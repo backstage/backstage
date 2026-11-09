@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import {
+  mockCredentials,
+  mockServices,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
+import {
+  actionsServiceMock,
   metricsServiceMock,
   tracingServiceMock,
 } from '@backstage/backend-test-utils/alpha';
@@ -25,6 +30,8 @@ import {
   Client,
   StreamableHTTPClientTransport,
 } from '@modelcontextprotocol/client';
+import { Client as LegacyClient } from '@modelcontextprotocol/sdk/client/index.js';
+import { StreamableHTTPClientTransport as LegacyTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 
@@ -133,6 +140,149 @@ describe('Mcp Backend', () => {
     expect(legacyResponse.status).toBe(404);
   });
 
+  it('should retain tool discovery, invocation, and errors for an SDK v1 client', async () => {
+    const { serverAddress } = await getContext('Use greeting tools.');
+    const client = new LegacyClient({
+      name: 'legacy test client',
+      version: '1.0',
+    });
+    try {
+      await client.connect(
+        new LegacyTransport(new URL(`${serverAddress}/api/mcp-actions/v1`)),
+      );
+      expect(client.getInstructions()).toBe('Use greeting tools.');
+      expect((await client.listTools()).tools.map(tool => tool.name)).toEqual([
+        'local.make-greeting',
+      ]);
+      expect(
+        await client.callTool({
+          name: 'local.make-greeting',
+          arguments: { name: 'Ada' },
+        }),
+      ).toEqual({
+        content: [{ type: 'text', text: '{"greeting":"Hello Ada!"}' }],
+        structuredContent: { greeting: 'Hello Ada!' },
+      });
+      expect(
+        await client.callTool({ name: 'missing', arguments: {} }),
+      ).toMatchObject({ isError: true });
+    } finally {
+      await client.close();
+    }
+  });
+
+  it('should keep concurrent callers isolated on the modern endpoint', async () => {
+    const auth = mockServices.auth();
+    const actions = actionsServiceMock.mock({
+      list: async ({ credentials }) => {
+        const name = auth.isPrincipal(credentials, 'user')
+          ? credentials.principal.userEntityRef.split('/')[1]
+          : 'other';
+        return {
+          actions: [
+            {
+              id: `local:${name}`,
+              pluginId: 'local',
+              name,
+              title: name,
+              description: name,
+              schema: { input: { type: 'object' }, output: { type: 'object' } },
+              attributes: {
+                readOnly: true,
+                destructive: false,
+                idempotent: true,
+              },
+            },
+          ],
+        };
+      },
+      invoke: async ({ credentials }) => ({
+        output: {
+          userEntityRef: auth.isPrincipal(credentials, 'user')
+            ? credentials.principal.userEntityRef
+            : 'other',
+        },
+      }),
+    });
+    const { server } = await startTestBackend({
+      features: [
+        mcpPlugin,
+        actions.factory,
+        mockServices.httpAuth.factory(),
+        metricsServiceMock.mock().factory,
+        tracingServiceMock.mock().factory,
+      ],
+    });
+    const address = server.address();
+    if (typeof address !== 'object' || !address)
+      throw new Error('Missing server address');
+    await Promise.all(
+      ['alice', 'bob'].map(async name => {
+        const client = new Client(
+          { name, version: '1.0' },
+          {
+            versionNegotiation: { mode: { pin: '2026-07-28' } },
+          },
+        );
+        try {
+          await client.connect(
+            new StreamableHTTPClientTransport(
+              new URL(`http://localhost:${address.port}/api/mcp-actions/v1`),
+              {
+                requestInit: {
+                  headers: {
+                    Authorization: mockCredentials.user.header(
+                      `user:default/${name}`,
+                    ),
+                  },
+                },
+              },
+            ),
+          );
+          expect(
+            (await client.listTools()).tools.map(tool => tool.name),
+          ).toEqual([`local.${name}`]);
+          expect(
+            await client.callTool({ name: `local.${name}`, arguments: {} }),
+          ).toMatchObject({
+            structuredContent: {
+              userEntityRef: `user:default/${name}`,
+            },
+          });
+          const other = name === 'alice' ? 'bob' : 'alice';
+          expect(
+            await client.callTool({ name: `local.${other}`, arguments: {} }),
+          ).toMatchObject({ isError: true });
+        } finally {
+          await client.close();
+        }
+      }),
+    );
+    expect(actions.invoke).toHaveBeenCalledTimes(2);
+  });
+
+  it('should reject modern header mismatches', async () => {
+    const { serverAddress } = await getContext();
+    const response = await request(serverAddress)
+      .post('/api/mcp-actions/v1')
+      .set('Accept', 'application/json, text/event-stream')
+      .set('MCP-Protocol-Version', '2026-07-28')
+      .set('Mcp-Method', 'tools/call')
+      .send({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/list',
+        params: {
+          _meta: {
+            'io.modelcontextprotocol/protocolVersion': '2026-07-28',
+            'io.modelcontextprotocol/clientCapabilities': {},
+          },
+        },
+      });
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe(-32020);
+  });
+
   it('should return configured instructions for the default server', async () => {
     const instructions = 'Use catalog tools before scaffolder tools.';
     const { client, serverAddress } = await getContext(instructions);
@@ -215,9 +365,24 @@ describe('Mcp Backend', () => {
         { versionNegotiation: { mode: { pin: '2026-07-28' } } },
       );
 
+      const listResponses: unknown[] = [];
       await client.connect(
         new StreamableHTTPClientTransport(
           new URL(`${serverAddress}/api/mcp-actions/v1`),
+          {
+            fetch: async (url, init) => {
+              const response = await fetch(url, init);
+              if (
+                response.headers
+                  .get('content-type')
+                  ?.includes('application/json')
+              ) {
+                const body = await response.clone().json();
+                if (body.result?.tools) listResponses.push(body.result);
+              }
+              return response;
+            },
+          },
         ),
       );
 
@@ -234,6 +399,9 @@ describe('Mcp Backend', () => {
       });
       expect(result.structuredContent).toEqual({ greeting: 'Hello Ada!' });
 
+      expect(listResponses).toEqual([
+        expect.objectContaining({ ttlMs: 0, cacheScope: 'private' }),
+      ]);
       await client.close();
       // The duration is recorded when the response closes, which can happen
       // after the client already holds the result.
@@ -384,6 +552,32 @@ describe('Mcp Backend', () => {
       expect(scaffolderResult.tools[0].name).toBe(
         'scaffolder-actions.create-app',
       );
+      const modernClient = new Client(
+        { name: 'modern named client', version: '1.0' },
+        { versionNegotiation: { mode: { pin: '2026-07-28' } } },
+      );
+      try {
+        await modernClient.connect(
+          new StreamableHTTPClientTransport(
+            new URL(`${serverAddress}/api/mcp-actions/v1/catalog`),
+          ),
+        );
+        expect(modernClient.getProtocolEra()).toBe('modern');
+        expect(modernClient.getInstructions()).toBe(
+          'Use this server to inspect the catalog.',
+        );
+        expect(
+          (await modernClient.listTools()).tools.map(tool => tool.name),
+        ).toEqual(['catalog-actions.get-entity']);
+        expect(
+          await modernClient.callTool({
+            name: 'scaffolder-actions.create-app',
+            arguments: { template: 'test' },
+          }),
+        ).toMatchObject({ isError: true });
+      } finally {
+        await modernClient.close();
+      }
     });
 
     it('should keep serving every action on /v1 when named servers are configured', async () => {
