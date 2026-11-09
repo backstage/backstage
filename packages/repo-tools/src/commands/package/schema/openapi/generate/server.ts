@@ -19,7 +19,6 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import { loadYaml } from '../../../../../lib/yaml';
 import { dirname, join, resolve } from 'node:path';
-import { exec } from '../../../../../lib/exec';
 import {
   OLD_SCHEMA_PATH,
   OPENAPI_IGNORE_FILES,
@@ -28,6 +27,7 @@ import {
 } from '../../../../../lib/openapi/constants';
 import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
 import { targetPaths } from '@backstage/cli-common';
+import { runOutputWithStderr } from '../../../../../lib/runOutputWithStderr';
 import {
   getOpenApiGeneratorKey,
   getPathToCurrentOpenApiSpec,
@@ -77,13 +77,24 @@ export const createOpenApiRouter = async (
     export * from './generated';`,
   );
 
-  await exec(`yarn backstage-cli package lint`, ['--fix', tsPath, indexFile]);
+  await runOutputWithStderr([
+    'yarn',
+    'backstage-cli',
+    'package',
+    'lint',
+    '--fix',
+    tsPath,
+    indexFile,
+  ]);
   if (
     await fs.pathExists(targetPaths.resolveRoot('node_modules/.bin/prettier'))
   ) {
-    await exec(`yarn prettier`, ['--write', tsPath, indexFile], {
-      cwd: targetPaths.rootDir,
-    });
+    await runOutputWithStderr(
+      ['yarn', 'prettier', '--write', tsPath, indexFile],
+      {
+        cwd: targetPaths.rootDir,
+      },
+    );
   }
 }
 
@@ -106,9 +117,9 @@ async function generate(
   });
   const generatorKey = await getOpenApiGeneratorKey(resolvedOpenapiPath);
 
-  await exec(
-    'node',
+  await runOutputWithStderr(
     [
+      'node',
       resolvePackagePath('@openapitools/openapi-generator-cli', 'main.js'),
       'generate',
       '-i',
@@ -124,16 +135,12 @@ async function generate(
       ),
       '--generator-key',
       generatorKey,
-      additionalProperties
-        ? `--additional-properties=${additionalProperties}`
-        : '',
+      ...(additionalProperties
+        ? [`--additional-properties=${additionalProperties}`]
+        : []),
     ],
     {
-      maxBuffer: Number.MAX_VALUE,
       cwd: resolvePackagePath('@backstage/repo-tools'),
-      env: {
-        ...process.env,
-      },
       signal: abortSignal?.signal,
     },
   );
@@ -146,17 +153,21 @@ async function generate(
     }
   }
 
-  await exec(
-    `yarn backstage-cli package lint --fix ${resolvedOutputDirectory}`,
-    [],
-    {
-      signal: abortSignal?.signal,
-    },
+  await runOutputWithStderr(
+    [
+      'yarn',
+      'backstage-cli',
+      'package',
+      'lint',
+      '--fix',
+      resolvedOutputDirectory,
+    ],
+    { signal: abortSignal?.signal },
   );
 
   const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
   if (prettier) {
-    await exec(`${prettier} --write ${resolvedOutputDirectory}`, [], {
+    await runOutputWithStderr([prettier, '--write', resolvedOutputDirectory], {
       signal: abortSignal?.signal,
     });
   }

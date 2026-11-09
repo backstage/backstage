@@ -16,8 +16,8 @@
 import { PackageGraph } from '@backstage/cli-node';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { OptionValues } from 'commander';
-import { exec } from '../../../../lib/exec';
 import { targetPaths } from '@backstage/cli-common';
+import { runOutputWithStderr } from '../../../../lib/runOutputWithStderr';
 import {
   DEFAULT_BASE_REF,
   YAML_SCHEMA_PATH,
@@ -27,6 +27,9 @@ import chalk from 'chalk';
 import { relative as relativePath, join, sep, posix } from 'node:path';
 import { pathExists } from 'fs-extra';
 
+// Output is parsed or printed as-is, so don't let run() force colors
+const noColor = { env: { FORCE_COLOR: undefined } };
+
 export async function command(opts: OptionValues) {
   await ensureOasdiffInstalled();
 
@@ -34,14 +37,14 @@ export async function command(opts: OptionValues) {
 
   let since = '';
   if (opts.since) {
-    const { stdout: sinceRaw } = await exec('git', ['rev-parse', opts.since]);
-    since = sinceRaw.toString().trim();
-    const { stdout: changedFilesRaw } = await exec('git', [
-      'diff',
-      '--name-only',
-      since,
-    ]);
-    const changedFiles = changedFilesRaw.toString().trim();
+    since = await runOutputWithStderr(
+      ['git', 'rev-parse', opts.since],
+      noColor,
+    );
+    const changedFiles = await runOutputWithStderr(
+      ['git', 'diff', '--name-only', since],
+      noColor,
+    );
 
     const changedOpenApiSpecs = changedFiles
       .split('\n')
@@ -66,8 +69,7 @@ export async function command(opts: OptionValues) {
     return;
   }
 
-  const { stdout: currentSha } = await exec('git', ['rev-parse', 'HEAD']);
-  const sha = currentSha.toString().trim();
+  const sha = await runOutputWithStderr(['git', 'rev-parse', 'HEAD'], noColor);
 
   console.log(`### Summary for commit (${sha})\n`);
 
@@ -90,9 +92,9 @@ export async function command(opts: OptionValues) {
     const baseSpec = `${baseRef}:${relativeSpecPath}`;
 
     try {
-      const { stdout } = await exec(
-        'oasdiff',
+      const output = await runOutputWithStderr(
         [
+          'oasdiff',
           'changelog',
           baseSpec,
           relativeSpecPath,
@@ -101,9 +103,8 @@ export async function command(opts: OptionValues) {
           '--template',
           templatePath,
         ],
-        { cwd: targetPaths.rootDir },
+        { cwd: targetPaths.rootDir, env: { FORCE_COLOR: undefined } },
       );
-      const output = stdout.toString().trim();
       if (output) {
         console.log(`## ${pkgName}\n`);
         console.log(output);

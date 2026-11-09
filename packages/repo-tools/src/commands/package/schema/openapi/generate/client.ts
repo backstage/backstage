@@ -18,13 +18,13 @@ import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { resolve } from 'node:path';
-import { exec } from '../../../../../lib/exec';
 import {
   OPENAPI_IGNORE_FILES,
   OUTPUT_PATH,
 } from '../../../../../lib/openapi/constants';
 import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
 import { targetPaths } from '@backstage/cli-common';
+import { runOutputWithStderr } from '../../../../../lib/runOutputWithStderr';
 import {
   getOpenApiGeneratorKey,
   getPathToCurrentOpenApiSpec,
@@ -53,9 +53,9 @@ async function generate(
     OPENAPI_IGNORE_FILES.join('\n'),
   );
 
-  await exec(
-    'node',
+  await runOutputWithStderr(
     [
+      'node',
       resolvePackagePath('@openapitools/openapi-generator-cli', 'main.js'),
       'generate',
       '-i',
@@ -71,17 +71,13 @@ async function generate(
       ),
       '--generator-key',
       generatorKey,
-      additionalProperties
-        ? `--additional-properties=${additionalProperties}`
-        : '',
+      ...(additionalProperties
+        ? [`--additional-properties=${additionalProperties}`]
+        : []),
     ],
     {
       signal: abortSignal?.signal,
-      maxBuffer: Number.MAX_VALUE,
       cwd: resolvePackagePath('@backstage/repo-tools'),
-      env: {
-        ...process.env,
-      },
     },
   );
 
@@ -93,13 +89,14 @@ async function generate(
     export * from './generated';`,
   );
 
-  await exec(`yarn backstage-cli package lint --fix ${parentDirectory}`, [], {
-    signal: abortSignal?.signal,
-  });
+  await runOutputWithStderr(
+    ['yarn', 'backstage-cli', 'package', 'lint', '--fix', parentDirectory],
+    { signal: abortSignal?.signal },
+  );
 
   const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
   if (await fs.pathExists(prettier)) {
-    await exec(`${prettier} --write ${parentDirectory}`, [], {
+    await runOutputWithStderr([prettier, '--write', parentDirectory], {
       signal: abortSignal?.signal,
     });
   }

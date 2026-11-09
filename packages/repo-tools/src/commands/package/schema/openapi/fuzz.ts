@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import fs from 'fs-extra';
-import { targetPaths } from '@backstage/cli-common';
+import { run, targetPaths } from '@backstage/cli-common';
 import chalk from 'chalk';
-import { spawn } from '../../../../lib/exec';
 import { getPathToCurrentOpenApiSpec } from '../../../../lib/openapi/helpers';
 import { ConfigSources } from '@backstage/config-loader';
 import { loadYaml } from '../../../../lib/yaml';
@@ -69,9 +68,9 @@ async function fuzz(opts: OptionValues) {
     args.push('--exclude-checks', opts.excludeChecks);
   }
 
-  await spawn(
-    'st',
+  await run(
     [
+      'st',
       'run',
       '--checks',
       'all',
@@ -81,7 +80,7 @@ async function fuzz(opts: OptionValues) {
     {
       stdio: ['ignore', 'inherit', 'ignore'],
     },
-  );
+  ).waitForExit();
 }
 
 export async function command(opts: OptionValues) {
