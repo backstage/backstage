@@ -76,7 +76,7 @@
     ],
     "*.md": [
       "prettier --write",
-      "node ./scripts/check-docs-quality"
+      "node ./scripts/check-docs-quality --lint-staged"
     ],
     "{plugins,packages}/*/catalog-info.yaml": [
       "yarn backstage-repo-tools generate-catalog-info --ci"
