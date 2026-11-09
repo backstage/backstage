@@ -15,6 +15,7 @@
  */
 
 import { execFile } from 'node:child_process';
+import fs from 'node:fs';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import parseGitUrl from 'git-url-parse';
@@ -115,6 +116,46 @@ export function parseCatalogFileFolder(
     return [[]];
   }
   return rest.slice(1).map((_, i) => rest.slice(i + 1));
+}
+
+/**
+ * Parses a `backstage.io/managed-by-location` annotation value of the form
+ * `file:<absolute path to the catalog file>`. Returns the folder of the file
+ * relative to the first of the given checkout roots that contains it, as a
+ * segment list, or undefined if the file is not inside any of the roots. Paths
+ * are compared by their real paths, so symlinks do not matter.
+ */
+export function parseFileLocationFolder(
+  location: string,
+  roots: string[],
+): string[] | undefined {
+  if (!location.startsWith('file:')) {
+    return undefined;
+  }
+  const filePath = location.slice('file:'.length);
+  if (!path.isAbsolute(filePath)) {
+    return undefined;
+  }
+  const dir = realpathOrResolve(path.dirname(filePath));
+  for (const root of roots) {
+    const relative = path.relative(realpathOrResolve(root), dir);
+    if (relative === '..' || relative.startsWith(`..${path.sep}`)) {
+      continue;
+    }
+    if (path.isAbsolute(relative)) {
+      continue;
+    }
+    return relative.split(path.sep).filter(Boolean);
+  }
+  return undefined;
+}
+
+function realpathOrResolve(target: string): string {
+  try {
+    return fs.realpathSync(target);
+  } catch {
+    return path.resolve(target);
+  }
 }
 
 export async function getOriginUrl(
