@@ -20,49 +20,51 @@ import type { ErrorObject } from 'ajv';
 const OPENAPI_VALIDATION_CODE_SUFFIX = '.openapi.validation';
 
 /**
- * Maps ajv keywords onto the zod v4 issue codes. A missing required property
- * is `invalid_type`, the same as in zod. Keywords that are not listed are
- * `custom`.
+ * How each ajv keyword is reported. `code` is the zod v4 issue code, where a
+ * missing required property is `invalid_type`, the same as in zod. Keywords
+ * that are not listed are `custom`. `param` is set for the keywords whose
+ * errors point at the parent object, and names the entry in the ajv `params`
+ * that holds the offending property.
  */
-const KEYWORD_CODES: Record<string, ValidationIssueCode> = {
-  type: 'invalid_type',
-  required: 'invalid_type',
-  minLength: 'too_small',
-  minItems: 'too_small',
-  minimum: 'too_small',
-  exclusiveMinimum: 'too_small',
-  minProperties: 'too_small',
-  maxLength: 'too_big',
-  maxItems: 'too_big',
-  maximum: 'too_big',
-  exclusiveMaximum: 'too_big',
-  maxProperties: 'too_big',
-  format: 'invalid_format',
-  pattern: 'invalid_format',
-  enum: 'invalid_value',
-  const: 'invalid_value',
-  multipleOf: 'not_multiple_of',
-  additionalProperties: 'unrecognized_keys',
-  unevaluatedProperties: 'unrecognized_keys',
-  oneOf: 'invalid_union',
-  anyOf: 'invalid_union',
-};
+const KEYWORDS: Record<string, { code: ValidationIssueCode; param?: string }> =
+  {
+    type: { code: 'invalid_type' },
+    required: { code: 'invalid_type', param: 'missingProperty' },
+    minLength: { code: 'too_small' },
+    minItems: { code: 'too_small' },
+    minimum: { code: 'too_small' },
+    exclusiveMinimum: { code: 'too_small' },
+    minProperties: { code: 'too_small' },
+    maxLength: { code: 'too_big' },
+    maxItems: { code: 'too_big' },
+    maximum: { code: 'too_big' },
+    exclusiveMaximum: { code: 'too_big' },
+    maxProperties: { code: 'too_big' },
+    format: { code: 'invalid_format' },
+    pattern: { code: 'invalid_format' },
+    enum: { code: 'invalid_value' },
+    const: { code: 'invalid_value' },
+    multipleOf: { code: 'not_multiple_of' },
+    additionalProperties: {
+      code: 'unrecognized_keys',
+      param: 'additionalProperty',
+    },
+    unevaluatedProperties: {
+      code: 'unrecognized_keys',
+      param: 'unevaluatedProperty',
+    },
+    oneOf: { code: 'invalid_union' },
+    anyOf: { code: 'invalid_union' },
+  };
 
-function codeFromKeyword(keyword: string): ValidationIssueCode {
-  return Object.prototype.hasOwnProperty.call(KEYWORD_CODES, keyword)
-    ? KEYWORD_CODES[keyword]
-    : 'custom';
+function keywordInfo(keyword: string): {
+  code: ValidationIssueCode;
+  param?: string;
+} {
+  return Object.prototype.hasOwnProperty.call(KEYWORDS, keyword)
+    ? KEYWORDS[keyword]
+    : { code: 'custom' };
 }
-
-/**
- * The keywords whose ajv errors point at the parent object, with the name of
- * the offending property in `params`.
- */
-const PROPERTY_PARAMS: Record<string, string> = {
-  required: 'missingProperty',
-  additionalProperties: 'additionalProperty',
-  unevaluatedProperties: 'unevaluatedProperty',
-};
 
 /**
  * Escapes a single segment for use in a JSON Pointer (RFC 6901).
@@ -70,17 +72,6 @@ const PROPERTY_PARAMS: Record<string, string> = {
 export function escapeJsonPointerSegment(segment: string): string {
   return segment.replace(/~/g, '~0').replace(/\//g, '~1');
 }
-
-function unescapeJsonPointerSegment(segment: string): string {
-  return segment.replace(/~1/g, '/').replace(/~0/g, '~');
-}
-
-/**
- * How many candidate parent objects to check when locating a property name
- * that contains slashes. Each check costs time proportional to the length of
- * the path, so this bounds the total work for long paths.
- */
-const MAX_PARENT_CANDIDATES = 8;
 
 /**
  * Converts ajv errors into validation issues.
@@ -96,109 +87,36 @@ export function validationIssuesFromAjv(
   return errors.map(error => {
     // ajv escapes the instance path, but not the property names in params.
     let path = `${pathPrefix}${error.instancePath}`;
-    const paramName = PROPERTY_PARAMS[error.keyword];
-    const property = paramName ? error.params?.[paramName] : undefined;
+    const { code, param } = keywordInfo(error.keyword);
+    const property = param ? error.params?.[param] : undefined;
     if (property !== undefined) {
       path += `/${escapeJsonPointerSegment(String(property))}`;
     }
     return {
       path,
       message: error.message ?? `must pass "${error.keyword}" validation`,
-      code: codeFromKeyword(error.keyword),
+      code,
     };
   });
 }
 
 /**
- * The parts of a request that express-openapi-validator validates, keyed the
- * same way as the root of its error paths.
- */
-export type ValidatedRequestData = {
-  body?: unknown;
-  query?: unknown;
-  headers?: unknown;
-  params?: unknown;
-  cookies?: unknown;
-};
-
-/**
- * express-openapi-validator joins the escaped instance path from ajv with the
- * raw property name for some keywords, such as `/body/a~1b/x/y` for a missing
- * `x/y` property. This finds where the raw property name starts and escapes it.
- */
-function fixPropertyPath(
-  path: string,
-  keyword: string,
-  message: string,
-  data: ValidatedRequestData,
-): string {
-  if (keyword === 'required') {
-    const match = /^must have required property '(.*)'$/.exec(message);
-    const property = match?.[1];
-    if (property !== undefined && path.endsWith(`/${property}`)) {
-      const parent = path.slice(0, path.length - property.length - 1);
-      return `${parent}/${escapeJsonPointerSegment(property)}`;
-    }
-    return path;
-  }
-
-  // The property exists in the request, so look for the parent object that
-  // has it. The path and the request both come from the client, so this walks
-  // the path once and only checks a bounded number of candidate parents,
-  // keeping the work linear in the length of the path.
-  const segments = path.split('/');
-  if (segments[0] !== '' || segments.length < 2) {
-    return path;
-  }
-
-  // parents[depth] is the value at the pointer made of the first `depth`
-  // segments, and offsets[depth] is the length of that pointer in `path`.
-  const parents: unknown[] = [data];
-  const offsets: number[] = [0];
-  let node: unknown = data;
-  for (let depth = 1; depth < segments.length - 1; depth++) {
-    if (!node || typeof node !== 'object') {
-      break;
-    }
-    const key = unescapeJsonPointerSegment(segments[depth]);
-    if (!Object.prototype.hasOwnProperty.call(node, key)) {
-      break;
-    }
-    node = (node as Record<string, unknown>)[key];
-    parents.push(node);
-    offsets.push(offsets[depth - 1] + 1 + segments[depth].length);
-  }
-
-  // Start with the deepest parent, since the property name is usually a
-  // single segment.
-  const lowestDepth = Math.max(0, parents.length - MAX_PARENT_CANDIDATES);
-  for (let depth = parents.length - 1; depth >= lowestDepth; depth--) {
-    const parent = parents[depth];
-    const property = path.slice(offsets[depth] + 1);
-    if (
-      parent &&
-      typeof parent === 'object' &&
-      Object.prototype.hasOwnProperty.call(parent, property)
-    ) {
-      return `${path.slice(0, offsets[depth])}/${escapeJsonPointerSegment(
-        property,
-      )}`;
-    }
-  }
-  return path;
-}
-
-/**
  * Converts the error items of an express-openapi-validator error into
- * validation issues with valid JSON Pointer paths.
+ * validation issues with JSON Pointer paths.
+ *
+ * @remarks
+ *
+ * express-openapi-validator appends the name of a missing or unknown property
+ * to the path without escaping it. The name of a missing property is read
+ * from the message and escaped. The name of an unknown property cannot be
+ * told apart from the rest of the path, so a name that contains `/` or `~`
+ * may be misplaced in the path until express-openapi-validator escapes it.
  *
  * @param error - The error passed on by the validator middleware.
- * @param data - The parts of the request that were validated.
  * @returns The issues, or `undefined` if the error has no error items.
  */
 export function validationIssuesFromValidatorError(
   error: Error,
-  data: ValidatedRequestData,
 ): ValidationIssue[] | undefined {
   const items: unknown = (error as { errors?: unknown }).errors;
   if (!Array.isArray(items)) {
@@ -210,8 +128,9 @@ export function validationIssuesFromValidatorError(
     const errorCode: string | undefined =
       typeof item?.errorCode === 'string' ? item.errorCode : undefined;
 
-    let path: string;
     let code: ValidationIssueCode = 'custom';
+    let path: string;
+    const query = /^(?:\/query\/|\.query\.)(.*)$/.exec(rawPath);
     if (errorCode?.endsWith(OPENAPI_VALIDATION_CODE_SUFFIX)) {
       // Schema validation errors from ajv, which are rooted at the request
       // data, for example `/body/location`.
@@ -219,14 +138,21 @@ export function validationIssuesFromValidatorError(
         0,
         -OPENAPI_VALIDATION_CODE_SUFFIX.length,
       );
-      code = codeFromKeyword(keyword);
-      path = PROPERTY_PARAMS[keyword]
-        ? fixPropertyPath(rawPath, keyword, message, data)
-        : rawPath;
-    } else if (rawPath.startsWith('/query/')) {
-      path = `/query/${escapeJsonPointerSegment(rawPath.slice(7))}`;
-    } else if (rawPath.startsWith('.query.')) {
-      path = `/query/${escapeJsonPointerSegment(rawPath.slice(7))}`;
+      code = keywordInfo(keyword).code;
+      path = rawPath;
+      if (keyword === 'required') {
+        const property = /^must have required property '(.*)'$/.exec(
+          message,
+        )?.[1];
+        if (property !== undefined && path.endsWith(`/${property}`)) {
+          path = `${path.slice(
+            0,
+            path.length - property.length,
+          )}${escapeJsonPointerSegment(property)}`;
+        }
+      }
+    } else if (query) {
+      path = `/query/${escapeJsonPointerSegment(query[1])}`;
     } else {
       // Other errors, such as an unsupported media type, carry the URL path
       // of the request rather than a location in it, so they refer to the

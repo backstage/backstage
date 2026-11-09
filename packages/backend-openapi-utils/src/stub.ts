@@ -33,16 +33,10 @@ import { isErrorResult, merge } from 'openapi-merge';
 import { validationIssuesFromValidatorError } from './validationIssues';
 
 function validatorErrorTransformer(): ErrorRequestHandler {
-  return (error: Error, req: Request, _2: Response, next: NextFunction) => {
+  return (error: Error, _1: Request, _2: Response, next: NextFunction) => {
     next(
       new InputError(error.message, undefined, {
-        issues: validationIssuesFromValidatorError(error, {
-          body: req.body,
-          query: req.query,
-          headers: req.headers,
-          params: req.params,
-          cookies: req.cookies,
-        }),
+        issues: validationIssuesFromValidatorError(error),
       }),
     );
   };

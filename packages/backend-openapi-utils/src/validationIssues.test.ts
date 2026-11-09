@@ -66,8 +66,7 @@ describe('validationIssuesFromAjv', () => {
 });
 
 describe('validationIssuesFromValidatorError', () => {
-  it('escapes property names that the validator appends unescaped', () => {
-    const data = { body: { 'a/b': { 'e/f': 1 } }, query: {} };
+  it('escapes the name of a missing property and keeps other paths', () => {
     const issues = validationIssuesFromValidatorError(
       validatorError([
         {
@@ -76,7 +75,7 @@ describe('validationIssuesFromValidatorError', () => {
           errorCode: 'required.openapi.validation',
         },
         {
-          path: '/body/a~1b/e/f',
+          path: '/body/a~1b/extra',
           message: 'must NOT have additional properties',
           errorCode: 'additionalProperties.openapi.validation',
         },
@@ -86,7 +85,6 @@ describe('validationIssuesFromValidatorError', () => {
           errorCode: 'type.openapi.validation',
         },
       ]),
-      data,
     );
 
     expect(issues).toEqual([
@@ -96,7 +94,7 @@ describe('validationIssuesFromValidatorError', () => {
         code: 'invalid_type',
       },
       {
-        path: '/body/a~1b/e~1f',
+        path: '/body/a~1b/extra',
         message: 'must NOT have additional properties',
         code: 'unrecognized_keys',
       },
@@ -108,45 +106,6 @@ describe('validationIssuesFromValidatorError', () => {
     ]);
   });
 
-  it('handles very long and deeply nested paths without excessive work', () => {
-    const depth = 50_000;
-    const deepest: Record<string, unknown> = { 'x/y': 1 };
-    let body: Record<string, unknown> = deepest;
-    for (let i = 0; i < depth; i++) {
-      body = { a: body };
-    }
-    const parentPath = `/body${'/a'.repeat(depth)}`;
-    const additional = (path: string) =>
-      validatorError([
-        {
-          path,
-          message: 'must NOT have additional properties',
-          errorCode: 'additionalProperties.openapi.validation',
-        },
-      ]);
-
-    expect(
-      validationIssuesFromValidatorError(additional(`${parentPath}/x/y`), {
-        body,
-      })?.[0].path,
-    ).toBe(`${parentPath}/x~1y`);
-
-    // A property that can't be found keeps the path as reported.
-    const missingPath = `${parentPath}/not/there`;
-    expect(
-      validationIssuesFromValidatorError(additional(missingPath), { body })?.[0]
-        .path,
-    ).toBe(missingPath);
-
-    // A long path that doesn't match the request at all.
-    const longPath = `/body${'/q'.repeat(200_000)}`;
-    expect(
-      validationIssuesFromValidatorError(additional(longPath), {
-        body: {},
-      })?.[0].path,
-    ).toBe(longPath);
-  });
-
   it('normalizes paths that are not schema validation errors', () => {
     const issues = validationIssuesFromValidatorError(
       validatorError([
@@ -154,7 +113,6 @@ describe('validationIssuesFromValidatorError', () => {
         { path: '.query.filter', message: "Parameter 'style' is invalid" },
         { path: '/things', message: 'unsupported media type text/plain' },
       ]),
-      {},
     );
 
     expect(issues).toEqual([
@@ -176,7 +134,7 @@ describe('validationIssuesFromValidatorError', () => {
     ]);
 
     expect(
-      validationIssuesFromValidatorError(new SyntaxError('bad json'), {}),
+      validationIssuesFromValidatorError(new SyntaxError('bad json')),
     ).toBeUndefined();
   });
 });

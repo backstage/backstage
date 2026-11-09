@@ -149,11 +149,11 @@ describe('createRouter', () => {
 
     const extraProperty = await request(app)
       .post('/things')
-      .send({ name: 'thing', 'a/b': 1 });
+      .send({ name: 'thing', extra: 1 });
     expect(extraProperty.status).toBe(400);
     expect(extraProperty.body.error.issues).toEqual([
       {
-        path: '/body/a~1b',
+        path: '/body/extra',
         message: 'must NOT have additional properties',
         code: 'unrecognized_keys',
       },
