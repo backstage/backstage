@@ -23,6 +23,7 @@ import {
   DbRefreshStateRow,
   DbRelationsRow,
   DbSearchRow,
+  DbStitchQueueRow,
 } from '../../tables';
 import { markForStitching } from './markForStitching';
 import { performStitching } from './performStitching';
@@ -525,6 +526,180 @@ describe.each(databases.eachSupportedId())(
           }
         },
       );
+
+      it.each(['update', 'revive', 'insert'] as const)(
+        'makes a deletion wait for an in-flight %s, then tombstones it',
+        async publicationKind => {
+          const knex = await databases.init(databaseId);
+          await applyDatabaseMigrations(knex);
+          const logger = mockServices.logger.mock();
+          const entity = {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n', namespace: 'ns' },
+            spec: { old: 'value' },
+          };
+          await knex<DbRefreshStateRow>('refresh_state').insert({
+            entity_id: 'my-id',
+            entity_ref: 'k:ns/n',
+            unprocessed_entity: '{}',
+            processed_entity: JSON.stringify(entity),
+            errors: '[]',
+            next_update_at: knex.fn.now(),
+            last_discovery_at: knex.fn.now(),
+          });
+          if (publicationKind === 'update') {
+            await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+            await performStitching({
+              knex,
+              logger,
+              ...(await getStitchClaim(knex, 'k:ns/n')),
+            });
+            await knex<DbRefreshStateRow>('refresh_state').update({
+              processed_entity: JSON.stringify({
+                ...entity,
+                spec: { new: 'value' },
+              }),
+            });
+          } else if (publicationKind === 'revive') {
+            await knex<DbFinalEntitiesRow>('final_entities').insert({
+              entity_id: 'old-id',
+              entity_ref: 'k:ns/n',
+              hash: '',
+              final_entity: null,
+              deleted_at: knex.fn.now(),
+            });
+          }
+          await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+          const [claim] = await getDeferredStitchableEntities({
+            knex,
+            batchSize: 1,
+            stitchTimeout: { minutes: 1 },
+          });
+
+          const deletion = await knex.transaction();
+          const actualSync =
+            jest.requireActual<typeof import('./syncSearchRows')>(
+              './syncSearchRows',
+            ).syncSearchRows;
+          let deleting: Promise<number> | undefined;
+          try {
+            syncSearchRowsMock.mockImplementationOnce(
+              async (tx, id, entries) => {
+                // The publication has written its body and passed its
+                // ownership checks. Deleting the candidate now must wait,
+                // since a stitch for the deletion would otherwise see the
+                // old state, and settle before this body is committed.
+                // Commit as soon as the deletion gets through, like an
+                // independent client would. The publication's settlement
+                // waits for the queue row that the deletion's trigger updates.
+                deleting = Promise.resolve(
+                  deletion('refresh_state')
+                    .where('entity_id', 'my-id')
+                    .delete(),
+                ).then(async count => {
+                  await deletion.commit();
+                  return count;
+                });
+                await expectStillWaiting(deleting, knex, databaseId);
+                await actualSync(tx, id, entries);
+              },
+            );
+            await expect(
+              performStitching({ knex, logger, ...claim }),
+            ).resolves.toBe('changed');
+            await expect(deleting).resolves.toBe(1);
+          } finally {
+            syncSearchRowsMock.mockReset().mockImplementation(actualSync);
+            if (!deletion.isCompleted()) await deletion.rollback();
+          }
+
+          const [published] = await knex<DbFinalEntitiesRow>('final_entities');
+          expect(published.entity_id).toBe(
+            publicationKind === 'revive' ? 'old-id' : 'my-id',
+          );
+          expect(JSON.parse(published.final_entity!).metadata.uid).toBe(
+            'my-id',
+          );
+
+          // The deletion's request outlives the publication's claim. It keeps
+          // that claim's lease, and is stitched once the lease runs out.
+          const queue = await knex<DbStitchQueueRow>('stitch_queue');
+          expect(queue.map(row => row.entity_ref)).toEqual(['k:ns/n']);
+          expect(queue[0].stitch_ticket).not.toBe(claim.stitchTicket);
+          await knex('stitch_queue').update({
+            next_stitch_at: '2000-01-01 00:00:00',
+          });
+          await expect(
+            performStitching({
+              knex,
+              logger,
+              ...(await getStitchClaim(knex, 'k:ns/n')),
+            }),
+          ).resolves.toBe('changed');
+          const [tombstone] = await knex<DbFinalEntitiesRow>('final_entities');
+          expect(tombstone.final_entity).toBeNull();
+          expect(await knex('stitch_queue')).toEqual([]);
+        },
+      );
+
+      it('abandons a publication whose candidate is deleted before it is locked', async () => {
+        const knex = await databases.init(databaseId);
+        await applyDatabaseMigrations(knex);
+        const logger = mockServices.logger.mock();
+        await knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: '{}',
+          processed_entity: JSON.stringify({
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n', namespace: 'ns' },
+          }),
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        });
+        await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+        const [claim] = await getDeferredStitchableEntities({
+          knex,
+          batchSize: 1,
+          stitchTimeout: { minutes: 1 },
+        });
+
+        // Hold the candidate, so that the publication reads it but then
+        // waits to lock it, and delete it meanwhile
+        const deletion = await knex.transaction();
+        let stitching: Promise<string> | undefined;
+        try {
+          await deletion('refresh_state')
+            .where('entity_id', 'my-id')
+            .forUpdate()
+            .select('entity_id');
+          stitching = performStitching({ knex, logger, ...claim });
+          await expectStillWaiting(stitching, knex, databaseId);
+          await deletion('refresh_state').where('entity_id', 'my-id').delete();
+          await deletion.commit();
+          await expect(stitching).resolves.toBe('abandoned');
+        } finally {
+          if (!deletion.isCompleted()) await deletion.rollback();
+          if (stitching) await stitching.catch(() => {});
+        }
+
+        expect(await knex('final_entities')).toEqual([]);
+        expect(await knex('search')).toEqual([]);
+        await knex('stitch_queue').update({
+          next_stitch_at: '2000-01-01 00:00:00',
+        });
+        await expect(
+          performStitching({
+            knex,
+            logger,
+            ...(await getStitchClaim(knex, 'k:ns/n')),
+          }),
+        ).resolves.toBe('abandoned');
+        expect(await knex('stitch_queue')).toEqual([]);
+      });
     }
     if (databaseId.startsWith('POSTGRES')) {
       it('rolls back body, search, and counter when generation assignment fails', async () => {
@@ -775,159 +950,188 @@ describe.each(databases.eachSupportedId())(
           }
         },
       );
-
-      it.each(['commit', 'rollback'] as const)(
-        'publishes without a lock inversion while cascading deletion waits, then %s deletion',
-        async deletionOutcome => {
-          const knex = await databases.init(databaseId);
-          await applyDatabaseMigrations(knex);
-          const logger = mockServices.logger.mock();
-          const initial = {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'n', namespace: 'ns' },
-            spec: { old: 'value' },
-          };
-          await knex<DbRefreshStateRow>('refresh_state').insert({
-            entity_id: 'my-id',
-            entity_ref: 'k:ns/n',
-            unprocessed_entity: '{}',
-            processed_entity: JSON.stringify(initial),
-            errors: '[]',
-            next_update_at: knex.fn.now(),
-            last_discovery_at: knex.fn.now(),
-          });
-          await markForStitching({ knex, entityRefs: ['k:ns/n'] });
-          await performStitching({
-            knex,
-            logger,
-            ...(await getStitchClaim(knex, 'k:ns/n')),
-          });
-          const beforeFinal = await knex<DbFinalEntitiesRow>('final_entities');
-          await knex<DbRefreshStateRow>('refresh_state')
-            .where('entity_id', 'my-id')
-            .update({
-              processed_entity: JSON.stringify({
-                ...initial,
-                spec: { new: 'value' },
-              }),
-            });
-          await markForStitching({ knex, entityRefs: ['k:ns/n'] });
-          const [claim] = await getDeferredStitchableEntities({
-            knex,
-            batchSize: 1,
-            stitchTimeout: { minutes: 1 },
-          });
-          const deletion = await knex.transaction();
-          let deleted: Promise<number> | undefined;
-          let publication: Promise<string> | undefined;
-          let timer: ReturnType<typeof setTimeout> | undefined;
-          const actualSync =
-            jest.requireActual<typeof import('./syncSearchRows')>(
-              './syncSearchRows',
-            ).syncSearchRows;
-
-          try {
-            const {
-              rows: [{ pid: deletionPid }],
-            } = await deletion.raw('SELECT pg_backend_pid() AS pid');
-            syncSearchRowsMock.mockImplementationOnce(
-              async (tx, id, entries) => {
-                const {
-                  rows: [{ pid: publicationPid }],
-                } = await tx.raw('SELECT pg_backend_pid() AS pid');
-                // Publication owns the refresh-state key lock and the final row.
-                // Deletion must wait before acquiring either in the opposite order.
-                deleted = deletion('refresh_state')
-                  .where('entity_id', 'my-id')
-                  .delete()
-                  .then(count => count);
-                // Attach a rejection handler immediately, including when a broken
-                // implementation changes the intended ordering.
-                void deleted.catch(() => {});
-                const deadline = Date.now() + 5_000;
-                for (;;) {
-                  const {
-                    rows: [{ blocked }],
-                  } = await knex.raw(
-                    'SELECT ? = ANY(pg_blocking_pids(?)) AS blocked',
-                    [publicationPid, deletionPid],
-                  );
-                  if (blocked) break;
-                  if (Date.now() >= deadline) {
-                    throw new Error('Deletion did not wait for publication');
-                  }
-                  await new Promise(resolve => setTimeout(resolve, 10));
-                }
-                // Search references final_entities, not refresh_state. Its FK
-                // check must not wait on the deleting transaction's refresh row,
-                // which would complete a deadlock cycle.
-                await actualSync(tx, id, entries);
-              },
-            );
-            publication = performStitching({ knex, logger, ...claim });
-            await expect(
-              Promise.race([
-                publication,
-                new Promise<never>((_, reject) => {
-                  timer = setTimeout(
-                    () =>
-                      reject(new Error('Publication blocked behind deletion')),
-                    5_000,
-                  );
-                }),
-              ]),
-            ).resolves.toBe('changed');
-            await expect(deleted).resolves.toBe(1);
-            await deletion[deletionOutcome]();
-          } finally {
-            clearTimeout(timer);
-            syncSearchRowsMock.mockReset().mockImplementation(actualSync);
-            if (!deletion.isCompleted()) await deletion.rollback();
-            if (publication) await publication.catch(() => {});
-            if (deleted) await deleted.catch(() => {});
-          }
-
-          expect(await knex('stitch_queue')).toEqual([]);
-          const committedDeletion = deletionOutcome === 'commit';
-          const refreshRows = await knex<DbRefreshStateRow>('refresh_state');
-          expect(refreshRows.map(row => row.entity_ref)).toEqual(
-            committedDeletion ? [] : ['k:ns/n'],
-          );
-          const finalRows = await knex<DbFinalEntitiesRow>('final_entities');
-          expect(
-            finalRows.map(row => ({
-              spec: JSON.parse(row.final_entity!).spec,
-              changed: row.hash !== beforeFinal[0].hash,
-            })),
-          ).toEqual(
-            committedDeletion
-              ? []
-              : [{ spec: { new: 'value' }, changed: true }],
-          );
-          expect((await knex<DbSearchRow>('search')).length > 0).toBe(
-            !committedDeletion,
-          );
-          expect(
-            await knex<DbSearchRow>('search').where('key', 'spec.old'),
-          ).toEqual([]);
-          expect(
-            await knex<DbSearchRow>('search').where('key', 'spec.new'),
-          ).toEqual(
-            committedDeletion
-              ? []
-              : [
-                  {
-                    entity_id: 'my-id',
-                    key: 'spec.new',
-                    value: 'value',
-                    original_value: 'value',
-                  },
-                ],
-          );
-        },
-      );
     }
+
+    it('tombstones deleted entities and keeps the slot across re-creation', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      const logger = mockServices.logger.mock();
+      const entity = {
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: { name: 'n', namespace: 'ns' },
+        spec: { same: 'value' },
+      };
+      const insertCandidate = (id: string, processed = true) =>
+        knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: id,
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: '{}',
+          processed_entity: processed ? JSON.stringify(entity) : undefined,
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        });
+      const stitch = async () =>
+        performStitching({
+          knex,
+          logger,
+          ...(await getStitchClaim(knex, 'k:ns/n')),
+        });
+      const readFinal = async () => {
+        const [row] = await knex<DbFinalEntitiesRow>('final_entities');
+        return {
+          slotId: row.entity_id,
+          uid: row.final_entity
+            ? JSON.parse(row.final_entity).metadata.uid
+            : undefined,
+          live: row.final_entity !== null,
+          deleted: row.deleted_at !== null,
+          generation: Number(row.generation),
+        };
+      };
+      const readUidSearch = () =>
+        knex<DbSearchRow>('search')
+          .where('key', 'metadata.uid')
+          .select('entity_id', 'value');
+
+      await insertCandidate('first');
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await expect(stitch()).resolves.toBe('changed');
+      const published = await readFinal();
+      expect(published).toEqual({
+        slotId: 'first',
+        uid: 'first',
+        live: true,
+        deleted: false,
+        generation: expect.any(Number),
+      });
+
+      // The trigger requests reconciliation; the stitcher writes the
+      // tombstone and gives it its own generation.
+      await knex('refresh_state').where('entity_id', 'first').delete();
+      expect(await knex('stitch_queue').pluck('entity_ref')).toEqual([
+        'k:ns/n',
+      ]);
+      await expect(stitch()).resolves.toBe('changed');
+      const tombstone = await readFinal();
+      expect(tombstone).toEqual({
+        slotId: 'first',
+        uid: undefined,
+        live: false,
+        deleted: true,
+        generation: expect.any(Number),
+      });
+      expect(tombstone.generation).toBeGreaterThan(published.generation);
+      expect(await knex('search')).toEqual([]);
+
+      // Reconciling a tombstone again is quiet.
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await expect(stitch()).resolves.toBe('abandoned');
+      expect(await readFinal()).toEqual(tombstone);
+
+      // Re-creation revives the same slot with the new candidate's UID,
+      // even though the content is identical.
+      await insertCandidate('second');
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await expect(stitch()).resolves.toBe('changed');
+      const revived = await readFinal();
+      expect(revived).toEqual({
+        slotId: 'first',
+        uid: 'second',
+        live: true,
+        deleted: false,
+        generation: expect.any(Number),
+      });
+      expect(revived.generation).toBeGreaterThan(tombstone.generation);
+      expect(await readUidSearch()).toEqual([
+        { entity_id: 'first', value: 'second' },
+      ]);
+
+      // Deleting and re-creating before any stitch runs still publishes the
+      // newest UID, and the result is stable afterwards.
+      await knex('refresh_state').where('entity_id', 'second').delete();
+      await insertCandidate('third');
+      await expect(stitch()).resolves.toBe('changed');
+      expect(await readFinal()).toEqual(
+        expect.objectContaining({ slotId: 'first', uid: 'third' }),
+      );
+      expect(await readUidSearch()).toEqual([
+        { entity_id: 'first', value: 'third' },
+      ]);
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await expect(stitch()).resolves.toBe('unchanged');
+
+      // A re-created candidate that is not yet processed must not leave its
+      // predecessor's body published in the meantime.
+      await knex('refresh_state').where('entity_id', 'third').delete();
+      await insertCandidate('fourth', false);
+      await expect(stitch()).resolves.toBe('changed');
+      expect(await readFinal()).toEqual(
+        expect.objectContaining({ slotId: 'first', live: false }),
+      );
+      await knex('refresh_state')
+        .where('entity_id', 'fourth')
+        .update({ processed_entity: JSON.stringify(entity) });
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await expect(stitch()).resolves.toBe('changed');
+      expect(await readFinal()).toEqual(
+        expect.objectContaining({
+          slotId: 'first',
+          uid: 'fourth',
+          live: true,
+        }),
+      );
+    });
+
+    it('does not tombstone with a claim that a newer request superseded', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      const logger = mockServices.logger.mock();
+      await knex<DbRefreshStateRow>('refresh_state').insert({
+        entity_id: 'my-id',
+        entity_ref: 'k:ns/n',
+        unprocessed_entity: '{}',
+        processed_entity: JSON.stringify({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n', namespace: 'ns' },
+        }),
+        errors: '[]',
+        next_update_at: knex.fn.now(),
+        last_discovery_at: knex.fn.now(),
+      });
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await performStitching({
+        knex,
+        logger,
+        ...(await getStitchClaim(knex, 'k:ns/n')),
+      });
+
+      await knex('refresh_state').where('entity_id', 'my-id').delete();
+      const staleClaim = await getStitchClaim(knex, 'k:ns/n');
+      // A newer request, such as from the entity being created again.
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+
+      await expect(
+        performStitching({ knex, logger, ...staleClaim }),
+      ).resolves.toBe('abandoned');
+      const [unchanged] = await knex<DbFinalEntitiesRow>('final_entities');
+      expect(unchanged.final_entity).not.toBeNull();
+
+      await expect(
+        performStitching({
+          knex,
+          logger,
+          ...(await getStitchClaim(knex, 'k:ns/n')),
+        }),
+      ).resolves.toBe('changed');
+      const [tombstone] = await knex<DbFinalEntitiesRow>('final_entities');
+      expect(tombstone.final_entity).toBeNull();
+      expect(Number(tombstone.generation)).toBeGreaterThan(
+        Number(unchanged.generation),
+      );
+    });
 
     it('retains failed work for a fenced retry and settles unprocessed work', async () => {
       const knex = await databases.init(databaseId);
@@ -1206,4 +1410,60 @@ async function getStitchClaim(knex: import('knex').Knex, entityRef: string) {
   const claim = claims.find(item => item.entityRef === entityRef);
   if (!claim) throw new Error(`No claim for ${entityRef}`);
   return claim;
+}
+
+/**
+ * Asserts that an operation is blocked on a lock: some query starts waiting,
+ * and the operation is still unfinished a while later.
+ */
+async function expectStillWaiting(
+  operation: Promise<unknown>,
+  knex: import('knex').Knex,
+  databaseId: string,
+) {
+  let finished = false;
+  operation.then(
+    () => {
+      finished = true;
+    },
+    () => {
+      finished = true;
+    },
+  );
+  await waitForLockWait(knex, databaseId);
+  await new Promise(resolve => setTimeout(resolve, 250));
+  expect(finished).toBe(false);
+}
+
+/**
+ * Waits until some transaction in this test's database is waiting for a lock.
+ */
+async function waitForLockWait(knex: import('knex').Knex, databaseId: string) {
+  const deadline = Date.now() + 5_000;
+  for (;;) {
+    let waiting: number;
+    if (databaseId.startsWith('POSTGRES')) {
+      const { rows } = await knex.raw(`
+        SELECT count(*) AS n FROM pg_stat_activity
+        WHERE datname = current_database() AND wait_event_type = 'Lock'
+      `);
+      waiting = Number(rows[0].n);
+    } else {
+      // A locking primary key lookup can wait while it is still being
+      // planned, before InnoDB lists its transaction as waiting. Every other
+      // connection in these tests is idle, so any running query is blocked.
+      const [rows] = await knex.raw(`
+        SELECT count(*) AS n FROM information_schema.PROCESSLIST
+        WHERE DB = DATABASE() AND COMMAND = 'Query' AND ID <> CONNECTION_ID()
+      `);
+      waiting = Number(rows[0].n);
+    }
+    if (waiting > 0) {
+      return;
+    }
+    if (Date.now() >= deadline) {
+      throw new Error('No transaction started waiting for a lock');
+    }
+    await new Promise(resolve => setTimeout(resolve, 10));
+  }
 }

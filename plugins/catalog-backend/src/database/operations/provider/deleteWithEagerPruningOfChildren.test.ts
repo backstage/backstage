@@ -22,6 +22,7 @@ import {
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbRelationsRow,
+  DbStitchQueueRow,
 } from '../../tables';
 import { deleteWithEagerPruningOfChildren } from './deleteWithEagerPruningOfChildren';
 import { markForStitching } from '../stitcher/markForStitching';
@@ -87,6 +88,12 @@ describe.each(databases.eachSupportedId())(
       return rows.map(r => r.entity_ref);
     }
 
+    // A trigger also queues every deleted ref, so that the stitcher can turn
+    // its final row into a tombstone.
+    function withDeletions(expected: string[], deleted: string[]) {
+      return [...new Set([...expected, ...deleted])].sort();
+    }
+
     async function entitiesMarkedForStitching(knex: Knex) {
       const rows = await knex('stitch_queue')
         .orderBy('entity_ref')
@@ -110,9 +117,15 @@ describe.each(databases.eachSupportedId())(
         entityRefs: ['E1'],
       });
       await expect(remainingEntities(knex)).resolves.toEqual([]);
-      await expect(knex('stitch_queue').orderBy('entity_ref')).resolves.toEqual(
-        queued,
-      );
+      // The deletion replaces the tickets but keeps each row's schedule, so
+      // the stitcher still settles them.
+      const withoutTicket = ({ stitch_ticket: _, ...row }: DbStitchQueueRow) =>
+        row;
+      await expect(
+        knex<DbStitchQueueRow>('stitch_queue')
+          .orderBy('entity_ref')
+          .then(rows => rows.map(withoutTicket)),
+      ).resolves.toEqual(queued.map(withoutTicket));
       const claims = await getDeferredStitchableEntities({
         knex,
         batchSize: 10,
@@ -215,7 +228,9 @@ describe.each(databases.eachSupportedId())(
         entityRefs: ['E1', 'E3'],
       });
       await expect(remainingEntities(knex)).resolves.toEqual(['E4', 'E5']);
-      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(['E4']);
+      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(
+        withDeletions(['E4'], ['E1', 'E2', 'E3']),
+      );
     });
 
     it('works when there are multiple identical references', async () => {
@@ -247,7 +262,9 @@ describe.each(databases.eachSupportedId())(
         entityRefs: ['E1'],
       });
       await expect(remainingEntities(knex)).resolves.toEqual(['E2']);
-      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(['E2']);
+      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(
+        withDeletions(['E2'], ['E1']),
+      );
     });
 
     it('leaves out things that have roots in other source keys', async () => {
@@ -282,7 +299,9 @@ describe.each(databases.eachSupportedId())(
         entityRefs: ['E1'],
       });
       await expect(remainingEntities(knex)).resolves.toEqual(['E2', 'E3']);
-      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(['E2']);
+      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(
+        withDeletions(['E2'], ['E1']),
+      );
     });
 
     it('leaves out things that have several different roots for the same source key', async () => {
@@ -312,7 +331,9 @@ describe.each(databases.eachSupportedId())(
         entityRefs: ['E1'],
       });
       await expect(remainingEntities(knex)).resolves.toEqual(['E2', 'E3']);
-      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual([]);
+      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(
+        withDeletions([], ['E1']),
+      );
     });
 
     it('handles cycles and diamonds gracefully', async () => {
@@ -353,14 +374,18 @@ describe.each(databases.eachSupportedId())(
         'E5',
         'E6',
       ]);
-      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(['E4']);
+      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(
+        withDeletions(['E4'], ['E1', 'E2']),
+      );
       await deleteWithEagerPruningOfChildren({
         knex,
         sourceKey: 'P1',
         entityRefs: ['E3'],
       });
       await expect(remainingEntities(knex)).resolves.toEqual([]);
-      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(['E4']);
+      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(
+        withDeletions(['E4'], ['E1', 'E2', 'E3', 'E5', 'E6']),
+      );
     });
 
     it('silently ignores attempts to delete things that are not your own and/or are not roots', async () => {
@@ -394,7 +419,9 @@ describe.each(databases.eachSupportedId())(
         'E2',
         'E4',
       ]);
-      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual([]);
+      await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(
+        withDeletions([], ['E3']),
+      );
     });
   },
 );

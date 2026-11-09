@@ -741,6 +741,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   async entityAncestry(rootRef: string): Promise<EntityAncestryResponse> {
     const [rootRow] = await this.database<DbFinalEntitiesRow>('final_entities')
       .where('final_entities.entity_ref', '=', rootRef)
+      .whereNotNull('final_entities.final_entity')
       .select({
         entityJson: 'final_entities.final_entity',
       });
@@ -770,6 +771,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
             'final_entities.entity_ref',
         })
         .where('refresh_state_references.target_entity_ref', '=', currentRef)
+        .whereNotNull('final_entities.final_entity')
         .select({
           parentEntityRef: 'final_entities.entity_ref',
           parentEntityJson: 'final_entities.final_entity',
