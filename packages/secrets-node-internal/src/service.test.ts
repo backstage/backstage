@@ -15,6 +15,7 @@
  */
 
 import {
+  coreServices,
   createBackendPlugin,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
@@ -22,17 +23,21 @@ import { startTestBackend } from '@backstage/backend-test-utils';
 import { secretProviderServiceRef, secretsServiceRef } from './service';
 
 describe('secretsServiceRef', () => {
-  it('derives the consumer identity from the plugin metadata, not the caller', async () => {
-    const observedConsumers: string[] = [];
+  it('creates a provider for each plugin with its identity from plugin metadata', async () => {
+    const observedPluginIds: string[] = [];
+    const constructedPluginIds: string[] = [];
 
     const providerFactory = createServiceFactory({
       service: secretProviderServiceRef,
-      deps: {},
-      async factory() {
+      deps: { pluginMetadata: coreServices.pluginMetadata },
+      async factory({ pluginMetadata }) {
+        const pluginId = pluginMetadata.getId();
+        constructedPluginIds.push(pluginId);
         return {
           id: 'test',
-          async resolve({ consumer }) {
-            observedConsumers.push(consumer.pluginId);
+          async resolve({ reference }) {
+            expect(reference).toEqual({ key: 'token' });
+            observedPluginIds.push(pluginId);
             return { value: 'secret' };
           },
         };
@@ -62,10 +67,7 @@ describe('secretsServiceRef', () => {
       ],
     });
 
-    // Each plugin resolves through its own plugin-scoped resolver, so the shared
-    // provider sees each consumer's real plugin id even though neither plugin
-    // supplied one. A single shared provider instance also confirms the registry
-    // is built once at root scope rather than per resolving plugin.
-    expect(observedConsumers.sort()).toEqual(['plugin-one', 'plugin-two']);
+    expect(constructedPluginIds.sort()).toEqual(['plugin-one', 'plugin-two']);
+    expect(observedPluginIds.sort()).toEqual(['plugin-one', 'plugin-two']);
   });
 });

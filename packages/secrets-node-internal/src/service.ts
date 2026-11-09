@@ -21,54 +21,27 @@ import {
 } from '@backstage/backend-plugin-api';
 import { DefaultSecretsService } from './DefaultSecretsService';
 import { createSecretProviderRegistry } from './SecretProviderRegistry';
-import type {
-  SecretProvider,
-  SecretProviderRegistry,
-  SecretsService,
-} from './types';
+import type { SecretProvider, SecretsService } from './types';
 
 /**
- * Root-scoped, multiton service ref that {@link SecretProvider} implementations
+ * Plugin-scoped, multiton service ref that {@link SecretProvider} implementations
  * register against.
  *
  * @remarks
  *
- * Providers are root scoped so their factories can depend on root services such
- * as `rootConfig` and `rootLogger`. Register a provider by adding a service
- * factory bound to this ref; the resolver selects it by its `id`.
+ * Providers are plugin scoped so their factories can depend on plugin-scoped
+ * services such as `coreServices.pluginMetadata` or the Connection Service, as
+ * well as root services. Each plugin gets its own provider instance. Register a
+ * provider by adding a service factory bound to this ref; the resolver selects
+ * it by its `id`.
  *
  * @public
  */
 export const secretProviderServiceRef = createServiceRef<SecretProvider>({
   id: 'secrets.provider',
-  scope: 'root',
+  scope: 'plugin',
   multiton: true,
 });
-
-/**
- * Root-scoped registry that validates the set of registered providers once and
- * exposes a lookup by id.
- *
- * @remarks
- *
- * Building the registry at root scope means a misconfiguration such as a
- * duplicate provider id surfaces as a single startup error, rather than lazily
- * and repeatedly for every plugin that depends on the resolver. It is internal
- * wiring for {@link secretsServiceRef} and is deliberately not exported.
- */
-const secretProviderRegistryServiceRef =
-  createServiceRef<SecretProviderRegistry>({
-    id: 'secrets.provider-registry',
-    scope: 'root',
-    defaultFactory: async service =>
-      createServiceFactory({
-        service,
-        deps: { providers: secretProviderServiceRef },
-        async factory({ providers }) {
-          return createSecretProviderRegistry(providers);
-        },
-      }),
-  });
 
 /**
  * Plugin-scoped {@link SecretsService} that routes references to the registered
@@ -76,8 +49,9 @@ const secretProviderRegistryServiceRef =
  *
  * @remarks
  *
- * The service is plugin scoped so the consuming plugin's identity is derived
- * from `coreServices.pluginMetadata` rather than supplied by the caller.
+ * The resolver is plugin scoped, so it routes through this plugin's own
+ * provider instances, whose identity is bound by dependency injection. It
+ * validates provider ids once when this plugin's resolver is initialized.
  *
  * @public
  */
@@ -88,15 +62,13 @@ export const secretsServiceRef = createServiceRef<SecretsService>({
     createServiceFactory({
       service,
       deps: {
-        registry: secretProviderRegistryServiceRef,
+        providers: secretProviderServiceRef,
         logger: coreServices.logger,
-        pluginMetadata: coreServices.pluginMetadata,
       },
-      async factory({ registry, logger, pluginMetadata }) {
+      async factory({ providers, logger }) {
         return DefaultSecretsService.create({
-          registry,
+          registry: createSecretProviderRegistry(providers),
           logger,
-          consumer: { pluginId: pluginMetadata.getId() },
         });
       },
     }),

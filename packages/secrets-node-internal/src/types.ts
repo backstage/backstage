@@ -42,7 +42,7 @@ export interface SecretReference {
  *
  * @remarks
  *
- * The consumer must call {@link ResolvedSecret.dispose} at its own lifecycle
+ * The caller must call {@link ResolvedSecret.dispose} at its own lifecycle
  * boundary when a provider supplies one. What disposal means is owned by the
  * provider (for example releasing a lease); for providers that return a static
  * value it may be absent.
@@ -59,29 +59,6 @@ export interface ResolvedSecret {
 }
 
 /**
- * Trusted context describing the consumer performing a resolve.
- *
- * @remarks
- *
- * This is derived from the plugin-scoped resolver instance (from the plugin's
- * metadata), never from a caller-supplied argument or from the
- * {@link SecretReference}, so it cannot be influenced by template input or other
- * end-user data that flows through a resolve.
- *
- * Within a single backend, plugins are mutually trusted and share a process, so
- * `pluginId` is trusted attribution rather than a security boundary between
- * plugins: a plugin that depends on the provider service ref, or that constructs
- * its own resolver, can present any `pluginId`. Provider authors must not use it
- * as an authorization control against sibling plugins.
- *
- * @public
- */
-export interface SecretConsumerContext {
-  /** Id of the plugin that owns the resolver instance. */
-  pluginId: string;
-}
-
-/**
  * The request a {@link SecretProvider} receives for a single resolve.
  *
  * @public
@@ -89,8 +66,6 @@ export interface SecretConsumerContext {
 export interface SecretProviderResolveRequest {
   /** The opaque, provider-specific payload from the {@link SecretReference}. */
   reference: JsonObject;
-  /** Trusted information about the consumer. */
-  consumer: SecretConsumerContext;
 }
 
 /**
@@ -106,11 +81,10 @@ export interface SecretProvider {
    *
    * @remarks
    *
-   * Thrown errors propagate to the consumer unchanged and may surface in
-   * consumer logs, so providers must not include the reference payload or the
-   * resolved value in error messages or metadata. Only the provider knows which
-   * parts of its reference are sensitive, so sanitizing failures is the
-   * provider's responsibility.
+   * Thrown errors propagate unchanged and may surface in caller logs, so
+   * providers must not include the reference payload or resolved value in error
+   * messages or metadata. Only the provider knows which parts of its reference
+   * are sensitive, so sanitizing failures is the provider's responsibility.
    */
   resolve(request: SecretProviderResolveRequest): Promise<ResolvedSecret>;
 }
@@ -121,8 +95,8 @@ export interface SecretProvider {
  *
  * @remarks
  *
- * The registry is built once from the set of registered providers, rejecting
- * duplicate ids up front, so the resolver only has to route by id.
+ * The registry is built once per plugin scope from the set of registered
+ * providers, rejecting duplicate ids so the resolver only has to route by id.
  *
  * @public
  */
@@ -147,7 +121,7 @@ export interface SecretsResolveOptions {
  *
  * @remarks
  *
- * A resolve handles a single reference. A consumer that resolves several
+ * A resolve handles a single reference. A caller that resolves several
  * references is responsible for disposing the handles it already holds if a
  * later resolve fails.
  *

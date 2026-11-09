@@ -18,7 +18,6 @@ import type { LoggerService } from '@backstage/backend-plugin-api';
 import { NotFoundError } from '@backstage/errors';
 import type {
   ResolvedSecret,
-  SecretConsumerContext,
   SecretProviderRegistry,
   SecretsResolveOptions,
   SecretsService,
@@ -32,8 +31,6 @@ import type {
 export interface DefaultSecretsServiceOptions {
   /** The validated provider lookup this service routes through. */
   registry: SecretProviderRegistry;
-  /** The consumer this service instance acts on behalf of. */
-  consumer: SecretConsumerContext;
   logger: LoggerService;
 }
 
@@ -44,25 +41,20 @@ export interface DefaultSecretsServiceOptions {
  * @remarks
  *
  * The service never logs or persists the opaque reference payload or the
- * resolved value; only non-sensitive metadata (provider id, consuming plugin
- * id) is emitted. Provider failures propagate to the consumer unchanged, so
- * keeping sensitive data out of error messages is the provider's
- * responsibility — see {@link SecretProvider.resolve}.
+ * resolved value; only non-sensitive metadata (provider id) is emitted. The
+ * plugin context comes from the plugin-scoped logger. Provider failures
+ * propagate unchanged, so keeping sensitive data out of error messages is the
+ * provider's responsibility — see {@link SecretProvider.resolve}.
  *
  * @public
  */
 export class DefaultSecretsService implements SecretsService {
   static create(options: DefaultSecretsServiceOptions): DefaultSecretsService {
-    return new DefaultSecretsService(
-      options.registry,
-      Object.freeze({ ...options.consumer }),
-      options.logger,
-    );
+    return new DefaultSecretsService(options.registry, options.logger);
   }
 
   private constructor(
     private readonly registry: SecretProviderRegistry,
-    private readonly consumer: SecretConsumerContext,
     private readonly logger: LoggerService,
   ) {}
 
@@ -74,13 +66,8 @@ export class DefaultSecretsService implements SecretsService {
       );
     }
 
-    this.logger.debug(
-      `Resolving secret via provider '${provider.id}' for plugin '${this.consumer.pluginId}'`,
-    );
+    this.logger.debug(`Resolving secret via provider '${provider.id}'`);
 
-    return provider.resolve({
-      reference: reference.reference,
-      consumer: this.consumer,
-    });
+    return provider.resolve({ reference: reference.reference });
   }
 }

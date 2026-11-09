@@ -23,9 +23,9 @@ import type { SecretProvider, SecretProviderRegistry } from './types';
  *
  * @remarks
  *
- * This is invoked once at root scope, so a duplicate provider id surfaces as a
- * single startup error rather than lazily for every plugin that resolves a
- * secret.
+ * Each plugin that uses the secrets service builds its own registry from its
+ * provider instances. Duplicate ids cause a {@link ConflictError} for each
+ * affected plugin; plugins do not compete for a shared registry.
  */
 export function createSecretProviderRegistry(
   providers: SecretProvider[],

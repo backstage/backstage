@@ -20,7 +20,6 @@ import { DefaultSecretsService } from './DefaultSecretsService';
 import { createSecretProviderRegistry } from './SecretProviderRegistry';
 import type {
   ResolvedSecret,
-  SecretConsumerContext,
   SecretProvider,
   SecretProviderResolveRequest,
 } from './types';
@@ -33,14 +32,13 @@ interface TestSecretValue {
 interface TestSecretProvider extends SecretProvider {
   setSecret(key: string, secret: string | TestSecretValue): void;
   readonly disposalCount: number;
-  readonly observedConsumers: ReadonlyArray<SecretConsumerContext>;
 }
 
 /**
  * A minimal fake {@link SecretProvider} for these tests. It holds mutable
  * in-memory values, can inject resolve failures, and records disposals so the
- * tests can assert routing, identity propagation, expiry, value changes, and
- * cleanup without any real backend.
+ * tests can assert routing, expiry, value changes, and cleanup without any real
+ * backend.
  */
 function createTestSecretProvider(options: {
   id: string;
@@ -56,7 +54,6 @@ function createTestSecretProvider(options: {
       toValue(secret),
     ]),
   );
-  const observedConsumers: SecretConsumerContext[] = [];
   let disposalCount = 0;
 
   return {
@@ -67,17 +64,12 @@ function createTestSecretProvider(options: {
     get disposalCount() {
       return disposalCount;
     },
-    get observedConsumers() {
-      return observedConsumers;
-    },
     async resolve(
       request: SecretProviderResolveRequest,
     ): Promise<ResolvedSecret> {
       if (options.failWith) {
         throw options.failWith;
       }
-      observedConsumers.push(request.consumer);
-
       const key = request.reference.key;
       if (typeof key !== 'string') {
         throw new Error(
@@ -105,19 +97,16 @@ function createTestSecretProvider(options: {
 }
 
 describe('DefaultSecretsService', () => {
-  const consumer = { pluginId: 'test-consumer' };
-
   const createService = (
     providers: TestSecretProvider[],
     logger = mockServices.logger.mock(),
   ) =>
     DefaultSecretsService.create({
       registry: createSecretProviderRegistry(providers),
-      consumer,
       logger,
     });
 
-  it('routes by provider id and propagates identity, value, expiry, and disposal', async () => {
+  it('routes by provider id and propagates value, expiry, and disposal', async () => {
     const expiresAt = new Date('2026-01-01T00:00:00Z');
     const providerA = createTestSecretProvider({
       id: 'a',
@@ -139,15 +128,6 @@ describe('DefaultSecretsService', () => {
     expect(handleA.value).toBe('a-value');
     expect(handleA.expiresAt).toEqual(expiresAt);
     expect(handleB.value).toBe('b-value');
-
-    // Identity is derived from the resolver instance, not the reference, so it
-    // cannot be influenced by template input or other end-user data.
-    expect(providerA.observedConsumers).toEqual([
-      { pluginId: 'test-consumer' },
-    ]);
-    expect(providerB.observedConsumers).toEqual([
-      { pluginId: 'test-consumer' },
-    ]);
 
     // Disposal is forwarded to the provider's handle.
     await handleA.dispose?.();
