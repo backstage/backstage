@@ -23,14 +23,23 @@ import { getPgSchemaInfo } from './getPgSchemaInfo';
 import { generateSqlReport } from './generateSqlReport';
 import type { Knex } from 'knex';
 import {
+  FormattedReport,
+  formatReports,
   logApiReportInstructions,
   logReportDiff,
-  tryRunPrettierAsync,
+  restoreReport,
 } from '../common';
 
 interface SqlExtractionOptions {
   packageDirs: string[];
   isLocalBuild: boolean;
+}
+
+/** A generated SQL report, before it has been formatted. */
+interface SqlReport {
+  packageDir: string;
+  reportPath: string;
+  content: string;
 }
 
 export async function runSqlExtraction(options: SqlExtractionOptions) {
@@ -45,6 +54,7 @@ export async function runSqlExtraction(options: SqlExtractionOptions) {
   }
 
   let dbIndex = 1;
+  const reports = new Array<SqlReport>();
 
   for (const packageDir of options.packageDirs) {
     const migrationDir = targetPaths.resolveRoot(packageDir, 'migrations');
@@ -81,14 +91,70 @@ export async function runSqlExtraction(options: SqlExtractionOptions) {
 
       await knex.raw('CREATE DATABASE ??', [database]);
 
-      await runSingleSqlExtraction(
-        packageDir,
-        migrationTarget,
-        pkgName,
-        knex,
-        options,
+      reports.push(
+        await runSingleSqlExtraction(
+          packageDir,
+          migrationTarget,
+          pkgName,
+          knex,
+        ),
       );
     }
+  }
+
+  await updateSqlReports(reports, options);
+}
+
+/**
+ * Formats all generated reports in one batch, and then either updates the
+ * committed reports, or fails if any of them are out of date.
+ */
+async function updateSqlReports(
+  reports: SqlReport[],
+  options: SqlExtractionOptions,
+) {
+  const formattedReports = await formatReports(
+    reports.map(report => ({
+      path: report.reportPath,
+      content: report.content,
+    })),
+  );
+
+  if (!options.isLocalBuild) {
+    // CI builds never change the committed reports
+    await Promise.all(formattedReports.map(report => restoreReport(report)));
+  }
+
+  const outdatedReports = new Array<FormattedReport>();
+
+  for (const [index, { packageDir }] of reports.entries()) {
+    const report = formattedReports[index];
+    if (report.existing === report.formatted) {
+      continue;
+    }
+    if (options.isLocalBuild) {
+      console.warn(`SQL report changed for ${packageDir}`);
+    } else {
+      outdatedReports.push(report);
+    }
+  }
+
+  if (outdatedReports.length > 0) {
+    logApiReportInstructions();
+    for (const { path, existing, formatted } of outdatedReports) {
+      logReportDiff(
+        relativePath(targetPaths.rootDir, path),
+        existing,
+        formatted,
+      );
+    }
+    logApiReportInstructions();
+
+    throw new Error(
+      `Report ${outdatedReports
+        .map(({ path }) => path)
+        .join(', ')} is out of date`,
+    );
   }
 }
 
@@ -97,8 +163,7 @@ async function runSingleSqlExtraction(
   migrationTarget: string,
   pkgName: string,
   knex: Knex,
-  options: SqlExtractionOptions,
-) {
+): Promise<SqlReport> {
   const migrationDir = targetPaths.resolveRoot(
     targetDir,
     'migrations',
@@ -160,36 +225,13 @@ async function runSingleSqlExtraction(
     targetDir,
     `report${migrationTarget === '.' ? '' : `-${migrationTarget}`}.sql.md`,
   );
-  const report = await tryRunPrettierAsync(
-    generateSqlReport({
+  return {
+    packageDir: targetDir,
+    reportPath,
+    content: generateSqlReport({
       reportName,
       failedDownMigration,
       schemaInfo,
     }),
-    { filepath: reportPath },
-  );
-
-  const existingReport = await fs.readFile(reportPath, 'utf8').catch(error => {
-    if (error.code === 'ENOENT') {
-      return undefined;
-    }
-    throw error;
-  });
-  if (existingReport !== report) {
-    if (options.isLocalBuild) {
-      console.warn(`SQL report changed for ${targetDir}`);
-      await fs.writeFile(reportPath, report);
-    } else {
-      logApiReportInstructions();
-
-      logReportDiff(
-        relativePath(targetPaths.rootDir, reportPath),
-        existingReport,
-        report,
-      );
-
-      logApiReportInstructions();
-      throw new Error(`Report ${reportPath} is out of date`);
-    }
-  }
+  };
 }

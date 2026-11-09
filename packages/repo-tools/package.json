@@ -57,7 +57,6 @@
     "@microsoft/tsdoc": "~0.16.0",
     "@microsoft/tsdoc-config": "~0.18.0",
     "@openapitools/openapi-generator-cli": "^2.41.0",
-    "@prettier/sync": "^0.6.1",
     "@stoplight/spectral-core": "^1.18.0",
     "@stoplight/spectral-formatters": "^1.1.0",
     "@stoplight/spectral-functions": "^1.7.2",
@@ -96,7 +95,6 @@
     "@backstage/types": "workspace:^",
     "@types/is-glob": "^4.0.2",
     "@types/node": "^24.0.0",
-    "@types/prettier": "^2.0.0",
     "@types/semver": "^7",
     "typedoc": "^0.28.0"
   }

@@ -25,6 +25,7 @@ import {
 import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
 import { targetPaths } from '@backstage/cli-common';
 import { runOutputWithStderr } from '../../../../../lib/runOutputWithStderr';
+import { formatFiles } from '../../../../../lib/formatFiles';
 import {
   getOpenApiGeneratorKey,
   getPathToCurrentOpenApiSpec,
@@ -94,12 +95,7 @@ async function generate(
     { signal: abortSignal?.signal },
   );
 
-  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
-  if (await fs.pathExists(prettier)) {
-    await runOutputWithStderr([prettier, '--write', parentDirectory], {
-      signal: abortSignal?.signal,
-    });
-  }
+  await formatFiles([parentDirectory], { signal: abortSignal?.signal });
 
   // Deduplicate imports in generated files
   const generatedFiles = await fs.readdir(resolvedOutputDirectory);
