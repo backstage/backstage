@@ -220,6 +220,38 @@ export function resolveAppTree(
     }
   }
 
+  for (const node of nodes.values()) {
+    for (const [inputName, settings] of Object.entries(
+      node.spec.inputs ?? {},
+    )) {
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          toInternalExtension(node.spec.extension).inputs,
+          inputName,
+        )
+      ) {
+        errorCollector.report({
+          code: 'EXTENSION_CONFIGURATION_INVALID',
+          message: `Unknown configured input '${inputName}' in extension '${node.spec.id}'; ignoring its settings`,
+          context: { node },
+        });
+        continue;
+      }
+      if (!settings.order) continue;
+      const children = node.edges.attachments.get(inputName) ?? [];
+      const byId = new Map(children.map(child => [child.spec.id, child]));
+      const mentioned = new Set(settings.order);
+      const rest = children.filter(child => !mentioned.has(child.spec.id));
+      const ordered = settings.order.flatMap(id => {
+        if (id === '*') return rest;
+        const child = byId.get(id);
+        return child ? [child] : [];
+      });
+      if (!mentioned.has('*')) ordered.push(...rest);
+      node.edges.attachments.set(inputName, ordered);
+    }
+  }
+
   if (!rootNode) {
     throw new Error(`No root node with id '${rootNodeId}' found in app tree`);
   }

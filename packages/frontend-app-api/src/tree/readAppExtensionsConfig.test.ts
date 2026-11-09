@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { createErrorCollector } from '../wiring/createErrorCollector';
 import { JsonValue } from '@backstage/types';
 import {
   expandShorthandExtensionParameters,
@@ -22,115 +23,110 @@ import {
 } from './readAppExtensionsConfig';
 
 describe('readAppExtensionsConfig', () => {
-  it('reads map-only configuration and rejects invalid section types', () => {
+  it('reads both forms and reports invalid entries with usable fallbacks', () => {
+    const collector = createErrorCollector();
     expect(
       readAppExtensionsConfig(
-        new ConfigReader({ app: { extension: { 'page:catalog': false } } }),
+        new ConfigReader({
+          app: { extensions: ['page:catalog', { 'page:scaffolder': false }] },
+        }),
+        collector,
       ),
-    ).toEqual({ parameters: [], overrides: { 'page:catalog': false } });
-    expect(() =>
-      readAppExtensionsConfig(new ConfigReader({ app: { extension: [] } })),
-    ).toThrow('app.extension');
-    expect(() =>
-      readAppExtensionsConfig(new ConfigReader({ app: { extensions: {} } })),
-    ).toThrow('app.extensions');
-  });
-
-  it('should disable extension with shorthand notation', () => {
+    ).toEqual({
+      reorder: true,
+      parameters: [
+        { id: 'page:catalog', disabled: false },
+        { id: 'page:scaffolder', disabled: true },
+      ],
+    });
     expect(
-      readAppExtensionsConfig(
-        new ConfigReader({ app: { extensions: [{ 'app/root': false }] } }),
-      ).parameters,
-    ).toEqual([
-      {
-        id: 'app/root',
-        disabled: true,
-      },
-    ]);
-    expect(
-      readAppExtensionsConfig(
-        new ConfigReader({
-          app: { extensions: [{ 'app/root': { disabled: true } }] },
-        }),
-      ).parameters,
-    ).toEqual([
-      {
-        at: undefined,
-        config: undefined,
-        disabled: true,
-        id: 'app/root',
-      },
-    ]);
-  });
-
-  it('should enable extension with shorthand notation', () => {
-    expect(
-      readAppExtensionsConfig(
-        new ConfigReader({ app: { extensions: ['app/root'] } }),
-      ).parameters,
-    ).toEqual([
-      {
-        id: 'app/root',
-        disabled: false,
-      },
-    ]);
-    expect(
-      readAppExtensionsConfig(
-        new ConfigReader({ app: { extensions: [{ 'app/root': true }] } }),
-      ).parameters,
-    ).toEqual([
-      {
-        id: 'app/root',
-        disabled: false,
-      },
-    ]);
-    expect(
-      readAppExtensionsConfig(
-        new ConfigReader({
-          app: { extensions: [{ 'app/root': { disabled: false } }] },
-        }),
-      ).parameters,
-    ).toEqual([
-      {
-        id: 'app/root',
-        disabled: false,
-      },
-    ]);
-  });
-
-  it('should not allow string keys', () => {
-    expect(() =>
       readAppExtensionsConfig(
         new ConfigReader({
           app: {
-            extensions: [{ 'app/root': 'some-string' }],
+            extensions: {
+              'page:catalog': { config: { title: 'Catalog' } },
+              'page:scaffolder': false,
+            },
           },
         }),
+        collector,
       ),
-    ).toThrow(
-      "Invalid extension configuration at app.extensions[0][app/root], value must be a boolean, 'true', 'false', or object",
-    );
-  });
-
-  it('should not allow invalid keys', () => {
-    expect(() =>
+    ).toEqual({
+      reorder: false,
+      parameters: [
+        { id: 'page:catalog', config: { title: 'Catalog' } },
+        { id: 'page:scaffolder', disabled: true },
+      ],
+    });
+    expect(collector.collectErrors()).toBeUndefined();
+    expect(
       readAppExtensionsConfig(
         new ConfigReader({
-          app: {
-            extensions: [
-              {
-                '': {
-                  extension: 'example-package#MyPage',
-                  config: { foo: 'bar' },
+          app: { extensions: { broken: { disabled: 42 }, valid: true } },
+        }),
+        collector,
+      ).parameters,
+    ).toEqual([{ id: 'valid', disabled: false }]);
+    expect(
+      readAppExtensionsConfig(
+        new ConfigReader({ app: { extensions: 42 } }),
+        collector,
+      ).parameters,
+    ).toEqual([]);
+    expect(
+      readAppExtensionsConfig(
+        new ConfigReader({ app: { extensions: [42, 'valid'] } }),
+        collector,
+      ).parameters,
+    ).toEqual([{ id: 'valid', disabled: false }]);
+    expect(collector.collectErrors()?.map(e => e.code)).toEqual([
+      'EXTENSION_CONFIG_INVALID',
+      'EXTENSION_CONFIG_INVALID',
+      'EXTENSION_CONFIG_INVALID',
+    ]);
+  });
+
+  it('normalizes input settings and reports every error while keeping first occurrences', () => {
+    const collector = createErrorCollector();
+    const result = readAppExtensionsConfig(
+      new ConfigReader({
+        app: {
+          extensions: {
+            parent: {
+              config: { retained: true },
+              inputs: {
+                cards: {
+                  order: ['a', '*', 'a', '*', 42, '', 'b'],
+                  extra: true,
                 },
+                invalid: [],
+                badOrder: { order: 42 },
               },
-            ],
+            },
+            badInputs: { inputs: 42 },
           },
-        }),
-      ),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[0], extension ID must not be empty or contain whitespace"`,
+        },
+      }),
+      collector,
     );
+    expect(result.parameters).toMatchObject([
+      {
+        id: 'parent',
+        config: { retained: true },
+        inputs: { cards: { order: ['a', '*', 'b'] } },
+      },
+      { id: 'badInputs' },
+    ]);
+    expect(result.parameters[0].inputs).toEqual({
+      cards: { order: ['a', '*', 'b'] },
+      badOrder: {},
+    });
+    const errors = collector.collectErrors()!;
+    expect(errors).toHaveLength(8);
+    expect(errors.every(e => e.code === 'EXTENSION_CONFIG_INVALID')).toBe(true);
+    expect(
+      errors.map(e => e.message).filter(m => m.includes('duplicate entry')),
+    ).toHaveLength(2);
   });
 });
 
@@ -226,7 +222,7 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'app/root': { id: 'some.id' } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][app/root].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
+      `"Invalid extension configuration at app.extensions[1][app/root].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config', 'inputs'"`,
     );
   });
 
@@ -246,7 +242,7 @@ describe('expandShorthandExtensionParameters', () => {
         },
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][app/root].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
+      `"Invalid extension configuration at app.extensions[1][app/root].id, unknown parameter; expected one of 'attachTo', 'disabled', 'config', 'inputs'"`,
     );
   });
 
@@ -300,7 +296,7 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'app/root': { foo: { settings: true } } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][app/root].foo, unknown parameter; expected one of 'attachTo', 'disabled', 'config'"`,
+      `"Invalid extension configuration at app.extensions[1][app/root].foo, unknown parameter; expected one of 'attachTo', 'disabled', 'config', 'inputs'"`,
     );
   });
 });

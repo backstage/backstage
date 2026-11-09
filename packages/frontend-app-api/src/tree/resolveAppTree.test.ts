@@ -25,6 +25,8 @@ import { resolveAppTree } from './resolveAppTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { createErrorCollector } from '../wiring/createErrorCollector';
+import { ConfigReader } from '@backstage/config';
+import { readAppExtensionsConfig } from './readAppExtensionsConfig';
 
 const collector = createErrorCollector();
 
@@ -54,6 +56,131 @@ const baseSpec = {
 };
 
 describe('buildAppTree', () => {
+  it('orders each input independently after redirects, retaining unlisted and disabled children', () => {
+    const parent = resolveExtensionDefinition(
+      createExtension({
+        name: 'parent',
+        attachTo: { id: 'none', input: 'none' },
+        inputs: {
+          cards: createExtensionInput([], {
+            replaces: [{ id: 'old-parent', input: 'cards' }],
+          }),
+          other: createExtensionInput([]),
+        },
+        output: [],
+        factory: () => [],
+      }),
+    ) as Extension<unknown>;
+    const specs = [
+      { ...baseSpec, id: 'parent', extension: parent },
+      ...[
+        'entity-card:catalog/about',
+        'entity-card:catalog/labels',
+        'entity-card:catalog/links',
+      ].map(id => ({
+        ...baseSpec,
+        id,
+        disabled: id === 'entity-card:catalog/links',
+        attachTo: { id: 'old-parent', input: 'cards' },
+      })),
+      { ...baseSpec, id: 'other', attachTo: { id: 'parent', input: 'other' } },
+    ];
+    const build = (order: string[]) => {
+      const parsed = readAppExtensionsConfig(
+        new ConfigReader({
+          app: { extensions: { parent: { inputs: { cards: { order } } } } },
+        }),
+        collector,
+      );
+      return resolveAppTree(
+        'parent',
+        [
+          { ...specs[0], inputs: parsed.parameters[0].inputs },
+          ...specs.slice(1),
+        ],
+        collector,
+      );
+    };
+    for (const [order, expected] of [
+      [
+        ['entity-card:catalog/links'],
+        [
+          'entity-card:catalog/links',
+          'entity-card:catalog/about',
+          'entity-card:catalog/labels',
+        ],
+      ],
+      [
+        ['entity-card:catalog/links', '*', 'entity-card:catalog/about'],
+        [
+          'entity-card:catalog/links',
+          'entity-card:catalog/labels',
+          'entity-card:catalog/about',
+        ],
+      ],
+      [
+        ['missing', 'other', '*'],
+        [
+          'entity-card:catalog/about',
+          'entity-card:catalog/labels',
+          'entity-card:catalog/links',
+        ],
+      ],
+    ]) {
+      const tree = build(order);
+      expect(
+        tree.root.edges.attachments.get('cards')?.map(n => n.spec.id),
+      ).toEqual(expected);
+      expect(
+        tree.root.edges.attachments.get('other')?.map(n => n.spec.id),
+      ).toEqual(['other']);
+      expect(tree.nodes.get('entity-card:catalog/links')?.spec.disabled).toBe(
+        true,
+      );
+    }
+    const tree = build([
+      'entity-card:catalog/links',
+      '*',
+      'entity-card:catalog/links',
+      '*',
+      'entity-card:catalog/about',
+    ]);
+    expect(
+      tree.root.edges.attachments.get('cards')?.map(n => n.spec.id),
+    ).toEqual([
+      'entity-card:catalog/links',
+      'entity-card:catalog/labels',
+      'entity-card:catalog/about',
+    ]);
+    expect(collector.collectErrors()?.map(e => e.code)).toEqual([
+      'EXTENSION_CONFIG_INVALID',
+      'EXTENSION_CONFIG_INVALID',
+    ]);
+    const unknown = resolveAppTree(
+      'parent',
+      [
+        {
+          ...specs[0],
+          inputs: { typo: { order: ['other'] }, empty: {}, toString: {} },
+        },
+        ...specs.slice(1),
+      ],
+      collector,
+    );
+    expect(
+      unknown.root.edges.attachments.get('cards')?.map(n => n.spec.id),
+    ).toEqual([
+      'entity-card:catalog/about',
+      'entity-card:catalog/labels',
+      'entity-card:catalog/links',
+    ]);
+    expect(collector.collectErrors()?.map(e => e.code)).toEqual([
+      'EXTENSION_CONFIGURATION_INVALID',
+      'EXTENSION_CONFIGURATION_INVALID',
+      'EXTENSION_CONFIGURATION_INVALID',
+    ]);
+  });
+
   it('should fail to create an empty tree', () => {
     expect(() => resolveAppTree('app', [], collector)).toThrow(
       "No root node with id 'app' found in app tree",

@@ -299,7 +299,7 @@ Installing translation extensions makes the translated messages available, but t
 
 ```yaml
 app:
-  extension:
+  extensions:
     api:app/app-language:
       config:
         availableLanguages:

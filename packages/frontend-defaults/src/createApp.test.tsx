@@ -33,6 +33,11 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { ThemeBlueprint } from '@backstage/plugin-app-react';
 import { act, screen, waitFor } from '@testing-library/react';
+import { maybeCreateErrorPage } from './maybeCreateErrorPage';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { readAppExtensionsConfig } from '../../frontend-app-api/src/tree/readAppExtensionsConfig';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { createErrorCollector } from '../../frontend-app-api/src/wiring/createErrorCollector';
 import { createApp } from './createApp';
 import { mockApis, renderWithEffects } from '@backstage/test-utils';
 import {
@@ -76,6 +81,47 @@ describe('createApp', () => {
       })),
     } as typeof permissionApiRef.T;
   }
+
+  it('lets app error policy decide whether malformed ordering is fatal', () => {
+    const collector = createErrorCollector();
+    const parsed = readAppExtensionsConfig(
+      mockApis.config({
+        data: {
+          app: {
+            extensions: {
+              'page:catalog/entity': {
+                inputs: {
+                  contents: { order: ['overview', '*', 'overview', '*'] },
+                },
+              },
+            },
+          },
+        },
+      }),
+      collector,
+    );
+    expect(parsed.parameters[0].inputs?.contents.order).toEqual([
+      'overview',
+      '*',
+    ]);
+    const errors = collector.collectErrors();
+    expect(errors).toHaveLength(2);
+    expect(maybeCreateErrorPage({ errors })).toBeDefined();
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      expect(
+        maybeCreateErrorPage(
+          { errors },
+          { warningCodes: ['EXTENSION_CONFIG_INVALID'] },
+        ),
+      ).toBeUndefined();
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('duplicate entry'),
+      );
+    } finally {
+      warn.mockRestore();
+    }
+  });
 
   it('should allow themes to be installed', async () => {
     const app = createApp({

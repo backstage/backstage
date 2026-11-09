@@ -21,11 +21,7 @@ import {
   FrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
-import {
-  ExtensionParameters,
-  expandShorthandExtensionParameters,
-} from './readAppExtensionsConfig';
-import { JsonObject } from '@backstage/types';
+import { ExtensionParameters } from './readAppExtensionsConfig';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { OpaqueFrontendPlugin } from '@internal/frontend';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -73,14 +69,14 @@ export function resolveAppNodeSpecs(options: {
   features?: FrontendFeature[];
   builtinExtensions?: Extension<any, any>[];
   parameters?: Array<ExtensionParameters>;
-  overrides?: JsonObject;
+  reorder?: boolean;
   forbidden?: Set<string>;
   collector: ErrorCollector;
 }): AppNodeSpec[] {
   const {
     builtinExtensions = [],
     parameters = [],
-    overrides = {},
+    reorder = true,
     forbidden = new Set(),
     features = [],
     collector,
@@ -172,6 +168,7 @@ export function resolveAppNodeSpecs(options: {
           disabled: internalExtension.disabled,
           if: getExtensionPredicate({ internalExtension }),
           config: undefined as unknown,
+          inputs: undefined as ExtensionParameters['inputs'],
         },
       };
     }),
@@ -186,6 +183,7 @@ export function resolveAppNodeSpecs(options: {
           disabled: internalExtension.disabled,
           if: getExtensionPredicate({ internalExtension }),
           config: undefined as unknown,
+          inputs: undefined as ExtensionParameters['inputs'],
         },
       };
     }),
@@ -218,6 +216,7 @@ export function resolveAppNodeSpecs(options: {
           disabled: internalExtension.disabled,
           if: getExtensionPredicate({ internalExtension }),
           config: undefined,
+          inputs: undefined as ExtensionParameters['inputs'],
         },
       });
     }
@@ -269,12 +268,12 @@ export function resolveAppNodeSpecs(options: {
         // TODO: merge config?
         existing.params.config = overrideParam.config;
       }
-      if (
-        Boolean(existing.params.disabled) !== Boolean(overrideParam.disabled)
-      ) {
+      if (reorder || overrideParam.disabled !== undefined) {
         existing.params.disabled = Boolean(overrideParam.disabled);
       }
-      order.set(extensionId, existing);
+      if (overrideParam.inputs !== undefined)
+        existing.params.inputs = overrideParam.inputs;
+      if (reorder) order.set(extensionId, existing);
     } else {
       collector.report({
         code: 'INVALID_EXTENSION_CONFIG_KEY',
@@ -291,33 +290,6 @@ export function resolveAppNodeSpecs(options: {
     ...deduplicatedExtensions.filter(e => !order.has(e.extension.id)),
   ];
 
-  // Apply map entries after ordering so their property order has no effect on
-  // extension ordering.
-  for (const [id, value] of Object.entries(overrides)) {
-    const existing = extensionsById.get(id);
-    const params = expandShorthandExtensionParameters(
-      { [id]: value },
-      'app.extension',
-    );
-    if (forbidden.has(id)) {
-      collector.report({
-        code: 'INVALID_EXTENSION_CONFIG_KEY',
-        message: `Configuration of the '${id}' extension is forbidden`,
-        context: { extensionId: id },
-      });
-    } else if (!existing) {
-      collector.report({
-        code: 'INVALID_EXTENSION_CONFIG_KEY',
-        message: `Extension ${id} does not exist`,
-        context: { extensionId: id },
-      });
-    } else {
-      existing.params.attachTo = params.attachTo ?? existing.params.attachTo;
-      existing.params.disabled = params.disabled ?? existing.params.disabled;
-      existing.params.config = params.config ?? existing.params.config;
-    }
-  }
-
   return orderedExtensions.map(param => ({
     id: param.extension.id,
     attachTo: param.params.attachTo,
@@ -327,5 +299,6 @@ export function resolveAppNodeSpecs(options: {
     plugin: param.params.plugin,
     source: param.params.source,
     config: param.params.config,
+    ...(param.params.inputs ? { inputs: param.params.inputs } : {}),
   }));
 }

@@ -12,9 +12,10 @@ Built-in extensions are default app extensions that are always installed when yo
 All built-in extensions can be disabled in the same way as you disable any other extension:
 
 ```yaml title="app-config.yaml"
-extensions:
-  # Disabling the built-in app root alert element
-  - app-root-element:app/alert-display: false
+app:
+  extensions:
+    # Disabling the built-in app root alert element
+    app-root-element:app/alert-display: false
 ```
 
 :::warning
@@ -194,7 +195,7 @@ You can configure redirects for the `app/routes` extension to automatically redi
 
 ```yaml title="app-config.yaml"
 app:
-  extension:
+  extensions:
     app/routes:
       config:
         redirects:

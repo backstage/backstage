@@ -19,7 +19,7 @@ The catalog index page can be configured through extensions in `app-config.yaml`
 
 ```yaml title="app-config.yaml"
 app:
-  extension:
+  extensions:
     page:catalog:
       config:
         pagination: true
@@ -29,7 +29,7 @@ You can also configure pagination with additional options:
 
 ```yaml title="app-config.yaml"
 app:
-  extension:
+  extensions:
     page:catalog:
       config:
         pagination:
@@ -49,7 +49,7 @@ To enable catalog export, add the following configuration:
 
 ```yaml title="app-config.yaml"
 app:
-  extension:
+  extensions:
     page:catalog:
       config:
         exportSettings:
@@ -140,7 +140,7 @@ The catalog index page includes a set of default filters (kind, type, owner, lif
 
 ```yaml title="app-config.yaml"
 app:
-  extension:
+  extensions:
     catalog-filter:catalog/kind:
       config:
         initialFilter: domain
@@ -150,7 +150,7 @@ To set the initial list filter to "all" instead of "owned":
 
 ```yaml title="app-config.yaml"
 app:
-  extension:
+  extensions:
     catalog-filter:catalog/list:
       config:
         initialFilter: all
@@ -207,7 +207,7 @@ Default filters can be disabled through `app-config.yaml` by setting them to `fa
 
 ```yaml title="app-config.yaml"
 app:
-  extension:
+  extensions:
     catalog-filter:catalog/lifecycle: false
     catalog-filter:catalog/tag: false
     catalog-filter:catalog/processing-status: false
@@ -513,7 +513,7 @@ You can define and customize the tab groups that appear on the entity page, as w
 
 ```yaml
 app:
-  extension:
+  extensions:
     # Entity page (new frontend system)
     page:catalog/entity:
       config:
@@ -545,11 +545,15 @@ By default, content items within each group are sorted alphabetically by title. 
 - **`title`** (default) — sort alphabetically by the content extension's title (case-insensitive).
 - **`natural`** — preserve the natural extension discovery/registration order.
 
+An explicit `inputs.contents.order` on `page:catalog/entity` takes precedence over
+alphabetical content sorting while preserving the groups. See
+[input ordering](../../frontend-system/building-apps/02-configuring-extensions.md#order-extension-inputs).
+
 A page-level `defaultContentOrder` sets the default for all groups, and individual groups can override it with a per-group `contentOrder`:
 
 ```yaml
 app:
-  extension:
+  extensions:
     page:catalog/entity:
       config:
         # Default content order for all groups
@@ -570,7 +574,7 @@ Groups can declare `aliases` — a list of other group IDs that should be treate
 
 ```yaml
 app:
-  extension:
+  extensions:
     page:catalog/entity:
       config:
         groups:
@@ -587,7 +591,7 @@ Each entity content extension (tabs on the entity page) can declare a default `g
 
 ```yaml
 app:
-  extension:
+  extensions:
     # ...
     # Example entity content extension instance id
     entity-content:example/my-content:

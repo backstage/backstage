@@ -20,6 +20,9 @@ import { AppNode, FrontendPlugin } from '@backstage/frontend-plugin-api';
  * @public
  */
 export type AppErrorTypes = {
+  EXTENSION_CONFIG_INVALID: {
+    context: { configPath: string; extensionId?: string };
+  };
   // resolveAppNodeSpecs
   EXTENSION_IGNORED: {
     context: { plugin: FrontendPlugin; extensionId: string };

@@ -20,6 +20,7 @@ import userEvent from '@testing-library/user-event';
 import {
   createExtensionTester,
   renderInTestApp,
+  renderTestApp,
 } from '@backstage/frontend-test-utils';
 import { catalogEntityPage } from './pages';
 import {
@@ -44,7 +45,10 @@ import {
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { useAppNode } from '@backstage/frontend-plugin-api';
+import {
+  createFrontendPlugin,
+  useAppNode,
+} from '@backstage/frontend-plugin-api';
 
 jest.setTimeout(30_000);
 
@@ -204,6 +208,56 @@ describe('Entity page', () => {
   });
 
   describe('Entity Page Groups', () => {
+    it('honors explicit input order over alphabetical group sorting', async () => {
+      renderTestApp({
+        features: [
+          createFrontendPlugin({
+            pluginId: 'catalog',
+            extensions: [
+              catalogEntityPage,
+              techdocsEntityContent,
+              apidocsEntityContent,
+            ],
+          }),
+        ],
+        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+        initialRouteEntries: [entityPath],
+        mountedRoutes: { '/catalog': convertLegacyRouteRef(rootRouteRef) },
+        config: {
+          app: {
+            extensions: {
+              'page:catalog/entity': {
+                inputs: {
+                  contents: { order: ['entity-content:catalog/techdocs', '*'] },
+                },
+                config: {
+                  defaultContentOrder: 'title',
+                  groups: [
+                    {
+                      documentation: {
+                        title: 'Documentation',
+                        contentOrder: 'title',
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      });
+      await userEvent.click(
+        await screen.findByRole('button', { name: /Documentation/ }),
+      );
+      const items = await screen.findAllByRole('menuitemradio', {
+        name: /Docs/,
+      });
+      expect(items.map(item => item.textContent)).toEqual([
+        'TechDocs',
+        'ApiDocs',
+      ]);
+    });
+
     it('Should render a group as dropdown', async () => {
       const tester = createExtensionTester(
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),

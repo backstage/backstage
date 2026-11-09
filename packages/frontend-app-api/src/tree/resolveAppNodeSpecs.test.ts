@@ -25,7 +25,6 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { readAppExtensionsConfig } from './readAppExtensionsConfig';
 import { resolveAppNodeSpecs } from './resolveAppNodeSpecs';
-import { resolveAppTree } from './resolveAppTree';
 import { createErrorCollector } from '../wiring/createErrorCollector';
 
 const collector = createErrorCollector();
@@ -73,164 +72,56 @@ function makeExtDef(
 }
 
 describe('resolveAppNodeSpecs', () => {
-  it('replaces list config with layered map config without changing order', () => {
+  it('layers map settings without reordering or enabling disabled defaults', () => {
     const shared = {
       app: {
-        extensions: [
-          {
-            c: {
-              disabled: true,
-              config: {
-                nested: { keep: 1, replace: [1, 2] },
-                typed: 'old',
-                fallback: 'from-list',
-              },
-            },
-          },
-          { a: { config: { retained: true } } },
-        ],
-        extension: {
+        extensions: {
           c: {
-            config: {
-              nested: { shared: true, remove: true, keep: 2 },
-              typed: 'from-map',
-              fallback: 'from-map',
-            },
+            disabled: true,
+            config: { title: 'Shared', nested: { keep: 1, replace: [1, 2] } },
           },
-          b: { config: { keepDisabled: true } },
+          b: { config: { retained: true } },
         },
       },
     };
     const local = {
       app: {
-        extension: {
-          d: false,
-          a: { disabled: false },
+        extensions: {
+          a: false,
           c: {
             disabled: false,
-            attachTo: { id: 'root', input: 'other' },
-            config: {
-              nested: { replace: [3], remove: null, shared: false },
-              typed: { value: 1 },
-              fallback: null,
-            },
+            config: { title: 'Local', nested: { replace: [3] } },
           },
         },
       },
     };
-    const config = ConfigReader.fromConfigs([
+    const appConfig = ConfigReader.fromConfigs([
       { context: 'shared', data: shared },
       { context: 'local', data: local },
     ]);
-    const resolve = (
-      overrides: NonNullable<
-        ReturnType<typeof readAppExtensionsConfig>['overrides']
-      >,
-    ) =>
-      resolveAppNodeSpecs({
-        builtinExtensions: [
-          makeExt('a'),
-          makeExt('b', 'disabled'),
-          makeExt('c'),
-          makeExt('d'),
-        ],
-        ...readAppExtensionsConfig(config),
-        overrides,
-        collector,
-      });
-    const overrides = readAppExtensionsConfig(config).overrides!;
-    const result = resolve(overrides);
-    expect(result.map(e => e.id)).toEqual(['c', 'a', 'b', 'd']);
-    expect(result[0]).toMatchObject({
-      attachTo: { id: 'root', input: 'other' },
-      disabled: false,
+    const parsed = readAppExtensionsConfig(appConfig, collector);
+    const builtinExtensions = [
+      makeExt('a'),
+      makeExt('b', 'disabled'),
+      makeExt('c'),
+    ];
+    const options = { builtinExtensions, ...parsed, collector };
+    const result = resolveAppNodeSpecs(options);
+    expect(result.map(e => e.id)).toEqual(['a', 'b', 'c']);
+    expect(result.map(e => e.disabled)).toEqual([true, true, false]);
+    expect(result[2].config).toEqual({
+      title: 'Local',
+      nested: { keep: 1, replace: [3] },
     });
-    expect(result[0].config).toEqual({
-      nested: { keep: 2, replace: [3], shared: false },
-      typed: { value: 1 },
+    const reversed = resolveAppNodeSpecs({
+      ...options,
+      parameters: [...parsed.parameters].reverse(),
     });
-    expect(result[1]).toMatchObject({
-      disabled: false,
-      config: { retained: true },
-    });
-    expect(result[2]).toMatchObject({
-      disabled: true,
-      config: { keepDisabled: true },
-    });
-    expect(result[3].disabled).toBe(true);
-    expect(resolve({ c: { config: {} } })[0]).toMatchObject({
-      disabled: true,
-      config: {},
-    });
-    expect(resolve({ c: false })[0].config).toEqual({
-      nested: { keep: 1, replace: [1, 2] },
-      typed: 'old',
-      fallback: 'from-list',
-    });
-
-    const reversed = resolve(
-      Object.fromEntries(Object.entries(overrides).reverse()),
+    expect(
+      reversed.map(({ id, config, disabled }) => ({ id, config, disabled })),
+    ).toEqual(
+      result.map(({ id, config, disabled }) => ({ id, config, disabled })),
     );
-    const settings = (specs: typeof result) =>
-      specs.map(spec => ({
-        id: spec.id,
-        disabled: spec.disabled,
-        config: spec.config,
-        attachTo: spec.attachTo,
-      }));
-    expect(settings(reversed)).toEqual(settings(result));
-    for (const specs of [result, reversed]) {
-      const tree = resolveAppTree(
-        'root',
-        [{ ...specs[1], id: 'root' }, ...specs],
-        collector,
-      );
-      expect(
-        tree.root.edges.attachments.get('default')?.map(node => node.spec.id),
-      ).toEqual(['a', 'b', 'd']);
-      expect(
-        tree.root.edges.attachments.get('other')?.map(node => node.spec.id),
-      ).toEqual(['c']);
-    }
-  });
-
-  it('validates map settings and reports unavailable or forbidden extensions', () => {
-    expect(() =>
-      resolveAppNodeSpecs({
-        overrides: { a: { unknown: true } },
-        collector,
-      }),
-    ).toThrow('app.extension[a].unknown, unknown parameter');
-    expect(() =>
-      resolveAppNodeSpecs({
-        overrides: { a: { disabled: 1 } },
-        collector,
-      }),
-    ).toThrow('app.extension[a].disabled, must be a boolean');
-    expect(() =>
-      resolveAppNodeSpecs({
-        overrides: { a: { config: [] } },
-        collector,
-      }),
-    ).toThrow('app.extension[a].config, must be an object');
-    expect(() =>
-      resolveAppNodeSpecs({
-        overrides: { a: { attachTo: { input: 'other' } } },
-        collector,
-      }),
-    ).toThrow('app.extension[a].attachTo.id, must be a non-empty string');
-    const result = resolveAppNodeSpecs({
-      builtinExtensions: [makeExt('a')],
-      overrides: { missing: true, a: false },
-      forbidden: new Set(['a']),
-      collector,
-    });
-    expect(result.map(e => e.id)).toEqual(['a']);
-    expect(result[0].disabled).toBe(false);
-    expect(collector.collectErrors()?.map(e => e.message)).toEqual([
-      'Extension missing does not exist',
-      "Configuration of the 'a' extension is forbidden",
-    ]);
   });
 
   it('should not filter out disabled extension instances', () => {

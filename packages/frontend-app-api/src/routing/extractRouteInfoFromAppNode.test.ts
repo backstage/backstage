@@ -112,7 +112,7 @@ function routeInfoFromExtensions(
       builtinExtensions: [
         resolveExtensionDefinition(Root, { namespace: 'root' }),
       ],
-      ...readAppExtensionsConfig(mockApis.config()),
+      ...readAppExtensionsConfig(mockApis.config(), collector),
       forbidden: new Set(['root']),
       collector,
     }),

@@ -5,133 +5,167 @@ sidebar_label: Configuring Extensions
 description: Documentation for how to configure extensions in a Backstage app
 ---
 
-All extensions in a Backstage app can be configured through static configuration.
-Use `app.extension` to configure extensions without changing their order, and
-`app.extensions` when you also want to control their order. For more general
-information, see [writing configuration](../../conf/writing.md).
+Use the object form of `app.extensions` to configure extensions and order their
+inputs. Settings merge across configuration files, so a local file can override
+one extension without replacing the shared configuration. Object property order
+does not affect extension order. For general configuration guidance, see
+[writing configuration](../../conf/writing.md).
 
-## Extension configuration schema
+## Extension settings
 
-The `app.extension` object maps extension IDs to settings. The full format for
-configuring an individual extension is as follows:
-
-```yaml
-app:
-  extension:
-    <id>:
-      attachTo:
-        id: <parent-id>
-        input: <input-name>
-      disabled: <true/false>
-      config: <extension-specific-config>
-```
-
-All of the top-level fields are optional: `attachTo`, `disabled`, and `config`.
-Every extension implementation provides defaults that are used when settings
-are not provided in configuration. When you specify `attachTo`, provide both the
-parent ID and input name. A settings object does not enable a disabled extension
-unless you explicitly set `disabled: false`.
-
-The `disabled` field also accepts the strings `'true'` and `'false'`, since
-environment variable substitution in configuration produces a string.
-
-You can also enable or disable an extension using a boolean shorthand:
-
-```yaml
-app:
-  extension:
-    <id>: <true/false>
-```
-
-This accepts the strings `'true'` and `'false'` too, so you can use an environment
-variable, for example `<id>: ${SOME_EXTENSION_ENABLED}`.
-
-The map's property order never affects extension or contribution ordering.
-Configuring an extension does not install its plugin or make an unavailable
-extension available. Unknown IDs produce the same diagnostics as unknown IDs in
-`app.extensions`.
-
-## Control extension order
-
-Use the `app.extensions` array to put extensions in a specific order. Extensions
-listed in this array appear before other extensions, which keep their registered
-order. Settings in `app.extension` apply without changing that order, including
-for extensions that are not listed in the array.
+The object is keyed by extension ID. Each entry accepts `attachTo`, `disabled`,
+`config`, and `inputs`. All fields are optional.
 
 ```yaml title="app-config.yaml"
 app:
   extensions:
-    - page:catalog
-    - page:scaffolder
-  extension:
     page:catalog:
       config:
         path: /catalog
         title: Software catalog
-```
-
-The catalog page appears before the scaffolder page, regardless of the order of
-entries in `app.extension`.
-
-The array also accepts extension settings using the same object and boolean
-shorthands as the map. A bare extension ID in the array is equivalent to
-`disabled: false`. Use `app.extension` for settings that do not need to control
-ordering.
-
-## Settings precedence
-
-Each field supplied in `app.extension` takes precedence over the corresponding
-field in `app.extensions`. Unspecified fields retain their values from the
-array, or the extension defaults if no array setting exists.
-
-The `config` objects in the two sections are **not merged**. Providing `config`
-in the map replaces the entire `config` from the array, even if the map's
-`config` is empty. For example:
-
-```yaml
-app:
-  extensions:
-    - page:catalog:
-        config:
-          path: /old-catalog
-          title: Shared catalog
-  extension:
-    page:catalog:
-      config:
-        path: /catalog
-```
-
-The catalog page receives only `path: /catalog` as its configuration. The title
-from the array is not retained. If you only supply `disabled` in the map, the
-array's `config` is retained.
-
-## Layer local configuration
-
-Configuration arrays replace arrays from lower-priority files. Overriding one
-entry in `app.extensions` in a local file therefore replaces the entire shared
-list. The `app.extension` object supports normal
-[configuration merging](../../conf/writing.md) across files: objects merge
-recursively, while arrays and primitive values are replaced.
-
-For example, add this local configuration alongside the shared configuration in
-[Control extension order](#control-extension-order):
-
-```yaml title="app-config.local.yaml"
-app:
-  extension:
-    page:catalog:
-      config:
-        title: Local catalog
     page:scaffolder:
       disabled: true
 ```
 
-The catalog page uses the local title and keeps `/catalog` as its path because
-both values come from `app.extension`. The scaffolder page is disabled, and the
-shared extension order is preserved. Other shared map entries and unspecified
-map settings are retained. To enable the scaffolder page again, set
-`disabled: false` in a higher-priority configuration file.
+Omitted settings use the extension defaults. Configuring an extension does not
+install its plugin or bypass its availability conditions. A settings object does
+not enable a disabled extension unless you set `disabled: false`.
 
-Frontend configuration filtering removes `null` values before configuration files
-are merged. Do not rely on `null` to clear a setting from a lower-priority file;
-set the desired values explicitly instead.
+You can also use boolean shorthands to enable or disable extensions:
+
+```yaml
+app:
+  extensions:
+    page:scaffolder: true
+    entity-card:catalog/links: false
+```
+
+Both the shorthand and `disabled` accept the strings `'true'` and `'false'`, so
+they can be supplied through environment variable substitution.
+
+To change an attachment, supply both the parent ID and input name:
+
+```yaml
+app:
+  extensions:
+    entity-card:catalog/links:
+      attachTo:
+        id: entity-content:catalog/overview
+        input: cards
+```
+
+## Order extension inputs
+
+Configure `inputs.<input-name>.order` on the receiving extension. The array lists
+child extension IDs in the desired order. Unlisted children follow in their
+existing order. Put `'*'` in the array to place those unlisted children between
+explicitly ordered entries instead.
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    app/routes:
+      inputs:
+        routes:
+          order:
+            - page:catalog
+            - page:scaffolder
+            - '*'
+    page:catalog/entity:
+      inputs:
+        contents:
+          order:
+            - entity-content:catalog/overview
+            - entity-content:techdocs
+            - '*'
+            - entity-content:kubernetes/kubernetes
+    entity-content:catalog/overview:
+      inputs:
+        cards:
+          order:
+            - entity-card:catalog/about
+            - entity-card:catalog/links
+```
+
+Each input has its own order. The example orders pages, entity-page content, and
+cards independently. The sidebar uses the order of discovered pages in
+`app/routes.routes`.
+
+Ordering is applied after attachments are resolved, including redirected inputs.
+It never moves children between inputs, enables disabled extensions, or makes an
+unavailable extension available. IDs that are absent from the input are ignored,
+so the same configuration can be used with optional plugins. An empty order array
+keeps the existing child order.
+
+The catalog entity page honors explicit `inputs.contents.order` over alphabetical
+content sorting within each group. Group order still follows the configured group
+definitions. Without an explicit input order,
+its existing sorting settings continue to apply. Other extensions may transform
+or sort their inputs when presenting them; input ordering determines the sequence
+delivered to their factory.
+
+## Layer configuration files
+
+For example, this local configuration overrides the shared catalog title and card
+order without replacing settings for other extensions or inputs:
+
+```yaml title="app-config.local.yaml"
+app:
+  extensions:
+    page:catalog:
+      config:
+        title: Local catalog
+    entity-content:catalog/overview:
+      inputs:
+        cards:
+          order:
+            - entity-card:catalog/about
+            - '*'
+            - entity-card:catalog/links
+```
+
+Objects merge recursively across files. Arrays, including an individual input's
+`order`, replace their lower-priority values. Frontend configuration filtering
+removes `null` values before configuration files are merged; do not rely on `null`
+to clear a setting from a lower-priority file.
+
+## Configuration errors and fallbacks
+
+Invalid extension settings are reported through app errors. The app's error
+policy determines whether an error prevents startup or is logged as a warning.
+Malformed settings use `EXTENSION_CONFIG_INVALID`; unknown inputs use
+`EXTENSION_CONFIGURATION_INVALID`. Both are fatal by default in
+`maybeCreateErrorPage` from `@backstage/frontend-defaults`. Its `warningCodes`
+option can classify them as warnings instead.
+
+Fallbacks remain available when the app is allowed to continue:
+
+- Invalid extension entries are ignored, retaining the extension defaults.
+- Invalid input settings or order values are ignored, retaining existing order.
+- Invalid entries within an order array are skipped.
+- Duplicate ordering IDs and duplicate wildcards are reported, and only their first
+  occurrence is used.
+- Unknown input names are reported, and their settings are ignored.
+
+## Legacy array form
+
+The array form of `app.extensions` remains supported with its existing behavior:
+listed extensions establish global order before unlisted extensions. A bare ID
+or boolean `true` enables an extension, and an object entry without `disabled`
+also enables it.
+
+```yaml
+app:
+  extensions:
+    - page:catalog
+    - page:scaffolder:
+        disabled: true
+```
+
+Array entries accept the same settings, including input ordering. An explicit
+input order takes precedence over the array's global order for that input.
+
+Use the object form for new configuration. When one configuration file uses an
+array and another uses an object at `app.extensions`, the higher-priority value
+replaces the entire lower-priority value. Migrate shared configuration to objects
+to compose per-extension overrides across files.

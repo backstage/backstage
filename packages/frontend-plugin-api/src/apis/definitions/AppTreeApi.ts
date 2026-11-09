@@ -35,6 +35,11 @@ export interface AppNodeSpec {
   readonly disabled: boolean;
   readonly if?: FilterPredicate;
   readonly config?: unknown;
+  /**
+   * Input settings configured by the app. An order lists child extension IDs,
+   * with `*` placing unlisted children in their existing order.
+   */
+  readonly inputs?: { [inputName: string]: { order?: string[] } };
   readonly plugin: FrontendPlugin;
 }
 

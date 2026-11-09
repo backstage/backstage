@@ -326,7 +326,7 @@ To now change the text of the title from "Sidebar Title" to "Backstage" we can l
 ```yaml
 app:
   # ...
-  extension:
+  extensions:
     # ...
     app/nav:
       config:

@@ -2,4 +2,4 @@
 '@backstage/frontend-app-api': patch
 ---
 
-Added `app.extension`, an object keyed by extension ID for overriding extension settings across configuration files without changing extension order. Its settings take precedence over `app.extensions`, which continues to control ordering. A `config` object supplied in `app.extension` replaces the configuration from `app.extensions` rather than merging with it.
+Added an object form of `app.extensions` for settings that merge across configuration files without changing extension order. Extensions can configure `inputs.<input-name>.order` to order their children by ID, with `*` positioning unlisted children. Invalid settings are reported through app errors with recoverable fallbacks; duplicate ordering IDs and wildcards use their first occurrence. The existing array form retains its ordering and enabling behavior.

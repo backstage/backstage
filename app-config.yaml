@@ -47,201 +47,255 @@ app:
         ownerEntityRefs: [cubic-belugas]
 
   extensions:
+    page:scaffolder:
+      inputs:
+        pages:
+          order:
+            - sub-page:scaffolder/templates
     # set availableLanguages example
-    - api:app/app-language:
-        config:
-          availableLanguages: ['en', 'es', 'fr', 'de', 'ja']
-          defaultLanguage: 'en'
-    - entity-card:org/members-list:
-        config:
-          showAggregateMembersToggle: true
-          initialRelationAggregation: aggregated
-    - entity-card:org/ownership:
-        config:
-          ownedKinds: ['Component', 'API', 'System']
+    api:app/app-language:
+      disabled: false
+      config:
+        availableLanguages: ['en', 'es', 'fr', 'de', 'ja']
+        defaultLanguage: 'en'
+    entity-card:org/members-list:
+      disabled: false
+      config:
+        showAggregateMembersToggle: true
+        initialRelationAggregation: aggregated
+    entity-card:org/ownership:
+      disabled: false
+      config:
+        ownedKinds: ['Component', 'API', 'System']
 
     # Visit tracking records which pages users navigate to and is disabled by default.
     # Enable it to populate the Most Visited and Recently Visited widgets on the Home page.
     # Visit data is stored via UserSettings storage if available, otherwise browser localStorage.
-    # - api:home/visits: true
-    # - app-root-element:home/visit-listener: true
-    - home-page-widget:home/random-joke: false
-    - home-page-widget:home/toolkit:
-        config:
-          tools:
-            - url: https://backstage.io/docs
-              label: Docs
-              icon: docs
-            - url: https://github.com/backstage/backstage
-              label: GitHub
-              icon: github
-            - url: https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md
-              label: Contributing
-              icon: docs
-            - url: https://backstage.io/plugins
-              label: Plugins Directory
-              icon: kind:component
-            - url: https://github.com/backstage/backstage/issues/new/choose
-              label: Submit New Issue
-              icon: github
-    - home-page-widget:home/world-clock:
-        config:
-          customTimeFormat:
-            hour12: false
-          clockConfigs:
-            - label: NYC
-              timeZone: America/New_York
-            - label: UTC
-              timeZone: UTC
-            - label: STO
-              timeZone: Europe/Stockholm
-            - label: TYO
-              timeZone: Asia/Tokyo
-    - page:home:
-        config:
-          defaultConfig:
-            - component: HomePageSearchBar
-              column: 0
-              row: 0
-              width: 12
-              height: 2
-              deletable: false
-            - component: GettingStarted
-              column: 0
-              row: 1
-              width: 4
-              height: 11
-            - component: HomePageStarredEntities
-              column: 4
-              row: 2
-              width: 4
-              height: 4
-            - component: HomePageRandomJoke
-              column: 8
-              row: 2
-              width: 4
-              height: 4
-            - component: HomePageToolkit
-              column: 4
-              row: 6
-              width: 4
-              height: 3
-            - component: HomePageWorldClock
-              column: 8
-              row: 6
-              width: 4
-              height: 3
-            - component: HomePageTopVisited
-              column: 4
-              row: 9
-              width: 4
-              height: 4
-            - component: HomePageRecentlyVisited
-              column: 8
-              row: 9
-              width: 4
-              height: 4
+    # api:home/visits: true
+    # app-root-element:home/visit-listener: true
+    home-page-widget:home/random-joke: false
+    home-page-widget:home/toolkit:
+      disabled: false
+      config:
+        tools:
+          - url: https://backstage.io/docs
+            label: Docs
+            icon: docs
+          - url: https://github.com/backstage/backstage
+            label: GitHub
+            icon: github
+          - url: https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md
+            label: Contributing
+            icon: docs
+          - url: https://backstage.io/plugins
+            label: Plugins Directory
+            icon: kind:component
+          - url: https://github.com/backstage/backstage/issues/new/choose
+            label: Submit New Issue
+            icon: github
+    home-page-widget:home/world-clock:
+      disabled: false
+      config:
+        customTimeFormat:
+          hour12: false
+        clockConfigs:
+          - label: NYC
+            timeZone: America/New_York
+          - label: UTC
+            timeZone: UTC
+          - label: STO
+            timeZone: Europe/Stockholm
+          - label: TYO
+            timeZone: Asia/Tokyo
+    page:home:
+      inputs:
+        widgets:
+          order:
+            - home-page-widget:home/random-joke
+            - home-page-widget:home/toolkit
+            - home-page-widget:home/world-clock
+      disabled: false
+      config:
+        defaultConfig:
+          - component: HomePageSearchBar
+            column: 0
+            row: 0
+            width: 12
+            height: 2
+            deletable: false
+          - component: GettingStarted
+            column: 0
+            row: 1
+            width: 4
+            height: 11
+          - component: HomePageStarredEntities
+            column: 4
+            row: 2
+            width: 4
+            height: 4
+          - component: HomePageRandomJoke
+            column: 8
+            row: 2
+            width: 4
+            height: 4
+          - component: HomePageToolkit
+            column: 4
+            row: 6
+            width: 4
+            height: 3
+          - component: HomePageWorldClock
+            column: 8
+            row: 6
+            width: 4
+            height: 3
+          - component: HomePageTopVisited
+            column: 4
+            row: 9
+            width: 4
+            height: 4
+          - component: HomePageRecentlyVisited
+            column: 8
+            row: 9
+            width: 4
+            height: 4
 
-    # - apis.plugin.graphiql.browse.gitlab: true
-    # - graphiql-endpoint:graphiql/gitlab: true
-
-    # Opt in to the experimental BUI scaffolder form theme
-    - sub-page:scaffolder/templates:
-        config:
-          enableBackstageUi: true
+    # apis.plugin.graphiql.browse.gitlab: true
+    # graphiql-endpoint:graphiql/gitlab: true
 
     # Pages
-    - page:catalog:
-        config:
-          exportSettings:
-            enabled: true
-    - page:catalog/entity:
-        config:
-          showNavItemIcons: true
-          # default content order for all groups, can be 'title' or 'natural'
-          # defaultContentOrder: title
-          groups:
-            # placing a tab at the beginning
-            - overview:
-                title: Overview
-            # example disabling a default group
-            # - development: false
-            # example overriding a default group title
-            - documentation:
-                title: Docs
-                icon: docs
-                # example aliasing a group
-                # aliases:
-                #   - docs
-            - deployment:
-                title: Deployments
-            # example adding a new group
-            - custom:
-                title: Custom
+    page:catalog:
+      disabled: false
+      config:
+        exportSettings:
+          enabled: true
+    page:catalog/entity:
+      inputs:
+        contents:
+          order:
+            - entity-content:catalog/overview
+            - entity-content:api-docs/definition
+            - entity-content:api-docs/apis
+            - entity-content:techdocs
+            - entity-content:kubernetes/kubernetes
+      disabled: false
+      config:
+        showNavItemIcons: true
+        # default content order for all groups, can be 'title' or 'natural'
+        # defaultContentOrder: title
+        groups:
+          # placing a tab at the beginning
+          - overview:
+              title: Overview
+          # example disabling a default group
+          # - development: false
+          # example overriding a default group title
+          - documentation:
+              title: Docs
+              icon: docs
+              # example aliasing a group
+              # aliases:
+              #   - docs
+          - deployment:
+              title: Deployments
+          # example adding a new group
+          - custom:
+              title: Custom
 
-    - sub-page:scaffolder/templates:
-        config:
-          groups:
-            - title: Recommended Services
-              filter:
-                spec.type: service
-            - title: Documentation
-              filter:
-                spec.type: documentation
+    sub-page:scaffolder/templates:
+      disabled: false
+      config:
+        groups:
+          - title: Recommended Services
+            filter:
+              spec.type: service
+          - title: Documentation
+            filter:
+              spec.type: documentation
 
     # Entity page cards
-    - entity-card:catalog/about:
-        config:
-          type: info
-    - entity-card:catalog/labels
-    - entity-card:catalog/links:
-        config:
-          filter:
-            kind: component
-            metadata.links:
-              $exists: true
-          # filter: kind:component has:links
-          type: info
-    # - entity-card:linguist/languages
-    - entity-card:catalog-graph/relations:
-        config:
-          height: 300
-    - entity-card:api-docs/has-apis
-    - entity-card:api-docs/consumed-apis
-    - entity-card:api-docs/provided-apis
-    - entity-card:api-docs/providing-components
-    - entity-card:api-docs/consuming-components
+    entity-card:catalog/about:
+      disabled: false
+      config:
+        type: info
+    entity-card:catalog/labels: true
+    entity-card:catalog/links:
+      disabled: false
+      config:
+        filter:
+          kind: component
+          metadata.links:
+            $exists: true
+        # filter: kind:component has:links
+        type: info
+    # entity-card:linguist/languages: true
+    entity-card:catalog-graph/relations:
+      disabled: false
+      config:
+        height: 300
+    entity-card:api-docs/has-apis: true
+    entity-card:api-docs/consumed-apis: true
+    entity-card:api-docs/provided-apis: true
+    entity-card:api-docs/providing-components: true
+    entity-card:api-docs/consuming-components: true
     # Org Plugin
-    - entity-card:org/group-profile
-    - entity-card:org/members-list
-    - entity-card:org/ownership
-    - entity-card:org/user-profile:
-        config:
-          maxRelations: 5
-          hideIcons: true
-    # - entity-card:azure-devops/readme
+    entity-card:org/group-profile: true
+    entity-card:org/user-profile:
+      disabled: false
+      config:
+        maxRelations: 5
+        hideIcons: true
+    # entity-card:azure-devops/readme: true
 
     # Entity page contents
-    - entity-content:catalog/overview
-    - entity-content:api-docs/definition
-    - entity-content:api-docs/apis:
-        config:
-          # example overriding the default group
-          group: documentation
-          icon: kind:api
-    - entity-content:techdocs:
-        config:
-          icon: techdocs
-    - entity-content:kubernetes/kubernetes:
-        config:
-          # example disassociating from the default group
-          group: false
-    # - entity-content:azure-devops/pipelines
-    # - entity-content:azure-devops/pull-requests
-    # - entity-content:azure-devops/git-tags
+    entity-content:catalog/overview:
+      disabled: false
+      inputs:
+        cards:
+          order:
+            - entity-card:org/members-list
+            - entity-card:org/ownership
+            - entity-card:catalog/about
+            - entity-card:catalog/labels
+            - entity-card:catalog/links
+            - entity-card:catalog-graph/relations
+            - entity-card:api-docs/has-apis
+            - entity-card:api-docs/consumed-apis
+            - entity-card:api-docs/provided-apis
+            - entity-card:api-docs/providing-components
+            - entity-card:api-docs/consuming-components
+            - entity-card:org/group-profile
+            - entity-card:org/user-profile
+    entity-content:api-docs/definition: true
+    entity-content:api-docs/apis:
+      disabled: false
+      config:
+        # example overriding the default group
+        group: documentation
+        icon: kind:api
+    entity-content:techdocs:
+      disabled: false
+      config:
+        icon: techdocs
+    entity-content:kubernetes/kubernetes:
+      disabled: false
+      config:
+        # example disassociating from the default group
+        group: false
+    # entity-content:azure-devops/pipelines: true
+    # entity-content:azure-devops/pull-requests: true
+    # entity-content:azure-devops/git-tags: true
 
     # Disable the catalog-unprocessed-entities element outside devtools
-    - page:catalog-unprocessed-entities: false
+    page:catalog-unprocessed-entities: false
+
+    app/routes:
+      inputs:
+        routes:
+          order:
+            - page:home
+            - page:catalog
+            - page:catalog/entity
+            - page:catalog-unprocessed-entities
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins

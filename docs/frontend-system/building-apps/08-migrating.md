@@ -827,7 +827,7 @@ If your old routes include `<Redirect>` elements to forward users from one path 
 
 ```yaml title="app-config.yaml"
 app:
-  extension:
+  extensions:
     app/routes:
       config:
         redirects:

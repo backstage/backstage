@@ -73,6 +73,11 @@ export interface AppNodeSpec {
   readonly id: string;
   // (undocumented)
   readonly if?: FilterPredicate;
+  readonly inputs?: {
+    [inputName: string]: {
+      order?: string[];
+    };
+  };
   // (undocumented)
   readonly plugin: FrontendPlugin;
 }
