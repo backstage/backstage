@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-module-format-prettier
+  title: '@backstage/cli-module-format-prettier'
+  description: CLI module for Backstage CLI that formats code with Prettier
+spec:
+  lifecycle: experimental
+  type: backstage-cli-module
+  owner: tooling-maintainers

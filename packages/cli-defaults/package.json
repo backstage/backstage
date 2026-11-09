@@ -35,6 +35,7 @@
     "@backstage/cli-module-build": "workspace:^",
     "@backstage/cli-module-catalog": "workspace:^",
     "@backstage/cli-module-config": "workspace:^",
+    "@backstage/cli-module-format-prettier": "workspace:^",
     "@backstage/cli-module-github": "workspace:^",
     "@backstage/cli-module-info": "workspace:^",
     "@backstage/cli-module-lint": "workspace:^",

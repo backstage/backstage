@@ -23,6 +23,7 @@ which bundles the following modules:
 | [Search](./module-search.md)                             | `@backstage/cli-module-search`               | `search`, `docs search`                                                                                                                                                         |
 | [Build](./module-build.md)                               | `@backstage/cli-module-build`                | `package build`, `package start`, `package bundle`, `package clean`, `package prepack`, `package postpack`, `repo build`, `repo start`, `repo clean`, `build-workspace`         |
 | [Config](./module-config.md)                             | `@backstage/cli-module-config`               | `config:docs`, `config:print`, `config:check`, `config:schema`                                                                                                                  |
+| [Format with Prettier](./02-build-system.md#formatting)  | `@backstage/cli-module-format-prettier`      | `package format`                                                                                                                                                                |
 | [GitHub](./module-github.md)                             | `@backstage/cli-module-github`               | `create-github-app`                                                                                                                                                             |
 | [Info](./module-info.md)                                 | `@backstage/cli-module-info`                 | `info`                                                                                                                                                                          |
 | [Lint](./module-lint.md)                                 | `@backstage/cli-module-lint`                 | `package lint`, `repo lint`                                                                                                                                                     |
@@ -73,6 +74,10 @@ module:
   }
 }
 ```
+
+Backstage also publishes `@backstage/cli-module-format-oxfmt`, which replaces
+the `package format` command of the default Prettier module in the same way.
+See [switching to oxfmt](./02-build-system.md#switching-to-oxfmt).
 
 ### Using a subset of modules
 

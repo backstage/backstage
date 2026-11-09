@@ -16,9 +16,10 @@
 
 import { cli } from 'cleye';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'node:path';
+import { createRequire } from 'node:module';
+import { dirname, resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
-import { runOutput } from '@backstage/cli-common';
+import { ExitCodeError, run, targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 const PREFIX = `module.exports = require('@backstage/cli/config/eslint-factory')`;
@@ -77,16 +78,38 @@ export default async ({ args, info }: CliCommandContext) => {
     }),
   );
 
-  // If prettier is present, then we run that too
-  let hasPrettier = false;
-  try {
-    require.resolve('prettier');
-    hasPrettier = true;
-  } catch {
-    /* ignore */
+  // Without any paths the format command would format the current package
+  if (configPaths.length === 0) {
+    return;
   }
 
-  if (hasPrettier) {
-    await runOutput(['prettier', '--write', ...configPaths]);
+  // Formatting goes through the Backstage CLI of the project, so that it uses
+  // whichever format module the project has installed
+  try {
+    await run(
+      [
+        process.execPath,
+        resolveProjectCliBin(),
+        'package',
+        'format',
+        ...configPaths,
+      ],
+      { cwd: targetPaths.rootDir },
+    ).waitForExit();
+  } catch (error) {
+    if (error instanceof ExitCodeError) {
+      // The error from run() would include every path, so leave them out
+      throw new ExitCodeError(error.code, 'backstage-cli package format');
+    }
+    throw error;
   }
 };
+
+function resolveProjectCliBin(): string {
+  const rootPkgPath = targetPaths.resolveRoot('package.json');
+  const pkgPath = createRequire(rootPkgPath).resolve(
+    '@backstage/cli/package.json',
+  );
+  const { bin } = fs.readJsonSync(pkgPath);
+  return resolvePath(dirname(pkgPath), bin['backstage-cli']);
+}

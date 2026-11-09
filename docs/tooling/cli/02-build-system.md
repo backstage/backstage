@@ -121,11 +121,63 @@ Most of the steps that we cover below have an accompanying command that is inten
 
 ## Formatting
 
-The formatting setup lives completely within each Backstage application and is
-not part of the CLI. In an app created with `@backstage/create-app` the
-formatting is handled by [prettier](https://prettier.io/), but each application
-can choose their own formatting rules and switch to a different formatter if
-desired.
+The formatter and its rules are chosen by each Backstage project. In an app
+created with `@backstage/create-app` formatting is handled by
+[Prettier](https://prettier.io/), with the configuration and
+`.prettierignore` file in the project root.
+
+The CLI provides a `package format` command that formats the current package,
+or only the files and directories passed to it, with the formatter of the
+project. Tools that write files, such as
+`backstage-cli migrate package-lint-configs`, use this command to format their
+output. With `--check`, the command lists the files that need formatting and
+exits with a non-zero code if there are any, without changing them. Files that
+the formatter ignores or can't format are skipped.
+
+```text
+Usage: backstage-cli package format [flags...] [paths...]
+
+Options:
+  --check  List the files that need formatting and fail if there are any, without writing them
+```
+
+The command comes from a CLI module, which runs the formatter that the root
+`package.json` lists as a dependency. If the formatter isn't listed, the
+command fails and asks you to add it.
+
+- `@backstage/cli-module-format-prettier` formats with Prettier. It's part of
+  `@backstage/cli-defaults`, so it's used unless you install another format
+  module.
+- `@backstage/cli-module-format-oxfmt` formats with
+  [oxfmt](https://oxc.rs/docs/guide/usage/formatter.html).
+
+### Switching to oxfmt
+
+To format with oxfmt instead of Prettier, add `oxfmt` and
+`@backstage/cli-module-format-oxfmt` to the root dev dependencies. Since the
+oxfmt module is installed individually, it replaces the Prettier module from
+`@backstage/cli-defaults`, as described in
+[overriding a module](./05-modules.md#overriding-a-module):
+
+```json title="package.json"
+{
+  "devDependencies": {
+    "@backstage/cli": "...",
+    "@backstage/cli-defaults": "...",
+    "@backstage/cli-module-format-oxfmt": "...",
+    "oxfmt": "..."
+  }
+}
+```
+
+Then run `oxfmt --migrate=prettier`, which converts your Prettier configuration
+and `.prettierignore` file, as described in the
+[oxfmt migration guide](https://oxc.rs/docs/guide/usage/formatter/migrate-from-prettier.html).
+oxfmt reads its configuration from an `.oxfmtrc.json`, `.oxfmtrc.jsonc`,
+`oxfmt.config.ts`, or `oxfmt.config.mts` file in the project root. Once
+nothing else uses Prettier, you can remove it from the root dependencies. You
+can keep the `eslint-config-prettier` setup in the Backstage ESLint
+configuration, since it only turns off rules that conflict with a formatter.
 
 ## Linting
 

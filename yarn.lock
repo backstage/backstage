@@ -2085,6 +2085,7 @@ __metadata:
     "@backstage/cli-module-build": "workspace:^"
     "@backstage/cli-module-catalog": "workspace:^"
     "@backstage/cli-module-config": "workspace:^"
+    "@backstage/cli-module-format-prettier": "workspace:^"
     "@backstage/cli-module-github": "workspace:^"
     "@backstage/cli-module-info": "workspace:^"
     "@backstage/cli-module-lint": "workspace:^"
@@ -2262,6 +2263,40 @@ __metadata:
     yaml: "npm:^2.0.0"
   bin:
     cli-module-config: bin/backstage-cli-module-config
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-format-oxfmt@workspace:packages/cli-module-format-oxfmt":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-format-oxfmt@workspace:packages/cli-module-format-oxfmt"
+  dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@types/fs-extra": "npm:^11.0.0"
+    cleye: "npm:^2.6.0"
+    fs-extra: "npm:^11.2.0"
+  bin:
+    cli-module-format-oxfmt: bin/backstage-cli-module-format-oxfmt
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-format-prettier@workspace:^, @backstage/cli-module-format-prettier@workspace:packages/cli-module-format-prettier":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-format-prettier@workspace:packages/cli-module-format-prettier"
+  dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@types/fs-extra": "npm:^11.0.0"
+    cleye: "npm:^2.6.0"
+    fs-extra: "npm:^11.2.0"
+  bin:
+    cli-module-format-prettier: bin/backstage-cli-module-format-prettier
   languageName: unknown
   linkType: soft
 
