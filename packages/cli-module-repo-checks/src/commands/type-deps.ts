@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
+import type { CliCommandContext } from '@backstage/cli-node';
 import fs from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
+
 // Cba polluting root package.json, we'll have this
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import chalk from 'chalk';
 import { getPackages, Package } from '@manypkg/get-packages';
-import { getPackageExportDetails } from '../../lib/getPackageExportDetails';
+import { getPackageExportDetails } from '../lib/getPackageExportDetails';
 
-export default async () => {
+const checkTypeDeps = async () => {
   const { packages } = await getPackages(resolvePath('.'));
 
   let hadErrors = false;
@@ -288,3 +291,9 @@ function mkErr(name: string, msg: string, extra: Record<string, string>) {
   Object.assign(error, extra);
   return error;
 }
+
+export default async ({ args, info }: CliCommandContext) => {
+  cli({ name: info.usage }, undefined, args);
+
+  await checkTypeDeps();
+};

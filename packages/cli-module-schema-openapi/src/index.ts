@@ -25,8 +25,7 @@ export default createCliModule({
       description:
         'Command to generate a client and/or a server stub from an OpenAPI spec.',
       execute: {
-        loader: () =>
-          import('./commands/package/schema/openapi/generateCommand'),
+        loader: () => import('./commands/package/schema/openapi/generate'),
       },
     });
 
@@ -35,8 +34,7 @@ export default createCliModule({
       description:
         'Validate that the OpenAPI spec is a valid OpenAPI 3.x document.',
       execute: {
-        loader: () =>
-          import('./commands/package/schema/openapi/validateCommand'),
+        loader: () => import('./commands/package/schema/openapi/validate'),
       },
     });
 
@@ -45,7 +43,7 @@ export default createCliModule({
       description:
         'Fuzz an OpenAPI schema by generating random data and sending it to the server.',
       execute: {
-        loader: () => import('./commands/package/schema/openapi/fuzzCommand'),
+        loader: () => import('./commands/package/schema/openapi/fuzz'),
       },
     });
 
@@ -53,7 +51,7 @@ export default createCliModule({
       path: ['package', 'schema', 'openapi', 'diff'],
       description: 'Diff the OpenAPI spec of a package against a specific ref.',
       execute: {
-        loader: () => import('./commands/package/schema/openapi/diffCommand'),
+        loader: () => import('./commands/package/schema/openapi/diff'),
       },
     });
 
@@ -62,7 +60,7 @@ export default createCliModule({
       description:
         'Validate that all OpenAPI schemas are valid and set up correctly.',
       execute: {
-        loader: () => import('./commands/repo/schema/openapi/validateCommand'),
+        loader: () => import('./commands/repo/schema/openapi/validate'),
       },
     });
 
@@ -71,7 +69,7 @@ export default createCliModule({
       description: 'Deprecated: use validate instead.',
       deprecated: true,
       execute: {
-        loader: () => import('./commands/repo/schema/openapi/verifyCommand'),
+        loader: () => import('./commands/repo/schema/openapi/verify'),
       },
     });
 
@@ -79,7 +77,7 @@ export default createCliModule({
       path: ['repo', 'schema', 'openapi', 'lint'],
       description: 'Lint OpenAPI schemas.',
       execute: {
-        loader: () => import('./commands/repo/schema/openapi/lintCommand'),
+        loader: () => import('./commands/repo/schema/openapi/lint'),
       },
     });
 
@@ -87,7 +85,7 @@ export default createCliModule({
       path: ['repo', 'schema', 'openapi', 'fuzz'],
       description: 'Fuzz all packages',
       execute: {
-        loader: () => import('./commands/repo/schema/openapi/fuzzCommand'),
+        loader: () => import('./commands/repo/schema/openapi/fuzz'),
       },
     });
 
@@ -96,7 +94,7 @@ export default createCliModule({
       description:
         'Diff all OpenAPI specs in the repository against a specific ref.',
       execute: {
-        loader: () => import('./commands/repo/schema/openapi/diffCommand'),
+        loader: () => import('./commands/repo/schema/openapi/diff'),
       },
     });
   },

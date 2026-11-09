@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
+import type { CliCommandContext } from '@backstage/cli-node';
 import { runKnipReports } from './knip-extractor';
 import { resolvePackagePaths } from '../../lib/paths';
 
@@ -57,4 +59,26 @@ export const buildKnipReports = async (paths: string[] = [], opts: Options) => {
       process.exit(1);
     }
   }
+};
+
+export default async ({ args, info }: CliCommandContext) => {
+  const {
+    flags: { ci },
+    _: paths,
+  } = cli(
+    {
+      name: info.usage,
+      parameters: ['[paths...]'],
+      flags: {
+        ci: {
+          type: Boolean,
+          description: 'CI run checks that there is no changes on knip reports',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
+  await buildKnipReports(paths, { ci });
 };

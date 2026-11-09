@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { cli } from 'cleye';
+import type { CliCommandContext } from '@backstage/cli-node';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { targetPaths } from '@backstage/cli-common';
@@ -116,7 +119,7 @@ async function generateDocJson(pkg: string, typedocBin: string) {
   return true;
 }
 
-export default async function packageDocs(paths: string[] = [], opts: any) {
+async function packageDocs(paths: string[] = [], opts: any) {
   console.warn('!!! This is an experimental command !!!');
 
   const typedocBin = requireProjectTool('typedoc').binPath('typedoc');
@@ -234,3 +237,16 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
   console.log(stdout);
   console.error(stderr);
 }
+
+export default async ({ args, info }: CliCommandContext) => {
+  const { _: paths } = cli(
+    {
+      name: info.usage,
+      parameters: ['[paths...]'],
+    },
+    undefined,
+    args,
+  );
+
+  await packageDocs(paths, {});
+};

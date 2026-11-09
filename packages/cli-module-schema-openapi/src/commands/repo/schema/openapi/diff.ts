@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { cli } from 'cleye';
+import type { CliCommandContext } from '@backstage/cli-node';
 import { PackageGraph } from '@backstage/cli-node';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { targetPaths } from '@backstage/cli-common';
@@ -21,7 +24,7 @@ import {
   DEFAULT_BASE_REF,
   YAML_SCHEMA_PATH,
 } from '../../../../lib/openapi/constants';
-import { ensureOasdiffInstalled } from '../../../util';
+import { ensureOasdiffInstalled } from '../../../../lib/util';
 import chalk from 'chalk';
 import { relative as relativePath, join, sep, posix } from 'node:path';
 import { pathExists } from 'fs-extra';
@@ -130,3 +133,24 @@ export async function command(opts: Options) {
     process.exit(1);
   }
 }
+
+export default async ({ args, info }: CliCommandContext) => {
+  const {
+    flags: { since },
+  } = cli(
+    {
+      name: info.usage,
+      flags: {
+        since: {
+          type: String,
+          description: 'Diff the API against a specific ref',
+          default: DEFAULT_BASE_REF,
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
+  await command({ since });
+};

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
+import type { CliCommandContext } from '@backstage/cli-node';
 import fs from 'fs-extra';
 import { isEqual } from 'lodash';
 import { join } from 'node:path';
@@ -87,3 +89,16 @@ export async function bulkCommand(paths: string[] = []): Promise<void> {
     console.log(chalk.green('Validated all files.'));
   }
 }
+
+export default async ({ args, info }: CliCommandContext) => {
+  const { _: paths } = cli(
+    {
+      name: info.usage,
+      parameters: ['[paths...]'],
+    },
+    undefined,
+    args,
+  );
+
+  await bulkCommand(paths);
+};

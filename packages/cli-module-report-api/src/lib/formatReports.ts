@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { formatFiles } from '../../../lib/formatFiles';
+import { formatFiles } from './formatFiles';
 
 /**
  * A report that has been written to its final path and formatted there.

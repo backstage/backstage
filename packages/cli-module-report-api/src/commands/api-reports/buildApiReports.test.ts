@@ -21,23 +21,23 @@ import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import { categorizePackageDirs } from './categorizePackageDirs';
 
 import { buildApiReports } from './buildApiReports';
-import { generateTypeDeclarations } from './api-reports';
+import { generateTypeDeclarations } from '../../lib/api-reports';
 import { PackageGraph } from '@backstage/cli-node';
-import { runCliExtraction } from './cli-reports';
-import { runApiExtraction, buildDocs } from './api-reports/index';
+import { runCliExtraction } from '../../lib/cli-reports';
+import { runApiExtraction, buildDocs } from '../../lib/api-reports';
 
 // create mocks for the dependencies of the `buildApiReports` function
-jest.mock('./api-reports', () => ({
+jest.mock('../../lib/api-reports', () => ({
   generateTypeDeclarations: jest.fn(),
   createTemporaryTsConfig: jest.fn(),
   runApiExtraction: jest.fn(),
   runCliExtraction: jest.fn(),
   buildDocs: jest.fn(),
 }));
-jest.mock('./cli-reports', () => ({
+jest.mock('../../lib/cli-reports', () => ({
   runCliExtraction: jest.fn(),
 }));
-jest.mock('./sql-reports', () => ({
+jest.mock('../../lib/sql-reports', () => ({
   runSqlExtraction: jest.fn(),
 }));
 jest.mock('./categorizePackageDirs', () => ({

@@ -24,7 +24,7 @@ export default createCliModule({
       path: ['api-reports'],
       description: 'Generate an API report for selected packages',
       execute: {
-        loader: () => import('./commands/api-reports/apiReportsCommand'),
+        loader: () => import('./commands/api-reports'),
       },
     });
   },

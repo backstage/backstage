@@ -30,15 +30,15 @@ import {
   relative as relativePath,
   resolve as resolvePath,
 } from 'node:path';
-import { getPackageExportDetails } from '../../../lib/getPackageExportDetails';
+import { getPackageExportDetails } from '../getPackageExportDetails';
 import { targetPaths } from '@backstage/cli-common';
 import {
   FormattedReport,
   formatReports,
-  logApiReportInstructions,
-  logReportDiff,
   restoreReport,
-} from '../common';
+} from '../formatReports';
+import { logApiReportInstructions } from '../logApiReportInstructions';
+import { logReportDiff } from '../logReportDiff';
 import { patchApiReportGeneration } from './patchApiReportGeneration';
 
 async function readReport(reportPath: string): Promise<string | undefined> {

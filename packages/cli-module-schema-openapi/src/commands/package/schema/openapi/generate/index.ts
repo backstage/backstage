@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { cli } from 'cleye';
+import type { CliCommandContext } from '@backstage/cli-node';
 import chalk from 'chalk';
 import { command as generateClient } from './client';
 import { command as generateServer } from './server';
@@ -107,3 +110,55 @@ export async function command(opts: Options) {
     }
   }
 }
+
+export default async ({ args, info }: CliCommandContext) => {
+  const {
+    flags: {
+      clientPackage,
+      server,
+      clientAdditionalProperties,
+      serverAdditionalProperties,
+      watch,
+    },
+  } = cli(
+    {
+      name: info.usage,
+      flags: {
+        clientPackage: {
+          type: String,
+          description:
+            'Top-level path to where the client should be generated, ie packages/catalog-client.',
+        },
+        server: {
+          type: Boolean,
+          description: 'Generate server stub',
+        },
+        clientAdditionalProperties: {
+          type: String,
+          description:
+            'Additional properties that can be passed to @openapitools/openapi-generator-cli',
+        },
+        serverAdditionalProperties: {
+          type: String,
+          description:
+            'Additional properties that can be passed to @openapitools/openapi-generator-cli',
+        },
+        watch: {
+          type: Boolean,
+          description:
+            'Watch the OpenAPI spec for changes and regenerate on save.',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
+  await command({
+    clientPackage,
+    server,
+    clientAdditionalProperties,
+    serverAdditionalProperties,
+    watch,
+  });
+};

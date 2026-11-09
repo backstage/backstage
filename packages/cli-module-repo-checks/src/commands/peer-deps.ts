@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
+import type { CliCommandContext } from '@backstage/cli-node';
 import { resolve as resolvePath } from 'node:path';
 import { getPackages, Package } from '@manypkg/get-packages';
 import { writeFileSync } from 'node:fs';
@@ -107,7 +109,7 @@ const matchesPeerDependency = (
   );
 };
 
-export default async ({ fix }: { fix: boolean }) => {
+const peerDeps = async ({ fix }: { fix: boolean }) => {
   let failed = false;
   const attemptToApplyFix = (fn: () => void) => {
     if (fix) {
@@ -268,4 +270,24 @@ export default async ({ fix }: { fix: boolean }) => {
     console.error('Some packages have incorrect peer dependencies');
     process.exit(1);
   }
+};
+
+export default async ({ args, info }: CliCommandContext) => {
+  const {
+    flags: { fix },
+  } = cli(
+    {
+      name: info.usage,
+      flags: {
+        fix: {
+          type: Boolean,
+          description: 'Fix the issues found',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
+  await peerDeps({ fix: Boolean(fix) });
 };

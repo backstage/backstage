@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
+import type { CliCommandContext } from '@backstage/cli-node';
 import * as YAML from 'js-yaml';
 import { loadYaml } from '../../lib/yaml';
 import pLimit from 'p-limit';
@@ -43,7 +45,7 @@ type CreateFixPackageInfoYamlsOptions = {
   dryRun?: boolean;
 };
 
-export default async (opts: CreateFixPackageInfoYamlsOptions) => {
+const generateCatalogInfo = async (opts: CreateFixPackageInfoYamlsOptions) => {
   const { dryRun = false, ci = false } = opts;
   const packages = await PackageGraph.listTargetPackages();
   const codeowners = await loadCodeowners();
@@ -263,3 +265,29 @@ function createOrMergeEntity(
     },
   };
 }
+
+export default async ({ args, info }: CliCommandContext) => {
+  const {
+    flags: { dryRun, ci },
+  } = cli(
+    {
+      name: info.usage,
+      flags: {
+        dryRun: {
+          type: Boolean,
+          description:
+            'Shows what would happen without actually writing any yaml.',
+        },
+        ci: {
+          type: Boolean,
+          description:
+            'CI run checks that there are no changes to catalog-info.yaml files',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
+  await generateCatalogInfo({ dryRun, ci });
+};

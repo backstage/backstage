@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { cli } from 'cleye';
+import type { CliCommandContext } from '@backstage/cli-node';
 import { PackageGraph } from '@backstage/cli-node';
 import { runOutputWithStderr } from '../../../../lib/runOutputWithStderr';
 import chalk from 'chalk';
@@ -50,3 +53,24 @@ export async function command(opts: Options) {
     process.exit(1);
   }
 }
+
+export default async ({ args, info }: CliCommandContext) => {
+  const {
+    flags: { since },
+  } = cli(
+    {
+      name: info.usage,
+      flags: {
+        since: {
+          type: String,
+          description:
+            'Only fuzz packages that have changed since the given ref',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
+  await command({ since });
+};

@@ -41,7 +41,6 @@
     "@microsoft/api-extractor-model": "7.32.2",
     "@microsoft/tsdoc": "~0.16.0",
     "@microsoft/tsdoc-config": "~0.18.0",
-    "@prettier/sync": "^0.6.1",
     "cleye": "^2.6.0",
     "diff": "^9.0.0",
     "fs-extra": "^11.2.0",
@@ -58,7 +57,6 @@
     "@backstage/cli": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/node": "^24.0.0",
-    "@types/prettier": "^2.0.0",
     "@types/semver": "^7"
   }
 }

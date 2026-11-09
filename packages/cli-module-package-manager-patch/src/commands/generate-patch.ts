@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
+import { InputError } from '@backstage/errors';
+import type { CliCommandContext } from '@backstage/cli-node';
 import { getPackages, Package, Packages } from '@manypkg/get-packages';
 import os from 'node:os';
 import fs from 'fs-extra';
@@ -24,8 +27,8 @@ import {
   posix,
 } from 'node:path';
 import { run } from '@backstage/cli-common';
-import { waitForExitOrSignal } from '../../lib/waitForExitOrSignal';
-import { runOutputWithStderr } from '../../lib/runOutputWithStderr';
+import { waitForExitOrSignal } from '../lib/waitForExitOrSignal';
+import { runOutputWithStderr } from '../lib/runOutputWithStderr';
 import { ForwardedError } from '@backstage/errors';
 import { Readable } from 'node:stream';
 import { finished } from 'node:stream/promises';
@@ -65,7 +68,7 @@ interface PatchContext {
   registryUrl: string;
 }
 
-export default async (
+const generatePatchForPackage = async (
   packageArg: string,
   opts: {
     target: string;
@@ -415,3 +418,55 @@ async function generatePatchForArchives(
   );
   return Buffer.concat(chunks).toString('utf8');
 }
+
+export default async ({ args, info }: CliCommandContext) => {
+  const {
+    flags: { target, registryUrl, baseVersion, query, skipInstall },
+    _: [packageArg],
+  } = cli(
+    {
+      name: info.usage,
+      parameters: ['<package>'],
+      flags: {
+        target: {
+          type: String,
+          description: 'The target repository to generate patches for',
+        },
+        registryUrl: {
+          type: String,
+          description:
+            'The registry to use for downloading artifacts (default: https://registry.npmjs.org)',
+        },
+        baseVersion: {
+          type: String,
+          description:
+            'Override the base version to generate the patch towards instead',
+        },
+        query: {
+          type: String,
+          description:
+            'Only apply the patch for a specific version query in the target repository',
+        },
+        skipInstall: {
+          type: Boolean,
+          description:
+            'Skip dependency installation in the target repository after applying the patch',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
+  if (!target) {
+    throw new InputError('Missing required option --target <target-repo>');
+  }
+
+  await generatePatchForPackage(packageArg, {
+    target,
+    registryUrl,
+    baseVersion,
+    query,
+    skipInstall,
+  });
+};

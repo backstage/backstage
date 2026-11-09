@@ -25,7 +25,7 @@ export default createCliModule({
       description:
         'Generate a patch for the selected package in the target repository',
       execute: {
-        loader: () => import('./commands/generate-patch/generatePatchCommand'),
+        loader: () => import('./commands/generate-patch'),
       },
     });
   },

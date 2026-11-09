@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
+import type { CliCommandContext } from '@backstage/cli-node';
 import chalk from 'chalk';
 import {
   getPathToCurrentOpenApiSpec,
@@ -31,3 +33,9 @@ export async function command() {
     process.exit(1);
   }
 }
+
+export default async ({ args, info }: CliCommandContext) => {
+  cli({ name: info.usage }, undefined, args);
+
+  await command();
+};

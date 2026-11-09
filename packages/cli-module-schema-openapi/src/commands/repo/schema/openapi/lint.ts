@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { cli } from 'cleye';
+import type { CliCommandContext } from '@backstage/cli-node';
 import {
   Spectral,
   Document,
@@ -122,3 +124,26 @@ export async function bulkCommand(
     console.log(chalk.green('Linted all files.'));
   }
 }
+
+export default async ({ args, info }: CliCommandContext) => {
+  const {
+    flags: { strict },
+    _: paths,
+  } = cli(
+    {
+      name: info.usage,
+      parameters: ['[paths...]'],
+      flags: {
+        strict: {
+          type: Boolean,
+          description:
+            'Fail on any linting severity messages, not just errors.',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
+  await bulkCommand(paths, { strict });
+};

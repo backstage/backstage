@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { cli } from 'cleye';
+import type { CliCommandContext } from '@backstage/cli-node';
 import { Project } from 'ts-morph';
 import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
 import fs from 'fs-extra';
@@ -117,3 +120,16 @@ function verifyIndex(pkg: string, packageJson?: BackstagePackageJson) {
     console.log('   ❌ Stop depending on @backstage/backend-tasks');
   }
 }
+
+export default async ({ args, info }: CliCommandContext) => {
+  const { _: paths } = cli(
+    {
+      name: info.usage,
+      parameters: ['[paths...]'],
+    },
+    undefined,
+    args,
+  );
+
+  await lint(paths);
+};

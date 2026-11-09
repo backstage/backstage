@@ -17,14 +17,14 @@
 import { categorizePackageDirs } from './categorizePackageDirs';
 import { targetPaths } from '@backstage/cli-common';
 import { resolvePackagePaths } from '../../lib/paths';
-import { runSqlExtraction } from './sql-reports';
-import { runCliExtraction } from './cli-reports';
+import { runSqlExtraction } from '../../lib/sql-reports';
+import { runCliExtraction } from '../../lib/cli-reports';
 import {
   runApiExtraction,
   buildDocs,
   createTemporaryTsConfig,
   generateTypeDeclarations,
-} from './api-reports/index';
+} from '../../lib/api-reports';
 
 type Options = {
   ci?: boolean;

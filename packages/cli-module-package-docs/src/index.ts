@@ -25,7 +25,7 @@ export default createCliModule({
       description: 'EXPERIMENTAL: Generate package documentation',
       experimental: true,
       execute: {
-        loader: () => import('./commands/package-docs/packageDocsCommand'),
+        loader: () => import('./commands/package-docs'),
       },
     });
   },

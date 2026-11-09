@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { cli } from 'cleye';
+import type { CliCommandContext } from '@backstage/cli-node';
 import fs from 'fs-extra';
 import { run, targetPaths } from '@backstage/cli-common';
 import chalk from 'chalk';
@@ -103,3 +106,36 @@ export async function command(opts: Options) {
     process.exit(1);
   }
 }
+
+export default async ({ args, info }: CliCommandContext) => {
+  const {
+    flags: { limit, workers, debug, excludeChecks },
+  } = cli(
+    {
+      name: info.usage,
+      flags: {
+        limit: {
+          type: String,
+          description: 'Maximum number of requests to send.',
+        },
+        workers: {
+          type: String,
+          description: 'Number of workers to use',
+          default: '2',
+        },
+        debug: {
+          type: Boolean,
+          description: `Enable debug mode, which will save cassettes to '.cassettes/{pluginId}.yml'`,
+        },
+        excludeChecks: {
+          type: String,
+          description: 'Exclude checks from schemathesis run',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
+  await command({ limit, workers, debug, excludeChecks });
+};

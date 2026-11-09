@@ -25,10 +25,10 @@ import type { Knex } from 'knex';
 import {
   FormattedReport,
   formatReports,
-  logApiReportInstructions,
-  logReportDiff,
   restoreReport,
-} from '../common';
+} from '../formatReports';
+import { logApiReportInstructions } from '../logApiReportInstructions';
+import { logReportDiff } from '../logReportDiff';
 
 interface SqlExtractionOptions {
   packageDirs: string[];

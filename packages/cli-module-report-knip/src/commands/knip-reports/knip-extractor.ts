@@ -19,7 +19,7 @@ import os from 'node:os';
 import { relative as relativePath, resolve as resolvePath } from 'node:path';
 import fs from 'fs-extra';
 import type { KnipConfig } from 'knip';
-import { createBinRunner } from '../util';
+import { createBinRunner } from '../../lib/util';
 import { logReportDiff } from '../../lib/logReportDiff';
 
 interface KnipExtractionOptions {

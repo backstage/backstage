@@ -24,7 +24,7 @@ export default createCliModule({
       path: ['type-deps'],
       description: 'Find inconsistencies in types of all packages and plugins',
       execute: {
-        loader: () => import('./commands/type-deps/typeDepsCommand'),
+        loader: () => import('./commands/type-deps'),
       },
     });
 
@@ -33,7 +33,7 @@ export default createCliModule({
       description:
         'Ensure your packages are using the correct peer dependency format.',
       execute: {
-        loader: () => import('./commands/peer-deps/peerDepsCommand'),
+        loader: () => import('./commands/peer-deps'),
       },
     });
 
@@ -41,8 +41,7 @@ export default createCliModule({
       path: ['generate-catalog-info'],
       description: 'Create or fix info yaml files for all backstage packages',
       execute: {
-        loader: () =>
-          import('./commands/generate-catalog-info/generateCatalogInfoCommand'),
+        loader: () => import('./commands/generate-catalog-info'),
       },
     });
 
@@ -51,10 +50,7 @@ export default createCliModule({
       description:
         'Lint backend plugin packages for legacy exports and make sure it conforms to the new export pattern',
       execute: {
-        loader: () =>
-          import(
-            './commands/lint-legacy-backend-exports/lintLegacyBackendExportsCommand'
-          ),
+        loader: () => import('./commands/lint/legacy-backend-exports'),
       },
     });
   },

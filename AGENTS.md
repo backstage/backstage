@@ -31,6 +31,8 @@ When writing or generating code, always match the existing coding style of each 
 
 When writing or generating tests, prefer fewer thorough tests with multiple assertions over many small tests. When using React Testing Library, prefer using `screen` and `.findBy*` queries over `waitFor`, and avoid adding test IDs to the implementation.
 
+In `packages/cli-module-*`, each command lives at `src/commands/<path-to-command>/<command>.ts`, or at `<command>/index.ts` with its helpers in sibling files. The command file holds the `cleye` flag parsing and the default export that `src/index.ts` loads. Any other shared code goes under `src/lib/`.
+
 ## Development Flow
 
 Before any of these commands can be run, you need to run `yarn install` in the project root.

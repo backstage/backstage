@@ -22,11 +22,12 @@ import {
 import os from 'node:os';
 import fs from 'fs-extra';
 import pLimit from 'p-limit';
-import { createBinRunner } from '../../util';
+import { createBinRunner } from '../util';
 import { CliHelpPage, CliModel } from './types';
 import { targetPaths } from '@backstage/cli-common';
 import { generateCliReport } from './generateCliReport';
-import { logApiReportInstructions, logReportDiff } from '../common';
+import { logApiReportInstructions } from '../logApiReportInstructions';
+import { logReportDiff } from '../logReportDiff';
 
 export function parseHelpPage(helpPageContent: string) {
   let usage: string | undefined;

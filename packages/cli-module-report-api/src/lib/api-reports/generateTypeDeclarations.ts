@@ -17,8 +17,8 @@
 import fs from 'fs-extra';
 import { run, ExitCodeError } from '@backstage/cli-common';
 import { targetPaths } from '@backstage/cli-common';
-import { waitForExitOrSignal } from '../../../lib/waitForExitOrSignal';
-import { requireProjectTool } from '../../../lib/projectTools';
+import { waitForExitOrSignal } from '../waitForExitOrSignal';
+import { requireProjectTool } from '../projectTools';
 
 /**
  * Generates the TypeScript declaration files for the specified project, using the provided `tsconfig.json` file.

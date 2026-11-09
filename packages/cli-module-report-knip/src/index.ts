@@ -24,7 +24,7 @@ export default createCliModule({
       path: ['knip-reports'],
       description: 'Generate a knip report for selected packages',
       execute: {
-        loader: () => import('./commands/knip-reports/knipReportsCommand'),
+        loader: () => import('./commands/knip-reports'),
       },
     });
   },

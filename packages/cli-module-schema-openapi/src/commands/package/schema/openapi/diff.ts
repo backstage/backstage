@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { cli } from 'cleye';
+import type { CliCommandContext } from '@backstage/cli-node';
 import chalk from 'chalk';
 import { relative as relativePath, sep, posix } from 'node:path';
 import { DEFAULT_BASE_REF } from '../../../../lib/openapi/constants';
 import { getPathToCurrentOpenApiSpec } from '../../../../lib/openapi/helpers';
-import { ensureOasdiffInstalled } from '../../../util';
+import { ensureOasdiffInstalled } from '../../../../lib/util';
 import { targetPaths } from '@backstage/cli-common';
 import { runOutputWithStderr } from '../../../../lib/runOutputWithStderr';
 import { SignalTerminatedError } from '../../../../lib/waitForExitOrSignal';
@@ -90,3 +93,31 @@ export async function command(opts: Options) {
     process.exit(1);
   }
 }
+
+export default async ({ args, info }: CliCommandContext) => {
+  const {
+    flags: { ignore, json, since },
+  } = cli(
+    {
+      name: info.usage,
+      flags: {
+        ignore: {
+          type: Boolean,
+          description: 'Ignore linting failures and only log the results.',
+        },
+        json: {
+          type: Boolean,
+          description: 'Output the results as JSON',
+        },
+        since: {
+          type: String,
+          description: 'Diff the API against a specific ref',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
+  await command({ ignore, json, since });
+};
