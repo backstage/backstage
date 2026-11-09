@@ -1,16 +1,11 @@
+# Compares catalog performance timings against the baseline recorded on master
+# by verify_catalog-performance-baseline.yml.
+#
+# SECURITY: this workflow runs PR code. Never switch it to pull_request_target
+# and never grant it write permissions or secrets; it must stay on
+# `pull_request` with `contents: read` only. Results go to the job summary.
 name: Catalog Performance
 on:
-  # Runs on master record the timing baseline that pull requests compare against
-  push:
-    branches:
-      - master
-    paths:
-      - '.github/workflows/verify_catalog-performance.yml'
-      - 'plugins/catalog-backend/**'
-      - 'plugins/catalog-node/**'
-      - 'plugins/catalog-common/**'
-      - 'packages/catalog-model/**'
-      - 'packages/backend-test-utils/**'
   pull_request:
     paths:
       - '.github/workflows/verify_catalog-performance.yml'
@@ -22,7 +17,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
 
 permissions: {}
 
@@ -91,22 +86,7 @@ jobs:
           BACKSTAGE_TEST_DATABASE_POSTGRES18_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres18.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_POSTGRES14_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres14.ports[5432] }}
 
-      # Master saves its timings to the Actions cache. Caches created on the
-      # default branch are readable from pull requests, and this needs no
-      # permissions beyond contents: read.
-      - name: stage baseline
-        if: github.event_name == 'push'
-        run: cp "$RUNNER_TEMP/perf/current.jsonl" "$RUNNER_TEMP/perf/baseline.jsonl"
-
-      - name: save baseline
-        if: github.event_name == 'push'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
-        with:
-          path: ${{ runner.temp }}/perf/baseline.jsonl
-          key: catalog-perf-baseline-${{ github.sha }}
-
       - name: restore baseline
-        if: github.event_name == 'pull_request'
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ runner.temp }}/perf/baseline.jsonl
@@ -114,5 +94,4 @@ jobs:
           restore-keys: catalog-perf-baseline-
 
       - name: compare against master
-        if: github.event_name == 'pull_request'
         run: node scripts/compare-catalog-performance.js "$RUNNER_TEMP/perf/current.jsonl" "$RUNNER_TEMP/perf/baseline.jsonl"
