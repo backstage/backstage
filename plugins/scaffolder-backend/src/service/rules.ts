@@ -33,6 +33,26 @@ import { z } from 'zod/v3';
 import { JsonObject, JsonPrimitive } from '@backstage/types';
 import { get, toPath } from 'lodash';
 
+/**
+ * Matches action ID segments belonging to the source code hosting
+ * integrations whose identifiers are accepted as either numbers or the
+ * equivalent numeric strings.
+ *
+ * When adding a scaffolder backend module that registers actions for another
+ * integration, decide whether its identifiers have this property and extend
+ * this pattern and `INTEGRATION_IDENTIFIER_PROPERTIES` accordingly. Modules
+ * that are not accounted for are caught by the classification test in
+ * `rules.test.ts`.
+ */
+const INTEGRATION_ACTION_SEGMENT_PATTERN =
+  /^(?:gitlab|github|bitbucket(?:Cloud|Server)?)$/u;
+const INTEGRATION_IDENTIFIER_PROPERTIES: readonly string[] = [
+  'owner',
+  'repoName',
+  'projectId',
+  'repoUrl',
+];
+
 export const createTemplatePermissionRule = makeCreatePermissionRule<
   TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
   {},
@@ -76,29 +96,31 @@ export const hasActionId = createActionPermissionRule({
 
 export const hasBooleanProperty = buildHasProperty({
   name: 'HAS_BOOLEAN_PROPERTY',
+  valueKind: 'boolean',
   valueSchema: z.boolean(),
 });
 export const hasNumberProperty = buildHasProperty({
   name: 'HAS_NUMBER_PROPERTY',
+  valueKind: 'number',
   valueSchema: z.number(),
 });
 export const hasStringProperty = buildHasProperty({
   name: 'HAS_STRING_PROPERTY',
+  valueKind: 'string',
   valueSchema: z.string(),
 });
 
 function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
   name,
+  valueKind,
   valueSchema,
   validateProperty = true,
 }: {
   name: string;
+  valueKind: 'boolean' | 'number' | 'string';
   valueSchema: Schema;
   validateProperty?: boolean;
 }) {
-  const matchesNumberValues = valueSchema instanceof z.ZodNumber;
-  const matchesStringValues = valueSchema instanceof z.ZodString;
-
   return createActionPermissionRule({
     name,
     description: `Allow actions with the specified property`,
@@ -116,11 +138,11 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
       const property = toPath(key).join('.');
       const actionSegments = resource.action.split(':');
       const integration = actionSegments.find(segment =>
-        /^(?:gitlab|github|bitbucket(?:Cloud|Server)?)$/u.test(segment),
+        INTEGRATION_ACTION_SEGMENT_PATTERN.test(segment),
       );
       const isIntegrationProperty =
         integration !== undefined &&
-        (['owner', 'repoName', 'projectId', 'repoUrl'].includes(property) ||
+        (INTEGRATION_IDENTIFIER_PROPERTIES.includes(property) ||
           (actionSegments.includes('group') && property === 'path'));
 
       // Some integration identifiers, such as GitLab project and group IDs,
@@ -130,12 +152,12 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
       // policies match regardless of which form the input uses.
       if (isIntegrationProperty) {
         if (
-          matchesNumberValues &&
+          valueKind === 'number' &&
           typeof foundValue === 'string' &&
           /^\d+$/u.test(foundValue)
         ) {
           foundValue = Number(foundValue);
-        } else if (matchesStringValues && typeof foundValue === 'number') {
+        } else if (valueKind === 'string' && typeof foundValue === 'number') {
           foundValue = String(foundValue);
         }
       }
