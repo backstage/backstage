@@ -279,17 +279,26 @@ function isObject(value: unknown): value is Schema {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+// A schema that declares a property, and whether it applies unconditionally
+// (the root and its allOf entries) or only as one of several alternatives
+// (anyOf/oneOf entries).
+type Declaration = {
+  schema: Schema;
+  unconditional: boolean;
+};
+
 // Collects own properties of a schema: top-level `properties` plus those of
 // inline (non-$ref) allOf/anyOf/oneOf entries. A property is required if any
-// schema that applies unconditionally (the root and its allOf entries) lists
-// it, regardless of which of them declares it. Properties of array items are
-// not described.
+// schema that applies unconditionally lists it, regardless of which of them
+// declares it. All declarations of the same property are merged into one
+// field, and the properties of array items are described under the path of
+// the array, which is how the catalog addresses them in queries.
 function collectProperties(
   schema: Schema,
   prefix: string,
   depth: number,
 ): FieldEntry[] {
-  const props: Array<[string, Schema]> = [];
+  const declarations = new Map<string, Declaration[]>();
   const requiredNames = new Set<string>();
   const visit = (s: unknown, unconditional: boolean) => {
     if (!isObject(s) || '$ref' in s) {
@@ -301,7 +310,12 @@ function collectProperties(
     if (isObject(s.properties)) {
       for (const [name, prop] of Object.entries(s.properties)) {
         if (isObject(prop)) {
-          props.push([name, prop]);
+          const existing = declarations.get(name);
+          if (existing) {
+            existing.push({ schema: prop, unconditional });
+          } else {
+            declarations.set(name, [{ schema: prop, unconditional }]);
+          }
         }
       }
     }
@@ -317,63 +331,139 @@ function collectProperties(
   visit(schema, true);
 
   const entries: FieldEntry[] = [];
-  const seen = new Set<string>();
-  for (const [name, prop] of props) {
+  for (const [name, decls] of declarations) {
     if (!prefix && BASE_FIELDS.has(name)) {
       continue;
     }
     const path = prefix ? `${prefix}.${name}` : name;
-    if (seen.has(path)) {
-      continue;
-    }
-    seen.add(path);
-    if (typeof prop.$ref === 'string') {
-      // Referenced definitions are not resolved, but the field must still show
-      entries.push({
-        path,
-        lines: [
-          `* "${path}" (${
-            requiredNames.has(name) ? 'required, ' : ''
-          }reference to "${prop.$ref}")`,
-        ],
-      });
-      continue;
-    }
-    entries.push(describeProperty(path, prop, requiredNames.has(name)));
+    entries.push(describeProperty(path, decls, requiredNames.has(name)));
     if (depth + 1 < MAX_FIELD_DEPTH) {
-      entries.push(...collectProperties(prop, path, depth + 1));
+      // Nested properties of all declarations, and of their array items, are
+      // collected as one schema so that they are merged in the same way
+      const nested: Declaration[] = decls.flatMap(d =>
+        isObject(d.schema.items)
+          ? [d, { schema: d.schema.items, unconditional: d.unconditional }]
+          : [d],
+      );
+      entries.push(
+        ...collectProperties(
+          {
+            allOf: nested.filter(d => d.unconditional).map(d => d.schema),
+            anyOf: nested.filter(d => !d.unconditional).map(d => d.schema),
+          },
+          path,
+          depth + 1,
+        ),
+      );
     }
   }
   return entries;
 }
 
+// Merges a facet, such as the types or allowed values, across declarations.
+// Every unconditional declaration narrows the facet further, while the
+// alternatives widen it, unless one of them leaves it unrestricted. Returns
+// undefined if the facet is unrestricted.
+function mergeFacet<T>(
+  decls: Declaration[],
+  facetOf: (schema: Schema) => T[] | undefined,
+): T[] | undefined {
+  const key = (value: T) => JSON.stringify(value);
+  let result: T[] | undefined;
+  for (const decl of decls.filter(d => d.unconditional)) {
+    const values = facetOf(decl.schema);
+    if (values) {
+      result = result
+        ? result.filter(r => values.some(v => key(v) === key(r)))
+        : values;
+    }
+  }
+  const alternatives = decls
+    .filter(d => !d.unconditional)
+    .map(d => facetOf(d.schema));
+  if (alternatives.length && alternatives.every(Boolean)) {
+    const union = [
+      ...new Map(
+        alternatives.flatMap(values => values ?? []).map(v => [key(v), v]),
+      ).values(),
+    ];
+    result = result
+      ? result.filter(r => union.some(v => key(v) === key(r)))
+      : union;
+  }
+  return result;
+}
+
+function typesOf(schema: Schema): string[] | undefined {
+  if (Array.isArray(schema.type)) {
+    return schema.type.filter((t: unknown) => typeof t === 'string');
+  }
+  return typeof schema.type === 'string' ? [schema.type] : undefined;
+}
+
+function allowedValuesOf(schema: Schema): unknown[] | undefined {
+  if (Array.isArray(schema.enum)) {
+    return schema.enum;
+  }
+  return 'const' in schema ? [schema.const] : undefined;
+}
+
+function refsOf(decls: Declaration[]): string[] {
+  return [
+    ...new Set(
+      decls
+        .map(d => d.schema.$ref)
+        .filter((ref): ref is string => typeof ref === 'string'),
+    ),
+  ];
+}
+
 function describeProperty(
   path: string,
-  prop: Schema,
+  decls: Declaration[],
   required: boolean,
 ): FieldEntry {
-  let type: string = Array.isArray(prop.type)
-    ? prop.type.join(' | ')
-    : prop.type ?? 'unknown';
-  if (prop.type === 'array' && isObject(prop.items) && prop.items.type) {
-    const itemType = Array.isArray(prop.items.type)
-      ? prop.items.type.join(' | ')
-      : prop.items.type;
-    type = `array of ${itemType}`;
+  // Referenced definitions are not resolved, but the field must still show
+  const refs = refsOf(decls);
+  const types = mergeFacet(decls, typesOf);
+  let type: string | undefined = types?.join(' | ');
+  if (types?.length === 1 && types[0] === 'array') {
+    const items: Declaration[] = decls.flatMap(d =>
+      isObject(d.schema.items)
+        ? [{ schema: d.schema.items, unconditional: d.unconditional }]
+        : [],
+    );
+    const itemTypes = mergeFacet(items, typesOf);
+    const itemRefs = refsOf(items);
+    if (itemTypes?.length) {
+      type = `array of ${itemTypes.join(' | ')}`;
+    } else if (itemRefs.length) {
+      type = `array of ${itemRefs.map(r => `reference to "${r}"`).join(', ')}`;
+    }
   }
-  const parts = [type];
+  if (!type && !refs.length) {
+    type = 'unknown';
+  }
+
+  const parts = type ? [type] : [];
   if (required) {
     parts.push('required');
   }
-  if (Array.isArray(prop.enum)) {
-    parts.push(
-      `one of ${prop.enum.map((v: unknown) => JSON.stringify(v)).join(', ')}`,
-    );
-  } else if ('const' in prop) {
-    parts.push(`const ${JSON.stringify(prop.const)}`);
+  parts.push(...refs.map(ref => `reference to "${ref}"`));
+  const values = mergeFacet(decls, allowedValuesOf);
+  if (values) {
+    const usesEnum = decls.some(d => Array.isArray(d.schema.enum));
+    if (!values.length) {
+      parts.push('no allowed values');
+    } else if (values.length === 1 && !usesEnum) {
+      parts.push(`const ${JSON.stringify(values[0])}`);
+    } else {
+      parts.push(`one of ${values.map(v => JSON.stringify(v)).join(', ')}`);
+    }
   }
-  const description =
-    typeof prop.description === 'string' ? prop.description : undefined;
+  const description = decls
+    .map(d => d.schema.description)
+    .find((d): d is string => typeof d === 'string');
   return {
     path,
     lines: [

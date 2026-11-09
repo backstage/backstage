@@ -183,6 +183,35 @@ function createModelWithKinds(
   };
 }
 
+// Builds a model with a single Widget kind whose spec schema is decided by a
+// callback for each version
+function createModelWithSpecSchema(
+  versions: TestVersion[],
+  specSchemaFor: (version: TestVersion) => Record<string, any>,
+): CatalogModel {
+  const names = { kind: 'Widget', singular: 'widget', plural: 'widgets' };
+  return {
+    listKinds: () => [{ description: 'The Widget kind', names, versions }],
+    listRelations: () => [],
+    getMetadata: () => ({ annotations: [], labels: [], tags: [] }),
+    getKind: ({ apiVersion, spec }) => ({
+      description: 'The Widget kind',
+      apiVersions: [apiVersion],
+      names,
+      relationFields: [],
+      jsonSchema: {
+        properties: {
+          spec: specSchemaFor({
+            apiVersion,
+            specType: typeof spec?.type === 'string' ? spec.type : undefined,
+          }),
+        },
+      },
+    }),
+    getRelations: () => undefined,
+  };
+}
+
 async function describeModel(testModel: CatalogModel): Promise<string> {
   const mockActionsRegistry = actionsRegistryServiceMock();
   createGetCatalogModelDescriptionAction({
@@ -308,6 +337,101 @@ describe('createGetCatalogModelDescriptionAction', () => {
     expect(description).not.toContain('"metadata.name" (');
     expect(description).not.toContain('"apiVersion" (');
     expect(description).not.toContain('hiddenFromBase');
+  });
+
+  it('should merge every declaration of a field', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
+        type: 'object',
+        allOf: [
+          // Required in a sibling of the entry that declares the properties
+          { required: ['owner', 'team'] },
+          {
+            properties: {
+              owner: { type: 'string' },
+              team: { $ref: '#/definitions/Team' },
+              mode: { type: 'string', description: 'The mode.' },
+            },
+          },
+          {
+            properties: {
+              // Stacked on the declaration above, narrowing it to an enum
+              mode: { enum: ['fast', 'slow'] },
+              team: { description: 'The owning team.' },
+            },
+          },
+        ],
+        anyOf: [
+          { properties: { variant: { type: 'string', enum: ['a'] } } },
+          { properties: { variant: { type: 'string', enum: ['b'] } } },
+        ],
+        properties: {
+          endpoints: {
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['url'],
+              properties: {
+                url: { type: 'string' },
+                port: { type: 'number' },
+              },
+            },
+          },
+          refs: { type: 'array', items: { $ref: '#/definitions/Ref' } },
+        },
+      })),
+    );
+
+    expect(description).toContain('* "spec.owner" (string, required)');
+    expect(description).toContain(
+      '* "spec.team" (required, reference to "#/definitions/Team"): The owning team.',
+    );
+    expect(description).toContain(
+      '* "spec.mode" (string, one of "fast", "slow"): The mode.',
+    );
+    // Alternatives widen the allowed values
+    expect(description).toContain('* "spec.variant" (string, one of "a", "b")');
+    // Properties of array items are addressed through the array path
+    expect(description).toContain('* "spec.endpoints" (array of object)');
+    expect(description).toContain('* "spec.endpoints.url" (string, required)');
+    expect(description).toContain('* "spec.endpoints.port" (number)');
+    expect(description).toContain(
+      '* "spec.refs" (array of reference to "#/definitions/Ref")',
+    );
+    // Every field is described once
+    expect(description.match(/"spec.mode"/g)).toHaveLength(1);
+    expect(description.match(/"spec.team"/g)).toHaveLength(1);
+    expect(description.match(/"spec.variant"/g)).toHaveLength(1);
+  });
+
+  it('should not group versions that differ only in a stacked constraint', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema(
+        [{ apiVersion: 'example.com/v1' }, { apiVersion: 'example.com/v2' }],
+        ({ apiVersion }) => ({
+          type: 'object',
+          allOf: [
+            { properties: { mode: { type: 'string' } } },
+            {
+              properties: {
+                mode: {
+                  enum:
+                    apiVersion === 'example.com/v1'
+                      ? ['fast']
+                      : ['fast', 'slow'],
+                },
+              },
+            },
+          ],
+        }),
+      ),
+    );
+
+    expect(description.match(/#### Fields/g)).toHaveLength(2);
+    expect(description).toContain('* "spec.mode" (string, one of "fast")');
+    expect(description).toContain(
+      '* "spec.mode" (string, one of "fast", "slow")',
+    );
   });
 
   it('should emit one field block per distinct schema and group identical ones', async () => {
