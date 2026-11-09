@@ -23,12 +23,9 @@
 export type {
   ResolvedSecret,
   SecretProvider,
-  SecretProviderRegistry,
   SecretProviderResolveRequest,
   SecretReference,
   SecretsResolveOptions,
   SecretsService,
 } from './types';
 export { secretProviderServiceRef, secretsServiceRef } from './service';
-export { DefaultSecretsService } from './DefaultSecretsService';
-export type { DefaultSecretsServiceOptions } from './DefaultSecretsService';

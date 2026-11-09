@@ -98,7 +98,7 @@ export interface SecretProvider {
  * The registry is built once per plugin scope from the set of registered
  * providers, rejecting duplicate ids so the resolver only has to route by id.
  *
- * @public
+ * @internal
  */
 export interface SecretProviderRegistry {
   /** Returns the provider registered under the given id, if any. */

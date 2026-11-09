@@ -26,7 +26,7 @@ import type {
 /**
  * Options for {@link DefaultSecretsService.create}.
  *
- * @public
+ * @internal
  */
 export interface DefaultSecretsServiceOptions {
   /** The validated provider lookup this service routes through. */
@@ -46,7 +46,7 @@ export interface DefaultSecretsServiceOptions {
  * propagate unchanged, so keeping sensitive data out of error messages is the
  * provider's responsibility — see {@link SecretProvider.resolve}.
  *
- * @public
+ * @internal
  */
 export class DefaultSecretsService implements SecretsService {
   static create(options: DefaultSecretsServiceOptions): DefaultSecretsService {
