@@ -1,5 +1,37 @@
 # @backstage/frontend-plugin-api
 
+## 0.19.0-next.1
+
+### Minor Changes
+
+- d514e4d: **BREAKING**: Removed the deprecated `ExtensionFactoryMiddleware` type export. Import it from `@backstage/frontend-app-api` instead:
+
+  ```diff
+  -import type { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
+  +import type { ExtensionFactoryMiddleware } from '@backstage/frontend-app-api';
+  ```
+
+  Add `@backstage/frontend-app-api` as a dependency of your app package if it is not already declared. Middleware behavior is unchanged.
+
+- 62268a9: **BREAKING**: Removed the deprecated `AnalyticsImplementationBlueprint` and `AnalyticsImplementationFactory` exports. Import them from `@backstage/plugin-app-react` instead. No changes to their usage are needed beyond updating the imports.
+- 86ff5a3: Removed the deprecated `PageTab` and `PluginOptions` types. Use `PageLayoutTab` and `CreateFrontendPluginOptions` instead.
+- dafdab8: **BREAKING**: Removed the deprecated `withApis` export. Wrap class components in a function component that uses `useApi` instead:
+
+  ```tsx
+  import { errorApiRef, useApi } from '@backstage/frontend-plugin-api';
+  import { MyClassComponent, MyClassComponentProps } from './MyClassComponent';
+
+  export function MyComponent(props: Omit<MyClassComponentProps, 'errorApi'>) {
+    const errorApi = useApi(errorApiRef);
+    return <MyClassComponent {...props} errorApi={errorApi} />;
+  }
+  ```
+
+- e55a4a8: **BREAKING**: Removed the deprecated `FrontendPlugin.id` property from the public interface. Use `pluginId` instead. The runtime alias is retained for compatibility with older apps.
+- d84cf73: Removed the deprecated `DialogApi.show`, `DialogApi.showModal`, and `IconsApi.getIcon` methods. Use `DialogApi.open` with your own dialog presentation, and `IconsApi.icon` to retrieve icon elements.
+
+  The API references now use `core.dialog.v2` and `core.icons.v2`. Upgrade `@backstage/plugin-app` alongside this package, and update custom API implementations to use the new references.
+
 ## 0.18.3-next.0
 
 ### Patch Changes

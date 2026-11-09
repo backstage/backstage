@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.3.0-next.1
+
+### Minor Changes
+
+- ff0ef74: Added support for `when` conditions on parameter steps. Steps whose condition evaluates to false are skipped during validation, and their values are removed before the task runs. Also updated Nunjitsu to 0.7.0, with no change to existing templating behavior.
+
+### Patch Changes
+
+- 2fac95b: Group the Software Templates API documentation by functionality instead of placing all endpoints under "Untagged".
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@2.4.0-next.0
+  - @backstage/plugin-events-node@0.5.0-next.1
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+  - @backstage/plugin-scaffolder-node@0.13.9-next.1
+
 ## 4.2.2-next.0
 
 ### Patch Changes

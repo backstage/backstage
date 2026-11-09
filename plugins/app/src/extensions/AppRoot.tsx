@@ -16,6 +16,7 @@
 
 import {
   ComponentType,
+  Fragment,
   PropsWithChildren,
   ReactNode,
   useState,
@@ -133,9 +134,11 @@ export const AppRoot = createExtension({
             RouterComponent={inputs.router?.get(
               RouterBlueprint.dataRefs.component,
             )}
-            extraElements={inputs.elements?.map(el =>
-              el.get(coreExtensionData.reactElement),
-            )}
+            extraElements={inputs.elements?.map(el => (
+              <Fragment key={el.node.spec.id}>
+                {el.get(coreExtensionData.reactElement)}
+              </Fragment>
+            ))}
           >
             {content}
           </AppRouter>
@@ -224,6 +227,29 @@ function DefaultRouter(props: PropsWithChildren<{}>) {
 }
 
 /**
+ * Renders the app root elements in a single, fixed position, so that the
+ * number of elements never changes where the rest of the app sits in the
+ * React tree. Elements without a key are keyed by their position.
+ *
+ * Root elements can be added during app finalization, for example ones that
+ * are deferred with an `if` predicate. Rendering them inline would shift the
+ * app content to a new position and cause it to remount.
+ */
+function AppRootElements(props: { elements: Array<JSX.Element> }) {
+  return (
+    <>
+      {props.elements.map((element, index) =>
+        element.key === null ? (
+          <Fragment key={`element-${index}`}>{element}</Fragment>
+        ) : (
+          element
+        ),
+      )}
+    </>
+  );
+}
+
+/**
  * App router and sign-in page wrapper.
  *
  * @remarks
@@ -285,7 +311,7 @@ export function AppRouter(props: AppRouterProps) {
       <RouterComponent>
         <BUIProvider useAnalytics={useAnalytics}>
           <BreadcrumbsRegistryProvider>
-            {...extraElements}
+            <AppRootElements elements={extraElements} />
             <RouteTracker routeObjects={routeObjects} />
             {children}
           </BreadcrumbsRegistryProvider>
@@ -298,7 +324,7 @@ export function AppRouter(props: AppRouterProps) {
     <RouterComponent>
       <BUIProvider useAnalytics={useAnalytics}>
         <BreadcrumbsRegistryProvider>
-          {...extraElements}
+          <AppRootElements elements={extraElements} />
           <RouteTracker routeObjects={routeObjects} />
           <SignInPageWrapper
             component={SignInPageComponent}

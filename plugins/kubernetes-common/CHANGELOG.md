@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.15-next.1
+
+### Patch Changes
+
+- 68abde4: Allow AWS Kubernetes clusters to select credentials from a configured AWS account without assuming another role. Set `kubernetes.io/aws-account-id` in the cluster's auth metadata to use that account's credentials directly, including credentials obtained through web identity federation.
+
 ## 0.9.15-next.0
 
 ### Patch Changes

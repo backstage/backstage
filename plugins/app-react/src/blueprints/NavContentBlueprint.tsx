@@ -18,7 +18,6 @@ import { ComponentType } from 'react';
 import {
   AppNode,
   ExtensionBoundary,
-  IconComponent,
   IconElement,
   RouteRef,
   createExtensionBlueprint,
@@ -96,20 +95,6 @@ export interface NavContentComponentProps {
    * for placing specific items in specific positions.
    */
   navItems: NavContentNavItems;
-
-  /**
-   * Flat list of nav items for simple rendering. Use `navItems` for more
-   * control over item placement.
-   *
-   * @deprecated Use `navItems` instead.
-   */
-  items: Array<{
-    icon: IconComponent;
-    title: string;
-    routeRef: RouteRef<undefined>;
-    to: string;
-    text: string;
-  }>;
 }
 
 /**

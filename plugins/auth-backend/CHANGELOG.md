@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend
 
+## 0.30.3-next.1
+
+### Patch Changes
+
+- 97ee785: Allow Cursor clients to use Client ID Metadata Documents by default.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.8-next.1
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+
 ## 0.30.3-next.0
 
 ### Patch Changes

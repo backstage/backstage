@@ -44,7 +44,7 @@ describe('RouteTracker', () => {
       appNode: {
         spec: {
           extension: { id: 'home.page.index' },
-          plugin: { id: 'home' },
+          plugin: { pluginId: 'home' },
         },
       } as AppNode,
     },
@@ -57,7 +57,7 @@ describe('RouteTracker', () => {
       appNode: {
         spec: {
           extension: { id: 'plugin1.page.index' },
-          plugin: { id: 'plugin1' },
+          plugin: { pluginId: 'plugin1' },
         },
       } as AppNode,
     },
@@ -70,7 +70,7 @@ describe('RouteTracker', () => {
       appNode: {
         spec: {
           extension: { id: 'plugin2.page.index' },
-          plugin: { id: 'plugin2' },
+          plugin: { pluginId: 'plugin2' },
         },
       } as AppNode,
     },
@@ -82,6 +82,44 @@ describe('RouteTracker', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  it('keeps context for a nested empty-path extension without a route ref', () => {
+    const routes: BackstageRouteObject[] = [
+      {
+        ...routeObjects[1],
+        children: [
+          {
+            path: '',
+            caseSensitive: false,
+            element: <div />,
+            routeRefs: new Set(),
+            appNode: {
+              spec: {
+                plugin: { pluginId: 'catalog' },
+                extension: { id: 'entity-content:catalog/overview' },
+              },
+            } as AppNode,
+          },
+        ],
+      },
+    ];
+    render(
+      <MemoryRouter initialEntries={['/path/foo/bar']}>
+        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
+          <RouteTracker routeObjects={routes} />
+        </TestApiProvider>
+      </MemoryRouter>,
+    );
+    expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        attributes: { p1: 'foo', p2: 'bar' },
+        context: {
+          pluginId: 'catalog',
+          extensionId: 'entity-content:catalog/overview',
+        },
+      }),
+    );
   });
 
   it('should capture the navigate event on load', async () => {

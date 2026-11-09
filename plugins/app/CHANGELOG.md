@@ -1,5 +1,25 @@
 # @backstage/plugin-app
 
+## 0.6.0-next.1
+
+### Minor Changes
+
+- cedb355: The deprecated `DialogApi.show` and `DialogApi.showModal` methods now throw errors. Use `DialogApi.open` and provide your own dialog surface and dismissal handling.
+
+  Added support for the new icons API while preserving `IconsApi.getIcon` for older plugins.
+
+- 86681bf: Removed the ignored `anchorOrigin` option from the built-in alert display extension and toast display props. Remove this option from your extension configuration. Toasts continue to appear at the bottom center of the screen.
+- 24bde66: Custom navigation components now receive `navItems` without the deprecated flat `items` collection.
+
+### Patch Changes
+
+- e55a4a8: Updated plugin identity handling to use `pluginId`, while preserving support for older plugin instances that only expose `id`.
+- 8f36712: Updated the app runtime to use the analytics implementation APIs from `@backstage/plugin-app-react`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-app-react@0.3.0-next.1
+
 ## 0.5.5-next.0
 
 ### Patch Changes

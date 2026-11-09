@@ -21,12 +21,6 @@ import { targetPaths } from '@backstage/cli-common';
 const TEAM_ID_RE = /^@[-\w]+\/[-\w]+$/;
 const USER_ID_RE = /^@[-\w]+$/;
 const EMAIL_RE = /^[^@]+@[-.\w]+\.[-\w]+$/i;
-const DEFAULT_OWNER = '@backstage/maintainers';
-
-type CodeownersEntry = {
-  ownedPath: string;
-  ownerIds: string[];
-};
 
 export async function getCodeownersFilePath(
   rootDir: string,
@@ -88,50 +82,21 @@ export async function addCodeownersEntry(
     }
   }
 
-  const allLines = (await fs.readFile(filePath, 'utf8')).split('\n');
+  const rootDir = targetPaths.rootDir;
+  const relativePath = path.isAbsolute(ownedPath)
+    ? path.relative(rootDir, ownedPath)
+    : ownedPath;
+  const normalizedPath = `/${relativePath
+    .split(path.sep)
+    .flatMap(part => part.split('/'))
+    .filter(Boolean)
+    .join('/')}/`;
 
-  // Only keep comments from the top of the file
-  const commentLines = [];
-  for (const line of allLines) {
-    if (line[0] !== '#') {
-      break;
-    }
-    commentLines.push(line);
-  }
+  const content = await fs.readFile(filePath, 'utf8');
+  const separator = content.length === 0 || content.endsWith('\n') ? '' : '\n';
+  const newLine = [normalizedPath, ...ownerIds].join(' ');
 
-  const oldDeclarationEntries: CodeownersEntry[] = allLines
-    .filter(line => line[0] !== '#')
-    .map(line => line.split(/\s+/).filter(Boolean))
-    .filter(tokens => tokens.length >= 2)
-    .map(tokens => ({
-      ownedPath: tokens[0],
-      ownerIds: tokens.slice(1),
-    }));
-
-  const newDeclarationEntries = oldDeclarationEntries
-    .filter(entry => entry.ownedPath !== '*')
-    .concat([{ ownedPath, ownerIds }])
-    .sort((l1, l2) => l1.ownedPath.localeCompare(l2.ownedPath));
-  newDeclarationEntries.unshift({
-    ownedPath: '*',
-    ownerIds: [DEFAULT_OWNER],
-  });
-
-  // Calculate longest path to be able to align entries nicely
-  const longestOwnedPath = newDeclarationEntries.reduce(
-    (length, entry) => Math.max(length, entry.ownedPath.length),
-    0,
-  );
-
-  const newDeclarationLines = newDeclarationEntries.map(entry => {
-    const entryPath =
-      entry.ownedPath + ' '.repeat(longestOwnedPath - entry.ownedPath.length);
-    return [entryPath, ...entry.ownerIds].join(' ');
-  });
-
-  const newLines = [...commentLines, '', ...newDeclarationLines, ''];
-
-  await fs.writeFile(filePath, newLines.join('\n'), 'utf8');
+  await fs.writeFile(filePath, `${content}${separator}${newLine}\n`, 'utf8');
 
   return true;
 }

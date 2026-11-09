@@ -20,7 +20,6 @@ import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
-import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
@@ -84,39 +83,6 @@ export type AnalyticsEventAttributes = {
 // @public
 export type AnalyticsImplementation = {
   captureEvent(event: AnalyticsEvent): void;
-};
-
-// @public @deprecated
-export const AnalyticsImplementationBlueprint: ExtensionBlueprint_2<{
-  kind: 'analytics';
-  params: <TDeps extends { [name in string]: unknown }>(
-    params: AnalyticsImplementationFactory<TDeps>,
-  ) => ExtensionBlueprintParams_2<AnalyticsImplementationFactory<{}>>;
-  output: ExtensionDataRef_2<
-    AnalyticsImplementationFactory<{}>,
-    'core.analytics.factory',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    factory: ConfigurableExtensionDataRef_2<
-      AnalyticsImplementationFactory<{}>,
-      'core.analytics.factory',
-      {}
-    >;
-  };
-}>;
-
-// @public @deprecated (undocumented)
-export type AnalyticsImplementationFactory<
-  Deps extends {
-    [name in string]: unknown;
-  } = {},
-> = {
-  deps: TypesToApiRefs<Deps>;
-  factory(deps: Deps): AnalyticsImplementation;
 };
 
 // @public
@@ -987,20 +953,6 @@ export interface DialogApi {
       | JSX.Element
       | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
   ): DialogApiDialog<TResult>;
-  // @deprecated
-  show<TResult = void>(
-    elementOrComponent:
-      | JSX.Element
-      | ((props: {
-          dialog: DialogApiDialog<TResult | undefined>;
-        }) => JSX.Element),
-  ): DialogApiDialog<TResult | undefined>;
-  // @deprecated
-  showModal<TResult = void>(
-    elementOrComponent:
-      | JSX.Element
-      | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
-  ): DialogApiDialog<TResult>;
 }
 
 // @public
@@ -1017,7 +969,7 @@ export interface DialogApiDialog<TResult = void> {
 }
 
 // @public @deprecated
-export const dialogApiRef: ApiRef_2<DialogApi, 'core.dialog'> & {
+export const dialogApiRef: ApiRef_2<DialogApi, 'core.dialog.v2'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1356,18 +1308,6 @@ export type ExtensionDefinitionParameters = {
   params?: object | ExtensionBlueprintDefineParams;
 };
 
-// @public @deprecated (undocumented)
-export type ExtensionFactoryMiddleware = (
-  originalFactory: (contextOverrides?: {
-    config?: JsonObject;
-  }) => ExtensionDataContainer<ExtensionDataRef>,
-  context: {
-    node: AppNode;
-    apis: ApiHolder;
-    config?: JsonObject;
-  },
-) => Iterable<ExtensionDataValue<any, any>>;
-
 // @public (undocumented)
 export interface ExtensionInput<
   UExtensionData extends ExtensionDataRef<
@@ -1512,8 +1452,6 @@ export interface FrontendPlugin<
   // (undocumented)
   readonly externalRoutes: TExternalRoutes;
   readonly icon?: IconElement;
-  // @deprecated
-  readonly id: string;
   info(): Promise<FrontendPluginInfo>;
   readonly pluginId: string;
   // (undocumented)
@@ -1585,15 +1523,13 @@ export type IconElement = JSX_2.Element | null;
 
 // @public
 export interface IconsApi {
-  // @deprecated (undocumented)
-  getIcon(key: string): IconComponent | undefined;
   icon(key: string): IconElement | undefined;
   // (undocumented)
   listIconKeys(): string[];
 }
 
 // @public @deprecated
-export const iconsApiRef: ApiRef_2<IconsApi, 'core.icons'> & {
+export const iconsApiRef: ApiRef_2<IconsApi, 'core.icons.v2'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1965,9 +1901,6 @@ export interface PageLayoutTab {
   label: string;
 }
 
-// @public @deprecated (undocumented)
-export type PageTab = PageLayoutTab;
-
 // @public
 export type PendingOAuthRequest = {
   provider: AuthProviderInfo;
@@ -2000,18 +1933,6 @@ export const pluginHeaderActionsApiRef: ApiRef_2<
 > & {
   readonly $$type: '@backstage/ApiRef';
 };
-
-// @public @deprecated (undocumented)
-export type PluginOptions<
-  TId extends string,
-  TRoutes extends {
-    [name in string]: RouteRef | SubRouteRef;
-  },
-  TExternalRoutes extends {
-    [name in string]: ExternalRouteRef;
-  },
-  TExtensions extends readonly ExtensionDefinition[],
-> = CreateFrontendPluginOptions<TId, TRoutes, TExternalRoutes, TExtensions>;
 
 // @public
 export type PluginWrapperApi = {
@@ -2523,15 +2444,5 @@ export const vmwareCloudAuthApiRef: ApiRef_2<
   'core.auth.vmware-cloud'
 > & {
   readonly $$type: '@backstage/ApiRef';
-};
-
-// @public @deprecated
-export function withApis<T extends {}>(
-  apis: TypesToApiRefs<T>,
-): <TProps extends T>(
-  WrappedComponent: ComponentType<TProps>,
-) => {
-  (props: PropsWithChildren<Omit<TProps, keyof T>>): JSX_3.Element;
-  displayName: string;
 };
 ```

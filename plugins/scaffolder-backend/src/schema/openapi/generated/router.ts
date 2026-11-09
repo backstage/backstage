@@ -687,6 +687,16 @@ export const spec = {
                 description: {
                   type: 'string',
                 },
+                when: {
+                  oneOf: [
+                    {
+                      type: 'string',
+                    },
+                    {
+                      type: 'boolean',
+                    },
+                  ],
+                },
                 schema: {
                   type: 'object',
                 },

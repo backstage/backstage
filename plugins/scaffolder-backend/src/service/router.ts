@@ -53,6 +53,7 @@ import {
   templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import {
+  resolveParameterSteps,
   scaffolderActionPermissions,
   scaffolderTaskPermissions,
   scaffolderTemplatePermissions,
@@ -82,7 +83,7 @@ import {
   scaffolderTemplatePermissionResourceRef,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { HumanDuration, JsonObject } from '@backstage/types';
+import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import express from 'express';
 import { Duration } from 'luxon';
 import { pathToFileURL } from 'node:url';
@@ -234,6 +235,29 @@ async function validateSecrets(options: {
     errors: formatSecretsValidationErrors(result),
   });
   return false;
+}
+
+/**
+ * Validates the values against the parameter steps that are visible, and
+ * returns the values with those owned only by hidden steps removed.
+ */
+function validateParameterSteps(
+  template: TemplateEntityV1beta3,
+  values: Record<string, JsonValue>,
+): { result?: ValidatorResult; values: Record<string, JsonValue> } {
+  const parameters = [template.spec.parameters ?? []].flat();
+  const resolved = resolveParameterSteps(
+    values,
+    parameters.map(schema => ({ schema, when: schema.when })),
+  );
+  for (const [index, schema] of parameters.entries()) {
+    if (!resolved.visible[index]) continue;
+    const result = validate(values, schema);
+    if (!result.valid) {
+      return { result, values: resolved.values };
+    }
+  }
+  return { values: resolved.values };
 }
 
 function serializeTask(task: SerializedTask): SerializedTaskResponse {
@@ -496,11 +520,14 @@ export async function createRouter(
             ...(presentation ? { presentation } : {}),
             description: template.metadata.description,
             'ui:options': template.metadata['ui:options'],
-            steps: parameters.map(schema => ({
+            steps: parameters.map(({ when, ...schema }) => ({
               title:
                 (schema.title as string) ??
                 'Please enter the following information',
               description: schema.description as string,
+              ...(typeof when === 'string' || typeof when === 'boolean'
+                ? { when }
+                : {}),
               schema,
             })),
             formDecorators:
@@ -586,21 +613,20 @@ export async function createRouter(
           credentials,
         );
 
-        for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const result = validate(values, parameters);
+        const { result: validationResult, values: filteredValues } =
+          validateParameterSteps(template, values as Record<string, JsonValue>);
 
-          if (!result.valid) {
-            await auditorEvent?.fail({
-              // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
-              error: (AggregateError as any)(
-                result.errors,
-                'Could not create entity',
-              ),
-            });
+        if (validationResult) {
+          await auditorEvent?.fail({
+            // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+            error: (AggregateError as any)(
+              validationResult.errors,
+              'Could not create entity',
+            ),
+          });
 
-            res.status(400).json({ errors: result.errors });
-            return;
-          }
+          res.status(400).json({ errors: validationResult.errors });
+          return;
         }
 
         const secretsValid = await validateSecrets({
@@ -624,7 +650,7 @@ export async function createRouter(
           })),
           EXPERIMENTAL_recovery: template.spec.EXPERIMENTAL_recovery,
           output: template.spec.output ?? {},
-          parameters: values,
+          parameters: filteredValues,
           user: {
             entity: userEntity as UserEntity,
             ref: userEntityRef,
@@ -1069,24 +1095,27 @@ export async function createRouter(
           template.metadata.namespace || 'default'
         }/${template.metadata.name}`;
 
-        for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const result = validate(body.values, parameters);
-          if (!result.valid) {
-            await auditorEvent?.fail({
-              // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
-              error: (AggregateError as any)(
-                result.errors,
-                'Could not execute dry run',
-              ),
-              meta: {
-                templateRef: templateRef,
-                parameters: template.spec.parameters,
-              },
-            });
+        const { result: validationResult, values: dryRunFilteredValues } =
+          validateParameterSteps(
+            template,
+            body.values as Record<string, JsonValue>,
+          );
 
-            res.status(400).json({ errors: result.errors });
-            return;
-          }
+        if (validationResult) {
+          await auditorEvent?.fail({
+            // TODO(Rugvip): Seems like there aren't proper types for AggregateError yet
+            error: (AggregateError as any)(
+              validationResult.errors,
+              'Could not execute dry run',
+            ),
+            meta: {
+              templateRef: templateRef,
+              parameters: template.spec.parameters,
+            },
+          });
+
+          res.status(400).json({ errors: validationResult.errors });
+          return;
         }
 
         const secretsValid = await validateSecrets({
@@ -1125,7 +1154,7 @@ export async function createRouter(
             apiVersion: template.apiVersion,
             steps,
             output: template.spec.output ?? {},
-            parameters: body.values as JsonObject,
+            parameters: dryRunFilteredValues as JsonObject,
             user: {
               entity: userEntity as UserEntity,
               ref: userEntityRef,

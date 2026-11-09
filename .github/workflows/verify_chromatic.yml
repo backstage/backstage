@@ -26,7 +26,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node-version: [22.x]
+        node-version: [24.x]
 
     name: Chromatic
     steps:
@@ -44,7 +44,7 @@ jobs:
       - name: Use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 22.23.4
+          node-version: 24.22.1
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: Install dependencies
@@ -57,7 +57,7 @@ jobs:
 
       - name: Run Chromatic
         id: chromatic
-        uses: chromaui/action@8e6c25f2af5570e4a0ed34674569c345d545ac4a # latest
+        uses: chromaui/action@1efa9d9b64308fe98fcf1eb4629f12639ffac902 # latest
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks

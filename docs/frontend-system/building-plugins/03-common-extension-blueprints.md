@@ -61,7 +61,7 @@ Translation extension provide custom translation messages for the app. They can 
 
 Nav content extensions allow you to replace the entire navbar with your own component. They are always attached to the app nav extension.
 
-Your custom component receives a `navItems` prop—a collection with `take(id)` and `rest()` methods for placing specific items in custom positions. Nav items are auto-discovered from page extensions, and metadata (title, icon) comes from page config, nav item extensions, or plugin defaults. Use `navItems.take('page:home')` to take a specific item by extension ID, and `navItems.rest()` to get all remaining items. The deprecated `items` prop (a flat list) remains supported for backward compatibility.
+Your custom component receives a `navItems` prop—a collection with `take(id)` and `rest()` methods for placing specific items in custom positions. Nav items are auto-discovered from page extensions, and metadata (title, icon) comes from page config, nav item extensions, or plugin defaults. Use `navItems.take('page:home')` to take a specific item by extension ID, and `navItems.rest()` to get all remaining items.
 
 ### Router - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.RouterBlueprint.html)
 

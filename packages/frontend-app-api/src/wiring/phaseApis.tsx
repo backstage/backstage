@@ -34,7 +34,6 @@ import {
   SubRouteRef,
   type AnyRouteRefParams,
   type AppNode,
-  type ExtensionFactoryMiddleware,
   type IdentityApi,
 } from '@backstage/frontend-plugin-api';
 import { matchRoutes } from 'react-router-dom';
@@ -55,6 +54,7 @@ import {
 } from './FrontendApiRegistry';
 import { type ExtensionPredicateContext } from './predicates';
 import { type ErrorCollector } from './createErrorCollector';
+import { type ExtensionFactoryMiddleware } from './types';
 
 // Helps delay callers from reaching out to the API before the app tree has been materialized
 export class AppTreeApiProxy implements AppTreeApi {
@@ -116,11 +116,14 @@ export class RouteResolutionApiProxy implements RouteResolutionApi {
   #delegate: RouteResolutionApi | undefined;
   #routeObjects: BackstageRouteObject[] | undefined;
 
-  private readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  private readonly routeBindings: Map<
+    ExternalRouteRef,
+    RouteRef | SubRouteRef | undefined
+  >;
   private readonly appBasePath: string;
 
   constructor(
-    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>,
+    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef | undefined>,
     appBasePath: string,
   ) {
     this.routeBindings = routeBindings;
@@ -229,7 +232,7 @@ export function createPhaseApis(options: {
   fallbackApis?: ApiHolder;
   includeConfigApi: boolean;
   appBasePath: string;
-  routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef | undefined>;
   staticFactories: AnyApiFactory[];
 }) {
   const appTreeApi = new AppTreeApiProxy(options.tree, options.appBasePath);

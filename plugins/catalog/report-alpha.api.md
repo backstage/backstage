@@ -160,8 +160,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'deleteEntity.deleteButtonTitle': 'Delete';
     readonly 'deleteEntity.dialogTitle': 'Are you sure you want to delete this entity?';
     readonly 'deleteEntity.actionButtonTitle': 'Delete entity';
-    readonly 'aboutCard.title': 'About';
     readonly 'aboutCard.unknown': 'unknown';
+    readonly 'aboutCard.title': 'About';
     readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'aboutCard.refreshButtonTitle': 'Schedule entity refresh';
     readonly 'aboutCard.editButtonTitle': 'Edit Metadata';

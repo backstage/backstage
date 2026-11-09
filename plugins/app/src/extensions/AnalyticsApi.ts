@@ -16,11 +16,11 @@
 
 import {
   analyticsApiRef,
-  AnalyticsImplementationBlueprint,
   ApiBlueprint,
   ApiRef,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
+import { AnalyticsImplementationBlueprint } from '@backstage/plugin-app-react';
 
 export const analyticsApi = ApiBlueprint.makeWithOverrides({
   name: 'analytics',
