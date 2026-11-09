@@ -31,6 +31,8 @@ export interface PlanNode {
   'Subplan Name'?: string;
   'Temp Read Blocks'?: number;
   'Temp Written Blocks'?: number;
+  'Shared Hit Blocks'?: number;
+  'Shared Read Blocks'?: number;
   'Actual Total Time'?: number;
   Plans?: PlanNode[];
   [key: string]: unknown;
@@ -181,4 +183,13 @@ export function summarizePlan(n: PlanNode, depth = 0): string {
   return [line, ...(n.Plans ?? []).map(c => summarizePlan(c, depth + 1))].join(
     '\n',
   );
+}
+
+/**
+ * The number of shared buffers the plan touched, from cache or from disk. The
+ * root node's counts include everything below it. Unlike timings, this does
+ * not depend on what happens to be cached, or on how busy the machine is.
+ */
+export function sharedBuffers(plan: PlanNode): number {
+  return (plan['Shared Hit Blocks'] ?? 0) + (plan['Shared Read Blocks'] ?? 0);
 }

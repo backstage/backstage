@@ -43,10 +43,11 @@ import {
   planLoops,
   planNodes,
   seqScansOn,
+  sharedBuffers,
   summarizePlan,
   topLevelSort,
 } from './lib/explain';
-import { measureRepeated } from './lib/measure';
+import { measureRepeated, recordBuffers } from './lib/measure';
 import { applyPlanCheckResult } from './lib/planFindings';
 
 /*
@@ -325,6 +326,10 @@ for (const databaseId of getPerformanceDatabaseIds()) {
       for (const q of queries.filter(isSelect)) {
         analyzed.push({ ...q, ...(await explain(knex, q)) });
       }
+      recordBuffers(
+        name,
+        analyzed.reduce((sum, q) => sum + sharedBuffers(q.plan), 0),
+      );
       await measureRepeated(name, fn, { warmups: 0 });
       return { result, queries: analyzed };
     }

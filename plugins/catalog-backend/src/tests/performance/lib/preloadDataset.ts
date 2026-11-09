@@ -24,8 +24,13 @@
  * 1. migrates the template database and seeds it with
  *    PERFORMANCE_DATASET_SIZE entities, unless its marker already matches;
  * 2. closes the template to connections, so it can be copied while tests run;
- * 3. if anything changed or the read copy is stale, runs ANALYZE on the
- *    template and recreates the read copy from it.
+ * 3. turns autovacuum off for the template's tables, so that statistics and
+ *    page visibility stay as they were when the dataset was prepared;
+ * 4. if the template changed, or has no statistics, runs ANALYZE with a high
+ *    statistics target. A template restored from a Postgres 18 dump keeps the
+ *    statistics from the dump, so that plans are the same between runs;
+ * 5. recreates the read copy if it is stale, and prewarms its tables and
+ *    indexes with pg_prewarm.
  *
  * Run it from the repository root, while no tests are running:
  *
@@ -44,6 +49,7 @@ import {
   DATASET_DATABASE,
   TEMPLATE_DATABASE,
   createDatabaseFromTemplate,
+  disableJit,
   getDatasetSize,
   getPerformanceDatabaseIds,
   markerMatches,
@@ -96,6 +102,51 @@ async function dropLeftoverClones(databaseId: TestDatabaseId, admin: Knex) {
   }
 }
 
+// Sampling more rows makes the statistics, and the plans chosen from them,
+// much less dependent on which rows ANALYZE happened to sample
+const STATISTICS_TARGET = 1000;
+
+async function hasStatistics(knex: Knex): Promise<boolean> {
+  const row = await knex('pg_stats')
+    .where({ schemaname: 'public', tablename: 'search' })
+    .first();
+  return Boolean(row);
+}
+
+async function disableAutovacuum(knex: Knex) {
+  const tables = await knex('pg_tables')
+    .where('schemaname', 'public')
+    .select('tablename');
+  for (const { tablename } of tables) {
+    await knex.raw(
+      'ALTER TABLE ?? SET (autovacuum_enabled = false, toast.autovacuum_enabled = false)',
+      [tablename],
+    );
+  }
+}
+
+async function analyze(knex: Knex) {
+  await knex.transaction(async trx => {
+    await trx.raw(`SELECT set_config('default_statistics_target', ?, true)`, [
+      String(STATISTICS_TARGET),
+    ]);
+    await trx.raw('ANALYZE');
+  });
+}
+
+/** Loads every table and index of the dataset into the buffer cache. */
+async function prewarm(databaseId: TestDatabaseId, knex: Knex) {
+  await knex.raw('CREATE EXTENSION IF NOT EXISTS pg_prewarm');
+  const { rows } = await knex.raw<{ rows: { prewarmed: string }[] }>(
+    `SELECT pg_prewarm(c.oid) AS prewarmed
+     FROM pg_class c
+     JOIN pg_namespace n ON n.oid = c.relnamespace
+     WHERE n.nspname IN ('public', 'pg_toast') AND c.relkind IN ('r', 'i', 't')`,
+  );
+  const blocks = rows.reduce((sum, r) => sum + Number(r.prewarmed), 0);
+  log(databaseId, `Prewarmed ${blocks} blocks of ${DATASET_DATABASE}`);
+}
+
 /** Migrates and seeds the template. Returns whether it changed. */
 async function prepareTemplate(
   databaseId: TestDatabaseId,
@@ -146,14 +197,18 @@ async function preload(databaseId: TestDatabaseId, size: number) {
         size,
       );
 
-    if (!copyIsCurrent) {
-      // Statistics are copied along with the data. A template restored from
-      // a dump has none, so analyze it whenever the copy is rebuilt.
-      log(databaseId, `Analyzing ${TEMPLATE_DATABASE}`);
-      await withDatabase(databaseId, TEMPLATE_DATABASE, template =>
-        template.raw('ANALYZE'),
-      );
-    }
+    await disableJit(admin, TEMPLATE_DATABASE);
+    await withDatabase(databaseId, TEMPLATE_DATABASE, async template => {
+      await disableAutovacuum(template);
+      // Statistics are copied along with the data. Dumps from before
+      // Postgres 18 have none, so those are analyzed after a restore.
+      if (templateChanged || !(await hasStatistics(template))) {
+        log(databaseId, `Analyzing ${TEMPLATE_DATABASE}`);
+        await analyze(template);
+      } else {
+        log(databaseId, `Keeping the statistics of ${TEMPLATE_DATABASE}`);
+      }
+    });
 
     // Postgres only copies a template that nothing is connected to. Refusing
     // connections keeps it that way while the tests copy it.
@@ -163,22 +218,25 @@ async function preload(databaseId: TestDatabaseId, size: number) {
 
     if (copyIsCurrent) {
       log(databaseId, `${DATASET_DATABASE} is up to date`);
-      return;
+    } else {
+      log(databaseId, `Creating ${DATASET_DATABASE} from ${TEMPLATE_DATABASE}`);
+      try {
+        await admin.raw('DROP DATABASE IF EXISTS ??', [DATASET_DATABASE]);
+        await createDatabaseFromTemplate(
+          admin,
+          DATASET_DATABASE,
+          TEMPLATE_DATABASE,
+        );
+      } catch (error) {
+        throw new ForwardedError(
+          `Could not recreate ${DATASET_DATABASE}; make sure no performance tests are running`,
+          error,
+        );
+      }
     }
-    log(databaseId, `Creating ${DATASET_DATABASE} from ${TEMPLATE_DATABASE}`);
-    try {
-      await admin.raw('DROP DATABASE IF EXISTS ??', [DATASET_DATABASE]);
-      await createDatabaseFromTemplate(
-        admin,
-        DATASET_DATABASE,
-        TEMPLATE_DATABASE,
-      );
-    } catch (error) {
-      throw new ForwardedError(
-        `Could not recreate ${DATASET_DATABASE}; make sure no performance tests are running`,
-        error,
-      );
-    }
+    await withDatabase(databaseId, DATASET_DATABASE, knex =>
+      prewarm(databaseId, knex),
+    );
   } finally {
     await admin.destroy();
   }

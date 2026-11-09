@@ -20,6 +20,25 @@ import { performance } from 'node:perf_hooks';
 
 const OPERATION_SUFFIX = ' [op]';
 
+const BUFFERS_SUFFIX = ' [buffers]';
+
+/**
+ * Records the number of shared buffers an operation touched, if
+ * `PERFORMANCE_RESULTS_FILE` is set. Written as `{"name": "<name> [buffers]",
+ * "value": 123}`. Unlike durations, buffer counts are stable between runs, so
+ * the comparison treats them as the main signal.
+ */
+export function recordBuffers(name: string, buffers: number) {
+  const resultsFile = process.env.PERFORMANCE_RESULTS_FILE;
+  if (resultsFile) {
+    mkdirSync(dirname(resultsFile), { recursive: true });
+    appendFileSync(
+      resultsFile,
+      `${JSON.stringify({ name: name + BUFFERS_SUFFIX, value: buffers })}\n`,
+    );
+  }
+}
+
 function recordOperation(name: string, durationMs: number) {
   const resultsFile = process.env.PERFORMANCE_RESULTS_FILE;
   if (resultsFile) {

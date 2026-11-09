@@ -29,7 +29,8 @@ work on their own copies of the template.
 - `PERFORMANCE_DATASET_SIZE`: number of entities to seed. Defaults to 500000.
 - `PERFORMANCE_RESULTS_FILE`: file that timings are appended to as JSON lines.
   The query battery records the median of five timed runs after one warm-up.
-  Suites that change data record a single run.
+  Suites that change data record a single run. Each battery scenario also
+  records the shared buffers its plans touched, as `<name> [buffers]`.
 - `PERFORMANCE_PLAN_CHECKS`: set to `report` to record query plan check
   violations in `PERFORMANCE_PLAN_FINDINGS_FILE` instead of failing the test.
   When unset, a violation fails the test. Correctness assertions, such as row
@@ -80,3 +81,18 @@ The `query-battery` jobs run with `PERFORMANCE_PLAN_CHECKS=report`, so query
 plan violations do not fail the job. The compare step adds them to the job
 summary under "Query plan findings": new findings first, and annotated as
 warnings, then known issues, then known issues that now pass.
+
+### Stable results
+
+Timings on shared runners are noisy, so the comparison treats the number of
+shared buffers a query touches as the main signal. Medians of repeated runs
+are flagged at 1.5x, and single runs and whole tests only above 3x. Findings
+are matched against the baseline ignoring numbers in the rule text.
+
+To keep plans and buffer counts the same between runs, the dataset script
+turns off automatic vacuuming on the dataset tables and JIT on the databases,
+analyzes with a statistics target of 1000, and loads the dataset into the
+buffer cache with `pg_prewarm`.
+A Postgres 18 snapshot keeps its statistics through the dump and restore.
+Earlier versions do not dump statistics, so the restored template is analyzed
+again, and plans can still differ slightly between runs there.

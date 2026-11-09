@@ -4,6 +4,14 @@
 # permissions beyond contents: read.
 name: Catalog Performance Baseline
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/verify_catalog-performance-baseline.yml'
+      - 'plugins/catalog-backend/**'
+      - 'plugins/catalog-node/**'
+      - 'plugins/catalog-common/**'
+      - 'packages/catalog-model/**'
+      - 'packages/backend-test-utils/**'
   push:
     branches:
       - master
@@ -172,7 +180,7 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ runner.temp }}/perf/dataset.dump
-          key: catalog-perf-dataset-v1-pg${{ matrix.pg }}-${{ hashFiles('plugins/catalog-backend/migrations/**', 'plugins/catalog-backend/src/tests/performance/lib/dataset.ts') }}
+          key: catalog-perf-dataset-v2-pg${{ matrix.pg }}-${{ hashFiles('plugins/catalog-backend/migrations/**', 'plugins/catalog-backend/src/tests/performance/lib/dataset.ts', 'plugins/catalog-backend/src/tests/performance/lib/preloadDataset.ts') }}
 
       # Restore with the tools inside the service container, so they match the server version
       - name: restore dataset into the template database
@@ -226,4 +234,4 @@ jobs:
           path: |
             ${{ runner.temp }}/perf/baseline.jsonl
             ${{ runner.temp }}/perf/baseline-plan-findings.jsonl
-          key: catalog-perf-battery-baseline-pg${{ matrix.pg }}-${{ github.sha }}
+          key: catalog-perf-battery-baseline-v2-pg${{ matrix.pg }}-${{ github.sha }}

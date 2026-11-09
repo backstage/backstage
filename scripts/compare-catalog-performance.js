@@ -31,9 +31,18 @@
 // that are not in the baseline, and known issues that now pass. Everything else
 // is collapsed.
 //
+// Buffer counts, recorded as `{ name: "<name> [buffers]", value }`, are the
+// main signal, since they do not depend on caching or machine load. Timings
+// are secondary: the median of repeated runs (an `[op]` timing with a buffer
+// count) is flagged at REGRESSION_RATIO, while single runs and whole-test
+// timings are only flagged at SINGLE_RUN_REGRESSION_RATIO.
+//
 // Environment:
 //   REGRESSION_RATIO       slowdown factor that counts as a regression (default 1.5)
 //   REGRESSION_MIN_MS      minimum absolute slowdown in ms to count (default 2000)
+//   SINGLE_RUN_REGRESSION_RATIO  the same, for single runs and whole tests (default 3)
+//   BUFFER_REGRESSION_RATIO      buffer count increase that counts (default 1.25)
+//   BUFFER_REGRESSION_MIN        minimum absolute buffer increase to count (default 1000)
 //   FAIL_ON_REGRESSION     set to "true" to exit non-zero on regressions
 //   GITHUB_STEP_SUMMARY    if set, a markdown report is appended to this file
 
@@ -41,6 +50,14 @@ const fs = require('node:fs');
 
 const ratioLimit = Number(process.env.REGRESSION_RATIO || 1.5);
 const minMs = Number(process.env.REGRESSION_MIN_MS || 2000);
+const singleRunRatioLimit = Number(
+  process.env.SINGLE_RUN_REGRESSION_RATIO || 3,
+);
+const bufferRatioLimit = Number(process.env.BUFFER_REGRESSION_RATIO || 1.25);
+const bufferMin = Number(process.env.BUFFER_REGRESSION_MIN || 1000);
+
+const BUFFERS_SUFFIX = ' [buffers]';
+const OPERATION_SUFFIX = ' [op]';
 
 function median(values) {
   const sorted = [...values].sort((a, b) => a - b);
@@ -55,8 +72,8 @@ function load(file) {
   }
   for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
     if (line.trim()) {
-      const { name, durationMs } = JSON.parse(line);
-      samples.set(name, [...(samples.get(name) ?? []), durationMs]);
+      const { name, durationMs, value } = JSON.parse(line);
+      samples.set(name, [...(samples.get(name) ?? []), value ?? durationMs]);
     }
   }
   // Use the median if a test was recorded more than once
@@ -74,7 +91,8 @@ function loadFindings(file) {
     .map(line => JSON.parse(line));
 }
 
-const findingKey = f => `${f.test}\n${f.rule}`;
+// Numbers in rules, such as loop counts and row counts, vary between runs
+const findingKey = f => `${f.test}\n${f.rule.replace(/\d+/g, '#')}`;
 
 const collapsed = (summary, body) =>
   [
@@ -172,32 +190,49 @@ function main() {
   }
 
   const regressedRows = [];
+  const regressedBufferRows = [];
   const otherRows = [];
+  const otherBufferRows = [];
   for (const [name, now] of [...current].sort()) {
+    const isBuffers = name.endsWith(BUFFERS_SUFFIX);
     const before = baseline.get(name);
     if (before === undefined) {
-      otherRows.push(`| ${name} | - | ${now} | new |`);
+      (isBuffers ? otherBufferRows : otherRows).push(
+        `| ${name} | - | ${now} | new |`,
+      );
       continue;
     }
     const ratio = now / before;
-    const regressed = ratio > ratioLimit && now - before > minMs;
+    let regressed;
+    if (isBuffers) {
+      regressed = ratio > bufferRatioLimit && now - before >= bufferMin;
+    } else {
+      const repeated =
+        name.endsWith(OPERATION_SUFFIX) &&
+        current.has(name.slice(0, -OPERATION_SUFFIX.length) + BUFFERS_SUFFIX);
+      regressed =
+        ratio > (repeated ? ratioLimit : singleRunRatioLimit) &&
+        now - before > minMs;
+    }
     const row = `| ${name} | ${before} | ${now} | ${ratio.toFixed(2)}x${
       regressed ? ' :warning: slower' : ''
     } |`;
     if (regressed) {
       console.log(
-        `::warning title=Catalog performance regression::${name} took ${now}ms, baseline ${before}ms (${ratio.toFixed(
-          2,
-        )}x)`,
+        `::warning title=Catalog performance regression::${name} ${
+          isBuffers ? 'touched' : 'took'
+        } ${now}${
+          isBuffers ? ' buffers' : 'ms'
+        }, baseline ${before} (${ratio.toFixed(2)}x)`,
       );
-      regressedRows.push(row);
+      (isBuffers ? regressedBufferRows : regressedRows).push(row);
     } else {
-      otherRows.push(row);
+      (isBuffers ? otherBufferRows : otherRows).push(row);
     }
   }
-  const regressions = regressedRows.length;
-  const tableHeader = [
-    '| Test | Baseline (ms) | Current (ms) | Change |',
+  const regressions = regressedRows.length + regressedBufferRows.length;
+  const tableHeader = (unit, kind = 'Test') => [
+    `| ${kind} | Baseline (${unit}) | Current (${unit}) | Change |`,
     '| --- | ---: | ---: | --- |',
   ];
 
@@ -215,18 +250,43 @@ function main() {
     '',
     baseline.size === 0
       ? '_No baseline found; showing current timings only._'
-      : `Flagged when slower by more than ${ratioLimit}x and ${minMs}ms. Timings are noisy on shared runners.`,
+      : `Timings are noisy on shared runners: medians of repeated runs are flagged at ${ratioLimit}x and ${minMs}ms, single runs at ${singleRunRatioLimit}x.`,
     '',
     ...(regressions + (planReport?.actionable ?? 0) === 0
       ? ['**No actionable changes.**', '']
       : []),
-    ...(regressions
-      ? ['### Timing regressions', '', ...tableHeader, ...regressedRows, '']
+    ...(regressedBufferRows.length
+      ? [
+          '### Buffer regressions',
+          '',
+          `Shared buffers touched, flagged at ${bufferRatioLimit}x and ${bufferMin} buffers.`,
+          '',
+          ...tableHeader('buffers'),
+          ...regressedBufferRows,
+          '',
+        ]
+      : []),
+    ...(regressedRows.length
+      ? [
+          '### Timing regressions',
+          '',
+          ...tableHeader('ms'),
+          ...regressedRows,
+          '',
+        ]
+      : []),
+    ...(otherBufferRows.length
+      ? [
+          collapsed(
+            `Buffer counts without a regression (${otherBufferRows.length})`,
+            [...tableHeader('buffers'), ...otherBufferRows],
+          ),
+        ]
       : []),
     ...(otherRows.length
       ? [
           collapsed(`Timings without a regression (${otherRows.length})`, [
-            ...tableHeader,
+            ...tableHeader('ms'),
             ...otherRows,
           ]),
         ]

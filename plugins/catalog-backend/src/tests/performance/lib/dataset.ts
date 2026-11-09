@@ -257,9 +257,10 @@ export async function cloneDataset(knex: Knex): Promise<Knex> {
 }
 
 /**
- * Runs `CREATE DATABASE target TEMPLATE source`. On Postgres 15 and later
- * this uses the file copy strategy, which is much faster for a large
- * template than the default of copying through the WAL.
+ * Runs `CREATE DATABASE target TEMPLATE source`, and turns JIT off in the
+ * copy. On Postgres 15 and later this uses the file copy strategy, which is
+ * much faster for a large template than the default of copying through the
+ * WAL.
  */
 export async function createDatabaseFromTemplate(
   admin: Knex,
@@ -276,6 +277,16 @@ export async function createDatabaseFromTemplate(
     target,
     source,
   ]);
+  await disableJit(admin, target);
+}
+
+/**
+ * Turns off JIT compilation for a database. Whether JIT kicks in depends on
+ * plan cost estimates and adds noise to timings, and per database settings
+ * are not carried over by CREATE DATABASE ... TEMPLATE.
+ */
+export async function disableJit(admin: Knex, database: string) {
+  await admin.raw('ALTER DATABASE ?? SET jit = off', [database]);
 }
 
 function parseConnectionString(
