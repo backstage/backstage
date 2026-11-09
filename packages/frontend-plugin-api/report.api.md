@@ -2263,7 +2263,7 @@ export const translationApiRef: ApiRef_2<TranslationApi, 'core.translation'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
-// @public (undocumented)
+// @public
 export type TranslationFunction<
   TMessages extends {
     [key in string]: string;
@@ -2345,7 +2345,7 @@ export interface TranslationRef<
   $$type: '@backstage/TranslationRef';
   <TKey extends TranslationMessageKey<TMessages>>(
     key: TKey,
-  ): TranslationRefTuple<TranslationMessageOptions<TMessages, TKey>>;
+  ): TranslationRefTuple<TranslationTupleOptions<TMessages, TKey>>;
   // (undocumented)
   id: TId;
   // (undocumented)

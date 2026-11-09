@@ -56,6 +56,7 @@ describe('createTranslationRef', () => {
         plain: 'Plain',
         interpolation: 'Hello {{name}}',
         formatted: '{{value, number}}',
+        plainCount: '{{count}} things',
         nested: '$t(interpolation)',
         deep: '$t(nested)',
         deeper: '$t(deep)',
@@ -74,6 +75,8 @@ describe('createTranslationRef', () => {
       ref('interpolation'),
       // @ts-expect-error Formatted messages require values.
       ref('formatted'),
+      // @ts-expect-error Count interpolation requires a value even without plural variants.
+      ref('plainCount'),
       // @ts-expect-error Nested messages inherit required values.
       ref('nested'),
       // @ts-expect-error Deeply nested values are checked too.
@@ -90,6 +93,7 @@ describe('createTranslationRef', () => {
       'nestedPlain',
       'interpolation',
       'formatted',
+      'plainCount',
       'nested',
       'deepest',
       'items',
@@ -100,6 +104,7 @@ describe('createTranslationRef', () => {
       ref('plain'),
       ref('interpolation'),
       ref('formatted'),
+      ref('plainCount'),
       ref('nested'),
       ref('items'),
       ref('widened'),
@@ -109,6 +114,7 @@ describe('createTranslationRef', () => {
       'plain',
       'interpolation',
       'formatted',
+      'plainCount',
       'nested',
       'items',
       'widened',

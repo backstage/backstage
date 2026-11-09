@@ -21,7 +21,7 @@ import {
 
 import {
   TranslationMessageKey,
-  TranslationMessageOptions,
+  TranslationTupleOptions,
 } from '../apis/definitions/TranslationApi';
 
 /** @public */
@@ -32,7 +32,7 @@ export interface TranslationRef<
   /** Selects a message key, checked against this ref's declared messages. */
   <TKey extends TranslationMessageKey<TMessages>>(
     key: TKey,
-  ): TranslationRefTuple<TranslationMessageOptions<TMessages, TKey>>;
+  ): TranslationRefTuple<TranslationTupleOptions<TMessages, TKey>>;
 
   $$type: '@backstage/TranslationRef';
 
@@ -173,7 +173,7 @@ export function createTranslationRef<
         ref: ref as unknown as TranslationRef,
         key,
       } as unknown as TranslationRefTuple<
-        TranslationMessageOptions<FlattenedMessages<TNestedMessages>, TKey>
+        TranslationTupleOptions<FlattenedMessages<TNestedMessages>, TKey>
       >),
     {
       $$type: '@backstage/TranslationRef' as const,
