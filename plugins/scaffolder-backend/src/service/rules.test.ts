@@ -25,6 +25,8 @@ import {
 } from './rules';
 import { SerializedTask } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import fs from 'fs-extra';
+import path from 'node:path';
 
 describe('hasTag', () => {
   describe('apply', () => {
@@ -556,5 +558,77 @@ describe('isTaskOwner', () => {
       key: 'created_by',
       values: ['user:default/user-1', 'user:default/user-2'],
     });
+  });
+});
+
+describe('integration identifier classification', () => {
+  it.each(['publish:gitea', 'publish:gerrit:review'])(
+    'does not normalize identifier aliases for %s',
+    action => {
+      expect(
+        hasNumberProperty.apply(
+          { action, input: { projectId: '42' } },
+          { key: 'projectId', value: 42 },
+        ),
+      ).toEqual(false);
+    },
+  );
+
+  it('classifies every in-repo scaffolder backend module', () => {
+    const pluginsDir = path.resolve(__dirname, '../../..');
+    if (!fs.existsSync(pluginsDir)) {
+      return;
+    }
+
+    // Modules whose integrations accept identifiers as either numbers or
+    // equivalent numeric strings, and are therefore covered by
+    // INTEGRATION_ACTION_SEGMENT_PATTERN in rules.ts. Their registered action
+    // namespaces are gitlab, github, bitbucket, bitbucketCloud and
+    // bitbucketServer.
+    const modulesWithIdentifierAliases = [
+      'scaffolder-backend-module-bitbucket-cloud',
+      'scaffolder-backend-module-bitbucket-server',
+      'scaffolder-backend-module-gitlab',
+      'scaffolder-backend-module-github',
+    ];
+    // Modules without number/numeric-string identifier aliases: gitea and
+    // gerrit identify repositories through parsed repoUrl strings, and the
+    // remaining modules do not register source code hosting actions.
+    const modulesWithoutIdentifierAliases = [
+      'scaffolder-backend-module-azure',
+      'scaffolder-backend-module-confluence-to-markdown',
+      'scaffolder-backend-module-cookiecutter',
+      'scaffolder-backend-module-gcp',
+      'scaffolder-backend-module-gerrit',
+      'scaffolder-backend-module-gitea',
+      'scaffolder-backend-module-notifications',
+      'scaffolder-backend-module-rails',
+      'scaffolder-backend-module-sentry',
+      'scaffolder-backend-module-workspace-database',
+      'scaffolder-backend-module-yeoman',
+    ];
+
+    const modules = fs
+      .readdirSync(pluginsDir)
+      .filter(name => name.startsWith('scaffolder-backend-module-'));
+
+    // A new scaffolder backend module must be classified here: if its
+    // integration accepts identifiers as both numbers and the equivalent
+    // numeric strings, extend INTEGRATION_ACTION_SEGMENT_PATTERN and
+    // INTEGRATION_IDENTIFIER_PROPERTIES in rules.ts and add it to
+    // modulesWithIdentifierAliases above; otherwise add it to
+    // modulesWithoutIdentifierAliases with a reason.
+    const unclassified = modules.filter(
+      name =>
+        !modulesWithIdentifierAliases.includes(name) &&
+        !modulesWithoutIdentifierAliases.includes(name),
+    );
+    expect(unclassified).toEqual([]);
+
+    const missing = [
+      ...modulesWithIdentifierAliases,
+      ...modulesWithoutIdentifierAliases,
+    ].filter(name => !modules.includes(name));
+    expect(missing).toEqual([]);
   });
 });
