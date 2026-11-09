@@ -133,9 +133,7 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=8192 --experimental-vm-modules
       PERFORMANCE_TEST: 1
       PERFORMANCE_DATABASE_IDS: POSTGRES_${{ matrix.pg }}
-      PERFORMANCE_RESULTS_FILE: ${{ runner.temp }}/perf/current.jsonl
       BACKSTAGE_TEST_DISABLE_DOCKER: 1
-      DATASET_DUMP: ${{ runner.temp }}/perf/dataset.dump
 
     name: Catalog Performance Baseline Query Battery (Postgres ${{ matrix.pg }})
     steps:
@@ -161,6 +159,8 @@ jobs:
       - name: configure database
         run: |
           mkdir -p "$RUNNER_TEMP/perf"
+          echo "PERFORMANCE_RESULTS_FILE=$RUNNER_TEMP/perf/current.jsonl" >> "$GITHUB_ENV"
+          echo "DATASET_DUMP=$RUNNER_TEMP/perf/dataset.dump" >> "$GITHUB_ENV"
           echo "PG_CONTAINER=${{ job.services.postgres.id }}" >> "$GITHUB_ENV"
           echo "BACKSTAGE_TEST_DATABASE_POSTGRES${{ matrix.pg }}_CONNECTION_STRING=postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}" >> "$GITHUB_ENV"
 
