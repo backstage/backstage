@@ -205,8 +205,12 @@ transformers:
 
 - a `UserTransformer`, invoked for each user that is returned from the API. It
   returns the `User` entity.
-- a `GroupTransformer`, invoked once with all the groups that are returned from
-  the API. It returns the `Group` entities.
+- a `GroupTransformer`, invoked with a list of groups. It returns one `Group`
+  entity for each of them. The scheduled refresh passes all the groups that are
+  returned from the API at once, but the [GitLab events](#events-support) pass a
+  single group at a time (for a group edit, the old and the new group in two
+  separate calls), and the provider then sets the `spec.parent` of the entity
+  itself. Don't rely on the list containing the whole group hierarchy.
 - a `GroupNameTransformer`, which returns the name of a group. It is used for the
   `metadata.name` and `spec.parent` of the `Group` entities and for the
   `spec.memberOf` of the `User` entities, so you can change the group names
