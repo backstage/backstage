@@ -16795,8 +16795,8 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-core@npm:^1.18.0, @stoplight/spectral-core@npm:^1.18.3, @stoplight/spectral-core@npm:^1.19.2, @stoplight/spectral-core@npm:^1.19.4, @stoplight/spectral-core@npm:^1.23.0":
-  version: 1.24.0
-  resolution: "@stoplight/spectral-core@npm:1.24.0"
+  version: 1.24.1
+  resolution: "@stoplight/spectral-core@npm:1.24.1"
   dependencies:
     "@scarf/scarf": "npm:^1.4.0"
     "@stoplight/better-ajv-errors": "npm:1.0.3"
@@ -16820,7 +16820,7 @@ __metadata:
     nimma: "npm:0.2.3"
     pony-cause: "npm:^1.1.1"
     tslib: "npm:^2.8.1"
-  checksum: 10/72fd3ce33a10e259314e2f293881e1fa851fcbf86874c8157edb1c165ee82812d54716c82e20ca22fcbacbda482d12e1d48005c65763b5a9c86e12a584c90052
+  checksum: 10/30619be7dbe6c0e74e1fd7ef4f808de266b407f7726b7d96714c671c0123e5733b19b740eda6db74cd49eb04538ae969503c36de731c3c9170488663227281a5
   languageName: node
   linkType: hard
 
