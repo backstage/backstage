@@ -28,6 +28,21 @@ work on their own copies of the template.
   database id.
 - `PERFORMANCE_DATASET_SIZE`: number of entities to seed. Defaults to 500000.
 - `PERFORMANCE_RESULTS_FILE`: file that timings are appended to as JSON lines.
+- `PERFORMANCE_PLAN_CHECKS`: set to `report` to record query plan check
+  violations in `PERFORMANCE_PLAN_FINDINGS_FILE` instead of failing the test.
+  When unset, a violation fails the test. Correctness assertions, such as row
+  counts, always fail.
+- `PERFORMANCE_PLAN_FINDINGS_FILE`: file that plan findings are appended to as
+  JSON lines of `{ test, rule, planSummary, known }`, in report mode.
+
+### Known plan issues
+
+A plan check that fails for a documented reason is passed `known: true` in
+`queryBattery.test.ts` and `orphanCleanup.test.ts`, next to a comment that
+explains the issue. In report mode, its violations are recorded with
+`known: true`. If it stops finding violations, a "now passing" finding is
+recorded, and the `known` flag should be removed. In strict mode, known issues
+fail the test like any other violation.
 
 ### Running locally
 
@@ -58,3 +73,8 @@ Actions cache, keyed on the catalog migrations and `lib/dataset.ts`. On a
 cache miss the leg seeds the dataset, then saves the dump. Timings are compared
 against a per-version baseline recorded on master by the
 `Catalog Performance Baseline` workflow.
+
+The `query-battery` jobs run with `PERFORMANCE_PLAN_CHECKS=report`, so query
+plan violations do not fail the job. The compare step adds them to the job
+summary under "Query plan findings": new findings first, and annotated as
+warnings, then known issues, then known issues that now pass.

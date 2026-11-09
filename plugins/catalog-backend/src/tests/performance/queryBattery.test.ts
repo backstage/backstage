@@ -35,15 +35,19 @@ import {
   PlanNode,
   captureQueries,
   correlatedSubPlans,
+  describeNode,
   explain,
   hasMaterializedCte,
   hasTempBuffers,
   indexesUsed,
+  planLoops,
   planNodes,
   seqScansOn,
+  summarizePlan,
   topLevelSort,
 } from './lib/explain';
 import { measure } from './lib/measure';
+import { applyPlanCheckResult } from './lib/planFindings';
 
 /*
  * Automated version of the manual battery in query-battery/queries.md. Each
@@ -76,6 +80,8 @@ if (readers !== `metadata.annotations.${DATASET_FIXTURES.readersAnnotation}`) {
  * "in the tens of thousands".
  */
 const MAX_SUBPLAN_LOOPS = 10_000;
+
+const KNOWN = { known: true };
 
 /** The permission predicate from queries.md, scenarios 15-19. */
 const permission: FilterPredicate = {
@@ -167,9 +173,12 @@ const noTempBuffers: PlanCheck = q =>
 
 const noPerRowSubPlans: PlanCheck = q =>
   correlatedSubPlans(q.plan)
-    .filter(n => loops(n) >= MAX_SUBPLAN_LOOPS)
+    .filter(n => planLoops(n) >= MAX_SUBPLAN_LOOPS)
     .map(
-      n => `correlated ${n['Subplan Name'] ?? 'SubPlan'} ran ${loops(n)} times`,
+      n =>
+        `correlated ${n['Subplan Name'] ?? 'SubPlan'} ran ${planLoops(
+          n,
+        )} times`,
     );
 
 const noNestedLoopWithSeqScanInner: PlanCheck = q =>
@@ -228,12 +237,8 @@ const globalChecks = (options?: { allowTempBuffers?: boolean }) => [
   noPerRowSubPlans,
 ];
 
-function loops(n: PlanNode): number {
-  return Number(n['Actual Loops'] ?? 1);
-}
-
 function totalRows(n: PlanNode): number {
-  return Number(n['Actual Rows'] ?? 0) * loops(n);
+  return Number(n['Actual Rows'] ?? 0) * planLoops(n);
 }
 
 function isInnerSeqScan(n: PlanNode): boolean {
@@ -257,45 +262,31 @@ function innerRelation(n: PlanNode): string {
   );
 }
 
-function describeNode(n: PlanNode): string {
-  return [
-    n['Node Type'],
-    n['Subplan Name'] ? `(${n['Subplan Name']})` : '',
-    n['Relation Name'] ? `on ${n['Relation Name']}` : '',
-    n['Index Name'] ? `using ${n['Index Name']}` : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
-}
-
-/** A compact, indented plan for failure messages. */
-function summarizePlan(n: PlanNode, depth = 0): string {
-  const cond = n['Index Cond'] ?? n.Filter;
-  const line = `${'  '.repeat(depth)}${describeNode(n)} (rows=${
-    n['Actual Rows']
-  } loops=${loops(n)}${cond ? ` cond=${String(cond).slice(0, 160)}` : ''})`;
-  return [line, ...(n.Plans ?? []).map(c => summarizePlan(c, depth + 1))].join(
-    '\n',
-  );
-}
-
+/**
+ * Runs the plan checks. Pass `known: true` for a documented known issue: it
+ * is reported separately in report mode, and flagged if it stops reproducing.
+ */
 function expectPlan(
   label: string,
   q: AnalyzedQuery | undefined,
   checks: PlanCheck[],
+  options?: { known?: boolean },
 ) {
   if (!q) {
     throw new Error(`${label}: query was not captured`);
   }
-  const violations = checks.flatMap(check => check(q));
-  if (violations.length) {
-    throw new Error(
-      `${label} plan violates: ${violations.join('; ')}\n` +
-        `Execution time: ${q.executionTimeMs}ms\n` +
-        `SQL: ${q.sql.slice(0, 2000)}\n` +
-        `Plan:\n${summarizePlan(q.plan)}`,
-    );
-  }
+  const planSummary = summarizePlan(q.plan);
+  applyPlanCheckResult({
+    test: expect.getState().currentTestName ?? label,
+    label,
+    violations: checks.flatMap(check => check(q)),
+    known: options?.known,
+    planSummary,
+    details:
+      `Execution time: ${q.executionTimeMs}ms\n` +
+      `SQL: ${q.sql.slice(0, 2000)}\n` +
+      `Plan:\n${planSummary}`,
+  });
 }
 
 // #endregion
@@ -532,8 +523,8 @@ for (const databaseId of getPerformanceDatabaseIds()) {
 
     // Known issue: query-battery/baseline.md, "Scenario 11", records a full
     // Parallel Seq Scan of both refresh_state and refresh_state_references on
-    // the replica. Remove `.failing` once the anti-join uses the index.
-    it.failing('11. orphan detection anti-join', async () => {
+    // the replica. Drop `known` once the anti-join uses the index.
+    it('11. orphan detection anti-join', async () => {
       const { rows, q } = await analyzeSql(
         `SELECT refresh_state.entity_id, refresh_state.entity_ref
          FROM refresh_state
@@ -545,18 +536,23 @@ for (const databaseId of getPerformanceDatabaseIds()) {
       );
       // Every generated entity has a parent reference
       expect(rows).toEqual([]);
-      expectPlan('anti-join', q, [
-        ...globalChecks(),
-        noSeqScanOn('refresh_state_references'),
-        usesIndex('refresh_state_references_target_entity_ref_idx'),
-      ]);
+      expectPlan(
+        'anti-join',
+        q,
+        [
+          ...globalChecks(),
+          noSeqScanOn('refresh_state_references'),
+          usesIndex('refresh_state_references_target_entity_ref_idx'),
+        ],
+        KNOWN,
+      );
     });
 
     // Known issue: query-battery/baseline.md, "Scenario 12", records that the
     // disjunction can't drive the query from either selective branch, so the
-    // ordered name scan runs correlated subplans per entity. Remove
-    // `.failing` once the branches drive the plan.
-    it.failing('12. ordered disjunction with selective branches', async () => {
+    // ordered name scan runs correlated subplans per entity. Drop
+    // `known` once the branches drive the plan.
+    it('12. ordered disjunction with selective branches', async () => {
       const workflows: FilterPredicate = {
         kind: 'subcomponent',
         'spec.type': 'workflow',
@@ -602,13 +598,18 @@ for (const databaseId of getPerformanceDatabaseIds()) {
           noSeqScanOn('final_entities'),
         ]);
       }
-      expectPlan('combined', single(combined.queries, isPage, 'page'), [
-        ...globalChecks(),
-        noSeqScanOn('final_entities'),
-        // "Tens of thousands of ordered candidates inspected to return
-        // approximately 2,000 rows"
-        maxOrderedCandidates(10_000),
-      ]);
+      expectPlan(
+        'combined',
+        single(combined.queries, isPage, 'page'),
+        [
+          ...globalChecks(),
+          noSeqScanOn('final_entities'),
+          // "Tens of thousands of ordered candidates inspected to return
+          // approximately 2,000 rows"
+          maxOrderedCandidates(10_000),
+        ],
+        KNOWN,
+      );
     });
 
     /**
@@ -686,8 +687,8 @@ for (const databaseId of getPerformanceDatabaseIds()) {
 
     // Known issue: query-battery/baseline.md, "Scenario 14: ordered scan with
     // a late cursor filter", records that the cursor is a filter rather than
-    // an index range condition. Remove `.failing` once it is a range.
-    it.failing('14. deep dataset page ordered by name', async () => {
+    // an index range condition. Drop `known` once it is a range.
+    it('14. deep dataset page ordered by name', async () => {
       const { datasetFilter, pageSize, boundaryOffset } = await deepPageShape();
       const [boundary] = await datasetFilter(
         knex('final_entities')
@@ -716,12 +717,20 @@ for (const databaseId of getPerformanceDatabaseIds()) {
       expect(entitiesResponseToObjects(result.items)).toHaveLength(pageSize);
       expect(result.pageInfo.nextCursor).toBeDefined();
 
-      expectPlan('page', single(queries, isPage, 'page'), [
-        ...globalChecks(),
-        noTopLevelSort,
-        // The cursor must be an index range condition, not a filter
-        indexCondition('search_key_value_entity_idx', /\bvalue\)?(::text)? > /),
-      ]);
+      expectPlan(
+        'page',
+        single(queries, isPage, 'page'),
+        [
+          ...globalChecks(),
+          noTopLevelSort,
+          // The cursor must be an index range condition, not a filter
+          indexCondition(
+            'search_key_value_entity_idx',
+            /\bvalue\)?(::text)? > /,
+          ),
+        ],
+        KNOWN,
+      );
     });
 
     // Scenarios 15-19: conditional permission filters. On Postgres, facets

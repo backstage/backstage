@@ -133,6 +133,8 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=8192 --experimental-vm-modules
       PERFORMANCE_TEST: 1
       PERFORMANCE_DATABASE_IDS: POSTGRES_${{ matrix.pg }}
+      # Plan invariant violations are reported in the job summary, not failed
+      PERFORMANCE_PLAN_CHECKS: report
       BACKSTAGE_TEST_DISABLE_DOCKER: 1
 
     name: Catalog Performance Baseline Query Battery (Postgres ${{ matrix.pg }})

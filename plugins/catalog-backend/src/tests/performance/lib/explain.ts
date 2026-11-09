@@ -154,3 +154,31 @@ export function topLevelSort(plan: PlanNode): boolean {
     node?.['Node Type'] === 'Sort' || node?.['Node Type'] === 'Incremental Sort'
   );
 }
+
+/** The number of times a node was executed. */
+export function planLoops(n: PlanNode): number {
+  return Number(n['Actual Loops'] ?? 1);
+}
+
+/** A short description of a node, such as `Index Scan on search using idx`. */
+export function describeNode(n: PlanNode): string {
+  return [
+    n['Node Type'],
+    n['Subplan Name'] ? `(${n['Subplan Name']})` : '',
+    n['Relation Name'] ? `on ${n['Relation Name']}` : '',
+    n['Index Name'] ? `using ${n['Index Name']}` : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
+/** A compact, indented plan for failure messages and reports. */
+export function summarizePlan(n: PlanNode, depth = 0): string {
+  const cond = n['Index Cond'] ?? n.Filter;
+  const line = `${'  '.repeat(depth)}${describeNode(n)} (rows=${
+    n['Actual Rows']
+  } loops=${planLoops(n)}${cond ? ` cond=${String(cond).slice(0, 160)}` : ''})`;
+  return [line, ...(n.Plans ?? []).map(c => summarizePlan(c, depth + 1))].join(
+    '\n',
+  );
+}

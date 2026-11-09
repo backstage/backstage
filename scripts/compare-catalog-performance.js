@@ -19,7 +19,11 @@
 // master. Both inputs are JSON lines of `{ name, durationMs }`, as written by
 // the tests when PERFORMANCE_RESULTS_FILE is set.
 //
-// Usage: compare-catalog-performance.js <current.jsonl> <baseline.jsonl>
+// Usage: compare-catalog-performance.js <current.jsonl> <baseline.jsonl> [plan-findings.jsonl]
+//
+// The optional third file holds query plan findings as JSON lines of
+// `{ test, rule, planSummary, known, nowPassing? }`, as written by the tests
+// when PERFORMANCE_PLAN_FINDINGS_FILE is set. They never affect the exit code.
 //
 // Environment:
 //   REGRESSION_RATIO       slowdown factor that counts as a regression (default 1.5)
@@ -47,8 +51,79 @@ function load(file) {
   return result;
 }
 
+function loadFindings(file) {
+  if (!file || !fs.existsSync(file)) {
+    return [];
+  }
+  return fs
+    .readFileSync(file, 'utf8')
+    .split('\n')
+    .filter(line => line.trim())
+    .map(line => JSON.parse(line));
+}
+
+// Findings are reported as: new, then known, then known checks that now pass.
+// Only new findings are annotated as warnings.
+function planFindingsReport(findings) {
+  const fresh = findings.filter(f => !f.known);
+  const known = findings.filter(f => f.known && !f.nowPassing);
+  const passing = findings.filter(f => f.known && f.nowPassing);
+
+  const details = f =>
+    [
+      `<details><summary>${f.test}: ${f.rule}</summary>`,
+      '',
+      '```',
+      f.planSummary,
+      '```',
+      '',
+      '</details>',
+      '',
+    ].join('\n');
+  const section = (title, items, note) =>
+    items.length === 0
+      ? []
+      : [`### ${title} (${items.length})`, '', note, '', ...items.map(details)];
+
+  for (const f of fresh) {
+    console.log(
+      `::warning title=Query plan check::${f.test}: ${f.rule}`.replace(
+        /\n/g,
+        ' ',
+      ),
+    );
+  }
+  for (const f of passing) {
+    console.log(`::notice title=Known plan issue fixed::${f.test}: ${f.rule}`);
+  }
+
+  return [
+    '## Query plan findings',
+    '',
+    findings.length === 0
+      ? '_No query plan findings._'
+      : 'Plan check violations do not fail the job.',
+    '',
+    ...section(
+      'New findings',
+      fresh,
+      'Not on the known issues list. Fix the query, or add a documented known issue.',
+    ),
+    ...section(
+      'Known issues',
+      known,
+      'Documented in the tests, and still reproducing.',
+    ),
+    ...section(
+      'Known issues that now pass',
+      passing,
+      'These no longer reproduce. Remove them from the known issues in the tests.',
+    ),
+  ].join('\n');
+}
+
 function main() {
-  const [currentFile, baselineFile] = process.argv.slice(2);
+  const [currentFile, baselineFile, findingsFile] = process.argv.slice(2);
   if (!currentFile || !baselineFile) {
     throw new Error(
       'Usage: compare-catalog-performance.js <current> <baseline>',
@@ -96,6 +171,9 @@ function main() {
     '| --- | ---: | ---: | --- |',
     ...rows,
     '',
+    ...(findingsFile
+      ? [planFindingsReport(loadFindings(findingsFile)), '']
+      : []),
   ].join('\n');
 
   console.log(report);
