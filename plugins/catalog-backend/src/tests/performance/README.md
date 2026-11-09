@@ -28,6 +28,8 @@ work on their own copies of the template.
   database id.
 - `PERFORMANCE_DATASET_SIZE`: number of entities to seed. Defaults to 500000.
 - `PERFORMANCE_RESULTS_FILE`: file that timings are appended to as JSON lines.
+  The query battery records the median of five timed runs after one warm-up.
+  Suites that change data record a single run.
 - `PERFORMANCE_PLAN_CHECKS`: set to `report` to record query plan check
   violations in `PERFORMANCE_PLAN_FINDINGS_FILE` instead of failing the test.
   When unset, a violation fails the test. Correctness assertions, such as row

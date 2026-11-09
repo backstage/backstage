@@ -46,7 +46,7 @@ import {
   summarizePlan,
   topLevelSort,
 } from './lib/explain';
-import { measure } from './lib/measure';
+import { measureRepeated } from './lib/measure';
 import { applyPlanCheckResult } from './lib/planFindings';
 
 /*
@@ -310,21 +310,22 @@ for (const databaseId of getPerformanceDatabaseIds()) {
     });
 
     /**
-     * Runs `fn`, timing only it under `name` (defaults to the test name), and
-     * returns the EXPLAIN ANALYZE results of every select it issued.
+     * Runs `fn` once untimed, returning the EXPLAIN ANALYZE results of every
+     * select it issued, then times five more runs and records the median under
+     * `name` (defaults to the test name). `fn` must be side effect free.
      */
     async function analyze<T>(
       fn: () => Promise<T>,
       name = expect.getState().currentTestName!,
     ): Promise<{ result: T; queries: AnalyzedQuery[] }> {
-      const { result, queries } = await captureQueries(knex, () =>
-        measure(name, fn),
-      );
+      // The captured run is the untimed warm-up for the timed runs below
+      const { result, queries } = await captureQueries(knex, fn);
       const analyzed: AnalyzedQuery[] = [];
       // explain runs ANALYZE, which executes the statement, so selects only
       for (const q of queries.filter(isSelect)) {
         analyzed.push({ ...q, ...(await explain(knex, q)) });
       }
+      await measureRepeated(name, fn, { warmups: 0 });
       return { result, queries: analyzed };
     }
 

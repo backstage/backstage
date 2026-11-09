@@ -20,6 +20,20 @@ import { performance } from 'node:perf_hooks';
 
 const OPERATION_SUFFIX = ' [op]';
 
+function recordOperation(name: string, durationMs: number) {
+  const resultsFile = process.env.PERFORMANCE_RESULTS_FILE;
+  if (resultsFile) {
+    mkdirSync(dirname(resultsFile), { recursive: true });
+    appendFileSync(
+      resultsFile,
+      `${JSON.stringify({
+        name: name.endsWith(OPERATION_SUFFIX) ? name : name + OPERATION_SUFFIX,
+        durationMs,
+      })}\n`,
+    );
+  }
+}
+
 /**
  * Times only `fn` and, if `PERFORMANCE_RESULTS_FILE` is set, appends the
  * duration to it as a JSON line in the same format as the whole-test timings
@@ -34,18 +48,33 @@ export async function measure<T>(
 ): Promise<T> {
   const startedAt = performance.now();
   const result = await fn();
-  const durationMs = Math.round(performance.now() - startedAt);
-
-  const resultsFile = process.env.PERFORMANCE_RESULTS_FILE;
-  if (resultsFile) {
-    mkdirSync(dirname(resultsFile), { recursive: true });
-    appendFileSync(
-      resultsFile,
-      `${JSON.stringify({
-        name: name.endsWith(OPERATION_SUFFIX) ? name : name + OPERATION_SUFFIX,
-        durationMs,
-      })}\n`,
-    );
-  }
+  recordOperation(name, Math.round(performance.now() - startedAt));
   return result;
+}
+
+/**
+ * Runs `fn` `runs` times and records the median duration under `<name> [op]`,
+ * like `measure`. Use only for side effect free operations. Warm-up runs come
+ * first and are neither timed nor recorded. Returns the result of the last
+ * run.
+ */
+export async function measureRepeated<T>(
+  name: string,
+  fn: () => Promise<T>,
+  options: { warmups?: number; runs?: number } = {},
+): Promise<T> {
+  const { warmups = 1, runs = 5 } = options;
+  for (let i = 0; i < warmups; i++) {
+    await fn();
+  }
+  const durations: number[] = [];
+  let result: T;
+  for (let i = 0; i < runs; i++) {
+    const startedAt = performance.now();
+    result = await fn();
+    durations.push(performance.now() - startedAt);
+  }
+  durations.sort((a, b) => a - b);
+  recordOperation(name, Math.round(durations[Math.floor(runs / 2)]));
+  return result!;
 }

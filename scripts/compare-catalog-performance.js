@@ -36,19 +36,25 @@ const fs = require('node:fs');
 const ratioLimit = Number(process.env.REGRESSION_RATIO || 1.5);
 const minMs = Number(process.env.REGRESSION_MIN_MS || 2000);
 
+function median(values) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
 function load(file) {
-  const result = new Map();
+  const samples = new Map();
   if (!fs.existsSync(file)) {
-    return result;
+    return samples;
   }
   for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
     if (line.trim()) {
       const { name, durationMs } = JSON.parse(line);
-      // Keep the fastest sample if a test was recorded more than once
-      result.set(name, Math.min(durationMs, result.get(name) ?? Infinity));
+      samples.set(name, [...(samples.get(name) ?? []), durationMs]);
     }
   }
-  return result;
+  // Use the median if a test was recorded more than once
+  return new Map([...samples].map(([name, values]) => [name, median(values)]));
 }
 
 function loadFindings(file) {
