@@ -29,7 +29,7 @@ import {
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
 import { EventsService } from '@backstage/plugin-events-node';
-import { WebhookProjectSchema, WebhookPushEventSchema } from '@gitbeaker/rest';
+import type { WebhookPushEventSchema } from '@gitbeaker/rest';
 import { randomUUID } from 'node:crypto';
 import {
   GitLabClient,
@@ -458,9 +458,13 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       return;
     }
 
+    // The event payload is untrusted input. The project record fetched above is
+    // the authoritative source for branch and location targets, so that a
+    // forged event can only ever affect the project it claims, never retarget
+    // the catalog at another location.
     const targetBranch =
       this.config.branch ??
-      event.project.default_branch ??
+      project.default_branch ??
       this.config.fallbackBranch;
 
     if (targetBranch && event.ref !== `refs/heads/${targetBranch}`) {
@@ -488,13 +492,10 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     );
 
     // Modified files will be scheduled to a refresh
-    const addedEntities = this.createLocationSpecCommittedFiles(
-      event.project,
-      added,
-    );
+    const addedEntities = this.createLocationSpecCommittedFiles(project, added);
 
     const removedEntities = this.createLocationSpecCommittedFiles(
-      event.project,
+      project,
       removed,
     );
 
@@ -511,28 +512,23 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     }
 
     if (modified.length > 0) {
-      const projectBranch =
-        this.config.branch ??
-        event.project.default_branch ??
-        this.config.fallbackBranch;
-
       // scheduling a refresh to both tree and blob (https://git-scm.com/book/en/v2/Git-Internals-Git-Objects)
       await this.connection.refresh({
         keys: [
           ...modified.map(
             filePath =>
-              `url:${event.project.web_url}/-/tree/${projectBranch}/${filePath}`,
+              `url:${project.web_url}/-/tree/${targetBranch}/${filePath}`,
           ),
           ...modified.map(
             filePath =>
-              `url:${event.project.web_url}/-/blob/${projectBranch}/${filePath}`,
+              `url:${project.web_url}/-/blob/${targetBranch}/${filePath}`,
           ),
         ],
       });
     }
 
     this.logger.info(
-      `Processed GitLab push event from ${event.project.web_url}: added ${added.length} - removed ${removed.length} - modified ${modified.length}`,
+      `Processed GitLab push event from ${project.web_url}: added ${added.length} - removed ${removed.length} - modified ${modified.length}`,
     );
   }
 
@@ -555,7 +551,8 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
 
     const matchingFiles = event.commits.flatMap((element: any) =>
       element[action].filter(
-        (file: string) => path.basename(file) === catalogFile,
+        (file: string) =>
+          path.basename(file) === catalogFile && this.isSafeCommittedPath(file),
       ),
     );
 
@@ -569,6 +566,29 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   }
 
   /**
+   * Checks whether a committed file path from an event payload can safely be
+   * interpolated into a location target or refresh key. Only plain relative
+   * paths that resolve within the fetched project are accepted; traversal or
+   * URL-shaped paths are dropped.
+   */
+  private isSafeCommittedPath(file: string): boolean {
+    if (
+      !file ||
+      file.startsWith('/') ||
+      file.includes('\\') ||
+      /[%?#]/.test(file)
+    ) {
+      return false;
+    }
+
+    return file
+      .split('/')
+      .every(
+        segment => segment.length > 0 && segment !== '.' && segment !== '..',
+      );
+  }
+
+  /**
    * Creates Backstage location specs for committed files.
    *
    * @param project - The GitLab project information.
@@ -576,7 +596,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
    * @returns An array of location specs.
    */
   private createLocationSpecCommittedFiles(
-    project: WebhookProjectSchema,
+    project: GitLabProject,
     addedFiles: string[],
   ): LocationSpec[] {
     const projectBranch =
