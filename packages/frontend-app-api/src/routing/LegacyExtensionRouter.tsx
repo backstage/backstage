@@ -32,14 +32,16 @@ import {
   sanitizeHref,
   type ReactRouterAdapterBindings,
 } from '@internal/frontend';
-import { useRouteResolution } from '../routing/useRouteResolution';
 import {
+  appHistoryApiRef,
   NavigationProvider,
+  useApi,
+  useApiHolder,
+  useRouteResolution,
+  type AppHistoryApi,
+  type AppNode,
   type Navigation,
-} from '../routing/NavigationProvider';
-import { useApi, useApiHolder } from '../apis/system';
-import type { AppNode } from '../apis/definitions/AppTreeApi';
-import { appHistoryApiRef, type AppHistoryApi } from '../routing/AppHistoryApi';
+} from '@backstage/frontend-plugin-api';
 
 /** Called by each navigation consumer, inside its own React Router route context. */
 function useLegacyNavigation(): Navigation {
@@ -75,7 +77,9 @@ function useLegacyNavigation(): Navigation {
   };
 }
 
-const LegacyPageRouterContext = createContext<AppNode | undefined>(undefined);
+const LegacyExtensionRouterContext = createContext<AppNode | undefined>(
+  undefined,
+);
 const warnedExtensions = new WeakMap<AppHistoryApi, Set<string>>();
 const bindings: ReactRouterAdapterBindings = {
   NavigationType,
@@ -88,13 +92,13 @@ const bindings: ReactRouterAdapterBindings = {
     UNSAFE_RouteContext as ReactRouterAdapterBindings['UNSAFE_RouteContext'],
 };
 
-/** Preserve existing new frontend pages while their owners adopt explicit adapters. */
-export function LegacyPageRouter(props: {
+/** Preserve implicit v6 routing around the complete output of a matched route-bearing extension. */
+export function LegacyExtensionRouter(props: {
   node: AppNode;
   children: ReactNode;
 }) {
   const { node, children } = props;
-  const parentNode = useContext(LegacyPageRouterContext);
+  const parentNode = useContext(LegacyExtensionRouterContext);
   const history = useApiHolder().get(appHistoryApiRef);
   const mounts = useRouteResolution().matches;
   const routePattern = mounts.at(-1)?.routePattern;
@@ -129,12 +133,12 @@ export function LegacyPageRouter(props: {
     return <>{children}</>;
   }
   return (
-    <LegacyPageRouterContext.Provider value={node}>
+    <LegacyExtensionRouterContext.Provider value={node}>
       <router.Router mounts={mounts}>
         <NavigationProvider useNavigation={useLegacyNavigation}>
           {children}
         </NavigationProvider>
       </router.Router>
-    </LegacyPageRouterContext.Provider>
+    </LegacyExtensionRouterContext.Provider>
   );
 }
