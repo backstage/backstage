@@ -3738,6 +3738,132 @@ describe('NunjucksWorkflowRunner', () => {
         expect.objectContaining({ input: { path: 42 } }),
       );
     });
+
+    it('denies path identifiers when the policy denies the project as a numeric string', async () => {
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'gitlab:projectAccessToken:create',
+          schema: {
+            input: {
+              projectId: z => z.union([z.string(), z.number()]),
+            },
+          },
+          handler: fakeActionHandler,
+        }),
+      );
+
+      mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          pluginId: 'scaffolder',
+          resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+          conditions: {
+            not: {
+              allOf: [
+                {
+                  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+                  rule: 'HAS_ACTION_ID',
+                  params: { actionId: 'gitlab:projectAccessToken:create' },
+                },
+                {
+                  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+                  rule: 'HAS_STRING_PROPERTY',
+                  params: { key: 'projectId', value: '42' },
+                },
+              ],
+            },
+          },
+        },
+      ]);
+
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'Create GitLab project access token',
+            action: 'gitlab:projectAccessToken:create',
+            input: { projectId: 'example/project' },
+          },
+        ],
+      });
+
+      const result = runner.execute(task).then(
+        () => true,
+        error => {
+          if (error?.name !== 'NotAllowedError') {
+            throw error;
+          }
+
+          return false;
+        },
+      );
+
+      await expect(result).resolves.toBe(false);
+      expect(fakeActionHandler).toHaveBeenCalledTimes(0);
+    });
+
+    it('allows digit-string identifiers other than the numeric identifiers the policy denies', async () => {
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'gitlab:projectAccessToken:create',
+          schema: {
+            input: {
+              projectId: z => z.union([z.string(), z.number()]),
+            },
+          },
+          handler: fakeActionHandler,
+        }),
+      );
+
+      mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          pluginId: 'scaffolder',
+          resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+          conditions: {
+            not: {
+              allOf: [
+                {
+                  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+                  rule: 'HAS_ACTION_ID',
+                  params: { actionId: 'gitlab:projectAccessToken:create' },
+                },
+                {
+                  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+                  rule: 'HAS_NUMBER_PROPERTY',
+                  params: { key: 'projectId', value: 42 },
+                },
+              ],
+            },
+          },
+        },
+      ]);
+
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'Create GitLab project access token',
+            action: 'gitlab:projectAccessToken:create',
+            input: { projectId: '7' },
+          },
+        ],
+      });
+
+      const result = runner.execute(task).then(
+        () => true,
+        error => {
+          if (error?.name !== 'NotAllowedError') {
+            throw error;
+          }
+
+          return false;
+        },
+      );
+
+      await expect(result).resolves.toBe(true);
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('step status check functions (always/failure)', () => {
