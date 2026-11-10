@@ -157,7 +157,7 @@ export interface Config {
      *
      * Clients without a `clientSecret` are public clients and must use PKCE.
      */
-    clients?: Array<{
+    staticClients?: Array<{
       /**
        * The client ID. Must be unique and must not be a URL.
        */

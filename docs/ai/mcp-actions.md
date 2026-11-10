@@ -239,7 +239,7 @@ Some MCP clients and integration platforms support neither CIMD nor Dynamic Clie
 
 ```yaml title="app-config.yaml"
 auth:
-  clients:
+  staticClients:
     - clientId: my-integration
       clientName: My Integration
       # Optional. Without a secret the client is public and must use PKCE.
@@ -255,7 +255,7 @@ auth:
 
 The client ID must be unique and must not be a URL. When configuring the client, use `<backend-url>/api/auth/v1/authorize` as the authorization URL and `<backend-url>/api/auth/v1/token` as the token URL. Prefer CIMD for clients that support it, and use pre-registered clients for those that don't.
 
-Removing a client from `auth.clients` and restarting the backend prevents its outstanding authorization codes and refresh tokens from being exchanged. Clients using HTTP Basic authentication must form-encode the client ID and secret before constructing the Basic credentials.
+Removing a client from `auth.staticClients` and restarting the backend prevents its outstanding authorization codes and refresh tokens from being exchanged. Clients using HTTP Basic authentication must form-encode the client ID and secret before constructing the Basic credentials.
 
 #### Migrating from Dynamic Client Registration
 

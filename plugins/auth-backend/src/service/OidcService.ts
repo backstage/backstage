@@ -144,28 +144,28 @@ function readStaticClients(
 ): Map<string, StaticClient> {
   const clients = new Map<string, StaticClient>();
 
-  for (const clientConfig of config.getOptionalConfigArray('auth.clients') ??
+  for (const clientConfig of config.getOptionalConfigArray('auth.staticClients') ??
     []) {
     const clientId = clientConfig.getString('clientId');
     if (URL.canParse(clientId)) {
       throw new Error(
-        `Invalid client ID '${clientId}' in auth.clients, client IDs must not be URLs`,
+        `Invalid client ID '${clientId}' in auth.staticClients, client IDs must not be URLs`,
       );
     }
     if (clients.has(clientId)) {
-      throw new Error(`Duplicate client ID '${clientId}' in auth.clients`);
+      throw new Error(`Duplicate client ID '${clientId}' in auth.staticClients`);
     }
 
     const redirectUris = clientConfig.getStringArray('redirectUris');
     if (redirectUris.length === 0) {
       throw new Error(
-        `Client '${clientId}' in auth.clients must have at least one redirect URI`,
+        `Client '${clientId}' in auth.staticClients must have at least one redirect URI`,
       );
     }
     for (const redirectUri of redirectUris) {
       if (!URL.canParse(redirectUri)) {
         throw new Error(
-          `Invalid redirect URI '${redirectUri}' for client '${clientId}' in auth.clients`,
+          `Invalid redirect URI '${redirectUri}' for client '${clientId}' in auth.staticClients`,
         );
       }
     }
