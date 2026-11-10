@@ -2,4 +2,4 @@
 '@backstage/frontend-defaults': patch
 ---
 
-Apps now release their browser history listener when the React root unmounts, avoiding retained listeners when apps are repeatedly created and discarded in tests or development tooling.
+Apps now release their browser history listener when the React root is removed or a hot refresh replaces the app within the existing root. Replacement apps restart their bootstrap flow, while StrictMode effect replay keeps the current app's history listener active.
