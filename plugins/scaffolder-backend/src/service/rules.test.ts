@@ -470,6 +470,37 @@ describe('hasStringProperty', () => {
     );
 
     it.each([
+      ['gitlab:issues:create', 'projectId', '042', '42'],
+      ['gitlab:issues:create', 'projectId', '42', '042'],
+      ['gitlab:group:access', 'path', '007', '7'],
+    ])(
+      'matches zero-padded digit identifiers, action=%s key=%s input=%s value=%s',
+      (action, key, inputValue, ruleValue) => {
+        expect(
+          hasStringProperty.apply(
+            { action, input: { [key]: inputValue } },
+            { key, value: ruleValue },
+          ),
+        ).toEqual(true);
+      },
+    );
+
+    it('does not match different digit identifiers', () => {
+      expect(
+        hasStringProperty.apply(
+          { action: 'gitlab:issues:create', input: { projectId: '042' } },
+          { key: 'projectId', value: '43' },
+        ),
+      ).toEqual(false);
+      expect(
+        hasNumberProperty.apply(
+          { action: 'gitlab:issues:create', input: { projectId: '042' } },
+          { key: 'projectId', value: 42 },
+        ),
+      ).toEqual(true);
+    });
+
+    it.each([
       ['custom:action', 'projectId', 42, '42'],
       ['gitlab:issues:create', 'title', 42, '42'],
       ['gitlab:projectAccessToken:create', 'projectId', 42, 'example/project'],
