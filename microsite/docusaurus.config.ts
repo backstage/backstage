@@ -349,6 +349,76 @@ const config: Config = {
             from: '/docs',
             to: '/docs/landing-page/doc-landing-page',
           },
+          // Annotation and status keys look like URLs (e.g. backstage.io/orphan) and
+          // get auto-linked in many tools, so send them to their docs
+          {
+            from: '/managed-by-location',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiomanaged-by-location',
+          },
+          {
+            from: '/managed-by-origin-location',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiomanaged-by-origin-location',
+          },
+          {
+            from: '/orphan',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioorphan',
+          },
+          {
+            from: '/techdocs-ref',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiotechdocs-ref',
+          },
+          {
+            from: '/techdocs-entity',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiotechdocs-entity',
+          },
+          {
+            from: '/techdocs-entity-path',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiotechdocs-entity-path',
+          },
+          {
+            from: '/view-url',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioview-url-backstageioedit-url',
+          },
+          {
+            from: '/edit-url',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioview-url-backstageioedit-url',
+          },
+          {
+            from: '/source-location',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiosource-location',
+          },
+          {
+            from: '/source-template',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiosource-template',
+          },
+          {
+            from: '/ldap-rdn',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioldap-rdn-backstageioldap-uuid-backstageioldap-dn',
+          },
+          {
+            from: '/ldap-uuid',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioldap-rdn-backstageioldap-uuid-backstageioldap-dn',
+          },
+          {
+            from: '/ldap-dn',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageioldap-rdn-backstageioldap-uuid-backstageioldap-dn',
+          },
+          {
+            from: '/code-coverage',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiocode-coverage',
+          },
+          {
+            from: '/github-actions-id',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiogithub-actions-id',
+          },
+          {
+            from: '/definition-at-location',
+            to: '/docs/features/software-catalog/well-known-annotations#backstageiodefinition-at-location',
+          },
+          {
+            from: '/catalog-processing',
+            to: '/docs/features/software-catalog/well-known-statuses#backstageiocatalog-processing',
+          },
           {
             from: '/docs/features/software-catalog/software-catalog-overview',
             to: '/docs/features/software-catalog/',

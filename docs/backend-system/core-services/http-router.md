@@ -68,6 +68,116 @@ For those routes you will also have to specify `allowLimitedAccess: true` when
 using the [`auth`](./auth.md) and [`httpAuth`](./http-auth.md) services to
 access the incoming credentials.
 
+## WebSocket upgrades
+
+Register an upgrade handler with an options object during plugin initialization.
+The path is relative to `/api/<plugin-id>`. Use `/` to register at the plugin base
+URL itself. Other paths match exactly and are case-sensitive. Query strings are
+ignored when matching; trailing slashes are significant. Path patterns are not
+supported. The first request can be a WebSocket upgrade.
+
+The handler receives one object containing Node's upgrade `request`, a raw
+`Duplex` `socket`, buffered `head`, and authentication metadata. Use a WebSocket
+library of your choice to complete the handshake, or forward the upgrade upstream. For example, with
+`ws`:
+
+```ts
+import { WebSocketServer } from 'ws';
+
+// Inside plugin initialization, with http, auth, lifecycle, and logger services.
+const server = new WebSocketServer({ noServer: true });
+
+http.addWebSocketHandler({
+  path: '/events',
+  handler({ request, socket, head, credentials }) {
+    server.handleUpgrade(request, socket, head, connection => {
+      if (auth.isPrincipal(credentials, 'user')) {
+        logger.info(
+          `WebSocket connected for ${credentials.principal.userEntityRef}`,
+        );
+      }
+      connection.on('error', error => {
+        logger.warn('WebSocket connection failed', error);
+        connection.terminate();
+      });
+      connection.on('message', (data, isBinary) => {
+        connection.send(data, { binary: isBinary });
+      });
+    });
+  },
+});
+
+lifecycle.addShutdownHook(() => {
+  for (const connection of server.clients) {
+    connection.terminate();
+  }
+  server.close();
+});
+```
+
+Add your chosen WebSocket library to your plugin's dependencies. In this example,
+`http`, `auth`, `lifecycle`, and `logger` come from `coreServices.httpRouter`,
+`coreServices.auth`, `coreServices.lifecycle`, and `coreServices.logger`. The plugin owns its WebSocket
+server, connection callbacks, protocol selection, and cleanup. The router only
+dispatches authenticated upgrades and owns the underlying transport lifetime.
+The example logs the user identity when available. Keep client tracking enabled when using `server.clients` for cleanup. Signals disables it
+because its connection manager already tracks and closes connections.
+
+`credentials` contains verified Backstage credentials, and
+`authProtocol` contains the verified token when it was also offered through the
+protocol header. The router does not select
+or echo a protocol on your behalf.
+
+The handler must accept, forward, or close the socket before returning.
+Thrown errors and rejected promises close the socket. The request retains its
+full URL, including `/api/<plugin-id>` and the query string.
+
+### Authentication policies
+
+WebSocket routes require authentication by default. The framework tries each
+comma-separated `Sec-WebSocket-Protocol` value in order until one authenticates.
+If none authenticates, it falls back to a Bearer token in the `Authorization`
+header. At most five candidates are allowed in total, counting protocol values
+and the bearer token; requests exceeding this limit are rejected before authentication.
+Tokens need not have a particular format. Browser clients cannot set
+`Authorization`, so pass the bearer token through the protocol list:
+
+```ts
+const connection = new WebSocket(url, [token]);
+```
+
+WebSocket routes require token authentication by default. Cookie authentication
+is not supported. Set `authPolicy: 'unauthenticated'` if the handler will manage
+authentication itself; the framework then supplies none credentials without
+validating tokens. HTTP rate limiting and request logging do not run for these
+routes either. The handler must provide any authentication, rate limiting, and
+request logging it needs. If it accepts cookies or other ambient credentials,
+it should validate the request origin to prevent cross-site WebSocket hijacking.
+
+### Routing and lifecycle
+
+Upgrades bypass Express middleware, including rate limiting and request logging. Cross-origin
+WebSockets do not require CORS response headers, and `backend.cors` does not apply
+to upgrades. Any additional origin restrictions are the handler's responsibility.
+Root-level WebSocket registrations use the same `{ path, handler }` shape but
+have no plugin authentication policy; their handler object contains only
+`request`, `socket`, and `head`. Root handlers must authenticate callers.
+
+Registering the first route installs one server-level upgrade listener. Duplicate
+paths are rejected. Unmatched upgrades receive a 404 response when this is the
+only upgrade listener; otherwise, they are left for the other listeners to handle.
+Multiple upgrade listeners produce a warning, including listeners registered
+lazily after startup. Migrate existing listeners to registered routes to avoid
+handling the same socket more than once. Workarounds that only handle upgrades
+through Express still need to migrate to this API.
+
+Plugin upgrades wait for startup using `backend.lifecycle.startupRequestPauseTimeout`
+(the default is five seconds). Upgrades receive HTTP 503 if startup times out or
+the plugin is shutting down. The framework checks readiness again after authentication.
+
+The router destroys tracked sockets during server shutdown. Plugins remain
+responsible for closing upstream proxy connections and resources they create.
+
 ## Rate limiting
 
 Rate limiting allows you to limit the amount of requests users can send to you backend.
@@ -133,6 +243,7 @@ import {
   createCredentialsBarrier,
   createAuthIntegrationRouter,
   createRateLimitMiddleware,
+  createWebSocketRouter,
 } from '@backstage/backend-defaults/httpRouter';
 import PromiseRouter from 'express-promise-router';
 import { Handler } from 'express';
@@ -152,6 +263,7 @@ backend.add(
       plugin: coreServices.pluginMetadata,
       config: coreServices.rootConfig,
       lifecycle: coreServices.lifecycle,
+      logger: coreServices.logger,
       rootHttpRouter: coreServices.rootHttpRouter,
       auth: coreServices.auth,
       httpAuth: coreServices.httpAuth,
@@ -163,6 +275,7 @@ backend.add(
       plugin,
       rootHttpRouter,
       lifecycle,
+      logger,
     }) {
       const router = PromiseRouter();
 
@@ -192,6 +305,14 @@ backend.add(
         use(handler: Handler): void {
           router.use(handler);
         },
+        addWebSocketHandler: createWebSocketRouter({
+          auth,
+          config,
+          lifecycle,
+          logger,
+          pluginId: plugin.getId(),
+          rootHttpRouter,
+        }),
         addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void {
           credentialsBarrier.addAuthPolicy(policy);
         },

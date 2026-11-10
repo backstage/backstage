@@ -39,6 +39,7 @@
 /packages/eslint-plugin                           @backstage/tooling-maintainers
 /packages/release-manifests                       @backstage/operations-maintainers
 /packages/repo-tools                              @backstage/tooling-maintainers
+/packages/secrets-node-internal                   @backstage/framework-maintainers @backstage/scaffolder-maintainers
 /packages/techdocs-cli                            @backstage/techdocs-maintainers
 /packages/techdocs-cli-embedded-app               @backstage/techdocs-maintainers
 /packages/ui                                      @backstage/design-system-maintainers

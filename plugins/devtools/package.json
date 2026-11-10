@@ -73,6 +73,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/lodash": "^4.14.151",

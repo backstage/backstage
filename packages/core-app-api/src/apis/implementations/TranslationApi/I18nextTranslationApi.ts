@@ -343,6 +343,10 @@ export class I18nextTranslationApi implements TranslationApi {
     return this.#createSnapshot(internalRef);
   }
 
+  /**
+   * Observes translation updates for the selected language. Pending loads from
+   * previous languages do not emit snapshots or errors to this subscription.
+   */
   translation$<TMessages extends { [key in string]: string }>(
     translationRef: TranslationRef<string, TMessages>,
   ): Observable<TranslationSnapshot<TMessages>> {
@@ -374,6 +378,7 @@ export class I18nextTranslationApi implements TranslationApi {
       };
 
       const onChange = () => {
+        loadTicket = {};
         const snapshot = this.#createSnapshot(internalRef);
         if (snapshot.ready) {
           subscriber.next(snapshot);
@@ -388,6 +393,7 @@ export class I18nextTranslationApi implements TranslationApi {
 
       this.#languageChangeListeners.add(onChange);
       return () => {
+        loadTicket = {};
         this.#languageChangeListeners.delete(onChange);
       };
     });

@@ -20,6 +20,7 @@ import {
   parseErrorResponseBody,
 } from '../serialization/response';
 import { ConsumedResponse } from './types';
+import { isErrorWithName } from './assertion';
 
 /**
  * An error thrown as the result of a failed server request.
@@ -29,6 +30,34 @@ import { ConsumedResponse } from './types';
  * @public
  */
 export class ResponseError extends Error {
+  /**
+   * Checks the error name and basic shape, including shallow checks of the
+   * response, body, cause, and status fields. Does not validate nested data.
+   * Works across package copies without requiring a shared constructor.
+   * A matching name is assumed to identify this error type.
+   *
+   * @example
+   * ```ts
+   * if (ResponseError.is(error)) {
+   *   console.log(error.statusCode, error.cause.message);
+   * }
+   * ```
+   */
+  static is(value: unknown): value is ResponseError {
+    return (
+      isErrorWithName(value, 'ResponseError') &&
+      typeof value.response === 'object' &&
+      value.response !== null &&
+      !Array.isArray(value.response) &&
+      typeof value.body === 'object' &&
+      value.body !== null &&
+      !Array.isArray(value.body) &&
+      value.cause !== undefined &&
+      typeof value.statusCode === 'number' &&
+      typeof value.statusText === 'string'
+    );
+  }
+
   /**
    * The actual response, as seen by the client.
    *

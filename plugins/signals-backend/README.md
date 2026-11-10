@@ -13,5 +13,6 @@ To install this signals backend plugin, please refer the [Getting Started](https
 The signals WebSocket endpoint requires a Backstage user token. The bundled
 signals client sends the token in the `Sec-WebSocket-Protocol` header. Custom
 clients can include the token alongside other protocol values; the backend
-authenticates each value and selects the user token for the WebSocket handshake.
+tries each value until one authenticates and selects that token for the WebSocket
+handshake. The signals handler then requires user credentials.
 Connections without a valid user token are rejected.

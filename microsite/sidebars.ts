@@ -652,6 +652,14 @@ export default {
         ),
         sidebarElementWithIndex(
           {
+            label: 'Common Libraries',
+            description:
+              'Shared libraries for frontend and backend development.',
+          },
+          ['common-libraries/index', 'common-libraries/errors'],
+        ),
+        sidebarElementWithIndex(
+          {
             label: 'Backstage CLI',
             description: 'Command-line interface for Backstage.',
           },
