@@ -568,15 +568,19 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   /**
    * Checks whether a committed file path from an event payload can safely be
    * interpolated into a location target or refresh key. Only plain relative
-   * paths that resolve within the fetched project are accepted; traversal or
-   * URL-shaped paths are dropped.
+   * paths that resolve within the fetched project are accepted; traversal,
+   * URL-shaped, or control-character paths are dropped. Control characters
+   * are rejected because URL parsing removes some of them before resolving
+   * dot segments, which can turn an otherwise plain path into a traversal.
    */
   private isSafeCommittedPath(file: string): boolean {
     if (
       !file ||
       file.startsWith('/') ||
       file.includes('\\') ||
-      /[%?#]/.test(file)
+      /[%?#]/.test(file) ||
+      // eslint-disable-next-line no-control-regex
+      /[\x00-\x1f\u007f]/.test(file)
     ) {
       return false;
     }
