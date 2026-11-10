@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment } from 'react';
+import { Fragment, Suspense } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import {
   type AppError,
@@ -150,6 +150,10 @@ const testAppPlugin = createTestAppPlugin([
 /**
  * @public
  * Renders the given element in a test app, for use in unit tests.
+ *
+ * Suspended content renders nothing until it is ready. Use asynchronous queries
+ * such as `findByText` to await it, or provide a Suspense boundary around the
+ * element to display a custom fallback. Rendering errors are not caught.
  */
 export function renderInTestApp<const TApiPairs extends any[] = any[]>(
   element: JSX.Element,
@@ -176,7 +180,11 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
           );
         }
 
-        return [coreExtensionData.reactElement(content)];
+        return [
+          coreExtensionData.reactElement(
+            <Suspense fallback={null}>{content}</Suspense>,
+          ),
+        ];
       },
     }),
   ];

@@ -4,5 +4,5 @@
 
 Updated the new frontend plugin template to provide an internal Todo API whose
 client implementation loads on demand. Generated pages consume the API instead
-of fetching directly, and generated tests install the plugin's API factories and provide a Suspense
-boundary for lazy initialization.
+of fetching directly, and generated tests install the plugin's API factories and
+use `renderInTestApp` to handle lazy initialization.

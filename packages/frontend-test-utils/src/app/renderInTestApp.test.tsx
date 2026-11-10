@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-import { Suspense, useCallback, useEffect, useState } from 'react';
-import { screen, fireEvent } from '@testing-library/react';
+import {
+  Component,
+  PropsWithChildren,
+  Suspense,
+  lazy,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+import { act, screen, fireEvent } from '@testing-library/react';
+import { withLogCollector } from '@backstage/test-utils';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
   useAnalytics,
@@ -92,14 +101,91 @@ describe('renderInTestApp', () => {
     expect(load).toHaveBeenCalledTimes(2);
     second.unmount();
 
-    renderInTestApp(
-      <Suspense fallback="Loading API">
-        <Consumer />
-      </Suspense>,
-      { features: [plugin] },
-    );
+    renderInTestApp(<Consumer />, { features: [plugin] });
     expect(await screen.findByText('Lazy API loaded')).toBeInTheDocument();
     expect(load).toHaveBeenCalledTimes(3);
+  });
+
+  it('should preserve synchronous rendering and custom Suspense fallbacks', async () => {
+    const rendered = renderInTestApp(<button>Ready</button>);
+    expect(screen.getByRole('button', { name: 'Ready' })).toBeInTheDocument();
+    rendered.unmount();
+
+    const LazyContent = lazy(async () => ({
+      default: () => <div>Loaded content</div>,
+    }));
+    renderInTestApp(
+      <Suspense fallback="Custom loading state">
+        <LazyContent />
+      </Suspense>,
+    );
+    expect(screen.getByText('Custom loading state')).toBeInTheDocument();
+    expect(await screen.findByText('Loaded content')).toBeInTheDocument();
+    expect(screen.queryByText('Custom loading state')).not.toBeInTheDocument();
+  });
+
+  it('should propagate rejected API initialization to the supplied error boundary', async () => {
+    class ErrorBoundary extends Component<
+      PropsWithChildren,
+      { error?: Error }
+    > {
+      static getDerivedStateFromError(error: Error) {
+        return { error };
+      }
+
+      state: { error?: Error } = {};
+
+      render() {
+        return this.state.error ? (
+          <div role="alert">{this.state.error.message}</div>
+        ) : (
+          this.props.children
+        );
+      }
+    }
+    const apiRef = createApiRef<string>().with({
+      id: 'plugin.test.rejected',
+      loading: 'async',
+    });
+    let reject!: (error: Error) => void;
+    const promise = new Promise<string>((_, r) => {
+      reject = r;
+    });
+    function Consumer() {
+      return <div>{useApi(apiRef)}</div>;
+    }
+    await withLogCollector(['error'], async () => {
+      renderInTestApp(
+        <ErrorBoundary>
+          <Consumer />
+        </ErrorBoundary>,
+        {
+          features: [
+            createFrontendModule({
+              pluginId: 'app',
+              extensions: [
+                ApiBlueprint.make({
+                  params: defineParams =>
+                    defineParams({
+                      api: apiRef,
+                      deps: {},
+                      factory: () => promise,
+                    }),
+                }),
+              ],
+            }),
+          ],
+        },
+      );
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      await act(async () => {
+        reject(new Error('API initialization failed'));
+        await promise.catch(() => {});
+      });
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'API initialization failed',
+      );
+    });
   });
 
   it('should throw for app errors that would show the error page', () => {
