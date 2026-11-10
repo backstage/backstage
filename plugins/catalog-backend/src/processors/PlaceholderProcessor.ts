@@ -16,7 +16,10 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import {
+  getAzureDownloadUrl,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
 import yaml from 'yaml';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
@@ -295,6 +298,34 @@ function assertSameRepository(
     return;
   }
 
+  // Azure DevOps file URLs take several host-specific shapes, and the
+  // git-url-parse based checks below only split them into a repository and
+  // a file path for the dev.azure.com form. For legacy cloud hosts and
+  // Azure DevOps Server hosts no file path parses, which used to skip the
+  // comparison for those targets entirely. Targets on a configured Azure
+  // DevOps integration are therefore attributed to a repository with the
+  // azure URL parsing of the integration package instead, the same parsing
+  // that the URL reader bases its fetches on. A URL that cannot be
+  // attributed to a repository at all cannot be fetched through that
+  // reader either, and counts as a different repository rather than
+  // skipping the comparison
+  if (integrations.byUrl(resolvedUrl)?.type === 'azure') {
+    let sameAzureRepository = false;
+    try {
+      sameAzureRepository =
+        azureRepositoryIdentity(resolvedUrl) ===
+        azureRepositoryIdentity(baseUrl);
+    } catch {
+      // The URL could not be attributed to an Azure DevOps repository
+    }
+    if (!sameAzureRepository) {
+      throw new Error(
+        `Placeholder may only reference files from the same repository as the entity`,
+      );
+    }
+    return;
+  }
+
   let resolved;
   let base;
   try {
@@ -363,6 +394,11 @@ function assertSameRepository(
       `Placeholder may only reference files from the same repository as the entity`,
     );
   }
+}
+
+function azureRepositoryIdentity(url: string): string {
+  const { host, pathname } = new URL(getAzureDownloadUrl(url));
+  return `${host}${pathname}`;
 }
 
 function relativeUrl({
