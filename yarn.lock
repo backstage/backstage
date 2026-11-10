@@ -6218,7 +6218,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-workspace-database@workspace:plugins/scaffolder-backend-module-workspace-database":
+"@backstage/plugin-scaffolder-backend-module-workspace-database@workspace:^, @backstage/plugin-scaffolder-backend-module-workspace-database@workspace:plugins/scaffolder-backend-module-workspace-database":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-workspace-database@workspace:plugins/scaffolder-backend-module-workspace-database"
   dependencies:
@@ -27778,6 +27778,7 @@ __metadata:
     "@backstage/core-compat-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/frontend-app-api": "workspace:^"
     "@backstage/frontend-defaults": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
@@ -27804,6 +27805,7 @@ __metadata:
     "@backstage/plugin-org": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/plugin-scaffolder": "workspace:^"
+    "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/plugin-scaffolder-react": "workspace:^"
     "@backstage/plugin-search": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
@@ -27875,6 +27877,8 @@ __metadata:
     "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-github": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-notifications": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-workspace-database": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-search-backend": "workspace:^"
     "@backstage/plugin-search-backend-module-catalog": "workspace:^"
     "@backstage/plugin-search-backend-module-elasticsearch": "workspace:^"

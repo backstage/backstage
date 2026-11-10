@@ -1,0 +1,36 @@
+approvalDemo:
+  enabled: true
+
+app:
+  baseUrl: http://localhost:3001
+  extensions:
+    - page:approval-demo:
+        disabled: false
+
+backend:
+  baseUrl: http://localhost:7008
+  listen:
+    port: 7008
+  cors:
+    origin: http://localhost:3001
+  database:
+    connection:
+      directory: ../../node_modules/.cache/approval-demo
+
+auth:
+  providers:
+    guest:
+      userEntityRef: user:development/guest
+      ownershipEntityRefs: [user:development/guest]
+
+catalog:
+  locations:
+    - type: file
+      target: ./examples/approval-demo.yaml
+      rules:
+        - allow: [Template, User]
+
+scaffolder:
+  taskRecovery:
+    enabled: true
+    workspaceProvider: database

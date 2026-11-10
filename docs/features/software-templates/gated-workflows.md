@@ -10,6 +10,30 @@ to declare the triggers that can resume a suspended task. The API may change.
 
 ## Enable gated workflows
 
+### Try the guest approval demo
+
+The private example app includes an approval page, a backend test module, and
+an approval template. From the repository root, run:
+
+```sh
+yarn install
+yarn start:approval-demo
+```
+
+Open `http://localhost:3001/approval-demo` and sign in as Guest. Select
+**Start approval session**. The task sends an **Approval needed** notification
+to `user:development/guest`, then waits. Open the notification to return to
+the approval page and select **Approve and continue**. The task continues and
+sends an **Approval demo completed** notification. The page also links to the
+task logs.
+
+The demo enables task recovery and the database workspace provider. Its SQLite
+databases are stored in `node_modules/.cache/approval-demo` and survive backend
+restarts. The demo page and backend test action are enabled only by the demo
+configuration. The template is also available on the Create page.
+
+### Configure another app
+
 Enable task recovery and configure a workspace provider. For example, use the
 existing database workspace module. See
 [task recovery configuration](./configuration.md#task-recovery).

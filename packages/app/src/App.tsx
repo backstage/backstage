@@ -16,6 +16,7 @@
 
 import { createApp } from '@backstage/frontend-defaults';
 import { pagesPlugin } from './examples/pagesPlugin';
+import { approvalDemoPlugin } from './examples/approvalDemoPlugin';
 import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
 import homePlugin from '@backstage/plugin-home/alpha';
@@ -87,6 +88,7 @@ const app = createApp({
   features: [
     customizedCatalog,
     pagesPlugin,
+    approvalDemoPlugin,
     convertedTechdocsPlugin,
     userSettingsPlugin,
     homePlugin,

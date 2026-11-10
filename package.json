@@ -52,6 +52,7 @@
     "snyk:test": "npx snyk test --yarn-workspaces --strict-out-of-sync=false",
     "snyk:test:package": "yarn snyk:test --include",
     "start": "backstage-cli repo start",
+    "start:approval-demo": "backstage-cli repo start --config ../../app-config.yaml --config ../../app-config.approval-demo.yaml",
     "start:docker": "docker compose -f docker-compose.deps.yml up --wait && BACKSTAGE_ENV=docker yarn start",
     "start:legacy": "yarn start example-app-legacy example-backend",
     "start:microsite": "cd microsite/ && yarn start",

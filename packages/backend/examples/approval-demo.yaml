@@ -1,0 +1,87 @@
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  namespace: development
+  name: guest
+spec:
+  profile:
+    displayName: Guest approver
+  memberOf: []
+---
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: approval-gate-demo
+  title: Approval gate demo
+  description: Send a notification and wait for approval before continuing.
+  tags: [experimental, approval]
+spec:
+  owner: user:development/guest
+  type: service
+  parameters:
+    - title: Approval request
+      required: [message, approver]
+      properties:
+        message:
+          title: Request
+          type: string
+          default: Try the approval gate
+        approver:
+          title: Approver entity reference
+          type: string
+          default: user:development/guest
+  steps:
+    - id: before
+      name: Start the approval request
+      action: debug:log
+      input:
+        message: 'Starting approval request: ${{ parameters.message }}'
+    - id: notify
+      name: Notify the approver
+      action: notification:send
+      input:
+        recipients: entity
+        entityRefs: ['${{ parameters.approver }}']
+        title: Approval needed
+        info: '${{ parameters.message }}'
+        link: '/approval-demo?taskId=${{ context.task.id }}'
+        severity: normal
+        topic: approval-demo
+        scope: '${{ context.task.id }}:approval'
+    - id: approval
+      name: Wait for approval
+      action: workflow:suspend
+      input:
+        key: approval
+        reason: '${{ parameters.message }}'
+        resumeOn:
+          - id: decision
+            type: manual
+            principals: ['${{ parameters.approver }}']
+        timeout:
+          hours: 1
+    - id: confirm
+      name: Check the approval decision
+      action: demo:approval:confirm
+      input:
+        decision: '${{ steps.approval.output.payload.decision }}'
+    - id: after
+      name: Continue after approval
+      action: debug:log
+      input:
+        message: Approval received. Workflow continued.
+    - id: completed
+      name: Notify that the workflow continued
+      action: notification:send
+      input:
+        recipients: entity
+        entityRefs: ['${{ parameters.approver }}']
+        title: Approval demo completed
+        info: The workflow continued after approval.
+        link: '/create/tasks/${{ context.task.id }}'
+        topic: approval-demo
+        scope: '${{ context.task.id }}:completed'
+  output:
+    links:
+      - title: Approval page
+        url: '/approval-demo?taskId=${{ context.task.id }}'
