@@ -319,7 +319,12 @@ function isActionInputAuthorized(
   // identifier that the policy refers to in the other form, e.g. a numeric
   // project ID may identify the same project as a project path that the
   // policy mentions. The input is therefore only authorized if the policy
-  // also allows the action for each of those identifiers.
+  // also allows the action for each of those identifiers. Candidates are
+  // compared with the input identifier by form rather than by JS type: a
+  // numeric identifier is re-checked against non-numeric string candidates,
+  // and a non-numeric string identifier is re-checked against numeric
+  // candidates. Two numeric forms of the same value, such as 42 and '42',
+  // are already matched by the rule conditions themselves.
   const isNumericIdentifier =
     numericIdentifierSchema.safeParse(identifier).success;
   const identifiers = getIdentifierConditionValues(
@@ -327,8 +332,8 @@ function isActionInputAuthorized(
     identifierKey,
   ).filter(
     candidate =>
-      (isNumericIdentifier && typeof candidate === 'string') ||
-      (typeof identifier === 'string' && typeof candidate === 'number'),
+      numericIdentifierSchema.safeParse(candidate).success !==
+      isNumericIdentifier,
   );
 
   return identifiers.every(candidate =>
