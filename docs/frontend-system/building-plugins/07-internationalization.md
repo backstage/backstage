@@ -401,19 +401,6 @@ group before rendering it, and retain the last resolved group during later
 language changes. This keeps extension data independent of subscriptions and
 React rendering.
 
-Translation snapshots always include a `t` function, even while resources are
-loading. To provide synchronous plain title metadata, call
-`translationApi.getTranslation(ref).t(key)`. It uses the messages already
-available for the selected language and the API's normal language fallbacks,
-including installed overrides. Formatting values use the existing translation
-function's argument types.
-
-The snapshot's `ready` flag indicates whether resources for the selected
-language have finished loading. Reading a snapshot does not load resources;
-subscribe to `translation$(ref)` to start loading and receive resolved updates.
-`useTranslationRef` continues to wait for ready translations.
-Custom translation API implementations must provide `t` on loading snapshots too.
-
 ### Using the CLI for full translation workflows
 
 When translating your app to other languages at scale — especially when working with external translation systems — the Backstage CLI provides `translations export` and `translations import` commands that automate the extraction and wiring of translation messages across all your plugin dependencies.
