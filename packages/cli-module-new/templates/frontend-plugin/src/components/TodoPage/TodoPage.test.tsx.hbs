@@ -5,7 +5,6 @@ import { setupServer } from 'msw/node';
 import {
   registerMswTestHooks,
   renderInTestApp,
-  mockApis,
 } from '@backstage/frontend-test-utils';
 import { TodoPage } from './TodoPage';
 import { {{ pluginVar }} } from '../../plugin';
@@ -29,7 +28,7 @@ describe('TodoPage', () => {
       <Suspense fallback="Loading API">
         <TodoPage />
       </Suspense>,
-      { features: [{{ pluginVar }}], apis: [mockApis.error()] },
+      { features: [{{ pluginVar }}] },
     );
 
     expect(await screen.findByText('Mocked task')).toBeInTheDocument();
@@ -49,7 +48,7 @@ describe('TodoPage', () => {
       <Suspense fallback="Loading API">
         <TodoPage />
       </Suspense>,
-      { features: [{{ pluginVar }}], apis: [mockApis.error()] },
+      { features: [{{ pluginVar }}] },
     );
 
     expect(await screen.findByText('Install the backend plugin')).toBeInTheDocument();

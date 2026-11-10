@@ -82,7 +82,8 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   config?: JsonObject;
 
   /**
-   * Additional features to add to the test app.
+   * Additional features to add to the test app. Test rendering extensions are
+   * retained when features include a plugin named `test`.
    */
   features?: FrontendFeature[];
 
@@ -244,7 +245,9 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
         }),
       ],
     }),
-    createFrontendPlugin({
+    createFrontendPlugin({ pluginId: 'test' }),
+    // Keep test extensions when a supplied plugin replaces the placeholder above.
+    createFrontendModule({
       pluginId: 'test',
       extensions,
     }),

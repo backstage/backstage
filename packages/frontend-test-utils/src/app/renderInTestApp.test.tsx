@@ -42,9 +42,9 @@ import { renderTestApp } from './renderTestApp';
 import { AnalyticsImplementationBlueprint } from '@backstage/plugin-app-react';
 
 describe('renderInTestApp', () => {
-  it('should lazily load an API implementation through ApiBlueprint on a lazy page', async () => {
+  it('should render lazy APIs with a plugin named test in both test helpers', async () => {
     const apiRef = createApiRef<{ getString(key: string): string }>().with({
-      id: 'plugin.lazy-api-poc.client',
+      id: 'plugin.test.client',
       loading: 'async',
     });
     const load = jest.fn(async () => {
@@ -55,7 +55,7 @@ describe('renderInTestApp', () => {
       return <div>{useApi(apiRef).getString('message')}</div>;
     }
     const plugin = createFrontendPlugin({
-      pluginId: 'lazy-api-poc',
+      pluginId: 'test',
       extensions: [
         ApiBlueprint.make({
           params: defineParams =>
