@@ -169,6 +169,12 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
         if (valueSchema.safeParse(value).success) {
           if (typeof value === 'string' && typeof foundValue === 'string') {
             if (isIntegrationProperty) {
+              if (/^\d+$/u.test(value) && /^\d+$/u.test(foundValue)) {
+                // Digit-only identifiers may carry leading zeros; the
+                // integration resolves them to the same entity as the
+                // unpadded form.
+                return Number(value) === Number(foundValue);
+              }
               return value.toLowerCase() === foundValue.toLowerCase();
             }
           }
