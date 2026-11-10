@@ -17,7 +17,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">HttpRouterServiceWebSocketHandler</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#authpolicy">authPolicy</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">&quot;unauthenticated&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#path">path</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#handler-1">handler</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">context</span><span class="tsd-signature-symbol">:</span> <a href="_backstage_backend-plugin-api.index.HttpRouterServiceWebSocketContext.html" class="tsd-signature-type tsd-kind-interface">HttpRouterServiceWebSocketContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/e4a1cead8cfb800f0648ace149a00aec9852d19f/packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts#L41">packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts:41</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/ca1165d1e6facc756d3724746d275e481275b91a/packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts#L41">packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts:41</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -46,14 +46,14 @@ Handlers accepting cookies or other ambient credentials should validate the
 request origin to prevent cross-site WebSocket hijacking.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/e4a1cead8cfb800f0648ace149a00aec9852d19f/packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts#L57">packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts:57</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/ca1165d1e6facc756d3724746d275e481275b91a/packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts#L57">packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts:57</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="path"><span>path</span><a href="#path" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">path</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>An exact path relative to the plugin base URL. Use <code>/</code> for the base URL.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/e4a1cead8cfb800f0648ace149a00aec9852d19f/packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts#L43">packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts:43</a></li></ul></aside></section></section></details>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/ca1165d1e6facc756d3724746d275e481275b91a/packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts#L43">packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts:43</a></li></ul></aside></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -72,7 +72,7 @@ its full URL. Take ownership of the socket or close it before resolving.</p>
 <li><span><span class="tsd-kind-parameter">context</span>: <a href="_backstage_backend-plugin-api.index.HttpRouterServiceWebSocketContext.html" class="tsd-signature-type tsd-kind-interface">HttpRouterServiceWebSocketContext</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/e4a1cead8cfb800f0648ace149a00aec9852d19f/packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts#L48">packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts:48</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/ca1165d1e6facc756d3724746d275e481275b91a/packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts#L48">packages/backend-plugin-api/src/services/definitions/HttpRouterService.ts:48</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
