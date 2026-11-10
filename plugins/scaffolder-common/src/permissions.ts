@@ -134,6 +134,16 @@ export const taskCancelPermission = createPermission({
 });
 
 /**
+ * Permission to resolve a declared manual task trigger.
+ * @alpha
+ */
+export const taskResumePermission = createPermission({
+  name: 'scaffolder.task.resume',
+  attributes: {},
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
+});
+
+/**
  * This permission is used to authorize template management features.
  *
  * @alpha
@@ -163,6 +173,7 @@ export const scaffolderActionPermissions = [actionExecutePermission];
  * @alpha
  */
 export const scaffolderTaskPermissions = [
+  taskResumePermission,
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,

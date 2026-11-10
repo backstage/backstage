@@ -7,6 +7,7 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CheckpointContext } from '@backstage/plugin-scaffolder-node/alpha';
 import { Expand } from '@backstage/types';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { HumanDuration } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { ListActionsResponse } from '@backstage/plugin-scaffolder-common';
@@ -48,6 +49,7 @@ export type ActionContext<
   checkpoint<T extends JsonValue | void>(
     opts: CheckpointContext<T>,
   ): Promise<T>;
+  suspend(options: TaskSuspendOptions): Promise<TaskResumeResult>;
   output(
     name: keyof TActionOutput,
     value: TActionOutput[keyof TActionOutput],
@@ -531,6 +533,7 @@ export interface TaskBroker {
   }>;
   // (undocumented)
   recoverTasks(): Promise<void>;
+  resume?(options: TaskResumeOptions): Promise<void>;
   // (undocumented)
   retry(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
   // (undocumented)
@@ -568,6 +571,7 @@ export interface TaskContext {
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
   getInitiatorCredentials(): Promise<BackstageCredentials>;
+  getSuspension?(key: string): Promise<TaskSuspension | undefined>;
   // (undocumented)
   getTaskState?(): Promise<
     | {
@@ -590,6 +594,11 @@ export interface TaskContext {
   serializeWorkspace?(options: { path: string }): Promise<void>;
   // (undocumented)
   spec: TaskSpec;
+  suspend?(
+    options: TaskSuspendOptions & {
+      stepId: string;
+    },
+  ): Promise<void>;
   // (undocumented)
   taskId?: string;
   // (undocumented)
@@ -627,18 +636,73 @@ export type TaskFilters =
   | TaskFilter;
 
 // @public
+export type TaskResumeOptions = {
+  taskId: string;
+  key: string;
+  triggerId: string;
+  payload: JsonObject;
+  principalRefs: string[];
+  resumedBy: NonNullable<TaskResumeResult['resumedBy']>;
+};
+
+// @public
+export type TaskResumeResult = {
+  timedOut: boolean;
+  triggerId?: string;
+  payload: JsonObject;
+  resumedBy?:
+    | {
+        type: 'user';
+        userEntityRef: string;
+      }
+    | {
+        type: 'service';
+        subject: string;
+      };
+};
+
+// @public
+export type TaskResumeTrigger =
+  | {
+      id: string;
+      type: 'manual';
+      principals?: string[];
+    }
+  | {
+      id: string;
+      type: 'event';
+      topic: string;
+      match: JsonObject;
+    };
+
+// @public
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
 };
 
 // @public @deprecated
 export type TaskStatus =
+  | 'waiting'
   | 'cancelled'
   | 'completed'
   | 'failed'
   | 'open'
   | 'processing'
   | 'skipped';
+
+// @public
+export type TaskSuspendOptions = {
+  key: string;
+  reason?: string;
+  resumeOn: TaskResumeTrigger[];
+  timeout?: HumanDuration;
+};
+
+// @public
+export type TaskSuspension = TaskSuspendOptions & {
+  stepId: string;
+  result?: TaskResumeResult;
+};
 
 // @public (undocumented)
 export type TemplateAction<

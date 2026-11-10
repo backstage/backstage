@@ -26,6 +26,7 @@ import {
   TaskFilters,
 } from '@backstage/plugin-scaffolder-node';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import type { TaskSuspensionStore } from './TaskSuspensionStore';
 
 /**
  * TaskStoreEmitOptions
@@ -107,6 +108,7 @@ export type TaskStoreCreateTaskResult = {
  *
  */
 export interface TaskStore {
+  suspensions?: TaskSuspensionStore;
   cancelTask(options: TaskStoreEmitOptions): Promise<void>;
 
   createTask(
@@ -166,7 +168,10 @@ export interface TaskStore {
   shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
 
-export type WorkflowResponse = { output: { [key: string]: JsonValue } };
+export type WorkflowResponse = {
+  output: { [key: string]: JsonValue };
+  status?: 'waiting';
+};
 
 export interface WorkflowRunner {
   execute(task: TaskContext): Promise<WorkflowResponse>;

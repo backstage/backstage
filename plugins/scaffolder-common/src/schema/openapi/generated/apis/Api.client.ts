@@ -31,6 +31,8 @@ import { DryRun200Response } from '../models/DryRun200Response.model';
 import { DryRunRequest } from '../models/DryRunRequest.model';
 import { ListTasksResponse } from '../models/ListTasksResponse.model';
 import { ListTemplatingExtensionsResponse } from '../models/ListTemplatingExtensionsResponse.model';
+import { ResumeTask200Response } from '../models/ResumeTask200Response.model';
+import { ResumeTaskRequest } from '../models/ResumeTaskRequest.model';
 import { RetryRequest } from '../models/RetryRequest.model';
 import { Scaffold201Response } from '../models/Scaffold201Response.model';
 import { ScaffolderScaffoldOptions } from '../models/ScaffolderScaffoldOptions.model';
@@ -117,6 +119,15 @@ export type ListTasks = {
  * @public
  */
 export type ListTemplatingExtensions = {};
+/**
+ * @public
+ */
+export type ResumeTask = {
+  path: {
+    taskId: string;
+  };
+  body: ResumeTaskRequest;
+};
 /**
  * @public
  */
@@ -369,6 +380,34 @@ export class DefaultApiClient {
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'GET',
+    });
+  }
+
+  /**
+   * Resolve a declared manual trigger on a waiting task.
+   * @param taskId -
+   * @param resumeTaskRequest -
+   */
+  public async resumeTask(
+    // @ts-ignore
+    request: ResumeTask,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<ResumeTask200Response>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/v2/tasks/{taskId}/resume`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      taskId: request.path.taskId,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(request.body),
     });
   }
 

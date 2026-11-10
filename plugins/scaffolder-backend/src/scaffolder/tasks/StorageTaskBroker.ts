@@ -32,6 +32,8 @@ import {
   TaskFilters,
   TaskSecrets,
   TaskStatus,
+  TaskResumeOptions,
+  TaskSuspension,
 } from '@backstage/plugin-scaffolder-node';
 import {
   WorkspaceProvider,
@@ -53,6 +55,8 @@ import {
   TaskState,
 } from './types';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { EventsService } from '@backstage/plugin-events-node';
+import { InputError } from '@backstage/errors';
 /**
  * TaskManager
  */
@@ -68,6 +72,8 @@ export class TaskManager implements TaskContext {
     logger: LoggerService,
     auth?: AuthService,
     workspaceProvider?: WorkspaceProvider,
+    eventTopics: string[] = [],
+    onDone?: () => void,
   ) {
     const workspaceService = DefaultWorkspaceService.create(
       task,
@@ -81,6 +87,9 @@ export class TaskManager implements TaskContext {
       logger,
       workspaceService,
       auth,
+      workspaceProvider,
+      eventTopics,
+      onDone,
     );
     agent.startTimeout();
     return agent;
@@ -101,6 +110,9 @@ export class TaskManager implements TaskContext {
     logger: LoggerService,
     workspaceService: WorkspaceService,
     auth?: AuthService,
+    private readonly workspaceProvider?: WorkspaceProvider,
+    private readonly eventTopics: string[] = [],
+    private readonly onDone?: () => void,
   ) {
     this.task = task;
     this.storage = storage;
@@ -109,6 +121,35 @@ export class TaskManager implements TaskContext {
     this.workspaceService = workspaceService;
     this.auth = auth;
   }
+
+  async getSuspension(key: string) {
+    return this.storage.suspensions?.get(this.taskId, key);
+  }
+
+  async suspend(options: TaskSuspension): Promise<void> {
+    if (!this.workspaceProvider || !this.storage.suspensions) {
+      throw new InputError(
+        'Task suspension requires a workspace provider and suspension storage',
+      );
+    }
+    for (const trigger of options.resumeOn) {
+      if (
+        trigger.type === 'event' &&
+        !this.eventTopics.includes(trigger.topic)
+      ) {
+        throw new InputError(
+          `Event topic '${trigger.topic}' is not enabled in scaffolder.gatedWorkflows.eventTopics`,
+        );
+      }
+    }
+    this.isSuspending = true;
+    clearTimeout(this.heartbeatTimeoutId);
+    await this.storage.suspensions.park(this.taskId, options);
+    this.isDone = true;
+    this.onDone?.();
+  }
+
+  private isSuspending = false;
 
   get taskId() {
     return this.task.taskId;
@@ -234,6 +275,7 @@ export class TaskManager implements TaskContext {
         await this.storage.heartbeatTask(this.task.taskId);
         this.startTimeout();
       } catch (error) {
+        if (this.isSuspending) return;
         this.isDone = true;
 
         this.logger.error(
@@ -361,12 +403,14 @@ export class StorageTaskBroker implements TaskBroker {
           if (event.type === 'completion' && !event.isTaskRecoverable) {
             shouldUnsubscribe = true;
           }
+          if (event.body.status === 'waiting') shouldUnsubscribe = true;
         }
         if (shouldUnsubscribe) {
           subscription.unsubscribe();
         }
       },
     });
+    return () => subscription.unsubscribe();
   }
 
   public async recoverTasks(): Promise<void> {
@@ -375,6 +419,8 @@ export class StorageTaskBroker implements TaskBroker {
     if (!enabled) {
       return;
     }
+
+    await this.storage.suspensions?.expire();
 
     const defaultTimeout: HumanDuration = { seconds: 30 };
     const timeout = this.config?.has('scaffolder.taskRecovery.staleTimeout')
@@ -393,7 +439,8 @@ export class StorageTaskBroker implements TaskBroker {
       timeout,
     })) ?? { ids: [] };
 
-    if (recoveredTaskIds.length > 0) {
+    // Poll the shared store for tasks resumed by another backend replica.
+    if (recoveredTaskIds.length > 0 || this.storage.suspensions) {
       this.signalDispatch();
     }
   }
@@ -407,7 +454,10 @@ export class StorageTaskBroker implements TaskBroker {
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
         const abortController = new AbortController();
-        await this.registerCancellable(pendingTask.id, abortController);
+        const unregisterCancellation = await this.registerCancellable(
+          pendingTask.id,
+          abortController,
+        );
         return TaskManager.create(
           {
             taskId: pendingTask.id,
@@ -421,6 +471,10 @@ export class StorageTaskBroker implements TaskBroker {
           this.logger,
           this.auth,
           this.workspaceProvider,
+          this.config?.getOptionalStringArray(
+            'scaffolder.gatedWorkflows.eventTopics',
+          ) ?? [],
+          unregisterCancellation,
         );
       }
 
@@ -446,6 +500,35 @@ export class StorageTaskBroker implements TaskBroker {
    */
   async get(taskId: string): Promise<SerializedTask> {
     return this.storage.getTask(taskId);
+  }
+
+  async resume(options: TaskResumeOptions): Promise<void> {
+    if (!this.storage.suspensions)
+      throw new InputError('Task store does not support suspension');
+    await this.storage.suspensions.resume(options);
+    this.signalDispatch();
+  }
+
+  /** Subscribes to configured topics and topics needed by existing waits. */
+  async startEventListener(events?: EventsService): Promise<void> {
+    const configuredTopics =
+      this.config?.getOptionalStringArray(
+        'scaffolder.gatedWorkflows.eventTopics',
+      ) ?? [];
+    const savedTopics =
+      (await this.storage.suspensions?.listEventTopics()) ?? [];
+    const topics = [...new Set([...configuredTopics, ...savedTopics])];
+    if (!topics.length) return;
+    if (!events)
+      throw new InputError('Event triggers require the Events service');
+    await events.subscribe({
+      id: 'scaffolder-gates',
+      topics,
+      onEvent: async event => {
+        await this.storage.suspensions?.onEvent(event);
+        this.signalDispatch();
+      },
+    });
   }
 
   /**
@@ -481,7 +564,9 @@ export class StorageTaskBroker implements TaskBroker {
 
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
-      })();
+      })().catch(error => {
+        if (!cancelled) observer.error(error);
+      });
 
       return () => {
         cancelled = true;

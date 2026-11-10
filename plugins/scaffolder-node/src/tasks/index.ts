@@ -28,3 +28,11 @@ export type {
   TaskEventType,
   TaskStatus,
 } from './types';
+
+export type {
+  TaskResumeTrigger,
+  TaskSuspendOptions,
+  TaskResumeResult,
+  TaskSuspension,
+  TaskResumeOptions,
+} from './suspensions';

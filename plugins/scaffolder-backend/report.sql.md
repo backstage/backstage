@@ -21,6 +21,40 @@
 - `task_events_pkey` (`id`) unique primary
 - `task_events_task_id_idx` (`task_id`)
 
+## Table `task_suspension_triggers`
+
+| Column          | Type                | Nullable | Max Length | Default |
+| --------------- | ------------------- | -------- | ---------- | ------- |
+| `config`        | `text`              | false    | -          | -       |
+| `suspension_id` | `uuid`              | false    | -          | -       |
+| `topic`         | `character varying` | true     | 255        | -       |
+| `trigger_id`    | `character varying` | false    | 255        | -       |
+| `type`          | `character varying` | false    | 255        | -       |
+
+### Indices
+
+- `task_suspension_triggers_pkey` (`suspension_id`, `trigger_id`) unique primary
+- `task_suspension_triggers_type_topic_index` (`type`, `topic`)
+
+## Table `task_suspensions`
+
+| Column        | Type                       | Nullable | Max Length | Default |
+| ------------- | -------------------------- | -------- | ---------- | ------- |
+| `consumed_at` | `timestamp with time zone` | true     | -          | -       |
+| `expires_at`  | `bigint`                   | true     | -          | -       |
+| `id`          | `uuid`                     | false    | -          | -       |
+| `key`         | `character varying`        | false    | 255        | -       |
+| `reason`      | `text`                     | true     | -          | -       |
+| `result`      | `text`                     | true     | -          | -       |
+| `step_id`     | `character varying`        | false    | 255        | -       |
+| `task_id`     | `uuid`                     | false    | -          | -       |
+
+### Indices
+
+- `task_suspensions_consumed_at_expires_at_index` (`consumed_at`, `expires_at`)
+- `task_suspensions_pkey` (`id`) unique primary
+- `task_suspensions_task_id_key_unique` (`task_id`, `key`) unique
+
 ## Table `tasks`
 
 | Column              | Type                       | Nullable | Max Length | Default             |

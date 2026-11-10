@@ -337,6 +337,7 @@ export type ScaffolderTaskOutput = {
 
 // @public (undocumented)
 export type ScaffolderTaskStatus =
+  | 'waiting'
   | 'cancelled'
   | 'completed'
   | 'failed'

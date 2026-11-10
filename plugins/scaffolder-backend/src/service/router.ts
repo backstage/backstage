@@ -27,6 +27,7 @@ import {
   PermissionsService,
   resolveSafeChildPath,
   SchedulerService,
+  UserInfoService,
 } from '@backstage/backend-plugin-api';
 import { validate, ValidatorResult } from 'jsonschema';
 import {
@@ -37,7 +38,7 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { InputError, NotFoundError } from '@backstage/errors';
+import { InputError, NotFoundError, NotAllowedError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 
 import { EventsService } from '@backstage/plugin-events-node';
@@ -59,6 +60,7 @@ import {
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
+  taskResumePermission,
   templateDryRunPermission,
   templateManagementPermission,
   templateParameterReadPermission,
@@ -169,6 +171,7 @@ export interface RouterOptions {
   permissionRules?: Array<ScaffolderPermissionRuleInput>;
   auth: AuthService;
   httpAuth: HttpAuthService;
+  userInfo?: UserInfoService;
   events?: EventsService;
   auditor?: AuditorService;
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
@@ -298,7 +301,7 @@ export async function createRouter(
       events: eventsService,
       recoverTasksEnabled: isTaskRecoveryEnabled(config),
     });
-    taskBroker = new StorageTaskBroker(
+    const storageTaskBroker = new StorageTaskBroker(
       databaseTaskStore,
       logger,
       config,
@@ -306,6 +309,8 @@ export async function createRouter(
       additionalWorkspaceProviders,
       auditor,
     );
+    await storageTaskBroker.startEventListener(eventsService);
+    taskBroker = storageTaskBroker;
 
     if (scheduler && databaseTaskStore.listStaleTasks) {
       await scheduler.scheduleTask({
@@ -426,6 +431,49 @@ export async function createRouter(
     Object.values(templateRules),
   );
   const isTaskAuthorized = createConditionAuthorizer(Object.values(taskRules));
+
+  router.post('/v2/tasks/:taskId/resume', async (req, res) => {
+    if (!taskBroker.resume)
+      throw new InputError('Task broker does not support suspension');
+    const credentials = await httpAuth.credentials(req, { allow: ['user'] });
+    const task = await taskBroker.get(req.params.taskId);
+    await checkTaskPermission({
+      credentials,
+      permissions: [taskReadPermission, taskResumePermission],
+      permissionService: permissions,
+      task,
+      isTaskAuthorized,
+    });
+    if (!auth.isPrincipal(credentials, 'user'))
+      throw new NotAllowedError('Manual resume requires user credentials');
+    const { key, triggerId, payload = {} } = req.body;
+    if (
+      typeof key !== 'string' ||
+      !key ||
+      typeof triggerId !== 'string' ||
+      !triggerId ||
+      !payload ||
+      typeof payload !== 'object' ||
+      Array.isArray(payload)
+    ) {
+      throw new InputError(
+        'Resume requires key, triggerId, and an object payload',
+      );
+    }
+    const user = credentials.principal;
+    const ownershipEntityRefs = options.userInfo
+      ? (await options.userInfo.getUserInfo(credentials)).ownershipEntityRefs
+      : [];
+    await taskBroker.resume({
+      taskId: task.id,
+      key,
+      triggerId,
+      payload,
+      principalRefs: [...new Set([user.userEntityRef, ...ownershipEntityRefs])],
+      resumedBy: { type: 'user', userEntityRef: user.userEntityRef },
+    });
+    res.status(200).json({ status: 'open' });
+  });
 
   const taskTransformConditions: ConditionTransformer<TaskFilters> =
     createConditionTransformer(Object.values(taskRules));

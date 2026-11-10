@@ -55,6 +55,7 @@ import {
   createWaitAction,
 } from './scaffolder';
 import { createRouter } from './service/router';
+import { createSuspendAction } from './scaffolder/actions/builtin/suspend';
 import { loggerToWinstonLogger } from './util/loggerToWinstonLogger';
 import {
   convertFiltersToRecord,
@@ -147,6 +148,7 @@ export const scaffolderPlugin = createBackendPlugin({
         auth: coreServices.auth,
         httpRouter: coreServices.httpRouter,
         httpAuth: coreServices.httpAuth,
+        userInfo: coreServices.userInfo,
         auditor: coreServices.auditor,
         catalog: catalogServiceRef,
         events: eventsServiceRef,
@@ -165,6 +167,7 @@ export const scaffolderPlugin = createBackendPlugin({
         auth,
         httpRouter,
         httpAuth,
+        userInfo,
         catalog,
         permissions,
         permissionsRegistry,
@@ -219,6 +222,7 @@ export const scaffolderPlugin = createBackendPlugin({
           }),
           createDebugLogAction(),
           createWaitAction(),
+          createSuspendAction(),
           // todo(blam): maybe these should be a -catalog module?
           createCatalogRegisterAction({ catalog, integrations }),
           createFetchCatalogEntityAction({ catalog }),
@@ -252,6 +256,7 @@ export const scaffolderPlugin = createBackendPlugin({
           additionalTemplateGlobals,
           auth,
           httpAuth,
+          userInfo,
           permissions,
           permissionsRegistry,
           autocompleteHandlers,

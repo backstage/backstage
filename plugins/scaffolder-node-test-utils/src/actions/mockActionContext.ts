@@ -43,6 +43,11 @@ export function createMockActionContext<
     logger: loggerToWinstonLogger(mockServices.logger.mock()),
     logStream: new PassThrough(),
     output: jest.fn(),
+    suspend: jest
+      .fn()
+      .mockRejectedValue(
+        new Error('Mock suspension outcome was not configured'),
+      ),
     createTemporaryDirectory: jest.fn(),
     input: {} as TActionInput,
     async checkpoint<T extends JsonValue | void>(
@@ -76,6 +81,7 @@ export function createMockActionContext<
 
   return {
     ...defaultContext,
+    ...(options.suspend && { suspend: options.suspend }),
     ...(workspacePath ? { workspacePath } : createDefaultWorkspace()),
     ...(workspacePath && {
       createTemporaryDirectory: jest.fn().mockResolvedValue(workspacePath),

@@ -24,6 +24,7 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { CheckpointContext } from '@backstage/plugin-scaffolder-node/alpha';
+import { TaskSuspendOptions, TaskResumeResult } from '../tasks';
 
 /**
  * ActionContext is passed into scaffolder actions.
@@ -45,6 +46,11 @@ export type ActionContext<
   checkpoint<T extends JsonValue | void>(
     opts: CheckpointContext<T>,
   ): Promise<T>;
+  /**
+   * Parks this task and releases its worker. Resume replays the handler from
+   * the beginning, so earlier side effects must use checkpoints.
+   */
+  suspend(options: TaskSuspendOptions): Promise<TaskResumeResult>;
   output(
     name: keyof TActionOutput,
     value: TActionOutput[keyof TActionOutput],

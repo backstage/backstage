@@ -548,6 +548,7 @@ export const spec = {
       TaskStatus: {
         type: 'string',
         enum: [
+          'waiting',
           'cancelled',
           'completed',
           'failed',
@@ -977,6 +978,78 @@ export const spec = {
         parameters: [
           {
             $ref: '#/components/parameters/taskId',
+          },
+        ],
+      },
+    },
+    '/v2/tasks/{taskId}/resume': {
+      post: {
+        operationId: 'ResumeTask',
+        description: 'Resolve a declared manual trigger on a waiting task.',
+        parameters: [
+          {
+            $ref: '#/components/parameters/taskId',
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['key', 'triggerId'],
+                properties: {
+                  key: {
+                    type: 'string',
+                    minLength: 1,
+                  },
+                  triggerId: {
+                    type: 'string',
+                    minLength: 1,
+                  },
+                  payload: {
+                    type: 'object',
+                    additionalProperties: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': {
+            description: 'The task is queued for replay.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['status'],
+                  properties: {
+                    status: {
+                      type: 'string',
+                      enum: ['open'],
+                    },
+                  },
+                },
+              },
+            },
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          '403': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          '404': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          '409': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+        security: [
+          {
+            JWT: [],
           },
         ],
       },

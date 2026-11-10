@@ -22,6 +22,7 @@ import {
 export const TaskStatusColumn = ({ status }: { status: string }) => {
   switch (status) {
     case 'processing':
+    case 'waiting':
       return <StatusPending>{status}</StatusPending>;
     case 'completed':
       return <StatusOK>{status}</StatusOK>;

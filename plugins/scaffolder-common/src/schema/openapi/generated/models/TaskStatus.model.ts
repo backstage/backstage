@@ -22,6 +22,7 @@
  * @public
  */
 export type TaskStatus =
+  | 'waiting'
   | 'cancelled'
   | 'completed'
   | 'failed'

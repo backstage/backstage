@@ -62,13 +62,15 @@ export const TaskSteps = (props: TaskStepsProps) => {
             const isFailed = step.status === 'failed';
             const isActive = step.status === 'processing';
             const isSkipped = step.status === 'skipped';
-            const stepIconProps: Partial<StepIconProps & { skipped: boolean }> =
-              {
-                completed: isCompleted,
-                error: isFailed,
-                active: isActive,
-                skipped: isSkipped,
-              };
+            const stepIconProps: Partial<
+              StepIconProps & { skipped: boolean; waiting: boolean }
+            > = {
+              completed: isCompleted,
+              error: isFailed,
+              active: isActive,
+              skipped: isSkipped,
+              waiting: step.status === 'waiting',
+            };
 
             return (
               <MuiStep key={step.id}>

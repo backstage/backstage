@@ -53,6 +53,7 @@ import {
 } from '@backstage/plugin-permission-node';
 import { TaskFilters } from '@backstage/plugin-scaffolder-node';
 import { compact } from 'lodash';
+import { TaskSuspensionStore } from './TaskSuspensionStore';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -121,6 +122,7 @@ const parseSqlDateToIsoString = <T>(input: T): T | string => {
  * DatabaseTaskStore
  */
 export class DatabaseTaskStore implements TaskStore {
+  readonly suspensions: TaskSuspensionStore;
   private readonly db: Knex;
   private readonly events?: EventsService;
   private readonly recoverTasksEnabled: boolean;
@@ -199,6 +201,7 @@ export class DatabaseTaskStore implements TaskStore {
     recoverTasksEnabled: boolean,
   ) {
     this.db = client;
+    this.suspensions = new TaskSuspensionStore(client);
     this.events = events;
     this.recoverTasksEnabled = recoverTasksEnabled;
   }
@@ -563,6 +566,8 @@ export class DatabaseTaskStore implements TaskStore {
           );
         }
 
+        await this.suspensions.clearPayloads(tx, taskId);
+
         this.events?.publish({
           topic: 'scaffolder.task',
           eventPayload: {
@@ -734,6 +739,22 @@ export class DatabaseTaskStore implements TaskStore {
     const { taskId, body } = options;
     const serializedBody = JSON.stringify(body);
     const ret = await this.db.transaction(async tx => {
+      // Consume the suspension before locking the task, as resume does.
+      await tx('task_suspensions')
+        .where({ task_id: taskId })
+        .whereNull('consumed_at')
+        .update({ consumed_at: tx.fn.now() });
+      const parked = await tx<RawDbTaskRow>('tasks')
+        .where({ id: taskId, status: 'waiting' })
+        .update({ status: 'cancelled', secrets: null });
+      if (parked) {
+        await this.suspensions.clearPayloads(tx, taskId);
+        await tx('task_events').insert({
+          task_id: taskId,
+          event_type: 'completion',
+          body: JSON.stringify({ message: 'Waiting task cancelled' }),
+        });
+      }
       await tx<RawDbTaskRow>('tasks')
         .where({ id: taskId })
         .update({ secrets: null });
@@ -779,6 +800,14 @@ export class DatabaseTaskStore implements TaskStore {
       if (Number(updateCount) !== 1) {
         throw new ConflictError(`Task with taskId ${taskId} cannot be retried`);
       }
+
+      await tx('task_suspension_triggers')
+        .whereIn(
+          'suspension_id',
+          tx('task_suspensions').where({ task_id: taskId }).select('id'),
+        )
+        .delete();
+      await tx('task_suspensions').where({ task_id: taskId }).delete();
 
       const [task] = await tx<RawDbTaskRow>('tasks')
         .where('id', taskId)

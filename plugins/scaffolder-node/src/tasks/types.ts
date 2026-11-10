@@ -19,6 +19,11 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, JsonValue, Observable } from '@backstage/types';
 import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
+import {
+  TaskSuspension,
+  TaskSuspendOptions,
+  TaskResumeOptions,
+} from './suspensions';
 
 /**
  * TaskSecrets
@@ -37,6 +42,7 @@ export type TaskSecrets = Record<string, string> & {
  * Please reach out to us in an issue if you're using this type and your use cases.
  */
 export type TaskStatus =
+  | 'waiting'
   | 'cancelled'
   | 'completed'
   | 'failed'
@@ -165,6 +171,12 @@ export interface TaskContext {
   done: boolean;
   isDryRun?: boolean;
 
+  /** Reads the saved outcome when an action replays. */
+  getSuspension?(key: string): Promise<TaskSuspension | undefined>;
+
+  /** Persists a park after the runner has serialized the workspace. */
+  suspend?(options: TaskSuspendOptions & { stepId: string }): Promise<void>;
+
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
 
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
@@ -207,6 +219,9 @@ export interface TaskContext {
  */
 export interface TaskBroker {
   cancel(taskId: string): Promise<void>;
+
+  /** Resolves a declared manual trigger after the caller is authorized. */
+  resume?(options: TaskResumeOptions): Promise<void>;
 
   retry(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
 

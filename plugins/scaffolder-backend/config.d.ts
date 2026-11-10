@@ -19,6 +19,11 @@ import { HumanDuration } from '@backstage/types';
 export interface Config {
   /** Configuration options for the scaffolder plugin */
   scaffolder?: {
+    /** Experimental support for tasks that wait for external events. */
+    gatedWorkflows?: {
+      /** Event topics that templates may use as resume triggers. */
+      eventTopics?: string[];
+    };
     /**
      * The commit author info used when new components are created.
      */

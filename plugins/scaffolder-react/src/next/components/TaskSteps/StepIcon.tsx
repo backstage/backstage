@@ -22,6 +22,7 @@ import PanoramaFishEyeIcon from '@material-ui/icons/PanoramaFishEye';
 import classNames from 'classnames';
 import CheckCircleOutline from '@material-ui/icons/CheckCircleOutline';
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
+import PauseCircleOutline from '@material-ui/icons/PauseCircleOutline';
 
 const useStepIconStyles = makeStyles(theme => ({
   root: {
@@ -35,11 +36,14 @@ const useStepIconStyles = makeStyles(theme => ({
   },
 }));
 
-export const StepIcon = (props: StepIconProps & { skipped: boolean }) => {
+export const StepIcon = (
+  props: StepIconProps & { skipped: boolean; waiting?: boolean },
+) => {
   const classes = useStepIconStyles();
-  const { active, completed, error, skipped } = props;
+  const { active, completed, error, skipped, waiting } = props;
 
   const getMiddle = () => {
+    if (waiting) return <PauseCircleOutline titleAccess="Waiting" />;
     if (active) {
       return <CircularProgress size="20px" />;
     }

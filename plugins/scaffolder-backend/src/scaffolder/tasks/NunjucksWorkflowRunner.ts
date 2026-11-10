@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { InputError, NotAllowedError, stringifyError } from '@backstage/errors';
+import {
+  CustomErrorBase,
+  InputError,
+  isError,
+  NotAllowedError,
+  stringifyError,
+} from '@backstage/errors';
 
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -74,6 +80,11 @@ import {
 } from '@backstage/plugin-permission-node';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import {
+  TaskResumeResult,
+  TaskSuspendOptions,
+} from '@backstage/plugin-scaffolder-node';
+import { parseTaskSuspendOptions } from './parseTaskSuspendOptions';
+import {
   TaskContext,
   TaskSecrets,
   TemplateAction,
@@ -91,6 +102,18 @@ import {
   convertFiltersToRecord,
 } from '../../util/templating';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
+
+class TaskSuspendSignal extends CustomErrorBase {
+  name = 'TaskSuspendSignal' as const;
+
+  static is(value: unknown): value is TaskSuspendSignal {
+    return isError(value) && value.name === 'TaskSuspendSignal';
+  }
+
+  constructor(readonly options: TaskSuspendOptions & { stepId: string }) {
+    super('Task suspended');
+  }
+}
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -351,6 +374,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
   ) {
     const stepTrack = await this.tracker.stepStart(task, step);
     let workspaceSerializationAttempted = false;
+    let pendingSuspend: TaskSuspendSignal | undefined;
+    let timedOut = false;
+    const returnedSuspensions = new Set<string>();
     const { taskLogger } = createStepLogger({
       task,
       step,
@@ -611,6 +637,41 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       const tmpDirs = new Array<string>();
       const stepOutput: { [outputName: string]: JsonValue } = {};
       const prevTaskState = await task.getTaskState?.();
+      const suspend = async (
+        options: TaskSuspendOptions,
+      ): Promise<TaskResumeResult> => {
+        if (pendingSuspend)
+          throw new InputError('The action caught the suspension signal');
+        if (!this.recoveryEnabled || task.isDryRun || !task.suspend) {
+          throw new InputError(
+            'Task suspension requires task recovery and a persistent task context',
+          );
+        }
+        const validated = parseTaskSuspendOptions(options);
+        if (returnedSuspensions.has(validated.key))
+          throw new InputError(
+            `Suspension key '${validated.key}' was reused in this step`,
+          );
+        const previous = await task.getSuspension?.(validated.key);
+        if (previous && previous.stepId !== step.id)
+          throw new InputError(
+            `Suspension key '${validated.key}' belongs to another step`,
+          );
+        if (previous?.result) {
+          returnedSuspensions.add(validated.key);
+          timedOut = previous.result.timedOut;
+          return previous.result as TaskResumeResult;
+        }
+        if (previous)
+          throw new InputError(
+            `Suspension key '${validated.key}' has no resume outcome`,
+          );
+        pendingSuspend = new TaskSuspendSignal({
+          ...validated,
+          stepId: step.id,
+        });
+        throw pendingSuspend;
+      };
 
       for (const iteration of iterations) {
         if (iteration.each) {
@@ -641,6 +702,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           secrets: task.secrets ?? {},
           logger: taskLogger,
           workspacePath,
+          suspend,
           async checkpoint<T extends JsonValue | void>(
             opts: CheckpointContext<T>,
           ) {
@@ -716,7 +778,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             name: step.name,
           },
         });
+        if (pendingSuspend)
+          throw new InputError('The action caught the suspension signal');
       }
+
+      if (timedOut) throw new Error('Suspension timed out');
 
       // Remove all temporary directories that were created when executing the action
       for (const tmpDir of tmpDirs) {
@@ -751,7 +817,15 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       await stepTrack.markSuccessful();
       return updatedPreparedContext;
     } catch (cause) {
-      const err = taskLogger.redactError(cause);
+      if (pendingSuspend && cause === pendingSuspend) {
+        await stepTrack.markWaiting();
+        throw cause;
+      }
+      const err = taskLogger.redactError(
+        pendingSuspend
+          ? new InputError('The action caught the suspension signal')
+          : cause,
+      );
       await taskTrack.markFailed(step, err);
       await stepTrack.markFailed();
       throw err;
@@ -771,6 +845,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     const taskId = await task.getWorkspaceName();
 
     const workspacePath = path.join(this.options.workingDirectory, taskId);
+    let removedBeforeSuspension = false;
 
     const { templateCapabilities } = this.options;
 
@@ -908,6 +983,13 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             decision,
           );
         } catch (err) {
+          if (TaskSuspendSignal.is(err)) {
+            // Remove the local copy before another worker can resume this task.
+            await fs.remove(workspacePath);
+            removedBeforeSuspension = true;
+            await task.suspend!(err.options);
+            return { status: 'waiting', output: {} };
+          }
           const error = err as Error;
           allErrors.push({ step, error });
 
@@ -960,7 +1042,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       return { output };
     } finally {
-      if (workspacePath) {
+      if (!removedBeforeSuspension) {
         await fs.remove(workspacePath);
       }
     }
@@ -1160,6 +1242,15 @@ function scaffoldingTracker(metrics: MetricsService) {
       });
     }
 
+    async function markWaiting() {
+      stepTimer({ result: 'waiting' });
+      stepDuration.record(endTime(), {
+        template,
+        step: step.name,
+        result: 'waiting',
+      });
+    }
+
     async function skipFalsy() {
       await task.emitLog(
         `Skipping step ${step.id} because its if condition was false`,
@@ -1180,6 +1271,7 @@ function scaffoldingTracker(metrics: MetricsService) {
       markFailed,
       markSuccessful,
       skipFalsy,
+      markWaiting,
     };
   }
 
