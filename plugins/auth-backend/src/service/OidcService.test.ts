@@ -955,26 +955,26 @@ describe('OidcService', () => {
 
           // CIMD clients are public clients and do not need a secret
           await expect(
-            service.verifyRevocationClient(cimdClientId),
+            service.verifyRevocationClient({ clientId: cimdClientId }),
           ).resolves.toBe(true);
 
           // CIMD clients outside the allowed patterns are rejected
           await expect(
-            service.verifyRevocationClient(
-              'https://evil.example.net/oauth-metadata.json',
-            ),
+            service.verifyRevocationClient({
+              clientId: 'https://evil.example.net/oauth-metadata.json',
+            }),
           ).resolves.toBe(false);
 
           // Client IDs that match the full URL string but not the hostname
           // component are rejected
           await expect(
-            service.verifyRevocationClient(
-              'https://other.com/.example.com/client.json',
-            ),
+            service.verifyRevocationClient({
+              clientId: 'https://other.com/.example.com/client.json',
+            }),
           ).resolves.toBe(false);
 
           await expect(
-            service.verifyRevocationClient('legacy-client-id'),
+            service.verifyRevocationClient({ clientId: 'legacy-client-id' }),
           ).resolves.toBe(false);
         });
 
@@ -989,7 +989,7 @@ describe('OidcService', () => {
           });
 
           await expect(
-            service.verifyRevocationClient(cimdClientId),
+            service.verifyRevocationClient({ clientId: cimdClientId }),
           ).resolves.toBe(false);
         });
       });
@@ -1945,7 +1945,7 @@ describe('OidcService', () => {
       ],
     ])('should reject invalid config %#', async (clients, message) => {
       await expect(
-        createOidcService({ config: { auth: { clients } } }),
+        createOidcService({ config: { auth: { staticClients: clients } } }),
       ).rejects.toThrow(message);
     });
   });
