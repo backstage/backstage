@@ -64,8 +64,8 @@ same SQL as before. Use it only after checking each assumption against the
 code under test, and list in the report which cuts were applied and why. If
 the change under test affects anything a cut relies on, such as the `$in` list
 threshold or the rule that decides how long lists are matched, run the full
-battery for the affected cases. Push back if asked to use the slim profile
-anyway.
+battery for the affected cases, and if asked to use the slim profile anyway,
+explain which cuts the change invalidates.
 
 ## When to run
 
