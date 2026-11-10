@@ -1793,7 +1793,6 @@ describe('OidcService', () => {
               clientName: 'Confidential Client',
               clientSecret: 'super-secret',
               redirectUris: [redirectUri],
-              scopes: ['openid'],
             },
             { clientId: 'public-client', redirectUris: [redirectUri] },
           ],
@@ -1839,14 +1838,6 @@ describe('OidcService', () => {
             responseType: 'code',
           }),
         ).rejects.toThrow('Invalid redirect_uri');
-        await expect(
-          service.createAuthorizationSession({
-            clientId: 'confidential-client',
-            redirectUri,
-            responseType: 'code',
-            scope: 'openid offline_access',
-          }),
-        ).rejects.toThrow("Invalid scope 'offline_access'");
 
         await expect(
           service.verifyClientCredentials({

@@ -132,11 +132,9 @@ function matchesRedirectUri(
 }
 
 type StaticClient = {
-  clientId: string;
   clientName: string;
   clientSecret?: string;
   redirectUris: string[];
-  scopes?: string[];
 };
 
 function readStaticClients(
@@ -144,9 +142,9 @@ function readStaticClients(
 ): Map<string, StaticClient> {
   const clients = new Map<string, StaticClient>();
 
-  for (const clientConfig of config.getOptionalConfigArray(
-    'auth.staticClients',
-  ) ?? []) {
+  const clientConfigs =
+    config.getOptionalConfigArray('auth.staticClients') ?? [];
+  for (const clientConfig of clientConfigs) {
     const clientId = clientConfig.getString('clientId');
     if (URL.canParse(clientId)) {
       throw new Error(
@@ -174,11 +172,9 @@ function readStaticClients(
     }
 
     clients.set(clientId, {
-      clientId,
       clientName: clientConfig.getOptionalString('clientName') ?? clientId,
       clientSecret: clientConfig.getOptionalString('clientSecret'),
       redirectUris,
-      scopes: clientConfig.getOptionalStringArray('scopes'),
     });
   }
 
@@ -371,23 +367,11 @@ export class OidcService {
       );
     }
 
-    if (client.scopes) {
-      const allowedScopes = client.scopes;
-      const invalidScope = scope
-        ?.split(' ')
-        .find(s => s && !allowedScopes.includes(s));
-      if (invalidScope) {
-        throw new InputError(`Invalid scope '${invalidScope}'`);
-      }
-    }
-
-    if (codeChallenge) {
-      if (
-        !codeChallengeMethod ||
-        !['S256', 'plain'].includes(codeChallengeMethod)
-      ) {
-        throw new InputError('Invalid code_challenge_method');
-      }
+    if (
+      codeChallenge &&
+      (!codeChallengeMethod || !['S256', 'plain'].includes(codeChallengeMethod))
+    ) {
+      throw new InputError('Invalid code_challenge_method');
     }
 
     const sessionId = crypto.randomUUID();
@@ -457,7 +441,6 @@ export class OidcService {
     clientName: string;
     redirectUris: string[];
     requiresPkce: boolean;
-    scopes?: string[];
   }> {
     const staticClient = this.staticClients.get(opts.clientId);
     if (staticClient) {
@@ -471,7 +454,6 @@ export class OidcService {
         clientName: staticClient.clientName,
         redirectUris: staticClient.redirectUris,
         requiresPkce: !staticClient.clientSecret,
-        scopes: staticClient.scopes,
       };
     }
 
@@ -661,8 +643,9 @@ export class OidcService {
       throw new AuthenticationError('Redirect URI mismatch');
     }
 
-    const requiresClientAuthentication =
-      await this.requiresClientAuthentication(session.clientId);
+    const requiresClientAuthentication = this.requiresClientAuthentication(
+      session.clientId,
+    );
     if (
       (authenticatedClientId && authenticatedClientId !== session.clientId) ||
       (!authenticatedClientId && requiresClientAuthentication)
@@ -760,8 +743,8 @@ export class OidcService {
         refreshToken: params.refreshToken,
         tokenIssuer: this.tokenIssuer,
         clientId: params.clientId,
-        isClientAuthenticationRequired: async clientId => {
-          const required = await this.requiresClientAuthentication(clientId);
+        isClientAuthenticationRequired: clientId => {
+          const required = this.requiresClientAuthentication(clientId);
           return required && params.authenticatedClientId !== clientId;
         },
       });
@@ -782,19 +765,13 @@ export class OidcService {
   ): Promise<boolean> {
     const { clientId, clientSecret } = options;
     const staticClient = this.staticClients.get(clientId);
-    if (staticClient) {
-      return (
-        !!staticClient.clientSecret &&
-        safeEqual(staticClient.clientSecret, clientSecret)
-      );
+    if (!staticClient?.clientSecret) {
+      return false;
     }
-
-    return false;
+    return safeEqual(staticClient.clientSecret, clientSecret);
   }
 
-  private async requiresClientAuthentication(
-    clientId: string,
-  ): Promise<boolean> {
+  private requiresClientAuthentication(clientId: string): boolean {
     const staticClient = this.staticClients.get(clientId);
     if (staticClient) {
       return !!staticClient.clientSecret;
