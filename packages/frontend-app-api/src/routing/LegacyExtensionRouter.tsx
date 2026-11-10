@@ -21,8 +21,6 @@ import {
   UNSAFE_NavigationContext,
   UNSAFE_RouteContext,
   matchPath,
-  useLocation,
-  useNavigate,
 } from 'react-router-dom';
 import {
   createAppHistoryRouter,
@@ -30,6 +28,7 @@ import {
   createPath,
   isExternalTarget,
   sanitizeHref,
+  unwrapReactRouterContext,
   type ReactRouterAdapterBindings,
 } from '@internal/frontend';
 import {
@@ -43,33 +42,59 @@ import {
   type Navigation,
 } from '@backstage/frontend-plugin-api';
 
+const LegacyExtensionRouterContext = createContext<AppNode | undefined>(
+  undefined,
+);
+const warnedExtensions = new WeakMap<AppHistoryApi, Set<string>>();
+
+function warnImplicitRouting(history: AppHistoryApi, node: AppNode) {
+  if (process.env.NODE_ENV !== 'development') {
+    return;
+  }
+  let warned = warnedExtensions.get(history);
+  if (!warned) {
+    warned = new Set();
+    warnedExtensions.set(history, warned);
+  }
+  if (!warned.has(node.spec.id)) {
+    warned.add(node.spec.id);
+    // eslint-disable-next-line no-console
+    console.warn(
+      `Extension '${node.spec.id}' uses implicit React Router v6 routing. Render ReactRouterV6PageRouter from @backstage/plugin-app-react-router-v6 in its loader to migrate. Existing routing remains supported.`,
+    );
+  }
+}
+
 /** Called by each navigation consumer, inside its own React Router route context. */
 function useLegacyNavigation(): Navigation {
   const history = useApi(appHistoryApiRef);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { matches } = useContext(UNSAFE_RouteContext);
-  const contributing = matches.filter(
-    (match, index) => index === 0 || !!match.route.path,
+  const node = useContext(LegacyExtensionRouterContext)!;
+  // Framework-supported targets do not consume implicit routing. Native router
+  // hooks still observe these contexts and report their own compatibility use.
+  const { location } = unwrapReactRouterContext(
+    useContext(UNSAFE_LocationContext),
   );
-  const bases = contributing.map(match => match.pathnameBase);
+  const { matches } = unwrapReactRouterContext(useContext(UNSAFE_RouteContext));
+  const bases = matches
+    .filter((match, index) => index === 0 || !!match.route.path)
+    .map(match => match.pathnameBase);
+  const resolveTarget = (to: string) => {
+    const safeTo = sanitizeHref(to);
+    if (
+      safeTo === '' ||
+      safeTo.startsWith('/') ||
+      safeTo.startsWith('?') ||
+      safeTo.startsWith('#') ||
+      isExternalTarget(safeTo)
+    ) {
+      return safeTo;
+    }
+    warnImplicitRouting(history, node);
+    return createPath(resolveAppPath(safeTo, bases, location.pathname));
+  };
   return {
-    navigate: (to, options) => {
-      const safeTo = sanitizeHref(to);
-      if (isExternalTarget(safeTo)) {
-        history.navigate(safeTo, options);
-      } else {
-        navigate(safeTo, options);
-      }
-    },
-    createHref: to => {
-      const safeTo = sanitizeHref(to);
-      return history.createHref(
-        isExternalTarget(safeTo)
-          ? safeTo
-          : createPath(resolveAppPath(safeTo, bases, location.pathname)),
-      );
-    },
+    navigate: (to, options) => history.navigate(resolveTarget(to), options),
+    createHref: to => history.createHref(resolveTarget(to)),
     pathname: new URL(
       history.createHref(location.pathname),
       'http://backstage.local',
@@ -77,10 +102,6 @@ function useLegacyNavigation(): Navigation {
   };
 }
 
-const LegacyExtensionRouterContext = createContext<AppNode | undefined>(
-  undefined,
-);
-const warnedExtensions = new WeakMap<AppHistoryApi, Set<string>>();
 const bindings: ReactRouterAdapterBindings = {
   NavigationType,
   matchPath: matchPath as ReactRouterAdapterBindings['matchPath'],
@@ -112,20 +133,7 @@ export function LegacyExtensionRouter(props: {
       navigationContextExtras: { future: { v7_relativeSplatPath: false } },
       onUse:
         process.env.NODE_ENV === 'development'
-          ? () => {
-              let warned = warnedExtensions.get(history);
-              if (!warned) {
-                warned = new Set();
-                warnedExtensions.set(history, warned);
-              }
-              if (!warned.has(node.spec.id)) {
-                warned.add(node.spec.id);
-                // eslint-disable-next-line no-console
-                console.warn(
-                  `Extension '${node.spec.id}' uses implicit React Router v6 routing. Render ReactRouterV6PageRouter from @backstage/plugin-app-react-router-v6 in its loader to migrate. Existing routing remains supported.`,
-                );
-              }
-            }
+          ? () => warnImplicitRouting(history, node)
           : undefined,
     });
   }, [history, routePattern, ownsMount, parentNode, node]);
