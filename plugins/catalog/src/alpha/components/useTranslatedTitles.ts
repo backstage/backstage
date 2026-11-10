@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
+import { useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { createTranslatedMessagesSource } from '@internal/frontend';
 import {
@@ -28,9 +28,14 @@ export function useTranslatedTitles(
   selections: readonly (TranslationRefTuple<undefined> | undefined)[],
 ): readonly (string | undefined)[] {
   const api = useApi(translationApiRef);
-  const source = useMemo(
-    () => createTranslatedMessagesSource(api, selections),
-    [api, selections],
+  const [previousSource, setSource] = useState(() =>
+    createTranslatedMessagesSource(api, selections),
   );
+  const source = previousSource.matches(api, selections)
+    ? previousSource
+    : createTranslatedMessagesSource(api, selections);
+  if (source !== previousSource) {
+    setSource(source);
+  }
   return useSyncExternalStore(source.subscribe, source.getSnapshot);
 }

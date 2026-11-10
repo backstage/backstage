@@ -241,6 +241,21 @@ describe('Entity page', () => {
             default: { title: string };
           }>(() => {}),
       );
+      let resolveGerman!: (value: {
+        default: { main: string; other: string };
+      }) => void;
+      const german = new Promise<{ default: { main: string; other: string } }>(
+        resolve => {
+          resolveGerman = resolve;
+        },
+      );
+      const getEntityByRef = jest
+        .fn()
+        .mockResolvedValueOnce(entityMock)
+        .mockResolvedValueOnce({
+          ...entityMock,
+          metadata: { ...entityMock.metadata, description: 'Refreshed entity' },
+        });
       const languageApi = AppLanguageSelector.create({
         availableLanguages: ['en', 'sv', 'de'],
       });
@@ -255,7 +270,7 @@ describe('Entity page', () => {
             ref,
             translations: {
               sv: async () => ({ default: { main: 'AAA', other: 'Övrigt' } }),
-              de: async () => ({ default: { main: '', other: 'Other' } }),
+              de: () => german,
             },
           }),
         ],
@@ -264,11 +279,18 @@ describe('Entity page', () => {
       const mount = jest.fn();
       const unmount = jest.fn();
       function Content() {
+        const { entity, refresh } = useAsyncEntity();
         useEffect(() => {
           mount();
           return unmount;
         }, []);
-        return <input aria-label="Entity page state" defaultValue="initial" />;
+        return (
+          <>
+            <input aria-label="Entity page state" defaultValue="initial" />
+            <button onClick={refresh}>Refresh entity</button>
+            <output>{entity?.metadata.description}</output>
+          </>
+        );
       }
       const tester = createExtensionTester(
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
@@ -323,7 +345,7 @@ describe('Entity page', () => {
       }
       await renderInTestApp(tester.reactElement(), {
         apis: [
-          mockCatalogApi,
+          catalogApiMock.mock({ getEntityByRef }),
           [starredEntitiesApiRef, mockStarredEntitiesApi],
           [translationApiRef, translationApi],
           [appLanguageApiRef, languageApi],
@@ -363,9 +385,24 @@ describe('Entity page', () => {
       ]);
       expect(Helmet.peek().title).toContain('AAA');
       await userEvent.keyboard('{Escape}');
+      const subscriptions = observe.mock.calls.length;
       act(() => languageApi.setLanguage('de'));
       await userEvent.click(
+        screen.getByRole('button', { name: 'Refresh entity' }),
+      );
+      expect(
+        await screen.findByText('Refreshed entity', { selector: 'output' }),
+      ).toBeInTheDocument();
+      expect(observe).toHaveBeenCalledTimes(subscriptions);
+      await userEvent.click(
         await screen.findByRole(groupRole, { name: /Documentation/ }),
+      );
+      expect(menuItems().map(item => item.textContent)).toEqual([
+        'AAA',
+        'Övrigt',
+      ]);
+      await act(async () =>
+        resolveGerman({ default: { main: '', other: 'Other' } }),
       );
       expect(
         await screen.findByRole(itemRole, { name: 'Other' }),

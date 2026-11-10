@@ -86,6 +86,10 @@ it('publishes complete title groups, batches notifications, and preserves titles
   expect(result.current).toEqual(['Main', undefined, 'Other', 'Secondary']);
   expect(observe).toHaveBeenCalledTimes(2);
   act(() => languageApi.setLanguage('sv'));
+  rerender({
+    titles: selections.map(selection => selection && { ...selection }),
+  });
+  expect(observe).toHaveBeenCalledTimes(2);
   expect(result.current).toEqual(['Main', undefined, 'Other', 'Secondary']);
   await act(async () => resolveSecondary({ default: { title: 'Andra' } }));
   expect(api.getTranslation(secondaryRef).ready).toBe(true);
@@ -104,6 +108,10 @@ it('publishes complete title groups, batches notifications, and preserves titles
   expect(result.current).toEqual(['Main', undefined, 'Other', 'Secondary']);
   expect(read).toHaveBeenCalledTimes(2);
   expect(observe).toHaveBeenCalledTimes(2);
+  rerender({
+    titles: [ref('other'), undefined, ref('main'), secondaryRef('title')],
+  });
+  expect(result.current).toEqual(['Other', undefined, 'Main', 'Secondary']);
   rerender({ titles: [secondaryRef('title'), ref('other')] });
   expect(result.current).toEqual(['Secondary', 'Other']);
   rerender({ titles: [] });

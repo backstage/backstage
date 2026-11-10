@@ -40,6 +40,20 @@ export function createTranslatedMessagesSource(
   let error: Error | undefined;
 
   return {
+    matches(
+      nextApi: TranslationApi,
+      nextSelections: typeof selections,
+    ): boolean {
+      return (
+        api === nextApi &&
+        selections.length === nextSelections.length &&
+        selections.every(
+          (selection, index) =>
+            selection?.ref === nextSelections[index]?.ref &&
+            selection?.key === nextSelections[index]?.key,
+        )
+      );
+    },
     getSnapshot: (): readonly (string | undefined)[] => {
       if (error) throw error;
       return snapshot;
