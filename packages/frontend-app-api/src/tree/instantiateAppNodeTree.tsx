@@ -23,7 +23,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ResolvedExtensionInputs } from '../../../frontend-plugin-api/src/wiring/createExtension';
-import { createElement, type ReactNode } from 'react';
+import { ReactNode } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppNodeProvider } from '../../../frontend-plugin-api/src/components/AppNodeProvider';
 import { LegacyExtensionRouter } from '../routing/LegacyExtensionRouter';
@@ -535,15 +535,11 @@ export function createAppNodeInstance(options: {
   ) {
     extensionData.set(
       coreExtensionData.reactElement.id,
-      createElement(AppNodeProvider, {
-        node,
-        children: createElement(LegacyExtensionRouter, {
-          node,
-          children: extensionData.get(
-            coreExtensionData.reactElement.id,
-          ) as ReactNode,
-        }),
-      }),
+      <AppNodeProvider node={node}>
+        <LegacyExtensionRouter node={node}>
+          {extensionData.get(coreExtensionData.reactElement.id) as ReactNode}
+        </LegacyExtensionRouter>
+      </AppNodeProvider>,
     );
   }
 
