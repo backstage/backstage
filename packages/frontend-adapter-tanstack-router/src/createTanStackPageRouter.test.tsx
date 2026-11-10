@@ -44,9 +44,61 @@ import {
   TanStackPageContent,
   TanStackPageRouter,
   createTanStackPageRouter,
+  type CreateTanStackPageRouterOptions,
 } from './TanStackPageRouter';
 
 describe('createTanStackPageRouter', () => {
+  it.each([false, true])(
+    'deduplicates repeated optional static segments with a custom router %s',
+    async custom => {
+      function Probe() {
+        return <p>Path: {useLocation().pathname}</p>;
+      }
+      const routerFactory = jest.fn(
+        ({
+          history,
+          routePaths,
+        }: Parameters<CreateTanStackPageRouterOptions['createRouter']>[0]) => {
+          const rootRoute = createRootRoute();
+          const routeTree = rootRoute.addChildren(
+            routePaths.map(path =>
+              createRoute({
+                getParentRoute: () => rootRoute,
+                path: `${path === '/' ? '' : path}/$`,
+                component: TanStackPageContent,
+              }),
+            ),
+          );
+          return createRouter({ routeTree, history });
+        },
+      );
+      const PageRouter = custom
+        ? createTanStackPageRouter({ createRouter: routerFactory })
+        : TanStackPageRouter;
+      const { appHistory } = renderInTestApp(
+        <PageRouter>
+          <Probe />
+        </PageRouter>,
+        {
+          mountPath: '/foo?/foo?',
+          initialRouteEntries: ['/foo/foo/details'],
+        },
+      );
+      expect(
+        await screen.findByText('Path: /foo/foo/details'),
+      ).toBeInTheDocument();
+      expect(
+        routerFactory.mock.calls.map(([{ routePaths }]) => routePaths),
+      ).toEqual(custom ? [['/foo/foo', '/foo', '/']] : []);
+      for (const pathname of ['/foo/details', '/details']) {
+        await act(async () => appHistory.navigate(pathname));
+        expect(
+          await screen.findByText(`Path: ${pathname}`),
+        ).toBeInTheDocument();
+      }
+    },
+  );
+
   it('keeps an optional parent scope outside a matched child during navigation', async () => {
     function ParentProbe() {
       const location = useLocation();
