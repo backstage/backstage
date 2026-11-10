@@ -29,6 +29,11 @@ const LazyAsyncApiDefinition = lazy(() =>
 /** @public */
 export type AsyncApiDefinitionWidgetProps = {
   definition: string;
+  /**
+   * Custom reference resolvers, provided to opt in to resolving external
+   * references in the definition. External references are not resolved by
+   * default.
+   */
   resolvers?: AsyncApiResolver[];
 };
 
