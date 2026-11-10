@@ -382,6 +382,11 @@ visible without remounting page content. Hidden entity tabs and pages excluded
 from navigation do not delay the corresponding visible titles. Failed resource
 loads surface as errors.
 
+When an entity refresh changes the available tabs, existing visible tabs keep
+their resolved titles and form state. Newly visible translated tabs wait until
+the replacement title group is ready. Opening a pending tab directly shows the
+loading indicator until that group is ready.
+
 TypeScript checks the selected key and rejects title messages that require
 replacement values or a plural count. Nested messages are supported when none
 of the referenced messages require values.

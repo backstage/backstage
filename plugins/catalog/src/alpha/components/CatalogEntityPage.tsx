@@ -35,6 +35,7 @@ import {
   filterEntityLayoutRoutes,
 } from './EntityLayout/entityLayoutRoutes';
 import type { EntityContextMenuItemDataWithNode } from './EntityContextMenu';
+import { useSelectedSubRoute } from './EntityTabs/EntityTabs';
 
 export interface CatalogEntityPageProps {
   menuItems: Array<
@@ -71,6 +72,8 @@ export function CatalogEntityPage(props: CatalogEntityPageProps) {
     [visibleRoutes],
   );
   const titles = useTranslatedTitles(selections);
+  const { index: activeRouteIndex } = useSelectedSubRoute(visibleRoutes);
+  const activeRoute = visibleRoutes[activeRouteIndex];
   const translatedRoutes = useMemo(
     () =>
       titles &&
@@ -93,12 +96,18 @@ export function CatalogEntityPage(props: CatalogEntityPageProps) {
   const routes = translatedRoutes
     ? [...translatedRoutes.values()]
     : previousRoutes &&
-      visibleRoutes.map(
-        route =>
+      visibleRoutes.flatMap(route => {
+        const resolved =
           previousRoutes.get(route) ??
-          (route.titleTranslation ? undefined : route),
-      );
-  if (!routes?.every((route): route is EntityLayoutRoute => Boolean(route))) {
+          (route.titleTranslation ? undefined : route);
+        return resolved ? [resolved] : [];
+      });
+  if (
+    !routes ||
+    (!translatedRoutes &&
+      activeRoute?.titleTranslation &&
+      !previousRoutes?.has(activeRoute))
+  ) {
     return <Progress />;
   }
   const entityProviderProps = {

@@ -15,6 +15,7 @@
  */
 
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
@@ -229,7 +230,7 @@ describe('Entity page', () => {
           );
       const ref = createTranslationRef({
         id: 'entity-content-titles',
-        messages: { main: 'Zulu', other: 'Alpha' },
+        messages: { main: 'Zulu', other: 'Alpha', new: 'New tab' },
       });
       const hiddenRef = createTranslationRef({
         id: 'hidden-entity-titles',
@@ -242,21 +243,21 @@ describe('Entity page', () => {
           }>(() => {}),
       );
       let resolveGerman!: (value: {
-        default: { main: string; other: string };
+        default: { main: string; other: string; new: string };
       }) => void;
-      const german = new Promise<{ default: { main: string; other: string } }>(
-        resolve => {
-          resolveGerman = resolve;
-        },
-      );
+      const german = new Promise<{
+        default: { main: string; other: string; new: string };
+      }>(resolve => {
+        resolveGerman = resolve;
+      });
       let resolveSwedish!: (value: {
-        default: { main: string; other: string };
+        default: { main: string; other: string; new: string };
       }) => void;
-      const swedish = new Promise<{ default: { main: string; other: string } }>(
-        resolve => {
-          resolveSwedish = resolve;
-        },
-      );
+      const swedish = new Promise<{
+        default: { main: string; other: string; new: string };
+      }>(resolve => {
+        resolveSwedish = resolve;
+      });
       const getEntityByRef = jest
         .fn()
         .mockResolvedValueOnce(entityMock)
@@ -350,6 +351,17 @@ describe('Entity page', () => {
       );
       tester.add(
         EntityContentBlueprint.make({
+          name: 'new-translated',
+          params: {
+            path: '/new',
+            title: ref('new'),
+            filter: e => e.metadata.description === 'Filtered entity',
+            loader: async () => <div>New content</div>,
+          },
+        }),
+      );
+      tester.add(
+        EntityContentBlueprint.make({
           name: 'hidden-translated',
           params: {
             path: '/hidden',
@@ -393,7 +405,9 @@ describe('Entity page', () => {
       expect(screen.queryByText('Configured fallback')).not.toBeInTheDocument();
       expect(screen.queryByText('Zulu')).not.toBeInTheDocument();
       await act(async () =>
-        resolveSwedish({ default: { main: 'AAA', other: 'Övrigt' } }),
+        resolveSwedish({
+          default: { main: 'AAA', other: 'Övrigt', new: 'New Swedish tab' },
+        }),
       );
       const input = await screen.findByLabelText('Entity page state');
       act(() => languageApi.setLanguage('en'));
@@ -436,6 +450,9 @@ describe('Entity page', () => {
         await screen.findByText('Filtered entity', { selector: 'output' }),
       ).toBeInTheDocument();
       expect(screen.queryByText('Conditional')).not.toBeInTheDocument();
+      expect(screen.queryByText('New tab')).not.toBeInTheDocument();
+      expect(screen.queryByText('New Swedish tab')).not.toBeInTheDocument();
+      expect(screen.queryByText('New German tab')).not.toBeInTheDocument();
       expect(screen.getByLabelText('Entity page state')).toBe(input);
       expect(input).toHaveValue('initial preserved');
       expect(mount).toHaveBeenCalledTimes(1);
@@ -448,12 +465,15 @@ describe('Entity page', () => {
         'Övrigt',
       ]);
       await act(async () =>
-        resolveGerman({ default: { main: '', other: 'Other' } }),
+        resolveGerman({
+          default: { main: '', other: 'Other', new: 'New German tab' },
+        }),
       );
       expect(
         await screen.findByRole(itemRole, { name: 'Other' }),
       ).toBeInTheDocument();
       expect(menuItems()[0]).toHaveTextContent(/^$/);
+      expect(screen.getByText('New German tab')).toBeInTheDocument();
       await userEvent.keyboard('{Escape}');
       act(() => languageApi.setLanguage('en'));
       await userEvent.click(
@@ -470,6 +490,122 @@ describe('Entity page', () => {
       expect(hiddenLoad).not.toHaveBeenCalled();
       expect(observe).not.toHaveBeenCalledWith(hiddenRef);
       expect(screen.queryByText('Hidden tab')).not.toBeInTheDocument();
+    },
+  );
+
+  it.each(['bui', 'legacy'])(
+    'waits for a newly visible translated route in the %s layout without showing not found',
+    async layout => {
+      const ref = createTranslationRef({
+        id: 'pending-route',
+        messages: { title: 'Default pending tab' },
+      });
+      let resolve!: (value: { default: { title: string } }) => void;
+      const pending = new Promise<{ default: { title: string } }>(r => {
+        resolve = r;
+      });
+      const languageApi = AppLanguageSelector.create({
+        availableLanguages: ['en', 'sv'],
+        defaultLanguage: 'sv',
+      });
+      const translationApi = I18nextTranslationApi.create({
+        languageApi,
+        resources: [
+          createTranslationResource({
+            ref,
+            translations: { sv: () => pending },
+          }),
+        ],
+      });
+      const getEntityByRef = jest
+        .fn()
+        .mockResolvedValueOnce(entityMock)
+        .mockResolvedValueOnce({
+          ...entityMock,
+          metadata: { ...entityMock.metadata, description: 'Refreshed entity' },
+        });
+      function Overview() {
+        const { entity, refresh } = useAsyncEntity();
+        return (
+          <>
+            <input aria-label="Retained state" defaultValue="initial" />
+            <button onClick={refresh}>Refresh entity</button>
+            <Link to={`${entityPath}/pending/nested`}>Open pending route</Link>
+            <output>{entity?.metadata.description}</output>
+          </>
+        );
+      }
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+        { apis: [[translationApiRef, translationApi]] },
+      )
+        .add(
+          EntityContentBlueprint.make({
+            name: 'overview',
+            params: {
+              path: '/overview',
+              title: 'Overview',
+              loader: async () => <Overview />,
+            },
+          }),
+        )
+        .add(
+          EntityContentBlueprint.make({
+            name: 'pending',
+            params: {
+              path: '/pending/*',
+              title: ref('title'),
+              filter: e => e.metadata.description === 'Refreshed entity',
+              loader: async () => <div>Pending content</div>,
+            },
+          }),
+        );
+      if (layout === 'legacy') {
+        tester.add(
+          EntityHeaderBlueprint.make({
+            name: 'legacy',
+            params: { loader: async () => <header>Legacy header</header> },
+          }),
+        );
+      }
+      await renderInTestApp(tester.reactElement(), {
+        apis: [
+          catalogApiMock.mock({ getEntityByRef }),
+          [starredEntitiesApiRef, mockStarredEntitiesApi],
+          [translationApiRef, translationApi],
+        ],
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: [`${entityPath}/overview`],
+        config: { backend: { baseUrl: 'http://localhost:7000' } },
+        mountedRoutes: {
+          '/catalog': convertLegacyRouteRef(rootRouteRef),
+          '/catalog/:namespace/:kind/:name':
+            convertLegacyRouteRef(entityRouteRef),
+        },
+      });
+      const input = await screen.findByLabelText('Retained state');
+      await userEvent.type(input, ' preserved');
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Refresh entity' }),
+      );
+      expect(
+        await screen.findByText('Refreshed entity', { selector: 'output' }),
+      ).toBeInTheDocument();
+      expect(screen.getByLabelText('Retained state')).toBe(input);
+      expect(input).toHaveValue('initial preserved');
+      expect(screen.queryByText('Default pending tab')).not.toBeInTheDocument();
+      await userEvent.click(
+        screen.getByRole('link', { name: 'Open pending route' }),
+      );
+      expect(await screen.findByTestId('progress')).toBeInTheDocument();
+      expect(screen.queryByText('Pending content')).not.toBeInTheDocument();
+      expect(screen.queryByText(/not found/i)).not.toBeInTheDocument();
+      await act(async () =>
+        resolve({ default: { title: 'Translated pending tab' } }),
+      );
+      expect(await screen.findByText('Pending content')).toBeInTheDocument();
+      expect(screen.getByText('Translated pending tab')).toBeInTheDocument();
+      expect(screen.queryByText('Default pending tab')).not.toBeInTheDocument();
     },
   );
 
