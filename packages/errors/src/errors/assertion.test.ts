@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assertError, isError, toError } from './assertion';
+import { assertError, isError, isErrorWithName, toError } from './assertion';
 import { NotFoundError } from './common';
 import { CustomErrorBase } from './CustomErrorBase';
 
@@ -76,6 +76,38 @@ describe('isError', () => {
       expect(isError(notError)).toBe(false);
     },
   );
+});
+
+describe('isErrorWithName', () => {
+  it('checks explicit names and optional causes without constructor identity', () => {
+    const cause = { name: 'Cause', message: '' };
+    const value: unknown = { name: 'CustomError', message: '', cause };
+    expect(isErrorWithName(value, 'CustomError')).toBe(true);
+    if (!isErrorWithName(value, 'CustomError')) {
+      throw new Error('Expected a named error');
+    }
+    const name: 'CustomError' = value.name;
+    const narrowedCause: Error | undefined = value.cause;
+    expect(name).toBe('CustomError');
+    expect(narrowedCause).toBe(cause);
+    expect(isErrorWithName({ name: 'CustomError', message: '' }, name)).toBe(
+      true,
+    );
+    expect(isErrorWithName(new NotFoundError(), 'NotFoundError')).toBe(true);
+    expect(isErrorWithName(value, 'OtherError')).toBe(false);
+
+    for (const invalid of [
+      undefined,
+      ...notErrors,
+      Object.assign([], { name: 'CustomError', message: '' }),
+      { name: 'CustomError', message: 42 },
+      { name: 'CustomError', message: '', cause: null },
+      { name: 'CustomError', message: '', cause: 'cause' },
+      { name: 'CustomError', message: '', cause: {} },
+    ]) {
+      expect(isErrorWithName(invalid, 'CustomError')).toBe(false);
+    }
+  });
 });
 
 describe('toError', () => {
