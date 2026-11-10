@@ -27,6 +27,7 @@ import {
   mockCredentials,
 } from '@backstage/backend-test-utils';
 import request from 'supertest';
+import express from 'express';
 import crypto from 'node:crypto';
 import type { JsonObject } from '@backstage/types';
 import { OidcRouter } from './OidcRouter';
@@ -265,11 +266,136 @@ describe('OidcRouter', () => {
         service: oidcService,
         tokenIssuer: mockTokenIssuer,
         catalog: mockCatalog,
+        offlineAccess,
       },
     };
   }
 
   describe.each(databases.eachSupportedId())('%p', databaseId => {
+    it('should decode form-encoded Basic client credentials', async () => {
+      const clientId = 'integration +/=';
+      const clientSecret = 'secret +/:=%';
+      const redirectUri = 'https://integration.example.com/callback';
+      const { router, mocks } = await createRouterWithOfflineAccess(
+        databaseId,
+        undefined,
+        {
+          clients: [{ clientId, clientSecret, redirectUris: [redirectUri] }],
+        },
+      );
+      mocks.tokenIssuer.issueToken.mockResolvedValue({ token: 'access-token' });
+      const session = await mocks.service.createAuthorizationSession({
+        clientId,
+        redirectUri,
+        responseType: 'code',
+      });
+      const { redirectUrl } = await mocks.service.approveAuthorizationSession({
+        sessionId: session.id,
+        userEntityRef: MOCK_USER_ENTITY_REF,
+      });
+      const encode = (value: string) =>
+        new URLSearchParams({ value }).toString().slice('value='.length);
+      const basic = Buffer.from(
+        `${encode(clientId)}:${encode(clientSecret)}`,
+      ).toString('base64');
+      const response = await request(express().use(router.getRouter()))
+        .post('/v1/token')
+        .set('Authorization', `Basic ${basic}`)
+        .send({
+          grant_type: 'authorization_code',
+          code: new URL(redirectUrl).searchParams.get('code'),
+          redirect_uri: redirectUri,
+        });
+      expect(response.status).toBe(200);
+      expect(response.body.access_token).toBe('access-token');
+    });
+
+    it('should reject outstanding codes and refresh tokens after removing a configured client', async () => {
+      const clientId = 'removed-client';
+      const clientSecret = 'client-secret';
+      const redirectUri = 'https://integration.example.com/callback';
+      const { router, mocks } = await createRouterWithOfflineAccess(
+        databaseId,
+        undefined,
+        {
+          clients: [{ clientId, clientSecret, redirectUris: [redirectUri] }],
+        },
+      );
+      mocks.tokenIssuer.issueToken.mockResolvedValue({ token: 'access-token' });
+      const codes: string[] = [];
+      for (let i = 0; i < 2; i++) {
+        const session = await mocks.service.createAuthorizationSession({
+          clientId,
+          redirectUri,
+          responseType: 'code',
+          scope: 'openid offline_access',
+        });
+        const { redirectUrl } = await mocks.service.approveAuthorizationSession(
+          {
+            sessionId: session.id,
+            userEntityRef: MOCK_USER_ENTITY_REF,
+          },
+        );
+        codes.push(new URL(redirectUrl).searchParams.get('code')!);
+      }
+      const app = express().use(router.getRouter());
+      const issued = await request(app).post('/v1/token').send({
+        grant_type: 'authorization_code',
+        code: codes[0],
+        redirect_uri: redirectUri,
+        client_id: clientId,
+        client_secret: clientSecret,
+      });
+      expect(issued.status).toBe(200);
+      expect(issued.body.refresh_token).toEqual(expect.any(String));
+      const refreshRequest = {
+        grant_type: 'refresh_token',
+        refresh_token: issued.body.refresh_token,
+      };
+      expect(
+        (await request(app).post('/v1/token').send(refreshRequest)).status,
+      ).toBe(400);
+      const restarted = OidcRouter.create({
+        auth: mocks.auth,
+        httpAuth: mocks.httpAuth,
+        oidc: mocks.oidc,
+        userInfo: mocks.userInfo,
+        tokenIssuer: mocks.tokenIssuer,
+        offlineAccess: mocks.offlineAccess,
+        logger: mockServices.logger.mock(),
+        baseUrl: 'http://localhost:7000',
+        appUrl: 'http://localhost:3000',
+        config: mockServices.rootConfig({
+          data: {
+            auth: {
+              clients: [
+                {
+                  clientId: 'remaining-client',
+                  clientSecret: 'another-secret',
+                  redirectUris: [redirectUri],
+                },
+              ],
+            },
+          },
+        }),
+      });
+      const restartedApp = express().use(restarted.getRouter());
+      mocks.tokenIssuer.issueToken.mockClear();
+      const refresh = await request(restartedApp)
+        .post('/v1/token')
+        .send(refreshRequest);
+      expect(refresh.status).toBe(400);
+      expect(refresh.body.error).toBe('invalid_grant');
+      const code = await request(restartedApp).post('/v1/token').send({
+        grant_type: 'authorization_code',
+        code: codes[1],
+        redirect_uri: redirectUri,
+      });
+      expect(code.status).toBe(400);
+      expect(code.body.error).toBe('invalid_grant');
+      expect(mocks.tokenIssuer.issueToken).not.toHaveBeenCalled();
+    });
+
     describe('/v1/userinfo', () => {
       it('should return user info for full tokens', async () => {
         const {

@@ -516,7 +516,7 @@ export class OidcService {
       }
     }
 
-    return cimdClient;
+    return { ...cimdClient, requiresPkce: true };
   }
 
   private async getValidPendingSession(sessionId: string) {
@@ -657,10 +657,11 @@ export class OidcService {
       throw new AuthenticationError('Redirect URI mismatch');
     }
 
+    const requiresClientAuthentication =
+      await this.requiresClientAuthentication(session.clientId);
     if (
       (authenticatedClientId && authenticatedClientId !== session.clientId) ||
-      (!authenticatedClientId &&
-        this.isConfidentialStaticClient(session.clientId))
+      (!authenticatedClientId && requiresClientAuthentication)
     ) {
       throw new AuthenticationError(
         'Authorization code was not issued to this client',
@@ -755,7 +756,7 @@ export class OidcService {
         tokenIssuer: this.tokenIssuer,
         clientId: params.clientId,
         isClientAuthenticationRequired: clientId =>
-          this.isConfidentialStaticClient(clientId),
+          this.requiresClientAuthentication(clientId),
       });
 
     return {
@@ -784,8 +785,21 @@ export class OidcService {
     return false;
   }
 
-  private isConfidentialStaticClient(clientId: string): boolean {
-    return !!this.staticClients.get(clientId)?.clientSecret;
+  private async requiresClientAuthentication(
+    clientId: string,
+  ): Promise<boolean> {
+    const staticClient = this.staticClients.get(clientId);
+    if (staticClient) {
+      return !!staticClient.clientSecret;
+    }
+
+    // CIMD clients have no database registration and need no metadata fetch here.
+    try {
+      validateCimdUrl(clientId);
+      return false;
+    } catch {
+      throw new AuthenticationError('Client is no longer registered');
+    }
   }
 
   /**
