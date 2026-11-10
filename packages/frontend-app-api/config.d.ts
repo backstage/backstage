@@ -32,6 +32,22 @@ export interface Config {
      */
     packages?: 'all' | { include?: string[]; exclude?: string[] };
 
+    /**
+     * Experimental features of the new frontend system.
+     *
+     * @visibility frontend
+     */
+    experimental?: {
+      /**
+       * When enabled together with `app.packages`, the CLI writes a manifest of
+       * each detected plugin at build time and loads plugins that only provide
+       * pages lazily, using a dynamic import instead of a static one.
+       *
+       * @visibility frontend
+       */
+      deferredPackages?: boolean;
+    };
+
     routes?: {
       /**
        * Maps external route references to regular route references. Both the

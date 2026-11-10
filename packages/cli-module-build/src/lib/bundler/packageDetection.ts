@@ -21,6 +21,10 @@ import fs from 'fs-extra';
 import PQueue from 'p-queue';
 import { dirname, join as joinPath, resolve as resolvePath } from 'node:path';
 import { targetPaths } from '@backstage/cli-common';
+import {
+  ExtractedManifest,
+  extractManifests,
+} from './manifest/extractManifests';
 
 const DETECTED_MODULES_MODULE_NAME = '__backstage-autodetected-plugins__';
 
@@ -103,18 +107,153 @@ async function detectPackages(
 // Make sure we're not issuing multiple writes at the same time, which can cause partial overwrites
 const writeQueue = new PQueue({ concurrency: 1 });
 
+type DetectedPackage = { name: string; export?: string; import: string };
+
+const IMPORT_SCAN_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs'];
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&');
+}
+
+/**
+ * Finds the detected packages that are imported by the source of the app. A
+ * static import stops the bundler from splitting a package into its own chunk.
+ */
+async function findStaticallyImportedPackages(
+  targetPath: string,
+  pkgs: DetectedPackage[],
+): Promise<Set<string>> {
+  const found = new Set<string>();
+  // Matches the package itself as well as any sub-path import
+  const patterns = Array.from(new Set(pkgs.map(pkg => pkg.name))).map(name => ({
+    name,
+    pattern: new RegExp(`['"]${escapeRegExp(name)}(?:/[^'"]*)?['"]`),
+  }));
+
+  async function scan(dir: string) {
+    for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+      const path = joinPath(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (entry.name !== 'node_modules') {
+          await scan(path);
+        }
+      } else if (
+        IMPORT_SCAN_EXTENSIONS.some(ext => entry.name.endsWith(ext)) &&
+        !/\.test\.[jt]sx?$/.test(entry.name)
+      ) {
+        const content = await fs.readFile(path, 'utf8');
+        for (const { name, pattern } of patterns) {
+          if (!found.has(name) && pattern.test(content)) {
+            found.add(name);
+          }
+        }
+      }
+    }
+  }
+
+  const srcDir = resolvePath(targetPath, 'src');
+  if (await fs.pathExists(srcDir)) {
+    await scan(srcDir);
+  }
+  return found;
+}
+
+type DetectedEntry =
+  | { pkg: DetectedPackage; mode: 'eager'; reason: string }
+  | {
+      pkg: DetectedPackage;
+      mode: 'lazy';
+      reason: string;
+      manifest: ExtractedManifest;
+    };
+
+async function resolveDetectedEntries(
+  targetPath: string,
+  pkgs: DetectedPackage[],
+): Promise<DetectedEntry[]> {
+  const imported = await findStaticallyImportedPackages(targetPath, pkgs);
+  const keyOf = (pkg: DetectedPackage) => `${pkg.name}${pkg.export ?? ''}`;
+  const results = await extractManifests({
+    appDir: targetPath,
+    packages: pkgs
+      .filter(pkg => !imported.has(pkg.name))
+      .map(pkg => ({ key: keyOf(pkg), import: pkg.import })),
+  });
+
+  return pkgs.map((pkg): DetectedEntry => {
+    if (imported.has(pkg.name)) {
+      return { pkg, mode: 'eager', reason: 'statically imported by app' };
+    }
+    const result = results.get(keyOf(pkg));
+    if (!result || 'error' in result) {
+      return {
+        pkg,
+        mode: 'eager',
+        reason: `manifest extraction failed: ${
+          result && 'error' in result ? result.error : 'no result'
+        }`,
+      };
+    }
+    if ('skipped' in result) {
+      return { pkg, mode: 'eager', reason: result.skipped };
+    }
+    if (!result.manifest.deferrable) {
+      return {
+        pkg,
+        mode: 'eager',
+        reason: result.manifest.notDeferrableReason ?? 'not deferrable',
+      };
+    }
+    return {
+      pkg,
+      mode: 'lazy',
+      reason: 'only provides pages',
+      manifest: result.manifest,
+    };
+  });
+}
+
+function printDeferralReport(entries: DetectedEntry[]) {
+  console.log('Deferred package detection:');
+  for (const { pkg, mode, reason } of entries) {
+    const name = `${pkg.name}${pkg.export ? pkg.export.slice(1) : ''}`;
+    console.log(
+      `  ${mode === 'lazy' ? 'deferred' : 'eager   '}  ${name} (${reason})`,
+    );
+  }
+}
+
+function requireEntry(pkg: DetectedPackage) {
+  return `{ name: ${JSON.stringify(pkg.name)}, export: ${JSON.stringify(
+    pkg.export,
+  )}, default: require('${pkg.import}').default }`;
+}
+
 async function writeDetectedPackagesModule(
   targetPath: string,
-  pkgs: { name: string; export?: string; import: string }[],
+  pkgs: DetectedPackage[],
+  options: { deferredPackages: boolean },
 ) {
-  const requirePackageScript = pkgs
-    ?.map(
-      pkg =>
-        `{ name: ${JSON.stringify(pkg.name)}, export: ${JSON.stringify(
-          pkg.export,
-        )}, default: require('${pkg.import}').default }`,
-    )
-    .join(',');
+  let requirePackageScript: string;
+  if (options.deferredPackages) {
+    const entries = await resolveDetectedEntries(targetPath, pkgs);
+    printDeferralReport(entries);
+    requirePackageScript = entries
+      .map(entry =>
+        entry.mode === 'lazy'
+          ? `{ name: ${JSON.stringify(
+              entry.pkg.name,
+            )}, export: ${JSON.stringify(
+              entry.pkg.export,
+            )}, manifest: ${JSON.stringify(
+              entry.manifest,
+            )}, load: () => import('${entry.pkg.import}') }`
+          : requireEntry(entry.pkg),
+      )
+      .join(',');
+  } else {
+    requirePackageScript = pkgs.map(requireEntry).join(',');
+  }
 
   await writeQueue.add(async () => {
     const detectedModulesPath = joinPath(
@@ -142,6 +281,10 @@ export async function createDetectedModulesEntryPoint(options: {
   if (!detectionConfig) {
     return [];
   }
+  const writeOptions = {
+    deferredPackages:
+      config.getOptionalBoolean('app.experimental.deferredPackages') ?? false,
+  };
 
   // Previous versions of the CLI would write the detected modules file to the
   // root `node_modules`, this makes sure that doesn't exist to minimize risk of conflicts
@@ -161,6 +304,7 @@ export async function createDetectedModulesEntryPoint(options: {
       await writeDetectedPackagesModule(
         targetPath,
         await detectPackages(targetPath, detectionConfig),
+        writeOptions,
       );
       watch();
     });
@@ -169,6 +313,7 @@ export async function createDetectedModulesEntryPoint(options: {
   await writeDetectedPackagesModule(
     targetPath,
     await detectPackages(targetPath, detectionConfig),
+    writeOptions,
   );
 
   return [DETECTED_MODULES_MODULE_NAME];
