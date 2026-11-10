@@ -61,9 +61,10 @@ function readConfigSchema(
 function runFactoryOnce(
   extension: Extension<unknown>,
   plugin: PluginLike,
+  configInput: { [key: string]: unknown } = {},
 ): Map<string, unknown> {
   const internal = toInternalExtension(extension);
-  const config = internal.configSchema?.parse({}) ?? {};
+  const config = internal.configSchema?.parse(configInput) ?? {};
   const node = {
     spec: {
       id: internal.id,
@@ -176,9 +177,31 @@ function extractElementManifest(
     throw new Error(`'${extension.id}' has inputs`);
   }
 
+  const element = readElementOutputs(
+    extension,
+    plugin,
+    runFactoryOnce(extension, plugin),
+  );
+  const dataConfigKeys = findDataConfigKeys(extension, plugin, element);
+  return {
+    ...element,
+    ...(dataConfigKeys.length > 0 ? { dataConfigKeys } : {}),
+  };
+}
+
+type ElementOutputs = {
+  data: { [dataRefId: string]: unknown };
+  routeRefName?: string;
+};
+
+function readElementOutputs(
+  extension: Extension<unknown>,
+  plugin: PluginLike,
+  outputs: Map<string, unknown>,
+): ElementOutputs {
   const data: { [dataRefId: string]: unknown } = {};
   let routeRefName: string | undefined;
-  for (const [id, value] of runFactoryOnce(extension, plugin)) {
+  for (const [id, value] of outputs) {
     if (id === coreExtensionData.reactElement.id) {
       continue;
     }
@@ -200,6 +223,86 @@ function extractElementManifest(
   }
 
   return { data, ...(routeRefName ? { routeRefName } : {}) };
+}
+
+type JsonSchema = {
+  type?: string | string[];
+  enum?: unknown[];
+  const?: unknown;
+  anyOf?: JsonSchema[];
+  oneOf?: JsonSchema[];
+  items?: JsonSchema;
+  properties?: { [key: string]: JsonSchema };
+};
+
+/**
+ * Creates values that a config property could be set to, used to check
+ * whether the property changes the outputs of an extension. Returns an empty
+ * list for schemas that it can't create values for.
+ */
+function createProbeValues(schema: JsonSchema): unknown[] {
+  if (schema.const !== undefined) {
+    return [schema.const];
+  }
+  if (schema.enum) {
+    return schema.enum;
+  }
+  const branches = schema.anyOf ?? schema.oneOf;
+  if (branches) {
+    return branches.flatMap(createProbeValues);
+  }
+  const types = Array.isArray(schema.type) ? schema.type : [schema.type];
+  return types.flatMap((type): unknown[] => {
+    switch (type) {
+      case 'string':
+        return ['deferred-config-probe'];
+      case 'number':
+      case 'integer':
+        return [7];
+      case 'boolean':
+        return [true, false];
+      case 'array':
+        return [[], ...createProbeValues(schema.items ?? {}).map(v => [v])];
+      default:
+        return [];
+    }
+  });
+}
+
+/**
+ * Finds the config keys that change the data outputs of an element. Config
+ * for these keys can't be applied before the plugin is loaded, since the stub
+ * only has the outputs from the default config. A key is included if it isn't
+ * possible to tell whether it changes the outputs.
+ */
+function findDataConfigKeys(
+  extension: Extension<unknown>,
+  plugin: PluginLike,
+  defaults: ElementOutputs,
+): string[] {
+  const properties = (readConfigSchema(extension) as JsonSchema | undefined)
+    ?.properties;
+  if (!properties) {
+    return [];
+  }
+  const expected = JSON.stringify(defaults);
+  return Object.entries(properties)
+    .filter(([key, schema]) => {
+      const values = createProbeValues(schema);
+      if (values.length === 0) {
+        return true;
+      }
+      return values.some(value => {
+        try {
+          const outputs = runFactoryOnce(extension, plugin, { [key]: value });
+          const probed = readElementOutputs(extension, plugin, outputs);
+          return JSON.stringify(probed) !== expected;
+        } catch {
+          return true;
+        }
+      });
+    })
+    .map(([key]) => key);
 }
 
 function hasIfPredicate(extension: Extension<unknown>): boolean {

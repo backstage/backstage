@@ -75,5 +75,12 @@ export interface FrontendExtensionManifest {
     data: { [dataRefId: string]: unknown };
     /** The key in plugin.routes whose RouteRef the extension outputs. */
     routeRefName?: string;
+    /**
+     * Config keys that change the data outputs. Setting them in app-config
+     * prevents the plugin from being deferred, since the stub can only output
+     * the data from the default config. Other config is applied when the
+     * plugin is loaded.
+     */
+    dataConfigKeys?: string[];
   };
 }

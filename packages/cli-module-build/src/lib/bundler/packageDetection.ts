@@ -167,9 +167,63 @@ type DetectedEntry =
       manifest: ExtractedManifest;
     };
 
+/**
+ * Reads the config keys that are set for each extension in `app.extensions`.
+ */
+function readConfiguredExtensionKeys(config: Config): Map<string, string[]> {
+  const result = new Map<string, string[]>();
+  const entries = config.getOptional('app.extensions');
+  if (!Array.isArray(entries)) {
+    return result;
+  }
+  for (const entry of entries) {
+    if (!entry || typeof entry !== 'object') {
+      continue;
+    }
+    for (const [id, value] of Object.entries(entry)) {
+      const extensionConfig = (value as { config?: unknown } | null)?.config;
+      if (extensionConfig && typeof extensionConfig === 'object') {
+        result.set(id, [
+          ...(result.get(id) ?? []),
+          ...Object.keys(extensionConfig),
+        ]);
+      }
+    }
+  }
+  return result;
+}
+
+/**
+ * Returns why the config prevents a plugin from being deferred, which is the
+ * case when an element is configured with keys that change the data its stub
+ * outputs.
+ */
+function findConfigConflict(
+  manifest: ExtractedManifest,
+  configKeysById: Map<string, string[]>,
+): string | undefined {
+  const extensions = (manifest.extensions ?? []) as Array<{
+    id: string;
+    element?: { dataConfigKeys?: string[] };
+  }>;
+  for (const extension of extensions) {
+    const dataConfigKeys = extension.element?.dataConfigKeys ?? [];
+    const keys = (configKeysById.get(extension.id) ?? []).filter(key =>
+      dataConfigKeys.includes(key),
+    );
+    if (keys.length > 0) {
+      return `'${extension.id}' is configured with '${keys.join(
+        "', '",
+      )}' in app.extensions, which can't be applied before the plugin is loaded`;
+    }
+  }
+  return undefined;
+}
+
 async function resolveDetectedEntries(
   targetPath: string,
   pkgs: DetectedPackage[],
+  configKeysById: Map<string, string[]>,
 ): Promise<DetectedEntry[]> {
   const imported = await findStaticallyImportedPackages(targetPath, pkgs);
   const keyOf = (pkg: DetectedPackage) => `${pkg.name}${pkg.export ?? ''}`;
@@ -204,6 +258,10 @@ async function resolveDetectedEntries(
         reason: result.manifest.notDeferrableReason ?? 'not deferrable',
       };
     }
+    const conflict = findConfigConflict(result.manifest, configKeysById);
+    if (conflict) {
+      return { pkg, mode: 'eager', reason: conflict };
+    }
     return {
       pkg,
       mode: 'lazy',
@@ -232,11 +290,15 @@ function requireEntry(pkg: DetectedPackage) {
 async function writeDetectedPackagesModule(
   targetPath: string,
   pkgs: DetectedPackage[],
-  options: { deferredPackages: boolean },
+  options: { deferredPackages: boolean; config: Config },
 ) {
   let requirePackageScript: string;
   if (options.deferredPackages) {
-    const entries = await resolveDetectedEntries(targetPath, pkgs);
+    const entries = await resolveDetectedEntries(
+      targetPath,
+      pkgs,
+      readConfiguredExtensionKeys(options.config),
+    );
     printDeferralReport(entries);
     requirePackageScript = entries
       .map(entry =>
@@ -282,6 +344,7 @@ export async function createDetectedModulesEntryPoint(options: {
     return [];
   }
   const writeOptions = {
+    config,
     deferredPackages:
       config.getOptionalBoolean('app.experimental.deferredPackages') ?? false,
   };
