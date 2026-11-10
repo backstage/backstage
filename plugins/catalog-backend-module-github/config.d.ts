@@ -279,13 +279,16 @@ export interface Config {
             experimental_checkForSuspendedUsersWithRest?: boolean;
 
             /**
-             * (Optional) Always request the public email field from the GitHub
-             * GraphQL API, even when using a GitHub App for authentication.
+             * (Optional) Request the public email field from the GitHub
+             * GraphQL API even when using a GitHub App for authentication.
              * By default, the public email field is only requested when using a
              * personal access token because GitHub App installation tokens
              * historically could not access it. Some GitHub instances now allow
              * it, so enable this flag if your GitHub App can read user emails.
-             * Default: `false`.
+             * If the GitHub instance does not support this, the entire user
+             * sync will fail with a "Resource not accessible by integration"
+             * error. Only affects the entity providers, not the legacy
+             * processors. Default: `false`.
              */
             fetchEmailForGithubApps?: boolean;
 
@@ -373,13 +376,16 @@ export interface Config {
             experimental_checkForSuspendedUsersWithRest?: boolean;
 
             /**
-             * (Optional) Always request the public email field from the GitHub
-             * GraphQL API, even when using a GitHub App for authentication.
+             * (Optional) Request the public email field from the GitHub
+             * GraphQL API even when using a GitHub App for authentication.
              * By default, the public email field is only requested when using a
              * personal access token because GitHub App installation tokens
              * historically could not access it. Some GitHub instances now allow
              * it, so enable this flag if your GitHub App can read user emails.
-             * Default: `false`.
+             * If the GitHub instance does not support this, the entire user
+             * sync will fail with a "Resource not accessible by integration"
+             * error. Only affects the entity providers, not the legacy
+             * processors. Default: `false`.
              */
             fetchEmailForGithubApps?: boolean;
 
