@@ -60,7 +60,7 @@ function warnImplicitRouting(history: AppHistoryApi, node: AppNode) {
     warned.add(node.spec.id);
     // eslint-disable-next-line no-console
     console.warn(
-      `Extension '${node.spec.id}' uses implicit React Router v6 routing. Render ReactRouterV6PageRouter from @backstage/plugin-app-react-router-v6 in its loader to migrate. Existing routing remains supported.`,
+      `Extension '${node.spec.id}' uses implicit React Router v6 routing. Render ReactRouterV6PageRouter from @backstage/frontend-adapter-react-router-v6 in its loader to migrate. Existing routing remains supported.`,
     );
   }
 }

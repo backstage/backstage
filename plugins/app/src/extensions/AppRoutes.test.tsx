@@ -30,7 +30,7 @@ import {
   useRouteRefParams,
   useAppHref,
 } from '@backstage/frontend-plugin-api';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
 // The app retains a shared root v6 context. Pages below that probe their own

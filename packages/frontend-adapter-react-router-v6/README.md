@@ -1,4 +1,4 @@
-# @backstage/plugin-app-react-router-v6
+# @backstage/frontend-adapter-react-router-v6
 
 Renders a page of the [new frontend system](https://backstage.io/docs/frontend-system/)
 with [React Router v6](https://reactrouter.com), so that a page written against
@@ -19,7 +19,7 @@ This package is part of scoped plugin routing,
 
 ```sh
 cd <package-dir> # if within a monorepo
-yarn add @backstage/plugin-app-react-router-v6 react-router-dom@^6
+yarn add @backstage/frontend-adapter-react-router-v6 react-router-dom@^6
 ```
 
 ## Usage
@@ -41,7 +41,7 @@ const toolsPage = PageBlueprint.make({
 The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
 
 ```tsx title="./components/ToolsPage.tsx"
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 
 export function ToolsPage() {
   return (

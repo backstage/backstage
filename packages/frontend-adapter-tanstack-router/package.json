@@ -1,19 +1,9 @@
 {
-  "name": "@backstage/plugin-app-react-router-v6",
+  "name": "@backstage/frontend-adapter-tanstack-router",
   "version": "0.1.0",
-  "description": "React Router v6 adapter for the Backstage router-agnostic plugin routing system",
+  "description": "TanStack Router adapter for the Backstage router-agnostic plugin routing system",
   "backstage": {
-    "role": "web-library",
-    "pluginId": "app",
-    "pluginPackages": [
-      "@backstage/plugin-app",
-      "@backstage/plugin-app-backend",
-      "@backstage/plugin-app-node",
-      "@backstage/plugin-app-react",
-      "@backstage/plugin-app-react-router-v6",
-      "@backstage/plugin-app-react-router-v7",
-      "@backstage/plugin-app-tanstack-router"
-    ]
+    "role": "web-library"
   },
   "publishConfig": {
     "access": "public"
@@ -25,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/app-react-router-v6"
+    "directory": "packages/frontend-adapter-tanstack-router"
   },
   "license": "Apache-2.0",
   "sideEffects": false,
@@ -64,7 +54,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
-    "@backstage/plugin-app-tanstack-router": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@backstage/ui": "workspace:^",
     "@tanstack/history": "1.131.2",
     "@tanstack/react-router": "1.131.2",
@@ -75,14 +65,14 @@
     "@types/react": "^18.0.0",
     "@types/use-sync-external-store": "^1.7.0",
     "react": "^18.0.2",
-    "react-dom": "^18.0.2",
-    "react-router-dom": "^6.30.6"
+    "react-dom": "^18.0.2"
   },
   "peerDependencies": {
-    "@types/react": "^17.0.0 || ^18.0.0",
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.30.6"
+    "@tanstack/history": "^1.131.2",
+    "@tanstack/react-router": "1.131.2",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

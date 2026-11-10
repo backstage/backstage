@@ -191,7 +191,7 @@ function PluginPageShell(props: {
  *
  * In the lazy component module:
  * ```tsx
- * import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+ * import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
  *
  * export const Page = () => (
  *   <ReactRouterV6PageRouter>

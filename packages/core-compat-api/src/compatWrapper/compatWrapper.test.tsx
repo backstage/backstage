@@ -40,7 +40,7 @@ import {
   useRouteRef as useOldRouteRef,
   createRouteRef as createOldRouteRef,
 } from '@backstage/core-plugin-api';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 import { renderInTestApp as renderInOldTestApp } from '@backstage/test-utils';
 

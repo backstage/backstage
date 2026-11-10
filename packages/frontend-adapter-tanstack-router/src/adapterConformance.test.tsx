@@ -15,7 +15,7 @@
  */
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { testPageRouter } from '../../../packages/frontend-test-utils/src/__testUtils__/testPageRouter';
+import { testPageRouter } from '../../frontend-test-utils/src/__testUtils__/testPageRouter';
 import { useState } from 'react';
 import '@testing-library/jest-dom';
 import { Link, useParams, useSearch } from '@tanstack/react-router';

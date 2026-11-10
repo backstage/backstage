@@ -355,7 +355,7 @@ Router context. Existing v6 pages retain implicit compatibility; an explicit
 adapter in the lazy page component migrates away from that fallback.
 
 ```tsx title="plugins/catalog/src/components/IndexPage.tsx"
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { indexRouteRef, detailsSubRouteRef } from '../routes';
@@ -673,7 +673,7 @@ PageBlueprint.make({
 The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
 
 ```tsx title="./Page.tsx"
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 
 export function Page() {
   return (

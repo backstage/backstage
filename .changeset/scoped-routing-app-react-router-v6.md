@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-app-react-router-v6': minor
+'@backstage/frontend-adapter-react-router-v6': minor
 ---
 
 Added `ReactRouterV6PageRouter` for page-scoped React Router v6 routing with app-owned history. Render it inside a lazily loaded page or sub-page component to support relative links, nested routes, and route parameters. React Router v6 is a peer dependency.
