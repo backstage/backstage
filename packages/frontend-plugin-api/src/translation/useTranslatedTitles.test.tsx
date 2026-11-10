@@ -198,11 +198,9 @@ it('waits for the initial selected-language group without publishing default mes
   await act(async () => {});
   expect(api.getTranslation(otherRef).ready).toBe(true);
   expect(result.current).toBeUndefined();
-  await act(async () => resolve({ default: { title: 'Svensk titel' } }));
-  expect(result.current).toEqual(['Svensk titel', undefined, 'Andra']);
+  await act(async () => resolve({ default: { title: 'Översikt' } }));
+  expect(result.current).toEqual(['Översikt', undefined, 'Andra']);
   expect(
-    published.every(
-      value => value === undefined || value[0] === 'Svensk titel',
-    ),
+    published.every(value => value === undefined || value[0] === 'Översikt'),
   ).toBe(true);
 });
