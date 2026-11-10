@@ -23,3 +23,5 @@ Implicit React Router v6 compatibility now covers the complete React element out
 Development compatibility warnings are emitted when an extension uses native React Router APIs or implicit relative navigation. BUI links with app-absolute paths, external URLs, or empty/query/hash targets use framework navigation without a compatibility warning. Empty targets keep the current pathname and clear its query and fragment.
 
 Route matching preserves literal suffixes on parameters, such as `:id.json`, and only returns the parameter value before the suffix.
+
+App-owned navigation state is preserved intact even when its shape resembles legacy router metadata, with or without the browser Navigation API.

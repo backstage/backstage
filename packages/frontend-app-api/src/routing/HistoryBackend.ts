@@ -264,7 +264,13 @@ export function createWindowHistoryBackend(): HistoryBackend {
       writing = true;
       try {
         if (hasNavigationApi) {
-          window.history.pushState(options?.state ?? null, '', url);
+          // Mark owned state even when the Navigation API supplies entry
+          // metadata, so user values cannot be mistaken for legacy envelopes.
+          window.history.pushState(
+            wrapState(options?.state, { key: createKey() }),
+            '',
+            url,
+          );
         } else {
           fallbackEntry = {
             key: createKey(),
@@ -297,9 +303,7 @@ export function createWindowHistoryBackend(): HistoryBackend {
       writing = true;
       try {
         window.history.replaceState(
-          hasNavigationApi
-            ? options?.state ?? null
-            : wrapState(options?.state, fallbackEntry),
+          wrapState(options?.state, readEntry()),
           '',
           url,
         );
