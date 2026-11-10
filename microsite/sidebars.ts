@@ -653,7 +653,8 @@ export default {
         sidebarElementWithIndex(
           {
             label: 'Common Libraries',
-            description: 'Shared libraries for frontend and backend development.',
+            description:
+              'Shared libraries for frontend and backend development.',
           },
           ['common-libraries/index', 'common-libraries/errors'],
         ),
