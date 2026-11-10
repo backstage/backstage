@@ -24,6 +24,7 @@ asciidoc
 async
 Atlassian
 autocomplete
+autoincrement
 autofix
 autologout
 automations
@@ -113,6 +114,7 @@ debounces
 debouncing
 debuggability
 declaratively
+dedupe
 deduplicate
 deduplicated
 deduplication
