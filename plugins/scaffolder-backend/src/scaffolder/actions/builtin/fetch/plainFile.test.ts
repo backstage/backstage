@@ -114,4 +114,38 @@ describe('fetch:plain:file', () => {
     );
     expect(fetchFile).not.toHaveBeenCalled();
   });
+
+  it('checks the host that relative fetch URLs resolve to when configured', async () => {
+    const giteaAndGithubIntegrations = ScmIntegrations.fromConfig(
+      new ConfigReader({
+        integrations: {
+          gitea: [{ host: 'gitea.example.com' }],
+          github: [{ host: 'github.example.com', token: 'token' }],
+        },
+      }),
+    );
+    const requiredAction = createFetchPlainFileAction({
+      integrations: giteaAndGithubIntegrations,
+      reader,
+      requireScmUserCredentials: true,
+    });
+
+    await expect(
+      requiredAction.handler({
+        ...mockContext,
+        input: {
+          url: ' //github.example.com/owner/repo/raw/main/secret.txt',
+          targetPath: 'secret.txt',
+        },
+        templateInfo: {
+          baseUrl:
+            'https://gitea.example.com/owner/repo/src/branch/main/template.yaml',
+          entityRef: 'template:default/test-template',
+        },
+      }),
+    ).rejects.toThrow(
+      'No user credentials provided for host github.example.com, but scaffolder.requireScmUserCredentials is enabled',
+    );
+    expect(fetchFile).not.toHaveBeenCalled();
+  });
 });
