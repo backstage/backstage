@@ -834,6 +834,65 @@ describe.each(databases.eachSupportedId())(
         ]);
       });
 
+      it('matches entity refs case insensitively, preserving order and returning null for missing or malformed refs', async () => {
+        await createDatabase();
+
+        await addEntity(
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'My-Service' },
+            spec: {},
+            relations: [],
+          },
+          [],
+        );
+        await addEntity(
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'other' },
+            spec: {},
+            relations: [],
+          },
+          [],
+        );
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+        });
+
+        const res = await catalog.entitiesBatch({
+          entityRefs: [
+            'component:default/My-Service',
+            'not a ref',
+            'component:default/my-service',
+            'component:default/does-not-exist',
+            'COMPONENT:DEFAULT/MY-SERVICE',
+            'Component:Default/Other',
+            'component:default/My-Service',
+            'component:My-Service',
+          ],
+          credentials: mockCredentials.none(),
+        });
+        const items = entitiesResponseToObjects(res.items);
+
+        expect(items).toHaveLength(8);
+        expect(items.map(e => e && stringifyEntityRef(e))).toEqual([
+          'component:default/my-service',
+          null,
+          'component:default/my-service',
+          null,
+          'component:default/my-service',
+          'component:default/other',
+          'component:default/my-service',
+          null,
+        ]);
+        expect(items[0]?.metadata.name).toBe('My-Service');
+        expect(items[4]).toEqual(items[0]);
+      });
+
       it('handles more than 200 refs without chunking on PostgreSQL', async () => {
         await createDatabase();
 
