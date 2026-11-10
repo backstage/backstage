@@ -35,7 +35,7 @@ import {
   createRouteRef,
   ExternalRouteRef,
   identityApiRef,
-  type ApiRef,
+  type AnyApiRef,
 } from '@backstage/frontend-plugin-api';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
 import { getMockApiFactory } from '../apis/MockWithApiFactory';
@@ -217,7 +217,7 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
   const apiFactoryOverrides = (options?.apis ?? []).map(
     entry =>
       getMockApiFactory(entry) ??
-      createApiFactory(...(entry as readonly [ApiRef<any>, any])),
+      createApiFactory(...(entry as readonly [AnyApiRef<any>, any])),
   );
   const identityOverrideFactory = apiFactoryOverrides.find(
     factory => factory.api.id === identityApiRef.id,

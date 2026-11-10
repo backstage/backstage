@@ -16,9 +16,9 @@
 
 import {
   createApiRef as createFrontendApiRef,
-  type ApiRef,
   type ApiRefConfig,
 } from '@backstage/frontend-plugin-api';
+import type { ApiRef } from './types';
 
 const createFrontendApiRefCompat = createFrontendApiRef as <T>(
   config: ApiRefConfig,

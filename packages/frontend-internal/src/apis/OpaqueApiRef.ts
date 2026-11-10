@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { ApiRef } from '@backstage/frontend-plugin-api';
+import type { AnyApiRef } from '@backstage/frontend-plugin-api';
 import { OpaqueType } from '@internal/opaque';
 
 export const OpaqueApiRef = OpaqueType.create<{
-  public: ApiRef<unknown> & {
+  public: AnyApiRef & {
     readonly $$type: '@backstage/ApiRef';
   };
   versions: {

@@ -17,6 +17,7 @@
 import { OpaqueSwappableComponentRef } from '@internal/frontend';
 import { swappableComponentsApiRef, useApi } from '../apis';
 import { lazy } from 'react';
+import { isError } from '@backstage/errors';
 
 /** @public */
 export type SwappableComponentRef<
@@ -49,7 +50,10 @@ const useComponentRefApi = () => {
   try {
     return useApi(swappableComponentsApiRef);
   } catch (e) {
-    return undefined;
+    if (isError(e) && e.name === 'NotImplementedError') {
+      return undefined;
+    }
+    throw e;
   }
 };
 

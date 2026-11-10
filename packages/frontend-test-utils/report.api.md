@@ -7,8 +7,8 @@ import { AlertApi } from '@backstage/core-plugin-api';
 import { AlertMessage } from '@backstage/core-plugin-api';
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
+import { AnyApiRef } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
-import { ApiRef } from '@backstage/frontend-plugin-api';
 import { AppError } from '@backstage/frontend-app-api';
 import { AppLanguageApi } from '@backstage/frontend-plugin-api';
 import { AppLifecycleApi } from '@backstage/frontend-plugin-api';
@@ -68,7 +68,7 @@ export type ApiMock<TApi> = {
 
 // @public
 export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
-  apiRef: ApiRef<TApi>,
+  apiRef: AnyApiRef<TApi>,
   implementation: TImpl,
 ): TImpl & {
   [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
@@ -76,7 +76,7 @@ export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
 
 // @public
 export function createApiMock<TApi>(
-  apiRef: ApiRef<TApi>,
+  apiRef: AnyApiRef<TApi>,
   mockFactory: () => jest.Mocked<TApi>,
 ): (partialImpl?: Partial<TApi>) => ApiMock<TApi>;
 
@@ -404,7 +404,10 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
 
 // @public
 export type TestApiPair<TApi> =
-  | readonly [ApiRef<TApi>, TApi extends infer TImpl ? Partial<TImpl> : never]
+  | readonly [
+      AnyApiRef<TApi>,
+      TApi extends infer TImpl ? Partial<TImpl> : never,
+    ]
   | MockWithApiFactory<NoInfer<TApi>>;
 
 // @public

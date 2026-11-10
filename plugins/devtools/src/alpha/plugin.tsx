@@ -24,7 +24,7 @@ import {
   SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
 
-import { devToolsApiRef, DevToolsClient } from '../api';
+import { devToolsApiRef } from '../api/DevToolsApi';
 import BuildIcon from '@material-ui/icons/Build';
 import { rootRouteRef } from '../routes';
 import {
@@ -42,8 +42,10 @@ export const devToolsApi = ApiBlueprint.make({
         discoveryApi: discoveryApiRef,
         fetchApi: fetchApiRef,
       },
-      factory: ({ discoveryApi, fetchApi }) =>
-        new DevToolsClient({ discoveryApi, fetchApi }),
+      factory: async ({ discoveryApi, fetchApi }) => {
+        const { DevToolsClient } = await import('../api/DevToolsClient');
+        return new DevToolsClient({ discoveryApi, fetchApi });
+      },
     }),
 });
 

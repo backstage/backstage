@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiRef } from '@backstage/frontend-plugin-api';
+import { AnyApiRef } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 
 /**
@@ -59,7 +59,7 @@ export type MockWithApiFactory<TApi> = TApi & {
  * ```
  */
 export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
-  apiRef: ApiRef<TApi>,
+  apiRef: AnyApiRef<TApi>,
   implementation: TImpl,
 ): TImpl & { [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}> } {
   const marked = implementation as TImpl & {

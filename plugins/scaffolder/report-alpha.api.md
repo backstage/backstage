@@ -77,8 +77,9 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
+        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:scaffolder/form-decorators': OverridableExtensionDefinition<{
@@ -105,8 +106,9 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
+        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:scaffolder/form-fields': OverridableExtensionDefinition<{
@@ -133,8 +135,9 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
+        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'entity-icon-link:scaffolder/launch-template': OverridableExtensionDefinition<{
@@ -707,8 +710,9 @@ export const formDecoratorsApi: OverridableExtensionDefinition<{
     TApi,
     TImpl extends TApi,
     TDeps extends { [name in string]: unknown },
+    TLoading extends 'sync' | 'async' = 'sync',
   >(
-    params: ApiFactory<TApi, TImpl, TDeps>,
+    params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
   ) => ExtensionBlueprintParams<AnyApiFactory>;
 }>;
 

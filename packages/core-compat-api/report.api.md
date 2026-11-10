@@ -147,7 +147,7 @@ export type ToNewRouteRef<T extends RouteRef | SubRouteRef | ExternalRouteRef> =
 
 // @public
 export function withApis<T extends {}>(
-  apis: TypesToApiRefs<T>,
+  apis: TypesToApiRefs<T, 'sync'>,
 ): <TProps extends T>(
   WrappedComponent: ComponentType<TProps>,
 ) => {

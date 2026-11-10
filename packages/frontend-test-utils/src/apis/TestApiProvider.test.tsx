@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/frontend-plugin-api';
-import { TestApiProvider } from './TestApiProvider';
+import {
+  createApiRef,
+  useApi,
+  useApiHolder,
+} from '@backstage/frontend-plugin-api';
+import { Suspense } from 'react';
+import { TestApiProvider, resolveTestApiEntries } from './TestApiProvider';
+import { createApiMock } from './createApiMock';
 import { mockApis } from './mockApis';
 import { render, screen } from '@testing-library/react';
 
@@ -27,6 +33,53 @@ const yApiRef = createApiRef<string>({
 });
 
 describe('TestApiProvider', () => {
+  it('should fall back to parent async APIs and keep lookup promises stable', async () => {
+    const apiRef = createApiRef<{ value: string }>().with({
+      id: 'async',
+      loading: 'async',
+    });
+    expect(resolveTestApiEntries([]).get(apiRef)).toBeUndefined();
+    const promises: (Promise<{ value: string }> | undefined)[] = [];
+    function Consumer() {
+      const apis = useApiHolder();
+      promises.push(apis.get(apiRef));
+      return <div>{useApi(apiRef).value}</div>;
+    }
+    const rendered = render(
+      <TestApiProvider apis={[[apiRef, { value: 'Parent API' }]]}>
+        <TestApiProvider apis={[]}>
+          <Suspense fallback="Loading API">
+            <Consumer />
+          </Suspense>
+        </TestApiProvider>
+      </TestApiProvider>,
+    );
+    expect(await screen.findByText('Parent API')).toBeInTheDocument();
+    expect(promises).not.toContain(undefined);
+    expect(new Set(promises).size).toBe(1);
+
+    rendered.rerender(
+      <TestApiProvider apis={[[apiRef, { value: 'Parent API' }]]}>
+        <TestApiProvider apis={[[apiRef, { value: 'Child API' }]]}>
+          <Suspense fallback="Loading API">
+            <Consumer />
+          </Suspense>
+        </TestApiProvider>
+      </TestApiProvider>,
+    );
+    expect(await screen.findByText('Child API')).toBeInTheDocument();
+
+    const mock = createApiMock(apiRef, () => ({ value: 'Mock API' }))();
+    rendered.rerender(
+      <TestApiProvider apis={[mock]}>
+        <Suspense fallback="Loading API">
+          <Consumer />
+        </Suspense>
+      </TestApiProvider>,
+    );
+    expect(await screen.findByText('Mock API')).toBeInTheDocument();
+  });
+
   it('should provide tuple APIs and check types', () => {
     render(
       <TestApiProvider

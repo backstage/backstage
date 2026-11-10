@@ -31,7 +31,7 @@ import {
   ExternalRouteRef,
   createRouteRef,
   identityApiRef,
-  type ApiRef,
+  type AnyApiRef,
 } from '@backstage/frontend-plugin-api';
 import { render, type RenderResult } from '@testing-library/react';
 import { JsonObject } from '@backstage/types';
@@ -179,7 +179,7 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
     if (mockFactory) {
       return mockFactory;
     }
-    const [apiRef, implementation] = entry as readonly [ApiRef<any>, any];
+    const [apiRef, implementation] = entry as readonly [AnyApiRef<any>, any];
     return createApiFactory(apiRef, implementation);
   });
   const identityOverrideFactory = apiFactoryOverrides.find(

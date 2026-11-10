@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
+import {
+  ApiHolder,
+  ApiLookupResult,
+  ApiRef,
+  AnyApiRef,
+} from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ApiProvider } from '../../../core-app-api/src/apis/system';
-import { ApiHolder, ApiRef } from '@backstage/frontend-plugin-api';
 import {
   getMockApiFactory,
   type MockWithApiFactory,
@@ -28,7 +33,10 @@ import {
  * @public
  */
 export type TestApiPair<TApi> =
-  | readonly [ApiRef<TApi>, TApi extends infer TImpl ? Partial<TImpl> : never]
+  | readonly [
+      AnyApiRef<TApi>,
+      TApi extends infer TImpl ? Partial<TImpl> : never,
+    ]
   | MockWithApiFactory<NoInfer<TApi>>;
 
 /**
@@ -50,14 +58,25 @@ export function resolveTestApiEntries<const TApiPairs extends any[]>(
     if (mockFactory) {
       apiMap.set(mockFactory.api.id, mockFactory.factory({}));
     } else {
-      const [apiRef, impl] = entry as readonly [ApiRef<any>, any];
+      const [apiRef, impl] = entry as readonly [AnyApiRef<any>, any];
       apiMap.set(apiRef.id, impl);
     }
   }
 
-  return {
-    get: <T,>(ref: ApiRef<T>) => apiMap.get(ref.id) as T | undefined,
-  };
+  const promises = new Map<string, Promise<unknown>>();
+  function get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
+    ref: TApiRef,
+  ): ApiLookupResult<TApiRef>;
+  function get(ref: AnyApiRef): unknown {
+    if (ref.loading !== 'async' || !apiMap.has(ref.id)) {
+      return apiMap.get(ref.id);
+    }
+    if (!promises.has(ref.id)) {
+      promises.set(ref.id, Promise.resolve(apiMap.get(ref.id)));
+    }
+    return promises.get(ref.id);
+  }
+  return { get };
 }
 
 /**
@@ -118,10 +137,6 @@ export type TestApiProviderProps<TApiPairs extends any[]> = {
 export function TestApiProvider<const TApiPairs extends any[]>(
   props: TestApiProviderProps<TApiPairs>,
 ): JSX.Element {
-  return (
-    <ApiProvider
-      apis={resolveTestApiEntries(props.apis)}
-      children={props.children}
-    />
-  );
+  const apis = useMemo(() => resolveTestApiEntries(props.apis), [props.apis]);
+  return <ApiProvider apis={apis} children={props.children} />;
 }

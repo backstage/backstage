@@ -27,7 +27,8 @@ import {
   createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { mockApis, TestApiRegistry } from '@backstage/test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
+import { FrontendApiResolver } from '../wiring/FrontendApiRegistry';
 import appPlugin from '@backstage/plugin-app';
 
 import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
@@ -119,7 +120,7 @@ function routeInfoFromExtensions(
     collector,
   );
 
-  instantiateAppNodeTree(tree.root, TestApiRegistry.from(), collector);
+  instantiateAppNodeTree(tree.root, new FrontendApiResolver({}), collector);
 
   return extractRouteInfoFromAppNode(
     tree.root,

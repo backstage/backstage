@@ -107,7 +107,7 @@ export type AnyApiFactory = ApiFactory<
 >;
 
 // @public
-export type AnyApiRef = ApiRef<unknown>;
+export type AnyApiRef<T = unknown> = ApiRef<T, string, 'sync' | 'async'>;
 
 // @public
 export type AnyRouteRefParams =
@@ -123,8 +123,9 @@ export const ApiBlueprint: ExtensionBlueprint_2<{
     TApi,
     TImpl extends TApi,
     TDeps extends { [name in string]: unknown },
+    TLoading extends 'sync' | 'async' = 'sync',
   >(
-    params: ApiFactory<TApi, TImpl, TDeps>,
+    params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
   ) => ExtensionBlueprintParams_2<AnyApiFactory>;
   output: ExtensionDataRef_2<AnyApiFactory, 'core.api.factory', {}>;
   inputs: {};
@@ -146,22 +147,48 @@ export type ApiFactory<
   Deps extends {
     [name in string]: unknown;
   },
+  TLoading extends 'sync' | 'async' = 'sync' | 'async',
 > = {
-  api: ApiRef<Api>;
-  deps: TypesToApiRefs<Deps>;
-  factory(deps: Deps): Impl;
+  api: ApiRef<Api, string, TLoading>;
+  deps: TypesToApiRefs<
+    Deps,
+    NoInfer<TLoading> extends 'sync' ? 'sync' : 'sync' | 'async'
+  >;
+  factory(
+    deps: Deps,
+  ): NoInfer<TLoading> extends 'sync' ? Impl : Impl | Promise<Impl>;
 };
 
 // @public
 export type ApiHolder = {
-  get<T>(api: ApiRef<T>): T | undefined;
+  get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
+    api: TApiRef,
+  ): ApiLookupResult<TApiRef>;
 };
 
 // @public
-export type ApiRef<T, TId extends string = string> = {
+export type ApiLookupResult<TApiRef extends AnyApiRef = AnyApiRef> =
+  | (TApiRef extends {
+      readonly loading?: infer TLoading;
+    }
+      ? 'async' extends TLoading
+        ? 'sync' extends TLoading
+          ? TApiRef['T'] | Promise<TApiRef['T']>
+          : Promise<TApiRef['T']>
+        : TApiRef['T']
+      : TApiRef['T'])
+  | undefined;
+
+// @public
+export type ApiRef<
+  T,
+  TId extends string = string,
+  TLoading extends 'sync' | 'async' = 'sync',
+> = {
   readonly $$type?: '@backstage/ApiRef';
   readonly id: TId;
   readonly T: T;
+  readonly loading?: TLoading;
 };
 
 // @public
@@ -453,13 +480,20 @@ export function createApiFactory<
   Deps extends {
     [name in string]: unknown;
   },
->(factory: ApiFactory<Api, Impl, Deps>): ApiFactory<Api, Impl, Deps>;
+  TLoading extends 'sync' | 'async' = 'sync',
+>(
+  factory: ApiFactory<Api, Impl, Deps, TLoading>,
+): ApiFactory<Api, Impl, Deps, TLoading>;
 
 // @public
-export function createApiFactory<Api, Impl extends Api>(
-  api: ApiRef<Api>,
+export function createApiFactory<
+  Api,
+  Impl extends Api,
+  TLoading extends 'sync' | 'async' = 'sync',
+>(
+  api: ApiRef<Api, string, TLoading>,
   instance: Impl,
-): ApiFactory<Api, Impl, {}>;
+): ApiFactory<Api, Impl, {}, TLoading>;
 
 // @public @deprecated
 export function createApiRef<T>(config: ApiRefConfig): ApiRef<T> & {
@@ -472,8 +506,18 @@ export function createApiRef<T>(): {
     config: ApiRefConfig & {
       id: TId;
       pluginId?: string;
+      loading?: 'sync';
     },
   ): ApiRef<T, TId> & {
+    readonly $$type: '@backstage/ApiRef';
+  };
+  with<const TId extends string, const TLoading extends 'sync' | 'async'>(
+    config: ApiRefConfig & {
+      id: TId;
+      pluginId?: string;
+      loading: TLoading;
+    },
+  ): ApiRef<T, TId, TLoading> & {
     readonly $$type: '@backstage/ApiRef';
   };
 };
@@ -2388,15 +2432,18 @@ export type TranslationSnapshot<
     };
 
 // @public
-export type TypesToApiRefs<T> = {
-  [key in keyof T]: ApiRef<T[key]>;
+export type TypesToApiRefs<
+  T,
+  TLoading extends 'sync' | 'async' = 'sync' | 'async',
+> = {
+  [key in keyof T]: ApiRef<T[key], string, TLoading>;
 };
 
 // @public
 export function useAnalytics(): AnalyticsTracker;
 
 // @public
-export function useApi<T>(apiRef: ApiRef<T>): T;
+export function useApi<T>(apiRef: AnyApiRef<T>): T;
 
 // @public
 export function useApiHolder(): ApiHolder;

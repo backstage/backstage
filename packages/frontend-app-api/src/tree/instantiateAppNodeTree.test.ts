@@ -41,11 +41,12 @@ import {
 } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createConfigSchema } from '../../../frontend-plugin-api/src/schema/createPortableSchema';
-import { TestApiRegistry, withLogCollector } from '@backstage/test-utils';
+import { withLogCollector } from '@backstage/test-utils';
+import { FrontendApiResolver } from '../wiring/FrontendApiRegistry';
 import { createErrorCollector } from '../wiring/createErrorCollector';
 import { z } from 'zod/v4';
 
-const testApis = TestApiRegistry.from();
+const testApis = new FrontendApiResolver({});
 const testDataRef = createExtensionDataRef<string>().with({ id: 'test' });
 const otherDataRef = createExtensionDataRef<number>().with({ id: 'other' });
 const inputMirrorDataRef = createExtensionDataRef<unknown>().with({

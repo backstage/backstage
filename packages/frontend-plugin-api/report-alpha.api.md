@@ -17,6 +17,9 @@ import { ReactNode } from 'react';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 
 // @public
+export type AnyApiRef<T = unknown> = ApiRef<T, string, 'sync' | 'async'>;
+
+// @public
 export type AnyRouteRefParams =
   | {
       [param in string]: string;
@@ -25,14 +28,34 @@ export type AnyRouteRefParams =
 
 // @public
 export type ApiHolder = {
-  get<T>(api: ApiRef<T>): T | undefined;
+  get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
+    api: TApiRef,
+  ): ApiLookupResult<TApiRef>;
 };
 
 // @public
-export type ApiRef<T, TId extends string = string> = {
+export type ApiLookupResult<TApiRef extends AnyApiRef = AnyApiRef> =
+  | (TApiRef extends {
+      readonly loading?: infer TLoading;
+    }
+      ? 'async' extends TLoading
+        ? 'sync' extends TLoading
+          ? TApiRef['T'] | Promise<TApiRef['T']>
+          : Promise<TApiRef['T']>
+        : TApiRef['T']
+      : TApiRef['T'])
+  | undefined;
+
+// @public
+export type ApiRef<
+  T,
+  TId extends string = string,
+  TLoading extends 'sync' | 'async' = 'sync',
+> = {
   readonly $$type?: '@backstage/ApiRef';
   readonly id: TId;
   readonly T: T;
+  readonly loading?: TLoading;
 };
 
 // @public

@@ -26,6 +26,8 @@ import {
   useApi,
   coreApis,
   ApiBlueprint,
+  PageBlueprint,
+  createApiRef,
   createFrontendModule,
   createFrontendPlugin,
   type FrontendFeature,
@@ -40,6 +42,53 @@ import { renderTestApp } from './renderTestApp';
 import { AnalyticsImplementationBlueprint } from '@backstage/plugin-app-react';
 
 describe('renderInTestApp', () => {
+  it('should lazily load an API implementation through ApiBlueprint on a lazy page', async () => {
+    const apiRef = createApiRef<{ getString(key: string): string }>().with({
+      id: 'plugin.lazy-api-poc.client',
+      loading: 'async',
+    });
+    const load = jest.fn(async () => {
+      const { ConfigReader } = await import('@backstage/config');
+      return new ConfigReader({ message: 'Lazy API loaded' });
+    });
+    function Consumer() {
+      return <div>{useApi(apiRef).getString('message')}</div>;
+    }
+    const plugin = createFrontendPlugin({
+      pluginId: 'lazy-api-poc',
+      extensions: [
+        ApiBlueprint.make({
+          params: defineParams =>
+            defineParams({
+              api: apiRef,
+              deps: { config: coreApis.config },
+              factory: ({ config }) => {
+                expect(config.getString('app.baseUrl')).toBe(
+                  'http://localhost:3000',
+                );
+                return load();
+              },
+            }),
+        }),
+        PageBlueprint.make({
+          params: { path: '/lazy', loader: async () => <Consumer /> },
+        }),
+      ],
+    });
+    expect(load).not.toHaveBeenCalled();
+    const rendered = renderTestApp({
+      features: [plugin],
+      initialRouteEntries: ['/lazy'],
+    });
+    expect(await screen.findByText('Lazy API loaded')).toBeInTheDocument();
+    expect(load).toHaveBeenCalledTimes(1);
+    rendered.unmount();
+
+    renderTestApp({ features: [plugin], initialRouteEntries: ['/lazy'] });
+    expect(await screen.findByText('Lazy API loaded')).toBeInTheDocument();
+    expect(load).toHaveBeenCalledTimes(2);
+  });
+
   it('should throw for app errors that would show the error page', () => {
     const conflictingPlugin = createFrontendPlugin({
       pluginId: 'conflict',

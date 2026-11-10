@@ -39,7 +39,9 @@ export type {
   OverridableExtensionDefinition,
 } from './wiring';
 export type {
+  AnyApiRef,
   ApiHolder,
+  ApiLookupResult,
   ApiRef,
   AppNode,
   AppNodeEdges,

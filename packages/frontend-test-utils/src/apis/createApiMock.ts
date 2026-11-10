@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiFactory, type ApiRef } from '@backstage/frontend-plugin-api';
+import { ApiFactory, type AnyApiRef } from '@backstage/frontend-plugin-api';
 import { mockApiFactorySymbol } from './MockWithApiFactory';
 
 /**
@@ -63,7 +63,7 @@ export type ApiMock<TApi> = {
  * ```
  */
 export function createApiMock<TApi>(
-  apiRef: ApiRef<TApi>,
+  apiRef: AnyApiRef<TApi>,
   mockFactory: () => jest.Mocked<TApi>,
 ): (partialImpl?: Partial<TApi>) => ApiMock<TApi> {
   return partialImpl => {

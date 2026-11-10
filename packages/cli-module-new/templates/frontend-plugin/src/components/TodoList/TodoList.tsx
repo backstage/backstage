@@ -1,11 +1,6 @@
 import { Table, useTable, CellText, type ColumnConfig } from '@backstage/ui';
 
-export type TodoItem = {
-  title: string;
-  id: string;
-  createdBy: string;
-  createdAt: string;
-};
+import type { TodoItem } from '../../api/TodoApi';
 
 const columns: ColumnConfig<TodoItem>[] = [
   {

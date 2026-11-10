@@ -89,6 +89,66 @@ The code also illustrates how the API factory declares a dependency on another u
 
 The extension ID of the work API will be the kind `api:` followed by the plugin ID as the namespace, a `/` separator, and lastly the name we used of the extension. In this case we end up with `api:example/work`. Check out [the naming patterns doc](../architecture/50-naming-patterns.md) for more information on how this works. You can now use this ID to refer to the API in app-config and elsewhere. In case there is a single API that is a central to the functionality of the plugin, most typically an API client, you can choose to omit the name of the extension so that you end up with just `api:<pluginId>`.
 
+## Lazy API implementations
+
+API refs are synchronous by default. To allow an implementation to be loaded
+asynchronously, opt in when creating the ref:
+
+```ts
+export const workApiRef = createApiRef<WorkApi>().with({
+  id: 'plugin.example.work',
+  loading: 'async',
+});
+```
+
+Prefer lazy implementations for APIs that are internal to a plugin. Keep their
+refs out of the package's public entry points. Shared APIs can also use lazy
+implementations to reduce the initial bundle size, but their consumers must
+handle asynchronous API resolution.
+
+The ref retains this loading mode in its type. Omitting `loading` when creating
+a ref infers `'sync'`, and `ApiRef<WorkApi>` describes a synchronous ref. The
+second type parameter is the ref ID, and the third is the loading mode. For
+example, `ApiRef<WorkApi, 'plugin.example.work', 'async'>` describes an async ref
+with that ID. Use `AnyApiRef<WorkApi>` when a type needs to accept either loading
+mode.
+
+`ApiHolder.get()` preserves the ref's loading mode in its return type, including
+when the ref passes through a generic helper. Preserve the inferred type when
+exporting refs so consumers retain that distinction.
+
+Factories for refs with `loading: 'async'` can return either
+an implementation or a promise. For example, use a dynamic import to defer
+loading the implementation until the API is first requested:
+
+```ts
+import { ApiBlueprint, coreApis } from '@backstage/frontend-plugin-api';
+import { workApiRef } from '@internal/plugin-example-react';
+
+const workApi = ApiBlueprint.make({
+  name: 'work',
+  params: defineParams =>
+    defineParams({
+      api: workApiRef,
+      deps: { storageApi: coreApis.storage },
+      factory: async ({ storageApi }) => {
+        const { WorkImpl } = await import('./WorkImpl');
+        return new WorkImpl({ storageApi });
+      },
+    }),
+});
+```
+
+Keep the implementation out of static imports in the plugin entry point so it
+can be loaded separately. The framework creates one implementation per app
+and resolves all dependencies before calling the factory. Independent async
+dependencies are resolved in parallel.
+
+An async-capable API can depend on both synchronous and async-capable APIs. A
+synchronous API can only depend on synchronous APIs, even if its own factory
+is synchronous. Changing an existing ref to `loading: 'async'` changes its public
+contract: callers of `apis.get()` must await the result.
+
 ## Adding configurability
 
 Here we will describe how to amend a utility API with the capability of having extension config, which is driven by [your app-config](../../conf/writing.md). You do this by giving an extension config schema to your API extension factory function. Let's refactor the example above to also accept configuration, which will require us to use the [override method of the blueprint](../architecture/23-extension-blueprints.md#creating-an-extension-from-a-blueprint-with-overrides).
