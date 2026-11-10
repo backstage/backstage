@@ -78,10 +78,12 @@ neither has to know about the other.
 
 Components loaded by `PageBlueprint` and `SubPageBlueprint` can declare adapters.
 Ordinary route-bearing extensions can do the same: publish
-`coreExtensionData.routePath` and render content through `ExtensionBoundary`.
-The framework uses the extension's matched ancestry to provide its mount.
-The parent extension retains responsibility for composing and rendering its
-children.
+`coreExtensionData.routePath`. The app establishes the extension's matched scope
+around its complete `coreExtensionData.reactElement` output, including content
+outside `ExtensionBoundary`. This also supplies implicit compatibility to older
+blueprints. Use `ExtensionBoundary` for extension context, loading, errors, and
+analytics. The parent extension retains responsibility for composing and
+rendering its children.
 
 Content that does not introduce a route mount normally uses the adapter above
 it. An entity tab or card already rendered inside a routing library's nested

@@ -26,7 +26,7 @@ import { optionalStringSchema } from '../schema/optionalStringSchema';
  *
  * A subpage is an ordinary route-bearing extension below its parent page.
  * The app matches the extension tree, and the parent page renders the selected
- * child. Its extension boundary provides the matched route ancestry.
+ * child. The app provides the matched route ancestry around its entire output.
  *
  * Existing sub-pages retain implicit React Router v6 matches for compatibility.
  * To select a library explicitly, render its adapter inside the sub-page's

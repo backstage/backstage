@@ -16,4 +16,6 @@ History entries reached outside app-owned navigation omit index, length, and bac
 
 Configured redirects and pages are ranked together by specificity, with redirects winning equal-pattern ties. Redirect templates support embedded route parameters and repeated splats in paths, queries, and fragments. Authored trailing slashes are preserved, and explicitly empty query or fragment components clear incoming values.
 
-Deployment basenames match case-insensitively. Persisted React Router history entries retain their user state when reloading or navigating Back after upgrading. React Router location keys refresh on replacement independently of stable framework history entry keys.
+Deployment basename matching is case-insensitive. Persisted React Router history entries retain their user state when reloading or navigating Back after upgrading. React Router location keys refresh on replacement independently of stable framework history entry keys.
+
+Implicit React Router v6 compatibility now covers the complete React element output of every route-bearing extension, including empty-path mounts and headers from older published blueprints. Extensions without a route path inherit their enclosing routing scope.

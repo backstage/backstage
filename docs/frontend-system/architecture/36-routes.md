@@ -687,8 +687,19 @@ adapter's content adds a second context instead of displacing the first.
 Declare an adapter in the content owned by a route-bearing extension.
 `PageBlueprint` and `SubPageBlueprint` are conveniences for common layouts;
 ordinary extensions with `coreExtensionData.routePath` participate in the same
-matched route tree. Their `ExtensionBoundary` scopes parameter resolution and
-adapter context to the extension's actual position in that tree.
+matched route tree. The app scopes each route-bearing extension's complete
+`coreExtensionData.reactElement` output to its matched position in that tree.
+This includes headers and other content outside the extension's own boundaries,
+so older blueprints receive compatibility without being rebuilt. An empty route
+path also establishes a scope. Extensions that do not output a route path inherit
+the surrounding routing scope.
+
+Implicit React Router v6 compatibility is supplied at these route-bearing
+outputs, independently of `ExtensionBoundary`. Explicit adapters can override
+that compatibility inside the output. `ExtensionBoundary` continues to provide
+extension context, loading, errors, and analytics. The app also retains a root
+compatibility projection for app chrome; none of these projections owns a
+separate browser history.
 
 Each parent extension still chooses how to render its children. Route matching
 does not render every matching extension automatically or replace the parent
@@ -781,4 +792,4 @@ A router library can block navigation that starts inside its own page, but not n
 
 Configured redirects and pages share specificity ranking. A more specific page takes precedence over a broad redirect; a redirect wins an equal-pattern tie. Redirect destinations are URL templates: named parameters can be embedded in segments, and splats can appear anywhere in the path, query, or fragment. Parameter values are URL-encoded, retaining splat path separators. Trailing slashes are preserved. Omitted query and fragment components inherit the incoming values; explicitly empty components (`?` and `#`) clear them.
 
-Deployment basenames match case-insensitively without changing the spelling of the remaining path. When upgrading an existing React Router app, persisted browser history entries retain their user state both on reload and when reached through Back or Forward navigation.
+Deployment basename matching is case-insensitive without changing the spelling of the remaining path. When upgrading an existing React Router app, persisted browser history entries retain their user state both on reload and when reached through Back or Forward navigation.
