@@ -19,3 +19,5 @@ Configured redirects and pages are ranked together by specificity, with redirect
 Deployment basename matching is case-insensitive. Persisted React Router history entries retain their user state when reloading or navigating Back after upgrading. React Router location keys refresh on replacement independently of stable framework history entry keys.
 
 Implicit React Router v6 compatibility now covers the complete React element output of every route-bearing extension, including empty-path mounts and headers from older published blueprints. Extensions without a route path inherit their enclosing routing scope.
+
+Development compatibility warnings are emitted when an extension uses native React Router APIs or implicit relative navigation. BUI links with app-absolute paths, external URLs, or empty/query/hash targets use framework navigation without a compatibility warning. Empty targets keep the current pathname and clear its query and fragment.

@@ -27,7 +27,11 @@ import {
 } from 'react-router-dom';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
-import { PageBlueprint, useAppHref } from '@backstage/frontend-plugin-api';
+import {
+  PageBlueprint,
+  RouterLink,
+  useAppHref,
+} from '@backstage/frontend-plugin-api';
 
 describe('implicit page router compatibility', () => {
   beforeEach(() => {
@@ -132,6 +136,133 @@ describe('implicit page router compatibility', () => {
     expect(warnings).toHaveLength(1);
     expect(warnings[0][0]).toContain('page:test/legacy');
     expect(warnings[0][0]).toContain('ReactRouterV6PageRouter');
+  });
+
+  it.each(['', '/backstage'])(
+    'warns only when a BUI link needs implicit relative routing with basename "%s"',
+    async basename => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      function FrameworkContent() {
+        const [relative, setRelative] = useState(false);
+        return (
+          <>
+            <BuiLink href="/framework/alpha/other">Absolute</BuiLink>
+            <RouterLink href="">Empty</RouterLink>
+            <BuiLink href="">Empty BUI</BuiLink>
+            <BuiLink href="?tab=details">Query</BuiLink>
+            <BuiLink href="#form">Hash</BuiLink>
+            <BuiLink href="https://example.com/docs">External</BuiLink>
+            <button onClick={() => setRelative(true)}>
+              Show relative link
+            </button>
+            {relative && <BuiLink href="edit">Relative</BuiLink>}
+          </>
+        );
+      }
+      const { appHistory } = renderTestApp({
+        config: { app: { baseUrl: `http://localhost${basename}` } },
+        initialRouteEntries: ['/framework/alpha/details?old=1#old'],
+        extensions: [
+          PageBlueprint.make({
+            params: {
+              path: '/framework/:id',
+              noHeader: true,
+              loader: async () => <FrameworkContent />,
+            },
+          }),
+        ],
+      });
+      expect(
+        await screen.findByRole('link', { name: 'Absolute' }),
+      ).toHaveAttribute('href', `${basename}/framework/alpha/other`);
+      for (const [name, suffix] of [
+        ['Empty', ''],
+        ['Query', '?tab=details'],
+        ['Hash', '#form'],
+      ]) {
+        expect(screen.getByRole('link', { name })).toHaveAttribute(
+          'href',
+          `${basename}/framework/alpha/details${suffix}`,
+        );
+      }
+      expect(screen.getByRole('link', { name: 'External' })).toHaveAttribute(
+        'href',
+        'https://example.com/docs',
+      );
+      expect(screen.getByText('Empty BUI')).toHaveAttribute('href', '');
+      fireEvent.click(screen.getByRole('link', { name: 'Query' }));
+      expect(appHistory.getSnapshot().location).toMatchObject({
+        pathname: '/framework/alpha/details',
+        search: '?tab=details',
+        hash: '',
+      });
+      fireEvent.click(screen.getByRole('link', { name: 'Hash' }));
+      expect(appHistory.getSnapshot().location).toMatchObject({
+        pathname: '/framework/alpha/details',
+        search: '',
+        hash: '#form',
+      });
+      fireEvent.click(screen.getByRole('link', { name: 'Empty' }));
+      expect(appHistory.getSnapshot().location).toMatchObject({
+        pathname: '/framework/alpha/details',
+        search: '',
+        hash: '',
+      });
+      fireEvent.click(screen.getByRole('link', { name: 'Absolute' }), {
+        ctrlKey: true,
+      });
+      expect(appHistory.getSnapshot().location.pathname).toBe(
+        '/framework/alpha/details',
+      );
+      expect(
+        warn.mock.calls.filter(([message]) =>
+          String(message).includes('implicit React Router'),
+        ),
+      ).toHaveLength(0);
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Show relative link' }),
+      );
+      expect(
+        await screen.findByRole('link', { name: 'Relative' }),
+      ).toHaveAttribute('href', `${basename}/framework/alpha/edit`);
+      fireEvent.click(screen.getByRole('link', { name: 'Relative' }));
+      expect(appHistory.getSnapshot().location.pathname).toBe(
+        '/framework/alpha/edit',
+      );
+      const warnings = warn.mock.calls.filter(([message]) =>
+        String(message).includes('implicit React Router'),
+      );
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0][0]).toContain('page:test');
+    },
+  );
+
+  it('warns for native router hooks without contextual links', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    function NativeContent() {
+      return <h1>Native {useParams().id}</h1>;
+    }
+    renderTestApp({
+      initialRouteEntries: ['/native/alpha'],
+      extensions: [
+        PageBlueprint.make({
+          params: {
+            path: '/native/:id',
+            noHeader: true,
+            loader: async () => <NativeContent />,
+          },
+        }),
+      ],
+    });
+    expect(
+      await screen.findByRole('heading', { name: 'Native alpha' }),
+    ).toBeVisible();
+    expect(
+      warn.mock.calls.filter(([message]) =>
+        String(message).includes('implicit React Router'),
+      ),
+    ).toHaveLength(1);
   });
 
   it('does not warn for explicit adapters or pages using only framework routing', async () => {

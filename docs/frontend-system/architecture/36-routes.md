@@ -650,9 +650,13 @@ export function EntityNameLink(props: {
 
 Existing new frontend system pages retain implicit React Router v6 routing.
 Route parameters, relative links and nested routes continue to work without
-an immediate migration. In development, consuming this fallback logs a warning
-once per extension per app instance. Render an explicit page adapter to migrate
-that content; pages using only framework routing do not need an adapter.
+an immediate migration. In development, native React Router APIs and path-relative
+BUI links using this fallback log a warning once per extension per app instance.
+BUI links with app-absolute paths, external URLs, or empty/query/hash targets use
+framework navigation without a compatibility warning. Empty targets keep the
+current pathname and clear the query and fragment. Render an explicit page
+adapter to migrate content that needs relative or native router APIs; pages using
+only framework routing do not need an adapter.
 
 A page that wants its library's own APIs declares an adapter by rendering one
 inside its lazily loaded page component — plain React, no extension wiring:
