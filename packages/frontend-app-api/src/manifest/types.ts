@@ -24,7 +24,12 @@ export interface FrontendFeatureManifest {
   type: 'plugin' | 'module';
   pluginId: string;
   title?: string;
-  /** True only when every rule for deferring a plugin passes. */
+  /**
+   * True only when every rule for deferring a plugin passes. A deferrable
+   * plugin only provides pages, APIs and extensions that output a React
+   * element along with JSON data, and it provides at least one page or
+   * element that loads the plugin when it is rendered.
+   */
   deferrable: boolean;
   /** Why the plugin isn't deferrable, for the CLI report. */
   notDeferrableReason?: string;
@@ -55,6 +60,20 @@ export interface FrontendExtensionManifest {
     path: string;
     title?: string;
     /** The key in plugin.routes whose RouteRef the page outputs. */
+    routeRefName?: string;
+  };
+  /**
+   * Only for extensions that output a React element but aren't pages that
+   * attach to app/routes, for example entity content. Comes from running the
+   * factory once at build time with the default config.
+   */
+  element?: {
+    /**
+     * The JSON values of all other outputs, keyed by extension data ID. A
+     * route ref output is stored as `routeRefName` instead.
+     */
+    data: { [dataRefId: string]: unknown };
+    /** The key in plugin.routes whose RouteRef the extension outputs. */
     routeRefName?: string;
   };
 }

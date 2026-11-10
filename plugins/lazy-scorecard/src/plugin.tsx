@@ -54,8 +54,10 @@ const scorecardEntityContent = EntityContentBlueprint.make({
 });
 
 /**
- * Demo plugin with an API, route refs and a catalog entity tab. Because it
- * provides more than pages, it is not deferred and loads with the app.
+ * Demo plugin with an API, route refs and a catalog entity tab. The CLI can
+ * defer it, so the plugin is loaded the first time its page is visited or its
+ * entity tab is opened. The API is only used by the plugin itself, so it is
+ * fine for it to be added to the app when the plugin is loaded.
  */
 export default createFrontendPlugin({
   pluginId: 'lazy-scorecard',
