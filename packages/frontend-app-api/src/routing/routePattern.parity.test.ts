@@ -18,9 +18,10 @@ import { createRouteRef, RouteRef } from '@backstage/frontend-plugin-api';
 import {
   generatePath as reactRouterGeneratePathTyped,
   matchRoutes as reactRouterMatchRoutes,
+  matchPath as reactRouterMatchPath,
   type RouteObject,
 } from 'react-router-dom';
-import { generatePath } from '@internal/frontend';
+import { generatePath, matchPath } from '@internal/frontend';
 import { matchRouteRefs } from './matchRouteRefs';
 import { BackstageRouteObject } from './types';
 
@@ -94,6 +95,29 @@ function reactRouterExpectation(paths: string[], pathname: string) {
 }
 
 describe('react-router parity', () => {
+  it('matches parameter names separately from their literal suffixes', () => {
+    for (const pattern of ['/foo/:id.json', '/foo/:item-id.tar.gz']) {
+      for (const pathname of [
+        '/foo/abc.json',
+        '/foo/a%2Fb.json',
+        '/foo/abc.tar.gz',
+        '/foo/abc',
+        '/foo/abcXjson',
+        '/foo/abc.json/details',
+      ]) {
+        for (const end of [true, false]) {
+          const expected = reactRouterMatchPath(
+            { path: pattern, end },
+            pathname,
+          );
+          const actual = matchPath(pattern, pathname, end);
+          expect(actual?.params).toEqual(expected?.params);
+          expect(actual === null).toBe(expected === null);
+        }
+      }
+    }
+  });
+
   const cases: Array<{ name: string; paths: string[]; pathname: string }> = [
     {
       name: 'simple prefix',
