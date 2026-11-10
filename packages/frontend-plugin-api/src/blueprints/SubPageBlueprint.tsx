@@ -89,11 +89,19 @@ export const SubPageBlueprint = createExtensionBlueprint({
     yield coreExtensionData.routePath(config.path ?? params.path);
     const translation =
       typeof params.title === 'object' ? params.title : undefined;
+    const translationApi =
+      translation && config.title === undefined
+        ? apis.get(translationApiRef)
+        : undefined;
+    if (translation && config.title === undefined && !translationApi) {
+      throw new Error(
+        `Translation API (core.translation) is required to resolve title '${translation.ref.id}:${translation.key}'`,
+      );
+    }
     const title =
       config.title ??
       (typeof params.title === 'object'
-        ? apis
-            .get(translationApiRef)!
+        ? translationApi!
             .getTranslation<Record<string, string>>(params.title.ref)
             .t(params.title.key)
         : params.title);

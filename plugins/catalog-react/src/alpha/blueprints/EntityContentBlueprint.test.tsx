@@ -186,6 +186,11 @@ describe('EntityContentBlueprint', () => {
       configured.get(EntityContentBlueprint.dataRefs.titleTranslation),
     ).toEqual(ref('title'));
     expect(api.getTranslation).toHaveBeenCalledTimes(1);
+    expect(() =>
+      createExtensionTester(extension).get(
+        EntityContentBlueprint.dataRefs.title,
+      ),
+    ).toThrow(/Translation API \(core\.translation\)/);
     EntityContentBlueprint.make({
       name: 'interpolated',
       params: {

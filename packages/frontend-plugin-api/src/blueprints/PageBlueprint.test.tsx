@@ -15,6 +15,7 @@
  */
 import { createRouteRef } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
+import { SubPageBlueprint } from './SubPageBlueprint';
 import {
   createExtensionTester,
   mockApis,
@@ -60,6 +61,22 @@ describe('PageBlueprint', () => {
     });
     expect(configured.get(coreExtensionData.title)).toBe('Configured');
     expect(api.getTranslation).toHaveBeenCalledTimes(1);
+    expect(() =>
+      createExtensionTester(extension).get(coreExtensionData.title),
+    ).toThrow(/Translation API \(core\.translation\)/);
+    const subPage = SubPageBlueprint.make({
+      name: 'child',
+      params: {
+        path: 'child',
+        title: ref('title'),
+        loader: async () => <div>Child</div>,
+      },
+    });
+    expect(() =>
+      createExtensionTester(Object.assign({ namespace: 'test' }, subPage)).get(
+        coreExtensionData.title,
+      ),
+    ).toThrow(/Translation API \(core\.translation\)/);
   });
 
   it('should return an extension when calling make with sensible defaults', () => {
