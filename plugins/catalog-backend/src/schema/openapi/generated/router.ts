@@ -226,6 +226,27 @@ export const spec = {
       },
     },
     schemas: {
+      ValidationIssue: {
+        type: 'object',
+        description: 'A single validation failure for one value in a request.',
+        properties: {
+          path: {
+            type: 'string',
+            description:
+              'A JSON Pointer to the value that failed validation, for example `/body/location`.',
+          },
+          message: {
+            type: 'string',
+            description:
+              'A human readable explanation of why the value is invalid.',
+          },
+          code: {
+            type: 'string',
+            description: 'A machine readable code for the failure.',
+          },
+        },
+        required: ['path', 'message'],
+      },
       Error: {
         type: 'object',
         properties: {
@@ -243,6 +264,13 @@ export const spec = {
               },
               code: {
                 type: 'string',
+              },
+              issues: {
+                type: 'array',
+                description: 'The individual validation failures, if known.',
+                items: {
+                  $ref: '#/components/schemas/ValidationIssue',
+                },
               },
             },
             required: ['name', 'message'],
@@ -1892,6 +1920,14 @@ export const spec = {
                           },
                           message: {
                             type: 'string',
+                          },
+                          issues: {
+                            type: 'array',
+                            description:
+                              'The individual validation failures, if known.',
+                            items: {
+                              $ref: '#/components/schemas/ValidationIssue',
+                            },
                           },
                         },
                         required: ['name', 'message'],

@@ -128,6 +128,7 @@ export class RequestBodyParser
         this.operation,
         `Request body`,
         this.validate.errors!,
+        '/body',
       );
     }
     return body;

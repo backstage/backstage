@@ -80,6 +80,14 @@ export class ForwardedError extends CustomErrorBase {
 
 // @public
 export class InputError extends CustomErrorBase {
+  constructor(
+    message?: string,
+    cause?: Error | unknown,
+    options?: {
+      issues?: ValidationIssue[];
+    },
+  );
+  readonly issues?: ValidationIssue[];
   // (undocumented)
   name: 'InputError';
 }
@@ -161,4 +169,25 @@ export function stringifyError(error: unknown): string;
 
 // @public
 export function toError(value: unknown): ErrorLike;
+
+// @public
+export type ValidationIssue = {
+  path: string;
+  message: string;
+  code?: string;
+};
+
+// @public
+export function validationIssuesFromZod(
+  error: {
+    issues: ReadonlyArray<{
+      path: ReadonlyArray<PropertyKey>;
+      message: string;
+      code?: string;
+    }>;
+  },
+  options?: {
+    pathPrefix?: string;
+  },
+): ValidationIssue[];
 ```

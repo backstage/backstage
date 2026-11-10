@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import type { ValidationIssue } from '@backstage/errors';
 import { Operation } from './types';
 import { ErrorObject } from 'ajv';
 import { humanifyAjvError } from './utils';
+import { validationIssuesFromAjv } from '../validationIssues';
 
 export class OperationError extends Error {
   constructor(operation: Operation, message: string) {
@@ -35,22 +37,41 @@ export class OperationResponseError extends Error {
 }
 
 export class OperationParsingError extends OperationError {
-  constructor(operation: Operation, type: string, errors: ErrorObject[]) {
+  /**
+   * The individual validation failures, with paths rooted at the request, for
+   * example `/body/name` or `/query/limit`.
+   */
+  readonly issues: ValidationIssue[];
+
+  constructor(
+    operation: Operation,
+    type: string,
+    errors: ErrorObject[],
+    pathPrefix: string,
+  ) {
     super(
       operation,
       `${type} validation failed.\n - ${errors
         .map(humanifyAjvError)
         .join('\n - ')}`,
     );
+    this.issues = validationIssuesFromAjv(errors, pathPrefix);
   }
 }
 
 export class OperationParsingResponseError extends OperationResponseError {
+  /**
+   * The individual validation failures, with paths rooted at the response, for
+   * example `/body/items/0/name`.
+   */
+  readonly issues: ValidationIssue[];
+
   constructor(
     operation: Operation,
     response: Response,
     type: string,
     errors: ErrorObject[],
+    pathPrefix: string,
   ) {
     super(
       operation,
@@ -59,5 +80,6 @@ export class OperationParsingResponseError extends OperationResponseError {
         .map(humanifyAjvError)
         .join('\n - ')}`,
     );
+    this.issues = validationIssuesFromAjv(errors, pathPrefix);
   }
 }

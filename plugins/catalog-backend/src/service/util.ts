@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { InputError, NotAllowedError } from '@backstage/errors';
+import {
+  InputError,
+  NotAllowedError,
+  validationIssuesFromZod,
+} from '@backstage/errors';
 import { createZodV3FilterPredicateSchema } from '@backstage/filter-predicates';
 import { Request } from 'express';
 import lodash from 'lodash';
@@ -66,7 +70,12 @@ export async function validateRequestBody<T>(
   try {
     return await schema.parse(body);
   } catch (e) {
-    throw new InputError(`Malformed request: ${e}`);
+    throw new InputError(`Malformed request: ${e}`, undefined, {
+      issues:
+        e instanceof z.ZodError
+          ? validationIssuesFromZod(e, { pathPrefix: '/body' })
+          : undefined,
+    });
   }
 }
 

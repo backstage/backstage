@@ -1260,6 +1260,13 @@ describe('createRouter readonly disabled', () => {
         expect(response.status).toEqual(400);
         expect(response.body.errors.length).toEqual(1);
         expect(response.body.errors[0].message).toContain('Malformed request:');
+        expect(response.body.errors[0].issues).toEqual([
+          {
+            path: '/body/location',
+            message: 'Expected string, received null',
+            code: 'invalid_type',
+          },
+        ]);
         expect(orchestrator.process).toHaveBeenCalledTimes(0);
       });
     });
