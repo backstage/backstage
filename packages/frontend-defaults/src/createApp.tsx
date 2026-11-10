@@ -42,10 +42,10 @@ import {
   PreparedSpecializedApp,
   FrontendPluginInfoResolver,
 } from '@backstage/frontend-app-api';
+import appPlugin from '@backstage/plugin-app';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../frontend-app-api/src/wiring/prepareSpecializedApp';
-import appPlugin from '@backstage/plugin-app';
-import { discoverAvailableFeatures } from './discovery';
+import { discoverAvailableAndDeferredFeatures } from './discovery';
 import { resolveAsyncFeatures } from './resolution';
 import { maybeCreateErrorPage } from './maybeCreateErrorPage';
 
@@ -123,8 +123,8 @@ export function createApp(options?: CreateAppOptions): {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
-    const { features: discoveredFeaturesAndLoaders } =
-      discoverAvailableFeatures(config);
+    const { features: discoveredFeaturesAndLoaders, deferred } =
+      discoverAvailableAndDeferredFeatures(config);
     const { features: loadedFeatures } = await resolveAsyncFeatures({
       config,
       features: [...discoveredFeaturesAndLoaders, ...(options?.features ?? [])],
@@ -133,7 +133,7 @@ export function createApp(options?: CreateAppOptions): {
     // Handed over synchronously while the app is being prepared, so it is
     // already the real teardown by the time anything renders.
     let disposeApp: () => void = () => {};
-    const preparedApp = prepareSpecializedApp({
+    const prepareOptions: CreateSpecializedAppInternalOptions = {
       features: [appPlugin, ...loadedFeatures],
       config,
       bindRoutes: options?.bindRoutes,
@@ -142,8 +142,10 @@ export function createApp(options?: CreateAppOptions): {
         onDispose: dispose => {
           disposeApp = dispose;
         },
+        ...(deferred.length > 0 ? { deferredFeatures: deferred } : undefined),
       },
-    } as CreateSpecializedAppInternalOptions);
+    };
+    const preparedApp = prepareSpecializedApp(prepareOptions);
 
     return {
       default: () => (

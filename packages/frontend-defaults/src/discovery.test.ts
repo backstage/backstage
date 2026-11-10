@@ -18,7 +18,10 @@ import {
   createFrontendFeatureLoader,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
-import { discoverAvailableFeatures } from './discovery';
+import {
+  discoverAvailableAndDeferredFeatures,
+  discoverAvailableFeatures,
+} from './discovery';
 import { ConfigReader } from '@backstage/config';
 
 const globalSpy = jest.fn();
@@ -99,5 +102,60 @@ describe('discoverAvailableFeatures', () => {
     expect(discoverAvailableFeatures(config)).toEqual({
       features: [test1Plugin, test2Plugin, test3Plugin],
     });
+  });
+
+  it('should split eager and lazy entries, keeping include and exclude filtering', async () => {
+    const eagerPlugin = createFrontendPlugin({ pluginId: 'eager' });
+    const lazyPlugin = createFrontendPlugin({ pluginId: 'lazy' });
+    const manifest = {
+      manifestVersion: 1 as const,
+      type: 'plugin' as const,
+      pluginId: 'lazy',
+      deferrable: true,
+      routes: [],
+      externalRoutes: [],
+      extensions: [],
+    };
+    const load = jest.fn(async () => ({ default: lazyPlugin }));
+    const notDeferrableLoad = jest.fn(async () => ({ default: lazyPlugin }));
+    globalSpy.mockReturnValue({
+      modules: [
+        { name: 'eager-pkg', default: eagerPlugin },
+        { name: 'lazy-pkg', manifest, load },
+        {
+          name: 'not-deferrable-pkg',
+          manifest: { ...manifest, deferrable: false },
+          load: notDeferrableLoad,
+        },
+        { name: 'excluded-pkg', manifest, load },
+      ],
+    });
+
+    const result = discoverAvailableAndDeferredFeatures(
+      new ConfigReader({
+        app: { packages: { exclude: ['excluded-pkg'] } },
+      }),
+    );
+    expect(result.features).toHaveLength(2);
+    expect(result.features[0]).toBe(eagerPlugin);
+    expect(result.features[1]).toMatchObject({
+      $$type: '@backstage/FrontendFeatureLoader',
+    });
+    expect(result.deferred).toEqual([{ name: 'lazy-pkg', manifest, load }]);
+    expect(load).not.toHaveBeenCalled();
+    expect(notDeferrableLoad).not.toHaveBeenCalled();
+
+    // The public discovery loads deferred plugins before the app starts
+    const publicResult = discoverAvailableFeatures(
+      new ConfigReader({ app: { packages: { include: ['lazy-pkg'] } } }),
+    );
+    expect(publicResult.features).toEqual([
+      expect.objectContaining({ $$type: '@backstage/FrontendFeatureLoader' }),
+    ]);
+    expect(
+      discoverAvailableAndDeferredFeatures(
+        new ConfigReader({ app: { packages: { include: ['eager-pkg'] } } }),
+      ),
+    ).toEqual({ features: [eagerPlugin], deferred: [] });
   });
 });

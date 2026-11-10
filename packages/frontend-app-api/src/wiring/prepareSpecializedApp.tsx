@@ -24,6 +24,7 @@ import {
   coreExtensionData,
   AppNode,
   FrontendFeature,
+  FrontendPlugin,
   IdentityApi,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
@@ -85,6 +86,12 @@ import {
   createBootstrapApp,
   prepareFinalizedTree,
 } from './treeLifecycle';
+import {
+  createDeferredPluginStub,
+  DeferredFeatureController,
+  DeferredFrontendFeature,
+} from './deferredFeatures';
+import { graftDeferredPlugin } from './graftDeferredPlugin';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -270,6 +277,13 @@ export interface CreateSpecializedAppInternalOptions
      * afterwards.
      */
     onDispose?(dispose: () => void): void;
+
+    /**
+     * Plugins that start out as stubs built from their manifests, and are
+     * loaded the first time one of their pages is rendered. A plugin that is
+     * also in `features` is used from there instead.
+     */
+    deferredFeatures?: DeferredFrontendFeature[];
   };
 }
 
@@ -289,11 +303,25 @@ export function prepareSpecializedApp(
 ): PreparedSpecializedApp {
   const internalOptions = options as CreateSpecializedAppInternalOptions;
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
-  const features = deduplicateFeatures(options?.features ?? []).map(
-    createPluginInfoAttacher(config, options?.advanced?.pluginInfoResolver),
+  const attachPluginInfo = createPluginInfoAttacher(
+    config,
+    options?.advanced?.pluginInfoResolver,
   );
+  const eagerFeatures = deduplicateFeatures(options?.features ?? []);
 
   const collector = createErrorCollector();
+
+  const deferred = createDeferredPlugins({
+    entries: internalOptions?.__internal?.deferredFeatures ?? [],
+    eagerFeatures,
+    attachPluginInfo,
+    collector,
+    graft: (entry, loadedFeature) => graftDeferred(entry, loadedFeature),
+  });
+  let features = [
+    ...eagerFeatures.map(attachPluginInfo),
+    ...deferred.stubs.values(),
+  ];
 
   const tree = resolveAppTree(
     'root',
@@ -382,6 +410,7 @@ export function prepareSpecializedApp(
   });
 
   let finalized: FinalizedSpecializedApp | undefined;
+  let finalizedPredicateContext: ExtensionPredicateContext | undefined;
   let bootstrapApp: BootstrapSpecializedApp | undefined;
   const signInRuntime: SignInRuntime = { requiresSignIn: false };
 
@@ -456,6 +485,9 @@ export function prepareSpecializedApp(
   function finalizeWithSessionState(
     finalizedSessionState: SpecializedAppSessionState,
   ) {
+    finalizedPredicateContext = OpaqueSpecializedAppSessionState.toInternal(
+      finalizedSessionState,
+    ).predicateContext;
     return finalizeFromSessionState({
       finalized,
       finalizedSessionState,
@@ -495,6 +527,61 @@ export function prepareSpecializedApp(
   function setFinalized(finalizedApp: FinalizedSpecializedApp) {
     finalized = finalizedApp;
     phase.appLifecycleApi.markFinalized();
+  }
+
+  // Adds a loaded deferred plugin to the finalized app, in place of its stub.
+  function graftDeferred(
+    entry: DeferredFrontendFeature,
+    loadedFeature: unknown,
+  ): Map<string, JSX.Element> {
+    if (!finalized) {
+      throw new Error(
+        `The deferred '${entry.manifest.pluginId}' plugin can't be loaded before the app is finalized`,
+      );
+    }
+    const stub = deferred.stubs.get(entry.manifest.pluginId);
+    if (!stub) {
+      throw new Error(
+        `No stub exists for the deferred '${entry.manifest.pluginId}' plugin`,
+      );
+    }
+
+    const graftCollector = createErrorCollector();
+    const result = graftDeferredPlugin({
+      entry,
+      loadedFeature,
+      stub,
+      features,
+      attachPluginInfo,
+      tree,
+      config,
+      apis: phase.apis,
+      collector: graftCollector,
+      extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
+      predicateContext: finalizedPredicateContext,
+      routeRefsById,
+      routeBindings,
+      routeResolutionApi: phase.routeResolutionApi,
+      appTreeApi: phase.appTreeApi,
+    });
+    features = result.features;
+
+    const errors = graftCollector.collectErrors();
+    if (errors) {
+      // The app has already started, so these can only be reported as
+      // warnings, the same way as for recoverable startup errors.
+      // eslint-disable-next-line no-console
+      console.warn(
+        `Loading the deferred '${
+          entry.manifest.pluginId
+        }' plugin encountered warnings:\n${errors
+          .map(error => `${error.code}: ${error.message}`)
+          .join('\n')}`,
+      );
+    }
+
+    phase.appLifecycleApi.notifyChanged();
+    return result.elements;
   }
 
   const finalization = createFinalizationController({
@@ -937,4 +1024,65 @@ function mergeExtensionFactoryMiddleware(
       }, ctx);
     };
   });
+}
+
+/**
+ * Builds stubs for the deferred plugins that aren't also installed as regular
+ * features, along with the controller that loads them.
+ */
+function createDeferredPlugins(options: {
+  entries: DeferredFrontendFeature[];
+  eagerFeatures: FrontendFeature[];
+  attachPluginInfo(feature: FrontendFeature): FrontendFeature;
+  collector: ErrorCollector;
+  graft(
+    entry: DeferredFrontendFeature,
+    loadedFeature: unknown,
+  ): Map<string, JSX.Element>;
+}) {
+  const eagerPluginIds = new Set(
+    options.eagerFeatures
+      .filter(OpaqueFrontendPlugin.isType)
+      .map(
+        feature =>
+          feature.pluginId ?? OpaqueFrontendPlugin.toInternal(feature).id,
+      ),
+  );
+
+  const entries = options.entries.filter(entry => {
+    const { manifest } = entry;
+    if (manifest.type !== 'plugin' || !manifest.deferrable) {
+      throw new Error(
+        `The '${entry.name}' package can't be deferred, ${
+          manifest.notDeferrableReason ?? 'its manifest is not deferrable'
+        }`,
+      );
+    }
+    return !eagerPluginIds.has(manifest.pluginId);
+  });
+
+  const controller = new DeferredFeatureController({
+    entries,
+    graft: options.graft,
+  });
+
+  const stubs = new Map<string, FrontendPlugin>();
+  for (const entry of entries) {
+    const { plugin, skippedExtensionIds } = createDeferredPluginStub(
+      entry,
+      controller,
+    );
+    const stub = options.attachPluginInfo(plugin) as FrontendPlugin;
+    stubs.set(entry.manifest.pluginId, stub);
+
+    for (const extensionId of skippedExtensionIds) {
+      options.collector.report({
+        code: 'EXTENSION_IGNORED',
+        message: `The '${extensionId}' extension of the deferred '${entry.manifest.pluginId}' plugin was ignored, because only pages that are attached to a single parent and have an ID of the form 'page:${entry.manifest.pluginId}' or 'page:${entry.manifest.pluginId}/<name>' can be deferred`,
+        context: { plugin, extensionId },
+      });
+    }
+  }
+
+  return { controller, stubs };
 }
