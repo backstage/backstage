@@ -89,8 +89,12 @@ function parseClientCredentials(opts: {
       const decoded = Buffer.from(basicAuth[1], 'base64').toString('utf8');
       const idx = decoded.indexOf(':');
       if (idx >= 0) {
-        const clientId = decoded.slice(0, idx);
-        const clientSecret = decoded.slice(idx + 1);
+        const clientId = decodeURIComponent(
+          decoded.slice(0, idx).replace(/\+/g, ' '),
+        );
+        const clientSecret = decodeURIComponent(
+          decoded.slice(idx + 1).replace(/\+/g, ' '),
+        );
         if (clientId && clientSecret) {
           return { clientId, clientSecret };
         }
