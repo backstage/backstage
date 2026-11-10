@@ -16,8 +16,8 @@
 
 import { ReactNode } from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { TestApiProvider } from '@backstage/frontend-test-utils';
-import { translationApiRef } from '../apis';
+import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
+import { appLanguageApiRef, translationApiRef } from '../apis';
 import { createTranslatedMessagesSource } from '@internal/frontend';
 import { createTranslationRef } from './TranslationRef';
 import { createTranslationResource } from './TranslationResource';
@@ -65,6 +65,7 @@ it('publishes complete title groups, batches notifications, and preserves titles
       }),
     ],
   });
+  const errorApi = mockApis.error.mock();
   const observe = jest.spyOn(api, 'translation$');
   const read = jest.spyOn(api, 'getTranslation');
   const renders: Array<readonly (string | undefined)[] | undefined> = [];
@@ -77,7 +78,13 @@ it('publishes complete title groups, batches notifications, and preserves titles
     {
       initialProps: { titles: selections },
       wrapper: ({ children }: { children: ReactNode }) => (
-        <TestApiProvider apis={[[translationApiRef, api]]}>
+        <TestApiProvider
+          apis={[
+            [translationApiRef, api],
+            [appLanguageApiRef, languageApi],
+            errorApi,
+          ]}
+        >
           {children}
         </TestApiProvider>
       ),
@@ -122,34 +129,88 @@ it('publishes complete title groups, batches notifications, and preserves titles
   expect(observe).toHaveBeenCalledTimes(subscriptions);
 });
 
-it('exposes a failed resource through the grouped snapshot', async () => {
+it('falls back after an initial failure, reports once, and resumes on later language selections', async () => {
   const ref = createTranslationRef({
     id: 'failed-titles',
     messages: { title: 'Title' },
   });
+  const otherRef = createTranslationRef({
+    id: 'healthy-titles',
+    messages: { title: 'Other' },
+  });
+  let resolveOther!: (value: { default: { title: string } }) => void;
+  const other = new Promise<{ default: { title: string } }>(resolve => {
+    resolveOther = resolve;
+  });
+  const failure = new Error('offline');
+  const loadSwedish = jest.fn(async () => {
+    throw failure;
+  });
+  let resolveGerman!: (value: { default: { title: string } }) => void;
+  const german = new Promise<{ default: { title: string } }>(resolve => {
+    resolveGerman = resolve;
+  });
+  const loadGerman = jest.fn(() => german);
+  const languageApi = AppLanguageSelector.create({
+    availableLanguages: ['en', 'sv', 'de'],
+    defaultLanguage: 'sv',
+  });
+  const errorApi = mockApis.error.mock();
   const api = I18nextTranslationApi.create({
-    languageApi: AppLanguageSelector.create({
-      availableLanguages: ['en', 'sv'],
-      defaultLanguage: 'sv',
-    }),
+    languageApi,
     resources: [
       createTranslationResource({
+        ref: otherRef,
+        translations: { sv: () => other },
+      }),
+      createTranslationResource({
         ref,
-        translations: {
-          sv: async () => {
-            throw new Error('offline');
-          },
-        },
+        translations: { sv: loadSwedish, de: loadGerman },
       }),
     ],
   });
-  const source = createTranslatedMessagesSource(api, [ref('title')]);
+  const options = {
+    translationApi: api,
+    languageApi,
+    errorApi,
+    selections: [ref('title'), otherRef('title')],
+  };
+  const source = createTranslatedMessagesSource(options);
+  const otherSource = createTranslatedMessagesSource(options);
   expect(source.getSnapshot()).toBeUndefined();
   const onChange = jest.fn();
   const unsubscribe = source.subscribe(onChange);
-  await waitFor(() => expect(() => source.getSnapshot()).toThrow('offline'));
-  expect(onChange).toHaveBeenCalled();
+  const unsubscribeOther = otherSource.subscribe(onChange);
+  await waitFor(() => expect(source.getSnapshot()).toEqual(['Title', 'Other']));
+  expect(otherSource.getSnapshot()).toEqual(['Title', 'Other']);
+  expect(errorApi.post).toHaveBeenCalledTimes(1);
+  expect(errorApi.post).toHaveBeenCalledWith(
+    expect.objectContaining({
+      message: "Failed to load translations for 'failed-titles'",
+      cause: failure,
+    }),
+    { hidden: true },
+  );
+  expect(loadSwedish).toHaveBeenCalledTimes(1);
+  resolveOther({ default: { title: 'Andra' } });
+  await waitFor(() => expect(source.getSnapshot()).toEqual(['Title', 'Andra']));
+  languageApi.setLanguage('de');
+  await waitFor(() => expect(loadGerman).toHaveBeenCalledTimes(1));
+  expect(source.getSnapshot()).toEqual(['Title', 'Andra']);
+  resolveGerman({ default: { title: 'Translated title' } });
+  await waitFor(() =>
+    expect(source.getSnapshot()).toEqual(['Translated title', 'Other']),
+  );
+  expect(otherSource.getSnapshot()).toEqual(['Translated title', 'Other']);
+  languageApi.setLanguage('sv');
+  await waitFor(() => expect(source.getSnapshot()).toEqual(['Title', 'Andra']));
+  expect(loadSwedish).toHaveBeenCalledTimes(1);
+  expect(errorApi.post).toHaveBeenCalledTimes(1);
   unsubscribe();
+  unsubscribeOther();
+  onChange.mockClear();
+  await act(async () => languageApi.setLanguage('en'));
+  expect(onChange).not.toHaveBeenCalled();
 });
 
 it('waits for the initial selected-language group without publishing default messages', async () => {
@@ -165,11 +226,13 @@ it('waits for the initial selected-language group without publishing default mes
   const pending = new Promise<{ default: { title: string } }>(r => {
     resolve = r;
   });
+  const languageApi = AppLanguageSelector.create({
+    availableLanguages: ['en', 'sv'],
+    defaultLanguage: 'sv',
+  });
+  const errorApi = mockApis.error.mock();
   const api = I18nextTranslationApi.create({
-    languageApi: AppLanguageSelector.create({
-      availableLanguages: ['en', 'sv'],
-      defaultLanguage: 'sv',
-    }),
+    languageApi,
     resources: [
       createTranslationResource({ ref, translations: { sv: () => pending } }),
       createTranslationResource({
@@ -188,7 +251,13 @@ it('waits for the initial selected-language group without publishing default mes
     },
     {
       wrapper: ({ children }: { children: ReactNode }) => (
-        <TestApiProvider apis={[[translationApiRef, api]]}>
+        <TestApiProvider
+          apis={[
+            [translationApiRef, api],
+            [appLanguageApiRef, languageApi],
+            errorApi,
+          ]}
+        >
           {children}
         </TestApiProvider>
       ),

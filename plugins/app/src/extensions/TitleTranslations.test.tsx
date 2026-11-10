@@ -16,8 +16,14 @@
 
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { act, fireEvent, screen, within } from '@testing-library/react';
-import { renderTestApp } from '@backstage/frontend-test-utils';
+import {
+  act,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
+import { mockApis, renderTestApp } from '@backstage/frontend-test-utils';
 import {
   AppRootElementBlueprint,
   PageBlueprint,
@@ -71,6 +77,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
   const swedish = new Promise<Parameters<typeof resolveSwedish>[0]>(resolve => {
     resolveSwedish = resolve;
   });
+  const errorApi = mockApis.error.mock();
   const mount = jest.fn();
   const unmount = jest.fn();
   function Content() {
@@ -94,6 +101,9 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
       <div>
         <button onClick={() => languageApi.setLanguage('sv')}>Swedish</button>
         <button onClick={() => languageApi.setLanguage('en')}>English</button>
+        <button onClick={() => languageApi.setLanguage('fr')}>
+          Failing language
+        </button>
         <button onClick={() => languageApi.setLanguage('de')}>
           Empty title
         </button>
@@ -199,6 +209,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
     ],
   });
   renderTestApp({
+    apis: [errorApi],
     features: [
       plugin,
       createFrontendModule({
@@ -223,6 +234,9 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
               resource: createTranslationResource({
                 ref: titleRef,
                 translations: {
+                  fr: async () => {
+                    throw new Error('Title resource unavailable');
+                  },
                   de: async () => ({
                     default: {
                       page: '',
@@ -262,7 +276,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
           {
             'api:app/app-language': {
               config: {
-                availableLanguages: ['en', 'sv', 'de'],
+                availableLanguages: ['en', 'sv', 'de', 'fr'],
                 defaultLanguage: 'sv',
               },
             },
@@ -353,6 +367,19 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
     screen.getByRole('tab', { name: 'Translated tab' }),
   ).toBeInTheDocument();
   expect(screen.queryByText('Translated disabled')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Failing language' }));
+  await waitFor(() => expect(errorApi.post).toHaveBeenCalledTimes(1));
+  expect(
+    screen.getByRole('heading', { name: 'API-dokumentation' }),
+  ).toBeInTheDocument();
+  expect(screen.getByLabelText('Page state')).toHaveValue(
+    'kept across languages',
+  );
+  expect(mount).toHaveBeenCalledTimes(1);
+  expect(unmount).not.toHaveBeenCalled();
+  expect(
+    within(nav).getByRole('link', { name: 'API-dokumentation' }),
+  ).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Empty title' }));
   expect(await screen.findByRole('tab', { name: '' })).toBeInTheDocument();
   expect(

@@ -379,8 +379,12 @@ translation. Existing language fallbacks remain unchanged.
 During later language changes, each group updates together once all of its
 translation resources are ready. Until then, the previous resolved titles remain
 visible without remounting page content. Hidden entity tabs and pages excluded
-from navigation do not delay the corresponding visible titles. Failed resource
-loads surface as errors.
+from navigation do not delay the corresponding visible titles.
+
+If a title resource fails to load, previously resolved titles remain visible.
+A group without resolved titles uses the translation API's available fallback
+messages instead. Failures are reported without replacing the page or navigation
+with an error screen. Selecting another language resumes normal loading.
 
 When an entity refresh changes the available tabs, existing visible tabs keep
 their resolved titles and form state. Newly visible translated tabs wait until

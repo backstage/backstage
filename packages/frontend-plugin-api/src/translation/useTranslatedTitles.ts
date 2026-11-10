@@ -17,20 +17,30 @@
 import { useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { createTranslatedMessagesSource } from '@internal/frontend';
-import { translationApiRef, useApi } from '../apis';
+import {
+  appLanguageApiRef,
+  errorApiRef,
+  translationApiRef,
+  useApi,
+} from '../apis';
 import { TranslationRefTuple } from './TranslationRef';
 
 /** Waits for an initial title group, retaining resolved titles during language changes. @internal */
 export function useTranslatedTitles(
   selections: readonly (TranslationRefTuple<undefined> | undefined)[],
 ): readonly (string | undefined)[] | undefined {
-  const api = useApi(translationApiRef);
+  const options = {
+    translationApi: useApi(translationApiRef),
+    languageApi: useApi(appLanguageApiRef),
+    errorApi: useApi(errorApiRef),
+    selections,
+  };
   const [previousSource, setSource] = useState(() =>
-    createTranslatedMessagesSource(api, selections),
+    createTranslatedMessagesSource(options),
   );
-  const source = previousSource.matches(api, selections)
+  const source = previousSource.matches(options)
     ? previousSource
-    : createTranslatedMessagesSource(api, selections);
+    : createTranslatedMessagesSource(options);
   if (source !== previousSource) {
     setSource(source);
   }
