@@ -138,6 +138,59 @@ describe('HistoryBackend', () => {
       });
     });
 
+    it.each([false, true])(
+      'preserves owned state shaped like legacy metadata with Navigation API %s',
+      hasNavigationApi => {
+        const navigation = Object.assign(new EventTarget(), {
+          currentEntry: { key: 'native-key', index: 3 },
+          canGoBack: true,
+        });
+        if (hasNavigationApi) {
+          Object.defineProperty(window, 'navigation', {
+            configurable: true,
+            value: navigation,
+          });
+        }
+        window.history.replaceState(
+          { usr: { from: '/catalog' }, key: 'legacy', idx: 1 },
+          '',
+          '/initial',
+        );
+        const history = createWindowHistoryBackend();
+        expect(history.getLocation().state).toEqual({ from: '/catalog' });
+
+        const state = {
+          usr: { returnTo: '/catalog' },
+          key: 'selection',
+          idx: 0,
+          other: 'retain-me',
+        };
+        history.push('/pushed', { state });
+        expect(history.getLocation().state).toEqual(state);
+        const pushedState = window.history.state;
+        expect(createWindowHistoryBackend().getLocation().state).toEqual(state);
+
+        const replacedState = { ...state, other: 'replaced' };
+        history.replace('/replaced', { state: replacedState });
+        expect(history.getLocation().state).toEqual(replacedState);
+        expect(createWindowHistoryBackend().getLocation().state).toEqual(
+          replacedState,
+        );
+
+        const listener = jest.fn();
+        const unsubscribe = history.listen(listener);
+        window.history.replaceState(pushedState, '', '/pushed');
+        if (hasNavigationApi) {
+          navigation.currentEntry = { key: 'pushed-key', index: 2 };
+          navigation.dispatchEvent(new Event('currententrychange'));
+        }
+        window.dispatchEvent(new PopStateEvent('popstate'));
+        expect(listener).toHaveBeenCalledTimes(1);
+        expect(history.getLocation().state).toEqual(state);
+        unsubscribe();
+      },
+    );
+
     it('imports React Router user state on initialization', () => {
       window.history.replaceState(
         { usr: { from: '/catalog' }, key: 'old', idx: 1 },
