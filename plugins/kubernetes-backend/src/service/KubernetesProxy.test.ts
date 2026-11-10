@@ -954,6 +954,10 @@ describe('KubernetesProxy', () => {
             return new HttpResponse(null, { status: 403 });
           }
 
+          if (mswRequest.headers.get('Cookie')) {
+            return new HttpResponse(null, { status: 403 });
+          }
+
           return HttpResponse.json({
             kind: 'NamespaceList',
             apiVersion: 'v1',
@@ -980,7 +984,11 @@ describe('KubernetesProxy', () => {
       proxyPath: '/mountpath',
       requestPath: '/api/v1/namespaces',
 
-      headers: { [HEADER_KUBERNETES_CLUSTER]: 'cluster1' },
+      headers: {
+        [HEADER_KUBERNETES_CLUSTER]: 'cluster1',
+        authorization: 'Bearer victim-backstage-token',
+        cookie: 'backstage-token=victim-session-cookie',
+      },
     });
 
     const response = await requestPromise;
@@ -1053,6 +1061,10 @@ describe('KubernetesProxy', () => {
             return new HttpResponse(null, { status: 403 });
           }
 
+          if (mswRequest.headers.get('Cookie')) {
+            return new HttpResponse(null, { status: 403 });
+          }
+
           return HttpResponse.json({
             kind: 'NamespaceList',
             apiVersion: 'v1',
@@ -1082,6 +1094,8 @@ describe('KubernetesProxy', () => {
       headers: {
         [HEADER_KUBERNETES_CLUSTER]: 'cluster1',
         [HEADER_KUBERNETES_AUTH]: 'tokenB',
+        authorization: 'Bearer victim-backstage-token',
+        cookie: 'backstage-token=victim-session-cookie',
       },
     });
 
@@ -1276,6 +1290,9 @@ describe('KubernetesProxy', () => {
   });
 
   it('returns a response with a localKubectlProxy auth provider configuration', async () => {
+    let forwardedAuthorization: string | null | undefined;
+    let forwardedCookie: string | null | undefined;
+
     proxy = new KubernetesProxy({
       logger: mockServices.logger.mock(),
       clusterSupplier: new LocalKubectlProxyClusterLocator(),
@@ -1289,13 +1306,14 @@ describe('KubernetesProxy', () => {
       http.get(
         'http://127.0.0.1:8001/api/v1/namespaces',
         ({ request: mswRequest }) => {
-          return mswRequest.headers.get('Authorization')
-            ? new HttpResponse(null, { status: 401 })
-            : HttpResponse.json({
-                kind: 'NamespaceList',
-                apiVersion: 'v1',
-                items: [],
-              });
+          forwardedAuthorization = mswRequest.headers.get('Authorization');
+          forwardedCookie = mswRequest.headers.get('Cookie');
+
+          return HttpResponse.json({
+            kind: 'NamespaceList',
+            apiVersion: 'v1',
+            items: [],
+          });
         },
       ),
     );
@@ -1306,6 +1324,11 @@ describe('KubernetesProxy', () => {
 
       headers: {
         [HEADER_KUBERNETES_CLUSTER]: 'local',
+        // As above: the user's Backstage identity token and session cookie
+        // are not credentials for the target cluster, so the anonymous
+        // auth strategy must not forward them upstream.
+        authorization: 'Bearer victim-backstage-token',
+        cookie: 'backstage-token=victim-session-cookie',
       },
     });
 
@@ -1317,6 +1340,8 @@ describe('KubernetesProxy', () => {
       apiVersion: 'v1',
       items: [],
     });
+    expect(forwardedAuthorization).toBeNull();
+    expect(forwardedCookie).toBeNull();
   });
 
   it('returns a 500 error if authStrategy errors out and Backstage-Kubernetes-Authorization field is not provided', async () => {
@@ -1461,13 +1486,15 @@ describe('KubernetesProxy', () => {
     });
 
     it('should use a x509 client cert authentication strategy to consume kubeapi when backstage-kubernetes-auth field is not provided and the authStrategy enables x509 client cert authentication', async () => {
+      let forwardedAuthorization: string | null | undefined;
+      let forwardedCookie: string | null | undefined;
+
       worker.use(
         http.get(
           'https://localhost:9999/api/v1/namespaces',
           ({ request: mswRequest }) => {
-            if (mswRequest.headers.get('Authorization')) {
-              return new HttpResponse(null, { status: 403 });
-            }
+            forwardedAuthorization = mswRequest.headers.get('Authorization');
+            forwardedCookie = mswRequest.headers.get('Cookie');
 
             return HttpResponse.json({
               kind: 'NamespaceList',
@@ -1499,7 +1526,15 @@ describe('KubernetesProxy', () => {
         proxyPath: '/mountpath',
         requestPath: '/api/v1/namespaces',
 
-        headers: { [HEADER_KUBERNETES_CLUSTER]: 'cluster1' },
+        headers: {
+          [HEADER_KUBERNETES_CLUSTER]: 'cluster1',
+          // The frontend injects the user's Backstage identity token as the
+          // Authorization header on every backend request, and Backstage
+          // session cookies ride along on Cookie. Neither is a credential
+          // for the target cluster, so they must not be forwarded upstream.
+          authorization: 'Bearer victim-backstage-token',
+          cookie: 'backstage-token=victim-session-cookie',
+        },
       });
 
       const response = await requestPromise;
@@ -1516,6 +1551,9 @@ describe('KubernetesProxy', () => {
           key: myKey,
         }),
       );
+
+      expect(forwardedAuthorization).toBeNull();
+      expect(forwardedCookie).toBeNull();
 
       expect(response.status).toEqual(200);
     });
