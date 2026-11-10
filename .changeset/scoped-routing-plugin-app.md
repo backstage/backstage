@@ -11,3 +11,5 @@ Page tabs and breadcrumbs use app-absolute paths and include deployment prefixes
 Older, separately bundled BUI components retain their React Router navigation through the legacy routing context, including beneath nested BUI providers.
 
 BUI navigation consumes the public contextual navigation hook, allowing routing adapters to supply the same behavior to other component libraries.
+
+Uncaught page rendering errors use the app's error display, including plugin details and retry, while unmatched routes continue to show the not-found page.
