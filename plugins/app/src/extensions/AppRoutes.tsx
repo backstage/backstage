@@ -21,6 +21,7 @@ import {
   coreExtensionData,
   createExtensionInput,
   NotFoundErrorPage,
+  ErrorDisplay,
   appHistoryApiRef,
   routeResolutionApiRef,
   useApi,
@@ -75,6 +76,13 @@ export const AppRoutes = createExtension({
           pages={pages}
           redirects={redirects}
           fallback={<NotFoundErrorPage />}
+          errorFallback={({ error, resetError, match }) => (
+            <ErrorDisplay
+              plugin={match.node.spec.plugin}
+              error={error}
+              resetError={resetError}
+            />
+          )}
         />
       );
     };

@@ -1,4 +1,4 @@
-# @backstage/plugin-app-tanstack-router
+# @backstage/frontend-adapter-tanstack-router
 
 Renders a page of the [new frontend system](https://backstage.io/docs/frontend-system/)
 with [TanStack Router](https://tanstack.com/router), scoped to the page's own
@@ -17,7 +17,7 @@ TanStack Router is a peer dependency, so install it alongside the adapter:
 
 ```sh
 cd <package-dir> # if within a monorepo
-yarn add @backstage/plugin-app-tanstack-router @tanstack/react-router@1.131.2 @tanstack/history@1.131.2
+yarn add @backstage/frontend-adapter-tanstack-router @tanstack/react-router@1.131.2 @tanstack/history@1.131.2
 ```
 
 The adapter pins `@tanstack/react-router` to `1.131.2`, the latest release
@@ -48,7 +48,7 @@ const toolsPage = PageBlueprint.make({
 The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
 
 ```tsx title="./components/ToolsPage.tsx"
-import { TanStackPageRouter } from '@backstage/plugin-app-tanstack-router';
+import { TanStackPageRouter } from '@backstage/frontend-adapter-tanstack-router';
 
 export function ToolsPage() {
   return (
@@ -104,7 +104,7 @@ wherever in the tree the Backstage page element belongs:
 import {
   TanStackPageContent,
   createTanStackPageRouter,
-} from '@backstage/plugin-app-tanstack-router';
+} from '@backstage/frontend-adapter-tanstack-router';
 import {
   Outlet,
   createRootRoute,

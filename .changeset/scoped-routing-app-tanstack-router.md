@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-app-tanstack-router': minor
+'@backstage/frontend-adapter-tanstack-router': minor
 ---
 
 Added `TanStackPageRouter` for page-scoped TanStack routing with app-owned history. Use `createTanStackPageRouter` and `TanStackPageContent` to integrate a plugin-owned route tree.

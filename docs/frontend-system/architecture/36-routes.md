@@ -355,7 +355,7 @@ Router context. Existing v6 pages retain implicit compatibility; an explicit
 adapter in the lazy page component migrates away from that fallback.
 
 ```tsx title="plugins/catalog/src/components/IndexPage.tsx"
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { indexRouteRef, detailsSubRouteRef } from '../routes';
@@ -650,9 +650,13 @@ export function EntityNameLink(props: {
 
 Existing new frontend system pages retain implicit React Router v6 routing.
 Route parameters, relative links and nested routes continue to work without
-an immediate migration. In development, consuming this fallback logs a warning
-once per extension per app instance. Render an explicit page adapter to migrate
-that content; pages using only framework routing do not need an adapter.
+an immediate migration. In development, native React Router APIs and path-relative
+BUI links using this fallback log a warning once per extension per app instance.
+BUI links with app-absolute paths, external URLs, or empty/query/hash targets use
+framework navigation without a compatibility warning. Empty targets keep the
+current pathname and clear the query and fragment. Render an explicit page
+adapter to migrate content that needs relative or native router APIs; pages using
+only framework routing do not need an adapter.
 
 A page that wants its library's own APIs declares an adapter by rendering one
 inside its lazily loaded page component — plain React, no extension wiring:
@@ -669,7 +673,7 @@ PageBlueprint.make({
 The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
 
 ```tsx title="./Page.tsx"
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 
 export function Page() {
   return (
@@ -700,6 +704,12 @@ that compatibility inside the output. `ExtensionBoundary` continues to provide
 extension context, loading, errors, and analytics. The app also retains a root
 compatibility projection for app chrome; none of these projections owns a
 separate browser history.
+
+If a matched page throws outside its own error boundaries, the app renders its
+configured error display with the plugin, error, and retry action. This is separate
+from the not-found page used when no route matches. Navigating to another
+concrete page mount clears the previous failure without remounting healthy pages
+on ordinary parameter changes.
 
 Each parent extension still chooses how to render its children. Route matching
 does not render every matching extension automatically or replace the parent

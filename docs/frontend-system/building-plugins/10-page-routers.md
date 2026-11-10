@@ -35,6 +35,12 @@ still owns browser history, and navigation between plugins still goes through
 `AppHistoryApi`.
 :::
 
+Routing adapters are standalone frontend framework libraries published as
+`@backstage/frontend-adapter-react-router-v6`,
+`@backstage/frontend-adapter-react-router-v7`, and
+`@backstage/frontend-adapter-tanstack-router`. Install the library alongside its
+routing peers in the package that owns the page.
+
 ## Declare a router in the lazy page component
 
 A page router is declared by rendering it, inside the lazily loaded page component. This keeps the adapter import and its
@@ -56,7 +62,7 @@ const toolsPage = PageBlueprint.make({
 The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
 
 ```tsx title="./components/ToolsPage.tsx"
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 
 export function ToolsPage() {
   return (
@@ -112,7 +118,7 @@ relative links, nested `<Routes>` and `useParams`. Add this explicit adapter to
 migrate away from that fallback:
 
 ```shell
-yarn --cwd plugins/<plugin-name> add @backstage/plugin-app-react-router-v6
+yarn --cwd plugins/<plugin-name> add @backstage/frontend-adapter-react-router-v6
 ```
 
 The package expects `react-router-dom` version 6 as a peer
@@ -122,7 +128,7 @@ dependency, which a plugin using those APIs already has. Render
 ## Use React Router v7
 
 ```shell
-yarn --cwd plugins/<plugin-name> add @backstage/plugin-app-react-router-v7
+yarn --cwd plugins/<plugin-name> add @backstage/frontend-adapter-react-router-v7
 ```
 
 The package expects `react-router` and `react-router-dom` version 7 as peer
@@ -142,7 +148,7 @@ const toolsPage = PageBlueprint.make({
 The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
 
 ```tsx title="./components/ToolsPage.tsx"
-import { ReactRouterV7PageRouter } from '@backstage/plugin-app-react-router-v7';
+import { ReactRouterV7PageRouter } from '@backstage/frontend-adapter-react-router-v7';
 
 export function ToolsPage() {
   return (
@@ -160,7 +166,7 @@ against the page rather than against the app root.
 ## Use TanStack Router
 
 ```shell
-yarn --cwd plugins/<plugin-name> add @backstage/plugin-app-tanstack-router
+yarn --cwd plugins/<plugin-name> add @backstage/frontend-adapter-tanstack-router
 ```
 
 Install `@tanstack/react-router@1.131.2` and `@tanstack/history@1.131.2` alongside
@@ -187,7 +193,7 @@ const toolsPage = PageBlueprint.make({
 The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
 
 ```tsx title="./components/ToolsPage.tsx"
-import { TanStackPageRouter } from '@backstage/plugin-app-tanstack-router';
+import { TanStackPageRouter } from '@backstage/frontend-adapter-tanstack-router';
 
 export function ToolsPage() {
   return (
@@ -208,7 +214,7 @@ the tree where the page's own content belongs:
 import {
   TanStackPageContent,
   createTanStackPageRouter,
-} from '@backstage/plugin-app-tanstack-router';
+} from '@backstage/frontend-adapter-tanstack-router';
 import {
   Outlet,
   createRootRoute,
@@ -291,7 +297,7 @@ const overviewSubPage = SubPageBlueprint.make({
 The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
 
 ```tsx title="./components/Overview.tsx"
-import { ReactRouterV7PageRouter } from '@backstage/plugin-app-react-router-v7';
+import { ReactRouterV7PageRouter } from '@backstage/frontend-adapter-react-router-v7';
 
 export function Overview() {
   return (
@@ -499,8 +505,8 @@ but adding a supported library remains a contribution to Backstage rather
 than a plugin-side extension point.
 
 If your plugin needs a library that is not covered here, open an issue. The
-existing adapters are small, and their source in `plugins/app-react-router-v6`,
-`plugins/app-react-router-v7` and `plugins/app-tanstack-router` is the reference
+existing adapters are small, and their source in `packages/frontend-adapter-react-router-v6`,
+`packages/frontend-adapter-react-router-v7` and `packages/frontend-adapter-tanstack-router` is the reference
 for what a new one does:
 
 - Project the app's history and the page's mount into the library's own history

@@ -37,7 +37,7 @@ import {
   useParams as useV6Params,
   useResolvedPath as useV6ResolvedPath,
 } from 'react-router-dom';
-import { TanStackPageRouter } from '@backstage/plugin-app-tanstack-router';
+import { TanStackPageRouter } from '@backstage/frontend-adapter-tanstack-router';
 import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
 
 /**
@@ -66,7 +66,7 @@ function useAppLocation() {
  * bottom then asks the question those three do not — not which library is
  * answering, but where the target it answers with actually lands.
  *
- * Lives in this package rather than in `plugin-app-tanstack-router`, because
+ * Lives in this package rather than in `frontend-adapter-tanstack-router`, because
  * `react-router-dom` resolves to v6 from here while the TanStack adapter
  * deliberately carries no React Router dependency at all. Both libraries are
  * therefore genuinely themselves, which is the whole point: they publish

@@ -21,7 +21,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { Route, Routes, useParams } from 'react-router-dom';
 import { renderInTestApp, renderTestApp } from '@backstage/frontend-test-utils';
 import {
