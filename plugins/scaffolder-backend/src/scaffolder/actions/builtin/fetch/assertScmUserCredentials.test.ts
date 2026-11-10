@@ -30,6 +30,7 @@ describe('assertScmUserCredentials', () => {
           },
         ],
         bitbucketServer: [{ host: 'bitbucket.example.com' }],
+        gitea: [{ host: 'gitea.example.com' }],
       },
     }),
   );
@@ -83,6 +84,58 @@ describe('assertScmUserCredentials', () => {
         integrations,
         requireScmUserCredentials: true,
         url: 'https://example.com/skeleton',
+      }),
+    ).not.toThrow();
+  });
+
+  it('checks the host that relative fetch URLs resolve to', () => {
+    const baseUrl =
+      'https://gitea.example.com/owner/repo/src/branch/main/template.yaml';
+
+    // Network-path references that fail absolute URL parsing are resolved
+    // against the template base, and the check must be applied to the host
+    // that will actually be read from
+    expect(() =>
+      assertScmUserCredentials({
+        integrations,
+        requireScmUserCredentials: true,
+        url: ' //github.example.com/owner/repo/raw/main/secret.txt',
+        baseUrl,
+      }),
+    ).toThrow(
+      'No user credentials provided for host github.example.com, but scaffolder.requireScmUserCredentials is enabled',
+    );
+
+    expect(() =>
+      assertScmUserCredentials({
+        integrations,
+        requireScmUserCredentials: true,
+        url: '\\\\github.example.com\\\\owner\\\\repo\\\\raw\\\\main\\\\secret.txt',
+        baseUrl,
+      }),
+    ).toThrow(
+      'No user credentials provided for host github.example.com, but scaffolder.requireScmUserCredentials is enabled',
+    );
+
+    // Ordinary relative fetch URLs resolve to the host of the template
+    // itself, which is not gated by the credential requirement
+    expect(() =>
+      assertScmUserCredentials({
+        integrations,
+        requireScmUserCredentials: true,
+        url: './skeleton',
+        baseUrl,
+      }),
+    ).not.toThrow();
+
+    // A bare network-path reference is applied relative to the repository
+    // root of the base rather than crossing to another host
+    expect(() =>
+      assertScmUserCredentials({
+        integrations,
+        requireScmUserCredentials: true,
+        url: '//github.example.com/owner/repo/raw/main/secret.txt',
+        baseUrl,
       }),
     ).not.toThrow();
   });
