@@ -39,6 +39,18 @@ createBackendPlugin({
 });
 ```
 
+## Shutdown
+
+The default scheduler stops recurring task execution and its background database
+maintenance during the root lifecycle before-shutdown phase, before plugin shutdown
+hooks run. This applies to both local and global tasks on the shutting-down backend
+instance. Other backend instances can continue running global tasks.
+
+Active tasks receive an abort signal at this point and should return as quickly as
+possible. The scheduler does not wait for active task functions to finish before
+plugin shutdown hooks run. If your plugin needs to drain active work, use a plugin
+shutdown hook to wait for that work to finish.
+
 ## REST API
 
 The scheduler exposes a REST API on top of each plugin's base URL, that lets you inspect and affect the current state of all of that plugin's tasks.
