@@ -16,5 +16,6 @@
 
 export {
   type IdentityApi,
+  type SignOutOptions,
   identityApiRef,
 } from '@backstage/frontend-plugin-api';
