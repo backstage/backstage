@@ -925,9 +925,9 @@ export async function createRouter(
             metadata: {
               ...entity.metadata,
               annotations: {
+                ...entity.metadata.annotations,
                 [ANNOTATION_LOCATION]: body.location,
                 [ANNOTATION_ORIGIN_LOCATION]: body.location,
-                ...entity.metadata.annotations,
               },
             },
           },
