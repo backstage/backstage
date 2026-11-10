@@ -212,8 +212,13 @@ jobs:
 
       - name: catalog query battery tests
         run: |
-          yarn test \
-            plugins/catalog-backend/src/tests/performance/queryBattery \
+          yarn test plugins/catalog-backend/src/tests/performance/queryBattery
+
+      # Each of these clones the ~7 GB dataset, so run them one at a time to keep
+      # at most one clone on the service's disk
+      - name: catalog dataset clone tests
+        run: |
+          yarn test --runInBand \
             plugins/catalog-backend/src/tests/performance/orphanCleanup \
             plugins/catalog-backend/src/tests/performance/ancestry \
             plugins/catalog-backend/src/tests/performance/refreshAtScale \
