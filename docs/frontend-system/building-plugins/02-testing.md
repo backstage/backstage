@@ -340,7 +340,7 @@ with the `mountPath` the page is registered at:
 
 ```tsx
 import { renderInTestApp } from '@backstage/frontend-test-utils';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 
 await renderInTestApp(<EntityHeader />, {
   router: ReactRouterV6PageRouter,

@@ -45,8 +45,8 @@ const peerDependenciesReact18Only = {
 };
 
 const react18OnlyPackages = new Set([
-  '@backstage/plugin-app-react-router-v7',
-  '@backstage/plugin-app-tanstack-router',
+  '@backstage/frontend-adapter-react-router-v7',
+  '@backstage/frontend-adapter-tanstack-router',
   '@backstage/ui',
 ]);
 

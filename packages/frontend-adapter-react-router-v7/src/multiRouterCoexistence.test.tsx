@@ -31,7 +31,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { useAppHistoryLocation } from '@internal/frontend';
 import { Link, useLocation, useResolvedPath } from 'react-router';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
 
 /**
@@ -53,7 +53,9 @@ import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
 const reactRouterV6 = require(require.resolve('react-router-dom', {
   paths: [
     path.dirname(
-      require.resolve('@backstage/plugin-app-react-router-v6/package.json'),
+      require.resolve(
+        '@backstage/frontend-adapter-react-router-v6/package.json',
+      ),
     ),
   ],
 })) as typeof import('react-router-dom');

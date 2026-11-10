@@ -40,7 +40,7 @@ import {
   convertLegacyRouteRefs,
 } from './convertLegacyRouteRef';
 import { compatWrapper } from './compatWrapper';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { collectEntityPageContents } from './collectEntityPageContents';
 import { normalizeRoutePath } from './normalizeRoutePath';
 

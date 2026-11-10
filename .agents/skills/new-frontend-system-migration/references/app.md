@@ -176,7 +176,7 @@ PageBlueprint.make({
 The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
 
 ```tsx title="./Page.tsx"
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 
 export function Page() {
   return (
@@ -189,11 +189,11 @@ export function Page() {
 
 Three adapter packages ship with Backstage, each exporting one component:
 
-| Package                                 | Component                 |
-| --------------------------------------- | ------------------------- |
-| `@backstage/plugin-app-react-router-v6` | `ReactRouterV6PageRouter` |
-| `@backstage/plugin-app-react-router-v7` | `ReactRouterV7PageRouter` |
-| `@backstage/plugin-app-tanstack-router` | `TanStackPageRouter`      |
+| Package                                       | Component                 |
+| --------------------------------------------- | ------------------------- |
+| `@backstage/frontend-adapter-react-router-v6` | `ReactRouterV6PageRouter` |
+| `@backstage/frontend-adapter-react-router-v7` | `ReactRouterV7PageRouter` |
+| `@backstage/frontend-adapter-tanstack-router` | `TanStackPageRouter`      |
 
 Adapters are **added, not selected**. Each library publishes a different React
 context object, so an adapter nests inside another instead of replacing it. A
@@ -222,7 +222,7 @@ Assert page parameters and relative hrefs to catch missing adapters. Pass the
 same adapter the page renders, and render app chrome as chrome:
 
 ```tsx
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 
 // Page content that routes with React Router.
 renderInTestApp(<EntityPage />, { router: ReactRouterV6PageRouter });

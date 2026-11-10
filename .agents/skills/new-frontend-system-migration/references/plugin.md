@@ -350,7 +350,7 @@ export const myPage = PageBlueprint.make({
 In the lazy `components/Router` module, wrap the component that uses router hooks:
 
 ```tsx
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 
 export const MyPluginRouter = () => (
   <ReactRouterV6PageRouter>

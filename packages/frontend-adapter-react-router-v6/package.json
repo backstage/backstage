@@ -1,19 +1,9 @@
 {
-  "name": "@backstage/plugin-app-react-router-v7",
+  "name": "@backstage/frontend-adapter-react-router-v6",
   "version": "0.1.0",
-  "description": "React Router v7 adapter for the Backstage router-agnostic plugin routing system",
+  "description": "React Router v6 adapter for the Backstage router-agnostic plugin routing system",
   "backstage": {
-    "role": "web-library",
-    "pluginId": "app",
-    "pluginPackages": [
-      "@backstage/plugin-app",
-      "@backstage/plugin-app-backend",
-      "@backstage/plugin-app-node",
-      "@backstage/plugin-app-react",
-      "@backstage/plugin-app-react-router-v6",
-      "@backstage/plugin-app-react-router-v7",
-      "@backstage/plugin-app-tanstack-router"
-    ]
+    "role": "web-library"
   },
   "publishConfig": {
     "access": "public"
@@ -25,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/app-react-router-v7"
+    "directory": "packages/frontend-adapter-react-router-v6"
   },
   "license": "Apache-2.0",
   "sideEffects": false,
@@ -63,9 +53,11 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/frontend-adapter-tanstack-router": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
-    "@backstage/plugin-app-react-router-v6": "workspace:^",
     "@backstage/ui": "workspace:^",
+    "@tanstack/history": "1.131.2",
+    "@tanstack/react-router": "1.131.2",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
@@ -74,15 +66,13 @@
     "@types/use-sync-external-store": "^1.7.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
-    "react-router": "^7.18.3",
-    "react-router-dom": "^7.18.3"
+    "react-router-dom": "^6.30.6"
   },
   "peerDependencies": {
-    "@types/react": "^18.0.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-router": "^7.18.3",
-    "react-router-dom": "^7.18.3"
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.30.6"
   },
   "peerDependenciesMeta": {
     "@types/react": {

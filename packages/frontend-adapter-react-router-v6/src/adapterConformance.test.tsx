@@ -17,7 +17,7 @@
 import { matchPath } from '@internal/frontend';
 import { type AppNode } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { testPageRouter } from '../../../packages/frontend-test-utils/src/__testUtils__/testPageRouter';
+import { testPageRouter } from '../../frontend-test-utils/src/__testUtils__/testPageRouter';
 import { useContext, useState } from 'react';
 import { act, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -44,18 +44,15 @@ import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
 const mockRouteNode = {} as AppNode;
 
 // Isolate routing consumers from extension rendering; app tests cover real node ancestry.
-jest.mock(
-  '../../../packages/frontend-plugin-api/src/components/AppNodeProvider',
-  () => {
-    const actual = jest.requireActual(
-      '../../../packages/frontend-plugin-api/src/components/AppNodeProvider',
-    );
-    return {
-      ...actual,
-      useAppNode: () => actual.useAppNode() ?? mockRouteNode,
-    };
-  },
-);
+jest.mock('../../frontend-plugin-api/src/components/AppNodeProvider', () => {
+  const actual = jest.requireActual(
+    '../../frontend-plugin-api/src/components/AppNodeProvider',
+  );
+  return {
+    ...actual,
+    useAppNode: () => actual.useAppNode() ?? mockRouteNode,
+  };
+});
 
 /**
  * Page router adapter conformance.
