@@ -12,7 +12,7 @@ Framework path destinations must start with `/` and exclude the deployment basen
 
 Framework routing hooks work without a page adapter and retain old frontend compatibility. Existing pages keep implicit React Router v6 routing, including consumer-scoped relative BUI links, with development warnings to guide migration to explicit adapters. The app supplies this compatibility around each route-bearing extension’s complete output, so headers from older published blueprints also retain their page scope. Explicit adapters override this navigation context; framework navigation hooks remain strict. Page headers remain visible during content loading and errors, and sub-page breadcrumbs point to their matched routes.
 
-**BREAKING**: `useRouteRefParams` returns only parameters declared by the supplied route ref, with `undefined` for unmatched parameters. It no longer includes the undeclared splat `*`; use your page router's APIs if you need that value.
+**BREAKING**: `useRouteRefParams` returns only parameters declared by the supplied route ref, with `undefined` for unmatched parameters. Matched extension parameters take precedence over parameters inferred from a sub-route path, so navigating deeper within a sub-page retains its bound values. It no longer includes the undeclared splat `*`; use your page router's APIs if you need that value.
 
 See [scoped plugin routing](https://backstage.io/docs/frontend-system/architecture/routes#scoped-plugin-routing) for navigation semantics and [page routers](https://backstage.io/docs/frontend-system/building-plugins/page-routers) for integration examples.
 

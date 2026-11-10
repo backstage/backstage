@@ -556,7 +556,9 @@ needs no adapter.
 route ref. Parameters that the current location does not bind have the value
 `undefined`. The undeclared splat `*` is not included; use the page router's own
 parameter API if your content needs the matched tail. In the old frontend
-system, the hook reads parameters from React Router.
+system, the hook reads parameters from React Router. Matched extension parameters
+take precedence over values inferred from a sub-route path, so navigating deeper
+within a sub-page retains its bound parameters.
 
 `useAppLocation` reads the app-absolute location, and `useAppSearchParams` reads
 and updates query parameters. Both use app history in the new frontend system
