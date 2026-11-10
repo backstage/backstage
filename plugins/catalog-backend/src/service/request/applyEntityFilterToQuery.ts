@@ -23,8 +23,10 @@ export function applyEntityFilterToQuery(options: {
   targetQuery: Knex.QueryBuilder;
   onEntityIdField: string;
   knex: Knex;
+  matchLongInListsPerRow?: boolean;
 }): Knex.QueryBuilder {
-  const { filter, targetQuery, onEntityIdField, knex } = options;
+  const { filter, targetQuery, onEntityIdField, knex, matchLongInListsPerRow } =
+    options;
 
   if (!filter) {
     return targetQuery;
@@ -35,5 +37,6 @@ export function applyEntityFilterToQuery(options: {
     targetQuery,
     onEntityIdField,
     knex,
+    matchLongInListsPerRow,
   });
 }

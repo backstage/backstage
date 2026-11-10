@@ -34,7 +34,10 @@ jest.setTimeout(60_000);
 const databases = TestDatabases.create();
 
 describe('PostgreSQL query generation', () => {
-  function compile(filter: FilterPredicate) {
+  function compile(
+    filter: FilterPredicate,
+    options?: { matchLongInListsPerRow?: boolean },
+  ) {
     const knex = knexFactory({ client: 'pg' });
     const query = knex('final_entities').select('*');
 
@@ -43,6 +46,7 @@ describe('PostgreSQL query generation', () => {
       targetQuery: query,
       onEntityIdField: 'final_entities.entity_id',
       knex,
+      ...options,
     });
 
     return query.toSQL();
@@ -102,6 +106,16 @@ describe('PostgreSQL query generation', () => {
     }
     expect(short.sql).toContain('exists');
     expect(short.sql).not.toContain('in_set');
+
+    // Callers that have already narrowed the rows can opt out of the sets
+    const perRow = compile(
+      { 'relations.ownedBy': { $in: values } },
+      { matchLongInListsPerRow: true },
+    );
+    expect(perRow.sql).toContain(
+      '"final_entities"."entity_id" in (select "search_flt"."entity_id" from "search" as "search_flt" where "search_flt"."entity_id" is not null and "search_flt"."key" = ? and ("search_flt"."value" = ANY(?::text[])))',
+    );
+    expect(perRow.sql).not.toContain('in_set');
 
     // The same list in another case or key order reuses the joined set
     const repeated = compile({

@@ -358,6 +358,9 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           targetQuery: query,
           onEntityIdField: 'final_entities.entity_id',
           knex: this.database,
+          // The refs already pick the rows, so matching long lists as whole
+          // sets would only add work
+          matchLongInListsPerRow: true,
         });
       }
 

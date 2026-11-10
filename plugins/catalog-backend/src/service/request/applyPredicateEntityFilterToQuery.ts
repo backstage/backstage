@@ -138,11 +138,17 @@ export function applyPredicateEntityFilterToQuery(options: {
    * matches long lists as sets; other databases always match per row.
    */
   inSets?: InSets;
+  /**
+   * Match long `$in` lists per row even on PostgreSQL. Use when the query is
+   * already narrowed to a few rows, where building the sets would only add
+   * work.
+   */
+  matchLongInListsPerRow?: boolean;
 }): Knex.QueryBuilder {
   const { filter, targetQuery, onEntityIdField, knex } = options;
   const inSets =
     options.inSets ??
-    (knex.client.config.client === 'pg'
+    (knex.client.config.client === 'pg' && !options.matchLongInListsPerRow
       ? joinLongInSets({
           filter,
           rootQuery: targetQuery,
