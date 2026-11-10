@@ -212,7 +212,7 @@ async function preload(databaseId: TestDatabaseId, size: number) {
         log(databaseId, `Keeping the statistics of ${TEMPLATE_DATABASE}`);
       }
       log(databaseId, `Vacuuming ${TEMPLATE_DATABASE}`);
-      await template.raw('VACUUM (FREEZE)');
+      await template.raw('VACUUM (FREEZE, PARALLEL 0)');
     });
 
     // Postgres only copies a template that nothing is connected to. Refusing

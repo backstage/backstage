@@ -35,6 +35,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
+          --shm-size=1g
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
@@ -46,6 +47,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
+          --shm-size=1g
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
@@ -123,6 +125,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
+          --shm-size=1g
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s

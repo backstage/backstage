@@ -4,14 +4,6 @@
 # permissions beyond contents: read.
 name: Catalog Performance Baseline
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/verify_catalog-performance-baseline.yml'
-      - 'plugins/catalog-backend/**'
-      - 'plugins/catalog-node/**'
-      - 'plugins/catalog-common/**'
-      - 'packages/catalog-model/**'
-      - 'packages/backend-test-utils/**'
   push:
     branches:
       - master
@@ -42,6 +34,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
+          --shm-size=1g
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
@@ -53,6 +46,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
+          --shm-size=1g
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
@@ -129,6 +123,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
+          --shm-size=1g
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
