@@ -411,6 +411,76 @@ describe('github', () => {
         'GET /versions',
       );
     });
+
+    it('fetches email with app token when fetchEmailForGithubApps is true', async () => {
+      let capturedVariables: Record<string, unknown> = {};
+      const input: QueryResponse = {
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'a',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+              },
+            ],
+          },
+        },
+      };
+
+      server.use(
+        graphqlMsw.query('users', ({ variables }) => {
+          capturedVariables = variables;
+          return HttpResponse.json({ data: input });
+        }),
+      );
+
+      await getOrganizationUsers(
+        graphql,
+        'a',
+        'app',
+        undefined,
+        undefined,
+        false,
+        undefined,
+        true,
+      );
+
+      expect(capturedVariables.email).toBe(true);
+    });
+
+    it('does not fetch email with app token by default', async () => {
+      let capturedVariables: Record<string, unknown> = {};
+      const input: QueryResponse = {
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'a',
+                name: 'b',
+                bio: 'c',
+                avatarUrl: 'e',
+              },
+            ],
+          },
+        },
+      };
+
+      server.use(
+        graphqlMsw.query('users', ({ variables }) => {
+          capturedVariables = variables;
+          return HttpResponse.json({ data: input });
+        }),
+      );
+
+      await getOrganizationUsers(graphql, 'a', 'app');
+
+      expect(capturedVariables.email).toBe(false);
+    });
   });
 
   describe('getOrganizationUsers using custom UserTransformer', () => {
