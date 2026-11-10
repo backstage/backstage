@@ -16,6 +16,7 @@
 
 import { forwardRef, useRef } from 'react';
 import { mergeProps, useFocusRing, useLink } from 'react-aria';
+import { RiExternalLinkLine } from '@remixicon/react';
 import type { LinkProps } from './types';
 import {
   useDefinition,
@@ -41,7 +42,7 @@ function LinkView({
   forwardedRef,
 }: LinkViewProps) {
   const { ownProps, restProps, dataAttributes, analytics } = definitionResult;
-  const { classes, title, children } = ownProps;
+  const { classes, title, children, external } = ownProps;
 
   const internalRef = useRef<HTMLAnchorElement>(null);
   const linkRef = (forwardedRef ||
@@ -98,7 +99,14 @@ function LinkView({
     className: classes.root,
     'data-focus-visible': isFocusVisible || undefined,
     onClick: handleClick,
-    children,
+    children: external ? (
+      <>
+        {children}
+        <RiExternalLinkLine className={classes.icon} aria-hidden="true" />
+      </>
+    ) : (
+      children
+    ),
   };
 
   if (navigation.type === 'router') {
@@ -114,13 +122,74 @@ function LinkView({
   return <a {...commonProps} href={resolvedHref} />;
 }
 
+const EXTERNAL_HREF = /^https?:\/\//i;
+
+/**
+ * Resolves the `external` prop to a boolean, detecting `http://` and
+ * `https://` destinations when set to `'auto'` or left undefined.
+ */
+function isExternalLink(
+  external: LinkProps['external'],
+  href: LinkProps['href'],
+): boolean {
+  if (external === true || external === 'always') {
+    return true;
+  }
+  if (external === false || external === 'no') {
+    return false;
+  }
+  return typeof href === 'string' && EXTERNAL_HREF.test(href);
+}
+
+/**
+ * Builds the `rel` attribute for a link that opens in a new tab, keeping any
+ * tokens provided by the caller while always including `noopener noreferrer`.
+ */
+function withNoOpenerRel(rel?: string): string {
+  return [
+    ...new Set([
+      'noopener',
+      'noreferrer',
+      ...(rel?.split(/\s+/).filter(Boolean) ?? []),
+    ]),
+  ].join(' ');
+}
+
 /**
  * A styled anchor element that supports analytics event tracking on click.
+ *
+ * @remarks
+ * Links to `http://` or `https://` destinations are treated as external by
+ * default. External links show an external link icon and always open in a
+ * new tab. Use the `external` prop to force (`'always'`) or suppress (`'no'`)
+ * this behavior.
+ *
+ * @example
+ * ```tsx
+ * <Link href="https://backstage.io">Backstage website</Link>
+ * <Link href="/docs" external="always">Docs in a new tab</Link>
+ * <Link href="https://backstage.io" external="no">Plain link</Link>
+ * ```
  *
  * @public
  */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const definitionResult = useDefinition(LinkDefinition, props);
+  const external = isExternalLink(props.external, props.href);
+  const definitionResult = useDefinition(
+    LinkDefinition,
+    // External links always open in a new tab, so the browser owns the
+    // navigation and the anchor carries the matching `target` and `rel`.
+    // The resolved boolean replaces the raw prop so the data attribute only
+    // appears on links that are actually external.
+    external
+      ? {
+          ...props,
+          external: true,
+          target: '_blank',
+          rel: withNoOpenerRel(props.rel),
+        }
+      : { ...props, external: undefined },
+  );
   const Navigation = definitionResult.navigation;
 
   return (

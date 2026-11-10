@@ -50,8 +50,39 @@ export const ExternalLink = meta.story({
   args: {
     href: 'https://backstage.io',
     children: 'Sign up for Backstage',
-    target: '_blank',
   },
+});
+
+export const ExternalLinkComparison = meta.story({
+  render: () => (
+    <Flex gap="4" direction="column">
+      <Link href="/" children="Internal link (auto)" />
+      <Link
+        href="https://backstage.io"
+        children="External link (auto, detected from https://)"
+      />
+      <Link
+        href="mailto:hello@backstage.io"
+        children="Mail link (auto, not external)"
+      />
+      <Link href="/" external="always" children="Internal link (always)" />
+      <Link
+        href="https://backstage.io"
+        external="no"
+        children="External link (no)"
+      />
+      <Link
+        href="https://backstage.io"
+        standalone
+        children="Standalone external link"
+      />
+      <Link
+        href="https://backstage.io"
+        variant="title-medium"
+        children="Title external link"
+      />
+    </Flex>
+  ),
 });
 
 export const AllVariants = meta.story({
