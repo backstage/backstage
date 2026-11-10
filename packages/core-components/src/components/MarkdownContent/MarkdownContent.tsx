@@ -77,6 +77,11 @@ const MarkdownRenderer = lazy(() => import('./MarkdownRenderer'));
  *
  * @remarks
  * If you just want to render to plain {@link https://commonmark.org/ | CommonMark}, set the dialect to `'common-mark'`
+ *
+ * The markdown renderer loads the first time this component renders, so the
+ * first render shows nothing until it has loaded. Tests that render this
+ * component synchronously should await the content, for example with
+ * `findBy*` queries.
  */
 export function MarkdownContent(props: Props) {
   const classes = useStyles();

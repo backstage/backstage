@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import validator from '@rjsf/validator-ajv8';
 import { Form } from '../../Form';
 
@@ -54,7 +54,7 @@ describe('BUI FieldTemplate', () => {
     expect(getByText(/Required/)).toBeInTheDocument();
   });
 
-  it('should render the description as markdown', () => {
+  it('should render the description as markdown', async () => {
     const { container } = render(
         <Form
           EXPERIMENTAL_theme="bui"
@@ -72,8 +72,11 @@ describe('BUI FieldTemplate', () => {
         />,
     );
 
+    // MarkdownContent loads its renderer on first render.
+    await waitFor(() =>
+      expect(container.querySelector('strong')).toBeInTheDocument(),
+    );
     const strong = container.querySelector('strong');
-    expect(strong).toBeInTheDocument();
     expect(strong?.textContent).toBe('full');
   });
 
