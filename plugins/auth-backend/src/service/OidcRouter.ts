@@ -480,6 +480,7 @@ export class OidcRouter {
             const result = await this.oidc.refreshAccessToken({
               refreshToken,
               clientId: authenticatedClientId ?? bodyClientId,
+              authenticatedClientId,
             });
 
             return res.json({
@@ -550,39 +551,6 @@ export class OidcRouter {
           }
 
           return res.status(200).send('');
-        } catch (e) {
-          throw OidcError.fromError(e);
-        }
-      });
-    }
-
-    // Dynamic Client Registration endpoint - only available when DCR is enabled
-    if (dcrEnabled) {
-      // https://openid.net/specs/openid-connect-registration-1_0.html#ClientRegistration
-      // Allows clients to register themselves dynamically with the provider
-      router.post('/v1/register', async (req, res) => {
-        const {
-          client_name: clientName,
-          redirect_uris: redirectUris,
-          response_types: responseTypes,
-          grant_types: grantTypes,
-          scope,
-        } = validateRequest(registerRequestBodySchema, req.body);
-
-        try {
-          const client = await this.oidc.registerClient({
-            clientName: clientName ?? 'Backstage CLI',
-            redirectUris,
-            responseTypes,
-            grantTypes,
-            scope,
-          });
-
-          return res.status(201).json({
-            client_id: client.clientId,
-            redirect_uris: client.redirectUris,
-            client_secret: client.clientSecret,
-          });
         } catch (e) {
           throw OidcError.fromError(e);
         }

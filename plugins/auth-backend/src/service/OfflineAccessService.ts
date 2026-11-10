@@ -240,7 +240,6 @@ export class OfflineAccessService {
     }
 
     if (
-      !clientId &&
       session.oidcClientId &&
       (await isClientAuthenticationRequired?.(session.oidcClientId))
     ) {

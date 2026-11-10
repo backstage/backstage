@@ -274,7 +274,9 @@ describe('OidcRouter', () => {
         databaseId,
         undefined,
         {
-          staticClients: [{ clientId, clientSecret, redirectUris: [redirectUri] }],
+          staticClients: [
+            { clientId, clientSecret, redirectUris: [redirectUri] },
+          ],
         },
       );
       mocks.tokenIssuer.issueToken.mockResolvedValue({ token: 'access-token' });
@@ -312,7 +314,9 @@ describe('OidcRouter', () => {
         databaseId,
         undefined,
         {
-          staticClients: [{ clientId, clientSecret, redirectUris: [redirectUri] }],
+          staticClients: [
+            { clientId, clientSecret, redirectUris: [redirectUri] },
+          ],
         },
       );
       mocks.tokenIssuer.issueToken.mockResolvedValue({ token: 'access-token' });
@@ -349,6 +353,22 @@ describe('OidcRouter', () => {
       expect(
         (await request(app).post('/v1/token').send(refreshRequest)).status,
       ).toBe(400);
+      expect(
+        (
+          await request(app)
+            .post('/v1/token')
+            .send({ ...refreshRequest, client_id: clientId })
+        ).status,
+      ).toBe(400);
+      const authenticatedRefresh = await request(app)
+        .post('/v1/token')
+        .send({
+          ...refreshRequest,
+          client_id: clientId,
+          client_secret: clientSecret,
+        });
+      expect(authenticatedRefresh.status).toBe(200);
+      refreshRequest.refresh_token = authenticatedRefresh.body.refresh_token;
       const restarted = OidcRouter.create({
         auth: mocks.auth,
         httpAuth: mocks.httpAuth,
@@ -380,6 +400,13 @@ describe('OidcRouter', () => {
         .send(refreshRequest);
       expect(refresh.status).toBe(400);
       expect(refresh.body.error).toBe('invalid_grant');
+      expect(
+        (
+          await request(restartedApp)
+            .post('/v1/token')
+            .send({ ...refreshRequest, client_id: clientId })
+        ).status,
+      ).toBe(400);
       const code = await request(restartedApp).post('/v1/token').send({
         grant_type: 'authorization_code',
         code: codes[1],

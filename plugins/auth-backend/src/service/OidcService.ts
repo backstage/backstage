@@ -145,8 +145,9 @@ function readStaticClients(
 ): Map<string, StaticClient> {
   const clients = new Map<string, StaticClient>();
 
-  for (const clientConfig of config.getOptionalConfigArray('auth.staticClients') ??
-    []) {
+  for (const clientConfig of config.getOptionalConfigArray(
+    'auth.staticClients',
+  ) ?? []) {
     const clientId = clientConfig.getString('clientId');
     if (URL.canParse(clientId)) {
       throw new Error(
@@ -154,7 +155,9 @@ function readStaticClients(
       );
     }
     if (clients.has(clientId)) {
-      throw new Error(`Duplicate client ID '${clientId}' in auth.staticClients`);
+      throw new Error(
+        `Duplicate client ID '${clientId}' in auth.staticClients`,
+      );
     }
 
     const redirectUris = clientConfig.getStringArray('redirectUris');
@@ -289,8 +292,9 @@ export class OidcService {
         ...(this.offlineAccess ? ['offline_access'] : []),
       ],
       token_endpoint_auth_methods_supported: [
-        'client_secret_basic',
-        'client_secret_post',
+        ...(staticClientsEnabled
+          ? ['client_secret_basic', 'client_secret_post']
+          : []),
         ...(publicClientsEnabled ? ['none'] : []),
       ],
       claims_supported: ['sub', 'ent'],
@@ -491,7 +495,7 @@ export class OidcService {
 
     const matchingPattern = cimd.allowedClientIdPatterns.find(pattern => {
       const matches = createUrlPatternMatcher(pattern);
-      return matches(cimdUrl);
+      return matches(opts.cimdUrl);
     });
     if (!matchingPattern) {
       throw new InputError(`Invalid client_id '${opts.clientId}'`);
@@ -505,7 +509,7 @@ export class OidcService {
 
     const cimdClient = await fetchCimdMetadata({
       clientId: opts.clientId,
-      validatedUrl: cimdUrl,
+      validatedUrl: opts.cimdUrl,
       skipSsrfCheck: isExactPattern,
     });
 
@@ -743,6 +747,7 @@ export class OidcService {
   public async refreshAccessToken(params: {
     refreshToken: string;
     clientId?: string;
+    authenticatedClientId?: string;
   }): Promise<{
     accessToken: string;
     tokenType: string;
@@ -758,8 +763,10 @@ export class OidcService {
         refreshToken: params.refreshToken,
         tokenIssuer: this.tokenIssuer,
         clientId: params.clientId,
-        isClientAuthenticationRequired: clientId =>
-          this.requiresClientAuthentication(clientId),
+        isClientAuthenticationRequired: async clientId => {
+          const required = await this.requiresClientAuthentication(clientId);
+          return required && params.authenticatedClientId !== clientId;
+        },
       });
 
     return {
@@ -806,11 +813,10 @@ export class OidcService {
   }
 
   /**
-   * Verifies a client for token revocation. Static clients can be confidential
-   * clients and must present a valid client secret, while CIMD clients are
-   * public clients that are identified by their client ID alone. The CIMD
-   * metadata document is deliberately not fetched here, so that tokens can
-   * still be revoked when the document is unreachable or has been removed.
+   * Confidential static clients must present a valid secret for revocation.
+   * Public static clients and CIMD clients use their client ID alone. CIMD
+   * metadata is not fetched, so tokens can still be revoked when the document
+   * is unreachable or has been removed.
    */
   public async verifyRevocationClient(
     options: OidcClientCredentials,
@@ -819,7 +825,10 @@ export class OidcService {
 
     const staticClient = this.staticClients.get(clientId);
     if (staticClient) {
-      return !staticClient.clientSecret || (!!clientSecret && safeEqual(staticClient.clientSecret, clientSecret));
+      return (
+        !staticClient.clientSecret ||
+        (!!clientSecret && safeEqual(staticClient.clientSecret, clientSecret))
+      );
     }
 
     let cimdUrl: URL | undefined;
