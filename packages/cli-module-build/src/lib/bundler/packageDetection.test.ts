@@ -194,4 +194,54 @@ describe('createDetectedModulesEntryPoint', () => {
       'eager     @test/plugin-broken (manifest extraction failed: boom)',
     );
   });
+
+  it('loads packages eagerly if their config cannot be applied to a stub', async () => {
+    const createManifest = (pluginId: string) => ({
+      manifestVersion: 1 as const,
+      type: 'plugin' as const,
+      pluginId,
+      deferrable: true,
+      routes: [],
+      externalRoutes: [],
+      extensions: [
+        {
+          id: `entity-card:${pluginId}`,
+          element: { data: {}, dataConfigKeys: ['title'] },
+        },
+      ],
+    });
+    mockExtractManifests.mockResolvedValue(
+      new Map([
+        ['@test/plugin-pages', { manifest: createManifest('pages') }],
+        ['@test/plugin-mixed', { manifest: createManifest('mixed') }],
+      ]),
+    );
+
+    await createDetectedModulesEntryPoint({
+      config: new ConfigReader({
+        app: {
+          packages: { include: ['@test/plugin-pages', '@test/plugin-mixed'] },
+          experimental: { deferredPackages: true },
+          extensions: [
+            'page:other',
+            { 'entity-card:pages': { config: { title: 'Other' } } },
+            { 'entity-card:mixed': { config: { height: 300 } } },
+          ],
+        },
+      }),
+      targetPath: appDir,
+    });
+
+    const content = await readDiscoveryModule();
+    expect(content).toContain(
+      `default: require('@test/plugin-pages').default }`,
+    );
+    expect(content).toContain(`load: () => import('@test/plugin-mixed')`);
+
+    const report = logSpy.mock.calls.map(call => call.join(' ')).join('\n');
+    expect(report).toContain(
+      "eager     @test/plugin-pages ('entity-card:pages' is configured with 'title' in app.extensions, which can't be applied before the plugin is loaded)",
+    );
+    expect(report).toContain('deferred  @test/plugin-mixed');
+  });
 });

@@ -26,6 +26,7 @@ import {
   createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
+import { z } from 'zod/v4';
 import { createFrontendFeatureManifest } from './createFrontendFeatureManifest';
 
 describe('createFrontendFeatureManifest', () => {
@@ -105,16 +106,20 @@ describe('createFrontendFeatureManifest', () => {
       createExtension({
         kind: 'content',
         attachTo: { id: 'page:host', input: 'contents' },
+        configSchema: {
+          title: z.string().optional(),
+          height: z.number().optional(),
+        },
         output: [
           coreExtensionData.reactElement,
           coreExtensionData.routeRef,
           titleRef,
           filterRef,
         ],
-        *factory() {
+        *factory({ config }) {
           yield coreExtensionData.reactElement(<div />);
           yield coreExtensionData.routeRef(rootRouteRef);
-          yield titleRef('Content');
+          yield titleRef(config.title ?? 'Content');
           yield filterRef(filter);
         },
       });
@@ -139,6 +144,7 @@ describe('createFrontendFeatureManifest', () => {
             'test.filter': { kind: 'component' },
           },
           routeRefName: 'root',
+          dataConfigKeys: ['title'],
         },
       }),
     ]);
