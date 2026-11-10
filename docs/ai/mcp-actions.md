@@ -262,12 +262,13 @@ Removing a client from `auth.staticClients` and restarting the backend prevents 
 Backstage previously supported experimental Dynamic Client Registration (DCR).
 This support has been removed in favor of [Client ID Metadata Documents](#client-id-metadata-documents).
 Remove `auth.experimentalDynamicClientRegistration` from your configuration and
-enable CIMD instead. Clients must support CIMD and use a metadata document URL as
-their client ID; previously registered client IDs and secrets no longer work.
+enable CIMD instead, or configure [pre-registered clients](#pre-registered-clients).
+CIMD clients use a metadata document URL as their client ID. Previously registered
+client IDs and secrets no longer work unless explicitly configured as static clients.
 
 The database migration deletes registered clients and their authorization and
 offline sessions. Existing DCR authorization codes and refresh tokens stop working;
-users must sign in again through a CIMD client. User tokens that have already been
+users must sign in again through a CIMD or pre-registered client. User tokens that have already been
 issued remain valid until they expire.
 
 ## Configuring MCP Clients
