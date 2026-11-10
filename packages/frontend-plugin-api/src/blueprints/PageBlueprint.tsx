@@ -26,7 +26,12 @@ import {
   createExtensionBlueprint,
   createExtensionInput,
 } from '../wiring';
-import { ExtensionBoundary, PageLayout, PageLayoutTab } from '../components';
+import {
+  ExtensionBoundary,
+  PageLayout,
+  PageLayoutTab,
+  Progress,
+} from '../components';
 import { useApi } from '../apis/system';
 import { BreadcrumbEntry } from '../breadcrumbs';
 import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
@@ -130,11 +135,14 @@ export const PageBlueprint = createExtensionBlueprint({
       const content = ExtensionBoundary.lazy(node, params.loader);
       const PageContent = () => {
         const translatedTitles = useTranslatedTitles(selections);
-        const currentTitle = translatedTitles[0] ?? resolvedTitle;
+        const currentTitle = translatedTitles?.[0] ?? resolvedTitle;
         const routeResolutionApi = useApi(routeResolutionApiRef);
         const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+        if (!translatedTitles) {
+          return <Progress />;
+        }
 
         return (
           <PageLayout
@@ -152,12 +160,12 @@ export const PageBlueprint = createExtensionBlueprint({
     } else if (inputs.pages.length > 0) {
       const PageContent = () => {
         const translatedTitles = useTranslatedTitles(selections);
-        const currentTitle = translatedTitles[0] ?? resolvedTitle;
+        const currentTitle = translatedTitles?.[0] ?? resolvedTitle;
 
         const pages = inputs.pages.map((page, index) => {
           const path = page.get(coreExtensionData.routePath);
           const tabTitle =
-            translatedTitles[index + 1] ??
+            translatedTitles?.[index + 1] ??
             (page.get(coreExtensionData.title) || path);
           return { page, path, title: tabTitle };
         });
@@ -175,6 +183,9 @@ export const PageBlueprint = createExtensionBlueprint({
 
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+        if (!translatedTitles) {
+          return <Progress />;
+        }
         return (
           <PageLayout
             title={currentTitle}
@@ -213,11 +224,14 @@ export const PageBlueprint = createExtensionBlueprint({
     } else {
       const PageContent = () => {
         const translatedTitles = useTranslatedTitles(selections);
-        const currentTitle = translatedTitles[0] ?? resolvedTitle;
+        const currentTitle = translatedTitles?.[0] ?? resolvedTitle;
         const routeResolutionApi = useApi(routeResolutionApiRef);
         const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+        if (!translatedTitles) {
+          return <Progress />;
+        }
         return (
           <PageLayout
             title={currentTitle}

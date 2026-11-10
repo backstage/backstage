@@ -17,6 +17,7 @@
 import { ComponentType, ReactElement, useMemo } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useRouteRefParams } from '@backstage/core-plugin-api';
+import { Progress } from '@backstage/frontend-plugin-api';
 import {
   AsyncEntityProvider,
   entityRouteRef,
@@ -72,12 +73,17 @@ export function CatalogEntityPage(props: CatalogEntityPageProps) {
   const titles = useTranslatedTitles(selections);
   const routes = useMemo(
     () =>
-      visibleRoutes.map((route, index) => ({
-        ...route,
-        title: titles[index] ?? route.title,
-      })),
+      titles
+        ? visibleRoutes.map((route, index) => ({
+            ...route,
+            title: titles[index] ?? route.title,
+          }))
+        : [],
     [visibleRoutes, titles],
   );
+  if (!titles) {
+    return <Progress />;
+  }
   const entityProviderProps = {
     ...entityFromUrl,
     entity,

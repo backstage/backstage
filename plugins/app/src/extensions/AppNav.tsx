@@ -22,6 +22,7 @@ import {
   appTreeApiRef,
   IconComponent,
   IconElement,
+  Progress,
   RouteRef,
   RouteResolutionApi,
   useApi,
@@ -232,6 +233,7 @@ function NavContentRenderer(props: {
   const translatedTitles = useTranslatedTitles(selections);
   const navItems = useMemo(
     () =>
+      translatedTitles &&
       new NavItemBag(
         items.flatMap((item, index) => {
           const title = translatedTitles[index] ?? item.title;
@@ -241,7 +243,7 @@ function NavContentRenderer(props: {
     [items, translatedTitles],
   );
 
-  return <props.Content navItems={navItems} />;
+  return navItems ? <props.Content navItems={navItems} /> : <Progress />;
 }
 
 export const AppNav = createExtension({

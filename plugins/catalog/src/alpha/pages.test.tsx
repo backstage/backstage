@@ -15,7 +15,7 @@
  */
 
 import { useEffect } from 'react';
-import { act, screen, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   createExtensionTester,
@@ -249,6 +249,14 @@ describe('Entity page', () => {
           resolveGerman = resolve;
         },
       );
+      let resolveSwedish!: (value: {
+        default: { main: string; other: string };
+      }) => void;
+      const swedish = new Promise<{ default: { main: string; other: string } }>(
+        resolve => {
+          resolveSwedish = resolve;
+        },
+      );
       const getEntityByRef = jest
         .fn()
         .mockResolvedValueOnce(entityMock)
@@ -258,6 +266,7 @@ describe('Entity page', () => {
         });
       const languageApi = AppLanguageSelector.create({
         availableLanguages: ['en', 'sv', 'de'],
+        defaultLanguage: 'sv',
       });
       const translationApi = I18nextTranslationApi.create({
         languageApi,
@@ -269,7 +278,7 @@ describe('Entity page', () => {
           createTranslationResource({
             ref,
             translations: {
-              sv: async () => ({ default: { main: 'AAA', other: 'Övrigt' } }),
+              sv: () => swedish,
               de: () => german,
             },
           }),
@@ -362,7 +371,17 @@ describe('Entity page', () => {
             convertLegacyRouteRef(entityRouteRef),
         },
       });
+      await waitFor(() => expect(observe).toHaveBeenCalledWith(ref));
+      expect(
+        screen.queryByLabelText('Entity page state'),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText('Configured fallback')).not.toBeInTheDocument();
+      expect(screen.queryByText('Zulu')).not.toBeInTheDocument();
+      await act(async () =>
+        resolveSwedish({ default: { main: 'AAA', other: 'Övrigt' } }),
+      );
       const input = await screen.findByLabelText('Entity page state');
+      act(() => languageApi.setLanguage('en'));
       await userEvent.type(input, ' preserved');
       await userEvent.click(
         await screen.findByRole(groupRole, { name: /Documentation/ }),

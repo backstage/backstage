@@ -36,7 +36,7 @@ export function createTranslatedMessagesSource(
       selection ? translations.get(selection.ref)!.t(selection.key) : undefined,
     );
   };
-  let snapshot = read() ?? selections.map(() => undefined);
+  let snapshot = read();
   let error: Error | undefined;
 
   return {
@@ -54,7 +54,7 @@ export function createTranslatedMessagesSource(
         )
       );
     },
-    getSnapshot: (): readonly (string | undefined)[] => {
+    getSnapshot: (): readonly (string | undefined)[] | undefined => {
       if (error) throw error;
       return snapshot;
     },
@@ -68,7 +68,11 @@ export function createTranslatedMessagesSource(
           queued = false;
           if (!active) return;
           const next = error ? undefined : read();
-          if (next?.some((value, index) => value !== snapshot[index])) {
+          if (
+            next &&
+            (!snapshot ||
+              next.some((value, index) => value !== snapshot![index]))
+          ) {
             snapshot = next;
           }
           onChange();

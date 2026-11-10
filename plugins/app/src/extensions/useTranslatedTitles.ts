@@ -23,10 +23,10 @@ import {
   TranslationRefTuple,
 } from '@backstage/frontend-plugin-api';
 
-/** Resolves title selections without suspending or remounting their consumers. @internal */
+/** Waits for an initial title group, retaining resolved titles during language changes. @internal */
 export function useTranslatedTitles(
   selections: readonly (TranslationRefTuple<undefined> | undefined)[],
-): readonly (string | undefined)[] {
+): readonly (string | undefined)[] | undefined {
   const api = useApi(translationApiRef);
   const [previousSource, setSource] = useState(() =>
     createTranslatedMessagesSource(api, selections),

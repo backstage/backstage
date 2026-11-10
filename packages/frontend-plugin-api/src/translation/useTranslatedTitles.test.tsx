@@ -67,7 +67,7 @@ it('publishes complete title groups, batches notifications, and preserves titles
   });
   const observe = jest.spyOn(api, 'translation$');
   const read = jest.spyOn(api, 'getTranslation');
-  const renders: Array<readonly (string | undefined)[]> = [];
+  const renders: Array<readonly (string | undefined)[] | undefined> = [];
   const { result, rerender, unmount } = renderHook(
     ({ titles }) => {
       const values = useTranslatedTitles(titles);
@@ -144,10 +144,65 @@ it('exposes a failed resource through the grouped snapshot', async () => {
     ],
   });
   const source = createTranslatedMessagesSource(api, [ref('title')]);
-  expect(source.getSnapshot()).toEqual([undefined]);
+  expect(source.getSnapshot()).toBeUndefined();
   const onChange = jest.fn();
   const unsubscribe = source.subscribe(onChange);
   await waitFor(() => expect(() => source.getSnapshot()).toThrow('offline'));
   expect(onChange).toHaveBeenCalled();
   unsubscribe();
+});
+
+it('waits for the initial selected-language group without publishing default messages', async () => {
+  const ref = createTranslationRef({
+    id: 'initial-titles',
+    messages: { title: 'English title' },
+  });
+  const otherRef = createTranslationRef({
+    id: 'initial-other',
+    messages: { title: 'English other' },
+  });
+  let resolve!: (value: { default: { title: string } }) => void;
+  const pending = new Promise<{ default: { title: string } }>(r => {
+    resolve = r;
+  });
+  const api = I18nextTranslationApi.create({
+    languageApi: AppLanguageSelector.create({
+      availableLanguages: ['en', 'sv'],
+      defaultLanguage: 'sv',
+    }),
+    resources: [
+      createTranslationResource({ ref, translations: { sv: () => pending } }),
+      createTranslationResource({
+        ref: otherRef,
+        translations: { sv: async () => ({ default: { title: 'Andra' } }) },
+      }),
+    ],
+  });
+  const selections = [ref('title'), undefined, otherRef('title')];
+  const published: Array<readonly (string | undefined)[] | undefined> = [];
+  const { result } = renderHook(
+    () => {
+      const values = useTranslatedTitles(selections);
+      published.push(values);
+      return values;
+    },
+    {
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <TestApiProvider apis={[[translationApiRef, api]]}>
+          {children}
+        </TestApiProvider>
+      ),
+    },
+  );
+  expect(result.current).toBeUndefined();
+  await act(async () => {});
+  expect(api.getTranslation(otherRef).ready).toBe(true);
+  expect(result.current).toBeUndefined();
+  await act(async () => resolve({ default: { title: 'Svensk titel' } }));
+  expect(result.current).toEqual(['Svensk titel', undefined, 'Andra']);
+  expect(
+    published.every(
+      value => value === undefined || value[0] === 'Svensk titel',
+    ),
+  ).toBe(true);
 });

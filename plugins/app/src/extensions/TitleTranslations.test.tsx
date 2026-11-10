@@ -16,7 +16,7 @@
 
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { fireEvent, screen, within } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   AppRootElementBlueprint,
@@ -58,6 +58,19 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
         default: { title: string };
       }>(() => {}),
   );
+  let resolveSwedish!: (value: {
+    default: {
+      page: string;
+      overview: string;
+      other: string;
+      configuredPage: string;
+      configuredTab: string;
+      disabled: string;
+    };
+  }) => void;
+  const swedish = new Promise<Parameters<typeof resolveSwedish>[0]>(resolve => {
+    resolveSwedish = resolve;
+  });
   const mount = jest.fn();
   const unmount = jest.fn();
   function Content() {
@@ -220,16 +233,7 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
                       disabled: null,
                     },
                   }),
-                  sv: async () => ({
-                    default: {
-                      page: 'API-dokumentation',
-                      overview: 'Översikt',
-                      other: 'AAA',
-                      configuredPage: 'Translated page',
-                      configuredTab: 'Translated tab',
-                      disabled: 'Translated disabled',
-                    },
-                  }),
+                  sv: () => swedish,
                 },
               }),
             },
@@ -257,7 +261,10 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
         extensions: [
           {
             'api:app/app-language': {
-              config: { availableLanguages: ['en', 'sv', 'de'] },
+              config: {
+                availableLanguages: ['en', 'sv', 'de'],
+                defaultLanguage: 'sv',
+              },
             },
           },
           {
@@ -278,6 +285,37 @@ it('updates page, tab, breadcrumb, and sorted custom nav titles without remounti
       backend: { baseUrl: 'http://localhost:7007' },
     },
   });
+  await screen.findByRole('button', { name: 'Swedish' });
+  expect(
+    screen.queryByRole('heading', { name: 'APIs' }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('tab', { name: 'Overview' }),
+  ).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('Page state')).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('navigation', { name: 'Custom navigation' }),
+  ).not.toBeInTheDocument();
+  expect(screen.queryByText('Configured page')).not.toBeInTheDocument();
+  await act(async () =>
+    resolveSwedish({
+      default: {
+        page: 'API-dokumentation',
+        overview: 'Översikt',
+        other: 'AAA',
+        configuredPage: 'Translated page',
+        configuredTab: 'Translated tab',
+        disabled: 'Translated disabled',
+      },
+    }),
+  );
+  expect(
+    await screen.findByRole('heading', { name: 'API-dokumentation' }),
+  ).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'English' }));
+  expect(
+    await screen.findByRole('heading', { name: 'APIs' }),
+  ).toBeInTheDocument();
   const nav = await screen.findByRole('navigation', {
     name: 'Custom navigation',
   });

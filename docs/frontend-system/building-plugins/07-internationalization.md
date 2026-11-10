@@ -371,17 +371,16 @@ Install translations using the existing `TranslationBlueprint` and translation
 resources described above. No additional title bundles or APIs are required.
 Existing string title parameters keep their behavior.
 
-Before translations finish loading, the title uses messages already available
-through the translation API, including installed overrides and default-language
-fallbacks. A configured `title` supplies that fallback instead. Once the required
-translations are ready, their resolved values take precedence over configured and
-plain titles, including when the API resolves to a default-language message.
-Missing locale messages use the translation API's existing fallback.
-During language changes, each group of titles updates together after all of its
-translation resources are ready. Until then, the previous titles remain visible
-without remounting page content. Hidden entity tabs and pages excluded from
-navigation do not delay the corresponding visible titles. Failed resource loads
-surface as errors.
+Translated title groups wait until their selected-language resources are ready
+before first rendering, showing the app's loading indicator in the meantime.
+Their resolved values take precedence over configured and plain titles, including
+when the translation API resolves to a default-language message for a missing
+translation. Existing language fallbacks remain unchanged.
+During later language changes, each group updates together once all of its
+translation resources are ready. Until then, the previous resolved titles remain
+visible without remounting page content. Hidden entity tabs and pages excluded
+from navigation do not delay the corresponding visible titles. Failed resource
+loads surface as errors.
 
 TypeScript checks the selected key and rejects title messages that require
 replacement values or a plural count. Nested messages are supported when none
@@ -397,12 +396,13 @@ restricts titles to messages without required formatting values. A bare
 options unknown. Consumers resolve that selection through the translation API
 and subscribe to `translation$(selection.ref)` for language changes. For a group
 of titles, wait until all required refs are ready before publishing new values.
-Use the static titles initially and retain the last resolved group during later
+Keep the static title as compatibility metadata, wait for the initial translated
+group before rendering it, and retain the last resolved group during later
 language changes. This keeps extension data independent of subscriptions and
 React rendering.
 
 Translation snapshots always include a `t` function, even while resources are
-loading. For synchronous fallback text, call
+loading. To provide synchronous plain title metadata, call
 `translationApi.getTranslation(ref).t(key)`. It uses the messages already
 available for the selected language and the API's normal language fallbacks,
 including installed overrides. Formatting values use the existing translation
