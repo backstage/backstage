@@ -205,8 +205,8 @@ export interface GithubMultiOrgEntityProviderOptions {
   experimental_checkForSuspendedUsersWithRest?: boolean;
 
   /**
-   * Always request the public email field from the GitHub GraphQL API, even
-   * when using a GitHub App for authentication. By default, the public email
+   * Request the public email field from the GitHub GraphQL API even when
+   * using a GitHub App for authentication. By default, the public email
    * field is only requested when using a personal access token.
    * @defaultValue false
    */
