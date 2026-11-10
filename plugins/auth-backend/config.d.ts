@@ -175,10 +175,6 @@ export interface Config {
        * The allowed redirect URIs, which must match exactly.
        */
       redirectUris: string[];
-      /**
-       * The scopes the client is allowed to request. Defaults to all supported scopes.
-       */
-      scopes?: string[];
     }>;
 
     /**

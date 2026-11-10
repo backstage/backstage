@@ -204,9 +204,7 @@ export class OfflineAccessService {
     refreshToken: string;
     tokenIssuer: TokenIssuer;
     clientId?: string;
-    isClientAuthenticationRequired?: (
-      oidcClientId: string,
-    ) => boolean | Promise<boolean>;
+    isClientAuthenticationRequired?: (oidcClientId: string) => boolean;
   }): Promise<{ accessToken: string; refreshToken: string }> {
     const {
       refreshToken,
@@ -241,7 +239,7 @@ export class OfflineAccessService {
 
     if (
       session.oidcClientId &&
-      (await isClientAuthenticationRequired?.(session.oidcClientId))
+      isClientAuthenticationRequired?.(session.oidcClientId)
     ) {
       throw new AuthenticationError('Client authentication required');
     }

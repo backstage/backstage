@@ -247,13 +247,11 @@ auth:
       # Redirect URIs must match exactly, wildcards are not supported.
       redirectUris:
         - https://integration.example.com/oauth/callback
-      # Optional. Defaults to all scopes supported by the auth backend.
-      scopes:
-        - openid
-        - offline_access
 ```
 
 The client ID must be unique and must not be a URL. When configuring the client, use `<backend-url>/api/auth/v1/authorize` as the authorization URL and `<backend-url>/api/auth/v1/token` as the token URL. Prefer CIMD for clients that support it, and use pre-registered clients for those that don't.
+
+Static clients use the same scopes as CIMD clients: `openid`, and `offline_access` when refresh tokens are enabled.
 
 Removing a client from `auth.staticClients` and restarting the backend prevents its outstanding authorization codes and refresh tokens from being exchanged. Clients using HTTP Basic authentication must form-encode the client ID and secret before constructing the Basic credentials.
 
