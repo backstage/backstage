@@ -20,6 +20,7 @@ import {
   createApiFactory,
   createApiRef,
   createExtension,
+  createExtensionDataRef,
   coreExtensionData,
   createFrontendModule,
   createFrontendPlugin,
@@ -81,32 +82,111 @@ describe('createFrontendFeatureManifest', () => {
     expect(JSON.parse(JSON.stringify(manifest))).toEqual(manifest);
   });
 
-  it('is not deferrable if the plugin has a non-page extension', async () => {
+  it('describes APIs and elements, and rejects extensions it cannot stub', async () => {
     const apiRef = createApiRef<{ x: string }>({ id: 'test.api' });
-    const plugin = createFrontendPlugin({
-      pluginId: 'test',
-      extensions: [
-        PageBlueprint.make({
-          params: { path: '/test', loader: async () => <div /> },
-        }),
-        ApiBlueprint.make({
-          params: defineParams =>
-            defineParams(
-              createApiFactory({
-                api: apiRef,
-                deps: {},
-                factory: () => ({ x: 'x' }),
-              }),
-            ),
-        }),
-      ],
+    const rootRouteRef = createRouteRef();
+    const titleRef = createExtensionDataRef<string>().with({
+      id: 'test.title',
     });
+    const filterRef = createExtensionDataRef<unknown>().with({
+      id: 'test.filter',
+    });
+    const api = ApiBlueprint.make({
+      params: defineParams =>
+        defineParams(
+          createApiFactory({
+            api: apiRef,
+            deps: {},
+            factory: () => ({ x: 'x' }),
+          }),
+        ),
+    });
+    const createContent = (filter: unknown) =>
+      createExtension({
+        kind: 'content',
+        attachTo: { id: 'page:host', input: 'contents' },
+        output: [
+          coreExtensionData.reactElement,
+          coreExtensionData.routeRef,
+          titleRef,
+          filterRef,
+        ],
+        *factory() {
+          yield coreExtensionData.reactElement(<div />);
+          yield coreExtensionData.routeRef(rootRouteRef);
+          yield titleRef('Content');
+          yield filterRef(filter);
+        },
+      });
 
-    const manifest = await createFrontendFeatureManifest(plugin);
+    const manifest = await createFrontendFeatureManifest(
+      createFrontendPlugin({
+        pluginId: 'test',
+        routes: { root: rootRouteRef },
+        extensions: [api, createContent({ kind: 'component' })],
+      }),
+    );
+    expect(manifest.deferrable).toBe(true);
+    expect(manifest.extensions).toEqual([
+      expect.objectContaining({ id: 'api:test', kind: 'api' }),
+      expect.objectContaining({
+        id: 'content:test',
+        kind: 'content',
+        attachTo: { id: 'page:host', input: 'contents' },
+        element: {
+          data: {
+            'test.title': 'Content',
+            'test.filter': { kind: 'component' },
+          },
+          routeRefName: 'root',
+        },
+      }),
+    ]);
+    expect(JSON.parse(JSON.stringify(manifest))).toEqual(manifest);
 
-    expect(manifest.deferrable).toBe(false);
-    expect(manifest.notDeferrableReason).toMatch(/non-page extension 'api:/);
-    expect(manifest.extensions.map(e => e.kind)).toEqual(['page', 'api']);
+    // A function can't be stored in the manifest
+    const withFunction = await createFrontendFeatureManifest(
+      createFrontendPlugin({
+        pluginId: 'test',
+        routes: { root: rootRouteRef },
+        extensions: [createContent(() => true)],
+      }),
+    );
+    expect(withFunction.deferrable).toBe(false);
+    expect(withFunction.notDeferrableReason).toContain(
+      "outputs 'test.filter' data that can't be stored as JSON",
+    );
+
+    // Nothing would ever load a plugin that only has APIs
+    const onlyApis = await createFrontendFeatureManifest(
+      createFrontendPlugin({ pluginId: 'test', extensions: [api] }),
+    );
+    expect(onlyApis.deferrable).toBe(false);
+    expect(onlyApis.notDeferrableReason).toBe(
+      'has no page or element that would load it',
+    );
+
+    // Extensions that don't render an element can't be stubbed
+    const withOther = await createFrontendFeatureManifest(
+      createFrontendPlugin({
+        pluginId: 'test',
+        extensions: [
+          PageBlueprint.make({
+            params: { path: '/test', loader: async () => <div /> },
+          }),
+          createExtension({
+            kind: 'other',
+            attachTo: { id: 'app', input: 'other' },
+            output: [titleRef],
+            factory: () => [titleRef('x')],
+          }),
+        ],
+      }),
+    );
+    expect(withOther.deferrable).toBe(false);
+    expect(withOther.notDeferrableReason).toBe(
+      "has extension 'other:test' that is not a page, an API, or an element",
+    );
   });
 
   it('is not deferrable if a page factory throws', async () => {

@@ -55,13 +55,13 @@ function readConfigSchema(
 }
 
 /**
- * Runs the factory of a page extension once, with stubbed dependencies, and
- * reads the routing data it outputs.
+ * Runs the factory of an extension once, with stubbed dependencies, and
+ * returns the data it outputs keyed by extension data ID.
  */
-function extractPageManifest(
+function runFactoryOnce(
   extension: Extension<unknown>,
   plugin: PluginLike,
-): NonNullable<FrontendExtensionManifest['page']> {
+): Map<string, unknown> {
   const internal = toInternalExtension(extension);
   const config = internal.configSchema?.parse({}) ?? {};
   const node = {
@@ -102,15 +102,31 @@ function extractPageManifest(
       data.set(value.id, value.value);
     }
   }
+  return data;
+}
+
+function findRouteRefName(
+  plugin: PluginLike,
+  routeRef: unknown,
+): string | undefined {
+  return Object.entries(plugin.routes).find(([, ref]) => ref === routeRef)?.[0];
+}
+
+/** Reads the routing data that a page extension outputs. */
+function extractPageManifest(
+  extension: Extension<unknown>,
+  plugin: PluginLike,
+): NonNullable<FrontendExtensionManifest['page']> {
+  const data = runFactoryOnce(extension, plugin);
 
   const path = data.get(coreExtensionData.routePath.id);
   if (typeof path !== 'string') {
-    throw new Error(`Page '${internal.id}' did not output a route path`);
+    throw new Error(`Page '${extension.id}' did not output a route path`);
   }
   const title = data.get(coreExtensionData.title.id);
   const routeRef = data.get(coreExtensionData.routeRef.id);
   const routeRefName = routeRef
-    ? Object.entries(plugin.routes).find(([, ref]) => ref === routeRef)?.[0]
+    ? findRouteRefName(plugin, routeRef)
     : undefined;
 
   return {
@@ -120,13 +136,116 @@ function extractPageManifest(
   };
 }
 
-function isRoutesAttachment(attachTo: unknown): boolean {
+function isJsonValue(value: unknown): boolean {
+  if (value === null) {
+    return true;
+  }
+  if (['string', 'number', 'boolean'].includes(typeof value)) {
+    return typeof value !== 'number' || Number.isFinite(value);
+  }
+  if (Array.isArray(value)) {
+    return value.every(isJsonValue);
+  }
+  if (typeof value === 'object') {
+    const prototype = Object.getPrototypeOf(value);
+    if (prototype !== Object.prototype && prototype !== null) {
+      return false;
+    }
+    return Object.values(value as object).every(isJsonValue);
+  }
+  return false;
+}
+
+/**
+ * Reads the outputs of an extension that renders a React element outside of
+ * app/routes. Returns undefined if the extension doesn't output an element.
+ */
+function extractElementManifest(
+  extension: Extension<unknown>,
+  plugin: PluginLike,
+): FrontendExtensionManifest['element'] {
+  const internal = toInternalExtension(extension);
+  const outputRefs: ExtensionDataRef[] =
+    internal.version === 'v1'
+      ? Object.values(internal.output)
+      : internal.output;
+  if (!outputRefs.some(ref => ref.id === coreExtensionData.reactElement.id)) {
+    return undefined;
+  }
+  if (Object.keys(internal.inputs).length > 0) {
+    throw new Error(`'${extension.id}' has inputs`);
+  }
+
+  const data: { [dataRefId: string]: unknown } = {};
+  let routeRefName: string | undefined;
+  for (const [id, value] of runFactoryOnce(extension, plugin)) {
+    if (id === coreExtensionData.reactElement.id) {
+      continue;
+    }
+    if (id === coreExtensionData.routeRef.id) {
+      routeRefName = findRouteRefName(plugin, value);
+      if (!routeRefName) {
+        throw new Error(
+          `'${extension.id}' outputs a route ref that isn't one of the plugin routes`,
+        );
+      }
+      continue;
+    }
+    if (!isJsonValue(value)) {
+      throw new Error(
+        `'${extension.id}' outputs '${id}' data that can't be stored as JSON`,
+      );
+    }
+    data[id] = value;
+  }
+
+  return { data, ...(routeRefName ? { routeRefName } : {}) };
+}
+
+function hasIfPredicate(extension: Extension<unknown>): boolean {
+  const internal = toInternalExtension(extension);
+  return internal.version === 'v2' && internal.if !== undefined;
+}
+
+function isAttachedTo(attachTo: unknown, id: string, input: string): boolean {
   const target = attachTo as { id?: string; input?: string };
   return (
-    !Array.isArray(attachTo) &&
-    target?.id === 'app/routes' &&
-    target?.input === 'routes'
+    !Array.isArray(attachTo) && target?.id === id && target?.input === input
   );
+}
+
+function isRoutesAttachment(attachTo: unknown): boolean {
+  return isAttachedTo(attachTo, 'app/routes', 'routes');
+}
+
+/**
+ * Returns why an extension prevents its plugin from being deferred, or
+ * undefined if it can be deferred.
+ */
+function getNotDeferrableReason(
+  extension: FrontendExtensionManifest,
+  usesIfPredicate: boolean,
+): string | undefined {
+  if (usesIfPredicate) {
+    return `extension '${extension.id}' uses an 'if' predicate`;
+  }
+  if (extension.kind === 'page') {
+    return isRoutesAttachment(extension.attachTo)
+      ? undefined
+      : `page '${extension.id}' does not attach to app/routes`;
+  }
+  if (extension.kind === 'api') {
+    return isAttachedTo(extension.attachTo, 'root', 'apis')
+      ? undefined
+      : `API '${extension.id}' does not attach to root`;
+  }
+  if (!extension.element) {
+    return `has extension '${extension.id}' that is not a page, an API, or an element`;
+  }
+  if (Array.isArray(extension.attachTo)) {
+    return `extension '${extension.id}' attaches to more than one extension`;
+  }
+  return undefined;
 }
 
 /**
@@ -188,6 +307,17 @@ export async function createFrontendFeatureManifest(
             `could not extract page '${id}': ${errorMessage(error)}`,
           );
         }
+      } else if (plugin && kind !== 'api') {
+        try {
+          const element = extractElementManifest(extension, plugin);
+          if (element) {
+            result.element = element;
+          }
+        } catch (error) {
+          failures.push(
+            `could not extract element '${id}': ${errorMessage(error)}`,
+          );
+        }
       }
       return result;
     },
@@ -201,12 +331,18 @@ export async function createFrontendFeatureManifest(
   } else if (failures.length > 0) {
     notDeferrableReason = failures[0];
   } else {
-    const other = extensions.find(e => e.kind !== 'page');
-    const detached = extensions.find(e => !isRoutesAttachment(e.attachTo));
-    if (other) {
-      notDeferrableReason = `has non-page extension '${other.id}'`;
-    } else if (detached) {
-      notDeferrableReason = `page '${detached.id}' does not attach to app/routes`;
+    notDeferrableReason = extensions
+      .map((extension, index) =>
+        getNotDeferrableReason(
+          extension,
+          hasIfPredicate(internalExtensions[index]),
+        ),
+      )
+      .find(Boolean);
+    // Only rendering a page or element loads a deferred plugin, so a plugin
+    // without one would never be loaded.
+    if (!notDeferrableReason && !extensions.some(e => e.page || e.element)) {
+      notDeferrableReason = 'has no page or element that would load it';
     }
   }
 

@@ -207,7 +207,7 @@ async function resolveDetectedEntries(
     return {
       pkg,
       mode: 'lazy',
-      reason: 'only provides pages',
+      reason: 'loaded on first use',
       manifest: result.manifest,
     };
   });

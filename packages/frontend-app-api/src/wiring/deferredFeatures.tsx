@@ -16,10 +16,14 @@
 
 import {
   coreExtensionData,
+  createExtension,
+  createExtensionDataRef,
   createExternalRouteRef,
   createFrontendPlugin,
   createRouteRef,
   ExtensionBoundary,
+  ExtensionDataRef,
+  ExtensionDefinition,
   ExternalRouteRef,
   FrontendPlugin,
   PageBlueprint,
@@ -30,7 +34,8 @@ import { useEffect, useState } from 'react';
 import { FrontendFeatureManifest } from '../manifest/types';
 
 /**
- * A plugin that is only loaded once one of its pages is rendered.
+ * A plugin that is only loaded once one of its pages or elements is
+ * rendered.
  *
  * @internal
  */
@@ -53,8 +58,8 @@ export type DeferredPluginState =
 const IDLE_STATE: DeferredPluginState = { status: 'idle' };
 
 /**
- * Adds a loaded plugin to the app, and returns the page elements that
- * replace the stub pages, keyed by extension ID.
+ * Adds a loaded plugin to the app, and returns the elements that replace the
+ * elements of the stub pages and extensions, keyed by extension ID.
  *
  * @internal
  */
@@ -73,7 +78,7 @@ export class DeferredFeatureController {
   readonly #entries = new Map<string, DeferredFrontendFeature>();
   readonly #states = new Map<string, DeferredPluginState>();
   readonly #loads = new Map<string, Promise<void>>();
-  readonly #pageElements = new Map<string, JSX.Element>();
+  readonly #elements = new Map<string, JSX.Element>();
   readonly #listeners = new Set<() => void>();
   readonly #graft: DeferredPluginGrafter;
   #queue: Promise<void> = Promise.resolve();
@@ -92,8 +97,8 @@ export class DeferredFeatureController {
     return this.#states.get(pluginId) ?? IDLE_STATE;
   }
 
-  getPageElement(extensionId: string): JSX.Element | undefined {
-    return this.#pageElements.get(extensionId);
+  getElement(extensionId: string): JSX.Element | undefined {
+    return this.#elements.get(extensionId);
   }
 
   subscribe(listener: () => void): () => void {
@@ -128,7 +133,7 @@ export class DeferredFeatureController {
         const loaded = await entry.load();
         const elements = this.#graft(entry, loaded?.default);
         for (const [extensionId, element] of elements) {
-          this.#pageElements.set(extensionId, element);
+          this.#elements.set(extensionId, element);
         }
         this.#setState(pluginId, { status: 'loaded' });
       })
@@ -176,7 +181,7 @@ function useDeferredPluginState(
   return state;
 }
 
-function DeferredPluginPage(props: {
+function DeferredPluginElement(props: {
   controller: DeferredFeatureController;
   pluginId: string;
   extensionId: string;
@@ -189,17 +194,17 @@ function DeferredPluginPage(props: {
   }, [controller, pluginId]);
 
   if (state.status === 'failed') {
-    // Shown by the error boundary of the stub page.
+    // Shown by the error boundary of the stub extension.
     throw state.error;
   }
   if (state.status !== 'loaded') {
     return <Progress />;
   }
 
-  const element = controller.getPageElement(extensionId);
+  const element = controller.getElement(extensionId);
   if (!element) {
     throw new Error(
-      `The '${pluginId}' plugin was loaded, but it doesn't provide the '${extensionId}' page from its manifest`,
+      `The '${pluginId}' plugin was loaded, but it doesn't provide the '${extensionId}' extension from its manifest`,
     );
   }
   return element;
@@ -213,18 +218,83 @@ function DeferredPluginIcon() {
   );
 }
 
-function getPageExtensionName(
+/**
+ * Splits an ID of the form `<kind>:<pluginId>` or `<kind>:<pluginId>/<name>`,
+ * which is the form the stub extensions are created with.
+ */
+function parseExtensionId(
   extensionId: string,
   pluginId: string,
-): { valid: boolean; name?: string } {
-  const prefix = `page:${pluginId}`;
-  if (extensionId === prefix) {
-    return { valid: true };
+): { kind: string; name?: string } | undefined {
+  const index = extensionId.indexOf(':');
+  if (index <= 0) {
+    return undefined;
   }
-  if (extensionId.startsWith(`${prefix}/`)) {
-    return { valid: true, name: extensionId.slice(prefix.length + 1) };
+  const kind = extensionId.slice(0, index);
+  const rest = extensionId.slice(index + 1);
+  if (rest === pluginId) {
+    return { kind };
   }
-  return { valid: false };
+  if (rest.startsWith(`${pluginId}/`) && rest.length > pluginId.length + 1) {
+    return { kind, name: rest.slice(pluginId.length + 1) };
+  }
+  return undefined;
+}
+
+/**
+ * Creates a stub for an extension that renders an element outside of
+ * app/routes. It outputs the data recorded in the manifest, and an element
+ * that loads the real plugin.
+ */
+function createStubElementExtension(options: {
+  extension: FrontendFeatureManifest['extensions'][number];
+  kind: string;
+  name?: string;
+  routes: Record<string, RouteRef>;
+  createElement(): JSX.Element;
+}) {
+  const { extension, routes } = options;
+  const element = extension.element!;
+  const attachTo = extension.attachTo as { id: string; input: string };
+
+  const dataRefs = Object.keys(element.data).map(id =>
+    createExtensionDataRef<unknown>().with({ id }),
+  );
+  const routeRef = element.routeRefName
+    ? routes[element.routeRefName]
+    : undefined;
+  if (element.routeRefName && !routeRef) {
+    throw new Error(
+      `The '${extension.id}' extension outputs the '${element.routeRefName}' route, which is not one of the plugin routes in the manifest`,
+    );
+  }
+
+  const output: ExtensionDataRef[] = [
+    coreExtensionData.reactElement,
+    ...dataRefs,
+    ...(routeRef ? [coreExtensionData.routeRef] : []),
+  ];
+
+  return createExtension({
+    kind: options.kind,
+    name: options.name,
+    attachTo,
+    disabled: extension.disabled,
+    output,
+    *factory({ node }) {
+      yield coreExtensionData.reactElement(
+        <ExtensionBoundary node={node}>
+          {options.createElement()}
+        </ExtensionBoundary>,
+      );
+      for (const ref of dataRefs) {
+        yield ref(element.data[ref.id]);
+      }
+      if (routeRef) {
+        yield coreExtensionData.routeRef(routeRef);
+      }
+    },
+  });
 }
 
 /**
@@ -233,8 +303,10 @@ function getPageExtensionName(
  * @remarks
  *
  * The stand-in has the same plugin ID, title and route names as the real
- * plugin, and one page for each page in the manifest. Rendering one of the
- * pages loads the real plugin.
+ * plugin, one page for each page in the manifest, and one extension for each
+ * element in the manifest that outputs the data recorded at build time.
+ * Rendering one of the pages or elements loads the real plugin. APIs are left
+ * out, and are added to the app when the real plugin is loaded.
  *
  * @internal
  */
@@ -253,45 +325,75 @@ export function createDeferredPluginStub(
   );
 
   const skippedExtensionIds = new Array<string>();
-  const extensions = manifest.extensions.flatMap(extension => {
-    const page = extension.page;
-    const { valid, name } = getPageExtensionName(extension.id, pluginId);
-    if (!page || !valid || Array.isArray(extension.attachTo)) {
-      skippedExtensionIds.push(extension.id);
-      return [];
-    }
+  const createElement = (extensionId: string) => (
+    <DeferredPluginElement
+      controller={controller}
+      pluginId={pluginId}
+      extensionId={extensionId}
+    />
+  );
 
-    const routeRef = page.routeRefName ? routes[page.routeRefName] : undefined;
-    return [
-      PageBlueprint.makeWithOverrides({
-        name,
-        attachTo: extension.attachTo,
-        disabled: extension.disabled,
-        *factory(originalFactory, { node }) {
-          // The original factory resolves the path, title and route ref
-          // outputs, but the page content is replaced by the loader.
-          for (const value of originalFactory({
-            path: page.path,
-            title: page.title,
-            routeRef,
-          })) {
-            if (value.id !== coreExtensionData.reactElement.id) {
-              yield value;
+  const extensions = manifest.extensions.flatMap(
+    (extension): ExtensionDefinition[] => {
+      // APIs are added to the app when the real plugin is loaded.
+      if (extension.kind === 'api') {
+        return [];
+      }
+      const parsedId = parseExtensionId(extension.id, pluginId);
+      if (!parsedId || Array.isArray(extension.attachTo)) {
+        skippedExtensionIds.push(extension.id);
+        return [];
+      }
+      const { kind, name } = parsedId;
+
+      if (extension.element && kind !== 'page') {
+        return [
+          createStubElementExtension({
+            extension,
+            kind,
+            name,
+            routes,
+            createElement: () => createElement(extension.id),
+          }),
+        ];
+      }
+
+      const page = extension.page;
+      if (!page || kind !== 'page') {
+        skippedExtensionIds.push(extension.id);
+        return [];
+      }
+
+      const routeRef = page.routeRefName
+        ? routes[page.routeRefName]
+        : undefined;
+      return [
+        PageBlueprint.makeWithOverrides({
+          name,
+          attachTo: extension.attachTo,
+          disabled: extension.disabled,
+          *factory(originalFactory, { node }) {
+            // The original factory resolves the path, title and route ref
+            // outputs, but the page content is replaced by the loader.
+            for (const value of originalFactory({
+              path: page.path,
+              title: page.title,
+              routeRef,
+            })) {
+              if (value.id !== coreExtensionData.reactElement.id) {
+                yield value;
+              }
             }
-          }
-          yield coreExtensionData.reactElement(
-            <ExtensionBoundary node={node}>
-              <DeferredPluginPage
-                controller={controller}
-                pluginId={pluginId}
-                extensionId={extension.id}
-              />
-            </ExtensionBoundary>,
-          );
-        },
-      }),
-    ];
-  });
+            yield coreExtensionData.reactElement(
+              <ExtensionBoundary node={node}>
+                {createElement(extension.id)}
+              </ExtensionBoundary>,
+            );
+          },
+        }),
+      ];
+    },
+  );
 
   const plugin = createFrontendPlugin({
     pluginId,

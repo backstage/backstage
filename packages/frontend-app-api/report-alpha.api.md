@@ -27,6 +27,12 @@ export interface FrontendExtensionManifest {
   };
   // (undocumented)
   disabled: boolean;
+  element?: {
+    data: {
+      [dataRefId: string]: unknown;
+    };
+    routeRefName?: string;
+  };
   id: string;
   kind?: string;
   page?: {

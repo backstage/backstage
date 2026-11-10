@@ -16,6 +16,7 @@
 
 import {
   ApiHolder,
+  AppNode,
   AppNodeSpec,
   AppTree,
   ConfigApi,
@@ -37,7 +38,13 @@ import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
 import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
 import { graftAppTreeNodes } from '../tree/resolveAppTree';
 import { instantiateAppNodeSubtree } from '../tree/instantiateAppNodeTree';
+import {
+  collectApiFactoryEntries,
+  registerFeatureFlagDeclarationsInHolder,
+  wrapFeatureFlagApiFactory,
+} from './apiFactories';
 import { ErrorCollector } from './createErrorCollector';
+import { FrontendApiRegistry } from './FrontendApiRegistry';
 import { DeferredFrontendFeature } from './deferredFeatures';
 import {
   AppTreeApiProxy,
@@ -47,7 +54,7 @@ import {
 import { type ExtensionPredicateContext } from './predicates';
 import { ExtensionFactoryMiddleware } from './types';
 
-const ROUTES_ATTACHMENT = { id: 'app/routes', input: 'routes' };
+const APIS_ATTACHMENT = { id: 'root', input: 'apis' };
 
 function getPluginId(plugin: FrontendPlugin) {
   return plugin.pluginId ?? OpaqueFrontendPlugin.toInternal(plugin).id;
@@ -57,32 +64,38 @@ function getAttachTo(spec: AppNodeSpec) {
   return Array.isArray(spec.attachTo) ? undefined : spec.attachTo;
 }
 
+function isAttachedTo(
+  spec: AppNodeSpec,
+  attachment: { id: string; input: string },
+) {
+  const attachTo = getAttachTo(spec);
+  return attachTo?.id === attachment.id && attachTo.input === attachment.input;
+}
+
 /**
  * Picks the specs that can be added to the app after it has been finalized:
- * pages attached to `app/routes`, plus anything attached to those pages. The
- * pages must also be in the manifest, because they are rendered through the
- * stub pages that were created from it.
+ * the pages and elements that replace the stubs created from the manifest,
+ * APIs, and anything attached to those pages.
  */
 function selectGraftableSpecs(options: {
   specs: AppNodeSpec[];
-  manifestPageIds: Set<string>;
+  stubExtensionIds: Set<string>;
   existingIds: Set<string>;
   stub: FrontendPlugin;
   collector: ErrorCollector;
 }): AppNodeSpec[] {
-  const { specs, manifestPageIds, existingIds, stub, collector } = options;
+  const { specs, stubExtensionIds, existingIds, stub, collector } = options;
   const candidates = specs.filter(
     spec => !existingIds.has(spec.id) && !spec.disabled,
   );
 
   const selected = new Set<string>();
   for (const spec of candidates) {
-    const attachTo = getAttachTo(spec);
-    if (
-      attachTo?.id === ROUTES_ATTACHMENT.id &&
-      attachTo.input === ROUTES_ATTACHMENT.input &&
-      spec.id.startsWith('page:') &&
-      manifestPageIds.has(spec.id)
+    if (stubExtensionIds.has(spec.id) && getAttachTo(spec)) {
+      selected.add(spec.id);
+    } else if (
+      spec.id.startsWith('api:') &&
+      isAttachedTo(spec, APIS_ATTACHMENT)
     ) {
       selected.add(spec.id);
     }
@@ -107,16 +120,14 @@ function selectGraftableSpecs(options: {
       continue;
     }
     const attachTo = getAttachTo(spec);
-    const reason = manifestPageIds.has(spec.id)
-      ? 'it attaches outside of app/routes'
-      : `it is not a page listed in the manifest, it attaches to ${
-          attachTo
-            ? `'${attachTo.id}' input '${attachTo.input}'`
-            : 'more than one extension'
-        }`;
+    const reason = `it is not an API or an extension listed in the manifest, it attaches to ${
+      attachTo
+        ? `'${attachTo.id}' input '${attachTo.input}'`
+        : 'more than one extension'
+    }`;
     collector.report({
       code: 'EXTENSION_IGNORED',
-      message: `The '${spec.id}' extension of the deferred '${spec.plugin.pluginId}' plugin was ignored because ${reason}. A deferred plugin can only provide pages, so its manifest is likely out of date.`,
+      message: `The '${spec.id}' extension of the deferred '${spec.plugin.pluginId}' plugin was ignored because ${reason}. A deferred plugin can only provide pages, APIs and elements that are listed in its manifest, so the manifest is likely out of date.`,
       context: { plugin: stub, extensionId: spec.id },
     });
   }
@@ -152,16 +163,58 @@ function updateRouteBindings(options: {
 }
 
 /**
+ * Registers the API factories of the given API nodes, unless an API with the
+ * same ID is already available in the app.
+ */
+function registerGraftedApis(options: {
+  apiNodes: AppNode[];
+  appApiRegistry: FrontendApiRegistry;
+  features: FrontendFeature[];
+  collector: ErrorCollector;
+  predicateContext?: ExtensionPredicateContext;
+}) {
+  const entries = collectApiFactoryEntries({
+    apiNodes: options.apiNodes,
+    collector: options.collector,
+    predicateContext: options.predicateContext,
+  });
+  for (const entry of entries.values()) {
+    const apiRefId = entry.factory.api.id;
+    const registered = options.appApiRegistry.register(
+      wrapFeatureFlagApiFactory(
+        entry.factory,
+        options.features,
+        options.collector,
+      ),
+    );
+    if (!registered) {
+      options.collector.report({
+        code: 'API_FACTORY_CONFLICT',
+        message: `API '${apiRefId}' is already provided by the app, so the one from the deferred '${entry.pluginId}' plugin was ignored.`,
+        context: {
+          node: entry.node,
+          apiRefId,
+          pluginId: entry.pluginId,
+          existingPluginId: 'app',
+        },
+      });
+    }
+  }
+}
+
+/**
  * Adds a loaded deferred plugin to a finalized app, in place of its stub.
  *
  * @remarks
  *
- * The real pages replace the stub pages in the app tree and are
- * instantiated, but the rest of the tree keeps its instances. The stub page
- * elements are already rendered by `app/routes`, so they render the real page
- * elements that are returned from here.
+ * The real pages and elements replace the stubs in the app tree and are
+ * instantiated, but the rest of the tree keeps its instances. The stub
+ * elements are already rendered by their parents, for example `app/routes`
+ * or an entity page, so they render the real elements that are returned from
+ * here. The APIs of the plugin are added to the app, unless the app already
+ * provides an API with the same ID.
  *
- * @returns The current feature list, and the real page elements keyed by
+ * @returns The current feature list, and the real elements keyed by
  * extension ID.
  * @internal
  */
@@ -174,6 +227,7 @@ export function graftDeferredPlugin(options: {
   tree: AppTree;
   config: ConfigApi;
   apis: ApiHolder;
+  appApiRegistry: FrontendApiRegistry;
   collector: ErrorCollector;
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
   predicateContext?: ExtensionPredicateContext;
@@ -229,7 +283,7 @@ export function graftDeferredPlugin(options: {
   );
   const graftSpecs = selectGraftableSpecs({
     specs,
-    manifestPageIds: stubExtensionIds,
+    stubExtensionIds,
     existingIds,
     stub,
     collector,
@@ -256,10 +310,20 @@ export function graftDeferredPlugin(options: {
     plugin,
   });
 
+  // APIs are registered before the elements are created, so that the
+  // elements can use them.
+  registerGraftedApis({
+    apiNodes: newNodes.filter(node => isAttachedTo(node.spec, APIS_ATTACHMENT)),
+    appApiRegistry: options.appApiRegistry,
+    features,
+    collector,
+    predicateContext: options.predicateContext,
+  });
+  registerFeatureFlagDeclarationsInHolder(options.apis, [plugin], collector);
+
   const elements = new Map<string, JSX.Element>();
   for (const node of newNodes) {
-    const attachTo = getAttachTo(node.spec);
-    if (attachTo?.id !== ROUTES_ATTACHMENT.id) {
+    if (!stubExtensionIds.has(node.spec.id)) {
       continue;
     }
     const instantiated = instantiateAppNodeSubtree({

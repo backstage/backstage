@@ -48,7 +48,10 @@ import { getBasePath } from '../routing/getBasePath';
 import { Root } from '../extensions/Root';
 import { resolveAppTree } from '../tree/resolveAppTree';
 import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
-import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
+import {
+  ExtensionParameters,
+  readAppExtensionsConfig,
+} from '../tree/readAppExtensionsConfig';
 import {
   createPluginInfoAttacher,
   FrontendPluginInfoResolver,
@@ -310,10 +313,12 @@ export function prepareSpecializedApp(
   const eagerFeatures = deduplicateFeatures(options?.features ?? []);
 
   const collector = createErrorCollector();
+  const extensionParameters = readAppExtensionsConfig(config);
 
   const deferred = createDeferredPlugins({
     entries: internalOptions?.__internal?.deferredFeatures ?? [],
     eagerFeatures,
+    extensionParameters,
     attachPluginInfo,
     collector,
     graft: (entry, loadedFeature) => graftDeferred(entry, loadedFeature),
@@ -330,7 +335,7 @@ export function prepareSpecializedApp(
       builtinExtensions: [
         resolveExtensionDefinition(Root, { namespace: 'root' }),
       ],
-      parameters: readAppExtensionsConfig(config),
+      parameters: extensionParameters,
       forbidden: new Set(['root']),
       collector,
     }),
@@ -556,6 +561,7 @@ export function prepareSpecializedApp(
       tree,
       config,
       apis: phase.apis,
+      appApiRegistry,
       collector: graftCollector,
       extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
       predicateContext: finalizedPredicateContext,
@@ -1033,6 +1039,7 @@ function mergeExtensionFactoryMiddleware(
 function createDeferredPlugins(options: {
   entries: DeferredFrontendFeature[];
   eagerFeatures: FrontendFeature[];
+  extensionParameters: ExtensionParameters[];
   attachPluginInfo(feature: FrontendFeature): FrontendFeature;
   collector: ErrorCollector;
   graft(
@@ -1049,6 +1056,12 @@ function createDeferredPlugins(options: {
       ),
   );
 
+  const configuredExtensionIds = new Set(
+    options.extensionParameters
+      .filter(param => param.config !== undefined)
+      .map(param => param.id),
+  );
+
   const entries = options.entries.filter(entry => {
     const { manifest } = entry;
     if (manifest.type !== 'plugin' || !manifest.deferrable) {
@@ -1058,7 +1071,21 @@ function createDeferredPlugins(options: {
         }`,
       );
     }
-    return !eagerPluginIds.has(manifest.pluginId);
+    if (eagerPluginIds.has(manifest.pluginId)) {
+      return false;
+    }
+    // The stubs of elements output the data that was recorded at build time
+    // with the default config, so they can't apply config from app-config.
+    const configured = manifest.extensions.find(
+      extension =>
+        extension.element && configuredExtensionIds.has(extension.id),
+    );
+    if (configured) {
+      throw new Error(
+        `The '${entry.name}' package can't be deferred, the '${configured.id}' extension is configured in app.extensions, which is only supported for pages of deferred plugins. Install the plugin as a regular feature of the app instead`,
+      );
+    }
+    return true;
   });
 
   const controller = new DeferredFeatureController({
@@ -1078,7 +1105,7 @@ function createDeferredPlugins(options: {
     for (const extensionId of skippedExtensionIds) {
       options.collector.report({
         code: 'EXTENSION_IGNORED',
-        message: `The '${extensionId}' extension of the deferred '${entry.manifest.pluginId}' plugin was ignored, because only pages that are attached to a single parent and have an ID of the form 'page:${entry.manifest.pluginId}' or 'page:${entry.manifest.pluginId}/<name>' can be deferred`,
+        message: `The '${extensionId}' extension of the deferred '${entry.manifest.pluginId}' plugin was ignored, because only pages, APIs and elements that are attached to a single parent and have an ID of the form '<kind>:${entry.manifest.pluginId}' or '<kind>:${entry.manifest.pluginId}/<name>' can be deferred`,
         context: { plugin, extensionId },
       });
     }
