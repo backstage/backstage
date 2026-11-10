@@ -20,12 +20,14 @@ import {
   createExtensionInput,
   routeResolutionApiRef,
   appTreeApiRef,
+  coreApis,
   IconComponent,
   IconElement,
   Progress,
   RouteRef,
   RouteResolutionApi,
   useApi,
+  useApiHolder,
   appLanguageApiRef,
   errorApiRef,
   translationApiRef,
@@ -39,7 +41,7 @@ import {
   NavContentNavItems,
 } from '@backstage/plugin-app-react';
 import { Sidebar, SidebarItem } from '@backstage/core-components';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslatedTitles } from '@internal/frontend';
 
 class NavItemBag implements NavContentNavItems {
@@ -157,6 +159,15 @@ function NavContentRenderer(props: {
 }) {
   const appTreeApi = useApi(appTreeApiRef);
   const routeResolutionApi = useApi(routeResolutionApiRef);
+  const appLifecycleApi = useApiHolder().get(coreApis.appLifecycle);
+
+  // The app tree can change after the app is finalized, for example when a
+  // deferred plugin is loaded, so the nav items are collected again.
+  const [treeRevision, setTreeRevision] = useState(0);
+  useEffect(
+    () => appLifecycleApi?.subscribe(() => setTreeRevision(r => r + 1)),
+    [appLifecycleApi],
+  );
 
   // Discover pages eligible for navigation before loading their title translations.
   const items = useMemo(() => {
@@ -225,7 +236,8 @@ function NavContentRenderer(props: {
 
       return [{ node, href: to, title: staticTitle, icon, routeRef }];
     });
-  }, [appTreeApi, routeResolutionApi, props.legacyNavItems]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appTreeApi, routeResolutionApi, props.legacyNavItems, treeRevision]);
   const selections = useMemo(
     () =>
       items.map(item =>

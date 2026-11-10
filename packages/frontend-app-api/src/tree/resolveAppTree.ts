@@ -30,7 +30,7 @@ function indent(str: string) {
 }
 
 /** @internal */
-class SerializableAppNode implements AppNode {
+export class SerializableAppNode implements AppNode {
   public readonly spec: AppNodeSpec;
   public readonly edges = {
     attachedTo: undefined as { node: AppNode; input: string } | undefined,
@@ -229,4 +229,122 @@ export function resolveAppTree(
     nodes,
     orphans,
   };
+}
+
+function removeAppNode(
+  nodes: Map<string, AppNode>,
+  node: AppNode,
+): { parent: AppNode; input: string; index: number } | undefined {
+  // Remove the node and all of its descendants from the node index.
+  const visit = (current: AppNode) => {
+    if (nodes.get(current.spec.id) === current) {
+      nodes.delete(current.spec.id);
+    }
+    for (const children of current.edges.attachments.values()) {
+      children.forEach(visit);
+    }
+  };
+  visit(node);
+
+  const attachedTo = node.edges.attachedTo;
+  if (!attachedTo) {
+    return undefined;
+  }
+  const siblings = attachedTo.node.edges.attachments.get(attachedTo.input) as
+    | AppNode[]
+    | undefined;
+  const index = siblings?.indexOf(node) ?? -1;
+  if (!siblings || index === -1) {
+    return undefined;
+  }
+  siblings.splice(index, 1);
+  return { parent: attachedTo.node, input: attachedTo.input, index };
+}
+
+function attachAppNode(
+  node: SerializableAppNode,
+  parent: AppNode,
+  input: string,
+  index?: number,
+) {
+  node.edges.attachedTo = { node: parent, input };
+
+  const attachments = parent.edges.attachments as Map<string, AppNode[]>;
+  const siblings = attachments.get(input);
+  if (!siblings) {
+    attachments.set(input, [node]);
+  } else if (index === undefined) {
+    siblings.push(node);
+  } else {
+    siblings.splice(index, 0, node);
+  }
+}
+
+/**
+ * Adds nodes for the given specs to an app tree that has already been
+ * resolved.
+ *
+ * @remarks
+ *
+ * A spec with the same ID as an existing node replaces that node and all of
+ * its attachments. If the new node attaches to the same input as the node it
+ * replaces, it takes the same position among the attachments of that input.
+ * New nodes can attach to each other as well as to existing nodes.
+ *
+ * Existing node instances are left untouched, and the new nodes are not
+ * instantiated.
+ *
+ * @returns The new nodes, in the order of the specs.
+ * @internal
+ */
+export function graftAppTreeNodes(
+  tree: AppTree,
+  specs: AppNodeSpec[],
+): AppNode[] {
+  const nodes = tree.nodes as Map<string, AppNode>;
+  const newNodes = new Map<string, SerializableAppNode>();
+
+  for (const spec of specs) {
+    if (Array.isArray(spec.attachTo)) {
+      throw new Error(
+        `Extension '${spec.id}' can't be added to an existing app tree because it uses multiple attachment points`,
+      );
+    }
+    if (!newNodes.has(spec.id)) {
+      newNodes.set(spec.id, new SerializableAppNode(spec));
+    }
+  }
+
+  for (const node of newNodes.values()) {
+    const attachTo = node.spec.attachTo as { id: string; input: string };
+
+    const replacedNode = nodes.get(node.spec.id);
+    const replacedPosition = replacedNode
+      ? removeAppNode(nodes, replacedNode)
+      : undefined;
+
+    const parent = newNodes.get(attachTo.id) ?? nodes.get(attachTo.id);
+    if (!parent) {
+      if (Array.isArray(tree.orphans)) {
+        tree.orphans.push(node);
+      }
+      continue;
+    }
+
+    const keepsPosition =
+      replacedPosition?.parent === parent &&
+      replacedPosition.input === attachTo.input;
+    attachAppNode(
+      node,
+      parent,
+      attachTo.input,
+      keepsPosition ? replacedPosition.index : undefined,
+    );
+  }
+
+  for (const node of newNodes.values()) {
+    nodes.set(node.spec.id, node);
+  }
+
+  return Array.from(newNodes.values());
 }

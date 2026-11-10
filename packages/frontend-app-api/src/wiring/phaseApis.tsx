@@ -196,7 +196,12 @@ export class DefaultAppLifecycleApi implements AppLifecycleApi {
 
   markFinalized() {
     this.#finalized = true;
+    this.notifyChanged();
+  }
 
+  // Tells subscribers that the app changed after it was finalized, for
+  // example when a deferred plugin was added to the app tree.
+  notifyChanged() {
     for (const listener of this.#listeners) {
       listener();
     }
@@ -402,6 +407,19 @@ export function instantiateAndInitializePhaseTree(options: {
     },
   );
 
+  initializePhaseRouting(options);
+}
+
+/**
+ * Extracts the route info from the instantiated app tree and initializes the
+ * route resolution and app tree APIs with it.
+ */
+export function initializePhaseRouting(options: {
+  tree: AppTree;
+  routeResolutionApi: RouteResolutionApiProxy;
+  appTreeApi: AppTreeApiProxy;
+  routeRefsById: ReturnType<typeof collectRouteIds>;
+}) {
   const routeInfo = extractRouteInfoFromAppNode(
     options.tree.root,
     createRouteAliasResolver(options.routeRefsById),
