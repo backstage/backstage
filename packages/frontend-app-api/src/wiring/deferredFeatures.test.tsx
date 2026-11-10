@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { z } from 'zod/v4';
 import {
   ApiBlueprint,
   coreExtensionData,
@@ -22,6 +23,7 @@ import {
   createExtension,
   createExtensionDataRef,
   createExtensionInput,
+  createExternalRouteRef,
   createFrontendPlugin,
   createRouteRef,
   PageBlueprint,
@@ -218,19 +220,23 @@ describe('deferred features', () => {
     expect(plainApp.tree.nodes.has('page:deferred')).toBe(false);
   });
 
-  it('should load a plugin with an API and an element on first use', async () => {
+  it('should load a plugin with an API, an element and external routes on first use', async () => {
     const scoreApiRef = createApiRef<{ getScore(): number }>({
       id: 'plugin.scored.service',
     });
     const contentTitleRef = createExtensionDataRef<string>().with({
       id: 'test.content.title',
     });
+    const hostRouteRef = createRouteRef();
     const rootRouteRef = createRouteRef();
+    const hostLinkRef = createExternalRouteRef({ defaultTarget: 'host.root' });
+    const configuredLinkRef = createExternalRouteRef();
 
     // An eager page that renders the contents attached to it, similar to the
     // entity page of the catalog.
     const hostPlugin = createFrontendPlugin({
       pluginId: 'host',
+      routes: { root: hostRouteRef },
       extensions: [
         createExtension({
           kind: 'page',
@@ -241,9 +247,14 @@ describe('deferred features', () => {
               contentTitleRef,
             ]),
           },
-          output: [coreExtensionData.routePath, coreExtensionData.reactElement],
+          output: [
+            coreExtensionData.routePath,
+            coreExtensionData.routeRef,
+            coreExtensionData.reactElement,
+          ],
           *factory({ inputs }) {
             yield coreExtensionData.routePath('/');
+            yield coreExtensionData.routeRef(hostRouteRef);
             yield coreExtensionData.reactElement(
               <div>
                 {inputs.contents.map(content => (
@@ -259,12 +270,15 @@ describe('deferred features', () => {
       ],
     });
 
-    function ScoreContent() {
+    function ScoreContent(props: { height?: number }) {
       const scoreApi = useApi(scoreApiRef);
       const rootLink = useRouteRef(rootRouteRef);
+      const hostLink = useRouteRef(hostLinkRef);
+      const configuredLink = useRouteRef(configuredLinkRef);
       return (
         <div>
-          Score {scoreApi.getScore()} at {rootLink?.()}
+          Score {scoreApi.getScore()} at {rootLink?.()} height={props.height}{' '}
+          host={hostLink?.()} configured={configuredLink?.()}
         </div>
       );
     }
@@ -272,6 +286,10 @@ describe('deferred features', () => {
     const realPlugin = createFrontendPlugin({
       pluginId: 'scored',
       routes: { root: rootRouteRef },
+      externalRoutes: {
+        hostLink: hostLinkRef,
+        configuredLink: configuredLinkRef,
+      },
       extensions: [
         ApiBlueprint.make({
           params: defineParams =>
@@ -291,10 +309,16 @@ describe('deferred features', () => {
         createExtension({
           kind: 'host-content',
           attachTo: { id: 'page:host', input: 'contents' },
+          configSchema: {
+            title: z.string().optional(),
+            height: z.number().optional(),
+          },
           output: [coreExtensionData.reactElement, contentTitleRef],
-          *factory() {
-            yield coreExtensionData.reactElement(<ScoreContent />);
-            yield contentTitleRef('Score tab');
+          *factory({ config }) {
+            yield coreExtensionData.reactElement(
+              <ScoreContent height={config.height} />,
+            );
+            yield contentTitleRef(config.title ?? 'Score tab');
           },
         }),
       ],
@@ -307,7 +331,10 @@ describe('deferred features', () => {
       expect.objectContaining({ id: 'page:scored', page: expect.any(Object) }),
       expect.objectContaining({
         id: 'host-content:scored',
-        element: { data: { 'test.content.title': 'Score tab' } },
+        element: {
+          data: { 'test.content.title': 'Score tab' },
+          dataConfigKeys: ['title'],
+        },
       }),
     ]);
 
@@ -317,6 +344,13 @@ describe('deferred features', () => {
     ];
     const app = prepareSpecializedApp({
       features: [noSignInAppPlugin, hostPlugin],
+      // Config that only the real element uses is applied once it is loaded
+      config: new ConfigReader({
+        app: {
+          extensions: [{ 'host-content:scored': { config: { height: 300 } } }],
+          routes: { bindings: { 'scored.configuredLink': 'host.root' } },
+        },
+      }),
       __internal: { deferredFeatures },
     } as CreateSpecializedAppInternalOptions).finalize();
 
@@ -326,35 +360,67 @@ describe('deferred features', () => {
     expect(load).not.toHaveBeenCalled();
 
     // The host page renders the stub content with the data from the
-    // manifest, which loads the real content along with the API and routes
+    // manifest, which loads the real content along with the API and routes.
+    // Both the default and the configured external route bindings apply.
     render(app.element);
     await expect(
       screen.findByRole('heading', { name: 'Score tab' }),
     ).resolves.toBeInTheDocument();
     await expect(
-      screen.findByText('Score 42 at /scored'),
+      screen.findByText('Score 42 at /scored height=300 host=/ configured=/'),
     ).resolves.toBeInTheDocument();
     expect(load).toHaveBeenCalledTimes(1);
     expect(app.apis.get(scoreApiRef)?.getScore()).toBe(42);
     expect(app.tree.nodes.get('host-content:scored')?.spec.plugin.routes).toBe(
       realPlugin.routes,
     );
+  });
 
-    // The content stub can't apply config, so configuring it is rejected
-    expect(() =>
-      prepareSpecializedApp({
-        features: [noSignInAppPlugin, hostPlugin],
-        config: new ConfigReader({
-          app: {
-            extensions: [
-              { 'host-content:scored': { config: { title: 'Other' } } },
-            ],
-          },
-        }),
-        __internal: { deferredFeatures },
-      } as CreateSpecializedAppInternalOptions),
-    ).toThrow(
-      "The 'scored-pkg' package can't be deferred, the 'host-content:scored' extension is configured in app.extensions",
+  it('should load a plugin right away if its stub can not apply the config', async () => {
+    const realPlugin = createRealDeferredPlugin();
+    const load = jest.fn(async () => ({ default: realPlugin }));
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const configuredManifest: FrontendFeatureManifest = {
+      ...manifest,
+      extensions: [
+        ...manifest.extensions,
+        {
+          id: 'host-content:deferred',
+          kind: 'host-content',
+          attachTo: { id: 'app/root', input: 'elements' },
+          disabled: false,
+          element: { data: {}, dataConfigKeys: ['title'] },
+        },
+      ],
+    };
+
+    const app = prepareSpecializedApp({
+      features: [noSignInAppPlugin],
+      config: new ConfigReader({
+        app: {
+          extensions: [
+            { 'host-content:deferred': { config: { title: 'Other' } } },
+          ],
+        },
+      }),
+      __internal: {
+        deferredFeatures: [
+          { name: 'deferred-pkg', manifest: configuredManifest, load },
+        ],
+      },
+    } as CreateSpecializedAppInternalOptions).finalize();
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "The 'host-content:deferred' extension of the deferred 'deferred-pkg' package is configured with 'title'",
+      ),
     );
+    // The plugin is loaded without rendering anything
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(load).toHaveBeenCalledTimes(1);
+    expect(app.tree.nodes.get('page:deferred')?.spec.plugin.routes).toBe(
+      realPlugin.routes,
+    );
+    warn.mockRestore();
   });
 });

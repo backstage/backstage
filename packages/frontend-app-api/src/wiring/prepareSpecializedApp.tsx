@@ -532,6 +532,9 @@ export function prepareSpecializedApp(
   function setFinalized(finalizedApp: FinalizedSpecializedApp) {
     finalized = finalizedApp;
     phase.appLifecycleApi.markFinalized();
+    for (const pluginId of deferred.preloadPluginIds) {
+      deferred.controller.load(pluginId);
+    }
   }
 
   // Adds a loaded deferred plugin to the finalized app, in place of its stub.
@@ -1056,11 +1059,16 @@ function createDeferredPlugins(options: {
       ),
   );
 
-  const configuredExtensionIds = new Set(
-    options.extensionParameters
-      .filter(param => param.config !== undefined)
-      .map(param => param.id),
-  );
+  const configKeysById = new Map<string, string[]>();
+  for (const param of options.extensionParameters) {
+    if (param.config && typeof param.config === 'object') {
+      configKeysById.set(param.id, [
+        ...(configKeysById.get(param.id) ?? []),
+        ...Object.keys(param.config),
+      ]);
+    }
+  }
+  const preloadPluginIds = new Array<string>();
 
   const entries = options.entries.filter(entry => {
     const { manifest } = entry;
@@ -1074,16 +1082,20 @@ function createDeferredPlugins(options: {
     if (eagerPluginIds.has(manifest.pluginId)) {
       return false;
     }
-    // The stubs of elements output the data that was recorded at build time
-    // with the default config, so they can't apply config from app-config.
-    const configured = manifest.extensions.find(
-      extension =>
-        extension.element && configuredExtensionIds.has(extension.id),
-    );
-    if (configured) {
-      throw new Error(
-        `The '${entry.name}' package can't be deferred, the '${configured.id}' extension is configured in app.extensions, which is only supported for pages of deferred plugins. Install the plugin as a regular feature of the app instead`,
+    const conflict = findDataConfigConflict(manifest, configKeysById);
+    if (conflict) {
+      // The CLI normally loads such plugins eagerly, so this only happens if
+      // the config changed after the build. The plugin is loaded right away
+      // to apply as much of the config as possible.
+      // eslint-disable-next-line no-console
+      console.warn(
+        `The '${conflict.extensionId}' extension of the deferred '${
+          entry.name
+        }' package is configured with '${conflict.keys.join(
+          "', '",
+        )}' in app.extensions, which a deferred extension can only apply after the plugin has loaded. The plugin is loaded as soon as the app has started, but the config may not be fully applied. Rebuild the app to load the package normally.`,
       );
+      preloadPluginIds.push(manifest.pluginId);
     }
     return true;
   });
@@ -1111,5 +1123,25 @@ function createDeferredPlugins(options: {
     }
   }
 
-  return { controller, stubs };
+  return { controller, stubs, preloadPluginIds };
+}
+
+/**
+ * Finds an element of a deferred plugin that is configured with keys that
+ * change the data its stub outputs.
+ */
+function findDataConfigConflict(
+  manifest: DeferredFrontendFeature['manifest'],
+  configKeysById: Map<string, string[]>,
+): { extensionId: string; keys: string[] } | undefined {
+  for (const extension of manifest.extensions) {
+    const dataConfigKeys = extension.element?.dataConfigKeys ?? [];
+    const keys = (configKeysById.get(extension.id) ?? []).filter(key =>
+      dataConfigKeys.includes(key),
+    );
+    if (keys.length > 0) {
+      return { extensionId: extension.id, keys };
+    }
+  }
+  return undefined;
 }

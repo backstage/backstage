@@ -32,6 +32,7 @@ export interface FrontendExtensionManifest {
       [dataRefId: string]: unknown;
     };
     routeRefName?: string;
+    dataConfigKeys?: string[];
   };
   id: string;
   kind?: string;
