@@ -135,7 +135,7 @@ export const mcpPlugin = createBackendPlugin({
             'auth.experimentalDynamicClientRegistration.enabled',
           ) ||
           config.getOptionalBoolean(`${cimdConfigPath}.enabled`) ||
-          config.has('auth.clients');
+          config.has('auth.staticClients');
 
         if (oauthEnabled) {
           // OAuth Authorization Server Metadata (RFC 8414)
