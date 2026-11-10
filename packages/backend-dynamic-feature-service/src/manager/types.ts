@@ -42,6 +42,11 @@ export interface FrontendPluginProvider {
   frontendPlugins(options?: {
     includeFailed?: boolean;
   }): FrontendDynamicPlugin[];
+  /**
+   * Changes each time the set of frontend plugins is refreshed, so that
+   * consumers can cache what they derive from it.
+   */
+  readonly frontendPluginsGeneration?: number;
 }
 
 /**

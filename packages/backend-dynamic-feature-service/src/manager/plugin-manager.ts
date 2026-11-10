@@ -89,20 +89,34 @@ export class DynamicPluginManager implements DynamicPluginProvider {
       scannedPluginManifestsPerRealPath,
     );
 
-    scanner.subscribeToRootDirectoryChange(async () => {
-      manager._availablePackages = (await scanner.scanRoot()).packages;
-      // TODO: do not store _scannedPlugins again, but instead store a diff of the changes
-    });
     manager._plugins.push(...(await manager.loadPlugins()));
+
+    // Refreshes run one at a time, so that a slow scan cannot overwrite the
+    // result of a newer one.
+    let pendingRefresh = Promise.resolve();
+    scanner.subscribeToRootDirectoryChange(() => {
+      pendingRefresh = pendingRefresh.then(async () => {
+        try {
+          manager._availablePackages = (await scanner.scanRoot()).packages;
+          manager.refreshFrontendPlugins();
+        } catch (e) {
+          options.logger.error(
+            'failed to refresh dynamic plugins after a rootDirectory change',
+            e,
+          );
+        }
+      });
+      return pendingRefresh;
+    });
 
     return manager;
   }
 
-  private readonly _plugins: DynamicPlugin[];
+  private _plugins: DynamicPlugin[];
   private _availablePackages: ScannedPluginPackage[];
 
   private readonly logger: LoggerService;
-  private readonly packages: ScannedPluginPackage[];
+  private packages: ScannedPluginPackage[];
   private readonly moduleLoader: ModuleLoader;
 
   private constructor(
@@ -117,8 +131,77 @@ export class DynamicPluginManager implements DynamicPluginProvider {
     this._availablePackages = packages;
   }
 
+  private _frontendPluginsGeneration = 0;
+
+  get frontendPluginsGeneration(): number {
+    return this._frontendPluginsGeneration;
+  }
+
   get availablePackages(): ScannedPluginPackage[] {
     return this._availablePackages;
+  }
+
+  /**
+   * Swaps the frontend (web) plugins for the ones found by the last scan.
+   * Backend plugins cannot be (un)loaded at runtime: changes are only logged.
+   */
+  private refreshFrontendPlugins(): void {
+    const isWebPlugin = (p: ScannedPluginPackage) => {
+      const role = p.manifest.backstage.role;
+      try {
+        return (
+          PackageRoles.getRoleInfo(role).platform === 'web' &&
+          (role.endsWith('-plugin') ||
+            role.endsWith('-plugin-module') ||
+            role === ('frontend-dynamic-container' as PackageRole))
+        );
+      } catch {
+        return false;
+      }
+    };
+    const key = (p: ScannedPluginPackage) =>
+      `${p.manifest.name}@${p.manifest.version}`;
+
+    const oldBackend = this.packages
+      .filter(p => !isWebPlugin(p))
+      .map(key)
+      .sort();
+    const newBackend = this._availablePackages
+      .filter(p => !isWebPlugin(p))
+      .map(key)
+      .sort();
+    if (oldBackend.join() !== newBackend.join()) {
+      this.logger.warn(
+        `dynamic backend plugin packages changed (loaded: [${oldBackend.join(
+          ', ',
+        )}], on disk: [${newBackend.join(
+          ', ',
+        )}]); restart the backend to apply`,
+      );
+    }
+
+    const webPackages = this._availablePackages.filter(isWebPlugin);
+    this.packages = [
+      ...this.packages.filter(p => !isWebPlugin(p)),
+      ...webPackages,
+    ];
+    this._plugins = [
+      ...this._plugins.filter(p => p.platform !== 'web'),
+      ...webPackages.map(
+        (p): FrontendDynamicPlugin => ({
+          name: p.manifest.name,
+          version: p.manifest.version,
+          role: p.manifest.backstage.role,
+          platform: 'web',
+        }),
+      ),
+    ];
+    this._frontendPluginsGeneration++;
+    this.logger.info(
+      `dynamic frontend plugins refreshed: [${webPackages
+        .map(key)
+        .join(', ')}]`,
+    );
   }
 
   addBackendPlugin(plugin: BackendDynamicPlugin): void {
