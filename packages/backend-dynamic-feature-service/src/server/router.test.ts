@@ -51,18 +51,15 @@ describe('createRouter', () => {
     });
   };
 
-  // A fake provider whose frontend plugins and generation the test controls.
-  const createProvider = (options: { withGeneration: boolean }) => {
+  // A fake provider whose frontend plugins the test controls. Like the real
+  // manager, it returns the same plugin objects until the test replaces them.
+  const createProvider = () => {
     const state = {
       plugins: [] as FrontendDynamicPlugin[],
-      generation: 0,
     };
-    const frontendPlugins = jest.fn(() => state.plugins);
-    const provider: DynamicPluginProvider = {
-      frontendPlugins,
-      backendPlugins: () => [],
-      plugins: () => state.plugins,
-      getScannedPackage: (plugin): ScannedPluginPackage => ({
+    // Called once per plugin each time the router rebuilds its remotes.
+    const getScannedPackage = jest.fn(
+      (plugin: FrontendDynamicPlugin): ScannedPluginPackage => ({
         location: url.pathToFileURL(mockDir.resolve(plugin.name)),
         manifest: {
           name: plugin.name,
@@ -71,13 +68,14 @@ describe('createRouter', () => {
           backstage: { role: plugin.role },
         },
       }),
+    );
+    const provider: DynamicPluginProvider = {
+      frontendPlugins: () => state.plugins,
+      backendPlugins: () => [],
+      plugins: () => state.plugins,
+      getScannedPackage,
     };
-    if (options.withGeneration) {
-      Object.defineProperty(provider, 'frontendPluginsGeneration', {
-        get: () => state.generation,
-      });
-    }
-    return { provider, state, frontendPlugins };
+    return { provider, state, getScannedPackage };
   };
 
   const resolvers: FrontendRemoteResolvers = {
@@ -106,16 +104,15 @@ describe('createRouter', () => {
     return (response.body as { packageName: string }[]).map(r => r.packageName);
   };
 
-  it('should rebuild the remotes only when the generation changes', async () => {
+  it('should rebuild the remotes only when the plugin objects change', async () => {
     writePluginAssets('plugin-a');
     writePluginAssets('plugin-b');
-    const { provider, state, frontendPlugins } = createProvider({
-      withGeneration: true,
-    });
-    state.plugins = [frontendPlugin('plugin-a')];
+    const { provider, state, getScannedPackage } = createProvider();
+    const pluginA = frontendPlugin('plugin-a');
+    state.plugins = [pluginA];
 
     const app = await createApp(provider);
-    expect(frontendPlugins).toHaveBeenCalledTimes(1);
+    expect(getScannedPackage).toHaveBeenCalledTimes(1);
 
     expect(await remoteNames(app)).toEqual(['plugin-a']);
     expect(await remoteNames(app)).toEqual(['plugin-a']);
@@ -123,17 +120,16 @@ describe('createRouter', () => {
       `/remotes/plugin-a/${manifestFileName}`,
     );
     expect(assetA.status).toBe(200);
-    expect(frontendPlugins).toHaveBeenCalledTimes(1);
-
-    // A changed plugin list is not picked up until the generation changes.
-    state.plugins = [frontendPlugin('plugin-b')];
+    // The same plugin objects, even in a new array, are not rebuilt.
+    state.plugins = [pluginA];
     expect(await remoteNames(app)).toEqual(['plugin-a']);
-    expect(frontendPlugins).toHaveBeenCalledTimes(1);
+    expect(getScannedPackage).toHaveBeenCalledTimes(1);
 
-    state.generation++;
+    // New plugin objects are picked up on the next request, once.
+    state.plugins = [frontendPlugin('plugin-b')];
     expect(await remoteNames(app)).toEqual(['plugin-b']);
     expect(await remoteNames(app)).toEqual(['plugin-b']);
-    expect(frontendPlugins).toHaveBeenCalledTimes(2);
+    expect(getScannedPackage).toHaveBeenCalledTimes(2);
 
     const assetB = await request(app).get(
       `/remotes/plugin-b/${manifestFileName}`,
@@ -145,18 +141,15 @@ describe('createRouter', () => {
     expect(removedAssetA.status).toBe(404);
   });
 
-  it('should build the remotes once for a provider without a generation', async () => {
+  it('should build the remotes once while the plugin objects never change', async () => {
     writePluginAssets('plugin-a');
-    const { provider, state, frontendPlugins } = createProvider({
-      withGeneration: false,
-    });
+    const { provider, state, getScannedPackage } = createProvider();
     state.plugins = [frontendPlugin('plugin-a')];
 
     const app = await createApp(provider);
-    state.plugins = [];
 
     expect(await remoteNames(app)).toEqual(['plugin-a']);
     expect(await remoteNames(app)).toEqual(['plugin-a']);
-    expect(frontendPlugins).toHaveBeenCalledTimes(1);
+    expect(getScannedPackage).toHaveBeenCalledTimes(1);
   });
 });

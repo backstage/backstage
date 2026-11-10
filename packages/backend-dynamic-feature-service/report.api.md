@@ -96,8 +96,6 @@ export class DynamicPluginManager implements DynamicPluginProvider {
     includeFailed?: boolean;
   }): FrontendDynamicPlugin[];
   // (undocumented)
-  get frontendPluginsGeneration(): number;
-  // (undocumented)
   getScannedPackage(plugin: DynamicPlugin): ScannedPluginPackage;
   // (undocumented)
   plugins(options?: { includeFailed?: boolean }): DynamicPlugin[];
@@ -223,7 +221,6 @@ export interface FrontendPluginProvider {
   frontendPlugins(options?: {
     includeFailed?: boolean;
   }): FrontendDynamicPlugin[];
-  readonly frontendPluginsGeneration?: number;
 }
 
 // @public (undocumented)

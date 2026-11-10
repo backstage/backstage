@@ -1113,7 +1113,7 @@ describe('backend-dynamic-feature-service', () => {
       expect(nameAndVersion(t.manager.frontendPlugins())).toEqual([
         'frontend-a@1.0.0',
       ]);
-      expect(t.manager.frontendPluginsGeneration).toBe(0);
+      const initialPlugins = t.manager.frontendPlugins();
 
       t.setPackagesOnDisk([frontendAUpdated, frontendC, backendB]);
       await t.rootDirectoryChanged();
@@ -1133,7 +1133,8 @@ describe('backend-dynamic-feature-service', () => {
           role: 'frontend-plugin',
         }),
       ).toThrow();
-      expect(t.manager.frontendPluginsGeneration).toBe(1);
+      const refreshedPlugins = t.manager.frontendPlugins();
+      expect(refreshedPlugins[0]).not.toBe(initialPlugins[0]);
 
       t.setPackagesOnDisk([frontendC, backendB]);
       await t.rootDirectoryChanged();
@@ -1141,7 +1142,7 @@ describe('backend-dynamic-feature-service', () => {
       expect(nameAndVersion(t.manager.frontendPlugins())).toEqual([
         'frontend-c@0.1.0',
       ]);
-      expect(t.manager.frontendPluginsGeneration).toBe(2);
+      expect(t.manager.frontendPlugins()[0]).not.toBe(refreshedPlugins[1]);
 
       expect(nameAndVersion(t.manager.backendPlugins())).toEqual([
         'backend-b@1.0.0',
@@ -1186,6 +1187,7 @@ describe('backend-dynamic-feature-service', () => {
 
     it('should keep the current plugins when a rescan fails', async () => {
       const t = await setup([frontendA, backendB]);
+      const initialPlugins = t.manager.frontendPlugins();
 
       t.scanRoot.mockRejectedValueOnce(new Error('scan failed'));
       await t.rootDirectoryChanged();
@@ -1193,7 +1195,7 @@ describe('backend-dynamic-feature-service', () => {
       expect(nameAndVersion(t.manager.frontendPlugins())).toEqual([
         'frontend-a@1.0.0',
       ]);
-      expect(t.manager.frontendPluginsGeneration).toBe(0);
+      expect(t.manager.frontendPlugins()[0]).toBe(initialPlugins[0]);
       expect(t.logger.logs.errors).toEqual([
         {
           message:
@@ -1224,7 +1226,6 @@ describe('backend-dynamic-feature-service', () => {
       expect(nameAndVersion(t.manager.frontendPlugins())).toEqual([
         'frontend-c@0.1.0',
       ]);
-      expect(t.manager.frontendPluginsGeneration).toBe(2);
     });
   });
 

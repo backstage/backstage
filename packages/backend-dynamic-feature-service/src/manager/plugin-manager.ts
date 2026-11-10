@@ -40,6 +40,46 @@ import { PackageRole, PackageRoles } from '@backstage/cli-node';
 import { targetPaths } from '@backstage/cli-common';
 import * as fs from 'node:fs';
 
+function isPluginRole(role: PackageRole): boolean {
+  return (
+    role.endsWith('-plugin') ||
+    role.endsWith('-plugin-module') ||
+    role === ('frontend-dynamic-container' as PackageRole)
+  );
+}
+
+function isWebPluginPackage(pkg: ScannedPluginPackage): boolean {
+  const role = pkg.manifest.backstage.role;
+  try {
+    return (
+      isPluginRole(role) && PackageRoles.getRoleInfo(role).platform === 'web'
+    );
+  } catch {
+    // Packages with an unknown role cannot be web plugins.
+    return false;
+  }
+}
+
+function toFrontendPlugin(pkg: ScannedPluginPackage): FrontendDynamicPlugin {
+  return {
+    name: pkg.manifest.name,
+    version: pkg.manifest.version,
+    role: pkg.manifest.backstage.role,
+    platform: 'web',
+  };
+}
+
+function packageKey(pkg: ScannedPluginPackage): string {
+  return `${pkg.manifest.name}@${pkg.manifest.version}`;
+}
+
+function backendPackageKeys(packages: ScannedPluginPackage[]): string[] {
+  return packages
+    .filter(p => !isWebPluginPackage(p))
+    .map(packageKey)
+    .sort();
+}
+
 /**
  * @public
  */
@@ -131,12 +171,6 @@ export class DynamicPluginManager implements DynamicPluginProvider {
     this._availablePackages = packages;
   }
 
-  private _frontendPluginsGeneration = 0;
-
-  get frontendPluginsGeneration(): number {
-    return this._frontendPluginsGeneration;
-  }
-
   get availablePackages(): ScannedPluginPackage[] {
     return this._availablePackages;
   }
@@ -146,30 +180,8 @@ export class DynamicPluginManager implements DynamicPluginProvider {
    * Backend plugins cannot be (un)loaded at runtime: changes are only logged.
    */
   private refreshFrontendPlugins(): void {
-    const isWebPlugin = (p: ScannedPluginPackage) => {
-      const role = p.manifest.backstage.role;
-      try {
-        return (
-          PackageRoles.getRoleInfo(role).platform === 'web' &&
-          (role.endsWith('-plugin') ||
-            role.endsWith('-plugin-module') ||
-            role === ('frontend-dynamic-container' as PackageRole))
-        );
-      } catch {
-        return false;
-      }
-    };
-    const key = (p: ScannedPluginPackage) =>
-      `${p.manifest.name}@${p.manifest.version}`;
-
-    const oldBackend = this.packages
-      .filter(p => !isWebPlugin(p))
-      .map(key)
-      .sort();
-    const newBackend = this._availablePackages
-      .filter(p => !isWebPlugin(p))
-      .map(key)
-      .sort();
+    const oldBackend = backendPackageKeys(this.packages);
+    const newBackend = backendPackageKeys(this._availablePackages);
     if (oldBackend.join() !== newBackend.join()) {
       this.logger.warn(
         `dynamic backend plugin packages changed (loaded: [${oldBackend.join(
@@ -180,26 +192,18 @@ export class DynamicPluginManager implements DynamicPluginProvider {
       );
     }
 
-    const webPackages = this._availablePackages.filter(isWebPlugin);
+    const webPackages = this._availablePackages.filter(isWebPluginPackage);
     this.packages = [
-      ...this.packages.filter(p => !isWebPlugin(p)),
+      ...this.packages.filter(p => !isWebPluginPackage(p)),
       ...webPackages,
     ];
     this._plugins = [
       ...this._plugins.filter(p => p.platform !== 'web'),
-      ...webPackages.map(
-        (p): FrontendDynamicPlugin => ({
-          name: p.manifest.name,
-          version: p.manifest.version,
-          role: p.manifest.backstage.role,
-          platform: 'web',
-        }),
-      ),
+      ...webPackages.map(toFrontendPlugin),
     ];
-    this._frontendPluginsGeneration++;
     this.logger.info(
       `dynamic frontend plugins refreshed: [${webPackages
-        .map(key)
+        .map(packageKey)
         .join(', ')}]`,
     );
   }
@@ -214,12 +218,8 @@ export class DynamicPluginManager implements DynamicPluginProvider {
     for (const scannedPlugin of this.packages) {
       const role = scannedPlugin.manifest.backstage.role;
       const platform = PackageRoles.getRoleInfo(role).platform;
-      const isPlugin =
-        role.endsWith('-plugin') ||
-        role.endsWith('-plugin-module') ||
-        role === ('frontend-dynamic-container' as PackageRole);
 
-      if (!isPlugin) {
+      if (!isPluginRole(role)) {
         this.logger.info(
           `skipping dynamic plugin package '${scannedPlugin.manifest.name}' from '${scannedPlugin.location}': incompatible role '${role}'`,
         );
@@ -232,13 +232,8 @@ export class DynamicPluginManager implements DynamicPluginProvider {
           break;
 
         case 'web':
-          loadedPlugins.push({
-            name: scannedPlugin.manifest.name,
-            version: scannedPlugin.manifest.version,
-            role: scannedPlugin.manifest.backstage.role,
-            platform: 'web',
-            // TODO(davidfestal): add required front-end plugin information here.
-          });
+          // TODO(davidfestal): add required front-end plugin information here.
+          loadedPlugins.push(toFrontendPlugin(scannedPlugin));
           break;
 
         default:
