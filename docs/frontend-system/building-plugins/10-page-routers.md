@@ -252,7 +252,8 @@ export const ToolsPageRouter = createTanStackPageRouter({
 
 The `history` uses app-absolute paths and shares the app's browser timeline.
 The supplied `routePaths` contains the page's mount patterns in TanStack syntax,
-including parameters. Optional static segments produce multiple patterns; mount
+including parameters. Optional static segments produce multiple unique patterns,
+including repeated segments such as `/foo?/foo?`; mount
 the plugin's routes at each one. For a `/` mount, attach the plugin's routes
 directly to the root route. Keep TanStack's
 `basepath` at `/`; the adapter applies the deployment basename when producing

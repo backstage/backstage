@@ -11,3 +11,5 @@ Install `@tanstack/react-router@1.131.2` and `@tanstack/history@1.131.2` alongsi
 See the [TanStack page router guide](https://backstage.io/docs/frontend-system/building-plugins/page-routers#use-tanstack-router) for setup, navigation blockers, and custom history requirements.
 
 The adapter supplies the public contextual navigation contract for any component library, including BUI, without depending on BUI at runtime.
+
+Optional static segments expand to unique mount patterns, including repeated segments such as `/foo?/foo?`, so default and custom routers can construct their route trees without duplicate route IDs.
