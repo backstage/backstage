@@ -100,7 +100,7 @@ function parseClientCredentials(opts: {
         }
       }
     } catch {
-      /* ignore */
+      // Fall back to credentials from the request body.
     }
   }
 
@@ -128,16 +128,12 @@ async function authenticateClient(opts: {
     );
   }
 
-  try {
-    const isValidClient = await oidc.verifyClientCredentials({
-      clientId,
-      clientSecret,
-    });
-    if (!isValidClient) {
-      throw new OidcError('invalid_client', 'Invalid client credentials', 401);
-    }
-  } catch (e) {
-    throw OidcError.fromError(e);
+  const isValidClient = await oidc.verifyClientCredentials({
+    clientId,
+    clientSecret,
+  });
+  if (!isValidClient) {
+    throw new OidcError('invalid_client', 'Invalid client credentials', 401);
   }
 
   return { clientId, clientSecret };
@@ -507,9 +503,8 @@ export class OidcRouter {
       });
 
       // Token Revocation endpoint (RFC 7009-like)
-      // Allows clients to revoke refresh tokens. DCR clients are confidential
-      // and must authenticate with their client secret, while CIMD clients
-      // are public clients that only identify themselves with their client ID
+      // Confidential clients must authenticate with their client secret.
+      // Public clients identify themselves with their client ID.
       router.post('/v1/revoke', async (req, res) => {
         try {
           const {
