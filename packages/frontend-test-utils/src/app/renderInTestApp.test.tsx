@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
@@ -84,9 +84,22 @@ describe('renderInTestApp', () => {
     expect(load).toHaveBeenCalledTimes(1);
     rendered.unmount();
 
-    renderTestApp({ features: [plugin], initialRouteEntries: ['/lazy'] });
+    const second = renderTestApp({
+      features: [plugin],
+      initialRouteEntries: ['/lazy'],
+    });
     expect(await screen.findByText('Lazy API loaded')).toBeInTheDocument();
     expect(load).toHaveBeenCalledTimes(2);
+    second.unmount();
+
+    renderInTestApp(
+      <Suspense fallback="Loading API">
+        <Consumer />
+      </Suspense>,
+      { features: [plugin] },
+    );
+    expect(await screen.findByText('Lazy API loaded')).toBeInTheDocument();
+    expect(load).toHaveBeenCalledTimes(3);
   });
 
   it('should throw for app errors that would show the error page', () => {

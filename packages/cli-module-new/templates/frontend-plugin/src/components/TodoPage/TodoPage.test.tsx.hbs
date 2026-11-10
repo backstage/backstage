@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { screen } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
@@ -23,7 +24,12 @@ describe('TodoPage', () => {
       ),
     );
 
-    await renderInTestApp(<TodoPage />, { features: [{{ pluginVar }}] });
+    renderInTestApp(
+      <Suspense fallback="Loading API">
+        <TodoPage />
+      </Suspense>,
+      { features: [{{ pluginVar }}] },
+    );
 
     expect(await screen.findByText('Mocked task')).toBeInTheDocument();
   });
@@ -38,7 +44,12 @@ describe('TodoPage', () => {
       ),
     );
 
-    await renderInTestApp(<TodoPage />, { features: [{{ pluginVar }}] });
+    renderInTestApp(
+      <Suspense fallback="Loading API">
+        <TodoPage />
+      </Suspense>,
+      { features: [{{ pluginVar }}] },
+    );
 
     expect(await screen.findByText('Install the backend plugin')).toBeInTheDocument();
   });
