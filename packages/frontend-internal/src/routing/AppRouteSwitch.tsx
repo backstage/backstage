@@ -35,9 +35,9 @@ import {
 import { parsePath } from './AppRouting';
 
 interface PluginErrorBoundaryProps {
-  basePath: string;
+  match: RouteResolutionMatch;
   children: ReactNode;
-  fallback: ReactElement;
+  errorFallback: AppRouteSwitchProps['errorFallback'];
 }
 
 interface PluginErrorBoundaryState {
@@ -48,7 +48,7 @@ interface PluginErrorBoundaryState {
 }
 
 /**
- * Renders the app fallback in place of a page that crashed.
+ * Renders the app error display in place of a page that crashed.
  *
  * A crash belongs to the concrete mount it happened at, not to the route
  * pattern: entity A crashing says nothing about entity B, even though both
@@ -73,15 +73,19 @@ class PluginErrorBoundary extends Component<
     props: PluginErrorBoundaryProps,
     state: PluginErrorBoundaryState,
   ): Partial<PluginErrorBoundaryState> | null {
-    if (state.basePath === props.basePath) {
+    if (state.basePath === props.match.basePath) {
       return null;
     }
     // A different concrete mount, so any error from the previous one is stale.
-    return { basePath: props.basePath, hasError: false, error: undefined };
+    return {
+      basePath: props.match.basePath,
+      hasError: false,
+      error: undefined,
+    };
   }
 
-  state = {
-    basePath: this.props.basePath,
+  state: PluginErrorBoundaryState = {
+    basePath: this.props.match.basePath,
     hasError: false,
     error: undefined,
   };
@@ -89,15 +93,23 @@ class PluginErrorBoundary extends Component<
   componentDidCatch(error: Error, info: ErrorInfo) {
     // eslint-disable-next-line no-console
     console.error(
-      `[AppRouteSwitch] Plugin at "${this.props.basePath}" crashed:`,
+      `[AppRouteSwitch] Plugin at "${this.props.match.basePath}" crashed:`,
       error,
       info,
     );
   }
 
+  handleErrorReset = () => {
+    this.setState({ hasError: false, error: undefined });
+  };
+
   render() {
     if (this.state.hasError) {
-      return this.props.fallback;
+      return this.props.errorFallback({
+        error: this.state.error!,
+        resetError: this.handleErrorReset,
+        match: this.props.match,
+      });
     }
     return this.props.children;
   }
@@ -130,6 +142,12 @@ export interface AppRouteSwitchProps {
   redirects?: AppRouteRedirect[];
   /** Rendered when no page matches. */
   fallback: ReactElement;
+  /** Renders a matched page's error separately from a missing route. */
+  errorFallback: (props: {
+    error: Error;
+    resetError: () => void;
+    match: RouteResolutionMatch;
+  }) => ReactElement;
 }
 
 /**
@@ -221,7 +239,7 @@ function resolveRedirectTarget(
  * extensions keep responsibility for rendering their own children.
  */
 export function AppRouteSwitch(props: AppRouteSwitchProps) {
-  const { history, matches, pages, redirects, fallback } = props;
+  const { history, matches, pages, redirects, fallback, errorFallback } = props;
   const location = useAppHistoryLocation(history)!;
   const match = matches.find(candidate => pages.has(candidate.node.spec.id));
   const redirectTarget = resolveRedirectTarget(
@@ -246,8 +264,8 @@ export function AppRouteSwitch(props: AppRouteSwitchProps) {
   return (
     <PluginErrorBoundary
       key={match.node.spec.id}
-      basePath={match.basePath}
-      fallback={fallback}
+      match={match}
+      errorFallback={errorFallback}
     >
       <PageComponent />
     </PluginErrorBoundary>

@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react';
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import {
   createMockAppHistory,
   renderTestApp,
@@ -25,6 +25,7 @@ import {
   PageBlueprint,
   coreExtensionData,
   createExtension,
+  createFrontendPlugin,
   createRouteRef,
   useAppLocation,
 } from '@backstage/frontend-plugin-api';
@@ -76,6 +77,10 @@ const otherPage = createExtension({
   },
 });
 
+function renderError({ error }: { error: Error }) {
+  return <p role="alert">{error.message}</p>;
+}
+
 describe('AppRouteSwitch', () => {
   it.each([
     ['/old/a%20b/c%23d', '/old', '/new/*', '/new/a%20b/c%23d'],
@@ -101,6 +106,7 @@ describe('AppRouteSwitch', () => {
           pages={new Map()}
           redirects={[{ from, to }]}
           fallback={<p>Not found</p>}
+          errorFallback={renderError}
         />,
       );
       const { pathname, search, hash } = history.getSnapshot().location;
@@ -156,6 +162,7 @@ describe('AppRouteSwitch', () => {
           pages={new Map()}
           redirects={specificFirst ? [specific, general] : [general, specific]}
           fallback={<p>Not found</p>}
+          errorFallback={renderError}
         />,
       );
       expect(history.getSnapshot().location.pathname).toBe('/specific');
@@ -182,6 +189,7 @@ describe('AppRouteSwitch', () => {
             to: `/winner-${index}`,
           }))}
           fallback={<p>Not found</p>}
+          errorFallback={renderError}
         />,
       );
       expect(history.getSnapshot().location.pathname).toBe(expected);
@@ -223,6 +231,7 @@ describe('AppRouteSwitch', () => {
           pages={new Map()}
           redirects={[{ from: '/old/:id', to }]}
           fallback={<p>Not found</p>}
+          errorFallback={renderError}
         />,
       );
       expect(history.getSnapshot().location).toMatchObject({
@@ -251,22 +260,86 @@ describe('AppRouteSwitch', () => {
     const error = jest.spyOn(console, 'error').mockImplementation(() => {});
     try {
       const { appHistory } = renderTestApp({
-        extensions: [entityPage, otherPage],
+        features: [
+          createFrontendPlugin({
+            pluginId: 'test',
+            extensions: [entityPage, otherPage],
+          }),
+        ],
         initialRouteEntries: ['/catalog/broken'],
       });
       expect(
-        await screen.findByText('ERROR 404: PAGE NOT FOUND'),
+        await screen.findByText('Entity page crashed'),
       ).toBeInTheDocument();
+      expect(
+        screen.queryByText('ERROR 404: PAGE NOT FOUND'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: 'Error: Error in test' }),
+      ).toBeVisible();
       await act(async () => appHistory.navigate('/catalog/healthy'));
       expect(await screen.findByText('Entity healthy')).toBeInTheDocument();
       await act(async () => appHistory.navigate('/catalog/broken'));
       expect(
-        await screen.findByText('ERROR 404: PAGE NOT FOUND'),
+        await screen.findByText('Entity page crashed'),
       ).toBeInTheDocument();
       await act(async () => appHistory.navigate('/other'));
       expect(await screen.findByText('Other page')).toBeInTheDocument();
       await act(async () => appHistory.navigate('/catalog/healthy'));
       expect(await screen.findByText('Entity healthy')).toBeInTheDocument();
+      await act(async () => appHistory.navigate('/unknown'));
+      expect(
+        await screen.findByText('ERROR 404: PAGE NOT FOUND'),
+      ).toBeVisible();
+    } finally {
+      error.mockRestore();
+    }
+  });
+
+  it('allows retrying a failed page through the app error display', async () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    let shouldThrow = true;
+    function RetryablePage() {
+      if (shouldThrow) {
+        throw new Error('Temporary page failure');
+      }
+      return <h1>Recovered page</h1>;
+    }
+    try {
+      renderTestApp({
+        features: [
+          createFrontendPlugin({
+            pluginId: 'test',
+            extensions: [
+              createExtension({
+                name: 'retryable',
+                attachTo: { id: 'app/routes', input: 'routes' },
+                output: [
+                  coreExtensionData.routePath,
+                  coreExtensionData.reactElement,
+                ],
+                factory: () => [
+                  coreExtensionData.routePath('/retryable'),
+                  coreExtensionData.reactElement(<RetryablePage />),
+                ],
+              }),
+            ],
+          }),
+        ],
+        initialRouteEntries: ['/retryable'],
+      });
+      expect(await screen.findByText('Temporary page failure')).toBeVisible();
+      expect(
+        screen.getByRole('heading', { name: 'Error: Error in test' }),
+      ).toBeVisible();
+      shouldThrow = false;
+      fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
+      expect(
+        await screen.findByRole('heading', { name: 'Recovered page' }),
+      ).toBeVisible();
+      expect(
+        screen.queryByText('Temporary page failure'),
+      ).not.toBeInTheDocument();
     } finally {
       error.mockRestore();
     }

@@ -701,6 +701,12 @@ extension context, loading, errors, and analytics. The app also retains a root
 compatibility projection for app chrome; none of these projections owns a
 separate browser history.
 
+If a matched page throws outside its own error boundaries, the app renders its
+configured error display with the plugin, error, and retry action. This is separate
+from the not-found page used when no route matches. Navigating to another
+concrete page mount clears the previous failure without remounting healthy pages
+on ordinary parameter changes.
+
 Each parent extension still chooses how to render its children. Route matching
 does not render every matching extension automatically or replace the parent
 layout. Content inside a page, such as an entity card, normally uses the adapter
