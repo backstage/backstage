@@ -15,14 +15,14 @@
 <div class="tsd-comment tsd-typography"><p>An error thrown as the result of a failed server request.</p>
 <p>The server is expected to respond on the ErrorResponseBody format.</p>
 </div></section>
-<section class="tsd-panel tsd-hierarchy" data-refl="10067">
+<section class="tsd-panel tsd-hierarchy" data-refl="10088">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-signature-type">Error</span>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-hierarchy-target">ResponseError</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/065d1e339c167184516155034f411511fc9f1aff/packages/errors/src/errors/ResponseError.ts#L31">packages/errors/src/errors/ResponseError.ts:31</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/b2aa17d8aa81d6eda7f3f96c85cfc14b0d8bb30e/packages/errors/src/errors/ResponseError.ts#L32">packages/errors/src/errors/ResponseError.ts:32</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -44,6 +44,7 @@
 <h3 class="tsd-index-heading tsd-anchor-link" id="methods">Methods<a href="#methods" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-index-list"><a href="#capturestacktrace" class="tsd-index-link tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>capture<wbr/>Stack<wbr/>Trace</span></a>
 <a href="#fromresponse" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>from<wbr/>Response</span></a>
+<a href="#is" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>is</span></a>
 <a href="#iserror" class="tsd-index-link tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>is<wbr/>Error</span></a>
 <a href="#preparestacktrace" class="tsd-index-link tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>prepare<wbr/>Stack<wbr/>Trace</span></a>
 </div></section></div></details></section></section>
@@ -56,7 +57,7 @@
 <div class="tsd-comment tsd-typography"><p>The parsed JSON error body, as sent by the server.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/065d1e339c167184516155034f411511fc9f1aff/packages/errors/src/errors/ResponseError.ts#L43">packages/errors/src/errors/ResponseError.ts:43</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/b2aa17d8aa81d6eda7f3f96c85cfc14b0d8bb30e/packages/errors/src/errors/ResponseError.ts#L72">packages/errors/src/errors/ResponseError.ts:72</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="cause"><code class="tsd-tag">Readonly</code><span>cause</span><a href="#cause" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">cause</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Error</span></div>
@@ -69,7 +70,7 @@ property rather than checking typeof or its constructor or prototype.</p>
 </div><aside class="tsd-sources">
 <p>Overrides Error.cause</p>
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/065d1e339c167184516155034f411511fc9f1aff/packages/errors/src/errors/ResponseError.ts#L54">packages/errors/src/errors/ResponseError.ts:54</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/b2aa17d8aa81d6eda7f3f96c85cfc14b0d8bb30e/packages/errors/src/errors/ResponseError.ts#L83">packages/errors/src/errors/ResponseError.ts:83</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited tsd-is-external">
 <h3 class="tsd-anchor-link" id="message"><span>message</span><a href="#message" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">message</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
@@ -90,7 +91,7 @@ property rather than checking typeof or its constructor or prototype.</p>
 in the <code>body</code> field.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/065d1e339c167184516155034f411511fc9f1aff/packages/errors/src/errors/ResponseError.ts#L38">packages/errors/src/errors/ResponseError.ts:38</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/b2aa17d8aa81d6eda7f3f96c85cfc14b0d8bb30e/packages/errors/src/errors/ResponseError.ts#L67">packages/errors/src/errors/ResponseError.ts:67</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited tsd-is-external">
 <h3 class="tsd-anchor-link" id="stack"><code class="tsd-tag">Optional</code><span>stack</span><a href="#stack" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">stack</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
@@ -101,12 +102,12 @@ in the <code>body</code> field.</p>
 <h3 class="tsd-anchor-link" id="statuscode"><code class="tsd-tag">Readonly</code><span>status<wbr/>Code</span><a href="#statuscode" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">statusCode</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/065d1e339c167184516155034f411511fc9f1aff/packages/errors/src/errors/ResponseError.ts#L56">packages/errors/src/errors/ResponseError.ts:56</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/b2aa17d8aa81d6eda7f3f96c85cfc14b0d8bb30e/packages/errors/src/errors/ResponseError.ts#L85">packages/errors/src/errors/ResponseError.ts:85</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="statustext"><code class="tsd-tag">Readonly</code><span>status<wbr/>Text</span><a href="#statustext" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">statusText</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/065d1e339c167184516155034f411511fc9f1aff/packages/errors/src/errors/ResponseError.ts#L58">packages/errors/src/errors/ResponseError.ts:58</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/b2aa17d8aa81d6eda7f3f96c85cfc14b0d8bb30e/packages/errors/src/errors/ResponseError.ts#L87">packages/errors/src/errors/ResponseError.ts:87</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited tsd-is-external">
 <h3 class="tsd-anchor-link" id="stacktracelimit"><code class="tsd-tag">Static</code><span>stack<wbr/>Trace<wbr/>Limit</span><a href="#stacktracelimit" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">stackTraceLimit</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
@@ -173,7 +174,31 @@ been consumed before.</p>
 <li><span><span class="tsd-kind-parameter">response</span>: <a href="../types/_backstage_errors.ConsumedResponse.html" class="tsd-signature-type tsd-kind-type-alias">ConsumedResponse</a> <span class="tsd-signature-symbol">&amp;</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-call-signature">text</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span> <span class="tsd-signature-symbol">}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="" class="tsd-signature-type tsd-kind-class">ResponseError</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/065d1e339c167184516155034f411511fc9f1aff/packages/errors/src/errors/ResponseError.ts#L66">packages/errors/src/errors/ResponseError.ts:66</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/b2aa17d8aa81d6eda7f3f96c85cfc14b0d8bb30e/packages/errors/src/errors/ResponseError.ts#L95">packages/errors/src/errors/ResponseError.ts:95</a></li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="is"><code class="tsd-tag">Static</code><span>is</span><a href="#is" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="is-1"><span class="tsd-kind-call-signature">is</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">value</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-kind-parameter">value</span> <span class="tsd-signature-keyword">is</span> <a href="" class="tsd-signature-type tsd-kind-class">ResponseError</a><a href="#is-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Checks the error name and basic shape, including shallow checks of the
+response, body, cause, and status fields. Does not validate nested data.
+Works across package copies without requiring a shared constructor.
+A matching name is assumed to identify this error type.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">value</span>: <span class="tsd-signature-type">unknown</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-kind-parameter">value</span> <span class="tsd-signature-keyword">is</span> <a href="" class="tsd-signature-type tsd-kind-class">ResponseError</a></h4>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example">Example<a href="#example" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-8">if</span><span class="hl-2"> (</span><span class="hl-6">ResponseError</span><span class="hl-2">.</span><span class="hl-1">is</span><span class="hl-2">(</span><span class="hl-6">error</span><span class="hl-2">)) {</span><br/><span class="hl-2">  </span><span class="hl-6">console</span><span class="hl-2">.</span><span class="hl-1">log</span><span class="hl-2">(</span><span class="hl-6">error</span><span class="hl-2">.</span><span class="hl-6">statusCode</span><span class="hl-2">, </span><span class="hl-6">error</span><span class="hl-2">.</span><span class="hl-6">cause</span><span class="hl-2">.</span><span class="hl-6">message</span><span class="hl-2">);</span><br/><span class="hl-2">}</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/b2aa17d8aa81d6eda7f3f96c85cfc14b0d8bb30e/packages/errors/src/errors/ResponseError.ts#L46">packages/errors/src/errors/ResponseError.ts:46</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited tsd-is-external">
 <h3 class="tsd-anchor-link" id="iserror"><code class="tsd-tag">Static</code><span>is<wbr/>Error</span><a href="#iserror" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited tsd-is-external">
@@ -227,7 +252,7 @@ been consumed before.</p>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
 <div><a href="#body"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>body</span></a><a href="#cause"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>cause</span></a><a href="#message" class="tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>message</span></a><a href="#name" class="tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>name</span></a><a href="#response"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>response</span></a><a href="#stack" class="tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>stack</span></a><a href="#statuscode"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>status<wbr/>Code</span></a><a href="#statustext"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>status<wbr/>Text</span></a><a href="#stacktracelimit" class="tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>stack<wbr/>Trace<wbr/>Limit</span></a></div></details>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Methods</summary>
-<div><a href="#capturestacktrace" class="tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>capture<wbr/>Stack<wbr/>Trace</span></a><a href="#fromresponse"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>from<wbr/>Response</span></a><a href="#iserror" class="tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>is<wbr/>Error</span></a><a href="#preparestacktrace" class="tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>prepare<wbr/>Stack<wbr/>Trace</span></a></div></details></div></details></div>
+<div><a href="#capturestacktrace" class="tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>capture<wbr/>Stack<wbr/>Trace</span></a><a href="#fromresponse"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>from<wbr/>Response</span></a><a href="#is"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>is</span></a><a href="#iserror" class="tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>is<wbr/>Error</span></a><a href="#preparestacktrace" class="tsd-is-inherited tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>prepare<wbr/>Stack<wbr/>Trace</span></a></div></details></div></details></div>
 <div class="site-menu">
 <nav id="tsd-sidebar-links" class="tsd-navigation"><a href="https://backstage.io/docs" class="tsd-nav-link">Docs</a><a href="https://github.com/backstage/backstage" class="tsd-nav-link">GitHub</a></nav>
 <nav class="tsd-navigation"><a href="../modules.html">Backstage</a>
