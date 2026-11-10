@@ -18,11 +18,22 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { auditSinksServiceRef } from './auditSinks';
 import { DefaultAuditorService } from './DefaultAuditorService';
-import { getSeverityLogLevelMappings } from './utils';
+import { createFanOutAuditSink } from './pipeline';
+import {
+  getAuditorSampling,
+  getMaxMetaStringLength,
+  getRedactMetaKeys,
+  getSanitizeRequestQuery,
+} from './utils';
 
 /**
  * Plugin-level auditing.
+ *
+ * Events are written to every audit sink registered through
+ * {@link auditSinksServiceRef}, fanned out in parallel with per-sink failure
+ * isolation.
  *
  * See {@link @backstage/code-plugin-api#AuditorService}
  * and {@link https://backstage.io/docs/backend-system/core-services/auditor | the service docs}
@@ -38,31 +49,22 @@ export const auditorServiceFactory = createServiceFactory({
     auth: coreServices.auth,
     httpAuth: coreServices.httpAuth,
     plugin: coreServices.pluginMetadata,
+    sinks: auditSinksServiceRef,
   },
-  factory({ config, logger, plugin, auth, httpAuth }) {
-    const auditLogger = logger.child({ isAuditEvent: true });
+  async factory({ config, logger, plugin, auth, httpAuth, sinks }) {
+    const onError = (error: Error) => {
+      logger.error(`Failed to emit audit event, ${error}`);
+    };
 
-    const severityLogLevelMappings = getSeverityLogLevelMappings(config);
-
-    return DefaultAuditorService.create(
-      event => {
-        if ('error' in event) {
-          const { error, ...rest } = event;
-          const childAuditLogger = auditLogger.child(rest);
-
-          childAuditLogger[severityLogLevelMappings[event.severityLevel]](
-            `${event.plugin}.${event.eventId}`,
-            error,
-          );
-        } else {
-          // the else statement is required for typechecking
-          auditLogger[severityLogLevelMappings[event.severityLevel]](
-            `${event.plugin}.${event.eventId}`,
-            event,
-          );
-        }
-      },
-      { plugin, auth, httpAuth },
-    );
+    return DefaultAuditorService.create(createFanOutAuditSink(sinks, onError), {
+      plugin,
+      auth,
+      httpAuth,
+      onError,
+      sanitizeRequestQuery: getSanitizeRequestQuery(config),
+      maxMetaStringLength: getMaxMetaStringLength(config),
+      redactMetaKeys: getRedactMetaKeys(config),
+      sampling: getAuditorSampling(config),
+    });
   },
 });

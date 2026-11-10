@@ -27,25 +27,88 @@ import type { Request as Request_2 } from 'express';
 import type { Response as Response_2 } from 'express';
 
 // @public
+export type AuditorEvent = {
+  id: string;
+  plugin: string;
+  eventId: string;
+  severityLevel: AuditorServiceEventSeverityLevel;
+  actor: AuditorEventActorDetails;
+  meta?: JsonObject;
+  request?: AuditorEventRequest;
+  correlationId?: string;
+  parentEventId?: string;
+} & AuditorEventStatus;
+
+// @public
+export type AuditorEventActorDetails = {
+  actorId?: string;
+  ip?: string;
+  hostname?: string;
+  userAgent?: string;
+};
+
+// @public
+export type AuditorEventRequest = {
+  url: string;
+  method: string;
+};
+
+// @public
+export type AuditorEventRequestContext = {
+  url: string;
+  method: string;
+  ip?: string;
+  hostname?: string;
+  userAgent?: string;
+};
+
+// @public
+export type AuditorEventStatus =
+  | {
+      status: 'initiated';
+    }
+  | {
+      status: 'succeeded';
+    }
+  | {
+      status: 'failed';
+      error: {
+        name: string;
+        message: string;
+        stack?: string;
+      };
+    };
+
+// @public
 export interface AuditorService {
   // (undocumented)
   createEvent(
     options: AuditorServiceCreateEventOptions,
   ): Promise<AuditorServiceEvent>;
+  withEvent<T>(
+    options: AuditorServiceCreateEventOptions,
+    fn: (event: AuditorServiceEvent) => Promise<T>,
+  ): Promise<T>;
 }
 
 // @public (undocumented)
 export type AuditorServiceCreateEventOptions = {
   eventId: string;
   severityLevel?: AuditorServiceEventSeverityLevel;
-  request?: Request_2<any, any, any, any, any>;
+  request?: Request_2<any, any, any, any, any> | AuditorEventRequestContext;
+  actor?: AuditorEventActorDetails;
   meta?: JsonObject;
+  correlationId?: string;
+  parentEventId?: string;
 };
 
-// @public (undocumented)
+// @public
 export type AuditorServiceEvent = {
+  readonly id: string;
+  update(meta: JsonObject): void;
   success(options?: { meta?: JsonObject }): Promise<void>;
   fail(options: { meta?: JsonObject; error: Error }): Promise<void>;
+  attachToResponse(res: Response_2): void;
 };
 
 // @public
@@ -54,6 +117,12 @@ export type AuditorServiceEventSeverityLevel =
   | 'medium'
   | 'high'
   | 'critical';
+
+// @public
+export interface AuditSink {
+  // (undocumented)
+  write(event: AuditorEvent): Promise<void>;
+}
 
 // @public
 export interface AuthService {

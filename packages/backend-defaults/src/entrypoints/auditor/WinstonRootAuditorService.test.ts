@@ -15,8 +15,20 @@
  */
 
 import { mockServices } from '@backstage/backend-test-utils';
+import { PassThrough } from 'node:stream';
+import * as winston from 'winston';
 import { WinstonRootAuditorService } from './WinstonRootAuditorService';
 import { DefaultAuditorService } from './DefaultAuditorService';
+
+function captureTransport() {
+  const entries: Record<string, any>[] = [];
+  const stream = new PassThrough({ objectMode: true });
+  stream.on('data', (info: Record<string, any>) => entries.push(info));
+  return {
+    entries,
+    transport: new winston.transports.Stream({ stream }),
+  };
+}
 
 describe('WinstonRootAuditorService', () => {
   it('creates a auditor instance with default options', () => {
@@ -55,10 +67,12 @@ describe('WinstonRootAuditorService', () => {
       eventId: 'test-event',
     });
 
-    expect(auditorSpy).toHaveBeenCalledWith({
-      eventId: 'test-event',
-      status: 'initiated',
-    });
+    expect(auditorSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventId: 'test-event',
+        status: 'initiated',
+      }),
+    );
   });
 
   it('should log a status "succeeded" using createEvent', async () => {
@@ -82,11 +96,12 @@ describe('WinstonRootAuditorService', () => {
     await auditorEvent.success();
 
     expect(auditorSpy).toHaveBeenCalledTimes(2);
-    expect(auditorSpy).toHaveBeenLastCalledWith({
-      eventId: 'test-event',
-      meta: {},
-      status: 'succeeded',
-    });
+    expect(auditorSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        eventId: 'test-event',
+        status: 'succeeded',
+      }),
+    );
   });
 
   it('should log a status "failed"', async () => {
@@ -111,12 +126,17 @@ describe('WinstonRootAuditorService', () => {
     await auditorEvent.fail({ error });
 
     expect(auditorSpy).toHaveBeenCalledTimes(2);
-    expect(auditorSpy).toHaveBeenLastCalledWith({
-      eventId: 'test-event',
-      meta: {},
-      status: 'failed',
-      error,
-    });
+    expect(auditorSpy).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        eventId: 'test-event',
+        status: 'failed',
+        error: {
+          name: 'Error',
+          message: 'error',
+          stack: expect.any(String),
+        },
+      }),
+    );
   });
 
   it('should use root meta', async () => {
@@ -133,42 +153,175 @@ describe('WinstonRootAuditorService', () => {
     // workaround to spy on private method
     const auditorSpy = jest.spyOn(auditor as any, 'log');
 
-    const auditorEvent = await auditor.createEvent({
+    const successEvent = await auditor.createEvent({
       eventId: 'test-event',
       meta: {
         initiated: 'test',
       },
     });
+    await successEvent.success({ meta: { succeeded: 'test' } });
 
-    await auditorEvent.success({ meta: { succeeded: 'test' } });
+    const failEvent = await auditor.createEvent({
+      eventId: 'test-event',
+      meta: {
+        initiated: 'test',
+      },
+    });
 
     const error = new Error('error');
-    await auditorEvent.fail({ error, meta: { failed: 'test' } });
+    await failEvent.fail({ error, meta: { failed: 'test' } });
 
-    expect(auditorSpy).toHaveBeenCalledTimes(3);
-    expect(auditorSpy).toHaveBeenNthCalledWith(1, {
+    expect(auditorSpy).toHaveBeenCalledTimes(4);
+    expect(auditorSpy).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        eventId: 'test-event',
+        status: 'initiated',
+        meta: {
+          initiated: 'test',
+        },
+      }),
+    );
+    expect(auditorSpy).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        eventId: 'test-event',
+        status: 'succeeded',
+        meta: {
+          initiated: 'test',
+          succeeded: 'test',
+        },
+      }),
+    );
+    expect(auditorSpy).toHaveBeenNthCalledWith(
+      4,
+      expect.objectContaining({
+        eventId: 'test-event',
+        status: 'failed',
+        meta: {
+          initiated: 'test',
+          failed: 'test',
+        },
+        error: {
+          name: 'Error',
+          message: 'error',
+          stack: expect.any(String),
+        },
+      }),
+    );
+  });
+
+  it('should apply default hygiene to emitted events', async () => {
+    const { entries, transport } = captureTransport();
+    const auditor = WinstonRootAuditorService.create({
+      transports: [transport],
+    }).forPlugin({
+      auth: mockServices.auth.mock(),
+      httpAuth: mockServices.httpAuth.mock(),
+      plugin: {
+        getId: () => 'test-plugin',
+      },
+      config: mockServices.rootConfig.mock(),
+    });
+
+    await auditor.createEvent({
       eventId: 'test-event',
-      status: 'initiated',
-      meta: {
-        initiated: 'test',
+      severityLevel: 'medium',
+      meta: { password: 'hunter2', long: 'a'.repeat(5000) },
+      // @ts-expect-error partial request is fine for this test
+      request: {
+        method: 'GET',
+        originalUrl: '/api/entities?filter=x',
+        get: () => undefined,
       },
     });
-    expect(auditorSpy).toHaveBeenNthCalledWith(2, {
+
+    await new Promise(resolve => setImmediate(resolve));
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0].id).toEqual(expect.any(String));
+    expect(entries[0].request).toEqual({
+      url: '/api/entities',
+      method: 'GET',
+    });
+    expect(entries[0].meta.password).toBe('[REDACTED]');
+    expect(entries[0].meta.long).toHaveLength(4096);
+  });
+
+  it('should honor hygiene configuration overrides', async () => {
+    const { entries, transport } = captureTransport();
+    const auditor = WinstonRootAuditorService.create({
+      transports: [transport],
+    }).forPlugin({
+      auth: mockServices.auth.mock(),
+      httpAuth: mockServices.httpAuth.mock(),
+      plugin: {
+        getId: () => 'test-plugin',
+      },
+      config: mockServices.rootConfig({
+        data: {
+          backend: {
+            auditor: {
+              sanitizeRequestQuery: false,
+              maxMetaStringLength: -1,
+              redactMetaKeys: [],
+            },
+          },
+        },
+      }),
+    });
+
+    await auditor.createEvent({
       eventId: 'test-event',
-      status: 'succeeded',
-      meta: {
-        initiated: 'test',
-        succeeded: 'test',
+      severityLevel: 'medium',
+      meta: { password: 'hunter2', long: 'a'.repeat(5000) },
+      // @ts-expect-error partial request is fine for this test
+      request: {
+        method: 'GET',
+        originalUrl: '/api/entities?filter=x',
+        get: () => undefined,
       },
     });
-    expect(auditorSpy).toHaveBeenNthCalledWith(3, {
-      eventId: 'test-event',
-      status: 'failed',
-      meta: {
-        initiated: 'test',
-        failed: 'test',
-      },
-      error,
+
+    await new Promise(resolve => setImmediate(resolve));
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0].request).toEqual({
+      url: '/api/entities?filter=x',
+      method: 'GET',
     });
+    expect(entries[0].meta.password).toBe('hunter2');
+    expect(entries[0].meta.long).toHaveLength(5000);
+  });
+
+  it('should apply configured sampling', async () => {
+    const { entries, transport } = captureTransport();
+    const auditor = WinstonRootAuditorService.create({
+      transports: [transport],
+    }).forPlugin({
+      auth: mockServices.auth.mock(),
+      httpAuth: mockServices.httpAuth.mock(),
+      plugin: {
+        getId: () => 'test-plugin',
+      },
+      config: mockServices.rootConfig({
+        data: {
+          backend: {
+            auditor: {
+              sampling: { low: 0 },
+            },
+          },
+        },
+      }),
+    });
+
+    await auditor.createEvent({ eventId: 'sampled-out' });
+    await auditor.createEvent({
+      eventId: 'kept',
+      severityLevel: 'medium',
+    });
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0].eventId).toBe('kept');
   });
 });

@@ -408,8 +408,11 @@ describe('TaskWorker', () => {
 
     const auditor = mockServices.auditor.mock();
     const auditEvent = {
+      id: 'test-event-id',
+      update: jest.fn(),
       success: jest.fn(),
       fail: jest.fn(),
+      attachToResponse: jest.fn(),
     };
     auditor.createEvent.mockResolvedValue(auditEvent);
 

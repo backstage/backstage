@@ -7,22 +7,30 @@ description: Documentation for the Auditor service
 
 ## Overview
 
-This document describes the Auditor Service, a core service designed to record and report on security-relevant events within an application. By default, this service utilizes the `rootLogger` core service for logging.
+This document describes the Auditor Service, a core service designed to record and report on security-relevant events within an application. By default, audit events are written to the root logger, marked with `isAuditEvent`, with severity levels mapped to log levels.
 
 ## Key Features
 
 - Provides a standardized way to capture security events.
 - Allows categorization of events by severity level.
 - Supports detailed metadata for each event.
-- Offers success/failure reporting for events.
+- Offers success/failure reporting for events, including automatic finalization from an Express response.
 - Integrates with authentication and plugin services for enhanced context.
-- Provides a service factory for easy integration with Backstage plugins.
+- Supports custom audit sinks for delivering events to additional destinations.
 
 ## How it Works
 
-The Auditor Service defines a class, `Auditor`, which implements the `AuditorService` interface. This class uses a `logFn` to log audit events with varying levels of severity and associated metadata. It also integrates with authentication and plugin services to capture actor details and plugin context.
+The default implementation of the `AuditorService` interface is `DefaultAuditorService`, provided by the `auditorServiceFactory` from `@backstage/backend-defaults/auditor`. Events pass through an internal pipeline that sanitizes the request URL, redacts sensitive metadata keys, and truncates long metadata strings, before they are written to every registered audit sink.
 
-The `auditorServiceFactory` wraps the `rootLogger` core service and provides a factory function for creating child loggers for individual plugins. This allows each plugin to have its own logger with inherited and additional metadata.
+Sinks implement the `AuditSink` interface. The default sink logs events through the root logger, and additional sinks can be registered as backend modules through the `auditSinksServiceRef` service reference (see [adding a custom audit sink](#adding-a-custom-audit-sink)). All sinks receive every event in parallel, and a failing sink is reported without blocking the others.
+
+The actor of each event is derived from the request credentials where an Express request is available, and from the plugin's own service credentials otherwise. Explicit actor attribution and non-HTTP request contexts are also supported (see [using the service](#using-the-service)).
+
+## Event Lifecycle
+
+Every audit event carries a unique `id`, shared by all emissions (`initiated`, `succeeded`, `failed`) of that event, so events can reference each other through `parentEventId` or be grouped through `correlationId`.
+
+An event is finalized exactly once: only the first terminal call — `success`, `fail`, or `attachToResponse` settling the response — takes effect, and later calls are no-ops. Terminal calls never reject: if the audit trail can't be written, the failure is reported to the service instead of breaking the audited operation. Failed events carry the error as a plain `{ name, message, stack }` object, so events remain serializable end to end.
 
 ## Usage Guidance
 
@@ -36,7 +44,7 @@ For general application logging that is not security-critical, you should use th
 
 ## Using the Service
 
-The Auditor Service can be accessed via dependency injection in your Backstage plugin. Here's an example of how to access the service and create an audit event within an Express route handler:
+The Auditor Service can be accessed via dependency injection in your Backstage plugin. For an operation with a clear success or failure outcome, `withEvent` records the outcome for you: the event is created up front, succeeded when the function resolves, and failed — with the original error re-thrown — when it rejects.
 
 ```typescript
 export async function createRouter(
@@ -48,31 +56,89 @@ export async function createRouter(
   router.use(express.json());
 
   router.post('/my-endpoint', async (req, res) => {
-    const auditorEvent = await auditor.createEvent({
-      eventId: 'my-endpoint-call',
-      request: req,
-      meta: {
-        // ... metadata about the request
+    await auditor.withEvent(
+      {
+        eventId: 'my-endpoint-call',
+        request: req,
+        meta: {
+          // ... metadata about the request
+        },
       },
-    });
-
-    try {
-      // ... process the request
-
-      await auditorEvent.success();
-      res.status(200).json({ message: 'Succeeded!' });
-    } catch (error) {
-      await auditorEvent.fail({ error });
-      res.status(500).json({ message: 'Failed!' });
-      throw error;
-    }
+      async event => {
+        // ... process the request; call event.update() to add metadata
+        // mid-flight
+        res.status(200).json({ message: 'Succeeded!' });
+      },
+    );
   });
 
   return router;
 }
 ```
 
-In this example, an audit event is created for each request to `/my-endpoint`. The `success` or `fail` methods are called based on the outcome of processing the request.
+For request handlers, the event can also finalize itself from the Express response with `attachToResponse`: it succeeds when the response finishes with a status code below 400, and fails when the response finishes with an error status or the client disconnects before the response completes. The status code is recorded as the `responseStatus` metadata.
+
+```typescript
+const auditorEvent = await auditor.createEvent({
+  eventId: 'my-endpoint-call',
+  request: req,
+});
+auditorEvent.attachToResponse(res);
+// ... process the request and send the response
+```
+
+For finer control, keep the handle returned by `createEvent` and call `success` or `fail` yourself. Metadata can be merged into the event while it is in flight with `event.update(meta)`, and only the first terminal call takes effect.
+
+### Non-HTTP Contexts
+
+In contexts without an Express request, such as task workers, schedulers, and message consumers, the `request` option accepts a plain request context instead, and the event can be attributed to a specific user with the `actor` option:
+
+```typescript
+await auditor.withEvent(
+  {
+    eventId: 'task-run',
+    request: { url: '/tasks/42', method: 'POST' },
+    actor: { actorId: task.createdBy },
+    meta: { taskId: '42' },
+  },
+  async () => {
+    // ... run the task on behalf of task.createdBy
+  },
+);
+```
+
+The `actor` fields take precedence over the actor derived from the request and credentials. A plain request context does not trigger credential resolution, and its URL query string is stripped before the event is emitted, just like for Express requests.
+
+## Adding a Custom Audit Sink
+
+Audit events can be delivered to additional destinations — a database, a SIEM, a message queue — by registering an `AuditSink` implementation for the `auditSinksServiceRef` service reference. All registered sinks receive every audit event in parallel, and a failing sink never blocks the others.
+
+```typescript
+import {
+  createBackendModule,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+import { auditSinksServiceRef } from '@backstage/backend-defaults/auditor';
+
+export const myAuditSinkModule = createBackendModule({
+  pluginId: 'app',
+  register(reg) {
+    reg.registerService(
+      createServiceFactory({
+        service: auditSinksServiceRef,
+        deps: {},
+        async factory() {
+          return {
+            write: async event => {
+              await persistEvent(event);
+            },
+          };
+        },
+      }),
+    );
+  },
+});
+```
 
 ## Naming Conventions
 
@@ -189,3 +255,32 @@ By default, these severity levels are mapped to the following log levels:
 - `critical`: `info`
 
 As a result, medium, high, and critical events are logged as info-level events by default, while low-level events are treated as debug.
+
+## Event Hygiene and Sampling
+
+Before an audit event is written to a sink, the auditor service sanitizes it and can sample high-volume events down. These controls are configured under the `backend.auditor` section of your `app-config.yaml` file.
+
+```yaml
+backend:
+  auditor:
+    # Strip query strings from request URLs, so credentials passed in the
+    # URL don't end up in the audit trail. Defaults to true.
+    sanitizeRequestQuery: true
+    # Maximum length of string values in event metadata; longer strings are
+    # truncated. Use -1 to disable. Defaults to 4096.
+    maxMetaStringLength: 4096
+    # Additional metadata keys whose values are redacted to `[REDACTED]`,
+    # on top of the default denylist of token, password, secret,
+    # authorization and cookie. Matching is case-insensitive and recursive.
+    # An empty array disables redaction entirely.
+    redactMetaKeys: []
+    # Optional per-severity sampling probabilities between 0 and 1. Severity
+    # levels without a probability are always emitted. A probability of 0
+    # drops all events of that severity; the critical severity must use a
+    # probability greater than 0, so critical audit events can never be
+    # sampled away entirely.
+    sampling:
+      low: 0.1
+```
+
+An invalid `sampling.critical` value of `0` is rejected with a configuration error at startup. Sampled-out events keep their full handle semantics — `createEvent` still returns a usable event and `withEvent` still runs the wrapped function — only the emissions are dropped.

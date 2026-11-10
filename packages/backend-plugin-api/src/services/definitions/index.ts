@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 export type {
+  AuditSink,
+  AuditorEvent,
+  AuditorEventActorDetails,
+  AuditorEventRequest,
+  AuditorEventRequestContext,
+  AuditorEventStatus,
   AuditorService,
   AuditorServiceCreateEventOptions,
   AuditorServiceEvent,

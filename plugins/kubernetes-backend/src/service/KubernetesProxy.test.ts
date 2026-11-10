@@ -73,7 +73,13 @@ describe('KubernetesProxy', () => {
   let proxy: KubernetesProxy;
   let authStrategy: jest.Mocked<AuthenticationStrategy>;
   let auditor: ReturnType<typeof mockServices.auditor.mock>;
-  let auditEvent: { success: jest.Mock; fail: jest.Mock };
+  let auditEvent: {
+    id: string;
+    update: jest.Mock;
+    success: jest.Mock;
+    fail: jest.Mock;
+    attachToResponse: jest.Mock;
+  };
   const worker = setupServer();
   const logger = mockServices.logger.mock();
 
@@ -175,8 +181,11 @@ describe('KubernetesProxy', () => {
   beforeEach(() => {
     auditor = mockServices.auditor.mock();
     auditEvent = {
+      id: 'test-event-id',
+      update: jest.fn(),
       success: jest.fn().mockResolvedValue(undefined),
       fail: jest.fn().mockResolvedValue(undefined),
+      attachToResponse: jest.fn(),
     };
     auditor.createEvent.mockResolvedValue(auditEvent);
 
@@ -469,12 +478,14 @@ describe('KubernetesProxy', () => {
       await requestPromise;
 
       const createEventCall = auditor.createEvent.mock.calls[0][0];
-      expect(createEventCall.request!.originalUrl).not.toContain('secret');
-      expect(createEventCall.request!.originalUrl).not.toContain('sensitive');
-      expect(createEventCall.request!.originalUrl).toContain('/api');
-      expect(createEventCall.request!.url).not.toContain('secret');
-      expect(createEventCall.request!.url).not.toContain('sensitive');
-      expect(createEventCall.request!.url).toContain('/api');
+      // ProxyAuditSession hands the auditor a sanitized copy of the request
+      const sanitizedRequest = createEventCall.request as Request;
+      expect(sanitizedRequest.originalUrl).not.toContain('secret');
+      expect(sanitizedRequest.originalUrl).not.toContain('sensitive');
+      expect(sanitizedRequest.originalUrl).toContain('/api');
+      expect(sanitizedRequest.url).not.toContain('secret');
+      expect(sanitizedRequest.url).not.toContain('sensitive');
+      expect(sanitizedRequest.url).toContain('/api');
       expect(createEventCall.meta!.path).toBe('/api');
 
       expect(auditEvent.success).toHaveBeenCalled();
@@ -488,7 +499,8 @@ describe('KubernetesProxy', () => {
     it('redaction holds when exercised through the default auditor', async () => {
       const sentinel = 'SENTINEL_SECRET_VALUE';
 
-      const auditLogger = mockServices.logger.mock();
+      // the default audit sink writes through the root logger
+      const auditLogger = mockServices.rootLogger.mock();
       auditLogger.child.mockReturnValue(auditLogger);
 
       const realAuditor = await ServiceFactoryTester.from(
