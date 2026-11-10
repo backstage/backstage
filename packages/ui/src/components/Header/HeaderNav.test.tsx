@@ -76,7 +76,7 @@ describe('HeaderNav', () => {
         useNavigation={() => ({
           navigate: () => {},
           createHref: href => '/base/catalog/' + href,
-          pathname: '/base/catalog/settings/details',
+          pathname: '/BASE/CATALOG/SETTINGS/details',
         })}
       >
         <HeaderNav
@@ -128,6 +128,40 @@ describe('HeaderNav', () => {
     ).not.toHaveAttribute('aria-current');
   });
 
+  it.each([
+    ['/app/CATALOG', ['Catalog']],
+    ['/app/CATALOG/details', ['Details']],
+    ['/app/CATALOGING', []],
+  ])(
+    'selects tabs without case sensitivity at %s while respecting segment boundaries',
+    (pathname, expected) => {
+      render(
+        <BUIProvider
+          useNavigation={() => ({
+            navigate: jest.fn(),
+            createHref: href => `/app${href}`,
+            pathname,
+          })}
+        >
+          <HeaderNav
+            tabs={[
+              { id: 'catalog', label: 'Catalog', href: '/catalog' },
+              { id: 'details', label: 'Details', href: '/Catalog/Details' },
+            ]}
+          />
+        </BUIProvider>,
+      );
+      const active = screen
+        .queryAllByRole('link')
+        .filter(link => link.getAttribute('aria-current') === 'page');
+      expect(active.map(link => link.textContent)).toEqual(expected);
+      expect(screen.getByRole('link', { name: 'Details' })).toHaveAttribute(
+        'href',
+        '/app/Catalog/Details',
+      );
+    },
+  );
+
   it('resolves relative flat tabs through the injected router when detecting the active tab', () => {
     const router: BUINavigation = {
       navigate: jest.fn(),
@@ -165,7 +199,7 @@ describe('HeaderNav', () => {
       navigate: jest.fn(),
       createHref: href =>
         href.startsWith('/') ? `/app${href}` : `/app/catalog/${href}`,
-      pathname: '/app/catalog/docs/details',
+      pathname: '/app/CATALOG/DOCS/details',
     };
 
     render(

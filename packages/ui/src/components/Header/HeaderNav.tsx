@@ -154,15 +154,18 @@ function HeaderNavHostAutoDetect({
   useNavigation: () => BUINavigation;
 }) {
   const router = useNavigation();
+  const currentPathname = router.pathname.toLowerCase();
   const allTabs = tabs.flatMap(tab => (isTabGroup(tab) ? tab.items : [tab]));
   let activeTabId: string | undefined;
   let activeScore = -1;
   for (const tab of allTabs) {
-    const pathname = getBUINavigationPathname(router.createHref(tab.href));
+    const pathname = getBUINavigationPathname(
+      router.createHref(tab.href),
+    )?.toLowerCase();
     if (
       pathname !== undefined &&
-      (router.pathname === pathname ||
-        router.pathname.startsWith(pathname + '/')) &&
+      (currentPathname === pathname ||
+        currentPathname.startsWith(pathname + '/')) &&
       pathname.length > activeScore
     ) {
       activeTabId = tab.id;

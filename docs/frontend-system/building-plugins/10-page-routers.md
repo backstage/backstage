@@ -435,6 +435,9 @@ on `BUIProvider`. React Router is no longer a BUI peer dependency.
 Legacy core-components, including the sidebar, continue using React Router
 and require the implicit React Router compatibility provided by the app.
 
+Header tabs select the most specific matching path without case sensitivity.
+Their link URLs retain the casing supplied by the navigation hook.
+
 The hook returns a `BUINavigation` with three members:
 
 - `createHref` resolves a target to a browser href.
