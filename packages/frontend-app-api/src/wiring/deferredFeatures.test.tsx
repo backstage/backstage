@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
+import { ConfigReader } from '@backstage/config';
 import {
+  ApiBlueprint,
+  coreExtensionData,
+  createApiRef,
+  createExtension,
+  createExtensionDataRef,
+  createExtensionInput,
   createFrontendPlugin,
   createRouteRef,
   PageBlueprint,
+  useApi,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { act, fireEvent, render, screen } from '@testing-library/react';
@@ -27,6 +35,7 @@ import {
   prepareSpecializedApp,
 } from './prepareSpecializedApp';
 import { FrontendFeatureManifest } from '../manifest/types';
+import { createFrontendFeatureManifest } from '../manifest/createFrontendFeatureManifest';
 
 const manifest: FrontendFeatureManifest = {
   manifestVersion: 1,
@@ -207,5 +216,145 @@ describe('deferred features', () => {
     }).finalize();
     expect(plainApp.errors).toBeUndefined();
     expect(plainApp.tree.nodes.has('page:deferred')).toBe(false);
+  });
+
+  it('should load a plugin with an API and an element on first use', async () => {
+    const scoreApiRef = createApiRef<{ getScore(): number }>({
+      id: 'plugin.scored.service',
+    });
+    const contentTitleRef = createExtensionDataRef<string>().with({
+      id: 'test.content.title',
+    });
+    const rootRouteRef = createRouteRef();
+
+    // An eager page that renders the contents attached to it, similar to the
+    // entity page of the catalog.
+    const hostPlugin = createFrontendPlugin({
+      pluginId: 'host',
+      extensions: [
+        createExtension({
+          kind: 'page',
+          attachTo: { id: 'app/routes', input: 'routes' },
+          inputs: {
+            contents: createExtensionInput([
+              coreExtensionData.reactElement,
+              contentTitleRef,
+            ]),
+          },
+          output: [coreExtensionData.routePath, coreExtensionData.reactElement],
+          *factory({ inputs }) {
+            yield coreExtensionData.routePath('/');
+            yield coreExtensionData.reactElement(
+              <div>
+                {inputs.contents.map(content => (
+                  <section key={content.node.spec.id}>
+                    <h2>{content.get(contentTitleRef)}</h2>
+                    {content.get(coreExtensionData.reactElement)}
+                  </section>
+                ))}
+              </div>,
+            );
+          },
+        }),
+      ],
+    });
+
+    function ScoreContent() {
+      const scoreApi = useApi(scoreApiRef);
+      const rootLink = useRouteRef(rootRouteRef);
+      return (
+        <div>
+          Score {scoreApi.getScore()} at {rootLink?.()}
+        </div>
+      );
+    }
+
+    const realPlugin = createFrontendPlugin({
+      pluginId: 'scored',
+      routes: { root: rootRouteRef },
+      extensions: [
+        ApiBlueprint.make({
+          params: defineParams =>
+            defineParams({
+              api: scoreApiRef,
+              deps: {},
+              factory: () => ({ getScore: () => 42 }),
+            }),
+        }),
+        PageBlueprint.make({
+          params: {
+            path: '/scored',
+            routeRef: rootRouteRef,
+            loader: async () => <div>Scored page</div>,
+          },
+        }),
+        createExtension({
+          kind: 'host-content',
+          attachTo: { id: 'page:host', input: 'contents' },
+          output: [coreExtensionData.reactElement, contentTitleRef],
+          *factory() {
+            yield coreExtensionData.reactElement(<ScoreContent />);
+            yield contentTitleRef('Score tab');
+          },
+        }),
+      ],
+    });
+
+    const scoredManifest = await createFrontendFeatureManifest(realPlugin);
+    expect(scoredManifest.deferrable).toBe(true);
+    expect(scoredManifest.extensions).toEqual([
+      expect.objectContaining({ id: 'api:scored', kind: 'api' }),
+      expect.objectContaining({ id: 'page:scored', page: expect.any(Object) }),
+      expect.objectContaining({
+        id: 'host-content:scored',
+        element: { data: { 'test.content.title': 'Score tab' } },
+      }),
+    ]);
+
+    const load = jest.fn(async () => ({ default: realPlugin }));
+    const deferredFeatures = [
+      { name: 'scored-pkg', manifest: scoredManifest, load },
+    ];
+    const app = prepareSpecializedApp({
+      features: [noSignInAppPlugin, hostPlugin],
+      __internal: { deferredFeatures },
+    } as CreateSpecializedAppInternalOptions).finalize();
+
+    // The API is only added once the plugin is loaded
+    expect(app.errors).toBeUndefined();
+    expect(app.apis.get(scoreApiRef)).toBeUndefined();
+    expect(load).not.toHaveBeenCalled();
+
+    // The host page renders the stub content with the data from the
+    // manifest, which loads the real content along with the API and routes
+    render(app.element);
+    await expect(
+      screen.findByRole('heading', { name: 'Score tab' }),
+    ).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByText('Score 42 at /scored'),
+    ).resolves.toBeInTheDocument();
+    expect(load).toHaveBeenCalledTimes(1);
+    expect(app.apis.get(scoreApiRef)?.getScore()).toBe(42);
+    expect(app.tree.nodes.get('host-content:scored')?.spec.plugin.routes).toBe(
+      realPlugin.routes,
+    );
+
+    // The content stub can't apply config, so configuring it is rejected
+    expect(() =>
+      prepareSpecializedApp({
+        features: [noSignInAppPlugin, hostPlugin],
+        config: new ConfigReader({
+          app: {
+            extensions: [
+              { 'host-content:scored': { config: { title: 'Other' } } },
+            ],
+          },
+        }),
+        __internal: { deferredFeatures },
+      } as CreateSpecializedAppInternalOptions),
+    ).toThrow(
+      "The 'scored-pkg' package can't be deferred, the 'host-content:scored' extension is configured in app.extensions",
+    );
   });
 });
