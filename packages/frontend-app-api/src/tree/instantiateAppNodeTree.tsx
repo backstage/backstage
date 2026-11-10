@@ -15,6 +15,7 @@
  */
 
 import {
+  coreExtensionData,
   ApiHolder,
   ExtensionDataContainer,
   ExtensionDataRef,
@@ -22,6 +23,10 @@ import {
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ResolvedExtensionInputs } from '../../../frontend-plugin-api/src/wiring/createExtension';
+import { ReactNode } from 'react';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppNodeProvider } from '../../../frontend-plugin-api/src/components/AppNodeProvider';
+import { LegacyExtensionRouter } from '../routing/LegacyExtensionRouter';
 import { ExtensionFactoryMiddleware } from '../wiring/types';
 import mapValues from 'lodash/mapValues';
 import { AppNode, AppNodeInstance } from '@backstage/frontend-plugin-api';
@@ -518,6 +523,24 @@ export function createAppNodeInstance(options: {
       });
     }
     return undefined;
+  }
+
+  // Apply compatibility after validating all factory versions and middleware.
+  // Wrapping the complete output includes headers and other elements that older
+  // blueprints render outside their own extension boundaries. An empty path is
+  // still a route mount; extensions without a path retain their parent's scope.
+  if (
+    extensionData.get(coreExtensionData.routePath.id) !== undefined &&
+    extensionData.has(coreExtensionData.reactElement.id)
+  ) {
+    extensionData.set(
+      coreExtensionData.reactElement.id,
+      <AppNodeProvider node={node}>
+        <LegacyExtensionRouter node={node}>
+          {extensionData.get(coreExtensionData.reactElement.id) as ReactNode}
+        </LegacyExtensionRouter>
+      </AppNodeProvider>,
+    );
   }
 
   return {

@@ -25,7 +25,6 @@ import {
   createExtensionInput,
 } from '../wiring';
 import { ExtensionBoundary, PageLayout } from '../components';
-import { AppNodeProvider } from '../components/AppNodeProvider';
 import { BreadcrumbEntry } from '../breadcrumbs';
 import { useApi, useApiHolder } from '../apis/system';
 import type { AppNode } from '../apis';
@@ -159,20 +158,18 @@ function PluginPageShell(props: {
   const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
 
   return (
-    <AppNodeProvider node={node}>
-      <PageLayout
-        title={title}
-        icon={icon}
-        noHeader={noHeader}
-        tabs={tabs}
-        titleLink={titleLink}
-        headerActions={headerActions}
-      >
-        <ExtensionBoundary node={node}>
-          <PageContent subPages={subPages}>{children}</PageContent>
-        </ExtensionBoundary>
-      </PageLayout>
-    </AppNodeProvider>
+    <PageLayout
+      title={title}
+      icon={icon}
+      noHeader={noHeader}
+      tabs={tabs}
+      titleLink={titleLink}
+      headerActions={headerActions}
+    >
+      <ExtensionBoundary node={node}>
+        <PageContent subPages={subPages}>{children}</PageContent>
+      </ExtensionBoundary>
+    </PageLayout>
   );
 }
 
@@ -210,8 +207,9 @@ function PluginPageShell(props: {
  * Sub-pages attached to the `pages` input (e.g. via `SubPageBlueprint`) are
  * ordinary route-bearing extensions. The page renders the child selected by
  * the app's matched extension branch and redirects its index to the first
- * sub-page. Extension boundaries provide the actual route ancestry to links
- * and adapters; the page retains ownership of its shell and child rendering.
+ * sub-page. The app scopes each route-bearing extension's complete element
+ * output to its matched ancestry, including its header. The page retains
+ * ownership of its shell and child rendering.
  * The content has one extension boundary for plugin providers, analytics,
  * loading, and errors. The page header stays visible while content loads or
  * displays an error.
