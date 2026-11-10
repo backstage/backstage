@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 import { ConfigReader } from '@backstage/config';
+import fs from 'fs-extra';
+import os from 'node:os';
+import path from 'node:path';
+import { Readable } from 'node:stream';
 import {
   createConfluenceVariables,
+  getAndWriteAttachments,
   getAuthorizationHeaderValue,
   getConfluenceConfig,
 } from './helpers';
@@ -177,5 +182,71 @@ describe('getAuthorizationHeaderValue', () => {
 
     // Note: this is fake and just the encoded result
     expect(authHeaderValue).toEqual('Basic ZmFrZV91c2VyOmZha2VfcGFzc3dvcmQ=');
+  });
+});
+
+describe('getAndWriteAttachments', () => {
+  const config = {
+    baseUrl: 'https://confluence.example.com',
+    auth: 'bearer',
+    token: 'token',
+  };
+  const attachments = {
+    results: [
+      {
+        id: '1',
+        type: 'attachment',
+        status: 'current',
+        title: 'my image.png',
+        metadata: { mediaType: 'image/png' },
+        _links: {
+          webui: '',
+          download: '/download/my-image.png',
+          thumbnail: '',
+          self: '',
+        },
+      },
+    ],
+  };
+  let docsDir: string;
+
+  beforeEach(async () => {
+    docsDir = await fs.mkdtemp(path.join(os.tmpdir(), 'confluence-test-'));
+    await fs.ensureDir(path.join(docsDir, 'img'));
+  });
+
+  afterEach(async () => {
+    jest.restoreAllMocks();
+    await fs.remove(docsDir);
+  });
+
+  it('writes the attachment to disk', async () => {
+    jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValue(new Response('image data', { status: 200 }));
+
+    const result = await getAndWriteAttachments(attachments, docsDir, config);
+
+    expect(result).toEqual([['my%20image.png', 'my-image.png']]);
+    await expect(
+      fs.readFile(path.join(docsDir, 'img', 'my-image.png'), 'utf8'),
+    ).resolves.toBe('image data');
+  });
+
+  it('rejects instead of hanging when the download fails midway', async () => {
+    const body = new Readable({
+      read() {
+        this.push('partial');
+        this.destroy(new Error('connection lost'));
+      },
+    });
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      body: Readable.toWeb(body),
+    } as unknown as Response);
+
+    await expect(
+      getAndWriteAttachments(attachments, docsDir, config),
+    ).rejects.toThrow('connection lost');
   });
 });
