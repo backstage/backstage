@@ -33,7 +33,6 @@ import {
 import { Client as LegacyClient } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport as LegacyTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import request from 'supertest';
-import waitForExpect from 'wait-for-expect';
 
 describe('Mcp Backend', () => {
   const mockPluginWithActions = createBackendPlugin({
@@ -360,6 +359,11 @@ describe('Mcp Backend', () => {
     it('should serve a 2026-07-28 client through server/discover', async () => {
       const instructions = 'Use catalog tools before scaffolder tools.';
       const { serverAddress, metrics } = await getContext(instructions);
+      const sessionRecorded = new Promise<void>(resolve => {
+        sessionDurationOf(metrics).record.mockImplementationOnce(() =>
+          resolve(),
+        );
+      });
       const client = new Client(
         { name: 'test client', version: '1.0' },
         { versionNegotiation: { mode: { pin: '2026-07-28' } } },
@@ -403,18 +407,20 @@ describe('Mcp Backend', () => {
         expect.objectContaining({ ttlMs: 0, cacheScope: 'private' }),
       ]);
       await client.close();
-      // The duration is recorded when the response closes, which can happen
-      // after the client already holds the result.
-      await waitForExpect(() => {
-        expect(sessionDurationOf(metrics).record).toHaveBeenCalledWith(
-          expect.any(Number),
-          expect.objectContaining({ 'mcp.protocol.version': '2026-07-28' }),
-        );
-      });
+      await sessionRecorded;
+      expect(sessionDurationOf(metrics).record).toHaveBeenCalledWith(
+        expect.any(Number),
+        expect.objectContaining({ 'mcp.protocol.version': '2026-07-28' }),
+      );
     });
 
     it('should not record an unknown protocol version on the session duration', async () => {
       const { serverAddress, metrics } = await getContext();
+      const sessionRecorded = new Promise<void>(resolve => {
+        sessionDurationOf(metrics).record.mockImplementationOnce(() =>
+          resolve(),
+        );
+      });
 
       await request(serverAddress)
         .post('/api/mcp-actions/v1')
@@ -422,9 +428,7 @@ describe('Mcp Backend', () => {
         .set('MCP-Protocol-Version', 'not-a-version')
         .send({ jsonrpc: '2.0', id: 1, method: 'ping' });
 
-      await waitForExpect(() => {
-        expect(sessionDurationOf(metrics).record).toHaveBeenCalled();
-      });
+      await sessionRecorded;
       expect(sessionDurationOf(metrics).record).not.toHaveBeenCalledWith(
         expect.any(Number),
         expect.objectContaining({ 'mcp.protocol.version': expect.anything() }),

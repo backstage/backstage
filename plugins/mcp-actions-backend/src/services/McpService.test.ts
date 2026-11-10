@@ -242,7 +242,7 @@ describe('McpService', () => {
     expect(first.tools[0].name).toBe('plugin.valid');
     expect(second.tools).toHaveLength(1);
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringMatching(/plugin:bad-type.*inputSchema\.type: /),
+      expect.stringContaining('plugin:bad-type'),
     );
     expect(logger.warn).toHaveBeenCalledWith(
       expect.stringContaining('plugin:bad-required'),

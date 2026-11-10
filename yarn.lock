@@ -5598,6 +5598,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@modelcontextprotocol/client": "npm:^2.3.1"
+    "@modelcontextprotocol/core": "npm:^2.3.1"
     "@modelcontextprotocol/node": "npm:^2.1.1"
     "@modelcontextprotocol/sdk": "npm:1.30.0"
     "@modelcontextprotocol/server": "npm:^2.3.1"
@@ -5607,7 +5608,6 @@ __metadata:
     express-promise-router: "npm:^4.1.0"
     minimatch: "npm:^10.2.1"
     supertest: "npm:^7.0.0"
-    wait-for-expect: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -11293,7 +11293,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@modelcontextprotocol/core@npm:2.3.1":
+"@modelcontextprotocol/core@npm:2.3.1, @modelcontextprotocol/core@npm:^2.3.1":
   version: 2.3.1
   resolution: "@modelcontextprotocol/core@npm:2.3.1"
   dependencies:
