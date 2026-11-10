@@ -1,5 +1,11 @@
 # @backstage/eslint-plugin
 
+## 0.3.4-next.0
+
+### Patch Changes
+
+- 245d9e3: Internal changes for TypeScript 7 compatibility. The rules work the same as before.
+
 ## 0.3.3
 
 ### Patch Changes

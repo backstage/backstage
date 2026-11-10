@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Pod, IContainerStatus, IContainer } from 'kubernetes-models/v1';
+import type { Pod, IContainerStatus, IContainer } from 'kubernetes-models/v1';
 import { DetectedError, ErrorMapper, ProposedFix } from './types';
 import { detectErrorsInObjects } from './common';
 import lodash from 'lodash';

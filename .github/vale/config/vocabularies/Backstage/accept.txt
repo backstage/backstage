@@ -34,6 +34,7 @@ backend's
 backoff
 backported
 backporting
+Bazel
 BEPs
 bg
 bigint
@@ -380,6 +381,7 @@ Platformize
 pluggable
 Pluggable
 Podman
+polyfills
 posix
 postgres
 postpack
@@ -487,6 +489,7 @@ sqs
 squidfunk
 src
 statefulsets
+stderr
 stdout
 storable
 storages

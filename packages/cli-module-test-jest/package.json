@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-module-test-jest",
-  "version": "0.1.7",
+  "version": "0.1.8-next.0",
   "description": "CLI module for Backstage CLI",
   "backstage": {
     "role": "cli-module"
@@ -41,7 +41,7 @@
     "cleye": "^2.6.0",
     "cross-fetch": "^4.0.0",
     "fs-extra": "^11.2.0",
-    "glob": "^13.0.0",
+    "glob": "^14.0.0",
     "jest-css-modules": "^2.1.0",
     "sucrase": "^3.20.2",
     "yargs": "^16.2.0"

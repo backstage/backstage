@@ -65,7 +65,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   const ref3 = createRouteRef({ id: 'ref3' });
   const ref4 = createRouteRef({ id: 'ref4' });
   const ref5 = createRouteRef({ id: 'ref5' });
-  const refOrder = [ref1, ref2, ref3, ref4, ref5];
+  const refOrder: RouteRef[] = [ref1, ref2, ref3, ref4, ref5];
 
   const Extension1 = plugin.provide(
     createRoutableExtension({

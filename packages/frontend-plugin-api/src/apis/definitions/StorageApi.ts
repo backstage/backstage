@@ -104,6 +104,7 @@ export interface StorageApi {
  * The {@link ApiRef} of {@link StorageApi}.
  *
  * @public
+ * @deprecated Use {@link coreApis.storage} instead.
  */
 export const storageApiRef = createApiRef<StorageApi>().with({
   id: 'core.storage',

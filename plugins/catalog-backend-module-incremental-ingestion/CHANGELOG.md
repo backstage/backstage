@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.9.1-next.1
+
+### Patch Changes
+
+- 7baaad7: Fixed incremental ingestion getting stuck when a provider emits the same entity more than once in a single page or event. Since the previous release, this made every attempt to ingest that page fail on PostgreSQL with `ON CONFLICT DO UPDATE command cannot affect row a second time`, so the provider never got past it. Now only the last copy of each entity is kept. A warning names the provider and some of the repeated entity refs, at most once every 10 minutes per provider.
+
+  Providers should still emit each entity at most once per page. If the copies differ and arrive in a different order on each run, the stored entity can change on every run.
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.2-next.1
+  - @backstage/plugin-catalog-backend@4.0.3-next.1
+  - @backstage/plugin-events-node@0.5.0-next.1
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.2-next.0
+  - @backstage/plugin-catalog-backend@4.0.3-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+
 ## 0.9.0
 
 ### Minor Changes

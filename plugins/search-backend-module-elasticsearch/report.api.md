@@ -5,8 +5,8 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
-import { BulkHelper } from '@opensearch-project/opensearch/lib/Helpers.js';
-import { BulkStats } from '@opensearch-project/opensearch/lib/Helpers.js';
+import type { BulkHelper } from '@opensearch-project/opensearch/lib/Helpers.js';
+import type { BulkStats } from '@opensearch-project/opensearch/lib/Helpers.js';
 import { Config } from '@backstage/config';
 import type { ConnectionOptions } from 'node:tls';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';

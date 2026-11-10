@@ -1305,6 +1305,43 @@ describe('NunjucksWorkflowRunner', () => {
   });
 
   describe('redactions', () => {
+    it('preserves public fields when an omitted secret changes object positions', async () => {
+      actionRegistry.register({
+        id: 'log-rendered-input',
+        handler: async ctx => {
+          ctx.logger.info(JSON.stringify(ctx.input));
+        },
+      });
+      const publicUrl = 'https://example.com/merge_requests/1';
+      const nestedPublicUrl = 'https://example.com/merge_requests/2';
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'test',
+              action: 'log-rendered-input',
+              input: {
+                token: '${{ secrets.token }}',
+                publicUrl,
+                nested: {
+                  token: '${{ secrets.token | upper }}',
+                  publicUrl: nestedPublicUrl,
+                },
+              },
+            },
+          ],
+        },
+        { token: 'private-test-token' },
+      );
+      await runner.execute(task);
+      const logs = JSON.stringify(fakeTaskLog.mock.calls);
+      expect(logs).toContain(publicUrl);
+      expect(logs).toContain(nestedPublicUrl);
+      expect(logs).not.toContain('private-test-token');
+      expect(logs).not.toContain('PRIVATE-TEST-TOKEN');
+    });
+
     it('should redact secrets from action errors', async () => {
       actionRegistry.register({
         id: 'fail-with-secret',

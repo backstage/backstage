@@ -78,4 +78,19 @@ describe('response body', () => {
       `"["GET /api/search" (200)]: Response body is required but missing"`,
     );
   });
+
+  it('should throw error if response body is empty and schema has required properties', async () => {
+    const jsonSchema = (schema.responses as ResponsesObject)['200'].content![
+      'application/json'
+    ].schema as { required?: string[] };
+    jsonSchema.required = ['results'];
+    parser = ResponseBodyParser.fromOperation(operation, {
+      ajv,
+    });
+    await expect(
+      parser.parse(toResponse()),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"["GET /api/search" (200)]: Response body is required but missing"`,
+    );
+  });
 });

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HorizontalPodAutoscaler } from 'kubernetes-models/autoscaling/v2';
+import type { HorizontalPodAutoscaler } from 'kubernetes-models/autoscaling/v2';
 import { DetectedError, ErrorMapper } from './types';
 import { detectErrorsInObjects } from './common';
 

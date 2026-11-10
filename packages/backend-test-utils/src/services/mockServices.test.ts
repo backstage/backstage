@@ -22,6 +22,15 @@ describe('mockServices', () => {
     key => key !== 'pluginMetadata',
   ) as Array<keyof typeof mockServices>;
 
+  it('should be frozen, but return mutable mocks', () => {
+    expect(Object.isFrozen(mockServices)).toBe(true);
+    expect(Object.isFrozen(coreServices)).toBe(true);
+    for (const entry of Object.values(mockServices)) {
+      expect(Object.isFrozen(entry)).toBe(true);
+    }
+    expect(Object.isFrozen(mockServices.urlReader.mock())).toBe(false);
+  });
+
   it.each(coreServiceKeys)('should have mock implementations for %s', key => {
     expect(mockServices[key]).toBeDefined();
     expect(mockServices[key].mock).toEqual(expect.any(Function));

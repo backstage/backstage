@@ -18,6 +18,8 @@ import {
   createExternalRouteRef,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
+import { RouteResolver } from './RouteResolver';
+import { createRouteAliasResolver } from './RouteAliasResolver';
 import { resolveRouteBindings } from './resolveRouteBindings';
 import { ConfigReader } from '@backstage/config';
 import { createErrorCollector } from '../wiring/createErrorCollector';
@@ -238,32 +240,54 @@ describe('resolveRouteBindings', () => {
     expect(result.get(source)).toBe(target2);
   });
 
-  it('can disable external routes that have defaults', () => {
-    const source = createExternalRouteRef({ defaultTarget: 'target1' });
-    const target1 = createRouteRef();
+  it('honors disabled defaults through resolution while preserving explicit bindings', () => {
+    const source = createExternalRouteRef({ defaultTarget: 'target' });
+    const target = createRouteRef();
     const routesById = {
-      routes: new Map([['target1', target1]]),
+      routes: new Map([['target', target]]),
       externalRoutes: new Map([['source', source]]),
     };
-
-    // resolves normally with no config
-    let result = resolveRouteBindings(
-      () => {},
-      new ConfigReader({}),
-      routesById,
-      collector,
-    );
-
-    expect(result.get(source)).toBe(target1);
-
-    // can be disabled
-    result = resolveRouteBindings(
-      () => {},
-      new ConfigReader({ app: { routes: { bindings: { source: false } } } }),
-      routesById,
-      collector,
-    );
-
-    expect(result.get(source)).toBe(undefined);
+    for (const scenario of [
+      'default',
+      'config',
+      'code',
+      'disable-first',
+      'disable-last',
+    ] as const) {
+      const bindings = resolveRouteBindings(
+        ({ bind }) => {
+          if (scenario === 'code' || scenario === 'disable-first') {
+            bind({ source }, { source: false });
+          }
+          if (scenario === 'disable-first' || scenario === 'disable-last') {
+            bind({ source }, { source: target });
+          }
+          if (scenario === 'disable-last') {
+            bind({ source }, { source: false });
+          }
+        },
+        new ConfigReader(
+          scenario === 'config'
+            ? { app: { routes: { bindings: { source: false } } } }
+            : {},
+        ),
+        routesById,
+        collector,
+      );
+      const resolver = new RouteResolver(
+        new Map([[target, '/target']]),
+        new Map(),
+        [],
+        bindings,
+        '',
+        createRouteAliasResolver(routesById),
+        routesById.routes,
+      );
+      expect({ scenario, path: resolver.resolve(source)?.() }).toEqual({
+        scenario,
+        path:
+          scenario === 'code' || scenario === 'config' ? undefined : '/target',
+      });
+    }
   });
 });

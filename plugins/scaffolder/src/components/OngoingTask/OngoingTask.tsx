@@ -106,6 +106,8 @@ function OngoingTaskAnalyticsContext(props: { children: ReactNode }) {
 }
 
 /**
+ * Task page with log and action controls. Completion preserves the user's
+ * button-bar visibility; action availability follows task state and permissions.
  * @public
  */
 export const OngoingTask = (props: {
@@ -449,7 +451,6 @@ function OngoingTaskContent(props: {
   useEffect(() => {
     if (taskStream.completed && !taskStream.error) {
       setLogVisibleState(true);
-      setButtonBarVisibleState(false);
     }
   }, [
     taskStream.error,

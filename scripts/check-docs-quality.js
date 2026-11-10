@@ -240,6 +240,15 @@ async function main() {
   const relativePaths = absolutePaths
     .map(path => relativePath(rootDir, path))
     .filter(path => !IGNORED_WHEN_EXPLICIT.some(pattern => pattern.test(path)));
+
+  // When run from lint-staged, only the staged files are checked. If all of
+  // them are ignored there is nothing to do, so don't fall back to checking
+  // every file in the repository.
+  if (process.argv.includes('--lint-staged') && relativePaths.length === 0) {
+    console.log('No staged documentation files to check.');
+    return;
+  }
+
   const success = await runVale(
     relativePaths.length === 0 ? await listFiles() : relativePaths,
   );

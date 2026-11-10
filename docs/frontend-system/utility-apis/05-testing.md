@@ -5,114 +5,162 @@ sidebar_label: Testing
 description: Mocking and testing Utility APIs
 ---
 
-When testing frontend components and extensions, you often need to provide mock implementations of the utility APIs they depend on. The `@backstage/frontend-test-utils` package provides the `mockApis` namespace with ready-made mocks for all core utility APIs.
+The `mockApis` namespace from `@backstage/frontend-test-utils` provides test
+implementations of the core Utility APIs. Every member of `coreApis` has a
+matching `mockApis.<name>.mock()` helper. Some APIs also have functional fake
+instances for tests that need state or other behavior.
 
-## The `mockApis` namespace
+## Create Jest mocks
 
-The `mockApis` namespace is the main entry point for creating mock utility API instances in tests. It provides two usage patterns for each API:
-
-### Fake instances
-
-Call the API function directly to create a fake instance with simplified but functional behavior. These are useful when your test needs the API to actually work, not just be stubbed.
-
-```ts
-import { mockApis } from '@backstage/frontend-test-utils';
-
-const configApi = mockApis.config({ data: { app: { title: 'Test' } } });
-configApi.getString('app.title'); // 'Test'
-
-const alertApi = mockApis.alert();
-alertApi.post({ message: 'hello' });
-expect(alertApi.getAlerts()).toHaveLength(1);
-```
-
-### Jest mocks
-
-Call `.mock()` to get an instance where every method is a `jest.fn()`. You can optionally provide partial implementations. This is useful when you want to assert that specific methods were called.
+Call `.mock()` to create an API whose methods are plain `jest.fn()` functions.
+They have no implementation by default and return `undefined`. Configure the
+methods your test uses by passing partial implementations:
 
 ```ts
 import { mockApis } from '@backstage/frontend-test-utils';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
-const permissionApi = mockApis.permission.mock({
-  authorize: async () => ({ result: AuthorizeResult.ALLOW }),
+const discovery = mockApis.discovery.mock({
+  getBaseUrl: async pluginId => `http://example.com/api/${pluginId}`,
 });
 
-// ... exercise the component ...
-
-expect(permissionApi.authorize).toHaveBeenCalledTimes(1);
+await discovery.getBaseUrl('catalog'); // 'http://example.com/api/catalog'
+expect(discovery.getBaseUrl).toHaveBeenCalledWith('catalog');
 ```
 
-## Providing mock APIs in tests
+All methods remain Jest mocks, including those supplied as partial
+implementations. You can change their behavior and make assertions using the
+usual Jest methods:
 
-### With `renderInTestApp`
+```ts
+discovery.getBaseUrl.mockResolvedValue('http://other.example.com/catalog');
+await expect(discovery.getBaseUrl('catalog')).resolves.toBe(
+  'http://other.example.com/catalog',
+);
+expect(discovery.getBaseUrl).toHaveBeenCalledTimes(2);
+```
+
+Each call to `.mock()` creates an independent instance. Use mocks when your test
+needs to control responses, simulate failures, or inspect calls.
+
+## Provide APIs to components and extensions
+
+Pass mocks directly to `renderInTestApp`, `renderTestApp`, or `TestApiProvider`.
+The helpers associate each instance with its API ref, so you do not need to
+provide the ref separately.
 
 ```tsx
-import { screen } from '@testing-library/react';
 import { renderInTestApp, mockApis } from '@backstage/frontend-test-utils';
 
-await renderInTestApp(<MyComponent />, {
-  apis: [
-    mockApis.identity({ userEntityRef: 'user:default/guest' }),
-    mockApis.config({ data: { app: { title: 'Test App' } } }),
-  ],
+const discovery = mockApis.discovery.mock({
+  getBaseUrl: async () => 'http://example.com/api/catalog',
 });
+
+await renderInTestApp(<MyComponent />, { apis: [discovery] });
 ```
 
-You can also use the `[apiRef, implementation]` tuple syntax to provide any API implementation, including ones that aren't from `mockApis`:
-
-```tsx
-import { myCustomApiRef } from '../apis';
-
-const myCustomApiInstance = {
-  // ...
-};
-
-await renderInTestApp(<MyComponent />, {
-  apis: [
-    mockApis.identity({ userEntityRef: 'user:default/guest' }),
-    [myCustomApiRef, myCustomApiInstance],
-  ],
-});
-```
-
-### With `renderTestApp`
-
-The same `apis` option is available on `renderTestApp`, which is commonly used when testing extensions or entity pages:
+For extensions, use the same `apis` option:
 
 ```tsx
 import { renderTestApp, mockApis } from '@backstage/frontend-test-utils';
-import { createTestEntityPage } from '@backstage/plugin-catalog-react/testUtils';
 
 renderTestApp({
-  extensions: [createTestEntityPage({ entity }), myEntityCard],
+  extensions: [myExtension],
   apis: [mockApis.permission()],
 });
 ```
 
-### With `TestApiProvider`
-
-For standalone rendering scenarios where you're not using `renderInTestApp`, the `TestApiProvider` component accepts the same `apis` format:
+For standalone component rendering, wrap the component in `TestApiProvider`:
 
 ```tsx
 import { render } from '@testing-library/react';
 import { TestApiProvider, mockApis } from '@backstage/frontend-test-utils';
 
 render(
-  <TestApiProvider
-    apis={[
-      mockApis.identity({ userEntityRef: 'user:default/guest' }),
-      mockApis.alert(),
-    ]}
-  >
+  <TestApiProvider apis={[mockApis.identity({ displayName: 'Test User' })]}>
     <MyComponent />
   </TestApiProvider>,
 );
 ```
 
-## Plugin-specific test mocks
+You can also provide any API implementation as an `[apiRef, implementation]`
+tuple. Mocks, fakes, and tuples can be mixed in the same `apis` array:
 
-Plugins can provide their own mock APIs that follow the same pattern. For example, `@backstage/plugin-catalog-react` provides `catalogApiMock` in its `/testUtils` entry point:
+```tsx
+await renderInTestApp(<MyComponent />, {
+  apis: [discovery, [myCustomApiRef, myCustomApiInstance]],
+});
+```
+
+### Test app defaults
+
+`renderInTestApp` and `renderTestApp` provide in-memory fakes for alerts,
+errors, OAuth requests, storage, and toast notifications. For example,
+storage stays local to each test app, and posting a toast records a message
+without displaying a notification. Explicit entries in `apis` replace these
+defaults. The test app configures its error fake with `collect: true` to record
+errors without displaying alerts or installing global error handlers.
+
+Feature-provided API extensions can also override these defaults. APIs that
+depend on installed extensions and app wiring use the test app's
+implementations, so routes, theme providers, translations, and plugin
+customizations remain available.
+
+## Use functional fake instances
+
+Call an API helper directly, without `.mock()`, to create a functional fake.
+Fakes implement useful behavior, such as collecting notifications or updating
+in-memory state. Use them to provide inputs or inspect effects of the component
+you are testing. Their methods are ordinary functions, so Jest call assertions
+do not apply.
+
+For example, test that your `AppHeader` displays the configured application
+title. Supply a configuration fake and assert on the component's rendered output:
+
+```tsx
+import { screen } from '@testing-library/react';
+import { mockApis, renderInTestApp } from '@backstage/frontend-test-utils';
+import { AppHeader } from './AppHeader';
+
+it('displays the configured application title', async () => {
+  const config = mockApis.config({ data: { app: { title: 'Test App' } } });
+  await renderInTestApp(<AppHeader />, { apis: [config] });
+
+  expect(
+    await screen.findByRole('heading', { name: 'Test App' }),
+  ).toBeInTheDocument();
+});
+```
+
+### Available fake instances
+
+| Helper                                      | Behavior                                                                                                                                                               |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mockApis.alert()`                          | Legacy Alert API fake; use `mockApis.toast()` for new tests. Provides `getAlerts()`, `clearAlerts()`, and `waitForAlert()`                                             |
+| `mockApis.analytics()`                      | Collects analytics events; provides `getEvents()`                                                                                                                      |
+| `mockApis.appLanguage(options?)`            | Selects from `availableLanguages`, starting with `defaultLanguage` or English. Updates subscribers when the language changes; passing no language resets the selection |
+| `mockApis.appLifecycle(options?)`           | Starts finalized unless `finalized: false` is supplied. `setFinalized()` changes state and notifies subscribers                                                        |
+| `mockApis.appTheme(options?)`               | Exposes the supplied `themes` and optional `activeThemeId`. Theme selection updates subscribers without browser storage                                                |
+| `mockApis.config({ data })`                 | Reads configuration from a plain JSON object                                                                                                                           |
+| `mockApis.discovery({ baseUrl })`           | Returns `${baseUrl}/api/${pluginId}`, with `http://example.com` as the default base URL                                                                                |
+| `mockApis.error(options?)`                  | Throws on unexpected errors by default. With `collect: true`, collects errors through `getErrors()` and `waitForError()`                                               |
+| `mockApis.featureFlags(options?)`           | Maintains flag state in memory; provides `getState()`, `setState()`, and `clearState()`                                                                                |
+| `mockApis.fetch(options?)`                  | Wraps native `fetch`; supports identity injection and the plugin protocol                                                                                              |
+| `mockApis.icons({ icons })`                 | Looks up the supplied icon elements by key; defaults to an empty collection                                                                                            |
+| `mockApis.identity(options?)`               | Provides configurable user identity, ownership, credentials, and profile information                                                                                   |
+| `mockApis.oauthRequest()`                   | Coordinates pending OAuth requests and merges requested scopes. Subscribers to `authRequest$()` trigger or reject requests                                             |
+| `mockApis.permission(options?)`             | Defaults to `ALLOW`; accepts a fixed authorization result or a handler                                                                                                 |
+| `mockApis.pluginHeaderActions({ actions })` | Looks up arrays of header actions by plugin ID; defaults to an empty collection                                                                                        |
+| `mockApis.storage({ data })`                | Maintains storage in memory, including separate buckets                                                                                                                |
+| `mockApis.toast()`                          | Collects active toast messages through `getToasts()`. Handles dismiss individual messages; timeouts are not scheduled                                                  |
+| `mockApis.translation()`                    | Returns default messages from translation refs                                                                                                                         |
+
+The `permission` helper is for the permission plugin's API, which is defined
+outside `coreApis`.
+
+## Plugin-specific test helpers
+
+Plugins can provide their own helpers. For example, `@backstage/plugin-catalog-react`
+provides `catalogApiMock` in its `/testUtils` entry point:
 
 ```tsx
 import { renderTestApp } from '@backstage/frontend-test-utils';
@@ -124,71 +172,27 @@ renderTestApp({
 });
 ```
 
-### Creating your own mock APIs
+### Create your own helpers
 
-If you maintain a plugin that exposes a utility API, you can provide mock utilities that follow the same function + `.mock()` pattern as the built-in `mockApis`.
-
-Use `attachMockApiFactory` for fake instances with real behavior, and `createApiMock` for the jest-mocked `.mock()` variant where all methods are `jest.fn()`. The full pattern looks like this:
+Use `createApiMock` to associate an API ref with a factory of plain Jest stubs.
+Use `attachMockApiFactory` to associate the same ref with a functional fake:
 
 ```ts
 import {
   attachMockApiFactory,
   createApiMock,
-  type ApiMock,
 } from '@backstage/frontend-test-utils';
-import { myApiRef, type MyApi } from '@internal/plugin-example-react';
+import { myApiRef } from '@internal/plugin-example-react';
 
-// Fake instance with real behavior
 export function myApiMock(options?: { greeting?: string }) {
   return attachMockApiFactory(myApiRef, {
     greet: async () => options?.greeting ?? 'Hello!',
   });
 }
 
-// Jest mock variant where all methods are jest.fn()
 export namespace myApiMock {
-  export const mock = createApiMock(myApiRef, () => ({
-    greet: jest.fn(),
-  }));
+  export const mock = createApiMock(myApiRef, () => ({ greet: jest.fn() }));
 }
 ```
 
-Consumers can then use it just like the core mocks:
-
-```tsx
-// Fake with real behavior
-await renderInTestApp(<MyComponent />, {
-  apis: [myApiMock({ greeting: 'Hi there!' })],
-});
-
-// Jest mock for assertions
-const api = myApiMock.mock({
-  greet: async () => 'mocked',
-});
-
-await renderInTestApp(<MyComponent />, {
-  apis: [api],
-});
-
-expect(api.greet).toHaveBeenCalledTimes(1);
-```
-
-## Available mock APIs
-
-The table below lists all core APIs available through the `mockApis` namespace.
-
-| API                               | Fake instance         | Notes                                                                  |
-| --------------------------------- | --------------------- | ---------------------------------------------------------------------- |
-| `mockApis.alert()`                | `MockAlertApi`        | Collects alerts; has `getAlerts()`, `clearAlerts()`, `waitForAlert()`  |
-| `mockApis.analytics()`            | `MockAnalyticsApi`    | Collects events; has `getEvents()`                                     |
-| `mockApis.config({ data })`       | `MockConfigApi`       | Reads from a plain JSON object                                         |
-| `mockApis.discovery({ baseUrl })` | Inline                | Returns `${baseUrl}/api/${pluginId}`, defaults to `http://example.com` |
-| `mockApis.error(options?)`        | `MockErrorApi`        | Collects errors; has `getErrors()`, `waitForError()`                   |
-| `mockApis.featureFlags(options?)` | `MockFeatureFlagsApi` | In-memory flag state; has `getState()`, `setState()`, `clearState()`   |
-| `mockApis.fetch(options?)`        | `MockFetchApi`        | Wraps native `fetch`; supports identity injection and plugin protocol  |
-| `mockApis.identity(options?)`     | Inline                | Configurable user ref, ownership, token, profile                       |
-| `mockApis.permission(options?)`   | `MockPermissionApi`   | Defaults to `ALLOW`; accepts a handler function                        |
-| `mockApis.storage({ data })`      | `MockStorageApi`      | In-memory storage with bucket support                                  |
-| `mockApis.translation()`          | `MockTranslationApi`  | Passthrough returning default messages from translation refs           |
-
-Each of these also has a `.mock()` variant that returns jest mocks, as described above.
+Both variants can then be passed directly to the test utilities' `apis` option.

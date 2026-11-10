@@ -40,13 +40,17 @@ interface AnyJWK extends Record<string, string> {
 // Simplified copy of TokenFactory in @backstage/plugin-auth-backend
 class FakeTokenFactory {
   private readonly keys = new Array<AnyJWK>();
+  private readonly algorithm: string;
 
   constructor(
     private readonly options: {
       issuer: string;
       keyDurationSeconds: number;
+      algorithm?: string;
     },
-  ) {}
+  ) {
+    this.algorithm = options.algorithm ?? 'ES256';
+  }
 
   async issueToken(params: {
     claims: {
@@ -54,10 +58,11 @@ class FakeTokenFactory {
       ent?: string[];
     };
   }): Promise<string> {
-    const pair = await generateKeyPair('ES256');
+    const pair = await generateKeyPair(this.algorithm);
     const publicKey = await exportJWK(pair.publicKey);
     const kid = uuid();
     publicKey.kid = kid;
+    publicKey.alg = this.algorithm;
     this.keys.push(publicKey as AnyJWK);
 
     const iss = this.options.issuer;
@@ -68,7 +73,7 @@ class FakeTokenFactory {
     const exp = iat + this.options.keyDurationSeconds;
 
     return new SignJWT({ iss, sub, aud, iat, exp, ent, kid })
-      .setProtectedHeader({ alg: 'ES256', ent: ent, kid: kid })
+      .setProtectedHeader({ alg: this.algorithm, ent: ent, kid: kid })
       .setIssuer(iss)
       .setAudience(aud)
       .setSubject(sub)
@@ -168,6 +173,38 @@ describe('DefaultIdentityClient', () => {
       return expect(
         async () => await identityClient.authenticate(token),
       ).rejects.toThrow();
+    });
+
+    it('should authenticate tokens signed with ML-DSA-65', async () => {
+      const algorithm = 'ML-DSA-65';
+      const mlDsaFactory = new FakeTokenFactory({
+        issuer: mockBaseUrl,
+        keyDurationSeconds,
+        algorithm,
+      });
+      server.use(
+        http.get(`${mockBaseUrl}/.well-known/jwks.json`, async () => {
+          const keys = await mlDsaFactory.listPublicKeys();
+          return HttpResponse.json(keys);
+        }),
+      );
+
+      const identityClient = DefaultIdentityClient.create({
+        discovery,
+        issuer: mockBaseUrl,
+        algorithms: [algorithm],
+      });
+
+      const token = await mlDsaFactory.issueToken({ claims: { sub: 'foo' } });
+      expect(decodeProtectedHeader(token).alg).toBe(algorithm);
+      await expect(identityClient.authenticate(token)).resolves.toEqual({
+        token,
+        identity: {
+          type: 'user',
+          userEntityRef: 'foo',
+          ownershipEntityRefs: [],
+        },
+      });
     });
   });
 

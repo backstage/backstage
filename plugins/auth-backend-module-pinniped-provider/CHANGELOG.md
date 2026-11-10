@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-pinniped-provider
 
+## 0.3.20-next.0
+
+### Patch Changes
+
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
 ## 0.3.19
 
 ### Patch Changes

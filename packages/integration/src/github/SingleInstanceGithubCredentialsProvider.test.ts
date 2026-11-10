@@ -148,6 +148,37 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     expect(token).toEqual('secret_token');
   });
 
+  it('should ignore null entries in the installations list', async () => {
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: {
+        etag: '123',
+      },
+      data: [
+        null,
+        {
+          id: 1,
+          repository_selection: 'all',
+          account: {
+            login: 'backstage',
+          },
+        },
+      ],
+    } as unknown as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
+      data: {
+        expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+        token: 'secret_token',
+      },
+    } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    const { token } = await github.getCredentials({
+      url: 'https://github.com/backstage',
+    });
+
+    expect(token).toEqual('secret_token');
+  });
+
   it('creates tokens for an organization with multiple configured apps', async () => {
     const multipleGithubApps = SingleInstanceGithubCredentialsProvider.create({
       host: 'github.com',

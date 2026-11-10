@@ -41,6 +41,9 @@ const mockGitlabClient = {
       id: 'f8a2c9bd4e2915b0792b43235c779e82ddad54af',
     })),
   },
+  Repositories: {
+    allRepositoryTrees: jest.fn(async () => []),
+  },
 };
 
 jest.mock('@gitbeaker/rest', () => ({

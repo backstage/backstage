@@ -357,6 +357,7 @@ export type TranslationApi = {
 
 /**
  * @public
+ * @deprecated Use {@link coreApis.translation} instead.
  */
 export const translationApiRef = createApiRef<TranslationApi>().with({
   id: 'core.translation',

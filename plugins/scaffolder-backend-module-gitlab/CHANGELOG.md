@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.12.2-next.0
+
+### Patch Changes
+
+- ae86338: Added GitLab branch autocompletion to RepoBranchPicker using user SCM credentials.
+- ed8e58f: Fixed `publish:gitlab:merge-request` and `gitlab:repo:push` failing with "A file with this name already exists" when `commitAction` is `auto` and the repository file list cannot be fetched, for example when the request times out on a large repository. The actions now check each file individually in that case, instead of treating every file as new.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-scaffolder-node@0.13.9-next.0
+
 ## 0.12.1
 
 ### Patch Changes

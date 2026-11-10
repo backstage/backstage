@@ -428,8 +428,6 @@ export interface FrontendPlugin<
   // (undocumented)
   readonly externalRoutes: TExternalRoutes;
   readonly icon?: IconElement;
-  // @deprecated
-  readonly id: string;
   info(): Promise<FrontendPluginInfo>;
   readonly pluginId: string;
   // (undocumented)
@@ -573,7 +571,7 @@ export type PluginWrapperApi = {
     | undefined;
 };
 
-// @public
+// @public @deprecated
 export const pluginWrapperApiRef: ApiRef_2<
   PluginWrapperApi,
   'core.plugin-wrapper'

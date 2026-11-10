@@ -18,7 +18,9 @@ const HomePage = () => {
   const { siteConfig } = useDocusaurusContext();
 
   const [hiddenNewsletterBanner, setHideNewsletterBanner] = useState(() => {
-    return JSON.parse(localStorage.getItem(hiddenNewsletterBannerKey)) || false;
+    return JSON.parse(
+      localStorage.getItem(hiddenNewsletterBannerKey) ?? 'false',
+    );
   });
 
   const hideNewsletterBanner = (shouldHide: boolean) => {

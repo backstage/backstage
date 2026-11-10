@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.56.0",
+  "version": "1.57.0-next.1",
   "backstage": {
     "cli": {
       "new": {
@@ -76,7 +76,7 @@
     ],
     "*.md": [
       "prettier --write",
-      "node ./scripts/check-docs-quality"
+      "node ./scripts/check-docs-quality --lint-staged"
     ],
     "{plugins,packages}/*/catalog-info.yaml": [
       "yarn backstage-repo-tools generate-catalog-info --ci"
@@ -142,7 +142,7 @@
     "@types/jest": "^30",
     "@types/jsdom": "^27",
     "@types/memjs": "^1.3.3",
-    "@types/node": "^22.13.14",
+    "@types/node": "^24.0.0",
     "@types/webpack": "^5.28.0",
     "array-to-table": "^1.0.1",
     "command-exists": "^1.2.9",
@@ -170,13 +170,13 @@
     "storybook": "^10.4.0",
     "ts-morph": "^24.0.0",
     "typedoc": "^0.28.0",
-    "typescript": "~5.7.0",
+    "typescript": "~5.9.0",
     "vite": "^7.1.5",
     "zod": "^3.25.76 || ^4.0.0"
   },
-  "packageManager": "yarn@4.18.0",
+  "packageManager": "yarn@4.18.1",
   "engines": {
-    "node": "22 || 24"
+    "node": "^24.15.0 || ^26.13.0"
   },
   "madge": {
     "fileExtensions": [

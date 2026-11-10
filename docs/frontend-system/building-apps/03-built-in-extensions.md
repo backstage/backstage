@@ -115,10 +115,11 @@ An app root element extension that displays messages posted via the [`AlertApi`]
 
 ###### Configurations
 
-| Key                  | Type                                                                       | Default value                             | Description                                                       |
-| -------------------- | -------------------------------------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------- |
-| `transientTimeoutMs` | number                                                                     | 5000                                      | Time in milliseconds to wait before displaying messages.          |
-| `anchorOrigin`       | { vertical: 'top' \| 'bottom', horizontal: 'left' \| 'center' \| 'right' } | { vertical: 'top', horizontal: 'center' } | Position on the screen where the message alert will be displayed. |
+| Key                  | Type   | Default value | Description                                                  |
+| -------------------- | ------ | ------------- | ------------------------------------------------------------ |
+| `transientTimeoutMs` | number | 5000          | Time in milliseconds that a transient alert remains visible. |
+
+Messages appear as toasts at the bottom center of the screen. Remove the `anchorOrigin` setting from this extension's configuration if present; it is no longer supported and had no effect on toast positioning.
 
 ###### Override or disable the extension
 

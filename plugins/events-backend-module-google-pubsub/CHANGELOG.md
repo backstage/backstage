@@ -1,5 +1,21 @@
 # @backstage/plugin-events-backend-module-google-pubsub
 
+## 0.2.9-next.1
+
+### Patch Changes
+
+- b03427c: Updated dependency `@google-cloud/pubsub` to `^6.3.2`. The new version requires Node.js 22 or later, which matches the Node.js versions that Backstage supports.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.5.0-next.1
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+
 ## 0.2.8
 
 ### Patch Changes

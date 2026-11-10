@@ -88,7 +88,7 @@ describe('Home Plugin Alpha', () => {
 
   describe('Plugin Structure', () => {
     it('should have correct plugin metadata', () => {
-      expect(homePlugin.id).toBe('home');
+      expect(homePlugin.pluginId).toBe('home');
       expect(homePlugin.routes.root).toBeDefined();
     });
 

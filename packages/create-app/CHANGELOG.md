@@ -1,5 +1,24 @@
 # @backstage/create-app
 
+## 0.9.4-next.1
+
+### Patch Changes
+
+- 04a54e2: Bumped TypeScript in the app templates to `~5.9.0`.
+- b8777d1: New apps now support Node.js 24 and 26, in line with the [versioning policy](https://backstage.io/docs/overview/versioning-policy#nodejs-releases). The `engines` field in the app template is set to `^24.15.0 || ^26.13.0`, and creating a new app now requires Node.js 24 (24.15.0 or later) or Node.js 26 (26.13.0 or later). 24.15.0 is the lowest version that all dependencies support, and 26.13.0 is the first Node.js 26 LTS release.
+
+  To update an existing app, set `engines.node` in your root `package.json` to `^24.15.0 || ^26.13.0`, and update the Node.js version used in your CI workflows and `Dockerfile` if needed.
+
+  If your `yarn.lock` resolves `avsc` to a version older than 5.7.8, run `yarn up -R avsc`. Those versions crash on load on Node.js 25 and later, which breaks Jest tests that import the AsyncAPI widget from `@backstage/plugin-api-docs`. If it resolves `node-gyp` to 12.3.0, run `yarn up -R node-gyp`, since that version can't download Node.js headers through a proxy on Node.js 26.
+
+## 0.9.4-next.0
+
+### Patch Changes
+
+- 77f9227: New apps now declare support for light and dark color schemes and apply the stored theme choice before the app loads. The browser's default page background, scrollbars and form controls then match the theme during loading, instead of always starting out light. A new `public/theme.js` applies a stored light or dark choice, and the OS preference is used otherwise.
+
+  To add this to an existing app, copy `packages/app/public/theme.js` from a newly created app, and add `<meta name="color-scheme" content="light dark" />` and `<script src="<%= publicPath %>/theme.js"></script>` to the `<head>` of `packages/app/public/index.html`.
+
 ## 0.9.3
 
 ### Patch Changes

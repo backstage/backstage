@@ -49,6 +49,7 @@ export type DiscoveryApi = {
  * The {@link ApiRef} of {@link DiscoveryApi}.
  *
  * @public
+ * @deprecated Use {@link coreApis.discovery} instead.
  */
 export const discoveryApiRef = createApiRef<DiscoveryApi>().with({
   id: 'core.discovery',

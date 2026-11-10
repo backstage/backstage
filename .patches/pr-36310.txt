@@ -1,1 +1,0 @@
-Made the @yarnpkg/* dependencies of @backstage/cli-module-package-manager-yarn optional peers, to work around @yarnpkg/core@4.9.2 breaking installation

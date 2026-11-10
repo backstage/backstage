@@ -19,6 +19,9 @@ import {
   coreExtensionData,
   createExtension,
   iconsApiRef,
+  createApiRef,
+  IconsApi,
+  IconComponent,
   useRouteRef as useNewRouteRef,
   createRouteRef as createNewRouteRef,
   useApi,
@@ -155,6 +158,36 @@ describe('ForwardsCompatProvider', () => {
       "components: progress=true, notFoundErrorPage=true, errorDisplay=true
       icons: kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, user, warning, star, unstarred"
     `);
+  });
+
+  it('should provide both icons API versions in old-system apps', async () => {
+    const legacyIconsApiRef = createApiRef<
+      IconsApi & { getIcon(key: string): IconComponent | undefined }
+    >({ id: 'core.icons' });
+    const CustomIcon = () => <svg aria-label="Custom icon" />;
+
+    function Component() {
+      const icons = useApi(iconsApiRef);
+      const legacyIcons = useApi(legacyIconsApiRef);
+      expect(legacyIcons.getIcon('custom')).toBe(CustomIcon);
+      expect(legacyIcons.getIcon('missing')).toBeUndefined();
+      expect(icons.icon('missing')).toBeUndefined();
+      expect(legacyIcons.listIconKeys()).toEqual(icons.listIconKeys());
+      expect(icons.listIconKeys()).toContain('custom');
+      const LegacyIcon = legacyIcons.getIcon('custom')!;
+      return (
+        <>
+          <LegacyIcon />
+          {legacyIcons.icon('custom')}
+          {icons.icon('custom')}
+        </>
+      );
+    }
+
+    await renderInOldTestApp(compatWrapper(<Component />), {
+      icons: { custom: CustomIcon },
+    });
+    expect(await screen.findAllByLabelText('Custom icon')).toHaveLength(3);
   });
 
   it('should convert the routing context', async () => {

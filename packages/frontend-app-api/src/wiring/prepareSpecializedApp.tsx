@@ -23,10 +23,8 @@ import {
   ConfigApi,
   coreExtensionData,
   AppNode,
-  ExtensionFactoryMiddleware,
   FrontendFeature,
   IdentityApi,
-  identityApiRef,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -71,6 +69,7 @@ import {
   type ExtensionPredicateContext,
 } from './predicates';
 import { FrontendApiRegistry } from './FrontendApiRegistry';
+import { ExtensionFactoryMiddleware } from './types';
 import {
   ApiFactoryEntry,
   collectApiFactoryEntries,
@@ -101,10 +100,12 @@ function deduplicateFeatures(
       if (!OpaqueFrontendPlugin.isType(feature)) {
         return true;
       }
-      if (seenIds.has(feature.id)) {
+      const pluginId =
+        feature.pluginId ?? OpaqueFrontendPlugin.toInternal(feature).id;
+      if (seenIds.has(pluginId)) {
         return false;
       }
-      seenIds.add(feature.id);
+      seenIds.add(pluginId);
       return true;
     })
     .reverse();
@@ -257,16 +258,6 @@ export interface CreateSpecializedAppInternalOptions
   __internal?: {
     apiFactoryOverrides?: AnyApiFactory[];
   };
-}
-
-export function createSessionStateFromApis(
-  apis: ApiHolder,
-): SpecializedAppSessionState {
-  return OpaqueSpecializedAppSessionState.createInstance('v1', {
-    apis,
-    identityApi: apis.get(identityApiRef),
-    predicateContext: EMPTY_PREDICATE_CONTEXT,
-  });
 }
 
 /**

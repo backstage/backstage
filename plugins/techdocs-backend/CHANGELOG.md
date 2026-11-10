@@ -1,5 +1,30 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.4.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.4-next.0
+  - @backstage/plugin-techdocs-node@2.2.1-next.1
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+
+## 2.4.2-next.0
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
+## 2.4.1-next.0
+
+### Patch Changes
+
+- 4d7a3fe: Clarified in the config schema which `techdocs.generator.mkdocs` settings also apply to the Zensical engine: `legacyCopyReadmeMdToIndexMd`, `dangerouslyAllowAdditionalKeys` and `dangerouslyAllowAdditionalPlugins`.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@2.2.0-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+
 ## 2.4.0
 
 ### Minor Changes

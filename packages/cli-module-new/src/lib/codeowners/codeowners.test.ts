@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { isValidSingleOwnerId, parseOwnerIds } from './codeowners';
+import fs from 'fs-extra';
+import { createMockDirectory } from '@backstage/backend-test-utils';
+import { targetPaths } from '@backstage/cli-common';
+import {
+  addCodeownersEntry,
+  isValidSingleOwnerId,
+  parseOwnerIds,
+} from './codeowners';
 
 describe('codeowners', () => {
   it('isValidSingleOwnerId', () => {
@@ -45,5 +52,62 @@ describe('codeowners', () => {
     expect(parseOwnerIds('@foo')).toEqual(['@foo']);
     expect(parseOwnerIds(' @foo  @bar/baz   ')).toEqual(['@foo', '@bar/baz']);
     expect(parseOwnerIds(' @foo  @bar/   ')).toBeUndefined();
+  });
+
+  describe('addCodeownersEntry', () => {
+    const mockDir = createMockDirectory();
+    const existing = [
+      '# Header comment',
+      '',
+      '*                   @backstage/core',
+      '/packages/foo/      @org/foo-team',
+      '',
+      '# Section comment',
+      '/plugins/bar/  @org/bar-team  @someone',
+      '',
+    ].join('\n');
+
+    beforeEach(() => {
+      mockDir.setContent({ '.github/CODEOWNERS': existing });
+    });
+
+    it('preserves existing content and appends a repo-relative entry', async () => {
+      const file = mockDir.resolve('.github/CODEOWNERS');
+      await expect(
+        addCodeownersEntry('packages/zz-lib', '@org/new-team', file),
+      ).resolves.toBe(true);
+      expect(await fs.readFile(file, 'utf8')).toBe(
+        `${existing}/packages/zz-lib/ @org/new-team\n`,
+      );
+    });
+
+    it('converts absolute paths to repo-relative paths', async () => {
+      const file = mockDir.resolve('.github/CODEOWNERS');
+      await addCodeownersEntry(
+        targetPaths.resolveRoot('packages', 'zz-lib'),
+        '@org/new-team @someone',
+        file,
+      );
+      expect(await fs.readFile(file, 'utf8')).toBe(
+        `${existing}/packages/zz-lib/ @org/new-team @someone\n`,
+      );
+    });
+
+    it('adds a newline if the file lacks a trailing one', async () => {
+      mockDir.setContent({ CODEOWNERS: '# c\n* @a/b' });
+      const file = mockDir.resolve('CODEOWNERS');
+      await addCodeownersEntry('plugins/x', '@a/b', file);
+      expect(await fs.readFile(file, 'utf8')).toBe(
+        '# c\n* @a/b\n/plugins/x/ @a/b\n',
+      );
+    });
+
+    it('rejects invalid owners without touching the file', async () => {
+      const file = mockDir.resolve('.github/CODEOWNERS');
+      await expect(
+        addCodeownersEntry('packages/x', 'nope', file),
+      ).resolves.toBe(false);
+      expect(await fs.readFile(file, 'utf8')).toBe(existing);
+    });
   });
 });

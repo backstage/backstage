@@ -34,6 +34,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
 import { ScaffolderFormFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
+import { ScaffolderTemplateFilterHook } from '@backstage/plugin-scaffolder-react/alpha';
 import { ScaffolderTemplateOutputsComponent } from '@backstage/plugin-scaffolder-react/alpha';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -603,7 +604,20 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        templateFilter: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            ScaffolderTemplateFilterHook,
+            'scaffolder.template-filter-hook',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
+            internal: false;
+          }
+        >;
+      };
       kind: 'sub-page';
       name: 'templates';
       params: {
