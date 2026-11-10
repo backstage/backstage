@@ -19,7 +19,8 @@
 <p>The signals WebSocket endpoint requires a Backstage user token. The bundled
 signals client sends the token in the <code>Sec-WebSocket-Protocol</code> header. Custom
 clients can include the token alongside other protocol values; the backend
-authenticates each value and selects the user token for the WebSocket handshake.
+tries each value until one authenticates and selects that token for the WebSocket
+handshake. The signals handler then requires user credentials.
 Connections without a valid user token are rejected.</p>
 </section>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Variables"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>

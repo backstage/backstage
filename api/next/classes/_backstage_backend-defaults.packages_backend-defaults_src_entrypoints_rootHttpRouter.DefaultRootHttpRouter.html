@@ -21,7 +21,7 @@
 <ul class="tsd-hierarchy">
 <li><a href="../interfaces/_backstage_backend-plugin-api.index.RootHttpRouterService.html" class="tsd-signature-type tsd-kind-interface">RootHttpRouterService</a></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/7fd6acfbd0196b3b0e3cf3b00b12546e2720acec/packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts#L44">packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts:44</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/e4a1cead8cfb800f0648ace149a00aec9852d19f/packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts#L57">packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts:57</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -29,13 +29,34 @@
 <div class="tsd-accordion-details">
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading tsd-anchor-link" id="methods">Methods<a href="#methods" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<div class="tsd-index-list"><a href="#handler" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>handler</span></a>
+<div class="tsd-index-list"><a href="#addwebsockethandler" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>add<wbr/>Web<wbr/>Socket<wbr/>Handler</span></a>
+<a href="#handler" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>handler</span></a>
 <a href="#use" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>use</span></a>
 <a href="#create" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create</span></a>
 </div></section></div></details></section></section>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="addwebsockethandler"><span>add<wbr/>Web<wbr/>Socket<wbr/>Handler</span><a href="#addwebsockethandler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="addwebsockethandler-1"><span class="tsd-kind-call-signature">addWebSocketHandler</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/_backstage_backend-plugin-api.index.RootHttpRouterServiceWebSocketHandler.html" class="tsd-signature-type tsd-kind-interface">RootHttpRouterServiceWebSocketHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><a href="#addwebsockethandler-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Registers an exact-path upgrade handler. Unmatched upgrades receive 404
+only when this router is the server's sole upgrade listener; otherwise,
+other listeners retain ownership. Multiple listeners produce a warning.
+Express-only upgrade handlers must migrate to registered routes because
+server-level upgrades bypass Express routing.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">input</span>: <a href="../interfaces/_backstage_backend-plugin-api.index.RootHttpRouterServiceWebSocketHandler.html" class="tsd-signature-type tsd-kind-interface">RootHttpRouterServiceWebSocketHandler</a></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
+<p>Implementation of <a href="../interfaces/_backstage_backend-plugin-api.index.RootHttpRouterService.html">RootHttpRouterService</a>.<a href="../interfaces/_backstage_backend-plugin-api.index.RootHttpRouterService.html#addwebsockethandler">addWebSocketHandler</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/e4a1cead8cfb800f0648ace149a00aec9852d19f/packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts#L145">packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts:145</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="handler"><span>handler</span><a href="#handler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -44,7 +65,7 @@
 <div class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Handler</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/7fd6acfbd0196b3b0e3cf3b00b12546e2720acec/packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts#L98">packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts:98</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/e4a1cead8cfb800f0648ace149a00aec9852d19f/packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts#L230">packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts:230</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="use"><span>use</span><a href="#use" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -62,7 +83,7 @@ The path is required and may not be empty.</p>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/_backstage_backend-plugin-api.index.RootHttpRouterService.html">RootHttpRouterService</a>.<a href="../interfaces/_backstage_backend-plugin-api.index.RootHttpRouterService.html#use">use</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/7fd6acfbd0196b3b0e3cf3b00b12546e2720acec/packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts#L80">packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts:80</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/e4a1cead8cfb800f0648ace149a00aec9852d19f/packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts#L120">packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts:120</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="create"><code class="tsd-tag">Static</code><span>create</span><a href="#create" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -75,7 +96,7 @@ The path is required and may not be empty.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="../interfaces/_backstage_backend-defaults.packages_backend-defaults_src_entrypoints_rootHttpRouter.DefaultRootHttpRouterOptions.html" class="tsd-signature-type tsd-kind-interface">DefaultRootHttpRouterOptions</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">DefaultRootHttpRouter</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/7fd6acfbd0196b3b0e3cf3b00b12546e2720acec/packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts#L52">packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts:52</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/e4a1cead8cfb800f0648ace149a00aec9852d19f/packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts#L73">packages/backend-defaults/src/entrypoints/rootHttpRouter/DefaultRootHttpRouter.ts:73</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -92,7 +113,7 @@ The path is required and may not be empty.</p>
 <h3>On This Page</h3></summary>
 <div class="tsd-accordion-details">
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Methods</summary>
-<div><a href="#handler"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>handler</span></a><a href="#use"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>use</span></a><a href="#create"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create</span></a></div></details></div></details></div>
+<div><a href="#addwebsockethandler"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>add<wbr/>Web<wbr/>Socket<wbr/>Handler</span></a><a href="#handler"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>handler</span></a><a href="#use"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>use</span></a><a href="#create"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create</span></a></div></details></div></details></div>
 <div class="site-menu">
 <nav id="tsd-sidebar-links" class="tsd-navigation"><a href="https://backstage.io/docs" class="tsd-nav-link">Docs</a><a href="https://github.com/backstage/backstage" class="tsd-nav-link">GitHub</a></nav>
 <nav class="tsd-navigation"><a href="../modules.html">Backstage</a>
