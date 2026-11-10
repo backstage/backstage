@@ -117,15 +117,15 @@ describe('signals framework router', () => {
       expect(dualHeader.ws?.protocol).toBe(mockCredentials.user.token());
       dualHeader.ws?.close();
     }
-    for (const protocols of [
-      undefined,
-      mockCredentials.user.invalidToken(),
-      mockCredentials.service.token(),
-      [mockCredentials.service.token(), mockCredentials.user.token()],
-      'application-protocol',
-    ]) {
+    for (const [protocols, status] of [
+      [undefined, 401],
+      [mockCredentials.user.invalidToken(), 401],
+      [mockCredentials.service.token(), 403],
+      [[mockCredentials.service.token(), mockCredentials.user.token()], 403],
+      ['application-protocol', 401],
+    ] as [string | string[] | undefined, number][]) {
       const result = await connectWebSocket(backend.server, protocols);
-      expect(result.statusCode).toBe(401);
+      expect(result.statusCode).toBe(status);
       expect(result.ws).toBeUndefined();
     }
     const mixed = await connectWebSocket(backend.server, [

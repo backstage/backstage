@@ -47,6 +47,11 @@ export async function authenticateWebSocket(options: {
       .map(value => value.trim())
       .filter(Boolean) ?? [];
   const candidates = bearer ? [...protocols, bearer] : protocols;
+  if (candidates.length > 5) {
+    throw new AuthenticationError(
+      'WebSocket authentication accepts at most 5 candidates',
+    );
+  }
   let deniedError: Error | undefined;
   let authenticationError: Error | undefined;
   for (const [index, token] of candidates.entries()) {

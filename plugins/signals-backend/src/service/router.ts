@@ -64,8 +64,11 @@ export function createRouter(options: RouterOptions): express.Router {
         logger.warn('WebSocket upgrade rejected: user credentials required', {
           remoteAddress: request.socket?.remoteAddress,
         });
+        const status = auth.isPrincipal(credentials, 'none')
+          ? '401 Unauthorized'
+          : '403 Forbidden';
         socket.end(
-          'HTTP/1.1 401 Unauthorized\r\nConnection: close\r\nContent-Length: 0\r\n\r\n',
+          `HTTP/1.1 ${status}\r\nConnection: close\r\nContent-Length: 0\r\n\r\n`,
           () => socket.destroy(),
         );
         return;

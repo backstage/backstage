@@ -137,7 +137,9 @@ full URL, including `/api/<plugin-id>` and the query string.
 WebSocket routes require authentication by default. The framework tries each
 comma-separated `Sec-WebSocket-Protocol` value in order until one authenticates.
 If none authenticates, it falls back to a Bearer token in the `Authorization`
-header. Tokens need not have a particular format. Browser clients cannot set
+header. At most five candidates are allowed in total, counting protocol values
+and the bearer token; requests exceeding this limit are rejected before authentication.
+Tokens need not have a particular format. Browser clients cannot set
 `Authorization`, so pass the bearer token through the protocol list:
 
 ```ts
@@ -149,7 +151,8 @@ is not supported. Set `authPolicy: 'unauthenticated'` if the handler will manage
 authentication itself; the framework then supplies none credentials without
 validating tokens. HTTP rate limiting and request logging do not run for these
 routes either. The handler must provide any authentication, rate limiting, and
-request logging it needs.
+request logging it needs. If it accepts cookies or other ambient credentials,
+it should validate the request origin to prevent cross-site WebSocket hijacking.
 
 ### Routing and lifecycle
 

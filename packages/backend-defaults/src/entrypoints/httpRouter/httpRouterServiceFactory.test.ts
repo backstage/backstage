@@ -35,8 +35,9 @@ import { once } from 'node:events';
 describe('httpRouterFactory', () => {
   it('should register plugin paths', async () => {
     const rootHttpRouter = mockServices.rootHttpRouter.mock();
+    const lifecycle = mockServices.lifecycle.mock();
     const tester = ServiceFactoryTester.from(httpRouterServiceFactory, {
-      dependencies: [rootHttpRouter.factory],
+      dependencies: [rootHttpRouter.factory, lifecycle.factory],
     });
 
     const router1 = await tester.getSubject('test1');
@@ -47,6 +48,8 @@ describe('httpRouterFactory', () => {
       expect.any(Function),
     );
 
+    expect(lifecycle.addStartupHook).toHaveBeenCalledTimes(1);
+    expect(lifecycle.addShutdownHook).toHaveBeenCalledTimes(1);
     const handler = jest.fn();
     router1.addWebSocketHandler({
       path: '/events',
@@ -61,7 +64,12 @@ describe('httpRouterFactory', () => {
       router1.addWebSocketHandler({ path: 'events', handler: handler }),
     ).toThrow('must start with /');
 
+    router1.addWebSocketHandler({ path: '/other', handler });
+    expect(lifecycle.addStartupHook).toHaveBeenCalledTimes(2);
+    expect(lifecycle.addShutdownHook).toHaveBeenCalledTimes(2);
     const router2 = await tester.getSubject('test2');
+    expect(lifecycle.addStartupHook).toHaveBeenCalledTimes(3);
+    expect(lifecycle.addShutdownHook).toHaveBeenCalledTimes(3);
     router2.use(() => {});
     expect(rootHttpRouter.use).toHaveBeenCalledTimes(2);
     expect(rootHttpRouter.use).toHaveBeenCalledWith(

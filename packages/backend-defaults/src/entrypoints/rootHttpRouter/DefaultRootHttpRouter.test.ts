@@ -151,6 +151,15 @@ describe('DefaultRootHttpRouter', () => {
       false,
     ]);
     expect(logger.warn).toHaveBeenCalledTimes(2);
+    const dropped = new PassThrough();
+    const req = new IncomingMessage(new Socket());
+    req.url = '/active';
+    req.headers.upgrade = 'websocket';
+    server.emit('upgrade', req, dropped, Buffer.alloc(0));
+    await new Promise(resolve => setImmediate(resolve));
+    dropped.emit('error', new Error('ECONNRESET'));
+    expect(dropped.destroyed).toBe(true);
+    expect(logger.warn).toHaveBeenCalledTimes(2);
     await lifecycle.shutdown();
     expect(sockets.every(socket => socket.destroyed)).toBe(true);
   });

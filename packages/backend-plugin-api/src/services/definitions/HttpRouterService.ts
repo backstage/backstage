@@ -51,6 +51,8 @@ export interface HttpRouterServiceWebSocketHandler {
    * authentication in the handler. Cookie authentication is not supported.
    * HTTP rate limiting and request logging do not run for unauthenticated
    * WebSocket routes either; the handler must provide any protections it needs.
+   * Handlers accepting cookies or other ambient credentials should validate the
+   * request origin to prevent cross-site WebSocket hijacking.
    */
   authPolicy?: 'unauthenticated';
 }

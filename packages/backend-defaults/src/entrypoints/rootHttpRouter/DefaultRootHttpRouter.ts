@@ -191,9 +191,12 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
         if (!matchedHandler && hasOtherListeners) {
           return;
         }
+        let handlerCompleted = false;
         // Node does not handle rejected promises from event listeners.
         const onError = (error: Error) => {
-          this.#webSocketLogger?.warn('WebSocket upgrade failed', error);
+          if (!handlerCompleted) {
+            this.#webSocketLogger?.warn('WebSocket upgrade failed', error);
+          }
           socket.destroy();
         };
         socket.on('error', onError);
@@ -215,6 +218,9 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
         }
         Promise.resolve()
           .then(() => matchedHandler({ request, socket, head }))
+          .then(() => {
+            handlerCompleted = true;
+          })
           .catch(onError);
       });
     }

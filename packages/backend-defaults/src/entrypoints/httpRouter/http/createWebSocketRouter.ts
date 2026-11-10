@@ -41,7 +41,7 @@ export function createWebSocketRouter(options: {
   rootHttpRouter: RootHttpRouterService;
 }): HttpRouterService['addWebSocketHandler'] {
   const { auth, config, lifecycle, logger, pluginId, rootHttpRouter } = options;
-  const lifecycleGate = createLifecycleGate({ config, lifecycle });
+  let lifecycleGate: ReturnType<typeof createLifecycleGate> | undefined;
   return ({
     path,
     handler,
@@ -50,12 +50,13 @@ export function createWebSocketRouter(options: {
     if (!path.startsWith('/')) {
       throw new Error('WebSocket path must start with /');
     }
+    const gate = (lifecycleGate ??= createLifecycleGate({ config, lifecycle }));
     rootHttpRouter.addWebSocketHandler({
       path: `/api/${pluginId}${path === '/' ? '' : path}`,
       async handler({ request, socket, head }) {
         let context;
         try {
-          await lifecycleGate.check();
+          await gate.check();
           if (socket.destroyed) {
             return;
           }
@@ -66,7 +67,7 @@ export function createWebSocketRouter(options: {
             request,
             authPolicy: authPolicy ?? 'authenticated',
           });
-          await lifecycleGate.check();
+          await gate.check();
         } catch (error) {
           let status = '500 Internal Server Error';
           if (error.name === 'AuthenticationError') {

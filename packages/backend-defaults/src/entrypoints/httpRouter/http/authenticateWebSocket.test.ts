@@ -106,6 +106,67 @@ describe('authenticateWebSocket', () => {
     }
   });
 
+  it('bounds authentication work without truncating candidate lists', async () => {
+    const auth = mockServices.auth();
+    const authenticate = jest.spyOn(auth, 'authenticate');
+    const config = mockServices.rootConfig();
+    const junk = ['one', 'two', 'three', 'four'];
+    for (const headers of [
+      {
+        'sec-websocket-protocol': [...junk, mockCredentials.user.token()].join(
+          ',',
+        ),
+      },
+      {
+        'sec-websocket-protocol': junk.join(','),
+        authorization: mockCredentials.user.header(),
+      },
+    ]) {
+      await expect(
+        authenticateWebSocket({
+          auth,
+          config,
+          request: request(headers),
+          authPolicy: 'authenticated',
+        }),
+      ).resolves.toMatchObject({ credentials: mockCredentials.user() });
+      expect(authenticate).toHaveBeenCalledTimes(5);
+      authenticate.mockClear();
+    }
+    for (const headers of [
+      {
+        'sec-websocket-protocol': [
+          mockCredentials.user.token(),
+          ...junk,
+          'five',
+        ].join(','),
+      },
+      {
+        'sec-websocket-protocol': [...junk, 'five'].join(','),
+        authorization: mockCredentials.user.header(),
+      },
+    ]) {
+      await expect(
+        authenticateWebSocket({
+          auth,
+          config,
+          request: request(headers),
+          authPolicy: 'authenticated',
+        }),
+      ).rejects.toThrow('at most 5 candidates');
+      expect(authenticate).not.toHaveBeenCalled();
+      await expect(
+        authenticateWebSocket({
+          auth,
+          config,
+          request: request(headers),
+          authPolicy: 'unauthenticated',
+        }),
+      ).resolves.toEqual({ credentials: mockCredentials.none() });
+      expect(authenticate).not.toHaveBeenCalled();
+    }
+  });
+
   it('tries later credentials after invalid tokens with the default auth service', async () => {
     const key = randomBytes(32);
     const data = {
