@@ -184,6 +184,20 @@ describe('useRouteRefParams', () => {
       name: 'foo',
       tab: 'ci-cd',
     });
+    // The suffix below the sub-page is not another value of its tab param.
+    // Appending the sub-route to the child mount would incorrectly read it.
+    const scoped = renderHook(() => useRouteRefParams(entityTabRouteRef), {
+      wrapper,
+    });
+    act(() =>
+      appHistory.navigate('/catalog/default/component/foo/ci-cd/details'),
+    );
+    expect(scoped.result.current).toEqual({
+      namespace: 'default',
+      kind: 'component',
+      name: 'foo',
+      tab: 'ci-cd',
+    });
     // The page's own ref declares none of the sub-page's params, so it still
     // sees exactly what it asked for at sub-page depth.
     expect(

@@ -82,7 +82,8 @@ function patternParams(
  * parent's, with its own path appended. That is what answers for a page that
  * routes below itself rather than through framework sub-pages, where the only
  * mount published is the page's own and the sub-route's params appear nowhere
- * else. It is tried last because it is the most specific pattern of the set.
+ * else. These inferred params are a fallback: actual matched extensions remain
+ * authoritative, including when a deeper mount reuses a parameter name.
  */
 function resolveParams(
   routeRef: RouteRef<any> | SubRouteRef<any>,
@@ -91,20 +92,20 @@ function resolveParams(
 ): Record<string, string> {
   const params: Record<string, string> = {};
 
-  for (const mount of mountChain) {
-    Object.assign(
-      params,
-      mount.params ??
-        patternParams(mount.routePattern, mount.basePath, pathname),
-    );
-  }
-
   if (OpaqueSubRouteRef.isType(routeRef)) {
     const { path: subPath } = OpaqueSubRouteRef.toInternal(routeRef);
     for (const mount of mountChain) {
       const routePattern = joinRoutePath(mount.routePattern, subPath);
       Object.assign(params, matchPath(routePattern, pathname, false)?.params);
     }
+  }
+
+  for (const mount of mountChain) {
+    Object.assign(
+      params,
+      mount.params ??
+        patternParams(mount.routePattern, mount.basePath, pathname),
+    );
   }
 
   return params;
