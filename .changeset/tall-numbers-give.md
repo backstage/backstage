@@ -2,4 +2,4 @@
 '@backstage/integration': patch
 ---
 
-Fixed a bug in AzureURL where legacy tfs URLs containing "/" characters in the owner portion were incorrectly parsed, resulting in invalid output URLs.
+Fixed a bug in AzureURL where legacy Azure DevOps Server URLs were incorrectly parsed when the owner variable contained "/" characters, resulting in invalid output URLs.
