@@ -16,6 +16,9 @@
 
 import {
   AppTreeApi,
+  AppHistoryApi,
+  appHistoryApiRef,
+  useAppLocation,
   ApiBlueprint,
   appTreeApiRef,
   coreExtensionData,
@@ -32,7 +35,13 @@ import {
   FrontendPluginInfo,
 } from '@backstage/frontend-plugin-api';
 import { ThemeBlueprint } from '@backstage/plugin-app-react';
-import { act, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import { createApp } from './createApp';
 import { mockApis, renderWithEffects } from '@backstage/test-utils';
 import {
@@ -41,7 +50,13 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import { default as appPluginOriginal } from '@backstage/plugin-app';
-import { ComponentType, StrictMode, useState, useEffect } from 'react';
+import {
+  ComponentType,
+  ReactElement,
+  StrictMode,
+  useState,
+  useEffect,
+} from 'react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
@@ -221,6 +236,151 @@ describe('createApp', () => {
     } finally {
       addEventListenerSpy.mockRestore();
       removeEventListenerSpy.mockRestore();
+    }
+  });
+
+  it('releases replaced app histories while a hot-refreshed root stays mounted', async () => {
+    window.history.replaceState(null, '', '/reload');
+    const add = jest.spyOn(window, 'addEventListener');
+    const remove = jest.spyOn(window, 'removeEventListener');
+    const lazy = jest.spyOn(
+      jest.requireActual<typeof import('react')>('react'),
+      'lazy',
+    );
+    const histories = new Map<string, AppHistoryApi>();
+    const popstateListeners = (spy: jest.SpyInstance) =>
+      spy.mock.calls
+        .filter(([type]) => type === 'popstate')
+        .map(([, listener]) => listener);
+    function Page({ title }: { title: string }) {
+      histories.set(title, useApi(appHistoryApiRef));
+      return (
+        <div>
+          {title}: {useAppLocation().pathname}
+        </div>
+      );
+    }
+    async function loadRoot(title: string, requireSignIn = false) {
+      createApp({
+        advanced: {
+          configLoader: async () => ({ config: mockApis.config() }),
+        },
+        features: [
+          requireSignIn ? appPluginOriginal : appPlugin,
+          ...(requireSignIn
+            ? [
+                createFrontendModule({
+                  pluginId: 'app',
+                  extensions: [
+                    appPluginOriginal
+                      .getExtension('sign-in-page:app')
+                      .override({
+                        factory: () => [
+                          signInPageComponentDataRef(({ onSignInSuccess }) => (
+                            <button
+                              onClick={() =>
+                                onSignInSuccess(mockApis.identity())
+                              }
+                            >
+                              Sign in {title}
+                            </button>
+                          )),
+                        ],
+                      }),
+                  ],
+                }),
+              ]
+            : []),
+          createFrontendPlugin({
+            pluginId: 'hot-refresh-test',
+            extensions: [
+              PageBlueprint.make({
+                params: {
+                  path: '/reload',
+                  loader: async () => <Page title={title} />,
+                },
+              }),
+            ],
+          }),
+        ],
+      });
+      // Fast Refresh may preserve PreparedAppRoot while replacing the app
+      // supplied to it. Resolve the lazy loader to exercise that boundary
+      // directly, without remounting its anonymous parent component.
+      const { default: Root } = await lazy.mock.calls.at(-1)![0]();
+      return (Root as () => ReactElement)();
+    }
+    try {
+      const independent = await renderWithEffects(
+        await loadRoot('Independent'),
+      );
+      const rendered = await renderWithEffects(
+        <StrictMode>{await loadRoot('First')}</StrictMode>,
+      );
+      expect(await screen.findByText('First: /reload')).toBeInTheDocument();
+      expect(
+        await screen.findByText('Independent: /reload'),
+      ).toBeInTheDocument();
+      expect(popstateListeners(add)).toHaveLength(2);
+      expect(popstateListeners(remove)).toHaveLength(0);
+
+      const staleSubscriber = jest.fn();
+      histories.get('First')!.subscribe(staleSubscriber);
+      for (const title of ['Second', 'Third']) {
+        rendered.rerender(
+          <StrictMode>{await loadRoot(title, title === 'Second')}</StrictMode>,
+        );
+        if (title === 'Second') {
+          fireEvent.click(
+            await screen.findByRole('button', { name: 'Sign in Second' }),
+          );
+        }
+        expect(
+          await screen.findByText(`${title}: /reload`),
+        ).toBeInTheDocument();
+        expect(screen.queryByText('First: /reload')).not.toBeInTheDocument();
+        expect(
+          popstateListeners(add).filter(
+            listener => !popstateListeners(remove).includes(listener),
+          ),
+        ).toHaveLength(2);
+      }
+      expect(popstateListeners(add)).toHaveLength(4);
+      expect(popstateListeners(remove)).toHaveLength(2);
+      expect(popstateListeners(remove)).not.toContain(
+        popstateListeners(add)[0],
+      );
+
+      await act(async () => {
+        window.history.pushState(null, '', '/reload/after');
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      });
+      expect(
+        await screen.findByText('Third: /reload/after'),
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText('Independent: /reload/after'),
+      ).toBeInTheDocument();
+      expect(staleSubscriber).not.toHaveBeenCalled();
+
+      rendered.unmount();
+      await Promise.resolve();
+      expect(popstateListeners(remove)).toHaveLength(3);
+      expect(popstateListeners(remove)).not.toContain(
+        popstateListeners(add)[0],
+      );
+      independent.unmount();
+      await Promise.resolve();
+      expect(new Set(popstateListeners(remove))).toEqual(
+        new Set(popstateListeners(add)),
+      );
+    } finally {
+      cleanup();
+      await Promise.resolve();
+      lazy.mockRestore();
+      add.mockRestore();
+      remove.mockRestore();
+      window.history.replaceState(null, '', '/');
     }
   });
 
