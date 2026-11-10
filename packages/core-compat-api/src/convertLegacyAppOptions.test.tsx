@@ -20,6 +20,8 @@ import {
   FrontendModule,
   toInternalFrontendModule,
 } from '../../frontend-plugin-api/src/wiring/createFrontendModule';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalExtension } from '../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import {
   AppTheme,
   createApiFactory,
@@ -70,5 +72,40 @@ describe('convertLegacyAppOptions', () => {
         "Extension{id=sign-in-page:app}",
       ]
     `);
+  });
+
+  it('should create uniquely named swappable component overrides', () => {
+    const { extensions } = toInternalFrontendModule(
+      convertLegacyAppOptions({
+        components: {
+          Progress: () => null,
+          NotFoundErrorPage: () => null,
+          ErrorBoundaryFallback: () => null,
+        },
+      }),
+    );
+
+    expect(extensions.map(extension => extension.id)).toEqual([
+      'component:app/core-progress',
+      'component:app/core-not-found-error-page',
+      'component:app/core-error-display',
+    ]);
+
+    expect(
+      extensions.map(extension => {
+        const internalExtension = toInternalExtension(extension);
+        if (internalExtension.version !== 'v2') {
+          throw new Error('Expected a v2 extension');
+        }
+        const [componentData] = Array.from(
+          internalExtension.factory({} as never),
+        );
+        return componentData.value.ref.id;
+      }),
+    ).toEqual([
+      'core-progress',
+      'core-not-found-error-page',
+      'core-error-display',
+    ]);
   });
 });
