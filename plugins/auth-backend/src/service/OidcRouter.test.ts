@@ -274,7 +274,7 @@ describe('OidcRouter', () => {
         databaseId,
         undefined,
         {
-          clients: [{ clientId, clientSecret, redirectUris: [redirectUri] }],
+          staticClients: [{ clientId, clientSecret, redirectUris: [redirectUri] }],
         },
       );
       mocks.tokenIssuer.issueToken.mockResolvedValue({ token: 'access-token' });
@@ -312,7 +312,7 @@ describe('OidcRouter', () => {
         databaseId,
         undefined,
         {
-          clients: [{ clientId, clientSecret, redirectUris: [redirectUri] }],
+          staticClients: [{ clientId, clientSecret, redirectUris: [redirectUri] }],
         },
       );
       mocks.tokenIssuer.issueToken.mockResolvedValue({ token: 'access-token' });
@@ -362,7 +362,7 @@ describe('OidcRouter', () => {
         config: mockServices.rootConfig({
           data: {
             auth: {
-              clients: [
+              staticClients: [
                 {
                   clientId: 'remaining-client',
                   clientSecret: 'another-secret',

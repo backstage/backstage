@@ -1871,7 +1871,7 @@ describe('OidcService', () => {
       const redirectUri = 'https://integration.example.com/callback';
       const staticClientsConfig = {
         auth: {
-          clients: [
+          staticClients: [
             {
               clientId: 'confidential-client',
               clientName: 'Confidential Client',
