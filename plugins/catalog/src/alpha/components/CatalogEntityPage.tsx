@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentType, ReactElement, useMemo } from 'react';
+import { ComponentType, ReactElement, useMemo, useState } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useRouteRefParams } from '@backstage/core-plugin-api';
 import { Progress } from '@backstage/frontend-plugin-api';
@@ -71,17 +71,34 @@ export function CatalogEntityPage(props: CatalogEntityPageProps) {
     [visibleRoutes],
   );
   const titles = useTranslatedTitles(selections);
-  const routes = useMemo(
+  const translatedRoutes = useMemo(
     () =>
-      titles
-        ? visibleRoutes.map((route, index) => ({
+      titles &&
+      new Map(
+        visibleRoutes.map((route, index) => [
+          route,
+          {
             ...route,
             title: titles[index] ?? route.title,
-          }))
-        : [],
+          },
+        ]),
+      ),
     [visibleRoutes, titles],
   );
-  if (!titles) {
+  // Keep resolved, still-visible routes mounted while a replacement group loads.
+  const [previousRoutes, setPreviousRoutes] = useState(translatedRoutes);
+  if (translatedRoutes && previousRoutes !== translatedRoutes) {
+    setPreviousRoutes(translatedRoutes);
+  }
+  const routes = translatedRoutes
+    ? [...translatedRoutes.values()]
+    : previousRoutes &&
+      visibleRoutes.map(
+        route =>
+          previousRoutes.get(route) ??
+          (route.titleTranslation ? undefined : route),
+      );
+  if (!routes?.every((route): route is EntityLayoutRoute => Boolean(route))) {
     return <Progress />;
   }
   const entityProviderProps = {

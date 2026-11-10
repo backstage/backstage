@@ -263,6 +263,10 @@ describe('Entity page', () => {
         .mockResolvedValueOnce({
           ...entityMock,
           metadata: { ...entityMock.metadata, description: 'Refreshed entity' },
+        })
+        .mockResolvedValueOnce({
+          ...entityMock,
+          metadata: { ...entityMock.metadata, description: 'Filtered entity' },
         });
       const languageApi = AppLanguageSelector.create({
         availableLanguages: ['en', 'sv', 'de'],
@@ -333,6 +337,17 @@ describe('Entity page', () => {
             },
           }),
         );
+      tester.add(
+        EntityContentBlueprint.make({
+          name: 'conditional',
+          params: {
+            path: '/conditional',
+            title: 'Conditional',
+            filter: e => e.metadata.description !== 'Filtered entity',
+            loader: async () => <div>Conditional content</div>,
+          },
+        }),
+      );
       tester.add(
         EntityContentBlueprint.make({
           name: 'hidden-translated',
@@ -413,6 +428,18 @@ describe('Entity page', () => {
         await screen.findByText('Refreshed entity', { selector: 'output' }),
       ).toBeInTheDocument();
       expect(observe).toHaveBeenCalledTimes(subscriptions);
+      expect(screen.getByText('Conditional')).toBeInTheDocument();
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Refresh entity' }),
+      );
+      expect(
+        await screen.findByText('Filtered entity', { selector: 'output' }),
+      ).toBeInTheDocument();
+      expect(screen.queryByText('Conditional')).not.toBeInTheDocument();
+      expect(screen.getByLabelText('Entity page state')).toBe(input);
+      expect(input).toHaveValue('initial preserved');
+      expect(mount).toHaveBeenCalledTimes(1);
+      expect(unmount).not.toHaveBeenCalled();
       await userEvent.click(
         await screen.findByRole(groupRole, { name: /Documentation/ }),
       );
