@@ -2,16 +2,4 @@
 '@backstage/frontend-adapter-react-router-v6': minor
 ---
 
-Added `ReactRouterV6PageRouter` for page-scoped React Router v6 routing with app-owned history. Render it inside a lazily loaded page or sub-page component to support relative links, nested routes, and route parameters. React Router v6 is a peer dependency.
-
-BUI controls inside the adapter use React Router’s relative-path semantics at the control’s route scope. App-absolute destinations, including paths from route refs, work through both BUI and native React Router APIs without adding the plugin mount path.
-
-The adapter renders children unchanged when no page mount or app history is available, supporting shared components in the old frontend system and standalone tests.
-
-See the [page router guide](https://backstage.io/docs/frontend-system/building-plugins/page-routers#use-react-router-v6) for setup and nesting examples.
-
-The adapter supplies the public contextual navigation contract for any component library, including BUI, without depending on BUI at runtime.
-
-Same-origin absolute links under the deployment basename navigate within the app without duplicating the basename. Cross-origin links remain external, and repeated path segments are preserved.
-
-Links to encoded paths retain native browser-router active states. React Router location keys refresh on push and replacement and restore on history traversal, without changing framework entry identity.
+Added `ReactRouterV6PageRouter` for page-scoped React Router v6 routing with app-owned history; React Router v6 is a peer dependency. Render it inside a lazily loaded page or sub-page component to support relative links, nested routes, and route parameters. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps and the [page router guide](https://backstage.io/docs/frontend-system/building-plugins/page-routers#use-react-router-v6) for setup and nesting examples.
