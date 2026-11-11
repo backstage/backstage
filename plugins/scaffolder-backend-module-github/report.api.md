@@ -367,7 +367,7 @@ export function createGithubRepoRulesetsCreateAction(options: {
     rules?:
       | {
           type: string;
-          parameters?: Record<string, unknown> | undefined;
+          parameters?: Record<string, any> | undefined;
         }[]
       | undefined;
     bypassActors?:

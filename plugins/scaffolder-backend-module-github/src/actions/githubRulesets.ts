@@ -97,7 +97,7 @@ export function createGithubRepoRulesetsCreateAction(options: {
             .array(
               z.object({
                 type: z.string(),
-                parameters: z.record(z.string(), z.unknown()).optional(),
+                parameters: z.record(z.string(), z.any()).optional(),
               }),
               {
                 description:
