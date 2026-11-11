@@ -82,21 +82,6 @@ export interface FrontendExtensionManifest {
 }
 
 /**
- * The manifest file of a frontend plugin package, which `backstage-cli
- * package build` writes to `dist/frontend-manifest.json`. It is referenced
- * by the `backstage.frontendManifest` field of the published package.json.
- */
-export interface FrontendPackageManifest {
-  manifestVersion: typeof FRONTEND_MANIFEST_VERSION;
-  /**
-   * The manifests of the default exports of the entry points of the package,
-   * keyed by entry point, for example "." or "./alpha". Entry points without
-   * a plugin or module as their default export are left out.
-   */
-  entryPoints: { [entryPoint: string]: FrontendFeatureManifest };
-}
-
-/**
  * A plugin that is only loaded once one of its pages or elements is
  * rendered.
  */

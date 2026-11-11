@@ -47,38 +47,6 @@ Feature discovery requires that your app is built using the `@backstage/cli`, wh
 
 For more details on how feature discovery works under the hood, see the [Feature Discovery](../architecture/10-app.md#feature-discovery) architecture documentation.
 
-### Deferred loading
-
-:::note
-Deferred loading is experimental, and the details described here may change.
-:::
-
-You can let the app load discovered plugins on demand, rather than including them all in the initial app bundle. This is enabled by setting `app.experimental.deferredPackages` together with `app.packages`:
-
-```yaml title="app-config.yaml"
-app:
-  packages: all
-  experimental:
-    deferredPackages: true
-```
-
-The CLI then defers each plugin that supports it, and loads it the first time one of its pages is visited or one of its elements is rendered. Whether a plugin supports it is decided by analyzing its source code at build time, see [Deferred loading](../building-plugins/01-index.md#deferred-loading). Plugins in your workspace are analyzed when you build or start the app. Plugins that you install from npm must include a manifest from the build of their package, otherwise they are loaded together with the app. When you build or start the app, the CLI prints which plugins are deferred and why the others are not.
-
-To always load some plugins together with the app, list their packages in `exclude`:
-
-```yaml title="app-config.yaml"
-app:
-  packages: all
-  experimental:
-    deferredPackages:
-      exclude:
-        - '@backstage/plugin-catalog'
-```
-
-A plugin that you pass to `createApp` in the `features` option is used instead of a deferred plugin with the same plugin ID. If you pass a module for a deferred plugin, that plugin is loaded together with the app so that the module applies to it.
-
-If you have any config in `app.extensions` for an element of a deferred plugin, such as a sub-page, the plugin is loaded right after the app has started, since the config can only be applied once the plugin is loaded. Config for the pages of a plugin does not have this effect. Plugins that provide utility APIs are always loaded together with the app.
-
 ## Manual installation
 
 If your app does not have [feature discovery](#feature-discovery) enabled, or if you need more control over the plugin installation, you can install plugins manually. This is done by importing the plugin and passing it to `createApp`:
