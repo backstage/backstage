@@ -716,7 +716,7 @@ Require stack:
             name: 'backstage__plugin_test',
             type: 'global',
           },
-          // Read from the frontend-manifest.json file next to the manifest
+          // Read from the backstage-manifest.json file next to the manifest
           frontendManifest: {
             manifestVersion: 1,
             exposedModules: {
