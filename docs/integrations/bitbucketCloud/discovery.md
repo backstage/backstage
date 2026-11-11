@@ -66,8 +66,13 @@ Further documentation:
 ## Configuration
 
 To use the entity provider, you'll need a [Bitbucket Cloud integration set up](locations.md).
-Very likely a `username` and `appPassword` will be required
-(you are restricted to public repositories and a very low rate limit otherwise).
+
+The entity provider uses the
+[workspace code search API](https://developer.atlassian.com/cloud/bitbucket/rest/api-group-workspaces/#api-workspaces-workspace-codesearch-post)
+of Bitbucket Cloud. This API needs a credential that identifies a user,
+for example a `username` (your Atlassian account email) and an API `token`.
+The token needs the scopes `read:repository:bitbucket` and `read:workspace:bitbucket`.
+Bitbucket Cloud rejects app passwords for this API.
 
 Additionally, you need to configure your entity provider instance(s):
 
@@ -100,8 +105,8 @@ It is possible but certainly not recommended to skip the provider ID level.
   Default: `/catalog-info.yaml`.
   Path where to look for `catalog-info.yaml` files.
   When started with `/`, it is an absolute path from the repo root.
-  It supports values as allowed by the `path` filter/modifier
-  [at Bitbucket Cloud's code search](https://confluence.atlassian.com/bitbucket/code-search-in-bitbucket-873876782.html#Search-Pathmodifier).
+  Otherwise, it matches the file at the repo root and in any folder.
+  In the path, `*` matches any characters, including `/`, and `?` matches one character.
 - **`filters`** _(optional)_:
   - **`projectKey`** _(optional)_:
     Regular expression used to filter results based on the project key.
