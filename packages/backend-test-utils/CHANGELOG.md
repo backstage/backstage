@@ -1,5 +1,26 @@
 # @backstage/backend-test-utils
 
+## 1.12.0-next.2
+
+### Minor Changes
+
+- 250e4c3: Support WebSocket upgrade route registration in HTTP router service mocks and test backends.
+- a5337d0: The `mockServices` export is now a frozen plain object instead of a TypeScript namespace, and its type is described by the new `MockServices` interface. Usage is unchanged: you can still call each mock service directly, use its `factory` and `mock` helpers, and refer to types such as `mockServices.rootConfig.Options`.
+
+  Both `mockServices` and each of its services are frozen, so they can no longer be modified at runtime, for example with `jest.spyOn(mockServices.urlReader, 'mock')`. The mocks and factories they create are not affected.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.19.0-next.2
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/backend-app-api@1.9.0-next.1
+  - @backstage/plugin-auth-node@0.7.8-next.2
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/config@1.3.11-next.0
+  - @backstage/plugin-permission-common@0.9.13-next.0
+
 ## 1.11.9-next.1
 
 ### Patch Changes

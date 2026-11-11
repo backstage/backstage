@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { JSX, lazy, ReactNode, Suspense, useEffect, useState } from 'react';
+import {
+  JSX,
+  lazy,
+  ReactNode,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   ConfigApi,
   FrontendFeature,
@@ -34,6 +42,8 @@ import {
   PreparedSpecializedApp,
   FrontendPluginInfoResolver,
 } from '@backstage/frontend-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import type { CreateSpecializedAppInternalOptions } from '../../frontend-app-api/src/wiring/prepareSpecializedApp';
 import appPlugin from '@backstage/plugin-app';
 import { discoverAvailableFeatures } from './discovery';
 import { resolveAsyncFeatures } from './resolution';
@@ -120,15 +130,25 @@ export function createApp(options?: CreateAppOptions): {
       features: [...discoveredFeaturesAndLoaders, ...(options?.features ?? [])],
     });
 
+    // Handed over synchronously while the app is being prepared, so it is
+    // already the real teardown by the time anything renders.
+    let disposeApp: () => void = () => {};
     const preparedApp = prepareSpecializedApp({
       features: [appPlugin, ...loadedFeatures],
       config,
       bindRoutes: options?.bindRoutes,
       advanced: options?.advanced,
-    });
+      __internal: {
+        onDispose: dispose => {
+          disposeApp = dispose;
+        },
+      },
+    } as CreateSpecializedAppInternalOptions);
 
     return {
-      default: () => <PreparedAppRoot preparedApp={preparedApp} />,
+      default: () => (
+        <PreparedAppRoot preparedApp={preparedApp} dispose={disposeApp} />
+      ),
     };
   }
 
@@ -147,16 +167,41 @@ export function createApp(options?: CreateAppOptions): {
 
 function PreparedAppRoot(props: {
   preparedApp: PreparedSpecializedApp;
+  dispose: () => void;
 }): JSX.Element {
-  const bootstrapApp = props.preparedApp.getBootstrapApp();
-  const [finalizedApp, setFinalizedApp] = useState<
-    FinalizedSpecializedApp | undefined
-  >();
+  const { preparedApp, dispose } = props;
+  const mountedDisposeRef = useRef<() => void>();
+  const bootstrapApp = preparedApp.getBootstrapApp();
+  const [finalized, setFinalized] = useState<{
+    preparedApp: PreparedSpecializedApp;
+    app: FinalizedSpecializedApp;
+  }>();
 
   useEffect(
-    () => props.preparedApp.onFinalized(setFinalizedApp),
-    [props.preparedApp],
+    () => preparedApp.onFinalized(app => setFinalized({ preparedApp, app })),
+    [preparedApp],
   );
+  const finalizedApp =
+    finalized?.preparedApp === preparedApp ? finalized.app : undefined;
+
+  // The app owns browser resources for as long as it is mounted, most notably
+  // the `popstate` listener behind app navigation, so unmounting the React root
+  // releases them.
+  //
+  // Fast Refresh can preserve this component while replacing the app. Track
+  // which app owns the mounted root so that replaying effects for the same app
+  // keeps it alive, while replacing the app releases the previous instance.
+  useEffect(() => {
+    mountedDisposeRef.current = dispose;
+    return () => {
+      mountedDisposeRef.current = undefined;
+      queueMicrotask(() => {
+        if (mountedDisposeRef.current !== dispose) {
+          dispose();
+        }
+      });
+    };
+  }, [dispose]);
 
   if (!finalizedApp) {
     return bootstrapApp.element;

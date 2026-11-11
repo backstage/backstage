@@ -1,5 +1,22 @@
 # @backstage/core-compat-api
 
+## 0.6.0-next.2
+
+### Minor Changes
+
+- df2bcee: **BREAKING**: `convertLegacyAppOptions` now rejects `components.Router`: remove plain `BrowserRouter` wrappers, move global providers to `AppRootWrapperBlueprint`, and use page router adapters for page-specific routing, with converted legacy pages receiving a scoped React Router v6 adapter automatically. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/frontend-adapter-react-router-v6@0.2.0-next.0
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/plugin-app-react@0.3.0-next.2
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/filter-predicates@0.2.1-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.2
+
 ## 0.5.17-next.1
 
 ### Patch Changes

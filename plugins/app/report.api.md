@@ -119,18 +119,6 @@ const appPlugin: OverridableFrontendPlugin<
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
-        router: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            (props: { children: ReactNode }) => JSX.Element | null,
-            'app.router.wrapper',
-            {}
-          >,
-          {
-            singleton: true;
-            optional: true;
-            internal: true;
-          }
-        >;
         signInPage: ExtensionInput<
           ConfigurableExtensionDataRef<
             ComponentType<SignInPageProps>,

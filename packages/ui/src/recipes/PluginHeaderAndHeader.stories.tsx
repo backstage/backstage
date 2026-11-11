@@ -20,8 +20,7 @@ import {
   Page as CorePage,
 } from '@backstage/core-components';
 import type { StoryFn } from '@storybook/react-vite';
-import { MemoryRouter } from 'react-router-dom';
-import { BUIProvider } from '../provider';
+import { TestRouter } from '../testUtils/TestRouter';
 import type { HeaderNavTabItem } from '../components/Header/types';
 import {
   PluginHeader,
@@ -80,11 +79,9 @@ const LongPageContent = () => (
 // ---------------------------------------------------------------------------
 
 const withLayout = (Story: StoryFn) => (
-  <MemoryRouter>
-    <BUIProvider>
-      <Story />
-    </BUIProvider>
-  </MemoryRouter>
+  <TestRouter>
+    <Story />
+  </TestRouter>
 );
 
 // ---------------------------------------------------------------------------
@@ -244,11 +241,9 @@ const subTabs: HeaderNavTabItem[] = [
 export const WithSubTabs = meta.story({
   decorators: [
     (Story: StoryFn) => (
-      <MemoryRouter initialEntries={['/summary']}>
-        <BUIProvider>
-          <Story />
-        </BUIProvider>
-      </MemoryRouter>
+      <TestRouter initialEntries={['/summary']}>
+        <Story />
+      </TestRouter>
     ),
   ],
   render: () => {
@@ -297,11 +292,9 @@ export const WithSubTabs = meta.story({
 export const WithSubTabsAndTags = meta.story({
   decorators: [
     (Story: StoryFn) => (
-      <MemoryRouter initialEntries={['/summary']}>
-        <BUIProvider>
-          <Story />
-        </BUIProvider>
-      </MemoryRouter>
+      <TestRouter initialEntries={['/summary']}>
+        <Story />
+      </TestRouter>
     ),
   ],
   render: () => {
@@ -355,11 +348,9 @@ export const WithSubTabsAndTags = meta.story({
 export const WithStickyHeader = meta.story({
   decorators: [
     (Story: StoryFn) => (
-      <MemoryRouter initialEntries={['/summary']}>
-        <BUIProvider>
-          <Story />
-        </BUIProvider>
-      </MemoryRouter>
+      <TestRouter initialEntries={['/summary']}>
+        <Story />
+      </TestRouter>
     ),
   ],
   render: () => {

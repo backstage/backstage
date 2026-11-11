@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-app-api",
-  "version": "1.20.7-next.1",
+  "version": "1.20.7-next.2",
   "description": "Core app API used by Backstage apps",
   "backstage": {
     "role": "web-library"
@@ -51,11 +51,13 @@
     "@backstage/types": "workspace:^",
     "@backstage/ui": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
+    "@remix-run/router": "^1.23.4",
     "@types/prop-types": "^15.7.3",
     "history": "^5.0.0",
     "i18next": "^22.4.15",
     "lodash": "^4.17.21",
     "prop-types": "^15.7.2",
+    "react-aria-components": "~1.17.0",
     "react-use": "^17.2.4",
     "zen-observable": "^0.10.0",
     "zod": "^3.25.76 || ^4.0.0"

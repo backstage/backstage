@@ -63,6 +63,29 @@ describe('buildHeaderTabs', () => {
       { id: '/ci', label: 'CI', href: 'ci' },
       { id: '/overview', label: 'Overview', href: 'overview' },
     ]);
+
+    expect(
+      buildHeaderTabs(
+        [
+          { path: '/', title: 'Overview', children: <div /> },
+          { path: '/docs/*', title: 'Docs', children: <div /> },
+        ],
+        {},
+        'title',
+        '/catalog/default/component/example',
+      ),
+    ).toEqual([
+      {
+        id: '/',
+        label: 'Overview',
+        href: '/catalog/default/component/example',
+      },
+      {
+        id: '/docs/*',
+        label: 'Docs',
+        href: '/catalog/default/component/example/docs',
+      },
+    ]);
   });
 });
 

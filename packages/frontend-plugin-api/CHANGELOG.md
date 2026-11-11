@@ -1,5 +1,18 @@
 # @backstage/frontend-plugin-api
 
+## 0.19.0-next.2
+
+### Minor Changes
+
+- a5b3445: Added router-independent navigation and routing APIs: `RouterLink`, `AppHistoryApi` with `useAppNavigate`, `useAppHref`, `useAppLocation`, `useAppSearchParams`, and `RouteResolutionApi.resolvePath` for matched routing ancestry. **BREAKING**: `useRouteRefParams` returns only parameters declared by the supplied route ref, with `undefined` for unmatched parameters, and no longer includes the splat `*`. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/filter-predicates@0.2.1-next.0
+
 ## 0.19.0-next.1
 
 ### Minor Changes

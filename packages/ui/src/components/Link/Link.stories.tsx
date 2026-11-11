@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { Link } from './Link';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
-import { MemoryRouter } from 'react-router-dom';
+
 import { BUIProvider } from '../../provider';
 
 const meta = preview.meta({
@@ -30,11 +31,11 @@ const meta = preview.meta({
   },
   decorators: [
     (Story: StoryFn) => (
-      <MemoryRouter>
+      <TestRouter>
         <BUIProvider>
           <Story />
         </BUIProvider>
-      </MemoryRouter>
+      </TestRouter>
     ),
   ],
 });

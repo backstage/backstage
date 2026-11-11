@@ -1,5 +1,18 @@
 # @backstage/frontend-dynamic-feature-loader
 
+## 0.1.18-next.2
+
+### Patch Changes
+
+- ed8f1ef: Updated dependency `@module-federation/sdk` to `~2.9.0`.
+  Updated dependency `@module-federation/enhanced` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime-core` to `~2.9.0`.
+- Updated dependencies
+  - @backstage/module-federation-common@0.1.7-next.0
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/config@1.3.11-next.0
+
 ## 0.1.18-next.1
 
 ### Patch Changes

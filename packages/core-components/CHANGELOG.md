@@ -1,5 +1,16 @@
 # @backstage/core-components
 
+## 0.18.16-next.1
+
+### Patch Changes
+
+- cac9654: `MarkdownContent` now loads `react-markdown` and its `remark` and `rehype` plugins the first time it renders, instead of with the app. This keeps them out of the app's startup bundle. Markdown appears once the renderer has loaded, so tests that look for rendered markdown right after a synchronous `render` may need to use `findBy*` queries instead.
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+
 ## 0.18.16-next.0
 
 ### Patch Changes
