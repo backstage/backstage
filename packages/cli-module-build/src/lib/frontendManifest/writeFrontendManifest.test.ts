@@ -27,7 +27,6 @@ describe('writeFrontendManifest', () => {
     backstage: { role: 'frontend-plugin' as const },
     exports: {
       '.': './src/index.ts',
-      './sync': './src/sync.ts',
       './package.json': './package.json',
     },
   };
@@ -37,14 +36,8 @@ describe('writeFrontendManifest', () => {
     export default createFrontendPlugin({ pluginId: 'demo', extensions: [${extensions}] });
   `;
 
-  it('should write a manifest that can be read back, or fail for an invalid sync entry point', async () => {
-    mockDir.setContent({
-      'src/index.ts': plugin('page'),
-      'src/sync.ts': `
-        import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
-        export default createFrontendPlugin({ pluginId: 'demo', extensions: [] });
-      `,
-    });
+  it('should write a manifest that can be read back', async () => {
+    mockDir.setContent({ 'src/index.ts': plugin('page') });
 
     await writeFrontendManifest(mockDir.path, packageJson);
     const written = await readPackageManifest(mockDir.path, {
@@ -65,19 +58,6 @@ describe('writeFrontendManifest', () => {
         },
       },
     });
-
-    // The sync entry point is for another plugin
-    mockDir.addContent({
-      'src/sync.ts': `
-        import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
-        export default createFrontendPlugin({ pluginId: 'other', extensions: [] });
-      `,
-    });
-    await expect(
-      writeFrontendManifest(mockDir.path, packageJson),
-    ).rejects.toThrow(
-      "The ./sync entry point of @test/plugin-demo is invalid, the sync entry point is for the 'other' plugin, which no other entry point of the package provides",
-    );
 
     // Packages other than plugins and modules get no manifest
     mockDir.clear();

@@ -259,7 +259,7 @@ describe('analyzeFrontendPackage', () => {
         ),
       ),
     ).toBe(
-      `the extension is created with 'createExtension', but only extensions made with PageBlueprint, SubPageBlueprint, ApiBlueprint can be deferred (src/index.ts:7)`,
+      `the extension is created with 'createExtension', but only extensions made with PageBlueprint, SubPageBlueprint can be deferred (src/index.ts:7)`,
     );
     // Entity cards output a filter function, which can't be stored
     expect(
@@ -269,7 +269,7 @@ describe('analyzeFrontendPackage', () => {
         ),
       ),
     ).toBe(
-      `the extension is created with 'EntityCardBlueprint.make', but only extensions made with PageBlueprint, SubPageBlueprint, ApiBlueprint can be deferred (src/index.ts:7)`,
+      `the extension is created with 'EntityCardBlueprint.make', but only extensions made with PageBlueprint, SubPageBlueprint can be deferred (src/index.ts:7)`,
     );
     expect(
       reasonOf(
@@ -288,177 +288,49 @@ describe('analyzeFrontendPackage', () => {
     expect(reasonOf(plugin(''))).toBe('the plugin has no extensions');
   });
 
-  it('should only defer plugins with APIs that have a sync entry point', () => {
+  it('should never defer plugins with APIs', () => {
     const files = {
       'src/index.ts': `
         import { createFrontendPlugin } from ${API};
         import { api, page } from './extensions';
-        import { rootRouteRef } from './routes';
         export default createFrontendPlugin({
           pluginId: 'demo',
-          routes: { root: rootRouteRef },
-          extensions: [api, page],
+          extensions: [page, api],
         });
       `,
       'src/sync.ts': `
         import { createFrontendPlugin } from ${API};
         import { api } from './extensions';
-        import { rootRouteRef } from './routes';
         export default createFrontendPlugin({
           pluginId: 'demo',
-          routes: { root: rootRouteRef },
           extensions: [api],
         });
       `,
-      'src/routes.ts': `
-        import { createRouteRef } from ${API};
-        export const rootRouteRef = createRouteRef();
-      `,
       'src/extensions.tsx': `
         import { ApiBlueprint, PageBlueprint } from ${API};
-        import { rootRouteRef } from './routes';
         export const api = ApiBlueprint.make({
           name: 'client',
           params: define => define({ api: x, deps: {}, factory: () => ({}) }),
         });
         export const page = PageBlueprint.make({
-          params: { path: '/demo', routeRef: rootRouteRef, loader: async () => <div /> },
+          params: { path: '/demo', loader: async () => <div /> },
         });
       `,
     };
+    const reason =
+      'the plugin provides an API, and plugins that provide APIs are loaded with the app (src/extensions.tsx:3)';
 
-    const withoutSync = analyze(files).entryPoints['.'];
-    expect(withoutSync).toMatchObject({
-      manifest: {
-        deferrable: false,
-        notDeferrableReason:
-          "the plugin provides the API 'api:demo/client', and only plugins with a ./sync entry point can defer their APIs",
-      },
+    expect(analyze(files).entryPoints['.']).toMatchObject({
+      manifest: { deferrable: false, notDeferrableReason: reason },
     });
-
-    const entryPoints = [
+    // A ./sync entry point is not analyzed, and doesn't change the result
+    const withSync = analyze(files, [
       { mount: '.', path: 'src/index.ts' },
       { mount: './sync', path: 'src/sync.ts' },
-    ];
-    const withSync = analyze(files, entryPoints);
-    expect(withSync.syncError).toBeUndefined();
+    ]);
+    expect(Object.keys(withSync.entryPoints)).toEqual(['.']);
     expect(withSync.entryPoints['.']).toMatchObject({
-      manifest: {
-        deferrable: true,
-        extensions: [
-          { id: 'api:demo/client', kind: 'api', sync: true },
-          { id: 'page:demo', page: { path: '/demo', routeRefName: 'root' } },
-        ],
-      },
-    });
-
-    // The sync entry point must not declare its own extensions or routes
-    const redeclared = analyze(
-      {
-        ...files,
-        'src/sync.ts': `
-          import { createFrontendPlugin, createRouteRef } from ${API};
-          import { api } from './extensions';
-          export default createFrontendPlugin({
-            pluginId: 'demo',
-            routes: { root: createRouteRef() },
-            extensions: [api],
-          });
-        `,
-      },
-      entryPoints,
-    );
-    expect(redeclared.syncError).toBe(
-      "the 'root' route ref in routes of the sync entry point is not the same declaration as in the main entry point",
-    );
-    const inline = analyze(
-      {
-        ...files,
-        'src/sync.ts': `
-          import { createFrontendPlugin, ApiBlueprint } from ${API};
-          export default createFrontendPlugin({
-            pluginId: 'demo',
-            extensions: [ApiBlueprint.make({ name: 'client', params: d => d({}) })],
-          });
-        `,
-      },
-      entryPoints,
-    );
-    expect(inline.syncError).toMatch(
-      /^each extension of the sync entry point must be a declaration that the main entry point uses as well.* \(src\/sync.ts:5\)$/,
-    );
-  });
-
-  it('should read the IDs of sync extensions made with any blueprint', () => {
-    const result = analyze(
-      {
-        'node_modules/@test/blueprints/package.json': JSON.stringify({
-          name: '@test/blueprints',
-          types: 'index.d.ts',
-        }),
-        'node_modules/@test/blueprints/index.d.ts': `
-          import { ExtensionBlueprint } from ${API};
-          export declare const CardBlueprint: ExtensionBlueprint<{
-            kind: 'card';
-            params: {};
-          }>;
-        `,
-        'src/blueprints.ts': `
-          import { createExtensionBlueprint } from ${API};
-          export const WidgetBlueprint = createExtensionBlueprint({
-            kind: 'widget',
-            attachTo: { id: 'home', input: 'widgets' },
-            output: [],
-            factory: () => [],
-          });
-        `,
-        'src/extensions.tsx': `
-          import { CardBlueprint } from '@test/blueprints';
-          import { PageBlueprint } from ${API};
-          import { WidgetBlueprint } from './blueprints';
-          export const card = CardBlueprint.makeWithOverrides({
-            name: 'overview',
-            factory(originalFactory) {
-              return originalFactory({});
-            },
-          });
-          export const widget = WidgetBlueprint.make({ params: {} });
-          export const page = PageBlueprint.make({
-            params: { path: '/demo', loader: async () => <div /> },
-          });
-        `,
-        'src/index.ts': `
-          import { createFrontendPlugin } from ${API};
-          import { card, page, widget } from './extensions';
-          export default createFrontendPlugin({
-            pluginId: 'demo',
-            extensions: [card, widget, page],
-          });
-        `,
-        'src/sync.ts': `
-          import { createFrontendPlugin } from ${API};
-          import { card, widget } from './extensions';
-          export default createFrontendPlugin({
-            pluginId: 'demo',
-            extensions: [card, widget],
-          });
-        `,
-      },
-      [
-        { mount: '.', path: 'src/index.ts' },
-        { mount: './sync', path: 'src/sync.ts' },
-      ],
-    );
-    expect(result.syncError).toBeUndefined();
-    expect(result.entryPoints['.']).toMatchObject({
-      manifest: {
-        deferrable: true,
-        extensions: [
-          { id: 'card:demo/overview', kind: 'card', sync: true },
-          { id: 'widget:demo', kind: 'widget', sync: true },
-          { id: 'page:demo', kind: 'page' },
-        ],
-      },
+      manifest: { deferrable: false, notDeferrableReason: reason },
     });
   });
 

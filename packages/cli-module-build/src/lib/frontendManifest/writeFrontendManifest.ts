@@ -32,11 +32,6 @@ export function hasFrontendManifest(packageJson: BackstagePackageJson) {
 /**
  * Analyzes the source of a frontend plugin package and writes its manifest
  * to `dist/frontend-manifest.json`, which lets apps defer loading it.
- *
- * @remarks
- *
- * A `./sync` entry point that doesn't agree with the other entry points of
- * the package fails the build.
  */
 export async function writeFrontendManifest(
   packageDir: string,
@@ -49,11 +44,6 @@ export async function writeFrontendManifest(
     packageDir,
     entryPoints: readEntryPoints(packageJson),
   });
-  if (analysis.syncError) {
-    throw new Error(
-      `The ./sync entry point of ${packageJson.name} is invalid, ${analysis.syncError}`,
-    );
-  }
   await fs.outputJson(
     resolvePath(packageDir, FRONTEND_MANIFEST_PATH),
     createPackageManifest(analysis),
