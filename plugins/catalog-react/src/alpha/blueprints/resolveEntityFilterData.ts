@@ -17,6 +17,7 @@
 import {
   entityFilterExpressionDataRef,
   entityFilterFunctionDataRef,
+  entityFilterPredicateDataRef,
 } from './extensionData';
 import {
   FilterPredicate,
@@ -40,6 +41,7 @@ export function* resolveEntityFilterData(
     yield entityFilterFunctionDataRef(
       filterPredicateToFilterFunction(config.filter),
     );
+    yield entityFilterPredicateDataRef(config.filter);
   } else if (typeof filter === 'function') {
     yield entityFilterFunctionDataRef(filter);
   } else if (typeof filter === 'string') {
@@ -50,5 +52,6 @@ export function* resolveEntityFilterData(
     yield entityFilterExpressionDataRef(filter);
   } else if (filter) {
     yield entityFilterFunctionDataRef(filterPredicateToFilterFunction(filter));
+    yield entityFilterPredicateDataRef(filter);
   }
 }

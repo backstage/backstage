@@ -30,6 +30,10 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
+import {
+  FilterPredicate,
+  filterPredicateToFilterFunction,
+} from '@backstage/filter-predicates';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import appPluginOriginal from '@backstage/plugin-app';
 import {
@@ -334,6 +338,9 @@ describe('deferred features', () => {
         element: {
           data: { 'test.content.title': 'Score tab' },
           dataConfigKeys: ['title'],
+          configPassThrough: {
+            title: { dataRefId: 'test.content.title', types: ['string'] },
+          },
         },
       }),
     ]);
@@ -347,7 +354,15 @@ describe('deferred features', () => {
       // Config that only the real element uses is applied once it is loaded
       config: new ConfigReader({
         app: {
-          extensions: [{ 'host-content:scored': { config: { height: 300 } } }],
+          // The title is applied to the stub, and the height once the real
+          // element is loaded
+          extensions: [
+            {
+              'host-content:scored': {
+                config: { height: 300, title: 'Scores' },
+              },
+            },
+          ],
           routes: { bindings: { 'scored.configuredLink': 'host.root' } },
         },
       }),
@@ -364,7 +379,7 @@ describe('deferred features', () => {
     // Both the default and the configured external route bindings apply.
     render(app.element);
     await expect(
-      screen.findByRole('heading', { name: 'Score tab' }),
+      screen.findByRole('heading', { name: 'Scores' }),
     ).resolves.toBeInTheDocument();
     await expect(
       screen.findByText('Score 42 at /scored height=300 host=/ configured=/'),
@@ -374,6 +389,154 @@ describe('deferred features', () => {
     expect(app.tree.nodes.get('host-content:scored')?.spec.plugin.routes).toBe(
       realPlugin.routes,
     );
+  });
+
+  it('should install the sync export of a plugin and recreate filter functions', async () => {
+    const scoreApiRef = createApiRef<{ getScore(): number }>({
+      id: 'plugin.synced.service',
+    });
+    const filterFunctionRef = createExtensionDataRef<
+      (entity: unknown) => boolean
+    >().with({ id: 'catalog.entity-filter-function' });
+    const filterPredicateRef = createExtensionDataRef<FilterPredicate>().with({
+      id: 'catalog.entity-filter-predicate',
+    });
+    const entity = { kind: 'Group' };
+
+    // An eager page that renders the cards that match its entity, similar to
+    // the entity page of the catalog.
+    const hostPlugin = createFrontendPlugin({
+      pluginId: 'host',
+      extensions: [
+        createExtension({
+          kind: 'page',
+          attachTo: { id: 'app/routes', input: 'routes' },
+          inputs: {
+            cards: createExtensionInput([
+              coreExtensionData.reactElement,
+              filterFunctionRef,
+            ]),
+          },
+          output: [coreExtensionData.routePath, coreExtensionData.reactElement],
+          *factory({ inputs }) {
+            yield coreExtensionData.routePath('/');
+            yield coreExtensionData.reactElement(
+              <div>
+                {inputs.cards
+                  .filter(card => card.get(filterFunctionRef)(entity))
+                  .map(card => (
+                    <section key={card.node.spec.id}>
+                      {card.get(coreExtensionData.reactElement)}
+                    </section>
+                  ))}
+              </div>,
+            );
+          },
+        }),
+      ],
+    });
+
+    const apiFactory = jest.fn(() => ({ getScore: () => 42 }));
+    const api = ApiBlueprint.make({
+      params: defineParams =>
+        defineParams({ api: scoreApiRef, deps: {}, factory: apiFactory }),
+    });
+    function ScoreCard(props: { label: string }) {
+      const scoreApi = useApi(scoreApiRef);
+      return (
+        <div>
+          {props.label} score {scoreApi.getScore()}
+        </div>
+      );
+    }
+    const createCard = (name: string, filter: FilterPredicate) =>
+      createExtension({
+        kind: 'card',
+        name,
+        attachTo: { id: 'page:host', input: 'cards' },
+        output: [
+          coreExtensionData.reactElement,
+          filterFunctionRef,
+          filterPredicateRef,
+        ],
+        *factory() {
+          yield coreExtensionData.reactElement(<ScoreCard label={name} />);
+          yield filterFunctionRef(filterPredicateToFilterFunction(filter));
+          yield filterPredicateRef(filter);
+        },
+      });
+    const realPlugin = createFrontendPlugin({
+      pluginId: 'synced',
+      extensions: [
+        api,
+        createCard('group', { kind: 'group' }),
+        createCard('user', { kind: 'user' }),
+      ],
+    });
+    // The sync export holds the API, so it's available before the plugin loads
+    const syncPart = createFrontendPlugin({
+      pluginId: 'synced',
+      extensions: [api],
+    });
+
+    const syncedManifest = await createFrontendFeatureManifest(realPlugin, {
+      sync: syncPart,
+    });
+    expect(syncedManifest.deferrable).toBe(true);
+    expect(syncedManifest.extensions[0]).toMatchObject({
+      id: 'api:synced',
+      sync: true,
+    });
+
+    const createApp = (loaded: typeof realPlugin) => {
+      const load = jest.fn(async () => ({ default: loaded }));
+      const app = prepareSpecializedApp({
+        features: [noSignInAppPlugin, hostPlugin, syncPart],
+        __internal: {
+          deferredFeatures: [
+            { name: 'synced-pkg', manifest: syncedManifest, load },
+          ],
+        },
+      } as CreateSpecializedAppInternalOptions).finalize();
+      return { app, load };
+    };
+
+    const { app, load } = createApp(realPlugin);
+    expect(app.errors).toBeUndefined();
+    const syncApi = app.apis.get(scoreApiRef);
+    expect(syncApi?.getScore()).toBe(42);
+    expect(load).not.toHaveBeenCalled();
+
+    // Only the card that matches the entity is rendered, which loads the plugin
+    render(app.element);
+    await expect(
+      screen.findByText('group score 42'),
+    ).resolves.toBeInTheDocument();
+    expect(screen.queryByText(/user score/)).not.toBeInTheDocument();
+    expect(load).toHaveBeenCalledTimes(1);
+    // The API of the sync export is installed once and kept as it is
+    expect(app.apis.get(scoreApiRef)).toBe(syncApi);
+    expect(apiFactory).toHaveBeenCalledTimes(1);
+    expect(app.tree.nodes.get('card:synced/group')?.spec.plugin.routes).toBe(
+      realPlugin.routes,
+    );
+
+    // A package whose halves disagree fails to load with a clear error
+    const mismatched = createApp(
+      createFrontendPlugin({
+        pluginId: 'synced',
+        extensions: [
+          api.override({}),
+          createCard('group', { kind: 'group' }),
+          createCard('user', { kind: 'user' }),
+        ],
+      }),
+    );
+    render(mismatched.app.element);
+    const errorMessages = await screen.findAllByText(
+      /The deferred 'synced-pkg' package can't be loaded, the 'api:synced' extension is defined differently in its sync and main exports/,
+    );
+    expect(errorMessages.length).toBeGreaterThan(0);
   });
 
   it('should load a plugin right away if its stub can not apply the config', async () => {

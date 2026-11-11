@@ -30,8 +30,13 @@ import {
   Progress,
   RouteRef,
 } from '@backstage/frontend-plugin-api';
+import {
+  FilterPredicate,
+  filterPredicateToFilterFunction,
+} from '@backstage/filter-predicates';
 import { useEffect, useState } from 'react';
 import { FrontendFeatureManifest } from '../manifest/types';
+import { applyConfigPassThrough } from '../manifest/deferredConfig';
 
 /**
  * A plugin that is only loaded once one of its pages or elements is
@@ -251,15 +256,36 @@ function createStubElementExtension(options: {
   kind: string;
   name?: string;
   routes: Record<string, RouteRef>;
+  config?: { [key: string]: unknown };
   createElement(): JSX.Element;
 }) {
   const { extension, routes } = options;
-  const element = extension.element!;
+  // Config that is output unchanged is applied to the recorded data
+  const element = {
+    ...extension.element!,
+    data: applyConfigPassThrough(extension.element!, options.config),
+  };
   const attachTo = extension.attachTo as { id: string; input: string };
 
   const dataRefs = Object.keys(element.data).map(id =>
     createExtensionDataRef<unknown>().with({ id }),
   );
+  // Functions that were created from filter predicates are recreated from the
+  // predicates, which are part of the data.
+  const predicateFunctions = Object.entries(
+    element.predicateFunctions ?? {},
+  ).map(([functionDataRefId, predicateDataRefId]) => {
+    const predicate = element.data[predicateDataRefId];
+    if (predicate === undefined) {
+      throw new Error(
+        `The '${extension.id}' extension outputs '${functionDataRefId}' from the '${predicateDataRefId}' data, which is missing from the manifest`,
+      );
+    }
+    return {
+      ref: createExtensionDataRef<unknown>().with({ id: functionDataRefId }),
+      value: filterPredicateToFilterFunction(predicate as FilterPredicate),
+    };
+  });
   const routeRef = element.routeRefName
     ? routes[element.routeRefName]
     : undefined;
@@ -272,6 +298,7 @@ function createStubElementExtension(options: {
   const output: ExtensionDataRef[] = [
     coreExtensionData.reactElement,
     ...dataRefs,
+    ...predicateFunctions.map(({ ref }) => ref),
     ...(routeRef ? [coreExtensionData.routeRef] : []),
   ];
 
@@ -290,11 +317,27 @@ function createStubElementExtension(options: {
       for (const ref of dataRefs) {
         yield ref(element.data[ref.id]);
       }
+      for (const { ref, value } of predicateFunctions) {
+        yield ref(value);
+      }
       if (routeRef) {
         yield coreExtensionData.routeRef(routeRef);
       }
     },
   });
+}
+
+function getSyncExtensionDefinition(
+  syncPart: FrontendPlugin,
+  extensionId: string,
+): ExtensionDefinition | undefined {
+  try {
+    return (
+      syncPart as { getExtension?(id: string): ExtensionDefinition }
+    ).getExtension?.(extensionId);
+  } catch {
+    return undefined;
+  }
 }
 
 /**
@@ -306,22 +349,36 @@ function createStubElementExtension(options: {
  * plugin, one page for each page in the manifest, and one extension for each
  * element in the manifest that outputs the data recorded at build time.
  * Rendering one of the pages or elements loads the real plugin. APIs are left
- * out, and are added to the app when the real plugin is loaded.
+ * out, and are added to the app when the real plugin is loaded. Extensions
+ * and route refs of the sync part of the plugin, if any, are installed as
+ * they are.
  *
  * @internal
  */
 export function createDeferredPluginStub(
   entry: DeferredFrontendFeature,
   controller: DeferredFeatureController,
+  syncPart?: FrontendPlugin,
+  configById?: Map<string, { [key: string]: unknown }>,
 ): { plugin: FrontendPlugin; skippedExtensionIds: string[] } {
   const { manifest } = entry;
   const pluginId = manifest.pluginId;
 
+  // Route refs of the sync part are the same as in the real plugin, so they
+  // are used as they are, while the others are stand-ins.
+  const syncRoutes = (syncPart?.routes ?? {}) as Record<string, RouteRef>;
+  const syncExternalRoutes = (syncPart?.externalRoutes ?? {}) as Record<
+    string,
+    ExternalRouteRef
+  >;
   const routes: Record<string, RouteRef> = Object.fromEntries(
-    manifest.routes.map(name => [name, createRouteRef()]),
+    manifest.routes.map(name => [name, syncRoutes[name] ?? createRouteRef()]),
   );
   const externalRoutes: Record<string, ExternalRouteRef> = Object.fromEntries(
-    manifest.externalRoutes.map(name => [name, createExternalRouteRef()]),
+    manifest.externalRoutes.map(name => [
+      name,
+      syncExternalRoutes[name] ?? createExternalRouteRef(),
+    ]),
   );
 
   const skippedExtensionIds = new Array<string>();
@@ -335,6 +392,18 @@ export function createDeferredPluginStub(
 
   const extensions = manifest.extensions.flatMap(
     (extension): ExtensionDefinition[] => {
+      // Extensions of the sync part are installed as they are.
+      if (extension.sync) {
+        const definition = syncPart
+          ? getSyncExtensionDefinition(syncPart, extension.id)
+          : undefined;
+        if (!definition) {
+          throw new Error(
+            `The '${extension.id}' extension of the deferred '${entry.name}' package is listed as part of its sync export, but the sync export doesn't provide it`,
+          );
+        }
+        return [definition];
+      }
       // APIs are added to the app when the real plugin is loaded.
       if (extension.kind === 'api') {
         return [];
@@ -353,6 +422,7 @@ export function createDeferredPluginStub(
             kind,
             name,
             routes,
+            config: configById?.get(extension.id),
             createElement: () => createElement(extension.id),
           }),
         ];
@@ -397,8 +467,8 @@ export function createDeferredPluginStub(
 
   const plugin = createFrontendPlugin({
     pluginId,
-    title: manifest.title,
-    icon: <DeferredPluginIcon />,
+    title: syncPart?.title ?? manifest.title,
+    icon: syncPart?.icon ?? <DeferredPluginIcon />,
     routes,
     externalRoutes,
     extensions,

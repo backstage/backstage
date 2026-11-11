@@ -95,6 +95,8 @@ import {
   DeferredFrontendFeature,
 } from './deferredFeatures';
 import { graftDeferredPlugin } from './graftDeferredPlugin';
+import { getPluginExtensionIds } from '../manifest/syncPart';
+import { findDeferredConfigConflict } from '../manifest/deferredConfig';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -323,8 +325,14 @@ export function prepareSpecializedApp(
     collector,
     graft: (entry, loadedFeature) => graftDeferred(entry, loadedFeature),
   });
+  // The sync parts of deferred plugins are part of their stubs
+  const syncPartFeatures = new Set<FrontendFeature>(
+    deferred.syncParts.values(),
+  );
   let features = [
-    ...eagerFeatures.map(attachPluginInfo),
+    ...eagerFeatures
+      .filter(feature => !syncPartFeatures.has(feature))
+      .map(attachPluginInfo),
     ...deferred.stubs.values(),
   ];
 
@@ -559,6 +567,7 @@ export function prepareSpecializedApp(
       entry,
       loadedFeature,
       stub,
+      syncPart: deferred.syncParts.get(entry.manifest.pluginId),
       features,
       attachPluginInfo,
       tree,
@@ -1050,22 +1059,25 @@ function createDeferredPlugins(options: {
     loadedFeature: unknown,
   ): Map<string, JSX.Element>;
 }) {
-  const eagerPluginIds = new Set(
-    options.eagerFeatures
-      .filter(OpaqueFrontendPlugin.isType)
-      .map(
-        feature =>
-          feature.pluginId ?? OpaqueFrontendPlugin.toInternal(feature).id,
-      ),
-  );
+  const eagerPlugins = new Map<string, FrontendPlugin>();
+  for (const feature of options.eagerFeatures) {
+    if (OpaqueFrontendPlugin.isType(feature)) {
+      eagerPlugins.set(
+        feature.pluginId ?? OpaqueFrontendPlugin.toInternal(feature).id,
+        feature,
+      );
+    }
+  }
+  // The sync parts of deferred plugins, which are merged into their stubs
+  const syncParts = new Map<string, FrontendPlugin>();
 
-  const configKeysById = new Map<string, string[]>();
+  const configById = new Map<string, { [key: string]: unknown }>();
   for (const param of options.extensionParameters) {
     if (param.config && typeof param.config === 'object') {
-      configKeysById.set(param.id, [
-        ...(configKeysById.get(param.id) ?? []),
-        ...Object.keys(param.config),
-      ]);
+      configById.set(param.id, {
+        ...configById.get(param.id),
+        ...(param.config as { [key: string]: unknown }),
+      });
     }
   }
   const preloadPluginIds = new Array<string>();
@@ -1079,10 +1091,30 @@ function createDeferredPlugins(options: {
         }`,
       );
     }
-    if (eagerPluginIds.has(manifest.pluginId)) {
+    const eagerPlugin = eagerPlugins.get(manifest.pluginId);
+    const syncExtensionIds = manifest.extensions
+      .filter(extension => extension.sync)
+      .map(extension => extension.id);
+    if (syncExtensionIds.length > 0) {
+      // The sync part is installed as a regular feature by discovery, and is
+      // told apart from the full plugin by having exactly the sync extensions.
+      if (!eagerPlugin) {
+        throw new Error(
+          `The deferred '${entry.name}' package has a sync export, but the '${manifest.pluginId}' plugin from it isn't installed in the app`,
+        );
+      }
+      const eagerIds = getPluginExtensionIds(eagerPlugin);
+      const isSyncPart =
+        eagerIds.length === syncExtensionIds.length &&
+        eagerIds.every(id => syncExtensionIds.includes(id));
+      if (!isSyncPart) {
+        return false;
+      }
+      syncParts.set(manifest.pluginId, eagerPlugin);
+    } else if (eagerPlugin) {
       return false;
     }
-    const conflict = findDataConfigConflict(manifest, configKeysById);
+    const conflict = findDeferredConfigConflict(manifest, configById);
     if (conflict) {
       // The CLI normally loads such plugins eagerly, so this only happens if
       // the config changed after the build. The plugin is loaded right away
@@ -1110,6 +1142,8 @@ function createDeferredPlugins(options: {
     const { plugin, skippedExtensionIds } = createDeferredPluginStub(
       entry,
       controller,
+      syncParts.get(entry.manifest.pluginId),
+      configById,
     );
     const stub = options.attachPluginInfo(plugin) as FrontendPlugin;
     stubs.set(entry.manifest.pluginId, stub);
@@ -1123,25 +1157,5 @@ function createDeferredPlugins(options: {
     }
   }
 
-  return { controller, stubs, preloadPluginIds };
-}
-
-/**
- * Finds an element of a deferred plugin that is configured with keys that
- * change the data its stub outputs.
- */
-function findDataConfigConflict(
-  manifest: DeferredFrontendFeature['manifest'],
-  configKeysById: Map<string, string[]>,
-): { extensionId: string; keys: string[] } | undefined {
-  for (const extension of manifest.extensions) {
-    const dataConfigKeys = extension.element?.dataConfigKeys ?? [];
-    const keys = (configKeysById.get(extension.id) ?? []).filter(key =>
-      dataConfigKeys.includes(key),
-    );
-    if (keys.length > 0) {
-      return { extensionId: extension.id, keys };
-    }
-  }
-  return undefined;
+  return { controller, stubs, syncParts, preloadPluginIds };
 }

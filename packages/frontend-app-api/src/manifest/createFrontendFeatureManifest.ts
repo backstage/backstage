@@ -27,6 +27,9 @@ import {
   toInternalExtension,
 } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { FrontendExtensionManifest, FrontendFeatureManifest } from './types';
+import { getJsonType } from './deferredConfig';
+import { PREDICATE_FUNCTION_DATA_PAIRS } from './predicateFunctions';
+import { findSyncPartMismatch, getPluginExtensionIds } from './syncPart';
 
 type PluginLike = {
   pluginId: string;
@@ -182,16 +185,22 @@ function extractElementManifest(
     plugin,
     runFactoryOnce(extension, plugin),
   );
-  const dataConfigKeys = findDataConfigKeys(extension, plugin, element);
+  const { dataConfigKeys, configPassThrough } = findConfigKeyEffects(
+    extension,
+    plugin,
+    element,
+  );
   return {
     ...element,
     ...(dataConfigKeys.length > 0 ? { dataConfigKeys } : {}),
+    ...(Object.keys(configPassThrough).length > 0 ? { configPassThrough } : {}),
   };
 }
 
 type ElementOutputs = {
   data: { [dataRefId: string]: unknown };
   routeRefName?: string;
+  predicateFunctions?: { [functionDataRefId: string]: string };
 };
 
 function readElementOutputs(
@@ -200,6 +209,7 @@ function readElementOutputs(
   outputs: Map<string, unknown>,
 ): ElementOutputs {
   const data: { [dataRefId: string]: unknown } = {};
+  const predicateFunctions: { [functionDataRefId: string]: string } = {};
   let routeRefName: string | undefined;
   for (const [id, value] of outputs) {
     if (id === coreExtensionData.reactElement.id) {
@@ -214,6 +224,17 @@ function readElementOutputs(
       }
       continue;
     }
+    // A function that was created from a predicate is recreated by the stub
+    // from the predicate, which is stored as regular data.
+    const predicateDataRefId = PREDICATE_FUNCTION_DATA_PAIRS.get(id);
+    if (
+      typeof value === 'function' &&
+      predicateDataRefId &&
+      outputs.has(predicateDataRefId)
+    ) {
+      predicateFunctions[id] = predicateDataRefId;
+      continue;
+    }
     if (!isJsonValue(value)) {
       throw new Error(
         `'${extension.id}' outputs '${id}' data that can't be stored as JSON`,
@@ -222,7 +243,13 @@ function readElementOutputs(
     data[id] = value;
   }
 
-  return { data, ...(routeRefName ? { routeRefName } : {}) };
+  return {
+    data,
+    ...(routeRefName ? { routeRefName } : {}),
+    ...(Object.keys(predicateFunctions).length > 0
+      ? { predicateFunctions }
+      : {}),
+  };
 }
 
 type JsonSchema = {
@@ -255,10 +282,10 @@ function createProbeValues(schema: JsonSchema): unknown[] {
   return types.flatMap((type): unknown[] => {
     switch (type) {
       case 'string':
-        return ['deferred-config-probe'];
+        return ['deferred-config-probe', 'deferred-config-probe-2'];
       case 'number':
       case 'integer':
-        return [7];
+        return [7, 8];
       case 'boolean':
         return [true, false];
       case 'array':
@@ -269,40 +296,127 @@ function createProbeValues(schema: JsonSchema): unknown[] {
   });
 }
 
+type ConfigKeyEffects = {
+  dataConfigKeys: string[];
+  configPassThrough: NonNullable<
+    NonNullable<FrontendExtensionManifest['element']>['configPassThrough']
+  >;
+};
+
 /**
  * Finds the config keys that change the data outputs of an element. Config
  * for these keys can't be applied before the plugin is loaded, since the stub
  * only has the outputs from the default config. A key is included if it isn't
  * possible to tell whether it changes the outputs.
+ *
+ * Keys whose value is output unchanged as a single data value are also
+ * recorded as pass-through keys, for the JSON types of values where that is
+ * the case, so that the stub can apply them.
  */
-function findDataConfigKeys(
+function findConfigKeyEffects(
   extension: Extension<unknown>,
   plugin: PluginLike,
   defaults: ElementOutputs,
-): string[] {
+): ConfigKeyEffects {
+  const effects: ConfigKeyEffects = {
+    dataConfigKeys: [],
+    configPassThrough: {},
+  };
   const properties = (readConfigSchema(extension) as JsonSchema | undefined)
     ?.properties;
   if (!properties) {
-    return [];
+    return effects;
   }
-  const expected = JSON.stringify(defaults);
-  return Object.entries(properties)
-    .filter(([key, schema]) => {
-      const values = createProbeValues(schema);
-      if (values.length === 0) {
-        return true;
+
+  for (const [key, schema] of Object.entries(properties)) {
+    const values = createProbeValues(schema);
+    if (values.length === 0) {
+      effects.dataConfigKeys.push(key);
+      continue;
+    }
+
+    let changesData = false;
+    // For each JSON type, the data ref the value is passed through to, or
+    // false if values of that type change the data in other ways
+    const passThroughByType = new Map<string, string | undefined | false>();
+    for (const value of values) {
+      const type = getJsonType(value);
+      let effect: { changed: boolean; dataRefId?: string } | false;
+      try {
+        const outputs = runFactoryOnce(extension, plugin, { [key]: value });
+        const probed = readElementOutputs(extension, plugin, outputs);
+        effect = findPassThroughDataRef(defaults, probed, value);
+      } catch {
+        effect = false;
       }
-      return values.some(value => {
-        try {
-          const outputs = runFactoryOnce(extension, plugin, { [key]: value });
-          const probed = readElementOutputs(extension, plugin, outputs);
-          return JSON.stringify(probed) !== expected;
-        } catch {
-          return true;
-        }
-      });
-    })
-    .map(([key]) => key);
+      if (effect === false || effect.changed) {
+        changesData = true;
+      }
+      const current = passThroughByType.get(type);
+      if (effect === false || current === false) {
+        passThroughByType.set(type, false);
+      } else if (effect.dataRefId) {
+        passThroughByType.set(
+          type,
+          current === undefined || current === effect.dataRefId
+            ? effect.dataRefId
+            : false,
+        );
+      } else if (!passThroughByType.has(type)) {
+        passThroughByType.set(type, undefined);
+      }
+    }
+
+    if (!changesData) {
+      continue;
+    }
+    effects.dataConfigKeys.push(key);
+    const passThrough = Array.from(passThroughByType).filter(
+      (entry): entry is [string, string] => typeof entry[1] === 'string',
+    );
+    const dataRefIds = new Set(passThrough.map(([, id]) => id));
+    if (dataRefIds.size === 1) {
+      effects.configPassThrough[key] = {
+        dataRefId: Array.from(dataRefIds)[0],
+        types: passThrough.map(([type]) => type),
+      };
+    }
+  }
+  return effects;
+}
+
+/**
+ * Compares the outputs for a probed config value with the defaults. Returns
+ * the data ref that the value was output with unchanged, if that is the only
+ * difference, or false if the outputs changed in some other way.
+ */
+function findPassThroughDataRef(
+  defaults: ElementOutputs,
+  probed: ElementOutputs,
+  value: unknown,
+): { changed: boolean; dataRefId?: string } | false {
+  const { data: defaultData, ...defaultRest } = defaults;
+  const { data: probedData, ...probedRest } = probed;
+  const ids = new Set([
+    ...Object.keys(defaultData),
+    ...Object.keys(probedData),
+  ]);
+  const changedIds = Array.from(ids).filter(
+    id => JSON.stringify(defaultData[id]) !== JSON.stringify(probedData[id]),
+  );
+  const restChanged =
+    JSON.stringify(defaultRest) !== JSON.stringify(probedRest);
+  if (changedIds.length === 0 && !restChanged) {
+    return { changed: false };
+  }
+  if (
+    !restChanged &&
+    changedIds.length === 1 &&
+    JSON.stringify(probedData[changedIds[0]]) === JSON.stringify(value)
+  ) {
+    return { changed: true, dataRefId: changedIds[0] };
+  }
+  return false;
 }
 
 function hasIfPredicate(extension: Extension<unknown>): boolean {
@@ -364,6 +478,14 @@ function getNotDeferrableReason(
  */
 export async function createFrontendFeatureManifest(
   feature: FrontendFeature,
+  options?: {
+    /**
+     * The default export of the `./sync` entry point of the same package, if
+     * there is one. Its extensions are loaded with the app, so they don't
+     * need to be deferrable.
+     */
+    sync?: FrontendFeature;
+  },
 ): Promise<FrontendFeatureManifest> {
   const isPlugin = OpaqueFrontendPlugin.isType(feature);
   const isModule =
@@ -388,6 +510,21 @@ export async function createFrontendFeatureManifest(
     : (feature as unknown as { extensions: Extension<unknown>[] }).extensions;
 
   const failures: string[] = [];
+  const sync = options?.sync;
+  if (sync) {
+    const mismatch = isPlugin
+      ? findSyncPartMismatch(feature, sync)
+      : 'modules can not have a sync export';
+    if (mismatch) {
+      failures.push(mismatch);
+    }
+  }
+  const syncExtensionIds = new Set(
+    sync && OpaqueFrontendPlugin.isType(sync)
+      ? getPluginExtensionIds(sync)
+      : [],
+  );
+
   const extensions = internalExtensions.map(
     (extension): FrontendExtensionManifest => {
       const id = extension.id;
@@ -402,7 +539,10 @@ export async function createFrontendFeatureManifest(
       if (configSchema) {
         result.configSchema = configSchema;
       }
-      if (plugin && kind === 'page') {
+      if (syncExtensionIds.has(id)) {
+        // Loaded with the app from the sync export, so nothing to extract
+        result.sync = true;
+      } else if (plugin && kind === 'page') {
         try {
           result.page = extractPageManifest(extension, plugin);
         } catch (error) {
@@ -436,16 +576,20 @@ export async function createFrontendFeatureManifest(
   } else {
     notDeferrableReason = extensions
       .map((extension, index) =>
-        getNotDeferrableReason(
-          extension,
-          hasIfPredicate(internalExtensions[index]),
-        ),
+        extension.sync
+          ? undefined
+          : getNotDeferrableReason(
+              extension,
+              hasIfPredicate(internalExtensions[index]),
+            ),
       )
       .find(Boolean);
     // Only rendering a page or element loads a deferred plugin, so a plugin
     // without one would never be loaded.
     if (!notDeferrableReason && !extensions.some(e => e.page || e.element)) {
-      notDeferrableReason = 'has no page or element that would load it';
+      notDeferrableReason = extensions.some(e => e.sync)
+        ? 'every page and element is in the sync export, so there is nothing to defer'
+        : 'has no page or element that would load it';
     }
   }
 

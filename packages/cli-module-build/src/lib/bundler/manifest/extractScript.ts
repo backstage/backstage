@@ -130,7 +130,15 @@ async function main() {
           if (!feature) {
             return { skipped: 'no default export' };
           }
-          return { manifest: await createFrontendFeatureManifest(feature) };
+          let sync;
+          if (pkg.syncImport) {
+            const syncPath = require.resolve(pkg.syncImport, { paths: [input.appDir] });
+            sync = require(syncPath).default;
+            if (!sync) {
+              return { error: 'the sync entry point ' + pkg.syncImport + ' has no default export' };
+            }
+          }
+          return { manifest: await createFrontendFeatureManifest(feature, sync ? { sync } : undefined) };
         })(),
         new Promise((_, reject) => {
           timer = setTimeout(

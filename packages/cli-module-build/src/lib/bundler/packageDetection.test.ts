@@ -214,18 +214,46 @@ describe('createDetectedModulesEntryPoint', () => {
       new Map([
         ['@test/plugin-pages', { manifest: createManifest('pages') }],
         ['@test/plugin-mixed', { manifest: createManifest('mixed') }],
+        [
+          '@test/plugin-broken',
+          {
+            manifest: {
+              ...createManifest('broken'),
+              extensions: [
+                {
+                  id: 'entity-card:broken',
+                  element: {
+                    data: {},
+                    dataConfigKeys: ['title'],
+                    configPassThrough: {
+                      title: { dataRefId: 'core.title', types: ['string'] },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ],
       ]),
     );
 
     await createDetectedModulesEntryPoint({
       config: new ConfigReader({
         app: {
-          packages: { include: ['@test/plugin-pages', '@test/plugin-mixed'] },
+          packages: {
+            include: [
+              '@test/plugin-pages',
+              '@test/plugin-mixed',
+              '@test/plugin-broken',
+            ],
+          },
           experimental: { deferredPackages: true },
           extensions: [
             'page:other',
             { 'entity-card:pages': { config: { title: 'Other' } } },
             { 'entity-card:mixed': { config: { height: 300 } } },
+            // Strings are applied to the stub as they are
+            { 'entity-card:broken': { config: { title: 'Other' } } },
           ],
         },
       }),
@@ -243,5 +271,67 @@ describe('createDetectedModulesEntryPoint', () => {
       "eager     @test/plugin-pages ('entity-card:pages' is configured with 'title' in app.extensions, which can't be applied before the plugin is loaded)",
     );
     expect(report).toContain('deferred  @test/plugin-mixed');
+    expect(report).toContain('deferred  @test/plugin-broken');
+  });
+
+  it('loads the sync entry point of a deferred package with the app', async () => {
+    const dir = joinPath(appDir, 'node_modules', '@test/plugin-sync');
+    await fs.ensureDir(dir);
+    await fs.writeJson(joinPath(dir, 'package.json'), {
+      name: '@test/plugin-sync',
+      version: '1.0.0',
+      backstage: { role: 'frontend-plugin' },
+      exports: {
+        '.': './index.js',
+        './alpha': './alpha.js',
+        './sync': './sync.js',
+        './package.json': './package.json',
+      },
+    });
+    await fs.writeJson(joinPath(appDir, 'package.json'), {
+      name: 'app',
+      dependencies: { '@test/plugin-sync': '*' },
+    });
+    const manifest = {
+      manifestVersion: 1 as const,
+      type: 'plugin' as const,
+      pluginId: 'sync',
+      deferrable: true,
+      routes: [],
+      externalRoutes: [],
+      extensions: [
+        { id: 'api:sync', sync: true },
+        { id: 'page:sync', page: { path: '/sync' } },
+      ],
+    };
+    mockExtractManifests.mockResolvedValue(
+      new Map([
+        ['@test/plugin-sync', { manifest }],
+        ['@test/plugin-sync./alpha', { manifest }],
+      ]),
+    );
+
+    await createDetectedModulesEntryPoint({
+      config: new ConfigReader({
+        app: { packages: 'all', experimental: { deferredPackages: true } },
+      }),
+      targetPath: appDir,
+    });
+
+    expect(
+      mockExtractManifests.mock.calls[0][0].packages.map(p => p.syncImport),
+    ).toEqual(['@test/plugin-sync/sync', '@test/plugin-sync/sync']);
+    const content = await readDiscoveryModule();
+    const syncEntry = `{ name: "@test/plugin-sync", export: "./sync", default: require('@test/plugin-sync/sync').default }`;
+    // The sync entry point is loaded once, before the deferred entry points
+    expect(content.split(syncEntry)).toHaveLength(2);
+    expect(content.indexOf(syncEntry)).toBeLessThan(
+      content.indexOf(`load: () => import('@test/plugin-sync')`),
+    );
+    expect(content).toContain(`load: () => import('@test/plugin-sync/alpha')`);
+    const report = logSpy.mock.calls.map(call => call.join(' ')).join('\n');
+    expect(report).toContain(
+      'deferred  @test/plugin-sync (loaded on first use, with its sync export loaded with the app)',
+    );
   });
 });
