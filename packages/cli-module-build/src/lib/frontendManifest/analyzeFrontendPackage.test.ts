@@ -298,14 +298,6 @@ describe('analyzeFrontendPackage', () => {
           extensions: [page, api],
         });
       `,
-      'src/sync.ts': `
-        import { createFrontendPlugin } from ${API};
-        import { api } from './extensions';
-        export default createFrontendPlugin({
-          pluginId: 'demo',
-          extensions: [api],
-        });
-      `,
       'src/extensions.tsx': `
         import { ApiBlueprint, PageBlueprint } from ${API};
         export const api = ApiBlueprint.make({
@@ -321,15 +313,6 @@ describe('analyzeFrontendPackage', () => {
       'the plugin provides an API, and plugins that provide APIs are loaded with the app (src/extensions.tsx:3)';
 
     expect(analyze(files).entryPoints['.']).toMatchObject({
-      manifest: { deferrable: false, notDeferrableReason: reason },
-    });
-    // A ./sync entry point is not analyzed, and doesn't change the result
-    const withSync = analyze(files, [
-      { mount: '.', path: 'src/index.ts' },
-      { mount: './sync', path: 'src/sync.ts' },
-    ]);
-    expect(Object.keys(withSync.entryPoints)).toEqual(['.']);
-    expect(withSync.entryPoints['.']).toMatchObject({
       manifest: { deferrable: false, notDeferrableReason: reason },
     });
   });
@@ -367,6 +350,9 @@ describe('analyzeFrontendPackage', () => {
             externalRoutes: [],
             extensions: [],
           },
+        },
+        './other': {
+          skipped: "'plugin' can't be resolved (src/other.ts:3)",
         },
       },
     });

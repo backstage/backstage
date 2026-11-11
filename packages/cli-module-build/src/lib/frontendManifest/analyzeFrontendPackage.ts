@@ -29,15 +29,6 @@ import {
   FrontendFeatureManifest,
 } from './types';
 
-/**
- * The version of the analysis. Bump it whenever the analysis changes in a
- * way that changes its results, which invalidates cached results.
- */
-export const ANALYZER_VERSION = 2;
-
-/** The entry points that can hold a plugin that is deferred. */
-export const DEFERRABLE_ENTRY_POINTS = ['.', './alpha'];
-
 const FRONTEND_PLUGIN_API = '@backstage/frontend-plugin-api';
 
 type AttachTo = { id: string; input: string };
@@ -1035,7 +1026,6 @@ export function analyzeFrontendPackage(options: {
   entryPoints: Array<{ mount: string; path: string }>;
 }): FrontendPackageAnalysis {
   const entryPoints = options.entryPoints
-    .filter(entry => DEFERRABLE_ENTRY_POINTS.includes(entry.mount))
     .map(entry => ({
       ...entry,
       file: resolvePath(options.packageDir, entry.path),
