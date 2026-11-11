@@ -39,18 +39,29 @@ export interface Config {
      */
     experimental?: {
       /**
-       * When enabled together with `app.packages`, the CLI writes a manifest of
-       * each detected plugin at build time and loads deferrable plugins lazily,
-       * using a dynamic import instead of a static one. A plugin is deferrable
-       * if it only provides pages, APIs, and extensions that render an element
-       * along with plain data, such as entity content. It is loaded the first
-       * time one of its pages or elements is rendered. A plugin is loaded
-       * normally if any of its element extensions has config in
-       * `app.extensions`.
+       * Enables deferred loading of the plugins that are discovered through
+       * `app.packages`. A deferrable plugin is loaded the first time one of
+       * its pages or elements is rendered, rather than with the app.
+       *
+       * Whether a plugin can be deferred is decided at build time by static
+       * analysis of its source code. Workspace packages are analyzed when the
+       * app is built or started, while other packages must include the
+       * manifest that `backstage-cli package build` writes. Any package
+       * that can't be analyzed is loaded with the app.
+       *
+       * Set `exclude` to a list of package names to always load those
+       * packages with the app.
        *
        * @visibility frontend
        */
-      deferredPackages?: boolean;
+      deferredPackages?:
+        | boolean
+        | {
+            /**
+             * @visibility frontend
+             */
+            exclude?: string[];
+          };
     };
 
     routes?: {

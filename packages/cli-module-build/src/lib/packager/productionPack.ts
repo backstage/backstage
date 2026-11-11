@@ -23,6 +23,8 @@ import type { ConfigSchemaError } from '@backstage/config-loader';
 import { readEntryPoints } from '../entryPoints';
 import { getEntryPointDefaultFeatureType } from '../typeDistProject';
 import { Project } from 'ts-morph';
+import { hasFrontendManifest } from '../frontendManifest/writeFrontendManifest';
+import { FRONTEND_MANIFEST_PATH } from '../frontendManifest/types';
 
 const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';
@@ -121,6 +123,17 @@ export async function productionPack(options: ProductionPackOptions) {
 
   // This mutates pkg to fill in index exports, so call it before applying publishConfig
   await rewriteEntryPoints(pkg, packageDir, options.featureDetectionProject);
+
+  // The manifest written by the build lets apps defer loading the package
+  if (
+    hasFrontendManifest(pkg) &&
+    (await fs.pathExists(resolvePath(packageDir, FRONTEND_MANIFEST_PATH)))
+  ) {
+    pkg.backstage = {
+      ...pkg.backstage,
+      frontendManifest: FRONTEND_MANIFEST_PATH,
+    } as BackstagePackageJson['backstage'];
+  }
 
   // TODO(Rugvip): Once exports are rolled out more broadly we should deprecate and remove this behavior
   const publishConfig = pkg.publishConfig ?? {};

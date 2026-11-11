@@ -19,34 +19,97 @@ import fs from 'fs-extra';
 import os from 'node:os';
 import { join as joinPath } from 'node:path';
 import { createDetectedModulesEntryPoint } from './packageDetection';
-import { extractManifests } from './manifest/extractManifests';
 
 jest.mock('chokidar', () => ({
   watch: jest.fn(() => ({
     on: jest.fn().mockReturnThis(),
     add: jest.fn(),
+    close: jest.fn(),
   })),
 }));
 
-jest.mock('./manifest/extractManifests', () => ({
-  extractManifests: jest.fn(),
-}));
+const createManifest = (pluginId: string, overrides: object = {}) => ({
+  manifestVersion: 1 as const,
+  type: 'plugin' as const,
+  pluginId,
+  deferrable: true,
+  routes: [],
+  externalRoutes: [],
+  extensions: [
+    {
+      id: `page:${pluginId}`,
+      kind: 'page',
+      attachTo: { id: 'app/routes', input: 'routes' },
+      disabled: false,
+      page: { path: `/${pluginId}` },
+    },
+  ],
+  ...overrides,
+});
 
-const mockExtractManifests = extractManifests as jest.MockedFunction<
-  typeof extractManifests
->;
-
-const pluginPackages: Record<string, { alpha?: boolean }> = {
-  '@test/plugin-pages': {},
-  '@test/plugin-mixed': {},
-  '@test/plugin-static': {},
-  '@test/plugin-broken': {},
-  '@test/plugin-alpha': { alpha: true },
+const pluginPackages: Record<
+  string,
+  { alpha?: boolean; manifest?: object | false }
+> = {
+  '@test/plugin-pages': {
+    manifest: {
+      manifestVersion: 1,
+      entryPoints: { '.': createManifest('pages') },
+    },
+  },
+  '@test/plugin-mixed': {
+    manifest: {
+      manifestVersion: 1,
+      entryPoints: {
+        '.': createManifest('mixed', {
+          deferrable: false,
+          notDeferrableReason: 'the plugin uses an if predicate',
+        }),
+      },
+    },
+  },
+  '@test/plugin-unbuilt': { manifest: false },
+  '@test/plugin-future': {
+    manifest: { manifestVersion: 2, entryPoints: {} },
+  },
+  '@test/plugin-alpha': {
+    alpha: true,
+    manifest: {
+      manifestVersion: 1,
+      entryPoints: { './alpha': createManifest('alpha') },
+    },
+  },
 };
 
 describe('createDetectedModulesEntryPoint', () => {
   let appDir: string;
   let logSpy: jest.SpyInstance;
+
+  async function writePackage(
+    dir: string,
+    packageJson: object,
+    manifest?: object | false,
+  ) {
+    await fs.ensureDir(dir);
+    await fs.writeJson(joinPath(dir, 'package.json'), {
+      version: '1.0.0',
+      ...packageJson,
+      ...(manifest
+        ? {
+            backstage: {
+              role: 'frontend-plugin',
+              frontendManifest: 'dist/frontend-manifest.json',
+            },
+          }
+        : { backstage: { role: 'frontend-plugin' } }),
+    });
+    if (manifest) {
+      await fs.outputJson(
+        joinPath(dir, 'dist', 'frontend-manifest.json'),
+        manifest,
+      );
+    }
+  }
 
   beforeEach(async () => {
     logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -57,37 +120,26 @@ describe('createDetectedModulesEntryPoint', () => {
         Object.keys(pluginPackages).map(name => [name, '*']),
       ),
     });
-    for (const [name, { alpha }] of Object.entries(pluginPackages)) {
-      const dir = joinPath(appDir, 'node_modules', name);
-      await fs.ensureDir(dir);
-      await fs.writeJson(joinPath(dir, 'package.json'), {
-        name,
-        version: '1.0.0',
-        backstage: { role: 'frontend-plugin' },
-        ...(alpha && {
-          exports: {
-            '.': './index.js',
-            './alpha': './alpha.js',
-            './package.json': './package.json',
-          },
-        }),
-      });
+    for (const [name, { alpha, manifest }] of Object.entries(pluginPackages)) {
+      await writePackage(
+        joinPath(appDir, 'node_modules', name),
+        {
+          name,
+          ...(alpha && {
+            exports: {
+              '.': './index.js',
+              './alpha': './alpha.js',
+              './package.json': './package.json',
+            },
+          }),
+        },
+        manifest,
+      );
     }
-    await fs.ensureDir(joinPath(appDir, 'src'));
-    await fs.writeFile(
-      joinPath(appDir, 'src', 'App.tsx'),
-      "import plugin from '@test/plugin-static/sub-path';\n",
-    );
-    // Test files don't count as the app importing a package
-    await fs.writeFile(
-      joinPath(appDir, 'src', 'App.test.tsx'),
-      "import plugin from '@test/plugin-pages';\n",
-    );
   });
 
   afterEach(async () => {
     logSpy.mockRestore();
-    mockExtractManifests.mockReset();
     await fs.remove(appDir);
   });
 
@@ -98,6 +150,10 @@ describe('createDetectedModulesEntryPoint', () => {
     );
   }
 
+  function readReport() {
+    return logSpy.mock.calls.map(call => call.join(' ')).join('\n');
+  }
+
   it('only emits require entries when the flag is off', async () => {
     const entryPoints = await createDetectedModulesEntryPoint({
       config: new ConfigReader({ app: { packages: 'all' } }),
@@ -105,162 +161,30 @@ describe('createDetectedModulesEntryPoint', () => {
     });
 
     expect(entryPoints).toEqual(['__backstage-autodetected-plugins__']);
-    expect(mockExtractManifests).not.toHaveBeenCalled();
     expect(await readDiscoveryModule()).toBe(
       `window['__@backstage/discovered__'] = { modules: [${[
         `{ name: "@test/plugin-pages", export: undefined, default: require('@test/plugin-pages').default }`,
         `{ name: "@test/plugin-mixed", export: undefined, default: require('@test/plugin-mixed').default }`,
-        `{ name: "@test/plugin-static", export: undefined, default: require('@test/plugin-static').default }`,
-        `{ name: "@test/plugin-broken", export: undefined, default: require('@test/plugin-broken').default }`,
+        `{ name: "@test/plugin-unbuilt", export: undefined, default: require('@test/plugin-unbuilt').default }`,
+        `{ name: "@test/plugin-future", export: undefined, default: require('@test/plugin-future').default }`,
         `{ name: "@test/plugin-alpha", export: undefined, default: require('@test/plugin-alpha').default }`,
         `{ name: "@test/plugin-alpha", export: "./alpha", default: require('@test/plugin-alpha/alpha').default }`,
       ].join(',')}] };`,
     );
+    expect(logSpy).not.toHaveBeenCalled();
   });
 
-  it('emits lazy entries for deferrable packages when the flag is on', async () => {
-    const manifest = {
-      manifestVersion: 1 as const,
-      type: 'plugin' as const,
-      pluginId: 'pages',
-      deferrable: true,
-      routes: [],
-      externalRoutes: [],
-      extensions: [],
-    };
-    mockExtractManifests.mockResolvedValue(
-      new Map([
-        ['@test/plugin-pages', { manifest }],
-        [
-          '@test/plugin-mixed',
-          {
-            manifest: {
-              ...manifest,
-              deferrable: false,
-              notDeferrableReason: "has non-page extension 'api:mixed'",
-            },
-          },
-        ],
-        ['@test/plugin-broken', { error: 'boom' }],
-        ['@test/plugin-alpha', { skipped: 'no default export' }],
-        ['@test/plugin-alpha./alpha', { manifest }],
-      ]),
-    );
-
-    await createDetectedModulesEntryPoint({
-      config: new ConfigReader({
-        app: { packages: 'all', experimental: { deferredPackages: true } },
-      }),
-      targetPath: appDir,
-    });
-
-    // The package that the app imports statically is never extracted
-    expect(mockExtractManifests).toHaveBeenCalledTimes(1);
-    expect(
-      mockExtractManifests.mock.calls[0][0].packages.map(p => p.key),
-    ).toEqual([
-      '@test/plugin-pages',
-      '@test/plugin-mixed',
-      '@test/plugin-broken',
-      '@test/plugin-alpha',
-      '@test/plugin-alpha./alpha',
-    ]);
-
-    const content = await readDiscoveryModule();
-    expect(content).toContain(
-      `{ name: "@test/plugin-pages", export: undefined, manifest: ${JSON.stringify(
-        manifest,
-      )}, load: () => import('@test/plugin-pages') }`,
-    );
-    expect(content).toContain(
-      `{ name: "@test/plugin-alpha", export: "./alpha", manifest: ${JSON.stringify(
-        manifest,
-      )}, load: () => import('@test/plugin-alpha/alpha') }`,
-    );
-    for (const name of ['mixed', 'static', 'broken']) {
-      expect(content).toContain(
-        `default: require('@test/plugin-${name}').default }`,
-      );
-      expect(content).not.toContain(`import('@test/plugin-${name}')`);
-    }
-    expect(content).toContain(
-      `default: require('@test/plugin-alpha').default }`,
-    );
-
-    const report = logSpy.mock.calls.map(call => call.join(' ')).join('\n');
-    expect(report).toContain('deferred  @test/plugin-pages');
-    expect(report).toContain(
-      "eager     @test/plugin-mixed (has non-page extension 'api:mixed')",
-    );
-    expect(report).toContain(
-      'eager     @test/plugin-static (statically imported by app)',
-    );
-    expect(report).toContain(
-      'eager     @test/plugin-broken (manifest extraction failed: boom)',
-    );
-  });
-
-  it('loads packages eagerly if an element extension has config', async () => {
-    const createManifest = (pluginId: string, extensions: object[]) => ({
-      manifestVersion: 1 as const,
-      type: 'plugin' as const,
-      pluginId,
-      deferrable: true,
-      routes: [],
-      externalRoutes: [],
-      extensions,
-    });
-    mockExtractManifests.mockResolvedValue(
-      new Map([
-        [
-          '@test/plugin-pages',
-          {
-            manifest: createManifest('pages', [
-              { id: 'entity-card:pages', element: { data: {} } },
-            ]),
-          },
-        ],
-        [
-          '@test/plugin-mixed',
-          {
-            manifest: createManifest('mixed', [
-              { id: 'entity-card:mixed', element: { data: {} } },
-            ]),
-          },
-        ],
-        [
-          '@test/plugin-broken',
-          {
-            manifest: createManifest('broken', [
-              { id: 'page:broken', page: { path: '/broken' } },
-              { id: 'entity-card:broken', element: { data: {} } },
-            ]),
-          },
-        ],
-      ]),
-    );
-
+  it('emits lazy entries for packages with deferrable manifests', async () => {
     await createDetectedModulesEntryPoint({
       config: new ConfigReader({
         app: {
-          packages: {
-            include: [
-              '@test/plugin-pages',
-              '@test/plugin-mixed',
-              '@test/plugin-broken',
-            ],
+          packages: 'all',
+          experimental: {
+            deferredPackages: { exclude: ['@test/plugin-alpha'] },
           },
-          experimental: { deferredPackages: true },
-          extensions: [
-            'page:other',
-            // Any config for an element extension counts, even if it's empty
-            { 'entity-card:pages': { config: { title: 'Other' } } },
-            { 'entity-card:mixed': { config: {} } },
-            // Config for a page is applied by the page stub, and
-            // extensions without config are not affected
-            { 'page:broken': { config: { path: '/other' } } },
-            { 'entity-card:broken': { disabled: false } },
-          ],
+          // Config for elements doesn't affect the build, it makes the app
+          // load the plugin right after it has started
+          extensions: [{ 'page:pages': { config: { path: '/other' } } }],
         },
       }),
       targetPath: appDir,
@@ -268,57 +192,89 @@ describe('createDetectedModulesEntryPoint', () => {
 
     const content = await readDiscoveryModule();
     expect(content).toContain(
-      `default: require('@test/plugin-pages').default }`,
+      `{ name: "@test/plugin-pages", export: undefined, manifest: ${JSON.stringify(
+        createManifest('pages'),
+      )}, load: () => import(/* webpackChunkName: "deferred-test-plugin-pages" */ '@test/plugin-pages') }`,
     );
+    for (const name of ['mixed', 'unbuilt', 'future', 'alpha']) {
+      expect(content).toContain(
+        `default: require('@test/plugin-${name}').default }`,
+      );
+      expect(content).not.toContain(`*/ '@test/plugin-${name}')`);
+    }
     expect(content).toContain(
-      `default: require('@test/plugin-mixed').default }`,
+      `default: require('@test/plugin-alpha/alpha').default }`,
     );
-    expect(content).toContain(`load: () => import('@test/plugin-broken')`);
 
-    const report = logSpy.mock.calls.map(call => call.join(' ')).join('\n');
+    const report = readReport();
     expect(report).toContain(
-      "eager     @test/plugin-pages ('entity-card:pages' is configured in app.extensions, which can't be applied before the plugin is loaded)",
+      'deferred  @test/plugin-pages (loaded on first use)',
     );
-    expect(report).toContain('eager     @test/plugin-mixed');
-    expect(report).toContain('deferred  @test/plugin-broken');
+    expect(report).toContain(
+      'eager     @test/plugin-mixed (the plugin uses an if predicate)',
+    );
+    expect(report).toContain(
+      'eager     @test/plugin-unbuilt (the package has no frontend manifest)',
+    );
+    expect(report).toContain(
+      'eager     @test/plugin-future (the frontend manifest of the package has version 2, but only version 1 is supported)',
+    );
+    expect(report).toContain(
+      'eager     @test/plugin-alpha/alpha (excluded in app.experimental.deferredPackages)',
+    );
+
+    // Without the exclusion, only the entry point with a manifest is deferred
+    logSpy.mockClear();
+    await createDetectedModulesEntryPoint({
+      config: new ConfigReader({
+        app: {
+          packages: { include: ['@test/plugin-alpha'] },
+          experimental: { deferredPackages: true },
+        },
+      }),
+      targetPath: appDir,
+    });
+    expect(await readDiscoveryModule()).toContain(
+      `load: () => import(/* webpackChunkName: "deferred-test-plugin-alpha-alpha" */ '@test/plugin-alpha/alpha') }`,
+    );
+    expect(readReport()).toContain(
+      'eager     @test/plugin-alpha (no manifest for the entry point)',
+    );
   });
 
   it('loads the sync entry point of a deferred package with the app', async () => {
-    const dir = joinPath(appDir, 'node_modules', '@test/plugin-sync');
-    await fs.ensureDir(dir);
-    await fs.writeJson(joinPath(dir, 'package.json'), {
-      name: '@test/plugin-sync',
-      version: '1.0.0',
-      backstage: { role: 'frontend-plugin' },
-      exports: {
-        '.': './index.js',
-        './alpha': './alpha.js',
-        './sync': './sync.js',
-        './package.json': './package.json',
-      },
+    const manifest = createManifest('sync', {
+      extensions: [
+        {
+          id: 'api:sync',
+          kind: 'api',
+          attachTo: [],
+          disabled: false,
+          sync: true,
+        },
+        ...createManifest('sync').extensions,
+      ],
     });
+    await writePackage(
+      joinPath(appDir, 'node_modules', '@test/plugin-sync'),
+      {
+        name: '@test/plugin-sync',
+        exports: {
+          '.': './index.js',
+          './alpha': './alpha.js',
+          './sync': './sync.js',
+          './package.json': './package.json',
+        },
+      },
+      {
+        manifestVersion: 1,
+        entryPoints: { '.': manifest, './alpha': manifest },
+      },
+    );
     await fs.writeJson(joinPath(appDir, 'package.json'), {
       name: 'app',
       dependencies: { '@test/plugin-sync': '*' },
     });
-    const manifest = {
-      manifestVersion: 1 as const,
-      type: 'plugin' as const,
-      pluginId: 'sync',
-      deferrable: true,
-      routes: [],
-      externalRoutes: [],
-      extensions: [
-        { id: 'api:sync', sync: true },
-        { id: 'page:sync', page: { path: '/sync' } },
-      ],
-    };
-    mockExtractManifests.mockResolvedValue(
-      new Map([
-        ['@test/plugin-sync', { manifest }],
-        ['@test/plugin-sync./alpha', { manifest }],
-      ]),
-    );
 
     await createDetectedModulesEntryPoint({
       config: new ConfigReader({
@@ -327,20 +283,78 @@ describe('createDetectedModulesEntryPoint', () => {
       targetPath: appDir,
     });
 
-    expect(
-      mockExtractManifests.mock.calls[0][0].packages.map(p => p.syncImport),
-    ).toEqual(['@test/plugin-sync/sync', '@test/plugin-sync/sync']);
     const content = await readDiscoveryModule();
     const syncEntry = `{ name: "@test/plugin-sync", export: "./sync", default: require('@test/plugin-sync/sync').default }`;
     // The sync entry point is loaded once, before the deferred entry points
     expect(content.split(syncEntry)).toHaveLength(2);
     expect(content.indexOf(syncEntry)).toBeLessThan(
-      content.indexOf(`load: () => import('@test/plugin-sync')`),
+      content.indexOf(`'@test/plugin-sync') }`),
     );
-    expect(content).toContain(`load: () => import('@test/plugin-sync/alpha')`);
-    const report = logSpy.mock.calls.map(call => call.join(' ')).join('\n');
-    expect(report).toContain(
+    expect(content).toContain(`'@test/plugin-sync/alpha') }`);
+    expect(readReport()).toContain(
       'deferred  @test/plugin-sync (loaded on first use, with its sync export loaded with the app)',
+    );
+  });
+
+  it('analyzes workspace packages from source and caches the result', async () => {
+    // A workspace package is linked into node_modules
+    const packageDir = joinPath(appDir, 'plugins', 'workspace');
+    await writePackage(packageDir, { name: '@test/plugin-workspace' });
+    await fs.outputFile(
+      joinPath(packageDir, 'src', 'index.ts'),
+      `
+        import { createFrontendPlugin, PageBlueprint } from '@backstage/frontend-plugin-api';
+        export default createFrontendPlugin({
+          pluginId: 'workspace',
+          extensions: [
+            PageBlueprint.make({ params: { path: '/workspace', loader: async () => null } }),
+          ],
+        });
+      `,
+    );
+    await fs.ensureSymlink(
+      packageDir,
+      joinPath(appDir, 'node_modules', '@test/plugin-workspace'),
+    );
+    await fs.writeJson(joinPath(appDir, 'package.json'), {
+      name: 'app',
+      dependencies: { '@test/plugin-workspace': '*' },
+    });
+    const config = new ConfigReader({
+      app: { packages: 'all', experimental: { deferredPackages: true } },
+    });
+
+    await createDetectedModulesEntryPoint({ config, targetPath: appDir });
+    expect(await readDiscoveryModule()).toContain(
+      `load: () => import(/* webpackChunkName: "deferred-test-plugin-workspace" */ '@test/plugin-workspace') }`,
+    );
+    const cachePath = joinPath(
+      appDir,
+      'node_modules',
+      '.cache',
+      'backstage-frontend-manifests',
+      'test-plugin-workspace.json',
+    );
+    const cached = await fs.readJson(cachePath);
+    expect(cached.result.entryPoints['.'].manifest.deferrable).toBe(true);
+
+    // A cached result is used as long as the source doesn't change
+    await fs.writeJson(cachePath, {
+      ...cached,
+      result: { entryPoints: { '.': { skipped: 'from the cache' } } },
+    });
+    await createDetectedModulesEntryPoint({ config, targetPath: appDir });
+    expect(readReport()).toContain(
+      'eager     @test/plugin-workspace (from the cache)',
+    );
+
+    await fs.outputFile(
+      joinPath(packageDir, 'src', 'index.ts'),
+      'export const x = 1;',
+    );
+    await createDetectedModulesEntryPoint({ config, targetPath: appDir });
+    expect(readReport()).toContain(
+      'eager     @test/plugin-workspace (the entry point has no default export)',
     );
   });
 });
