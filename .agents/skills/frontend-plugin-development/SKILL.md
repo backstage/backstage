@@ -20,6 +20,12 @@ It is a reference, not a procedure. Read only the reference that matches the tas
 | [Testing](references/testing.md)                   | Adding a plugin smoke test, or providing APIs to components and hooks in tests                                                           |
 | [Troubleshooting](references/troubleshooting.md)   | An error message or symptom at startup or runtime: missing plugin, missing page or tab, duplicate tab, API errors, ignored feature flags |
 
+## Contribute through extension inputs
+
+A plugin should work once it is installed. Everything it adds is an extension, created with a blueprint, that attaches to an extension input of another extension: the app's, such as routes for `PageBlueprint` and APIs for `ApiBlueprint`, or another plugin's, such as the catalog entity page for `EntityContentBlueprint`. Adopters adjust these extensions through `app-config` or modules. If other plugins should be able to extend part of your plugin's UI, give that part an extension input and a blueprint that attaches to it.
+
+When no extension input fits what the plugin adds, the fix is to add one, in the app or in the plugin that owns that part of the UI. Tell the user what is missing and where it belongs. Exporting a component for adopters to render in their app is a last resort, for when adding the input is out of scope, and the README should say it is temporary.
+
 ## Check the dev app after a change
 
 `yarn tsc`, lint, and unit tests do not catch most of the problems in these references. After changing a plugin, start its dev app (`yarn start` from the plugin directory) and check that:
