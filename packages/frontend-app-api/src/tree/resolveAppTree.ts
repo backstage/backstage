@@ -231,21 +231,12 @@ export function resolveAppTree(
   };
 }
 
-function removeAppNode(
-  nodes: Map<string, AppNode>,
+/**
+ * Detaches a node from its parent, and returns where it was attached.
+ */
+function detachAppNode(
   node: AppNode,
 ): { parent: AppNode; input: string; index: number } | undefined {
-  // Remove the node and all of its descendants from the node index.
-  const visit = (current: AppNode) => {
-    if (nodes.get(current.spec.id) === current) {
-      nodes.delete(current.spec.id);
-    }
-    for (const children of current.edges.attachments.values()) {
-      children.forEach(visit);
-    }
-  };
-  visit(node);
-
   const attachedTo = node.edges.attachedTo;
   if (!attachedTo) {
     return undefined;
@@ -286,10 +277,12 @@ function attachAppNode(
  *
  * @remarks
  *
- * A spec with the same ID as an existing node replaces that node and all of
- * its attachments. If the new node attaches to the same input as the node it
- * replaces, it takes the same position among the attachments of that input.
- * New nodes can attach to each other as well as to existing nodes.
+ * A spec with the same ID as an existing node replaces that node. If the new
+ * node attaches to the same input as the node it replaces, it takes the same
+ * position among the attachments of that input. Existing attachments of the
+ * replaced node, for example extensions from modules, are moved over to the
+ * new node unless they are replaced as well. New nodes can attach to each
+ * other as well as to existing nodes.
  *
  * Existing node instances are left untouched, and the new nodes are not
  * instantiated.
@@ -320,8 +313,18 @@ export function graftAppTreeNodes(
 
     const replacedNode = nodes.get(node.spec.id);
     const replacedPosition = replacedNode
-      ? removeAppNode(nodes, replacedNode)
+      ? detachAppNode(replacedNode)
       : undefined;
+    if (replacedNode) {
+      for (const [input, children] of replacedNode.edges.attachments) {
+        for (const child of children) {
+          if (!newNodes.has(child.spec.id)) {
+            // All nodes of a resolved tree are serializable nodes
+            attachAppNode(child as SerializableAppNode, node, input);
+          }
+        }
+      }
+    }
 
     const parent = newNodes.get(attachTo.id) ?? nodes.get(attachTo.id);
     if (!parent) {
