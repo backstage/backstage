@@ -36,7 +36,10 @@ import {
   CreateSpecializedAppInternalOptions,
   prepareSpecializedApp,
 } from './prepareSpecializedApp';
-import { FrontendFeatureManifest } from '@internal/frontend';
+import {
+  FrontendFeatureManifest,
+  OpaqueDeferredFrontendFeature,
+} from '@internal/frontend';
 import { DeferredFeatureController } from './deferredFeatures';
 
 const manifest: FrontendFeatureManifest = {
@@ -546,6 +549,29 @@ describe('deferred features', () => {
     ).toThrow(
       "The 'api-pkg' package can't be deferred, it provides the 'api:deferred' API",
     );
+  });
+
+  it('should install deferred features that are passed as features', async () => {
+    const load = jest.fn(async () => ({ default: createRealDeferredPlugin() }));
+    const deferredFeature = OpaqueDeferredFrontendFeature.createInstance('v1', {
+      name: 'remote-pkg',
+      manifest,
+      load,
+    }) as unknown as FrontendFeature;
+    window.history.replaceState(null, '', '/deferred');
+
+    const app = prepareSpecializedApp({
+      features: [noSignInAppPlugin, deferredFeature],
+    }).finalize();
+    expect(app.errors).toBeUndefined();
+    expect(app.tree.nodes.get('page:deferred')).toBeDefined();
+    expect(load).not.toHaveBeenCalled();
+
+    render(app.element);
+    await expect(
+      screen.findByText(/Real deferred root/),
+    ).resolves.toBeInTheDocument();
+    expect(load).toHaveBeenCalledTimes(1);
   });
 
   it('should load a plugin right away if its stub can not apply the config', async () => {
