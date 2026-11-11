@@ -8,12 +8,12 @@ The `Dockerfile` in this directory uses a [wolfi-base](https://github.com/wolfi-
 
 When converting, I utilized the upstream Dockerfile as a starting point.
 
-- Multi-stage build - The Dockerfile has been split up into a multistage build which reduces the files, packages, executables, and directories in the final image.
-  - Size savings = ~900mb
+- Multi-stage build - The Dockerfile has been split into a three-stage build (python-builder, node-builder, final) which reduces the files, packages, executables, and directories in the final image.
+  - Significant size savings compared to the standard Backstage Dockerfile
   - Reduced attack surface
 - Base Image - Swap to [wolfi-base](https://github.com/wolfi-dev) image from Chainguard Images
-  - Vulnerability Savings = ~239 at the time of updating this README
 - Entrypoint - Swap from `node` to `tini` as entrypoint to ensure that the default signal handlers work and zombie processes are handled properly
+- User - Uses Chainguard's `nonroot` user (UID 65532) instead of `node` (UID 1000)
 - Use `ADD` instead of `COPY` in dockerfile to reduce copied compressed files
   - When a `rm` is used to remove a compressed file it still makes its way into the final image. Using `ADD` is safe with local files.
 
