@@ -33,20 +33,17 @@ import {
  * The version of the analysis. Bump it whenever the analysis changes in a
  * way that changes its results, which invalidates cached results.
  */
-export const ANALYZER_VERSION = 1;
+export const ANALYZER_VERSION = 2;
 
 /** The entry points that can hold a plugin that is deferred. */
 export const DEFERRABLE_ENTRY_POINTS = ['.', './alpha'];
-
-/** The entry point with the part of a plugin that is loaded with the app. */
-export const SYNC_ENTRY_POINT = './sync';
 
 const FRONTEND_PLUGIN_API = '@backstage/frontend-plugin-api';
 
 type AttachTo = { id: string; input: string };
 
 type BlueprintSupport = {
-  type: 'page' | 'sub-page' | 'api';
+  type: 'page' | 'sub-page';
   kind: string;
   attachTo: unknown;
 };
@@ -67,11 +64,6 @@ const CORE_BLUEPRINTS: { [name: string]: BlueprintSupport } = {
     type: 'sub-page',
     kind: 'sub-page',
     attachTo: { relative: { kind: 'page' }, input: 'pages' },
-  },
-  ApiBlueprint: {
-    type: 'api',
-    kind: 'api',
-    attachTo: { id: 'root', input: 'apis' },
   },
 };
 
@@ -111,11 +103,6 @@ export type EntryPointAnalysis =
 /** The result of analyzing a frontend plugin package. */
 export interface FrontendPackageAnalysis {
   entryPoints: { [entryPoint: string]: EntryPointAnalysis };
-  /**
-   * Why the `./sync` entry point of the package doesn't agree with its other
-   * entry points, if it doesn't. No part of such a package can be deferred.
-   */
-  syncError?: string;
 }
 
 class AnalysisError extends Error {}
@@ -130,7 +117,7 @@ type FeatureInfo = {
   title?: string;
   routes: Map<string, string>;
   externalRoutes: Map<string, string>;
-  extensions: Array<{ key: string; node: ts.Expression; declared: boolean }>;
+  extensions: Array<{ node: ts.Expression }>;
   ifNode?: ts.Node;
 };
 
@@ -278,63 +265,10 @@ function isAttachedTo(
   );
 }
 
-/** Reads the kind of a blueprint from its declaration. */
-function readBlueprintKind(declaration: ts.Declaration): string | undefined {
-  if (!ts.isVariableDeclaration(declaration)) {
-    return undefined;
-  }
-  // Source code: createExtensionBlueprint({ kind: '...', ... })
-  const initializer =
-    declaration.initializer && unwrap(declaration.initializer);
-  if (initializer && ts.isCallExpression(initializer)) {
-    const [options] = initializer.arguments;
-    if (
-      initializer.expression.getText().endsWith('createExtensionBlueprint') &&
-      options &&
-      ts.isObjectLiteralExpression(options)
-    ) {
-      for (const property of options.properties) {
-        if (
-          ts.isPropertyAssignment(property) &&
-          property.name.getText() === 'kind' &&
-          ts.isStringLiteralLike(property.initializer)
-        ) {
-          return property.initializer.text;
-        }
-      }
-    }
-    return undefined;
-  }
-  // Type declarations: ExtensionBlueprint<{ kind: '...'; ... }>
-  const type = declaration.type;
-  if (
-    type &&
-    ts.isTypeReferenceNode(type) &&
-    type.typeName.getText().endsWith('ExtensionBlueprint')
-  ) {
-    const [params] = type.typeArguments ?? [];
-    if (params && ts.isTypeLiteralNode(params)) {
-      for (const member of params.members) {
-        if (
-          ts.isPropertySignature(member) &&
-          member.name.getText() === 'kind' &&
-          member.type &&
-          ts.isLiteralTypeNode(member.type) &&
-          ts.isStringLiteral(member.type.literal)
-        ) {
-          return member.type.literal.text;
-        }
-      }
-    }
-  }
-  return undefined;
-}
-
 class PackageAnalyzer {
   readonly #packageDir: string;
   readonly #program: ts.Program;
   readonly #checker: ts.TypeChecker;
-  readonly #externalPrograms = new Map<string, ts.Program | undefined>();
 
   constructor(packageDir: string, rootNames: string[]) {
     this.#packageDir = packageDir;
@@ -663,37 +597,6 @@ class PackageAnalyzer {
     return call.arguments[0];
   }
 
-  /**
-   * Reads a single property of an object literal, ignoring any other
-   * properties as long as they can't override it.
-   */
-  #readProperty(expr: ts.Expression, key: string): ts.Expression | undefined {
-    const target = this.#resolve(expr);
-    if (target.type !== 'node' || !ts.isObjectLiteralExpression(target.node)) {
-      this.#fail('the extension options must be an object literal', expr);
-    }
-    let value: ts.Expression | undefined;
-    for (const property of target.node.properties) {
-      if (ts.isSpreadAssignment(property)) {
-        this.#fail(
-          'the extension options must not use spread syntax',
-          property,
-        );
-      }
-      if (property.name?.getText() !== key) {
-        continue;
-      }
-      if (ts.isPropertyAssignment(property)) {
-        value = property.initializer;
-      } else if (ts.isShorthandPropertyAssignment(property)) {
-        value = property.name;
-      } else {
-        this.#fail(`the '${key}' option must be a plain property`, property);
-      }
-    }
-    return value;
-  }
-
   #resolveObject(
     expr: ts.Expression,
     what: string,
@@ -811,11 +714,7 @@ class PackageAnalyzer {
                 element,
               );
             }
-            info.extensions.push({
-              key: resolved.key,
-              node: resolved.node,
-              declared: resolved.node !== unwrap(element),
-            });
+            info.extensions.push({ node: resolved.node });
           }
         } else {
           this.#fail(`the plugin option '${name}' is not supported`, value);
@@ -906,6 +805,18 @@ class PackageAnalyzer {
     const { pluginId } = info;
     const { method, blueprint, blueprintName, optionsArg, readOptions, call } =
       this.#readExtensionCall(extension.node);
+    // APIs are created when the app starts, so a plugin that provides one is
+    // always loaded with the app.
+    if (
+      blueprint.type === 'external' &&
+      blueprint.module === FRONTEND_PLUGIN_API &&
+      blueprint.name === 'ApiBlueprint'
+    ) {
+      this.#fail(
+        'the plugin provides an API, and plugins that provide APIs are loaded with the app',
+        call,
+      );
+    }
     const support =
       blueprint.type === 'external' && blueprint.module === FRONTEND_PLUGIN_API
         ? CORE_BLUEPRINTS[blueprint.name]
@@ -970,9 +881,6 @@ class PackageAnalyzer {
       attachTo,
       disabled,
     };
-    if (support.type === 'api') {
-      return result;
-    }
 
     const factoryExpr = options.get('factory');
     const paramsExpr = withOverrides
@@ -1041,153 +949,7 @@ class PackageAnalyzer {
     };
   }
 
-  /** Reads the kind of a blueprint from another package. */
-  #readExternalBlueprintKind(
-    module: string,
-    name: string,
-    from: ts.Node,
-  ): string | undefined {
-    const resolved = ts.resolveModuleName(
-      module,
-      from.getSourceFile().fileName,
-      COMPILER_OPTIONS,
-      ts.sys,
-    ).resolvedModule?.resolvedFileName;
-    if (!resolved) {
-      return undefined;
-    }
-    if (!this.#externalPrograms.has(resolved)) {
-      this.#externalPrograms.set(resolved, createProgram([resolved]));
-    }
-    const program = this.#externalPrograms.get(resolved);
-    const sourceFile = program?.getSourceFile(resolved);
-    if (!program || !sourceFile) {
-      return undefined;
-    }
-    const checker = program.getTypeChecker();
-    const moduleSymbol = checker.getSymbolAtLocation(sourceFile);
-    let symbol = moduleSymbol
-      ? checker
-          .getExportsOfModule(moduleSymbol)
-          .find(s => s.escapedName === name)
-      : undefined;
-    if (symbol && symbol.flags & ts.SymbolFlags.Alias) {
-      symbol = checker.getAliasedSymbol(symbol);
-    }
-    const declaration = symbol?.valueDeclaration ?? symbol?.declarations?.[0];
-    return declaration ? readBlueprintKind(declaration) : undefined;
-  }
-
-  /**
-   * Reads the ID of an extension in the sync entry point. It is installed
-   * as it is, so its ID is all that is needed.
-   */
-  #readSyncExtension(
-    extension: FeatureInfo['extensions'][number],
-    pluginId: string,
-  ): FrontendExtensionManifest {
-    const { method, blueprint, blueprintName, optionsArg, call } =
-      this.#readExtensionCall(extension.node);
-    let kind: string | undefined;
-    if (!method) {
-      // createExtension({ kind, name, ... })
-      if (
-        blueprint.type !== 'external' ||
-        blueprint.module !== FRONTEND_PLUGIN_API ||
-        blueprint.name !== 'createExtension'
-      ) {
-        this.#fail(
-          `the extension is created with '${blueprintName}', which is not supported`,
-          call,
-        );
-      }
-      const kindExpr = this.#readProperty(optionsArg, 'kind');
-      kind = kindExpr
-        ? this.#evaluateString(kindExpr, 'the extension kind')
-        : undefined;
-    } else if (
-      blueprint.type === 'external' &&
-      blueprint.module === FRONTEND_PLUGIN_API &&
-      CORE_BLUEPRINTS[blueprint.name]
-    ) {
-      kind = CORE_BLUEPRINTS[blueprint.name].kind;
-    } else if (blueprint.type === 'external') {
-      kind = this.#readExternalBlueprintKind(
-        blueprint.module,
-        blueprint.name,
-        blueprint.from,
-      );
-    } else {
-      const symbol = this.#checker.getSymbolAtLocation(
-        unwrap((call.expression as ts.PropertyAccessExpression).expression),
-      );
-      const declaration = symbol && this.#declarationOf(symbol);
-      kind = declaration ? readBlueprintKind(declaration) : undefined;
-    }
-    if (kind === undefined) {
-      this.#fail(`the kind of '${blueprintName}' can't be read`, call);
-    }
-
-    const nameExpr = this.#readProperty(optionsArg, 'name');
-    const name = nameExpr
-      ? this.#evaluateString(nameExpr, 'the extension name')
-      : undefined;
-    return {
-      id: extensionId(kind, pluginId, name),
-      kind,
-      // The extension is installed from the sync entry point as it is, so
-      // its attachment point isn't needed
-      attachTo: [],
-      disabled: false,
-      sync: true,
-    };
-  }
-
-  #declarationOf(symbol: ts.Symbol): ts.Declaration | undefined {
-    let current = symbol;
-    if (current.flags & ts.SymbolFlags.Alias) {
-      current = this.#checker.getAliasedSymbol(current);
-    }
-    return current.valueDeclaration ?? current.declarations?.[0];
-  }
-
-  /**
-   * Checks that the sync part of a plugin is made from the same declarations
-   * as the plugin, and returns the keys of its extensions.
-   */
-  checkSyncPart(main: FeatureInfo, sync: FeatureInfo): Set<string> {
-    if (sync.type !== 'plugin') {
-      throw new AnalysisError(
-        'the default export of the sync entry point is not a plugin',
-      );
-    }
-    for (const extension of sync.extensions) {
-      const isShared =
-        extension.declared &&
-        main.extensions.some(other => other.key === extension.key);
-      if (!isShared) {
-        this.#fail(
-          'each extension of the sync entry point must be a declaration that the main entry point uses as well, imported from a module that both entry points share',
-          extension.node,
-        );
-      }
-    }
-    for (const key of ['routes', 'externalRoutes'] as const) {
-      for (const [name, ref] of sync[key]) {
-        if (main[key].get(name) !== ref) {
-          throw new AnalysisError(
-            `the '${name}' route ref in ${key} of the sync entry point is not the same declaration as in the main entry point`,
-          );
-        }
-      }
-    }
-    return new Set(sync.extensions.map(extension => extension.key));
-  }
-
-  createManifest(
-    info: FeatureInfo,
-    options: { syncKeys?: Set<string>; hasSyncEntryPoint: boolean },
-  ): FrontendFeatureManifest {
+  createManifest(info: FeatureInfo): FrontendFeatureManifest {
     const manifest: FrontendFeatureManifest = {
       manifestVersion: FRONTEND_MANIFEST_VERSION,
       type: info.type,
@@ -1207,9 +969,7 @@ class PackageAnalyzer {
         this.#fail(`the plugin uses an 'if' predicate`, info.ifNode);
       }
       manifest.extensions = info.extensions.map(extension =>
-        options.syncKeys?.has(extension.key)
-          ? this.#readSyncExtension(extension, info.pluginId)
-          : this.#readExtension(extension, info),
+        this.#readExtension(extension, info),
       );
     } catch (error) {
       if (error instanceof AnalysisError) {
@@ -1218,10 +978,7 @@ class PackageAnalyzer {
       throw error;
     }
 
-    const reason = findNotDeferrableReason(
-      manifest.extensions,
-      options.hasSyncEntryPoint,
-    );
+    const reason = findNotDeferrableReason(manifest.extensions);
     return reason
       ? { ...manifest, notDeferrableReason: reason }
       : { ...manifest, deferrable: true };
@@ -1231,23 +988,12 @@ class PackageAnalyzer {
 /** Checks the rules for deferring a plugin, given its extensions. */
 function findNotDeferrableReason(
   extensions: FrontendExtensionManifest[],
-  hasSyncEntryPoint: boolean,
 ): string | undefined {
   if (extensions.length === 0) {
     return 'the plugin has no extensions';
   }
   for (const extension of extensions) {
-    if (extension.sync) {
-      continue;
-    }
-    if (extension.kind === 'api') {
-      if (!isAttachedTo(extension.attachTo, { id: 'root', input: 'apis' })) {
-        return `the API '${extension.id}' does not attach to root`;
-      }
-      if (!hasSyncEntryPoint) {
-        return `the plugin provides the API '${extension.id}', and only plugins with a ./sync entry point can defer their APIs`;
-      }
-    } else if (extension.page) {
+    if (extension.page) {
       if (
         !isAttachedTo(extension.attachTo, {
           id: 'app/routes',
@@ -1262,10 +1008,8 @@ function findNotDeferrableReason(
   }
   // Only rendering a page or element loads a deferred plugin, so a plugin
   // without one would never be loaded.
-  if (!extensions.some(e => !e.sync && (e.page || e.element))) {
-    return extensions.some(e => e.sync)
-      ? 'every page and element is in the sync entry point, so there is nothing to defer'
-      : 'the plugin has no page or element that would load it';
+  if (!extensions.some(e => e.page || e.element)) {
+    return 'the plugin has no page or element that would load it';
   }
   return undefined;
 }
@@ -1291,11 +1035,7 @@ export function analyzeFrontendPackage(options: {
   entryPoints: Array<{ mount: string; path: string }>;
 }): FrontendPackageAnalysis {
   const entryPoints = options.entryPoints
-    .filter(
-      entry =>
-        DEFERRABLE_ENTRY_POINTS.includes(entry.mount) ||
-        entry.mount === SYNC_ENTRY_POINT,
-    )
+    .filter(entry => DEFERRABLE_ENTRY_POINTS.includes(entry.mount))
     .map(entry => ({
       ...entry,
       file: resolvePath(options.packageDir, entry.path),
@@ -1307,47 +1047,11 @@ export function analyzeFrontendPackage(options: {
     entryPoints.map(entry => entry.file),
   );
 
-  const syncEntry = entryPoints.find(e => e.mount === SYNC_ENTRY_POINT);
-  const sync = syncEntry ? analyzer.readFeature(syncEntry.file) : undefined;
-
   const result: FrontendPackageAnalysis = { entryPoints: {} };
-  let syncMatched = false;
   for (const entry of entryPoints) {
-    if (entry.mount === SYNC_ENTRY_POINT) {
-      continue;
-    }
     const info = analyzer.readFeature(entry.file);
-    if ('skipped' in info) {
-      result.entryPoints[entry.mount] = info;
-      continue;
-    }
-
-    let syncKeys: Set<string> | undefined;
-    if (sync && info.type === 'plugin') {
-      if ('skipped' in sync) {
-        result.syncError = `the sync entry point can't be read, ${sync.skipped}`;
-      } else if (sync.pluginId === info.pluginId) {
-        syncMatched = true;
-        try {
-          syncKeys = analyzer.checkSyncPart(info, sync);
-        } catch (error) {
-          if (!(error instanceof AnalysisError)) {
-            throw error;
-          }
-          result.syncError = error.message;
-        }
-      }
-    }
-    result.entryPoints[entry.mount] = {
-      manifest: analyzer.createManifest(info, {
-        syncKeys,
-        hasSyncEntryPoint: Boolean(syncEntry),
-      }),
-    };
-  }
-
-  if (sync && !('skipped' in sync) && !syncMatched && !result.syncError) {
-    result.syncError = `the sync entry point is for the '${sync.pluginId}' plugin, which no other entry point of the package provides`;
+    result.entryPoints[entry.mount] =
+      'skipped' in info ? info : { manifest: analyzer.createManifest(info) };
   }
   return result;
 }

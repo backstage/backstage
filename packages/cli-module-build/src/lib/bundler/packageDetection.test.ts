@@ -242,60 +242,6 @@ describe('createDetectedModulesEntryPoint', () => {
     );
   });
 
-  it('loads the sync entry point of a deferred package with the app', async () => {
-    const manifest = createManifest('sync', {
-      extensions: [
-        {
-          id: 'api:sync',
-          kind: 'api',
-          attachTo: [],
-          disabled: false,
-          sync: true,
-        },
-        ...createManifest('sync').extensions,
-      ],
-    });
-    await writePackage(
-      joinPath(appDir, 'node_modules', '@test/plugin-sync'),
-      {
-        name: '@test/plugin-sync',
-        exports: {
-          '.': './index.js',
-          './alpha': './alpha.js',
-          './sync': './sync.js',
-          './package.json': './package.json',
-        },
-      },
-      {
-        manifestVersion: 1,
-        entryPoints: { '.': manifest, './alpha': manifest },
-      },
-    );
-    await fs.writeJson(joinPath(appDir, 'package.json'), {
-      name: 'app',
-      dependencies: { '@test/plugin-sync': '*' },
-    });
-
-    await createDetectedModulesEntryPoint({
-      config: new ConfigReader({
-        app: { packages: 'all', experimental: { deferredPackages: true } },
-      }),
-      targetPath: appDir,
-    });
-
-    const content = await readDiscoveryModule();
-    const syncEntry = `{ name: "@test/plugin-sync", export: "./sync", default: require('@test/plugin-sync/sync').default }`;
-    // The sync entry point is loaded once, before the deferred entry points
-    expect(content.split(syncEntry)).toHaveLength(2);
-    expect(content.indexOf(syncEntry)).toBeLessThan(
-      content.indexOf(`'@test/plugin-sync') }`),
-    );
-    expect(content).toContain(`'@test/plugin-sync/alpha') }`);
-    expect(readReport()).toContain(
-      'deferred  @test/plugin-sync (loaded on first use, with its sync export loaded with the app)',
-    );
-  });
-
   it('analyzes workspace packages from source and caches the result', async () => {
     // A workspace package is linked into node_modules
     const packageDir = joinPath(appDir, 'plugins', 'workspace');

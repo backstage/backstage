@@ -16,7 +16,6 @@
 
 import {
   ApiHolder,
-  AppNode,
   AppNodeSpec,
   AppTree,
   ConfigApi,
@@ -37,18 +36,9 @@ import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
 import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
 import { graftAppTreeNodes } from '../tree/resolveAppTree';
 import { instantiateAppNodeSubtree } from '../tree/instantiateAppNodeTree';
-import {
-  collectApiFactoryEntries,
-  registerFeatureFlagDeclarationsInHolder,
-  wrapFeatureFlagApiFactory,
-} from './apiFactories';
+import { registerFeatureFlagDeclarationsInHolder } from './apiFactories';
 import { ErrorCollector } from './createErrorCollector';
-import { FrontendApiRegistry } from './FrontendApiRegistry';
-import {
-  findSyncPartMismatch,
-  getPluginExtensionIds,
-  getPluginId,
-} from '../manifest/syncPart';
+import { getPluginId } from './deferredFeatures';
 import {
   AppTreeApiProxy,
   initializePhaseRouting,
@@ -74,7 +64,7 @@ function isAttachedTo(
 /**
  * Picks the specs that can be added to the app after it has been finalized:
  * the pages and elements that replace the stubs created from the manifest,
- * APIs, and anything attached to those pages.
+ * and anything attached to those pages.
  */
 function selectGraftableSpecs(options: {
   specs: AppNodeSpec[];
@@ -91,11 +81,6 @@ function selectGraftableSpecs(options: {
   const selected = new Set<string>();
   for (const spec of candidates) {
     if (stubExtensionIds.has(spec.id) && getAttachTo(spec)) {
-      selected.add(spec.id);
-    } else if (
-      spec.id.startsWith('api:') &&
-      isAttachedTo(spec, APIS_ATTACHMENT)
-    ) {
       selected.add(spec.id);
     }
   }
@@ -119,14 +104,14 @@ function selectGraftableSpecs(options: {
       continue;
     }
     const attachTo = getAttachTo(spec);
-    const reason = `it is not an API or an extension listed in the manifest, it attaches to ${
+    const reason = `it is not an extension listed in the manifest, it attaches to ${
       attachTo
         ? `'${attachTo.id}' input '${attachTo.input}'`
         : 'more than one extension'
     }`;
     collector.report({
       code: 'EXTENSION_IGNORED',
-      message: `The '${spec.id}' extension of the deferred '${spec.plugin.pluginId}' plugin was ignored because ${reason}. A deferred plugin can only provide pages, APIs and elements that are listed in its manifest, so the manifest is likely out of date.`,
+      message: `The '${spec.id}' extension of the deferred '${spec.plugin.pluginId}' plugin was ignored because ${reason}. A deferred plugin can only provide pages and elements that are listed in its manifest, so the manifest is likely out of date.`,
       context: { plugin: stub, extensionId: spec.id },
     });
   }
@@ -162,46 +147,6 @@ function updateRouteBindings(options: {
 }
 
 /**
- * Registers the API factories of the given API nodes, unless an API with the
- * same ID is already available in the app.
- */
-function registerGraftedApis(options: {
-  apiNodes: AppNode[];
-  appApiRegistry: FrontendApiRegistry;
-  features: FrontendFeature[];
-  collector: ErrorCollector;
-  predicateContext?: ExtensionPredicateContext;
-}) {
-  const entries = collectApiFactoryEntries({
-    apiNodes: options.apiNodes,
-    collector: options.collector,
-    predicateContext: options.predicateContext,
-  });
-  for (const entry of entries.values()) {
-    const apiRefId = entry.factory.api.id;
-    const registered = options.appApiRegistry.register(
-      wrapFeatureFlagApiFactory(
-        entry.factory,
-        options.features,
-        options.collector,
-      ),
-    );
-    if (!registered) {
-      options.collector.report({
-        code: 'API_FACTORY_CONFLICT',
-        message: `API '${apiRefId}' is already provided by the app, so the one from the deferred '${entry.pluginId}' plugin was ignored.`,
-        context: {
-          node: entry.node,
-          apiRefId,
-          pluginId: entry.pluginId,
-          existingPluginId: 'app',
-        },
-      });
-    }
-  }
-}
-
-/**
  * Adds a loaded deferred plugin to a finalized app, in place of its stub.
  *
  * @remarks
@@ -210,8 +155,8 @@ function registerGraftedApis(options: {
  * instantiated, but the rest of the tree keeps its instances. The stub
  * elements are already rendered by their parents, for example `app/routes`
  * or an entity page, so they render the real elements that are returned from
- * here. The APIs of the plugin are added to the app, unless the app already
- * provides an API with the same ID.
+ * here. A deferred plugin can't provide APIs, since APIs are created when
+ * the app starts, so a loaded plugin that provides one fails to load.
  *
  * @returns The current feature list, and the real elements keyed by
  * extension ID.
@@ -221,14 +166,11 @@ export function graftDeferredPlugin(options: {
   entry: DeferredFrontendFeature;
   loadedFeature: unknown;
   stub: FrontendPlugin;
-  /** The sync part of the plugin, which is already installed in the app. */
-  syncPart?: FrontendPlugin;
   features: FrontendFeature[];
   attachPluginInfo(feature: FrontendFeature): FrontendFeature;
   tree: AppTree;
   config: ConfigApi;
   apis: ApiHolder;
-  appApiRegistry: FrontendApiRegistry;
   collector: ErrorCollector;
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
   predicateContext?: ExtensionPredicateContext;
@@ -251,19 +193,6 @@ export function graftDeferredPlugin(options: {
       `The deferred '${entry.name}' package provided the '${loadedPluginId}' plugin, but its manifest is for the '${pluginId}' plugin`,
     );
   }
-  // The sync part was installed in place of the extensions it provides, so it
-  // must agree with the loaded plugin for them to only be installed once.
-  if (options.syncPart) {
-    const mismatch = findSyncPartMismatch(loadedPlugin, options.syncPart);
-    if (mismatch) {
-      throw new Error(
-        `The deferred '${entry.name}' package can't be loaded, ${mismatch}`,
-      );
-    }
-  }
-  const syncExtensionIds = new Set(
-    options.syncPart ? getPluginExtensionIds(options.syncPart) : [],
-  );
   const plugin = options.attachPluginInfo(loadedPlugin) as FrontendPlugin;
 
   // Modules for the plugin were installed together with the stub, so they are
@@ -286,17 +215,27 @@ export function graftDeferredPlugin(options: {
     collector,
   });
 
-  // The extensions of the sync part are kept as they are
   const stubExtensionIds = new Set(
-    OpaqueFrontendPlugin.toInternal(stub)
-      .extensions.map(e => e.id)
-      .filter(id => !syncExtensionIds.has(id)),
+    OpaqueFrontendPlugin.toInternal(stub).extensions.map(e => e.id),
   );
   // Nodes that are already in the tree and don't belong to the stub, for
   // example extensions added by modules, are kept as they are.
   const existingIds = new Set(
     Array.from(tree.nodes.keys()).filter(id => !stubExtensionIds.has(id)),
   );
+  // APIs are created when the app starts, so they can't be added once the app
+  // is running. This is checked before the tree is changed.
+  const api = specs.find(
+    spec =>
+      !spec.disabled &&
+      !existingIds.has(spec.id) &&
+      isAttachedTo(spec, APIS_ATTACHMENT),
+  );
+  if (api) {
+    throw new Error(
+      `The deferred '${entry.name}' package can't be loaded, it provides the '${api.id}' API, and plugins that provide APIs can't be deferred. Its manifest is likely out of date.`,
+    );
+  }
   const graftSpecs = selectGraftableSpecs({
     specs,
     stubExtensionIds,
@@ -328,15 +267,6 @@ export function graftDeferredPlugin(options: {
     plugin,
   });
 
-  // APIs are registered before the elements are created, so that the
-  // elements can use them.
-  registerGraftedApis({
-    apiNodes: newNodes.filter(node => isAttachedTo(node.spec, APIS_ATTACHMENT)),
-    appApiRegistry: options.appApiRegistry,
-    features,
-    collector,
-    predicateContext: options.predicateContext,
-  });
   registerFeatureFlagDeclarationsInHolder(options.apis, [plugin], collector);
 
   const elements = new Map<string, JSX.Element>();

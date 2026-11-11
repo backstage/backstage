@@ -28,7 +28,6 @@ import {
   createRouteRef,
   FrontendFeature,
   PageBlueprint,
-  useApi,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { act, fireEvent, render, screen } from '@testing-library/react';
@@ -258,39 +257,44 @@ describe('deferred features', () => {
     ).resolves.not.toHaveLength(0);
     missingPage.unmount();
 
-    // A plugin with an API that the app already provides, and an extension
-    // that isn't in the manifest, both of which are ignored with a warning
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    // A plugin with an API, which can't be added once the app has started
     const serviceApiRef = createApiRef<{ name: string }>({
       id: 'plugin.deferred.service',
     });
-    const createApi = (name: string) =>
-      ApiBlueprint.make({
-        params: defineParams =>
-          defineParams({
-            api: serviceApiRef,
-            deps: {},
-            factory: () => ({ name }),
+    const withApi = renderAt(
+      '/deferred',
+      createRealDeferredPlugin().withOverrides({
+        extensions: [
+          ApiBlueprint.make({
+            params: defineParams =>
+              defineParams({
+                api: serviceApiRef,
+                deps: {},
+                factory: () => ({ name: 'deferred' }),
+              }),
           }),
-      });
-    const realPlugin = createRealDeferredPlugin();
+        ],
+      }),
+    );
+    await expect(
+      screen.findAllByText(
+        /The deferred 'deferred-pkg' package can't be loaded, it provides the 'api:deferred' API, and plugins that provide APIs can't be deferred/,
+      ),
+    ).resolves.not.toHaveLength(0);
+    withApi.unmount();
+
+    // An extension that isn't in the manifest is ignored with a warning
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     renderAt(
       '/deferred',
-      realPlugin.withOverrides({
+      createRealDeferredPlugin().withOverrides({
         extensions: [
-          createApi('deferred'),
           PageBlueprint.make({
             name: 'unlisted',
             params: { path: '/unlisted', loader: async () => <div /> },
           }),
         ],
       }),
-      [
-        createFrontendPlugin({
-          pluginId: 'eager',
-          extensions: [createApi('eager')],
-        }),
-      ],
     );
     await expect(
       screen.findByText(/Real deferred root/),
@@ -299,9 +303,6 @@ describe('deferred features', () => {
       .map(([message]) => String(message))
       .filter(message => message.startsWith("Loading the deferred 'deferred'"));
     expect(graftWarnings).toHaveLength(1);
-    expect(graftWarnings[0]).toContain(
-      "API_FACTORY_CONFLICT: API 'plugin.deferred.service' is already provided by the app, so the one from the deferred 'deferred' plugin was ignored.",
-    );
     expect(graftWarnings[0]).toContain(
       "EXTENSION_IGNORED: The 'page:deferred/unlisted' extension of the deferred 'deferred' plugin was ignored",
     );
@@ -372,10 +373,7 @@ describe('deferred features', () => {
     expect(moduleNode?.edges.attachedTo?.node).toBe(realPage);
   });
 
-  it('should load a plugin with an API, an element and external routes on first use', async () => {
-    const scoreApiRef = createApiRef<{ getScore(): number }>({
-      id: 'plugin.scored.service',
-    });
+  it('should load a plugin with an element and external routes on first use', async () => {
     const contentTitleRef = createExtensionDataRef<string>().with({
       id: 'test.content.title',
     });
@@ -423,14 +421,13 @@ describe('deferred features', () => {
     });
 
     function ScoreContent() {
-      const scoreApi = useApi(scoreApiRef);
       const rootLink = useRouteRef(rootRouteRef);
       const hostLink = useRouteRef(hostLinkRef);
       const configuredLink = useRouteRef(configuredLinkRef);
       return (
         <div>
-          Score {scoreApi.getScore()} at {rootLink?.()} host={hostLink?.()}{' '}
-          configured={configuredLink?.()}
+          Score at {rootLink?.()} host={hostLink?.()} configured=
+          {configuredLink?.()}
         </div>
       );
     }
@@ -443,14 +440,6 @@ describe('deferred features', () => {
         configuredLink: configuredLinkRef,
       },
       extensions: [
-        ApiBlueprint.make({
-          params: defineParams =>
-            defineParams({
-              api: scoreApiRef,
-              deps: {},
-              factory: () => ({ getScore: () => 42 }),
-            }),
-        }),
         PageBlueprint.make({
           params: {
             path: '/scored',
@@ -478,12 +467,6 @@ describe('deferred features', () => {
       routes: ['root'],
       externalRoutes: ['hostLink', 'configuredLink'],
       extensions: [
-        {
-          id: 'api:scored',
-          kind: 'api',
-          attachTo: { id: 'root', input: 'apis' },
-          disabled: false,
-        },
         {
           id: 'page:scored',
           kind: 'page',
@@ -515,175 +498,54 @@ describe('deferred features', () => {
       __internal: { deferredFeatures },
     } as CreateSpecializedAppInternalOptions).finalize();
 
-    // The API is only added once the plugin is loaded
     expect(app.errors).toBeUndefined();
-    expect(app.apis.get(scoreApiRef)).toBeUndefined();
     expect(load).not.toHaveBeenCalled();
 
     // The host page renders the stub content with the data from the
-    // manifest, which loads the real content along with the API and routes.
+    // manifest, which loads the real content along with its routes.
     // Both the default and the configured external route bindings apply.
     render(app.element);
     await expect(
       screen.findByRole('heading', { name: 'Score tab' }),
     ).resolves.toBeInTheDocument();
     await expect(
-      screen.findByText('Score 42 at /scored host=/ configured=/'),
+      screen.findByText('Score at /scored host=/ configured=/'),
     ).resolves.toBeInTheDocument();
     expect(load).toHaveBeenCalledTimes(1);
-    expect(app.apis.get(scoreApiRef)?.getScore()).toBe(42);
     expect(app.tree.nodes.get('host-content:scored')?.spec.plugin.routes).toBe(
       realPlugin.routes,
     );
   });
 
-  it('should install the sync export of a plugin', async () => {
-    const scoreApiRef = createApiRef<{ getScore(): number }>({
-      id: 'plugin.synced.service',
-    });
-    const cardKindRef = createExtensionDataRef<string>().with({
-      id: 'test.card.kind',
-    });
-
-    // An eager page that renders the cards for one kind, similar to the
-    // entity page of the catalog.
-    const hostPlugin = createFrontendPlugin({
-      pluginId: 'host',
+  it('should not defer a plugin with an API', () => {
+    const apiManifest: FrontendFeatureManifest = {
+      ...manifest,
       extensions: [
-        createExtension({
-          kind: 'page',
-          attachTo: { id: 'app/routes', input: 'routes' },
-          inputs: {
-            cards: createExtensionInput([
-              coreExtensionData.reactElement,
-              cardKindRef,
-            ]),
-          },
-          output: [coreExtensionData.routePath, coreExtensionData.reactElement],
-          *factory({ inputs }) {
-            yield coreExtensionData.routePath('/');
-            yield coreExtensionData.reactElement(
-              <div>
-                {inputs.cards
-                  .filter(card => card.get(cardKindRef) === 'group')
-                  .map(card => (
-                    <section key={card.node.spec.id}>
-                      {card.get(coreExtensionData.reactElement)}
-                    </section>
-                  ))}
-              </div>,
-            );
-          },
-        }),
-      ],
-    });
-
-    const apiFactory = jest.fn(() => ({ getScore: () => 42 }));
-    const api = ApiBlueprint.make({
-      params: defineParams =>
-        defineParams({ api: scoreApiRef, deps: {}, factory: apiFactory }),
-    });
-    function ScoreCard(props: { label: string }) {
-      const scoreApi = useApi(scoreApiRef);
-      return (
-        <div>
-          {props.label} score {scoreApi.getScore()}
-        </div>
-      );
-    }
-    const createCard = (name: string) =>
-      createExtension({
-        kind: 'card',
-        name,
-        attachTo: { id: 'page:host', input: 'cards' },
-        output: [coreExtensionData.reactElement, cardKindRef],
-        *factory() {
-          yield coreExtensionData.reactElement(<ScoreCard label={name} />);
-          yield cardKindRef(name);
-        },
-      });
-    const realPlugin = createFrontendPlugin({
-      pluginId: 'synced',
-      extensions: [api, createCard('group'), createCard('user')],
-    });
-    // The sync export holds the API, so it's available before the plugin loads
-    const syncPart = createFrontendPlugin({
-      pluginId: 'synced',
-      extensions: [api],
-    });
-
-    const createCardManifest = (name: string) => ({
-      id: `card:synced/${name}`,
-      kind: 'card',
-      attachTo: { id: 'page:host', input: 'cards' },
-      disabled: false,
-      element: { data: { 'test.card.kind': name } },
-    });
-    const syncedManifest: FrontendFeatureManifest = {
-      manifestVersion: 1,
-      type: 'plugin',
-      pluginId: 'synced',
-      deferrable: true,
-      routes: [],
-      externalRoutes: [],
-      extensions: [
+        ...manifest.extensions,
         {
-          id: 'api:synced',
+          id: 'api:deferred',
           kind: 'api',
           attachTo: { id: 'root', input: 'apis' },
           disabled: false,
-          sync: true,
         },
-        createCardManifest('group'),
-        createCardManifest('user'),
       ],
     };
-
-    const createApp = (loaded: typeof realPlugin) => {
-      const load = jest.fn(async () => ({ default: loaded }));
-      const app = prepareSpecializedApp({
-        features: [noSignInAppPlugin, hostPlugin, syncPart],
+    expect(() =>
+      prepareSpecializedApp({
+        features: [noSignInAppPlugin],
         __internal: {
           deferredFeatures: [
-            { name: 'synced-pkg', manifest: syncedManifest, load },
+            {
+              name: 'api-pkg',
+              manifest: apiManifest,
+              load: async () => ({ default: createRealDeferredPlugin() }),
+            },
           ],
         },
-      } as CreateSpecializedAppInternalOptions).finalize();
-      return { app, load };
-    };
-
-    const { app, load } = createApp(realPlugin);
-    expect(app.errors).toBeUndefined();
-    const syncApi = app.apis.get(scoreApiRef);
-    expect(syncApi?.getScore()).toBe(42);
-    expect(load).not.toHaveBeenCalled();
-
-    // Only the card for the kind is rendered, which loads the plugin
-    render(app.element);
-    await expect(
-      screen.findByText('group score 42'),
-    ).resolves.toBeInTheDocument();
-    expect(screen.queryByText(/user score/)).not.toBeInTheDocument();
-    expect(load).toHaveBeenCalledTimes(1);
-    // The API of the sync export is installed once and kept as it is
-    expect(app.apis.get(scoreApiRef)).toBe(syncApi);
-    expect(apiFactory).toHaveBeenCalledTimes(1);
-    expect(app.tree.nodes.get('card:synced/group')?.spec.plugin.routes).toBe(
-      realPlugin.routes,
+      } as CreateSpecializedAppInternalOptions),
+    ).toThrow(
+      "The 'api-pkg' package can't be deferred, it provides the 'api:deferred' API",
     );
-
-    // A package whose halves disagree fails to load with a clear error
-    const mismatched = createApp(
-      createFrontendPlugin({
-        pluginId: 'synced',
-        extensions: [api.override({}), createCard('group'), createCard('user')],
-      }),
-    );
-    render(mismatched.app.element);
-    const errorMessages = await screen.findAllByText(
-      /The deferred 'synced-pkg' package can't be loaded, the 'api:synced' extension is defined differently in its sync and main exports/,
-    );
-    expect(errorMessages.length).toBeGreaterThan(0);
   });
 
   it('should load a plugin right away if its stub can not apply the config', async () => {

@@ -41,7 +41,6 @@ export interface FrontendExtensionManifest {
     data: { [dataRefId: string]: unknown };
     routeRefName?: string;
   };
-  sync?: boolean;
 }
 
 export interface FrontendFeatureManifest {

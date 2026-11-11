@@ -246,42 +246,14 @@ A plugin can be deferred if its default export is a direct call to `createFronte
 
 - A page that is made with `PageBlueprint.make` and attaches to `app/routes`. A page can also be made with `PageBlueprint.makeWithOverrides`, as long as its factory does nothing but return `originalFactory({ ... })` with the params, and it only adds a `configSchema`, not `inputs` or `output`.
 - A sub-page that is made with `SubPageBlueprint.make`, without an icon.
-- A utility API that is made with `ApiBlueprint.make`. Plugins with utility APIs can only be deferred if they have a [sync export](#the-sync-export), since an API of a deferred plugin only becomes available once the plugin has loaded. If other plugins use the API, put it in the sync export.
 
 The `path` and `title` params, and the extension `name`, `attachTo`, and `disabled` options, must be literal values or constants that hold literal values, which can be imported from other modules of your package. A `routeRef` param must be one of the route refs in the `routes` of the plugin. Other extensions that are made with `makeWithOverrides`, and extensions made with `createExtension` or with other blueprints, such as the entity cards and contents of the catalog, prevent the plugin from being deferred, and so does an `if` predicate on the plugin or on any of its extensions.
+
+A plugin that provides a utility API is always loaded together with the app, since utility APIs are created when the app starts.
 
 The analysis fails closed: if any of these values can't be read, the plugin is loaded together with the app, and the CLI reports the reason along with the location in your source code.
 
 If an app has any config in `app.extensions` for an element of your plugin, such as a sub-page, the plugin is loaded right after the app has started. Config for the pages of your plugin does not have this effect, and is applied to the stand-in of the page.
-
-### The sync export
-
-If some extensions of your plugin are needed before the plugin is first used, you can move them to a `./sync` entry point of your plugin package. The app loads the sync export together with the app, while the rest of the plugin is still deferred. Use it for utility APIs that other plugins use, and for extensions that can't be deferred, such as an entity card. The extensions of the sync export can be made in any way, as long as the CLI can read their kind and name.
-
-The default export of the sync entry point is a plugin that has the same plugin ID as the main export, and only holds the extensions that should be loaded with the app. Each of these extensions must be the same declaration as in the main export, which you can do by declaring them in a separate module that both entry points import:
-
-```tsx title="in src/sync.tsx"
-import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { exampleApi, exampleEntityCard } from './syncExtensions';
-
-export default createFrontendPlugin({
-  pluginId: 'example',
-  extensions: [exampleApi, exampleEntityCard],
-});
-```
-
-```json title="in package.json"
-"exports": {
-  ".": "./src/index.ts",
-  "./alpha": "./src/alpha.tsx",
-  "./sync": "./src/sync.tsx",
-  "./package.json": "./package.json"
-},
-```
-
-The main export still includes all of its extensions, so that the plugin works in apps that don't defer it. When the plugin is deferred, each extension of the sync export is installed once, and is kept as it is when the rest of the plugin is loaded. Any route refs of the sync export must also be the same declarations as in the main export. If the two exports don't agree, for example because an extension is declared twice or has a different plugin ID, `backstage-cli package build` fails, and an app that analyzes the plugin from its workspace loads it together with the app.
-
-Keep the sync export small, since everything that it imports is part of the initial app bundle.
 
 ## Related topics
 

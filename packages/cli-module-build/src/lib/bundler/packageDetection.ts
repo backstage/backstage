@@ -29,7 +29,6 @@ import { targetPaths } from '@backstage/cli-common';
 import {
   EntryPointAnalysis,
   FrontendPackageAnalysis,
-  SYNC_ENTRY_POINT,
 } from '../frontendManifest/analyzeFrontendPackage';
 import { readPackageManifest } from '../frontendManifest/readPackageManifest';
 import { FrontendFeatureManifest } from '../frontendManifest/types';
@@ -104,8 +103,6 @@ type DetectedPackage = {
   /** The directory of the package. */
   dir: string;
   packageJson: BackstagePackageJson;
-  /** The import path of the sync entry point of the package, if any */
-  syncImport?: string;
 };
 
 function isWorkspacePackage(dir: string) {
@@ -145,26 +142,13 @@ async function detectPackages(
         };
         // Include alpha entry point if available. If there's no default export it will be ignored
         const exp = depPackageJson.exports;
-        const hasExport = (name: string) =>
-          Boolean(exp && typeof exp === 'object' && name in exp);
-        // The sync entry point holds the part of a plugin that is loaded with
-        // the app when the rest of the plugin is deferred
-        const syncImport = hasExport(SYNC_ENTRY_POINT)
-          ? `${depName}/sync`
-          : undefined;
-        const withSync = (entry: DetectedPackage): DetectedPackage =>
-          syncImport ? { ...entry, syncImport } : entry;
-        if (hasExport('./alpha')) {
+        if (exp && typeof exp === 'object' && './alpha' in exp) {
           return [
-            withSync({ ...base, import: depName }),
-            withSync({
-              ...base,
-              export: './alpha',
-              import: `${depName}/alpha`,
-            }),
+            { ...base, import: depName },
+            { ...base, export: './alpha', import: `${depName}/alpha` },
           ];
         }
-        return [withSync({ ...base, import: depName })];
+        return [{ ...base, import: depName }];
       }
     } catch {
       /* ignore packages that don't make package.json available */
@@ -234,13 +218,6 @@ async function resolveDetectedEntries(
       if ('skipped' in result) {
         return { pkg, mode: 'eager', reason: result.skipped };
       }
-      if (result.syncError) {
-        return {
-          pkg,
-          mode: 'eager',
-          reason: `the sync entry point is invalid, ${result.syncError}`,
-        };
-      }
       const entry: EntryPointAnalysis | undefined =
         result.entryPoints[pkg.export ?? '.'];
       if (!entry) {
@@ -264,17 +241,11 @@ async function resolveDetectedEntries(
       return {
         pkg,
         mode: 'lazy',
-        reason: hasSyncExtensions(manifest)
-          ? 'loaded on first use, with its sync export loaded with the app'
-          : 'loaded on first use',
+        reason: 'loaded on first use',
         manifest,
       };
     }),
   );
-}
-
-function hasSyncExtensions(manifest: FrontendFeatureManifest): boolean {
-  return manifest.extensions.some(extension => extension.sync);
 }
 
 function printDeferralReport(entries: DetectedEntry[]) {
@@ -287,7 +258,7 @@ function printDeferralReport(entries: DetectedEntry[]) {
   }
 }
 
-function requireEntry(pkg: { name: string; export?: string; import: string }) {
+function requireEntry(pkg: DetectedPackage) {
   return `{ name: ${JSON.stringify(pkg.name)}, export: ${JSON.stringify(
     pkg.export,
   )}, default: require('${pkg.import}').default }`;
@@ -326,33 +297,12 @@ async function createDetectedPackagesScript(
     cache,
   });
   printDeferralReport(entries);
-  // A package can have more than one deferred entry point that shares a
-  // sync entry point, which must only be loaded once
-  const emittedSyncImports = new Set<string>();
   return entries
-    .flatMap(entry => {
-      if (entry.mode !== 'lazy') {
-        return [requireEntry(entry.pkg)];
-      }
-      // The sync part of a deferred plugin is loaded with the app
-      const syncImport = entry.pkg.syncImport;
-      if (
-        !syncImport ||
-        !hasSyncExtensions(entry.manifest) ||
-        emittedSyncImports.has(syncImport)
-      ) {
-        return [lazyEntry(entry.pkg, entry.manifest)];
-      }
-      emittedSyncImports.add(syncImport);
-      return [
-        requireEntry({
-          name: entry.pkg.name,
-          export: SYNC_ENTRY_POINT,
-          import: syncImport,
-        }),
-        lazyEntry(entry.pkg, entry.manifest),
-      ];
-    })
+    .map(entry =>
+      entry.mode === 'lazy'
+        ? lazyEntry(entry.pkg, entry.manifest)
+        : requireEntry(entry.pkg),
+    )
     .join(',');
 }
 

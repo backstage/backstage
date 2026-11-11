@@ -318,14 +318,8 @@ export function prepareSpecializedApp(
     collector,
     graft: graftDeferred,
   });
-  // The sync parts of deferred plugins are part of their stubs
-  const syncPartFeatures = new Set<FrontendFeature>(
-    deferred.syncParts.values(),
-  );
   let features = [
-    ...eagerFeatures
-      .filter(feature => !syncPartFeatures.has(feature))
-      .map(attachPluginInfo),
+    ...eagerFeatures.map(attachPluginInfo),
     ...deferred.stubs.values(),
   ];
 
@@ -560,13 +554,11 @@ export function prepareSpecializedApp(
       entry,
       loadedFeature,
       stub,
-      syncPart: deferred.syncParts.get(entry.manifest.pluginId),
       features,
       attachPluginInfo,
       tree,
       config,
       apis: phase.apis,
-      appApiRegistry,
       collector: graftCollector,
       extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
       predicateContext: finalizedPredicateContext,

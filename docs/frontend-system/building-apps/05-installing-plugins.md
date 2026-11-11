@@ -77,7 +77,7 @@ app:
 
 A plugin that you pass to `createApp` in the `features` option is used instead of a deferred plugin with the same plugin ID. If you pass a module for a deferred plugin, that plugin is loaded together with the app so that the module applies to it.
 
-If you have any config in `app.extensions` for an element of a deferred plugin, such as a sub-page, the plugin is loaded right after the app has started, since the config can only be applied once the plugin is loaded. Config for the pages of a plugin does not have this effect. Some plugins provide a `./sync` entry point with the parts that are needed before the plugin is first used, which the app loads together with the app.
+If you have any config in `app.extensions` for an element of a deferred plugin, such as a sub-page, the plugin is loaded right after the app has started, since the config can only be applied once the plugin is loaded. Config for the pages of a plugin does not have this effect. Plugins that provide utility APIs are always loaded together with the app.
 
 ## Manual installation
 
