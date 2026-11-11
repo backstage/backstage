@@ -28,6 +28,12 @@ Backstage comes with a number of catalog concepts out of the box:
 
 We'll list different possibilities for extending this below.
 
+:::tip
+
+There is also an alpha, schema-based way to declare kinds, relations, and metadata without writing processors. See [Catalog model layers](catalog-model-layers.md).
+
+:::
+
 ## Adding a New `apiVersion` of an Existing Kind
 
 Example intents:
