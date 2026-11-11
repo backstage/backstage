@@ -19,6 +19,7 @@ export type {
   AuditorEventActorDetails,
   AuditorEventRequest,
   AuditorEventRequestContext,
+  AuditorEventSchemaVersion,
   AuditorEventStatus,
   AuditorService,
   AuditorServiceCreateEventOptions,

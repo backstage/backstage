@@ -31,14 +31,15 @@ export type AuditorEvent = {
   id: string;
   plugin: string;
   eventId: string;
+  timestamp: string;
   severityLevel: AuditorServiceEventSeverityLevel;
   actor: AuditorEventActorDetails;
   meta?: JsonObject;
   request?: AuditorEventRequest;
-  correlationId?: string;
   parentEventId?: string;
   traceId?: string;
   spanId?: string;
+  schemaVersion: AuditorEventSchemaVersion;
 } & AuditorEventStatus;
 
 // @public
@@ -63,6 +64,9 @@ export type AuditorEventRequestContext = {
   hostname?: string;
   userAgent?: string;
 };
+
+// @public
+export type AuditorEventSchemaVersion = 2;
 
 // @public
 export type AuditorEventStatus =
@@ -100,7 +104,6 @@ export type AuditorServiceCreateEventOptions = {
   request?: Request_2<any, any, any, any, any> | AuditorEventRequestContext;
   actor?: AuditorEventActorDetails;
   meta?: JsonObject;
-  correlationId?: string;
   parentEventId?: string;
 };
 

@@ -147,7 +147,7 @@ describe('captureAuditor', () => {
     });
   });
 
-  it('should record request and correlation details as given', async () => {
+  it('should record request and event linkage details as given', async () => {
     const { auditor, events } = captureAuditor();
 
     const request = {
@@ -158,7 +158,6 @@ describe('captureAuditor', () => {
       eventId: 'test-event',
       // @ts-expect-error partial request is fine for this test
       request,
-      correlationId: 'correlation-id',
       parentEventId: 'parent-event-id',
     });
 
@@ -166,7 +165,6 @@ describe('captureAuditor', () => {
       url: '/api/entities?filter=x',
       method: 'GET',
     });
-    expect(events[0].correlationId).toBe('correlation-id');
     expect(events[0].parentEventId).toBe('parent-event-id');
   });
 

@@ -71,13 +71,6 @@ export type AuditorServiceCreateEventOptions = {
   meta?: JsonObject;
 
   /**
-   * (Optional) A correlation ID that links related audit events together, for
-   * example when a single user action fans out across multiple plugins or
-   * services.
-   */
-  correlationId?: string;
-
-  /**
    * (Optional) The ID of another audit event that this event was caused by or
    * is part of, forming a chain of related events.
    */
@@ -238,12 +231,16 @@ export type AuditorEvent = {
   id: string;
   plugin: string;
   eventId: string;
+  /**
+   * The time the event was created, as an ISO 8601 string. Captured once at
+   * event creation and shared by all emissions of the event, so that sinks
+   * have an authoritative time even when a terminal emission happens later.
+   */
+  timestamp: string;
   severityLevel: AuditorServiceEventSeverityLevel;
   actor: AuditorEventActorDetails;
   meta?: JsonObject;
   request?: AuditorEventRequest;
-  /** (Optional) Correlation ID linking related audit events together. */
-  correlationId?: string;
   /** (Optional) ID of the audit event that this event was caused by. */
   parentEventId?: string;
   /**
@@ -256,7 +253,23 @@ export type AuditorEvent = {
    * the event was created, when one exists.
    */
   spanId?: string;
+  /**
+   * The version of the audit event schema. Version 1 is the legacy shape
+   * emitted before this field existed, detected by its absence; version 2 is
+   * the current shape, including `id`, `timestamp`, `traceId`/`spanId`,
+   * `parentEventId`, the serializable error shape, and `responseStatus`
+   * metadata.
+   */
+  schemaVersion: AuditorEventSchemaVersion;
 } & AuditorEventStatus;
+
+/**
+ * The schema version stamped on every {@link AuditorEvent} emitted by the
+ * auditor service.
+ *
+ * @public
+ */
+export type AuditorEventSchemaVersion = 2;
 
 /**
  * A port for writing audit events to a destination such as a log transport or

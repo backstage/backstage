@@ -75,9 +75,6 @@ export type AuditorEventOptions<TMeta extends JsonObject> = {
   /** (Optional) Additional metadata relevant to the event. */
   meta?: TMeta;
 
-  /** (Optional) Correlation ID linking related audit events together. */
-  correlationId?: string;
-
   /** (Optional) ID of the audit event that this event was caused by. */
   parentEventId?: string;
 
@@ -86,6 +83,9 @@ export type AuditorEventOptions<TMeta extends JsonObject> = {
 
   /** (Optional) OpenTelemetry span ID captured with the event. */
   spanId?: string;
+
+  /** (Optional) Event creation time; set by the service, ISO 8601. */
+  timestamp?: string;
 } & AuditorEventStatus;
 
 /** @public */
@@ -345,8 +345,8 @@ export class DefaultAuditorService implements AuditorService {
       request,
       actor: actorOverride,
       meta,
-      correlationId,
       parentEventId,
+      timestamp,
       ...rest
     } = options;
 
@@ -355,13 +355,14 @@ export class DefaultAuditorService implements AuditorService {
 
       await this.pipeline.emit({
         id: id ?? randomUUID(),
+        schemaVersion: 2,
         plugin: this.plugin.getId(),
         eventId,
+        timestamp: timestamp ?? new Date().toISOString(),
         severityLevel,
         actor,
         request: request ? this.getRequestDetails(request) : undefined,
         meta,
-        correlationId,
         parentEventId,
         ...rest,
       });
@@ -430,7 +431,10 @@ export class DefaultAuditorService implements AuditorService {
       spanContext && trace.isSpanContextValid(spanContext)
         ? { traceId: spanContext.traceId, spanId: spanContext.spanId }
         : {};
-    const eventOptions = { ...options, ...tracing };
+    // Captured once, at event creation, so that sinks get an authoritative
+    // time for the event regardless of when a terminal emission happens.
+    const timestamp = new Date().toISOString();
+    const eventOptions = { ...options, ...tracing, timestamp };
 
     if (!this.isSampled(options.severityLevel ?? 'low')) {
       // Sampled-out events keep the real handle semantics; only the emission

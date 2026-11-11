@@ -359,13 +359,12 @@ describe('DefaultAuditorService', () => {
     );
   });
 
-  it('should pass correlationId and parentEventId to the sink', async () => {
+  it('should pass parentEventId to the sink', async () => {
     const logFn = jest.fn();
     const auditor = DefaultAuditorService.create(logFn, mockDeps);
 
     await auditor.createEvent({
       eventId: 'test-event',
-      correlationId: 'correlation-id',
       parentEventId: 'parent-event-id',
     });
 
@@ -373,7 +372,6 @@ describe('DefaultAuditorService', () => {
       expect.objectContaining({
         eventId: 'test-event',
         status: 'initiated',
-        correlationId: 'correlation-id',
         parentEventId: 'parent-event-id',
         plugin: 'test',
         severityLevel: 'low',
@@ -476,6 +474,42 @@ describe('DefaultAuditorService', () => {
           }),
         }),
       );
+    });
+  });
+
+  describe('event contract', () => {
+    it('threads one creation timestamp and schema version through the lifecycle', async () => {
+      const sink = { write: jest.fn(async (_event: AuditorEvent) => {}) };
+      const auditor = DefaultAuditorService.create(sink, mockDeps);
+
+      const event = await auditor.createEvent({ eventId: 'test-event' });
+      await event.success();
+
+      expect(sink.write).toHaveBeenCalledTimes(2);
+      for (const call of sink.write.mock.calls) {
+        expect(call[0].timestamp).toEqual(
+          expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/),
+        );
+        expect(call[0].schemaVersion).toBe(2);
+      }
+      // captured once at creation: identical across emissions
+      expect(sink.write.mock.calls[0][0].timestamp).toBe(
+        sink.write.mock.calls[1][0].timestamp,
+      );
+    });
+
+    it('does not emit correlationId', async () => {
+      const sink = { write: jest.fn(async (_event: AuditorEvent) => {}) };
+      const auditor = DefaultAuditorService.create(sink, mockDeps);
+
+      await auditor.createEvent({
+        eventId: 'test-event',
+        parentEventId: 'parent-event-id',
+      });
+
+      const emitted = sink.write.mock.calls[0][0];
+      expect(emitted.parentEventId).toBe('parent-event-id');
+      expect('correlationId' in emitted).toBe(false);
     });
   });
 

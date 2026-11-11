@@ -28,9 +28,15 @@ The actor of each event is derived from the request credentials where an Express
 
 ## Event Lifecycle
 
-Every audit event carries a unique `id`, shared by all emissions (`initiated`, `succeeded`, `failed`) of that event, so events can reference each other through `parentEventId` or be grouped through `correlationId`.
+Every audit event carries a unique `id`, shared by all emissions (`initiated`, `succeeded`, `failed`) of that event, so events can reference each other through `parentEventId`.
 
 An event is finalized exactly once: only the first terminal call — `success`, `fail`, or `attachToResponse` settling the response — takes effect, and later calls are no-ops. Terminal calls never reject: if the audit trail can't be written, the failure is reported to the service instead of breaking the audited operation. Failed events carry the error as a plain `{ name, message, stack }` object, so events remain serializable end to end.
+
+Every event also carries a `schemaVersion` field. Version 1 is the legacy shape emitted before the field existed, which sinks detect by its absence; version 2 is the current shape, including the event `id`, `timestamp`, `traceId`/`spanId`, `parentEventId`, the serializable error shape, and `responseStatus` metadata.
+
+### Delivery Semantics
+
+`withEvent` and manual `success`/`fail` calls await their terminal emission before returning, so the record is flushed before the audited operation continues. `attachToResponse` is different by design: the response has already finished when the event finalizes, so the emission is fire-and-forget — a process crash in that window can lose the record for an already-completed action. This is the current contract.
 
 ## Usage Guidance
 
@@ -216,11 +222,13 @@ To clarify how to utilize the Auditor feature effectively, we recommend explorin
   - The "Audit Events" section of the Software Catalog [Audit Documentation](../../features/software-catalog/audit-events.md) provides a well-structured example of documenting emitted audit events.
   - It illustrates how to detail various `eventId` values and their corresponding `meta` fields (e.g., `queryType`, `actionType`) for different plugin operations.
 
+Sinks should treat the audit trail as append-only: events are records of things that happened, and updating or deleting them is outside the audit contract. How long events are retained, and how they are expired or archived, belongs to the sink's domain — the auditor service makes no retention decisions.
+
 These examples provide both a code-level demonstration and a documentation guideline for effectively utilizing the `AuditorService` to manage audit events within your Backstage plugins.
 
 ## Trace Correlation
 
-When an [OpenTelemetry](https://opentelemetry.io/) span is active while an audit event is created, the event automatically carries the span's `traceId` and `spanId`, and the same values are kept across all emissions of the event. This lets audit trails be joined with distributed traces without any extra wiring. When no span is active, the fields are simply absent. The explicit `correlationId` and `parentEventId` options remain available for manual linkage between audit events.
+When an [OpenTelemetry](https://opentelemetry.io/) span is active while an audit event is created, the event automatically carries the span's `traceId` and `spanId`, and the same values are kept across all emissions of the event. This lets audit trails be joined with distributed traces without any extra wiring. When no span is active, the fields are simply absent. The explicit `parentEventId` option remains available for manual linkage between audit events.
 
 ## Severity Log Level Mappings
 

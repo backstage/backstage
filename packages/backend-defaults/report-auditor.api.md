@@ -36,10 +36,10 @@ export type AuditorEventOptions<TMeta extends JsonObject> = {
   request?: Request_2<any, any, any, any, any> | AuditorEventRequestContext;
   actor?: AuditorEventActorDetails;
   meta?: TMeta;
-  correlationId?: string;
   parentEventId?: string;
   traceId?: string;
   spanId?: string;
+  timestamp?: string;
 } & AuditorEventStatus;
 
 export { AuditorEventRequest };
