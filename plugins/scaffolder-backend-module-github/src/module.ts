@@ -32,6 +32,7 @@ import {
   createPublishGithubPullRequestAction,
   createGithubPagesEnableAction,
   createGithubBranchProtectionAction,
+  createGithubRepoRulesetsCreateAction,
 } from './actions';
 import {
   DefaultGithubCredentialsProvider,
@@ -128,6 +129,11 @@ export const githubModule = createBackendModule({
           }),
           createGithubBranchProtectionAction({
             integrations,
+            requireScmUserCredentials,
+          }),
+          createGithubRepoRulesetsCreateAction({
+            integrations,
+            githubCredentialsProvider,
             requireScmUserCredentials,
           }),
         );
