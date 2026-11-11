@@ -42,13 +42,10 @@ import {
   PreparedSpecializedApp,
   FrontendPluginInfoResolver,
 } from '@backstage/frontend-app-api';
-import appPlugin from '@backstage/plugin-app';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../frontend-app-api/src/wiring/prepareSpecializedApp';
-import {
-  applyExplicitFeatures,
-  discoverAvailableAndDeferredFeatures,
-} from './discovery';
+import appPlugin from '@backstage/plugin-app';
+import { discoverAvailableFeatures } from './discovery';
 import { resolveAsyncFeatures } from './resolution';
 import { maybeCreateErrorPage } from './maybeCreateErrorPage';
 
@@ -126,12 +123,8 @@ export function createApp(options?: CreateAppOptions): {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
-    // Features that are passed explicitly win over deferred plugins
-    const { features: discoveredFeaturesAndLoaders, deferred } =
-      applyExplicitFeatures(
-        discoverAvailableAndDeferredFeatures(config),
-        options?.features ?? [],
-      );
+    const { features: discoveredFeaturesAndLoaders } =
+      discoverAvailableFeatures(config);
     const { features: loadedFeatures } = await resolveAsyncFeatures({
       config,
       features: [...discoveredFeaturesAndLoaders, ...(options?.features ?? [])],
@@ -140,7 +133,7 @@ export function createApp(options?: CreateAppOptions): {
     // Handed over synchronously while the app is being prepared, so it is
     // already the real teardown by the time anything renders.
     let disposeApp: () => void = () => {};
-    const prepareOptions: CreateSpecializedAppInternalOptions = {
+    const preparedApp = prepareSpecializedApp({
       features: [appPlugin, ...loadedFeatures],
       config,
       bindRoutes: options?.bindRoutes,
@@ -149,10 +142,8 @@ export function createApp(options?: CreateAppOptions): {
         onDispose: dispose => {
           disposeApp = dispose;
         },
-        ...(deferred.length > 0 ? { deferredFeatures: deferred } : undefined),
       },
-    };
-    const preparedApp = prepareSpecializedApp(prepareOptions);
+    } as CreateSpecializedAppInternalOptions);
 
     return {
       default: () => (

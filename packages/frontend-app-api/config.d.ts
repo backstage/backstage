@@ -32,38 +32,6 @@ export interface Config {
      */
     packages?: 'all' | { include?: string[]; exclude?: string[] };
 
-    /**
-     * Experimental features of the new frontend system.
-     *
-     * @visibility frontend
-     */
-    experimental?: {
-      /**
-       * Enables deferred loading of the plugins that are discovered through
-       * `app.packages`. A deferrable plugin is loaded the first time one of
-       * its pages or elements is rendered, rather than with the app.
-       *
-       * Whether a plugin can be deferred is decided at build time by static
-       * analysis of its source code. Workspace packages are analyzed when the
-       * app is built or started, while other packages must include the
-       * manifest that `backstage-cli package build` writes. Any package
-       * that can't be analyzed is loaded with the app.
-       *
-       * Set `exclude` to a list of package names to always load those
-       * packages with the app.
-       *
-       * @visibility frontend
-       */
-      deferredPackages?:
-        | boolean
-        | {
-            /**
-             * @visibility frontend
-             */
-            exclude?: string[];
-          };
-    };
-
     routes?: {
       /**
        * Maps external route references to regular route references. Both the
