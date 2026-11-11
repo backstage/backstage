@@ -19,16 +19,44 @@ import {
   TranslationResource,
 } from './TranslationResource';
 
+import {
+  TranslationMessageKey,
+  TranslationTupleOptions,
+} from '../apis/definitions/TranslationApi';
+
 /** @public */
 export interface TranslationRef<
   TId extends string = string,
   TMessages extends { [key in string]: string } = { [key in string]: string },
 > {
+  /** Selects a message key, checked against this ref's declared messages. */
+  <TKey extends TranslationMessageKey<TMessages>>(
+    key: TKey,
+  ): TranslationRefTuple<TranslationTupleOptions<TMessages, TKey>>;
+
   $$type: '@backstage/TranslationRef';
 
   id: TId;
 
   T: TMessages;
+}
+
+/**
+ * A message selected from a translation ref.
+ *
+ * Created by calling a translation ref with one of its declared message keys.
+ * The options type defaults to `unknown`, accepting selections with any required
+ * formatting values. Use `TranslationRefTuple<undefined>` for messages that do
+ * not require formatting values.
+ * @public
+ */
+export interface TranslationRefTuple<TOptions = unknown> {
+  /** The ref that owns the selected message; its catalog is erased from the tuple. */
+  readonly ref: TranslationRef;
+  /** The selected message key. */
+  readonly key: string;
+  /** For type inference only; undefined when no formatting values are required. Must not be accessed at runtime. */
+  readonly T: TOptions;
 }
 
 /** @internal */
@@ -118,52 +146,6 @@ function flattenMessages(nested: AnyNestedMessages): AnyMessages {
   return Object.fromEntries(entries);
 }
 
-/** @internal */
-class TranslationRefImpl<
-  TId extends string,
-  TNestedMessages extends AnyNestedMessages,
-> implements InternalTranslationRef<TId, FlattenedMessages<TNestedMessages>>
-{
-  #id: TId;
-  #messages: FlattenedMessages<TNestedMessages>;
-  #resources: TranslationResource | undefined;
-
-  constructor(options: TranslationRefOptions<TId, TNestedMessages, any>) {
-    this.#id = options.id;
-    this.#messages = flattenMessages(
-      options.messages,
-    ) as FlattenedMessages<TNestedMessages>;
-  }
-
-  $$type = '@backstage/TranslationRef' as const;
-
-  version = 'v1' as const;
-
-  get id(): TId {
-    return this.#id;
-  }
-
-  get T(): never {
-    throw new Error('Not implemented');
-  }
-
-  getDefaultMessages(): AnyMessages {
-    return this.#messages;
-  }
-
-  setDefaultResource(resources: TranslationResource): void {
-    this.#resources = resources;
-  }
-
-  getDefaultResource(): TranslationResource | undefined {
-    return this.#resources;
-  }
-
-  toString() {
-    return `TranslationRef{id=${this.id}}`;
-  }
-}
-
 /** @public */
 export function createTranslationRef<
   TId extends string,
@@ -178,14 +160,45 @@ export function createTranslationRef<
 >(
   config: TranslationRefOptions<TId, TNestedMessages, TTranslations>,
 ): TranslationRef<TId, FlattenedMessages<TNestedMessages>> {
-  const ref = new TranslationRefImpl(config);
+  const messages = flattenMessages(config.messages);
+  let resource: TranslationResource | undefined;
+  const ref: InternalTranslationRef<
+    TId,
+    FlattenedMessages<TNestedMessages>
+  > = Object.assign(
+    <TKey extends TranslationMessageKey<FlattenedMessages<TNestedMessages>>>(
+      key: TKey,
+    ) =>
+      ({
+        ref: ref as unknown as TranslationRef,
+        key,
+      } as unknown as TranslationRefTuple<
+        TranslationTupleOptions<FlattenedMessages<TNestedMessages>, TKey>
+      >),
+    {
+      $$type: '@backstage/TranslationRef' as const,
+      version: 'v1' as const,
+      id: config.id,
+      T: undefined as unknown as FlattenedMessages<TNestedMessages>,
+      getDefaultMessages: () => messages,
+      getDefaultResource: () => resource,
+      toString: () => `TranslationRef{id=${ref.id}}`,
+    },
+  );
+  Object.defineProperties(ref, {
+    id: { writable: false },
+    T: {
+      get() {
+        throw new Error('Not implemented');
+      },
+      enumerable: false,
+    },
+  });
   if (config.translations) {
-    ref.setDefaultResource(
-      createTranslationResource({
-        ref,
-        translations: config.translations as any,
-      }),
-    );
+    resource = createTranslationResource({
+      ref,
+      translations: config.translations as any,
+    });
   }
   return ref;
 }

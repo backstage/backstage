@@ -40,6 +40,7 @@ import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: OverridableFrontendPlugin<
@@ -218,6 +219,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
+            TranslationRefTuple<undefined>,
+            'core.titleTranslation',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -238,6 +246,13 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<
               string,
               'core.title',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              TranslationRefTuple<undefined>,
+              'core.titleTranslation',
               {
                 optional: true;
               }
@@ -272,7 +287,7 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string;
+        title?: string | TranslationRefTuple<undefined>;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
@@ -452,6 +467,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
+            TranslationRefTuple<undefined>,
+            'core.titleTranslation',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -461,7 +483,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         path: string;
-        title: string;
+        title: string | TranslationRefTuple<undefined>;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
@@ -490,6 +512,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
+            TranslationRefTuple<undefined>,
+            'core.titleTranslation',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -499,7 +528,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         path: string;
-        title: string;
+        title: string | TranslationRefTuple<undefined>;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
@@ -525,6 +554,13 @@ const _default: OverridableFrontendPlugin<
           >
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            TranslationRefTuple<undefined>,
+            'core.titleTranslation',
+            {
+              optional: true;
+            }
+          >
         | ExtensionDataRef<
             IconElement,
             'core.icon',
@@ -555,7 +591,7 @@ const _default: OverridableFrontendPlugin<
       name: 'tasks';
       params: {
         path: string;
-        title: string;
+        title: string | TranslationRefTuple<undefined>;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
@@ -598,6 +634,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
+            TranslationRefTuple<undefined>,
+            'core.titleTranslation',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -622,7 +665,7 @@ const _default: OverridableFrontendPlugin<
       name: 'templates';
       params: {
         path: string;
-        title: string;
+        title: string | TranslationRefTuple<undefined>;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
@@ -651,6 +694,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<string, 'core.title', {}>
         | ExtensionDataRef<
+            TranslationRefTuple<undefined>,
+            'core.titleTranslation',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -660,7 +710,7 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         path: string;
-        title: string;
+        title: string | TranslationRefTuple<undefined>;
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
