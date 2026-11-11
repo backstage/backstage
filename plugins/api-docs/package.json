@@ -26,7 +26,6 @@
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.tsx",
-    "./sync": "./src/sync.tsx",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -35,9 +34,6 @@
     "*": {
       "alpha": [
         "src/alpha.tsx"
-      ],
-      "sync": [
-        "src/sync.tsx"
       ],
       "package.json": [
         "package.json"
