@@ -21,7 +21,7 @@ import { SecretInput } from './SecretInput';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ScaffolderRJSFFormProps as FormProps } from '@backstage/plugin-scaffolder-react';
 import { Form } from '@backstage/plugin-scaffolder-react/alpha';
-import validator from '@rjsf/validator-ajv8';
+import { validator } from '@internal/rjsf-validator';
 import { fireEvent, act, waitFor } from '@testing-library/react';
 
 describe('<SecretInput />', () => {

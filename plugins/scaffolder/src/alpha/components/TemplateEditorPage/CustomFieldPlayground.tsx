@@ -16,7 +16,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import yaml from 'yaml';
-import validator from '@rjsf/validator-ajv8';
+import { validator } from '@internal/rjsf-validator';
 import CodeMirror from '@uiw/react-codemirror';
 import { StreamLanguage } from '@codemirror/language';
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';

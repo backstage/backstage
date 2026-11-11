@@ -33,7 +33,7 @@ import { useState } from 'react';
 import { Widget } from './types';
 import { withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
-import validator from '@rjsf/validator-ajv8';
+import { validator } from '@internal/rjsf-validator';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { homeTranslationRef } from '../../translation';
 
