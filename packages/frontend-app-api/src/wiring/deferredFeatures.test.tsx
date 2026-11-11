@@ -26,6 +26,7 @@ import {
   createFrontendModule,
   createFrontendPlugin,
   createRouteRef,
+  FrontendFeature,
   PageBlueprint,
   useApi,
   useRouteRef,
@@ -199,30 +200,117 @@ describe('deferred features', () => {
     expect(load).toHaveBeenCalledTimes(1);
   });
 
-  it('should show load failures and boot unchanged without deferred features', async () => {
-    const load = jest.fn(async () => ({ default: { not: 'a plugin' } }));
-    window.history.replaceState(null, '', '/deferred');
+  it('should report a loaded plugin that does not match its manifest', async () => {
+    const renderAt = (
+      path: string,
+      loaded: unknown,
+      features: FrontendFeature[] = [],
+    ) => {
+      window.history.replaceState(null, '', path);
+      const load = jest.fn(async () => ({ default: loaded }));
+      const app = prepareSpecializedApp({
+        features: [noSignInAppPlugin, ...features],
+        __internal: {
+          deferredFeatures: [{ name: 'deferred-pkg', manifest, load }],
+        },
+      } as CreateSpecializedAppInternalOptions).finalize();
+      return render(app.element);
+    };
 
-    const app = prepareSpecializedApp({
-      features: [noSignInAppPlugin],
-      __internal: {
-        deferredFeatures: [{ name: 'deferred-pkg', manifest, load }],
-      },
-    } as CreateSpecializedAppInternalOptions).finalize();
+    // Something that isn't a plugin
+    const notAPlugin = renderAt('/deferred', { not: 'a plugin' });
+    await expect(
+      screen.findAllByText(
+        /The deferred 'deferred-pkg' package didn't provide a frontend plugin as its default export/,
+      ),
+    ).resolves.not.toHaveLength(0);
+    notAPlugin.unmount();
 
-    render(app.element);
-
-    const errorMessages = await screen.findAllByText(
-      /The deferred 'deferred-pkg' package didn't provide a frontend plugin/,
+    // A plugin with another ID
+    const otherPlugin = renderAt(
+      '/deferred',
+      createFrontendPlugin({ pluginId: 'other', extensions: [] }),
     );
-    expect(errorMessages.length).toBeGreaterThan(0);
-    expect(load).toHaveBeenCalledTimes(1);
+    await expect(
+      screen.findAllByText(
+        /The deferred 'deferred-pkg' package provided the 'other' plugin, but its manifest is for the 'deferred' plugin/,
+      ),
+    ).resolves.not.toHaveLength(0);
+    otherPlugin.unmount();
 
-    const plainApp = prepareSpecializedApp({
-      features: [noSignInAppPlugin],
-    }).finalize();
-    expect(plainApp.errors).toBeUndefined();
-    expect(plainApp.tree.nodes.has('page:deferred')).toBe(false);
+    // A plugin without one of the pages in the manifest
+    const rootRouteRef = createRouteRef();
+    const missingPage = renderAt(
+      '/deferred-settings',
+      createFrontendPlugin({
+        pluginId: 'deferred',
+        routes: { root: rootRouteRef },
+        extensions: [
+          PageBlueprint.make({
+            params: {
+              path: '/deferred',
+              routeRef: rootRouteRef,
+              loader: async () => <div>Real deferred root</div>,
+            },
+          }),
+        ],
+      }),
+    );
+    await expect(
+      screen.findAllByText(
+        /The 'deferred' plugin was loaded, but it doesn't provide the 'page:deferred\/settings' extension from its manifest/,
+      ),
+    ).resolves.not.toHaveLength(0);
+    missingPage.unmount();
+
+    // A plugin with an API that the app already provides, and an extension
+    // that isn't in the manifest, both of which are ignored with a warning
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const serviceApiRef = createApiRef<{ name: string }>({
+      id: 'plugin.deferred.service',
+    });
+    const createApi = (name: string) =>
+      ApiBlueprint.make({
+        params: defineParams =>
+          defineParams({
+            api: serviceApiRef,
+            deps: {},
+            factory: () => ({ name }),
+          }),
+      });
+    const realPlugin = createRealDeferredPlugin();
+    renderAt(
+      '/deferred',
+      realPlugin.withOverrides({
+        extensions: [
+          createApi('deferred'),
+          PageBlueprint.make({
+            name: 'unlisted',
+            params: { path: '/unlisted', loader: async () => <div /> },
+          }),
+        ],
+      }),
+      [
+        createFrontendPlugin({
+          pluginId: 'eager',
+          extensions: [createApi('eager')],
+        }),
+      ],
+    );
+    await expect(
+      screen.findByText(/Real deferred root/),
+    ).resolves.toBeInTheDocument();
+    const graftWarnings = warn.mock.calls
+      .map(([message]) => String(message))
+      .filter(message => message.startsWith("Loading the deferred 'deferred'"));
+    expect(graftWarnings).toHaveLength(1);
+    expect(graftWarnings[0]).toContain(
+      "API_FACTORY_CONFLICT: API 'plugin.deferred.service' is already provided by the app, so the one from the deferred 'deferred' plugin was ignored.",
+    );
+    expect(graftWarnings[0]).toContain(
+      "EXTENSION_IGNORED: The 'page:deferred/unlisted' extension of the deferred 'deferred' plugin was ignored",
+    );
+    warn.mockRestore();
   });
 
   it('should keep module extensions that attach to a stub page', async () => {
