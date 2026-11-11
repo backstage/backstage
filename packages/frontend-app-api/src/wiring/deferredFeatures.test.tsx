@@ -254,7 +254,7 @@ describe('deferred features', () => {
       features: [noSignInAppPlugin, module],
       __internal: {
         deferredFeatures: [
-          { name: 'tabbed-pkg', manifest: await tabbedManifest, load },
+          { name: 'tabbed-pkg', manifest: tabbedManifest, load },
         ],
       },
     } as CreateSpecializedAppInternalOptions).finalize();
@@ -371,7 +371,7 @@ describe('deferred features', () => {
       ],
     });
 
-    const scoredManifest = await createFrontendFeatureManifest(realPlugin);
+    const scoredManifest = createFrontendFeatureManifest(realPlugin);
     expect(scoredManifest.deferrable).toBe(true);
     expect(scoredManifest.extensions).toEqual([
       expect.objectContaining({ id: 'api:scored', kind: 'api' }),
@@ -506,7 +506,7 @@ describe('deferred features', () => {
       extensions: [api],
     });
 
-    const syncedManifest = await createFrontendFeatureManifest(realPlugin, {
+    const syncedManifest = createFrontendFeatureManifest(realPlugin, {
       sync: syncPart,
     });
     expect(syncedManifest.deferrable).toBe(true);
