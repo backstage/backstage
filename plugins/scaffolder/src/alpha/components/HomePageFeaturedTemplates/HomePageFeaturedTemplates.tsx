@@ -20,6 +20,7 @@ import {
 } from '@backstage/catalog-model';
 import { useApi, useTranslationRef } from '@backstage/frontend-plugin-api';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import {
   isTemplateEntityV1beta3,
@@ -31,7 +32,6 @@ import { RiErrorWarningLine, RiShapesLine } from '@remixicon/react';
 import { useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import useAsyncRetry from 'react-use/esm/useAsyncRetry';
-import { useNavigate } from 'react-router-dom';
 import { rootRouteRef, selectedTemplateRouteRef } from '../../../routes';
 import { scaffolderTranslationRef } from '../../../translation';
 import styles from './HomePageFeaturedTemplates.module.css';
@@ -49,7 +49,7 @@ export function HomePageFeaturedTemplates({
   const catalogApi = useApi(catalogApiRef);
   const selectedTemplateRoute = useRouteRef(selectedTemplateRouteRef);
   const templatesRoute = useRouteRef(rootRouteRef);
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const [track, setTrack] = useState<HTMLDivElement | null>(null);
   const { ref: firstCardRef, inView: firstCardInView } = useInView({
     root: track,
