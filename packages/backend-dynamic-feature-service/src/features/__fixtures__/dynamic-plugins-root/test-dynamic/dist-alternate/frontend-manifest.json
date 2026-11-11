@@ -1,0 +1,14 @@
+{
+  "manifestVersion": 1,
+  "entryPoints": {
+    ".": {
+      "manifestVersion": 1,
+      "type": "plugin",
+      "pluginId": "test",
+      "deferrable": true,
+      "routes": [],
+      "externalRoutes": [],
+      "extensions": []
+    }
+  }
+}
