@@ -22,8 +22,11 @@
 /** The version of the manifest format that this CLI writes and reads. */
 export const FRONTEND_MANIFEST_VERSION = 1;
 
-/** The path of the manifest file within a built package. */
-export const FRONTEND_MANIFEST_PATH = 'dist/frontend-manifest.json';
+/**
+ * The name of the manifest file, which is written next to `mf-manifest.json`
+ * in the output directory of a module federation remote.
+ */
+export const FRONTEND_MANIFEST_FILE_NAME = 'frontend-manifest.json';
 
 export interface FrontendExtensionManifest {
   id: string;
