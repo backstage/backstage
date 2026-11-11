@@ -15,6 +15,7 @@
  */
 
 import {
+  AppNodeSpec,
   coreExtensionData,
   createExtension,
   createExtensionInput,
@@ -515,10 +516,11 @@ describe('graftAppTreeNodes', () => {
       graftAppTreeNodes(tree, [
         {
           ...spec('multi', { id: 'app', input: 'children' }),
+          // Multiple attachment points are only supported internally
           attachTo: [
             { id: 'a', input: 'x' },
             { id: 'c', input: 'x' },
-          ],
+          ] as unknown as AppNodeSpec['attachTo'],
         },
       ]),
     ).toThrow(
