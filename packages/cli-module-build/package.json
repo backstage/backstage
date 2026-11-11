@@ -20,6 +20,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./manifestWorker": "./src/lib/bundler/manifest/extractWorker.ts",
+    "./config/webpack-public-path": "./config/webpack-public-path.js",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
