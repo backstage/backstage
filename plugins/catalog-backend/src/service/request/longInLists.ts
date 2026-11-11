@@ -72,8 +72,17 @@ export const IN_SUBQUERY_MIN_VALUES = 10;
 /**
  * The fields whose single values usually match a large share of the catalog,
  * and that therefore do not narrow down a filter much on their own.
+ *
+ * Broad means few distinct values, not that every entity has the field. For
+ * example `metadata.name` is on every entity but is nearly unique, so a list
+ * of names narrows a filter well.
  */
-const BROAD_FIELDS = new Set(['kind', 'spec.type', 'spec.lifecycle']);
+const BROAD_FIELDS = new Set([
+  'kind',
+  'metadata.namespace',
+  'spec.type',
+  'spec.lifecycle',
+]);
 
 function isPrimitive(value: unknown): value is FilterPredicatePrimitive {
   return (
