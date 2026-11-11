@@ -26,6 +26,9 @@ describe('api-docs sync export', () => {
       'api:api-docs/config',
       'entity-card:api-docs/has-apis',
     ] as const) {
+      // The plugins wrap the same extension in a new object each, but the
+      // functions inside are compared by reference, so this fails unless both
+      // exports were built from the same extension.
       expect(apiDocsSyncPlugin.getExtension(id)).toEqual(
         apiDocsPlugin.getExtension(id),
       );
