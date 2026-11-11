@@ -20,9 +20,10 @@ import {
   FrontendFeature,
   FrontendFeatureLoader,
 } from '@backstage/frontend-plugin-api';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import type { DeferredFrontendFeature } from '../../frontend-app-api/src/wiring/deferredFeatures';
-import type { FrontendFeatureManifest } from '@backstage/frontend-app-api/alpha';
+import type {
+  DeferredFrontendFeature,
+  FrontendFeatureManifest,
+} from '@internal/frontend';
 import { isBackstageFeatureLoader } from './resolution';
 
 type EagerDiscoveryEntry = { name: string; export?: string; default: unknown };
@@ -76,7 +77,7 @@ function isDeferrable(entry: LazyDiscoveryEntry) {
 
 // A lazy entry that can't be deferred is loaded before the app starts.
 function createLoaderForLazyEntry(
-  entry: LazyDiscoveryEntry,
+  entry: Pick<LazyDiscoveryEntry, 'name' | 'load'>,
 ): FrontendFeatureLoader {
   return createFrontendFeatureLoader({
     async loader() {
@@ -139,6 +140,56 @@ export function discoverAvailableAndDeferredFeatures(config: Config): {
     }
   }
 
+  return { features, deferred };
+}
+
+/**
+ * Applies the features that are passed to the app explicitly to the result
+ * of discovery, which take precedence over deferred plugins with the same
+ * plugin ID.
+ *
+ * @remarks
+ *
+ * A deferred plugin that is also passed explicitly is dropped, since the
+ * explicit plugin replaces it. A deferred plugin that an explicit module
+ * applies to is loaded before the app starts instead, so that the module
+ * applies to the real plugin.
+ *
+ * @internal
+ */
+export function applyExplicitFeatures(
+  discovered: {
+    features: (FrontendFeature | FrontendFeatureLoader)[];
+    deferred: DeferredFrontendFeature[];
+  },
+  explicitFeatures: (FrontendFeature | FrontendFeatureLoader)[],
+): {
+  features: (FrontendFeature | FrontendFeatureLoader)[];
+  deferred: DeferredFrontendFeature[];
+} {
+  const pluginIds = new Set<string>();
+  const modulePluginIds = new Set<string>();
+  for (const feature of explicitFeatures) {
+    if (feature.$$type === '@backstage/FrontendPlugin') {
+      pluginIds.add((feature as FrontendFeature).pluginId);
+    } else if (feature.$$type === '@backstage/FrontendModule') {
+      modulePluginIds.add((feature as FrontendFeature).pluginId);
+    }
+  }
+
+  const features = [...discovered.features];
+  const deferred = new Array<DeferredFrontendFeature>();
+  for (const entry of discovered.deferred) {
+    const pluginId = entry.manifest.pluginId;
+    if (pluginIds.has(pluginId)) {
+      continue;
+    }
+    if (modulePluginIds.has(pluginId)) {
+      features.push(createLoaderForLazyEntry(entry));
+      continue;
+    }
+    deferred.push(entry);
+  }
   return { features, deferred };
 }
 

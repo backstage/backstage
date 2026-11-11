@@ -15,12 +15,17 @@
  */
 
 /**
- * A build-time description of a frontend plugin or module.
- *
- * @alpha
+ * The version of the manifest format. A manifest with any other version is
+ * ignored, and the package it describes is loaded together with the app.
+ */
+export const FRONTEND_MANIFEST_VERSION = 1;
+
+/**
+ * A build-time description of a frontend plugin or module, created by static
+ * analysis of its source code.
  */
 export interface FrontendFeatureManifest {
-  manifestVersion: 1;
+  manifestVersion: typeof FRONTEND_MANIFEST_VERSION;
   type: 'plugin' | 'module';
   pluginId: string;
   title?: string;
@@ -41,21 +46,17 @@ export interface FrontendFeatureManifest {
 
 /**
  * A build-time description of a single extension.
- *
- * @alpha
  */
 export interface FrontendExtensionManifest {
   /** Full extension ID, e.g. "page:my-plugin" or "page:my-plugin/settings". */
   id: string;
-  /** Parsed from the ID prefix before ":". */
+  /** The kind of the extension, which is the part of the ID before ":". */
   kind?: string;
   attachTo:
     | { id: string; input: string }
     | Array<{ id: string; input: string }>;
   disabled: boolean;
-  /** From configSchema.schema(), draft-07. */
-  configSchema?: { [key: string]: unknown };
-  /** Only for kind "page". Comes from running the factory once at build time. */
+  /** Only for pages that attach to app/routes. */
   page?: {
     path: string;
     title?: string;
@@ -64,11 +65,9 @@ export interface FrontendExtensionManifest {
   };
   /**
    * Only for extensions that output a React element but aren't pages that
-   * attach to app/routes, for example entity content. Comes from running the
-   * factory once at build time with the default config. Setting config for
-   * such an extension in `app.extensions` prevents its plugin from being
-   * deferred, since the stub can only output the data from the default
-   * config.
+   * attach to app/routes. The stub of such an extension outputs this data
+   * as it was declared in the source code, which means that it can't apply
+   * any config from `app.extensions`.
    */
   element?: {
     /**
@@ -78,12 +77,6 @@ export interface FrontendExtensionManifest {
     data: { [dataRefId: string]: unknown };
     /** The key in plugin.routes whose RouteRef the extension outputs. */
     routeRefName?: string;
-    /**
-     * Function outputs that the stub creates from a filter predicate in
-     * `data`, keyed by the function data ref ID, with the ID of the predicate
-     * data ref as the value.
-     */
-    predicateFunctions?: { [functionDataRefId: string]: string };
   };
   /**
    * True if the extension is part of the sync export of the plugin package,
@@ -91,3 +84,31 @@ export interface FrontendExtensionManifest {
    */
   sync?: boolean;
 }
+
+/**
+ * The manifest file of a frontend plugin package, which `backstage-cli
+ * package build` writes to `dist/frontend-manifest.json`. It is referenced
+ * by the `backstage.frontendManifest` field of the published package.json.
+ */
+export interface FrontendPackageManifest {
+  manifestVersion: typeof FRONTEND_MANIFEST_VERSION;
+  /**
+   * The manifests of the default exports of the entry points of the package,
+   * keyed by entry point, for example "." or "./alpha". Entry points without
+   * a plugin or module as their default export are left out.
+   */
+  entryPoints: { [entryPoint: string]: FrontendFeatureManifest };
+}
+
+/**
+ * A plugin that is only loaded once one of its pages or elements is
+ * rendered.
+ */
+export type DeferredFrontendFeature = {
+  /** The package name of the plugin. */
+  name: string;
+  /** The build-time description of the plugin. */
+  manifest: FrontendFeatureManifest;
+  /** Loads the plugin, which must be the default export. */
+  load: () => Promise<{ default: unknown }>;
+};
