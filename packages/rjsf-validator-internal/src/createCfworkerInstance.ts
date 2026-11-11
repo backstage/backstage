@@ -55,6 +55,8 @@ function asFormatChecker(
   return (value: string) => regex.test(value);
 }
 
+let hasWarnedMissingRegistry = false;
+
 /** Makes a validator use the built-in RJSF formats and any user-provided
  * formats, without leaking them to other validators.
  *
@@ -72,11 +74,20 @@ export function scopeFormats(
   targetRegistry = (CFWorkerJsonSchema as unknown as FormatRegistryModule)
     .format,
 ): void {
-  // `format` is a runtime export in @cfworker/json-schema 4.1.1, although its
+  // `format` is a runtime export in @cfworker/json-schema 4.x, although its
   // generated declaration file omits it. The engine reads this registry while
   // validating, so adding entries here is its supported runtime extension seam.
+  // If a future release stops exposing it, keep validating without the extra
+  // formats rather than failing every form. The custom format tests catch this.
   if (!targetRegistry) {
-    throw new Error('@cfworker/json-schema did not expose its format registry');
+    if (!hasWarnedMissingRegistry) {
+      hasWarnedMissingRegistry = true;
+      // eslint-disable-next-line no-console
+      console.warn(
+        '@cfworker/json-schema did not expose its format registry, custom formats will not be validated',
+      );
+    }
+    return;
   }
 
   const registry = targetRegistry;
