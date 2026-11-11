@@ -57,7 +57,7 @@
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-catalog-unprocessed-entities-common": "workspace:^",
     "@backstage/ui": "workspace:^",
-    "@remixicon/react": ">=4.6.0 <4.9.0",
+    "@remixicon/react": "<4.10.0",
     "luxon": "^3.5.0",
     "react-use": "^17.2.4"
   },

@@ -67,7 +67,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@react-hookz/web": "^24.0.0",
-    "@remixicon/react": ">=4.6.0 <4.9.0",
+    "@remixicon/react": "<4.10.0",
     "i18next": "^22.4.15",
     "lodash": "^4.17.21",
     "motion": "^12.0.0",
