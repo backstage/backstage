@@ -100,7 +100,7 @@ export const appModuleNav = createFrontendModule({
   extensions: [
     NavContentBlueprint.make({
       params: {
-        component: ({ navItems }) => {
+        component: ({ navItems, navSlots }) => {
           const nav = navItems.withComponent(item => (
             <SidebarItem
               icon={() => item.icon}
@@ -116,6 +116,7 @@ export const appModuleNav = createFrontendModule({
               <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
                 <SidebarSearchModal />
               </SidebarGroup>
+              {navSlots.start.rest()}
               <SidebarDivider />
               <SidebarGroup label="Menu" icon={<MenuIcon />}>
                 {nav.take('page:home')}
@@ -127,6 +128,7 @@ export const appModuleNav = createFrontendModule({
                 </SidebarScrollWrapper>
               </SidebarGroup>
               <SidebarDivider />
+              {navSlots.end.rest()}
               <SidebarSpace />
               <SidebarDivider />
               <SidebarGroup

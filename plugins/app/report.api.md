@@ -17,6 +17,7 @@ import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { NavContentComponent } from '@backstage/plugin-app-react';
+import { NavElementSlot } from '@backstage/plugin-app-react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { PluginWrapperDefinition } from '@backstage/frontend-plugin-api';
@@ -91,6 +92,19 @@ const appPlugin: OverridableFrontendPlugin<
             'core.nav-item.target',
             {}
           >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+        elements: ExtensionInput<
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<
+              NavElementSlot,
+              'core.nav-element.slot',
+              {}
+            >,
           {
             singleton: false;
             optional: false;

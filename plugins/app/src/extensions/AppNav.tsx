@@ -31,11 +31,46 @@ import {
   NavContentBlueprint,
   NavContentComponent,
   NavContentComponentProps,
+  NavContentNavElements,
   NavContentNavItem,
   NavContentNavItems,
+  NavElementBlueprint,
+  NavElementSlot,
 } from '@backstage/plugin-app-react';
 import { Sidebar, SidebarItem } from '@backstage/core-components';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
+
+type NavElementEntry = { id: string; element: JSX.Element };
+
+class NavElementBag implements NavContentNavElements {
+  readonly #index: Map<string, JSX.Element>;
+  readonly #rest: JSX.Element[];
+
+  constructor(entries: NavElementEntry[]) {
+    const keyed = entries.map(
+      ({ id, element }) =>
+        [id, <Fragment key={id}>{element}</Fragment>] as const,
+    );
+    this.#index = new Map(keyed);
+    this.#rest = keyed.map(([, element]) => element);
+  }
+
+  take(id: string): JSX.Element | null {
+    const element = this.#index.get(id);
+    if (!element) {
+      return null;
+    }
+    const index = this.#rest.indexOf(element);
+    if (index !== -1) {
+      this.#rest.splice(index, 1);
+    }
+    return element;
+  }
+
+  rest(): JSX.Element[] {
+    return this.#rest;
+  }
+}
 
 class NavItemBag implements NavContentNavItems {
   readonly #items: NavContentNavItem[];
@@ -114,6 +149,7 @@ function DefaultNavContent(props: NavContentComponentProps) {
   const items = props.navItems.rest();
   return (
     <Sidebar>
+      {props.navSlots.start.rest()}
       {items.map(item => (
         <SidebarItem
           to={item.href}
@@ -122,6 +158,7 @@ function DefaultNavContent(props: NavContentComponentProps) {
           key={item.node.spec.id}
         />
       ))}
+      {props.navSlots.end.rest()}
     </Sidebar>
   );
 }
@@ -144,6 +181,7 @@ function tryResolveLink(
 // RouteResolutionApi and AppTreeApi are available.
 function NavContentRenderer(props: {
   Content: NavContentComponent;
+  slots: Record<NavElementSlot, NavElementEntry[]>;
   legacyNavItems: Array<{
     title: string;
     icon: IconComponent;
@@ -224,7 +262,15 @@ function NavContentRenderer(props: {
     return new NavItemBag(items);
   }, [appTreeApi, routeResolutionApi, props.legacyNavItems]);
 
-  return <props.Content navItems={navItems} />;
+  const navSlots = useMemo(
+    () => ({
+      start: new NavElementBag(props.slots.start),
+      end: new NavElementBag(props.slots.end),
+    }),
+    [props.slots],
+  );
+
+  return <props.Content navItems={navItems} navSlots={navSlots} />;
 }
 
 export const AppNav = createExtension({
@@ -232,6 +278,10 @@ export const AppNav = createExtension({
   attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
     items: createExtensionInput([legacyNavItemTargetDataRef]),
+    elements: createExtensionInput([
+      coreExtensionData.reactElement,
+      NavElementBlueprint.dataRefs.slot,
+    ]),
     content: createExtensionInput([NavContentBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
@@ -244,11 +294,22 @@ export const AppNav = createExtension({
       inputs.content?.get(NavContentBlueprint.dataRefs.component) ??
       DefaultNavContent;
 
+    // Inputs are already in app order: extensions listed in `app.extensions`
+    // config come first, in that order, then the rest in install order.
+    const bySlot = (slot: NavElementSlot) =>
+      inputs.elements
+        .filter(e => e.get(NavElementBlueprint.dataRefs.slot) === slot)
+        .map(e => ({
+          id: e.node.spec.id,
+          element: e.get(coreExtensionData.reactElement),
+        }));
+
     yield coreExtensionData.reactElement(
       <NavContentRenderer
         legacyNavItems={inputs.items.map(item =>
           item.get(legacyNavItemTargetDataRef),
         )}
+        slots={{ start: bySlot('start'), end: bySlot('end') }}
         Content={Content}
       />,
     );

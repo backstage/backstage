@@ -20,9 +20,13 @@ import {
   PageBlueprint,
   createExtension,
   createFrontendModule,
+  createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { NavContentBlueprint } from '@backstage/plugin-app-react';
+import {
+  NavContentBlueprint,
+  NavElementBlueprint,
+} from '@backstage/plugin-app-react';
 import { legacyNavItemTargetDataRef } from './legacyNavItem';
 
 const DEFAULT_CONFIG = {
@@ -119,5 +123,59 @@ describe('AppNav', () => {
     await expect(
       screen.findByText('1 nav item provided'),
     ).resolves.toBeInTheDocument();
+  });
+
+  it('should render nav elements in their slots, in configured order', async () => {
+    const element = (name: string, slot?: 'start' | 'end') =>
+      NavElementBlueprint.make({
+        name,
+        params: { slot, loader: async () => <span>{`element ${name}`}</span> },
+      });
+
+    renderTestApp({
+      extensions: [mockPage],
+      features: [
+        createFrontendPlugin({
+          pluginId: 'x',
+          extensions: [
+            element('a', 'start'),
+            element('b'),
+            element('c'),
+            element('d'),
+            element('hidden'),
+          ],
+        }),
+      ],
+      config: {
+        ...DEFAULT_CONFIG,
+        app: {
+          ...DEFAULT_CONFIG.app,
+          extensions: [
+            // Listing an extension moves it ahead of unlisted ones.
+            { 'nav-element:x/d': { config: { slot: 'start' } } },
+            { 'nav-element:x/c': true },
+            { 'nav-element:x/hidden': false },
+          ],
+        },
+      },
+    });
+
+    const nav = await screen.findByRole('navigation');
+    await within(nav).findByText('element b');
+    const texts = Array.from(
+      nav.querySelectorAll('span'),
+      span => span.textContent,
+    ).filter(text => text?.startsWith('element ') || text === 'My Plugin');
+
+    // The start slot holds `d` (moved there by config, and listed so first)
+    // and `a`, then come the page links, then the end slot with the listed
+    // `c` ahead of `b`. Disabled elements are not rendered.
+    expect(texts).toEqual([
+      'element d',
+      'element a',
+      'My Plugin',
+      'element c',
+      'element b',
+    ]);
   });
 });
