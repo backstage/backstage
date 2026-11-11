@@ -2,6 +2,6 @@
 '@backstage/core-plugin-api': minor
 ---
 
-Exported the alpha `TranslationRefTuple` type for messages selected by calling a translation ref. Translation refs are now callable functions; treat them as opaque values rather than checking for plain objects or cloning them.
+Exported the alpha `TranslationRefTuple` type for messages selected by calling a translation ref. Refs are now callable functions; treat them as opaque values.
 
-**BREAKING PRODUCERS**: Translation snapshots always include `t`, even when `ready` is false. Custom translation API implementations must provide a translator on loading snapshots using the available messages and language fallbacks.
+**BREAKING PRODUCERS**: Translation snapshots require `t` even when `ready` is false. Custom translation APIs must provide a translator using available messages and language fallbacks.

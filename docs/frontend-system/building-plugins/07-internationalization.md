@@ -397,18 +397,25 @@ of the referenced messages require values.
 
 ### Consuming title translations
 
-Extensions keep their existing static title string and can additionally provide
-`coreExtensionData.titleTranslation`, containing a
-`TranslationRefTuple<undefined>` with `ref` and `key`. The explicit type parameter
-restricts titles to messages without required formatting values. A bare
-`TranslationRefTuple` accepts selections with any required values, keeping their
-options unknown. Consumers resolve that selection through the translation API
-and subscribe to `translation$(selection.ref)` for language changes. For a group
-of titles, wait until all required refs are ready before publishing new values.
-Keep the static title as compatibility metadata, wait for the initial translated
-group before rendering it, and retain the last resolved group during later
-language changes. This keeps extension data independent of subscriptions and
-React rendering.
+Extensions can provide `coreExtensionData.titleTranslation` alongside their static
+title. It contains a `TranslationRefTuple<undefined>` with a `ref` and `key`,
+selecting a message that needs no formatting values.
+
+To render the translated title in React, pass the ref to `useTranslationRef` and
+translate the selected key. The hook uses the app translation API and waits for
+the selected language's resources:
+
+```tsx
+import {
+  TranslationRefTuple,
+  useTranslationRef,
+} from '@backstage/frontend-plugin-api';
+
+function TranslatedTitle({ title }: { title: TranslationRefTuple<undefined> }) {
+  const { t } = useTranslationRef(title.ref);
+  return <>{t(title.key)}</>;
+}
+```
 
 ### Using the CLI for full translation workflows
 
