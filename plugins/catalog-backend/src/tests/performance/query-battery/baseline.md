@@ -493,14 +493,16 @@ differences are run-to-run variation.
 ## Long `$in` lists (2026-11-03)
 
 On PostgreSQL, an `$in` list of 10 or more values on a field other than
-`kind`, `spec.type` and `spec.lifecycle` is matched in paginated queries as a
+`kind`, `metadata.namespace`, `spec.type` and `spec.lifecycle` is matched as a
 set of entity IDs, either joined (anti-joined under `$not`) or hashed, instead
-of a per-row `= ANY(array)` probe. Facets and counts already use set
+of a per-row `= ANY(array)` probe. This applies to paginated queries, the
+legacy entity listing, and facets of filters without a disjunction or
+negation. Facets and counts with a disjunction or negation already use set
 operations and keep their SQL, as do lists with fewer than 10 values, lists
 on the broad fields, and lookups by entity ref (see
 [below](#lookups-by-entity-ref-2026-11-11)). `metadata.namespace` was added to
-the broad fields after these measurements; none of the scenarios use a long
-list of namespaces.
+the broad fields after the measurements in this section, see
+[below](#namespace-as-a-broad-field-2026-11-11).
 
 Measured on the production-scale staging replica (PostgreSQL 18.6, about 712k
 entities) with SQL captured from `DefaultEntitiesCatalog` on this change and
@@ -583,6 +585,39 @@ filter, median of 3 runs over 2 rounds:
 
 The per-row form is as fast or faster at every batch size, so there is no
 batch size above which the set form is used.
+
+### Namespace as a broad field (2026-11-11)
+
+Besides keeping long lists of namespaces per row, this stops a
+`metadata.namespace` condition from counting as a narrow sibling of a long
+list in an `$all`, as the namespace filter of the catalog page would. Such a
+list now uses the JOIN form instead of the IN form, the same as without the
+namespace condition.
+
+Measured on the beta read replica (about 728k entities) with wall-clock
+timings of `DefaultEntitiesCatalog` calls, adding
+`'metadata.namespace': 'default'` to the request filter of scenarios 1, 7 and
+15, the owned page, and a conjunctive `spec.type` facet of owned components
+without permissions. Medians of 3 runs over 2 rounds; both rules returned the
+same entities. 3-claim lists are below the threshold and unchanged.
+
+| Query                   | Claims |   namespace narrow |  namespace broad |
+| ----------------------- | -----: | -----------------: | ---------------: |
+| 1 component page        |  10/40 |       44 / 58-2441 |          47 / 89 |
+| 1 component page        |    174 |        1.25-1.36 s |          415-433 |
+| 7 full text component   |  10/40 |     55-94 / 72-117 | 94-105 / 147-162 |
+| 7 full text component   |    174 |           199-1352 |          435-543 |
+| 15 permission list page |  10/40 |            46 / 60 |          47 / 86 |
+| 15 permission list page |    174 |                190 |              410 |
+| Owned page              |  10/40 |     110 / 747-1974 |         75 / 425 |
+| Owned page              |    174 |             1.92 s |         576-1827 |
+| Facet, owned components |  10/40 | 100-111 / 594-1185 |         68 / 390 |
+| Facet, owned components |    174 |                372 |          351-800 |
+
+Times in ms unless noted; ranges are the two rounds. The broad rule removes
+the multi-second outliers of the component and owned pages at 40 claims,
+where the IN form switched between plans, at the cost of slower scenario 15
+pages at 40 and 174 claims and about 40 ms more on the full-text page.
 
 ### Comparison
 
