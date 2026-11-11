@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-app-react",
-  "version": "0.3.0-next.1",
+  "version": "0.3.0-next.2",
   "description": "Web library for the app plugin",
   "backstage": {
     "role": "web-library",

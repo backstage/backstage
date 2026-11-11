@@ -1,5 +1,18 @@
 # @backstage/frontend-defaults
 
+## 0.5.8-next.2
+
+### Patch Changes
+
+- 2aa14e3: Apps now release their browser history listener when the React root is removed or a hot refresh replaces the app within the existing root. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for background on app-owned history.
+- Updated dependencies
+  - @backstage/plugin-app@0.6.0-next.2
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/frontend-app-api@0.17.0-next.2
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/config@1.3.11-next.0
+
 ## 0.5.8-next.1
 
 ### Patch Changes

@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.3-next.2
+
+### Patch Changes
+
+- c4b7cb1: The `entities/by-refs` endpoint now resolves entity references case-insensitively, matching `entities/by-name` and the documented entity reference contract where receivers treat refs case-insensitively. Previously, a ref whose casing differed from the stored lowercased ref returned `null`. Fixes #36743.
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.1
+  - @backstage/plugin-permission-node@0.11.6-next.1
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/catalog-client@1.16.4-next.1
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/filter-predicates@0.2.1-next.0
+  - @backstage/plugin-permission-common@0.9.13-next.0
+  - @backstage/plugin-catalog-common@1.2.2-next.0
+
 ## 4.0.3-next.1
 
 ### Patch Changes

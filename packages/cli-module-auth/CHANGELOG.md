@@ -1,5 +1,15 @@
 # @backstage/cli-module-auth
 
+## 0.1.6-next.1
+
+### Patch Changes
+
+- 5fc15b7: Fixed `auth login` to include the CLI's client ID when exchanging authorization codes, supporting auth backends that enforce client ID binding.
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.2
+  - @backstage/errors@1.4.0-next.0
+
 ## 0.1.6-next.0
 
 ### Patch Changes

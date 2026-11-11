@@ -1,5 +1,16 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.61-next.1
+
+### Patch Changes
+
+- 39cda0c: Avoid recomputing full-text search `tsvector` data for unchanged documents during indexing.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/plugin-search-backend-node@1.4.10-next.1
+  - @backstage/config@1.3.11-next.0
+  - @backstage/plugin-search-common@1.2.27-next.0
+
 ## 0.5.61-next.0
 
 ### Patch Changes
