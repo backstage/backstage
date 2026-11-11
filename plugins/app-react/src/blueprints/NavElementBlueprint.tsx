@@ -14,28 +14,11 @@
  * limitations under the License.
  */
 
-import { z } from 'zod/v4';
 import {
   ExtensionBoundary,
   coreExtensionData,
   createExtensionBlueprint,
-  createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
-
-/**
- * Where a navigation element goes, relative to the page links.
- *
- * @remarks
- * `start` comes before the page links and `end` after them, whichever way the
- * app lays out its navigation.
- *
- * @public
- */
-export type NavElementSlot = 'start' | 'end';
-
-const slotDataRef = createExtensionDataRef<NavElementSlot>().with({
-  id: 'core.nav-element.slot',
-});
 
 /**
  * Adds content to the app's navigation that is not a link to a page, such as
@@ -43,30 +26,21 @@ const slotDataRef = createExtensionDataRef<NavElementSlot>().with({
  *
  * @remarks
  * Links to pages come from `PageBlueprint` extensions and need no extension of
- * their own. The plugin picks a default slot; the app can move, order or
- * disable the element through config.
+ * their own.
+ *
+ * A nav element only renders where the app lists it, in the `elements` config
+ * of the `app/nav` extension. The app decides which elements show, in which
+ * slot, and in what order, so plugins can't add themselves to the navigation.
  *
  * @public
  */
 export const NavElementBlueprint = createExtensionBlueprint({
   kind: 'nav-element',
   attachTo: { id: 'app/nav', input: 'elements' },
-  output: [coreExtensionData.reactElement, slotDataRef],
-  dataRefs: { slot: slotDataRef },
-  configSchema: {
-    slot: z.enum(['start', 'end']).optional(),
-  },
-  *factory(
-    params: {
-      /** The default slot. Defaults to `end`. */
-      slot?: NavElementSlot;
-      loader: () => Promise<JSX.Element>;
-    },
-    { node, config },
-  ) {
+  output: [coreExtensionData.reactElement],
+  *factory(params: { loader: () => Promise<JSX.Element> }, { node }) {
     yield coreExtensionData.reactElement(
       ExtensionBoundary.lazy(node, params.loader),
     );
-    yield slotDataRef(config.slot ?? params.slot ?? 'end');
   },
 });

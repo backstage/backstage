@@ -38,12 +38,13 @@ import {
   NavContentNavElements,
   NavContentNavItem,
   NavContentNavItems,
-  NavElementBlueprint,
-  NavElementSlot,
 } from '@backstage/plugin-app-react';
 import { Sidebar, SidebarItem } from '@backstage/core-components';
 import { Fragment, useMemo } from 'react';
+import { z } from 'zod/v4';
 import { useTranslatedTitles } from '@internal/frontend';
+
+type NavSlot = 'start' | 'end';
 
 type NavElementEntry = { id: string; element: JSX.Element };
 
@@ -186,7 +187,7 @@ function tryResolveLink(
 // RouteResolutionApi and AppTreeApi are available.
 function NavContentRenderer(props: {
   Content: NavContentComponent;
-  slots: Record<NavElementSlot, NavElementEntry[]>;
+  slots: Record<NavSlot, NavElementEntry[]>;
   legacyNavItems: Array<{
     title: string;
     icon: IconComponent;
@@ -309,31 +310,46 @@ export const AppNav = createExtension({
   attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
     items: createExtensionInput([legacyNavItemTargetDataRef]),
-    elements: createExtensionInput([
-      coreExtensionData.reactElement,
-      NavElementBlueprint.dataRefs.slot,
-    ]),
+    elements: createExtensionInput([coreExtensionData.reactElement]),
     content: createExtensionInput([NavContentBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
       internal: true,
     }),
   },
+  configSchema: {
+    // The app's allowlist of nav elements, by slot and in order. Elements
+    // that aren't listed are never rendered.
+    elements: z
+      .object({
+        start: z.array(z.string()).optional(),
+        end: z.array(z.string()).optional(),
+      })
+      .optional(),
+  },
   output: [coreExtensionData.reactElement],
-  *factory({ inputs }) {
+  *factory({ inputs, config }) {
     const Content =
       inputs.content?.get(NavContentBlueprint.dataRefs.component) ??
       DefaultNavContent;
 
-    // Inputs are already in app order: extensions listed in `app.extensions`
-    // config come first, in that order, then the rest in install order.
-    const bySlot = (slot: NavElementSlot) =>
-      inputs.elements
-        .filter(e => e.get(NavElementBlueprint.dataRefs.slot) === slot)
-        .map(e => ({
-          id: e.node.spec.id,
-          element: e.get(coreExtensionData.reactElement),
-        }));
+    const available = new Map(
+      inputs.elements.map(e => [
+        e.node.spec.id,
+        e.get(coreExtensionData.reactElement),
+      ]),
+    );
+    const placed = new Set<string>();
+    const bySlot = (slot: NavSlot) =>
+      (config.elements?.[slot] ?? []).flatMap(id => {
+        const element = available.get(id);
+        // Skip unknown IDs, and render each element in one place only.
+        if (!element || placed.has(id)) {
+          return [];
+        }
+        placed.add(id);
+        return [{ id, element }];
+      });
 
     yield coreExtensionData.reactElement(
       <NavContentRenderer

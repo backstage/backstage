@@ -169,10 +169,29 @@ Extension responsible for rendering the logo and items in the app's sidebar.
 
 #### Inputs
 
-| Name     | Description                                          | Type                                                                                                                                                                                                                                                                         | Optional | Default | Blueprint                                                                                                             |
-| -------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
-| content  | Overrides the default content of the navbar.         | [NavContentBlueprint.dataRefs.component](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.NavContentBlueprint.html)                                                                                                                                     | true     | -       | [NavContentBlueprint](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.NavContentBlueprint.html) |
-| elements | Content that plugins add to the navigation, by slot. | [coreExtensionData.reactElement](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.coreExtensionData.html), [NavElementBlueprint.dataRefs.slot](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.NavElementBlueprint.html) | true     | -       | [NavElementBlueprint](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.NavElementBlueprint.html) |
+| Name     | Description                                                                                       | Type                                                                                                                                     | Optional | Default | Blueprint                                                                                                             |
+| -------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
+| content  | Overrides the default content of the navbar.                                                      | [NavContentBlueprint.dataRefs.component](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.NavContentBlueprint.html) | true     | -       | [NavContentBlueprint](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.NavContentBlueprint.html) |
+| elements | Content that plugins add to the navigation. Only elements listed in the `elements` config render. | [coreExtensionData.reactElement](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.coreExtensionData.html)  | true     | -       | [NavElementBlueprint](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.NavElementBlueprint.html) |
+
+#### Configurations
+
+| Key              | Type       | Default value | Description                                                          |
+| ---------------- | ---------- | ------------- | -------------------------------------------------------------------- |
+| `elements.start` | `string[]` | `[]`          | Nav element extension IDs to render before the page links, in order. |
+| `elements.end`   | `string[]` | `[]`          | Nav element extension IDs to render after the page links, in order.  |
+
+Nav elements that aren't listed don't render, so the app decides what plugins add to its navigation:
+
+```yaml
+app:
+  extensions:
+    - app/nav:
+        config:
+          elements:
+            end:
+              - nav-element:shortcuts
+```
 
 ### App routes
 

@@ -41,8 +41,7 @@
   "dependencies": {
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
-    "@material-ui/core": "^4.9.13",
-    "zod": "^4.0.0"
+    "@material-ui/core": "^4.9.13"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

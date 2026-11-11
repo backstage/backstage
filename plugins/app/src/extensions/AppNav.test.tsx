@@ -125,11 +125,11 @@ describe('AppNav', () => {
     ).resolves.toBeInTheDocument();
   });
 
-  it('should render nav elements in their slots, in configured order', async () => {
-    const element = (name: string, slot?: 'start' | 'end') =>
+  it('should render only the nav elements the app lists, by slot and in order', async () => {
+    const element = (name: string) =>
       NavElementBlueprint.make({
         name,
-        params: { slot, loader: async () => <span>{`element ${name}`}</span> },
+        params: { loader: async () => <span>{`element ${name}`}</span> },
       });
 
     renderTestApp({
@@ -138,11 +138,10 @@ describe('AppNav', () => {
         createFrontendPlugin({
           pluginId: 'x',
           extensions: [
-            element('a', 'start'),
+            element('a'),
             element('b'),
             element('c'),
-            element('d'),
-            element('hidden'),
+            element('not-listed'),
           ],
         }),
       ],
@@ -151,31 +150,34 @@ describe('AppNav', () => {
         app: {
           ...DEFAULT_CONFIG.app,
           extensions: [
-            // Listing an extension moves it ahead of unlisted ones.
-            { 'nav-element:x/d': { config: { slot: 'start' } } },
-            { 'nav-element:x/c': true },
-            { 'nav-element:x/hidden': false },
+            {
+              'app/nav': {
+                config: {
+                  elements: {
+                    start: ['nav-element:x/c'],
+                    // `x/c` is already placed, and unknown IDs are ignored.
+                    end: [
+                      'nav-element:x/b',
+                      'nav-element:x/a',
+                      'nav-element:x/c',
+                      'nav-element:x/unknown',
+                    ],
+                  },
+                },
+              },
+            },
           ],
         },
       },
     });
 
     const nav = await screen.findByRole('navigation');
-    await within(nav).findByText('element b');
+    await within(nav).findByText('element a');
     const texts = Array.from(
       nav.querySelectorAll('span'),
       span => span.textContent,
     ).filter(text => text?.startsWith('element ') || text === 'My Plugin');
 
-    // The start slot holds `d` (moved there by config, and listed so first)
-    // and `a`, then come the page links, then the end slot with the listed
-    // `c` ahead of `b`. Disabled elements are not rendered.
-    expect(texts).toEqual([
-      'element d',
-      'element a',
-      'My Plugin',
-      'element c',
-      'element b',
-    ]);
+    expect(texts).toEqual(['element c', 'My Plugin', 'element b', 'element a']);
   });
 });

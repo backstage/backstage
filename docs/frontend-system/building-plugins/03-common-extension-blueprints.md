@@ -67,34 +67,34 @@ Nav content extensions allow you to replace the entire navbar with your own comp
 
 Your custom component receives a `navItems` prop—a collection with `take(id)` and `rest()` methods for placing specific items in custom positions. Nav items are auto-discovered from page extensions, and metadata (title, icon) comes from page config, nav item extensions, or plugin defaults. Use `navItems.take('page:home')` to take a specific item by extension ID, and `navItems.rest()` to get all remaining items.
 
-It also receives a `navSlots` prop with the elements that plugins add through `NavElementBlueprint`, in two slots: `navSlots.start` for content before the page links and `navSlots.end` for content after them. Each slot has the same `take(id)` and `rest()` methods. Render `navSlots.start.rest()` and `navSlots.end.rest()` somewhere in your navigation, so that plugins you install show up without further changes.
+It also receives a `navSlots` prop with the elements that plugins add through `NavElementBlueprint`, in two slots: `navSlots.start` for content before the page links and `navSlots.end` for content after them. Each slot has the same `take(id)` and `rest()` methods. Render `navSlots.start.rest()` and `navSlots.end.rest()` somewhere in your navigation, so that the nav elements listed in the `app/nav` config show up without further changes to your component.
 
 ### NavElement - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.NavElementBlueprint.html)
 
 Nav element extensions add content to the app's navigation that is not a link to a page, such as a list of user shortcuts or a search button. Links to pages need no extension of their own: they are discovered from page extensions.
 
-A nav element renders its own content, loaded lazily, in one of two slots relative to the page links: `start` or `end`, which is the default.
+A nav element renders its own content, loaded lazily:
 
 ```tsx
 import { NavElementBlueprint } from '@backstage/plugin-app-react';
 
 const shortcutsNavElement = NavElementBlueprint.make({
   params: {
-    slot: 'end',
     loader: () => import('./ShortcutsNav').then(m => <m.ShortcutsNav />),
   },
 });
 ```
 
-Apps control nav elements through configuration, like any other extension. Move an element with its `slot` config, disable it with `false`, and order it by listing it under `app.extensions`. Listed extensions come ahead of the others in the same slot.
+A nav element only renders where the app lists it, in the `elements` config of the `app/nav` extension. The app picks the slot, `start` before the page links or `end` after them, and the order within it. Plugins can't add themselves to the navigation, so your README should show the line that adds your element:
 
 ```yaml
 app:
   extensions:
-    - nav-element:shortcuts:
+    - app/nav:
         config:
-          slot: start
-    - nav-element:search: false
+          elements:
+            end:
+              - nav-element:shortcuts
 ```
 
 ### AppRootWrapper - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.AppRootWrapperBlueprint.html)

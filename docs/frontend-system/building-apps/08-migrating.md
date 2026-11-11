@@ -836,7 +836,7 @@ If your custom sidebar uses the removed flat `items` prop, use `navItems.rest()`
 
 If you don't want to auto-populate the list, remove the rendering of that `SidebarGroup`.
 
-The `navSlots` prop holds content that plugins add to the navigation through `NavElementBlueprint`, such as user shortcuts. Render `navSlots.start.rest()` and `navSlots.end.rest()` once in your sidebar, and plugins you install show up there without further changes to the app.
+The `navSlots` prop holds content that plugins add to the navigation through `NavElementBlueprint`, such as user shortcuts. Render `navSlots.start.rest()` and `navSlots.end.rest()` once in your sidebar. Nav elements only render when you list them in the `elements` config of `app/nav`, by slot and in order (see [App nav](./03-built-in-extensions.md#app-nav)). When a plugin you already render by hand in the sidebar gains a nav element, remove that code from the sidebar and list the element instead.
 
 You might also notice that when you're rendering additional fixed icons for plugins (e.g. Search in a dedicated group) these might become duplicated, since that page is also included in `nav.rest()`. To exclude an item from the remaining list, call `nav.take('page:search')` before calling `nav.rest()` — you can discard the return value. Items that have been taken will not appear in `rest()`.
 

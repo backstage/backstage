@@ -115,10 +115,10 @@ export interface NavContentComponentProps {
    */
   navItems: NavContentNavItems;
   /**
-   * Elements contributed by plugins through `NavElementBlueprint`, by slot.
-   * `start` goes before the page links and `end` after them. Render
-   * `rest()` of both so that installed plugins show up without changes to the
-   * app.
+   * Elements contributed by plugins through `NavElementBlueprint` that the
+   * app lists in the `app/nav` config, by slot and in order. `start` goes
+   * before the page links and `end` after them. Render `rest()` of both so
+   * that listed elements show up without changes to this component.
    */
   navSlots: {
     start: NavContentNavElements;

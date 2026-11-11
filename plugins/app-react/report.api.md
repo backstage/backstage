@@ -87,7 +87,7 @@ export const IconBundleBlueprint: ExtensionBlueprint<{
   };
   output: ExtensionDataRef<
     {
-      [x: string]: IconComponent | IconElement;
+      [x: string]: IconElement | IconComponent;
     },
     'core.icons',
     {}
@@ -98,7 +98,7 @@ export const IconBundleBlueprint: ExtensionBlueprint<{
   dataRefs: {
     icons: ConfigurableExtensionDataRef<
       {
-        [x: string]: IconComponent | IconElement;
+        [x: string]: IconElement | IconComponent;
       },
       'core.icons',
       {}
@@ -178,30 +178,14 @@ export interface NavContentNavItemsWithComponent {
 export const NavElementBlueprint: ExtensionBlueprint<{
   kind: 'nav-element';
   params: {
-    slot?: NavElementSlot;
     loader: () => Promise<JSX.Element>;
   };
-  output:
-    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-    | ExtensionDataRef<NavElementSlot, 'core.nav-element.slot', {}>;
+  output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
   inputs: {};
-  config: {
-    slot: 'end' | 'start' | undefined;
-  };
-  configInput: {
-    slot?: 'end' | 'start' | undefined;
-  };
-  dataRefs: {
-    slot: ConfigurableExtensionDataRef<
-      NavElementSlot,
-      'core.nav-element.slot',
-      {}
-    >;
-  };
+  config: {};
+  configInput: {};
+  dataRefs: never;
 }>;
-
-// @public
-export type NavElementSlot = 'start' | 'end';
 
 // @public
 export const SignInPageBlueprint: ExtensionBlueprint<{

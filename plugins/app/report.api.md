@@ -17,7 +17,6 @@ import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { NavContentComponent } from '@backstage/plugin-app-react';
-import { NavElementSlot } from '@backstage/plugin-app-react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { PluginWrapperDefinition } from '@backstage/frontend-plugin-api';
@@ -78,8 +77,22 @@ const appPlugin: OverridableFrontendPlugin<
       name: 'layout';
     }>;
     'app/nav': OverridableExtensionDefinition<{
-      config: {};
-      configInput: {};
+      config: {
+        elements:
+          | {
+              start?: string[] | undefined;
+              end?: string[] | undefined;
+            }
+          | undefined;
+      };
+      configInput: {
+        elements?:
+          | {
+              start?: string[] | undefined;
+              end?: string[] | undefined;
+            }
+          | undefined;
+      };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         items: ExtensionInput<
@@ -99,12 +112,7 @@ const appPlugin: OverridableFrontendPlugin<
           }
         >;
         elements: ExtensionInput<
-          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-          | ConfigurableExtensionDataRef<
-              NavElementSlot,
-              'core.nav-element.slot',
-              {}
-            >,
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
             singleton: false;
             optional: false;
@@ -494,7 +502,7 @@ const appPlugin: OverridableFrontendPlugin<
         icons: ExtensionInput<
           ConfigurableExtensionDataRef<
             {
-              [x: string]: IconComponent | IconElement;
+              [x: string]: IconElement | IconComponent;
             },
             'core.icons',
             {}
