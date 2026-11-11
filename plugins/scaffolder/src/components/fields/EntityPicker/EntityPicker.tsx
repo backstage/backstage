@@ -217,6 +217,8 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   const lastCommittedRef = useRef(formData);
 
+  const selectedOption = buiOptions.find(option => option.value === formData);
+
   useEffect(() => {
     lastCommittedRef.current = formData;
   }, [formData]);
@@ -227,7 +229,11 @@ export const EntityPicker = (props: EntityPickerProps) => {
         const value = String(key);
         lastCommittedRef.current = value;
         onChange(value);
-      } else if (allowArbitraryValues && inputValue) {
+      } else if (
+        allowArbitraryValues &&
+        inputValue &&
+        selectedOption?.value !== inputValue
+      ) {
         let entityRef = inputValue;
         try {
           entityRef = stringifyEntityRef(
@@ -243,10 +249,23 @@ export const EntityPicker = (props: EntityPickerProps) => {
         onChange(undefined);
       }
     },
-    [onChange, allowArbitraryValues, inputValue, defaultKind, defaultNamespace],
+    [
+      onChange,
+      allowArbitraryValues,
+      inputValue,
+      defaultKind,
+      defaultNamespace,
+      selectedOption?.value,
+    ],
   );
 
   const handleBlur = useCallback(() => {
+    if (!userEditedInputRef.current) {
+      return;
+    }
+
+    userEditedInputRef.current = false;
+
     if (allowArbitraryValues && inputValue) {
       let entityRef = inputValue;
       try {
