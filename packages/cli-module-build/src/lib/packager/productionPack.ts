@@ -23,6 +23,7 @@ import type { ConfigSchemaError } from '@backstage/config-loader';
 import { readEntryPoints } from '../entryPoints';
 import { getEntryPointDefaultFeatureType } from '../typeDistProject';
 import { Project } from 'ts-morph';
+import { writeFrontendManifest } from '../frontendManifest/writeFrontendManifest';
 
 const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';
@@ -30,6 +31,7 @@ const GENERATED_CONFIG_SCHEMA_PATH = 'config.schema.json';
 
 const SKIPPED_KEYS = ['access', 'registry', 'tag'];
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
+const FRONTEND_MANIFEST_ROLES = ['frontend-plugin', 'frontend-plugin-module'];
 
 interface ProductionPackOptions {
   packageDir: string;
@@ -119,6 +121,9 @@ export async function productionPack(options: ProductionPackOptions) {
     await fs.writeFile(PKG_BACKUP_PATH, pkgContent);
   }
 
+  // Needs the source entry points, so this must be read before the exports are rewritten
+  const sourceEntryPoints = readEntryPoints(pkg);
+
   // This mutates pkg to fill in index exports, so call it before applying publishConfig
   await rewriteEntryPoints(pkg, packageDir, options.featureDetectionProject);
 
@@ -137,6 +142,21 @@ export async function productionPack(options: ProductionPackOptions) {
     delete pkg.devDependencies;
     delete pkg.peerDependencies;
     delete pkg.optionalDependencies;
+  }
+
+  // Lets apps defer loading the plugin, the same as for module federation remotes
+  if (
+    pkg.backstage?.role &&
+    FRONTEND_MANIFEST_ROLES.includes(pkg.backstage.role) &&
+    (await fs.pathExists(resolvePath(packageDir, 'dist')))
+  ) {
+    await writeFrontendManifest({
+      packageDir,
+      distDir: resolvePath(packageDir, 'dist'),
+      exposes: Object.fromEntries(
+        sourceEntryPoints.map(entry => [entry.mount, entry.path]),
+      ),
+    });
   }
 
   const sourceConfigSchemaPath = getTypeScriptConfigSchemaPath(pkg);
