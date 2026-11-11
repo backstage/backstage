@@ -24,6 +24,7 @@ import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TableItem } from '@backstage/ui';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 
 // @alpha
 export const CatalogFilterBlueprint: ExtensionBlueprint<{
@@ -284,7 +285,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     defaultPath?: [Error: `Use the 'path' param instead`];
     path: string;
     defaultTitle?: [Error: `Use the 'title' param instead`];
-    title: string;
+    title: string | TranslationRefTuple<undefined>;
     defaultGroup?: [Error: `Use the 'group' param instead`];
     group?: keyof typeof defaultEntityContentGroups | (string & {});
     icon?: string | ReactElement;
@@ -302,6 +303,13 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
         }
       >
     | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
+        TranslationRefTuple<undefined>,
+        'core.titleTranslation',
+        {
+          optional: true;
+        }
+      >
     | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
@@ -350,6 +358,11 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     title: ConfigurableExtensionDataRef<
       string,
       'catalog.entity-content-title',
+      {}
+    >;
+    titleTranslation: ConfigurableExtensionDataRef<
+      TranslationRefTuple<undefined>,
+      'core.titleTranslation',
       {}
     >;
     filterFunction: ConfigurableExtensionDataRef<

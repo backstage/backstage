@@ -15,16 +15,22 @@
  */
 
 import { JSX, ReactNode, lazy, useEffect } from 'react';
+import { appLanguageApiRef, errorApiRef, translationApiRef } from '../apis';
+import { TranslationRefTuple } from '../translation/TranslationRef';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
-import { joinRoutePath, useAppHistoryLocation } from '@internal/frontend';
+import {
+  joinRoutePath,
+  useAppHistoryLocation,
+  useTranslatedTitles,
+} from '@internal/frontend';
 import { useRouteResolution } from '../routing/useRouteResolution';
 import {
   coreExtensionData,
   createExtensionBlueprint,
   createExtensionInput,
 } from '../wiring';
-import { ExtensionBoundary, PageLayout } from '../components';
+import { ExtensionBoundary, PageLayout, Progress } from '../components';
 import { BreadcrumbEntry } from '../breadcrumbs';
 import { useApi, useApiHolder } from '../apis/system';
 import type { AppNode } from '../apis';
@@ -51,6 +57,7 @@ interface PageSubPage {
   path: string;
   /** The sub-page's tab label, defaulting to {@link PageSubPage.path}. */
   label: string;
+  titleTranslation?: TranslationRefTuple<undefined>;
   /** The sub-page's tab icon, if the author supplied one. */
   icon?: IconElement;
   /** The sub-page content, including its extension boundary. */
@@ -120,6 +127,7 @@ function PageContent(props: {
 function PluginPageShell(props: {
   node: AppNode;
   title: string;
+  titleTranslation?: TranslationRefTuple<undefined>;
   icon?: IconElement;
   noHeader?: boolean;
   subPages?: readonly PageSubPage[];
@@ -130,6 +138,7 @@ function PluginPageShell(props: {
   const {
     node,
     title,
+    titleTranslation,
     icon,
     noHeader,
     subPages,
@@ -137,6 +146,19 @@ function PluginPageShell(props: {
     pluginId,
     children,
   } = props;
+  const titles = useTranslatedTitles({
+    translationApi: useApi(translationApiRef),
+    languageApi: useApi(appLanguageApiRef),
+    errorApi: useApi(errorApiRef),
+    selections: [
+      titleTranslation,
+      ...(subPages?.map(page => page.titleTranslation) ?? []),
+    ],
+  });
+  const translatedSubPages = subPages?.map((page, index) => ({
+    ...page,
+    label: titles?.[index + 1] ?? page.label,
+  }));
   const routeResolutionApi = useApi(routeResolutionApiRef);
   const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
   const history = useApiHolder().get(appHistoryApiRef);
@@ -148,7 +170,7 @@ function PluginPageShell(props: {
       .matches.at(-1);
   const tabs =
     mount &&
-    subPages?.map(({ path, label, icon: tabIcon }) => ({
+    translatedSubPages?.map(({ path, label, icon: tabIcon }) => ({
       id: path,
       label,
       icon: tabIcon,
@@ -157,9 +179,12 @@ function PluginPageShell(props: {
   const headerActionsApi = useApi(pluginHeaderActionsApiRef);
   const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
 
+  if (!titles) {
+    return <Progress />;
+  }
   return (
     <PageLayout
-      title={title}
+      title={titles[0] ?? title}
       icon={icon}
       noHeader={noHeader}
       tabs={tabs}
@@ -167,7 +192,7 @@ function PluginPageShell(props: {
       headerActions={headerActions}
     >
       <ExtensionBoundary node={node}>
-        <PageContent subPages={subPages}>{children}</PageContent>
+        <PageContent subPages={translatedSubPages}>{children}</PageContent>
       </ExtensionBoundary>
     </PageLayout>
   );
@@ -225,6 +250,7 @@ export const PageBlueprint = createExtensionBlueprint({
       coreExtensionData.routeRef.optional(),
       coreExtensionData.reactElement,
       coreExtensionData.title.optional(),
+      coreExtensionData.titleTranslation.optional(),
       coreExtensionData.icon.optional(),
     ]),
   },
@@ -233,6 +259,7 @@ export const PageBlueprint = createExtensionBlueprint({
     coreExtensionData.reactElement,
     coreExtensionData.routeRef.optional(),
     coreExtensionData.title.optional(),
+    coreExtensionData.titleTranslation.optional(),
     coreExtensionData.icon.optional(),
   ],
   configSchema: {
@@ -242,7 +269,8 @@ export const PageBlueprint = createExtensionBlueprint({
   *factory(
     params: {
       path: string;
-      title?: string;
+      /** A plain title or a message reference resolved using the translation API. */
+      title?: string | TranslationRefTuple<undefined>;
       icon?: IconElement;
       loader?: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
@@ -251,9 +279,26 @@ export const PageBlueprint = createExtensionBlueprint({
        */
       noHeader?: boolean;
     },
-    { config, node, inputs },
+    { config, node, inputs, apis },
   ) {
-    const title = config.title ?? params.title;
+    const translation =
+      typeof params.title === 'object' ? params.title : undefined;
+    const translationApi =
+      translation && config.title === undefined
+        ? apis.get(translationApiRef)
+        : undefined;
+    if (translation && config.title === undefined && !translationApi) {
+      throw new Error(
+        `Translation API (core.translation) is required to resolve title '${translation.ref.id}:${translation.key}'`,
+      );
+    }
+    const title =
+      config.title ??
+      (typeof params.title === 'object'
+        ? translationApi!
+            .getTranslation<Record<string, string>>(params.title.ref)
+            .t(params.title.key)
+        : params.title);
     const icon = params.icon;
     const pluginId = node.spec.plugin.pluginId;
     const noHeader = params.noHeader ?? false;
@@ -267,11 +312,15 @@ export const PageBlueprint = createExtensionBlueprint({
     // anything attached to its `pages` input has nothing to be shown in.
     const subPages = params.loader ? [] : collectSubPages(inputs.pages);
 
+    if (translation) {
+      yield coreExtensionData.titleTranslation(translation);
+    }
     yield coreExtensionData.routePath(routePath);
     yield coreExtensionData.reactElement(
       createPageElement({
         node,
         resolvedTitle,
+        titleTranslation: translation,
         resolvedIcon,
         titleRouteRef,
         pluginId,
@@ -310,6 +359,7 @@ function collectSubPages(
       node: page.node,
       path,
       label,
+      titleTranslation: page.get(coreExtensionData.titleTranslation),
       icon: page.get(coreExtensionData.icon),
       element: page.get(coreExtensionData.reactElement),
     };
@@ -319,6 +369,7 @@ function collectSubPages(
 function createPageElement(options: {
   node: AppNode;
   resolvedTitle: string;
+  titleTranslation?: TranslationRefTuple<undefined>;
   resolvedIcon?: IconElement;
   titleRouteRef?: RouteRef;
   pluginId: string;
@@ -329,6 +380,7 @@ function createPageElement(options: {
   const {
     node,
     resolvedTitle,
+    titleTranslation,
     resolvedIcon,
     titleRouteRef,
     pluginId,
@@ -345,6 +397,7 @@ function createPageElement(options: {
     <PluginPageShell
       node={node}
       title={resolvedTitle}
+      titleTranslation={titleTranslation}
       icon={resolvedIcon}
       noHeader={noHeader}
       subPages={subPages}

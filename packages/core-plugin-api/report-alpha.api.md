@@ -15,6 +15,7 @@ import { TranslationMessages } from '@backstage/frontend-plugin-api';
 import { TranslationMessagesOptions } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { TranslationRefOptions } from '@backstage/frontend-plugin-api';
+import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 import { TranslationResource } from '@backstage/frontend-plugin-api';
 import { TranslationResourceOptions } from '@backstage/frontend-plugin-api';
 import { TranslationSnapshot } from '@backstage/frontend-plugin-api';
@@ -43,6 +44,8 @@ export { TranslationMessagesOptions };
 export { TranslationRef };
 
 export { TranslationRefOptions };
+
+export { TranslationRefTuple };
 
 export { TranslationResource };
 
