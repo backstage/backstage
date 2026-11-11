@@ -41,6 +41,7 @@ import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { TabProps } from '@material-ui/core/Tab';
+import { TextFilterFieldsConfig } from '@backstage/plugin-catalog-react';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
@@ -389,6 +390,8 @@ export interface DefaultCatalogPageProps {
   pagination?: EntityListPagination;
   // (undocumented)
   tableOptions?: TableProps<CatalogTableRow>['options'];
+  // (undocumented)
+  textFilterFields?: TextFilterFieldsConfig;
 }
 
 // @public

@@ -80,6 +80,7 @@ export function MockEntityListContextProvider<
       setOffset: value?.setOffset,
       paginationMode: value?.paginationMode ?? 'none',
       refresh: value?.refresh ?? (() => {}),
+      textFilterFields: value?.textFilterFields,
     }),
     [value, defaultValues, filters, updateFilters],
   );
