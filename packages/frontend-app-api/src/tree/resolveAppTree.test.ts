@@ -469,6 +469,9 @@ describe('graftAppTreeNodes', () => {
         spec('c', { id: 'app', input: 'children' }),
         // For example an extension from a module, attached to a replaced node
         spec('b-child', { id: 'b', input: 'x' }),
+        // A stub child that the new nodes no longer provide, with a child
+        spec('b-stale', { id: 'b', input: 'x' }),
+        spec('b-stale-child', { id: 'b-stale', input: 'x' }),
       ],
       collector,
     );
@@ -476,13 +479,17 @@ describe('graftAppTreeNodes', () => {
     const oldB = tree.nodes.get('b')!;
     const bChild = tree.nodes.get('b-child')!;
 
-    const newNodes = graftAppTreeNodes(tree, [
-      spec('b', { id: 'app', input: 'children' }),
-      spec('b-new-child', { id: 'b', input: 'x' }),
-      spec('n1', { id: 'app', input: 'children' }),
-      spec('n2', { id: 'n1', input: 'y' }),
-      spec('orphan', { id: 'missing', input: 'z' }),
-    ]);
+    const newNodes = graftAppTreeNodes(
+      tree,
+      [
+        spec('b', { id: 'app', input: 'children' }),
+        spec('b-new-child', { id: 'b', input: 'x' }),
+        spec('n1', { id: 'app', input: 'children' }),
+        spec('n2', { id: 'n1', input: 'y' }),
+        spec('orphan', { id: 'missing', input: 'z' }),
+      ],
+      { staleIds: new Set(['b-stale']) },
+    );
     expect(ids(newNodes)).toEqual(['b', 'b-new-child', 'n1', 'n2', 'orphan']);
 
     // The replacement keeps the position of the replaced node
@@ -496,7 +503,10 @@ describe('graftAppTreeNodes', () => {
     ]);
     expect(newB.edges.attachedTo).toEqual({ node: app, input: 'children' });
 
-    // Existing children of the replaced node move over to the new node
+    // Existing children of the replaced node move over to the new node,
+    // except stale ones, which are removed from the tree
+    expect(tree.nodes.has('b-stale')).toBe(false);
+    expect(tree.nodes.has('b-stale-child')).toBe(false);
     expect(tree.nodes.get('b-child')).toBe(bChild);
     expect(bChild.edges.attachedTo).toEqual({ node: newB, input: 'x' });
     expect(ids(newB.edges.attachments.get('x'))).toEqual([
