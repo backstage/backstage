@@ -128,6 +128,11 @@ describe('validationIssuesFromValidatorError', () => {
           message: 'must be string',
           errorCode: 'type.openapi.validation',
         },
+        {
+          path: '/body/10',
+          message: "must have required property '10'",
+          errorCode: 'required.openapi.validation',
+        },
       ]),
     );
 
@@ -150,6 +155,12 @@ describe('validationIssuesFromValidatorError', () => {
       {
         path: ['body', 'items', 0, '01'],
         message: 'must be string',
+        code: 'invalid_type',
+      },
+      // The name of a missing property is an object key, so it stays a string.
+      {
+        path: ['body', '10'],
+        message: "must have required property '10'",
         code: 'invalid_type',
       },
     ]);
