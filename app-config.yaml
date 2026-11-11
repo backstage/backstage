@@ -47,23 +47,16 @@ app:
         ownerEntityRefs: [cubic-belugas]
 
   extensions:
-    page:scaffolder:
-      inputs:
-        pages:
-          order:
-            - sub-page:scaffolder/templates
     # set availableLanguages example
     api:app/app-language:
       config:
         availableLanguages: ['en', 'es', 'fr', 'de', 'ja']
         defaultLanguage: 'en'
     entity-card:org/members-list:
-      disabled: false
       config:
         showAggregateMembersToggle: true
         initialRelationAggregation: aggregated
     entity-card:org/ownership:
-      disabled: false
       config:
         ownedKinds: ['Component', 'API', 'System']
 
@@ -74,7 +67,6 @@ app:
     # app-root-element:home/visit-listener: true
     home-page-widget:home/random-joke: false
     home-page-widget:home/toolkit:
-      disabled: false
       config:
         tools:
           - url: https://backstage.io/docs
@@ -93,7 +85,6 @@ app:
             label: Submit New Issue
             icon: github
     home-page-widget:home/world-clock:
-      disabled: false
       config:
         customTimeFormat:
           hour12: false
@@ -109,11 +100,10 @@ app:
     page:home:
       inputs:
         widgets:
+          # Keep Toolkit and World Clock first in the widget picker.
           order:
-            - home-page-widget:home/random-joke
             - home-page-widget:home/toolkit
             - home-page-widget:home/world-clock
-      disabled: false
       config:
         defaultConfig:
           - component: HomePageSearchBar
@@ -163,20 +153,10 @@ app:
 
     # Pages
     page:catalog:
-      disabled: false
       config:
         exportSettings:
           enabled: true
     page:catalog/entity:
-      inputs:
-        contents:
-          order:
-            - entity-content:catalog/overview
-            - entity-content:api-docs/definition
-            - entity-content:api-docs/apis
-            - entity-content:techdocs
-            - entity-content:kubernetes/kubernetes
-      disabled: false
       config:
         showNavItemIcons: true
         # default content order for all groups, can be 'title' or 'natural'
@@ -201,7 +181,6 @@ app:
               title: Custom
 
     sub-page:scaffolder/templates:
-      disabled: false
       config:
         groups:
           - title: Recommended Services
@@ -213,12 +192,9 @@ app:
 
     # Entity page cards
     entity-card:catalog/about:
-      disabled: false
       config:
         type: info
-    entity-card:catalog/labels: true
     entity-card:catalog/links:
-      disabled: false
       config:
         filter:
           kind: component
@@ -228,18 +204,10 @@ app:
         type: info
     # entity-card:linguist/languages: true
     entity-card:catalog-graph/relations:
-      disabled: false
       config:
         height: 300
-    entity-card:api-docs/has-apis: true
-    entity-card:api-docs/consumed-apis: true
-    entity-card:api-docs/provided-apis: true
-    entity-card:api-docs/providing-components: true
-    entity-card:api-docs/consuming-components: true
     # Org Plugin
-    entity-card:org/group-profile: true
     entity-card:org/user-profile:
-      disabled: false
       config:
         maxRelations: 5
         hideIcons: true
@@ -247,9 +215,9 @@ app:
 
     # Entity page contents
     entity-content:catalog/overview:
-      disabled: false
       inputs:
         cards:
+          # Preserve the example app's custom card order.
           order:
             - entity-card:org/members-list
             - entity-card:org/ownership
@@ -264,19 +232,15 @@ app:
             - entity-card:api-docs/consuming-components
             - entity-card:org/group-profile
             - entity-card:org/user-profile
-    entity-content:api-docs/definition: true
     entity-content:api-docs/apis:
-      disabled: false
       config:
         # example overriding the default group
         group: documentation
         icon: kind:api
     entity-content:techdocs:
-      disabled: false
       config:
         icon: techdocs
     entity-content:kubernetes/kubernetes:
-      disabled: false
       config:
         # example disassociating from the default group
         group: false
@@ -286,15 +250,6 @@ app:
 
     # Disable the catalog-unprocessed-entities element outside devtools
     page:catalog-unprocessed-entities: false
-
-    app/routes:
-      inputs:
-        routes:
-          order:
-            - page:home
-            - page:catalog
-            - page:catalog/entity
-            - page:catalog-unprocessed-entities
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins

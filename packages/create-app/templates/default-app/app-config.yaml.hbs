@@ -11,7 +11,6 @@ app:
     # serve as the root page. To switch to the Home page, comment out the
     # catalog path override and uncomment the path override under page:home below.
     page:catalog:
-      disabled: false
       config:
         path: /
 
@@ -21,7 +20,6 @@ app:
     # api:home/visits: true
     # app-root-element:home/visit-listener: true
     home-page-widget:home/toolkit:
-      disabled: false
       config:
         tools:
           - url: https://backstage.io/docs
@@ -40,7 +38,6 @@ app:
             label: Submit New Issue
             icon: github
     home-page-widget:home/world-clock:
-      disabled: false
       config:
         clockConfigs:
           - label: NYC
@@ -54,10 +51,10 @@ app:
     page:home:
       inputs:
         widgets:
+          # Keep Toolkit and World Clock first in the widget picker.
           order:
             - home-page-widget:home/toolkit
             - home-page-widget:home/world-clock
-      disabled: false
       config:
         # path: /
         defaultConfig:
@@ -102,13 +99,6 @@ app:
             row: 9
             width: 4
             height: 4
-
-    app/routes:
-      inputs:
-        routes:
-          order:
-            - page:catalog
-            - page:home
 
 organization:
   name: My Company
