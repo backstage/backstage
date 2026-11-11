@@ -27,6 +27,7 @@ import * as url from 'node:url';
 import { FrontendRemoteResolvers } from './frontendRemotesServer';
 import { Remote } from '../schema/openapi/generated/models';
 import { JsonObject } from '@backstage/types';
+import { readFrontendManifest } from './frontendManifest';
 
 export async function createRouter({
   logger,
@@ -154,6 +155,12 @@ export async function createRouter({
         defaultResolver.overrideExposedModules;
 
       const exposedModules = manifest.exposes.map(e => e.name);
+      const frontendManifest = readFrontendManifest({
+        assetsPath,
+        mfManifest: manifest,
+        logger,
+        pluginName: plugin.name,
+      });
 
       frontendPluginRemotes.push({
         packageName: plugin.name,
@@ -164,6 +171,7 @@ export async function createRouter({
         },
         exposedModules:
           overrideExposedModules?.(exposedModules, manifest) ?? exposedModules,
+        ...(frontendManifest ? { frontendManifest } : {}),
       });
 
       const customizeManifest =

@@ -50,9 +50,31 @@ components:
           type: array
           items:
             type: string
+        frontendManifest:
+          $ref: '#/components/schemas/FrontendManifest'
       required:
         - packageName
         - remoteInfo
+        - exposedModules
+
+    FrontendManifest:
+      description: >-
+        Build-time description of the frontend plugins and modules exposed by a Module Federation remote,
+        which lets an app defer loading the plugins of the remote. It is read from the
+        frontend-manifest.json file that the Backstage CLI writes next to the Module Federation manifest.
+      type: object
+      properties:
+        manifestVersion:
+          description: Version of the format of the manifests of the exposed modules
+          type: number
+        exposedModules:
+          description: Manifests of the exposed modules that are frontend plugins or modules, keyed by the name of the exposed module
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties: {}
+      required:
+        - manifestVersion
         - exposedModules
 
     RemoteInfo:
