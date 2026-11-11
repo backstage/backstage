@@ -44,7 +44,9 @@ export interface Config {
        * using a dynamic import instead of a static one. A plugin is deferrable
        * if it only provides pages, APIs, and extensions that render an element
        * along with plain data, such as entity content. It is loaded the first
-       * time one of its pages or elements is rendered.
+       * time one of its pages or elements is rendered. A plugin is loaded
+       * normally if any of its element extensions has config in
+       * `app.extensions`.
        *
        * @visibility frontend
        */

@@ -144,11 +144,6 @@ describe('createFrontendFeatureManifest', () => {
             'test.filter': { kind: 'component' },
           },
           routeRefName: 'root',
-          dataConfigKeys: ['title'],
-          // The title is output as it is configured, so a stub can apply it
-          configPassThrough: {
-            title: { dataRefId: 'test.title', types: ['string'] },
-          },
         },
       }),
     ]);

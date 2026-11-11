@@ -1071,15 +1071,6 @@ function createDeferredPlugins(options: {
   // The sync parts of deferred plugins, which are merged into their stubs
   const syncParts = new Map<string, FrontendPlugin>();
 
-  const configById = new Map<string, { [key: string]: unknown }>();
-  for (const param of options.extensionParameters) {
-    if (param.config && typeof param.config === 'object') {
-      configById.set(param.id, {
-        ...configById.get(param.id),
-        ...(param.config as { [key: string]: unknown }),
-      });
-    }
-  }
   const preloadPluginIds = new Array<string>();
 
   const entries = options.entries.filter(entry => {
@@ -1114,18 +1105,17 @@ function createDeferredPlugins(options: {
     } else if (eagerPlugin) {
       return false;
     }
-    const conflict = findDeferredConfigConflict(manifest, configById);
-    if (conflict) {
+    const configuredExtensionId = findDeferredConfigConflict(
+      manifest,
+      options.extensionParameters,
+    );
+    if (configuredExtensionId) {
       // The CLI normally loads such plugins eagerly, so this only happens if
       // the config changed after the build. The plugin is loaded right away
-      // to apply as much of the config as possible.
+      // so that the config is applied as soon as possible.
       // eslint-disable-next-line no-console
       console.warn(
-        `The '${conflict.extensionId}' extension of the deferred '${
-          entry.name
-        }' package is configured with '${conflict.keys.join(
-          "', '",
-        )}' in app.extensions, which a deferred extension can only apply after the plugin has loaded. The plugin is loaded as soon as the app has started, but the config may not be fully applied. Rebuild the app to load the package normally.`,
+        `The '${configuredExtensionId}' extension of the deferred '${entry.name}' package has config in app.extensions, which can only be applied once the plugin is loaded. The plugin is loaded as soon as the app has started. Rebuild the app to load the package normally.`,
       );
       preloadPluginIds.push(manifest.pluginId);
     }
@@ -1143,7 +1133,6 @@ function createDeferredPlugins(options: {
       entry,
       controller,
       syncParts.get(entry.manifest.pluginId),
-      configById,
     );
     const stub = options.attachPluginInfo(plugin) as FrontendPlugin;
     stubs.set(entry.manifest.pluginId, stub);
