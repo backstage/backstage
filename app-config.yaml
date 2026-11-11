@@ -2,6 +2,8 @@ app:
   title: Backstage Example App
   baseUrl: http://localhost:3000
   packages: all # ✨
+  experimental:
+    deferredPackages: true
 
   #datadogRum:
   #  clientToken: '123456789'
