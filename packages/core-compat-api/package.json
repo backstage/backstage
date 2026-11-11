@@ -41,8 +41,7 @@
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "lodash": "^4.17.21",
-    "prop-types": "^15.7.2",
-    "use-sync-external-store": "^1.7.0"
+    "prop-types": "^15.7.2"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -55,7 +54,6 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",
-    "@types/use-sync-external-store": "^1.7.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.30.2"

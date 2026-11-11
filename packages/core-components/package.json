@@ -99,7 +99,6 @@
     "rehype-raw": "^6.0.0",
     "rehype-sanitize": "^5.0.0",
     "remark-gfm": "^3.0.1",
-    "use-sync-external-store": "^1.7.0",
     "zen-observable": "^0.10.0",
     "zod": "^3.25.76 || ^4.0.0"
   },

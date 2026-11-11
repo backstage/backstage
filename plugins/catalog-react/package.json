@@ -88,7 +88,6 @@
     "qs": "^6.15.2",
     "react-use": "^17.2.4",
     "react-window": "^1.8.10",
-    "use-sync-external-store": "^1.7.0",
     "yaml": "^2.0.0",
     "zen-observable": "^0.10.0",
     "zod": "^4.0.0"
@@ -106,7 +105,6 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/react": "^18.0.0",
     "@types/react-window": "^1.8.8",
-    "@types/use-sync-external-store": "^1.7.0",
     "@types/zen-observable": "^0.8.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",

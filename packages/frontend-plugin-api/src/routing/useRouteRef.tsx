@@ -15,7 +15,7 @@
  */
 
 import { useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useSyncExternalStore } from 'react';
 import { APP_ROOT_PATH, useAppHistoryLocation } from '@internal/frontend';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
