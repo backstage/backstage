@@ -20,6 +20,10 @@ It is a reference, not a procedure. Read only the reference that matches the tas
 | [Testing](references/testing.md)                   | Adding a plugin smoke test, or providing APIs to components and hooks in tests                                                           |
 | [Troubleshooting](references/troubleshooting.md)   | An error message or symptom at startup or runtime: missing plugin, missing page or tab, duplicate tab, API errors, ignored feature flags |
 
+## Reach the app through extension points
+
+A plugin should work once it is installed. Contribute everything through blueprints that attach to an extension point, such as `PageBlueprint`, `EntityContentBlueprint`, `ApiBlueprint`, or a blueprint another plugin defines. Don't export a component and ask adopters to render it in their app, and don't solve it by having the app edit its `NavContentBlueprint` for the plugin. When the content the plugin needs to add has no extension point, for example interactive sidebar content, say so to the user instead of working around it.
+
 ## Check the dev app after a change
 
 `yarn tsc`, lint, and unit tests do not catch most of the problems in these references. After changing a plugin, start its dev app (`yarn start` from the plugin directory) and check that:
