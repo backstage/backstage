@@ -15,12 +15,14 @@
  */
 
 import {
+  ExtensionDefinition,
   FrontendFeature,
   FrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import { OpaqueFrontendPlugin } from '@internal/frontend';
 
-function getPluginId(plugin: FrontendPlugin): string {
+/** Returns the ID of a plugin, including plugins from older versions. */
+export function getPluginId(plugin: FrontendPlugin): string {
   return plugin.pluginId ?? OpaqueFrontendPlugin.toInternal(plugin).id;
 }
 
@@ -29,9 +31,19 @@ export function getPluginExtensionIds(plugin: FrontendPlugin): string[] {
   return OpaqueFrontendPlugin.toInternal(plugin).extensions.map(e => e.id);
 }
 
-function getExtensionDefinition(plugin: FrontendPlugin, id: string): unknown {
-  const getExtension = (plugin as { getExtension?(id: string): unknown })
-    .getExtension;
+/**
+ * Returns the definition of an extension of a plugin, or undefined if the
+ * plugin doesn't provide it.
+ */
+export function getExtensionDefinition(
+  plugin: FrontendPlugin,
+  id: string,
+): ExtensionDefinition | undefined {
+  // Plugins from older versions don't have getExtension, and it throws for
+  // IDs that the plugin doesn't provide.
+  const getExtension = (
+    plugin as { getExtension?(id: string): ExtensionDefinition }
+  ).getExtension;
   if (!getExtension) {
     return undefined;
   }

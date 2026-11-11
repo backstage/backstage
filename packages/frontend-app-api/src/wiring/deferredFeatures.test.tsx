@@ -636,10 +636,12 @@ describe('DeferredFeatureController', () => {
     const second = createEntry('second', async () => ({
       default: 'second plugin',
     }));
-    const graft = jest.fn((entry: { manifest: { pluginId: string } }) => {
-      const id = entry.manifest.pluginId;
-      return new Map([[`page:${id}`, <div>{id}</div>]]);
-    });
+    const graft = jest.fn(
+      (entry: { manifest: { pluginId: string } }, _loaded: unknown) => {
+        const id = entry.manifest.pluginId;
+        return new Map([[`page:${id}`, <div>{id}</div>]]);
+      },
+    );
     const controller = new DeferredFeatureController({
       entries: [first, second],
       graft,

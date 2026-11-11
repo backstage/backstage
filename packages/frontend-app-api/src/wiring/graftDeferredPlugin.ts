@@ -49,6 +49,7 @@ import { DeferredFrontendFeature } from './deferredFeatures';
 import {
   findSyncPartMismatch,
   getPluginExtensionIds,
+  getPluginId,
 } from '../manifest/syncPart';
 import {
   AppTreeApiProxy,
@@ -59,10 +60,6 @@ import { type ExtensionPredicateContext } from './predicates';
 import { ExtensionFactoryMiddleware } from './types';
 
 const APIS_ATTACHMENT = { id: 'root', input: 'apis' };
-
-function getPluginId(plugin: FrontendPlugin) {
-  return plugin.pluginId ?? OpaqueFrontendPlugin.toInternal(plugin).id;
-}
 
 function getAttachTo(spec: AppNodeSpec) {
   return Array.isArray(spec.attachTo) ? undefined : spec.attachTo;

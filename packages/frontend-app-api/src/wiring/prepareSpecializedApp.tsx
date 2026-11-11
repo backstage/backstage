@@ -24,7 +24,6 @@ import {
   coreExtensionData,
   AppNode,
   FrontendFeature,
-  FrontendPlugin,
   IdentityApi,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
@@ -48,10 +47,7 @@ import { getBasePath } from '../routing/getBasePath';
 import { Root } from '../extensions/Root';
 import { resolveAppTree } from '../tree/resolveAppTree';
 import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
-import {
-  ExtensionParameters,
-  readAppExtensionsConfig,
-} from '../tree/readAppExtensionsConfig';
+import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
 import {
   createPluginInfoAttacher,
   FrontendPluginInfoResolver,
@@ -90,13 +86,10 @@ import {
   prepareFinalizedTree,
 } from './treeLifecycle';
 import {
-  createDeferredPluginStub,
-  DeferredFeatureController,
+  createDeferredPlugins,
   DeferredFrontendFeature,
 } from './deferredFeatures';
 import { graftDeferredPlugin } from './graftDeferredPlugin';
-import { getPluginExtensionIds } from '../manifest/syncPart';
-import { findDeferredConfigConflict } from '../manifest/deferredConfig';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -323,7 +316,7 @@ export function prepareSpecializedApp(
     extensionParameters,
     attachPluginInfo,
     collector,
-    graft: (entry, loadedFeature) => graftDeferred(entry, loadedFeature),
+    graft: graftDeferred,
   });
   // The sync parts of deferred plugins are part of their stubs
   const syncPartFeatures = new Set<FrontendFeature>(
@@ -1041,109 +1034,4 @@ function mergeExtensionFactoryMiddleware(
       }, ctx);
     };
   });
-}
-
-/**
- * Builds stubs for the deferred plugins that aren't also installed as regular
- * features, along with the controller that loads them.
- */
-function createDeferredPlugins(options: {
-  entries: DeferredFrontendFeature[];
-  eagerFeatures: FrontendFeature[];
-  extensionParameters: ExtensionParameters[];
-  attachPluginInfo(feature: FrontendFeature): FrontendFeature;
-  collector: ErrorCollector;
-  graft(
-    entry: DeferredFrontendFeature,
-    loadedFeature: unknown,
-  ): Map<string, JSX.Element>;
-}) {
-  const eagerPlugins = new Map<string, FrontendPlugin>();
-  for (const feature of options.eagerFeatures) {
-    if (OpaqueFrontendPlugin.isType(feature)) {
-      eagerPlugins.set(
-        feature.pluginId ?? OpaqueFrontendPlugin.toInternal(feature).id,
-        feature,
-      );
-    }
-  }
-  // The sync parts of deferred plugins, which are merged into their stubs
-  const syncParts = new Map<string, FrontendPlugin>();
-
-  const preloadPluginIds = new Array<string>();
-
-  const entries = options.entries.filter(entry => {
-    const { manifest } = entry;
-    if (manifest.type !== 'plugin' || !manifest.deferrable) {
-      throw new Error(
-        `The '${entry.name}' package can't be deferred, ${
-          manifest.notDeferrableReason ?? 'its manifest is not deferrable'
-        }`,
-      );
-    }
-    const eagerPlugin = eagerPlugins.get(manifest.pluginId);
-    const syncExtensionIds = manifest.extensions
-      .filter(extension => extension.sync)
-      .map(extension => extension.id);
-    if (syncExtensionIds.length > 0) {
-      // The sync part is installed as a regular feature by discovery, and is
-      // told apart from the full plugin by having exactly the sync extensions.
-      if (!eagerPlugin) {
-        throw new Error(
-          `The deferred '${entry.name}' package has a sync export, but the '${manifest.pluginId}' plugin from it isn't installed in the app`,
-        );
-      }
-      const eagerIds = getPluginExtensionIds(eagerPlugin);
-      const isSyncPart =
-        eagerIds.length === syncExtensionIds.length &&
-        eagerIds.every(id => syncExtensionIds.includes(id));
-      if (!isSyncPart) {
-        return false;
-      }
-      syncParts.set(manifest.pluginId, eagerPlugin);
-    } else if (eagerPlugin) {
-      return false;
-    }
-    const configuredExtensionId = findDeferredConfigConflict(
-      manifest,
-      options.extensionParameters,
-    );
-    if (configuredExtensionId) {
-      // The CLI normally loads such plugins eagerly, so this only happens if
-      // the config changed after the build. The plugin is loaded right away
-      // so that the config is applied as soon as possible.
-      // eslint-disable-next-line no-console
-      console.warn(
-        `The '${configuredExtensionId}' extension of the deferred '${entry.name}' package has config in app.extensions, which can only be applied once the plugin is loaded. The plugin is loaded as soon as the app has started. Rebuild the app to load the package normally.`,
-      );
-      preloadPluginIds.push(manifest.pluginId);
-    }
-    return true;
-  });
-
-  const controller = new DeferredFeatureController({
-    entries,
-    graft: options.graft,
-  });
-
-  const stubs = new Map<string, FrontendPlugin>();
-  for (const entry of entries) {
-    const { plugin, skippedExtensionIds } = createDeferredPluginStub(
-      entry,
-      controller,
-      syncParts.get(entry.manifest.pluginId),
-    );
-    const stub = options.attachPluginInfo(plugin) as FrontendPlugin;
-    stubs.set(entry.manifest.pluginId, stub);
-
-    for (const extensionId of skippedExtensionIds) {
-      options.collector.report({
-        code: 'EXTENSION_IGNORED',
-        message: `The '${extensionId}' extension of the deferred '${entry.manifest.pluginId}' plugin was ignored, because only pages, APIs and elements that are attached to a single parent and have an ID of the form '<kind>:${entry.manifest.pluginId}' or '<kind>:${entry.manifest.pluginId}/<name>' can be deferred`,
-        context: { plugin, extensionId },
-      });
-    }
-  }
-
-  return { controller, stubs, syncParts, preloadPluginIds };
 }
