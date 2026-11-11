@@ -14,12 +14,27 @@
  * limitations under the License.
  */
 
-import { act, renderHook, waitFor } from '@testing-library/react';
+import {
+  StrictMode,
+  Suspense,
+  startTransition,
+  useLayoutEffect,
+  useState,
+} from 'react';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import { mockApis } from '@backstage/frontend-test-utils';
-import { createTranslatedMessagesSource } from './createTranslatedMessagesSource';
+import type { Observable, Observer } from '@backstage/types';
 import {
   createTranslationRef,
   createTranslationResource,
+  TranslationSnapshot,
 } from '@backstage/frontend-plugin-api';
 import { useTranslatedTitles } from './useTranslatedTitles';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -169,14 +184,18 @@ it('falls back after an initial failure, reports once, and resumes on later lang
     errorApi,
     selections: [ref('title'), otherRef('title')],
   };
-  const source = createTranslatedMessagesSource(options);
-  const otherSource = createTranslatedMessagesSource(options);
-  expect(source.getSnapshot()).toBeUndefined();
-  const onChange = jest.fn();
-  const unsubscribe = source.subscribe(onChange);
-  const unsubscribeOther = otherSource.subscribe(onChange);
-  await waitFor(() => expect(source.getSnapshot()).toEqual(['Title', 'Other']));
-  expect(otherSource.getSnapshot()).toEqual(['Title', 'Other']);
+  const recordRender = jest.fn();
+  const first = renderHook(() => {
+    recordRender();
+    return useTranslatedTitles(options);
+  });
+  const second = renderHook(() => {
+    recordRender();
+    return useTranslatedTitles(options);
+  });
+  expect(first.result.current).toBeUndefined();
+  await waitFor(() => expect(first.result.current).toEqual(['Title', 'Other']));
+  expect(second.result.current).toEqual(['Title', 'Other']);
   expect(errorApi.post).toHaveBeenCalledTimes(1);
   expect(errorApi.post).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -186,25 +205,27 @@ it('falls back after an initial failure, reports once, and resumes on later lang
     { hidden: true },
   );
   expect(loadSwedish).toHaveBeenCalledTimes(1);
-  resolveOther({ default: { title: 'Andra' } });
-  await waitFor(() => expect(source.getSnapshot()).toEqual(['Title', 'Andra']));
-  languageApi.setLanguage('de');
+  await act(async () => resolveOther({ default: { title: 'Andra' } }));
+  await waitFor(() => expect(first.result.current).toEqual(['Title', 'Andra']));
+  await act(async () => languageApi.setLanguage('de'));
   await waitFor(() => expect(loadGerman).toHaveBeenCalledTimes(1));
-  expect(source.getSnapshot()).toEqual(['Title', 'Andra']);
-  resolveGerman({ default: { title: 'Translated title' } });
-  await waitFor(() =>
-    expect(source.getSnapshot()).toEqual(['Translated title', 'Other']),
+  expect(first.result.current).toEqual(['Title', 'Andra']);
+  await act(async () =>
+    resolveGerman({ default: { title: 'Translated title' } }),
   );
-  expect(otherSource.getSnapshot()).toEqual(['Translated title', 'Other']);
-  languageApi.setLanguage('sv');
-  await waitFor(() => expect(source.getSnapshot()).toEqual(['Title', 'Andra']));
+  await waitFor(() =>
+    expect(first.result.current).toEqual(['Translated title', 'Other']),
+  );
+  expect(second.result.current).toEqual(['Translated title', 'Other']);
+  await act(async () => languageApi.setLanguage('sv'));
+  await waitFor(() => expect(first.result.current).toEqual(['Title', 'Andra']));
   expect(loadSwedish).toHaveBeenCalledTimes(1);
   expect(errorApi.post).toHaveBeenCalledTimes(1);
-  unsubscribe();
-  unsubscribeOther();
-  onChange.mockClear();
+  first.unmount();
+  second.unmount();
+  recordRender.mockClear();
   await act(async () => languageApi.setLanguage('en'));
-  expect(onChange).not.toHaveBeenCalled();
+  expect(recordRender).not.toHaveBeenCalled();
 });
 
 it('waits for the initial selected-language group without publishing default messages', async () => {
@@ -389,3 +410,206 @@ it.each(['before', 'after'])(
     expect(result.current).toEqual(['Extra', 'Main']);
   },
 );
+
+it('resets on an API replacement and ignores abandoned loads and updates after unmount', async () => {
+  const ref = createTranslationRef({
+    id: 'api-replacement',
+    messages: { title: 'Title' },
+  });
+  let rejectOld!: (cause: Error) => void;
+  const abandoned = new Promise<never>((_resolve, reject) => {
+    rejectOld = reject;
+  });
+  let resolveNew!: (value: { default: { title: string } }) => void;
+  const pending = new Promise<{ default: { title: string } }>(resolve => {
+    resolveNew = resolve;
+  });
+  const oldLanguage = AppLanguageSelector.create({
+    availableLanguages: ['en', 'de'],
+  });
+  const newLanguage = AppLanguageSelector.create({
+    availableLanguages: ['en', 'sv'],
+    defaultLanguage: 'sv',
+  });
+  const oldApi = I18nextTranslationApi.create({
+    languageApi: oldLanguage,
+    resources: [
+      createTranslationResource({ ref, translations: { de: () => abandoned } }),
+    ],
+  });
+  const newApi = I18nextTranslationApi.create({
+    languageApi: newLanguage,
+    resources: [
+      createTranslationResource({ ref, translations: { sv: () => pending } }),
+    ],
+  });
+  const errorApi = mockApis.error.mock();
+  const renders = jest.fn();
+  const { result, rerender, unmount } = renderHook(
+    ({ translationApi, languageApi }) => {
+      renders();
+      return useTranslatedTitles({
+        translationApi,
+        languageApi,
+        errorApi,
+        selections: [ref('title')],
+      });
+    },
+    {
+      initialProps: { translationApi: oldApi, languageApi: oldLanguage },
+      wrapper: StrictMode,
+    },
+  );
+  expect(result.current).toEqual(['Title']);
+  await act(async () => oldLanguage.setLanguage('de'));
+  rerender({ translationApi: newApi, languageApi: newLanguage });
+  expect(result.current).toBeUndefined();
+  await act(async () => rejectOld(new Error('abandoned')));
+  expect(result.current).toBeUndefined();
+  expect(errorApi.post).not.toHaveBeenCalled();
+  await act(async () => resolveNew({ default: { title: 'New translation' } }));
+  expect(result.current).toEqual(['New translation']);
+  unmount();
+  renders.mockClear();
+  await act(async () => newLanguage.setLanguage('en'));
+  expect(renders).not.toHaveBeenCalled();
+});
+
+it('keeps committed subscriptions active when a selection transition suspends', async () => {
+  const ref = createTranslationRef({
+    id: 'concurrent-titles',
+    messages: { first: 'First', second: 'Second' },
+  });
+  const languageApi = AppLanguageSelector.create({
+    availableLanguages: ['en', 'sv'],
+  });
+  const translationApi = I18nextTranslationApi.create({
+    languageApi,
+    resources: [
+      createTranslationResource({
+        ref,
+        translations: {
+          sv: async () => ({ default: { first: 'Första', second: 'Andra' } }),
+        },
+      }),
+    ],
+  });
+  const observe = jest.spyOn(translationApi, 'translation$');
+  const errorApi = mockApis.error.mock();
+  const never = new Promise<void>(() => {});
+  function Content() {
+    const [pending, setPending] = useState(false);
+    const titles = useTranslatedTitles({
+      translationApi,
+      languageApi,
+      errorApi,
+      selections: [ref(pending ? 'second' : 'first')],
+    });
+    if (pending) throw never;
+    return (
+      <>
+        <button onClick={() => startTransition(() => setPending(true))}>
+          Change selection
+        </button>
+        <output>{titles?.[0]}</output>
+      </>
+    );
+  }
+  render(
+    <Suspense fallback={<div>Suspended</div>}>
+      <Content />
+    </Suspense>,
+  );
+  expect(screen.getByRole('status')).toHaveTextContent('First');
+  fireEvent.click(screen.getByRole('button', { name: 'Change selection' }));
+  expect(screen.queryByText('Suspended')).not.toBeInTheDocument();
+  await act(async () => languageApi.setLanguage('sv'));
+  expect(screen.getByRole('status')).toHaveTextContent('Första');
+  expect(observe).toHaveBeenCalledTimes(1);
+  expect(errorApi.post).not.toHaveBeenCalled();
+});
+
+it('retains a failure delivered between a selection commit and subscription replacement', async () => {
+  type Snapshot = TranslationSnapshot<Record<string, string>>;
+  const observers: Observer<Snapshot>[] = [];
+  const stream: Observable<Snapshot> = {
+    [Symbol.observable]() {
+      return this;
+    },
+    subscribe(observer?: Observer<Snapshot> | ((snapshot: Snapshot) => void)) {
+      observers.push(
+        typeof observer === 'function' ? { next: observer } : observer ?? {},
+      );
+      let closed = false;
+      return {
+        get closed() {
+          return closed;
+        },
+        unsubscribe() {
+          closed = true;
+        },
+      };
+    },
+  };
+  const ref = createTranslationRef({
+    id: 'commit-failure',
+    messages: { main: 'Main', extra: 'Extra' },
+  });
+  const languageApi = AppLanguageSelector.create({
+    availableLanguages: ['en', 'sv', 'de'],
+    defaultLanguage: 'sv',
+  });
+  const errorApi = mockApis.error.mock();
+  const translationApi = mockApis.translation.mock();
+  translationApi.translation$.mockReturnValue(stream);
+  translationApi.getTranslation.mockReturnValue({
+    ready: true,
+    t: jest
+      .fn()
+      .mockImplementation((key: string) =>
+        key === 'main' ? 'Huvud' : 'Extra svenska',
+      ),
+  });
+  function Content() {
+    const [extra, setExtra] = useState(false);
+    const titles = useTranslatedTitles({
+      translationApi,
+      languageApi,
+      errorApi,
+      selections: extra ? [ref('extra'), ref('main')] : [ref('main')],
+    });
+    useLayoutEffect(() => {
+      if (extra) {
+        translationApi.getTranslation.mockReturnValue({
+          ready: true,
+          t: jest
+            .fn()
+            .mockImplementation((key: string) =>
+              key === 'main' ? 'Main' : 'Extra',
+            ),
+        });
+        observers[0].error?.(new Error('Failed between render and effect'));
+      }
+    }, [extra]);
+    return (
+      <>
+        <button onClick={() => setExtra(true)}>Add selection</button>
+        <output>{titles?.join(',') ?? 'Loading'}</output>
+      </>
+    );
+  }
+  render(<Content />);
+  expect(screen.getByRole('status')).toHaveTextContent('Huvud');
+  translationApi.getTranslation.mockReturnValue({
+    ready: false,
+    t: jest
+      .fn()
+      .mockImplementation((key: string) => (key === 'main' ? 'Main' : 'Extra')),
+  });
+  await act(async () => languageApi.setLanguage('de'));
+  fireEvent.click(screen.getByRole('button', { name: 'Add selection' }));
+  await waitFor(() =>
+    expect(screen.getByRole('status')).toHaveTextContent('Extra,Huvud'),
+  );
+  expect(errorApi.post).toHaveBeenCalledTimes(1);
+});

@@ -15,5 +15,4 @@
  */
 
 export * from './OpaqueApiRef';
-export * from './createTranslatedMessagesSource';
 export * from './useTranslatedTitles';
