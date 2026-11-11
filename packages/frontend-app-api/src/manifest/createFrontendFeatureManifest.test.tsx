@@ -361,6 +361,40 @@ describe('createFrontendFeatureManifest', () => {
     expect(manifest.notDeferrableReason).toContain('boom');
   });
 
+  it('is not deferrable if a config schema can not be read', async () => {
+    // A field that validates, but fails to convert to JSON schema
+    const unconvertible = {
+      '~standard': {
+        version: 1 as const,
+        vendor: 'test',
+        validate: (value: unknown) => ({ value }),
+        jsonSchema: {
+          input: () => {
+            throw new Error('cannot convert');
+          },
+        },
+      },
+    };
+    const plugin = createFrontendPlugin({
+      pluginId: 'test',
+      extensions: [
+        PageBlueprint.makeWithOverrides({
+          configSchema: { since: unconvertible },
+          factory: originalFactory =>
+            originalFactory({ path: '/test', loader: async () => <div /> }),
+        }),
+      ],
+    });
+
+    const manifest = await createFrontendFeatureManifest(plugin);
+
+    expect(manifest.deferrable).toBe(false);
+    expect(manifest.notDeferrableReason).toBe(
+      "could not read the config schema of 'page:test': cannot convert",
+    );
+    expect(manifest.extensions[0].configSchema).toBeUndefined();
+  });
+
   it('is not deferrable if a page attaches somewhere else', async () => {
     const plugin = createFrontendPlugin({
       pluginId: 'test',

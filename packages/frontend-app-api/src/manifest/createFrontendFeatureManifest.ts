@@ -46,16 +46,6 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-function readConfigSchema(
-  extension: Extension<unknown>,
-): { [key: string]: unknown } | undefined {
-  try {
-    return extension.configSchema?.schema().schema;
-  } catch {
-    return undefined;
-  }
-}
-
 /**
  * Runs the factory of an extension once, with stubbed dependencies and the
  * default config, and returns the data it outputs keyed by extension data ID.
@@ -339,9 +329,17 @@ export async function createFrontendFeatureManifest(
         attachTo: extension.attachTo,
         disabled: extension.disabled,
       };
-      const configSchema = readConfigSchema(extension);
-      if (configSchema) {
-        result.configSchema = configSchema;
+      // An invalid schema is left out, and prevents the plugin from being
+      // deferred
+      try {
+        const configSchema = extension.configSchema?.schema().schema;
+        if (configSchema) {
+          result.configSchema = configSchema;
+        }
+      } catch (error) {
+        failures.push(
+          `could not read the config schema of '${id}': ${errorMessage(error)}`,
+        );
       }
       if (syncExtensionIds.has(id)) {
         // Loaded with the app from the sync export, so nothing to extract
