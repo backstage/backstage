@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import fs from 'fs-extra';
-import os from 'node:os';
-import path from 'node:path';
 import { Readable } from 'node:stream';
 import {
   createConfluenceVariables,
@@ -208,16 +206,14 @@ describe('getAndWriteAttachments', () => {
       },
     ],
   };
-  let docsDir: string;
+  const mockDir = createMockDirectory();
 
-  beforeEach(async () => {
-    docsDir = await fs.mkdtemp(path.join(os.tmpdir(), 'confluence-test-'));
-    await fs.ensureDir(path.join(docsDir, 'img'));
+  beforeEach(() => {
+    mockDir.setContent({ img: {} });
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     jest.restoreAllMocks();
-    await fs.remove(docsDir);
   });
 
   it('writes the attachment to disk', async () => {
@@ -225,12 +221,16 @@ describe('getAndWriteAttachments', () => {
       .spyOn(global, 'fetch')
       .mockResolvedValue(new Response('image data', { status: 200 }));
 
-    const result = await getAndWriteAttachments(attachments, docsDir, config);
+    const result = await getAndWriteAttachments(
+      attachments,
+      mockDir.path,
+      config,
+    );
 
     expect(result).toEqual([['my%20image.png', 'my-image.png']]);
-    await expect(
-      fs.readFile(path.join(docsDir, 'img', 'my-image.png'), 'utf8'),
-    ).resolves.toBe('image data');
+    expect(mockDir.content({ shouldReadAsText: true })).toEqual({
+      img: { 'my-image.png': 'image data' },
+    });
   });
 
   it('rejects instead of hanging when the download fails midway', async () => {
@@ -246,7 +246,7 @@ describe('getAndWriteAttachments', () => {
     } as unknown as Response);
 
     await expect(
-      getAndWriteAttachments(attachments, docsDir, config),
+      getAndWriteAttachments(attachments, mockDir.path, config),
     ).rejects.toThrow('connection lost');
   });
 });
