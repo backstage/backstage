@@ -259,6 +259,10 @@ describe('Entity page', () => {
       }>(resolve => {
         resolveSwedish = resolve;
       });
+      let rejectFrench!: (cause: Error) => void;
+      const french = new Promise<never>((_resolve, reject) => {
+        rejectFrench = reject;
+      });
       const getEntityByRef = jest
         .fn()
         .mockResolvedValueOnce(entityMock)
@@ -297,8 +301,7 @@ describe('Entity page', () => {
             translations: {
               sv: () => swedish,
               de: () => german,
-              fr: () =>
-                Promise.reject<never>(new Error('Unavailable title resource')),
+              fr: () => french,
             },
           }),
         ],
@@ -509,7 +512,7 @@ describe('Entity page', () => {
       await userEvent.keyboard('{Escape}');
       await act(async () => languageApi.setLanguage('sv'));
       await act(async () => languageApi.setLanguage('fr'));
-      expect(errorApi.post).toHaveBeenCalledTimes(1);
+      expect(errorApi.post).not.toHaveBeenCalled();
       expect(Helmet.peek().title).toContain('AAA');
       await userEvent.click(
         screen.getByRole('button', { name: 'Refresh entity' }),
@@ -517,6 +520,11 @@ describe('Entity page', () => {
       expect(
         await screen.findByText('After failed load', { selector: 'output' }),
       ).toBeInTheDocument();
+      expect(Helmet.peek().title).toContain('AAA');
+      await act(async () =>
+        rejectFrench(new Error('Unavailable title resource')),
+      );
+      expect(errorApi.post).toHaveBeenCalledTimes(1);
       expect(Helmet.peek().title).toContain('AAA');
       await userEvent.click(
         screen.getByRole('button', { name: 'Refresh entity' }),

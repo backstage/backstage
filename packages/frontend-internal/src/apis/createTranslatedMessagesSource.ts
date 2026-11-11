@@ -24,7 +24,7 @@ import type {
 
 const reportedErrors = new WeakSet<Error>();
 
-interface TranslationFailure {
+interface RetainedTranslations {
   translationApi: TranslationApi;
   languageApi: AppLanguageApi;
   language: string;
@@ -43,16 +43,19 @@ export function createTranslatedMessagesSource(
     errorApi: ErrorApi;
     selections: readonly (TranslationRefTuple<undefined> | undefined)[];
   },
-  previousFailure?: TranslationFailure,
+  previousState?: RetainedTranslations,
 ) {
   const { translationApi: api, languageApi, errorApi, selections } = options;
   const refs = [...new Set(selections.flatMap(s => (s ? [s.ref] : [])))];
+  const retainedState =
+    previousState?.translationApi === api &&
+    previousState.languageApi === languageApi &&
+    previousState.language === languageApi.getLanguage().language
+      ? previousState
+      : undefined;
   let failure =
-    previousFailure?.translationApi === api &&
-    previousFailure.languageApi === languageApi &&
-    previousFailure.language === languageApi.getLanguage().language &&
-    refs.some(ref => previousFailure.refs.has(ref))
-      ? previousFailure
+    retainedState && refs.some(ref => retainedState.refs.has(ref))
+      ? retainedState
       : undefined;
   const read = () => {
     const retained =
@@ -79,9 +82,22 @@ export function createTranslatedMessagesSource(
     );
   };
   let snapshot = read();
+  const retainedValues = () =>
+    snapshot
+      ? selections.flatMap((selection, index) => {
+          const value = snapshot![index];
+          return selection && value !== undefined ? [{ selection, value }] : [];
+        })
+      : retainedState?.values ?? [];
 
   return {
-    getFailureState: () => failure,
+    getRetainedState: (): RetainedTranslations => ({
+      translationApi: api,
+      languageApi,
+      language: languageApi.getLanguage().language,
+      refs: failure?.refs ?? new Set(),
+      values: failure?.values ?? retainedValues(),
+    }),
     matches(next: typeof options): boolean {
       return (
         api === next.translationApi &&
@@ -135,14 +151,7 @@ export function createTranslatedMessagesSource(
                 languageApi,
                 language: currentLanguage,
                 refs: new Set([...(previous?.refs ?? []), ref]),
-                values:
-                  previous?.values ??
-                  selections.flatMap((selection, index) => {
-                    const value = snapshot?.[index];
-                    return selection && value !== undefined
-                      ? [{ selection, value }]
-                      : [];
-                  }),
+                values: previous?.values ?? retainedValues(),
               };
               reconnect = true;
               if (

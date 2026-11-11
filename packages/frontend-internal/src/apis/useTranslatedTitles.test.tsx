@@ -295,73 +295,97 @@ it.each([null, 'offline'])(
   },
 );
 
-it('retains failed-language titles by ref and key as selections change and recovers in another language', async () => {
-  const ref = createTranslationRef({
-    id: 'replacement-titles',
-    messages: { main: 'Main', other: 'Other', extra: 'Extra' },
-  });
-  const healthyRef = createTranslationRef({
-    id: 'replacement-healthy',
-    messages: { title: 'Healthy fallback' },
-  });
-  let resolveHealthy!: (value: { default: { title: string } }) => void;
-  const healthy = new Promise<{ default: { title: string } }>(resolve => {
-    resolveHealthy = resolve;
-  });
-  const languageApi = AppLanguageSelector.create({
-    availableLanguages: ['en', 'sv', 'de'],
-    defaultLanguage: 'sv',
-  });
-  const errorApi = mockApis.error.mock();
-  const translationApi = I18nextTranslationApi.create({
-    languageApi,
-    resources: [
-      createTranslationResource({
-        ref,
-        translations: {
-          sv: async () => ({
-            default: { main: 'Huvud', other: 'Andra', extra: 'Extra svenska' },
-          }),
-          de: () => Promise.reject<never>(new Error('offline')),
-        },
-      }),
-      createTranslationResource({
-        ref: healthyRef,
-        translations: { de: () => healthy },
-      }),
-    ],
-  });
-  const { result, rerender } = renderHook(
-    ({ selections }) =>
-      useTranslatedTitles({
-        translationApi,
-        languageApi,
-        errorApi,
-        selections,
-      }),
-    { initialProps: { selections: [ref('main'), ref('other')] } },
-  );
-  await waitFor(() => expect(result.current).toEqual(['Huvud', 'Andra']));
-  await act(async () => languageApi.setLanguage('de'));
-  expect(errorApi.post).toHaveBeenCalledTimes(1);
-  expect(result.current).toEqual(['Huvud', 'Andra']);
-  rerender({
-    selections: [ref('other'), ref('main'), ref('extra'), healthyRef('title')],
-  });
-  expect(result.current).toEqual([
-    'Andra',
-    'Huvud',
-    'Extra',
-    'Healthy fallback',
-  ]);
-  await act(async () => resolveHealthy({ default: { title: 'Gesund' } }));
-  expect(result.current).toEqual(['Andra', 'Huvud', 'Extra', 'Gesund']);
-  rerender({ selections: [ref('main'), ref('other')] });
-  expect(result.current).toEqual(['Huvud', 'Andra']);
-  await act(async () => languageApi.setLanguage('sv'));
-  expect(result.current).toEqual(['Huvud', 'Andra']);
-  rerender({ selections: [ref('extra'), ref('main')] });
-  expect(result.current).toEqual(['Extra svenska', 'Huvud']);
-  await act(async () => languageApi.setLanguage('en'));
-  expect(result.current).toEqual(['Extra', 'Main']);
-});
+it.each(['before', 'after'])(
+  'retains titles when selections change %s a failed load',
+  async timing => {
+    const ref = createTranslationRef({
+      id: 'replacement-titles',
+      messages: { main: 'Main', other: 'Other', extra: 'Extra' },
+    });
+    const healthyRef = createTranslationRef({
+      id: 'replacement-healthy',
+      messages: { title: 'Healthy fallback' },
+    });
+    let resolveHealthy!: (value: { default: { title: string } }) => void;
+    const healthy = new Promise<{ default: { title: string } }>(resolve => {
+      resolveHealthy = resolve;
+    });
+    let rejectGerman!: (cause: Error) => void;
+    const german = new Promise<never>((_resolve, reject) => {
+      rejectGerman = reject;
+    });
+    const languageApi = AppLanguageSelector.create({
+      availableLanguages: ['en', 'sv', 'de'],
+      defaultLanguage: 'sv',
+    });
+    const errorApi = mockApis.error.mock();
+    const translationApi = I18nextTranslationApi.create({
+      languageApi,
+      resources: [
+        createTranslationResource({
+          ref,
+          translations: {
+            sv: async () => ({
+              default: {
+                main: 'Huvud',
+                other: 'Andra',
+                extra: 'Extra svenska',
+              },
+            }),
+            de: () => german,
+          },
+        }),
+        createTranslationResource({
+          ref: healthyRef,
+          translations: { de: () => healthy },
+        }),
+      ],
+    });
+    const { result, rerender } = renderHook(
+      ({ selections }) =>
+        useTranslatedTitles({
+          translationApi,
+          languageApi,
+          errorApi,
+          selections,
+        }),
+      { initialProps: { selections: [ref('main'), ref('other')] } },
+    );
+    await waitFor(() => expect(result.current).toEqual(['Huvud', 'Andra']));
+    await act(async () => languageApi.setLanguage('de'));
+    expect(result.current).toEqual(['Huvud', 'Andra']);
+    const nextSelections = [
+      ref('other'),
+      ref('main'),
+      ref('extra'),
+      healthyRef('title'),
+    ];
+    if (timing === 'before') {
+      rerender({ selections: nextSelections });
+    }
+    expect(result.current).toEqual(
+      timing === 'before' ? undefined : ['Huvud', 'Andra'],
+    );
+    await act(async () => rejectGerman(new Error('offline')));
+    expect(errorApi.post).toHaveBeenCalledTimes(1);
+    if (timing === 'after') {
+      rerender({ selections: nextSelections });
+    }
+    expect(result.current).toEqual([
+      'Andra',
+      'Huvud',
+      'Extra',
+      'Healthy fallback',
+    ]);
+    await act(async () => resolveHealthy({ default: { title: 'Gesund' } }));
+    expect(result.current).toEqual(['Andra', 'Huvud', 'Extra', 'Gesund']);
+    rerender({ selections: [ref('main'), ref('other')] });
+    expect(result.current).toEqual(['Huvud', 'Andra']);
+    await act(async () => languageApi.setLanguage('sv'));
+    expect(result.current).toEqual(['Huvud', 'Andra']);
+    rerender({ selections: [ref('extra'), ref('main')] });
+    expect(result.current).toEqual(['Extra svenska', 'Huvud']);
+    await act(async () => languageApi.setLanguage('en'));
+    expect(result.current).toEqual(['Extra', 'Main']);
+  },
+);
