@@ -123,6 +123,58 @@ describe('analyzeFrontendPackage', () => {
     });
   });
 
+  it('should read pages made with makeWithOverrides that only pass params', () => {
+    const result = analyze(
+      {
+        'src/index.tsx': `
+        import { createFrontendPlugin, createRouteRef, PageBlueprint } from ${API};
+        import { z } from 'zod';
+        const rootRouteRef = createRouteRef();
+        const PATH = '/overridden';
+        const page = PageBlueprint.makeWithOverrides({
+          name: 'main',
+          configSchema: { filter: z.string().optional() },
+          factory(originalFactory, { config }) {
+            return originalFactory({
+              path: PATH,
+              title: 'Overridden',
+              routeRef: rootRouteRef,
+              icon: <span />,
+              loader: async () => <div>{config.filter}</div>,
+            });
+          },
+        });
+        const arrowPage = PageBlueprint.makeWithOverrides({
+          name: 'arrow',
+          factory: orig => orig({ path: '/arrow', loader: async () => null }),
+        });
+        export default createFrontendPlugin({
+          pluginId: 'demo',
+          routes: { root: rootRouteRef },
+          extensions: [page, arrowPage],
+        });
+      `,
+      },
+      [{ mount: '.', path: 'src/index.tsx' }],
+    );
+    expect(result.entryPoints['.']).toMatchObject({
+      manifest: {
+        deferrable: true,
+        extensions: [
+          {
+            id: 'page:demo/main',
+            page: {
+              path: '/overridden',
+              title: 'Overridden',
+              routeRefName: 'root',
+            },
+          },
+          { id: 'page:demo/arrow', page: { path: '/arrow' } },
+        ],
+      },
+    });
+  });
+
   it('should fail closed with the location of values it can not read', () => {
     const plugin = (extension: string, extra = '') => ({
       'src/index.ts': `
@@ -162,11 +214,43 @@ describe('analyzeFrontendPackage', () => {
     expect(
       reasonOf(
         plugin(
-          `PageBlueprint.makeWithOverrides({ factory: orig => orig({ path: '/' }) })`,
+          `SubPageBlueprint.makeWithOverrides({ factory: orig => orig({ path: 'x', title: 'X' }) })`,
+          `import { SubPageBlueprint } from ${API};`,
         ),
       ),
     ).toBe(
-      `the extension is created with 'PageBlueprint.makeWithOverrides', but only 'PageBlueprint.make' can be deferred (src/index.ts:7)`,
+      `the extension is created with 'SubPageBlueprint.makeWithOverrides', but only 'SubPageBlueprint.make' can be deferred (src/index.ts:7)`,
+    );
+    // A page made with makeWithOverrides must only pass literal params to
+    // the original factory
+    const overrides = (options: string) =>
+      reasonOf(plugin(`PageBlueprint.makeWithOverrides({ ${options} })`));
+    expect(
+      overrides(
+        `factory(orig, { config }) { const p = '/'; return orig({ path: p, loader: async () => null }); }`,
+      ),
+    ).toBe(
+      'the factory must only return orig(params), with no other statements or arguments (src/index.ts:7)',
+    );
+    expect(
+      overrides(
+        `factory: (orig, { config }) => orig({ path: config.path, loader: async () => null })`,
+      ),
+    ).toBe(`'config' is not a constant value (src/index.ts:7)`);
+    expect(
+      overrides(
+        `inputs: {}, factory: orig => orig({ path: '/', loader: async () => null })`,
+      ),
+    ).toBe("the extension option 'inputs' is not supported (src/index.ts:7)");
+    expect(overrides(`*factory(orig) { yield* orig({ path: '/' }); }`)).toBe(
+      'the factory must return the result of originalFactory, not yield it (src/index.ts:7)',
+    );
+    expect(
+      overrides(
+        `factory: orig => orig({ path: '/', loader: async () => null }, {})`,
+      ),
+    ).toBe(
+      'the factory must only return orig(params), with no other statements or arguments (src/index.ts:7)',
     );
     expect(
       reasonOf(

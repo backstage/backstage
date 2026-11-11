@@ -77,6 +77,18 @@ const CORE_BLUEPRINTS: { [name: string]: BlueprintSupport } = {
 
 const MAKE_OPTIONS = ['name', 'attachTo', 'disabled', 'if', 'params'];
 
+// The options of makeWithOverrides that can be deferred. A config schema
+// only adds config that is applied once the plugin has loaded, while inputs
+// and outputs would change what the stand-in of the extension provides.
+const MAKE_WITH_OVERRIDES_OPTIONS = [
+  'name',
+  'attachTo',
+  'disabled',
+  'if',
+  'configSchema',
+  'factory',
+];
+
 // Options of createFrontendPlugin that don't affect deferred loading
 const IGNORED_PLUGIN_OPTIONS = ['icon', 'info', 'featureFlags'];
 
@@ -544,6 +556,114 @@ class PackageAnalyzer {
   }
 
   /**
+   * Reads the options of makeWithOverrides, where the factory may be a
+   * method. Any other function-valued option is left for the caller to
+   * reject by name.
+   */
+  #readOverrideOptions(expr: ts.Expression): Map<string, ts.Expression> {
+    const target = this.#resolve(expr);
+    if (target.type !== 'node' || !ts.isObjectLiteralExpression(target.node)) {
+      this.#fail('the extension options must be an object literal', expr);
+    }
+    const options = new Map<string, ts.Expression>();
+    for (const property of target.node.properties) {
+      if (
+        ts.isMethodDeclaration(property) &&
+        ts.isIdentifier(property.name) &&
+        property.name.text === 'factory'
+      ) {
+        if (property.asteriskToken) {
+          this.#fail(
+            'the factory must return the result of originalFactory, not yield it',
+            property,
+          );
+        }
+        // The method is treated like a function expression with the same
+        // parameters and body
+        options.set('factory', property as unknown as ts.Expression);
+        continue;
+      }
+      if (ts.isPropertyAssignment(property) && ts.isIdentifier(property.name)) {
+        options.set(property.name.text, property.initializer);
+        continue;
+      }
+      if (ts.isShorthandPropertyAssignment(property)) {
+        options.set(property.name.text, property.name);
+        continue;
+      }
+      this.#fail(
+        'the extension options must only have plain properties',
+        property,
+      );
+    }
+    return options;
+  }
+
+  /**
+   * Reads the params that a makeWithOverrides factory passes to the original
+   * factory. The factory must do nothing but return
+   * `originalFactory({ ... })`, so that the params are all that it adds.
+   */
+  #readOriginalFactoryParams(factoryExpr: ts.Expression): ts.Expression {
+    const factory: ts.Node = ts.isMethodDeclaration(factoryExpr)
+      ? factoryExpr
+      : unwrap(factoryExpr);
+    if (
+      !ts.isMethodDeclaration(factory) &&
+      !ts.isArrowFunction(factory) &&
+      !ts.isFunctionExpression(factory)
+    ) {
+      this.#fail('the factory must be a function', factoryExpr);
+    }
+    if (
+      (ts.isMethodDeclaration(factory) || ts.isFunctionExpression(factory)) &&
+      (factory.asteriskToken || factory.modifiers?.length)
+    ) {
+      this.#fail('the factory must be a plain function', factory);
+    }
+    if (ts.isArrowFunction(factory) && factory.modifiers?.length) {
+      this.#fail('the factory must be a plain function', factory);
+    }
+    const [originalParam] = factory.parameters;
+    if (!originalParam || !ts.isIdentifier(originalParam.name)) {
+      this.#fail(
+        'the factory must take the original factory as a plain parameter',
+        factory,
+      );
+    }
+
+    let returned: ts.Expression | undefined;
+    const body = factory.body;
+    if (body && ts.isBlock(body)) {
+      const [statement, ...rest] = body.statements;
+      if (
+        rest.length === 0 &&
+        statement &&
+        ts.isReturnStatement(statement) &&
+        statement.expression
+      ) {
+        returned = statement.expression;
+      }
+    } else if (body) {
+      returned = body;
+    }
+    const call = returned && unwrap(returned);
+    if (
+      !call ||
+      !ts.isCallExpression(call) ||
+      !ts.isIdentifier(call.expression) ||
+      call.expression.text !== originalParam.name.text ||
+      call.arguments.length !== 1
+    ) {
+      this.#fail(
+        `the factory must only return ${originalParam.name.text}(params), with no other statements or arguments`,
+        factory,
+      );
+    }
+    return call.arguments[0];
+  }
+
+  /**
    * Reads a single property of an object literal, ignoring any other
    * properties as long as they can't override it.
    */
@@ -784,7 +904,7 @@ class PackageAnalyzer {
     info: FeatureInfo,
   ): FrontendExtensionManifest {
     const { pluginId } = info;
-    const { method, blueprint, blueprintName, readOptions, call } =
+    const { method, blueprint, blueprintName, optionsArg, readOptions, call } =
       this.#readExtensionCall(extension.node);
     const support =
       blueprint.type === 'external' && blueprint.module === FRONTEND_PLUGIN_API
@@ -800,15 +920,22 @@ class PackageAnalyzer {
         call,
       );
     }
-    if (method !== 'make') {
+    const withOverrides =
+      method === 'makeWithOverrides' && support.type === 'page';
+    if (method !== 'make' && !withOverrides) {
       this.#fail(
         `the extension is created with '${blueprintName}.${method}', but only '${blueprintName}.make' can be deferred`,
         call,
       );
     }
-    const options = readOptions();
+    const options = withOverrides
+      ? this.#readOverrideOptions(optionsArg)
+      : readOptions();
+    const allowedOptions = withOverrides
+      ? MAKE_WITH_OVERRIDES_OPTIONS
+      : MAKE_OPTIONS;
     for (const [name, value] of options) {
-      if (!MAKE_OPTIONS.includes(name)) {
+      if (!allowedOptions.includes(name)) {
         this.#fail(`the extension option '${name}' is not supported`, value);
       }
     }
@@ -847,9 +974,17 @@ class PackageAnalyzer {
       return result;
     }
 
-    const paramsExpr = options.get('params');
+    const factoryExpr = options.get('factory');
+    const paramsExpr = withOverrides
+      ? factoryExpr && this.#readOriginalFactoryParams(factoryExpr)
+      : options.get('params');
     if (!paramsExpr) {
-      this.#fail('the extension has no params', call);
+      this.#fail(
+        withOverrides
+          ? 'the extension has no factory'
+          : 'the extension has no params',
+        call,
+      );
     }
     const params = this.#resolveObject(paramsExpr, 'the extension params');
     const readString = (key: string, required: boolean) => {

@@ -244,11 +244,11 @@ The CLI creates the manifest by analyzing the source code of your plugin without
 
 A plugin can be deferred if its default export is a direct call to `createFrontendPlugin`, and each of its extensions is one of the following:
 
-- A page that is made with `PageBlueprint.make` and attaches to `app/routes`.
+- A page that is made with `PageBlueprint.make` and attaches to `app/routes`. A page can also be made with `PageBlueprint.makeWithOverrides`, as long as its factory does nothing but return `originalFactory({ ... })` with the params, and it only adds a `configSchema`, not `inputs` or `output`.
 - A sub-page that is made with `SubPageBlueprint.make`, without an icon.
 - A utility API that is made with `ApiBlueprint.make`. Plugins with utility APIs can only be deferred if they have a [sync export](#the-sync-export), since an API of a deferred plugin only becomes available once the plugin has loaded. If other plugins use the API, put it in the sync export.
 
-The `path` and `title` params, and the extension `name`, `attachTo`, and `disabled` options, must be literal values or constants that hold literal values, which can be imported from other modules of your package. A `routeRef` param must be one of the route refs in the `routes` of the plugin. Extensions that are made with `makeWithOverrides`, with `createExtension`, or with other blueprints, such as the entity cards and contents of the catalog, prevent the plugin from being deferred, and so does an `if` predicate on the plugin or on any of its extensions.
+The `path` and `title` params, and the extension `name`, `attachTo`, and `disabled` options, must be literal values or constants that hold literal values, which can be imported from other modules of your package. A `routeRef` param must be one of the route refs in the `routes` of the plugin. Other extensions that are made with `makeWithOverrides`, and extensions made with `createExtension` or with other blueprints, such as the entity cards and contents of the catalog, prevent the plugin from being deferred, and so does an `if` predicate on the plugin or on any of its extensions.
 
 The analysis fails closed: if any of these values can't be read, the plugin is loaded together with the app, and the CLI reports the reason along with the location in your source code.
 
