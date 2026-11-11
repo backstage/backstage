@@ -82,6 +82,8 @@ type InSets = {
   aliases: Map<string, string>;
   /** The keys of the field expressions whose lists are joined */
   joined: WeakMap<object, Set<string>>;
+  /** Whether long lists are matched as sets at all, or always per row */
+  sets: boolean;
 };
 
 /**
@@ -97,7 +99,11 @@ function joinLongInSets(options: {
   knex: Knex;
 }): InSets {
   const { rootQuery, onEntityIdField, knex } = options;
-  const inSets: InSets = { aliases: new Map(), joined: new WeakMap() };
+  const inSets: InSets = {
+    aliases: new Map(),
+    joined: new WeakMap(),
+    sets: true,
+  };
 
   for (const { filter, keyAnyCase, value } of findJoinedLongInLists(
     options.filter,
@@ -155,7 +161,7 @@ export function applyPredicateEntityFilterToQuery(options: {
           onEntityIdField,
           knex,
         })
-      : { aliases: new Map(), joined: new WeakMap() });
+      : { aliases: new Map(), joined: new WeakMap(), sets: false });
 
   assertObjectPredicate(filter);
 
@@ -224,10 +230,7 @@ export function applyPredicateEntityFilterToQuery(options: {
         inner.whereNotNull(`${alias}.entity_id`);
         continue;
       }
-      if (
-        knex.client.config.client === 'pg' &&
-        isLongInList(keyAnyCase, value)
-      ) {
+      if (inSets.sets && isLongInList(keyAnyCase, value)) {
         // A long list in the IN form: an uncorrelated set that is computed
         // once per query and hashed, instead of probing the list once per
         // candidate row. See `longInLists.ts` for when each form is used.

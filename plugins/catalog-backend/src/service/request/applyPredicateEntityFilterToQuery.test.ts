@@ -107,15 +107,22 @@ describe('PostgreSQL query generation', () => {
     expect(short.sql).toContain('exists');
     expect(short.sql).not.toContain('in_set');
 
-    // Callers that have already narrowed the rows can opt out of the sets
-    const perRow = compile(
+    // Callers that have already narrowed the rows can opt out of the sets,
+    // at any depth
+    const nested: FilterPredicate[] = [
       { 'relations.ownedBy': { $in: values } },
-      { matchLongInListsPerRow: true },
-    );
-    expect(perRow.sql).toContain(
-      '"final_entities"."entity_id" in (select "search_flt"."entity_id" from "search" as "search_flt" where "search_flt"."entity_id" is not null and "search_flt"."key" = ? and ("search_flt"."value" = ANY(?::text[])))',
-    );
-    expect(perRow.sql).not.toContain('in_set');
+      {
+        $all: [{ kind: 'component' }, { 'relations.ownedBy': { $in: values } }],
+      },
+      { $any: [{ kind: 'api' }, { 'relations.ownedBy': { $in: values } }] },
+      { $not: { 'relations.ownedBy': { $in: values } } },
+    ];
+    for (const filter of nested) {
+      const perRow = compile(filter, { matchLongInListsPerRow: true });
+      expect(perRow.sql).toContain('exists');
+      expect(perRow.sql).not.toContain('in_set');
+      expect(perRow.sql).not.toContain('"entity_id" in (select');
+    }
 
     // The same list in another case or key order reuses the joined set
     const repeated = compile({
