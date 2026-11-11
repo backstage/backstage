@@ -65,7 +65,10 @@ export interface FrontendExtensionManifest {
   /**
    * Only for extensions that output a React element but aren't pages that
    * attach to app/routes, for example entity content. Comes from running the
-   * factory once at build time with the default config.
+   * factory once at build time with the default config. Setting config for
+   * such an extension in `app.extensions` prevents its plugin from being
+   * deferred, since the stub can only output the data from the default
+   * config.
    */
   element?: {
     /**
@@ -75,22 +78,6 @@ export interface FrontendExtensionManifest {
     data: { [dataRefId: string]: unknown };
     /** The key in plugin.routes whose RouteRef the extension outputs. */
     routeRefName?: string;
-    /**
-     * Config keys that change the data outputs. Setting them in app-config
-     * prevents the plugin from being deferred, since the stub can only output
-     * the data from the default config. Other config is applied when the
-     * plugin is loaded.
-     */
-    dataConfigKeys?: string[];
-    /**
-     * Keys in `dataConfigKeys` whose value is output unchanged as the data
-     * of a single data ref, for values of the listed JSON types. The stub
-     * applies config for these keys and types itself, so it doesn't prevent
-     * the plugin from being deferred.
-     */
-    configPassThrough?: {
-      [configKey: string]: { dataRefId: string; types: string[] };
-    };
     /**
      * Function outputs that the stub creates from a filter predicate in
      * `data`, keyed by the function data ref ID, with the ID of the predicate

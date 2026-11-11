@@ -36,7 +36,6 @@ import {
 } from '@backstage/filter-predicates';
 import { useEffect, useState } from 'react';
 import { FrontendFeatureManifest } from '../manifest/types';
-import { applyConfigPassThrough } from '../manifest/deferredConfig';
 
 /**
  * A plugin that is only loaded once one of its pages or elements is
@@ -256,15 +255,10 @@ function createStubElementExtension(options: {
   kind: string;
   name?: string;
   routes: Record<string, RouteRef>;
-  config?: { [key: string]: unknown };
   createElement(): JSX.Element;
 }) {
   const { extension, routes } = options;
-  // Config that is output unchanged is applied to the recorded data
-  const element = {
-    ...extension.element!,
-    data: applyConfigPassThrough(extension.element!, options.config),
-  };
+  const element = extension.element!;
   const attachTo = extension.attachTo as { id: string; input: string };
 
   const dataRefs = Object.keys(element.data).map(id =>
@@ -359,7 +353,6 @@ export function createDeferredPluginStub(
   entry: DeferredFrontendFeature,
   controller: DeferredFeatureController,
   syncPart?: FrontendPlugin,
-  configById?: Map<string, { [key: string]: unknown }>,
 ): { plugin: FrontendPlugin; skippedExtensionIds: string[] } {
   const { manifest } = entry;
   const pluginId = manifest.pluginId;
@@ -422,7 +415,6 @@ export function createDeferredPluginStub(
             kind,
             name,
             routes,
-            config: configById?.get(extension.id),
             createElement: () => createElement(extension.id),
           }),
         ];
