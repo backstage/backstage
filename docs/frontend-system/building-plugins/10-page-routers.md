@@ -252,7 +252,8 @@ export const ToolsPageRouter = createTanStackPageRouter({
 
 The `history` uses app-absolute paths and shares the app's browser timeline.
 The supplied `routePaths` contains the page's mount patterns in TanStack syntax,
-including parameters. Optional static segments produce multiple patterns; mount
+including parameters. Optional static segments produce multiple unique patterns,
+including repeated segments such as `/foo?/foo?`; mount
 the plugin's routes at each one. For a `/` mount, attach the plugin's routes
 directly to the root route. Keep TanStack's
 `basepath` at `/`; the adapter applies the deployment basename when producing
@@ -433,6 +434,9 @@ apps that relied on an ambient React Router must provide the `useNavigation` pro
 on `BUIProvider`. React Router is no longer a BUI peer dependency.
 Legacy core-components, including the sidebar, continue using React Router
 and require the implicit React Router compatibility provided by the app.
+
+Header tabs select the most specific matching path without case sensitivity.
+Their link URLs retain the casing supplied by the navigation hook.
 
 The hook returns a `BUINavigation` with three members:
 

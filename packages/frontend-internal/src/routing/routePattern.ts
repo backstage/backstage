@@ -116,7 +116,8 @@ export function expandOptionalSegments(path: string): string[] {
 /**
  * Converts a route path pattern into a RegExp and extracts parameter names.
  * Handles named params (`:id`), optional params (`:id?`), optional static
- * segments (`task?`), a trailing catch-all `*`, and empty layout paths.
+ * segments (`task?`), literal parameter suffixes (`:id.json`), a trailing
+ * catch-all `*`, and empty layout paths.
  * Matching is case insensitive unless `caseSensitive` is set, which is the
  * react-router default.
  *
@@ -147,10 +148,12 @@ function compilePath(
   const namedSegments = hasSplat ? segments.slice(0, -1) : segments;
 
   for (const segment of namedSegments) {
-    if (segment.startsWith(':')) {
-      const optional = segment.endsWith('?');
-      paramNames.push(segment.slice(1, optional ? -1 : undefined));
+    const param = segment.match(/^:([\w-]+)(\?)?(.*)$/);
+    if (param) {
+      const [, name, optional, suffix] = param;
+      paramNames.push(name);
       regexpSource += optional ? '(?:/([^/]+))?' : '/([^/]+)';
+      regexpSource += escapeRegExp(normalizeSegment(suffix));
     } else {
       const optional = segment.endsWith('?');
       const required = normalizeSegment(

@@ -11,3 +11,5 @@ Backstage apps preserve the legacy V2 React Router integration for separately bu
 See the [BUI routing migration guide](https://backstage.io/docs/frontend-system/building-plugins/page-routers#migrate-backstage-ui-routing) for integration requirements.
 
 Affected components: BUIProvider, ButtonLink, Card, Combobox, Header, Link, List, Menu, PluginHeader, SearchAutocomplete, Select, Table, Tabs, TagGroup
+
+Header tab selection remains case-insensitive and chooses the most specific matching path while preserving the authored casing in link URLs.

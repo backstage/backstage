@@ -556,7 +556,9 @@ needs no adapter.
 route ref. Parameters that the current location does not bind have the value
 `undefined`. The undeclared splat `*` is not included; use the page router's own
 parameter API if your content needs the matched tail. In the old frontend
-system, the hook reads parameters from React Router.
+system, the hook reads parameters from React Router. Matched extension parameters
+take precedence over values inferred from a sub-route path, so navigating deeper
+within a sub-page retains its bound parameters.
 
 `useAppLocation` reads the app-absolute location, and `useAppSearchParams` reads
 and updates query parameters. Both use app history in the new frontend system
@@ -794,7 +796,7 @@ owns link activation and native browser behavior; BUI does not detect a routing
 library or handle modified clicks itself. This integration applies to BUI controls;
 plugins using React Aria directly can [compose with RouterLink](../building-plugins/10-page-routers.md#use-react-aria-components-directly) using the public routing APIs.
 
-An app releases its browser history listener when its React root is torn down. Re-running `createApp` during a hot reload builds a new app without tearing down the old one, so the previous listener stays attached until the page reloads.
+An app releases its browser history listener when its React root is torn down or a hot refresh replaces the app within the existing root. The replacement app starts its own bootstrap flow. Replaying effects for the same app in React StrictMode keeps its listener active.
 
 A router library can block navigation that starts inside its own page, but not navigation that starts anywhere else, because `AppHistoryApi` has no shared blocker contract.
 
@@ -802,4 +804,4 @@ A router library can block navigation that starts inside its own page, but not n
 
 Configured redirects and pages share specificity ranking. A more specific page takes precedence over a broad redirect; a redirect wins an equal-pattern tie. Redirect destinations are URL templates: named parameters can be embedded in segments, and splats can appear anywhere in the path, query, or fragment. Parameter values are URL-encoded, retaining splat path separators. Trailing slashes are preserved. Omitted query and fragment components inherit the incoming values; explicitly empty components (`?` and `#`) clear them.
 
-Deployment basename matching is case-insensitive without changing the spelling of the remaining path. When upgrading an existing React Router app, persisted browser history entries retain their user state both on reload and when reached through Back or Forward navigation.
+Deployment basename matching is case-insensitive without changing the spelling of the remaining path. When upgrading an existing React Router app, persisted browser history entries retain their user state both on reload and when reached through Back or Forward navigation. App-owned navigation state is preserved intact even when its shape resembles legacy router metadata, with or without the browser Navigation API.

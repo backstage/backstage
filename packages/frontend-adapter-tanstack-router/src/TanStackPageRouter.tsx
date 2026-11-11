@@ -116,7 +116,7 @@ export interface CreateTanStackPageRouterOptions {
     history: RouterHistory;
     /**
      * App-absolute mount patterns in TanStack syntax. Optional static segments
-     * produce multiple patterns. Mount a route tree at each pattern, never by
+     * produce multiple unique patterns. Mount a route tree at each pattern, never by
      * setting basepath. For `/`, attach the routes directly to the root route.
      */
     routePaths: readonly string[];
@@ -175,7 +175,10 @@ export function createTanStackPageRouter(
           [''],
         )
         .map(path => path || '/');
-      const router = options.createRouter({ history, routePaths });
+      const router = options.createRouter({
+        history,
+        routePaths: [...new Set(routePaths)],
+      });
       if (router.basepath !== '/') {
         throw new Error(
           'TanStack page routers must use the app root as basepath. Mount routes using routePaths instead.',
