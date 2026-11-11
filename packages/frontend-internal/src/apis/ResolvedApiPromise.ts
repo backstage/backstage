@@ -22,3 +22,14 @@ export const resolvedApiPromise = Symbol.for('@backstage/resolved-api-promise');
 export type ResolvedApiPromise<T> = Promise<T> & {
   readonly [resolvedApiPromise]?: { readonly value: T };
 };
+
+/** @internal */
+export function createApiPromise(value: unknown): ResolvedApiPromise<unknown> {
+  const promise = Promise.resolve(value);
+  if (!value || typeof (value as Promise<unknown>).then !== 'function') {
+    Object.defineProperty(promise, resolvedApiPromise, {
+      value: { value },
+    });
+  }
+  return promise;
+}

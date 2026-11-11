@@ -15,10 +15,7 @@
  */
 
 import { ReactNode, useMemo } from 'react';
-import {
-  resolvedApiPromise,
-  type ResolvedApiPromise,
-} from '@internal/frontend';
+import { createApiPromise } from '@internal/frontend';
 import {
   ApiHolder,
   ApiLookupResult,
@@ -76,19 +73,8 @@ export function resolveTestApiEntries<const TApiPairs extends any[]>(
       return apiMap.get(ref.id);
     }
     if (!promises.has(ref.id)) {
-      const implementation = apiMap.get(ref.id);
-      const promise: ResolvedApiPromise<unknown> =
-        Promise.resolve(implementation);
-      if (
-        !implementation ||
-        typeof (implementation as Promise<unknown>).then !== 'function'
-      ) {
-        // Ready mocks must not suspend a provider whose first render is retried.
-        Object.defineProperty(promise, resolvedApiPromise, {
-          value: { value: implementation },
-        });
-      }
-      promises.set(ref.id, promise);
+      // Ready mocks must not suspend a provider whose first render is retried.
+      promises.set(ref.id, createApiPromise(apiMap.get(ref.id)));
     }
     return promises.get(ref.id);
   }

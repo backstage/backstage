@@ -77,6 +77,10 @@ immediately. Initialization failures reject the promise and are cached for
 subsequent lookups. Synchronous refs continue returning instances or
 `undefined` directly.
 
+When rendering under a legacy API context, `useApiHolder` from the new frontend
+system adapts synchronous implementations to the same async lookup contract.
+Factory construction in legacy apps remains synchronous.
+
 `get()` infers its result from the ref's type, so generic helpers can preserve
 the loading mode without branching:
 

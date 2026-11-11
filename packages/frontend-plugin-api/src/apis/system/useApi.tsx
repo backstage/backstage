@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { AnyApiRef, ApiHolder } from './types';
+import { AnyApiRef, ApiHolder, ApiRef, ApiLookupResult } from './types';
 import { useVersionedContext } from '@backstage/version-bridge';
 import { NotImplementedError } from '@backstage/errors';
 import {
   resolvedApiPromise,
   type ResolvedApiPromise,
+  createApiPromise,
 } from '@internal/frontend';
 
 const emptyApiHolder: ApiHolder = Object.freeze({ get: () => undefined });
@@ -32,13 +33,67 @@ type ApiPromiseState =
 // Keep state outside React so retries before the initial mount share it.
 const apiPromiseStates = new WeakMap<Promise<unknown>, ApiPromiseState>();
 
+// The v1 context is also provided by the legacy system, whose lookups are synchronous.
+type ApiHolderV1 = { get(ref: AnyApiRef): unknown };
+const apiHolderAdapters = new WeakMap<ApiHolderV1, ApiHolder>();
+
+function adaptApiHolder(holder: ApiHolderV1): ApiHolder {
+  const promises = new Map<
+    string,
+    | { kind: 'value'; value: unknown; promise: Promise<unknown> }
+    | { kind: 'error'; promise: Promise<unknown> }
+  >();
+
+  function get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
+    ref: TApiRef,
+  ): ApiLookupResult<TApiRef>;
+  function get(ref: AnyApiRef): unknown {
+    if (ref.loading !== 'async') {
+      return holder.get(ref);
+    }
+    try {
+      const value = holder.get(ref);
+      if (value === undefined) {
+        promises.delete(ref.id);
+        return undefined;
+      }
+      if (value && typeof (value as Promise<unknown>).then === 'function') {
+        // Native async holders own their promise identity and invalidation.
+        promises.delete(ref.id);
+        return value;
+      }
+      const existing = promises.get(ref.id);
+      if (existing?.kind === 'value' && Object.is(existing.value, value)) {
+        return existing.promise;
+      }
+      const promise = createApiPromise(value);
+      promises.set(ref.id, { kind: 'value', value, promise });
+      return promise;
+    } catch (error) {
+      const existing = promises.get(ref.id);
+      if (existing?.kind === 'error') {
+        return existing.promise;
+      }
+      const promise = Promise.reject(error);
+      promises.set(ref.id, { kind: 'error', promise });
+      return promise;
+    }
+  }
+
+  return { get };
+}
+
 /**
  * React hook for retrieving {@link ApiHolder}, an API catalog.
+ * Async lookups are normalized when the context contains a legacy holder.
+ * Synchronous lookups are forwarded unchanged.
  *
  * @public
  */
 export function useApiHolder(): ApiHolder {
-  const versionedHolder = useVersionedContext<{ 1: ApiHolder }>('api-context');
+  const versionedHolder = useVersionedContext<{ 1: ApiHolderV1 }>(
+    'api-context',
+  );
   if (!versionedHolder) {
     return emptyApiHolder;
   }
@@ -47,7 +102,12 @@ export function useApiHolder(): ApiHolder {
   if (!apiHolder) {
     throw new NotImplementedError('ApiContext v1 not available');
   }
-  return apiHolder;
+  let adapter = apiHolderAdapters.get(apiHolder);
+  if (!adapter) {
+    adapter = adaptApiHolder(apiHolder);
+    apiHolderAdapters.set(apiHolder, adapter);
+  }
+  return adapter;
 }
 
 /**

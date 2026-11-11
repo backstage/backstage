@@ -26,6 +26,12 @@ import {
   FrontendApiRegistry,
   FrontendApiResolver,
 } from '../../../../frontend-app-api/src/wiring/FrontendApiRegistry';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ApiRegistry as LegacyApiRegistry } from '../../../../core-app-api/src/apis/system/ApiRegistry';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ApiResolver as LegacyApiResolver } from '../../../../core-app-api/src/apis/system/ApiResolver';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ApiFactoryRegistry as LegacyApiFactoryRegistry } from '../../../../core-app-api/src/apis/system/ApiFactoryRegistry';
 
 class TestErrorBoundary extends Component<
   PropsWithChildren,
@@ -53,12 +59,108 @@ describe('useApiHolder', () => {
     context.reset();
   });
 
-  it('should return the API holder from context', () => {
+  it('should return a stable holder that forwards context lookups', () => {
     const holder = { get: jest.fn() };
     context.set({ 1: holder });
 
     const renderedHook = renderHook(() => useApiHolder());
-    expect(renderedHook.result.current).toBe(holder);
+    const adapter = renderedHook.result.current;
+    const ref = createApiRef<string>().with({ id: 'x' });
+    expect(adapter.get(ref)).toBeUndefined();
+    expect(holder.get).toHaveBeenCalledWith(ref);
+    renderedHook.rerender();
+    expect(renderedHook.result.current).toBe(adapter);
+  });
+
+  it('should normalize direct async lookups from legacy registries and resolvers', async () => {
+    const sync = createApiRef<{ value: string }>().with({ id: 'legacy' });
+    const asyncRef = createApiRef<{ value: string }>().with({
+      id: sync.id,
+      loading: 'async',
+    });
+    const missing = createApiRef<string>().with({
+      id: 'missing',
+      loading: 'async',
+    });
+    const implementation = { value: 'legacy instance' };
+    const entries = new Map<string, unknown>([[sync.id, implementation]]);
+    const registry = new LegacyApiRegistry(entries);
+    const factories = new LegacyApiFactoryRegistry();
+    factories.register('default', createApiFactory(sync, implementation));
+    const resolver = new LegacyApiResolver(factories);
+    for (const legacy of [registry, resolver]) {
+      context.set({ 1: legacy });
+      const rendered = renderHook(() => useApiHolder());
+      const holder = rendered.result.current;
+      const promise = holder.get(asyncRef);
+      expect(promise).toBeInstanceOf(Promise);
+      expect(holder.get(asyncRef)).toBe(promise);
+      expect(await promise?.then(api => api.value)).toBe('legacy instance');
+      expect(holder.get(sync)).toBe(implementation);
+      expect(holder.get(missing)).toBeUndefined();
+      rendered.unmount();
+    }
+
+    context.set({ 1: registry });
+    const rendered = renderHook(() => useApiHolder());
+    const holder = rendered.result.current;
+    const previous = holder.get(asyncRef);
+    entries.set(sync.id, { value: 'replacement' });
+    const replacement = holder.get(asyncRef);
+    expect(replacement).not.toBe(previous);
+    await expect(replacement).resolves.toEqual({ value: 'replacement' });
+    entries.delete(sync.id);
+    expect(holder.get(asyncRef)).toBeUndefined();
+    rendered.unmount();
+
+    const failure = createApiRef<string>().with({ id: 'failure' });
+    const asyncFailure = createApiRef<string>().with({
+      id: failure.id,
+      loading: 'async',
+    });
+    const error = new Error('Legacy initialization failed');
+    factories.register(
+      'default',
+      createApiFactory({
+        api: failure,
+        deps: {},
+        factory: () => {
+          throw error;
+        },
+      }),
+    );
+    context.set({ 1: resolver });
+    const failed = renderHook(() => useApiHolder()).result.current;
+    expect(() => failed.get(failure)).toThrow(error);
+    const rejection = failed.get(asyncFailure);
+    expect(failed.get(asyncFailure)).toBe(rejection);
+    await expect(rejection).rejects.toBe(error);
+  });
+
+  it('should preserve native promise identity and invalidation', async () => {
+    const ref = createApiRef<{ value: string }>().with({
+      id: 'native',
+      loading: 'async',
+    });
+    const registry = new FrontendApiRegistry();
+    registry.register(
+      createApiFactory({
+        api: ref,
+        deps: {},
+        factory: () => ({ value: 'native instance' }),
+      }),
+    );
+    const resolver = new FrontendApiResolver({ primaryRegistry: registry });
+    context.set({ 1: resolver });
+    const holder = renderHook(() => useApiHolder()).result.current;
+    const promise = resolver.get(ref);
+    expect(holder.get(ref)).toBe(promise);
+    await expect(promise).resolves.toEqual({ value: 'native instance' });
+    resolver.invalidate([ref.id]);
+    const replacement = resolver.get(ref);
+    expect(holder.get(ref)).toBe(replacement);
+    expect(replacement).not.toBe(promise);
+    await expect(replacement).resolves.toEqual({ value: 'native instance' });
   });
 
   it('should return an empty API holder when there is no context', () => {
