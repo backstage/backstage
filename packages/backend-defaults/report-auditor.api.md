@@ -38,6 +38,8 @@ export type AuditorEventOptions<TMeta extends JsonObject> = {
   meta?: TMeta;
   correlationId?: string;
   parentEventId?: string;
+  traceId?: string;
+  spanId?: string;
 } & AuditorEventStatus;
 
 export { AuditorEventRequest };

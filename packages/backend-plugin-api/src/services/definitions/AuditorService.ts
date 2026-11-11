@@ -246,6 +246,16 @@ export type AuditorEvent = {
   correlationId?: string;
   /** (Optional) ID of the audit event that this event was caused by. */
   parentEventId?: string;
+  /**
+   * (Optional) The OpenTelemetry trace ID of the span that was active when
+   * the event was created, when one exists.
+   */
+  traceId?: string;
+  /**
+   * (Optional) The OpenTelemetry span ID of the span that was active when
+   * the event was created, when one exists.
+   */
+  spanId?: string;
 } & AuditorEventStatus;
 
 /**

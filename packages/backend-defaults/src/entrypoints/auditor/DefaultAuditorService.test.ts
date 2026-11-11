@@ -15,6 +15,13 @@
  */
 
 import { mockServices } from '@backstage/backend-test-utils';
+import {
+  TraceFlags,
+  context,
+  trace,
+  type SpanContext,
+} from '@opentelemetry/api';
+import { AsyncLocalStorageContextManager } from '@opentelemetry/context-async-hooks';
 import type { AuditorEvent } from '@backstage/backend-plugin-api';
 import type { Response } from 'express';
 import { EventEmitter } from 'node:events';
@@ -40,6 +47,18 @@ function createMockResponse(options: {
   return res;
 }
 
+const TEST_SPAN_CONTEXT: SpanContext = {
+  traceId: '0af7651916cd43dd8448eb211c80319c',
+  spanId: 'b7ad6b7169203331',
+  traceFlags: TraceFlags.SAMPLED,
+};
+
+const withTestSpan = <T>(fn: () => Promise<T>): Promise<T> =>
+  context.with(
+    trace.setSpan(context.active(), trace.wrapSpanContext(TEST_SPAN_CONTEXT)),
+    fn,
+  );
+
 const mockDeps = {
   auth: mockServices.auth.mock(),
   httpAuth: mockServices.httpAuth.mock(),
@@ -47,6 +66,15 @@ const mockDeps = {
     getId: () => 'test',
   },
 };
+
+// The OpenTelemetry API is a no-op without a registered context manager;
+// register one so that context.with() activates spans for these tests
+beforeAll(() => {
+  context.setGlobalContextManager(new AsyncLocalStorageContextManager());
+});
+afterAll(() => {
+  context.disable();
+});
 
 describe('DefaultAuditorService', () => {
   it('creates a auditor instance with default options', () => {
@@ -448,6 +476,56 @@ describe('DefaultAuditorService', () => {
           }),
         }),
       );
+    });
+  });
+
+  describe('trace correlation', () => {
+    it('threads the active span context through the lifecycle emissions', async () => {
+      const sink = { write: jest.fn(async (_event: AuditorEvent) => {}) };
+      const auditor = DefaultAuditorService.create(sink, mockDeps);
+
+      let event: Awaited<ReturnType<typeof auditor.createEvent>>;
+      await withTestSpan(async () => {
+        event = await auditor.createEvent({ eventId: 'test-event' });
+      });
+      // the terminal call happens outside the span context; the values were
+      // captured at event creation and are not re-read
+      await event!.fail({ error: new Error('error') });
+
+      expect(sink.write).toHaveBeenCalledTimes(2);
+      for (const call of sink.write.mock.calls) {
+        expect(call[0].traceId).toBe(TEST_SPAN_CONTEXT.traceId);
+        expect(call[0].spanId).toBe(TEST_SPAN_CONTEXT.spanId);
+      }
+    });
+
+    it('omits the trace fields when no span is active', async () => {
+      const sink = { write: jest.fn(async (_event: AuditorEvent) => {}) };
+      const auditor = DefaultAuditorService.create(sink, mockDeps);
+
+      const event = await auditor.createEvent({ eventId: 'test-event' });
+      await event.success();
+
+      expect(sink.write).toHaveBeenCalledTimes(2);
+      for (const call of sink.write.mock.calls) {
+        expect(call[0].traceId).toBeUndefined();
+        expect(call[0].spanId).toBeUndefined();
+      }
+    });
+
+    it('does not emit trace fields for sampled-out events', async () => {
+      const sink = { write: jest.fn(async (_event: AuditorEvent) => {}) };
+      const auditor = DefaultAuditorService.create(sink, {
+        ...mockDeps,
+        sampling: { low: 0 },
+      });
+
+      await withTestSpan(async () => {
+        const event = await auditor.createEvent({ eventId: 'test-event' });
+        await event.success();
+      });
+
+      expect(sink.write).not.toHaveBeenCalled();
     });
   });
 

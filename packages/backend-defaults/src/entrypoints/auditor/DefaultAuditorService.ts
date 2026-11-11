@@ -30,6 +30,7 @@ import type {
   HttpAuthService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
+import { context, trace } from '@opentelemetry/api';
 import { ForwardedError, InputError } from '@backstage/errors';
 import type { JsonObject } from '@backstage/types';
 import { randomUUID } from 'node:crypto';
@@ -79,6 +80,12 @@ export type AuditorEventOptions<TMeta extends JsonObject> = {
 
   /** (Optional) ID of the audit event that this event was caused by. */
   parentEventId?: string;
+
+  /** (Optional) OpenTelemetry trace ID captured with the event. */
+  traceId?: string;
+
+  /** (Optional) OpenTelemetry span ID captured with the event. */
+  spanId?: string;
 } & AuditorEventStatus;
 
 /** @public */
@@ -415,17 +422,27 @@ export class DefaultAuditorService implements AuditorService {
   ): Promise<AuditorServiceEvent> {
     const id = randomUUID();
 
+    // The active span context is captured once, at event creation, so that
+    // every emission of the event carries the same trace and span IDs even
+    // when a terminal call happens after the span has ended.
+    const spanContext = trace.getSpanContext(context.active());
+    const tracing =
+      spanContext && trace.isSpanContextValid(spanContext)
+        ? { traceId: spanContext.traceId, spanId: spanContext.spanId }
+        : {};
+    const eventOptions = { ...options, ...tracing };
+
     if (!this.isSampled(options.severityLevel ?? 'low')) {
       // Sampled-out events keep the real handle semantics; only the emission
       // is dead.
-      return new AuditorServiceEventHandle(async () => {}, options, id);
+      return new AuditorServiceEventHandle(async () => {}, eventOptions, id);
     }
 
-    await this.log({ ...options, id, status: 'initiated' });
+    await this.log({ ...eventOptions, id, status: 'initiated' });
 
     return new AuditorServiceEventHandle(
-      eventOptions => this.log(eventOptions),
-      options,
+      emitOptions => this.log(emitOptions),
+      eventOptions,
       id,
     );
   }

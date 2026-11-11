@@ -4,7 +4,7 @@
 
 Adds new contracts to the auditor core service.
 
-Every audit event now carries a unique `id`, shared by all emissions (`initiated`, `succeeded`, `failed`) of the same event, so producers can reference their own events and link child events to them via `parentEventId`.
+Every audit event now carries a unique `id`, shared by all emissions (`initiated`, `succeeded`, `failed`) of the same event, so producers can reference their own events and link child events to them via `parentEventId`. Events also carry the `traceId` and `spanId` of the OpenTelemetry span that was active when the event was created, when one exists, so audit trails can be joined with distributed traces.
 
 Audit event handles can now carry metadata across the lifetime of an operation: `event.update()` merges metadata into the held event, and finalizing an event with `success` or `fail` is first-terminal-wins. The new `auditor.withEvent(options, fn)` helper wraps an entire operation: it records a successful outcome when the function resolves, and records the failure and re-throws the original error when it rejects, so callers no longer need to write the create/try/catch ceremony themselves. Events can also carry a `correlationId` and `parentEventId` to link related events together.
 

@@ -37,6 +37,8 @@ export type AuditorEvent = {
   request?: AuditorEventRequest;
   correlationId?: string;
   parentEventId?: string;
+  traceId?: string;
+  spanId?: string;
 } & AuditorEventStatus;
 
 // @public

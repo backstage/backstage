@@ -218,6 +218,10 @@ To clarify how to utilize the Auditor feature effectively, we recommend explorin
 
 These examples provide both a code-level demonstration and a documentation guideline for effectively utilizing the `AuditorService` to manage audit events within your Backstage plugins.
 
+## Trace Correlation
+
+When an [OpenTelemetry](https://opentelemetry.io/) span is active while an audit event is created, the event automatically carries the span's `traceId` and `spanId`, and the same values are kept across all emissions of the event. This lets audit trails be joined with distributed traces without any extra wiring. When no span is active, the fields are simply absent. The explicit `correlationId` and `parentEventId` options remain available for manual linkage between audit events.
+
 ## Severity Log Level Mappings
 
 The Auditor Service provides a way for plugins to log significant events, categorized by their severity. The `severityLogLevelMappings` configuration option enables you to customize how these severity levels are mapped to actual log levels within your Backstage backend, giving you precise control over the verbosity of your audit logs.

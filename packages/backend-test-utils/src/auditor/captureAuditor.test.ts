@@ -14,7 +14,28 @@
  * limitations under the License.
  */
 
+import {
+  TraceFlags,
+  context,
+  trace,
+  type SpanContext,
+} from '@opentelemetry/api';
+import { AsyncLocalStorageContextManager } from '@opentelemetry/context-async-hooks';
 import { captureAuditor } from './captureAuditor';
+
+const TEST_SPAN_CONTEXT: SpanContext = {
+  traceId: '0af7651916cd43dd8448eb211c80319c',
+  spanId: 'b7ad6b7169203331',
+  traceFlags: TraceFlags.SAMPLED,
+};
+
+// The OpenTelemetry API is a no-op without a registered context manager
+beforeAll(() => {
+  context.setGlobalContextManager(new AsyncLocalStorageContextManager());
+});
+afterAll(() => {
+  context.disable();
+});
 
 describe('captureAuditor', () => {
   it('should record the full event lifecycle with merged meta', async () => {
@@ -188,5 +209,21 @@ describe('captureAuditor', () => {
         },
       }),
     );
+  });
+  it('carries the active trace and span context through events', async () => {
+    const { auditor, events } = captureAuditor();
+
+    await context.with(
+      trace.setSpan(context.active(), trace.wrapSpanContext(TEST_SPAN_CONTEXT)),
+      async () => {
+        await auditor.withEvent({ eventId: 'traced-event' }, async () => {});
+      },
+    );
+
+    expect(events).toHaveLength(2);
+    for (const event of events) {
+      expect(event.traceId).toBe(TEST_SPAN_CONTEXT.traceId);
+      expect(event.spanId).toBe(TEST_SPAN_CONTEXT.spanId);
+    }
   });
 });
