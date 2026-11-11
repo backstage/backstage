@@ -14,53 +14,48 @@
  * limitations under the License.
  */
 import { useCallback, useEffect, useState } from 'react';
-import throttle from 'lodash/throttle';
-
-const getPrefix = (value: number) => (value === 0 ? '' : `(${value}) `);
 
 const cleanTitle = (currentTitle: string) =>
   currentTitle.replace(/^\(\d+\)\s/, '');
 
-const throttledSetTitle = throttle((shownTitle: string) => {
-  document.title = shownTitle;
-}, 100);
-
 /** @internal */
 export function useTitleCounter() {
-  const [title, setTitle] = useState(document.title);
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    const baseTitle = cleanTitle(title);
-    const shownTitle = `${getPrefix(count)}${baseTitle}`;
-    if (document.title !== shownTitle) {
-      throttledSetTitle(shownTitle);
+    // With nothing to show, the title is left to the page entirely, which is also
+    // how a disabled counter stays out of the way.
+    if (count === 0) {
+      return undefined;
     }
-    return () => {
-      document.title = cleanTitle(title);
-    };
-  }, [count, title]);
 
-  useEffect(() => {
+    // Always prefixes the title as it is now, never a remembered one: a page may
+    // retitle itself at any moment, and writing back an older title would undo it.
+    // Once the prefix is right there is nothing to write, so the hook's own write
+    // does not trigger another.
+    const showCount = () => {
+      const shownTitle = `(${count}) ${cleanTitle(document.title)}`;
+      if (document.title !== shownTitle) {
+        document.title = shownTitle;
+      }
+    };
+    showCount();
+
     const titleElement = document.querySelector('title');
     let observer: MutationObserver | undefined;
     if (titleElement) {
-      observer = new MutationObserver(mutations => {
-        if (mutations?.[0]?.target?.textContent) {
-          setTitle(mutations[0].target.textContent);
-        }
-      });
+      observer = new MutationObserver(showCount);
       observer.observe(titleElement, {
         characterData: true,
         childList: true,
+        subtree: true,
       });
     }
     return () => {
-      if (observer) {
-        observer.disconnect();
-      }
+      observer?.disconnect();
+      document.title = cleanTitle(document.title);
     };
-  }, []);
+  }, [count]);
 
   const setNotificationCount = useCallback(
     (newCount: number) => setCount(newCount),
