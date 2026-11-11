@@ -24,7 +24,7 @@ import {
   useApiHolder,
 } from '@backstage/frontend-plugin-api';
 import { Routes, Route } from 'react-router-dom';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { EntityProvider } from '../hooks/useEntity';
 import {
   EntityCardBlueprint,

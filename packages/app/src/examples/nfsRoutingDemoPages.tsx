@@ -78,13 +78,13 @@ import {
   createRouter,
   useRouterState,
 } from '@tanstack/react-router';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
-import { ReactRouterV7PageRouter } from '@backstage/plugin-app-react-router-v7';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
+import { ReactRouterV7PageRouter } from '@backstage/frontend-adapter-react-router-v7';
 import {
   TanStackPageContent,
   TanStackPageRouter,
   createTanStackPageRouter,
-} from '@backstage/plugin-app-tanstack-router';
+} from '@backstage/frontend-adapter-tanstack-router';
 import Typography from '@material-ui/core/Typography';
 
 import {

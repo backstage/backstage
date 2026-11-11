@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { useAsync, useMountEffect } from '@react-hookz/web';
 import { useCallback, useMemo } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';

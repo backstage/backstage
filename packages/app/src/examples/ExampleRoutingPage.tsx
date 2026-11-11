@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { Link } from '@backstage/core-components';
 import { useRouteRef, BreadcrumbEntry } from '@backstage/frontend-plugin-api';
 import { Route, Routes } from 'react-router-dom';

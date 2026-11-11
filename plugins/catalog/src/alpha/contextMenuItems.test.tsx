@@ -35,7 +35,7 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import useCopyToClipboardUnmocked from 'react-use/esm/useCopyToClipboard';
 import { SWRConfig } from 'swr';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';

@@ -26,7 +26,7 @@ import {
 import { screen } from '@testing-library/react';
 import { convertLegacyEntityCardExtension } from './convertLegacyEntityCardExtension';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { EntityCardBlueprint } from '../blueprints';
 
 const routeRef = createLegacyRouteRef({ id: 'test' });
