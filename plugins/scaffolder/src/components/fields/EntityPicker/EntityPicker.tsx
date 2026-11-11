@@ -202,8 +202,10 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   // BUI: controlled input value
   const [inputValue, setInputValue] = useState(formData || '');
+  const userEditedInputRef = useRef(false);
 
   useEffect(() => {
+    userEditedInputRef.current = false;
     if (formData) {
       const opt = buiOptions.find(o => o.value === formData);
       setInputValue(opt?.label || formData);
@@ -225,6 +227,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   const handleSelectionChange = useCallback(
     (key: Key | null) => {
+      userEditedInputRef.current = false;
       if (key !== null) {
         const value = String(key);
         lastCommittedRef.current = value;
@@ -340,7 +343,10 @@ export const EntityPicker = (props: EntityPickerProps) => {
           isDisabled={isDisabled || isAutoSelected}
           selectedKey={selectedKey}
           inputValue={inputValue}
-          onInputChange={setInputValue}
+          onInputChange={value => {
+            userEditedInputRef.current = true;
+            setInputValue(value);
+          }}
           onSelectionChange={handleSelectionChange}
           onBlur={handleBlur}
           isLoading={loading}
