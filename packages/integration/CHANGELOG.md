@@ -1,5 +1,15 @@
 # @backstage/integration
 
+## 2.1.4-next.0
+
+### Patch Changes
+
+- f56086a: Fixed GitHub app credentials failing for every owner with `Cannot read properties of null (reading 'account')` when the list of app installations returned by GitHub contained null entries. Those entries are now ignored.
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/connections@0.4.2-next.0
+
 ## 2.1.3
 
 ### Patch Changes

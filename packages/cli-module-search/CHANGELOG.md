@@ -1,5 +1,13 @@
 # @backstage/cli-module-search
 
+## 0.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.2
+  - @backstage/errors@1.4.0-next.0
+
 ## 0.2.1-next.0
 
 ### Patch Changes

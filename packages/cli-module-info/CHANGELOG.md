@@ -1,5 +1,14 @@
 # @backstage/cli-module-info
 
+## 0.1.6-next.1
+
+### Patch Changes
+
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.2
+  - @backstage/cli-common@0.3.3-next.0
+
 ## 0.1.6-next.0
 
 ### Patch Changes

@@ -1,5 +1,36 @@
 # @backstage/backend-plugin-api
 
+## 1.12.0-next.1
+
+### Minor Changes
+
+- a5337d0: The `coreServices` export is now a frozen plain object instead of a TypeScript namespace, and its type is described by the new `CoreServices` interface. Usage is unchanged, and every service reference keeps its existing type. The object can no longer be modified at runtime.
+- 250e4c3: Add WebSocket upgrade routes to the HTTP router services. Routes require token authentication by default. The `unauthenticated` override leaves authentication to the handler. Cookie authentication is not supported. Browser clients can pass bearer tokens through the WebSocket protocol header.
+
+  ```ts
+  httpRouter.addWebSocketHandler({
+    path: '/events',
+    handler({ request, socket, head }) {
+      webSocketServer.handleUpgrade(request, socket, head, connection => {
+        webSocketServer.emit('connection', connection, request);
+      });
+    },
+  });
+  ```
+
+  **BREAKING PRODUCERS**: Custom implementations of `HttpRouterService` and `RootHttpRouterService` must implement `addWebSocketHandler`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/plugin-auth-node@0.7.8-next.2
+  - @backstage/plugin-permission-node@0.11.6-next.1
+  - @backstage/cli-common@0.3.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/connections@0.4.2-next.0
+  - @backstage/plugin-permission-common@0.9.13-next.0
+
 ## 1.11.1-next.0
 
 ### Patch Changes

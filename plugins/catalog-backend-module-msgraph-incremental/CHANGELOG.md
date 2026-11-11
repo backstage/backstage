@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-msgraph-incremental
 
+## 0.1.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/plugin-catalog-backend-module-incremental-ingestion@0.9.1-next.2
+  - @backstage/plugin-catalog-backend-module-msgraph@0.10.8-next.1
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+
 ## 0.1.6-next.0
 
 ### Patch Changes

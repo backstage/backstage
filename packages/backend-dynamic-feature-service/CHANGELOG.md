@@ -1,5 +1,33 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.8.9-next.2
+
+### Patch Changes
+
+- ed8f1ef: Updated dependency `@module-federation/sdk` to `~2.9.0`.
+  Updated dependency `@module-federation/enhanced` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime-core` to `~2.9.0`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.19.0-next.2
+  - @backstage/plugin-catalog-backend@4.0.3-next.2
+  - @backstage/cli-node@0.3.6-next.2
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.1
+  - @backstage/plugin-auth-node@0.7.8-next.2
+  - @backstage/plugin-events-backend@0.6.8-next.2
+  - @backstage/plugin-permission-node@0.11.6-next.1
+  - @backstage/plugin-search-backend-node@1.4.10-next.1
+  - @backstage/plugin-app-node@0.1.51-next.1
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/plugin-scaffolder-node@1.0.0-next.2
+  - @backstage/cli-common@0.3.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/config-loader@1.11.5-next.0
+  - @backstage/plugin-permission-common@0.9.13-next.0
+  - @backstage/plugin-search-common@1.2.27-next.0
+
 ## 0.8.9-next.1
 
 ### Patch Changes

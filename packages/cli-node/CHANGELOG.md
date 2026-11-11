@@ -1,5 +1,14 @@
 # @backstage/cli-node
 
+## 0.3.6-next.2
+
+### Patch Changes
+
+- 8069934: Fixed the Node.js module transform loading ES module JavaScript files from packages without a `"type"` field as CommonJS, which broke named imports such as `import { DefaultGithubCredentialsProvider } from '@backstage/integration'` during local development. The format of these files is now detected by Node.js, while TypeScript files in such packages are still treated as CommonJS.
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/cli-common@0.3.3-next.0
+
 ## 0.3.6-next.1
 
 ### Patch Changes
