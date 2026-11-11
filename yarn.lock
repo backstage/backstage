@@ -29489,7 +29489,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:13.0.6, glob@npm:^13.0.0, glob@npm:^13.0.1, glob@npm:^13.0.6":
+"glob@npm:13.0.6":
   version: 13.0.6
   resolution: "glob@npm:13.0.6"
   dependencies:
@@ -29516,14 +29516,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^14.0.0":
-  version: 14.0.3
-  resolution: "glob@npm:14.0.3"
+"glob@npm:^13.0.0, glob@npm:^13.0.1, glob@npm:^13.0.6":
+  version: 13.0.7
+  resolution: "glob@npm:13.0.7"
   dependencies:
-    minimatch: "npm:^11.0.2"
+    minimatch: "npm:^10.2.2"
+    minipass: "npm:^7.1.3"
+    path-scurry: "npm:^2.0.2"
+  checksum: 10/1ef7fe26d21a74f0a195a28f30f8298cceb7d88e0d9748f034a9f8e780b34585e18d703c26b9eba99986edc1828dba580d0543e3fcd796a7060d9bdbdf759723
+  languageName: node
+  linkType: hard
+
+"glob@npm:^14.0.0":
+  version: 14.0.4
+  resolution: "glob@npm:14.0.4"
+  dependencies:
+    minimatch: "npm:^11.0.5"
     minipass: "npm:^7.1.3"
     path-scurry: "npm:^3.0.0"
-  checksum: 10/d993e6e40db60fe7963f3a097dcae17d48465c521eec1f984f13bad94e8648db0ebc9006f8a2f7a97796f71e7be4c637da22c224a7a9eb53458f76278de0fa53
+  checksum: 10/d43e532cc85bd2e26bc3a0064a809ed57f2581999fb0bf2b6bafe7d394358fac2693331c313d6eccc9952e0f2bfdd78f53c88ad06a657dc47c6bc99745e470e2
   languageName: node
   linkType: hard
 
@@ -35331,13 +35342,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^11.0.1, minimatch@npm:^11.0.2":
-  version: 11.0.5
-  resolution: "minimatch@npm:11.0.5"
+"minimatch@npm:^11.0.1, minimatch@npm:^11.0.5":
+  version: 11.0.8
+  resolution: "minimatch@npm:11.0.8"
   dependencies:
     "@isaacs/nonrecursive-glob-match": "npm:^1.1.0"
     brace-expansion: "npm:^5.0.12"
-  checksum: 10/40df2064d0bc512a6e06eba4b11aa62d411e3259aea41854cd48800416e4d81158dc27ff143a8e7359eeb12797b010969a1dd935e1fed3da1bb8f967634aea71
+  checksum: 10/c72623c8c38bf28a8c01634fbceab5bb3be1b68af5bc21cd32bc41968cd356bed570a88feb4c7da3a70322604d5d9afc9d8a96a799aeecafb7d2784ee3d7f2d4
   languageName: node
   linkType: hard
 
