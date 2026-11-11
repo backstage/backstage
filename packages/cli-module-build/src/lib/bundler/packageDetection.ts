@@ -135,6 +135,13 @@ function escapeRegExp(value: string) {
 /**
  * Finds the detected packages that are imported by the source of the app. A
  * static import stops the bundler from splitting a package into its own chunk.
+ *
+ * @remarks
+ *
+ * This is a heuristic: it matches the package name, or any sub-path of it, in
+ * quotes anywhere in the non-test source files of the app, so it also matches
+ * dynamic imports, re-exports and plain strings. A false positive only means
+ * that a package is loaded eagerly.
  */
 async function findStaticallyImportedPackages(
   targetPath: string,
@@ -184,14 +191,13 @@ type DetectedEntry =
       manifest: ExtractedManifest;
     };
 
-type ExtensionConfigById = Map<string, { [key: string]: unknown }>;
-
 /**
- * Reads the config that is set for each extension in `app.extensions`, merged
- * in order so that later entries win.
+ * Reads the IDs of the extensions that have config in `app.extensions`. This
+ * must match how the app decides this at runtime, see
+ * `findDeferredConfigConflict` in `@backstage/frontend-app-api`.
  */
-function readConfiguredExtensions(config: Config): ExtensionConfigById {
-  const result: ExtensionConfigById = new Map();
+function readConfiguredExtensionIds(config: Config): Set<string> {
+  const result = new Set<string>();
   const entries = config.getOptional('app.extensions');
   if (!Array.isArray(entries)) {
     return result;
@@ -201,68 +207,44 @@ function readConfiguredExtensions(config: Config): ExtensionConfigById {
       continue;
     }
     for (const [id, value] of Object.entries(entry)) {
-      const extensionConfig = (value as { config?: unknown } | null)?.config;
       if (
-        extensionConfig &&
-        typeof extensionConfig === 'object' &&
-        !Array.isArray(extensionConfig)
+        value &&
+        typeof value === 'object' &&
+        (value as { config?: unknown }).config !== undefined
       ) {
-        result.set(id, { ...result.get(id), ...extensionConfig });
+        result.add(id);
       }
     }
   }
   return result;
 }
 
-function getJsonType(value: unknown): string {
-  if (value === null) {
-    return 'null';
-  }
-  return Array.isArray(value) ? 'array' : typeof value;
-}
-
 /**
- * Returns why the config prevents a plugin from being deferred, which is the
- * case when an element is configured with values that change the data its
- * stub outputs, and that the stub can't apply itself.
+ * Returns why the config prevents a plugin from being deferred. The stub of an
+ * element extension outputs the data of the real extension with its default
+ * config, so an element with any config can only be set up by loading the
+ * plugin.
  */
 function findConfigConflict(
   manifest: ExtractedManifest,
-  configById: ExtensionConfigById,
+  configuredIds: Set<string>,
 ): string | undefined {
   const extensions = (manifest.extensions ?? []) as Array<{
     id: string;
-    element?: {
-      dataConfigKeys?: string[];
-      configPassThrough?: { [key: string]: { types: string[] } };
-    };
+    element?: unknown;
   }>;
-  for (const extension of extensions) {
-    const element = extension.element;
-    const config = configById.get(extension.id);
-    if (!element || !config) {
-      continue;
-    }
-    const keys = Object.keys(config).filter(
-      key =>
-        (element.dataConfigKeys ?? []).includes(key) &&
-        !element.configPassThrough?.[key]?.types.includes(
-          getJsonType(config[key]),
-        ),
-    );
-    if (keys.length > 0) {
-      return `'${extension.id}' is configured with '${keys.join(
-        "', '",
-      )}' in app.extensions, which can't be applied before the plugin is loaded`;
-    }
-  }
-  return undefined;
+  const conflict = extensions.find(
+    extension => extension.element && configuredIds.has(extension.id),
+  );
+  return conflict
+    ? `'${conflict.id}' is configured in app.extensions, which can't be applied before the plugin is loaded`
+    : undefined;
 }
 
 async function resolveDetectedEntries(
   targetPath: string,
   pkgs: DetectedPackage[],
-  configById: ExtensionConfigById,
+  configuredIds: Set<string>,
 ): Promise<DetectedEntry[]> {
   const imported = await findStaticallyImportedPackages(targetPath, pkgs);
   const keyOf = (pkg: DetectedPackage) => `${pkg.name}${pkg.export ?? ''}`;
@@ -301,7 +283,7 @@ async function resolveDetectedEntries(
         reason: result.manifest.notDeferrableReason ?? 'not deferrable',
       };
     }
-    const conflict = findConfigConflict(result.manifest, configById);
+    const conflict = findConfigConflict(result.manifest, configuredIds);
     if (conflict) {
       return { pkg, mode: 'eager', reason: conflict };
     }
@@ -347,7 +329,7 @@ async function writeDetectedPackagesModule(
     const entries = await resolveDetectedEntries(
       targetPath,
       pkgs,
-      readConfiguredExtensions(options.config),
+      readConfiguredExtensionIds(options.config),
     );
     printDeferralReport(entries);
     // A package can have more than one deferred entry point that shares a
