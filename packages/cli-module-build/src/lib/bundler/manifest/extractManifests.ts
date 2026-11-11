@@ -16,7 +16,7 @@
 
 import spawn from 'cross-spawn';
 import { dirname } from 'node:path';
-import { EXTRACT_SCRIPT, MANIFEST_RESULT_MARKER } from './extractScript';
+import { MANIFEST_RESULT_MARKER, ManifestWorkerInput } from './protocol';
 
 /**
  * A subset of the manifest type from `@backstage/frontend-app-api/alpha`. The
@@ -90,22 +90,28 @@ function runChild(
   const nodeTransformPath = require.resolve(
     '@backstage/cli-node/config/nodeTransform.cjs',
   );
+  // Resolves to the source file in the workspace and the built file when
+  // published, see the exports of this package.
+  const workerPath = require.resolve(
+    '@backstage/cli-module-build/manifestWorker',
+  );
+  const input: ManifestWorkerInput = {
+    appDir: options.appDir,
+    transformDir: dirname(nodeTransformPath),
+    packages: options.packages,
+    timeoutMs,
+  };
   return new Promise(resolve => {
     const child = spawn(
       process.execPath,
-      ['--require', nodeTransformPath, '--eval', EXTRACT_SCRIPT],
+      ['--require', nodeTransformPath, workerPath],
       {
         cwd: options.appDir,
         stdio: ['ignore', 'pipe', 'pipe'],
         env: {
           ...process.env,
           NODE_ENV: 'development',
-          BACKSTAGE_MANIFEST_INPUT: JSON.stringify({
-            appDir: options.appDir,
-            transformDir: dirname(nodeTransformPath),
-            packages: options.packages,
-            timeoutMs,
-          }),
+          BACKSTAGE_MANIFEST_INPUT: JSON.stringify(input),
         },
       },
     );
