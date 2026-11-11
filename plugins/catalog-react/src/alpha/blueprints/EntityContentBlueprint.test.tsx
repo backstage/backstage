@@ -104,15 +104,6 @@ describe('EntityContentBlueprint', () => {
             "config": {
               "optional": true,
             },
-            "id": "catalog.entity-filter-predicate",
-            "optional": [Function],
-            "toString": [Function],
-          },
-          {
-            "$$type": "@backstage/ExtensionDataRef",
-            "config": {
-              "optional": true,
-            },
             "id": "catalog.entity-content-group",
             "optional": [Function],
             "toString": [Function],

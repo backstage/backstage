@@ -132,13 +132,6 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            FilterPredicate,
-            'catalog.entity-filter-predicate',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
             EntityCardType,
             'catalog.entity-card-type',
             {

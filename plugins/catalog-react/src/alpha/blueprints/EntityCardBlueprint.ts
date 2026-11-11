@@ -22,7 +22,6 @@ import {
 import {
   entityFilterFunctionDataRef,
   entityFilterExpressionDataRef,
-  entityFilterPredicateDataRef,
   entityCardTypeDataRef,
   entityCardTypes,
   EntityCardType,
@@ -46,13 +45,11 @@ export const EntityCardBlueprint = createExtensionBlueprint({
     coreExtensionData.reactElement,
     entityFilterFunctionDataRef.optional(),
     entityFilterExpressionDataRef.optional(),
-    entityFilterPredicateDataRef.optional(),
     entityCardTypeDataRef.optional(),
   ],
   dataRefs: {
     filterFunction: entityFilterFunctionDataRef,
     filterExpression: entityFilterExpressionDataRef,
-    filterPredicate: entityFilterPredicateDataRef,
     type: entityCardTypeDataRef,
   },
   configSchema: {

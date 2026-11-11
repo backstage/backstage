@@ -80,15 +80,6 @@ describe('EntityCardBlueprint', () => {
             "config": {
               "optional": true,
             },
-            "id": "catalog.entity-filter-predicate",
-            "optional": [Function],
-            "toString": [Function],
-          },
-          {
-            "$$type": "@backstage/ExtensionDataRef",
-            "config": {
-              "optional": true,
-            },
             "id": "catalog.entity-card-type",
             "optional": [Function],
             "toString": [Function],
@@ -139,38 +130,6 @@ describe('EntityCardBlueprint', () => {
         }),
       ).get(EntityCardBlueprint.dataRefs.filterFunction),
     ).toBe(mockFilter);
-
-    // A filter predicate is output both as a function and as it is
-    const predicateTester = createExtensionTester(
-      EntityCardBlueprint.make({
-        name: 'test',
-        params: {
-          filter: { kind: 'component' },
-          loader: async () => <div>Test!</div>,
-        },
-      }),
-    );
-    expect(
-      predicateTester.get(EntityCardBlueprint.dataRefs.filterPredicate),
-    ).toEqual({ kind: 'component' });
-    const filterFunction = predicateTester.get(
-      EntityCardBlueprint.dataRefs.filterFunction,
-    );
-    expect(filterFunction?.({ kind: 'Component' } as Entity)).toBe(true);
-    expect(filterFunction?.({ kind: 'Group' } as Entity)).toBe(false);
-
-    // A filter function given directly has no predicate
-    expect(
-      createExtensionTester(
-        EntityCardBlueprint.make({
-          name: 'test',
-          params: {
-            filter: mockFilter,
-            loader: async () => <div>Test!</div>,
-          },
-        }),
-      ).get(EntityCardBlueprint.dataRefs.filterPredicate),
-    ).toBeUndefined();
   });
 
   it('should allow overriding config and inputs', async () => {
