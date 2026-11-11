@@ -196,7 +196,7 @@ async function main() {
             }
           }
           return {
-            manifest: await createFrontendFeatureManifest(
+            manifest: createFrontendFeatureManifest(
               feature,
               sync ? { sync } : undefined,
             ),

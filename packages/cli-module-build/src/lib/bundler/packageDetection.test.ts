@@ -76,7 +76,12 @@ describe('createDetectedModulesEntryPoint', () => {
     await fs.ensureDir(joinPath(appDir, 'src'));
     await fs.writeFile(
       joinPath(appDir, 'src', 'App.tsx'),
-      "import plugin from '@test/plugin-static';\n",
+      "import plugin from '@test/plugin-static/sub-path';\n",
+    );
+    // Test files don't count as the app importing a package
+    await fs.writeFile(
+      joinPath(appDir, 'src', 'App.test.tsx'),
+      "import plugin from '@test/plugin-pages';\n",
     );
   });
 
@@ -195,43 +200,41 @@ describe('createDetectedModulesEntryPoint', () => {
     );
   });
 
-  it('loads packages eagerly if their config cannot be applied to a stub', async () => {
-    const createManifest = (pluginId: string) => ({
+  it('loads packages eagerly if an element extension has config', async () => {
+    const createManifest = (pluginId: string, extensions: object[]) => ({
       manifestVersion: 1 as const,
       type: 'plugin' as const,
       pluginId,
       deferrable: true,
       routes: [],
       externalRoutes: [],
-      extensions: [
-        {
-          id: `entity-card:${pluginId}`,
-          element: { data: {}, dataConfigKeys: ['title'] },
-        },
-      ],
+      extensions,
     });
     mockExtractManifests.mockResolvedValue(
       new Map([
-        ['@test/plugin-pages', { manifest: createManifest('pages') }],
-        ['@test/plugin-mixed', { manifest: createManifest('mixed') }],
+        [
+          '@test/plugin-pages',
+          {
+            manifest: createManifest('pages', [
+              { id: 'entity-card:pages', element: { data: {} } },
+            ]),
+          },
+        ],
+        [
+          '@test/plugin-mixed',
+          {
+            manifest: createManifest('mixed', [
+              { id: 'entity-card:mixed', element: { data: {} } },
+            ]),
+          },
+        ],
         [
           '@test/plugin-broken',
           {
-            manifest: {
-              ...createManifest('broken'),
-              extensions: [
-                {
-                  id: 'entity-card:broken',
-                  element: {
-                    data: {},
-                    dataConfigKeys: ['title'],
-                    configPassThrough: {
-                      title: { dataRefId: 'core.title', types: ['string'] },
-                    },
-                  },
-                },
-              ],
-            },
+            manifest: createManifest('broken', [
+              { id: 'page:broken', page: { path: '/broken' } },
+              { id: 'entity-card:broken', element: { data: {} } },
+            ]),
           },
         ],
       ]),
@@ -250,10 +253,13 @@ describe('createDetectedModulesEntryPoint', () => {
           experimental: { deferredPackages: true },
           extensions: [
             'page:other',
+            // Any config for an element extension counts, even if it's empty
             { 'entity-card:pages': { config: { title: 'Other' } } },
-            { 'entity-card:mixed': { config: { height: 300 } } },
-            // Strings are applied to the stub as they are
-            { 'entity-card:broken': { config: { title: 'Other' } } },
+            { 'entity-card:mixed': { config: {} } },
+            // Config for a page is applied by the page stub, and
+            // extensions without config are not affected
+            { 'page:broken': { config: { path: '/other' } } },
+            { 'entity-card:broken': { disabled: false } },
           ],
         },
       }),
@@ -264,13 +270,16 @@ describe('createDetectedModulesEntryPoint', () => {
     expect(content).toContain(
       `default: require('@test/plugin-pages').default }`,
     );
-    expect(content).toContain(`load: () => import('@test/plugin-mixed')`);
+    expect(content).toContain(
+      `default: require('@test/plugin-mixed').default }`,
+    );
+    expect(content).toContain(`load: () => import('@test/plugin-broken')`);
 
     const report = logSpy.mock.calls.map(call => call.join(' ')).join('\n');
     expect(report).toContain(
-      "eager     @test/plugin-pages ('entity-card:pages' is configured with 'title' in app.extensions, which can't be applied before the plugin is loaded)",
+      "eager     @test/plugin-pages ('entity-card:pages' is configured in app.extensions, which can't be applied before the plugin is loaded)",
     );
-    expect(report).toContain('deferred  @test/plugin-mixed');
+    expect(report).toContain('eager     @test/plugin-mixed');
     expect(report).toContain('deferred  @test/plugin-broken');
   });
 

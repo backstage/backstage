@@ -153,10 +153,7 @@ export function discoverAvailableFeatures(config: Config): {
   // Without the app setup of createApp the deferred plugins can't be loaded
   // on demand, so they are loaded before the app starts instead.
   return {
-    features: [
-      ...features,
-      ...deferred.map(entry => createLoaderForLazyEntry(entry)),
-    ],
+    features: [...features, ...deferred.map(createLoaderForLazyEntry)],
   };
 }
 
