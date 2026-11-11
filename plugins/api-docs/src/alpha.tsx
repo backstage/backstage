@@ -17,44 +17,19 @@
 import Grid from '@material-ui/core/Grid';
 
 import {
-  ApiBlueprint,
   PageBlueprint,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import { z } from 'zod/v4';
 
-import {
-  ApiEntity,
-  parseEntityRef,
-  RELATION_HAS_PART,
-} from '@backstage/catalog-model';
-
-import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
 import { rootRoute, registerComponentRouteRef } from './routes';
-import { apiDocsConfigRef } from './config';
+import { apiDocsConfigApi, apiDocsHasApisEntityCard } from './syncExtensions';
 import { AppIcon } from '@backstage/core-components';
 
 import {
   EntityCardBlueprint,
   EntityContentBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
-
-const apiDocsConfigApi = ApiBlueprint.make({
-  name: 'config',
-  params: defineParams =>
-    defineParams({
-      api: apiDocsConfigRef,
-      deps: {},
-      factory: () => {
-        const definitionWidgets = defaultDefinitionWidgets();
-        return {
-          getApiDefinitionWidget: (apiEntity: ApiEntity) => {
-            return definitionWidgets.find(d => d.type === apiEntity.spec.type);
-          },
-        };
-      },
-    }),
-});
 
 const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
   configSchema: {
@@ -76,26 +51,6 @@ const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
           ),
         ),
     });
-  },
-});
-
-const apiDocsHasApisEntityCard = EntityCardBlueprint.make({
-  name: 'has-apis',
-  params: {
-    // Omitting configSchema for now
-    // We are skipping variants and columns are too complex to map to zod
-    // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
-    filter: entity => {
-      return (
-        entity.kind === 'Component' &&
-        entity.relations?.some(
-          ({ type, targetRef }) =>
-            type.toLowerCase() === RELATION_HAS_PART &&
-            parseEntityRef(targetRef).kind === 'API',
-        )!!
-      );
-    },
-    loader: () => import('./components/ApisCards').then(m => <m.HasApisCard />),
   },
 });
 

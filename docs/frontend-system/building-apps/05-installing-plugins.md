@@ -47,6 +47,25 @@ Feature discovery requires that your app is built using the `@backstage/cli`, wh
 
 For more details on how feature discovery works under the hood, see the [Feature Discovery](../architecture/10-app.md#feature-discovery) architecture documentation.
 
+### Deferred loading
+
+:::note
+Deferred loading is experimental, and the details described here may change.
+:::
+
+You can let the app load discovered plugins on demand, rather than including them all in the initial app bundle. This is enabled by setting `app.experimental.deferredPackages` together with `app.packages`:
+
+```yaml title="app-config.yaml"
+app:
+  packages: all
+  experimental:
+    deferredPackages: true
+```
+
+The CLI then defers each plugin that supports it, and loads it the first time one of its pages is visited or one of its elements is rendered. Plugins that are imported directly in the code of your app are always loaded together with the app. When you build or start the app, the CLI prints which plugins are deferred and why the others are not.
+
+Config in `app.extensions` is applied to a deferred plugin once it has loaded. If you configure a value that would change what one of its elements shows before then, such as an entity card filter, the plugin is loaded together with the app instead. Some plugins provide a `./sync` entry point with the parts that are needed before the plugin is first used, which the app loads together with the app. To learn which plugins can be deferred, see [Deferred loading](../building-plugins/01-index.md#deferred-loading).
+
 ## Manual installation
 
 If your app does not have [feature discovery](#feature-discovery) enabled, or if you need more control over the plugin installation, you can install plugins manually. This is done by importing the plugin and passing it to `createApp`:

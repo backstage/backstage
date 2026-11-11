@@ -8,6 +8,9 @@ import { FrontendFeature } from '@backstage/frontend-plugin-api';
 // @alpha
 export function createFrontendFeatureManifest(
   feature: FrontendFeature,
+  options?: {
+    sync?: FrontendFeature;
+  },
 ): Promise<FrontendFeatureManifest>;
 
 // @alpha
@@ -33,6 +36,15 @@ export interface FrontendExtensionManifest {
     };
     routeRefName?: string;
     dataConfigKeys?: string[];
+    configPassThrough?: {
+      [configKey: string]: {
+        dataRefId: string;
+        types: string[];
+      };
+    };
+    predicateFunctions?: {
+      [functionDataRefId: string]: string;
+    };
   };
   id: string;
   kind?: string;
@@ -41,6 +53,7 @@ export interface FrontendExtensionManifest {
     title?: string;
     routeRefName?: string;
   };
+  sync?: boolean;
 }
 
 // @alpha
