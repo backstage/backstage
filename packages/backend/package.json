@@ -22,6 +22,7 @@
   ],
   "scripts": {
     "build": "backstage-cli package build",
+    "build:lazy-demo-remotes": "./scripts/build-lazy-demo-remotes.sh",
     "build-image": "docker build ../.. -f Dockerfile --tag example-backend",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
@@ -31,6 +32,7 @@
   },
   "dependencies": {
     "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-dynamic-feature-service": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/plugin-app-backend": "workspace:^",

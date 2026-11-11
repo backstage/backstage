@@ -1,9 +1,12 @@
+dynamicPlugins:
+  rootDirectory: packages/backend/dist/dynamic-plugins-root
+
 app:
   title: Backstage Example App
   baseUrl: http://localhost:3000
   packages: all # ✨
   experimental:
-    deferredPackages: true
+    deferredRemotes: true
 
   #datadogRum:
   #  clientToken: '123456789'
