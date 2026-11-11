@@ -1316,6 +1316,7 @@ describe('createApp', () => {
           <api:app/scm-auth out=[core.api.factory] />
           <api:app/scm-integrations out=[core.api.factory] />
           <api:app/app-language out=[core.api.factory] />
+          <api:app/document-title out=[core.api.factory] />
           <api:app/app-theme out=[core.api.factory]>
             themes [
               <theme:app/dark out=[core.theme.theme] />

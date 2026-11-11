@@ -32,6 +32,7 @@ import {
 } from '../wiring';
 import { ExtensionBoundary, PageLayout, Progress } from '../components';
 import { BreadcrumbEntry } from '../breadcrumbs';
+import { useNodeTitle } from '../pageTitle';
 import { useApi, useApiHolder } from '../apis/system';
 import type { AppNode } from '../apis';
 import {
@@ -114,7 +115,11 @@ function PageContent(props: {
     }
   }, [matches, firstPath, pageMount, location, history]);
   return selected && selectedMatch ? (
+    // The key makes sure that switching between sub-pages remounts the
+    // breadcrumb and sub-page content, rather than reusing them while the
+    // previous content is shown
     <BreadcrumbEntry
+      key={selected.node.spec.id}
       entry={{ label: selected.label, href: selectedMatch.basePath }}
     >
       {selected.element}
@@ -178,6 +183,7 @@ function PluginPageShell(props: {
     }));
   const headerActionsApi = useApi(pluginHeaderActionsApiRef);
   const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+  useNodeTitle(node, title, 'default');
 
   if (!titles) {
     return <Progress />;

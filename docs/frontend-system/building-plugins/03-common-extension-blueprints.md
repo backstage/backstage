@@ -23,6 +23,19 @@ To enable sub-pages on a page, you can either omit the `loader` param to use the
 
 Existing pages retain implicit React Router v6 matches. To migrate a page or select another routing library, render its adapter inside the page's lazily loaded component — see [Choose a router for a page](10-page-routers.md).
 
+The page title and the titles of its sub-pages are also used for the browser's document title, one segment for each. To show something more specific, such as the name of the item a page is showing, call `usePageTitle` from within the page or sub-page content. This API is currently in alpha:
+
+```tsx
+import { usePageTitle } from '@backstage/frontend-plugin-api/alpha';
+
+function ItemDetails(props: { item: Item }) {
+  usePageTitle(props.item.name);
+  // ...
+}
+```
+
+The title replaces the segment of the page or sub-page that the component is rendered within, and the default comes back when the component is no longer rendered. When called from an extension without a route path of its own, such as a card, it applies to the closest enclosing page. See [Document title](../building-apps/03-built-in-extensions.md#document-title) for how the app formats the final title.
+
 ### SubPage - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.SubPageBlueprint.html)
 
 Sub-page extensions create tabbed content within a parent page. They are attached to a page extension's `pages` input and rendered as tabs in the page header. Each sub-page has a `path` (relative to the parent page), a `title` for the tab, and an optional `icon`. Content is lazy-loaded via a `loader` function.

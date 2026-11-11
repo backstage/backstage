@@ -30,6 +30,7 @@ import {
   useNavigation,
 } from '@backstage/frontend-plugin-api';
 import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
+import { PageTitleRegistryProvider } from './PageTitleRegistryProvider';
 import {
   AppRootWrapperBlueprint,
   SignInPageBlueprint,
@@ -301,18 +302,20 @@ export function AppRouter(props: AppRouterProps) {
       <LegacyBUIProvider>
         <BUIProvider useAnalytics={useAnalytics} useNavigation={useNavigation}>
           <BreadcrumbsRegistryProvider>
-            <AppRootElements elements={extraElements} />
-            <RouteTracker routeObjects={routeObjects} />
-            {SignInPageComponent ? (
-              <SignInPageWrapper
-                component={SignInPageComponent}
-                appIdentityProxy={appIdentityProxy}
-              >
-                {children}
-              </SignInPageWrapper>
-            ) : (
-              children
-            )}
+            <PageTitleRegistryProvider>
+              <AppRootElements elements={extraElements} />
+              <RouteTracker routeObjects={routeObjects} />
+              {SignInPageComponent ? (
+                <SignInPageWrapper
+                  component={SignInPageComponent}
+                  appIdentityProxy={appIdentityProxy}
+                >
+                  {children}
+                </SignInPageWrapper>
+              ) : (
+                children
+              )}
+            </PageTitleRegistryProvider>
           </BreadcrumbsRegistryProvider>
         </BUIProvider>
       </LegacyBUIProvider>
