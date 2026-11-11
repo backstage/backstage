@@ -55,6 +55,7 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/plugin-app-react": "workspace:^",
     "@backstage/plugin-home-react": "workspace:^",
     "@backstage/plugin-notifications-common": "workspace:^",
     "@backstage/plugin-signals-react": "workspace:^",
@@ -65,11 +66,13 @@
     "luxon": "^3.0.0",
     "notistack": "^3.0.1",
     "react-aria-components": "~1.22.0",
-    "react-use": "^17.2.4"
+    "react-use": "^17.2.4",
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
+    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/plugin-signals": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",

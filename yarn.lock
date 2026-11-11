@@ -5876,6 +5876,8 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
+    "@backstage/plugin-app-react": "workspace:^"
     "@backstage/plugin-home-react": "workspace:^"
     "@backstage/plugin-notifications-common": "workspace:^"
     "@backstage/plugin-signals": "workspace:^"
@@ -5898,6 +5900,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
+    zod: "npm:^4.0.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
