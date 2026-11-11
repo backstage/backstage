@@ -174,6 +174,7 @@ export const scaffolderEditorSubPage = SubPageBlueprint.make({
   params: {
     path: 'edit',
     title: 'Template Editor',
+
     loader: () =>
       import('./components/EditorSubPage').then(m => <m.EditorSubPage />),
   },

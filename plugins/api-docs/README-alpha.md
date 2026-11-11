@@ -184,22 +184,24 @@ Here is an example overriding the APIs Explorer page component:
 ```tsx
 import {
   createFrontendModule,
-  createPageExtension,
-} from '@backstage/backstage-plugin-api';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+  PageBlueprint,
+} from '@backstage/frontend-plugin-api';
+import apiDocsPlugin from '@backstage/plugin-api-docs/alpha';
 
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createPageExtension({
+    PageBlueprint.make({
       // Omitting name since we are overriding a plugin index page
-      // It's up to you whether to use the original default path or not, but links that are hardcoded to the default path won't work if you change it
-      path: '/api-docs',
-      // Associating the page with a different route ref may result in the sidebar item or external plugin route pointing to an unreachable page
-      routeRef: convertLegacyRouteRef(rootRoute),
-      // Custom page components are loaded here
-      loader: () =>
-        import('./components').then(m => <m.MyCustomApiExplorerPage />),
+      params: {
+        // It's up to you whether to use the original default path or not, but links that are hardcoded to the default path won't work if you change it
+        path: '/api-docs',
+        // Associating the page with a different route ref may result in the sidebar item or external plugin route pointing to an unreachable page
+        routeRef: apiDocsPlugin.routes.root,
+        // Custom page components are loaded here
+        loader: () =>
+          import('./components').then(m => <m.MyCustomApiExplorerPage />),
+      },
     }),
   ],
 });
@@ -269,7 +271,7 @@ app:
 Use extension overrides for completely re-implementing the has apis entity card extension:
 
 ```tsx
-import { createFrontendModule } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
@@ -345,7 +347,7 @@ app:
 Use extension overrides for completely re-implementing the definition entity card extension:
 
 ```tsx
-import { createFrontendModule } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
@@ -423,7 +425,7 @@ app:
 Use extension overrides for completely re-implementing the provided-apis entity card extension:
 
 ```tsx
-import { createFrontendModule } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
@@ -501,7 +503,7 @@ app:
 Use extension overrides for completely re-implementing the consumed-apis entity card extension:
 
 ```tsx
-import { createFrontendModule } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
@@ -579,7 +581,7 @@ app:
 Use extension overrides for completely re-implementing the providing-components entity card extension:
 
 ```tsx
-import { createFrontendModule } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
@@ -657,7 +659,7 @@ app:
 Use extension overrides for completely re-implementing the consuming-components entity card extension:
 
 ```tsx
-import { createFrontendModule } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
@@ -749,7 +751,7 @@ app:
 Use extension overrides for completely re-implementing the definition entity content extension:
 
 ```tsx
-import { createFrontendModule } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
@@ -832,7 +834,7 @@ app:
 Use extension overrides for completely re-implementing the apis entity content extension:
 
 ```tsx
-import { createFrontendModule } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 export default createFrontendModule({
@@ -857,9 +859,9 @@ For more information about where to place extension overrides, see the official 
 
 This is an api used by the `api-docs` plugin to get the api definition widget.
 
-| Kind  | Namespace                | Name | Id                           |
-| ----- | ------------------------ | ---- | ---------------------------- |
-| `api` | `plugin.api-docs.config` | -    | `api:plugin.api-docs.config` |
+| Kind  | Namespace  | Name     | Id                    |
+| ----- | ---------- | -------- | --------------------- |
+| `api` | `api-docs` | `config` | `api:api-docs/config` |
 
 Changing the widgets returned by this API requires [overriding](https://backstage.io/docs/frontend-system/architecture/extension-overrides) the default extension implementation. Here are a few common override cases:
 
@@ -872,8 +874,7 @@ This is an example with a made-up renderer for SQL schemas:
 ```tsx
 import {
   createFrontendModule,
-  createApiExtension,
-  createApiFactory,
+  ApiBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { ApiEntity } from '@backstage/catalog-model';
 import {
@@ -886,34 +887,37 @@ import { SqlRenderer } from '...';
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createApiExtension({
-      factory: createApiFactory({
-        api: apiDocsConfigRef,
-        deps: {},
-        factory: () => {
-          // load the default widgets
-          const definitionWidgets = defaultDefinitionWidgets();
-          return {
-            getApiDefinitionWidget: (apiEntity: ApiEntity) => {
-              // custom rendering for sql
-              if (apiEntity.spec.type === 'sql') {
-                return {
-                  type: 'sql',
-                  title: 'SQL',
-                  component: definition => (
-                    <SqlRenderer definition={definition} />
-                  ),
-                } as ApiDefinitionWidget;
-              }
+    ApiBlueprint.make({
+      // Name is necessary so the system knows that this extension will override the default 'config' api extension provided by the 'api-docs' plugin
+      name: 'config',
+      params: defineParams =>
+        defineParams({
+          api: apiDocsConfigRef,
+          deps: {},
+          factory: () => {
+            // load the default widgets
+            const definitionWidgets = defaultDefinitionWidgets();
+            return {
+              getApiDefinitionWidget: (apiEntity: ApiEntity) => {
+                // custom rendering for sql
+                if (apiEntity.spec.type === 'sql') {
+                  return {
+                    type: 'sql',
+                    title: 'SQL',
+                    component: definition => (
+                      <SqlRenderer definition={definition} />
+                    ),
+                  } as ApiDefinitionWidget;
+                }
 
-              // fallback to the defaults
-              return definitionWidgets.find(
-                d => d.type === apiEntity.spec.type,
-              );
-            },
-          };
-        },
-      }),
+                // fallback to the defaults
+                return definitionWidgets.find(
+                  d => d.type === apiEntity.spec.type,
+                );
+              },
+            };
+          },
+        }),
     }),
   ],
 });
@@ -926,8 +930,7 @@ Override the config api to configure a [`requestInterceptor` for Swagger UI](htt
 ```tsx
 import {
   createFrontendModule,
-  createApiExtension,
-  createApiFactory,
+  ApiBlueprint,
 } from '@backstage/frontend-plugin-api';
 import {
   apiDocsConfigRef,
@@ -939,40 +942,43 @@ import { ApiEntity } from '@backstage/catalog-model';
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createApiExtension({
-      factory: createApiFactory({
-        api: apiDocsConfigRef,
-        deps: {},
-        factory: () => {
-          // Overriding openapi definition widget to add header
-          const requestInterceptor = (req: any) => {
-            req.headers.append('myheader', 'wombats');
-            return req;
-          };
-          const definitionWidgets = defaultDefinitionWidgets().map(obj => {
-            if (obj.type === 'openapi') {
-              return {
-                ...obj,
-                component: definition => (
-                  <OpenApiDefinitionWidget
-                    definition={definition}
-                    requestInterceptor={requestInterceptor}
-                  />
-                ),
-              };
-            }
-            return obj;
-          });
+    ApiBlueprint.make({
+      // Name is necessary so the system knows that this extension will override the default 'config' api extension provided by the 'api-docs' plugin
+      name: 'config',
+      params: defineParams =>
+        defineParams({
+          api: apiDocsConfigRef,
+          deps: {},
+          factory: () => {
+            // Overriding openapi definition widget to add header
+            const requestInterceptor = (req: any) => {
+              req.headers.append('myheader', 'wombats');
+              return req;
+            };
+            const definitionWidgets = defaultDefinitionWidgets().map(obj => {
+              if (obj.type === 'openapi') {
+                return {
+                  ...obj,
+                  component: definition => (
+                    <OpenApiDefinitionWidget
+                      definition={definition}
+                      requestInterceptor={requestInterceptor}
+                    />
+                  ),
+                };
+              }
+              return obj;
+            });
 
-          return {
-            getApiDefinitionWidget: (apiEntity: ApiEntity) => {
-              return definitionWidgets.find(
-                d => d.type === apiEntity.spec.type,
-              );
-            },
-          };
-        },
-      }),
+            return {
+              getApiDefinitionWidget: (apiEntity: ApiEntity) => {
+                return definitionWidgets.find(
+                  d => d.type === apiEntity.spec.type,
+                );
+              },
+            };
+          },
+        }),
     }),
   ],
 });
@@ -988,8 +994,7 @@ If you want to limit the HTTP methods available for the `Try It Out` feature of 
 ```tsx
 import {
   createFrontendModule,
-  createApiExtension,
-  createApiFactory,
+  ApiBlueprint,
 } from '@backstage/frontend-plugin-api';
 import {
   apiDocsConfigRef,
@@ -1001,36 +1006,39 @@ import { ApiEntity } from '@backstage/catalog-model';
 export default createFrontendModule({
   pluginId: 'api-docs',
   extensions: [
-    createApiExtension({
-      factory: createApiFactory({
-        api: apiDocsConfigRef,
-        deps: {},
-        factory: () => {
-          const supportedSubmitMethods = ['get', 'post', 'put', 'delete'];
-          const definitionWidgets = defaultDefinitionWidgets().map(obj => {
-            if (obj.type === 'openapi') {
-              return {
-                ...obj,
-                component: definition => (
-                  <OpenApiDefinitionWidget
-                    definition={definition}
-                    supportedSubmitMethods={supportedSubmitMethods}
-                  />
-                ),
-              };
-            }
-            return obj;
-          });
+    ApiBlueprint.make({
+      // Name is necessary so the system knows that this extension will override the default 'config' api extension provided by the 'api-docs' plugin
+      name: 'config',
+      params: defineParams =>
+        defineParams({
+          api: apiDocsConfigRef,
+          deps: {},
+          factory: () => {
+            const supportedSubmitMethods = ['get', 'post', 'put', 'delete'];
+            const definitionWidgets = defaultDefinitionWidgets().map(obj => {
+              if (obj.type === 'openapi') {
+                return {
+                  ...obj,
+                  component: definition => (
+                    <OpenApiDefinitionWidget
+                      definition={definition}
+                      supportedSubmitMethods={supportedSubmitMethods}
+                    />
+                  ),
+                };
+              }
+              return obj;
+            });
 
-          return {
-            getApiDefinitionWidget: (apiEntity: ApiEntity) => {
-              return definitionWidgets.find(
-                d => d.type === apiEntity.spec.type,
-              );
-            },
-          };
-        },
-      }),
+            return {
+              getApiDefinitionWidget: (apiEntity: ApiEntity) => {
+                return definitionWidgets.find(
+                  d => d.type === apiEntity.spec.type,
+                );
+              },
+            };
+          },
+        }),
     }),
   ],
 });
@@ -1043,7 +1051,10 @@ N.B. if you wish to disable the `Try It Out` feature for your API, you can provi
 You can override the default http/https resolvers, for example to add authentication to requests to internal schema registries by providing the `resolvers` prop to the `AsyncApiDefinitionWidget`. This is an example:
 
 ```tsx
-...
+import {
+  createFrontendModule,
+  ApiBlueprint,
+} from '@backstage/frontend-plugin-api';
 import {
   AsyncApiDefinitionWidget,
   apiDocsConfigRef,
@@ -1051,46 +1062,58 @@ import {
 } from '@backstage/plugin-api-docs';
 import { ApiEntity } from '@backstage/catalog-model';
 
-export const apis: AnyApiFactory[] = [
-...
-  createApiFactory({
-    api: apiDocsConfigRef,
-    deps: {},
-    factory: () => {
-      const myCustomResolver = {
-        schema: 'https',
-        order: 1,
-        canRead: true,
-        async read(uri: any) {
-          const response = await fetch(request, {
-            headers: {
-              X-Custom: 'Custom',
-            },
-          });
-          return response.text();
-        },
-      };
+export default createFrontendModule({
+  pluginId: 'api-docs',
+  extensions: [
+    ApiBlueprint.make({
+      // Name is necessary so the system knows that this extension will override the default 'config' api extension provided by the 'api-docs' plugin
+      name: 'config',
+      params: defineParams =>
+        defineParams({
+          api: apiDocsConfigRef,
+          deps: {},
+          factory: () => {
+            const myCustomResolver = {
+              schema: 'https',
+              order: 1,
+              canRead: true,
+              async read(uri: any) {
+                const response = await fetch(uri.toString(), {
+                  headers: {
+                    'X-Custom': 'Custom',
+                  },
+                });
+                return response.text();
+              },
+            };
 
-      const definitionWidgets = defaultDefinitionWidgets().map(obj => {
-        if (obj.type === 'asyncapi') {
-          return {
-            ...obj,
-            component: (definition) => (
-              <AsyncApiDefinitionWidget definition={definition} resolvers={[myCustomResolver]} />
-            ),
-          };
-        }
-        return obj;
-      });
+            const definitionWidgets = defaultDefinitionWidgets().map(obj => {
+              if (obj.type === 'asyncapi') {
+                return {
+                  ...obj,
+                  component: definition => (
+                    <AsyncApiDefinitionWidget
+                      definition={definition}
+                      resolvers={[myCustomResolver]}
+                    />
+                  ),
+                };
+              }
+              return obj;
+            });
 
-      return {
-        getApiDefinitionWidget: (apiEntity: ApiEntity) => {
-          return definitionWidgets.find(d => d.type === apiEntity.spec.type);
-        },
-      };
-    }
-  })
-]
+            return {
+              getApiDefinitionWidget: (apiEntity: ApiEntity) => {
+                return definitionWidgets.find(
+                  d => d.type === apiEntity.spec.type,
+                );
+              },
+            };
+          },
+        }),
+    }),
+  ],
+});
 ```
 
 ### Integrations

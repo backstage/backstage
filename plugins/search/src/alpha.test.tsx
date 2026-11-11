@@ -42,6 +42,8 @@ describe('searchPage', () => {
 
     const tester = createExtensionTester(searchPage);
     await renderInTestApp(tester.reactElement(), {
+      mountPath: '/search',
+      initialRouteEntries: ['/search'],
       apis: [catalogApi, [searchApiRef, searchApi]],
       config: {
         backend: { baseUrl: 'http://localhost:7007' },

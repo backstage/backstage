@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,14 @@
  * limitations under the License.
  */
 
-export { AppVisualizerPage } from './AppVisualizerPage';
+import {
+  createRouteRef,
+  createExternalRouteRef,
+} from '@backstage/frontend-plugin-api';
+
+export const indexRouteRef = createRouteRef();
+export const page1RouteRef = createRouteRef();
+export const externalPageXRouteRef = createExternalRouteRef({
+  defaultTarget: 'pages.pageX',
+});
+export const pageXRouteRef = createRouteRef();

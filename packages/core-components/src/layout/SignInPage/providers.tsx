@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useAppSearchParams } from '@backstage/frontend-plugin-api';
+
 import { useLayoutEffect, useState, useMemo, useCallback } from 'react';
 import {
   SignInPageProps,
@@ -32,7 +34,7 @@ import { commonProvider } from './commonProvider';
 import { guestProvider } from './guestProvider';
 import { customProvider } from './customProvider';
 import { IdentityApiSignOutProxy } from './IdentityApiSignOutProxy';
-import { useSearchParams } from 'react-router-dom';
+
 import { useMountEffect } from '@react-hookz/web';
 import { ForwardedError } from '@backstage/errors';
 import { coreComponentsTranslationRef } from '../../translation';
@@ -97,7 +99,7 @@ export const useSignInProviders = (
 
   const { t } = useTranslationRef(coreComponentsTranslationRef);
   // User was redirected back to sign in page with error from auth redirect flow
-  const [searchParams, _setSearchParams] = useSearchParams();
+  const [searchParams, _setSearchParams] = useAppSearchParams();
 
   useMountEffect(() => {
     const errorParam = searchParams.get('error');

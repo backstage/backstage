@@ -114,6 +114,33 @@ export function expandOptionalSegments(path: string): string[] {
 }
 
 /**
+ * Splits a `:name?suffix` segment without a backtracking-prone regular
+ * expression: the name is the longest run of `[\w-]` characters after the
+ * colon, an optional `?` follows it, and the remainder is a literal suffix.
+ * Returns `undefined` when the segment is not a parameter segment.
+ */
+function matchParamSegment(
+  segment: string,
+): { name: string; optional: string; suffix: string } | undefined {
+  if (!segment.startsWith(':')) {
+    return undefined;
+  }
+  let end = 1;
+  while (end < segment.length && /[$\w-]/.test(segment[end])) {
+    end += 1;
+  }
+  if (end === 1) {
+    return undefined;
+  }
+  const optional = segment[end] === '?' ? '?' : '';
+  return {
+    name: segment.slice(1, end),
+    optional,
+    suffix: segment.slice(end + optional.length),
+  };
+}
+
+/**
  * Converts a route path pattern into a RegExp and extracts parameter names.
  * Handles named params (`:id`), optional params (`:id?`), optional static
  * segments (`task?`), literal parameter suffixes (`:id.json`), a trailing
@@ -148,9 +175,9 @@ function compilePath(
   const namedSegments = hasSplat ? segments.slice(0, -1) : segments;
 
   for (const segment of namedSegments) {
-    const param = segment.match(/^:([\w-]+)(\?)?(.*)$/);
+    const param = matchParamSegment(segment);
     if (param) {
-      const [, name, optional, suffix] = param;
+      const { name, optional, suffix } = param;
       paramNames.push(name);
       regexpSource += optional ? '(?:/([^/]+))?' : '/([^/]+)';
       regexpSource += escapeRegExp(normalizeSegment(suffix));

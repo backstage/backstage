@@ -68,6 +68,7 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/filter-predicates": "workspace:^",
+    "@backstage/frontend-adapter-react-router-v6": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",

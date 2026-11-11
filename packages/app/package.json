@@ -43,6 +43,9 @@
     "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/frontend-adapter-react-router-v6": "workspace:^",
+    "@backstage/frontend-adapter-react-router-v7": "workspace:^",
+    "@backstage/frontend-adapter-tanstack-router": "workspace:^",
     "@backstage/frontend-app-api": "workspace:^",
     "@backstage/frontend-defaults": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
@@ -84,6 +87,8 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
+    "@tanstack/history": "1.131.2",
+    "@tanstack/react-router": "1.131.2",
     "history": "^5.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
@@ -93,6 +98,7 @@
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {
+    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@playwright/test": "^1.58.2",
     "@testing-library/dom": "^10.0.0",

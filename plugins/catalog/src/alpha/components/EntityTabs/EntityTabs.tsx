@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ReactElement, useMemo } from 'react';
+import { ReactElement, Suspense, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
+import { Progress } from '@backstage/core-components';
 import { NotFoundErrorPage } from '@backstage/frontend-plugin-api';
 import { EntityTabsPanel } from './EntityTabsPanel';
 import { EntityTabsList } from './EntityTabsList';
@@ -124,7 +125,11 @@ export function EntityTabs(props: EntityTabsProps) {
       />
       <EntityTabsPanel>
         <Helmet title={route?.title} />
-        {element ?? <NotFoundErrorPage />}
+        {element ?? (
+          <Suspense fallback={<Progress />}>
+            <NotFoundErrorPage />
+          </Suspense>
+        )}
       </EntityTabsPanel>
     </>
   );

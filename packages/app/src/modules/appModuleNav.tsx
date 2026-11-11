@@ -23,8 +23,9 @@ import {
   SidebarScrollWrapper,
   SidebarSpace,
   useSidebarOpenState,
+  Link,
 } from '@backstage/core-components';
-import { Link } from 'react-router-dom';
+
 import SearchIcon from '@material-ui/icons/Search';
 import MenuIcon from '@material-ui/icons/Menu';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';

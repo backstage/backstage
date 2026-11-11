@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
+    "@backstage/frontend-adapter-react-router-v6": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/ui": "workspace:^",

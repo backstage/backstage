@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
+
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 import {
@@ -55,7 +58,6 @@ import LinkIcon from '@material-ui/icons/Link';
 import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import {
   Extension,
@@ -308,7 +310,7 @@ export type TemplatingExtensionsPageProps = {
 export const TemplatingExtensionsPage = (
   props: TemplatingExtensionsPageProps,
 ) => {
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const editorLink = useRouteRef(editRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);

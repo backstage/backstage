@@ -31,7 +31,6 @@ import { Text, Box } from '@backstage/ui';
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { useLayoutEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../../api';
 import { entityRouteRef } from '../../../routes';
@@ -39,6 +38,7 @@ import { useEntityPresentation } from '../../../apis';
 import { EntityKindIcon } from './EntityKindIcon';
 import { catalogReactTranslationRef } from '../../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   node: {
@@ -106,7 +106,7 @@ function useAncestry(root: Entity): {
 
 function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
   const classes = useStyles();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const entityRoute = useRouteRef(entityRouteRef);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);

@@ -17,6 +17,7 @@ import {
   configApiRef,
   useAnalytics,
   useApi,
+  useApiHolder,
   useApp,
 } from '@backstage/core-plugin-api';
 // eslint-disable-next-line no-restricted-imports
@@ -40,6 +41,16 @@ import {
   LinkProps as RouterLinkProps,
   Route,
 } from 'react-router-dom';
+import {
+  createPath,
+  isExternalTarget,
+  sanitizeHref,
+  useAppHistoryLocation,
+} from '@internal/frontend';
+import {
+  appHistoryApiRef,
+  useNavigation,
+} from '@backstage/frontend-plugin-api';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 
 export function isReactRouterBeta(): boolean {
@@ -85,7 +96,7 @@ export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
 // See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
 const scriptProtocolPattern =
   // eslint-disable-next-line no-control-regex
-  /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*\:/i;
+  /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i;
 
 // We install this globally in order to prevent javascript: URL XSS attacks via window.open
 const originalWindowOpen = window.open as typeof window.open & {
@@ -181,13 +192,17 @@ const getNodeText = (node: ReactNode): string => {
 
 /**
  * Unstyled link primitive which...
- * - Uses react-router for internal links.
+ * - Uses Backstage app history for internal links, with React Router fallback in the old frontend system.
  * - Captures link clicks as analytics events.
  */
-export const UnstyledLink = forwardRef<any, LinkProps>(
+export const UnstyledLink = forwardRef<any, Omit<LinkProps, 'variant'>>(
   ({ onClick, noTrack, externalLinkIcon, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
+    const navigation = useNavigation();
+    const appHistory = useApiHolder().get(appHistoryApiRef);
+    const currentLocation = useAppHistoryLocation(appHistory);
+    const hasAppHistory = Boolean(appHistory && currentLocation);
 
     // Adding the base path to URLs breaks react-router v6 stable, so we only
     // do it for beta. The react router version won't change at runtime so it is
@@ -195,7 +210,7 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const to = isReactRouterBeta() ? useResolvedPath(props.to) : props.to;
     const linkText = getNodeText(props.children) || to;
-    const external = isExternalUri(to);
+    const external = hasAppHistory ? isExternalTarget(to) : isExternalUri(to);
     const newWindow = external && !!/^https?:/.exec(to);
 
     if (scriptProtocolPattern.test(to)) {
@@ -210,6 +225,55 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
         analytics.captureEvent('click', linkText, { attributes: { to } });
       }
     };
+
+    if (hasAppHistory && !external) {
+      const {
+        to: _to,
+        replace,
+        state,
+        reloadDocument,
+        relative: _relative,
+        preventScrollReset: _preventScrollReset,
+        viewTransition: _viewTransition,
+        ...anchorProps
+      } = props;
+      const safeTo = sanitizeHref(to);
+      const href = navigation.createHref(safeTo);
+      return (
+        <a
+          {...anchorProps}
+          ref={ref}
+          href={href}
+          onClick={event => {
+            handleClick(event);
+            if (
+              event.defaultPrevented ||
+              reloadDocument ||
+              safeTo !== to ||
+              event.button !== 0 ||
+              event.metaKey ||
+              event.altKey ||
+              event.ctrlKey ||
+              event.shiftKey ||
+              (event.currentTarget.target &&
+                event.currentTarget.target.toLowerCase() !== '_self') ||
+              event.currentTarget.hasAttribute('download')
+            ) {
+              return;
+            }
+            event.preventDefault();
+            navigation.navigate(to, {
+              replace:
+                replace ??
+                href === navigation.createHref(createPath(currentLocation!)),
+              state,
+            });
+          }}
+        >
+          {props.children}
+        </a>
+      );
+    }
 
     return external ? (
       // External links

@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { useAppNavigate, useAppLocation } from '@backstage/frontend-plugin-api';
+
 import {
   CompoundEntityRef,
   parseEntityRef,
@@ -27,7 +30,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+
 import { Direction } from '../../lib/types';
 
 export type CatalogGraphPageValue = {
@@ -68,8 +71,8 @@ export function useCatalogGraphPage({
     curve?: 'curveStepBefore' | 'curveMonotoneX';
   };
 }): CatalogGraphPageValue {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const location = useAppLocation();
+  const navigate = useAppNavigate();
 
   const query = useMemo(
     () =>
@@ -119,9 +122,9 @@ export function useCatalogGraphPage({
         { arrayFormat: 'brackets', addQueryPrefix: true },
       );
 
-      navigate(newSearch);
+      navigate(location.pathname + newSearch);
     },
-    [rootEntityNames, navigate, query],
+    [rootEntityNames, navigate, query, location.pathname],
   );
 
   const [maxDepth, setMaxDepth] = useState<number>(() =>
@@ -196,7 +199,7 @@ export function useCatalogGraphPage({
       { arrayFormat: 'brackets', addQueryPrefix: true },
     );
 
-    navigate(newParams, { replace: true });
+    navigate(location.pathname + newParams, { replace: true });
   }, [
     maxDepth,
     curve,
@@ -208,6 +211,7 @@ export function useCatalogGraphPage({
     showFilters,
     rootEntityNames,
     navigate,
+    location.pathname,
   ]);
 
   return {

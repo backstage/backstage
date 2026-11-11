@@ -63,15 +63,9 @@ export function convertLegacyPageExtension(
       path: overrides?.path ?? `/${kebabName}`,
       noHeader: true,
       routeRef: mountPoint && convertLegacyRouteRef(mountPoint),
-      // A legacy page is a React Router v6 page by definition: the old
-      // frontend system mounts every page in a real v6 route tree, and
-      // `createRoutableExtension` calls `useRouteRef` from
-      // `@backstage/core-plugin-api` — which reads `useLocation` — before the
-      // page's own component renders at all. The new frontend system provides
-      // no routing library context at page depth, so the converter declares
-      // the one the page it is converting has always had. That is what lets a
-      // legacy plugin keep working once converted without its author changing
-      // anything, which is the whole promise of this package.
+      // Converted pages may render legacy nested routes or outlets. Declare
+      // the v6 adapter at the page boundary so their route matching is preserved.
+      // Shared Backstage links and route-reference hooks do not require it.
       //
       // Declared here, at the page, and not in `compatWrapper` or in the
       // entity card and content converters: those produce page *content*, and

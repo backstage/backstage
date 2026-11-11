@@ -17,8 +17,6 @@
 import { Link } from '@backstage/core-components';
 import {
   createFrontendPlugin,
-  createRouteRef,
-  createExternalRouteRef,
   useRouteRef,
   PageBlueprint,
   FrontendPluginInfo,
@@ -26,17 +24,18 @@ import {
   createExtensionBlueprint,
   createExtensionInput,
   coreExtensionData,
-  BreadcrumbEntry,
 } from '@backstage/frontend-plugin-api';
 import { useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { nfsRoutingDemoExtensions } from './nfsRoutingDemo';
 
-const indexRouteRef = createRouteRef();
-const page1RouteRef = createRouteRef();
-export const externalPageXRouteRef = createExternalRouteRef({
-  defaultTarget: 'pages.pageX',
-});
-export const pageXRouteRef = createRouteRef();
+import {
+  indexRouteRef,
+  page1RouteRef,
+  externalPageXRouteRef,
+  pageXRouteRef,
+} from './pagesRoutes';
+
+export { externalPageXRouteRef, pageXRouteRef } from './pagesRoutes';
 
 function PluginInfo() {
   const node = useAppNode();
@@ -113,6 +112,36 @@ const IndexPage = PageBlueprint.make({
               </li>
             </ul>
 
+            <h2>Scoped Plugin Routing</h2>
+            <p>
+              Page router adapters (RFC{' '}
+              <a href="https://github.com/backstage/backstage/issues/33603">
+                #33603
+              </a>
+              ). Three pages, each hosted by a different routing library, and
+              eight tabs that between them cover every combination worth
+              proving. Each panel prints the resolved URL and the resolved{' '}
+              <code>href</code> of its links, so a doubled base path shows up on
+              screen:
+            </p>
+            <ul>
+              <li>
+                <Link to="/nfs-routing-demo">React Router v6 host</Link> — v6
+                nested inside v6, a TanStack sub-page inside a v6 page, and
+                links resolved three segments below the page base
+              </li>
+              <li>
+                <Link to="/nfs-routing-demo-tanstack">TanStack host</Link> —
+                TanStack building the tab route tree itself, and hosting a React
+                Router v6 sub-page
+              </li>
+              <li>
+                <Link to="/nfs-routing-demo-v7">React Router v7 host</Link> — v6
+                and v7 route trees in the same app, a v7 tab, and framework
+                links that resolve across both libraries
+              </li>
+            </ul>
+
             <h2>Feature Flag Enablement Examples</h2>
             <p>
               The following pages demonstrate conditional extension enablement
@@ -152,49 +181,8 @@ const Page1 = PageBlueprint.make({
   params: {
     path: '/page1',
     routeRef: page1RouteRef,
-    loader: async () => {
-      const Component = () => {
-        const indexLink = useRouteRef(indexRouteRef);
-        const xLink = useRouteRef(externalPageXRouteRef);
-
-        return (
-          <div>
-            <h1>This is page 1</h1>
-            {indexLink && <Link to={indexLink()}>Go back</Link>}
-            <Link to="./page2">Page 2</Link>
-            {xLink && <Link to={xLink()}>Page X</Link>}
-
-            <div>
-              Sub-page content:
-              <div>
-                <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      <BreadcrumbEntry entry={{ label: 'Page 1', href: '/' }}>
-                        <h2>This is also page 1</h2>
-                      </BreadcrumbEntry>
-                    }
-                  />
-
-                  <Route
-                    path="/page2"
-                    element={
-                      <BreadcrumbEntry
-                        entry={{ label: 'Page 2', href: '/page2' }}
-                      >
-                        <h2>This is page 2</h2>
-                      </BreadcrumbEntry>
-                    }
-                  />
-                </Routes>
-              </div>
-            </div>
-          </div>
-        );
-      };
-      return <Component />;
-    },
+    loader: () =>
+      import('./ExampleRoutingPage').then(m => <m.ExampleRoutingPage />),
   },
 });
 
@@ -550,6 +538,7 @@ export const pagesPlugin = createFrontendPlugin({
     IndexPage,
     Page1,
     ExternalPage,
+    ...nfsRoutingDemoExtensions,
     FeatureFlagPage,
     AllFlagsPage,
     AnyFlagPage,

@@ -22,7 +22,7 @@ import {
   type Context,
   type ReactNode,
 } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useSyncExternalStore } from 'react';
 import type {
   AppHistoryApi,
   AppHistorySnapshot,

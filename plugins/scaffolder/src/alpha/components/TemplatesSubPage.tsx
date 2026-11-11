@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { useCallback, useMemo } from 'react';
-import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
+import { Routes, Route, useParams } from 'react-router-dom';
 import {
   Content,
   ContentHeader,
@@ -34,6 +35,7 @@ import {
   EntityOwnerPicker,
 } from '@backstage/plugin-catalog-react';
 import {
+  FormField,
   TemplateCategoryPicker,
   TemplateGroups,
   type ScaffolderTemplateFilterHook,
@@ -50,7 +52,7 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
-import { FormField } from '@backstage/plugin-scaffolder-react/alpha';
+
 import { OpaqueFormField } from '@internal/scaffolder';
 import { RegisterExistingButton } from './TemplateListPage/RegisterExistingButton';
 import { TemplateWizardPageContent } from './TemplateWizardPage';
@@ -62,7 +64,10 @@ import {
 import { scaffolderTranslationRef } from '../../translation';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
-import { BreadcrumbEntry } from '@backstage/frontend-plugin-api';
+import {
+  useAppNavigate,
+  BreadcrumbEntry,
+} from '@backstage/frontend-plugin-api';
 import {
   TECHDOCS_ANNOTATION,
   TECHDOCS_EXTERNAL_ANNOTATION,
@@ -86,7 +91,7 @@ function TemplateListContent({
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const app = useApp();
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const viewerTemplateFilter = useTemplateFilter();
@@ -238,27 +243,29 @@ export function TemplatesSubPage(props: {
   ] as FieldExtensionOptions[];
 
   return (
-    <Routes>
-      <Route
-        index
-        element={
-          <TemplateListContent
-            groups={props.groups}
-            templateFilter={props.templateFilter}
-            useTemplateFilter={props.useTemplateFilter}
-          />
-        }
-      />
-      <Route
-        path=":namespace/:templateName"
-        element={
-          <TemplateWizardWithBreadcrumb
-            customFieldExtensions={fieldExtensions}
-            layouts={customLayouts}
-            formProps={props.formProps}
-          />
-        }
-      />
-    </Routes>
+    <ReactRouterV6PageRouter>
+      <Routes>
+        <Route
+          index
+          element={
+            <TemplateListContent
+              groups={props.groups}
+              templateFilter={props.templateFilter}
+              useTemplateFilter={props.useTemplateFilter}
+            />
+          }
+        />
+        <Route
+          path=":namespace/:templateName"
+          element={
+            <TemplateWizardWithBreadcrumb
+              customFieldExtensions={fieldExtensions}
+              layouts={customLayouts}
+              formProps={props.formProps}
+            />
+          }
+        />
+      </Routes>
+    </ReactRouterV6PageRouter>
   );
 }

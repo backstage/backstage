@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
+
 import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { useRouteRef } from '@backstage/core-plugin-api';
 import type {
@@ -60,7 +62,7 @@ export const TemplateEditor = (props: {
 }) => {
   const { layouts, formProps, fieldExtensions } = props;
   const [errorText, setErrorText] = useState<string>();
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const editLink = useRouteRef(editRouteRef);
   const {
     directory,

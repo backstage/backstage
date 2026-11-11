@@ -29,12 +29,13 @@ import {
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { TestApiProvider } from '@backstage/test-utils';
-import { mockApis } from '@backstage/frontend-test-utils';
+import { createMockAppHistory, mockApis } from '@backstage/frontend-test-utils';
 import { useMountEffect } from '@react-hookz/web';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
 import { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router-dom';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import { catalogApiRef } from '../api';
 import { MockStarredEntitiesApi, starredEntitiesApiRef } from '../apis';
 import {
@@ -136,6 +137,61 @@ describe('<EntityListProvider />', () => {
   });
   afterEach(() => {
     window.history.replaceState = origReplaceState;
+  });
+
+  it('publishes filter edits through app history and reads externally restored queries', async () => {
+    const history = createMockAppHistory({
+      initialLocation: '/catalog?unrelated=keep',
+    });
+    const catalogApi = catalogApiMock({ entities });
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: ({ children }) => (
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, catalogApi],
+            [appHistoryApiRef, history],
+            [configApiRef, mockApis.config()],
+            [identityApiRef, mockIdentityApi],
+            [storageApiRef, mockApis.storage()],
+            [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+            [alertApiRef, mockApis.alert()],
+            [translationApiRef, mockApis.translation()],
+            [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
+          ]}
+        >
+          <EntityListProvider pagination={false}>{children}</EntityListProvider>
+        </TestApiProvider>
+      ),
+    });
+    act(() =>
+      result.current.updateFilters({
+        kind: new EntityKindFilter('component', 'Component'),
+      }),
+    );
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(
+      qs.parse(history.getSnapshot().location.search, {
+        ignoreQueryPrefix: true,
+      }),
+    ).toEqual({ unrelated: 'keep', filters: { kind: 'component' } });
+    expect(history.navigateCalls.at(-1)).toMatchObject({
+      options: { replace: true },
+    });
+    act(() => history.navigate('/catalog?filters[kind]=api&unrelated=other'));
+    expect(result.current.queryParameters).toEqual({ kind: 'api' });
+    act(() =>
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      }),
+    );
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(history.getSnapshot().location.search).toContain('unrelated=other');
+    expect(
+      qs.parse(history.getSnapshot().location.search, {
+        ignoreQueryPrefix: true,
+      }),
+    ).toMatchObject({ filters: { kind: 'api' } });
+    expect(history.navigateCalls.length).toBeLessThan(10);
   });
 
   it('should send backend filters', async () => {

@@ -16,14 +16,11 @@
 
 import { ApiProvider } from '@backstage/core-app-api';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
+import { mockApis, TestApiRegistry } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { scaffolderApiMock as createScaffolderApiMock } from '@backstage/plugin-scaffolder-react/testUtils';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import {
-  mockApis,
-  renderInTestApp,
-  TestApiRegistry,
-} from '@backstage/test-utils';
-import { fireEvent, waitFor } from '@testing-library/react';
-import {
-  ScaffolderApi,
   scaffolderApiRef,
   SecretsContextProvider,
 } from '@backstage/plugin-scaffolder-react';
@@ -35,29 +32,7 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { ScaffolderFormDecoratorsApi } from '../../api/types';
 import { formDecoratorsApiRef } from '../../api/ref';
 
-jest.mock('react-router-dom', () => {
-  return {
-    ...(jest.requireActual('react-router-dom') as any),
-    useParams: () => ({
-      templateName: 'test',
-    }),
-  };
-});
-
-const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
-  cancelTask: jest.fn(),
-  scaffold: jest.fn(),
-  getTemplateParameterSchema: jest.fn(),
-  getIntegrationsList: jest.fn(),
-  getTask: jest.fn(),
-  streamLogs: jest.fn(),
-  listActions: jest.fn(),
-  listTasks: jest.fn(),
-  autocomplete: jest.fn(),
-  retry: jest.fn(),
-  listTemplatingExtensions: jest.fn(),
-  dryRun: jest.fn(),
-};
+const scaffolderApiMock = createScaffolderApiMock.mock();
 
 const scaffolderDecoratorsMock: jest.Mocked<ScaffolderFormDecoratorsApi> = {
   getFormDecorators: jest.fn().mockResolvedValue([]),
@@ -71,7 +46,6 @@ const apis = TestApiRegistry.from(
   [formDecoratorsApiRef, scaffolderDecoratorsMock],
   [catalogApiRef, catalogApi],
   [analyticsApiRef, analyticsApi],
-  [catalogApiRef, catalogApi],
 );
 
 const entityRefResponse = {
@@ -92,8 +66,7 @@ const entityRefResponse = {
 };
 
 describe('TemplateWizardPage', () => {
-  it('captures expected analytics events', async () => {
-    scaffolderApiMock.scaffold.mockResolvedValue({ taskId: 'xyz' });
+  beforeEach(() => {
     scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
       steps: [
         {
@@ -109,15 +82,21 @@ describe('TemplateWizardPage', () => {
       ],
       title: 'React JSON Schema Form Test',
     });
+  });
+
+  it('captures expected analytics events', async () => {
+    scaffolderApiMock.scaffold.mockResolvedValue({ taskId: 'xyz' });
     catalogApi.getEntityByRef.mockResolvedValue(entityRefResponse);
 
-    const { findByRole, getByRole } = await renderInTestApp(
+    const { findByRole } = await renderInTestApp(
       <ApiProvider apis={apis}>
         <SecretsContextProvider>
           <TemplateWizardPage customFieldExtensions={[]} />,
         </SecretsContextProvider>
       </ApiProvider>,
       {
+        mountPath: '/create/templates/:namespace/:templateName',
+        initialRouteEntries: ['/create/templates/default/test'],
         mountedRoutes: {
           '/create': rootRouteRef,
         },
@@ -125,7 +104,7 @@ describe('TemplateWizardPage', () => {
     );
 
     // Fill out the name field
-    fireEvent.change(getByRole('textbox', { name: 'name' }), {
+    fireEvent.change(await findByRole('textbox', { name: 'name' }), {
       target: { value: 'expected-name' },
     });
 
@@ -188,11 +167,14 @@ describe('TemplateWizardPage', () => {
           </SecretsContextProvider>
         </ApiProvider>,
         {
+          mountPath: '/create/templates/:namespace/:templateName',
+          initialRouteEntries: ['/create/templates/default/test'],
           mountedRoutes: {
             '/create': rootRouteRef,
           },
         },
       );
+      await screen.findByRole('textbox', { name: 'name' });
       expect(queryByTestId('menu-button')).toBeInTheDocument();
     });
 
@@ -217,11 +199,14 @@ describe('TemplateWizardPage', () => {
           </SecretsContextProvider>
         </ApiProvider>,
         {
+          mountPath: '/create/templates/:namespace/:templateName',
+          initialRouteEntries: ['/create/templates/default/test'],
           mountedRoutes: {
             '/create': rootRouteRef,
           },
         },
       );
+      await screen.findByRole('textbox', { name: 'name' });
       expect(queryByTestId('menu-button')).not.toBeInTheDocument();
     });
   });

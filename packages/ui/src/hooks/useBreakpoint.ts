@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useSyncExternalStore } from 'react';
 import type { Breakpoint } from '../types';
 
 export const breakpoints: { name: string; id: Breakpoint; value: number }[] = [
