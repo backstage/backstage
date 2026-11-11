@@ -496,8 +496,11 @@ On PostgreSQL, an `$in` list of 10 or more values on a field other than
 `kind`, `spec.type` and `spec.lifecycle` is matched in paginated queries as a
 set of entity IDs, either joined (anti-joined under `$not`) or hashed, instead
 of a per-row `= ANY(array)` probe. Facets and counts already use set
-operations and keep their SQL, as do lists with fewer than 10 values and
-lists on the three broad fields.
+operations and keep their SQL, as do lists with fewer than 10 values, lists
+on the broad fields, and lookups by entity ref (see
+[below](#lookups-by-entity-ref-2026-11-11)). `metadata.namespace` was added to
+the broad fields after these measurements; none of the scenarios use a long
+list of namespaces.
 
 Measured on the production-scale staging replica (PostgreSQL 18.6, about 712k
 entities) with SQL captured from `DefaultEntitiesCatalog` on this change and
@@ -524,7 +527,6 @@ on master, using the [slim profile](./slim-profile.md):
 | 1 component page                      |     10 |          8 ms |        32 ms |
 | 1 component page                      |    174 |         67 ms |       590 ms |
 | 3 unfiltered page                     |    174 |        176 ms |       695 ms |
-| 6 entity by ref                       |    174 |        0.6 ms |        13 ms |
 | 7 full text component                 |  10/40 |      51/54 ms |   207/219 ms |
 | 7 full text component                 |    174 |         76 ms |       408 ms |
 | 12 ordered selective OR               |     10 |         4.0 s |        4.9 s |
@@ -556,6 +558,31 @@ on master, using the [slim profile](./slim-profile.md):
 
 Cases not listed, with 10 to 40 claims, are within 2x of master and under
 30 ms.
+
+### Lookups by entity ref (2026-11-11)
+
+The table above first measured scenario 6 at 174 claims with the list as a
+set: 0.6 ms on master against 13 ms. Since the refs already pick the rows,
+lookups by ref now keep the per-row form at any list length, which is the SQL
+master produces.
+
+Measured on the beta read replica (PostgreSQL, about 728k entities) with
+wall-clock timings of `entitiesBatch` calls under the scenario 15 permission
+filter, median of 3 runs over 2 rounds:
+
+| Refs | Claims | per row (this change) |   as a set |
+| ---: | -----: | --------------------: | ---------: |
+|    1 |   3-40 |              37-54 ms |   47-62 ms |
+|    1 |    174 |                 43 ms |     194 ms |
+|   10 |    174 |                 51 ms |     190 ms |
+|  100 |    174 |                202 ms |     209 ms |
+| 1000 |   3-40 |             86-104 ms | 153-192 ms |
+| 1000 |    174 |                232 ms |     287 ms |
+| 5000 |   3-40 |            260-320 ms | 486-550 ms |
+| 5000 |    174 |                427 ms |     618 ms |
+
+The per-row form is as fast or faster at every batch size, so there is no
+batch size above which the set form is used.
 
 ### Comparison
 
