@@ -20,6 +20,7 @@ import {
   type IconElement,
 } from '@backstage/frontend-plugin-api';
 import { ReactElement, type ReactNode } from 'react';
+import type { FilterPredicate } from '@backstage/filter-predicates';
 
 /** @alpha */
 export type UseProps = () =>
@@ -68,6 +69,25 @@ export const entityFilterFunctionDataRef = createExtensionDataRef<
 export const entityFilterExpressionDataRef =
   createExtensionDataRef<string>().with({
     id: 'catalog.entity-filter-expression',
+  });
+
+/**
+ * The filter predicate that an entity filter function was created from.
+ *
+ * @remarks
+ *
+ * When a filter is given as a filter predicate object rather than a function,
+ * the predicate is output with this data ref in addition to the filter
+ * function. Consumers keep using the filter function, while the predicate can
+ * be stored as JSON, for example by deferred plugin loading, and turned back
+ * into the same filter function with `filterPredicateToFilterFunction` from
+ * `@backstage/filter-predicates`.
+ *
+ * @internal
+ */
+export const entityFilterPredicateDataRef =
+  createExtensionDataRef<FilterPredicate>().with({
+    id: 'catalog.entity-filter-predicate',
   });
 
 /** @alpha */

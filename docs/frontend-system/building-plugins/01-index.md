@@ -232,6 +232,53 @@ The `ExampleEntityContent` itself is again a regular React component where you c
 
 For a more complete list of the different kinds of extensions that you can create for your plugin, see the [extension blueprints](./03-common-extension-blueprints.md) section.
 
+## Deferred loading
+
+:::note
+Deferred loading is experimental, and the details described here may change.
+:::
+
+When an app enables `app.experimental.deferredPackages`, the Backstage CLI can defer your plugin. A _deferred plugin_ starts out as a stand-in that is built from a manifest that the CLI records at build time. The real plugin code is loaded the first time one of its pages is visited or one of its elements is rendered, for example an entity card or an entity content tab. The CLI prints which plugins are deferred, and why the others are not, when the app is built or started.
+
+A plugin can be deferred if each of its extensions is one of the following:
+
+- A page.
+- A utility API. It becomes available once the plugin has loaded, so only your plugin itself should use it, unless the API is part of the [sync export](#the-sync-export).
+- An element, which is an extension that outputs a React element along with data that can be stored as JSON, for example the title and filter of an entity card.
+
+An element can't be deferred if it outputs a function, since a function can't be stored in the manifest. The one exception is an entity filter that is given as a filter predicate object to the entity blueprints of `@backstage/plugin-catalog-react`. These blueprints output the predicate alongside the filter function, and the stand-in creates the same function from the predicate. Filters given as a function or as a filter expression string still prevent the plugin from being deferred.
+
+Config in `app.extensions` for a deferred element is applied once the plugin has loaded. A config value that only changes the data of an element, such as a title, is also applied to the stand-in when the element outputs it as it is. If an element is configured with any other value that changes the data it outputs, the plugin is loaded together with the app instead.
+
+### The sync export
+
+If some extensions of your plugin are needed before the plugin is first used, you can move them to a `./sync` entry point of your plugin package. The app loads the sync export together with the app, while the rest of the plugin is still deferred. Use it for utility APIs that other plugins use, and for elements that can't be deferred, such as an entity card with a filter function.
+
+The default export of the sync entry point is a plugin that has the same plugin ID as the main export, and only holds the extensions that should be loaded with the app. Each of these extensions must be the same extension object as in the main export, which you can do by defining them in a separate module that both entry points import:
+
+```tsx title="in src/sync.tsx"
+import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { exampleApi, exampleEntityCard } from './syncExtensions';
+
+export default createFrontendPlugin({
+  pluginId: 'example',
+  extensions: [exampleApi, exampleEntityCard],
+});
+```
+
+```json title="in package.json"
+"exports": {
+  ".": "./src/index.ts",
+  "./alpha": "./src/alpha.tsx",
+  "./sync": "./src/sync.tsx",
+  "./package.json": "./package.json"
+},
+```
+
+The main export still includes all of its extensions, so that the plugin works in apps that don't defer it. When the plugin is deferred, each extension of the sync export is installed once, and is kept as it is when the rest of the plugin is loaded. If the two exports don't agree, for example because an extension is created twice or has a different plugin ID, the CLI loads the plugin together with the app, and reports why. Any route refs of the sync export must also be the same as in the main export.
+
+Keep the sync export small, since everything that it imports is part of the initial app bundle.
+
 ## Related topics
 
 The following guides cover cross-cutting concerns for building frontend plugins:

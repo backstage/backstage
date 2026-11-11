@@ -41,7 +41,7 @@ export interface ExtractManifestsOptions {
   /** The directory of the app, used to resolve the packages to extract */
   appDir: string;
   /** The packages to extract manifests from, `key` identifies the result */
-  packages: Array<{ key: string; import: string }>;
+  packages: Array<{ key: string; import: string; syncImport?: string }>;
   /** The time to allow for each package, in milliseconds */
   packageTimeoutMs?: number;
 }

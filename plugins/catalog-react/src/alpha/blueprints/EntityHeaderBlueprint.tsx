@@ -27,6 +27,7 @@ import { Entity } from '@backstage/catalog-model';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
 import {
   entityFilterExpressionDataRef,
+  entityFilterPredicateDataRef,
   entityFilterFunctionDataRef,
 } from './extensionData';
 
@@ -41,6 +42,7 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
   attachTo: { id: 'page:catalog/entity', input: 'headers' },
   dataRefs: {
     filterFunction: entityFilterFunctionDataRef,
+    filterPredicate: entityFilterPredicateDataRef,
     element: coreExtensionData.reactElement,
   },
   configSchema: {
@@ -49,6 +51,7 @@ export const EntityHeaderBlueprint = createExtensionBlueprint({
   output: [
     entityFilterFunctionDataRef.optional(),
     entityFilterExpressionDataRef.optional(),
+    entityFilterPredicateDataRef.optional(),
     coreExtensionData.reactElement.optional(),
   ],
   *factory(

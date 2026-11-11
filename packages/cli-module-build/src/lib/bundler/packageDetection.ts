@@ -89,13 +89,24 @@ async function detectPackages(
       ) {
         // Include alpha entry point if available. If there's no default export it will be ignored
         const exp = depPackageJson.exports;
-        if (exp && typeof exp === 'object' && './alpha' in exp) {
+        const hasExport = (name: string) =>
+          Boolean(exp && typeof exp === 'object' && name in exp);
+        // The sync entry point holds the part of a plugin that is loaded with
+        // the app when the rest of the plugin is deferred
+        const syncImport = hasExport('./sync') ? `${depName}/sync` : undefined;
+        const withSync = (entry: DetectedPackage): DetectedPackage =>
+          syncImport ? { ...entry, syncImport } : entry;
+        if (hasExport('./alpha')) {
           return [
-            { name: depName, import: depName },
-            { name: depName, export: './alpha', import: `${depName}/alpha` },
+            withSync({ name: depName, import: depName }),
+            withSync({
+              name: depName,
+              export: './alpha',
+              import: `${depName}/alpha`,
+            }),
           ];
         }
-        return [{ name: depName, import: depName }];
+        return [withSync({ name: depName, import: depName })];
       }
     } catch {
       /* ignore packages that don't make package.json available */
@@ -107,7 +118,13 @@ async function detectPackages(
 // Make sure we're not issuing multiple writes at the same time, which can cause partial overwrites
 const writeQueue = new PQueue({ concurrency: 1 });
 
-type DetectedPackage = { name: string; export?: string; import: string };
+type DetectedPackage = {
+  name: string;
+  export?: string;
+  import: string;
+  /** The import path of the sync entry point of the package, if any */
+  syncImport?: string;
+};
 
 const IMPORT_SCAN_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs'];
 
@@ -167,11 +184,14 @@ type DetectedEntry =
       manifest: ExtractedManifest;
     };
 
+type ExtensionConfigById = Map<string, { [key: string]: unknown }>;
+
 /**
- * Reads the config keys that are set for each extension in `app.extensions`.
+ * Reads the config that is set for each extension in `app.extensions`, merged
+ * in order so that later entries win.
  */
-function readConfiguredExtensionKeys(config: Config): Map<string, string[]> {
-  const result = new Map<string, string[]>();
+function readConfiguredExtensions(config: Config): ExtensionConfigById {
+  const result: ExtensionConfigById = new Map();
   const entries = config.getOptional('app.extensions');
   if (!Array.isArray(entries)) {
     return result;
@@ -182,34 +202,53 @@ function readConfiguredExtensionKeys(config: Config): Map<string, string[]> {
     }
     for (const [id, value] of Object.entries(entry)) {
       const extensionConfig = (value as { config?: unknown } | null)?.config;
-      if (extensionConfig && typeof extensionConfig === 'object') {
-        result.set(id, [
-          ...(result.get(id) ?? []),
-          ...Object.keys(extensionConfig),
-        ]);
+      if (
+        extensionConfig &&
+        typeof extensionConfig === 'object' &&
+        !Array.isArray(extensionConfig)
+      ) {
+        result.set(id, { ...result.get(id), ...extensionConfig });
       }
     }
   }
   return result;
 }
 
+function getJsonType(value: unknown): string {
+  if (value === null) {
+    return 'null';
+  }
+  return Array.isArray(value) ? 'array' : typeof value;
+}
+
 /**
  * Returns why the config prevents a plugin from being deferred, which is the
- * case when an element is configured with keys that change the data its stub
- * outputs.
+ * case when an element is configured with values that change the data its
+ * stub outputs, and that the stub can't apply itself.
  */
 function findConfigConflict(
   manifest: ExtractedManifest,
-  configKeysById: Map<string, string[]>,
+  configById: ExtensionConfigById,
 ): string | undefined {
   const extensions = (manifest.extensions ?? []) as Array<{
     id: string;
-    element?: { dataConfigKeys?: string[] };
+    element?: {
+      dataConfigKeys?: string[];
+      configPassThrough?: { [key: string]: { types: string[] } };
+    };
   }>;
   for (const extension of extensions) {
-    const dataConfigKeys = extension.element?.dataConfigKeys ?? [];
-    const keys = (configKeysById.get(extension.id) ?? []).filter(key =>
-      dataConfigKeys.includes(key),
+    const element = extension.element;
+    const config = configById.get(extension.id);
+    if (!element || !config) {
+      continue;
+    }
+    const keys = Object.keys(config).filter(
+      key =>
+        (element.dataConfigKeys ?? []).includes(key) &&
+        !element.configPassThrough?.[key]?.types.includes(
+          getJsonType(config[key]),
+        ),
     );
     if (keys.length > 0) {
       return `'${extension.id}' is configured with '${keys.join(
@@ -223,7 +262,7 @@ function findConfigConflict(
 async function resolveDetectedEntries(
   targetPath: string,
   pkgs: DetectedPackage[],
-  configKeysById: Map<string, string[]>,
+  configById: ExtensionConfigById,
 ): Promise<DetectedEntry[]> {
   const imported = await findStaticallyImportedPackages(targetPath, pkgs);
   const keyOf = (pkg: DetectedPackage) => `${pkg.name}${pkg.export ?? ''}`;
@@ -231,7 +270,11 @@ async function resolveDetectedEntries(
     appDir: targetPath,
     packages: pkgs
       .filter(pkg => !imported.has(pkg.name))
-      .map(pkg => ({ key: keyOf(pkg), import: pkg.import })),
+      .map(pkg => ({
+        key: keyOf(pkg),
+        import: pkg.import,
+        ...(pkg.syncImport ? { syncImport: pkg.syncImport } : {}),
+      })),
   });
 
   return pkgs.map((pkg): DetectedEntry => {
@@ -258,17 +301,24 @@ async function resolveDetectedEntries(
         reason: result.manifest.notDeferrableReason ?? 'not deferrable',
       };
     }
-    const conflict = findConfigConflict(result.manifest, configKeysById);
+    const conflict = findConfigConflict(result.manifest, configById);
     if (conflict) {
       return { pkg, mode: 'eager', reason: conflict };
     }
     return {
       pkg,
       mode: 'lazy',
-      reason: 'loaded on first use',
+      reason: hasSyncExtensions(result.manifest)
+        ? 'loaded on first use, with its sync export loaded with the app'
+        : 'loaded on first use',
       manifest: result.manifest,
     };
   });
+}
+
+function hasSyncExtensions(manifest: ExtractedManifest): boolean {
+  const extensions = (manifest.extensions ?? []) as Array<{ sync?: boolean }>;
+  return extensions.some(extension => extension.sync);
 }
 
 function printDeferralReport(entries: DetectedEntry[]) {
@@ -297,21 +347,43 @@ async function writeDetectedPackagesModule(
     const entries = await resolveDetectedEntries(
       targetPath,
       pkgs,
-      readConfiguredExtensionKeys(options.config),
+      readConfiguredExtensions(options.config),
     );
     printDeferralReport(entries);
+    // A package can have more than one deferred entry point that shares a
+    // sync entry point, which must only be loaded once
+    const emittedSyncImports = new Set<string>();
     requirePackageScript = entries
-      .map(entry =>
-        entry.mode === 'lazy'
-          ? `{ name: ${JSON.stringify(
-              entry.pkg.name,
-            )}, export: ${JSON.stringify(
-              entry.pkg.export,
-            )}, manifest: ${JSON.stringify(
-              entry.manifest,
-            )}, load: () => import('${entry.pkg.import}') }`
-          : requireEntry(entry.pkg),
-      )
+      .flatMap(entry => {
+        if (entry.mode !== 'lazy') {
+          return [requireEntry(entry.pkg)];
+        }
+        const lazyEntry = `{ name: ${JSON.stringify(
+          entry.pkg.name,
+        )}, export: ${JSON.stringify(
+          entry.pkg.export,
+        )}, manifest: ${JSON.stringify(entry.manifest)}, load: () => import('${
+          entry.pkg.import
+        }') }`;
+        // The sync part of a deferred plugin is loaded with the app
+        const syncImport = entry.pkg.syncImport;
+        if (
+          !syncImport ||
+          !hasSyncExtensions(entry.manifest) ||
+          emittedSyncImports.has(syncImport)
+        ) {
+          return [lazyEntry];
+        }
+        emittedSyncImports.add(syncImport);
+        return [
+          requireEntry({
+            name: entry.pkg.name,
+            export: './sync',
+            import: syncImport,
+          }),
+          lazyEntry,
+        ];
+      })
       .join(',');
   } else {
     requirePackageScript = pkgs.map(requireEntry).join(',');

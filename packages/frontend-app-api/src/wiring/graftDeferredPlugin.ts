@@ -47,6 +47,10 @@ import { ErrorCollector } from './createErrorCollector';
 import { FrontendApiRegistry } from './FrontendApiRegistry';
 import { DeferredFrontendFeature } from './deferredFeatures';
 import {
+  findSyncPartMismatch,
+  getPluginExtensionIds,
+} from '../manifest/syncPart';
+import {
   AppTreeApiProxy,
   initializePhaseRouting,
   RouteResolutionApiProxy,
@@ -222,6 +226,8 @@ export function graftDeferredPlugin(options: {
   entry: DeferredFrontendFeature;
   loadedFeature: unknown;
   stub: FrontendPlugin;
+  /** The sync part of the plugin, which is already installed in the app. */
+  syncPart?: FrontendPlugin;
   features: FrontendFeature[];
   attachPluginInfo(feature: FrontendFeature): FrontendFeature;
   tree: AppTree;
@@ -251,6 +257,19 @@ export function graftDeferredPlugin(options: {
       `The deferred '${entry.name}' package provided the '${loadedPluginId}' plugin, but its manifest is for the '${pluginId}' plugin`,
     );
   }
+  // The sync part was installed in place of the extensions it provides, so it
+  // must agree with the loaded plugin for them to only be installed once.
+  if (options.syncPart) {
+    const mismatch = findSyncPartMismatch(loadedPlugin, options.syncPart);
+    if (mismatch) {
+      throw new Error(
+        `The deferred '${entry.name}' package can't be loaded, ${mismatch}`,
+      );
+    }
+  }
+  const syncExtensionIds = new Set(
+    options.syncPart ? getPluginExtensionIds(options.syncPart) : [],
+  );
   const plugin = options.attachPluginInfo(loadedPlugin) as FrontendPlugin;
 
   // Modules for the plugin were installed together with the stub, so they are
@@ -273,8 +292,11 @@ export function graftDeferredPlugin(options: {
     collector,
   });
 
+  // The extensions of the sync part are kept as they are
   const stubExtensionIds = new Set(
-    OpaqueFrontendPlugin.toInternal(stub).extensions.map(e => e.id),
+    OpaqueFrontendPlugin.toInternal(stub)
+      .extensions.map(e => e.id)
+      .filter(id => !syncExtensionIds.has(id)),
   );
   // Nodes that are already in the tree and don't belong to the stub, for
   // example extensions added by modules, are kept as they are.

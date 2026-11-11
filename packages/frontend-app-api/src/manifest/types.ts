@@ -82,5 +82,25 @@ export interface FrontendExtensionManifest {
      * plugin is loaded.
      */
     dataConfigKeys?: string[];
+    /**
+     * Keys in `dataConfigKeys` whose value is output unchanged as the data
+     * of a single data ref, for values of the listed JSON types. The stub
+     * applies config for these keys and types itself, so it doesn't prevent
+     * the plugin from being deferred.
+     */
+    configPassThrough?: {
+      [configKey: string]: { dataRefId: string; types: string[] };
+    };
+    /**
+     * Function outputs that the stub creates from a filter predicate in
+     * `data`, keyed by the function data ref ID, with the ID of the predicate
+     * data ref as the value.
+     */
+    predicateFunctions?: { [functionDataRefId: string]: string };
   };
+  /**
+   * True if the extension is part of the sync export of the plugin package,
+   * which is loaded with the app. Such extensions aren't stubbed.
+   */
+  sync?: boolean;
 }
