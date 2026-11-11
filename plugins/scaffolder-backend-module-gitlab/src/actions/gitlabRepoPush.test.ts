@@ -89,6 +89,40 @@ describe('createGitLabCommit', () => {
     instance = createGitlabRepoPushAction({ integrations });
   });
 
+  describe('targetPath validation', () => {
+    it('rejects targetPath that escapes the repository subdirectory', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Create my new commit',
+        branchName: 'some-branch',
+        targetPath: 'services/..',
+      };
+      mockDir.setContent({
+        [workspacePath]: { 'foo.txt': 'Hello there!' },
+      });
+      const ctx = createMockActionContext({ input, workspacePath });
+
+      await expect(instance.handler(ctx)).rejects.toThrow(
+        "Invalid targetPath 'services/..'",
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects absolute and parent-directory targetPath', async () => {
+      for (const targetPath of ['..', '/etc', 'a/../../b']) {
+        const input = {
+          repoUrl: 'gitlab.com?repo=repo&owner=owner',
+          commitMessage: 'Create my new commit',
+          branchName: 'some-branch',
+          targetPath,
+        };
+        const ctx = createMockActionContext({ input, workspacePath });
+        await expect(instance.handler(ctx)).rejects.toThrow(/targetPath/);
+      }
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+    });
+  });
+
   describe('createGitLabCommitWithoutCommitAction', () => {
     it('default commitAction is create', async () => {
       const input = {
