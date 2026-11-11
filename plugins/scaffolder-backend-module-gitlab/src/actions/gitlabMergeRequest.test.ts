@@ -271,6 +271,39 @@ describe('createGitLabMergeRequest', () => {
     instance = createPublishGitlabMergeRequestAction({ integrations });
   });
 
+  describe('targetPath validation', () => {
+    it('rejects targetPath that escapes the repository subdirectory', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'some-branch',
+        description: 'Create my new MR',
+        targetPath: 'services/..',
+      };
+      const ctx = createMockActionContext({ input, workspacePath });
+
+      await expect(instance.handler(ctx)).rejects.toThrow(
+        "Invalid targetPath 'services/..'",
+      );
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects absolute and parent-directory targetPath', async () => {
+      for (const targetPath of ['..', '/etc', 'a/../../b']) {
+        const input = {
+          repoUrl: 'gitlab.com?repo=repo&owner=owner',
+          title: 'Create my new MR',
+          branchName: 'some-branch',
+          description: 'Create my new MR',
+          targetPath,
+        };
+        const ctx = createMockActionContext({ input, workspacePath });
+        await expect(instance.handler(ctx)).rejects.toThrow(/targetPath/);
+      }
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+    });
+  });
+
   describe('createGitLabMergeRequestWithSpecifiedTargetBranch', () => {
     it('removeSourceBranch is false by default when not passed in options', async () => {
       const input = {
