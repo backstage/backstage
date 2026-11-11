@@ -180,6 +180,62 @@ describe('createPublishGithubPullRequestAction', () => {
     });
   });
 
+  describe('targetPath validation', () => {
+    it('rejects targetPath that escapes the repository subdirectory', async () => {
+      const input: GithubPullRequestActionInput = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        targetPath: 'services/..',
+      };
+      mockDir.setContent({
+        [workspacePath]: { 'file.txt': 'Hello there!' },
+      });
+      const ctx = createMockActionContext({ input, workspacePath });
+
+      await expect(instance.handler(ctx)).rejects.toThrow(
+        "Invalid targetPath 'services/..'",
+      );
+      expect(fakeClient.createPullRequest).not.toHaveBeenCalled();
+    });
+
+    it('rejects filesToDelete entries that escape the repository subdirectory', async () => {
+      const input: GithubPullRequestActionInput = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        targetPath: 'services',
+        filesToDelete: ['../.github/workflows/ci.yml'],
+      };
+      mockDir.setContent({
+        [workspacePath]: { 'file.txt': 'Hello there!' },
+      });
+      const ctx = createMockActionContext({ input, workspacePath });
+
+      await expect(instance.handler(ctx)).rejects.toThrow(
+        "Invalid filesToDelete entry '../.github/workflows/ci.yml'",
+      );
+      expect(fakeClient.createPullRequest).not.toHaveBeenCalled();
+    });
+
+    it('rejects absolute and parent-directory targetPath', async () => {
+      for (const targetPath of ['..', '/etc', 'a/../../b']) {
+        const input: GithubPullRequestActionInput = {
+          repoUrl: 'github.com?owner=myorg&repo=myrepo',
+          title: 'Create my new app',
+          branchName: 'new-app',
+          description: 'This PR is really good',
+          targetPath,
+        };
+        const ctx = createMockActionContext({ input, workspacePath });
+        await expect(instance.handler(ctx)).rejects.toThrow(/targetPath/);
+      }
+      expect(fakeClient.createPullRequest).not.toHaveBeenCalled();
+    });
+  });
+
   describe('with no sourcePath', () => {
     let input: GithubPullRequestActionInput;
     let ctx: ActionContext<GithubPullRequestActionInput, any, any>;

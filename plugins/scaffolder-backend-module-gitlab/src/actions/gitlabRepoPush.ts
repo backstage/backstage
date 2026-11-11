@@ -24,7 +24,11 @@ import {
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
 import { CommitAction } from '@gitbeaker/rest';
-import { createGitlabApi, getErrorMessage } from './helpers';
+import {
+  assertValidTargetPath,
+  createGitlabApi,
+  getErrorMessage,
+} from './helpers';
 import { examples } from './gitlabRepoPush.examples';
 import { getFileAction } from '../util';
 import { SerializedFile } from '@backstage/plugin-scaffolder-node';
@@ -116,6 +120,10 @@ export const createGitlabRepoPushAction = (options: {
         commitAction,
         allowEmpty,
       } = ctx.input;
+
+      if (targetPath) {
+        assertValidTargetPath(targetPath);
+      }
 
       const { owner, repo, project } = parseRepoUrl(repoUrl, integrations);
       const repoID = project ? project : `${owner}/${repo}`;
