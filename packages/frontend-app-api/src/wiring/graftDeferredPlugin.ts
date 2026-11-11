@@ -27,12 +27,11 @@ import {
   RouteRef,
   SubRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { OpaqueFrontendPlugin } from '@internal/frontend';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
-  isInternalFrontendModule,
-  toInternalFrontendModule,
-} from '../../../frontend-plugin-api/src/wiring/createFrontendModule';
+  DeferredFrontendFeature,
+  OpaqueFrontendModule,
+  OpaqueFrontendPlugin,
+} from '@internal/frontend';
 import { collectRouteIds } from '../routing/collectRouteIds';
 import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
 import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
@@ -45,7 +44,6 @@ import {
 } from './apiFactories';
 import { ErrorCollector } from './createErrorCollector';
 import { FrontendApiRegistry } from './FrontendApiRegistry';
-import { DeferredFrontendFeature } from './deferredFeatures';
 import {
   findSyncPartMismatch,
   getPluginExtensionIds,
@@ -271,12 +269,12 @@ export function graftDeferredPlugin(options: {
   // Modules for the plugin were installed together with the stub, so they are
   // applied to the real plugin as well.
   const modules = options.features
-    .filter(isInternalFrontendModule)
+    .filter(OpaqueFrontendModule.isType)
     .filter(mod => mod.pluginId === pluginId);
   const ownExtensionIds = new Set([
     ...OpaqueFrontendPlugin.toInternal(plugin).extensions.map(e => e.id),
     ...modules.flatMap(mod =>
-      toInternalFrontendModule(mod).extensions.map(e => e.id),
+      OpaqueFrontendModule.toInternal(mod).extensions.map(e => e.id),
     ),
   ]);
   const specs = resolveAppNodeSpecs({

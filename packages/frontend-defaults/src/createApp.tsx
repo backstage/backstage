@@ -45,7 +45,10 @@ import {
 import appPlugin from '@backstage/plugin-app';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../frontend-app-api/src/wiring/prepareSpecializedApp';
-import { discoverAvailableAndDeferredFeatures } from './discovery';
+import {
+  applyExplicitFeatures,
+  discoverAvailableAndDeferredFeatures,
+} from './discovery';
 import { resolveAsyncFeatures } from './resolution';
 import { maybeCreateErrorPage } from './maybeCreateErrorPage';
 
@@ -123,8 +126,12 @@ export function createApp(options?: CreateAppOptions): {
         overrideBaseUrlConfigs(defaultConfigLoaderSync()),
       );
 
+    // Features that are passed explicitly win over deferred plugins
     const { features: discoveredFeaturesAndLoaders, deferred } =
-      discoverAvailableAndDeferredFeatures(config);
+      applyExplicitFeatures(
+        discoverAvailableAndDeferredFeatures(config),
+        options?.features ?? [],
+      );
     const { features: loadedFeatures } = await resolveAsyncFeatures({
       config,
       features: [...discoveredFeaturesAndLoaders, ...(options?.features ?? [])],

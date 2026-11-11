@@ -31,14 +31,13 @@ import {
   Progress,
   RouteRef,
 } from '@backstage/frontend-plugin-api';
-import {
-  FilterPredicate,
-  filterPredicateToFilterFunction,
-} from '@backstage/filter-predicates';
 import { ForwardedError } from '@backstage/errors';
 import { useEffect, useState } from 'react';
-import { OpaqueFrontendPlugin } from '@internal/frontend';
-import { FrontendFeatureManifest } from '../manifest/types';
+import {
+  DeferredFrontendFeature,
+  FrontendFeatureManifest,
+  OpaqueFrontendPlugin,
+} from '@internal/frontend';
 import { findDeferredConfigConflict } from '../manifest/deferredConfig';
 import {
   getExtensionDefinition,
@@ -48,20 +47,7 @@ import {
 import { ExtensionParameters } from '../tree/readAppExtensionsConfig';
 import { ErrorCollector } from './createErrorCollector';
 
-/**
- * A plugin that is only loaded once one of its pages or elements is
- * rendered.
- *
- * @internal
- */
-export type DeferredFrontendFeature = {
-  /** The package name of the plugin. */
-  name: string;
-  /** The build-time description of the plugin. */
-  manifest: FrontendFeatureManifest;
-  /** Loads the plugin, which must be the default export. */
-  load: () => Promise<{ default: unknown }>;
-};
+export type { DeferredFrontendFeature };
 
 /** @internal */
 export type DeferredPluginState =
@@ -71,6 +57,8 @@ export type DeferredPluginState =
   | { status: 'failed'; error: Error };
 
 const IDLE_STATE: DeferredPluginState = { status: 'idle' };
+
+const DEFAULT_RETRY_DELAYS_MS = [250, 1000];
 
 /**
  * Adds a loaded plugin to the app, and returns the elements that replace the
@@ -96,16 +84,23 @@ export class DeferredFeatureController {
   readonly #elements = new Map<string, JSX.Element>();
   readonly #listeners = new Set<() => void>();
   readonly #graft: DeferredPluginGrafter;
+  readonly #retryDelaysMs: number[];
   #queue: Promise<void> = Promise.resolve();
 
   constructor(options: {
     entries: DeferredFrontendFeature[];
     graft: DeferredPluginGrafter;
+    /**
+     * The delays before each retry of loading the code of a plugin. Defaults
+     * to two retries, after 250 and 1000 milliseconds.
+     */
+    retryDelaysMs?: number[];
   }) {
     for (const entry of options.entries) {
       this.#entries.set(entry.manifest.pluginId, entry);
     }
     this.#graft = options.graft;
+    this.#retryDelaysMs = options.retryDelaysMs ?? DEFAULT_RETRY_DELAYS_MS;
   }
 
   getState(pluginId: string): DeferredPluginState {
@@ -127,8 +122,11 @@ export class DeferredFeatureController {
    * Loads the plugin and adds it to the app. The returned promise always
    * resolves; a failure is stored in the plugin state instead.
    *
-   * A failed load is not retried, since a plugin that was partly added to the
-   * app can't be removed again. The error asks the user to reload the page.
+   * Loading the code of the plugin is retried a few times, since it can fail
+   * because of a network error. Once the code has loaded, a failure to add
+   * the plugin to the app is final, since a plugin that was partly added to
+   * the app can't be removed again. The error asks the user to reload the
+   * page.
    */
   load(pluginId: string): Promise<void> {
     const existing = this.#loads.get(pluginId);
@@ -148,7 +146,7 @@ export class DeferredFeatureController {
     this.#setState(pluginId, { status: 'loading' });
     const load = this.#queue
       .then(async () => {
-        const loaded = await entry.load();
+        const loaded = await this.#loadWithRetries(entry);
         const elements = this.#graft(entry, loaded?.default);
         for (const [extensionId, element] of elements) {
           this.#elements.set(extensionId, element);
@@ -168,6 +166,20 @@ export class DeferredFeatureController {
     this.#queue = load;
     this.#loads.set(pluginId, load);
     return load;
+  }
+
+  async #loadWithRetries(
+    entry: DeferredFrontendFeature,
+  ): Promise<{ default: unknown }> {
+    for (const delayMs of this.#retryDelaysMs) {
+      try {
+        return await entry.load();
+      } catch {
+        // Only the error of the last attempt is reported
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+      }
+    }
+    return entry.load();
   }
 
   #setState(pluginId: string, state: DeferredPluginState) {
@@ -276,22 +288,6 @@ function createStubElementExtension(options: {
   const dataRefs = Object.keys(element.data).map(id =>
     createExtensionDataRef<unknown>().with({ id }),
   );
-  // Functions that were created from filter predicates are recreated from the
-  // predicates, which are part of the data.
-  const predicateFunctions = Object.entries(
-    element.predicateFunctions ?? {},
-  ).map(([functionDataRefId, predicateDataRefId]) => {
-    const predicate = element.data[predicateDataRefId];
-    if (predicate === undefined) {
-      throw new Error(
-        `The '${extension.id}' extension outputs '${functionDataRefId}' from the '${predicateDataRefId}' data, which is missing from the manifest`,
-      );
-    }
-    return {
-      ref: createExtensionDataRef<unknown>().with({ id: functionDataRefId }),
-      value: filterPredicateToFilterFunction(predicate as FilterPredicate),
-    };
-  });
   const routeRef = element.routeRefName
     ? routes[element.routeRefName]
     : undefined;
@@ -304,7 +300,6 @@ function createStubElementExtension(options: {
   const output: ExtensionDataRef[] = [
     coreExtensionData.reactElement,
     ...dataRefs,
-    ...predicateFunctions.map(({ ref }) => ref),
     ...(routeRef ? [coreExtensionData.routeRef] : []),
   ];
 
@@ -322,9 +317,6 @@ function createStubElementExtension(options: {
       );
       for (const ref of dataRefs) {
         yield ref(element.data[ref.id]);
-      }
-      for (const { ref, value } of predicateFunctions) {
-        yield ref(value);
       }
       if (routeRef) {
         yield coreExtensionData.routeRef(routeRef);
@@ -531,13 +523,9 @@ export function createDeferredPlugins(options: {
       options.extensionParameters,
     );
     if (configuredExtensionId) {
-      // The CLI normally loads such plugins eagerly, so this only happens if
-      // the config changed after the build. The plugin is loaded right away
-      // so that the config is applied as soon as possible.
-      // eslint-disable-next-line no-console
-      console.warn(
-        `The '${configuredExtensionId}' extension of the deferred '${entry.name}' package has config in app.extensions, which can only be applied once the plugin is loaded. The plugin is loaded as soon as the app has started. Rebuild the app to load the package normally.`,
-      );
+      // The stub of an element can't apply config, so the plugin is loaded
+      // right after the app has started, which applies the config as soon as
+      // possible.
       preloadPluginIds.push(manifest.pluginId);
     }
     return true;

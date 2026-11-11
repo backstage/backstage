@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-export type {
-  FrontendFeatureManifest,
-  FrontendExtensionManifest,
-} from './manifest/types';
-export { createFrontendFeatureManifest } from './manifest/createFrontendFeatureManifest';
+export {
+  FRONTEND_MANIFEST_VERSION,
+  type FrontendFeatureManifest,
+  type FrontendExtensionManifest,
+  type FrontendPackageManifest,
+  type DeferredFrontendFeature,
+} from './types';

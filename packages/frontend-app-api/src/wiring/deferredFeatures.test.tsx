@@ -31,18 +31,13 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
-import {
-  FilterPredicate,
-  filterPredicateToFilterFunction,
-} from '@backstage/filter-predicates';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import appPluginOriginal from '@backstage/plugin-app';
 import {
   CreateSpecializedAppInternalOptions,
   prepareSpecializedApp,
 } from './prepareSpecializedApp';
-import { FrontendFeatureManifest } from '../manifest/types';
-import { createFrontendFeatureManifest } from '../manifest/createFrontendFeatureManifest';
+import { FrontendFeatureManifest } from '@internal/frontend';
 import { DeferredFeatureController } from './deferredFeatures';
 
 const manifest: FrontendFeatureManifest = {
@@ -320,7 +315,23 @@ describe('deferred features', () => {
         PageBlueprint.make({ params: { path: '/tabbed', title: 'Tabbed' } }),
       ],
     });
-    const tabbedManifest = createFrontendFeatureManifest(realPlugin);
+    const tabbedManifest: FrontendFeatureManifest = {
+      manifestVersion: 1,
+      type: 'plugin',
+      pluginId: 'tabbed',
+      deferrable: true,
+      routes: [],
+      externalRoutes: [],
+      extensions: [
+        {
+          id: 'page:tabbed',
+          kind: 'page',
+          attachTo: { id: 'app/routes', input: 'routes' },
+          disabled: false,
+          page: { path: '/tabbed', title: 'Tabbed' },
+        },
+      ],
+    };
     const module = createFrontendModule({
       pluginId: 'tabbed',
       extensions: [
@@ -459,16 +470,36 @@ describe('deferred features', () => {
       ],
     });
 
-    const scoredManifest = createFrontendFeatureManifest(realPlugin);
-    expect(scoredManifest.deferrable).toBe(true);
-    expect(scoredManifest.extensions).toEqual([
-      expect.objectContaining({ id: 'api:scored', kind: 'api' }),
-      expect.objectContaining({ id: 'page:scored', page: expect.any(Object) }),
-      expect.objectContaining({
-        id: 'host-content:scored',
-        element: { data: { 'test.content.title': 'Score tab' } },
-      }),
-    ]);
+    const scoredManifest: FrontendFeatureManifest = {
+      manifestVersion: 1,
+      type: 'plugin',
+      pluginId: 'scored',
+      deferrable: true,
+      routes: ['root'],
+      externalRoutes: ['hostLink', 'configuredLink'],
+      extensions: [
+        {
+          id: 'api:scored',
+          kind: 'api',
+          attachTo: { id: 'root', input: 'apis' },
+          disabled: false,
+        },
+        {
+          id: 'page:scored',
+          kind: 'page',
+          attachTo: { id: 'app/routes', input: 'routes' },
+          disabled: false,
+          page: { path: '/scored', routeRefName: 'root' },
+        },
+        {
+          id: 'host-content:scored',
+          kind: 'host-content',
+          attachTo: { id: 'page:host', input: 'contents' },
+          disabled: false,
+          element: { data: { 'test.content.title': 'Score tab' } },
+        },
+      ],
+    };
 
     const load = jest.fn(async () => ({ default: realPlugin }));
     const deferredFeatures = [
@@ -506,20 +537,16 @@ describe('deferred features', () => {
     );
   });
 
-  it('should install the sync export of a plugin and recreate filter functions', async () => {
+  it('should install the sync export of a plugin', async () => {
     const scoreApiRef = createApiRef<{ getScore(): number }>({
       id: 'plugin.synced.service',
     });
-    const filterFunctionRef = createExtensionDataRef<
-      (entity: unknown) => boolean
-    >().with({ id: 'catalog.entity-filter-function' });
-    const filterPredicateRef = createExtensionDataRef<FilterPredicate>().with({
-      id: 'catalog.entity-filter-predicate',
+    const cardKindRef = createExtensionDataRef<string>().with({
+      id: 'test.card.kind',
     });
-    const entity = { kind: 'Group' };
 
-    // An eager page that renders the cards that match its entity, similar to
-    // the entity page of the catalog.
+    // An eager page that renders the cards for one kind, similar to the
+    // entity page of the catalog.
     const hostPlugin = createFrontendPlugin({
       pluginId: 'host',
       extensions: [
@@ -529,7 +556,7 @@ describe('deferred features', () => {
           inputs: {
             cards: createExtensionInput([
               coreExtensionData.reactElement,
-              filterFunctionRef,
+              cardKindRef,
             ]),
           },
           output: [coreExtensionData.routePath, coreExtensionData.reactElement],
@@ -538,7 +565,7 @@ describe('deferred features', () => {
             yield coreExtensionData.reactElement(
               <div>
                 {inputs.cards
-                  .filter(card => card.get(filterFunctionRef)(entity))
+                  .filter(card => card.get(cardKindRef) === 'group')
                   .map(card => (
                     <section key={card.node.spec.id}>
                       {card.get(coreExtensionData.reactElement)}
@@ -564,29 +591,20 @@ describe('deferred features', () => {
         </div>
       );
     }
-    const createCard = (name: string, filter: FilterPredicate) =>
+    const createCard = (name: string) =>
       createExtension({
         kind: 'card',
         name,
         attachTo: { id: 'page:host', input: 'cards' },
-        output: [
-          coreExtensionData.reactElement,
-          filterFunctionRef,
-          filterPredicateRef,
-        ],
+        output: [coreExtensionData.reactElement, cardKindRef],
         *factory() {
           yield coreExtensionData.reactElement(<ScoreCard label={name} />);
-          yield filterFunctionRef(filterPredicateToFilterFunction(filter));
-          yield filterPredicateRef(filter);
+          yield cardKindRef(name);
         },
       });
     const realPlugin = createFrontendPlugin({
       pluginId: 'synced',
-      extensions: [
-        api,
-        createCard('group', { kind: 'group' }),
-        createCard('user', { kind: 'user' }),
-      ],
+      extensions: [api, createCard('group'), createCard('user')],
     });
     // The sync export holds the API, so it's available before the plugin loads
     const syncPart = createFrontendPlugin({
@@ -594,14 +612,32 @@ describe('deferred features', () => {
       extensions: [api],
     });
 
-    const syncedManifest = createFrontendFeatureManifest(realPlugin, {
-      sync: syncPart,
+    const createCardManifest = (name: string) => ({
+      id: `card:synced/${name}`,
+      kind: 'card',
+      attachTo: { id: 'page:host', input: 'cards' },
+      disabled: false,
+      element: { data: { 'test.card.kind': name } },
     });
-    expect(syncedManifest.deferrable).toBe(true);
-    expect(syncedManifest.extensions[0]).toMatchObject({
-      id: 'api:synced',
-      sync: true,
-    });
+    const syncedManifest: FrontendFeatureManifest = {
+      manifestVersion: 1,
+      type: 'plugin',
+      pluginId: 'synced',
+      deferrable: true,
+      routes: [],
+      externalRoutes: [],
+      extensions: [
+        {
+          id: 'api:synced',
+          kind: 'api',
+          attachTo: { id: 'root', input: 'apis' },
+          disabled: false,
+          sync: true,
+        },
+        createCardManifest('group'),
+        createCardManifest('user'),
+      ],
+    };
 
     const createApp = (loaded: typeof realPlugin) => {
       const load = jest.fn(async () => ({ default: loaded }));
@@ -622,7 +658,7 @@ describe('deferred features', () => {
     expect(syncApi?.getScore()).toBe(42);
     expect(load).not.toHaveBeenCalled();
 
-    // Only the card that matches the entity is rendered, which loads the plugin
+    // Only the card for the kind is rendered, which loads the plugin
     render(app.element);
     await expect(
       screen.findByText('group score 42'),
@@ -640,11 +676,7 @@ describe('deferred features', () => {
     const mismatched = createApp(
       createFrontendPlugin({
         pluginId: 'synced',
-        extensions: [
-          api.override({}),
-          createCard('group', { kind: 'group' }),
-          createCard('user', { kind: 'user' }),
-        ],
+        extensions: [api.override({}), createCard('group'), createCard('user')],
       }),
     );
     render(mismatched.app.element);
@@ -657,7 +689,6 @@ describe('deferred features', () => {
   it('should load a plugin right away if its stub can not apply the config', async () => {
     const realPlugin = createRealDeferredPlugin();
     const load = jest.fn(async () => ({ default: realPlugin }));
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const configuredManifest: FrontendFeatureManifest = {
       ...manifest,
       extensions: [
@@ -688,18 +719,12 @@ describe('deferred features', () => {
       },
     } as CreateSpecializedAppInternalOptions).finalize();
 
-    expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining(
-        "The 'host-content:deferred' extension of the deferred 'deferred-pkg' package has config in app.extensions",
-      ),
-    );
     // The plugin is loaded without rendering anything
     await new Promise(resolve => setTimeout(resolve, 0));
     expect(load).toHaveBeenCalledTimes(1);
     expect(app.tree.nodes.get('page:deferred')?.spec.plugin.routes).toBe(
       realPlugin.routes,
     );
-    warn.mockRestore();
   });
 });
 
@@ -733,6 +758,7 @@ describe('DeferredFeatureController', () => {
     const controller = new DeferredFeatureController({
       entries: [first, second],
       graft,
+      retryDelaysMs: [],
     });
     const listener = jest.fn();
     controller.subscribe(listener);
@@ -767,26 +793,61 @@ describe('DeferredFeatureController', () => {
     });
   });
 
-  it('should not retry a plugin that failed to load', async () => {
-    const entry = createEntry('broken', async () => {
+  it('should retry loading the code, but not adding the plugin to the app', async () => {
+    // The code loads on the third attempt
+    let attempts = 0;
+    const flaky = createEntry('flaky', async () => {
+      attempts += 1;
+      if (attempts < 3) {
+        throw new Error(`chunk failed ${attempts}`);
+      }
+      return { default: 'flaky plugin' };
+    });
+    const broken = createEntry('broken', async () => {
       throw new Error('chunk failed');
     });
+    const grafted = createEntry('grafted', async () => ({
+      default: 'grafted plugin',
+    }));
+    const graft = jest.fn((entry: { manifest: { pluginId: string } }) => {
+      if (entry.manifest.pluginId === 'grafted') {
+        throw new Error('graft failed');
+      }
+      return new Map();
+    });
     const controller = new DeferredFeatureController({
-      entries: [entry],
-      graft: jest.fn(),
+      entries: [flaky, broken, grafted],
+      graft,
+      retryDelaysMs: [0, 0],
     });
 
+    await controller.load('flaky');
+    expect(flaky.load).toHaveBeenCalledTimes(3);
+    expect(controller.getState('flaky')).toEqual({ status: 'loaded' });
+
+    // The error of the last attempt is reported
     await controller.load('broken');
+    expect(broken.load).toHaveBeenCalledTimes(3);
     const state = controller.getState('broken');
     expect(state.status).toBe('failed');
     expect((state as { error: Error }).error.message).toBe(
       "Failed to load the deferred 'broken' plugin, reload the page to try again; caused by Error: chunk failed",
     );
 
-    // Loading the code once more is left to a reload of the page, since a
-    // partly added plugin can't be removed from the app again
+    // Loading once more is left to a reload of the page
     await controller.load('broken');
-    expect(entry.load).toHaveBeenCalledTimes(1);
+    expect(broken.load).toHaveBeenCalledTimes(3);
     expect(controller.getState('broken')).toBe(state);
+
+    // A plugin that was partly added to the app can't be removed again, so
+    // adding it isn't retried
+    await controller.load('grafted');
+    expect(grafted.load).toHaveBeenCalledTimes(1);
+    expect(graft).toHaveBeenCalledTimes(2);
+    expect(
+      (controller.getState('grafted') as { error: Error }).error.message,
+    ).toBe(
+      "Failed to load the deferred 'grafted' plugin, reload the page to try again; caused by Error: graft failed",
+    );
   });
 });

@@ -15,7 +15,7 @@
  */
 
 import { ExtensionParameters } from '../tree/readAppExtensionsConfig';
-import { FrontendFeatureManifest } from './types';
+import { FrontendFeatureManifest } from '@internal/frontend';
 
 /**
  * Finds an element extension of a deferred plugin that has config in
@@ -23,10 +23,10 @@ import { FrontendFeatureManifest } from './types';
  *
  * @remarks
  *
- * The stub of an element outputs the data that the real extension output at
- * build time with its default config, so any config for it can only be
- * applied once the plugin is loaded. The CLI loads such plugins eagerly, so
- * this only finds a conflict if the config changed after the app was built.
+ * The stub of an element outputs the data that was declared for it in the
+ * source code, so any config for it can only be applied once the plugin is
+ * loaded. Plugins with such config are loaded right after the app has
+ * started.
  *
  * @returns The ID of the first configured element extension, if any.
  */
