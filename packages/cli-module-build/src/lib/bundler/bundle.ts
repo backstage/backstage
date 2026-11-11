@@ -29,6 +29,7 @@ import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import chalk from 'chalk';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { createRuntimeSharedDependenciesEntryPoint } from './moduleFederation';
+import { writeFrontendManifest } from '../frontendManifest/writeFrontendManifest';
 
 // TODO(Rugvip): Limits from CRA, we might want to tweak these though.
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
@@ -135,6 +136,18 @@ export async function buildBundle(options: BuildOptions) {
 
   if (!stats) {
     throw new Error('No stats returned');
+  }
+
+  // Written after the build, since the output directory is emptied before it.
+  // The manifest lets apps defer loading the plugins of the remote.
+  if (options.moduleFederationRemote) {
+    await writeFrontendManifest({
+      packageDir: paths.targetPath,
+      distDir: paths.targetDist,
+      exposes: options.moduleFederationRemote.exposes ?? {
+        '.': paths.targetEntry,
+      },
+    });
   }
   const [mainStats, authStats] = stats.stats;
 
