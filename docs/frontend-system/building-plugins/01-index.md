@@ -238,23 +238,27 @@ For a more complete list of the different kinds of extensions that you can creat
 Deferred loading is experimental, and the details described here may change.
 :::
 
-When an app enables `app.experimental.deferredPackages`, the Backstage CLI can defer your plugin. A _deferred plugin_ starts out as a stand-in that is built from a manifest that the CLI records at build time. The real plugin code is loaded the first time one of its pages is visited or one of its elements is rendered, for example an entity card or an entity content tab. The CLI prints which plugins are deferred, and why the others are not, when the app is built or started.
+When an app enables `app.experimental.deferredPackages`, the Backstage CLI can defer your plugin. A _deferred plugin_ starts out as a stand-in that is built from a manifest, and the real plugin code is loaded the first time one of its pages is visited or one of its elements is rendered. If loading the code fails, for example because of a network error, it is retried a couple of times before an error is shown.
 
-A plugin can be deferred if each of its extensions is one of the following:
+The CLI creates the manifest by analyzing the source code of your plugin without running it. For plugins in the workspace of an app, this happens when the app is built or started. For published plugins, `backstage-cli package build` writes the manifest to `dist/frontend-manifest.json`, and the package.json that is published refers to it. A published plugin without a manifest is loaded together with the app.
 
-- A page.
-- A utility API. It becomes available once the plugin has loaded, so only your plugin itself should use it, unless the API is part of the [sync export](#the-sync-export).
-- An element, which is an extension that outputs a React element along with data that can be stored as JSON, for example the title and filter of an entity card.
+A plugin can be deferred if its default export is a direct call to `createFrontendPlugin`, and each of its extensions is one of the following:
 
-An element can't be deferred if it outputs a function, since a function can't be stored in the manifest. The one exception is an entity filter that is given as a filter predicate object to the entity blueprints of `@backstage/plugin-catalog-react`. These blueprints output the predicate alongside the filter function, and the stand-in creates the same function from the predicate. Filters given as a function or as a filter expression string still prevent the plugin from being deferred.
+- A page that is made with `PageBlueprint.make` and attaches to `app/routes`.
+- A sub-page that is made with `SubPageBlueprint.make`, without an icon.
+- A utility API that is made with `ApiBlueprint.make`. Plugins with utility APIs can only be deferred if they have a [sync export](#the-sync-export), since an API of a deferred plugin only becomes available once the plugin has loaded. If other plugins use the API, put it in the sync export.
 
-If an app has any config in `app.extensions` for an element of your plugin, the plugin is loaded together with the app instead of being deferred. Config for the pages of your plugin does not have this effect, and is applied to the stand-in of the page.
+The `path` and `title` params, and the extension `name`, `attachTo`, and `disabled` options, must be literal values or constants that hold literal values, which can be imported from other modules of your package. A `routeRef` param must be one of the route refs in the `routes` of the plugin. Extensions that are made with `makeWithOverrides`, with `createExtension`, or with other blueprints, such as the entity cards and contents of the catalog, prevent the plugin from being deferred, and so does an `if` predicate on the plugin or on any of its extensions.
+
+The analysis fails closed: if any of these values can't be read, the plugin is loaded together with the app, and the CLI reports the reason along with the location in your source code.
+
+If an app has any config in `app.extensions` for an element of your plugin, such as a sub-page, the plugin is loaded right after the app has started. Config for the pages of your plugin does not have this effect, and is applied to the stand-in of the page.
 
 ### The sync export
 
-If some extensions of your plugin are needed before the plugin is first used, you can move them to a `./sync` entry point of your plugin package. The app loads the sync export together with the app, while the rest of the plugin is still deferred. Use it for utility APIs that other plugins use, and for elements that can't be deferred, such as an entity card with a filter function.
+If some extensions of your plugin are needed before the plugin is first used, you can move them to a `./sync` entry point of your plugin package. The app loads the sync export together with the app, while the rest of the plugin is still deferred. Use it for utility APIs that other plugins use, and for extensions that can't be deferred, such as an entity card. The extensions of the sync export can be made in any way, as long as the CLI can read their kind and name.
 
-The default export of the sync entry point is a plugin that has the same plugin ID as the main export, and only holds the extensions that should be loaded with the app. Each of these extensions must be the same extension object as in the main export, which you can do by defining them in a separate module that both entry points import:
+The default export of the sync entry point is a plugin that has the same plugin ID as the main export, and only holds the extensions that should be loaded with the app. Each of these extensions must be the same declaration as in the main export, which you can do by declaring them in a separate module that both entry points import:
 
 ```tsx title="in src/sync.tsx"
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -275,7 +279,7 @@ export default createFrontendPlugin({
 },
 ```
 
-The main export still includes all of its extensions, so that the plugin works in apps that don't defer it. When the plugin is deferred, each extension of the sync export is installed once, and is kept as it is when the rest of the plugin is loaded. If the two exports don't agree, for example because an extension is created twice or has a different plugin ID, the CLI loads the plugin together with the app, and reports why. Any route refs of the sync export must also be the same as in the main export.
+The main export still includes all of its extensions, so that the plugin works in apps that don't defer it. When the plugin is deferred, each extension of the sync export is installed once, and is kept as it is when the rest of the plugin is loaded. Any route refs of the sync export must also be the same declarations as in the main export. If the two exports don't agree, for example because an extension is declared twice or has a different plugin ID, `backstage-cli package build` fails, and an app that analyzes the plugin from its workspace loads it together with the app.
 
 Keep the sync export small, since everything that it imports is part of the initial app bundle.
 

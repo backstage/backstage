@@ -62,9 +62,22 @@ app:
     deferredPackages: true
 ```
 
-The CLI then defers each plugin that supports it, and loads it the first time one of its pages is visited or one of its elements is rendered. Plugins that are imported directly in the code of your app are always loaded together with the app. When you build or start the app, the CLI prints which plugins are deferred and why the others are not.
+The CLI then defers each plugin that supports it, and loads it the first time one of its pages is visited or one of its elements is rendered. Whether a plugin supports it is decided by analyzing its source code at build time, see [Deferred loading](../building-plugins/01-index.md#deferred-loading). Plugins in your workspace are analyzed when you build or start the app. Plugins that you install from npm must include a manifest from the build of their package, otherwise they are loaded together with the app. When you build or start the app, the CLI prints which plugins are deferred and why the others are not.
 
-If you have any config in `app.extensions` for an element of a plugin, such as an entity card or an entity content tab, the plugin is loaded together with the app instead of being deferred. Config for the pages of a plugin does not have this effect. Some plugins provide a `./sync` entry point with the parts that are needed before the plugin is first used, which the app loads together with the app. To learn which plugins can be deferred, see [Deferred loading](../building-plugins/01-index.md#deferred-loading).
+To always load some plugins together with the app, list their packages in `exclude`:
+
+```yaml title="app-config.yaml"
+app:
+  packages: all
+  experimental:
+    deferredPackages:
+      exclude:
+        - '@backstage/plugin-catalog'
+```
+
+A plugin that you pass to `createApp` in the `features` option is used instead of a deferred plugin with the same plugin ID. If you pass a module for a deferred plugin, that plugin is loaded together with the app so that the module applies to it.
+
+If you have any config in `app.extensions` for an element of a deferred plugin, such as a sub-page, the plugin is loaded right after the app has started, since the config can only be applied once the plugin is loaded. Config for the pages of a plugin does not have this effect. Some plugins provide a `./sync` entry point with the parts that are needed before the plugin is first used, which the app loads together with the app.
 
 ## Manual installation
 
