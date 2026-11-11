@@ -1887,7 +1887,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service":
+"@backstage/backend-dynamic-feature-service@workspace:^, @backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service":
   version: 0.0.0-use.local
   resolution: "@backstage/backend-dynamic-feature-service@workspace:packages/backend-dynamic-feature-service"
   dependencies:
@@ -3220,7 +3220,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/frontend-dynamic-feature-loader@workspace:packages/frontend-dynamic-feature-loader":
+"@backstage/frontend-dynamic-feature-loader@workspace:^, @backstage/frontend-dynamic-feature-loader@workspace:packages/frontend-dynamic-feature-loader":
   version: 0.0.0-use.local
   resolution: "@backstage/frontend-dynamic-feature-loader@workspace:packages/frontend-dynamic-feature-loader"
   dependencies:
@@ -10001,7 +10001,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@internal/plugin-lazy-demo@workspace:^, @internal/plugin-lazy-demo@workspace:plugins/lazy-demo":
+"@internal/plugin-lazy-demo@workspace:plugins/lazy-demo":
   version: 0.0.0-use.local
   resolution: "@internal/plugin-lazy-demo@workspace:plugins/lazy-demo"
   dependencies:
@@ -10026,7 +10026,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@internal/plugin-lazy-scorecard@workspace:^, @internal/plugin-lazy-scorecard@workspace:plugins/lazy-scorecard":
+"@internal/plugin-lazy-scorecard@workspace:plugins/lazy-scorecard":
   version: 0.0.0-use.local
   resolution: "@internal/plugin-lazy-scorecard@workspace:plugins/lazy-scorecard"
   dependencies:
@@ -27816,6 +27816,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-app-api": "workspace:^"
     "@backstage/frontend-defaults": "workspace:^"
+    "@backstage/frontend-dynamic-feature-loader": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-api-docs": "workspace:^"
@@ -27852,8 +27853,6 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/ui": "workspace:^"
-    "@internal/plugin-lazy-demo": "workspace:^"
-    "@internal/plugin-lazy-scorecard": "workspace:^"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
@@ -27883,6 +27882,7 @@ __metadata:
   resolution: "example-backend@workspace:packages/backend"
   dependencies:
     "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-dynamic-feature-service": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
