@@ -14,10 +14,17 @@
 <section class="tsd-panel">
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="rendertestapp"><span class="tsd-kind-call-signature">renderTestApp</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-keyword">const</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#rendertestapptapipairs">TApiPairs</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="../types/_backstage_frontend-test-utils.RenderTestAppOptions.html" class="tsd-signature-type tsd-kind-type-alias">RenderTestAppOptions</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#rendertestapptapipairs">TApiPairs</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RenderResult</span><a href="#rendertestapp" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="rendertestapp"><span class="tsd-kind-call-signature">renderTestApp</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-keyword">const</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#rendertestapptapipairs">TApiPairs</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="../types/_backstage_frontend-test-utils.RenderTestAppOptions.html" class="tsd-signature-type tsd-kind-type-alias">RenderTestAppOptions</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#rendertestapptapipairs">TApiPairs</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_frontend-test-utils.TestAppRenderResult.html" class="tsd-signature-type tsd-kind-type-alias">TestAppRenderResult</a><a href="#rendertestapp" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Renders the provided extensions inside a Backstage app, returning the same
 utilities as <code>@testing-library/react</code> <code>render</code> function.</p>
+<p>Navigation is owned by a @backstage/frontend-plugin-api#AppHistoryApi
+with in-memory history, the same seam as production, and is returned as
+<code>appHistory</code>.</p>
+<p>There is no <code>router</code> option here, and no need for one: the extensions are
+routed by the app itself, so each page declares the adapter it wants exactly
+as it does in production. The app's root React Router v6 projection is also
+present. <code>renderInTestApp</code> supplies the page around a bare element.</p>
 </div>
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
@@ -27,9 +34,9 @@ utilities as <code>@testing-library/react</code> <code>render</code> function.</
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="../types/_backstage_frontend-test-utils.RenderTestAppOptions.html" class="tsd-signature-type tsd-kind-type-alias">RenderTestAppOptions</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#rendertestapptapipairs">TApiPairs</a><span class="tsd-signature-symbol">&gt;</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">RenderResult</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <a href="../types/_backstage_frontend-test-utils.TestAppRenderResult.html" class="tsd-signature-type tsd-kind-type-alias">TestAppRenderResult</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/ca1165d1e6facc756d3724746d275e481275b91a/packages/frontend-test-utils/src/app/renderTestApp.tsx#L138">packages/frontend-test-utils/src/app/renderTestApp.tsx:138</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/0a160f3ed418debac235602a09defae612a728d3/packages/frontend-test-utils/src/app/renderTestApp.tsx#L144">packages/frontend-test-utils/src/app/renderTestApp.tsx:144</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

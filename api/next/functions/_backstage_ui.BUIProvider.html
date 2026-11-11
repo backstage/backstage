@@ -17,13 +17,13 @@
 <div class="tsd-signature tsd-anchor-link" id="buiprovider"><span class="tsd-kind-call-signature">BUIProvider</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">props</span><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_ui.BUIProviderProps.html" class="tsd-signature-type tsd-kind-type-alias">BUIProviderProps</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Element</span><a href="#buiprovider" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Provides integration capabilities to all descendant BUI components.</p>
-<p>When rendered inside the Backstage app router, BUI components use
-client-side navigation for internal links. Relative destinations resolve
-from the route of the component that renders the link, and the router
-basename applies once.</p>
-<p>External and scheme links, downloads, and links with non-self targets use the
-browser's native navigation. BUI components rendered outside React Router use
-native links without throwing.</p>
+<p>An explicit host hook supplies navigation, href resolution, and active-state
+detection, including for independently loaded BUI components. BUI components
+bind this hook to React Aria at their own route scope. Without a host hook,
+components use an explicitly supplied React Aria router or browser navigation.</p>
+<p>React Aria components used directly need their own routing integration.</p>
+<p>External links, downloads, and links with non-self targets use native browser
+navigation. Components outside a routing context also use native links.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -37,7 +37,7 @@ native links without throwing.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/ca1165d1e6facc756d3724746d275e481275b91a/packages/ui/src/provider/BUIProvider.tsx#L60">packages/ui/src/provider/BUIProvider.tsx:60</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/0a160f3ed418debac235602a09defae612a728d3/packages/ui/src/provider/BUIProvider.tsx#L66">packages/ui/src/provider/BUIProvider.tsx:66</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

@@ -1,0 +1,164 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@backstage/frontend-adapter-tanstack-router | Backstage</title><meta name="description" content="Documentation for Backstage"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">Backstage</a>
+<div id="tsd-toolbar-links"><a href="https://backstage.io/docs">Docs</a><a href="https://github.com/backstage/backstage">GitHub</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
+<ul role="listbox" id="tsd-search-results"></ul>
+<div id="tsd-search-status" aria-live="polite" aria-atomic="true">
+<div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-menu"></use></svg></a></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<ul class="tsd-breadcrumb" aria-label="Breadcrumb">
+<li><a href="" aria-current="page">@backstage/frontend-adapter-tanstack-router</a></li></ul>
+<h1>Module @backstage/frontend-adapter-tanstack-router</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>TanStack Router adapter for Backstage scoped plugin routing.</p>
+</div></section>
+<section class="tsd-panel tsd-typography"><h1 id="backstagefrontend-adapter-tanstack-router" class="tsd-anchor-link">@backstage/frontend-adapter-tanstack-router<a href="#backstagefrontend-adapter-tanstack-router" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h1>
+<p>Renders a page of the <a href="https://backstage.io/docs/frontend-system/">new frontend system</a>
+with <a href="https://tanstack.com/router">TanStack Router</a>, scoped to the page's own
+path.</p>
+<p>Browser history belongs to the app. This package never writes to
+<code>window.history</code>. It only scopes TanStack Router to the page it renders, so
+programmatic back, forward, and <code>go</code> traverse the app-owned history.</p>
+<p>This package is part of scoped plugin routing,
+<a href="https://github.com/backstage/backstage/issues/33603">RFC #33603</a>.</p>
+<h2 id="installation" class="tsd-anchor-link">Installation<a href="#installation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>TanStack Router is a peer dependency, so install it alongside the adapter:</p>
+<pre><code class="sh"><span class="hl-1">cd</span><span class="hl-2"> &lt;</span><span class="hl-4">package-di</span><span class="hl-2">r&gt; </span><span class="hl-0"># if within a monorepo</span><br/><span class="hl-1">yarn</span><span class="hl-2"> </span><span class="hl-4">add</span><span class="hl-2"> </span><span class="hl-4">@backstage/frontend-adapter-tanstack-router</span><span class="hl-2"> </span><span class="hl-4">@tanstack/react-router@1.131.2</span><span class="hl-2"> </span><span class="hl-4">@tanstack/history@1.131.2</span>
+</code><button type="button">Copy</button></pre>
+
+<p>The adapter pins <code>@tanstack/react-router</code> to <code>1.131.2</code>, the latest release
+verified to pass strict dependency type checking with React 18 without a
+package patch. Newer releases through <code>1.170.36</code> have declaration errors
+in TanStack Router or its router-core dependency.</p>
+<p>This issue may already be fixed in a newer TanStack Router release when you read
+this. Check the <a href="https://github.com/TanStack/router/releases">latest releases</a>
+and the adapter's current peer dependency range before choosing a version.</p>
+<h2 id="usage" class="tsd-anchor-link">Usage<a href="#usage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Render <code>TanStackPageRouter</code> inside the lazily loaded component of the page whose
+content should get the context:</p>
+<pre><code class="tsx"><span class="hl-8">import</span><span class="hl-2"> { </span><span class="hl-6">PageBlueprint</span><span class="hl-2"> } </span><span class="hl-8">from</span><span class="hl-2"> </span><span class="hl-4">&#39;@backstage/frontend-plugin-api&#39;</span><span class="hl-2">;</span><br/><br/><span class="hl-3">const</span><span class="hl-2"> </span><span class="hl-5">toolsPage</span><span class="hl-2"> = </span><span class="hl-6">PageBlueprint</span><span class="hl-2">.</span><span class="hl-1">make</span><span class="hl-2">({</span><br/><span class="hl-2">  </span><span class="hl-6">params:</span><span class="hl-2"> {</span><br/><span class="hl-2">    </span><span class="hl-6">path:</span><span class="hl-2"> </span><span class="hl-4">&#39;/tools&#39;</span><span class="hl-2">,</span><br/><span class="hl-2">    </span><span class="hl-1">loader</span><span class="hl-6">:</span><span class="hl-2"> () </span><span class="hl-3">=&gt;</span><span class="hl-2"> </span><span class="hl-3">import</span><span class="hl-2">(</span><span class="hl-4">&#39;./components/ToolsPage&#39;</span><span class="hl-2">).</span><span class="hl-1">then</span><span class="hl-2">(</span><span class="hl-6">m</span><span class="hl-2"> </span><span class="hl-3">=&gt;</span><span class="hl-2"> </span><span class="hl-16">&lt;</span><span class="hl-13">m.ToolsPage</span><span class="hl-2"> </span><span class="hl-16">/&gt;</span><span class="hl-2">),</span><br/><span class="hl-2">  },</span><br/><span class="hl-2">});</span>
+</code><button type="button">Copy</button></pre>
+
+<p>The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.</p>
+<pre><code class="tsx"><span class="hl-8">import</span><span class="hl-2"> { </span><span class="hl-6">TanStackPageRouter</span><span class="hl-2"> } </span><span class="hl-8">from</span><span class="hl-2"> </span><span class="hl-4">&#39;@backstage/frontend-adapter-tanstack-router&#39;</span><span class="hl-2">;</span><br/><br/><span class="hl-8">export</span><span class="hl-2"> </span><span class="hl-3">function</span><span class="hl-2"> </span><span class="hl-1">ToolsPage</span><span class="hl-2">() {</span><br/><span class="hl-2">  </span><span class="hl-8">return</span><span class="hl-2"> (</span><br/><span class="hl-2">    </span><span class="hl-16">&lt;</span><span class="hl-13">TanStackPageRouter</span><span class="hl-16">&gt;</span><br/><span class="hl-2">      </span><span class="hl-3">{</span><span class="hl-0">/* Existing page JSX and local routes go here. */</span><span class="hl-3">}</span><br/><span class="hl-2">    </span><span class="hl-16">&lt;/</span><span class="hl-13">TanStackPageRouter</span><span class="hl-16">&gt;</span><br/><span class="hl-2">  );</span><br/><span class="hl-2">}</span>
+</code><button type="button">Copy</button></pre>
+
+<p><code>TanStackPageRouter</code> renders the content it is given through a catch-all route.
+That covers pages that render the content they are handed without routing inside
+it.</p>
+<p>The adapter is scoped where the page component renders it. TanStack Router publishes
+its own React context, so it can nest with adapters from other libraries.
+The app also retains a root React Router v6 projection for shared components;
+page content using v6 retains implicit page-relative compatibility. An explicit
+adapter migrates that content away from the fallback.</p>
+<p>Rendering it in a sub-page's component scopes it to that sub-page, because the
+sub-page's app node determines its routing scope. Sibling tabs may declare
+different libraries, or none at all.</p>
+<p>Declare it in the component that owns the page or sub-page route mount. An
+<code>EntityContentBlueprint</code> tab, a card, or anything else filling a region of
+another page already renders inside the adapter that page declared, one
+route match deeper. A second adapter there re-scopes to the page's own mount and
+drops the tab's match, so relative targets in that content resolve from the page
+instead of from the tab.</p>
+<h3 id="where-there-is-nothing-to-scope-to" class="tsd-anchor-link">Where there is nothing to scope to<a href="#where-there-is-nothing-to-scope-to" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>Scoping needs two things: a page mount, saying which part of the URL belongs to
+the page, and a registered <code>AppHistoryApi</code> to project a history from. With
+either missing, this adapter renders its children untouched and asks nothing of
+the surrounding app — no API provider, no framework context. No route tree is
+built, and <code>createRouter</code> is never called.</p>
+<p>That passthrough is what lets a plugin shipping for both frontend systems wrap a
+shared component in the adapter. The old frontend system supplies neither half,
+so the wrap is invisible there rather than a crash. The same holds in a plugin's
+own <code>render()</code> unit tests, which stand up no app at all. A router built with
+<code>createTanStackPageRouter</code> behaves the same way.</p>
+<h3 id="using-a-plugin-owned-route-tree" class="tsd-anchor-link">Using a plugin-owned route tree<a href="#using-a-plugin-owned-route-tree" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>To route with a nested TanStack tree of your own, build the page router from
+that tree with <code>createTanStackPageRouter</code>. Render <code>TanStackPageContent</code>
+wherever in the tree the Backstage page element belongs:</p>
+<pre><code class="tsx"><span class="hl-8">import</span><span class="hl-2"> {</span><br/><span class="hl-2">  </span><span class="hl-6">TanStackPageContent</span><span class="hl-2">,</span><br/><span class="hl-2">  </span><span class="hl-6">createTanStackPageRouter</span><span class="hl-2">,</span><br/><span class="hl-2">} </span><span class="hl-8">from</span><span class="hl-2"> </span><span class="hl-4">&#39;@backstage/frontend-adapter-tanstack-router&#39;</span><span class="hl-2">;</span><br/><span class="hl-8">import</span><span class="hl-2"> {</span><br/><span class="hl-2">  </span><span class="hl-6">Outlet</span><span class="hl-2">,</span><br/><span class="hl-2">  </span><span class="hl-6">createRootRoute</span><span class="hl-2">,</span><br/><span class="hl-2">  </span><span class="hl-6">createRoute</span><span class="hl-2">,</span><br/><span class="hl-2">  </span><span class="hl-6">createRouter</span><span class="hl-2">,</span><br/><span class="hl-2">} </span><span class="hl-8">from</span><span class="hl-2"> </span><span class="hl-4">&#39;@tanstack/react-router&#39;</span><span class="hl-2">;</span><br/><span class="hl-8">import</span><span class="hl-2"> { </span><span class="hl-6">ToolDetails</span><span class="hl-2"> } </span><span class="hl-8">from</span><span class="hl-2"> </span><span class="hl-4">&#39;./ToolDetails&#39;</span><span class="hl-2">;</span><br/><br/><span class="hl-3">const</span><span class="hl-2"> </span><span class="hl-5">ToolsPageRouter</span><span class="hl-2"> = </span><span class="hl-1">createTanStackPageRouter</span><span class="hl-2">({</span><br/><span class="hl-2">  </span><span class="hl-1">createRouter</span><span class="hl-6">:</span><span class="hl-2"> ({ </span><span class="hl-6">history</span><span class="hl-2">, </span><span class="hl-6">routePaths</span><span class="hl-2"> }) </span><span class="hl-3">=&gt;</span><span class="hl-2"> {</span><br/><span class="hl-2">    </span><span class="hl-3">const</span><span class="hl-2"> </span><span class="hl-5">rootRoute</span><span class="hl-2"> = </span><span class="hl-1">createRootRoute</span><span class="hl-2">({ </span><span class="hl-6">component:</span><span class="hl-2"> </span><span class="hl-6">Outlet</span><span class="hl-2"> });</span><br/><span class="hl-2">    </span><span class="hl-3">const</span><span class="hl-2"> </span><span class="hl-5">routeTree</span><span class="hl-2"> = </span><span class="hl-6">rootRoute</span><span class="hl-2">.</span><span class="hl-1">addChildren</span><span class="hl-2">(</span><br/><span class="hl-2">      </span><span class="hl-6">routePaths</span><span class="hl-2">.</span><span class="hl-1">map</span><span class="hl-2">(</span><span class="hl-6">routePath</span><span class="hl-2"> </span><span class="hl-3">=&gt;</span><span class="hl-2"> {</span><br/><span class="hl-2">        </span><span class="hl-3">const</span><span class="hl-2"> </span><span class="hl-5">pageRoute</span><span class="hl-2"> = </span><span class="hl-1">createRoute</span><span class="hl-2">({</span><br/><span class="hl-2">          </span><span class="hl-1">getParentRoute</span><span class="hl-6">:</span><span class="hl-2"> () </span><span class="hl-3">=&gt;</span><span class="hl-2"> </span><span class="hl-6">rootRoute</span><span class="hl-2">,</span><br/><span class="hl-2">          </span><span class="hl-6">path:</span><span class="hl-2"> </span><span class="hl-6">routePath</span><span class="hl-2">,</span><br/><span class="hl-2">          </span><span class="hl-1">component</span><span class="hl-6">:</span><span class="hl-2"> () </span><span class="hl-3">=&gt;</span><span class="hl-2"> (</span><br/><span class="hl-2">            </span><span class="hl-16">&lt;&gt;</span><br/><span class="hl-2">              </span><span class="hl-16">&lt;</span><span class="hl-13">TanStackPageContent</span><span class="hl-2"> </span><span class="hl-16">/&gt;</span><br/><span class="hl-2">              </span><span class="hl-16">&lt;</span><span class="hl-13">Outlet</span><span class="hl-2"> </span><span class="hl-16">/&gt;</span><br/><span class="hl-2">            </span><span class="hl-16">&lt;/&gt;</span><br/><span class="hl-2">          ),</span><br/><span class="hl-2">        });</span><br/><span class="hl-2">        </span><span class="hl-3">const</span><span class="hl-2"> </span><span class="hl-5">detailsRoute</span><span class="hl-2"> = </span><span class="hl-1">createRoute</span><span class="hl-2">({</span><br/><span class="hl-2">          </span><span class="hl-1">getParentRoute</span><span class="hl-6">:</span><span class="hl-2"> () </span><span class="hl-3">=&gt;</span><span class="hl-2"> </span><span class="hl-6">pageRoute</span><span class="hl-2">,</span><br/><span class="hl-2">          </span><span class="hl-6">path:</span><span class="hl-2"> </span><span class="hl-4">&#39;details&#39;</span><span class="hl-2">,</span><br/><span class="hl-2">          </span><span class="hl-6">component:</span><span class="hl-2"> </span><span class="hl-6">ToolDetails</span><span class="hl-2">,</span><br/><span class="hl-2">        });</span><br/><span class="hl-2">        </span><span class="hl-8">return</span><span class="hl-2"> </span><span class="hl-6">pageRoute</span><span class="hl-2">.</span><span class="hl-1">addChildren</span><span class="hl-2">([</span><span class="hl-6">detailsRoute</span><span class="hl-2">]);</span><br/><span class="hl-2">      }),</span><br/><span class="hl-2">    );</span><br/><span class="hl-2">    </span><span class="hl-8">return</span><span class="hl-2"> </span><span class="hl-1">createRouter</span><span class="hl-2">({ </span><span class="hl-6">routeTree</span><span class="hl-2">, </span><span class="hl-6">history</span><span class="hl-2"> });</span><br/><span class="hl-2">  },</span><br/><span class="hl-2">});</span><br/><br/><span class="hl-8">export</span><span class="hl-2"> </span><span class="hl-3">function</span><span class="hl-2"> </span><span class="hl-1">ToolsPage</span><span class="hl-2">() {</span><br/><span class="hl-2">  </span><span class="hl-8">return</span><span class="hl-2"> (</span><br/><span class="hl-2">    </span><span class="hl-16">&lt;</span><span class="hl-13">ToolsPageRouter</span><span class="hl-16">&gt;</span><br/><span class="hl-2">      </span><span class="hl-16">&lt;</span><span class="hl-10">h1</span><span class="hl-16">&gt;</span><span class="hl-2">Tools</span><span class="hl-16">&lt;/</span><span class="hl-10">h1</span><span class="hl-16">&gt;</span><br/><span class="hl-2">    </span><span class="hl-16">&lt;/</span><span class="hl-13">ToolsPageRouter</span><span class="hl-16">&gt;</span><br/><span class="hl-2">  );</span><br/><span class="hl-2">}</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Going through the factory keeps TanStack types out of the framework's public
+contract, so they stay inside this package and your own plugin.</p>
+<h2 id="navigation-targets" class="tsd-anchor-link">Navigation targets<a href="#navigation-targets" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Paths starting with <code>/</code> are absolute from the app root, without the deployment
+basename. Route-ref destinations work unchanged through this adapter's native
+navigation APIs and through BUI controls, including navigation to other plugins.</p>
+<p>The adapter supplies <code>NavigationProvider</code> from <code>@backstage/frontend-plugin-api</code>.
+<code>useNavigation</code>, <code>RouterLink</code>, and BUI controls resolve relative targets using
+the routing library at the consuming control's route scope. Other component
+libraries can integrate through the same public hook; the adapter has no BUI
+runtime dependency. Outside an adapter, framework routing accepts only app-absolute
+paths, empty/query/hash targets, and external URLs.</p>
+<h2 id="limitations" class="tsd-anchor-link">Limitations<a href="#limitations" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p><code>useBlocker</code> only intercepts navigation that starts inside this page. It cannot
+see navigation coming from elsewhere in the app, because the app's history API
+has no shared blocker contract.</p>
+<p>Custom <code>AppHistoryApi</code> implementations must expose their updated location
+snapshot synchronously when handling push or replace navigation. TanStack
+notifies its subscribers immediately after the host handles the request;
+later host notifications for that write are ignored. Back, forward, and <code>go</code>
+notify subscribers when the host emits the resulting location, which can be
+asynchronous.</p>
+<p>The public <code>AppHistorySnapshot</code> optionally exposes entry identity and stack
+position through <code>entry</code>, <code>index</code>, and <code>length</code>. It does not report traversal
+completion or operation correlation.
+Without this optional entry metadata, the
+adapter exposes one synthetic slot: <code>history.length</code> is <code>1</code>, <code>__TSR_index</code> is
+<code>0</code>, and both <code>history.canGoBack()</code> and TanStack's <code>useCanGoBack()</code> return <code>false</code>.
+Back, forward, and <code>go</code> still delegate to the host even with this conservative
+back-availability result.</p>
+<p>TanStack supplies its native push and replace actions, blockers, and state
+fields. Host updates without entry metadata are reported as <code>GO</code> with a zero
+delta. Keys supplied by TanStack can remain in the host's state, but hosts
+without entry metadata cannot reliably identify entries created elsewhere in
+the app. Entry-based scroll restoration therefore lacks full fidelity with
+these custom histories. The adapter does not infer a second history stack from
+URLs, which can be identical for different entries.</p>
+<h2 id="documentation" class="tsd-anchor-link">Documentation<a href="#documentation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<ul>
+<li><a href="https://backstage.io/docs/frontend-system/architecture/routes#scoped-plugin-routing">Scoped plugin routing</a></li>
+<li><a href="https://backstage.io/docs">Backstage Documentation</a></li>
+</ul>
+</section>
+<details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Interfaces"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h2 class="tsd-anchor-link" id="interfaces">Interfaces<a href="#interfaces" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary><dl class="tsd-member-summaries"><dt class="tsd-member-summary" id="createtanstackpagerouteroptions"><span class="tsd-member-summary-name"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Interface"><use href="../assets/icons.svg#icon-256"></use></svg><a href="../interfaces/_backstage_frontend-adapter-tanstack-router.CreateTanStackPageRouterOptions.html">CreateTanStackPageRouterOptions</a><a href="#createtanstackpagerouteroptions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></span></dt><dd class="tsd-member-summary"></dd></dl></details>
+<details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Functions"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h2 class="tsd-anchor-link" id="functions">Functions<a href="#functions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary><dl class="tsd-member-summaries"><dt class="tsd-member-summary" id="createtanstackpagerouter"><span class="tsd-member-summary-name"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Function"><use href="../assets/icons.svg#icon-64"></use></svg><a href="../functions/_backstage_frontend-adapter-tanstack-router.createTanStackPageRouter.html">createTanStackPageRouter</a><a href="#createtanstackpagerouter" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></span></dt><dd class="tsd-member-summary"></dd><dt class="tsd-member-summary" id="tanstackpagecontent"><span class="tsd-member-summary-name"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Function"><use href="../assets/icons.svg#icon-64"></use></svg><a href="../functions/_backstage_frontend-adapter-tanstack-router.TanStackPageContent.html">TanStackPageContent</a><a href="#tanstackpagecontent" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></span></dt><dd class="tsd-member-summary"></dd><dt class="tsd-member-summary" id="tanstackpagerouter"><span class="tsd-member-summary-name"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Function"><use href="../assets/icons.svg#icon-64"></use></svg><a href="../functions/_backstage_frontend-adapter-tanstack-router.TanStackPageRouter.html">TanStackPageRouter</a><a href="#tanstackpagerouter" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></span></dt><dd class="tsd-member-summary"></dd></dl></details></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div>
+<div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>On This Page</h3></summary>
+<div class="tsd-accordion-details"><a href="#backstagefrontend-adapter-tanstack-router"><span>@backstage/frontend-<wbr/>adapter-<wbr/>tanstack-<wbr/>router</span></a>
+<ul>
+<li><a href="#installation"><span>Installation</span></a></li>
+<li><a href="#usage"><span>Usage</span></a></li>
+<li>
+<ul>
+<li><a href="#where-there-is-nothing-to-scope-to"><span>Where there is nothing to scope to</span></a></li>
+<li><a href="#using-a-plugin-owned-route-tree"><span>Using a plugin-<wbr/>owned route tree</span></a></li></ul></li>
+<li><a href="#navigation-targets"><span>Navigation targets</span></a></li>
+<li><a href="#limitations"><span>Limitations</span></a></li>
+<li><a href="#documentation"><span>Documentation</span></a></li></ul>
+<details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Interfaces"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Interfaces</summary>
+<div><a href="#createtanstackpagerouteroptions"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Interface"><use href="../assets/icons.svg#icon-256"></use></svg><span>Create<wbr/>Tan<wbr/>Stack<wbr/>Page<wbr/>Router<wbr/>Options</span></a></div></details>
+<details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Functions"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Functions</summary>
+<div><a href="#createtanstackpagerouter"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Function"><use href="../assets/icons.svg#icon-64"></use></svg><span>create<wbr/>Tan<wbr/>Stack<wbr/>Page<wbr/>Router</span></a><a href="#tanstackpagecontent"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Function"><use href="../assets/icons.svg#icon-64"></use></svg><span>Tan<wbr/>Stack<wbr/>Page<wbr/>Content</span></a><a href="#tanstackpagerouter"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Function"><use href="../assets/icons.svg#icon-64"></use></svg><span>Tan<wbr/>Stack<wbr/>Page<wbr/>Router</span></a></div></details></div></details></div>
+<div class="site-menu">
+<nav id="tsd-sidebar-links" class="tsd-navigation"><a href="https://backstage.io/docs" class="tsd-nav-link">Docs</a><a href="https://github.com/backstage/backstage" class="tsd-nav-link">GitHub</a></nav>
+<nav class="tsd-navigation"><a href="../modules.html">Backstage</a>
+<ul class="tsd-small-nested-navigation" id="tsd-nav-container">
+<li>Loading...</li></ul></nav></div></div></div><footer>
+<p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer>
+<div class="overlay"></div></body></html>

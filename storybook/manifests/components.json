@@ -6297,7 +6297,7 @@
           "snippet": "const Responsive = () => <ButtonLink\n    variant={{\n      initial: 'primary',\n      sm: 'secondary',\n    }}\n    size={{\n      xs: 'small',\n      sm: 'medium',\n    }}>Button</ButtonLink>;"
         }
       ],
-      "import": "import { BUIProvider, ButtonLink, Flex } from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";\nimport { RiArrowRightSLine, RiCloudLine } from \"@remixicon/react\";",
+      "import": "import { BUIProvider, ButtonLink, Flex, TestRouter } from \"@backstage/ui\";\nimport { RiArrowRightSLine, RiCloudLine } from \"@remixicon/react\";",
       "jsDocTags": {
         "public": [
           " "
@@ -6514,6 +6514,35 @@
               "name": "string"
             },
             "description": ""
+          },
+          "routerOptions": {
+            "required": false,
+            "tsType": {
+              "name": "signature",
+              "type": "object",
+              "raw": "{\n  /** Replace the current history entry instead of adding one. */\n  replace?: boolean;\n  /** State associated with the destination history entry. */\n  state?: unknown;\n}",
+              "signature": {
+                "properties": [
+                  {
+                    "key": "replace",
+                    "value": {
+                      "name": "boolean",
+                      "required": false
+                    },
+                    "description": "Replace the current history entry instead of adding one."
+                  },
+                  {
+                    "key": "state",
+                    "value": {
+                      "name": "unknown",
+                      "required": false
+                    },
+                    "description": "State associated with the destination history entry."
+                  }
+                ]
+              }
+            },
+            "description": "Options passed to the router configured on BUIProvider."
           }
         },
         "composes": [
@@ -7006,7 +7035,7 @@
           "snippet": "const AllVariants = () => (\n  <Flex direction=\"column\" gap=\"2\">\n    <Checkbox>Unchecked</Checkbox>\n    <Checkbox isSelected>Checked</Checkbox>\n    <Checkbox isIndeterminate>Indeterminate</Checkbox>\n    <Checkbox isDisabled>Disabled</Checkbox>\n    <Checkbox isSelected isDisabled>\n      Checked & Disabled\n    </Checkbox>\n    <Checkbox isIndeterminate isDisabled>\n      Indeterminate & Disabled\n    </Checkbox>\n    <Checkbox isInvalid>Invalid</Checkbox>\n    <Checkbox isInvalid isSelected>\n      Invalid & Checked\n    </Checkbox>\n    <Checkbox isInvalid isIndeterminate>\n      Invalid & Indeterminate\n    </Checkbox>\n  </Flex>\n);"
         }
       ],
-      "import": "import { Checkbox, Flex, Link } from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";",
+      "import": "import { Checkbox, Flex, Link, TestRouter } from \"@backstage/ui\";",
       "jsDocTags": {
         "public": [
           " "
@@ -11877,7 +11906,7 @@
           "snippet": "const WithTabs = () => (\n  <>\n    <PluginHeader title=\"My Plugin\" tabs={tabs} />\n    <FullPage>\n      <Container>\n        <Text as=\"p\">\n          The FullPage height adjusts automatically when the Header includes\n          tabs, thanks to the ResizeObserver measuring the Header's actual\n          height.\n        </Text>\n        {paragraphs}\n      </Container>\n    </FullPage>\n  </>\n);"
         }
       ],
-      "import": "import { BUIProvider, Container, FullPage, PluginHeader, Text } from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";",
+      "import": "import { BUIProvider, Container, FullPage, PluginHeader, TestRouter, Text } from \"@backstage/ui\";",
       "jsDocTags": {
         "public": [
           " "
@@ -12006,7 +12035,7 @@
           "snippet": "const StickyWithBreadcrumbsAndLongTitle = () => (\n  <>\n    <Header\n      title=\"This is a very long page title that should demonstrate how sticky breadcrumbs and titles behave when both need to fit in the compact stuck state\"\n      sticky\n      breadcrumbs={[\n        { label: 'Home', href: '/' },\n        { label: 'Very Long Breadcrumb Name', href: '/long-breadcrumb' },\n      ]}\n      description=\"This is a description of the page that scrolls away when you scroll down.\"\n      tags={[\n        { label: 'TypeScript' },\n        { label: 'Platform', href: '/platform' },\n      ]}\n      metadata={[\n        { label: 'Owner', value: 'platform-team' },\n        { label: 'Type', value: 'website' },\n      ]}\n      customActions={<Button>Custom action</Button>}\n    />\n    <Container pb=\"3\">\n      {Array.from({ length: 60 }, (_, i) => (\n        <p key={i} style={{ marginBottom: '16px' }}>\n          Scroll down to see the breadcrumb and long title bar stick to the\n          top while the tags, description, and metadata scroll away. Line{' '}\n          {i + 1}.\n        </p>\n      ))}\n    </Container>\n  </>\n);"
         }
       ],
-      "import": "import {\n    BUIProvider,\n    Button,\n    ButtonIcon,\n    Container,\n    Header,\n    HeaderMetadataStatus,\n    HeaderMetadataUsers,\n    Menu,\n    MenuItem,\n    MenuTrigger,\n} from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";\nimport { RiMore2Line } from \"@remixicon/react\";",
+      "import": "import {\n    BUIProvider,\n    Button,\n    ButtonIcon,\n    Container,\n    Header,\n    HeaderMetadataStatus,\n    HeaderMetadataUsers,\n    Menu,\n    MenuItem,\n    MenuTrigger,\n    TestRouter,\n} from \"@backstage/ui\";\nimport { RiMore2Line } from \"@remixicon/react\";",
       "jsDocTags": {
         "public": [
           " "
@@ -12072,7 +12101,7 @@
                 }
               ]
             },
-            "description": ""
+            "description": "Active tab ID. When omitted, the host router configured through BUIProvider\nselects the most specific matching href. Set to null to disable selection."
           },
           "breadcrumbs": {
             "required": false,
@@ -12188,7 +12217,7 @@
           "snippet": "const Responsive = () => <Link\n    variant={{\n      xs: 'title-x-small',\n      md: 'body-x-small',\n    }}>Link</Link>;"
         }
       ],
-      "import": "import { BUIProvider, Flex, Link, Text } from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";",
+      "import": "import { BUIProvider, Flex, Link, TestRouter, Text } from \"@backstage/ui\";",
       "jsDocTags": {
         "public": [
           " "
@@ -12582,6 +12611,35 @@
               "name": "string"
             },
             "description": ""
+          },
+          "routerOptions": {
+            "required": false,
+            "tsType": {
+              "name": "signature",
+              "type": "object",
+              "raw": "{\n  /** Replace the current history entry instead of adding one. */\n  replace?: boolean;\n  /** State associated with the destination history entry. */\n  state?: unknown;\n}",
+              "signature": {
+                "properties": [
+                  {
+                    "key": "replace",
+                    "value": {
+                      "name": "boolean",
+                      "required": false
+                    },
+                    "description": "Replace the current history entry instead of adding one."
+                  },
+                  {
+                    "key": "state",
+                    "value": {
+                      "name": "unknown",
+                      "required": false
+                    },
+                    "description": "State associated with the destination history entry."
+                  }
+                ]
+              }
+            },
+            "description": "Options passed to the router configured on BUIProvider."
           }
         },
         "composes": [
@@ -12650,7 +12708,7 @@
           "snippet": "const WithActionsMenuAndTags = () => <List style={{ width: 420 }} aria-label=\"List\" items={items}>\n    {item => (\n      <ListRow\n        id={item.id}\n        icon={item.icon}\n        menuItems={menuItems}\n        customActions={\n          <TagGroup aria-label={`Tags for ${item.label}`}>\n            {item.tags.map(tag => (\n              <Tag key={tag}>{tag}</Tag>\n            ))}\n          </TagGroup>\n        }\n      >\n        {item.label}\n      </ListRow>\n    )}\n</List>;"
         }
       ],
-      "import": "import { List, ListRow, MenuItem, Tag, TagGroup } from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";\nimport {\n    RiCodeLine,\n    RiDeleteBinLine,\n    RiEdit2Line,\n    RiJavascriptLine,\n    RiReactjsLine,\n    RiShareBoxLine,\n    RiShipLine,\n    RiTerminalLine,\n} from \"@remixicon/react\";",
+      "import": "import { List, ListRow, MenuItem, Tag, TagGroup, TestRouter } from \"@backstage/ui\";\nimport {\n    RiCodeLine,\n    RiDeleteBinLine,\n    RiEdit2Line,\n    RiJavascriptLine,\n    RiReactjsLine,\n    RiShareBoxLine,\n    RiShipLine,\n    RiTerminalLine,\n} from \"@remixicon/react\";",
       "jsDocTags": {
         "public": [
           " "
@@ -12788,7 +12846,7 @@
           "snippet": "const WithScroll = () => (\n  <MenuTrigger>\n    <Button aria-label=\"Menu\">Menu</Button>\n    <Menu>\n      <MenuItem>Edit</MenuItem>\n      <MenuItem>Duplicate</MenuItem>\n      <MenuItem>Rename</MenuItem>\n      <MenuSeparator />\n      <MenuItem iconStart={<RiShareBoxLine />}>Share</MenuItem>\n      <MenuItem iconStart={<RiChat1Line />}>Feedback</MenuItem>\n      <MenuSeparator />\n      <SubmenuTrigger>\n        <MenuItem iconStart={<RiSettingsLine />}>Settings</MenuItem>\n        <Menu placement=\"right top\">\n          <MenuItem>Edit</MenuItem>\n          <MenuItem>Duplicate</MenuItem>\n          <MenuItem>Rename</MenuItem>\n        </Menu>\n      </SubmenuTrigger>\n    </Menu>\n  </MenuTrigger>\n);"
         }
       ],
-      "import": "import {\n    BUIProvider,\n    Button,\n    Menu,\n    MenuItem,\n    MenuSection,\n    MenuSeparator,\n    MenuTrigger,\n    SubmenuTrigger,\n} from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";\nimport {\n    RiChat1Line,\n    RiCustomerService2Line,\n    RiDeleteBinLine,\n    RiEdit2Line,\n    RiFileCopyLine,\n    RiQuestionLine,\n    RiSettingsLine,\n    RiShareBoxLine,\n    RiUserLine,\n} from \"@remixicon/react\";",
+      "import": "import {\n    BUIProvider,\n    Button,\n    Menu,\n    MenuItem,\n    MenuSection,\n    MenuSeparator,\n    MenuTrigger,\n    SubmenuTrigger,\n    TestRouter,\n} from \"@backstage/ui\";\nimport {\n    RiChat1Line,\n    RiCustomerService2Line,\n    RiDeleteBinLine,\n    RiEdit2Line,\n    RiFileCopyLine,\n    RiQuestionLine,\n    RiSettingsLine,\n    RiShareBoxLine,\n    RiUserLine,\n} from \"@remixicon/react\";",
       "jsDocTags": {
         "public": [
           " "
@@ -12838,7 +12896,7 @@
           "snippet": "const Submenu = () => (\n  <MenuTrigger isOpen>\n    <Button aria-label=\"Menu\">Menu</Button>\n    <Menu>\n      <MenuItem>Edit</MenuItem>\n      <MenuItem>Duplicate</MenuItem>\n      <SubmenuTrigger>\n        <MenuItem>Submenu</MenuItem>\n        <MenuAutocomplete placement=\"right top\">\n          {options.map(option => (\n            <MenuItem key={option.value} id={option.value}>\n              {option.label}\n            </MenuItem>\n          ))}\n        </MenuAutocomplete>\n      </SubmenuTrigger>\n    </Menu>\n  </MenuTrigger>\n);"
         }
       ],
-      "import": "import {\n    BUIProvider,\n    Button,\n    Menu,\n    MenuAutocomplete,\n    MenuItem,\n    MenuTrigger,\n    SubmenuTrigger,\n} from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";",
+      "import": "import {\n    BUIProvider,\n    Button,\n    Menu,\n    MenuAutocomplete,\n    MenuItem,\n    MenuTrigger,\n    SubmenuTrigger,\n    TestRouter,\n} from \"@backstage/ui\";",
       "jsDocTags": {
         "public": [
           " "
@@ -12893,7 +12951,7 @@
           "snippet": "const VirtualizedMaxHeight = () => {\n  const [pokemon, setPokemon] = useState<\n    Array<{ name: string; url: string }>\n  >([]);\n\n  useEffect(() => {\n    fetch('https://pokeapi.co/api/v2/pokemon?limit=1000')\n      .then(response => response.json())\n      .then(data => {\n        setPokemon(data.results);\n      })\n      .catch(error => {\n        console.error('Error fetching Pokemon:', error);\n      });\n  }, []);\n\n  return (\n    <MenuTrigger isOpen>\n      <Button aria-label=\"Menu\">Menu</Button>\n      <MenuAutocompleteListbox\n        items={pokemon}\n        placeholder=\"Search Pokemon...\"\n        virtualized\n        maxHeight=\"300px\"\n      >\n        {pokemon.map((p, index) => (\n          <MenuListBoxItem key={index} id={p.name}>\n            {p.name.charAt(0).toUpperCase() + p.name.slice(1)}\n          </MenuListBoxItem>\n        ))}\n      </MenuAutocompleteListbox>\n    </MenuTrigger>\n  );\n};"
         }
       ],
-      "import": "import {\n    BUIProvider,\n    Button,\n    Flex,\n    Menu,\n    MenuAutocompleteListbox,\n    MenuItem,\n    MenuListBoxItem,\n    MenuTrigger,\n    SubmenuTrigger,\n    Text,\n} from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";",
+      "import": "import {\n    BUIProvider,\n    Button,\n    Flex,\n    Menu,\n    MenuAutocompleteListbox,\n    MenuItem,\n    MenuListBoxItem,\n    MenuTrigger,\n    SubmenuTrigger,\n    TestRouter,\n    Text,\n} from \"@backstage/ui\";",
       "jsDocTags": {
         "public": [
           " "
@@ -12938,7 +12996,7 @@
           "snippet": "const VirtualizedMaxHeight = () => {\n  const [pokemon, setPokemon] = useState<\n    Array<{ name: string; url: string }>\n  >([]);\n\n  useEffect(() => {\n    fetch('https://pokeapi.co/api/v2/pokemon?limit=1000')\n      .then(response => response.json())\n      .then(data => {\n        setPokemon(data.results);\n      })\n      .catch(error => {\n        console.error('Error fetching Pokemon:', error);\n      });\n  }, []);\n\n  return (\n    <MenuTrigger isOpen>\n      <Button aria-label=\"Menu\">Menu</Button>\n      <MenuListBox items={pokemon} virtualized maxHeight=\"300px\">\n        {pokemon.map((p, index) => (\n          <MenuListBoxItem key={index} id={p.name}>\n            {p.name.charAt(0).toUpperCase() + p.name.slice(1)}\n          </MenuListBoxItem>\n        ))}\n      </MenuListBox>\n    </MenuTrigger>\n  );\n};"
         }
       ],
-      "import": "import { BUIProvider, Button, Flex, MenuListBox, MenuListBoxItem, MenuTrigger, Text } from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";",
+      "import": "import {\n    BUIProvider,\n    Button,\n    Flex,\n    MenuListBox,\n    MenuListBoxItem,\n    MenuTrigger,\n    TestRouter,\n    Text,\n} from \"@backstage/ui\";",
       "jsDocTags": {
         "public": [
           " "
@@ -13412,32 +13470,32 @@
         {
           "id": "backstage-ui-pluginheader--with-mocked-url-campaigns",
           "name": "With Mocked URL Campaigns",
-          "snippet": "const WithMockedURLCampaigns = () => <MemoryRouter initialEntries={['/campaigns']}>\n    <BUIProvider>\n        <PluginHeader tabs={tabs} />\n        <Container mt=\"6\">\n            <Text as=\"p\">Current URL is mocked to be: <strong>/campaigns</strong>\n            </Text>\n            <Text as=\"p\">Notice how the \"Campaigns\" tab is selected (highlighted) because it\n                            matches the current path.\n                          </Text>\n        </Container>\n    </BUIProvider>\n</MemoryRouter>;"
+          "snippet": "const WithMockedURLCampaigns = () => <TestRouter initialEntries={['/campaigns']}>\n    <BUIProvider>\n        <PluginHeader tabs={tabs} />\n        <Container mt=\"6\">\n            <Text as=\"p\">Current URL is mocked to be: <strong>/campaigns</strong>\n            </Text>\n            <Text as=\"p\">Notice how the \"Campaigns\" tab is selected (highlighted) because it\n                            matches the current path.\n                          </Text>\n        </Container>\n    </BUIProvider>\n</TestRouter>;"
         },
         {
           "id": "backstage-ui-pluginheader--with-mocked-url-integrations",
           "name": "With Mocked URL Integrations",
-          "snippet": "const WithMockedURLIntegrations = () => <MemoryRouter initialEntries={['/integrations']}>\n    <BUIProvider>\n        <PluginHeader tabs={tabs} />\n        <Container mt=\"6\">\n            <Text as=\"p\">Current URL is mocked to be: <strong>/integrations</strong>\n            </Text>\n            <Text as=\"p\">Notice how the \"Integrations\" tab is selected (highlighted) because\n                            it matches the current path.\n                          </Text>\n        </Container>\n    </BUIProvider>\n</MemoryRouter>;"
+          "snippet": "const WithMockedURLIntegrations = () => <TestRouter initialEntries={['/integrations']}>\n    <BUIProvider>\n        <PluginHeader tabs={tabs} />\n        <Container mt=\"6\">\n            <Text as=\"p\">Current URL is mocked to be: <strong>/integrations</strong>\n            </Text>\n            <Text as=\"p\">Notice how the \"Integrations\" tab is selected (highlighted) because\n                            it matches the current path.\n                          </Text>\n        </Container>\n    </BUIProvider>\n</TestRouter>;"
         },
         {
           "id": "backstage-ui-pluginheader--with-mocked-url-no-match",
           "name": "With Mocked URL No Match",
-          "snippet": "const WithMockedURLNoMatch = () => <MemoryRouter initialEntries={['/some-other-page']}>\n    <BUIProvider>\n        <PluginHeader tabs={tabs} />\n        <Container mt=\"6\">\n            <Text as=\"p\">Current URL is mocked to be: <strong>/some-other-page</strong>\n            </Text>\n            <Text as=\"p\">No tab is selected because the current path doesn't match any tab's\n                            href.\n                          </Text>\n            <Text as=\"p\">Tabs without href (like \"Overview\", \"Checks\", \"Tracks\") fall back to\n                            React Aria's internal state.\n                          </Text>\n        </Container>\n    </BUIProvider>\n</MemoryRouter>;"
+          "snippet": "const WithMockedURLNoMatch = () => <TestRouter initialEntries={['/some-other-page']}>\n    <BUIProvider>\n        <PluginHeader tabs={tabs} />\n        <Container mt=\"6\">\n            <Text as=\"p\">Current URL is mocked to be: <strong>/some-other-page</strong>\n            </Text>\n            <Text as=\"p\">No tab is selected because the current path doesn't match any tab's\n                            href.\n                          </Text>\n            <Text as=\"p\">Tabs without href (like \"Overview\", \"Checks\", \"Tracks\") fall back to\n                            React Aria's internal state.\n                          </Text>\n        </Container>\n    </BUIProvider>\n</TestRouter>;"
         },
         {
           "id": "backstage-ui-pluginheader--with-tabs-matching-strategies",
           "name": "With Tabs Matching Strategies",
-          "snippet": "const WithTabsMatchingStrategies = () => <MemoryRouter initialEntries={['/mentorship/events']}>\n    <BUIProvider>\n        <PluginHeader\n            title=\"Route Matching Demo\"\n            tabs={[\n              {\n                id: 'home',\n                label: 'Home',\n                href: '/home',\n              },\n              {\n                id: 'mentorship',\n                label: 'Mentorship',\n                href: '/mentorship',\n                matchStrategy: 'prefix',\n              },\n              {\n                id: 'catalog',\n                label: 'Catalog',\n                href: '/catalog',\n                matchStrategy: 'prefix',\n              },\n              {\n                id: 'settings',\n                label: 'Settings',\n                href: '/settings',\n              },\n            ]} />\n        <Container mt=\"6\">\n            <Text>\n                <strong>Current URL:</strong>/mentorship/events\n                          </Text>\n            <br />\n            <Text>Notice how the \"Mentorship\" tab is active even though we're on a\n                            nested route. This is because it uses{' '}\n                <code>matchStrategy=\"prefix\"</code>.\n                          </Text>\n            <br />\n            <Text>• <strong>Home</strong>: exact matching (default) - not active\n                          </Text>\n            <Text>• <strong>Mentorship</strong>: prefix matching - IS active (URL\n                            starts with /mentorship)\n                          </Text>\n            <Text>• <strong>Catalog</strong>: prefix matching - not active\n                          </Text>\n            <Text>• <strong>Settings</strong>: exact matching (default) - not active\n                          </Text>\n        </Container>\n    </BUIProvider>\n</MemoryRouter>;"
+          "snippet": "const WithTabsMatchingStrategies = () => <TestRouter initialEntries={['/mentorship/events']}>\n    <BUIProvider>\n        <PluginHeader\n            title=\"Route Matching Demo\"\n            tabs={[\n              {\n                id: 'home',\n                label: 'Home',\n                href: '/home',\n              },\n              {\n                id: 'mentorship',\n                label: 'Mentorship',\n                href: '/mentorship',\n                matchStrategy: 'prefix',\n              },\n              {\n                id: 'catalog',\n                label: 'Catalog',\n                href: '/catalog',\n                matchStrategy: 'prefix',\n              },\n              {\n                id: 'settings',\n                label: 'Settings',\n                href: '/settings',\n              },\n            ]} />\n        <Container mt=\"6\">\n            <Text>\n                <strong>Current URL:</strong>/mentorship/events\n                          </Text>\n            <br />\n            <Text>Notice how the \"Mentorship\" tab is active even though we're on a\n                            nested route. This is because it uses{' '}\n                <code>matchStrategy=\"prefix\"</code>.\n                          </Text>\n            <br />\n            <Text>• <strong>Home</strong>: exact matching (default) - not active\n                          </Text>\n            <Text>• <strong>Mentorship</strong>: prefix matching - IS active (URL\n                            starts with /mentorship)\n                          </Text>\n            <Text>• <strong>Catalog</strong>: prefix matching - not active\n                          </Text>\n            <Text>• <strong>Settings</strong>: exact matching (default) - not active\n                          </Text>\n        </Container>\n    </BUIProvider>\n</TestRouter>;"
         },
         {
           "id": "backstage-ui-pluginheader--with-tabs-exact-matching",
           "name": "With Tabs Exact Matching",
-          "snippet": "const WithTabsExactMatching = () => <MemoryRouter initialEntries={['/mentorship/events']}>\n    <BUIProvider>\n        <PluginHeader\n            title=\"Exact Matching Demo\"\n            tabs={[\n              {\n                id: 'mentorship',\n                label: 'Mentorship',\n                href: '/mentorship',\n              },\n              {\n                id: 'events',\n                label: 'Events',\n                href: '/mentorship/events',\n              },\n              {\n                id: 'mentors',\n                label: 'Mentors',\n                href: '/mentorship/mentors',\n              },\n            ]} />\n        <Container mt=\"6\">\n            <Text>\n                <strong>Current URL:</strong>/mentorship/events\n                          </Text>\n            <br />\n            <Text>With default exact matching, only the \"Events\" tab is active because\n                            it exactly matches the current URL. The \"Mentorship\" tab is not\n                            active even though the URL is under /mentorship.\n                          </Text>\n        </Container>\n    </BUIProvider>\n</MemoryRouter>;"
+          "snippet": "const WithTabsExactMatching = () => <TestRouter initialEntries={['/mentorship/events']}>\n    <BUIProvider>\n        <PluginHeader\n            title=\"Exact Matching Demo\"\n            tabs={[\n              {\n                id: 'mentorship',\n                label: 'Mentorship',\n                href: '/mentorship',\n              },\n              {\n                id: 'events',\n                label: 'Events',\n                href: '/mentorship/events',\n              },\n              {\n                id: 'mentors',\n                label: 'Mentors',\n                href: '/mentorship/mentors',\n              },\n            ]} />\n        <Container mt=\"6\">\n            <Text>\n                <strong>Current URL:</strong>/mentorship/events\n                          </Text>\n            <br />\n            <Text>With default exact matching, only the \"Events\" tab is active because\n                            it exactly matches the current URL. The \"Mentorship\" tab is not\n                            active even though the URL is under /mentorship.\n                          </Text>\n        </Container>\n    </BUIProvider>\n</TestRouter>;"
         },
         {
           "id": "backstage-ui-pluginheader--with-tabs-prefix-matching-deep",
           "name": "With Tabs Prefix Matching Deep",
-          "snippet": "const WithTabsPrefixMatchingDeep = () => <MemoryRouter initialEntries={['/catalog/users/john/details']}>\n    <BUIProvider>\n        <PluginHeader\n            title=\"Deep Nesting Demo\"\n            tabs={[\n              {\n                id: 'catalog',\n                label: 'Catalog',\n                href: '/catalog',\n                matchStrategy: 'prefix',\n              },\n              {\n                id: 'users',\n                label: 'Users',\n                href: '/catalog/users',\n                matchStrategy: 'prefix',\n              },\n              {\n                id: 'components',\n                label: 'Components',\n                href: '/catalog/components',\n                matchStrategy: 'prefix',\n              },\n            ]} />\n        <Container mt=\"6\">\n            <Text as=\"p\">\n                <strong>Current URL:</strong>/catalog/users/john/details\n                          </Text>\n            <br />\n            <Text as=\"p\">Active tab is <strong>Users</strong>because:\n                          </Text>\n            <ul>\n                <li>\n                    <strong>Catalog</strong>: Matches since URL starts with /catalog\n                                </li>\n                <li>\n                    <strong>Users</strong>: Is active since URL starts with\n                                  /catalog/users, and is more specific (has more url segments) than\n                                  \"Catalog\"\n                                </li>\n                <li>\n                    <strong>Components</strong>: not active (URL doesn't start with\n                                  /catalog/components)\n                                </li>\n            </ul>\n            <Text as=\"p\">This demonstrates how prefix matching works with deeply nested\n                            routes.\n                          </Text>\n        </Container>\n    </BUIProvider>\n</MemoryRouter>;"
+          "snippet": "const WithTabsPrefixMatchingDeep = () => <TestRouter initialEntries={['/catalog/users/john/details']}>\n    <BUIProvider>\n        <PluginHeader\n            title=\"Deep Nesting Demo\"\n            tabs={[\n              {\n                id: 'catalog',\n                label: 'Catalog',\n                href: '/catalog',\n                matchStrategy: 'prefix',\n              },\n              {\n                id: 'users',\n                label: 'Users',\n                href: '/catalog/users',\n                matchStrategy: 'prefix',\n              },\n              {\n                id: 'components',\n                label: 'Components',\n                href: '/catalog/components',\n                matchStrategy: 'prefix',\n              },\n            ]} />\n        <Container mt=\"6\">\n            <Text as=\"p\">\n                <strong>Current URL:</strong>/catalog/users/john/details\n                          </Text>\n            <br />\n            <Text as=\"p\">Active tab is <strong>Users</strong>because:\n                          </Text>\n            <ul>\n                <li>\n                    <strong>Catalog</strong>: Matches since URL starts with /catalog\n                                </li>\n                <li>\n                    <strong>Users</strong>: Is active since URL starts with\n                                  /catalog/users, and is more specific (has more url segments) than\n                                  \"Catalog\"\n                                </li>\n                <li>\n                    <strong>Components</strong>: not active (URL doesn't start with\n                                  /catalog/components)\n                                </li>\n            </ul>\n            <Text as=\"p\">This demonstrates how prefix matching works with deeply nested\n                            routes.\n                          </Text>\n        </Container>\n    </BUIProvider>\n</TestRouter>;"
         },
         {
           "id": "backstage-ui-pluginheader--with-breadcrumbs",
@@ -13470,7 +13528,7 @@
           "snippet": "const WithBreadcrumbsAndAllOptions = () => <PluginHeader\n    tabs={tabs}\n    breadcrumbs={[\n      { label: 'Home', href: '/' },\n      { label: 'Docs', href: '/docs' },\n      { label: 'Guides', href: '/docs/guides' },\n      {\n        label:\n          'Setup page with a very long title that should truncate at some point',\n        href: '/docs/guides/setup',\n      },\n      {\n        label:\n          'Introduction with a very long title that should truncate at some point',\n        href: '/docs/guides/setup/introduction',\n      },\n    ]} />;"
         }
       ],
-      "import": "import {\n    BUIProvider,\n    ButtonIcon,\n    Container,\n    Menu,\n    MenuItem,\n    MenuTrigger,\n    PluginHeader,\n    Text,\n} from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";\nimport { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from \"@remixicon/react\";",
+      "import": "import {\n    BUIProvider,\n    ButtonIcon,\n    Container,\n    Menu,\n    MenuItem,\n    MenuTrigger,\n    PluginHeader,\n    TestRouter,\n    Text,\n} from \"@backstage/ui\";\nimport { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from \"@remixicon/react\";",
       "jsDocTags": {
         "public": [
           " "
@@ -13849,7 +13907,7 @@
           "snippet": "const OpenWithLoading = () => {\n    return (\n        <SearchAutocomplete\n            aria-label=\"Search fruits\"\n            placeholder=\"Search fruits...\"\n            defaultOpen\n            isLoading\n            inputValue=\"ap\"\n            style={{ maxWidth: '300px' }}\n            onInputChange={() => {}}>\n            {fruits.slice(0, 3).map(fruit => (\n              <SearchAutocompleteItem\n                key={fruit.id}\n                id={fruit.id}\n                textValue={fruit.name}\n              >\n                <Text weight=\"bold\">{fruit.name}</Text>\n                <Text variant=\"body-small\" color=\"secondary\">\n                  {fruit.description}\n                </Text>\n              </SearchAutocompleteItem>\n            ))}\n        </SearchAutocomplete>\n    );\n};"
         }
       ],
-      "import": "import {\n    ButtonIcon,\n    Flex,\n    PluginHeader,\n    SearchAutocomplete,\n    SearchAutocompleteItem,\n    Text,\n} from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";\nimport { RiCactusLine } from \"@remixicon/react\";",
+      "import": "import {\n    ButtonIcon,\n    Flex,\n    PluginHeader,\n    SearchAutocomplete,\n    SearchAutocompleteItem,\n    TestRouter,\n    Text,\n} from \"@backstage/ui\";\nimport { RiCactusLine } from \"@remixicon/react\";",
       "jsDocTags": {
         "public": [
           " "
@@ -14153,7 +14211,7 @@
           "snippet": "const AutoBg = () => (\n  <Flex direction=\"column\" gap=\"4\">\n    <div style={{ maxWidth: '600px' }}>\n      SearchField automatically detects its parent bg context and increments\n      the neutral level by 1. No prop is needed — it's fully automatic.\n    </div>\n    <Box bg=\"neutral\" p=\"4\">\n      <Text>Neutral 1 container</Text>\n      <Flex mt=\"2\" style={{ maxWidth: '300px' }}>\n        <SearchField aria-label=\"Search\" size=\"small\" />\n      </Flex>\n    </Box>\n    <Box bg=\"neutral\">\n      <Box bg=\"neutral\" p=\"4\">\n        <Text>Neutral 2 container</Text>\n        <Flex mt=\"2\" style={{ maxWidth: '300px' }}>\n          <SearchField aria-label=\"Search\" size=\"small\" />\n        </Flex>\n      </Box>\n    </Box>\n    <Box bg=\"neutral\">\n      <Box bg=\"neutral\">\n        <Box bg=\"neutral\" p=\"4\">\n          <Text>Neutral 3 container</Text>\n          <Flex mt=\"2\" style={{ maxWidth: '300px' }}>\n            <SearchField aria-label=\"Search\" size=\"small\" />\n          </Flex>\n        </Box>\n      </Box>\n    </Box>\n  </Flex>\n);"
         }
       ],
-      "import": "import {\n    Box,\n    BUIProvider,\n    Button,\n    ButtonIcon,\n    FieldLabel,\n    Flex,\n    PluginHeader,\n    SearchField,\n    Text,\n} from \"@backstage/ui\";\nimport { Form } from \"react-aria-components\";\nimport { MemoryRouter } from \"react-router-dom\";\nimport { RiCactusLine, RiEBike2Line } from \"@remixicon/react\";",
+      "import": "import {\n    Box,\n    BUIProvider,\n    Button,\n    ButtonIcon,\n    FieldLabel,\n    Flex,\n    PluginHeader,\n    SearchField,\n    TestRouter,\n    Text,\n} from \"@backstage/ui\";\nimport { Form } from \"react-aria-components\";\nimport { RiCactusLine, RiEBike2Line } from \"@remixicon/react\";",
       "jsDocTags": {
         "public": [
           " "
@@ -15689,57 +15747,57 @@
         {
           "id": "backstage-ui-tabs--with-mocked-url-tab-2",
           "name": "With Mocked URL Tab 2",
-          "snippet": "const WithMockedURLTab2 = () => (\n  <MemoryRouter initialEntries={['/tab2']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"tab1\" href=\"/tab1\">\n            Tab 1\n          </Tab>\n          <Tab id=\"tab2\" href=\"/tab2\">\n            Tab 2\n          </Tab>\n          <Tab id=\"tab3\" href=\"/tab3\">\n            Tab 3 With long title\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL is mocked to be: <strong>/tab2</strong>\n        </Text>\n        <Text as=\"p\">\n          Notice how the \"Tab 2\" tab is selected (highlighted) because it\n          matches the current path.\n        </Text>\n      </Box>\n    </BUIProvider>\n  </MemoryRouter>\n);"
+          "snippet": "const WithMockedURLTab2 = () => (\n  <TestRouter initialEntries={['/tab2']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"tab1\" href=\"/tab1\">\n            Tab 1\n          </Tab>\n          <Tab id=\"tab2\" href=\"/tab2\">\n            Tab 2\n          </Tab>\n          <Tab id=\"tab3\" href=\"/tab3\">\n            Tab 3 With long title\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL is mocked to be: <strong>/tab2</strong>\n        </Text>\n        <Text as=\"p\">\n          Notice how the \"Tab 2\" tab is selected (highlighted) because it\n          matches the current path.\n        </Text>\n      </Box>\n    </BUIProvider>\n  </TestRouter>\n);"
         },
         {
           "id": "backstage-ui-tabs--with-mocked-url-tab-3",
           "name": "With Mocked URL Tab 3",
-          "snippet": "const WithMockedURLTab3 = () => (\n  <MemoryRouter initialEntries={['/tab3']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"tab1\" href=\"/tab1\">\n            Tab 1\n          </Tab>\n          <Tab id=\"tab2\" href=\"/tab2\">\n            Tab 2\n          </Tab>\n          <Tab id=\"tab3\" href=\"/tab3\">\n            Tab 3 With long title\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL is mocked to be: <strong>/tab3</strong>\n        </Text>\n        <Text as=\"p\">\n          Notice how the \"Tab 3 With long title\" tab is selected (highlighted)\n          because it matches the current path.\n        </Text>\n      </Box>\n    </BUIProvider>\n  </MemoryRouter>\n);"
+          "snippet": "const WithMockedURLTab3 = () => (\n  <TestRouter initialEntries={['/tab3']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"tab1\" href=\"/tab1\">\n            Tab 1\n          </Tab>\n          <Tab id=\"tab2\" href=\"/tab2\">\n            Tab 2\n          </Tab>\n          <Tab id=\"tab3\" href=\"/tab3\">\n            Tab 3 With long title\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL is mocked to be: <strong>/tab3</strong>\n        </Text>\n        <Text as=\"p\">\n          Notice how the \"Tab 3 With long title\" tab is selected (highlighted)\n          because it matches the current path.\n        </Text>\n      </Box>\n    </BUIProvider>\n  </TestRouter>\n);"
         },
         {
           "id": "backstage-ui-tabs--with-mocked-url-no-match",
           "name": "With Mocked URL No Match",
-          "snippet": "const WithMockedURLNoMatch = () => (\n  <MemoryRouter initialEntries={['/some-other-page']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"tab1\" href=\"/tab1\">\n            Tab 1\n          </Tab>\n          <Tab id=\"tab2\" href=\"/tab2\">\n            Tab 2\n          </Tab>\n          <Tab id=\"tab3\" href=\"/tab3\">\n            Tab 3 With long title\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL is mocked to be: <strong>/some-other-page</strong>\n        </Text>\n        <Text as=\"p\">\n          No tab is selected because the current path doesn't match any tab's\n          href.\n        </Text>\n        <Text as=\"p\">\n          Tabs without href (like \"Tab 1\", \"Tab 2\", \"Tab 3 With long title\")\n          fall back to React Aria's internal state.\n        </Text>\n      </Box>\n    </BUIProvider>\n  </MemoryRouter>\n);"
+          "snippet": "const WithMockedURLNoMatch = () => (\n  <TestRouter initialEntries={['/some-other-page']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"tab1\" href=\"/tab1\">\n            Tab 1\n          </Tab>\n          <Tab id=\"tab2\" href=\"/tab2\">\n            Tab 2\n          </Tab>\n          <Tab id=\"tab3\" href=\"/tab3\">\n            Tab 3 With long title\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL is mocked to be: <strong>/some-other-page</strong>\n        </Text>\n        <Text as=\"p\">\n          No tab is selected because the current path doesn't match any tab's\n          href.\n        </Text>\n        <Text as=\"p\">\n          Tabs without href (like \"Tab 1\", \"Tab 2\", \"Tab 3 With long title\")\n          fall back to React Aria's internal state.\n        </Text>\n      </Box>\n    </BUIProvider>\n  </TestRouter>\n);"
         },
         {
           "id": "backstage-ui-tabs--exact-matching-default",
           "name": "Exact Matching Default",
-          "snippet": "const ExactMatchingDefault = () => (\n  <MemoryRouter initialEntries={['/mentorship/events']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"mentorship\" href=\"/mentorship\">\n            Mentorship\n          </Tab>\n          <Tab id=\"events\" href=\"/mentorship/events\">\n            Events\n          </Tab>\n          <Tab id=\"catalog\" href=\"/catalog\">\n            Catalog\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/mentorship/events</strong>\n        </Text>\n        <Text as=\"p\">\n          Using default exact matching, only the \"Events\" tab is active\n          because it exactly matches the URL.\n        </Text>\n        <Text as=\"p\">\n          The \"Mentorship\" tab is NOT active even though the URL contains\n          \"/mentorship\".\n        </Text>\n      </Box>\n    </BUIProvider>\n  </MemoryRouter>\n);"
+          "snippet": "const ExactMatchingDefault = () => (\n  <TestRouter initialEntries={['/mentorship/events']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"mentorship\" href=\"/mentorship\">\n            Mentorship\n          </Tab>\n          <Tab id=\"events\" href=\"/mentorship/events\">\n            Events\n          </Tab>\n          <Tab id=\"catalog\" href=\"/catalog\">\n            Catalog\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/mentorship/events</strong>\n        </Text>\n        <Text as=\"p\">\n          Using default exact matching, only the \"Events\" tab is active\n          because it exactly matches the URL.\n        </Text>\n        <Text as=\"p\">\n          The \"Mentorship\" tab is NOT active even though the URL contains\n          \"/mentorship\".\n        </Text>\n      </Box>\n    </BUIProvider>\n  </TestRouter>\n);"
         },
         {
           "id": "backstage-ui-tabs--prefix-matching-for-nested-routes",
           "name": "Prefix Matching For Nested Routes",
-          "snippet": "const PrefixMatchingForNestedRoutes = () => (\n  <MemoryRouter initialEntries={['/mentorship/events']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"mentorship\" href=\"/mentorship\" matchStrategy=\"prefix\">\n            Mentorship\n          </Tab>\n          <Tab id=\"events\" href=\"/mentorship/events\">\n            Events\n          </Tab>\n          <Tab id=\"catalog\" href=\"/catalog\" matchStrategy=\"prefix\">\n            Catalog\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/mentorship/events</strong>\n        </Text>\n        <Text as=\"p\">\n          The \"Mentorship\" tab uses prefix matching and IS active because\n          \"/mentorship/events\" starts with \"/mentorship\".\n        </Text>\n        <Text as=\"p\">\n          The \"Events\" tab uses exact matching and is also active because it\n          exactly matches.\n        </Text>\n        <Text as=\"p\">\n          The \"Catalog\" tab uses prefix matching but is NOT active because the\n          URL doesn't start with \"/catalog\".\n        </Text>\n      </Box>\n    </BUIProvider>\n  </MemoryRouter>\n);"
+          "snippet": "const PrefixMatchingForNestedRoutes = () => (\n  <TestRouter initialEntries={['/mentorship/events']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"mentorship\" href=\"/mentorship\" matchStrategy=\"prefix\">\n            Mentorship\n          </Tab>\n          <Tab id=\"events\" href=\"/mentorship/events\">\n            Events\n          </Tab>\n          <Tab id=\"catalog\" href=\"/catalog\" matchStrategy=\"prefix\">\n            Catalog\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/mentorship/events</strong>\n        </Text>\n        <Text as=\"p\">\n          The \"Mentorship\" tab uses prefix matching and IS active because\n          \"/mentorship/events\" starts with \"/mentorship\".\n        </Text>\n        <Text as=\"p\">\n          The \"Events\" tab uses exact matching and is also active because it\n          exactly matches.\n        </Text>\n        <Text as=\"p\">\n          The \"Catalog\" tab uses prefix matching but is NOT active because the\n          URL doesn't start with \"/catalog\".\n        </Text>\n      </Box>\n    </BUIProvider>\n  </TestRouter>\n);"
         },
         {
           "id": "backstage-ui-tabs--prefix-matching-deep-nesting",
           "name": "Prefix Matching Deep Nesting",
-          "snippet": "const PrefixMatchingDeepNesting = () => (\n  <MemoryRouter initialEntries={['/catalog/users/john/details']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"home\" href=\"/home\">\n            Home\n          </Tab>\n          <Tab id=\"catalog\" href=\"/catalog\" matchStrategy=\"prefix\">\n            Catalog\n          </Tab>\n          <Tab id=\"mentorship\" href=\"/mentorship\" matchStrategy=\"prefix\">\n            Mentorship\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/catalog/users/john/details</strong>\n        </Text>\n        <Text as=\"p\">\n          The \"Catalog\" tab is active because it uses prefix matching and the\n          URL starts with \"/catalog\".\n        </Text>\n        <Text as=\"p\">\n          This works for any level of nesting under \"/catalog\".\n        </Text>\n      </Box>\n    </BUIProvider>\n  </MemoryRouter>\n);"
+          "snippet": "const PrefixMatchingDeepNesting = () => (\n  <TestRouter initialEntries={['/catalog/users/john/details']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"home\" href=\"/home\">\n            Home\n          </Tab>\n          <Tab id=\"catalog\" href=\"/catalog\" matchStrategy=\"prefix\">\n            Catalog\n          </Tab>\n          <Tab id=\"mentorship\" href=\"/mentorship\" matchStrategy=\"prefix\">\n            Mentorship\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/catalog/users/john/details</strong>\n        </Text>\n        <Text as=\"p\">\n          The \"Catalog\" tab is active because it uses prefix matching and the\n          URL starts with \"/catalog\".\n        </Text>\n        <Text as=\"p\">\n          This works for any level of nesting under \"/catalog\".\n        </Text>\n      </Box>\n    </BUIProvider>\n  </TestRouter>\n);"
         },
         {
           "id": "backstage-ui-tabs--mixed-matching-strategies",
           "name": "Mixed Matching Strategies",
-          "snippet": "const MixedMatchingStrategies = () => (\n  <MemoryRouter initialEntries={['/dashboard/analytics/reports']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"overview\" href=\"/dashboard\">\n            Overview\n          </Tab>\n          <Tab\n            id=\"analytics\"\n            href=\"/dashboard/analytics\"\n            matchStrategy=\"prefix\"\n          >\n            Analytics\n          </Tab>\n          <Tab\n            id=\"settings\"\n            href=\"/dashboard/settings\"\n            matchStrategy=\"prefix\"\n          >\n            Settings\n          </Tab>\n          <Tab id=\"help\" href=\"/help\">\n            Help\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/dashboard/analytics/reports</strong>\n        </Text>\n        <Text as=\"p\">\n          • \"Overview\" tab: exact matching, NOT active (doesn't exactly match\n          \"/dashboard\")\n        </Text>\n        <Text as=\"p\">\n          • \"Analytics\" tab: prefix matching, IS active (URL starts with\n          \"/dashboard/analytics\")\n        </Text>\n        <Text as=\"p\">\n          • \"Settings\" tab: prefix matching, NOT active (URL doesn't start\n          with \"/dashboard/settings\")\n        </Text>\n        <Text as=\"p\">\n          • \"Help\" tab: exact matching, NOT active (doesn't exactly match\n          \"/help\")\n        </Text>\n      </Box>\n    </BUIProvider>\n  </MemoryRouter>\n);"
+          "snippet": "const MixedMatchingStrategies = () => (\n  <TestRouter initialEntries={['/dashboard/analytics/reports']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"overview\" href=\"/dashboard\">\n            Overview\n          </Tab>\n          <Tab\n            id=\"analytics\"\n            href=\"/dashboard/analytics\"\n            matchStrategy=\"prefix\"\n          >\n            Analytics\n          </Tab>\n          <Tab\n            id=\"settings\"\n            href=\"/dashboard/settings\"\n            matchStrategy=\"prefix\"\n          >\n            Settings\n          </Tab>\n          <Tab id=\"help\" href=\"/help\">\n            Help\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/dashboard/analytics/reports</strong>\n        </Text>\n        <Text as=\"p\">\n          • \"Overview\" tab: exact matching, NOT active (doesn't exactly match\n          \"/dashboard\")\n        </Text>\n        <Text as=\"p\">\n          • \"Analytics\" tab: prefix matching, IS active (URL starts with\n          \"/dashboard/analytics\")\n        </Text>\n        <Text as=\"p\">\n          • \"Settings\" tab: prefix matching, NOT active (URL doesn't start\n          with \"/dashboard/settings\")\n        </Text>\n        <Text as=\"p\">\n          • \"Help\" tab: exact matching, NOT active (doesn't exactly match\n          \"/help\")\n        </Text>\n      </Box>\n    </BUIProvider>\n  </TestRouter>\n);"
         },
         {
           "id": "backstage-ui-tabs--prefix-matching-edge-cases",
           "name": "Prefix Matching Edge Cases",
-          "snippet": "const PrefixMatchingEdgeCases = () => (\n  <MemoryRouter initialEntries={['/foobar']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"foo\" href=\"/foo\" matchStrategy=\"prefix\">\n            Foo\n          </Tab>\n          <Tab id=\"foobar\" href=\"/foobar\">\n            Foobar\n          </Tab>\n          <Tab id=\"foo-exact\" href=\"/foo\">\n            Foo (exact)\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/foobar</strong>\n        </Text>\n        <Text as=\"p\">\n          • \"Foo\" tab (prefix): NOT active - prevents \"/foo\" from matching\n          \"/foobar\"\n        </Text>\n        <Text as=\"p\">\n          • \"Foobar\" tab (exact): IS active - exactly matches \"/foobar\"\n        </Text>\n        <Text as=\"p\">\n          • \"Foo (exact)\" tab: NOT active - doesn't exactly match \"/foobar\"\n        </Text>\n        <Text as=\"p\">\n          This shows that prefix matching properly requires a \"/\" separator to\n          prevent false matches.\n        </Text>\n      </Box>\n    </BUIProvider>\n  </MemoryRouter>\n);"
+          "snippet": "const PrefixMatchingEdgeCases = () => (\n  <TestRouter initialEntries={['/foobar']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"foo\" href=\"/foo\" matchStrategy=\"prefix\">\n            Foo\n          </Tab>\n          <Tab id=\"foobar\" href=\"/foobar\">\n            Foobar\n          </Tab>\n          <Tab id=\"foo-exact\" href=\"/foo\">\n            Foo (exact)\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/foobar</strong>\n        </Text>\n        <Text as=\"p\">\n          • \"Foo\" tab (prefix): NOT active - prevents \"/foo\" from matching\n          \"/foobar\"\n        </Text>\n        <Text as=\"p\">\n          • \"Foobar\" tab (exact): IS active - exactly matches \"/foobar\"\n        </Text>\n        <Text as=\"p\">\n          • \"Foo (exact)\" tab: NOT active - doesn't exactly match \"/foobar\"\n        </Text>\n        <Text as=\"p\">\n          This shows that prefix matching properly requires a \"/\" separator to\n          prevent false matches.\n        </Text>\n      </Box>\n    </BUIProvider>\n  </TestRouter>\n);"
         },
         {
           "id": "backstage-ui-tabs--prefix-matching-with-slash",
           "name": "Prefix Matching With Slash",
-          "snippet": "const PrefixMatchingWithSlash = () => (\n  <MemoryRouter initialEntries={['/foo/bar']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"foo\" href=\"/foo\" matchStrategy=\"prefix\">\n            Foo\n          </Tab>\n          <Tab id=\"foobar\" href=\"/foobar\">\n            Foobar\n          </Tab>\n          <Tab id=\"bar\" href=\"/bar\" matchStrategy=\"prefix\">\n            Bar\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/foo/bar</strong>\n        </Text>\n        <Text as=\"p\">\n          • \"Foo\" tab (prefix): IS active - \"/foo/bar\" starts with \"/foo/\"\n        </Text>\n        <Text as=\"p\">\n          • \"Foobar\" tab (exact): NOT active - doesn't exactly match \"/foobar\"\n        </Text>\n        <Text as=\"p\">\n          • \"Bar\" tab (prefix): NOT active - \"/foo/bar\" doesn't start with\n          \"/bar\"\n        </Text>\n        <Text as=\"p\">\n          This demonstrates proper prefix matching with the \"/\" separator.\n        </Text>\n      </Box>\n    </BUIProvider>\n  </MemoryRouter>\n);"
+          "snippet": "const PrefixMatchingWithSlash = () => (\n  <TestRouter initialEntries={['/foo/bar']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"foo\" href=\"/foo\" matchStrategy=\"prefix\">\n            Foo\n          </Tab>\n          <Tab id=\"foobar\" href=\"/foobar\">\n            Foobar\n          </Tab>\n          <Tab id=\"bar\" href=\"/bar\" matchStrategy=\"prefix\">\n            Bar\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/foo/bar</strong>\n        </Text>\n        <Text as=\"p\">\n          • \"Foo\" tab (prefix): IS active - \"/foo/bar\" starts with \"/foo/\"\n        </Text>\n        <Text as=\"p\">\n          • \"Foobar\" tab (exact): NOT active - doesn't exactly match \"/foobar\"\n        </Text>\n        <Text as=\"p\">\n          • \"Bar\" tab (prefix): NOT active - \"/foo/bar\" doesn't start with\n          \"/bar\"\n        </Text>\n        <Text as=\"p\">\n          This demonstrates proper prefix matching with the \"/\" separator.\n        </Text>\n      </Box>\n    </BUIProvider>\n  </TestRouter>\n);"
         },
         {
           "id": "backstage-ui-tabs--root-path-matching",
           "name": "Root Path Matching",
-          "snippet": "const RootPathMatching = () => (\n  <MemoryRouter initialEntries={['/']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"home\" href=\"/\">\n            Home\n          </Tab>\n          <Tab id=\"home-prefix\" href=\"/\" matchStrategy=\"prefix\">\n            Home (prefix)\n          </Tab>\n          <Tab id=\"catalog\" href=\"/catalog\" matchStrategy=\"prefix\">\n            Catalog\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/</strong>\n        </Text>\n        <Text as=\"p\">\n          • \"Home\" tab (exact): IS active - exactly matches \"/\"\n        </Text>\n        <Text as=\"p\">• \"Home (prefix)\" tab: IS active - \"/\" matches \"/\"</Text>\n        <Text as=\"p\">\n          • \"Catalog\" tab (prefix): NOT active - \"/\" doesn't start with\n          \"/catalog\"\n        </Text>\n      </Box>\n    </BUIProvider>\n  </MemoryRouter>\n);"
+          "snippet": "const RootPathMatching = () => (\n  <TestRouter initialEntries={['/']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab id=\"home\" href=\"/\">\n            Home\n          </Tab>\n          <Tab id=\"home-prefix\" href=\"/\" matchStrategy=\"prefix\">\n            Home (prefix)\n          </Tab>\n          <Tab id=\"catalog\" href=\"/catalog\" matchStrategy=\"prefix\">\n            Catalog\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/</strong>\n        </Text>\n        <Text as=\"p\">\n          • \"Home\" tab (exact): IS active - exactly matches \"/\"\n        </Text>\n        <Text as=\"p\">• \"Home (prefix)\" tab: IS active - \"/\" matches \"/\"</Text>\n        <Text as=\"p\">\n          • \"Catalog\" tab (prefix): NOT active - \"/\" doesn't start with\n          \"/catalog\"\n        </Text>\n      </Box>\n    </BUIProvider>\n  </TestRouter>\n);"
         },
         {
           "id": "backstage-ui-tabs--href-with-query-params",
           "name": "Href With Query Params",
-          "snippet": "const HrefWithQueryParams = () => (\n  <MemoryRouter initialEntries={['/cost-insights/dashboard?group=bar']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab\n            id=\"dashboard\"\n            href=\"/cost-insights/dashboard?group=foo\"\n            matchStrategy=\"prefix\"\n          >\n            Dashboard\n          </Tab>\n          <Tab\n            id=\"alerts\"\n            href=\"/cost-insights/alerts?group=foo\"\n            matchStrategy=\"prefix\"\n          >\n            Alerts\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/cost-insights/dashboard?group=bar</strong>\n        </Text>\n        <Text as=\"p\">\n          Tab hrefs include query params (e.g., ?group=foo) but the current\n          URL has different query params (?group=bar).\n        </Text>\n        <Text as=\"p\">\n          • \"Dashboard\" tab: IS active — matching ignores query params and\n          compares only the pathname.\n        </Text>\n        <Text as=\"p\">\n          • \"Alerts\" tab: NOT active — pathname /cost-insights/alerts doesn't\n          match /cost-insights/dashboard.\n        </Text>\n      </Box>\n    </BUIProvider>\n  </MemoryRouter>\n);"
+          "snippet": "const HrefWithQueryParams = () => (\n  <TestRouter initialEntries={['/cost-insights/dashboard?group=bar']}>\n    <BUIProvider>\n      <Tabs>\n        <TabList>\n          <Tab\n            id=\"dashboard\"\n            href=\"/cost-insights/dashboard?group=foo\"\n            matchStrategy=\"prefix\"\n          >\n            Dashboard\n          </Tab>\n          <Tab\n            id=\"alerts\"\n            href=\"/cost-insights/alerts?group=foo\"\n            matchStrategy=\"prefix\"\n          >\n            Alerts\n          </Tab>\n        </TabList>\n      </Tabs>\n      <Box mt=\"6\" pl=\"2\">\n        <Text as=\"p\">\n          Current URL: <strong>/cost-insights/dashboard?group=bar</strong>\n        </Text>\n        <Text as=\"p\">\n          Tab hrefs include query params (e.g., ?group=foo) but the current\n          URL has different query params (?group=bar).\n        </Text>\n        <Text as=\"p\">\n          • \"Dashboard\" tab: IS active — matching ignores query params and\n          compares only the pathname.\n        </Text>\n        <Text as=\"p\">\n          • \"Alerts\" tab: NOT active — pathname /cost-insights/alerts doesn't\n          match /cost-insights/dashboard.\n        </Text>\n      </Box>\n    </BUIProvider>\n  </TestRouter>\n);"
         },
         {
           "id": "backstage-ui-tabs--dynamic-tab-width",
@@ -15749,10 +15807,10 @@
         {
           "id": "backstage-ui-tabs--auto-selection-of-tabs",
           "name": "Auto Selection Of Tabs",
-          "snippet": "const AutoSelectionOfTabs = () => (\n  <MemoryRouter initialEntries={['/random-page']}>\n    <BUIProvider>\n      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>\n        <Text style={{ fontSize: '16px', color: '#666' }}>\n          Current URL: <strong>/random-page</strong>\n        </Text>\n\n        {/* Without hrefs */}\n        <Text>\n          {' '}\n          <strong>Case 1: Without hrefs</strong>\n        </Text>\n        <Tabs>\n          <TabList>\n            <Tab id=\"settings\">Settings</Tab>\n            <Tab id=\"preferences\">Preferences</Tab>\n            <Tab id=\"advanced\">Advanced</Tab>\n          </TabList>\n          <TabPanel id=\"settings\">\n            <Text>Settings content - React Aria manages this selection</Text>\n          </TabPanel>\n          <TabPanel id=\"preferences\">\n            <Text>Preferences content - works normally</Text>\n          </TabPanel>\n          <TabPanel id=\"advanced\">\n            <Text>Advanced content - local state only</Text>\n          </TabPanel>\n        </Tabs>\n\n        {/* With hrefs */}\n        <Text as=\"p\">\n          <strong>Case 2: With hrefs</strong>\n        </Text>\n        <Text as=\"p\">\n          By default no selection is shown because the URL doesn't match any\n          tab's href.\n        </Text>\n        <Tabs>\n          <TabList>\n            <Tab id=\"catalog\" href=\"/catalog\">\n              Catalog\n            </Tab>\n            <Tab id=\"create\" href=\"/create\">\n              Create\n            </Tab>\n            <Tab id=\"docs\" href=\"/docs\">\n              Docs\n            </Tab>\n          </TabList>\n        </Tabs>\n      </div>\n    </BUIProvider>\n  </MemoryRouter>\n);"
+          "snippet": "const AutoSelectionOfTabs = () => (\n  <TestRouter initialEntries={['/random-page']}>\n    <BUIProvider>\n      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>\n        <Text style={{ fontSize: '16px', color: '#666' }}>\n          Current URL: <strong>/random-page</strong>\n        </Text>\n\n        {/* Without hrefs */}\n        <Text>\n          {' '}\n          <strong>Case 1: Without hrefs</strong>\n        </Text>\n        <Tabs>\n          <TabList>\n            <Tab id=\"settings\">Settings</Tab>\n            <Tab id=\"preferences\">Preferences</Tab>\n            <Tab id=\"advanced\">Advanced</Tab>\n          </TabList>\n          <TabPanel id=\"settings\">\n            <Text>Settings content - React Aria manages this selection</Text>\n          </TabPanel>\n          <TabPanel id=\"preferences\">\n            <Text>Preferences content - works normally</Text>\n          </TabPanel>\n          <TabPanel id=\"advanced\">\n            <Text>Advanced content - local state only</Text>\n          </TabPanel>\n        </Tabs>\n\n        {/* With hrefs */}\n        <Text as=\"p\">\n          <strong>Case 2: With hrefs</strong>\n        </Text>\n        <Text as=\"p\">\n          By default no selection is shown because the URL doesn't match any\n          tab's href.\n        </Text>\n        <Tabs>\n          <TabList>\n            <Tab id=\"catalog\" href=\"/catalog\">\n              Catalog\n            </Tab>\n            <Tab id=\"create\" href=\"/create\">\n              Create\n            </Tab>\n            <Tab id=\"docs\" href=\"/docs\">\n              Docs\n            </Tab>\n          </TabList>\n        </Tabs>\n      </div>\n    </BUIProvider>\n  </TestRouter>\n);"
         }
       ],
-      "import": "import { Box, BUIProvider, Tab, TabList, TabPanel, Tabs, Text } from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";",
+      "import": "import { Box, BUIProvider, Tab, TabList, TabPanel, Tabs, TestRouter, Text } from \"@backstage/ui\";",
       "jsDocTags": {
         "public": [
           " "
@@ -15839,7 +15897,7 @@
           "snippet": "const WithIconAndRemoveButton = () => {\n    const [selected, setSelected] = useState<Selection>(new Set(['travel']));\n\n    const list = useListData<ListItem>({\n      initialItems: initialList,\n    });\n\n    return (\n        <TagGroup\n            items={list.items}\n            onRemove={keys => list.remove(...keys)}\n            selectedKeys={selected}\n            onSelectionChange={setSelected}>\n            {item => (\n              <Tag icon={item.icon ? item.icon : undefined}>{item.name}</Tag>\n            )}\n        </TagGroup>\n    );\n};"
         }
       ],
-      "import": "import { BUIProvider, Flex, Tag, TagGroup } from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";\nimport { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from \"@remixicon/react\";",
+      "import": "import { BUIProvider, Flex, Tag, TagGroup, TestRouter } from \"@backstage/ui\";\nimport { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from \"@remixicon/react\";",
       "jsDocTags": {
         "public": [
           " "
@@ -17189,7 +17247,7 @@
           "snippet": "const WithDescription = () => <Container pt=\"4\">\n    <Grid.Root columns=\"2\" gap=\"4\">\n        <ServiceListCard title=\"Frontend services\" items={frontendServices} description />\n        <ServiceListCard title=\"Backend services\" items={backendServices} description />\n    </Grid.Root>\n</Container>;"
         }
       ],
-      "import": "import {\n    Card,\n    CardBody,\n    CardHeader,\n    Container,\n    Flex,\n    Grid,\n    List,\n    ListRow,\n    MenuItem,\n    Tag,\n    TagGroup,\n    Text,\n} from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";\nimport {\n    RiAccountCircleLine,\n    RiCloudLine,\n    RiCodeLine,\n    RiDeleteBinLine,\n    RiEdit2Line,\n    RiGitBranchLine,\n    RiJavascriptLine,\n    RiReactjsLine,\n    RiServerLine,\n    RiShareBoxLine,\n    RiShieldLine,\n    RiTerminalLine,\n} from \"@remixicon/react\";",
+      "import": "import {\n    Card,\n    CardBody,\n    CardHeader,\n    Container,\n    Flex,\n    Grid,\n    List,\n    ListRow,\n    MenuItem,\n    Tag,\n    TagGroup,\n    TestRouter,\n    Text,\n} from \"@backstage/ui\";\nimport {\n    RiAccountCircleLine,\n    RiCloudLine,\n    RiCodeLine,\n    RiDeleteBinLine,\n    RiEdit2Line,\n    RiGitBranchLine,\n    RiJavascriptLine,\n    RiReactjsLine,\n    RiServerLine,\n    RiShareBoxLine,\n    RiShieldLine,\n    RiTerminalLine,\n} from \"@remixicon/react\";",
       "jsDocTags": {
         "public": [
           " "
@@ -17491,7 +17549,7 @@
           "snippet": "const WithStickyHeader = () => {\n  return (\n    <>\n      <PluginHeader\n        icon={<RiGitBranchLine />}\n        title=\"CI/CD\"\n        titleLink=\"/\"\n        tabs={[\n          { id: 'builds', label: 'Builds', href: '/builds' },\n          { id: 'pipelines', label: 'Pipelines', href: '/pipelines' },\n          { id: 'deployments', label: 'Deployments', href: '/deployments' },\n          { id: 'settings', label: 'Settings', href: '/settings' },\n        ]}\n        customActions={\n          <>\n            <ButtonIcon\n              variant=\"secondary\"\n              icon={<RiRefreshLine />}\n              aria-label=\"Refresh\"\n            />\n          </>\n        }\n      />\n      <Header\n        title=\"Production deployment pipeline run\"\n        sticky\n        tabs={subTabs}\n        customActions={\n          <>\n            <Button variant=\"secondary\" iconStart={<RiDownloadLine />}>\n              Download logs\n            </Button>\n            <Button variant=\"primary\" iconStart={<RiPlayLine />}>\n              Re-run pipeline\n            </Button>\n          </>\n        }\n      />\n      <LongPageContent />\n    </>\n  );\n};"
         }
       ],
-      "import": "import {\n    BUIProvider,\n    Button,\n    ButtonIcon,\n    Card,\n    Container,\n    Flex,\n    Header,\n    Menu,\n    MenuItem,\n    MenuTrigger,\n    PluginHeader,\n} from \"@backstage/ui\";\nimport { Header as CoreHeader, Page as CorePage } from \"@backstage/core-components\";\nimport { MemoryRouter } from \"react-router-dom\";\nimport {\n    RiBox3Line,\n    RiCodeSSlashLine,\n    RiDownloadLine,\n    RiEdit2Line,\n    RiGitBranchLine,\n    RiMore2Line,\n    RiPlayLine,\n    RiRefreshLine,\n    RiSettings4Line,\n    RiShareBoxLine,\n} from \"@remixicon/react\";",
+      "import": "import {\n    Button,\n    ButtonIcon,\n    Card,\n    Container,\n    Flex,\n    Header,\n    Menu,\n    MenuItem,\n    MenuTrigger,\n    PluginHeader,\n    TestRouter,\n} from \"@backstage/ui\";\nimport { Header as CoreHeader, Page as CorePage } from \"@backstage/core-components\";\nimport {\n    RiBox3Line,\n    RiCodeSSlashLine,\n    RiDownloadLine,\n    RiEdit2Line,\n    RiGitBranchLine,\n    RiMore2Line,\n    RiPlayLine,\n    RiRefreshLine,\n    RiSettings4Line,\n    RiShareBoxLine,\n} from \"@remixicon/react\";",
       "jsDocTags": {
         "public": [
           " "
@@ -17557,7 +17615,7 @@
                 }
               ]
             },
-            "description": ""
+            "description": "Active tab ID. When omitted, the host router configured through BUIProvider\nselects the most specific matching href. Set to null to disable selection."
           },
           "breadcrumbs": {
             "required": false,
@@ -17633,7 +17691,7 @@
           "snippet": "const Default = () => <CardsWithTableLayout />;"
         }
       ],
-      "import": "import {\n    BUIProvider,\n    Button,\n    Card,\n    CardBody,\n    CardHeader,\n    CellProfile,\n    CellText,\n    Container,\n    Flex,\n    Grid,\n    Header,\n    PluginHeader,\n    Table,\n    Text,\n} from \"@backstage/ui\";\nimport { MemoryRouter } from \"react-router-dom\";",
+      "import": "import {\n    Button,\n    Card,\n    CardBody,\n    CardHeader,\n    CellProfile,\n    CellText,\n    Container,\n    Flex,\n    Grid,\n    Header,\n    PluginHeader,\n    Table,\n    TestRouter,\n    Text,\n} from \"@backstage/ui\";",
       "jsDocTags": {
         "public": [
           " "
@@ -17999,6 +18057,6 @@
   },
   "meta": {
     "docgen": "react-docgen",
-    "durationMs": 4250
+    "durationMs": 5118
   }
 }

@@ -335,7 +335,7 @@ Old plugins often use React Router `<Route>` trees inside a router component. Re
 
 > "Does your plugin use top-level tabs that users navigate between via a header (for example Overview / Settings)? Or does it use detail or drill-down routes (for example `/my-plugin/items/:id`)?"
 
-Keep the internal routing in a `PageBlueprint` `loader` when the routes are detail pages or deeply nested or dynamic:
+Keep drill-down routing inside a `PageBlueprint` `loader`. If its content uses React Router `<Routes>`, render the matching page adapter at that mount:
 
 ```tsx
 export const myPage = PageBlueprint.make({
@@ -346,6 +346,20 @@ export const myPage = PageBlueprint.make({
   },
 });
 ```
+
+In the lazy `components/Router` module, wrap the component that uses router hooks:
+
+```tsx
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
+
+export const MyPluginRouter = () => (
+  <ReactRouterV6PageRouter>
+    <MyPluginRouterContent />
+  </ReactRouterV6PageRouter>
+);
+```
+
+Add the adapter package as a dependency. Use the v7 or TanStack adapter when the content uses that router instead. Each page or sub-page scopes its own adapter; don't wrap unrelated entity content or cards. If content only reads params or builds links, use framework `useRouteRefParams`, `useRouteRef`, and `useAppHref` instead of a router adapter. `renderInTestApp` accepts the same adapter through `router` when testing a bare page.
 
 Use `SubPageBlueprint` when the routes are top-level tabs:
 

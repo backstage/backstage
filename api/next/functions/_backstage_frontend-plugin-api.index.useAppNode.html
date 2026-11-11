@@ -22,14 +22,15 @@
 <h4 class="tsd-returns-title">Returns <a href="../interfaces/_backstage_frontend-plugin-api.index.AppNode.html" class="tsd-signature-type tsd-kind-interface">AppNode</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4>
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-remarks">
-<h4 class="tsd-anchor-link" id="remarks">Remarks<a href="#remarks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>This hook will return the <a href="../interfaces/_backstage_frontend-plugin-api.index.AppNode.html" class="tsd-kind-interface">AppNode</a> for the closest extension. This
-relies on the extension using the (ExtensionBoundary:function) component in its
-implementation, which is included by default for all common blueprints.</p>
-<p>If the current component is not inside an (ExtensionBoundary:function), it will
-return <code>undefined</code>.</p>
+<h4 class="tsd-anchor-link" id="remarks">Remarks<a href="#remarks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>This hook returns the <a href="../interfaces/_backstage_frontend-plugin-api.index.AppNode.html" class="tsd-kind-interface">AppNode</a> from the closest extension context.
+The app supplies this context around the complete React element output of
+route-bearing extensions, including headers outside their own boundaries.
+The (ExtensionBoundary:function) component also supplies extension
+context, including for extensions without a route path.</p>
+<p>If no extension context is available, this hook returns <code>undefined</code>.</p>
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/ca1165d1e6facc756d3724746d275e481275b91a/packages/frontend-plugin-api/src/components/AppNodeProvider.tsx#L63">packages/frontend-plugin-api/src/components/AppNodeProvider.tsx:63</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/0a160f3ed418debac235602a09defae612a728d3/packages/frontend-plugin-api/src/components/AppNodeProvider.tsx#L68">packages/frontend-plugin-api/src/components/AppNodeProvider.tsx:68</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

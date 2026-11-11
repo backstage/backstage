@@ -1,0 +1,115 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@backstage/frontend-adapter-react-router-v7 | Backstage</title><meta name="description" content="Documentation for Backstage"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">Backstage</a>
+<div id="tsd-toolbar-links"><a href="https://backstage.io/docs">Docs</a><a href="https://github.com/backstage/backstage">GitHub</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
+<ul role="listbox" id="tsd-search-results"></ul>
+<div id="tsd-search-status" aria-live="polite" aria-atomic="true">
+<div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-menu"></use></svg></a></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<ul class="tsd-breadcrumb" aria-label="Breadcrumb">
+<li><a href="" aria-current="page">@backstage/frontend-adapter-react-router-v7</a></li></ul>
+<h1>Module @backstage/frontend-adapter-react-router-v7</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>React Router v7 adapter for Backstage scoped plugin routing.</p>
+</div></section>
+<section class="tsd-panel tsd-typography"><h1 id="backstagefrontend-adapter-react-router-v7" class="tsd-anchor-link">@backstage/frontend-adapter-react-router-v7<a href="#backstagefrontend-adapter-react-router-v7" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h1>
+<p>Renders a page of the <a href="https://backstage.io/docs/frontend-system/">new frontend system</a>
+with <a href="https://reactrouter.com">React Router v7</a>, so that one page can use
+<code>react-router</code> and <code>react-router-dom</code> v7 while other pages in the same app
+render with a different routing library, or with none at all.</p>
+<p>Browser history belongs to the app. This package never writes to
+<code>window.history</code>. It only scopes React Router to the page it renders, so
+programmatic back and forward, such as <code>navigate(-1)</code>, traverse the app-owned
+history.</p>
+<p>This package is part of scoped plugin routing,
+<a href="https://github.com/backstage/backstage/issues/33603">RFC #33603</a>.</p>
+<h2 id="installation" class="tsd-anchor-link">Installation<a href="#installation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>React Router v7 is a peer dependency, so install it alongside the adapter:</p>
+<pre><code class="sh"><span class="hl-1">cd</span><span class="hl-2"> &lt;</span><span class="hl-4">package-di</span><span class="hl-2">r&gt; </span><span class="hl-0"># if within a monorepo</span><br/><span class="hl-1">yarn</span><span class="hl-2"> </span><span class="hl-4">add</span><span class="hl-2"> </span><span class="hl-4">@backstage/frontend-adapter-react-router-v7</span><span class="hl-2"> </span><span class="hl-4">react-router@^7</span><span class="hl-2"> </span><span class="hl-4">react-router-dom@^7</span>
+</code><button type="button">Copy</button></pre>
+
+<h2 id="usage" class="tsd-anchor-link">Usage<a href="#usage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Render <code>ReactRouterV7PageRouter</code> inside the lazily loaded component of the page whose
+content should get the context:</p>
+<pre><code class="tsx"><span class="hl-8">import</span><span class="hl-2"> { </span><span class="hl-6">PageBlueprint</span><span class="hl-2"> } </span><span class="hl-8">from</span><span class="hl-2"> </span><span class="hl-4">&#39;@backstage/frontend-plugin-api&#39;</span><span class="hl-2">;</span><br/><br/><span class="hl-3">const</span><span class="hl-2"> </span><span class="hl-5">toolsPage</span><span class="hl-2"> = </span><span class="hl-6">PageBlueprint</span><span class="hl-2">.</span><span class="hl-1">make</span><span class="hl-2">({</span><br/><span class="hl-2">  </span><span class="hl-6">params:</span><span class="hl-2"> {</span><br/><span class="hl-2">    </span><span class="hl-6">path:</span><span class="hl-2"> </span><span class="hl-4">&#39;/tools&#39;</span><span class="hl-2">,</span><br/><span class="hl-2">    </span><span class="hl-1">loader</span><span class="hl-6">:</span><span class="hl-2"> () </span><span class="hl-3">=&gt;</span><span class="hl-2"> </span><span class="hl-3">import</span><span class="hl-2">(</span><span class="hl-4">&#39;./components/ToolsPage&#39;</span><span class="hl-2">).</span><span class="hl-1">then</span><span class="hl-2">(</span><span class="hl-6">m</span><span class="hl-2"> </span><span class="hl-3">=&gt;</span><span class="hl-2"> </span><span class="hl-16">&lt;</span><span class="hl-13">m.ToolsPage</span><span class="hl-2"> </span><span class="hl-16">/&gt;</span><span class="hl-2">),</span><br/><span class="hl-2">  },</span><br/><span class="hl-2">});</span>
+</code><button type="button">Copy</button></pre>
+
+<p>The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.</p>
+<pre><code class="tsx"><span class="hl-8">import</span><span class="hl-2"> { </span><span class="hl-6">ReactRouterV7PageRouter</span><span class="hl-2"> } </span><span class="hl-8">from</span><span class="hl-2"> </span><span class="hl-4">&#39;@backstage/frontend-adapter-react-router-v7&#39;</span><span class="hl-2">;</span><br/><br/><span class="hl-8">export</span><span class="hl-2"> </span><span class="hl-3">function</span><span class="hl-2"> </span><span class="hl-1">ToolsPage</span><span class="hl-2">() {</span><br/><span class="hl-2">  </span><span class="hl-8">return</span><span class="hl-2"> (</span><br/><span class="hl-2">    </span><span class="hl-16">&lt;</span><span class="hl-13">ReactRouterV7PageRouter</span><span class="hl-16">&gt;</span><br/><span class="hl-2">      </span><span class="hl-3">{</span><span class="hl-0">/* Existing page JSX and local routes go here. */</span><span class="hl-3">}</span><br/><span class="hl-2">    </span><span class="hl-16">&lt;/</span><span class="hl-13">ReactRouterV7PageRouter</span><span class="hl-16">&gt;</span><br/><span class="hl-2">  );</span><br/><span class="hl-2">}</span>
+</code><button type="button">Copy</button></pre>
+
+<p>The page keeps composing its own content. A <code>&lt;Routes&gt;</code> tree the page builds
+itself works as usual, as do relative <code>Link</code>s, nested <code>&lt;Routes&gt;</code>, and
+<code>useParams</code>.</p>
+<p>Existing pages retain an implicit React Router v6 compatibility context. This
+explicit adapter takes effect where the page component renders it. Development warnings
+identify content still consuming the implicit fallback. Adapters are added rather than
+selected: React Router v7 publishes its own React context, so it nests with adapters
+from other libraries instead of replacing them.</p>
+<p>Rendering it in a sub-page's component scopes it to that sub-page, because the
+sub-page's app node determines its routing scope. Sibling tabs may declare
+different libraries, or none at all.</p>
+<p>Declare it at a route-bearing extension, such as a page or sub-page. An
+<code>EntityContentBlueprint</code> tab, a card, or anything else filling a region of
+another page already renders inside the adapter that page declared, one
+route match deeper. A second adapter there re-scopes to the page's own mount and
+drops the tab's match, so relative targets in that content resolve from the page
+instead of from the tab.</p>
+<h2 id="where-there-is-nothing-to-scope-to" class="tsd-anchor-link">Where there is nothing to scope to<a href="#where-there-is-nothing-to-scope-to" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Scoping needs two things: a page mount, saying which part of the URL belongs to
+the page, and a registered <code>AppHistoryApi</code> to project a location from. With
+either missing, this adapter renders its children untouched and asks nothing of
+the surrounding app — no API provider, no framework context.</p>
+<p>That passthrough is what lets a plugin shipping for both frontend systems wrap a
+shared component in the adapter. The old frontend system supplies neither half,
+so the wrap is invisible there rather than a crash. The same holds in a plugin's
+own <code>render()</code> unit tests, which stand up no app at all.</p>
+<h2 id="navigation-targets" class="tsd-anchor-link">Navigation targets<a href="#navigation-targets" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Paths starting with <code>/</code> are absolute from the app root, without the deployment
+basename. Route-ref destinations work unchanged through this adapter's native
+navigation APIs and through BUI controls, including navigation to other plugins.</p>
+<p>The adapter supplies <code>NavigationProvider</code> from <code>@backstage/frontend-plugin-api</code>.
+<code>useNavigation</code>, <code>RouterLink</code>, and BUI controls resolve relative targets using
+the routing library at the consuming control's route scope. Other component
+libraries can integrate through the same public hook; the adapter has no BUI
+runtime dependency. Outside an adapter, framework routing accepts only app-absolute
+paths, empty/query/hash targets, and external URLs.</p>
+<h2 id="documentation" class="tsd-anchor-link">Documentation<a href="#documentation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<ul>
+<li><a href="https://backstage.io/docs/frontend-system/architecture/routes#scoped-plugin-routing">Scoped plugin routing</a></li>
+<li><a href="https://backstage.io/docs">Backstage Documentation</a></li>
+</ul>
+</section>
+<details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Functions"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h2 class="tsd-anchor-link" id="functions">Functions<a href="#functions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary><dl class="tsd-member-summaries"><dt class="tsd-member-summary" id="reactrouterv7pagerouter"><span class="tsd-member-summary-name"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Function"><use href="../assets/icons.svg#icon-64"></use></svg><a href="../functions/_backstage_frontend-adapter-react-router-v7.ReactRouterV7PageRouter.html">ReactRouterV7PageRouter</a><a href="#reactrouterv7pagerouter" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></span></dt><dd class="tsd-member-summary"></dd></dl></details></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div>
+<div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>On This Page</h3></summary>
+<div class="tsd-accordion-details"><a href="#backstagefrontend-adapter-react-router-v7"><span>@backstage/frontend-<wbr/>adapter-<wbr/>react-<wbr/>router-<wbr/>v7</span></a>
+<ul>
+<li><a href="#installation"><span>Installation</span></a></li>
+<li><a href="#usage"><span>Usage</span></a></li>
+<li><a href="#where-there-is-nothing-to-scope-to"><span>Where there is nothing to scope to</span></a></li>
+<li><a href="#navigation-targets"><span>Navigation targets</span></a></li>
+<li><a href="#documentation"><span>Documentation</span></a></li></ul>
+<details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Functions"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Functions</summary>
+<div><a href="#reactrouterv7pagerouter"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Function"><use href="../assets/icons.svg#icon-64"></use></svg><span>React<wbr/>Router<wbr/>V7<wbr/>Page<wbr/>Router</span></a></div></details></div></details></div>
+<div class="site-menu">
+<nav id="tsd-sidebar-links" class="tsd-navigation"><a href="https://backstage.io/docs" class="tsd-nav-link">Docs</a><a href="https://github.com/backstage/backstage" class="tsd-nav-link">GitHub</a></nav>
+<nav class="tsd-navigation"><a href="../modules.html">Backstage</a>
+<ul class="tsd-small-nested-navigation" id="tsd-nav-container">
+<li>Loading...</li></ul></nav></div></div></div><footer>
+<p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer>
+<div class="overlay"></div></body></html>

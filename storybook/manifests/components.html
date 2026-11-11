@@ -626,7 +626,7 @@
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>4.3s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>5.1s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -2967,7 +2967,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ButtonLink</h2>
       <div class="badges">
-        <label for="c-7-backstage-ui-buttonlink-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-7-backstage-ui-buttonlink-props" class="badge ok as-toggle">8 prop types</label>
         
         <label for="c-7-backstage-ui-buttonlink-stories" class="badge ok as-toggle">7 stories</label>
         
@@ -2996,7 +2996,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">7 prop types</span>
+              <span class="badge ok">8 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/ButtonLink/ButtonLink.tsx::ButtonLink</code></pre>
             <pre><code>Props:</code></pre>
@@ -3009,6 +3009,16 @@ iconEnd?: ReactElement
 iconStart?: ReactElement
 
 noTrack?: boolean
+
+/**
+ * Options passed to the router configured on BUIProvider.
+ */
+routerOptions?: {
+  /** Replace the current history entry instead of adding one. */
+  replace?: boolean;
+  /** State associated with the destination history entry. */
+  state?: unknown;
+}
 
 size?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
@@ -3024,8 +3034,7 @@ variant?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { BUIProvider, ButtonLink, Flex } from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";
+                <pre><code>import { BUIProvider, ButtonLink, Flex, TestRouter } from "@backstage/ui";
 import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
               </div>
           
@@ -3839,9 +3848,9 @@ style?: CSSProperties</code></pre>
     MenuItem,
     Tag,
     TagGroup,
+    TestRouter,
     Text,
 } from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";
 import {
     RiAccountCircleLine,
     RiCloudLine,
@@ -3999,7 +4008,6 @@ style?: CSSProperties</code></pre>
                   <span class="ex-name">Imports</span>
                 </div>
                 <pre><code>import {
-    BUIProvider,
     Button,
     Card,
     CardBody,
@@ -4012,9 +4020,9 @@ style?: CSSProperties</code></pre>
     Header,
     PluginHeader,
     Table,
+    TestRouter,
     Text,
-} from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";</code></pre>
+} from "@backstage/ui";</code></pre>
               </div>
           
           
@@ -4095,8 +4103,7 @@ className?: string</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { Checkbox, Flex, Link } from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";</code></pre>
+                <pre><code>import { Checkbox, Flex, Link, TestRouter } from "@backstage/ui";</code></pre>
               </div>
           
           
@@ -8021,8 +8028,7 @@ style?: CSSProperties</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { BUIProvider, Container, FullPage, PluginHeader, Text } from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";</code></pre>
+                <pre><code>import { BUIProvider, Container, FullPage, PluginHeader, TestRouter, Text } from "@backstage/ui";</code></pre>
               </div>
           
           
@@ -8150,7 +8156,11 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
             </div>
             <pre><code>Component: packages/ui/src/components/Header/Header.tsx::Header</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>activeTabId?: string | null
+            <pre><code>/**
+ * Active tab ID. When omitted, the host router configured through BUIProvider
+ * selects the most specific matching href. Set to null to disable selection.
+ */
+activeTabId?: string | null
 
 /**
  * @deprecated The breadcrumbs prop will be removed in a future release.
@@ -8202,8 +8212,8 @@ title?: string</code></pre>
     Menu,
     MenuItem,
     MenuTrigger,
+    TestRouter,
 } from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";
 import { RiMore2Line } from "@remixicon/react";</code></pre>
               </div>
           
@@ -8685,7 +8695,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Link</h2>
       <div class="badges">
-        <label for="c-24-backstage-ui-link-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-24-backstage-ui-link-props" class="badge ok as-toggle">10 prop types</label>
         
         <label for="c-24-backstage-ui-link-stories" class="badge ok as-toggle">9 stories</label>
         
@@ -8714,7 +8724,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen)</small></span>
-              <span class="badge ok">9 prop types</span>
+              <span class="badge ok">10 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Link/Link.tsx::Link</code></pre>
             <pre><code>Props:</code></pre>
@@ -8727,6 +8737,16 @@ color?: | TextColors
 | Partial&lt;Record&lt;Breakpoint, TextColors | TextColorStatus&gt;&gt;
 
 noTrack?: boolean
+
+/**
+ * Options passed to the router configured on BUIProvider.
+ */
+routerOptions?: {
+  /** Replace the current history entry instead of adding one. */
+  replace?: boolean;
+  /** State associated with the destination history entry. */
+  state?: unknown;
+}
 
 standalone?: boolean
 
@@ -8748,8 +8768,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { BUIProvider, Flex, Link, Text } from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";</code></pre>
+                <pre><code>import { BUIProvider, Flex, Link, TestRouter, Text } from "@backstage/ui";</code></pre>
               </div>
           
           
@@ -9088,8 +9107,7 @@ renderEmptyState?: ReactAriaGridListProps&lt;T&gt;[&#39;renderEmptyState&#39;]</
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { List, ListRow, MenuItem, Tag, TagGroup } from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";
+                <pre><code>import { List, ListRow, MenuItem, Tag, TagGroup, TestRouter } from "@backstage/ui";
 import {
     RiCodeLine,
     RiDeleteBinLine,
@@ -9403,8 +9421,8 @@ import {
     MenuSeparator,
     MenuTrigger,
     SubmenuTrigger,
+    TestRouter,
 } from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";
 import {
     RiChat1Line,
     RiCustomerService2Line,
@@ -9905,8 +9923,8 @@ import {
     MenuItem,
     MenuTrigger,
     SubmenuTrigger,
-} from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";</code></pre>
+    TestRouter,
+} from "@backstage/ui";</code></pre>
               </div>
           
           
@@ -10135,9 +10153,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     MenuListBoxItem,
     MenuTrigger,
     SubmenuTrigger,
+    TestRouter,
     Text,
-} from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";</code></pre>
+} from "@backstage/ui";</code></pre>
               </div>
           
           
@@ -10421,8 +10439,16 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { BUIProvider, Button, Flex, MenuListBox, MenuListBoxItem, MenuTrigger, Text } from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";</code></pre>
+                <pre><code>import {
+    BUIProvider,
+    Button,
+    Flex,
+    MenuListBox,
+    MenuListBoxItem,
+    MenuTrigger,
+    TestRouter,
+    Text,
+} from "@backstage/ui";</code></pre>
               </div>
           
           
@@ -11206,9 +11232,9 @@ titleLink?: string</code></pre>
     MenuItem,
     MenuTrigger,
     PluginHeader,
+    TestRouter,
     Text,
 } from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";
 import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@remixicon/react";</code></pre>
               </div>
           
@@ -11281,7 +11307,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
               </div>
               
               
-              <pre><code>const WithMockedURLCampaigns = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/campaigns&#39;]}&gt;
+              <pre><code>const WithMockedURLCampaigns = () =&gt; &lt;TestRouter initialEntries={[&#39;/campaigns&#39;]}&gt;
     &lt;BUIProvider&gt;
         &lt;PluginHeader tabs={tabs} /&gt;
         &lt;Container mt=&quot;6&quot;&gt;
@@ -11292,7 +11318,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
                           &lt;/Text&gt;
         &lt;/Container&gt;
     &lt;/BUIProvider&gt;
-&lt;/MemoryRouter&gt;;</code></pre>
+&lt;/TestRouter&gt;;</code></pre>
               
             </div>
             <div class="note ok">
@@ -11302,7 +11328,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
               </div>
               
               
-              <pre><code>const WithMockedURLIntegrations = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/integrations&#39;]}&gt;
+              <pre><code>const WithMockedURLIntegrations = () =&gt; &lt;TestRouter initialEntries={[&#39;/integrations&#39;]}&gt;
     &lt;BUIProvider&gt;
         &lt;PluginHeader tabs={tabs} /&gt;
         &lt;Container mt=&quot;6&quot;&gt;
@@ -11313,7 +11339,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
                           &lt;/Text&gt;
         &lt;/Container&gt;
     &lt;/BUIProvider&gt;
-&lt;/MemoryRouter&gt;;</code></pre>
+&lt;/TestRouter&gt;;</code></pre>
               
             </div>
             <div class="note ok">
@@ -11323,7 +11349,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
               </div>
               
               
-              <pre><code>const WithMockedURLNoMatch = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/some-other-page&#39;]}&gt;
+              <pre><code>const WithMockedURLNoMatch = () =&gt; &lt;TestRouter initialEntries={[&#39;/some-other-page&#39;]}&gt;
     &lt;BUIProvider&gt;
         &lt;PluginHeader tabs={tabs} /&gt;
         &lt;Container mt=&quot;6&quot;&gt;
@@ -11337,7 +11363,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
                           &lt;/Text&gt;
         &lt;/Container&gt;
     &lt;/BUIProvider&gt;
-&lt;/MemoryRouter&gt;;</code></pre>
+&lt;/TestRouter&gt;;</code></pre>
               
             </div>
             <div class="note ok">
@@ -11347,7 +11373,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
               </div>
               
               
-              <pre><code>const WithTabsMatchingStrategies = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/mentorship/events&#39;]}&gt;
+              <pre><code>const WithTabsMatchingStrategies = () =&gt; &lt;TestRouter initialEntries={[&#39;/mentorship/events&#39;]}&gt;
     &lt;BUIProvider&gt;
         &lt;PluginHeader
             title=&quot;Route Matching Demo&quot;
@@ -11396,7 +11422,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
                           &lt;/Text&gt;
         &lt;/Container&gt;
     &lt;/BUIProvider&gt;
-&lt;/MemoryRouter&gt;;</code></pre>
+&lt;/TestRouter&gt;;</code></pre>
               
             </div>
             <div class="note ok">
@@ -11406,7 +11432,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
               </div>
               
               
-              <pre><code>const WithTabsExactMatching = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/mentorship/events&#39;]}&gt;
+              <pre><code>const WithTabsExactMatching = () =&gt; &lt;TestRouter initialEntries={[&#39;/mentorship/events&#39;]}&gt;
     &lt;BUIProvider&gt;
         &lt;PluginHeader
             title=&quot;Exact Matching Demo&quot;
@@ -11438,7 +11464,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
                           &lt;/Text&gt;
         &lt;/Container&gt;
     &lt;/BUIProvider&gt;
-&lt;/MemoryRouter&gt;;</code></pre>
+&lt;/TestRouter&gt;;</code></pre>
               
             </div>
             <div class="note ok">
@@ -11448,7 +11474,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
               </div>
               
               
-              <pre><code>const WithTabsPrefixMatchingDeep = () =&gt; &lt;MemoryRouter initialEntries={[&#39;/catalog/users/john/details&#39;]}&gt;
+              <pre><code>const WithTabsPrefixMatchingDeep = () =&gt; &lt;TestRouter initialEntries={[&#39;/catalog/users/john/details&#39;]}&gt;
     &lt;BUIProvider&gt;
         &lt;PluginHeader
             title=&quot;Deep Nesting Demo&quot;
@@ -11498,7 +11524,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
                           &lt;/Text&gt;
         &lt;/Container&gt;
     &lt;/BUIProvider&gt;
-&lt;/MemoryRouter&gt;;</code></pre>
+&lt;/TestRouter&gt;;</code></pre>
               
             </div>
             <div class="note ok">
@@ -11689,7 +11715,11 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
             </div>
             <pre><code>Component: packages/ui/src/components/Header/Header.tsx::Header</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>activeTabId?: string | null
+            <pre><code>/**
+ * Active tab ID. When omitted, the host router configured through BUIProvider
+ * selects the most specific matching href. Set to null to disable selection.
+ */
+activeTabId?: string | null
 
 /**
  * @deprecated The breadcrumbs prop will be removed in a future release.
@@ -11731,7 +11761,6 @@ title?: string</code></pre>
                   <span class="ex-name">Imports</span>
                 </div>
                 <pre><code>import {
-    BUIProvider,
     Button,
     ButtonIcon,
     Card,
@@ -11742,9 +11771,9 @@ title?: string</code></pre>
     MenuItem,
     MenuTrigger,
     PluginHeader,
+    TestRouter,
 } from "@backstage/ui";
 import { Header as CoreHeader, Page as CorePage } from "@backstage/core-components";
-import { MemoryRouter } from "react-router-dom";
 import {
     RiBox3Line,
     RiCodeSSlashLine,
@@ -12847,9 +12876,9 @@ style?: React.CSSProperties</code></pre>
     PluginHeader,
     SearchAutocomplete,
     SearchAutocompleteItem,
+    TestRouter,
     Text,
 } from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";
 import { RiCactusLine } from "@remixicon/react";</code></pre>
               </div>
           
@@ -13347,10 +13376,10 @@ startCollapsed?: boolean</code></pre>
     Flex,
     PluginHeader,
     SearchField,
+    TestRouter,
     Text,
 } from "@backstage/ui";
 import { Form } from "react-aria-components";
-import { MemoryRouter } from "react-router-dom";
 import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
               </div>
           
@@ -14990,8 +15019,7 @@ className?: string</code></pre>
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { Box, BUIProvider, Tab, TabList, TabPanel, Tabs, Text } from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";</code></pre>
+                <pre><code>import { Box, BUIProvider, Tab, TabList, TabPanel, Tabs, TestRouter, Text } from "@backstage/ui";</code></pre>
               </div>
           
           
@@ -15048,7 +15076,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const WithMockedURLTab2 = () =&gt; (
-  &lt;MemoryRouter initialEntries={[&#39;/tab2&#39;]}&gt;
+  &lt;TestRouter initialEntries={[&#39;/tab2&#39;]}&gt;
     &lt;BUIProvider&gt;
       &lt;Tabs&gt;
         &lt;TabList&gt;
@@ -15073,7 +15101,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         &lt;/Text&gt;
       &lt;/Box&gt;
     &lt;/BUIProvider&gt;
-  &lt;/MemoryRouter&gt;
+  &lt;/TestRouter&gt;
 );</code></pre>
               
             </div>
@@ -15085,7 +15113,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const WithMockedURLTab3 = () =&gt; (
-  &lt;MemoryRouter initialEntries={[&#39;/tab3&#39;]}&gt;
+  &lt;TestRouter initialEntries={[&#39;/tab3&#39;]}&gt;
     &lt;BUIProvider&gt;
       &lt;Tabs&gt;
         &lt;TabList&gt;
@@ -15110,7 +15138,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         &lt;/Text&gt;
       &lt;/Box&gt;
     &lt;/BUIProvider&gt;
-  &lt;/MemoryRouter&gt;
+  &lt;/TestRouter&gt;
 );</code></pre>
               
             </div>
@@ -15122,7 +15150,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const WithMockedURLNoMatch = () =&gt; (
-  &lt;MemoryRouter initialEntries={[&#39;/some-other-page&#39;]}&gt;
+  &lt;TestRouter initialEntries={[&#39;/some-other-page&#39;]}&gt;
     &lt;BUIProvider&gt;
       &lt;Tabs&gt;
         &lt;TabList&gt;
@@ -15151,7 +15179,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         &lt;/Text&gt;
       &lt;/Box&gt;
     &lt;/BUIProvider&gt;
-  &lt;/MemoryRouter&gt;
+  &lt;/TestRouter&gt;
 );</code></pre>
               
             </div>
@@ -15163,7 +15191,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const ExactMatchingDefault = () =&gt; (
-  &lt;MemoryRouter initialEntries={[&#39;/mentorship/events&#39;]}&gt;
+  &lt;TestRouter initialEntries={[&#39;/mentorship/events&#39;]}&gt;
     &lt;BUIProvider&gt;
       &lt;Tabs&gt;
         &lt;TabList&gt;
@@ -15192,7 +15220,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         &lt;/Text&gt;
       &lt;/Box&gt;
     &lt;/BUIProvider&gt;
-  &lt;/MemoryRouter&gt;
+  &lt;/TestRouter&gt;
 );</code></pre>
               
             </div>
@@ -15204,7 +15232,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const PrefixMatchingForNestedRoutes = () =&gt; (
-  &lt;MemoryRouter initialEntries={[&#39;/mentorship/events&#39;]}&gt;
+  &lt;TestRouter initialEntries={[&#39;/mentorship/events&#39;]}&gt;
     &lt;BUIProvider&gt;
       &lt;Tabs&gt;
         &lt;TabList&gt;
@@ -15237,7 +15265,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         &lt;/Text&gt;
       &lt;/Box&gt;
     &lt;/BUIProvider&gt;
-  &lt;/MemoryRouter&gt;
+  &lt;/TestRouter&gt;
 );</code></pre>
               
             </div>
@@ -15249,7 +15277,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const PrefixMatchingDeepNesting = () =&gt; (
-  &lt;MemoryRouter initialEntries={[&#39;/catalog/users/john/details&#39;]}&gt;
+  &lt;TestRouter initialEntries={[&#39;/catalog/users/john/details&#39;]}&gt;
     &lt;BUIProvider&gt;
       &lt;Tabs&gt;
         &lt;TabList&gt;
@@ -15277,7 +15305,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         &lt;/Text&gt;
       &lt;/Box&gt;
     &lt;/BUIProvider&gt;
-  &lt;/MemoryRouter&gt;
+  &lt;/TestRouter&gt;
 );</code></pre>
               
             </div>
@@ -15289,7 +15317,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const MixedMatchingStrategies = () =&gt; (
-  &lt;MemoryRouter initialEntries={[&#39;/dashboard/analytics/reports&#39;]}&gt;
+  &lt;TestRouter initialEntries={[&#39;/dashboard/analytics/reports&#39;]}&gt;
     &lt;BUIProvider&gt;
       &lt;Tabs&gt;
         &lt;TabList&gt;
@@ -15337,7 +15365,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         &lt;/Text&gt;
       &lt;/Box&gt;
     &lt;/BUIProvider&gt;
-  &lt;/MemoryRouter&gt;
+  &lt;/TestRouter&gt;
 );</code></pre>
               
             </div>
@@ -15349,7 +15377,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const PrefixMatchingEdgeCases = () =&gt; (
-  &lt;MemoryRouter initialEntries={[&#39;/foobar&#39;]}&gt;
+  &lt;TestRouter initialEntries={[&#39;/foobar&#39;]}&gt;
     &lt;BUIProvider&gt;
       &lt;Tabs&gt;
         &lt;TabList&gt;
@@ -15384,7 +15412,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         &lt;/Text&gt;
       &lt;/Box&gt;
     &lt;/BUIProvider&gt;
-  &lt;/MemoryRouter&gt;
+  &lt;/TestRouter&gt;
 );</code></pre>
               
             </div>
@@ -15396,7 +15424,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const PrefixMatchingWithSlash = () =&gt; (
-  &lt;MemoryRouter initialEntries={[&#39;/foo/bar&#39;]}&gt;
+  &lt;TestRouter initialEntries={[&#39;/foo/bar&#39;]}&gt;
     &lt;BUIProvider&gt;
       &lt;Tabs&gt;
         &lt;TabList&gt;
@@ -15430,7 +15458,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         &lt;/Text&gt;
       &lt;/Box&gt;
     &lt;/BUIProvider&gt;
-  &lt;/MemoryRouter&gt;
+  &lt;/TestRouter&gt;
 );</code></pre>
               
             </div>
@@ -15442,7 +15470,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const RootPathMatching = () =&gt; (
-  &lt;MemoryRouter initialEntries={[&#39;/&#39;]}&gt;
+  &lt;TestRouter initialEntries={[&#39;/&#39;]}&gt;
     &lt;BUIProvider&gt;
       &lt;Tabs&gt;
         &lt;TabList&gt;
@@ -15471,7 +15499,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         &lt;/Text&gt;
       &lt;/Box&gt;
     &lt;/BUIProvider&gt;
-  &lt;/MemoryRouter&gt;
+  &lt;/TestRouter&gt;
 );</code></pre>
               
             </div>
@@ -15483,7 +15511,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const HrefWithQueryParams = () =&gt; (
-  &lt;MemoryRouter initialEntries={[&#39;/cost-insights/dashboard?group=bar&#39;]}&gt;
+  &lt;TestRouter initialEntries={[&#39;/cost-insights/dashboard?group=bar&#39;]}&gt;
     &lt;BUIProvider&gt;
       &lt;Tabs&gt;
         &lt;TabList&gt;
@@ -15521,7 +15549,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         &lt;/Text&gt;
       &lt;/Box&gt;
     &lt;/BUIProvider&gt;
-  &lt;/MemoryRouter&gt;
+  &lt;/TestRouter&gt;
 );</code></pre>
               
             </div>
@@ -15562,7 +15590,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
               
               
               <pre><code>const AutoSelectionOfTabs = () =&gt; (
-  &lt;MemoryRouter initialEntries={[&#39;/random-page&#39;]}&gt;
+  &lt;TestRouter initialEntries={[&#39;/random-page&#39;]}&gt;
     &lt;BUIProvider&gt;
       &lt;div style={{ display: &#39;flex&#39;, flexDirection: &#39;column&#39;, gap: &#39;24px&#39; }}&gt;
         &lt;Text style={{ fontSize: &#39;16px&#39;, color: &#39;#666&#39; }}&gt;
@@ -15614,7 +15642,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         &lt;/Tabs&gt;
       &lt;/div&gt;
     &lt;/BUIProvider&gt;
-  &lt;/MemoryRouter&gt;
+  &lt;/TestRouter&gt;
 );</code></pre>
               
             </div>
@@ -15689,8 +15717,7 @@ renderEmptyState?: ReactAriaTagListProps&lt;T&gt;[&#39;renderEmptyState&#39;]</c
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { BUIProvider, Flex, Tag, TagGroup } from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";
+                <pre><code>import { BUIProvider, Flex, Tag, TagGroup, TestRouter } from "@backstage/ui";
 import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixicon/react";</code></pre>
               </div>
           
