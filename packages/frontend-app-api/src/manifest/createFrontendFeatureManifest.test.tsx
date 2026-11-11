@@ -30,7 +30,7 @@ import { z } from 'zod/v4';
 import { createFrontendFeatureManifest } from './createFrontendFeatureManifest';
 
 describe('createFrontendFeatureManifest', () => {
-  it('describes a plugin that only has pages as deferrable', async () => {
+  it('describes a plugin that only has pages as deferrable', () => {
     const rootRouteRef = createRouteRef();
     const plugin = createFrontendPlugin({
       pluginId: 'test',
@@ -52,7 +52,7 @@ describe('createFrontendFeatureManifest', () => {
       ],
     });
 
-    const manifest = await createFrontendFeatureManifest(plugin);
+    const manifest = createFrontendFeatureManifest(plugin);
 
     expect(manifest).toMatchObject({
       manifestVersion: 1,
@@ -83,7 +83,7 @@ describe('createFrontendFeatureManifest', () => {
     expect(JSON.parse(JSON.stringify(manifest))).toEqual(manifest);
   });
 
-  it('describes APIs and elements, and rejects extensions it cannot stub', async () => {
+  it('describes APIs and elements, and rejects extensions it cannot stub', () => {
     const apiRef = createApiRef<{ x: string }>({ id: 'test.api' });
     const rootRouteRef = createRouteRef();
     const titleRef = createExtensionDataRef<string>().with({
@@ -124,7 +124,7 @@ describe('createFrontendFeatureManifest', () => {
         },
       });
 
-    const manifest = await createFrontendFeatureManifest(
+    const manifest = createFrontendFeatureManifest(
       createFrontendPlugin({
         pluginId: 'test',
         routes: { root: rootRouteRef },
@@ -150,7 +150,7 @@ describe('createFrontendFeatureManifest', () => {
     expect(JSON.parse(JSON.stringify(manifest))).toEqual(manifest);
 
     // A function can't be stored in the manifest
-    const withFunction = await createFrontendFeatureManifest(
+    const withFunction = createFrontendFeatureManifest(
       createFrontendPlugin({
         pluginId: 'test',
         routes: { root: rootRouteRef },
@@ -163,7 +163,7 @@ describe('createFrontendFeatureManifest', () => {
     );
 
     // Nothing would ever load a plugin that only has APIs
-    const onlyApis = await createFrontendFeatureManifest(
+    const onlyApis = createFrontendFeatureManifest(
       createFrontendPlugin({ pluginId: 'test', extensions: [api] }),
     );
     expect(onlyApis.deferrable).toBe(false);
@@ -172,7 +172,7 @@ describe('createFrontendFeatureManifest', () => {
     );
 
     // Extensions that don't render an element can't be stubbed
-    const withOther = await createFrontendFeatureManifest(
+    const withOther = createFrontendFeatureManifest(
       createFrontendPlugin({
         pluginId: 'test',
         extensions: [
@@ -194,7 +194,7 @@ describe('createFrontendFeatureManifest', () => {
     );
   });
 
-  it('records filter functions that are created from a filter predicate', async () => {
+  it('records filter functions that are created from a filter predicate', () => {
     const filterFunctionRef = createExtensionDataRef<unknown>().with({
       id: 'catalog.entity-filter-function',
     });
@@ -219,7 +219,7 @@ describe('createFrontendFeatureManifest', () => {
         },
       });
 
-    const manifest = await createFrontendFeatureManifest(
+    const manifest = createFrontendFeatureManifest(
       createFrontendPlugin({
         pluginId: 'test',
         extensions: [createCard(true)],
@@ -234,7 +234,7 @@ describe('createFrontendFeatureManifest', () => {
     });
 
     // Without the predicate the function can't be recreated
-    const withoutPredicate = await createFrontendFeatureManifest(
+    const withoutPredicate = createFrontendFeatureManifest(
       createFrontendPlugin({
         pluginId: 'test',
         extensions: [createCard(false)],
@@ -246,7 +246,7 @@ describe('createFrontendFeatureManifest', () => {
     );
   });
 
-  it('leaves the extensions of the sync export out of the deferral', async () => {
+  it('leaves the extensions of the sync export out of the deferral', () => {
     const apiRef = createApiRef<{ x: string }>({ id: 'test.api' });
     const rootRouteRef = createRouteRef();
     const api = ApiBlueprint.make({
@@ -279,7 +279,7 @@ describe('createFrontendFeatureManifest', () => {
       extensions: [api, other, page],
     });
 
-    const manifest = await createFrontendFeatureManifest(plugin, {
+    const manifest = createFrontendFeatureManifest(plugin, {
       sync: createFrontendPlugin({
         pluginId: 'test',
         routes: { root: rootRouteRef },
@@ -294,7 +294,7 @@ describe('createFrontendFeatureManifest', () => {
     ]);
 
     // The halves must agree with each other
-    const withCopy = await createFrontendFeatureManifest(plugin, {
+    const withCopy = createFrontendFeatureManifest(plugin, {
       sync: createFrontendPlugin({
         pluginId: 'test',
         routes: { root: rootRouteRef },
@@ -305,14 +305,14 @@ describe('createFrontendFeatureManifest', () => {
     expect(withCopy.notDeferrableReason).toContain(
       "the 'api:test' extension is defined differently in its sync and main exports",
     );
-    const withOtherPlugin = await createFrontendFeatureManifest(plugin, {
+    const withOtherPlugin = createFrontendFeatureManifest(plugin, {
       sync: createFrontendPlugin({ pluginId: 'other', extensions: [] }),
     });
     expect(withOtherPlugin.deferrable).toBe(false);
     expect(withOtherPlugin.notDeferrableReason).toContain(
       "its sync export is for the 'other' plugin",
     );
-    const withMissing = await createFrontendFeatureManifest(plugin, {
+    const withMissing = createFrontendFeatureManifest(plugin, {
       sync: createFrontendPlugin({
         pluginId: 'test',
         routes: { root: rootRouteRef },
@@ -331,7 +331,7 @@ describe('createFrontendFeatureManifest', () => {
     );
 
     // Nothing is left to defer when everything is in the sync export
-    const everything = await createFrontendFeatureManifest(plugin, {
+    const everything = createFrontendFeatureManifest(plugin, {
       sync: plugin,
     });
     expect(everything.deferrable).toBe(false);
@@ -340,7 +340,7 @@ describe('createFrontendFeatureManifest', () => {
     );
   });
 
-  it('is not deferrable if a page factory throws', async () => {
+  it('is not deferrable if a page factory throws', () => {
     const plugin = createFrontendPlugin({
       pluginId: 'test',
       extensions: [
@@ -355,13 +355,13 @@ describe('createFrontendFeatureManifest', () => {
       ],
     });
 
-    const manifest = await createFrontendFeatureManifest(plugin);
+    const manifest = createFrontendFeatureManifest(plugin);
 
     expect(manifest.deferrable).toBe(false);
     expect(manifest.notDeferrableReason).toContain('boom');
   });
 
-  it('is not deferrable if a config schema can not be read', async () => {
+  it('is not deferrable if a config schema can not be read', () => {
     // A field that validates, but fails to convert to JSON schema
     const unconvertible = {
       '~standard': {
@@ -386,7 +386,7 @@ describe('createFrontendFeatureManifest', () => {
       ],
     });
 
-    const manifest = await createFrontendFeatureManifest(plugin);
+    const manifest = createFrontendFeatureManifest(plugin);
 
     expect(manifest.deferrable).toBe(false);
     expect(manifest.notDeferrableReason).toBe(
@@ -395,7 +395,7 @@ describe('createFrontendFeatureManifest', () => {
     expect(manifest.extensions[0].configSchema).toBeUndefined();
   });
 
-  it('is not deferrable if a page attaches somewhere else', async () => {
+  it('is not deferrable if a page attaches somewhere else', () => {
     const plugin = createFrontendPlugin({
       pluginId: 'test',
       extensions: [
@@ -410,7 +410,7 @@ describe('createFrontendFeatureManifest', () => {
       ],
     });
 
-    const manifest = await createFrontendFeatureManifest(plugin);
+    const manifest = createFrontendFeatureManifest(plugin);
 
     expect(manifest.deferrable).toBe(false);
     expect(manifest.notDeferrableReason).toContain(
@@ -418,7 +418,7 @@ describe('createFrontendFeatureManifest', () => {
     );
   });
 
-  it('describes a module as not deferrable', async () => {
+  it('describes a module as not deferrable', () => {
     const module = createFrontendModule({
       pluginId: 'test',
       extensions: [
@@ -428,7 +428,7 @@ describe('createFrontendFeatureManifest', () => {
       ],
     });
 
-    const manifest = await createFrontendFeatureManifest(module);
+    const manifest = createFrontendFeatureManifest(module);
 
     expect(manifest).toMatchObject({
       manifestVersion: 1,

@@ -26,6 +26,11 @@ import {
   Extension,
   toInternalExtension,
 } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  isInternalFrontendModule,
+  toInternalFrontendModule,
+} from '../../../frontend-plugin-api/src/wiring/createFrontendModule';
 import { FrontendExtensionManifest, FrontendFeatureManifest } from './types';
 import { PREDICATE_FUNCTION_DATA_PAIRS } from './predicateFunctions';
 import { findSyncPartMismatch, getPluginExtensionIds } from './syncPart';
@@ -69,11 +74,13 @@ function runFactoryOnce(
   } as unknown as AppNode;
   const apis = { get: () => undefined };
 
+  // The extension runs without any attachments, so every input is empty
+  const inputs = Object.fromEntries(
+    Object.keys(internal.inputs).map(name => [name, []]),
+  );
+
   const data = new Map<string, unknown>();
   if (internal.version === 'v1') {
-    const inputs = Object.fromEntries(
-      Object.keys(internal.inputs).map(name => [name, []]),
-    );
     const outputs = internal.factory({ node, apis, config, inputs });
     for (const [name, value] of Object.entries(outputs)) {
       const ref: ExtensionDataRef | undefined = internal.output[name];
@@ -82,9 +89,6 @@ function runFactoryOnce(
       }
     }
   } else {
-    const inputs = Object.fromEntries(
-      Object.keys(internal.inputs).map(name => [name, []]),
-    );
     for (const value of internal.factory({
       node,
       apis,
@@ -270,7 +274,7 @@ function getNotDeferrableReason(
  *
  * @alpha
  */
-export async function createFrontendFeatureManifest(
+export function createFrontendFeatureManifest(
   feature: FrontendFeature,
   options?: {
     /**
@@ -280,11 +284,9 @@ export async function createFrontendFeatureManifest(
      */
     sync?: FrontendFeature;
   },
-): Promise<FrontendFeatureManifest> {
+): FrontendFeatureManifest {
   const isPlugin = OpaqueFrontendPlugin.isType(feature);
-  const isModule =
-    (feature as { $$type?: string }).$$type === '@backstage/FrontendModule';
-  if (!isPlugin && !isModule) {
+  if (!isPlugin && !isInternalFrontendModule(feature)) {
     return {
       manifestVersion: 1,
       type: 'module',
@@ -297,11 +299,11 @@ export async function createFrontendFeatureManifest(
     };
   }
 
-  const plugin = (isPlugin ? feature : undefined) as PluginLike | undefined;
-  const pluginId = (feature as { pluginId: string }).pluginId;
+  const plugin = isPlugin ? (feature as PluginLike) : undefined;
+  const pluginId = feature.pluginId;
   const internalExtensions: Extension<unknown>[] = isPlugin
     ? OpaqueFrontendPlugin.toInternal(feature).extensions
-    : (feature as unknown as { extensions: Extension<unknown>[] }).extensions;
+    : toInternalFrontendModule(feature).extensions;
 
   const failures: string[] = [];
   const sync = options?.sync;
