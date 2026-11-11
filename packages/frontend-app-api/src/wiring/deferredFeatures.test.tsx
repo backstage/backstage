@@ -42,6 +42,7 @@ import {
 } from './prepareSpecializedApp';
 import { FrontendFeatureManifest } from '../manifest/types';
 import { createFrontendFeatureManifest } from '../manifest/createFrontendFeatureManifest';
+import { DeferredFeatureController } from './deferredFeatures';
 
 const manifest: FrontendFeatureManifest = {
   manifestVersion: 1,
@@ -611,5 +612,91 @@ describe('deferred features', () => {
       realPlugin.routes,
     );
     warn.mockRestore();
+  });
+});
+
+describe('DeferredFeatureController', () => {
+  function createEntry(pluginId: string, load: () => Promise<any>) {
+    return {
+      name: `${pluginId}-pkg`,
+      manifest: { ...manifest, pluginId },
+      load: jest.fn(load),
+    };
+  }
+
+  it('should load each plugin once, one at a time', async () => {
+    let resolveFirst = () => {};
+    const first = createEntry(
+      'first',
+      () =>
+        new Promise(resolve => {
+          resolveFirst = () => resolve({ default: 'first plugin' });
+        }),
+    );
+    const second = createEntry('second', async () => ({
+      default: 'second plugin',
+    }));
+    const graft = jest.fn((entry: { manifest: { pluginId: string } }) => {
+      const id = entry.manifest.pluginId;
+      return new Map([[`page:${id}`, <div>{id}</div>]]);
+    });
+    const controller = new DeferredFeatureController({
+      entries: [first, second],
+      graft,
+    });
+    const listener = jest.fn();
+    controller.subscribe(listener);
+
+    // Concurrent loads of the same plugin share one load
+    const firstLoad = controller.load('first');
+    expect(controller.load('first')).toBe(firstLoad);
+    const secondLoad = controller.load('second');
+    expect(controller.getState('first')).toEqual({ status: 'loading' });
+    expect(controller.getState('second')).toEqual({ status: 'loading' });
+
+    // The second plugin waits for the first one to be added to the app
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(first.load).toHaveBeenCalledTimes(1);
+    expect(second.load).not.toHaveBeenCalled();
+    resolveFirst();
+    await Promise.all([firstLoad, secondLoad]);
+    expect(graft.mock.calls.map(([, loaded]) => loaded)).toEqual([
+      'first plugin',
+      'second plugin',
+    ]);
+    expect(controller.getState('first')).toEqual({ status: 'loaded' });
+    expect(controller.getState('second')).toEqual({ status: 'loaded' });
+    expect(controller.getElement('page:second')).toEqual(<div>second</div>);
+    expect(listener).toHaveBeenCalledTimes(4);
+
+    // An unknown plugin fails right away
+    await controller.load('unknown');
+    expect(controller.getState('unknown')).toEqual({
+      status: 'failed',
+      error: new Error("No deferred plugin with ID 'unknown' exists"),
+    });
+  });
+
+  it('should not retry a plugin that failed to load', async () => {
+    const entry = createEntry('broken', async () => {
+      throw new Error('chunk failed');
+    });
+    const controller = new DeferredFeatureController({
+      entries: [entry],
+      graft: jest.fn(),
+    });
+
+    await controller.load('broken');
+    const state = controller.getState('broken');
+    expect(state.status).toBe('failed');
+    expect((state as { error: Error }).error.message).toBe(
+      "Failed to load the deferred 'broken' plugin, reload the page to try again; caused by Error: chunk failed",
+    );
+
+    // Loading the code once more is left to a reload of the page, since a
+    // partly added plugin can't be removed from the app again
+    await controller.load('broken');
+    expect(entry.load).toHaveBeenCalledTimes(1);
+    expect(controller.getState('broken')).toBe(state);
   });
 });

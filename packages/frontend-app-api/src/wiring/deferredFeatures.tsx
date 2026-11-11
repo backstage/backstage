@@ -34,6 +34,7 @@ import {
   FilterPredicate,
   filterPredicateToFilterFunction,
 } from '@backstage/filter-predicates';
+import { ForwardedError } from '@backstage/errors';
 import { useEffect, useState } from 'react';
 import { FrontendFeatureManifest } from '../manifest/types';
 
@@ -115,6 +116,9 @@ export class DeferredFeatureController {
   /**
    * Loads the plugin and adds it to the app. The returned promise always
    * resolves; a failure is stored in the plugin state instead.
+   *
+   * A failed load is not retried, since a plugin that was partly added to the
+   * app can't be removed again. The error asks the user to reload the page.
    */
   load(pluginId: string): Promise<void> {
     const existing = this.#loads.get(pluginId);
@@ -144,7 +148,10 @@ export class DeferredFeatureController {
       .catch(error => {
         this.#setState(pluginId, {
           status: 'failed',
-          error: toError(error, `Failed to load the '${pluginId}' plugin`),
+          error: new ForwardedError(
+            `Failed to load the deferred '${pluginId}' plugin, reload the page to try again`,
+            error,
+          ),
         });
       });
 
@@ -159,13 +166,6 @@ export class DeferredFeatureController {
       listener();
     }
   }
-}
-
-function toError(error: unknown, message: string): Error {
-  if (error instanceof Error) {
-    return error;
-  }
-  return new Error(`${message}; caused by ${String(error)}`);
 }
 
 function useDeferredPluginState(
