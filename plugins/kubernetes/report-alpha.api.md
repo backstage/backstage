@@ -140,13 +140,6 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >
-        | ExtensionDataRef<
-            FilterPredicate,
-            'catalog.entity-filter-predicate',
-            {
-              optional: true;
-            }
-          >
         | ExtensionDataRef<string, 'catalog.entity-content-title', {}>
         | ExtensionDataRef<
             string,

@@ -169,13 +169,6 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
-            FilterPredicate,
-            'catalog.entity-filter-predicate',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
             () => IconLinkVerticalProps,
             'entity-icon-link-props',
             {}
