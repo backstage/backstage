@@ -296,6 +296,29 @@ describe('routePattern', () => {
       });
       expect(matchPath('', '/x', true)).toBeNull();
     });
+
+    it('parses parameter segments without regex backtracking', () => {
+      // Adversarial input for the old `^:([\\w-]+)(\\?)?(.*)$` expression:
+      // long runs of dashes blur the boundary between the name, the optional
+      // marker, and the suffix. The linear scan keeps parsing fast and exact.
+      const name = `-${'--'.repeat(2500)}`;
+      const t0 = Date.now();
+      const result = matchPath(`/:${name}`, `/${name}`, true);
+      expect(Date.now() - t0).toBeLessThan(100);
+      expect(result).not.toBeNull();
+      expect(result?.params[name]).toBe(name);
+
+      // Ordinary segments keep their meaning: name, optional marker, suffix.
+      expect(matchPath('/:id.json', '/42.json', true)).toMatchObject({
+        params: { id: '42' },
+      });
+      expect(matchPath('/:id?', '/', true)).toMatchObject({
+        params: {},
+      });
+      expect(matchPath('/:area/item', '/north/item', true)).toMatchObject({
+        params: { area: 'north' },
+      });
+    });
   });
 
   describe('generatePath', () => {
