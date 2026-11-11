@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TranslationRefTuple } from '../translation/TranslationRef';
+import { translationApiRef } from '../apis';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
@@ -68,6 +70,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
     coreExtensionData.routePath,
     coreExtensionData.reactElement,
     coreExtensionData.title,
+    coreExtensionData.titleTranslation.optional(),
     coreExtensionData.routeRef.optional(),
     coreExtensionData.icon.optional(),
   ],
@@ -86,7 +89,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
       /**
        * The title displayed in the tab for this sub-page.
        */
-      title: string;
+      title: string | TranslationRefTuple<undefined>;
       /**
        * Optional icon for this sub-page, displayed in the tab.
        */
@@ -101,12 +104,32 @@ export const SubPageBlueprint = createExtensionBlueprint({
        */
       routeRef?: RouteRef;
     },
-    { config, node },
+    { config, node, apis },
   ) {
-    const routePath = config.path ?? params.path;
+    yield coreExtensionData.routePath(config.path ?? params.path);
+    const translation =
+      typeof params.title === 'object' ? params.title : undefined;
+    const translationApi =
+      translation && config.title === undefined
+        ? apis.get(translationApiRef)
+        : undefined;
+    if (translation && config.title === undefined && !translationApi) {
+      throw new Error(
+        `Translation API (core.translation) is required to resolve title '${translation.ref.id}:${translation.key}'`,
+      );
+    }
+    const title =
+      config.title ??
+      (typeof params.title === 'object'
+        ? translationApi!
+            .getTranslation<Record<string, string>>(params.title.ref)
+            .t(params.title.key)
+        : params.title);
+    yield coreExtensionData.title(title);
+    if (translation) {
+      yield coreExtensionData.titleTranslation(translation);
+    }
 
-    yield coreExtensionData.routePath(routePath);
-    yield coreExtensionData.title(config.title ?? params.title);
     yield coreExtensionData.reactElement(
       ExtensionBoundary.lazy(node, params.loader),
     );

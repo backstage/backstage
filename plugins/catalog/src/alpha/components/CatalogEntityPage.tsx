@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-import { ComponentType, ReactElement } from 'react';
+import { ComponentType, ReactElement, useMemo, useState } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useRouteRefParams } from '@backstage/core-plugin-api';
+import {
+  Progress,
+  useApi,
+  appLanguageApiRef,
+  errorApiRef,
+  translationApiRef,
+} from '@backstage/frontend-plugin-api';
 import {
   AsyncEntityProvider,
   entityRouteRef,
@@ -25,11 +32,16 @@ import {
   type EntityContentGroupDefinitions,
   type EntityHeaderLayoutProps,
 } from '@backstage/plugin-catalog-react/alpha';
+import { useTranslatedTitles } from '@internal/frontend';
 import { useEntityFromUrl } from '../../components/CatalogEntityPage/useEntityFromUrl';
 import { EntityLayout } from './EntityLayout';
 import { EntityLayoutBui } from './EntityLayout/EntityLayoutBui';
-import type { EntityLayoutRoute } from './EntityLayout/entityLayoutRoutes';
+import {
+  type EntityLayoutRoute,
+  filterEntityLayoutRoutes,
+} from './EntityLayout/entityLayoutRoutes';
 import type { EntityContextMenuItemDataWithNode } from './EntityContextMenu';
+import { useSelectedSubRoute } from './EntityTabs/EntityTabs';
 
 export interface CatalogEntityPageProps {
   menuItems: Array<
@@ -57,6 +69,58 @@ export function CatalogEntityPage(props: CatalogEntityPageProps) {
     stringifyEntityRef(entityFromUrl.entity) ===
       stringifyEntityRef(routeParams);
   const entity = matchesRoute ? entityFromUrl.entity : undefined;
+  const visibleRoutes = useMemo(
+    () => filterEntityLayoutRoutes(props.routes, entity),
+    [props.routes, entity],
+  );
+  const selections = useMemo(
+    () => visibleRoutes.map(route => route.titleTranslation),
+    [visibleRoutes],
+  );
+  const titles = useTranslatedTitles({
+    translationApi: useApi(translationApiRef),
+    languageApi: useApi(appLanguageApiRef),
+    errorApi: useApi(errorApiRef),
+    selections,
+  });
+  const { index: activeRouteIndex } = useSelectedSubRoute(visibleRoutes);
+  const activeRoute = visibleRoutes[activeRouteIndex];
+  const translatedRoutes = useMemo(
+    () =>
+      titles &&
+      new Map(
+        visibleRoutes.map((route, index) => [
+          route,
+          {
+            ...route,
+            title: titles[index] ?? route.title,
+          },
+        ]),
+      ),
+    [visibleRoutes, titles],
+  );
+  // Keep resolved, still-visible routes mounted while a replacement group loads.
+  const [previousRoutes, setPreviousRoutes] = useState(translatedRoutes);
+  if (translatedRoutes && previousRoutes !== translatedRoutes) {
+    setPreviousRoutes(translatedRoutes);
+  }
+  const routes = translatedRoutes
+    ? [...translatedRoutes.values()]
+    : previousRoutes &&
+      visibleRoutes.flatMap(route => {
+        const resolved =
+          previousRoutes.get(route) ??
+          (route.titleTranslation ? undefined : route);
+        return resolved ? [resolved] : [];
+      });
+  if (
+    !routes ||
+    (!translatedRoutes &&
+      activeRoute?.titleTranslation &&
+      !previousRoutes?.has(activeRoute))
+  ) {
+    return <Progress />;
+  }
   const entityProviderProps = {
     ...entityFromUrl,
     entity,
@@ -78,7 +142,7 @@ export function CatalogEntityPage(props: CatalogEntityPageProps) {
   const layout =
     HeaderComponent || !legacyHeader ? (
       <EntityLayoutBui
-        routes={props.routes}
+        routes={routes}
         HeaderComponent={HeaderComponent}
         contextMenuItems={filteredMenuItems}
         groupDefinitions={props.groupDefinitions}
@@ -86,7 +150,7 @@ export function CatalogEntityPage(props: CatalogEntityPageProps) {
       />
     ) : (
       <EntityLayout
-        routes={props.routes}
+        routes={routes}
         header={legacyHeader}
         contextMenuItems={filteredMenuItems}
         groupDefinitions={props.groupDefinitions}

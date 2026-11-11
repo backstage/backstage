@@ -410,15 +410,11 @@ export class I18nextTranslationApi implements TranslationApi {
   #createSnapshot<TMessages extends { [key in string]: string }>(
     internalRef: InternalTranslationRef<string, TMessages>,
   ): TranslationSnapshot<TMessages> {
-    if (this.#loader.needsLoading(this.#language, internalRef.id)) {
-      return { ready: false };
-    }
-
     const unwrappedT = this.#i18n.getFixedT(null, internalRef.id);
     const t = this.#jsxInterpolator.wrapT<TMessages>(unwrappedT);
 
     return {
-      ready: true,
+      ready: !this.#loader.needsLoading(this.#language, internalRef.id),
       t,
     };
   }
