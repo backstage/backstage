@@ -502,7 +502,7 @@ const appPlugin: OverridableFrontendPlugin<
         icons: ExtensionInput<
           ConfigurableExtensionDataRef<
             {
-              [x: string]: IconElement | IconComponent;
+              [x: string]: IconComponent | IconElement;
             },
             'core.icons',
             {}

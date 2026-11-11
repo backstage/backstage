@@ -25,7 +25,6 @@ export { NavElementBlueprint } from './NavElementBlueprint';
 export type {
   NavContentComponent,
   NavContentComponentProps,
-  NavContentNavElements,
   NavContentNavItem,
   NavContentNavItemsWithComponent,
   NavContentNavItems,

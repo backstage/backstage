@@ -37,8 +37,7 @@ function mockNode(id: string): AppNode {
   return { spec: { id } } as AppNode;
 }
 
-const emptySlot = { take: () => null, rest: () => [] };
-const emptyNavSlots = { start: emptySlot, end: emptySlot };
+const emptyNavSlots = { start: [], end: [] };
 
 function mockNavItems(items: NavContentNavItem[]): NavContentNavItems {
   const taken = new Set<string>();

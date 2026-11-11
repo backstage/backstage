@@ -67,7 +67,7 @@ Nav content extensions allow you to replace the entire navbar with your own comp
 
 Your custom component receives a `navItems` prop—a collection with `take(id)` and `rest()` methods for placing specific items in custom positions. Nav items are auto-discovered from page extensions, and metadata (title, icon) comes from page config, nav item extensions, or plugin defaults. Use `navItems.take('page:home')` to take a specific item by extension ID, and `navItems.rest()` to get all remaining items.
 
-It also receives a `navSlots` prop with the elements that plugins add through `NavElementBlueprint`, in two slots: `navSlots.start` for content before the page links and `navSlots.end` for content after them. Each slot has the same `take(id)` and `rest()` methods. Render `navSlots.start.rest()` and `navSlots.end.rest()` somewhere in your navigation, so that the nav elements listed in the `app/nav` config show up without further changes to your component.
+It also receives a `navSlots` prop with the elements that plugins add through `NavElementBlueprint` and the app lists in the `app/nav` config: `navSlots.start` for content before the page links and `navSlots.end` for content after them, each in config order. Render each slot once where it belongs in your layout. The config decides which elements show and where, so your component never refers to an element by ID.
 
 ### NavElement - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.NavElementBlueprint.html)
 

@@ -35,7 +35,6 @@ import {
   NavContentBlueprint,
   NavContentComponent,
   NavContentComponentProps,
-  NavContentNavElements,
   NavContentNavItem,
   NavContentNavItems,
 } from '@backstage/plugin-app-react';
@@ -47,36 +46,6 @@ import { useTranslatedTitles } from '@internal/frontend';
 type NavSlot = 'start' | 'end';
 
 type NavElementEntry = { id: string; element: JSX.Element };
-
-class NavElementBag implements NavContentNavElements {
-  readonly #index: Map<string, JSX.Element>;
-  readonly #rest: JSX.Element[];
-
-  constructor(entries: NavElementEntry[]) {
-    const keyed = entries.map(
-      ({ id, element }) =>
-        [id, <Fragment key={id}>{element}</Fragment>] as const,
-    );
-    this.#index = new Map(keyed);
-    this.#rest = keyed.map(([, element]) => element);
-  }
-
-  take(id: string): JSX.Element | null {
-    const element = this.#index.get(id);
-    if (!element) {
-      return null;
-    }
-    const index = this.#rest.indexOf(element);
-    if (index !== -1) {
-      this.#rest.splice(index, 1);
-    }
-    return element;
-  }
-
-  rest(): JSX.Element[] {
-    return this.#rest;
-  }
-}
 
 class NavItemBag implements NavContentNavItems {
   readonly #items: NavContentNavItem[];
@@ -155,7 +124,7 @@ function DefaultNavContent(props: NavContentComponentProps) {
   const items = props.navItems.rest();
   return (
     <Sidebar>
-      {props.navSlots.start.rest()}
+      {props.navSlots.start}
       {items.map(item => (
         <SidebarItem
           to={item.href}
@@ -164,7 +133,7 @@ function DefaultNavContent(props: NavContentComponentProps) {
           key={item.node.spec.id}
         />
       ))}
-      {props.navSlots.end.rest()}
+      {props.navSlots.end}
     </Sidebar>
   );
 }
@@ -292,8 +261,12 @@ function NavContentRenderer(props: {
 
   const navSlots = useMemo(
     () => ({
-      start: new NavElementBag(props.slots.start),
-      end: new NavElementBag(props.slots.end),
+      start: props.slots.start.map(({ id, element }) => (
+        <Fragment key={id}>{element}</Fragment>
+      )),
+      end: props.slots.end.map(({ id, element }) => (
+        <Fragment key={id}>{element}</Fragment>
+      )),
     }),
     [props.slots],
   );

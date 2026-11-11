@@ -94,7 +94,7 @@ app:
           snackbarEnabled: true
 ```
 
-If you have a custom sidebar through a `NavContentBlueprint`, render `navSlots.end.rest()` in it, or place the element exactly with `navSlots.end.take('nav-element:notifications')`. The element links to the notifications page, so you can hide the separate page link with `navItems.take('page:notifications')`.
+If you have a custom sidebar through a `NavContentBlueprint`, it needs to render `navSlots.start` and `navSlots.end`. The element links to the notifications page, so you can hide the separate page link with `navItems.take('page:notifications')`.
 
 If you previously added the `NotificationsSidebarItem` component to your sidebar by hand, remove it when you list the element. You can keep rendering the component yourself if you need options that config can't express, such as `renderItem`.
 

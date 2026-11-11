@@ -117,7 +117,7 @@ export const appModuleNav = createFrontendModule({
               <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
                 <SidebarSearchModal />
               </SidebarGroup>
-              {navSlots.start.rest()}
+              {navSlots.start}
               <SidebarDivider />
               <SidebarGroup label="Menu" icon={<MenuIcon />}>
                 {nav.take('page:home')}
@@ -129,7 +129,7 @@ export const appModuleNav = createFrontendModule({
                 </SidebarScrollWrapper>
               </SidebarGroup>
               <SidebarDivider />
-              {navSlots.end.rest()}
+              {navSlots.end}
               <SidebarSpace />
               <SidebarDivider />
               <SidebarGroup
@@ -137,7 +137,6 @@ export const appModuleNav = createFrontendModule({
                 icon={<UserSettingsSignInAvatar />}
                 to="/settings"
               >
-                {navSlots.end.take('nav-element:notifications')}
                 {nav.take('page:devtools')}
                 {nav.take('page:user-settings')}
               </SidebarGroup>

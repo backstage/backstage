@@ -85,25 +85,6 @@ export interface NavContentNavItems {
 }
 
 /**
- * Elements contributed through `NavElementBlueprint` for one slot, already in
- * the order the app configured, with take/rest semantics for placing specific
- * elements in specific positions.
- *
- * @public
- */
-export interface NavContentNavElements {
-  /** Take an element by extension ID, removing it from the slot. Returns null if not found. */
-  take(id: string): JSX.Element | null;
-  /**
-   * All elements not yet taken, in configured order.
-   *
-   * The returned array is live and is updated when later `take` calls remove
-   * elements from the slot.
-   */
-  rest(): JSX.Element[];
-}
-
-/**
  * The props for the {@link NavContentComponent}.
  *
  * @public
@@ -115,14 +96,14 @@ export interface NavContentComponentProps {
    */
   navItems: NavContentNavItems;
   /**
-   * Elements contributed by plugins through `NavElementBlueprint` that the
-   * app lists in the `app/nav` config, by slot and in order. `start` goes
-   * before the page links and `end` after them. Render `rest()` of both so
-   * that listed elements show up without changes to this component.
+   * Elements contributed by plugins through `NavElementBlueprint`, as listed
+   * in the `app/nav` config: `start` before the page links and `end` after
+   * them, each in config order. The config decides which elements show and
+   * where, so render each slot once as it is.
    */
   navSlots: {
-    start: NavContentNavElements;
-    end: NavContentNavElements;
+    start: JSX.Element[];
+    end: JSX.Element[];
   };
 }
 

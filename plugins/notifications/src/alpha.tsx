@@ -49,7 +49,6 @@ const api = ApiBlueprint.make({
     }),
 });
 
-/** @alpha */
 const navElement = NavElementBlueprint.makeWithOverrides({
   configSchema: {
     webNotificationsEnabled: z.boolean().optional(),
@@ -70,6 +69,7 @@ const navElement = NavElementBlueprint.makeWithOverrides({
   },
 });
 
+/** @alpha */
 export default createFrontendPlugin({
   pluginId: 'notifications',
   title: 'Notifications',
