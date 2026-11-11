@@ -22,7 +22,12 @@ import { targetPaths } from '@backstage/cli-common';
 
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
-import { PackageRoles, runConcurrentTasks } from '@backstage/cli-node';
+import {
+  BackstagePackageJson,
+  PackageRoles,
+  runConcurrentTasks,
+} from '@backstage/cli-node';
+import { writeFrontendManifest } from '../frontendManifest/writeFrontendManifest';
 
 export function formatErrorMessage(error: any) {
   let msg = '';
@@ -113,7 +118,18 @@ export const buildPackage = async (options: BuildOptions) => {
   const buildTasks = rollupConfigs.map(rollupBuild);
 
   await Promise.all(buildTasks);
+  await writeFrontendManifestForBuild(targetDir, options.packageJson);
 };
+
+async function writeFrontendManifestForBuild(
+  targetDir: string,
+  packageJson?: BackstagePackageJson,
+) {
+  await writeFrontendManifest(
+    targetDir,
+    packageJson ?? (await fs.readJson(resolvePath(targetDir, 'package.json'))),
+  );
+}
 
 export const buildPackages = async (options: BuildOptions[]) => {
   if (options.some(opt => !opt.targetDir)) {
@@ -131,6 +147,11 @@ export const buildPackages = async (options: BuildOptions[]) => {
     items: buildTasks,
     worker: async task => task(),
   });
+  await Promise.all(
+    options.map(({ targetDir, packageJson }) =>
+      writeFrontendManifestForBuild(targetDir!, packageJson),
+    ),
+  );
 };
 
 export function getOutputsForRole(role: string): Set<Output> {

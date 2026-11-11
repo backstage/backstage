@@ -16,21 +16,35 @@
 
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { Config, ConfigReader } from '@backstage/config';
-import chokidar from 'chokidar';
+import chokidar, { FSWatcher } from 'chokidar';
 import fs from 'fs-extra';
 import PQueue from 'p-queue';
-import { dirname, join as joinPath, resolve as resolvePath } from 'node:path';
+import {
+  dirname,
+  join as joinPath,
+  resolve as resolvePath,
+  sep,
+} from 'node:path';
 import { targetPaths } from '@backstage/cli-common';
 import {
-  ExtractedManifest,
-  extractManifests,
-} from './manifest/extractManifests';
+  EntryPointAnalysis,
+  FrontendPackageAnalysis,
+  SYNC_ENTRY_POINT,
+} from '../frontendManifest/analyzeFrontendPackage';
+import { readPackageManifest } from '../frontendManifest/readPackageManifest';
+import { FrontendFeatureManifest } from '../frontendManifest/types';
+import { WorkspaceManifestCache } from '../frontendManifest/WorkspaceManifestCache';
 
 const DETECTED_MODULES_MODULE_NAME = '__backstage-autodetected-plugins__';
 
 interface PackageDetectionConfig {
   include?: string[];
   exclude?: string[];
+}
+
+interface DeferredPackagesConfig {
+  /** Packages that are always loaded with the app. */
+  exclude: string[];
 }
 
 function readPackageDetectionConfig(
@@ -61,10 +75,47 @@ function readPackageDetectionConfig(
   };
 }
 
+function readDeferredPackagesConfig(
+  config: Config,
+): DeferredPackagesConfig | undefined {
+  const key = 'app.experimental.deferredPackages';
+  const value = config.getOptional(key);
+  if (value === undefined || value === false) {
+    return undefined;
+  }
+  if (value === true) {
+    return { exclude: [] };
+  }
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    throw new Error(
+      `Invalid config at '${key}', expected a boolean or an object`,
+    );
+  }
+  return {
+    exclude:
+      new ConfigReader(value, key).getOptionalStringArray('exclude') ?? [],
+  };
+}
+
+type DetectedPackage = {
+  name: string;
+  export?: string;
+  import: string;
+  /** The directory of the package. */
+  dir: string;
+  packageJson: BackstagePackageJson;
+  /** The import path of the sync entry point of the package, if any */
+  syncImport?: string;
+};
+
+function isWorkspacePackage(dir: string) {
+  return !fs.realpathSync(dir).split(sep).includes('node_modules');
+}
+
 async function detectPackages(
   targetPath: string,
   { include, exclude }: PackageDetectionConfig,
-) {
+): Promise<DetectedPackage[]> {
   const pkg: BackstagePackageJson = await fs.readJson(
     resolvePath(targetPath, 'package.json'),
   );
@@ -78,35 +129,42 @@ async function detectPackages(
     }
 
     try {
-      const depPackageJson: BackstagePackageJson = require(require.resolve(
-        `${depName}/package.json`,
-        { paths: [targetPath] },
-      ));
+      const packageJsonPath = require.resolve(`${depName}/package.json`, {
+        paths: [targetPath],
+      });
+      const depPackageJson: BackstagePackageJson = require(packageJsonPath);
       if (
         ['frontend-plugin', 'frontend-plugin-module'].includes(
           depPackageJson.backstage?.role ?? '',
         )
       ) {
+        const base = {
+          name: depName,
+          dir: dirname(packageJsonPath),
+          packageJson: depPackageJson,
+        };
         // Include alpha entry point if available. If there's no default export it will be ignored
         const exp = depPackageJson.exports;
         const hasExport = (name: string) =>
           Boolean(exp && typeof exp === 'object' && name in exp);
         // The sync entry point holds the part of a plugin that is loaded with
         // the app when the rest of the plugin is deferred
-        const syncImport = hasExport('./sync') ? `${depName}/sync` : undefined;
+        const syncImport = hasExport(SYNC_ENTRY_POINT)
+          ? `${depName}/sync`
+          : undefined;
         const withSync = (entry: DetectedPackage): DetectedPackage =>
           syncImport ? { ...entry, syncImport } : entry;
         if (hasExport('./alpha')) {
           return [
-            withSync({ name: depName, import: depName }),
+            withSync({ ...base, import: depName }),
             withSync({
-              name: depName,
+              ...base,
               export: './alpha',
               import: `${depName}/alpha`,
             }),
           ];
         }
-        return [withSync({ name: depName, import: depName })];
+        return [withSync({ ...base, import: depName })];
       }
     } catch {
       /* ignore packages that don't make package.json available */
@@ -118,189 +176,105 @@ async function detectPackages(
 // Make sure we're not issuing multiple writes at the same time, which can cause partial overwrites
 const writeQueue = new PQueue({ concurrency: 1 });
 
-type DetectedPackage = {
-  name: string;
-  export?: string;
-  import: string;
-  /** The import path of the sync entry point of the package, if any */
-  syncImport?: string;
-};
-
-const IMPORT_SCAN_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs'];
-
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&');
-}
-
-/**
- * Finds the detected packages that are imported by the source of the app. A
- * static import stops the bundler from splitting a package into its own chunk.
- *
- * @remarks
- *
- * This is a heuristic: it matches the package name, or any sub-path of it, in
- * quotes anywhere in the non-test source files of the app, so it also matches
- * dynamic imports, re-exports and plain strings. A false positive only means
- * that a package is loaded eagerly.
- */
-async function findStaticallyImportedPackages(
-  targetPath: string,
-  pkgs: DetectedPackage[],
-): Promise<Set<string>> {
-  const found = new Set<string>();
-  // Matches the package itself as well as any sub-path import
-  const patterns = Array.from(new Set(pkgs.map(pkg => pkg.name))).map(name => ({
-    name,
-    pattern: new RegExp(`['"]${escapeRegExp(name)}(?:/[^'"]*)?['"]`),
-  }));
-
-  async function scan(dir: string) {
-    for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
-      const path = joinPath(dir, entry.name);
-      if (entry.isDirectory()) {
-        if (entry.name !== 'node_modules') {
-          await scan(path);
-        }
-      } else if (
-        IMPORT_SCAN_EXTENSIONS.some(ext => entry.name.endsWith(ext)) &&
-        !/\.test\.[jt]sx?$/.test(entry.name)
-      ) {
-        const content = await fs.readFile(path, 'utf8');
-        for (const { name, pattern } of patterns) {
-          if (!found.has(name) && pattern.test(content)) {
-            found.add(name);
-          }
-        }
-      }
-    }
-  }
-
-  const srcDir = resolvePath(targetPath, 'src');
-  if (await fs.pathExists(srcDir)) {
-    await scan(srcDir);
-  }
-  return found;
-}
-
 type DetectedEntry =
   | { pkg: DetectedPackage; mode: 'eager'; reason: string }
   | {
       pkg: DetectedPackage;
       mode: 'lazy';
       reason: string;
-      manifest: ExtractedManifest;
+      manifest: FrontendFeatureManifest;
     };
 
 /**
- * Reads the IDs of the extensions that have config in `app.extensions`. This
- * must match how the app decides this at runtime, see
- * `findDeferredConfigConflict` in `@backstage/frontend-app-api`.
+ * Reads the manifests of a package. Workspace packages are analyzed from
+ * source, while other packages must ship a manifest from their build.
  */
-function readConfiguredExtensionIds(config: Config): Set<string> {
-  const result = new Set<string>();
-  const entries = config.getOptional('app.extensions');
-  if (!Array.isArray(entries)) {
-    return result;
-  }
-  for (const entry of entries) {
-    if (!entry || typeof entry !== 'object') {
-      continue;
-    }
-    for (const [id, value] of Object.entries(entry)) {
-      if (
-        value &&
-        typeof value === 'object' &&
-        (value as { config?: unknown }).config !== undefined
-      ) {
-        result.add(id);
-      }
+async function readManifests(
+  pkg: DetectedPackage,
+  cache: WorkspaceManifestCache,
+): Promise<FrontendPackageAnalysis | { skipped: string }> {
+  if (isWorkspacePackage(pkg.dir)) {
+    try {
+      return await cache.analyze(pkg.dir, pkg.packageJson);
+    } catch (error) {
+      return { skipped: `the analysis of the package failed, ${error}` };
     }
   }
-  return result;
-}
-
-/**
- * Returns why the config prevents a plugin from being deferred. The stub of an
- * element extension outputs the data of the real extension with its default
- * config, so an element with any config can only be set up by loading the
- * plugin.
- */
-function findConfigConflict(
-  manifest: ExtractedManifest,
-  configuredIds: Set<string>,
-): string | undefined {
-  const extensions = (manifest.extensions ?? []) as Array<{
-    id: string;
-    element?: unknown;
-  }>;
-  const conflict = extensions.find(
-    extension => extension.element && configuredIds.has(extension.id),
-  );
-  return conflict
-    ? `'${conflict.id}' is configured in app.extensions, which can't be applied before the plugin is loaded`
-    : undefined;
+  return readPackageManifest(pkg.dir, pkg.packageJson);
 }
 
 async function resolveDetectedEntries(
-  targetPath: string,
   pkgs: DetectedPackage[],
-  configuredIds: Set<string>,
+  options: {
+    deferredPackages: DeferredPackagesConfig;
+    cache: WorkspaceManifestCache;
+  },
 ): Promise<DetectedEntry[]> {
-  const imported = await findStaticallyImportedPackages(targetPath, pkgs);
-  const keyOf = (pkg: DetectedPackage) => `${pkg.name}${pkg.export ?? ''}`;
-  const results = await extractManifests({
-    appDir: targetPath,
-    packages: pkgs
-      .filter(pkg => !imported.has(pkg.name))
-      .map(pkg => ({
-        key: keyOf(pkg),
-        import: pkg.import,
-        ...(pkg.syncImport ? { syncImport: pkg.syncImport } : {}),
-      })),
-  });
+  const manifestsByPackage = new Map<
+    string,
+    Promise<FrontendPackageAnalysis | { skipped: string }>
+  >();
 
-  return pkgs.map((pkg): DetectedEntry => {
-    if (imported.has(pkg.name)) {
-      return { pkg, mode: 'eager', reason: 'statically imported by app' };
-    }
-    const result = results.get(keyOf(pkg));
-    if (!result || 'error' in result) {
+  return Promise.all(
+    pkgs.map(async (pkg): Promise<DetectedEntry> => {
+      if (options.deferredPackages.exclude.includes(pkg.name)) {
+        return {
+          pkg,
+          mode: 'eager',
+          reason: 'excluded in app.experimental.deferredPackages',
+        };
+      }
+
+      let manifests = manifestsByPackage.get(pkg.name);
+      if (!manifests) {
+        manifests = readManifests(pkg, options.cache);
+        manifestsByPackage.set(pkg.name, manifests);
+      }
+      const result = await manifests;
+      if ('skipped' in result) {
+        return { pkg, mode: 'eager', reason: result.skipped };
+      }
+      if (result.syncError) {
+        return {
+          pkg,
+          mode: 'eager',
+          reason: `the sync entry point is invalid, ${result.syncError}`,
+        };
+      }
+      const entry: EntryPointAnalysis | undefined =
+        result.entryPoints[pkg.export ?? '.'];
+      if (!entry) {
+        return {
+          pkg,
+          mode: 'eager',
+          reason: 'no manifest for the entry point',
+        };
+      }
+      if ('skipped' in entry) {
+        return { pkg, mode: 'eager', reason: entry.skipped };
+      }
+      const { manifest } = entry;
+      if (manifest.type !== 'plugin' || !manifest.deferrable) {
+        return {
+          pkg,
+          mode: 'eager',
+          reason: manifest.notDeferrableReason ?? 'not deferrable',
+        };
+      }
       return {
         pkg,
-        mode: 'eager',
-        reason: `manifest extraction failed: ${
-          result && 'error' in result ? result.error : 'no result'
-        }`,
+        mode: 'lazy',
+        reason: hasSyncExtensions(manifest)
+          ? 'loaded on first use, with its sync export loaded with the app'
+          : 'loaded on first use',
+        manifest,
       };
-    }
-    if ('skipped' in result) {
-      return { pkg, mode: 'eager', reason: result.skipped };
-    }
-    if (!result.manifest.deferrable) {
-      return {
-        pkg,
-        mode: 'eager',
-        reason: result.manifest.notDeferrableReason ?? 'not deferrable',
-      };
-    }
-    const conflict = findConfigConflict(result.manifest, configuredIds);
-    if (conflict) {
-      return { pkg, mode: 'eager', reason: conflict };
-    }
-    return {
-      pkg,
-      mode: 'lazy',
-      reason: hasSyncExtensions(result.manifest)
-        ? 'loaded on first use, with its sync export loaded with the app'
-        : 'loaded on first use',
-      manifest: result.manifest,
-    };
-  });
+    }),
+  );
 }
 
-function hasSyncExtensions(manifest: ExtractedManifest): boolean {
-  const extensions = (manifest.extensions ?? []) as Array<{ sync?: boolean }>;
-  return extensions.some(extension => extension.sync);
+function hasSyncExtensions(manifest: FrontendFeatureManifest): boolean {
+  return manifest.extensions.some(extension => extension.sync);
 }
 
 function printDeferralReport(entries: DetectedEntry[]) {
@@ -313,76 +287,100 @@ function printDeferralReport(entries: DetectedEntry[]) {
   }
 }
 
-function requireEntry(pkg: DetectedPackage) {
+function requireEntry(pkg: { name: string; export?: string; import: string }) {
   return `{ name: ${JSON.stringify(pkg.name)}, export: ${JSON.stringify(
     pkg.export,
   )}, default: require('${pkg.import}').default }`;
 }
 
-async function writeDetectedPackagesModule(
-  targetPath: string,
+/** The name of the chunk that holds the code of a deferred entry point. */
+function chunkNameOf(pkg: DetectedPackage) {
+  const name = `${pkg.name}${pkg.export ? pkg.export.slice(1) : ''}`;
+  return `deferred-${name.replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-/, '')}`;
+}
+
+function lazyEntry(pkg: DetectedPackage, manifest: FrontendFeatureManifest) {
+  return `{ name: ${JSON.stringify(pkg.name)}, export: ${JSON.stringify(
+    pkg.export,
+  )}, manifest: ${JSON.stringify(
+    manifest,
+  )}, load: () => import(/* webpackChunkName: ${JSON.stringify(
+    chunkNameOf(pkg),
+  )} */ '${pkg.import}') }`;
+}
+
+async function createDetectedPackagesScript(
   pkgs: DetectedPackage[],
-  options: { deferredPackages: boolean; config: Config },
-) {
-  let requirePackageScript: string;
-  if (options.deferredPackages) {
-    const entries = await resolveDetectedEntries(
-      targetPath,
-      pkgs,
-      readConfiguredExtensionIds(options.config),
-    );
-    printDeferralReport(entries);
-    // A package can have more than one deferred entry point that shares a
-    // sync entry point, which must only be loaded once
-    const emittedSyncImports = new Set<string>();
-    requirePackageScript = entries
-      .flatMap(entry => {
-        if (entry.mode !== 'lazy') {
-          return [requireEntry(entry.pkg)];
-        }
-        const lazyEntry = `{ name: ${JSON.stringify(
-          entry.pkg.name,
-        )}, export: ${JSON.stringify(
-          entry.pkg.export,
-        )}, manifest: ${JSON.stringify(entry.manifest)}, load: () => import('${
-          entry.pkg.import
-        }') }`;
-        // The sync part of a deferred plugin is loaded with the app
-        const syncImport = entry.pkg.syncImport;
-        if (
-          !syncImport ||
-          !hasSyncExtensions(entry.manifest) ||
-          emittedSyncImports.has(syncImport)
-        ) {
-          return [lazyEntry];
-        }
-        emittedSyncImports.add(syncImport);
-        return [
-          requireEntry({
-            name: entry.pkg.name,
-            export: './sync',
-            import: syncImport,
-          }),
-          lazyEntry,
-        ];
-      })
-      .join(',');
-  } else {
-    requirePackageScript = pkgs.map(requireEntry).join(',');
+  options: {
+    deferredPackages?: DeferredPackagesConfig;
+    cache: WorkspaceManifestCache;
+  },
+): Promise<string> {
+  const { deferredPackages, cache } = options;
+  if (!deferredPackages) {
+    return pkgs.map(requireEntry).join(',');
   }
 
-  await writeQueue.add(async () => {
+  const entries = await resolveDetectedEntries(pkgs, {
+    deferredPackages,
+    cache,
+  });
+  printDeferralReport(entries);
+  // A package can have more than one deferred entry point that shares a
+  // sync entry point, which must only be loaded once
+  const emittedSyncImports = new Set<string>();
+  return entries
+    .flatMap(entry => {
+      if (entry.mode !== 'lazy') {
+        return [requireEntry(entry.pkg)];
+      }
+      // The sync part of a deferred plugin is loaded with the app
+      const syncImport = entry.pkg.syncImport;
+      if (
+        !syncImport ||
+        !hasSyncExtensions(entry.manifest) ||
+        emittedSyncImports.has(syncImport)
+      ) {
+        return [lazyEntry(entry.pkg, entry.manifest)];
+      }
+      emittedSyncImports.add(syncImport);
+      return [
+        requireEntry({
+          name: entry.pkg.name,
+          export: SYNC_ENTRY_POINT,
+          import: syncImport,
+        }),
+        lazyEntry(entry.pkg, entry.manifest),
+      ];
+    })
+    .join(',');
+}
+
+/**
+ * Writes the module with the detected packages, and returns whether its
+ * content changed.
+ */
+async function writeDetectedPackagesModule(
+  targetPath: string,
+  script: string,
+): Promise<boolean> {
+  return writeQueue.add(async () => {
     const detectedModulesPath = joinPath(
       targetPath,
       'node_modules',
       `${DETECTED_MODULES_MODULE_NAME}.js`,
     );
+    const content = `window['__@backstage/discovered__'] = { modules: [${script}] };`;
 
+    if (
+      (await fs.pathExists(detectedModulesPath)) &&
+      (await fs.readFile(detectedModulesPath, 'utf8')) === content
+    ) {
+      return false;
+    }
     await fs.ensureDir(dirname(detectedModulesPath));
-    await fs.writeFile(
-      detectedModulesPath,
-      `window['__@backstage/discovered__'] = { modules: [${requirePackageScript}] };`,
-    );
+    await fs.writeFile(detectedModulesPath, content);
+    return true;
   });
 }
 
@@ -397,11 +395,15 @@ export async function createDetectedModulesEntryPoint(options: {
   if (!detectionConfig) {
     return [];
   }
-  const writeOptions = {
-    config,
-    deferredPackages:
-      config.getOptionalBoolean('app.experimental.deferredPackages') ?? false,
-  };
+  const deferredPackages = readDeferredPackagesConfig(config);
+  const cache = new WorkspaceManifestCache(
+    joinPath(
+      targetPath,
+      'node_modules',
+      '.cache',
+      'backstage-frontend-manifests',
+    ),
+  );
 
   // Previous versions of the CLI would write the detected modules file to the
   // root `node_modules`, this makes sure that doesn't exist to minimize risk of conflicts
@@ -414,24 +416,61 @@ export async function createDetectedModulesEntryPoint(options: {
     await fs.remove(legacyDetectedModulesPath);
   }
 
+  // The source of each workspace package that can be deferred is watched,
+  // so that its manifest is updated when it changes
+  const sourceWatchers = new Map<string, FSWatcher>();
+  let pkgs = await detectPackages(targetPath, detectionConfig);
+
+  async function update() {
+    const script = await createDetectedPackagesScript(pkgs, {
+      deferredPackages,
+      cache,
+    });
+    const changed = await writeDetectedPackagesModule(targetPath, script);
+    if (watch && deferredPackages) {
+      watchSources();
+    }
+    return changed;
+  }
+
+  function watchSources() {
+    const dirs = new Set(
+      pkgs.filter(pkg => isWorkspacePackage(pkg.dir)).map(pkg => pkg.dir),
+    );
+    for (const [dir, watcher] of sourceWatchers) {
+      if (!dirs.has(dir)) {
+        watcher.close();
+        sourceWatchers.delete(dir);
+      }
+    }
+    for (const dir of dirs) {
+      if (sourceWatchers.has(dir)) {
+        continue;
+      }
+      const watcher = chokidar.watch(resolvePath(dir, 'src'), {
+        ignoreInitial: true,
+      });
+      watcher.on('all', async () => {
+        cache.invalidate(dir);
+        if (await update()) {
+          watch?.();
+        }
+      });
+      sourceWatchers.set(dir, watcher);
+    }
+  }
+
   if (watch) {
     const watcher = chokidar.watch(resolvePath(targetPath, 'package.json'));
 
     watcher.on('change', async () => {
-      await writeDetectedPackagesModule(
-        targetPath,
-        await detectPackages(targetPath, detectionConfig),
-        writeOptions,
-      );
+      pkgs = await detectPackages(targetPath, detectionConfig);
+      await update();
       watch();
     });
   }
 
-  await writeDetectedPackagesModule(
-    targetPath,
-    await detectPackages(targetPath, detectionConfig),
-    writeOptions,
-  );
+  await update();
 
   return [DETECTED_MODULES_MODULE_NAME];
 }

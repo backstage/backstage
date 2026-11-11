@@ -109,6 +109,50 @@ describe('productionPack', () => {
     expect(packedContent['config.schema.json']).toBeDefined();
   });
 
+  it('should reference the frontend manifest of a plugin package', async () => {
+    const pluginPackageJson = {
+      name: 'test-plugin',
+      version: '1.0.0',
+      backstage: { role: 'frontend-plugin' },
+      files: ['dist'],
+    };
+    mockDir.setContent({
+      plugin: {
+        'package.json': JSON.stringify(pluginPackageJson),
+        'dist/frontend-manifest.json': '{"manifestVersion":1,"entryPoints":{}}',
+      },
+      library: {
+        'package.json': JSON.stringify({
+          ...pluginPackageJson,
+          backstage: { role: 'web-library' },
+        }),
+        'dist/frontend-manifest.json': '{}',
+      },
+    });
+
+    for (const name of ['plugin', 'library']) {
+      await productionPack({
+        packageDir: mockDir.resolve(name),
+        targetDir: mockDir.resolve(`${name}-target`),
+      });
+    }
+
+    const readPacked = (name: string) =>
+      JSON.parse(
+        (
+          mockDir.content({
+            path: `${name}-target`,
+            shouldReadAsText: true,
+          }) as Record<string, string>
+        )['package.json'],
+      );
+    expect(readPacked('plugin').backstage).toEqual({
+      role: 'frontend-plugin',
+      frontendManifest: 'dist/frontend-manifest.json',
+    });
+    expect(readPacked('library').backstage).toEqual({ role: 'web-library' });
+  });
+
   it('should restore TypeScript schemas after packing for publishing', async () => {
     mockDir.setContent({
       package: {
