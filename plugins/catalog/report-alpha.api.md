@@ -467,6 +467,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
+            FilterPredicate,
+            'catalog.entity-filter-predicate',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             EntityCardType,
             'catalog.entity-card-type',
             {
@@ -537,6 +544,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
+            FilterPredicate,
+            'catalog.entity-filter-predicate',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             EntityCardType,
             'catalog.entity-card-type',
             {
@@ -573,6 +587,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<
             string,
             'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            FilterPredicate,
+            'catalog.entity-filter-predicate',
             {
               optional: true;
             }
@@ -619,6 +640,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
+            FilterPredicate,
+            'catalog.entity-filter-predicate',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             EntityCardType,
             'catalog.entity-card-type',
             {
@@ -655,6 +683,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<
             string,
             'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            FilterPredicate,
+            'catalog.entity-filter-predicate',
             {
               optional: true;
             }
@@ -701,6 +736,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
+            FilterPredicate,
+            'catalog.entity-filter-predicate',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             EntityCardType,
             'catalog.entity-card-type',
             {
@@ -737,6 +779,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<
             string,
             'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            FilterPredicate,
+            'catalog.entity-filter-predicate',
             {
               optional: true;
             }
@@ -783,6 +832,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
+            FilterPredicate,
+            'catalog.entity-filter-predicate',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             EntityCardType,
             'catalog.entity-card-type',
             {
@@ -824,6 +880,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
+            FilterPredicate,
+            'catalog.entity-filter-predicate',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             EntityCardType,
             'catalog.entity-card-type',
             {
@@ -860,6 +923,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<
             string,
             'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            FilterPredicate,
+            'catalog.entity-filter-predicate',
             {
               optional: true;
             }
@@ -920,6 +990,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<
             string,
             'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            FilterPredicate,
+            'catalog.entity-filter-predicate',
             {
               optional: true;
             }
@@ -1110,6 +1187,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<
             string,
             'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            FilterPredicate,
+            'catalog.entity-filter-predicate',
             {
               optional: true;
             }

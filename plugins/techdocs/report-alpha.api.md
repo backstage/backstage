@@ -176,6 +176,13 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >
+        | ExtensionDataRef<
+            FilterPredicate,
+            'catalog.entity-filter-predicate',
+            {
+              optional: true;
+            }
+          >
         | ExtensionDataRef<string, 'catalog.entity-content-title', {}>
         | ExtensionDataRef<
             string,
@@ -258,6 +265,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<
             string,
             'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            FilterPredicate,
+            'catalog.entity-filter-predicate',
             {
               optional: true;
             }
