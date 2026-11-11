@@ -577,7 +577,6 @@ export function prepareSpecializedApp(
       collector: graftCollector,
       extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
       predicateContext: finalizedPredicateContext,
-      routeRefsById,
       routeBindings,
       routeResolutionApi: phase.routeResolutionApi,
       appTreeApi: phase.appTreeApi,
