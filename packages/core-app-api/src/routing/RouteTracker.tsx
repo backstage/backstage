@@ -15,7 +15,7 @@
  */
 
 import { useEffect } from 'react';
-import { matchRoutes, useLocation } from 'react-router-dom';
+import { matchRoutes, useInRouterContext, useLocation } from 'react-router-dom';
 import {
   useAnalytics,
   AnalyticsContext,
@@ -114,10 +114,12 @@ const TrackNavigation = ({
 };
 
 /**
- * Logs a "navigate" event with appropriate plugin-level analytics context
- * attributes each time the user navigates to a page.
+ * Reads the location being navigated to and reports it.
+ *
+ * Split out of {@link RouteTracker} so that `useLocation` is only ever called
+ * from a component that is mounted inside a router, where it cannot throw.
  */
-export const RouteTracker = ({
+const TrackRouterNavigation = ({
   routeObjects,
 }: {
   routeObjects: BackstageRouteObject[];
@@ -139,4 +141,30 @@ export const RouteTracker = ({
       />
     </AnalyticsContext>
   );
+};
+
+/**
+ * Logs a "navigate" event with appropriate plugin-level analytics context
+ * attributes each time the user navigates to a page.
+ *
+ * App chrome is allowed to render with no ambient React Router at all — an app
+ * that supplies a passthrough `Router` component has none — and React Router's
+ * `useLocation` throws there. `useInRouterContext` is the probe React Router
+ * offers instead: it reads the very context `useLocation` reads and returns
+ * `false` rather than throwing. It is called unconditionally and the branch is
+ * on its value, so hook order is stable whether or not a router is present.
+ * Without one there is no location, and so no navigation to report.
+ */
+export const RouteTracker = ({
+  routeObjects,
+}: {
+  routeObjects: BackstageRouteObject[];
+}) => {
+  const inRouterContext = useInRouterContext();
+
+  if (!inRouterContext) {
+    return null;
+  }
+
+  return <TrackRouterNavigation routeObjects={routeObjects} />;
 };

@@ -1,5 +1,22 @@
 # @backstage/plugin-scaffolder-react
 
+## 3.0.0-next.2
+
+### Patch Changes
+
+- e8c4fb9: Improved screen reader support in the BUI scaffolder form theme: array item controls include the item name in their labels.
+- 818fbd6: The BUI form theme now renders a multi-select dropdown for array fields with unique `enum` items, and focus/blur events now report the selected values correctly.
+- Updated dependencies
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/catalog-client@1.16.4-next.1
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/plugin-catalog-react@4.0.0-next.2
+  - @backstage/plugin-scaffolder-common@2.4.0-next.1
+  - @backstage/plugin-permission-react@0.5.7-next.1
+
 ## 3.0.0-next.1
 
 ### Minor Changes

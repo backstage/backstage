@@ -1,5 +1,25 @@
 # @backstage/plugin-app
 
+## 0.6.0-next.2
+
+### Minor Changes
+
+- df2bcee: Pages and sub-pages now share app-owned navigation and can use different routing libraries, with implicit React Router v6 compatibility for existing pages. **BREAKING**: Removed the `router` input from `app/root`; remove root router extensions, move global providers to `AppRootWrapperBlueprint`, and use page adapters where needed. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
+
+### Patch Changes
+
+- 9bac36e: Fixed the app remounting during finalization when root elements are added, for example ones deferred with an `if` predicate. Root elements are now keyed by their extension ID and rendered in a single fixed position, so adding one no longer moves the rest of the app in the React tree.
+- Updated dependencies
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/plugin-app-react@0.3.0-next.2
+  - @backstage/config@1.3.11-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/filter-predicates@0.2.1-next.0
+  - @backstage/integration-react@1.2.24-next.1
+  - @backstage/plugin-permission-react@0.5.7-next.1
+
 ## 0.6.0-next.1
 
 ### Minor Changes

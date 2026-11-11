@@ -1,5 +1,31 @@
 # @backstage/backend-defaults
 
+## 0.19.0-next.2
+
+### Minor Changes
+
+- 250e4c3: Add support for the new WebSocket routing APIs.
+
+  Existing server upgrade listeners can coexist during migration and receive unmatched upgrades. Multiple listeners produce a warning; migrate custom upgrade handling to the router API to avoid handling the same socket twice. Installing a plugin that registers a WebSocket route, such as signals, activates the server-level upgrade listener. Upgrades handled only through Express, such as the Kubernetes proxy, must migrate to this API; otherwise, unmatched upgrades receive 404 responses when this is the only server-level listener.
+
+### Patch Changes
+
+- 5eb2381: Updated a documentation link for `DefaultRootHttpRouter` to point to the `coreServices.rootHttpRouter` service reference.
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/backend-app-api@1.9.0-next.1
+  - @backstage/plugin-auth-node@0.7.8-next.2
+  - @backstage/plugin-permission-node@0.11.6-next.1
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/config@1.3.11-next.0
+  - @backstage/config-loader@1.11.5-next.0
+  - @backstage/connections@0.4.2-next.0
+  - @backstage/integration-aws-node@0.2.4-next.1
+  - @backstage/plugin-permission-common@0.9.13-next.0
+
 ## 0.18.2-next.1
 
 ### Patch Changes

@@ -36,7 +36,7 @@ import { MouseEvent as MouseEvent_2 } from 'react';
 import { MouseEventHandler } from 'react';
 import { MutableRefObject } from 'react';
 import { NavLinkProps } from 'react-router-dom';
-import { Options } from 'react-markdown';
+import type { Options } from 'react-markdown';
 import { Options as Options_2 } from '@material-table/core';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { ProfileInfo } from '@backstage/core-plugin-api';

@@ -11,6 +11,171 @@ This section provides migration guides for different versions of the frontend sy
 
 This guide is intended for app and plugin authors who have already migrated their code to the new frontend system, and are looking to keep it up to date with the latest changes. These guides do not cover trivial migrations that can be explained in a deprecation message, such as a renamed export.
 
+## 1.57
+
+This release changes how the frontend system handles routing. The app now owns the browser history and exposes it as `AppHistoryApi`, and each page picks its own routing library instead of sharing a single app-wide React Router. Plugins navigate through framework APIs that work the same way on every page, while pages that need a routing library's own APIs render a page-scoped adapter. For the design background, see [RFC #33603](https://github.com/backstage/backstage/issues/33603).
+
+If your app uses the default routing setup, the only required action is to remove any router overrides, as described below. The remaining changes affect apps that customize navigation, apps that use Backstage UI outside a Backstage app, and plugin authors that use router-specific APIs.
+
+### Removed `RouterBlueprint` and the `app/root` router input
+
+The `RouterBlueprint` from `@backstage/plugin-app-react` and the `router` input of the `app/root` extension have been removed. `convertLegacyAppOptions` from `@backstage/core-compat-api` also throws if you pass it a `components.Router` option. The app creates and owns the browser history itself, so a root component that installs its own router would create a second history that the app cannot observe.
+
+What to do with an existing router override depends on what it did:
+
+- If it only rendered `BrowserRouter`, delete it. The app provides history now.
+- If it wrapped the router in global providers, move those providers to `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`.
+- If it installed a different router library, render that library's page router inside the lazily loaded component of each page that needs it. See [page routers](../building-plugins/10-page-routers.md).
+
+For example, an app that previously overrode the router to add a query client:
+
+```tsx
+import { BrowserRouter } from 'react-router-dom';
+import { RouterBlueprint } from '@backstage/plugin-app-react';
+
+export default RouterBlueprint.make({
+  params: {
+    component: ({ children }) => (
+      <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </BrowserRouter>
+    ),
+  },
+});
+```
+
+Now moves the provider to an app root wrapper, installed like any other extension:
+
+```tsx
+import { AppRootWrapperBlueprint } from '@backstage/plugin-app-react';
+
+export const queryClientWrapper = AppRootWrapperBlueprint.make({
+  name: 'query-client',
+  params: {
+    component: ({ children }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    ),
+  },
+});
+```
+
+Apps that remain on the old frontend system are unaffected.
+
+### The app owns the browser history
+
+The app creates a browser history and exposes it through `AppHistoryApi`, available as `appHistoryApiRef` and `coreApis.appHistory` from `@backstage/frontend-plugin-api`. Page adapters, navigation hooks, and navigation analytics all observe this single history, so browser Back and Forward stay in sync with route matching.
+
+Destinations passed to framework navigation must be app-absolute: they start with `/` and exclude the deployment basename. `/catalog` always means that path from the app root, even inside another plugin's adapter. Empty, query-only, and hash-only targets keep the current pathname. Path-relative targets such as `details`, `.`, and `../edit` are rejected by framework navigation; a page router adapter supplies its library's relative semantics instead. External URLs use browser navigation, honoring the `replace` option. Both `navigate` and `createHref` replace executable URL schemes such as `javascript:` with `about:blank` and log a warning.
+
+For hash-based deployments, embedded views, or a host application that owns navigation, register your own `AppHistoryApi` implementation for `appHistoryApiRef` through an `ApiBlueprint` factory:
+
+```tsx
+import { ApiBlueprint, appHistoryApiRef } from '@backstage/frontend-plugin-api';
+
+const appHistory = ApiBlueprint.make({
+  name: 'app-history',
+  params: defineParams =>
+    defineParams({
+      api: appHistoryApiRef,
+      deps: {},
+      factory: () => createMyAppHistory(),
+    }),
+});
+```
+
+The factory must be available during app initialization. An `if` predicate on the factory's extension, or on the attachment path leading to it, is rejected with an error, because predicate context is evaluated after the app history is selected. Remove the predicate and decide inside the factory which implementation to return.
+
+In tests, replace a root `MemoryRouter` with `renderInTestApp` or `renderTestApp` from `@backstage/frontend-test-utils`, and navigate through the `appHistory` they return.
+
+### Page-scoped routing with adapters
+
+Pages keep their existing React Router v6 nested routes, relative links, and `useParams` through an implicit compatibility layer, which logs a development warning once per extension. To migrate away from that fallback, render a page router adapter in the lazily loaded page component:
+
+```tsx
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
+
+export function ToolsPage() {
+  return (
+    <ReactRouterV6PageRouter>
+      {/* Existing page JSX and local routes go here. */}
+    </ReactRouterV6PageRouter>
+  );
+}
+```
+
+Adapters are standalone libraries published as `@backstage/frontend-adapter-react-router-v6`, `@backstage/frontend-adapter-react-router-v7`, and `@backstage/frontend-adapter-tanstack-router`. Install the adapter in the package that owns the page, alongside its routing library, which is a peer dependency. A page or sub-page that declares no adapter keeps the implicit compatibility.
+
+Because an adapter is declared by the page content, routers nest: a page written with one library can host a sub-page written with another. Route refs resolve against the page the anchor is written in, and app-absolute destinations work across plugins. See [choose a router for a page](../building-plugins/10-page-routers.md) for the full guide, including TanStack Router and sub-page adapters.
+
+### `useRouteRefParams` returns only declared parameters
+
+`useRouteRefParams` now returns exactly the parameter names declared by the supplied route ref. Parameters that the current location does not bind have the value `undefined`, and the undeclared splat `*` is no longer included. Previously the hook returned all parameters matched for the current location, including the splat.
+
+```tsx
+const detailsRouteRef = createRouteRef({
+  params: ['kind', 'namespace', 'name'],
+});
+
+// At /catalog/component/default/foo:
+const params = useRouteRefParams(detailsRouteRef);
+// { kind: 'component', namespace: 'default', name: 'foo' }
+// Previously also included '*' when the page had a splat sub-route.
+```
+
+If your content needs the matched tail, read it from your page router's own parameter APIs. Matched extension parameters also take precedence over parameters inferred from a sub-route path, so navigating deeper within a sub-page retains its bound values.
+
+### Backstage UI navigation
+
+Backstage UI (BUI) components now use explicit routing integration based on React Aria's native link behavior:
+
+- In Backstage apps, BUI navigation is configured automatically. BUI controls accept app-absolute destinations, query and hash targets, and external URLs. Relative targets work inside a page adapter, using that library's semantics at the control's route scope.
+- Standalone apps that relied on ambient React Router integration must supply a `useNavigation` hook to `BUIProvider`. React Router is no longer a peer dependency of `@backstage/ui`.
+- The `routerOptions` prop is retained, but it now supports only the router-neutral `replace` and `state` fields, so library-specific options are gone. Usage stays the same:
+
+```tsx
+<Link
+  href={entityHref({ kind, namespace, name })}
+  routerOptions={{ replace: true, state: { from: 'search' } }}
+>
+  Entity name
+</Link>
+```
+
+- Hrefs using `javascript:`, `data:`, or `vbscript:` schemes become inert `about:blank` links with a console warning. Replace `data:` links with blob URLs or display their content directly, and replace `javascript:` links with `onClick` handlers.
+- App chrome follows the app history: page tabs and breadcrumbs use app-absolute paths that include the deployment prefix, and header tab selection is case-insensitive, choosing the most specific matching path. Legacy core-components, including the sidebar, keep using React Router through the app's implicit compatibility.
+
+See [migrate Backstage UI routing](../building-plugins/10-page-routers.md#migrate-backstage-ui-routing) for integration requirements.
+
+### Page errors and missing routes
+
+Uncaught errors thrown while page content renders now use the app's error display, which includes the plugin's details and a retry action. Unmatched routes continue to show the not-found page. If your app wrapped pages in its own error boundaries, you can remove them for page content, since the app now renders this display around every page.
+
+### Testing navigation
+
+`renderInTestApp` from `@backstage/frontend-test-utils` accepts a `router` option for rendering page adapters, and both `renderInTestApp` and `renderTestApp` return an `appHistory` that you use for navigation and location assertions:
+
+```tsx
+import { renderTestApp } from '@backstage/frontend-test-utils';
+import { screen } from '@testing-library/react';
+
+it('renders the tools page and navigates', async () => {
+  const { appHistory } = renderTestApp({
+    extensions: [toolsPage],
+    initialRouteEntries: ['/tools'],
+  });
+
+  expect(await screen.findByText('Tools')).toBeInTheDocument();
+
+  appHistory.navigate('/tools/details');
+
+  expect(await screen.findByText('Tool details')).toBeInTheDocument();
+});
+```
+
+For tests that need memory history or fixed route-reference paths outside a test app, use `createMockAppHistory`, `createMockRouteResolutionApi`, `mockApis.appHistory()`, and `mockApis.routeResolution()`. Mocks reject path-relative destinations, matching production history, so use app-absolute paths or route-ref destinations. See [navigation and app history](../building-plugins/02-testing.md#navigation-and-app-history) for more examples.
+
 ## 1.50
 
 ### New `configSchema` option for extension config
@@ -102,14 +267,14 @@ For example:
 
 ```tsx
 import {
-  createPageExtension,
+  PageBlueprint,
   createExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 
 const customSearchPage = PageBlueprint.make({
   namespace: 'search',
   params: {
-    defaultPath: '/search',
+    path: '/search',
     loader: () =>
       import('./CustomSearchPage').then(m => <m.CustomSearchPage />),
   },
@@ -124,13 +289,13 @@ Should now look like this:
 
 ```tsx
 import {
-  createPageExtension,
+  PageBlueprint,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 
 const customSearchPage = PageBlueprint.make({
   params: {
-    defaultPath: '/search',
+    path: '/search',
     loader: () =>
       import('./CustomSearchPage').then(m => <m.CustomSearchPage />),
   },

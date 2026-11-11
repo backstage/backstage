@@ -613,6 +613,7 @@ export default {
                 'frontend-system/building-plugins/testing',
                 'frontend-system/building-plugins/common-extension-blueprints',
                 'frontend-system/building-plugins/built-in-data-refs',
+                'frontend-system/building-plugins/page-routers',
                 'frontend-system/building-plugins/migrating',
                 'frontend-system/building-plugins/internationalization',
                 'frontend-system/building-plugins/analytics',
@@ -649,6 +650,14 @@ export default {
               ],
             ),
           ],
+        ),
+        sidebarElementWithIndex(
+          {
+            label: 'Common Libraries',
+            description:
+              'Shared libraries for frontend and backend development.',
+          },
+          ['common-libraries/index', 'common-libraries/errors'],
         ),
         sidebarElementWithIndex(
           {

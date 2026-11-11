@@ -1,5 +1,17 @@
 # @backstage/core-app-api
 
+## 1.20.7-next.2
+
+### Patch Changes
+
+- 25297de: Fixed translation subscriptions failing when an abandoned language load rejects after switching to a language whose translations are already available.
+- 2aa14e3: Backstage UI links and collections now use client-side navigation at their consuming route scope, and apps with a custom `Router` that provides no React Router context render without failing at startup. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
+- 8688124: Fix unexpected sign-in prompts when multiple tabs refresh a session at the same time with an auth provider that rotates refresh tokens. Refresh requests are coordinated across tabs in browsers that support the Web Locks API.
+- Updated dependencies
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+
 ## 1.20.7-next.1
 
 ### Patch Changes

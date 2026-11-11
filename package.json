@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.57.0-next.1",
+  "version": "1.57.0-next.2",
   "backstage": {
     "cli": {
       "new": {
@@ -76,7 +76,7 @@
     ],
     "*.md": [
       "prettier --write",
-      "node ./scripts/check-docs-quality"
+      "node ./scripts/check-docs-quality --lint-staged"
     ],
     "{plugins,packages}/*/catalog-info.yaml": [
       "yarn backstage-repo-tools generate-catalog-info --ci"

@@ -19,6 +19,7 @@ import { Config } from '@backstage/config';
 import { ResponseError, ConflictError } from '@backstage/errors';
 import fs from 'fs-extra';
 import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
 interface Links {
   webui: string;
@@ -165,17 +166,12 @@ export const getAndWriteAttachments = async (
           attachmentDir,
           downloadTitle,
         );
-        fs.openSync(attachmentPath, 'w');
-        const writeStream = fs.createWriteStream(attachmentPath);
         // TODO(freben): This cast is sketchy, but for some reason the node types don't quite line up here
         // https://stackoverflow.com/questions/44672942/stream-response-to-file-using-fetch-api-and-fs-createwritestream/73879265#73879265
-        Readable.fromWeb(res.body as any).pipe(writeStream);
-        await new Promise((resolve, reject) => {
-          writeStream.on('finish', () => {
-            resolve(attachmentPath);
-          });
-          writeStream.on('error', reject);
-        });
+        await pipeline(
+          Readable.fromWeb(res.body as any),
+          fs.createWriteStream(attachmentPath),
+        );
       } else {
         throw new ConflictError(
           'No Body on the response. Can not save images from Confluence Doc',

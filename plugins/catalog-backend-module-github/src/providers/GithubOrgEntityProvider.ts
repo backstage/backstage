@@ -171,6 +171,14 @@ export interface GithubOrgEntityProviderOptions {
    * @defaultValue false
    */
   experimental_checkForSuspendedUsersWithRest?: boolean;
+
+  /**
+   * Request the public email field from the GitHub GraphQL API even when
+   * using a GitHub App for authentication. By default, the public email
+   * field is only requested when using a personal access token.
+   * @defaultValue false
+   */
+  fetchEmailForGithubApps?: boolean;
 }
 
 /**
@@ -211,6 +219,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       events: options.events,
       pageSizes: options.pageSizes,
       excludeSuspendedUsers: options.excludeSuspendedUsers,
+      fetchEmailForGithubApps: options.fetchEmailForGithubApps,
       cache: options.cache,
       experimental_checkForSuspendedUsersWithRest:
         options.experimental_checkForSuspendedUsersWithRest,
@@ -233,6 +242,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       teamTransformer?: TeamTransformer;
       pageSizes?: Partial<GithubPageSizes>;
       excludeSuspendedUsers?: boolean;
+      fetchEmailForGithubApps?: boolean;
       cache?: CacheService;
       experimental_checkForSuspendedUsersWithRest?: boolean;
     },
@@ -334,6 +344,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       pageSizes,
       this.options.excludeSuspendedUsers,
       this.useRestSuspendedCheck ? this.getRestClient() : undefined,
+      this.options.fetchEmailForGithubApps,
     );
     const { teams } = await getOrganizationTeams(
       client,
@@ -465,6 +476,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       pageSizes,
       this.options.excludeSuspendedUsers,
       this.useRestSuspendedCheck ? this.getRestClient() : undefined,
+      this.options.fetchEmailForGithubApps,
     );
 
     if (!isGroupEntity(team)) {
