@@ -8,6 +8,7 @@ export interface IPluginData {
   authorUrl: string;
   category: string;
   description: string;
+  fullDescription?: string;
   documentation: string;
   iconUrl?: string;
   title: string;
@@ -24,6 +25,7 @@ export const PluginCard = ({
   authorUrl,
   category,
   description,
+  fullDescription,
   documentation,
   iconUrl,
   isNew = false,
@@ -45,7 +47,7 @@ export const PluginCard = ({
         <span className="badge badge--secondary fit-content">{category}</span>
       </>
     }
-    body={<p>{description}</p>}
+    body={<p title={fullDescription ?? description}>{description}</p>}
     footer={
       <Link
         to={documentation}
