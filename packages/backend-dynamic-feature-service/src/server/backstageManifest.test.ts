@@ -18,15 +18,15 @@ import {
   createMockDirectory,
   mockServices,
 } from '@backstage/backend-test-utils';
-import { readFrontendManifest } from './frontendManifest';
+import { readBackstageManifest } from './backstageManifest';
 
-describe('readFrontendManifest', () => {
+describe('readBackstageManifest', () => {
   const mockDir = createMockDirectory();
 
   it('should key the manifests by exposed module, and ignore missing or invalid files', () => {
     const logger = mockServices.logger.mock();
     const read = () =>
-      readFrontendManifest({
+      readBackstageManifest({
         assetsPath: mockDir.path,
         mfManifest: {
           exposes: [
@@ -44,13 +44,17 @@ describe('readFrontendManifest', () => {
     expect(read()).toBeUndefined();
 
     mockDir.setContent({
-      'frontend-manifest.json': JSON.stringify({
+      'backstage-manifest.json': JSON.stringify({
         manifestVersion: 1,
-        entryPoints: {
-          '.': { pluginId: 'root' },
-          './alpha': { pluginId: 'alpha' },
-          './beta': { pluginId: 'beta' },
-          './unexposed': { pluginId: 'unexposed' },
+        packageName: 'plugin-test',
+        role: 'frontend-plugin',
+        frontend: {
+          exposedModules: {
+            '.': { pluginId: 'root' },
+            './alpha': { pluginId: 'alpha' },
+            './beta': { pluginId: 'beta' },
+            './unexposed': { pluginId: 'unexposed' },
+          },
         },
       }),
     });
@@ -63,10 +67,19 @@ describe('readFrontendManifest', () => {
       },
     });
 
-    mockDir.setContent({ 'frontend-manifest.json': '{' });
+    mockDir.setContent({ 'backstage-manifest.json': '{' });
     expect(read()).toBeUndefined();
     mockDir.setContent({
-      'frontend-manifest.json': JSON.stringify({ entryPoints: [] }),
+      'backstage-manifest.json': JSON.stringify({
+        manifestVersion: 1,
+        frontend: { exposedModules: [] },
+      }),
+    });
+    expect(read()).toBeUndefined();
+    expect(logger.warn).toHaveBeenCalledTimes(2);
+
+    mockDir.setContent({
+      'backstage-manifest.json': JSON.stringify({ manifestVersion: 1 }),
     });
     expect(read()).toBeUndefined();
     expect(logger.warn).toHaveBeenCalledTimes(2);

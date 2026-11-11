@@ -19,14 +19,18 @@
 // since the CLI can't depend on frontend packages. Any change to the format
 // must bump FRONTEND_MANIFEST_VERSION in both places.
 
-/** The version of the manifest format that this CLI writes and reads. */
+/** The version of the manifest format of a frontend plugin or module. */
 export const FRONTEND_MANIFEST_VERSION = 1;
 
+/** The version of the envelope of the Backstage manifest. */
+export const BACKSTAGE_MANIFEST_VERSION = 1;
+
 /**
- * The name of the manifest file, which is written next to `mf-manifest.json`
- * in the output directory of a module federation remote.
+ * The name of the Backstage manifest file, which is written to the `dist`
+ * folder of a package, and next to `mf-manifest.json` in the output directory
+ * of a module federation remote.
  */
-export const FRONTEND_MANIFEST_FILE_NAME = 'frontend-manifest.json';
+export const BACKSTAGE_MANIFEST_FILE_NAME = 'backstage-manifest.json';
 
 export interface FrontendExtensionManifest {
   id: string;
@@ -58,7 +62,22 @@ export interface FrontendFeatureManifest {
   extensions: FrontendExtensionManifest[];
 }
 
+/**
+ * The section of the Backstage manifest that describes the frontend plugins
+ * and modules of a package, keyed by the name of the exposed module, for
+ * example "." or "./alpha".
+ */
 export interface FrontendPackageManifest {
-  manifestVersion: typeof FRONTEND_MANIFEST_VERSION;
-  entryPoints: { [entryPoint: string]: FrontendFeatureManifest };
+  exposedModules: { [name: string]: FrontendFeatureManifest };
+}
+
+/**
+ * The contents of `backstage-manifest.json`. It has one optional section for
+ * each kind of package that the manifest can describe.
+ */
+export interface BackstageManifest {
+  manifestVersion: typeof BACKSTAGE_MANIFEST_VERSION;
+  packageName: string;
+  role: string;
+  frontend?: FrontendPackageManifest;
 }

@@ -154,7 +154,7 @@ describe('productionPack', () => {
     });
   });
 
-  it('should write a frontend manifest for frontend plugins', async () => {
+  it('should write a Backstage manifest for frontend plugins', async () => {
     const pluginPackageJson = {
       name: 'test-plugin',
       version: '1.0.0',
@@ -197,9 +197,13 @@ describe('productionPack', () => {
       path: 'plugin-target',
       shouldReadAsText: true,
     }) as { dist: Record<string, string> };
-    const manifest = JSON.parse(pluginContent.dist['frontend-manifest.json']);
-    expect(manifest.manifestVersion).toBe(1);
-    expect(manifest.entryPoints['.']).toMatchObject({
+    const manifest = JSON.parse(pluginContent.dist['backstage-manifest.json']);
+    expect(manifest).toMatchObject({
+      manifestVersion: 1,
+      packageName: 'test-plugin',
+      role: 'frontend-plugin',
+    });
+    expect(manifest.frontend.exposedModules['.']).toMatchObject({
       type: 'plugin',
       pluginId: 'test',
     });
@@ -208,7 +212,7 @@ describe('productionPack', () => {
     ).toEqual(
       expect.objectContaining({
         dist: expect.not.objectContaining({
-          'frontend-manifest.json': expect.anything(),
+          'backstage-manifest.json': expect.anything(),
         }),
       }),
     );

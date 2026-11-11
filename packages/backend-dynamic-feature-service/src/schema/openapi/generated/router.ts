@@ -101,7 +101,7 @@ export const spec = {
       },
       FrontendManifest: {
         description:
-          'Build-time description of the frontend plugins and modules exposed by a Module Federation remote, which lets an app defer loading the plugins of the remote. It is read from the frontend-manifest.json file that the Backstage CLI writes next to the Module Federation manifest.',
+          'Build-time description of the frontend plugins and modules exposed by a Module Federation remote, which lets an app defer loading the plugins of the remote. It is read from the frontend section of the backstage-manifest.json file that the Backstage CLI writes next to the Module Federation manifest.',
         type: 'object',
         properties: {
           manifestVersion: {
