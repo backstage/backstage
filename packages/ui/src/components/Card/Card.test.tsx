@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
 import { Card } from './Card';
 
@@ -25,7 +26,7 @@ function LocationStatus() {
 
 function renderCard() {
   return render(
-    <MemoryRouter
+    <TestRouter
       basename="/app"
       initialEntries={['/app/catalog/entity']}
       future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -45,7 +46,7 @@ function renderCard() {
           />
         </Routes>
       </BUIProvider>
-    </MemoryRouter>,
+    </TestRouter>,
   );
 }
 

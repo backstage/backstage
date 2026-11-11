@@ -51,6 +51,14 @@ export interface LifecycleMiddlewareOptions {
 export function createLifecycleMiddleware(
   options: LifecycleMiddlewareOptions,
 ): RequestHandler {
+  return createLifecycleGate(options).middleware;
+}
+
+/** Shares the same lifecycle admission checks across HTTP requests and upgrades. */
+export function createLifecycleGate(options: LifecycleMiddlewareOptions): {
+  middleware: RequestHandler;
+  check(): Promise<void>;
+} {
   const { config, lifecycle } = options;
 
   let state: 'init' | 'up' | 'down' = 'init';
@@ -90,7 +98,7 @@ export function createLifecycleMiddleware(
 
   const timeoutMs = durationToMilliseconds(startupRequestPauseTimeout);
 
-  return (_req, _res, next) => {
+  const check = (next: (error?: Error) => void) => {
     if (state === 'up') {
       next();
       return;
@@ -109,5 +117,13 @@ export function createLifecycleMiddleware(
     };
 
     waiting.add(item);
+  };
+
+  return {
+    middleware: (_req, _res, next) => check(next),
+    check: () =>
+      new Promise<void>((resolve, reject) => {
+        check(error => (error ? reject(error) : resolve()));
+      }),
   };
 }

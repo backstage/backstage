@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import preview from '../../../../../.storybook/preview';
 import type { StoryFn } from '@storybook/react-vite';
 import { PluginHeader } from './PluginHeader';
@@ -26,7 +27,7 @@ import {
   Menu,
   MenuItem,
 } from '../../';
-import { MemoryRouter } from 'react-router-dom';
+
 import { BUIProvider } from '../../provider';
 import {
   RiHeartLine,
@@ -44,11 +45,11 @@ const meta = preview.meta({
 });
 
 const withRouter = (Story: StoryFn) => (
-  <MemoryRouter>
+  <TestRouter>
     <BUIProvider>
       <Story />
     </BUIProvider>
-  </MemoryRouter>
+  </TestRouter>
 );
 
 const tabs: HeaderTab[] = [
@@ -153,7 +154,7 @@ export const WithMockedURLCampaigns = meta.story({
     tabs,
   },
   render: args => (
-    <MemoryRouter initialEntries={['/campaigns']}>
+    <TestRouter initialEntries={['/campaigns']}>
       <BUIProvider>
         <PluginHeader {...args} />
         <Container mt="6">
@@ -166,7 +167,7 @@ export const WithMockedURLCampaigns = meta.story({
           </Text>
         </Container>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -175,7 +176,7 @@ export const WithMockedURLIntegrations = meta.story({
     tabs,
   },
   render: args => (
-    <MemoryRouter initialEntries={['/integrations']}>
+    <TestRouter initialEntries={['/integrations']}>
       <BUIProvider>
         <PluginHeader {...args} />
         <Container mt="6">
@@ -188,7 +189,7 @@ export const WithMockedURLIntegrations = meta.story({
           </Text>
         </Container>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -197,7 +198,7 @@ export const WithMockedURLNoMatch = meta.story({
     tabs,
   },
   render: args => (
-    <MemoryRouter initialEntries={['/some-other-page']}>
+    <TestRouter initialEntries={['/some-other-page']}>
       <BUIProvider>
         <PluginHeader {...args} />
         <Container mt="6">
@@ -214,7 +215,7 @@ export const WithMockedURLNoMatch = meta.story({
           </Text>
         </Container>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -247,7 +248,7 @@ export const WithTabsMatchingStrategies = meta.story({
     ],
   },
   render: args => (
-    <MemoryRouter initialEntries={['/mentorship/events']}>
+    <TestRouter initialEntries={['/mentorship/events']}>
       <BUIProvider>
         <PluginHeader {...args} />
         <Container mt="6">
@@ -276,7 +277,7 @@ export const WithTabsMatchingStrategies = meta.story({
           </Text>
         </Container>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -302,7 +303,7 @@ export const WithTabsExactMatching = meta.story({
     ],
   },
   render: args => (
-    <MemoryRouter initialEntries={['/mentorship/events']}>
+    <TestRouter initialEntries={['/mentorship/events']}>
       <BUIProvider>
         <PluginHeader {...args} />
         <Container mt="6">
@@ -317,7 +318,7 @@ export const WithTabsExactMatching = meta.story({
           </Text>
         </Container>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 
@@ -346,7 +347,7 @@ export const WithTabsPrefixMatchingDeep = meta.story({
     ],
   },
   render: args => (
-    <MemoryRouter initialEntries={['/catalog/users/john/details']}>
+    <TestRouter initialEntries={['/catalog/users/john/details']}>
       <BUIProvider>
         <PluginHeader {...args} />
         <Container mt="6">
@@ -377,7 +378,7 @@ export const WithTabsPrefixMatchingDeep = meta.story({
           </Text>
         </Container>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   ),
 });
 

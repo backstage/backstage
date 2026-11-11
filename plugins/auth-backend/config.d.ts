@@ -152,34 +152,6 @@ export interface Config {
     experimentalExtraAllowedOrigins?: string[];
 
     /**
-     * Configuration for dynamic client registration
-     * @deprecated Use `auth.clientIdMetadataDocuments` instead.
-     */
-    experimentalDynamicClientRegistration?: {
-      /**
-       * Whether to enable dynamic client registration
-       * Defaults to false
-       */
-      enabled?: boolean;
-
-      /**
-       * A list of allowed URI patterns to use for redirect URIs during
-       * dynamic client registration.
-       *
-       * Patterns are matched per URL component: a `*` in the hostname or
-       * path only matches within that component, and a `:*` port matches
-       * any port. Patterns must include an explicit protocol and only
-       * match the path they list, e.g. `http://localhost:*\/*` allows any
-       * port and any path on localhost.
-       *
-       * Defaults to Cursor and loopback addresses (localhost, 127.0.0.1, [::1]).
-       *
-       * @example ['http://localhost:*\/*', 'https://*.example.com/callback']
-       */
-      allowedRedirectUriPatterns?: string[];
-    };
-
-    /**
      * Configuration for Client ID Metadata Documents (CIMD)
      *
      * @see https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/

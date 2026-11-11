@@ -19,3 +19,4 @@ export { createLifecycleMiddleware } from './createLifecycleMiddleware';
 export type { LifecycleMiddlewareOptions } from './createLifecycleMiddleware';
 export { createCookieAuthRefreshMiddleware } from './createCookieAuthRefreshMiddleware';
 export { createRateLimitMiddleware } from './createRateLimitMiddleware';
+export { createWebSocketRouter } from './createWebSocketRouter';

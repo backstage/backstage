@@ -115,6 +115,11 @@ class CompatIconsApi implements IconsApi {
 }
 
 class CompatRouteResolutionApi implements RouteResolutionApi {
+  resolvePath(): ReturnType<RouteResolutionApi['resolvePath']> {
+    // The old frontend system has no app-node route tree.
+    return { matches: [] };
+  }
+
   readonly #routeResolver: RouteResolver;
 
   constructor(routeResolver: RouteResolver) {

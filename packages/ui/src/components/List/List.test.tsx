@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import {
   createVersionedValueMap,
   type VersionedValue,
@@ -31,14 +32,8 @@ import {
   RouterProvider,
   type GridListItemRenderProps,
 } from 'react-aria-components';
-import {
-  MemoryRouter,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
-import { useResolvedHref } from '../../hooks/useResolvedHref';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { useTestHref } from '../../testUtils/TestRouter';
 import { BUIContext, type BUIContextVersions } from '../../provider/BUIContext';
 import { BUIProvider } from '../../provider/BUIProvider';
 import { List, ListRow } from './List';
@@ -60,7 +55,7 @@ function LocationStatus() {
 
 function RouterFixture({ children }: PropsWithChildren) {
   return (
-    <MemoryRouter
+    <TestRouter
       basename="/app"
       initialEntries={['/app/catalog/entity/docs']}
       future={routerFuture}
@@ -71,7 +66,7 @@ function RouterFixture({ children }: PropsWithChildren) {
         </Routes>
         <LocationStatus />
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   );
 }
 
@@ -86,7 +81,7 @@ function OldBUIProvider({ children }: PropsWithChildren) {
   );
 
   return (
-    <RouterProvider navigate={navigate} useHref={useResolvedHref}>
+    <RouterProvider navigate={navigate} useHref={useTestHref}>
       <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
     </RouterProvider>
   );
@@ -368,10 +363,9 @@ describe('ListRow navigation', () => {
   });
 
   it.each([
-    ['V2', 'shared'],
-    ['V2', 'isolated'],
+    ['configured', 'shared'],
+    ['configured', 'isolated'],
     ['V1-only', 'shared'],
-    ['V1-only', 'isolated'],
   ] as const)(
     'applies the basename once under a %s host with %s React Aria',
     (provider, reactAriaGraph) => {
@@ -441,18 +435,18 @@ describe('ListRow navigation', () => {
         </IsolatedList>
       );
       render(
-        <MemoryRouter
+        <TestRouter
           basename="/app"
           initialEntries={['/app/catalog/entity/docs']}
           future={routerFuture}
         >
-          {provider === 'V2' ? (
+          {provider === 'configured' ? (
             <BUIProvider>{content}</BUIProvider>
           ) : (
             <OldBUIProvider>{content}</OldBUIProvider>
           )}
           <LocationStatus />
-        </MemoryRouter>,
+        </TestRouter>,
       );
 
       const row = screen.getByRole('row', { name: 'Destination' });

@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.14.2-next.2
+
+### Patch Changes
+
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- d926160: Added `fetchEmailForGithubApps` config option to the GitHub org entity providers (`GithubOrgEntityProvider` and `GithubMultiOrgEntityProvider`). When enabled, the provider requests the public email field from the GitHub GraphQL API even when using a GitHub App for authentication. By default, the public email is only requested with personal access tokens due to a historical GitHub API limitation that may no longer apply to all instances. If the GitHub instance does not support this, the user sync will fail — only enable it after confirming your GitHub App can access user emails.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/plugin-catalog-common@1.2.2-next.0
+
 ## 0.14.2-next.1
 
 ### Patch Changes

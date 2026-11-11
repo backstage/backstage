@@ -331,12 +331,15 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       return { items: await processRawEntitiesResult([], request.fields) };
     }
 
+    // Stored refs are lowercased by stringifyEntityRef, so lowercase the
+    // requested refs the same way to match them case insensitively, like
+    // entities/by-name does. Order and length are preserved for the response.
+    const normalizedRefs = request.entityRefs.map(ref => ref.toLowerCase());
+
     const lookup = new Map<string, string>();
     const isPg = this.database.client.config.client === 'pg';
 
-    const chunks = isPg
-      ? [request.entityRefs]
-      : lodashChunk(request.entityRefs, 200);
+    const chunks = isPg ? [normalizedRefs] : lodashChunk(normalizedRefs, 200);
 
     for (const chunk of chunks) {
       let query = this.database<DbFinalEntitiesRow>('final_entities').select({
@@ -366,7 +369,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       }
     }
 
-    const items = request.entityRefs.map(ref => lookup.get(ref) ?? null);
+    const items = normalizedRefs.map(ref => lookup.get(ref) ?? null);
 
     return { items: await processRawEntitiesResult(items, request.fields) };
   }

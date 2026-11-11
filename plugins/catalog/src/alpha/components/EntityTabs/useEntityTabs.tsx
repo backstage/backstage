@@ -19,14 +19,16 @@ import { type HeaderNavTab, type HeaderNavTabItem } from '@backstage/ui';
 import { type EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 import { type SubRoute, useSelectedSubRoute } from './EntityTabs';
 
-function tabHrefFromPath(path: string): string {
-  return path.replace(/\/\*$/, '').replace(/^\//, '');
+function tabHrefFromPath(path: string, baseHref = ''): string {
+  const subpath = path.replace(/\/\*$/, '').replace(/^\//, '');
+  return baseHref ? `${baseHref}${subpath ? `/${subpath}` : ''}` : subpath;
 }
 
 export function buildHeaderTabs(
   routes: SubRoute[],
   groupDefinitions: EntityContentGroupDefinitions,
   defaultContentOrder: 'title' | 'natural',
+  baseHref?: string,
 ): HeaderNavTabItem[] {
   const aliases = Object.entries(groupDefinitions).reduce(
     (map, [id, group]) => {
@@ -45,7 +47,7 @@ export function buildHeaderTabs(
     result[key].items.push({
       id: route.path,
       label: route.title,
-      href: tabHrefFromPath(route.path),
+      href: tabHrefFromPath(route.path, baseHref),
     });
     return result;
   }, {} as Record<string, { group?: EntityContentGroupDefinitions[string]; items: HeaderNavTab[] }>);
@@ -75,16 +77,22 @@ export function buildHeaderTabs(
   );
 }
 
+/**
+ * Builds entity tabs with app-absolute links when `baseHref` is supplied.
+ * This keeps links independent of the page router's relative-path semantics.
+ */
 export function useEntityTabs(props: {
   routes: SubRoute[];
   groupDefinitions: EntityContentGroupDefinitions;
   defaultContentOrder: 'title' | 'natural';
+  baseHref?: string;
 }) {
-  const { routes, groupDefinitions, defaultContentOrder } = props;
+  const { routes, groupDefinitions, defaultContentOrder, baseHref } = props;
   const { route, element } = useSelectedSubRoute(routes);
   const tabs = useMemo(
-    () => buildHeaderTabs(routes, groupDefinitions, defaultContentOrder),
-    [routes, groupDefinitions, defaultContentOrder],
+    () =>
+      buildHeaderTabs(routes, groupDefinitions, defaultContentOrder, baseHref),
+    [routes, groupDefinitions, defaultContentOrder, baseHref],
   );
   return {
     tabs,

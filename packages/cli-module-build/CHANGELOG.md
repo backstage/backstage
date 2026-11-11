@@ -1,5 +1,28 @@
 # @backstage/cli-module-build
 
+## 0.1.10-next.2
+
+### Patch Changes
+
+- ed81712: Fixed `backstage-cli package start` and `backstage-cli repo start` so the `--require` flag can be repeated again. `repo start` also forwards every `--require` from a backend package's `start` script, instead of only the last one.
+- ed81712: Added `--import` flag to `backstage-cli repo start` and `backstage-cli package start`. This flag can be specified multiple times and is forwarded to the underlying node process.
+- ed8f1ef: Updated dependency `@module-federation/sdk` to `~2.9.0`.
+  Updated dependency `@module-federation/enhanced` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime-core` to `~2.9.0`.
+- 20e14f5: Updated dependency `@types/react-dom` to `19.3.0`.
+  Updated dependency `react` to `19.3.0`.
+  Updated dependency `react-dom` to `19.3.0`.
+  Updated dependency `react-refresh` to `^0.19.0`.
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.2
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/module-federation-common@0.1.7-next.0
+  - @backstage/cli-common@0.3.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/config-loader@1.11.5-next.0
+
 ## 0.1.10-next.1
 
 ### Patch Changes

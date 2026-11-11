@@ -1,5 +1,20 @@
 # @backstage/ui
 
+## 0.20.0-next.0
+
+### Minor Changes
+
+- f4d8adf: **BREAKING**: Backstage UI now uses explicit routing integration and React Aria's native link behavior: standalone apps that relied on automatic React Router integration must supply `BUIProvider` with a `useNavigation` hook, React Router is no longer a peer dependency, and `routerOptions` now supports only the router-neutral `replace` and `state` fields. **BREAKING**: Link targets using `javascript:`, `data:`, or `vbscript:` become inert `about:blank` links with a console warning. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps and the [BUI routing migration guide](https://backstage.io/docs/frontend-system/building-plugins/page-routers#migrate-backstage-ui-routing) for integration requirements.
+
+  Affected components: BUIProvider, ButtonLink, Card, Combobox, Header, Link, List, Menu, PluginHeader, SearchAutocomplete, Select, Table, Tabs, TagGroup
+
+### Patch Changes
+
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- 065d1e3: Fixed `useTable` in complete mode showing an empty page labelled "NaN - NaN of N" when `paginationOptions` switched from `type: 'none'` to paged pagination after mount.
+
+  **Affected components:** `useTable`
+
 ## 0.19.0
 
 ### Minor Changes

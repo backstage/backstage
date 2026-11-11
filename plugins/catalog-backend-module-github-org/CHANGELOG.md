@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-github-org
 
+## 0.3.28-next.2
+
+### Patch Changes
+
+- d926160: Added `fetchEmailForGithubApps` config option to the GitHub org entity providers (`GithubOrgEntityProvider` and `GithubMultiOrgEntityProvider`). When enabled, the provider requests the public email field from the GitHub GraphQL API even when using a GitHub App for authentication. By default, the public email is only requested with personal access tokens due to a historical GitHub API limitation that may no longer apply to all instances. If the GitHub instance does not support this, the user sync will fail — only enable it after confirming your GitHub App can access user emails.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/plugin-catalog-backend-module-github@0.14.2-next.2
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/config@1.3.11-next.0
+
 ## 0.3.28-next.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/repo-tools",
-  "version": "0.19.3-next.0",
+  "version": "0.19.3-next.1",
   "description": "CLI for Backstage repo tooling ",
   "backstage": {
     "role": "cli"
@@ -69,7 +69,7 @@
     "commander": "^14.0.3",
     "diff": "^9.0.0",
     "fs-extra": "^11.2.0",
-    "glob": "^13.0.0",
+    "glob": "^14.0.0",
     "globby": "^11.0.0",
     "is-glob": "^4.0.3",
     "js-yaml": "^5.0.0",
@@ -78,7 +78,7 @@
     "knex-pglite": "^0.14.0",
     "knip": "^5.42.0",
     "lodash": "^4.17.21",
-    "minimatch": "^10.2.1",
+    "minimatch": "^11.0.1",
     "openapi-types": "^12.0.0",
     "p-limit": "^3.0.2",
     "tar": "^7.5.21",

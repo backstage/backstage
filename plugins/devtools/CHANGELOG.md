@@ -1,5 +1,20 @@
 # @backstage/plugin-devtools
 
+## 0.1.45-next.2
+
+### Patch Changes
+
+- ca1165d: Fixed an issue in `ScheduledTasksContent` where actual backend error messages (such as network or authorization errors) were discarded in favor of a hardcoded "No scheduled tasks found" message, and ensured the loading indicator is displayed while switching plugins.
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/core-compat-api@0.6.0-next.2
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/plugin-permission-react@0.5.7-next.1
+  - @backstage/plugin-devtools-common@0.1.28-next.0
+
 ## 0.1.45-next.1
 
 ### Patch Changes

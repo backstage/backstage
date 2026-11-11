@@ -1,5 +1,26 @@
 # @backstage/frontend-test-utils
 
+## 0.7.0-next.2
+
+### Minor Changes
+
+- 2aa14e3: Added `router` and `renderAs: 'chrome'` options to `renderInTestApp`, an `appHistory` return value on `renderInTestApp` and `renderTestApp`, and mock utilities for navigation tests: `createMockAppHistory`, `createMockRouteResolutionApi`, `mockApis.appHistory()`, and `mockApis.routeResolution()`. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps and the [routing test guide](https://backstage.io/docs/frontend-system/building-plugins/testing#navigation-and-app-history) for examples.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.6.0-next.2
+  - @backstage/core-app-api@1.20.7-next.2
+  - @backstage/frontend-app-api@0.17.0-next.2
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/plugin-app-react@0.3.0-next.2
+  - @backstage/config@1.3.11-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/filter-predicates@0.2.1-next.0
+  - @backstage/plugin-permission-common@0.9.13-next.0
+  - @backstage/test-utils@1.7.24-next.1
+  - @backstage/plugin-permission-react@0.5.7-next.1
+
 ## 0.7.0-next.1
 
 ### Minor Changes

@@ -14,30 +14,52 @@
  * limitations under the License.
  */
 
-import { JSX } from 'react';
+import { JSX, ReactNode, lazy, useEffect } from 'react';
 import { translationApiRef } from '../apis';
 import { useTranslatedTitles } from '../translation/useTranslatedTitles';
 import { TranslationRefTuple } from '../translation/TranslationRef';
-import { Routes, Route, Navigate } from 'react-router-dom';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
+import { joinRoutePath, useAppHistoryLocation } from '@internal/frontend';
+import { useRouteResolution } from '../routing/useRouteResolution';
 import {
   coreExtensionData,
   createExtensionBlueprint,
   createExtensionInput,
 } from '../wiring';
-import {
-  ExtensionBoundary,
-  PageLayout,
-  PageLayoutTab,
-  Progress,
-} from '../components';
-import { useApi } from '../apis/system';
+import { ExtensionBoundary, PageLayout, Progress } from '../components';
 import { BreadcrumbEntry } from '../breadcrumbs';
-import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
+import { useApi, useApiHolder } from '../apis/system';
+import type { AppNode } from '../apis';
+import {
+  routeResolutionApiRef,
+  RouteResolutionApi,
+} from '../apis/definitions/RouteResolutionApi';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
-import { RouteResolutionApi } from '../apis/definitions/RouteResolutionApi';
+
 import { optionalStringSchema } from '../schema/optionalStringSchema';
+import { appHistoryApiRef } from '../routing/AppHistoryApi';
+
+/**
+ * One sub-page of a page, as the page itself sees it: a tab to show in the
+ * chrome, and the content to render when that tab is the one selected.
+ *
+ * Deliberately not part of any public contract — sub-pages are ordinary routes
+ * one level below the page, and nothing outside this blueprint needs to know
+ * that the page is composed from them.
+ */
+interface PageSubPage {
+  node: AppNode;
+  /** The sub-page path exactly as its author wrote it, e.g. `overview`. */
+  path: string;
+  /** The sub-page's tab label, defaulting to {@link PageSubPage.path}. */
+  label: string;
+  titleTranslation?: TranslationRefTuple<undefined>;
+  /** The sub-page's tab icon, if the author supplied one. */
+  icon?: IconElement;
+  /** The sub-page content, including its extension boundary. */
+  element: ReactNode;
+}
 
 function resolveTitleLink(
   routeResolutionApi: RouteResolutionApi,
@@ -54,8 +76,160 @@ function resolveTitleLink(
   }
 }
 
+/** Parent-owned selection from the same matched branch as the app route. */
+function PageContent(props: {
+  subPages?: readonly PageSubPage[];
+  children?: ReactNode;
+}) {
+  const { subPages, children } = props;
+  const pageMount = useRouteResolution().matches.at(-1);
+  const history = useApiHolder().get(appHistoryApiRef);
+  const location = useAppHistoryLocation(history);
+  const routes = useApiHolder().get(routeResolutionApiRef);
+  const matches =
+    location && routes?.resolvePath({ pathname: location.pathname }).matches;
+  const selectedMatch = matches?.find(match =>
+    subPages?.some(page => page.node === match.node),
+  );
+  const selected = subPages?.find(page => page.node === selectedMatch?.node);
+  const firstPath = subPages?.[0]?.path;
+  useEffect(() => {
+    if (
+      matches &&
+      firstPath &&
+      pageMount &&
+      location &&
+      location.pathname.replace(/\/$/, '') ===
+        pageMount.basePath.replace(/\/$/, '')
+    ) {
+      const target = joinRoutePath(pageMount.basePath, firstPath);
+      if (target !== pageMount.basePath) {
+        history?.navigate(`${target}${location.search}${location.hash}`, {
+          replace: true,
+        });
+      }
+    }
+  }, [matches, firstPath, pageMount, location, history]);
+  return selected && selectedMatch ? (
+    <BreadcrumbEntry
+      entry={{ label: selected.label, href: selectedMatch.basePath }}
+    >
+      {selected.element}
+    </BreadcrumbEntry>
+  ) : (
+    <>{children}</>
+  );
+}
+
+function PluginPageShell(props: {
+  node: AppNode;
+  title: string;
+  titleTranslation?: TranslationRefTuple<undefined>;
+  icon?: IconElement;
+  noHeader?: boolean;
+  subPages?: readonly PageSubPage[];
+  titleRouteRef?: RouteRef;
+  pluginId: string;
+  children?: ReactNode;
+}) {
+  const {
+    node,
+    title,
+    titleTranslation,
+    icon,
+    noHeader,
+    subPages,
+    titleRouteRef,
+    pluginId,
+    children,
+  } = props;
+  const titles = useTranslatedTitles([
+    titleTranslation,
+    ...(subPages?.map(page => page.titleTranslation) ?? []),
+  ]);
+  const translatedSubPages = subPages?.map((page, index) => ({
+    ...page,
+    label: titles?.[index + 1] ?? page.label,
+  }));
+  const routeResolutionApi = useApi(routeResolutionApiRef);
+  const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
+  const history = useApiHolder().get(appHistoryApiRef);
+  const location = useAppHistoryLocation(history);
+  const mount =
+    location &&
+    routeResolutionApi
+      .resolvePath({ pathname: location.pathname, node })
+      .matches.at(-1);
+  const tabs =
+    mount &&
+    translatedSubPages?.map(({ path, label, icon: tabIcon }) => ({
+      id: path,
+      label,
+      icon: tabIcon,
+      href: joinRoutePath(mount.basePath, path),
+    }));
+  const headerActionsApi = useApi(pluginHeaderActionsApiRef);
+  const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+
+  if (!titles) {
+    return <Progress />;
+  }
+  return (
+    <PageLayout
+      title={titles[0] ?? title}
+      icon={icon}
+      noHeader={noHeader}
+      tabs={tabs}
+      titleLink={titleLink}
+      headerActions={headerActions}
+    >
+      <ExtensionBoundary node={node}>
+        <PageContent subPages={translatedSubPages}>{children}</PageContent>
+      </ExtensionBoundary>
+    </PageLayout>
+  );
+}
+
 /**
  * Creates extensions that are routable React page components.
+ *
+ * Existing pages retain implicit React Router v6 matches for compatibility.
+ * Development warnings identify consumers of that fallback. Pages can migrate
+ * independently by rendering an explicit adapter inside their lazily loaded component:
+ *
+ * ```tsx
+ * PageBlueprint.make({
+ *   params: {
+ *     path: '/catalog',
+ *     loader: () => import('./Page').then(m => <m.Page />),
+ *   },
+ * });
+ * ```
+ *
+ * In the lazy component module:
+ * ```tsx
+ * import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
+ *
+ * export const Page = () => (
+ *   <ReactRouterV6PageRouter>
+ *     <PageContent />
+ *   </ReactRouterV6PageRouter>
+ * );
+ * ```
+ *
+ * Adapters are added rather than selected, so they nest: a sub-page written
+ * with one routing library works under a page written with another, and
+ * neither has to know about the other.
+ *
+ * Sub-pages attached to the `pages` input (e.g. via `SubPageBlueprint`) are
+ * ordinary route-bearing extensions. The page renders the child selected by
+ * the app's matched extension branch and redirects its index to the first
+ * sub-page. The app scopes each route-bearing extension's complete element
+ * output to its matched ancestry, including its header. The page retains
+ * ownership of its shell and child rendering.
+ * The content has one extension boundary for plugin providers, analytics,
+ * loading, and errors. The page header stays visible while content loads or
+ * displays an error.
  *
  * @public
  */
@@ -125,132 +299,28 @@ export const PageBlueprint = createExtensionBlueprint({
     const resolvedIcon = icon ?? node.spec.plugin.icon;
     const titleRouteRef =
       (node.spec.plugin.routes as { root?: RouteRef }).root ?? params.routeRef;
+    const routePath = config.path ?? params.path;
+    // A page written around a `loader` owns its whole content region, so
+    // anything attached to its `pages` input has nothing to be shown in.
+    const subPages = params.loader ? [] : collectSubPages(inputs.pages);
 
     if (translation) {
       yield coreExtensionData.titleTranslation(translation);
     }
-    const selections = [
-      translation,
-      ...(params.loader
-        ? []
-        : inputs.pages.map(page =>
-            page.get(coreExtensionData.titleTranslation),
-          )),
-    ];
-
-    yield coreExtensionData.routePath(config.path ?? params.path);
-    if (params.loader) {
-      const content = ExtensionBoundary.lazy(node, params.loader);
-      const PageContent = () => {
-        const translatedTitles = useTranslatedTitles(selections);
-        const currentTitle = translatedTitles?.[0] ?? resolvedTitle;
-        const routeResolutionApi = useApi(routeResolutionApiRef);
-        const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
-        const headerActionsApi = useApi(pluginHeaderActionsApiRef);
-        const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
-        if (!translatedTitles) {
-          return <Progress />;
-        }
-
-        return (
-          <PageLayout
-            title={currentTitle}
-            icon={resolvedIcon}
-            noHeader={noHeader}
-            titleLink={titleLink}
-            headerActions={headerActions}
-          >
-            {content}
-          </PageLayout>
-        );
-      };
-      yield coreExtensionData.reactElement(<PageContent />);
-    } else if (inputs.pages.length > 0) {
-      const PageContent = () => {
-        const translatedTitles = useTranslatedTitles(selections);
-        const currentTitle = translatedTitles?.[0] ?? resolvedTitle;
-
-        const pages = inputs.pages.map((page, index) => {
-          const path = page.get(coreExtensionData.routePath);
-          const tabTitle =
-            translatedTitles?.[index + 1] ??
-            (page.get(coreExtensionData.title) || path);
-          return { page, path, title: tabTitle };
-        });
-        const tabs: PageLayoutTab[] = pages.map(
-          ({ page, path, title: tabTitle }) => ({
-            id: path,
-            label: tabTitle,
-            icon: page.get(coreExtensionData.icon),
-            href: path,
-          }),
-        );
-        const firstPagePath = inputs.pages[0]?.get(coreExtensionData.routePath);
-        const routeResolutionApi = useApi(routeResolutionApiRef);
-        const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
-
-        const headerActionsApi = useApi(pluginHeaderActionsApiRef);
-        const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
-        if (!translatedTitles) {
-          return <Progress />;
-        }
-        return (
-          <PageLayout
-            title={currentTitle}
-            icon={resolvedIcon}
-            tabs={tabs}
-            titleLink={titleLink}
-            headerActions={headerActions}
-          >
-            <Routes>
-              {firstPagePath && (
-                <Route
-                  index
-                  element={<Navigate to={firstPagePath} replace />}
-                />
-              )}
-              {pages.map(({ page, path, title: tabTitle }, index) => {
-                const element = page.get(coreExtensionData.reactElement);
-                return (
-                  <Route
-                    key={index}
-                    path={`${path}/*`}
-                    element={
-                      <BreadcrumbEntry entry={{ label: tabTitle, href: path }}>
-                        {element}
-                      </BreadcrumbEntry>
-                    }
-                  />
-                );
-              })}
-            </Routes>
-          </PageLayout>
-        );
-      };
-
-      yield coreExtensionData.reactElement(<PageContent />);
-    } else {
-      const PageContent = () => {
-        const translatedTitles = useTranslatedTitles(selections);
-        const currentTitle = translatedTitles?.[0] ?? resolvedTitle;
-        const routeResolutionApi = useApi(routeResolutionApiRef);
-        const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
-        const headerActionsApi = useApi(pluginHeaderActionsApiRef);
-        const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
-        if (!translatedTitles) {
-          return <Progress />;
-        }
-        return (
-          <PageLayout
-            title={currentTitle}
-            icon={resolvedIcon}
-            titleLink={titleLink}
-            headerActions={headerActions}
-          />
-        );
-      };
-      yield coreExtensionData.reactElement(<PageContent />);
-    }
+    yield coreExtensionData.routePath(routePath);
+    yield coreExtensionData.reactElement(
+      createPageElement({
+        node,
+        resolvedTitle,
+        titleTranslation: translation,
+        resolvedIcon,
+        titleRouteRef,
+        pluginId,
+        noHeader,
+        loader: params.loader,
+        subPages,
+      }),
+    );
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);
     }
@@ -262,3 +332,71 @@ export const PageBlueprint = createExtensionBlueprint({
     }
   },
 });
+
+/**
+ * Reads the `pages` input into the shape the page itself works in.
+ *
+ * One pass serves both consumers: the page chrome (tabs) and content selection.
+ */
+function collectSubPages(
+  pages: readonly {
+    node: AppNode;
+    get(ref: any): any;
+  }[],
+): PageSubPage[] {
+  return pages.map(page => {
+    const path = page.get(coreExtensionData.routePath);
+    const label = page.get(coreExtensionData.title) || path;
+    return {
+      node: page.node,
+      path,
+      label,
+      titleTranslation: page.get(coreExtensionData.titleTranslation),
+      icon: page.get(coreExtensionData.icon),
+      element: page.get(coreExtensionData.reactElement),
+    };
+  });
+}
+
+function createPageElement(options: {
+  node: AppNode;
+  resolvedTitle: string;
+  titleTranslation?: TranslationRefTuple<undefined>;
+  resolvedIcon?: IconElement;
+  titleRouteRef?: RouteRef;
+  pluginId: string;
+  noHeader: boolean;
+  loader?: () => Promise<JSX.Element>;
+  subPages: readonly PageSubPage[];
+}): JSX.Element {
+  const {
+    node,
+    resolvedTitle,
+    titleTranslation,
+    resolvedIcon,
+    titleRouteRef,
+    pluginId,
+    noHeader,
+    loader,
+    subPages,
+  } = options;
+
+  const Content = loader
+    ? lazy(() => loader().then(element => ({ default: () => element })))
+    : undefined;
+
+  return (
+    <PluginPageShell
+      node={node}
+      title={resolvedTitle}
+      titleTranslation={titleTranslation}
+      icon={resolvedIcon}
+      noHeader={noHeader}
+      subPages={subPages}
+      titleRouteRef={titleRouteRef}
+      pluginId={pluginId}
+    >
+      {Content && <Content />}
+    </PluginPageShell>
+  );
+}

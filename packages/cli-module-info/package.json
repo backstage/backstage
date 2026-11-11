@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-module-info",
-  "version": "0.1.6-next.0",
+  "version": "0.1.6-next.1",
   "description": "CLI module for Backstage CLI",
   "backstage": {
     "role": "cli-module"
@@ -37,7 +37,7 @@
     "@backstage/cli-node": "workspace:^",
     "cleye": "^2.6.0",
     "fs-extra": "^11.2.0",
-    "minimatch": "^10.2.1"
+    "minimatch": "^11.0.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

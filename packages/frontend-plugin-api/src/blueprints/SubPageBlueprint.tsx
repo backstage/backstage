@@ -26,6 +26,15 @@ import { optionalStringSchema } from '../schema/optionalStringSchema';
  * Creates extensions that are sub-page React components attached to a parent page.
  * Sub-pages are rendered as tabs within the parent page's header.
  *
+ * A subpage is an ordinary route-bearing extension below its parent page.
+ * The app matches the extension tree, and the parent page renders the selected
+ * child. The app provides the matched route ancestry around its entire output.
+ *
+ * Existing sub-pages retain implicit React Router v6 matches for compatibility.
+ * To select a library explicitly, render its adapter inside the sub-page's
+ * lazily loaded component. Adapters compose, so a sub-page may use a different routing library
+ * from its parent page.
+ *
  * @public
  * @example
  * ```tsx
@@ -41,6 +50,17 @@ import { optionalStringSchema } from '../schema/optionalStringSchema';
  *     loader: () => import('./components/Overview').then(m => <m.Overview />),
  *   },
  * });
+ * ```
+ *
+ * In the lazy component module:
+ * ```tsx
+ * import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
+ *
+ * export const Overview = () => (
+ *   <ReactRouterV6PageRouter>
+ *     <OverviewContent />
+ *   </ReactRouterV6PageRouter>
+ * );
  * ```
  */
 export const SubPageBlueprint = createExtensionBlueprint({
@@ -109,6 +129,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
     if (translation) {
       yield coreExtensionData.titleTranslation(translation);
     }
+
     yield coreExtensionData.reactElement(
       ExtensionBoundary.lazy(node, params.loader),
     );
