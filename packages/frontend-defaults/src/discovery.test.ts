@@ -16,9 +16,11 @@
 
 import {
   createFrontendFeatureLoader,
+  createFrontendModule,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import {
+  applyExplicitFeatures,
   discoverAvailableAndDeferredFeatures,
   discoverAvailableFeatures,
 } from './discovery';
@@ -157,5 +159,46 @@ describe('discoverAvailableFeatures', () => {
         new ConfigReader({ app: { packages: { include: ['eager-pkg'] } } }),
       ),
     ).toEqual({ features: [eagerPlugin], deferred: [] });
+  });
+
+  it('should let explicit features win over deferred plugins', () => {
+    const createEntry = (pluginId: string) => ({
+      name: `${pluginId}-pkg`,
+      manifest: {
+        manifestVersion: 1 as const,
+        type: 'plugin' as const,
+        pluginId,
+        deferrable: true,
+        routes: [],
+        externalRoutes: [],
+        extensions: [],
+      },
+      load: jest.fn(async () => ({
+        default: createFrontendPlugin({ pluginId }),
+      })),
+    });
+    const replaced = createEntry('replaced');
+    const modified = createEntry('modified');
+    const untouched = createEntry('untouched');
+    const eagerPlugin = createFrontendPlugin({ pluginId: 'eager' });
+
+    const result = applyExplicitFeatures(
+      { features: [eagerPlugin], deferred: [replaced, modified, untouched] },
+      [
+        createFrontendPlugin({ pluginId: 'replaced' }),
+        createFrontendModule({ pluginId: 'modified', extensions: [] }),
+        createFrontendFeatureLoader({ loader: () => [] }),
+      ],
+    );
+
+    // The explicit plugin replaces the deferred one, and the plugin that a
+    // module applies to is loaded before the app starts
+    expect(result.deferred).toEqual([untouched]);
+    expect(result.features).toEqual([
+      eagerPlugin,
+      expect.objectContaining({ $$type: '@backstage/FrontendFeatureLoader' }),
+    ]);
+    expect(replaced.load).not.toHaveBeenCalled();
+    expect(modified.load).not.toHaveBeenCalled();
   });
 });
