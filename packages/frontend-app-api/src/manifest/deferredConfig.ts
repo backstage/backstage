@@ -14,67 +14,30 @@
  * limitations under the License.
  */
 
-import { FrontendExtensionManifest, FrontendFeatureManifest } from './types';
-
-type ElementManifest = NonNullable<FrontendExtensionManifest['element']>;
-
-/** The JSON type of a value, as used for config pass-through. */
-export function getJsonType(value: unknown): string {
-  if (value === null) {
-    return 'null';
-  }
-  return Array.isArray(value) ? 'array' : typeof value;
-}
-
-/** Whether the stub of an element can apply a config value itself. */
-function canPassThrough(
-  element: ElementManifest,
-  key: string,
-  value: unknown,
-): boolean {
-  return (
-    element.configPassThrough?.[key]?.types.includes(getJsonType(value)) ??
-    false
-  );
-}
+import { ExtensionParameters } from '../tree/readAppExtensionsConfig';
+import { FrontendFeatureManifest } from './types';
 
 /**
- * Finds an element of a deferred plugin that is configured with values that
- * change the data its stub outputs, and that the stub can't apply itself.
+ * Finds an element extension of a deferred plugin that has config in
+ * `app.extensions`.
+ *
+ * @remarks
+ *
+ * The stub of an element outputs the data that the real extension output at
+ * build time with its default config, so any config for it can only be
+ * applied once the plugin is loaded. The CLI loads such plugins eagerly, so
+ * this only finds a conflict if the config changed after the app was built.
+ *
+ * @returns The ID of the first configured element extension, if any.
  */
 export function findDeferredConfigConflict(
   manifest: FrontendFeatureManifest,
-  configById: Map<string, { [key: string]: unknown }>,
-): { extensionId: string; keys: string[] } | undefined {
-  for (const extension of manifest.extensions) {
-    const element = extension.element;
-    const config = configById.get(extension.id);
-    if (!element || !config) {
-      continue;
-    }
-    const keys = Object.keys(config).filter(
-      key =>
-        (element.dataConfigKeys ?? []).includes(key) &&
-        !canPassThrough(element, key, config[key]),
-    );
-    if (keys.length > 0) {
-      return { extensionId: extension.id, keys };
-    }
-  }
-  return undefined;
-}
-
-/** Returns the data of an element stub, with the pass-through config applied. */
-export function applyConfigPassThrough(
-  element: ElementManifest,
-  config: { [key: string]: unknown } | undefined,
-): { [dataRefId: string]: unknown } {
-  const data = { ...element.data };
-  for (const [key, value] of Object.entries(config ?? {})) {
-    const passThrough = element.configPassThrough?.[key];
-    if (passThrough && canPassThrough(element, key, value)) {
-      data[passThrough.dataRefId] = value;
-    }
-  }
-  return data;
+  parameters: ExtensionParameters[],
+): string | undefined {
+  const configuredIds = new Set(
+    parameters.filter(param => param.config !== undefined).map(p => p.id),
+  );
+  return manifest.extensions.find(
+    extension => extension.element && configuredIds.has(extension.id),
+  )?.id;
 }

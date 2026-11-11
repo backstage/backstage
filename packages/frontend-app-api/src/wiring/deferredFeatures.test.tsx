@@ -15,7 +15,6 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { z } from 'zod/v4';
 import {
   ApiBlueprint,
   coreExtensionData,
@@ -274,15 +273,15 @@ describe('deferred features', () => {
       ],
     });
 
-    function ScoreContent(props: { height?: number }) {
+    function ScoreContent() {
       const scoreApi = useApi(scoreApiRef);
       const rootLink = useRouteRef(rootRouteRef);
       const hostLink = useRouteRef(hostLinkRef);
       const configuredLink = useRouteRef(configuredLinkRef);
       return (
         <div>
-          Score {scoreApi.getScore()} at {rootLink?.()} height={props.height}{' '}
-          host={hostLink?.()} configured={configuredLink?.()}
+          Score {scoreApi.getScore()} at {rootLink?.()} host={hostLink?.()}{' '}
+          configured={configuredLink?.()}
         </div>
       );
     }
@@ -313,16 +312,10 @@ describe('deferred features', () => {
         createExtension({
           kind: 'host-content',
           attachTo: { id: 'page:host', input: 'contents' },
-          configSchema: {
-            title: z.string().optional(),
-            height: z.number().optional(),
-          },
           output: [coreExtensionData.reactElement, contentTitleRef],
-          *factory({ config }) {
-            yield coreExtensionData.reactElement(
-              <ScoreContent height={config.height} />,
-            );
-            yield contentTitleRef(config.title ?? 'Score tab');
+          *factory() {
+            yield coreExtensionData.reactElement(<ScoreContent />);
+            yield contentTitleRef('Score tab');
           },
         }),
       ],
@@ -335,13 +328,7 @@ describe('deferred features', () => {
       expect.objectContaining({ id: 'page:scored', page: expect.any(Object) }),
       expect.objectContaining({
         id: 'host-content:scored',
-        element: {
-          data: { 'test.content.title': 'Score tab' },
-          dataConfigKeys: ['title'],
-          configPassThrough: {
-            title: { dataRefId: 'test.content.title', types: ['string'] },
-          },
-        },
+        element: { data: { 'test.content.title': 'Score tab' } },
       }),
     ]);
 
@@ -351,18 +338,8 @@ describe('deferred features', () => {
     ];
     const app = prepareSpecializedApp({
       features: [noSignInAppPlugin, hostPlugin],
-      // Config that only the real element uses is applied once it is loaded
       config: new ConfigReader({
         app: {
-          // The title is applied to the stub, and the height once the real
-          // element is loaded
-          extensions: [
-            {
-              'host-content:scored': {
-                config: { height: 300, title: 'Scores' },
-              },
-            },
-          ],
           routes: { bindings: { 'scored.configuredLink': 'host.root' } },
         },
       }),
@@ -379,10 +356,10 @@ describe('deferred features', () => {
     // Both the default and the configured external route bindings apply.
     render(app.element);
     await expect(
-      screen.findByRole('heading', { name: 'Scores' }),
+      screen.findByRole('heading', { name: 'Score tab' }),
     ).resolves.toBeInTheDocument();
     await expect(
-      screen.findByText('Score 42 at /scored height=300 host=/ configured=/'),
+      screen.findByText('Score 42 at /scored host=/ configured=/'),
     ).resolves.toBeInTheDocument();
     expect(load).toHaveBeenCalledTimes(1);
     expect(app.apis.get(scoreApiRef)?.getScore()).toBe(42);
@@ -552,7 +529,7 @@ describe('deferred features', () => {
           kind: 'host-content',
           attachTo: { id: 'app/root', input: 'elements' },
           disabled: false,
-          element: { data: {}, dataConfigKeys: ['title'] },
+          element: { data: {} },
         },
       ],
     };
@@ -575,7 +552,7 @@ describe('deferred features', () => {
 
     expect(warn).toHaveBeenCalledWith(
       expect.stringContaining(
-        "The 'host-content:deferred' extension of the deferred 'deferred-pkg' package is configured with 'title'",
+        "The 'host-content:deferred' extension of the deferred 'deferred-pkg' package has config in app.extensions",
       ),
     );
     // The plugin is loaded without rendering anything

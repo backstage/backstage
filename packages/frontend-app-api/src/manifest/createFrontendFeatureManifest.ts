@@ -27,7 +27,6 @@ import {
   toInternalExtension,
 } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { FrontendExtensionManifest, FrontendFeatureManifest } from './types';
-import { getJsonType } from './deferredConfig';
 import { PREDICATE_FUNCTION_DATA_PAIRS } from './predicateFunctions';
 import { findSyncPartMismatch, getPluginExtensionIds } from './syncPart';
 
@@ -58,16 +57,15 @@ function readConfigSchema(
 }
 
 /**
- * Runs the factory of an extension once, with stubbed dependencies, and
- * returns the data it outputs keyed by extension data ID.
+ * Runs the factory of an extension once, with stubbed dependencies and the
+ * default config, and returns the data it outputs keyed by extension data ID.
  */
 function runFactoryOnce(
   extension: Extension<unknown>,
   plugin: PluginLike,
-  configInput: { [key: string]: unknown } = {},
 ): Map<string, unknown> {
   const internal = toInternalExtension(extension);
-  const config = internal.configSchema?.parse(configInput) ?? {};
+  const config = internal.configSchema?.parse({}) ?? {};
   const node = {
     spec: {
       id: internal.id,
@@ -180,34 +178,7 @@ function extractElementManifest(
     throw new Error(`'${extension.id}' has inputs`);
   }
 
-  const element = readElementOutputs(
-    extension,
-    plugin,
-    runFactoryOnce(extension, plugin),
-  );
-  const { dataConfigKeys, configPassThrough } = findConfigKeyEffects(
-    extension,
-    plugin,
-    element,
-  );
-  return {
-    ...element,
-    ...(dataConfigKeys.length > 0 ? { dataConfigKeys } : {}),
-    ...(Object.keys(configPassThrough).length > 0 ? { configPassThrough } : {}),
-  };
-}
-
-type ElementOutputs = {
-  data: { [dataRefId: string]: unknown };
-  routeRefName?: string;
-  predicateFunctions?: { [functionDataRefId: string]: string };
-};
-
-function readElementOutputs(
-  extension: Extension<unknown>,
-  plugin: PluginLike,
-  outputs: Map<string, unknown>,
-): ElementOutputs {
+  const outputs = runFactoryOnce(extension, plugin);
   const data: { [dataRefId: string]: unknown } = {};
   const predicateFunctions: { [functionDataRefId: string]: string } = {};
   let routeRefName: string | undefined;
@@ -250,173 +221,6 @@ function readElementOutputs(
       ? { predicateFunctions }
       : {}),
   };
-}
-
-type JsonSchema = {
-  type?: string | string[];
-  enum?: unknown[];
-  const?: unknown;
-  anyOf?: JsonSchema[];
-  oneOf?: JsonSchema[];
-  items?: JsonSchema;
-  properties?: { [key: string]: JsonSchema };
-};
-
-/**
- * Creates values that a config property could be set to, used to check
- * whether the property changes the outputs of an extension. Returns an empty
- * list for schemas that it can't create values for.
- */
-function createProbeValues(schema: JsonSchema): unknown[] {
-  if (schema.const !== undefined) {
-    return [schema.const];
-  }
-  if (schema.enum) {
-    return schema.enum;
-  }
-  const branches = schema.anyOf ?? schema.oneOf;
-  if (branches) {
-    return branches.flatMap(createProbeValues);
-  }
-  const types = Array.isArray(schema.type) ? schema.type : [schema.type];
-  return types.flatMap((type): unknown[] => {
-    switch (type) {
-      case 'string':
-        return ['deferred-config-probe', 'deferred-config-probe-2'];
-      case 'number':
-      case 'integer':
-        return [7, 8];
-      case 'boolean':
-        return [true, false];
-      case 'array':
-        return [[], ...createProbeValues(schema.items ?? {}).map(v => [v])];
-      default:
-        return [];
-    }
-  });
-}
-
-type ConfigKeyEffects = {
-  dataConfigKeys: string[];
-  configPassThrough: NonNullable<
-    NonNullable<FrontendExtensionManifest['element']>['configPassThrough']
-  >;
-};
-
-/**
- * Finds the config keys that change the data outputs of an element. Config
- * for these keys can't be applied before the plugin is loaded, since the stub
- * only has the outputs from the default config. A key is included if it isn't
- * possible to tell whether it changes the outputs.
- *
- * Keys whose value is output unchanged as a single data value are also
- * recorded as pass-through keys, for the JSON types of values where that is
- * the case, so that the stub can apply them.
- */
-function findConfigKeyEffects(
-  extension: Extension<unknown>,
-  plugin: PluginLike,
-  defaults: ElementOutputs,
-): ConfigKeyEffects {
-  const effects: ConfigKeyEffects = {
-    dataConfigKeys: [],
-    configPassThrough: {},
-  };
-  const properties = (readConfigSchema(extension) as JsonSchema | undefined)
-    ?.properties;
-  if (!properties) {
-    return effects;
-  }
-
-  for (const [key, schema] of Object.entries(properties)) {
-    const values = createProbeValues(schema);
-    if (values.length === 0) {
-      effects.dataConfigKeys.push(key);
-      continue;
-    }
-
-    let changesData = false;
-    // For each JSON type, the data ref the value is passed through to, or
-    // false if values of that type change the data in other ways
-    const passThroughByType = new Map<string, string | undefined | false>();
-    for (const value of values) {
-      const type = getJsonType(value);
-      let effect: { changed: boolean; dataRefId?: string } | false;
-      try {
-        const outputs = runFactoryOnce(extension, plugin, { [key]: value });
-        const probed = readElementOutputs(extension, plugin, outputs);
-        effect = findPassThroughDataRef(defaults, probed, value);
-      } catch {
-        effect = false;
-      }
-      if (effect === false || effect.changed) {
-        changesData = true;
-      }
-      const current = passThroughByType.get(type);
-      if (effect === false || current === false) {
-        passThroughByType.set(type, false);
-      } else if (effect.dataRefId) {
-        passThroughByType.set(
-          type,
-          current === undefined || current === effect.dataRefId
-            ? effect.dataRefId
-            : false,
-        );
-      } else if (!passThroughByType.has(type)) {
-        passThroughByType.set(type, undefined);
-      }
-    }
-
-    if (!changesData) {
-      continue;
-    }
-    effects.dataConfigKeys.push(key);
-    const passThrough = Array.from(passThroughByType).filter(
-      (entry): entry is [string, string] => typeof entry[1] === 'string',
-    );
-    const dataRefIds = new Set(passThrough.map(([, id]) => id));
-    if (dataRefIds.size === 1) {
-      effects.configPassThrough[key] = {
-        dataRefId: Array.from(dataRefIds)[0],
-        types: passThrough.map(([type]) => type),
-      };
-    }
-  }
-  return effects;
-}
-
-/**
- * Compares the outputs for a probed config value with the defaults. Returns
- * the data ref that the value was output with unchanged, if that is the only
- * difference, or false if the outputs changed in some other way.
- */
-function findPassThroughDataRef(
-  defaults: ElementOutputs,
-  probed: ElementOutputs,
-  value: unknown,
-): { changed: boolean; dataRefId?: string } | false {
-  const { data: defaultData, ...defaultRest } = defaults;
-  const { data: probedData, ...probedRest } = probed;
-  const ids = new Set([
-    ...Object.keys(defaultData),
-    ...Object.keys(probedData),
-  ]);
-  const changedIds = Array.from(ids).filter(
-    id => JSON.stringify(defaultData[id]) !== JSON.stringify(probedData[id]),
-  );
-  const restChanged =
-    JSON.stringify(defaultRest) !== JSON.stringify(probedRest);
-  if (changedIds.length === 0 && !restChanged) {
-    return { changed: false };
-  }
-  if (
-    !restChanged &&
-    changedIds.length === 1 &&
-    JSON.stringify(probedData[changedIds[0]]) === JSON.stringify(value)
-  ) {
-    return { changed: true, dataRefId: changedIds[0] };
-  }
-  return false;
 }
 
 function hasIfPredicate(extension: Extension<unknown>): boolean {
