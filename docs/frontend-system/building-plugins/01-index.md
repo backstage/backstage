@@ -248,7 +248,7 @@ A plugin can be deferred if each of its extensions is one of the following:
 
 An element can't be deferred if it outputs a function, since a function can't be stored in the manifest. The one exception is an entity filter that is given as a filter predicate object to the entity blueprints of `@backstage/plugin-catalog-react`. These blueprints output the predicate alongside the filter function, and the stand-in creates the same function from the predicate. Filters given as a function or as a filter expression string still prevent the plugin from being deferred.
 
-Config in `app.extensions` for a deferred element is applied once the plugin has loaded. A config value that only changes the data of an element, such as a title, is also applied to the stand-in when the element outputs it as it is. If an element is configured with any other value that changes the data it outputs, the plugin is loaded together with the app instead.
+If an app has any config in `app.extensions` for an element of your plugin, the plugin is loaded together with the app instead of being deferred. Config for the pages of your plugin does not have this effect, and is applied to the stand-in of the page.
 
 ### The sync export
 
