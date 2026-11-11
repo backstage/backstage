@@ -17,6 +17,7 @@
 /**
  * API reference. Set `loading: 'async'` when creating a ref to allow asynchronous
  * factories and dependencies. Ref types and creation default to synchronous loading.
+ * Async refs require their loading marker; synchronous and older refs may omit it.
  *
  * @public
  */
@@ -30,7 +31,9 @@ export type ApiRef<
   readonly T: T;
   /** How implementations are loaded. Defaults to synchronous loading. */
   readonly loading?: TLoading;
-};
+} & ('sync' extends NoInfer<TLoading>
+  ? {}
+  : { readonly loading: NoInfer<TLoading> });
 
 /**
  * Catch-all {@link ApiRef} type.
@@ -91,7 +94,8 @@ export type ApiHolder = {
  *
  * Async-capable refs allow promises and async dependencies. All dependencies
  * are resolved before the factory is called. Synchronous refs only allow
- * synchronous factories and dependencies.
+ * synchronous factories and dependencies. Factory types default to synchronous
+ * loading; use {@link AnyApiFactory} to accept both modes.
  *
  * @public
  */
@@ -99,7 +103,7 @@ export type ApiFactory<
   Api,
   Impl extends Api,
   Deps extends { [name in string]: unknown },
-  TLoading extends 'sync' | 'async' = 'sync' | 'async',
+  TLoading extends 'sync' | 'async' = 'sync',
 > = {
   api: ApiRef<Api, string, TLoading>;
   deps: TypesToApiRefs<
@@ -119,5 +123,6 @@ export type ApiFactory<
 export type AnyApiFactory = ApiFactory<
   unknown,
   unknown,
-  { [key in string]: unknown }
+  { [key in string]: unknown },
+  'sync' | 'async'
 >;

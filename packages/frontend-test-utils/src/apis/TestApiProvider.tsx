@@ -47,6 +47,14 @@ export type TestApiPairs<TApiPairs> = {
   [TIndex in keyof TApiPairs]: TestApiPair<TApiPairs[TIndex]>;
 };
 
+// Lookups must survive aborted provider renders, where React discards useMemo.
+// Avoid retaining object implementations after their tests have finished.
+const objectApiPromises = new WeakMap<object, Promise<unknown>>();
+const primitiveApiPromises = new WeakMap<
+  AnyApiRef,
+  Map<unknown, Promise<unknown>>
+>();
+
 /** @internal */
 export function resolveTestApiEntries<const TApiPairs extends any[]>(
   apis: readonly [...TestApiPairs<TApiPairs>],
@@ -63,7 +71,6 @@ export function resolveTestApiEntries<const TApiPairs extends any[]>(
     }
   }
 
-  const promises = new Map<string, Promise<unknown>>();
   function get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
     ref: TApiRef,
   ): ApiLookupResult<TApiRef>;
@@ -71,10 +78,27 @@ export function resolveTestApiEntries<const TApiPairs extends any[]>(
     if (ref.loading !== 'async' || !apiMap.has(ref.id)) {
       return apiMap.get(ref.id);
     }
-    if (!promises.has(ref.id)) {
-      promises.set(ref.id, Promise.resolve(apiMap.get(ref.id)));
+    const implementation = apiMap.get(ref.id);
+    if (
+      (typeof implementation === 'object' && implementation !== null) ||
+      typeof implementation === 'function'
+    ) {
+      let promise = objectApiPromises.get(implementation);
+      if (!promise) {
+        promise = Promise.resolve(implementation);
+        objectApiPromises.set(implementation, promise);
+      }
+      return promise;
     }
-    return promises.get(ref.id);
+    let promises = primitiveApiPromises.get(ref);
+    if (!promises) {
+      promises = new Map();
+      primitiveApiPromises.set(ref, promises);
+    }
+    if (!promises.has(implementation)) {
+      promises.set(implementation, Promise.resolve(implementation));
+    }
+    return promises.get(implementation);
   }
   return { get };
 }

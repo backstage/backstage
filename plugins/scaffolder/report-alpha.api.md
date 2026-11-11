@@ -6,7 +6,6 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
-import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
@@ -717,7 +716,12 @@ export const formDecoratorsApi: OverridableExtensionDefinition<{
 }>;
 
 // @public (undocumented)
-export const formDecoratorsApiRef: ApiRef<ScaffolderFormDecoratorsApi> & {
+export const formDecoratorsApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: string;
+  readonly T: ScaffolderFormDecoratorsApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 

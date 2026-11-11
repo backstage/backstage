@@ -39,7 +39,7 @@ export type MockApiFactorySymbol = typeof mockApiFactorySymbol;
  * @public
  */
 export type MockWithApiFactory<TApi> = TApi & {
-  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
+  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}, 'sync' | 'async'>;
 };
 
 /**
@@ -61,9 +61,11 @@ export type MockWithApiFactory<TApi> = TApi & {
 export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
   apiRef: AnyApiRef<TApi>,
   implementation: TImpl,
-): TImpl & { [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}> } {
+): TImpl & {
+  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}, 'sync' | 'async'>;
+} {
   const marked = implementation as TImpl & {
-    [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
+    [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}, 'sync' | 'async'>;
   };
   (marked as any)[mockApiFactorySymbol] = {
     api: apiRef,
@@ -81,7 +83,7 @@ export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
  */
 export function getMockApiFactory(
   value: unknown,
-): ApiFactory<any, any, {}> | undefined {
+): ApiFactory<any, any, {}, 'sync' | 'async'> | undefined {
   if (
     typeof value === 'object' &&
     value !== null &&

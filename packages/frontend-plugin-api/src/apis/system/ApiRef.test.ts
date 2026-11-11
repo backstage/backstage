@@ -17,6 +17,8 @@
 import { createApiRef } from './ApiRef';
 import type {
   AnyApiRef,
+  AnyApiFactory,
+  ApiFactory,
   ApiHolder,
   ApiLookupResult,
   ApiRef as ApiRefType,
@@ -26,6 +28,13 @@ import { createApiFactory } from './helpers';
 describe('ApiRef', () => {
   it('should preserve async capability in refs, factories, and lookups', async () => {
     const sync = createApiRef<{ value: string }>().with({ id: 'sync' });
+    const legacyShape = { id: 'legacy', T: { value: 'legacy' } };
+    const legacySync: ApiRefType<{ value: string }> = legacyShape;
+    expect(legacySync).toBe(legacyShape);
+    // @ts-expect-error Async refs must carry their runtime loading marker.
+    const invalidAsyncRef: ApiRefType<{ value: string }, string, 'async'> =
+      legacyShape;
+    expect(invalidAsyncRef).toBe(legacyShape);
     const asyncRef = createApiRef<{ value: string }>().with({
       id: 'async',
       loading: 'async',
@@ -139,6 +148,42 @@ describe('ApiRef', () => {
     expect(synchronous?.value).toBe('sync');
     expect(genericSynchronous?.value).toBe('sync');
     await expect(asynchronous).resolves.toEqual({ value: 'loaded' });
+  });
+
+  it('should keep existing factory declarations synchronous and catch-all factories broad', () => {
+    type Api = { value: string };
+    const sync = createApiRef<Api>().with({ id: 'sync' });
+    const asyncRef = createApiRef<Api>().with({
+      id: 'async',
+      loading: 'async',
+    });
+    const factory: ApiFactory<Api, Api, {}> = {
+      api: sync,
+      deps: {},
+      factory: () => ({ value: 'sync' }),
+    };
+    const implementation: Api = factory.factory({});
+    expect(implementation).toEqual({ value: 'sync' });
+    const invalidFactory: ApiFactory<Api, Api, {}> = {
+      api: sync,
+      deps: {},
+      // @ts-expect-error Existing factory types require synchronous implementations.
+      factory: async () => ({ value: 'invalid' }),
+    };
+    expect(invalidFactory.api).toBe(sync);
+    const invalidDeps: ApiFactory<Api, Api, { dependency: Api }> = {
+      api: sync,
+      // @ts-expect-error Existing factory types require synchronous dependencies.
+      deps: { dependency: asyncRef },
+      factory: () => ({ value: 'invalid' }),
+    };
+    expect(invalidDeps.api).toBe(sync);
+    const broad: AnyApiFactory = createApiFactory({
+      api: asyncRef,
+      deps: { dependency: asyncRef },
+      factory: async ({ dependency }) => dependency,
+    });
+    expect(broad.api).toBe(asyncRef);
   });
 
   it('should preserve IDs and loading modes through generic refs', () => {

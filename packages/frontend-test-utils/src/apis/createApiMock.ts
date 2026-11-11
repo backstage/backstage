@@ -25,7 +25,7 @@ import { mockApiFactorySymbol } from './MockWithApiFactory';
  * @public
  */
 export type ApiMock<TApi> = {
-  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
+  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}, 'sync' | 'async'>;
 } & {
   [Key in keyof TApi]: TApi[Key] extends (...args: infer Args) => infer Return
     ? TApi[Key] & jest.MockInstance<Return, Args>

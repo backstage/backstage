@@ -19,7 +19,7 @@ import {
   useApi,
   useApiHolder,
 } from '@backstage/frontend-plugin-api';
-import { Suspense } from 'react';
+import { StrictMode, Suspense } from 'react';
 import { TestApiProvider, resolveTestApiEntries } from './TestApiProvider';
 import { createApiMock } from './createApiMock';
 import { mockApis } from './mockApis';
@@ -33,6 +33,38 @@ const yApiRef = createApiRef<string>({
 });
 
 describe('TestApiProvider', () => {
+  it('should retain lookup promises when the provider suspends before mounting', async () => {
+    for (const implementation of [{ value: 'Mock API' }, 'Mock API']) {
+      const apiRef = createApiRef<typeof implementation>().with({
+        id: 'async',
+        loading: 'async',
+      });
+      const promises: unknown[] = [];
+      const Consumer = () => {
+        promises.push(useApiHolder().get(apiRef));
+        const api = useApi(apiRef);
+        return <div>{typeof api === 'string' ? api : api.value}</div>;
+      };
+      const Provider = () => {
+        return (
+          <TestApiProvider apis={[[apiRef, implementation]]}>
+            <Consumer />
+          </TestApiProvider>
+        );
+      };
+      const rendered = render(
+        <StrictMode>
+          <Suspense fallback="Loading API">
+            <Provider />
+          </Suspense>
+        </StrictMode>,
+      );
+      expect(await screen.findByText('Mock API')).toBeInTheDocument();
+      expect(new Set(promises).size).toBe(1);
+      rendered.unmount();
+    }
+  });
+
   it('should fall back to parent async APIs and keep lookup promises stable', async () => {
     const apiRef = createApiRef<{ value: string }>().with({
       id: 'async',

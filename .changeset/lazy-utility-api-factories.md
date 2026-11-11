@@ -16,6 +16,11 @@ records the loading mode, while the second parameter remains the ref ID. Use
 `AnyApiRef<T>` to accept either loading mode, including in generic helpers that
 preserve the lookup result type.
 
+Explicitly asynchronous ref types require the `loading: 'async'` marker. Older
+refs without a loading marker remain compatible with synchronous consumers.
+`ApiFactory<Api, Impl, Deps>` also remains synchronous by default, while
+`AnyApiFactory` accepts either loading mode.
+
 `useApi` also supports older synchronous refs when their registered implementation
 has migrated to async loading. Existing synchronous factories remain compatible
 with async-capable refs. Direct synchronous lookups and synchronous factory

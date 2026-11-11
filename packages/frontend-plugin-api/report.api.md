@@ -5,7 +5,6 @@
 ```ts
 import { AnchorHTMLAttributes } from 'react';
 import { AnyRouteRefParams as AnyRouteRefParams_2 } from '@backstage/frontend-plugin-api';
-import { ApiRef as ApiRef_2 } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import type { Config } from '@backstage/config';
 import { ConfigurableExtensionDataRef as ConfigurableExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
@@ -34,7 +33,12 @@ export type AlertApi = {
 };
 
 // @public @deprecated
-export const alertApiRef: ApiRef_2<AlertApi, 'core.alert'> & {
+export const alertApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.alert';
+  readonly T: AlertApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -51,7 +55,12 @@ export type AnalyticsApi = {
 };
 
 // @public @deprecated
-export const analyticsApiRef: ApiRef_2<AnalyticsApi, 'core.analytics'> & {
+export const analyticsApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.analytics';
+  readonly T: AnalyticsApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -106,7 +115,8 @@ export type AnyApiFactory = ApiFactory<
   unknown,
   {
     [key in string]: unknown;
-  }
+  },
+  'sync' | 'async'
 >;
 
 // @public
@@ -150,7 +160,7 @@ export type ApiFactory<
   Deps extends {
     [name in string]: unknown;
   },
-  TLoading extends 'sync' | 'async' = 'sync' | 'async',
+  TLoading extends 'sync' | 'async' = 'sync',
 > = {
   api: ApiRef<Api, string, TLoading>;
   deps: TypesToApiRefs<
@@ -192,7 +202,11 @@ export type ApiRef<
   readonly id: TId;
   readonly T: T;
   readonly loading?: TLoading;
-};
+} & ('sync' extends NoInfer<TLoading>
+  ? {}
+  : {
+      readonly loading: NoInfer<TLoading>;
+    });
 
 // @public
 export type ApiRefConfig = {
@@ -212,7 +226,12 @@ export interface AppHistoryApi {
 }
 
 // @public
-export const appHistoryApiRef: ApiRef_2<AppHistoryApi, 'core.app-history'> & {
+export const appHistoryApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.app-history';
+  readonly T: AppHistoryApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -245,7 +264,12 @@ export type AppLanguageApi = {
 };
 
 // @public @deprecated (undocumented)
-export const appLanguageApiRef: ApiRef_2<AppLanguageApi, 'core.applanguage'> & {
+export const appLanguageApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.applanguage';
+  readonly T: AppLanguageApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -256,10 +280,12 @@ export interface AppLifecycleApi {
 }
 
 // @public @deprecated
-export const appLifecycleApiRef: ApiRef_2<
-  AppLifecycleApi,
-  'core.app-lifecycle'
-> & {
+export const appLifecycleApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.app-lifecycle';
+  readonly T: AppLifecycleApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -361,7 +387,12 @@ export type AppThemeApi = {
 };
 
 // @public @deprecated
-export const appThemeApiRef: ApiRef_2<AppThemeApi, 'core.apptheme'> & {
+export const appThemeApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.apptheme';
+  readonly T: AppThemeApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -383,15 +414,22 @@ export interface AppTreeApi {
 }
 
 // @public @deprecated
-export const appTreeApiRef: ApiRef_2<AppTreeApi, 'core.app-tree'> & {
+export const appTreeApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.app-tree';
+  readonly T: AppTreeApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
 // @public
-export const atlassianAuthApiRef: ApiRef_2<
-  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi,
-  'core.auth.atlassian'
-> & {
+export const atlassianAuthApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.auth.atlassian';
+  readonly T: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -431,18 +469,22 @@ export type BackstageUserIdentity = {
 };
 
 // @public
-export const bitbucketAuthApiRef: ApiRef_2<
-  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi,
-  'core.auth.bitbucket'
-> & {
+export const bitbucketAuthApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.auth.bitbucket';
+  readonly T: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
 // @public
-export const bitbucketServerAuthApiRef: ApiRef_2<
-  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi,
-  'core.auth.bitbucket-server'
-> & {
+export const bitbucketServerAuthApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.auth.bitbucket-server';
+  readonly T: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -466,7 +508,12 @@ export interface BreadcrumbEntryData {
 export type ConfigApi = Config;
 
 // @public @deprecated
-export const configApiRef: ApiRef_2<Config, 'core.config'> & {
+export const configApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.config';
+  readonly T: Config;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1068,7 +1115,12 @@ export interface DialogApiDialog<TResult = void> {
 }
 
 // @public @deprecated
-export const dialogApiRef: ApiRef_2<DialogApi, 'core.dialog.v2'> & {
+export const dialogApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.dialog.v2';
+  readonly T: DialogApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1078,7 +1130,12 @@ export type DiscoveryApi = {
 };
 
 // @public @deprecated
-export const discoveryApiRef: ApiRef_2<DiscoveryApi, 'core.discovery'> & {
+export const discoveryApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.discovery';
+  readonly T: DiscoveryApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1104,7 +1161,12 @@ export type ErrorApiErrorContext = {
 };
 
 // @public @deprecated
-export const errorApiRef: ApiRef_2<ErrorApi, 'core.error'> & {
+export const errorApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.error';
+  readonly T: ErrorApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1471,10 +1533,12 @@ export interface FeatureFlagsApi {
 }
 
 // @public @deprecated
-export const featureFlagsApiRef: ApiRef_2<
-  FeatureFlagsApi,
-  'core.featureflags'
-> & {
+export const featureFlagsApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.featureflags';
+  readonly T: FeatureFlagsApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1508,7 +1572,12 @@ export type FetchApi = {
 };
 
 // @public @deprecated
-export const fetchApiRef: ApiRef_2<FetchApi, 'core.fetch'> & {
+export const fetchApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.fetch';
+  readonly T: FetchApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1581,34 +1650,40 @@ export type FrontendPluginInfoOptions = {
 };
 
 // @public
-export const githubAuthApiRef: ApiRef_2<
-  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi,
-  'core.auth.github'
-> & {
+export const githubAuthApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.auth.github';
+  readonly T: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
 // @public
-export const gitlabAuthApiRef: ApiRef_2<
-  OAuthApi &
+export const gitlabAuthApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.auth.gitlab';
+  readonly T: OAuthApi &
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionApi,
-  'core.auth.gitlab'
-> & {
+    SessionApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
 // @public
-export const googleAuthApiRef: ApiRef_2<
-  OAuthApi &
+export const googleAuthApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.auth.google';
+  readonly T: OAuthApi &
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionApi,
-  'core.auth.google'
-> & {
+    SessionApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1628,7 +1703,12 @@ export interface IconsApi {
 }
 
 // @public @deprecated
-export const iconsApiRef: ApiRef_2<IconsApi, 'core.icons.v2'> & {
+export const iconsApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.icons.v2';
+  readonly T: IconsApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1643,19 +1723,26 @@ export type IdentityApi = {
 };
 
 // @public @deprecated
-export const identityApiRef: ApiRef_2<IdentityApi, 'core.identity'> & {
+export const identityApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.identity';
+  readonly T: IdentityApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
 // @public
-export const microsoftAuthApiRef: ApiRef_2<
-  OAuthApi &
+export const microsoftAuthApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.auth.microsoft';
+  readonly T: OAuthApi &
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionApi,
-  'core.auth.microsoft'
-> & {
+    SessionApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1706,10 +1793,12 @@ export type OAuthRequestApi = {
 };
 
 // @public @deprecated
-export const oauthRequestApiRef: ApiRef_2<
-  OAuthRequestApi,
-  'core.oauthrequest'
-> & {
+export const oauthRequestApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.oauthrequest';
+  readonly T: OAuthRequestApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1728,26 +1817,30 @@ export type OAuthRequesterOptions<TOAuthResponse> = {
 export type OAuthScope = string | string[];
 
 // @public
-export const oktaAuthApiRef: ApiRef_2<
-  OAuthApi &
+export const oktaAuthApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.auth.okta';
+  readonly T: OAuthApi &
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionApi,
-  'core.auth.okta'
-> & {
+    SessionApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
 // @public
-export const oneloginAuthApiRef: ApiRef_2<
-  OAuthApi &
+export const oneloginAuthApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.auth.onelogin';
+  readonly T: OAuthApi &
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionApi,
-  'core.auth.onelogin'
-> & {
+    SessionApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1757,10 +1850,12 @@ export type OpenIdConnectApi = {
 };
 
 // @public
-export const openshiftAuthApiRef: ApiRef_2<
-  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi,
-  'core.auth.openshift'
-> & {
+export const openshiftAuthApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.auth.openshift';
+  readonly T: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2045,10 +2140,12 @@ export type PluginHeaderActionsApi = {
 };
 
 // @public @deprecated
-export const pluginHeaderActionsApiRef: ApiRef_2<
-  PluginHeaderActionsApi,
-  'core.plugin-header-actions'
-> & {
+export const pluginHeaderActionsApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.plugin-header-actions';
+  readonly T: PluginHeaderActionsApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2065,10 +2162,12 @@ export type PluginWrapperApi = {
 };
 
 // @public @deprecated
-export const pluginWrapperApiRef: ApiRef_2<
-  PluginWrapperApi,
-  'core.plugin-wrapper'
-> & {
+export const pluginWrapperApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.plugin-wrapper';
+  readonly T: PluginWrapperApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2168,10 +2267,12 @@ export interface RouteResolutionApi {
 }
 
 // @public @deprecated
-export const routeResolutionApiRef: ApiRef_2<
-  RouteResolutionApi,
-  'core.route-resolution'
-> & {
+export const routeResolutionApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.route-resolution';
+  readonly T: RouteResolutionApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2242,7 +2343,12 @@ export interface StorageApi {
 }
 
 // @public @deprecated
-export const storageApiRef: ApiRef_2<StorageApi, 'core.storage'> & {
+export const storageApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.storage';
+  readonly T: StorageApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2334,10 +2440,12 @@ export interface SwappableComponentsApi {
 }
 
 // @public @deprecated
-export const swappableComponentsApiRef: ApiRef_2<
-  SwappableComponentsApi,
-  'core.swappable-components'
-> & {
+export const swappableComponentsApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.swappable-components';
+  readonly T: SwappableComponentsApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2388,7 +2496,12 @@ export type TranslationApi = {
 };
 
 // @public @deprecated (undocumented)
-export const translationApiRef: ApiRef_2<TranslationApi, 'core.translation'> & {
+export const translationApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.translation';
+  readonly T: TranslationApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2610,14 +2723,16 @@ export const useTranslationRef: <TMessages extends { [key in string]: string }>(
 };
 
 // @public
-export const vmwareCloudAuthApiRef: ApiRef_2<
-  OAuthApi &
+export const vmwareCloudAuthApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: 'core.auth.vmware-cloud';
+  readonly T: OAuthApi &
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionApi,
-  'core.auth.vmware-cloud'
-> & {
+    SessionApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 ```

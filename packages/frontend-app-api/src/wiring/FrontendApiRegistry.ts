@@ -53,13 +53,20 @@ export class FrontendApiRegistry {
 
   get<T>(
     api: AnyApiRef<T>,
-  ): ApiFactory<T, T, { [name: string]: unknown }> | undefined {
+  ):
+    | ApiFactory<T, T, { [name: string]: unknown }, 'sync' | 'async'>
+    | undefined {
     const factory = this.factories.get(api.id);
     if (!factory) {
       return undefined;
     }
 
-    return factory as ApiFactory<T, T, { [name: string]: unknown }>;
+    return factory as ApiFactory<
+      T,
+      T,
+      { [name: string]: unknown },
+      'sync' | 'async'
+    >;
   }
 
   getAllApis() {
