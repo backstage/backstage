@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
-import { appLanguageApiRef, translationApiRef } from '../apis';
-import { createTranslatedMessagesSource } from '@internal/frontend';
-import { createTranslationRef } from './TranslationRef';
-import { createTranslationResource } from './TranslationResource';
+import { mockApis } from '@backstage/frontend-test-utils';
+import { createTranslatedMessagesSource } from './createTranslatedMessagesSource';
+import {
+  createTranslationRef,
+  createTranslationResource,
+} from '@backstage/frontend-plugin-api';
 import { useTranslatedTitles } from './useTranslatedTitles';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppLanguageSelector } from '../../../core-app-api/src/apis/implementations/AppLanguageApi';
@@ -71,23 +71,17 @@ it('publishes complete title groups, batches notifications, and preserves titles
   const renders: Array<readonly (string | undefined)[] | undefined> = [];
   const { result, rerender, unmount } = renderHook(
     ({ titles }) => {
-      const values = useTranslatedTitles(titles);
+      const values = useTranslatedTitles({
+        translationApi: api,
+        languageApi,
+        errorApi,
+        selections: titles,
+      });
       renders.push(values);
       return values;
     },
     {
       initialProps: { titles: selections },
-      wrapper: ({ children }: { children: ReactNode }) => (
-        <TestApiProvider
-          apis={[
-            [translationApiRef, api],
-            [appLanguageApiRef, languageApi],
-            errorApi,
-          ]}
-        >
-          {children}
-        </TestApiProvider>
-      ),
     },
   );
   expect(result.current).toEqual(['Main', undefined, 'Other', 'Secondary']);
@@ -243,26 +237,16 @@ it('waits for the initial selected-language group without publishing default mes
   });
   const selections = [ref('title'), undefined, otherRef('title')];
   const published: Array<readonly (string | undefined)[] | undefined> = [];
-  const { result } = renderHook(
-    () => {
-      const values = useTranslatedTitles(selections);
-      published.push(values);
-      return values;
-    },
-    {
-      wrapper: ({ children }: { children: ReactNode }) => (
-        <TestApiProvider
-          apis={[
-            [translationApiRef, api],
-            [appLanguageApiRef, languageApi],
-            errorApi,
-          ]}
-        >
-          {children}
-        </TestApiProvider>
-      ),
-    },
-  );
+  const { result } = renderHook(() => {
+    const values = useTranslatedTitles({
+      translationApi: api,
+      languageApi,
+      errorApi,
+      selections,
+    });
+    published.push(values);
+    return values;
+  });
   expect(result.current).toBeUndefined();
   await act(async () => {});
   expect(api.getTranslation(otherRef).ready).toBe(true);

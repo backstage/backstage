@@ -15,12 +15,15 @@
  */
 
 import { JSX, ReactNode, lazy, useEffect } from 'react';
-import { translationApiRef } from '../apis';
-import { useTranslatedTitles } from '../translation/useTranslatedTitles';
+import { appLanguageApiRef, errorApiRef, translationApiRef } from '../apis';
 import { TranslationRefTuple } from '../translation/TranslationRef';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
-import { joinRoutePath, useAppHistoryLocation } from '@internal/frontend';
+import {
+  joinRoutePath,
+  useAppHistoryLocation,
+  useTranslatedTitles,
+} from '@internal/frontend';
 import { useRouteResolution } from '../routing/useRouteResolution';
 import {
   coreExtensionData,
@@ -143,10 +146,15 @@ function PluginPageShell(props: {
     pluginId,
     children,
   } = props;
-  const titles = useTranslatedTitles([
-    titleTranslation,
-    ...(subPages?.map(page => page.titleTranslation) ?? []),
-  ]);
+  const titles = useTranslatedTitles({
+    translationApi: useApi(translationApiRef),
+    languageApi: useApi(appLanguageApiRef),
+    errorApi: useApi(errorApiRef),
+    selections: [
+      titleTranslation,
+      ...(subPages?.map(page => page.titleTranslation) ?? []),
+    ],
+  });
   const translatedSubPages = subPages?.map((page, index) => ({
     ...page,
     label: titles?.[index + 1] ?? page.label,

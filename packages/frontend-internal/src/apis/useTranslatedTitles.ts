@@ -16,25 +16,16 @@
 
 import { useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
-import { createTranslatedMessagesSource } from '@internal/frontend';
-import {
-  appLanguageApiRef,
-  errorApiRef,
-  translationApiRef,
-  useApi,
-} from '../apis';
-import { TranslationRefTuple } from './TranslationRef';
+import { createTranslatedMessagesSource } from './createTranslatedMessagesSource';
 
-/** Waits for an initial title group, retaining resolved titles during language changes. @internal */
+/**
+ * Waits for an initial title group, retaining resolved titles during language changes.
+ * APIs are supplied by the caller to avoid an inlined-package import cycle.
+ * @internal
+ */
 export function useTranslatedTitles(
-  selections: readonly (TranslationRefTuple<undefined> | undefined)[],
+  options: Parameters<typeof createTranslatedMessagesSource>[0],
 ): readonly (string | undefined)[] | undefined {
-  const options = {
-    translationApi: useApi(translationApiRef),
-    languageApi: useApi(appLanguageApiRef),
-    errorApi: useApi(errorApiRef),
-    selections,
-  };
   const [previousSource, setSource] = useState(() =>
     createTranslatedMessagesSource(options),
   );

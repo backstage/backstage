@@ -17,7 +17,13 @@
 import { ComponentType, ReactElement, useMemo, useState } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useRouteRefParams } from '@backstage/core-plugin-api';
-import { Progress } from '@backstage/frontend-plugin-api';
+import {
+  Progress,
+  useApi,
+  appLanguageApiRef,
+  errorApiRef,
+  translationApiRef,
+} from '@backstage/frontend-plugin-api';
 import {
   AsyncEntityProvider,
   entityRouteRef,
@@ -26,7 +32,7 @@ import {
   type EntityContentGroupDefinitions,
   type EntityHeaderLayoutProps,
 } from '@backstage/plugin-catalog-react/alpha';
-import { useTranslatedTitles } from './useTranslatedTitles';
+import { useTranslatedTitles } from '@internal/frontend';
 import { useEntityFromUrl } from '../../components/CatalogEntityPage/useEntityFromUrl';
 import { EntityLayout } from './EntityLayout';
 import { EntityLayoutBui } from './EntityLayout/EntityLayoutBui';
@@ -71,7 +77,12 @@ export function CatalogEntityPage(props: CatalogEntityPageProps) {
     () => visibleRoutes.map(route => route.titleTranslation),
     [visibleRoutes],
   );
-  const titles = useTranslatedTitles(selections);
+  const titles = useTranslatedTitles({
+    translationApi: useApi(translationApiRef),
+    languageApi: useApi(appLanguageApiRef),
+    errorApi: useApi(errorApiRef),
+    selections,
+  });
   const { index: activeRouteIndex } = useSelectedSubRoute(visibleRoutes);
   const activeRoute = visibleRoutes[activeRouteIndex];
   const translatedRoutes = useMemo(

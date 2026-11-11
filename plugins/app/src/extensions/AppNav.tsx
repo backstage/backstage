@@ -26,6 +26,9 @@ import {
   RouteRef,
   RouteResolutionApi,
   useApi,
+  appLanguageApiRef,
+  errorApiRef,
+  translationApiRef,
 } from '@backstage/frontend-plugin-api';
 import { legacyNavItemTargetDataRef } from './legacyNavItem';
 import {
@@ -37,7 +40,7 @@ import {
 } from '@backstage/plugin-app-react';
 import { Sidebar, SidebarItem } from '@backstage/core-components';
 import { useMemo } from 'react';
-import { useTranslatedTitles } from './useTranslatedTitles';
+import { useTranslatedTitles } from '@internal/frontend';
 
 class NavItemBag implements NavContentNavItems {
   readonly #items: NavContentNavItem[];
@@ -230,7 +233,12 @@ function NavContentRenderer(props: {
       ),
     [items],
   );
-  const translatedTitles = useTranslatedTitles(selections);
+  const translatedTitles = useTranslatedTitles({
+    translationApi: useApi(translationApiRef),
+    languageApi: useApi(appLanguageApiRef),
+    errorApi: useApi(errorApiRef),
+    selections,
+  });
   const navItems = useMemo(
     () =>
       translatedTitles &&
