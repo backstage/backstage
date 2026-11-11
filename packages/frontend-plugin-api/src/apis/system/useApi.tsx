@@ -51,6 +51,11 @@ function adaptApiHolder(holder: ApiHolderV1): ApiHolder {
     if (ref.loading !== 'async') {
       return holder.get(ref);
     }
+    const existing = promises.get(ref.id);
+    // Suspense retries must not rerun a failed legacy factory.
+    if (existing?.kind === 'error') {
+      return existing.promise;
+    }
     try {
       const value = holder.get(ref);
       if (value === undefined) {
@@ -62,7 +67,6 @@ function adaptApiHolder(holder: ApiHolderV1): ApiHolder {
         promises.delete(ref.id);
         return value;
       }
-      const existing = promises.get(ref.id);
       if (existing?.kind === 'value' && Object.is(existing.value, value)) {
         return existing.promise;
       }
@@ -70,10 +74,6 @@ function adaptApiHolder(holder: ApiHolderV1): ApiHolder {
       promises.set(ref.id, { kind: 'value', value, promise });
       return promise;
     } catch (error) {
-      const existing = promises.get(ref.id);
-      if (existing?.kind === 'error') {
-        return existing.promise;
-      }
       const promise = Promise.reject(error);
       promises.set(ref.id, { kind: 'error', promise });
       return promise;

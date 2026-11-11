@@ -119,22 +119,25 @@ describe('useApiHolder', () => {
       loading: 'async',
     });
     const error = new Error('Legacy initialization failed');
+    const factory = jest.fn(() => {
+      throw error;
+    });
     factories.register(
       'default',
       createApiFactory({
         api: failure,
         deps: {},
-        factory: () => {
-          throw error;
-        },
+        factory,
       }),
     );
     context.set({ 1: resolver });
     const failed = renderHook(() => useApiHolder()).result.current;
     expect(() => failed.get(failure)).toThrow(error);
+    factory.mockClear();
     const rejection = failed.get(asyncFailure);
     expect(failed.get(asyncFailure)).toBe(rejection);
     await expect(rejection).rejects.toBe(error);
+    expect(factory).toHaveBeenCalledTimes(1);
   });
 
   it('should preserve native promise identity and invalidation', async () => {
