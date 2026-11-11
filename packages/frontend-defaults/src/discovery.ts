@@ -170,10 +170,14 @@ export function applyExplicitFeatures(
   const pluginIds = new Set<string>();
   const modulePluginIds = new Set<string>();
   for (const feature of explicitFeatures) {
+    const pluginId = (feature as { pluginId?: string }).pluginId;
+    if (!pluginId) {
+      continue;
+    }
     if (feature.$$type === '@backstage/FrontendPlugin') {
-      pluginIds.add((feature as FrontendFeature).pluginId);
+      pluginIds.add(pluginId);
     } else if (feature.$$type === '@backstage/FrontendModule') {
-      modulePluginIds.add((feature as FrontendFeature).pluginId);
+      modulePluginIds.add(pluginId);
     }
   }
 
