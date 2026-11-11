@@ -252,6 +252,18 @@ function detachAppNode(
   return { parent: attachedTo.node, input: attachedTo.input, index };
 }
 
+/** Removes a node and all of its attachments from the node index. */
+function removeAppNodeSubtree(nodes: Map<string, AppNode>, node: AppNode) {
+  if (nodes.get(node.spec.id) === node) {
+    nodes.delete(node.spec.id);
+  }
+  for (const children of node.edges.attachments.values()) {
+    for (const child of children) {
+      removeAppNodeSubtree(nodes, child);
+    }
+  }
+}
+
 function attachAppNode(
   node: SerializableAppNode,
   parent: AppNode,
@@ -281,7 +293,7 @@ function attachAppNode(
  * node attaches to the same input as the node it replaces, it takes the same
  * position among the attachments of that input. Existing attachments of the
  * replaced node, for example extensions from modules, are moved over to the
- * new node unless they are replaced as well. New nodes can attach to each
+ * new node unless they are replaced as well or listed as stale. New nodes can attach to each
  * other as well as to existing nodes.
  *
  * Existing node instances are left untouched, and the new nodes are not
@@ -293,6 +305,15 @@ function attachAppNode(
 export function graftAppTreeNodes(
   tree: AppTree,
   specs: AppNodeSpec[],
+  options?: {
+    /**
+     * IDs of existing nodes that are no longer provided, for example stub
+     * extensions that the loaded plugin doesn't have. Such attachments of a
+     * replaced node are removed from the tree along with their attachments,
+     * instead of being moved over to the new node.
+     */
+    staleIds?: ReadonlySet<string>;
+  },
 ): AppNode[] {
   const nodes = tree.nodes as Map<string, AppNode>;
   const newNodes = new Map<string, SerializableAppNode>();
@@ -318,7 +339,12 @@ export function graftAppTreeNodes(
     if (replacedNode) {
       for (const [input, children] of replacedNode.edges.attachments) {
         for (const child of children) {
-          if (!newNodes.has(child.spec.id)) {
+          if (newNodes.has(child.spec.id)) {
+            continue;
+          }
+          if (options?.staleIds?.has(child.spec.id)) {
+            removeAppNodeSubtree(nodes, child);
+          } else {
             // All nodes of a resolved tree are serializable nodes
             attachAppNode(child as SerializableAppNode, node, input);
           }
