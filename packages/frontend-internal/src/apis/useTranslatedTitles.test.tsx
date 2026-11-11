@@ -257,3 +257,111 @@ it('waits for the initial selected-language group without publishing default mes
     published.every(value => value === undefined || value[0] === 'Översikt'),
   ).toBe(true);
 });
+
+it.each([null, 'offline'])(
+  'uses fallback titles after a resource rejects with %p',
+  async cause => {
+    const ref = createTranslationRef({
+      id: 'primitive-rejection',
+      messages: { title: 'Fallback title' },
+    });
+    const languageApi = AppLanguageSelector.create({
+      availableLanguages: ['en', 'sv'],
+      defaultLanguage: 'sv',
+    });
+    const translationApi = I18nextTranslationApi.create({
+      languageApi,
+      resources: [
+        createTranslationResource({
+          ref,
+          translations: { sv: () => Promise.reject<never>(cause) },
+        }),
+      ],
+    });
+    const errorApi = mockApis.error.mock();
+    const { result } = renderHook(() =>
+      useTranslatedTitles({
+        translationApi,
+        languageApi,
+        errorApi,
+        selections: [ref('title')],
+      }),
+    );
+    await waitFor(() => expect(result.current).toEqual(['Fallback title']));
+    expect(errorApi.post).toHaveBeenCalledWith(
+      expect.objectContaining({ cause }),
+      { hidden: true },
+    );
+  },
+);
+
+it('retains failed-language titles by ref and key as selections change and recovers in another language', async () => {
+  const ref = createTranslationRef({
+    id: 'replacement-titles',
+    messages: { main: 'Main', other: 'Other', extra: 'Extra' },
+  });
+  const healthyRef = createTranslationRef({
+    id: 'replacement-healthy',
+    messages: { title: 'Healthy fallback' },
+  });
+  let resolveHealthy!: (value: { default: { title: string } }) => void;
+  const healthy = new Promise<{ default: { title: string } }>(resolve => {
+    resolveHealthy = resolve;
+  });
+  const languageApi = AppLanguageSelector.create({
+    availableLanguages: ['en', 'sv', 'de'],
+    defaultLanguage: 'sv',
+  });
+  const errorApi = mockApis.error.mock();
+  const translationApi = I18nextTranslationApi.create({
+    languageApi,
+    resources: [
+      createTranslationResource({
+        ref,
+        translations: {
+          sv: async () => ({
+            default: { main: 'Huvud', other: 'Andra', extra: 'Extra svenska' },
+          }),
+          de: () => Promise.reject<never>(new Error('offline')),
+        },
+      }),
+      createTranslationResource({
+        ref: healthyRef,
+        translations: { de: () => healthy },
+      }),
+    ],
+  });
+  const { result, rerender } = renderHook(
+    ({ selections }) =>
+      useTranslatedTitles({
+        translationApi,
+        languageApi,
+        errorApi,
+        selections,
+      }),
+    { initialProps: { selections: [ref('main'), ref('other')] } },
+  );
+  await waitFor(() => expect(result.current).toEqual(['Huvud', 'Andra']));
+  await act(async () => languageApi.setLanguage('de'));
+  expect(errorApi.post).toHaveBeenCalledTimes(1);
+  expect(result.current).toEqual(['Huvud', 'Andra']);
+  rerender({
+    selections: [ref('other'), ref('main'), ref('extra'), healthyRef('title')],
+  });
+  expect(result.current).toEqual([
+    'Andra',
+    'Huvud',
+    'Extra',
+    'Healthy fallback',
+  ]);
+  await act(async () => resolveHealthy({ default: { title: 'Gesund' } }));
+  expect(result.current).toEqual(['Andra', 'Huvud', 'Extra', 'Gesund']);
+  rerender({ selections: [ref('main'), ref('other')] });
+  expect(result.current).toEqual(['Huvud', 'Andra']);
+  await act(async () => languageApi.setLanguage('sv'));
+  expect(result.current).toEqual(['Huvud', 'Andra']);
+  rerender({ selections: [ref('extra'), ref('main')] });
+  expect(result.current).toEqual(['Extra svenska', 'Huvud']);
+  await act(async () => languageApi.setLanguage('en'));
+  expect(result.current).toEqual(['Extra', 'Main']);
+});

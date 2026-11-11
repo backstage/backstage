@@ -20,6 +20,7 @@ import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   createExtensionTester,
+  mockApis,
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
 import { catalogEntityPage } from './pages';
@@ -268,9 +269,20 @@ describe('Entity page', () => {
         .mockResolvedValueOnce({
           ...entityMock,
           metadata: { ...entityMock.metadata, description: 'Filtered entity' },
+        })
+        .mockResolvedValueOnce({
+          ...entityMock,
+          metadata: {
+            ...entityMock.metadata,
+            description: 'After failed load',
+          },
+        })
+        .mockResolvedValueOnce({
+          ...entityMock,
+          metadata: { ...entityMock.metadata, description: 'Filtered entity' },
         });
       const languageApi = AppLanguageSelector.create({
-        availableLanguages: ['en', 'sv', 'de'],
+        availableLanguages: ['en', 'sv', 'de', 'fr'],
         defaultLanguage: 'sv',
       });
       const translationApi = I18nextTranslationApi.create({
@@ -285,10 +297,13 @@ describe('Entity page', () => {
             translations: {
               sv: () => swedish,
               de: () => german,
+              fr: () =>
+                Promise.reject<never>(new Error('Unavailable title resource')),
             },
           }),
         ],
       });
+      const errorApi = mockApis.error.mock();
       const observe = jest.spyOn(translationApi, 'translation$');
       const mount = jest.fn();
       const unmount = jest.fn();
@@ -382,6 +397,7 @@ describe('Entity page', () => {
       await renderInTestApp(tester.reactElement(), {
         apis: [
           catalogApiMock.mock({ getEntityByRef }),
+          errorApi,
           [starredEntitiesApiRef, mockStarredEntitiesApi],
           [translationApiRef, translationApi],
           [appLanguageApiRef, languageApi],
@@ -490,6 +506,33 @@ describe('Entity page', () => {
       expect(hiddenLoad).not.toHaveBeenCalled();
       expect(observe).not.toHaveBeenCalledWith(hiddenRef);
       expect(screen.queryByText('Hidden tab')).not.toBeInTheDocument();
+      await userEvent.keyboard('{Escape}');
+      await act(async () => languageApi.setLanguage('sv'));
+      await act(async () => languageApi.setLanguage('fr'));
+      expect(errorApi.post).toHaveBeenCalledTimes(1);
+      expect(Helmet.peek().title).toContain('AAA');
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Refresh entity' }),
+      );
+      expect(
+        await screen.findByText('After failed load', { selector: 'output' }),
+      ).toBeInTheDocument();
+      expect(Helmet.peek().title).toContain('AAA');
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Refresh entity' }),
+      );
+      expect(
+        await screen.findByText('Filtered entity', { selector: 'output' }),
+      ).toBeInTheDocument();
+      expect(screen.getByText('New Swedish tab')).toBeInTheDocument();
+      expect(screen.queryByText('New tab')).not.toBeInTheDocument();
+      expect(Helmet.peek().title).toContain('AAA');
+      expect(screen.getByLabelText('Entity page state')).toBe(input);
+      expect(input).toHaveValue('initial preserved');
+      expect(mount).toHaveBeenCalledTimes(1);
+      expect(unmount).not.toHaveBeenCalled();
+      await act(async () => languageApi.setLanguage('en'));
+      expect(Helmet.peek().title).toContain('Zulu');
     },
   );
 

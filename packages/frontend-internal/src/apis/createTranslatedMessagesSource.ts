@@ -18,39 +18,70 @@ import type {
   AppLanguageApi,
   ErrorApi,
   TranslationApi,
+  TranslationRef,
   TranslationRefTuple,
 } from '@backstage/frontend-plugin-api';
 
 const reportedErrors = new WeakSet<Error>();
 
-/** Collects ready translations as a single snapshot, batching notifications within a microtask. @internal */
-export function createTranslatedMessagesSource(options: {
+interface TranslationFailure {
   translationApi: TranslationApi;
   languageApi: AppLanguageApi;
-  errorApi: ErrorApi;
-  selections: readonly (TranslationRefTuple<undefined> | undefined)[];
-}) {
+  language: string;
+  refs: ReadonlySet<TranslationRef>;
+  values: readonly {
+    selection: TranslationRefTuple<undefined>;
+    value: string;
+  }[];
+}
+
+/** Collects ready translations as a single snapshot, batching notifications within a microtask. @internal */
+export function createTranslatedMessagesSource(
+  options: {
+    translationApi: TranslationApi;
+    languageApi: AppLanguageApi;
+    errorApi: ErrorApi;
+    selections: readonly (TranslationRefTuple<undefined> | undefined)[];
+  },
+  previousFailure?: TranslationFailure,
+) {
   const { translationApi: api, languageApi, errorApi, selections } = options;
   const refs = [...new Set(selections.flatMap(s => (s ? [s.ref] : [])))];
-  const read = (allowFallback = false) => {
+  let failure =
+    previousFailure?.translationApi === api &&
+    previousFailure.languageApi === languageApi &&
+    previousFailure.language === languageApi.getLanguage().language &&
+    refs.some(ref => previousFailure.refs.has(ref))
+      ? previousFailure
+      : undefined;
+  const read = () => {
+    const retained =
+      failure?.language === languageApi.getLanguage().language
+        ? failure
+        : undefined;
     const translations = new Map(
       refs.map(ref => [ref, api.getTranslation<Record<string, string>>(ref)]),
     );
     if (
-      !allowFallback &&
+      !retained &&
       [...translations.values()].some(translation => !translation.ready)
     ) {
       return undefined;
     }
     return selections.map(selection =>
-      selection ? translations.get(selection.ref)!.t(selection.key) : undefined,
+      selection
+        ? retained?.values.find(
+            value =>
+              value.selection.ref === selection.ref &&
+              value.selection.key === selection.key,
+          )?.value ?? translations.get(selection.ref)!.t(selection.key)
+        : undefined,
     );
   };
   let snapshot = read();
-  let hasResolved = snapshot !== undefined;
-  let failedLanguage: string | undefined;
 
   return {
+    getFailureState: () => failure,
     matches(next: typeof options): boolean {
       return (
         api === next.translationApi &&
@@ -79,10 +110,8 @@ export function createTranslatedMessagesSource(options: {
         queueMicrotask(() => {
           queued = false;
           if (!active) return;
-          const failed = failedLanguage === languageApi.getLanguage().language;
-          const next = failed && hasResolved ? undefined : read(failed);
+          const next = read();
           if (next) {
-            if (!failed) hasResolved = true;
             if (
               !snapshot ||
               next.some((value, index) => value !== snapshot![index])
@@ -98,10 +127,32 @@ export function createTranslatedMessagesSource(options: {
           api.translation$(ref).subscribe({
             next: update,
             error: cause => {
-              failedLanguage = languageApi.getLanguage().language;
+              const currentLanguage = languageApi.getLanguage().language;
+              const previous =
+                failure?.language === currentLanguage ? failure : undefined;
+              failure = {
+                translationApi: api,
+                languageApi,
+                language: currentLanguage,
+                refs: new Set([...(previous?.refs ?? []), ref]),
+                values:
+                  previous?.values ??
+                  selections.flatMap((selection, index) => {
+                    const value = snapshot?.[index];
+                    return selection && value !== undefined
+                      ? [{ selection, value }]
+                      : [];
+                  }),
+              };
               reconnect = true;
-              if (!reportedErrors.has(cause)) {
-                reportedErrors.add(cause);
+              if (
+                typeof cause !== 'object' ||
+                cause === null ||
+                !reportedErrors.has(cause)
+              ) {
+                if (typeof cause === 'object' && cause !== null) {
+                  reportedErrors.add(cause);
+                }
                 errorApi.post(
                   new Error(`Failed to load translations for '${ref.id}'`, {
                     cause,
@@ -119,8 +170,8 @@ export function createTranslatedMessagesSource(options: {
         .subscribe(({ language: nextLanguage }) => {
           if (nextLanguage === language) return;
           language = nextLanguage;
-          if (failedLanguage !== nextLanguage) {
-            failedLanguage = undefined;
+          if (failure?.language !== nextLanguage) {
+            failure = undefined;
           }
           if (reconnect) {
             reconnect = false;

@@ -31,7 +31,7 @@ export function useTranslatedTitles(
   );
   const source = previousSource.matches(options)
     ? previousSource
-    : createTranslatedMessagesSource(options);
+    : createTranslatedMessagesSource(options, previousSource.getFailureState());
   if (source !== previousSource) {
     setSource(source);
   }
