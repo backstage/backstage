@@ -11,7 +11,7 @@ export function createFrontendFeatureManifest(
   options?: {
     sync?: FrontendFeature;
   },
-): Promise<FrontendFeatureManifest>;
+): FrontendFeatureManifest;
 
 // @alpha
 export interface FrontendExtensionManifest {
@@ -35,13 +35,6 @@ export interface FrontendExtensionManifest {
       [dataRefId: string]: unknown;
     };
     routeRefName?: string;
-    dataConfigKeys?: string[];
-    configPassThrough?: {
-      [configKey: string]: {
-        dataRefId: string;
-        types: string[];
-      };
-    };
     predicateFunctions?: {
       [functionDataRefId: string]: string;
     };
