@@ -71,6 +71,8 @@ type PathSegment = string | number;
 /**
  * Converts a JSON Pointer (RFC 6901) into a list of path segments. Segments
  * made only of digits become numbers, to match the array indices of zod.
+ * This rule applies only to segments parsed from a pointer, where an array
+ * index cannot be told apart from an object key.
  */
 function pointerToSegments(pointer: string): PathSegment[] {
   if (pointer === '') {
@@ -98,6 +100,11 @@ function toIssue(
 
 /**
  * Converts ajv errors into validation issues.
+ *
+ * @remarks
+ *
+ * The names of missing and unknown properties, which ajv reports separately
+ * from the instance path, are object keys and are always kept as strings.
  *
  * @param errors - The errors of a failed ajv validation.
  * @param pathPrefix - The keys of the validated value, for example
@@ -130,9 +137,11 @@ export function validationIssuesFromAjv(
  *
  * express-openapi-validator appends the name of a missing or unknown property
  * to the path without escaping it. The name of a missing property is read
- * from the message, so it is kept whole. The name of an unknown property
- * cannot be told apart from the rest of the path, so a name that contains `/`
- * or `~` may be split or misread until express-openapi-validator escapes it.
+ * from the message, so it is kept whole, and it is always a string. The name
+ * of an unknown property cannot be told apart from the rest of the path, so
+ * it is parsed as part of the pointer. A name that contains `/` or `~` may be
+ * split or misread until express-openapi-validator escapes it, and a name
+ * made only of digits becomes a number.
  *
  * @param error - The error passed on by the validator middleware.
  * @returns The issues, or `undefined` if the error has no error items.
