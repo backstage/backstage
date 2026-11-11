@@ -31,9 +31,10 @@ export interface FrontendFeatureManifest {
   title?: string;
   /**
    * True only when every rule for deferring a plugin passes. A deferrable
-   * plugin only provides pages, APIs and extensions that output a React
-   * element along with JSON data, and it provides at least one page or
-   * element that loads the plugin when it is rendered.
+   * plugin only provides pages and extensions that output a React element
+   * along with JSON data, and it provides at least one page or element that
+   * loads the plugin when it is rendered. Plugins that provide APIs are never
+   * deferrable.
    */
   deferrable: boolean;
   /** Why the plugin isn't deferrable, for the CLI report. */
@@ -78,11 +79,6 @@ export interface FrontendExtensionManifest {
     /** The key in plugin.routes whose RouteRef the extension outputs. */
     routeRefName?: string;
   };
-  /**
-   * True if the extension is part of the sync export of the plugin package,
-   * which is loaded with the app. Such extensions aren't stubbed.
-   */
-  sync?: boolean;
 }
 
 /**
