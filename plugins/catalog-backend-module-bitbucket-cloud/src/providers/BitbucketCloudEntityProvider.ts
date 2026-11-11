@@ -28,6 +28,7 @@ import {
 } from '@backstage/integration';
 import {
   BitbucketCloudClient,
+  CodeSearch,
   Events,
   Models,
 } from '@backstage/plugin-bitbucket-cloud-common';
@@ -362,77 +363,157 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     repoSlug?: string,
   ): Promise<IngestionTarget[]> {
     const workspace = this.config.workspace;
-    const catalogPath = this.config.catalogPath;
 
-    const catalogFilename = catalogPath.substring(
-      catalogPath.lastIndexOf('/') + 1,
+    // The code search results do not hold the main branch and the project of
+    // a repository. Load them from the repository list instead.
+    const repositories = (await this.findRepositories(repoSlug)).filter(
+      repository => this.matchesFilters(repository),
     );
 
-    const optRepoFilter = repoSlug ? ` repo:${repoSlug}` : '';
-    const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
+    const repositoriesByProject = new Map<string, Models.Repository[]>();
+    for (const repository of repositories) {
+      const projectKey = repository.project!.key!;
+      const projectRepositories = repositoriesByProject.get(projectKey) ?? [];
+      projectRepositories.push(repository);
+      repositoriesByProject.set(projectKey, projectRepositories);
+    }
 
-    if (repoSlug) return this.processQuery(workspace, query);
-
-    const projects = this.client
-      .listProjectsByWorkspace(workspace)
-      .iterateResults();
+    const pathFilter = BitbucketCloudEntityProvider.toPathFilter(
+      this.config.catalogPath,
+    );
 
     let results: IngestionTarget[] = [];
-
-    for await (const project of projects) {
-      const projectQuery = `${query} project:${project.key}`;
-      const result = await this.processQuery(workspace, projectQuery);
+    for (const [projectKey, projectRepositories] of repositoriesByProject) {
+      const scopeFilter: CodeSearch.Filter = repoSlug
+        ? { attribute: 'repository', eq: repoSlug }
+        : { attribute: 'project', eq: projectKey };
+      const result = await this.processQuery(
+        workspace,
+        { and: [pathFilter, scopeFilter] },
+        projectRepositories,
+      );
       results = results.concat(result);
     }
 
     return results;
   }
 
+  private async findRepositories(
+    repoSlug?: string,
+  ): Promise<Models.Repository[]> {
+    const fields = [
+      'next',
+      'values.slug',
+      'values.project.key',
+      'values.mainbranch.name',
+      'values.links.html.href',
+    ].join(',');
+    const q = repoSlug ? `slug="${repoSlug}"` : undefined;
+
+    const repositories: Models.Repository[] = [];
+    for await (const repository of this.client
+      .listRepositoriesByWorkspace(this.config.workspace, { fields, q })
+      .iterateResults()) {
+      repositories.push(repository);
+    }
+
+    return repositories;
+  }
+
   private async processQuery(
     workspace: string,
-    query: string,
+    filters: CodeSearch.Filter,
+    repositories: Models.Repository[],
   ): Promise<IngestionTarget[]> {
-    // load all fields relevant for creating refs later, but not more
-    const fields = [
-      // exclude code/content match details
-      '-values.content_matches',
-      // include/add relevant repository details
-      '+values.file.commit.repository.mainbranch.name',
-      '+values.file.commit.repository.project.key',
-      '+values.file.commit.repository.slug',
-      // remove irrelevant links
-      '-values.*.links',
-      '-values.*.*.links',
-      '-values.*.*.*.links',
-      // ...except the one we need
-      '+values.file.commit.repository.links.html.href',
-    ].join(',');
+    const catalogPath = this.config.catalogPath;
+    const catalogFilename = catalogPath.substring(
+      catalogPath.lastIndexOf('/') + 1,
+    );
 
-    const searchResults = this.client
-      .searchCode(workspace, query, { fields }, this.config.pagelen)
-      .iterateResults();
+    const pathPattern = BitbucketCloudEntityProvider.toPathPattern(catalogPath);
 
-    const result: IngestionTarget[] = [];
+    const pages = this.client.searchWorkspaceCode(
+      workspace,
+      { search_term: catalogFilename, filters },
+      { maxResults: this.config.pagelen ?? 100 },
+    );
 
-    for await (const searchResult of searchResults) {
-      // not a file match, but a code match
-      if (searchResult.path_matches!.length === 0) {
-        continue;
-      }
+    // The code search can return the same file on more than one page.
+    const result = new Map<string, IngestionTarget>();
 
-      const repository = searchResult.file!.commit!.repository!;
-      if (this.matchesFilters(repository)) {
-        result.push({
-          fileUrl: BitbucketCloudEntityProvider.toUrl(
-            repository,
-            searchResult.file!.path!,
-          ),
+    for await (const page of pages) {
+      for (const file of page.matched_files ?? []) {
+        if (!pathPattern.test(file.path)) {
+          continue;
+        }
+
+        const repository = repositories.find(repo =>
+          file.url.startsWith(`${repo.links!.html!.href!}/`),
+        );
+        if (!repository) {
+          continue;
+        }
+
+        const fileUrl = BitbucketCloudEntityProvider.toUrl(
+          repository,
+          file.path,
+        );
+        result.set(fileUrl, {
+          fileUrl,
           repoUrl: repository.links!.html!.href!,
         });
       }
     }
 
-    return result;
+    return [...result.values()];
+  }
+
+  /**
+   * Creates the code search filter for the configured catalog path.
+   *
+   * The code search can return files at other paths than the filter
+   * describes, so the filter only reduces the results and
+   * `toPathPattern` decides which files match.
+   */
+  private static toPathFilter(catalogPath: string): CodeSearch.Filter {
+    const path = catalogPath.replace(/^\//, '');
+    if (!/[*?]/.test(path)) {
+      // matches the path at the root and in any folder
+      return { attribute: 'path', eq: path };
+    }
+
+    if (catalogPath.startsWith('/')) {
+      return { attribute: 'path', wildcard: path };
+    }
+
+    return {
+      or: [
+        { attribute: 'path', wildcard: path },
+        { attribute: 'path', wildcard: `*/${path}` },
+      ],
+    };
+  }
+
+  /**
+   * Creates the pattern that a file path must match.
+   *
+   * A catalog path that starts with `/` matches from the repository root.
+   * Any other catalog path matches at the root and in any folder.
+   * In the catalog path, `*` matches any characters and `?` matches one character.
+   */
+  private static toPathPattern(catalogPath: string): RegExp {
+    const absolute = catalogPath.startsWith('/');
+    const pattern = catalogPath
+      .replace(/^\//, '')
+      .split('')
+      .map(char => {
+        if (char === '*') return '.*';
+        if (char === '?') return '.';
+        return char.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+      })
+      .join('');
+
+    return new RegExp(absolute ? `^${pattern}$` : `^(.*/)?${pattern}$`);
   }
 
   private matchesFilters(repository: Models.Repository): boolean {
