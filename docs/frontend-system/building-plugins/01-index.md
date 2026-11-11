@@ -238,9 +238,9 @@ For a more complete list of the different kinds of extensions that you can creat
 Deferred loading is experimental, and the details described here may change.
 :::
 
-When an app enables `app.experimental.deferredPackages`, the Backstage CLI can defer your plugin. A _deferred plugin_ starts out as a stand-in that is built from a manifest, and the real plugin code is loaded the first time one of its pages is visited or one of its elements is rendered. If loading the code fails, for example because of a network error, it is retried a couple of times before an error is shown.
+When your plugin is built as a [module federation remote](../building-apps/07-module-federation.md), an app that enables `app.experimental.deferredRemotes` can defer loading it. A _deferred plugin_ starts out as a stand-in that is built from a manifest, and the real plugin code is loaded the first time one of its pages is visited or one of its elements is rendered. If loading the code fails, for example because of a network error, it is retried a couple of times before an error is shown.
 
-The CLI creates the manifest by analyzing the source code of your plugin without running it. For plugins in the workspace of an app, this happens when the app is built or started. For published plugins, `backstage-cli package build` writes the manifest to `dist/frontend-manifest.json`, and the package.json that is published refers to it. A published plugin without a manifest is loaded together with the app.
+The CLI creates the manifest by analyzing the source code of your plugin without running it. When you build your plugin with `backstage-cli package build --module-federation` or `backstage-cli package bundle`, it writes the manifest to `dist/frontend-manifest.json`, next to the module federation manifest. A remote without this file is loaded together with the app.
 
 A plugin can be deferred if its default export is a direct call to `createFrontendPlugin`, and each of its extensions is one of the following:
 
@@ -251,7 +251,7 @@ The `path` and `title` params, and the extension `name`, `attachTo`, and `disabl
 
 A plugin that provides a utility API is always loaded together with the app, since utility APIs are created when the app starts.
 
-The analysis fails closed: if any of these values can't be read, the plugin is loaded together with the app, and the CLI reports the reason along with the location in your source code.
+The analysis fails closed: if any of these values can't be read, the plugin is loaded together with the app, and the manifest records the reason in its `notDeferrableReason` field, along with the location in your source code.
 
 If an app has any config in `app.extensions` for an element of your plugin, such as a sub-page, the plugin is loaded right after the app has started. Config for the pages of your plugin does not have this effect, and is applied to the stand-in of the page.
 

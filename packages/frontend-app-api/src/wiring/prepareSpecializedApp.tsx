@@ -29,6 +29,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import {
   createExtensionDataContainer,
+  OpaqueDeferredFrontendFeature,
   OpaqueFrontendPlugin,
 } from '@internal/frontend';
 import { OpaqueType } from '@internal/opaque';
@@ -305,13 +306,28 @@ export function prepareSpecializedApp(
     config,
     options?.advanced?.pluginInfoResolver,
   );
-  const eagerFeatures = deduplicateFeatures(options?.features ?? []);
+  // Feature loaders can provide plugins that are deferred, such as the
+  // plugins of module federation remotes, which are installed as stubs.
+  const allFeatures = options?.features ?? [];
+  const eagerFeatures = deduplicateFeatures(
+    allFeatures.filter(
+      feature => !OpaqueDeferredFrontendFeature.isType(feature),
+    ),
+  );
+  const deferredEntries: DeferredFrontendFeature[] = [
+    ...(internalOptions?.__internal?.deferredFeatures ?? []),
+    ...allFeatures.filter(OpaqueDeferredFrontendFeature.isType).map(feature => {
+      const { name, manifest, load } =
+        OpaqueDeferredFrontendFeature.toInternal(feature);
+      return { name, manifest, load };
+    }),
+  ];
 
   const collector = createErrorCollector();
   const extensionParameters = readAppExtensionsConfig(config);
 
   const deferred = createDeferredPlugins({
-    entries: internalOptions?.__internal?.deferredFeatures ?? [],
+    entries: deferredEntries,
     eagerFeatures,
     extensionParameters,
     attachPluginInfo,

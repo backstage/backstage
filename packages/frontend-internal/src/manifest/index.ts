@@ -18,6 +18,6 @@ export {
   FRONTEND_MANIFEST_VERSION,
   type FrontendFeatureManifest,
   type FrontendExtensionManifest,
-  type FrontendPackageManifest,
   type DeferredFrontendFeature,
 } from './types';
+export { OpaqueDeferredFrontendFeature } from './OpaqueDeferredFrontendFeature';
