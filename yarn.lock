@@ -5779,7 +5779,7 @@ __metadata:
     "@backstage/plugin-notifications-node": "workspace:^"
     "@backstage/types": "workspace:^"
     lodash: "npm:^4.17.21"
-    nodemailer: "npm:^10.0.10"
+    nodemailer: "npm:^10.4.1"
     p-throttle: "npm:^4.1.1"
   languageName: unknown
   linkType: soft
@@ -36297,10 +36297,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^10.0.10":
-  version: 10.4.0
-  resolution: "nodemailer@npm:10.4.0"
-  checksum: 10/1644e9c24491c7a523b75b01cb7bae054a6b0cdad3bbc84307e09e44b89bd95a011ff93f4d4fcf7adf0d3faebe14af55d41d36cd9c078ec81ac1dfccd46901f6
+"nodemailer@npm:^10.4.1":
+  version: 10.5.0
+  resolution: "nodemailer@npm:10.5.0"
+  checksum: 10/800f0bca222525d1f975670ec9eefb6b4f7d710bcf39192911aa4a0a45cc7b146ab01ac7c2d32044d3d6efec1e92755fd6641150f0cf18017c81549de2762ed7
   languageName: node
   linkType: hard
 
