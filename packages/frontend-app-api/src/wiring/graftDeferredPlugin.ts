@@ -307,7 +307,14 @@ export function graftDeferredPlugin(options: {
     collector,
   });
 
-  const newNodes = graftAppTreeNodes(tree, graftSpecs);
+  // Stub extensions that the loaded plugin doesn't provide are dropped when
+  // the stub they attach to is replaced.
+  const graftIds = new Set(graftSpecs.map(spec => spec.id));
+  const newNodes = graftAppTreeNodes(tree, graftSpecs, {
+    staleIds: new Set(
+      Array.from(stubExtensionIds).filter(id => !graftIds.has(id)),
+    ),
+  });
 
   // The route refs of the real plugin replace those of the stub, so the route
   // IDs are collected again from the current features. The routing APIs are
