@@ -16,15 +16,17 @@
 
 import { test, expect } from '@playwright/test';
 
-test('deferred plugins are loaded in a separate chunk when first visited', async ({
+test('deferred remotes are fetched only when their pages are first visited', async ({
   page,
 }) => {
-  const scriptRequests = new Array<string>();
-  page.on('request', request => {
-    if (request.resourceType() === 'script') {
-      scriptRequests.push(new URL(request.url()).pathname);
-    }
-  });
+  const requests = new Array<string>();
+  page.on('request', request => requests.push(request.url()));
+  const fetched = (remote: string) =>
+    requests.filter(
+      url =>
+        url.includes(`/remotes/@internal/plugin-${remote}/`) &&
+        (url.endsWith('mf-manifest.json') || url.endsWith('remoteEntry.js')),
+    );
 
   await page.goto('/');
   await page.getByRole('button', { name: 'Enter' }).click();
@@ -34,26 +36,19 @@ test('deferred plugins are loaded in a separate chunk when first visited', async
       .getByRole('link', { name: 'Catalog', exact: true }),
   ).toBeVisible();
 
-  // The code of a deferred plugin is not part of the initial app bundle
-  expect(
-    scriptRequests.filter(path => /deferred-.*lazy-demo/.test(path)),
-  ).toEqual([]);
+  // Neither remote entry is fetched while the app starts
+  expect(fetched('lazy-demo')).toEqual([]);
+  expect(fetched('lazy-scorecard')).toEqual([]);
 
   await page.goto('/lazy-demo');
   await expect(page.getByText(/This page was loaded on demand/)).toBeVisible();
+  expect(fetched('lazy-demo').length).toBeGreaterThan(0);
+  expect(fetched('lazy-scorecard')).toEqual([]);
 
-  const demoChunks = scriptRequests.filter(path =>
-    /deferred-.*lazy-demo/.test(path),
-  );
-  expect(demoChunks.length).toBeGreaterThan(0);
-
-  // Pages of deferred plugins with sub-pages work as well
+  // A deferred plugin with sub-pages works as well
   await page.goto('/lazy-scorecard/overview');
   await expect(
     page.getByText(/component:default\/example-website: \d+%/),
   ).toBeVisible();
-  expect(
-    scriptRequests.filter(path => /deferred-.*lazy-scorecard/.test(path))
-      .length,
-  ).toBeGreaterThan(0);
+  expect(fetched('lazy-scorecard').length).toBeGreaterThan(0);
 });

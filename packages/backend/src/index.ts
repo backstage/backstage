@@ -15,6 +15,7 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
+import { dynamicPluginsFeatureLoader } from '@backstage/backend-dynamic-feature-service';
 import {
   coreServices,
   createBackendFeatureLoader,
@@ -39,6 +40,7 @@ const searchLoader = createBackendFeatureLoader({
   },
 });
 
+backend.add(dynamicPluginsFeatureLoader);
 backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(import('./authModuleGithubProvider'));
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
