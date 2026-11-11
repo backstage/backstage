@@ -22,9 +22,13 @@ import {
   appTreeApiRef,
   IconComponent,
   IconElement,
+  Progress,
   RouteRef,
   RouteResolutionApi,
   useApi,
+  appLanguageApiRef,
+  errorApiRef,
+  translationApiRef,
 } from '@backstage/frontend-plugin-api';
 import { legacyNavItemTargetDataRef } from './legacyNavItem';
 import {
@@ -36,6 +40,7 @@ import {
 } from '@backstage/plugin-app-react';
 import { Sidebar, SidebarItem } from '@backstage/core-components';
 import { useMemo } from 'react';
+import { useTranslatedTitles } from '@internal/frontend';
 
 class NavItemBag implements NavContentNavItems {
   readonly #items: NavContentNavItem[];
@@ -153,11 +158,11 @@ function NavContentRenderer(props: {
   const appTreeApi = useApi(appTreeApiRef);
   const routeResolutionApi = useApi(routeResolutionApiRef);
 
-  // New navItems: discover pages from the extension tree, merged with nav items.
-  const navItems = useMemo(() => {
+  // Discover pages eligible for navigation before loading their title translations.
+  const items = useMemo(() => {
     const { tree } = appTreeApi.getTree();
     const routesNode = tree.nodes.get('app/routes');
-    if (!routesNode) return new NavItemBag([]);
+    if (!routesNode) return [];
 
     // Index nav items by routeRef for matching against pages
     const navItemsByRouteRef = new Map<
@@ -166,7 +171,7 @@ function NavContentRenderer(props: {
     >(props.legacyNavItems.map(item => [item.routeRef, item]));
 
     const pageNodes = routesNode.edges.attachments.get('routes') ?? [];
-    const items = pageNodes.flatMap((node): NavContentNavItem[] => {
+    return pageNodes.flatMap((node): NavContentNavItem[] => {
       if (!node.instance || node.spec.disabled) {
         return [];
       }
@@ -188,7 +193,7 @@ function NavContentRenderer(props: {
         resolvedTitle !== undefined &&
         resolvedTitle !== pluginTitle &&
         resolvedTitle !== pluginId;
-      const title = hasExplicitPageTitle
+      const staticTitle = hasExplicitPageTitle
         ? resolvedTitle
         : matchingNavItem?.title ?? pluginTitle ?? pluginId;
 
@@ -209,7 +214,7 @@ function NavContentRenderer(props: {
         icon = pluginIcon;
       }
 
-      if (!title || !icon) {
+      if (!icon) {
         return [];
       }
 
@@ -218,13 +223,35 @@ function NavContentRenderer(props: {
         return [];
       }
 
-      return [{ node, href: to, title, icon, routeRef }];
+      return [{ node, href: to, title: staticTitle, icon, routeRef }];
     });
-
-    return new NavItemBag(items);
   }, [appTreeApi, routeResolutionApi, props.legacyNavItems]);
+  const selections = useMemo(
+    () =>
+      items.map(item =>
+        item.node.instance?.getData(coreExtensionData.titleTranslation),
+      ),
+    [items],
+  );
+  const translatedTitles = useTranslatedTitles({
+    translationApi: useApi(translationApiRef),
+    languageApi: useApi(appLanguageApiRef),
+    errorApi: useApi(errorApiRef),
+    selections,
+  });
+  const navItems = useMemo(
+    () =>
+      translatedTitles &&
+      new NavItemBag(
+        items.flatMap((item, index) => {
+          const title = translatedTitles[index] ?? item.title;
+          return title ? [{ ...item, title }] : [];
+        }),
+      ),
+    [items, translatedTitles],
+  );
 
-  return <props.Content navItems={navItems} />;
+  return navItems ? <props.Content navItems={navItems} /> : <Progress />;
 }
 
 export const AppNav = createExtension({

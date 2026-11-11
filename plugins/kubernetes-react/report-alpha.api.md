@@ -67,8 +67,8 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'hpa.targetCpuUsageLabel': 'target CPU usage: {{value}}%';
     readonly 'errorReporting.columns.name': 'name';
     readonly 'errorReporting.columns.kind': 'kind';
-    readonly 'errorReporting.columns.namespace': 'namespace';
     readonly 'errorReporting.columns.messages': 'messages';
+    readonly 'errorReporting.columns.namespace': 'namespace';
     readonly 'errorReporting.columns.cluster': 'cluster';
     readonly 'errorReporting.title': 'Error Reporting';
     readonly 'podLogs.title': 'No logs emitted';

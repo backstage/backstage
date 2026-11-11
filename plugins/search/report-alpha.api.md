@@ -22,6 +22,7 @@ import { SearchFilterExtensionComponent } from '@backstage/plugin-search-react/a
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: OverridableFrontendPlugin<
@@ -84,6 +85,13 @@ const _default: OverridableFrontendPlugin<
             }
           >
         | ExtensionDataRef<
+            TranslationRefTuple<undefined>,
+            'core.titleTranslation',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
             IconElement,
             'core.icon',
             {
@@ -104,6 +112,13 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<
               string,
               'core.title',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              TranslationRefTuple<undefined>,
+              'core.titleTranslation',
               {
                 optional: true;
               }
@@ -172,7 +187,7 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: {
         path: string;
-        title?: string;
+        title?: string | TranslationRefTuple<undefined>;
         icon?: IconElement;
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef;
@@ -231,6 +246,13 @@ export const searchPage: OverridableExtensionDefinition<{
         }
       >
     | ExtensionDataRef<
+        TranslationRefTuple<undefined>,
+        'core.titleTranslation',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
         IconElement,
         'core.icon',
         {
@@ -251,6 +273,13 @@ export const searchPage: OverridableExtensionDefinition<{
       | ConfigurableExtensionDataRef<
           string,
           'core.title',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef<
+          TranslationRefTuple<undefined>,
+          'core.titleTranslation',
           {
             optional: true;
           }
@@ -319,7 +348,7 @@ export const searchPage: OverridableExtensionDefinition<{
   name: undefined;
   params: {
     path: string;
-    title?: string;
+    title?: string | TranslationRefTuple<undefined>;
     icon?: IconElement;
     loader?: () => Promise<JSX_2.Element>;
     routeRef?: RouteRef;

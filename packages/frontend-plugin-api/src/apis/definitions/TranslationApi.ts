@@ -206,35 +206,23 @@ type NestingKeysFromMessage<TMessage extends string> =
     : never;
 
 /**
- * Find all referenced keys, given a starting key and the full set of messages.
- *
- * This will only discover keys up to 3 levels deep.
- *
- * @example
- * ```
- * <'x', { x: '$t(y) $t(z)', y: 'y', z: '$t(w)', w: 'w', foo: 'foo' }> -> 'x' | 'y' | 'z' | 'w'
- * ```
+ * Finds referenced message keys, tracking visited keys to stop at cycles.
  *
  * @ignore
  */
 type NestedMessageKeys<
   TKey extends keyof TMessages,
   TMessages extends { [key in string]: string },
-> =
-  | TKey
-  | NestedMessageKeys2<NestingKeysFromMessage<TMessages[TKey]>, TMessages>;
-// Can't recursively reference ourself, so instead we got this beauty
-type NestedMessageKeys2<
-  TKey extends keyof TMessages,
-  TMessages extends { [key in string]: string },
-> =
-  | TKey
-  | NestedMessageKeys3<NestingKeysFromMessage<TMessages[TKey]>, TMessages>;
-// Only support 3 levels of nesting
-type NestedMessageKeys3<
-  TKey extends keyof TMessages,
-  TMessages extends { [key in string]: string },
-> = TKey | NestingKeysFromMessage<TMessages[TKey]>;
+  TSeen = never,
+> = TKey extends TSeen
+  ? never
+  :
+      | TKey
+      | NestedMessageKeys<
+          Extract<NestingKeysFromMessage<TMessages[TKey]>, keyof TMessages>,
+          TMessages,
+          TSeen | TKey
+        >;
 
 /**
  * Converts a union type to an intersection type.
@@ -262,6 +250,7 @@ type CollectOptions<
   TFormats extends {},
   TValueType,
 > = TCount &
+  ('count' extends keyof TFormats ? { count: number } : {}) &
   // count is special, omit it from the replacements
   (keyof Omit<TFormats, 'count'> extends never
     ? {}
@@ -286,26 +275,61 @@ type OptionArgs<TOptions extends {}> = keyof TOptions extends never
   : [options: Expand<BaseOptions & TOptions>];
 
 /**
+ * The required formatting options for normalized message keys.
  * @ignore
  */
-type TranslationFunctionOptions<
-  TKeys extends keyof TMessages, // All normalized message keys to be considered, i.e. included nested ones
-  TPluralKeys extends keyof TMessages, // All keys in the message map that are pluralized
-  TMessages extends { [key in string]: string }, // Collapsed message map with normalized keys and union values
-  TValueType,
-> = OptionArgs<
-  Expand<
-    CollectOptions<
-      TKeys & TPluralKeys extends never ? {} : { count: number },
-      ExpandRecursive<
-        UnionToIntersection<ReplaceFormatsFromMessage<TMessages[TKeys]>>
-      >,
-      TValueType
-    >
+type TranslationMessageOptions<
+  TKeys extends keyof TMessages,
+  TPluralKeys extends keyof TMessages,
+  TMessages extends { [key in string]: string },
+  TValueType = string,
+> = Expand<
+  CollectOptions<
+    TKeys & TPluralKeys extends never ? {} : { count: number },
+    ExpandRecursive<
+      UnionToIntersection<ReplaceFormatsFromMessage<TMessages[TKeys]>>
+    >,
+    TValueType
   >
 >;
 
-/** @public */
+/** @ignore */
+type TranslationFunctionOptions<
+  TKeys extends keyof TMessages,
+  TPluralKeys extends keyof TMessages,
+  TMessages extends { [key in string]: string },
+  TValueType,
+> = OptionArgs<
+  TranslationMessageOptions<TKeys, TPluralKeys, TMessages, TValueType>
+>;
+
+/** @ignore */
+export type TranslationMessageKey<TMessages extends { [key: string]: string }> =
+  keyof CollapsedMessages<TMessages> & string;
+
+/** @ignore */
+export type TranslationTupleOptions<
+  TMessages extends { [key: string]: string },
+  TKey extends TranslationMessageKey<TMessages>,
+> = string extends CollapsedMessages<TMessages>[NestedMessageKeys<
+  TKey,
+  CollapsedMessages<TMessages>
+>]
+  ? unknown
+  : TranslationMessageOptions<
+      NestedMessageKeys<TKey, CollapsedMessages<TMessages>>,
+      PluralKeys<TMessages>,
+      CollapsedMessages<TMessages>
+    > extends infer TOptions extends {}
+  ? keyof TOptions extends never
+    ? undefined
+    : Expand<BaseOptions & TOptions>
+  : never;
+
+/**
+ * A translation function with inferred keys, formatting values, and nested message requirements.
+ * @public
+ */
 export type TranslationFunction<TMessages extends { [key in string]: string }> =
   CollapsedMessages<TMessages> extends infer IMessages extends {
     [key in string]: string;
@@ -340,9 +364,17 @@ export type TranslationFunction<TMessages extends { [key in string]: string }> =
       }
     : never;
 
-/** @public */
+/**
+ * A synchronous translation snapshot, with fallback messages available while resources load.
+ * @public
+ */
 export type TranslationSnapshot<TMessages extends { [key in string]: string }> =
-  { ready: false } | { ready: true; t: TranslationFunction<TMessages> };
+  {
+    /** Whether resources for the selected language have finished loading. */
+    ready: boolean;
+    /** Translates using the currently available messages and language fallbacks. */
+    t: TranslationFunction<TMessages>;
+  };
 
 /** @public */
 export type TranslationApi = {

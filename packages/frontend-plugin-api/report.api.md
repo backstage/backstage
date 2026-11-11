@@ -490,7 +490,7 @@ export const bitbucketServerAuthApiRef: {
 
 // @public
 export function BreadcrumbEntry(props: {
-  entry: Omit<BreadcrumbEntryData, 'depth'>;
+  entry?: Omit<BreadcrumbEntryData, 'depth'>;
   children: ReactNode;
 }): JSX_3.Element;
 
@@ -566,6 +566,11 @@ export namespace coreApis {
 // @public (undocumented)
 export const coreExtensionData: {
   title: ConfigurableExtensionDataRef_2<string, 'core.title', {}>;
+  titleTranslation: ConfigurableExtensionDataRef_2<
+    TranslationRefTuple<undefined>,
+    'core.titleTranslation',
+    {}
+  >;
   icon: ConfigurableExtensionDataRef_2<IconElement, 'core.icon', {}>;
   reactElement: ConfigurableExtensionDataRef_2<
     JSX_2.Element,
@@ -2005,7 +2010,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
   kind: 'page';
   params: {
     path: string;
-    title?: string;
+    title?: string | TranslationRefTuple<undefined>;
     icon?: IconElement;
     loader?: () => Promise<JSX_2.Element>;
     routeRef?: RouteRef;
@@ -2024,6 +2029,13 @@ export const PageBlueprint: ExtensionBlueprint_2<{
     | ExtensionDataRef_2<
         string,
         'core.title',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef_2<
+        TranslationRefTuple<undefined>,
+        'core.titleTranslation',
         {
           optional: true;
         }
@@ -2049,6 +2061,13 @@ export const PageBlueprint: ExtensionBlueprint_2<{
       | ConfigurableExtensionDataRef_2<
           string,
           'core.title',
+          {
+            optional: true;
+          }
+        >
+      | ConfigurableExtensionDataRef_2<
+          TranslationRefTuple<undefined>,
+          'core.titleTranslation',
           {
             optional: true;
           }
@@ -2370,7 +2389,7 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
   kind: 'sub-page';
   params: {
     path: string;
-    title: string;
+    title: string | TranslationRefTuple<undefined>;
     icon?: IconElement;
     loader: () => Promise<JSX.Element>;
     routeRef?: RouteRef;
@@ -2386,6 +2405,13 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
       >
     | ExtensionDataRef_2<JSX_2, 'core.reactElement', {}>
     | ExtensionDataRef_2<string, 'core.title', {}>
+    | ExtensionDataRef_2<
+        TranslationRefTuple<undefined>,
+        'core.titleTranslation',
+        {
+          optional: true;
+        }
+      >
     | ExtensionDataRef_2<
         IconElement,
         'core.icon',
@@ -2505,7 +2531,7 @@ export const translationApiRef: {
   readonly $$type: '@backstage/ApiRef';
 };
 
-// @public (undocumented)
+// @public
 export type TranslationFunction<
   TMessages extends {
     [key in string]: string;
@@ -2585,6 +2611,9 @@ export interface TranslationRef<
 > {
   // (undocumented)
   $$type: '@backstage/TranslationRef';
+  <TKey extends TranslationMessageKey<TMessages>>(
+    key: TKey,
+  ): TranslationRefTuple<TranslationTupleOptions<TMessages, TKey>>;
   // (undocumented)
   id: TId;
   // (undocumented)
@@ -2609,6 +2638,13 @@ export interface TranslationRefOptions<
   messages: TNestedMessages;
   // (undocumented)
   translations?: TTranslations;
+}
+
+// @public
+export interface TranslationRefTuple<TOptions = unknown> {
+  readonly key: string;
+  readonly ref: TranslationRef;
+  readonly T: TOptions;
 }
 
 // @public (undocumented)
@@ -2641,19 +2677,15 @@ export interface TranslationResourceOptions<
   translations: TTranslations;
 }
 
-// @public (undocumented)
+// @public
 export type TranslationSnapshot<
   TMessages extends {
     [key in string]: string;
   },
-> =
-  | {
-      ready: false;
-    }
-  | {
-      ready: true;
-      t: TranslationFunction<TMessages>;
-    };
+> = {
+  ready: boolean;
+  t: TranslationFunction<TMessages>;
+};
 
 // @public
 export type TypesToApiRefs<T, TLoading extends 'sync' | 'async' = 'sync'> = {

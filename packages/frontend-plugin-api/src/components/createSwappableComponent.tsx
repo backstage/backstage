@@ -16,7 +16,7 @@
 
 import { OpaqueSwappableComponentRef } from '@internal/frontend';
 import { swappableComponentsApiRef, useApi } from '../apis';
-import { lazy } from 'react';
+import { lazy, useMemo } from 'react';
 import { isError } from '@backstage/errors';
 
 /** @public */
@@ -95,16 +95,16 @@ export function createSwappableComponent<
 
   const ComponentRefImpl = (props: TExternalComponentProps) => {
     const api = useComponentRefApi();
+    const ResolvedComponent = useMemo(() => api?.getComponent<any>(ref), [api]);
 
-    if (!api) {
+    if (!ResolvedComponent) {
       const internalRef = OpaqueSwappableComponentRef.toInternal(ref);
       const Component = internalRef.defaultComponent;
       const innerProps = internalRef.transformProps?.(props) ?? props;
       return <Component {...innerProps} />;
     }
 
-    const Component = api.getComponent<any>(ref);
-    return <Component {...props} />;
+    return <ResolvedComponent {...props} />;
   };
 
   Object.assign(ComponentRefImpl, { ref });
