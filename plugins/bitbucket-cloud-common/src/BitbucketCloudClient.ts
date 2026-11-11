@@ -19,6 +19,7 @@ import {
   getBitbucketCloudOAuthToken,
 } from '@backstage/integration';
 import fetch, { Request } from 'cross-fetch';
+import { CodeSearch } from './codeSearch';
 import { Models } from './models';
 import { WithPagination } from './pagination';
 import {
@@ -39,6 +40,11 @@ export class BitbucketCloudClient {
     private readonly config: BitbucketCloudIntegrationConfig,
   ) {}
 
+  /**
+   * @deprecated Bitbucket Cloud removes the endpoint
+   * `GET /2.0/workspaces/{workspace}/search/code` on 2026-11-15.
+   * Use {@link BitbucketCloudClient.searchWorkspaceCode} instead.
+   */
   searchCode(
     workspace: string,
     query: string,
@@ -56,6 +62,49 @@ export class BitbucketCloudClient {
       url => this.getTypeMapped(url),
       pagelen,
     );
+  }
+
+  /**
+   * Searches code in all repositories of a workspace with the endpoint
+   * `POST /2.0/workspaces/{workspace}/codesearch`, and yields each page of
+   * results.
+   *
+   * The endpoint needs a credential that identifies a user, with the scopes
+   * `read:repository:bitbucket` and `read:workspace:bitbucket`.
+   * Bitbucket Cloud rejects app passwords for this endpoint.
+   *
+   * @param workspace - The workspace slug or UUID.
+   * @param query - The search term and the optional filters.
+   * @param options - `maxResults` sets the number of results per page (1 to 100).
+   */
+  async *searchWorkspaceCode(
+    workspace: string,
+    query: CodeSearch.Query,
+    options?: { maxResults?: number },
+  ): AsyncGenerator<CodeSearch.ResultPage, void> {
+    const workspaceEnc = encodeURIComponent(workspace);
+    const url = this.createUrl(`/workspaces/${workspaceEnc}/codesearch`);
+    const config = options?.maxResults
+      ? { max_results: options.maxResults }
+      : undefined;
+
+    let pagination:
+      | { request_id: string; pagination: { next_cursor: string } }
+      | undefined;
+    do {
+      const page: CodeSearch.ResultPage = await this.post(url, {
+        query,
+        config,
+        ...pagination,
+      }).then(response => response.json());
+      yield page;
+
+      const nextCursor = page.pagination?.next_cursor;
+      pagination =
+        page.pagination?.has_more && nextCursor
+          ? { request_id: page.id, pagination: { next_cursor: nextCursor } }
+          : undefined;
+    } while (pagination);
   }
 
   listRepositoriesByWorkspace(
@@ -141,8 +190,24 @@ export class BitbucketCloudClient {
     return this.request(new Request(url.toString(), { method: 'GET' }));
   }
 
+  private async post(url: URL, body: unknown): Promise<Response> {
+    return this.request(
+      new Request(url.toString(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }),
+    );
+  }
+
   private async request(req: Request): Promise<Response> {
-    const headers = await this.getAuthHeaders();
+    // The headers passed to fetch replace the headers of the request,
+    // so keep the request headers and add the auth headers to them.
+    const headers: Record<string, string> = {};
+    req.headers.forEach((value, key) => {
+      headers[key] = value;
+    });
+    Object.assign(headers, await this.getAuthHeaders());
     return fetch(req, { headers }).then((response: Response) => {
       if (!response.ok) {
         throw new Error(
