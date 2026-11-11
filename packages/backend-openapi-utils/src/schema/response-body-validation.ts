@@ -153,7 +153,7 @@ export class ResponseBodyParser
         response,
         'Response body',
         validate.errors!,
-        '/body',
+        ['body'],
       );
     }
     return jsonBody;

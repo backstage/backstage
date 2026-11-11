@@ -231,9 +231,19 @@ export const spec = {
         description: 'A single validation failure for one value in a request.',
         properties: {
           path: {
-            type: 'string',
+            type: 'array',
             description:
-              'A JSON Pointer to the value that failed validation, for example `/body/location`.',
+              'The keys from the root of the request to the value that failed validation, in order. For example, the `location` property of the request body has the keys `body` and `location`. Array indices are numbers. Omitted when the issue refers to the whole request.',
+            items: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  type: 'integer',
+                },
+              ],
+            },
           },
           message: {
             type: 'string',
@@ -257,7 +267,7 @@ export const spec = {
             ],
           },
         },
-        required: ['path', 'message'],
+        required: ['message'],
       },
       Error: {
         type: 'object',

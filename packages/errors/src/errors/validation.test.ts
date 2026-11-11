@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import { deserializeError, serializeError } from '../serialization';
 import { InputError } from './common';
 import { validationIssuesFromZod, ValidationIssue } from './validation';
 
+// Compile-time checks that validation issues can be used as Standard Schema
+// issues.
+const standardIssue: StandardSchemaV1.Issue = {} as ValidationIssue;
+const standardIssues: ReadonlyArray<StandardSchemaV1.Issue> =
+  [] as ValidationIssue[];
+void standardIssue;
+void standardIssues;
+
 describe('validationIssuesFromZod', () => {
   it('converts zod issues into validation issues', () => {
+    const symbol = Symbol('sym');
     const zodLikeError = {
       issues: [
         {
@@ -28,28 +38,32 @@ describe('validationIssuesFromZod', () => {
           message: 'Expected string, received number',
         },
         {
-          path: ['a/b', 'c~d'],
+          path: ['a/b', { key: 'c~d' }, { key: 1 }, symbol],
           message: 'Invalid value',
         },
         { code: 'custom', path: [], message: 'Invalid input' },
+        { message: 'No path' },
       ],
     };
 
     expect(validationIssuesFromZod(zodLikeError)).toEqual([
       {
-        path: '/entity/spec/0/name',
+        path: ['entity', 'spec', 0, 'name'],
         message: 'Expected string, received number',
         code: 'invalid_type',
       },
-      { path: '/a~1b/c~0d', message: 'Invalid value' },
-      { path: '', message: 'Invalid input', code: 'custom' },
+      { path: ['a/b', 'c~d', 1, 'Symbol(sym)'], message: 'Invalid value' },
+      { message: 'Invalid input', code: 'custom' },
+      { message: 'No path' },
     ]);
+    expect(validationIssuesFromZod(zodLikeError)[2]).not.toHaveProperty('path');
 
-    const [prefixed, , root] = validationIssuesFromZod(zodLikeError, {
-      pathPrefix: '/body',
+    const [prefixed, , root, noPath] = validationIssuesFromZod(zodLikeError, {
+      pathPrefix: ['body'],
     });
-    expect(prefixed.path).toBe('/body/entity/spec/0/name');
-    expect(root.path).toBe('/body');
+    expect(prefixed.path).toEqual(['body', 'entity', 'spec', 0, 'name']);
+    expect(root.path).toEqual(['body']);
+    expect(noPath.path).toEqual(['body']);
   });
 });
 
@@ -89,7 +103,7 @@ describe('InputError validation issues', () => {
   it('keeps validation issues through serialization', () => {
     const issues: ValidationIssue[] = [
       {
-        path: '/body/location',
+        path: ['body', 'location'],
         message: 'must be string',
         code: 'invalid_type',
       },

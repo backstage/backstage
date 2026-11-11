@@ -68,7 +68,7 @@ describe('response body', () => {
     await expect(parser.parse(toResponse(responseBody))).rejects.toMatchObject({
       issues: [
         {
-          path: '/body/result',
+          path: ['body', 'result'],
           message: 'must NOT have additional properties',
           code: 'unrecognized_keys',
         },

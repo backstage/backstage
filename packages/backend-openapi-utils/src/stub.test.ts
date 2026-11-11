@@ -129,7 +129,7 @@ describe('createRouter', () => {
     expect(response.body.error.name).toBe('InputError');
     expect(response.body.error.issues).toEqual([
       {
-        path: '/body/name',
+        path: ['body', 'name'],
         message: "must have required property 'name'",
         code: 'invalid_type',
       },
@@ -141,7 +141,7 @@ describe('createRouter', () => {
     expect(wrongType.status).toBe(400);
     expect(wrongType.body.error.issues).toEqual([
       {
-        path: '/body/count',
+        path: ['body', 'count'],
         message: 'must be integer',
         code: 'invalid_type',
       },
@@ -153,7 +153,7 @@ describe('createRouter', () => {
     expect(extraProperty.status).toBe(400);
     expect(extraProperty.body.error.issues).toEqual([
       {
-        path: '/body/extra',
+        path: ['body', 'extra'],
         message: 'must NOT have additional properties',
         code: 'unrecognized_keys',
       },
@@ -165,7 +165,7 @@ describe('createRouter', () => {
     expect(unknownQuery.status).toBe(400);
     expect(unknownQuery.body.error.issues).toEqual([
       {
-        path: '/query/a~1b',
+        path: ['query', 'a/b'],
         message: "Unknown query parameter 'a/b'",
         code: 'custom',
       },

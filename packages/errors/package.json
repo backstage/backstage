@@ -40,6 +40,7 @@
     "serialize-error": "^8.0.1"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "@standard-schema/spec": "^1.1.0"
   }
 }

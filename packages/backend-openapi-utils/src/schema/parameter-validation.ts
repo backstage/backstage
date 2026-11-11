@@ -24,7 +24,6 @@ import {
 } from './types';
 import Ajv from 'ajv';
 import { OperationError, OperationParsingError } from './errors';
-import { escapeJsonPointerSegment } from '../validationIssues';
 import { mockttpToFetchRequest } from './utils';
 
 type ReferencelessSchemaObject = SchemaObject & { $ref?: never };
@@ -186,7 +185,7 @@ export class QueryParameterParser
           this.operation,
           'Query parameter',
           validate.errors!,
-          `/query/${escapeJsonPointerSegment(name)}`,
+          ['query', name],
         );
       }
       queryParameters[name] = param;
@@ -383,7 +382,7 @@ export class HeaderParameterParser
           this.operation,
           'Header parameter',
           validate.errors!,
-          `/headers/${escapeJsonPointerSegment(name.toLowerCase())}`,
+          ['headers', name.toLowerCase()],
         );
       }
       headerParameters[name] = header;
@@ -430,7 +429,7 @@ export class PathParameterParser
           this.operation,
           'Path parameter',
           validate.errors!,
-          `/params/${escapeJsonPointerSegment(name)}`,
+          ['params', name],
         );
       }
       pathParameters[name] = param;

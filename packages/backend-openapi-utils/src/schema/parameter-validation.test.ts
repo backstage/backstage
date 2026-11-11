@@ -99,7 +99,7 @@ describe('query parameters', () => {
         await expect(parser.parse(request)).rejects.toMatchObject({
           issues: [
             {
-              path: '/query/param',
+              path: ['query', 'param'],
               message: 'must be number',
               code: 'invalid_type',
             },

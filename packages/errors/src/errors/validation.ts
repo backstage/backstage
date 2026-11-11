@@ -75,20 +75,25 @@ const ZOD_CODES: Record<string, ValidationIssueCode> = {
 /**
  * A single validation failure for one value in a request.
  *
- * The member names follow zod issues, except that `path` is always a JSON
- * Pointer string rather than an array of path segments.
+ * @remarks
+ *
+ * The type follows the `Issue` interface of
+ * {@link https://standardschema.dev | Standard Schema}, so it can be used
+ * wherever a Standard Schema issue is expected. The path segments are limited
+ * to strings and numbers so that issues can be serialized as JSON.
  *
  * @public
  */
 export type ValidationIssue = {
-  /**
-   * The location of the value that failed validation, as a JSON Pointer
-   * (RFC 6901) string such as `/body/entity/metadata/name` or `/query/limit`.
-   * An empty string refers to the whole input.
-   */
-  path: string;
   /** A human readable explanation of why the value is invalid. */
   message: string;
+  /**
+   * The keys from the root of the input to the value that failed validation,
+   * for example `['body', 'entity', 'metadata', 'name']` or
+   * `['query', 'limit']`. Array indices are numbers. The path is omitted when
+   * the issue refers to the whole input.
+   */
+  path?: ReadonlyArray<string | number>;
   /**
    * A machine readable code for the failure, from a closed list that follows
    * the issue codes of zod v4. See {@link ValidationIssueCode}.
@@ -97,22 +102,13 @@ export type ValidationIssue = {
 };
 
 /**
- * Escapes a single path segment for use in a JSON Pointer.
+ * Converts a single issue path segment into a string or number key.
  */
-function escapePointerSegment(segment: PropertyKey): string {
-  return String(segment).replace(/~/g, '~0').replace(/\//g, '~1');
-}
-
-/**
- * Converts a list of path segments into a JSON Pointer.
- */
-function toJsonPointer(
-  segments: ReadonlyArray<PropertyKey>,
-  prefix: string = '',
-): string {
-  return `${prefix}${segments
-    .map(segment => `/${escapePointerSegment(segment)}`)
-    .join('')}`;
+function toPathSegment(
+  segment: PropertyKey | { readonly key: PropertyKey },
+): string | number {
+  const key = typeof segment === 'object' ? segment.key : segment;
+  return typeof key === 'symbol' ? String(key) : key;
 }
 
 /**
@@ -120,9 +116,11 @@ function toJsonPointer(
  *
  * @remarks
  *
- * The error is matched by its shape, so both zod v3 and zod v4 errors are
- * supported without depending on zod directly. Issue codes are converted to
- * the zod v4 names, and codes without a v4 equivalent become `custom`.
+ * The error is matched by its shape, so zod v3 and v4 errors are supported
+ * without depending on zod directly, as are other lists of Standard Schema
+ * issues. Issue codes are converted to the zod v4 names, and codes without a
+ * v4 equivalent become `custom`. Symbol path segments are converted to
+ * strings.
  *
  * @public
  * @param error - A zod error, or any object with a matching `issues` array.
@@ -131,21 +129,25 @@ function toJsonPointer(
 export function validationIssuesFromZod(
   error: {
     issues: ReadonlyArray<{
-      path: ReadonlyArray<PropertyKey>;
+      path?: ReadonlyArray<PropertyKey | { readonly key: PropertyKey }>;
       message: string;
       code?: string;
     }>;
   },
   options?: {
-    /** A JSON Pointer to prepend to every issue, for example `/body`. */
-    pathPrefix?: string;
+    /** Keys to prepend to the path of every issue, for example `['body']`. */
+    pathPrefix?: ReadonlyArray<string | number>;
   },
 ): ValidationIssue[] {
   return error.issues.map(issue => {
-    const item: ValidationIssue = {
-      path: toJsonPointer(issue.path, options?.pathPrefix),
-      message: issue.message,
-    };
+    const item: ValidationIssue = { message: issue.message };
+    const path = [
+      ...(options?.pathPrefix ?? []),
+      ...(issue.path ?? []).map(toPathSegment),
+    ];
+    if (path.length > 0) {
+      item.path = path;
+    }
     if (issue.code !== undefined) {
       item.code = ZOD_CODES[issue.code] ?? 'custom';
     }

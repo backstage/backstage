@@ -74,7 +74,7 @@ describe('request body', () => {
     await expect(parser.parse(toRequest(requestBody))).rejects.toMatchObject({
       issues: [
         {
-          path: '/body/query',
+          path: ['body', 'query'],
           message: 'must be string',
           code: 'invalid_type',
         },

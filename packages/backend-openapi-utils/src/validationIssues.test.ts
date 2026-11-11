@@ -27,7 +27,7 @@ function validatorError(
 }
 
 describe('validationIssuesFromAjv', () => {
-  it('builds escaped JSON Pointer paths from ajv errors', () => {
+  it('builds exact paths from ajv errors', () => {
     const ajv = new Ajv({ allErrors: true });
     const validate = ajv.compile({
       type: 'object',
@@ -37,36 +37,75 @@ describe('validationIssuesFromAjv', () => {
           properties: { 'c~d': { type: 'string' } },
           required: ['x/y'],
         },
+        items: { type: 'array', items: { type: 'string' } },
+        '10': { type: 'string' },
       },
       additionalProperties: false,
     });
-    expect(validate({ 'a/b': { 'c~d': 1 }, 'e/f': 1 })).toBe(false);
+    expect(
+      validate({
+        'a/b': { 'c~d': 1 },
+        'e/f': 1,
+        items: ['ok', 2],
+        '10': 3,
+      }),
+    ).toBe(false);
 
-    expect(validationIssuesFromAjv(validate.errors!, '/body')).toEqual([
+    expect(validationIssuesFromAjv(validate.errors!, ['body'])).toEqual([
       {
-        path: '/body/e~1f',
+        path: ['body', 'e/f'],
         message: 'must NOT have additional properties',
         code: 'unrecognized_keys',
       },
+      // A property name made only of digits becomes a number, like an index.
       {
-        path: '/body/a~1b/x~1y',
+        path: ['body', 10],
+        message: 'must be string',
+        code: 'invalid_type',
+      },
+      {
+        path: ['body', 'a/b', 'x/y'],
         message: "must have required property 'x/y'",
         code: 'invalid_type',
       },
       {
-        path: '/body/a~1b/c~0d',
+        path: ['body', 'a/b', 'c~d'],
+        message: 'must be string',
+        code: 'invalid_type',
+      },
+      {
+        path: ['body', 'items', 1],
         message: 'must be string',
         code: 'invalid_type',
       },
     ]);
-    expect(validationIssuesFromAjv(validate.errors!)[2].path).toBe(
-      '/a~1b/c~0d',
-    );
+    expect(validationIssuesFromAjv(validate.errors!)[3].path).toEqual([
+      'a/b',
+      'c~d',
+    ]);
+
+    const validateRoot = ajv.compile({ type: 'string' });
+    expect(validateRoot(1)).toBe(false);
+    const [rootIssue] = validationIssuesFromAjv(validateRoot.errors!);
+    expect(rootIssue).toEqual({
+      message: 'must be string',
+      code: 'invalid_type',
+    });
+    expect(rootIssue).not.toHaveProperty('path');
+    expect(
+      validationIssuesFromAjv(validateRoot.errors!, ['query', 'limit']),
+    ).toEqual([
+      {
+        path: ['query', 'limit'],
+        message: 'must be string',
+        code: 'invalid_type',
+      },
+    ]);
   });
 });
 
 describe('validationIssuesFromValidatorError', () => {
-  it('escapes the name of a missing property and keeps other paths', () => {
+  it('keeps the name of a missing property whole and splits other paths', () => {
     const issues = validationIssuesFromValidatorError(
       validatorError([
         {
@@ -84,22 +123,32 @@ describe('validationIssuesFromValidatorError', () => {
           message: 'must be string',
           errorCode: 'type.openapi.validation',
         },
+        {
+          path: '/body/items/0/01',
+          message: 'must be string',
+          errorCode: 'type.openapi.validation',
+        },
       ]),
     );
 
     expect(issues).toEqual([
       {
-        path: '/body/a~1b/x~1y',
+        path: ['body', 'a/b', 'x/y'],
         message: "must have required property 'x/y'",
         code: 'invalid_type',
       },
       {
-        path: '/body/a~1b/extra',
+        path: ['body', 'a/b', 'extra'],
         message: 'must NOT have additional properties',
         code: 'unrecognized_keys',
       },
       {
-        path: '/body/a~1b/c~0d',
+        path: ['body', 'a/b', 'c~d'],
+        message: 'must be string',
+        code: 'invalid_type',
+      },
+      {
+        path: ['body', 'items', 0, '01'],
         message: 'must be string',
         code: 'invalid_type',
       },
@@ -117,21 +166,21 @@ describe('validationIssuesFromValidatorError', () => {
 
     expect(issues).toEqual([
       {
-        path: '/query/a~1b',
+        path: ['query', 'a/b'],
         message: "Unknown query parameter 'a/b'",
         code: 'custom',
       },
       {
-        path: '/query/filter',
+        path: ['query', 'filter'],
         message: "Parameter 'style' is invalid",
         code: 'custom',
       },
       {
-        path: '',
         message: 'unsupported media type text/plain',
         code: 'custom',
       },
     ]);
+    expect(issues![2]).not.toHaveProperty('path');
 
     expect(
       validationIssuesFromValidatorError(new SyntaxError('bad json')),

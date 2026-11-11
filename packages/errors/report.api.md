@@ -172,8 +172,8 @@ export function toError(value: unknown): ErrorLike;
 
 // @public
 export type ValidationIssue = {
-  path: string;
   message: string;
+  path?: ReadonlyArray<string | number>;
   code?: ValidationIssueCode;
 };
 
@@ -193,13 +193,18 @@ export type ValidationIssueCode =
 export function validationIssuesFromZod(
   error: {
     issues: ReadonlyArray<{
-      path: ReadonlyArray<PropertyKey>;
+      path?: ReadonlyArray<
+        | PropertyKey
+        | {
+            readonly key: PropertyKey;
+          }
+      >;
       message: string;
       code?: string;
     }>;
   },
   options?: {
-    pathPrefix?: string;
+    pathPrefix?: ReadonlyArray<string | number>;
   },
 ): ValidationIssue[];
 ```

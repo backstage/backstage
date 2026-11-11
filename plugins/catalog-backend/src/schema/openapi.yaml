@@ -322,8 +322,12 @@ components:
       description: A single validation failure for one value in a request.
       properties:
         path:
-          type: string
-          description: A JSON Pointer to the value that failed validation, for example `/body/location`.
+          type: array
+          description: The keys from the root of the request to the value that failed validation, in order. For example, the `location` property of the request body has the keys `body` and `location`. Array indices are numbers. Omitted when the issue refers to the whole request.
+          items:
+            oneOf:
+              - type: string
+              - type: integer
         message:
           type: string
           description: A human readable explanation of why the value is invalid.
@@ -341,7 +345,6 @@ components:
             - invalid_union
             - custom
       required:
-        - path
         - message
     Error:
       type: object

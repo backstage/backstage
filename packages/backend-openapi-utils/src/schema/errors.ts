@@ -39,7 +39,7 @@ export class OperationResponseError extends Error {
 export class OperationParsingError extends OperationError {
   /**
    * The individual validation failures, with paths rooted at the request, for
-   * example `/body/name` or `/query/limit`.
+   * example `['body', 'name']` or `['query', 'limit']`.
    */
   readonly issues: ValidationIssue[];
 
@@ -47,7 +47,7 @@ export class OperationParsingError extends OperationError {
     operation: Operation,
     type: string,
     errors: ErrorObject[],
-    pathPrefix: string,
+    pathPrefix: ReadonlyArray<string | number>,
   ) {
     super(
       operation,
@@ -62,7 +62,7 @@ export class OperationParsingError extends OperationError {
 export class OperationParsingResponseError extends OperationResponseError {
   /**
    * The individual validation failures, with paths rooted at the response, for
-   * example `/body/items/0/name`.
+   * example `['body', 'items', 0, 'name']`.
    */
   readonly issues: ValidationIssue[];
 
@@ -71,7 +71,7 @@ export class OperationParsingResponseError extends OperationResponseError {
     response: Response,
     type: string,
     errors: ErrorObject[],
-    pathPrefix: string,
+    pathPrefix: ReadonlyArray<string | number>,
   ) {
     super(
       operation,
