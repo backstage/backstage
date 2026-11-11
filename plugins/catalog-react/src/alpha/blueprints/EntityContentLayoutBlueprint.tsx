@@ -21,7 +21,6 @@ import {
 } from '@backstage/frontend-plugin-api';
 import {
   entityFilterExpressionDataRef,
-  entityFilterPredicateDataRef,
   entityFilterFunctionDataRef,
   EntityCardType,
 } from './extensionData';
@@ -55,13 +54,11 @@ export const EntityContentLayoutBlueprint = createExtensionBlueprint({
   output: [
     entityFilterFunctionDataRef.optional(),
     entityFilterExpressionDataRef.optional(),
-    entityFilterPredicateDataRef.optional(),
     entityCardLayoutComponentDataRef,
   ],
   dataRefs: {
     filterFunction: entityFilterFunctionDataRef,
     filterExpression: entityFilterExpressionDataRef,
-    filterPredicate: entityFilterPredicateDataRef,
     component: entityCardLayoutComponentDataRef,
   },
   configSchema: {
