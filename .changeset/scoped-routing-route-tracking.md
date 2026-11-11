@@ -2,8 +2,4 @@
 '@backstage/core-app-api': patch
 ---
 
-Backstage UI links and collections now use client-side navigation at their consuming route scope.
-
-Apps with a custom `Router` that provides no React Router context now render without failing at startup. Navigation analytics are skipped while no router is present; apps using the default router are unaffected.
-
-Legacy frontend app roots also preserve routing for separately bundled older Backstage UI components, including client-side navigation and active-route selection.
+Backstage UI links and collections now use client-side navigation at their consuming route scope, and apps with a custom `Router` that provides no React Router context render without failing at startup. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
