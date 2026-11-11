@@ -64,7 +64,7 @@ app:
 
 The CLI then defers each plugin that supports it, and loads it the first time one of its pages is visited or one of its elements is rendered. Plugins that are imported directly in the code of your app are always loaded together with the app. When you build or start the app, the CLI prints which plugins are deferred and why the others are not.
 
-Config in `app.extensions` is applied to a deferred plugin once it has loaded. If you configure a value that would change what one of its elements shows before then, such as an entity card filter, the plugin is loaded together with the app instead. Some plugins provide a `./sync` entry point with the parts that are needed before the plugin is first used, which the app loads together with the app. To learn which plugins can be deferred, see [Deferred loading](../building-plugins/01-index.md#deferred-loading).
+If you have any config in `app.extensions` for an element of a plugin, such as an entity card or an entity content tab, the plugin is loaded together with the app instead of being deferred. Config for the pages of a plugin does not have this effect. Some plugins provide a `./sync` entry point with the parts that are needed before the plugin is first used, which the app loads together with the app. To learn which plugins can be deferred, see [Deferred loading](../building-plugins/01-index.md#deferred-loading).
 
 ## Manual installation
 
