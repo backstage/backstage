@@ -16,13 +16,17 @@
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
-import { writeFrontendManifest } from './writeFrontendManifest';
+import { writeBackstageManifest } from './writeBackstageManifest';
 
-describe('writeFrontendManifest', () => {
+describe('writeBackstageManifest', () => {
   const mockDir = createMockDirectory();
 
   it('should write the manifests of the exposed plugins and modules', async () => {
     mockDir.setContent({
+      'package.json': JSON.stringify({
+        name: '@internal/demo',
+        backstage: { role: 'frontend-plugin' },
+      }),
       'src/index.ts': `
         import { createFrontendPlugin, PageBlueprint } from '@backstage/frontend-plugin-api';
         export const page = PageBlueprint.make({ params: { path: '/demo', loader: async () => null } });
@@ -35,7 +39,7 @@ describe('writeFrontendManifest', () => {
       'src/utils.ts': `export const notAFeature = 1;`,
     });
 
-    await writeFrontendManifest({
+    await writeBackstageManifest({
       packageDir: mockDir.path,
       distDir: mockDir.resolve('dist'),
       exposes: {
@@ -46,25 +50,32 @@ describe('writeFrontendManifest', () => {
     });
 
     const written = await fs.readJson(
-      mockDir.resolve('dist/frontend-manifest.json'),
+      mockDir.resolve('dist/backstage-manifest.json'),
     );
     expect(written).toMatchObject({
       manifestVersion: 1,
-      entryPoints: {
-        '.': {
-          pluginId: 'demo',
-          type: 'plugin',
-          deferrable: true,
-          extensions: [{ id: 'page:demo', page: { path: '/demo' } }],
-        },
-        './alpha': {
-          pluginId: 'other',
-          type: 'module',
-          deferrable: false,
-          notDeferrableReason: 'modules are never deferred',
+      packageName: '@internal/demo',
+      role: 'frontend-plugin',
+      frontend: {
+        exposedModules: {
+          '.': {
+            pluginId: 'demo',
+            type: 'plugin',
+            deferrable: true,
+            extensions: [{ id: 'page:demo', page: { path: '/demo' } }],
+          },
+          './alpha': {
+            pluginId: 'other',
+            type: 'module',
+            deferrable: false,
+            notDeferrableReason: 'modules are never deferred',
+          },
         },
       },
     });
-    expect(Object.keys(written.entryPoints)).toEqual(['.', './alpha']);
+    expect(Object.keys(written.frontend.exposedModules)).toEqual([
+      '.',
+      './alpha',
+    ]);
   });
 });

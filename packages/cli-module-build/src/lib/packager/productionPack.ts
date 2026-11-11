@@ -23,7 +23,7 @@ import type { ConfigSchemaError } from '@backstage/config-loader';
 import { readEntryPoints } from '../entryPoints';
 import { getEntryPointDefaultFeatureType } from '../typeDistProject';
 import { Project } from 'ts-morph';
-import { writeFrontendManifest } from '../frontendManifest/writeFrontendManifest';
+import { writeBackstageManifest } from '../frontendManifest/writeBackstageManifest';
 
 const PKG_PATH = 'package.json';
 const PKG_BACKUP_PATH = 'package.json-prepack';
@@ -150,7 +150,7 @@ export async function productionPack(options: ProductionPackOptions) {
     FRONTEND_MANIFEST_ROLES.includes(pkg.backstage.role) &&
     (await fs.pathExists(resolvePath(packageDir, 'dist')))
   ) {
-    await writeFrontendManifest({
+    await writeBackstageManifest({
       packageDir,
       distDir: resolvePath(packageDir, 'dist'),
       exposes: Object.fromEntries(

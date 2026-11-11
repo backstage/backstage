@@ -1,0 +1,18 @@
+{
+  "manifestVersion": 1,
+  "packageName": "plugin-test-dynamic",
+  "role": "frontend-plugin",
+  "frontend": {
+    "exposedModules": {
+      ".": {
+        "manifestVersion": 1,
+        "type": "plugin",
+        "pluginId": "test",
+        "deferrable": true,
+        "routes": [],
+        "externalRoutes": [],
+        "extensions": []
+      }
+    }
+  }
+}

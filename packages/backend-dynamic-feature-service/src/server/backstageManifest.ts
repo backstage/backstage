@@ -24,23 +24,24 @@ import { FrontendManifest } from '../schema/openapi/generated/models';
  * The name of the file that the Backstage CLI writes next to the module
  * federation manifest of a frontend plugin remote.
  */
-export const FRONTEND_MANIFEST_FILE_NAME = 'frontend-manifest.json';
+export const BACKSTAGE_MANIFEST_FILE_NAME = 'backstage-manifest.json';
 
 function isObject(value: unknown): value is { [key: string]: unknown } {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /**
- * Reads the frontend manifest of a remote, if it has one, and keys the
- * manifests of its entry points by the names of the exposed modules in the
- * module federation manifest.
+ * Reads the frontend section of the Backstage manifest of a remote, if it has
+ * one, and keys the manifests of its exposed modules by the names of the
+ * exposed modules in the module federation manifest.
  *
  * @remarks
  *
- * The frontend manifest is optional, so a missing or invalid file only means
- * that the plugins of the remote are loaded with the app.
+ * The Backstage manifest and its frontend section are optional, so a missing
+ * or invalid file only means that the plugins of the remote are loaded with
+ * the app.
  */
-export function readFrontendManifest(options: {
+export function readBackstageManifest(options: {
   assetsPath: string;
   mfManifest: JsonObject;
   logger: LoggerService;
@@ -48,7 +49,7 @@ export function readFrontendManifest(options: {
 }): FrontendManifest | undefined {
   const location = path.resolve(
     options.assetsPath,
-    FRONTEND_MANIFEST_FILE_NAME,
+    BACKSTAGE_MANIFEST_FILE_NAME,
   );
   if (!fs.existsSync(location)) {
     return undefined;
@@ -59,26 +60,37 @@ export function readFrontendManifest(options: {
     content = JSON.parse(fs.readFileSync(location, 'utf8'));
   } catch (error) {
     options.logger.warn(
-      `Ignoring the frontend manifest '${location}' of dynamic frontend plugin '${options.pluginName}', since it could not be parsed`,
+      `Ignoring the Backstage manifest '${location}' of dynamic frontend plugin '${options.pluginName}', since it could not be parsed`,
       error,
     );
     return undefined;
   }
-  if (
-    !isObject(content) ||
-    typeof content.manifestVersion !== 'number' ||
-    !isObject(content.entryPoints)
-  ) {
+  if (!isObject(content) || typeof content.manifestVersion !== 'number') {
     options.logger.warn(
-      `Ignoring the frontend manifest '${location}' of dynamic frontend plugin '${options.pluginName}', since it is invalid`,
+      `Ignoring the Backstage manifest '${location}' of dynamic frontend plugin '${options.pluginName}', since it is invalid`,
     );
     return undefined;
   }
 
-  // The entry points are keyed by the keys of the exposes option of the
+  // A manifest without a frontend section describes a package that isn't
+  // a frontend plugin or module.
+  if (content.frontend === undefined) {
+    return undefined;
+  }
+  if (
+    !isObject(content.frontend) ||
+    !isObject(content.frontend.exposedModules)
+  ) {
+    options.logger.warn(
+      `Ignoring the frontend section of the Backstage manifest in '${location}' of dynamic frontend plugin '${options.pluginName}', since it is invalid`,
+    );
+    return undefined;
+  }
+
+  // The exposed modules are keyed by the keys of the exposes option of the
   // build, for example "./alpha", which the module federation manifest
   // records as the path of each exposed module.
-  const entryPoints = content.entryPoints;
+  const entryPoints = content.frontend.exposedModules;
   const exposes = Array.isArray(options.mfManifest.exposes)
     ? options.mfManifest.exposes
     : [];

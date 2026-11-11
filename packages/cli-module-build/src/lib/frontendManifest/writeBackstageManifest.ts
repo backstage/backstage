@@ -18,24 +18,25 @@ import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { analyzeFrontendPackage } from './analyzeFrontendPackage';
 import {
-  FRONTEND_MANIFEST_FILE_NAME,
-  FRONTEND_MANIFEST_VERSION,
+  BACKSTAGE_MANIFEST_FILE_NAME,
+  BACKSTAGE_MANIFEST_VERSION,
+  BackstageManifest,
   FrontendPackageManifest,
 } from './types';
 
 /**
- * Analyzes the source of the modules that a module federation remote
- * exposes, and writes the manifest of each one that is a plugin or module to
- * `frontend-manifest.json` in the output directory of the remote. The
- * manifest lets apps defer loading the plugins of the remote.
+ * Analyzes the source of the entry points of a frontend package, and writes
+ * the manifest of each one that is a plugin or module to the `frontend`
+ * section of `backstage-manifest.json` in the output directory. The manifest
+ * lets apps defer loading the plugins of the package.
  */
-export async function writeFrontendManifest(options: {
+export async function writeBackstageManifest(options: {
   /** The directory of the package. */
   packageDir: string;
-  /** The output directory of the remote, next to `mf-manifest.json`. */
+  /** The output directory, which is next to `mf-manifest.json` for a remote. */
   distDir: string;
   /**
-   * The exposed modules of the remote, keyed by their name in the exposes
+   * The exposed modules of the package, keyed by their name in the exposes
    * option, for example "." or "./alpha", with the path of their source.
    */
   exposes: { [name: string]: string };
@@ -48,17 +49,30 @@ export async function writeFrontendManifest(options: {
     })),
   });
 
-  const manifest: FrontendPackageManifest = {
-    manifestVersion: FRONTEND_MANIFEST_VERSION,
-    entryPoints: {},
-  };
+  const frontend: FrontendPackageManifest = { exposedModules: {} };
   for (const [entryPoint, entry] of Object.entries(analysis.entryPoints)) {
     if ('manifest' in entry) {
-      manifest.entryPoints[entryPoint] = entry.manifest;
+      frontend.exposedModules[entryPoint] = entry.manifest;
     }
   }
+
+  const packageJson = await fs.readJson(
+    resolvePath(options.packageDir, 'package.json'),
+  );
+  const role = packageJson.backstage?.role;
+  if (typeof packageJson.name !== 'string' || typeof role !== 'string') {
+    throw new Error(
+      `Unable to write the Backstage manifest, ${options.packageDir}/package.json must have a name and a backstage.role`,
+    );
+  }
+  const manifest: BackstageManifest = {
+    manifestVersion: BACKSTAGE_MANIFEST_VERSION,
+    packageName: packageJson.name,
+    role,
+    frontend,
+  };
   await fs.outputJson(
-    resolvePath(options.distDir, FRONTEND_MANIFEST_FILE_NAME),
+    resolvePath(options.distDir, BACKSTAGE_MANIFEST_FILE_NAME),
     manifest,
     { spaces: 2 },
   );
