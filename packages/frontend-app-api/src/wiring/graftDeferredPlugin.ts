@@ -33,7 +33,7 @@ import {
   isInternalFrontendModule,
   toInternalFrontendModule,
 } from '../../../frontend-plugin-api/src/wiring/createFrontendModule';
-import { collectRouteIds, RouteRefsById } from '../routing/collectRouteIds';
+import { collectRouteIds } from '../routing/collectRouteIds';
 import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
 import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
 import { graftAppTreeNodes } from '../tree/resolveAppTree';
@@ -237,7 +237,6 @@ export function graftDeferredPlugin(options: {
   collector: ErrorCollector;
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware;
   predicateContext?: ExtensionPredicateContext;
-  routeRefsById: RouteRefsById;
   routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef | undefined>;
   routeResolutionApi: RouteResolutionApiProxy;
   appTreeApi: AppTreeApiProxy;
@@ -313,19 +312,14 @@ export function graftDeferredPlugin(options: {
 
   const newNodes = graftAppTreeNodes(tree, graftSpecs);
 
-  // Route refs aren't matched by ID yet, so the IDs are collected again with
-  // the real plugin in place of the stub.
+  // The route refs of the real plugin replace those of the stub, so the route
+  // IDs are collected again from the current features. The routing APIs are
+  // initialized from these below, which is the only place they are used once
+  // the app is finalized.
   const features = options.features.map(feature =>
     feature === stub ? plugin : feature,
   );
   const routeRefsById = collectRouteIds(features, collector);
-  for (const key of ['routes', 'externalRoutes'] as const) {
-    const target = options.routeRefsById[key] as Map<string, unknown>;
-    target.clear();
-    for (const [id, ref] of routeRefsById[key]) {
-      target.set(id, ref);
-    }
-  }
   updateRouteBindings({
     routeBindings: options.routeBindings,
     stub,
@@ -367,7 +361,7 @@ export function graftDeferredPlugin(options: {
     tree,
     routeResolutionApi: options.routeResolutionApi,
     appTreeApi: options.appTreeApi,
-    routeRefsById: options.routeRefsById,
+    routeRefsById,
   });
 
   return { features, elements };
