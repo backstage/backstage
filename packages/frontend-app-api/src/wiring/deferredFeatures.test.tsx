@@ -23,6 +23,7 @@ import {
   createExtensionDataRef,
   createExtensionInput,
   createExternalRouteRef,
+  createFrontendModule,
   createFrontendPlugin,
   createRouteRef,
   PageBlueprint,
@@ -221,6 +222,54 @@ describe('deferred features', () => {
     }).finalize();
     expect(plainApp.errors).toBeUndefined();
     expect(plainApp.tree.nodes.has('page:deferred')).toBe(false);
+  });
+
+  it('should keep module extensions that attach to a stub page', async () => {
+    const realPlugin = createFrontendPlugin({
+      pluginId: 'tabbed',
+      extensions: [
+        PageBlueprint.make({ params: { path: '/tabbed', title: 'Tabbed' } }),
+      ],
+    });
+    const tabbedManifest = createFrontendFeatureManifest(realPlugin);
+    const module = createFrontendModule({
+      pluginId: 'tabbed',
+      extensions: [
+        PageBlueprint.make({
+          name: 'extra',
+          attachTo: { id: 'page:tabbed', input: 'pages' },
+          params: {
+            path: 'extra',
+            title: 'Module tab',
+            loader: async () => <div>Module tab content</div>,
+          },
+        }),
+      ],
+    });
+    const load = jest.fn(async () => ({ default: realPlugin }));
+    window.history.replaceState(null, '', '/tabbed');
+
+    const app = prepareSpecializedApp({
+      features: [noSignInAppPlugin, module],
+      __internal: {
+        deferredFeatures: [
+          { name: 'tabbed-pkg', manifest: await tabbedManifest, load },
+        ],
+      },
+    } as CreateSpecializedAppInternalOptions).finalize();
+    const moduleNode = app.tree.nodes.get('page:tabbed/extra');
+    expect(moduleNode?.edges.attachedTo?.node.spec.id).toBe('page:tabbed');
+
+    // The real page renders the tab from the module
+    render(app.element);
+    await expect(
+      screen.findByText('Module tab content'),
+    ).resolves.toBeInTheDocument();
+    expect(load).toHaveBeenCalledTimes(1);
+    const realPage = app.tree.nodes.get('page:tabbed');
+    expect(realPage?.spec.plugin.pluginId).toBe('tabbed');
+    expect(app.tree.nodes.get('page:tabbed/extra')).toBe(moduleNode);
+    expect(moduleNode?.edges.attachedTo?.node).toBe(realPage);
   });
 
   it('should load a plugin with an API, an element and external routes on first use', async () => {
