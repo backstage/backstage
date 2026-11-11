@@ -36,7 +36,7 @@ In large repositories, a plugin is often migrated a page or tab at a time. When 
 - **New system:** `createFrontendPlugin` from `@backstage/frontend-plugin-api`, pages via `PageBlueprint`, routes owned by the plugin
 - **Page shell:** Old-system pages render their own `Page`/`Header`/`PageWithHeader` from `@backstage/core-components`. In the new system, the framework's `PageLayout` renders `PluginHeader` from `@backstage/ui` above each page, unless the page sets `noHeader: true`. Step 4 explains how to handle the old shell.
 - **Wrapper packages:** Some repositories import `@backstage/*` packages through their own re-exports, such as `@internal/backstage/core-plugin-api`. Treat those imports like the package they re-export in every step.
-- **Extension points, not app edits:** A migrated plugin works once it is installed. Everything it contributes to the app, such as pages, entity tabs and cards, APIs, and header actions, is an extension that attaches to an extension point. Adopters adjust it through `app-config` or modules, not by rendering the plugin's components in their app. Don't migrate an old-system component that the app placed by hand, such as a sidebar widget, into a component export with instructions to render it in the app. If no extension point fits, stop and tell the user which one is missing, and keep that part on the old system until one exists.
+- **Extension points first, app edits as a last resort:** A migrated plugin should work once it is installed. It contributes through extension points: the ones the framework and the app provide, such as pages, APIs, and navigation, and the ones other plugins provide, such as entity tabs and cards from the catalog. Adopters adjust those contributions through `app-config` or modules. When nothing fits, the fix is an extension point in the app or in the plugin that owns that part of the UI, not a component that every adopter has to place by hand. A plugin that owns UI other plugins should be able to extend gives them one, through an extension input and a blueprint of its own. Tell the user which extension point is missing and where it belongs. Ask adopters to edit their app only as a last resort, when adding the extension point is out of scope, and say in the README that it is temporary.
 
 ## Step 1: Route Refs
 
@@ -446,16 +446,16 @@ if (docsLink) {
 
 For path A, replace every `@backstage/core-plugin-api` import with `@backstage/frontend-plugin-api`, including imports through the repository's own re-exports of it:
 
-| Old Import (`@backstage/core-plugin-api`)                                                              | New Import (`@backstage/frontend-plugin-api`)                                                                                                                     |
-| ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `createPlugin`                                                                                         | `createFrontendPlugin`                                                                                                                                            |
-| `createRouteRef`, `createSubRouteRef`, `createExternalRouteRef`                                        | Same names                                                                                                                                                        |
-| `createApiRef`                                                                                         | `createApiRef`                                                                                                                                                    |
-| `createApiFactory`                                                                                     | `ApiBlueprint.make`                                                                                                                                               |
-| `useApi`, `useRouteRef`                                                                                | Same names                                                                                                                                                        |
-| `configApiRef`, `discoveryApiRef`, `fetchApiRef`, `identityApiRef`, `storageApiRef`, `analyticsApiRef` | Same names                                                                                                                                                        |
-| `createRoutableExtension`                                                                              | `PageBlueprint.make`                                                                                                                                              |
-| `createComponentExtension`                                                                             | A blueprint, such as `EntityCardBlueprint`. A plain component export only for building blocks that other plugins render, never for something the app has to place |
+| Old Import (`@backstage/core-plugin-api`)                                                              | New Import (`@backstage/frontend-plugin-api`)                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `createPlugin`                                                                                         | `createFrontendPlugin`                                                                                                                                             |
+| `createRouteRef`, `createSubRouteRef`, `createExternalRouteRef`                                        | Same names                                                                                                                                                         |
+| `createApiRef`                                                                                         | `createApiRef`                                                                                                                                                     |
+| `createApiFactory`                                                                                     | `ApiBlueprint.make`                                                                                                                                                |
+| `useApi`, `useRouteRef`                                                                                | Same names                                                                                                                                                         |
+| `configApiRef`, `discoveryApiRef`, `fetchApiRef`, `identityApiRef`, `storageApiRef`, `analyticsApiRef` | Same names                                                                                                                                                         |
+| `createRoutableExtension`                                                                              | `PageBlueprint.make`                                                                                                                                               |
+| `createComponentExtension`                                                                             | A blueprint, such as `EntityCardBlueprint`. A plain component export for building blocks that other plugins render, and for the app to place only as a last resort |
 
 ## Step 7: Refs and Translations (Path B)
 
@@ -517,7 +517,7 @@ Items marked (A) or (B) apply to that path only.
 14. [ ] (B) Refs and translations exported from the main entry, not duplicated in `./alpha`
 15. [ ] (B) Old-system pages and exports still work
 16. [ ] Smoke test that renders the new plugin's main page
-17. [ ] The new-system install docs need no app code beyond installing the plugin, with any missing extension point reported to the user
+17. [ ] Everything the plugin adds reaches the app through extension points, and any app code in the install docs is a last resort for a missing extension point that was reported to the user
 18. [ ] The plugin's legacy wiring removed from a new-system app in the same repository, with the app's redirects moved to config, and no export removed that other code still imports
 19. [ ] `yarn tsc` and `yarn lint` pass
 20. [ ] `yarn build:api-reports` run, if the project uses API reports

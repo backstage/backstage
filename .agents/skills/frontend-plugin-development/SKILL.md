@@ -22,7 +22,9 @@ It is a reference, not a procedure. Read only the reference that matches the tas
 
 ## Reach the app through extension points
 
-A plugin should work once it is installed. Contribute everything through blueprints that attach to an extension point, such as `PageBlueprint`, `EntityContentBlueprint`, `ApiBlueprint`, or a blueprint another plugin defines. Don't export a component and ask adopters to render it in their app, and don't solve it by having the app edit its `NavContentBlueprint` for the plugin. When the content the plugin needs to add has no extension point, for example interactive sidebar content, say so to the user instead of working around it.
+A plugin should work once it is installed. Contribute through blueprints that attach to an extension point: the ones the framework and the app provide, such as `PageBlueprint` and `ApiBlueprint`, or ones other plugins provide, such as `EntityContentBlueprint` from the catalog. If other plugins should be able to extend part of your plugin's UI, give them an extension point: an extension input and a blueprint that attaches to it.
+
+When there is no extension point for what the plugin adds, the right fix is to add one in the app or in the plugin that owns that UI. Tell the user what is missing and where it belongs. Exporting a component for adopters to render in their app is a last resort, for when adding the extension point is out of scope, and the README should say it is temporary.
 
 ## Check the dev app after a change
 
