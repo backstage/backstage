@@ -63,6 +63,42 @@ describe('compileSchema', () => {
   it.each([
     ['cfworker', cfworkerSchemaEngine],
     ['ajv', ajvSchemaEngine],
+  ])('applies keywords next to $ref with the %s engine', (_name, engine) => {
+    const refSchema = {
+      type: 'object',
+      properties: {
+        metadata: { $ref: 'EntityMeta', required: ['namespace'] },
+      },
+    };
+    const validate = compileSchema(engine, refSchema, { disableCache: true });
+
+    expect(validate({ metadata: { name: 'a', namespace: 'b' } })).toBe(
+      undefined,
+    );
+    expect(validate({ metadata: { name: 'a' } })).toEqual([
+      expect.objectContaining({
+        instancePath: '/metadata',
+        keyword: 'required',
+      }),
+    ]);
+    expect(validate({ metadata: { namespace: 'b' } })).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          instancePath: '/metadata',
+          keyword: 'required',
+        }),
+      ]),
+    );
+    // The schema passed in is not modified
+    expect(refSchema.properties.metadata).toEqual({
+      $ref: 'EntityMeta',
+      required: ['namespace'],
+    });
+  });
+
+  it.each([
+    ['cfworker', cfworkerSchemaEngine],
+    ['ajv', ajvSchemaEngine],
   ])('handles edge case values with the %s engine', (_name, engine) => {
     const validate = compileSchema(
       engine,
@@ -111,6 +147,9 @@ describe('compileSchema', () => {
     expect(() =>
       compileSchema(ajvSchemaEngine, { type: 'object', unknownKeyword: 1 }),
     ).toThrow(/unknown keyword/);
+    expect(() =>
+      compileSchema(ajvSchemaEngine, { type: 'string', format: 'email' }),
+    ).toThrow(/unknown format/);
   });
 
   it('rejects malformed schemas with cfworker at compile time', () => {
@@ -122,6 +161,9 @@ describe('compileSchema', () => {
     expect(() =>
       compile({ properties: { a: { type: 'string', minimumLength: 3 } } }),
     ).toThrow(/unknown keyword "minimumLength" at path \/properties\/a/);
+    expect(() =>
+      compile({ properties: { a: { type: 'string', format: 'email' } } }),
+    ).toThrow(/unknown format "email" at path \/properties\/a/);
     expect(() =>
       compile({ $schema: 'https://json-schema.org/draft/2020-12/schema' }),
     ).toThrow(/unsupported \$schema/);

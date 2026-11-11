@@ -240,10 +240,11 @@ function normalizeObject(
   return result;
 }
 
-// Copies a schema, translating any `nullable` keywords
+// Copies a schema, translating any `nullable` keywords and `$ref` siblings
 function withoutNullable(schema: object): Schema {
   const clone = cloneJson(schema);
   translateNullable(clone);
+  translateRefSiblings(clone);
   return clone as Schema;
 }
 
@@ -359,6 +360,14 @@ function checkKnownKeywords(schema: unknown, path: string = '') {
     return;
   }
   for (const [keyword, value] of Object.entries(schema)) {
+    // ajv rejects all formats, since no format definitions are added to it
+    if (keyword === 'format') {
+      throw new TypeError(
+        `Invalid JSON schema: unknown format ${JSON.stringify(
+          value,
+        )} at path ${path || '<root>'}`,
+      );
+    }
     if (!KNOWN_KEYWORDS.has(keyword)) {
       throw new TypeError(
         `Invalid JSON schema: unknown keyword "${keyword}" at path ${
@@ -437,6 +446,70 @@ function translateNullable(schema: unknown) {
         }
       }
     }
+  }
+}
+
+// Keywords that don't affect validation, so they can stay next to `$ref`
+const REF_NEUTRAL_KEYWORDS = new Set([
+  '$comment',
+  '$defs',
+  '$ref',
+  '$schema',
+  'default',
+  'definitions',
+  'deprecated',
+  'description',
+  'examples',
+  'readOnly',
+  'title',
+  'writeOnly',
+]);
+
+/**
+ * In draft-07 mode the engine ignores all keywords next to a `$ref`, while
+ * ajv applies them. To match ajv, this moves the `$ref` into an `allOf`, so
+ * the other keywords apply too. The other keywords stay where they are, so
+ * JSON pointers into the schema keep working. Schemas with an `$id` next to
+ * the `$ref` are left alone, since moving the `$ref` would change how it is
+ * resolved. Modifies the schema in place.
+ */
+function translateRefSiblings(schema: unknown) {
+  if (Array.isArray(schema)) {
+    schema.forEach(translateRefSiblings);
+    return;
+  }
+  if (!schema || typeof schema !== 'object') {
+    return;
+  }
+  const node = schema as Record<string, unknown>;
+  for (const [keyword, value] of Object.entries(node)) {
+    if (
+      SUBSCHEMA_KEYWORDS.has(keyword) ||
+      SUBSCHEMA_LIST_KEYWORDS.has(keyword)
+    ) {
+      translateRefSiblings(value);
+    } else if (
+      SUBSCHEMA_MAP_KEYWORDS.has(keyword) &&
+      value &&
+      typeof value === 'object'
+    ) {
+      for (const subschema of Object.values(value)) {
+        if (!Array.isArray(subschema)) {
+          translateRefSiblings(subschema);
+        }
+      }
+    }
+  }
+  if (
+    typeof node.$ref === 'string' &&
+    !('$id' in node) &&
+    Object.keys(node).some(keyword => !REF_NEUTRAL_KEYWORDS.has(keyword))
+  ) {
+    const refSchema = { $ref: node.$ref };
+    delete node.$ref;
+    node.allOf = Array.isArray(node.allOf)
+      ? [...node.allOf, refSchema]
+      : [refSchema];
   }
 }
 
