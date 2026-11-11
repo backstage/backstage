@@ -174,10 +174,16 @@ export class FrontendApiResolver implements ApiHolder {
                   ` Set loading: 'async' on the ref for '${factory.api.id}' and update its factory as needed.`,
               );
             }
-            return this.load(
+            const dep = this.load(
               isAsyncFactory ? { ...depRef, loading: 'async' } : depRef,
               [...loading, { apiId: factory.api.id, dependencyName: name }],
             );
+            if (dep === undefined) {
+              throw new Error(
+                `No API factory available for dependency ${depRef} of dependent ${factory.api}`,
+              );
+            }
+            return dep;
           } catch (error) {
             if (!isAsyncFactory) {
               throw error;

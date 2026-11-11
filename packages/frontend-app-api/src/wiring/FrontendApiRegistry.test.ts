@@ -184,6 +184,20 @@ describe('FrontendApiResolver', () => {
     );
     resolver.invalidate();
     await expect(resolver.get(api)).rejects.toBe(error);
+    const missing = createApiRef<string>().with({ id: 'missing' });
+    registry.set(
+      createApiFactory({
+        api,
+        deps: { dependency, missing },
+        factory: () => 'unreachable',
+      }),
+    );
+    resolver.invalidate([api.id]);
+    const missingResult = resolver.get(api);
+    await expect(missingResult).rejects.toThrow(
+      'No API factory available for dependency apiRef{missing}',
+    );
+    expect(resolver.get(api)).toBe(missingResult);
     // A sibling that rejects later must still be observed by dependency resolution.
     rejectDependency!(new Error('Sibling dependency failed later'));
     await Promise.resolve();

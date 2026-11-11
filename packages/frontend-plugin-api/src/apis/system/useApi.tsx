@@ -17,6 +17,10 @@
 import { AnyApiRef, ApiHolder } from './types';
 import { useVersionedContext } from '@backstage/version-bridge';
 import { NotImplementedError } from '@backstage/errors';
+import {
+  resolvedApiPromise,
+  type ResolvedApiPromise,
+} from '@internal/frontend';
 
 const emptyApiHolder: ApiHolder = Object.freeze({ get: () => undefined });
 
@@ -78,15 +82,21 @@ export function useApi<T>(apiRef: AnyApiRef<T>): T {
   }
   // Handle promises even when the consumer has an older synchronous ref.
   if (api && typeof (api as Promise<unknown>).then === 'function') {
-    const promise = api as Promise<T>;
+    const promise = api as ResolvedApiPromise<T>;
     let state = apiPromiseStates.get(promise);
     if (!state) {
-      state = { status: 'pending' };
+      const resolved = promise[resolvedApiPromise];
+      state = resolved
+        ? { status: 'fulfilled', value: resolved.value }
+        : { status: 'pending' };
       apiPromiseStates.set(promise, state);
-      promise.then(
-        value => apiPromiseStates.set(promise, { status: 'fulfilled', value }),
-        error => apiPromiseStates.set(promise, { status: 'rejected', error }),
-      );
+      if (!resolved) {
+        promise.then(
+          value =>
+            apiPromiseStates.set(promise, { status: 'fulfilled', value }),
+          error => apiPromiseStates.set(promise, { status: 'rejected', error }),
+        );
+      }
     }
     if (state.status === 'pending') {
       throw promise;

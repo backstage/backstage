@@ -18,8 +18,11 @@ preserve the lookup result type.
 
 Explicitly asynchronous ref types require the `loading: 'async'` marker. Older
 refs without a loading marker remain compatible with synchronous consumers.
-`ApiFactory<Api, Impl, Deps>` also remains synchronous by default, while
-`AnyApiFactory` accepts either loading mode.
+`ApiFactory<Api, Impl, Deps>` and `TypesToApiRefs<Deps>` also remain synchronous
+by default, while `AnyApiFactory` accepts either loading mode.
+
+Missing utility API dependencies fail promptly even when a sibling dependency
+is still initializing.
 
 `useApi` also supports older synchronous refs when their registered implementation
 has migrated to async loading. Existing synchronous factories remain compatible

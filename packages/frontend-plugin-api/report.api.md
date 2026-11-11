@@ -2656,10 +2656,7 @@ export type TranslationSnapshot<
     };
 
 // @public
-export type TypesToApiRefs<
-  T,
-  TLoading extends 'sync' | 'async' = 'sync' | 'async',
-> = {
+export type TypesToApiRefs<T, TLoading extends 'sync' | 'async' = 'sync'> = {
   [key in keyof T]: ApiRef<T[key], string, TLoading>;
 };
 

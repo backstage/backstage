@@ -5,8 +5,9 @@
 Added support for async-capable utility API refs in test API tuples and nested
 test API providers.
 
-Async mock lookups keep the same promise when an outer Suspense boundary retries
-the provider before it first mounts, including when API tuples are recreated.
+Already-available mock implementations remain immediately readable through
+`useApi`, including async-capable refs and inline mocks under an outer Suspense
+boundary. Holder lookups for async refs still return stable promises.
 
 `renderInTestApp` now handles suspended content with an empty fallback, so lazy
 APIs do not require a Suspense wrapper in each test. Only content that actually

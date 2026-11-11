@@ -16,6 +16,10 @@
 
 import { ReactNode, useMemo } from 'react';
 import {
+  resolvedApiPromise,
+  type ResolvedApiPromise,
+} from '@internal/frontend';
+import {
   ApiHolder,
   ApiLookupResult,
   ApiRef,
@@ -47,14 +51,6 @@ export type TestApiPairs<TApiPairs> = {
   [TIndex in keyof TApiPairs]: TestApiPair<TApiPairs[TIndex]>;
 };
 
-// Lookups must survive aborted provider renders, where React discards useMemo.
-// Avoid retaining object implementations after their tests have finished.
-const objectApiPromises = new WeakMap<object, Promise<unknown>>();
-const primitiveApiPromises = new WeakMap<
-  AnyApiRef,
-  Map<unknown, Promise<unknown>>
->();
-
 /** @internal */
 export function resolveTestApiEntries<const TApiPairs extends any[]>(
   apis: readonly [...TestApiPairs<TApiPairs>],
@@ -71,6 +67,7 @@ export function resolveTestApiEntries<const TApiPairs extends any[]>(
     }
   }
 
+  const promises = new Map<string, Promise<unknown>>();
   function get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
     ref: TApiRef,
   ): ApiLookupResult<TApiRef>;
@@ -78,27 +75,22 @@ export function resolveTestApiEntries<const TApiPairs extends any[]>(
     if (ref.loading !== 'async' || !apiMap.has(ref.id)) {
       return apiMap.get(ref.id);
     }
-    const implementation = apiMap.get(ref.id);
-    if (
-      (typeof implementation === 'object' && implementation !== null) ||
-      typeof implementation === 'function'
-    ) {
-      let promise = objectApiPromises.get(implementation);
-      if (!promise) {
-        promise = Promise.resolve(implementation);
-        objectApiPromises.set(implementation, promise);
+    if (!promises.has(ref.id)) {
+      const implementation = apiMap.get(ref.id);
+      const promise: ResolvedApiPromise<unknown> =
+        Promise.resolve(implementation);
+      if (
+        !implementation ||
+        typeof (implementation as Promise<unknown>).then !== 'function'
+      ) {
+        // Ready mocks must not suspend a provider whose first render is retried.
+        Object.defineProperty(promise, resolvedApiPromise, {
+          value: { value: implementation },
+        });
       }
-      return promise;
+      promises.set(ref.id, promise);
     }
-    let promises = primitiveApiPromises.get(ref);
-    if (!promises) {
-      promises = new Map();
-      primitiveApiPromises.set(ref, promises);
-    }
-    if (!promises.has(implementation)) {
-      promises.set(implementation, Promise.resolve(implementation));
-    }
-    return promises.get(implementation);
+    return promises.get(ref.id);
   }
   return { get };
 }

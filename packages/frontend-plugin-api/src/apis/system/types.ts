@@ -62,13 +62,12 @@ export type ApiLookupResult<TApiRef extends AnyApiRef = AnyApiRef> =
 
 /**
  * Wraps a type with API properties into a type holding their respective {@link ApiRef}s.
+ * Dependencies are synchronous by default; use the second type parameter to
+ * allow async-capable refs.
  *
  * @public
  */
-export type TypesToApiRefs<
-  T,
-  TLoading extends 'sync' | 'async' = 'sync' | 'async',
-> = {
+export type TypesToApiRefs<T, TLoading extends 'sync' | 'async' = 'sync'> = {
   [key in keyof T]: ApiRef<T[key], string, TLoading>;
 };
 

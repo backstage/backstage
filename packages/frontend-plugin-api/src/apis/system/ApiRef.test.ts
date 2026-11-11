@@ -19,6 +19,7 @@ import type {
   AnyApiRef,
   AnyApiFactory,
   ApiFactory,
+  TypesToApiRefs,
   ApiHolder,
   ApiLookupResult,
   ApiRef as ApiRefType,
@@ -113,6 +114,11 @@ describe('ApiRef', () => {
       createApiRef<{ value: string }>({ id: 'legacy' }),
     );
     const synchronous: { value: string } | undefined = lookup(sync);
+    const deps: TypesToApiRefs<{ dependency: { value: string } }> = {
+      dependency: sync,
+    };
+    const dependency: { value: string } | undefined = lookup(deps.dependency);
+    expect(dependency?.value).toBe('sync');
     const genericSynchronous: { value: string } | undefined = lookupSync(sync);
     const annotated: { value: string } | undefined = lookup(defaultSync);
     const asynchronous: Promise<{ value: string }> | undefined =
@@ -157,12 +163,17 @@ describe('ApiRef', () => {
       id: 'async',
       loading: 'async',
     });
-    const factory: ApiFactory<Api, Api, {}> = {
-      api: sync,
-      deps: {},
-      factory: () => ({ value: 'sync' }),
+    const defaultDeps: TypesToApiRefs<{ dependency: Api }> = {
+      dependency: sync,
     };
-    const implementation: Api = factory.factory({});
+    const factory: ApiFactory<Api, Api, { dependency: Api }> = {
+      api: sync,
+      deps: defaultDeps,
+      factory: ({ dependency }) => dependency,
+    };
+    const implementation: Api = factory.factory({
+      dependency: { value: 'sync' },
+    });
     expect(implementation).toEqual({ value: 'sync' });
     const invalidFactory: ApiFactory<Api, Api, {}> = {
       api: sync,

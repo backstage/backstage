@@ -33,7 +33,7 @@ const yApiRef = createApiRef<string>({
 });
 
 describe('TestApiProvider', () => {
-  it('should retain lookup promises when the provider suspends before mounting', async () => {
+  it('should read inline async mocks synchronously under an outer Suspense boundary', () => {
     for (const implementation of [{ value: 'Mock API' }, 'Mock API']) {
       const apiRef = createApiRef<typeof implementation>().with({
         id: 'async',
@@ -47,7 +47,16 @@ describe('TestApiProvider', () => {
       };
       const Provider = () => {
         return (
-          <TestApiProvider apis={[[apiRef, implementation]]}>
+          <TestApiProvider
+            apis={[
+              [
+                apiRef,
+                typeof implementation === 'string'
+                  ? implementation
+                  : { ...implementation },
+              ],
+            ]}
+          >
             <Consumer />
           </TestApiProvider>
         );
@@ -59,7 +68,9 @@ describe('TestApiProvider', () => {
           </Suspense>
         </StrictMode>,
       );
-      expect(await screen.findByText('Mock API')).toBeInTheDocument();
+      expect(screen.getByText('Mock API')).toBeInTheDocument();
+      expect(screen.queryByText('Loading API')).not.toBeInTheDocument();
+      expect(promises.every(promise => promise instanceof Promise)).toBe(true);
       expect(new Set(promises).size).toBe(1);
       rendered.unmount();
     }
