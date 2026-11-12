@@ -24,6 +24,16 @@ if: needs.pre_activation.outputs.check_result == 'success'
 # and writes the result to /tmp/gh-aw/agent/doc-gaps.md. Pull request text is
 # only matched against, never copied into that file.
 steps:
+  - name: Use Node.js
+    uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+    with:
+      node-version: 24.22.1
+
+  - name: Install dependencies
+    uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
+    with:
+      cache-prefix: ${{ runner.os }}-v24.x
+
   - name: Triage changesets against open docs pull requests
     env:
       GH_TOKEN: ${{ github.token }}
@@ -311,7 +321,7 @@ Edit the files with the edit tool. Write for adopters in plain language, in the 
 
 ## Step 6. Self-check
 
-- Run `npx --yes prettier@2.8.8 --config packages/cli/config/prettier.json --check <edited files>`. The checkout has no installed dependencies, so the root Prettier config cannot load; this runs the version pinned in `yarn.lock` with the dependency-free config. Fix any formatting problem it reports.
+- Run `yarn prettier --check <edited files>`. A setup step has already run `yarn install --immutable`, so the repository Prettier configuration loads. Fix any formatting problem it reports.
 - Re-check every source reference: run `sed -n '<line>p' <path>` for each one and confirm that the line supports the claim. Fix the reference, or remove the claim and move it to "Needs human review".
 - If `vale` is available on the path, run `node scripts/check-docs-quality.js <edited files>` and fix what it reports. Otherwise, write "Vale: not run" in the pull request body.
 - If the self-check fails and you cannot fix it, do not open the pull request. Call `noop` with the reason.
