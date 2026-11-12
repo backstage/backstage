@@ -7,6 +7,7 @@ app:
   packages: all # ✨
   experimental:
     deferredRemotes: true
+    deferredPackages: true
 
   #datadogRum:
   #  clientToken: '123456789'
