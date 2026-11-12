@@ -400,6 +400,51 @@ describe('createGetCatalogModelDescriptionAction', () => {
     expect(description.match(/"spec.cfg.team"/g)).toHaveLength(1);
   });
 
+  it('should combine conflicting allOf declarations without dropping any', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
+        type: 'object',
+        properties: {
+          // Every referenced definition applies
+          target: {
+            allOf: [{ $ref: '#/definitions/A' }, { $ref: '#/definitions/B' }],
+          },
+          typedRef: {
+            allOf: [{ type: 'object' }, { $ref: '#/definitions/A' }],
+          },
+          // const and enum narrow each other, in one schema or across several
+          pinned: { allOf: [{ enum: ['a', 'b'] }, { const: 'a' }] },
+          pinnedInline: { enum: ['a', 'b'], const: 'b' },
+          impossible: { allOf: [{ enum: ['a'] }, { const: 'b' }] },
+          // Types that do not overlap, and integer as a subset of number
+          broken: { allOf: [{ type: 'string' }, { type: 'number' }] },
+          count: { allOf: [{ type: 'number' }, { type: 'integer' }] },
+          notes: {
+            type: 'string',
+            description: 'Free text.\n\nSpans several lines.',
+          },
+        },
+      })),
+    );
+
+    expect(description).toContain(
+      '* "spec.target" (reference to "#/definitions/A" and reference to "#/definitions/B")',
+    );
+    expect(description).toContain(
+      '* "spec.typedRef" (object, reference to "#/definitions/A")',
+    );
+    expect(description).toContain('* "spec.pinned" (unknown, const "a")');
+    expect(description).toContain('* "spec.pinnedInline" (unknown, const "b")');
+    expect(description).toContain(
+      '* "spec.impossible" (unknown, no allowed values)',
+    );
+    expect(description).toContain('* "spec.broken" (no valid type)');
+    expect(description).toContain('* "spec.count" (integer)');
+    expect(description).toContain(
+      '* "spec.notes" (string): Free text. Spans several lines.',
+    );
+  });
+
   it('should mark fields with alternative schemas instead of expanding them', async () => {
     const description = await describeModel(
       createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({

@@ -295,9 +295,38 @@ function intersect(a: unknown[], b: unknown[]): unknown[] {
   return a.filter(v => keys.has(JSON.stringify(v)));
 }
 
+// Like intersect, but aware that every integer is also a number
+function intersectTypes(a: unknown[], b: unknown[]): unknown[] {
+  const result = new Set<unknown>();
+  for (const x of a) {
+    for (const y of b) {
+      if (x === y) {
+        result.add(x);
+      } else if (
+        (x === 'integer' && y === 'number') ||
+        (x === 'number' && y === 'integer')
+      ) {
+        result.add('integer');
+      }
+    }
+  }
+  return [...result];
+}
+
+// The values allowed by enum and const together, or undefined if unrestricted
+function allowedValuesOf(schema: Schema): unknown[] | undefined {
+  const fromEnum = Array.isArray(schema.enum) ? schema.enum : undefined;
+  const fromConst = 'const' in schema ? [schema.const] : undefined;
+  if (fromEnum && fromConst) {
+    return intersect(fromConst, fromEnum);
+  }
+  return fromEnum ?? fromConst;
+}
+
 // Folds inline allOf entries into the schema. Every entry applies, so types
-// and allowed values are intersected, required names are joined, and
-// properties declared more than once are folded the same way when visited.
+// and allowed values are intersected, required names and references are
+// joined, and properties declared more than once are folded the same way when
+// visited. A folded schema is only used for rendering, so $ref may hold a list.
 function foldAllOf(schema: Schema): Schema {
   if (!Array.isArray(schema.allOf)) {
     return schema;
@@ -309,10 +338,23 @@ function foldAllOf(schema: Schema): Schema {
 function combine(a: Schema, b: Schema): Schema {
   const result: Schema = { ...b, ...a };
   if (a.type !== undefined && b.type !== undefined) {
-    result.type = intersect(toArray(a.type), toArray(b.type));
+    result.type = intersectTypes(toArray(a.type), toArray(b.type));
   }
-  if (Array.isArray(a.enum) && Array.isArray(b.enum)) {
-    result.enum = intersect(a.enum, b.enum);
+  const aValues = allowedValuesOf(a);
+  const bValues = allowedValuesOf(b);
+  if (aValues && bValues) {
+    const values = intersect(aValues, bValues);
+    delete result.enum;
+    delete result.const;
+    if (values.length === 1 && ('const' in a || 'const' in b)) {
+      result.const = values[0];
+    } else {
+      result.enum = values;
+    }
+  }
+  const refs = [...new Set([...toArray(a.$ref), ...toArray(b.$ref)])];
+  if (refs.length > 1) {
+    result.$ref = refs;
   }
   if (a.required || b.required) {
     result.required = [
@@ -363,15 +405,22 @@ function collectFields(
 }
 
 function describeType(schema: Schema): string {
-  if (typeof schema.$ref === 'string') {
-    // Referenced definitions are not resolved, but the field must still show
-    return `reference to "${schema.$ref}"`;
+  const parts: string[] = [];
+  if (schema.type !== undefined) {
+    const types = toArray(schema.type).filter(t => typeof t === 'string');
+    if (types.length === 1 && types[0] === 'array' && isObject(schema.items)) {
+      parts.push(`array of ${describeType(foldAllOf(schema.items))}`);
+    } else {
+      // Declarations whose types do not overlap leave no valid type
+      parts.push(types.length ? types.join(' | ') : 'no valid type');
+    }
   }
-  const types = toArray(schema.type).filter(t => typeof t === 'string');
-  if (types.length === 1 && types[0] === 'array' && isObject(schema.items)) {
-    return `array of ${describeType(foldAllOf(schema.items))}`;
+  // Referenced definitions are not resolved, but the field must still show
+  const refs = toArray(schema.$ref).filter(r => typeof r === 'string');
+  if (refs.length) {
+    parts.push(refs.map(r => `reference to "${r}"`).join(' and '));
   }
-  return types.length ? types.join(' | ') : 'unknown';
+  return parts.length ? parts.join(', ') : 'unknown';
 }
 
 function describeField(
@@ -383,21 +432,32 @@ function describeField(
   if (required) {
     parts.push('required');
   }
-  if (Array.isArray(schema.enum)) {
-    parts.push(
-      schema.enum.length
-        ? `one of ${schema.enum.map(v => JSON.stringify(v)).join(', ')}`
-        : 'no allowed values',
-    );
-  } else if ('const' in schema) {
-    parts.push(`const ${JSON.stringify(schema.const)}`);
+  const values = allowedValuesOf(schema);
+  if (values) {
+    if (!values.length) {
+      parts.push('no allowed values');
+    } else if (values.length === 1 && 'const' in schema) {
+      parts.push(`const ${JSON.stringify(values[0])}`);
+    } else {
+      parts.push(`one of ${values.map(v => JSON.stringify(v)).join(', ')}`);
+    }
   }
   if (CONDITIONAL_KEYWORDS.some(k => k in schema)) {
     parts.push('has conditional constraints not listed here');
   }
+  // Each field is a single list item, so line breaks are collapsed
   const description =
-    typeof schema.description === 'string' ? `: ${schema.description}` : '';
-  return { path, lines: [`* "${path}" (${parts.join(', ')})${description}`] };
+    typeof schema.description === 'string'
+      ? schema.description.replace(/\s+/g, ' ').trim()
+      : '';
+  return {
+    path,
+    lines: [
+      `* "${path}" (${parts.join(', ')})${
+        description ? `: ${description}` : ''
+      }`,
+    ],
+  };
 }
 
 function describeAnnotation(annotation: CatalogModelAnnotationSummary): string {
