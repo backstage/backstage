@@ -27,7 +27,7 @@ import { resolve as resolvePath } from 'node:path';
 import { runConcurrentTasks } from '@backstage/cli-node';
 import {
   detectPackageManager,
-  Lockfile,
+  PackageManagerLockfile,
   PackageInfo,
 } from '@backstage/cli-node/alpha';
 import { mapDependencies } from '../../lib/versioning/packages';
@@ -99,7 +99,7 @@ export default async ({ args, info }: CliCommandContext) => {
 
   // The lockfile is only used to report breaking updates, so the bump works
   // without it, for example when a build system owns the installs.
-  let lockfile: Lockfile | undefined;
+  let lockfile: PackageManagerLockfile | undefined;
   try {
     lockfile = await packageManager.loadLockfile();
   } catch (error) {

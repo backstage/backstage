@@ -255,7 +255,7 @@ export async function createDistWorkspace(
   );
 
   const files: FileEntry[] =
-    options.files ?? (await getDefaultWorkspaceFiles(packageManager, logger));
+    options.files ?? (await getDefaultWorkspaceFiles(packageManager));
 
   for (const file of files) {
     const src = typeof file === 'string' ? file : file.src;
@@ -290,24 +290,21 @@ export async function createDistWorkspace(
 }
 
 /**
- * The files that are copied into the dist workspace when none are given. A
- * missing lockfile is skipped with a warning, since the commands that create
- * a dist workspace do not require one.
+ * The files that are copied into the dist workspace when none are given. The
+ * lockfile is required, since the dist workspace is installed from it.
  */
 export async function getDefaultWorkspaceFiles(
-  packageManager: Pick<PackageManager, 'lockfileName'>,
-  logger: { warn(msg: string): void },
+  packageManager: Pick<PackageManager, 'lockfileName' | 'getCommandHint'>,
 ): Promise<FileEntry[]> {
-  const files: FileEntry[] = ['package.json'];
   const lockfile = packageManager.lockfileName();
-  if (await fs.pathExists(targetPaths.resolveWorkspaceRoot(lockfile))) {
-    files.unshift(lockfile);
-  } else {
-    logger.warn(
-      `There is no ${lockfile} in the workspace root, so the dist workspace has no lockfile and cannot be installed from one`,
+  if (!(await fs.pathExists(targetPaths.resolveWorkspaceRoot(lockfile)))) {
+    throw new Error(
+      `There is no ${lockfile} in the workspace root, which the dist workspace is installed from. Run '${packageManager.getCommandHint(
+        ['install'],
+      )}' to create it.`,
     );
   }
-  return files;
+  return [lockfile, 'package.json'];
 }
 
 const FAST_PACK_SCRIPTS = [
