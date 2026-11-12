@@ -29,9 +29,10 @@ requested anyway. Never fall back to a smaller matrix silently.
   are compiled differently, and only from `IN_SUBQUERY_MIN_VALUES` values (10
   at the time of writing) as direct conditions of the filter, or from
   `INDIRECT_IN_MIN_VALUES` values (100) inside an `$any` or a `$not` and not on
-  first pages of up to 100 entities. See `src/service/request/longInLists.ts`.
-  Scenarios without permissions, short claim lists and filters with short lists
-  produce the same SQL.
+  pages of up to 100 entities. Lists that stay per row are hashed in the probe
+  from 100 values, and on pages of up to 100 entities from 10 values. See
+  `src/service/request/longInLists.ts`. Scenarios without permissions, short
+  claim lists and filters with short lists produce the same SQL.
 - **Check:** compare the generated SQL strings, not the claim count. Read the
   thresholds from the code under test and print them in the report.
 - **Invalidated by:** any change to the thresholds, to the broad fields, to

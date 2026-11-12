@@ -586,3 +586,85 @@ All on the same replica and claim lists, against master:
   for late pages (scenario 20 for groups 1.07 s, for components 1.11 s) but
   slower for scenarios 13 (1.08 s) and 14 (6.3 s) and the streams, and exposed
   to the misestimate above.
+
+## Hashed per-row probes (2026-11-12)
+
+A per-row probe of a long list now compares `(value || '') = ANY(list)` in a
+subquery with `OFFSET 0`, instead of `value = ANY(list)`. As an index
+condition, the list is sorted again by every probe, about 0.43 ms for 99
+values. As an expression, it is checked against a hash that PostgreSQL builds
+once per query: about 0.012 ms per probe, whatever the list length. The
+`OFFSET 0` keeps PostgreSQL from turning the probe into an uncorrelated hashed
+set, which would then read every row of the key, since the list is no longer
+in the index condition.
+
+The hashed probe is used from 100 values, and on pages of up to 100 entities
+from 10 values. Pages of up to 100 entities now also count as small when they
+have a cursor, so long lists inside an `$any` or a `$not` stay per row on late
+pages too.
+
+### Setup
+
+- The same beta replica as above, now 751,424 entities. Master is
+  `33ee6b59f2bc`, which includes the change above. Master and this change ran
+  interleaved in the same session, case by case, as above.
+- Claim lists of 3, 10, 40 and 99 claims, 99 claims that include the largest
+  group (117,501 entities), and 174 claims that include it. Every case
+  returned the same entities as master.
+- Measured: scenarios 1, 3, 6 (1,000 refs), 7, 12, 13, 14, 15, 16, 18, 19,
+  20 and 21 and the owned entities page, with and without permissions. Facets
+  and counts use the set compiler and are not affected.
+
+### Results
+
+| Query                       | Claims   | master | this change |
+| --------------------------- | -------- | -----: | ----------: |
+| 1 component page            | 40       |  23 ms |        5 ms |
+| 1 component page            | 174      |  43 ms |        5 ms |
+| 3 unfiltered page           | 40       |  20 ms |        1 ms |
+| 3 unfiltered page           | 174      | 161 ms |        1 ms |
+| 3 unfiltered page           | 99 large | 178 ms |        1 ms |
+| 7 full text                 | 99       |  65 ms |       16 ms |
+| 15 list page                | 99       |  48 ms |        2 ms |
+| 16 component page           | 99       |  50 ms |        3 ms |
+| 18 negated page             | 99       |  48 ms |        1 ms |
+| 19 with permission page     | 99       |  97 ms |        3 ms |
+| 6 by ref, 1,000 refs        | 174      | 203 ms |       57 ms |
+| 20 late group page          | 99       | 1.41 s |      451 ms |
+| 20 late group page          | 99 large | 9.63 s |      454 ms |
+| 20 late group page          | 174      | 1.79 s |      463 ms |
+| 20 late component page      | 174      | 2.43 s |      465 ms |
+| Owned page, with permission | 99 large | 4.83 s |      658 ms |
+| Owned page, with permission | 174      | 4.22 s |      612 ms |
+
+Everything else measured within noise of master: scenarios 12, 13 and 14 at
+all claim counts, by-ref lookups below 100 claims, scenario 21, and the owned
+page without permissions. This removes the scenario 20 regression of the
+change above.
+
+Scenario 14 with 99 claims that include the largest group is still as slow
+as on master, 24.2 s there and at the 30 s timeout here. It is a page of
+10,000 entities with fewer than 100 values, so it keeps the plain probe.
+
+### Rules that were measured and not used
+
+- The hashed probe without `OFFSET 0`, from 9 values everywhere. Where the
+  planner turned the probe into a hashed set, it read the whole key instead:
+  scenario 3 with 40 claims went from 20 ms to 260 ms, scenario 12 at 10-99
+  claims from 3.5 s to 5.7 s, and scenario 21 with broad types from 0.67 s
+  to 1.16 s.
+- The hashed probe with `OFFSET 0`, from 9 values everywhere. It fixed the
+  above, and scenario 14 with 99 claims including the largest group (23.8 s
+  to 3.4 s), but deep scans with shorter lists got slower, since PostgreSQL
+  could no longer build the matching set from the index: scenario 12 at
+  10-99 claims from 3.6 s to 5.7 s, scenario 13 from 0.43 s to 1.1 s, and
+  scenario 14 from 2.6 s to 3.5 s.
+- Either of those without sets for lists inside an `$any` or a `$not`. The
+  same, and scenario 12 with 174 claims went from 3.0 s to 5.7 s.
+- Sorting the list before sending it. PostgreSQL sorts it again on every
+  probe, which is cheap only if the list is already in the column's collation
+  order. A JavaScript sort does not match the `en_US` collation of the database (6 of 99 claims
+  out of place) and saved only a quarter of the time. Sorting in the query,
+  with `ANY(ARRAY(SELECT ... ORDER BY))`, saved 70% per probe, but hid the
+  values from the planner: scenario 14 with 99 claims went from 2.6 s to
+  14 s.
