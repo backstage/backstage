@@ -67,6 +67,7 @@ export type RawDbTaskRow = {
   last_heartbeat_at?: string;
   created_at: string;
   created_by: string | null;
+  template_ref?: string | null;
   secrets?: string | null;
   workspace?: Buffer;
 };
@@ -255,12 +256,25 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
+  // SQLite stores timestamps as UTC strings, so they must be compared as such
+  private toDbTimestamp(isoTimestamp: string): Date | string {
+    if (this.db.client.config.client.includes('sqlite')) {
+      return DateTime.fromISO(isoTimestamp, { zone: 'UTC' }).toFormat(
+        'yyyy-MM-dd HH:mm:ss',
+      );
+    }
+    return new Date(isoTimestamp);
+  }
+
   async list(options: {
     createdBy?: string;
     status?: TaskStatus;
     filters?: {
       createdBy?: string | string[];
       status?: TaskStatus | TaskStatus[];
+      templateRef?: string | string[];
+      createdAfter?: string;
+      createdBefore?: string;
     };
     pagination?: {
       limit?: number;
@@ -300,6 +314,27 @@ export class DatabaseTaskStore implements TaskStore {
         filters?.status,
       );
       queryBuilder.whereIn('status', [...new Set(arr)]);
+    }
+
+    const templateRefs = flattenParams<string>(filters?.templateRef);
+    if (templateRefs.length > 0) {
+      queryBuilder.whereIn('template_ref', [...new Set(templateRefs)]);
+    }
+
+    if (filters?.createdAfter) {
+      queryBuilder.where(
+        'created_at',
+        '>=',
+        this.toDbTimestamp(filters.createdAfter),
+      );
+    }
+
+    if (filters?.createdBefore) {
+      queryBuilder.where(
+        'created_at',
+        '<=',
+        this.toDbTimestamp(filters.createdBefore),
+      );
     }
 
     const countQuery = queryBuilder.clone();
@@ -409,6 +444,7 @@ export class DatabaseTaskStore implements TaskStore {
       spec: JSON.stringify(options.spec),
       secrets: options.secrets ? JSON.stringify(options.secrets) : undefined,
       created_by: options.createdBy ?? null,
+      template_ref: options.spec.templateInfo?.entityRef ?? null,
       status: 'open',
     });
 

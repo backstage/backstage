@@ -95,10 +95,13 @@ export type ListActions = {
 export type ListTasks = {
   query: {
     createdBy?: Array<string>;
+    createdAfter?: string;
+    createdBefore?: string;
     limit?: number;
     offset?: number;
     order?: Array<string>;
     status?: Array<string>;
+    templateRef?: Array<string>;
   };
   response: ListTasksResponse | Error;
 };

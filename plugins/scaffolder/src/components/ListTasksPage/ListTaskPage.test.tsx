@@ -27,7 +27,14 @@ import {
   ScaffolderApi,
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
-import { act, fireEvent } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { rootRouteRef } from '../../routes';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 
@@ -202,4 +209,116 @@ describe('<ListTasksPage />', () => {
     expect(await findByText('One Template')).toBeInTheDocument();
     expect(await findByText('boo')).toBeInTheDocument();
   });
+
+  it('should order tasks by the backend when sorting a column', async () => {
+    scaffolderApiMock.listTasks.mockResolvedValue({ tasks: [], totalTasks: 0 });
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [identityApiRef, identityApi],
+          [scaffolderApiRef, scaffolderApiMock],
+          [permissionApiRef, mockPermissionApi],
+        ]}
+      >
+        <ListTasksPage />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/root': rootRouteRef,
+        },
+      },
+    );
+
+    await userEvent.click(
+      within(
+        await screen.findByRole('columnheader', { name: /Status/ }),
+      ).getByText('Status'),
+    );
+
+    await waitFor(() =>
+      expect(scaffolderApiMock.listTasks).toHaveBeenLastCalledWith(
+        expect.objectContaining({ order: [{ field: 'status', order: 'asc' }] }),
+      ),
+    );
+  });
+
+  it('should filter tasks by owner, template, status and time range', async () => {
+    scaffolderApiMock.listTasks.mockResolvedValue({ tasks: [], totalTasks: 0 });
+    catalogApi.queryEntities.mockImplementation(async request => {
+      const kind = (request as { filter: { kind: string } }).filter.kind;
+      return {
+        items: [
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind,
+            metadata: { name: `my-${kind}`, title: `My ${kind}` },
+          },
+        ],
+        totalItems: 1,
+        pageInfo: {},
+      };
+    });
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [identityApiRef, identityApi],
+          [scaffolderApiRef, scaffolderApiMock],
+          [permissionApiRef, mockPermissionApi],
+        ]}
+      >
+        <ListTasksPage />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/root': rootRouteRef,
+        },
+      },
+    );
+
+    await userEvent.click(await screen.findByText('All'));
+    await userEvent.click(await screen.findByLabelText('Created by'));
+    await userEvent.click(await screen.findByText('My user'));
+    await userEvent.click(await screen.findByLabelText('Template'));
+    await userEvent.click(await screen.findByText('My template'));
+    await userEvent.click(screen.getByLabelText('Status'));
+    await userEvent.click(await screen.findByText('failed'));
+    const typeDate = async (label: string, date: string) => {
+      const [month] = screen.getAllByRole('spinbutton', {
+        name: new RegExp(`^month.*${label}`),
+      });
+      await userEvent.click(month);
+      await userEvent.keyboard(date);
+    };
+    await typeDate('Created from', '01102026');
+    await typeDate('Created until', '01202026');
+
+    await waitFor(() =>
+      expect(scaffolderApiMock.listTasks).toHaveBeenLastCalledWith({
+        filterByOwnership: 'all',
+        createdBy: ['user:default/my-user'],
+        templateRef: ['template:default/my-template'],
+        status: ['failed'],
+        createdAfter: new Date('2026-01-10T00:00:00'),
+        createdBefore: new Date('2026-01-20T23:59:59.999'),
+        limit: 5,
+        offset: 0,
+      }),
+    );
+
+    await userEvent.click(screen.getByText('Clear filters'));
+
+    await waitFor(() =>
+      expect(scaffolderApiMock.listTasks).toHaveBeenLastCalledWith({
+        filterByOwnership: 'all',
+        limit: 5,
+        offset: 0,
+      }),
+    );
+  }, 30000);
 });

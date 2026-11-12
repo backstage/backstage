@@ -876,6 +876,14 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'listTaskPage.title': 'List template tasks';
     readonly 'listTaskPage.subtitle': 'All tasks that have been started';
     readonly 'listTaskPage.pageTitle': 'Templates Tasks';
+    readonly 'taskListFilters.clear': 'Clear filters';
+    readonly 'taskListFilters.template.label': 'Template';
+    readonly 'taskListFilters.template.placeholder': 'Search templates';
+    readonly 'taskListFilters.status.label': 'Status';
+    readonly 'taskListFilters.createdAfter': 'Created from';
+    readonly 'taskListFilters.createdBy.label': 'Created by';
+    readonly 'taskListFilters.createdBy.placeholder': 'Search users';
+    readonly 'taskListFilters.createdBefore': 'Created until';
     readonly 'ownerListPicker.title': 'Task Owner';
     readonly 'ownerListPicker.options.all': 'All';
     readonly 'ownerListPicker.options.owned': 'Owned';

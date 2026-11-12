@@ -88,11 +88,7 @@ export class ScaffolderClient implements ScaffolderApi {
    * {@inheritdoc ScaffolderApi.listTasks}
    */
   async listTasks(
-    request: {
-      filterByOwnership: 'owned' | 'all';
-      limit?: number;
-      offset?: number;
-    },
+    request: Parameters<ScaffolderApi['listTasks']>[0],
     options?: ScaffolderRequestOptions,
   ): Promise<{ tasks: ScaffolderTask[]; totalTasks?: number }> {
     if (!this.identityApi) {
@@ -103,14 +99,23 @@ export class ScaffolderClient implements ScaffolderApi {
 
     const { userEntityRef } = await this.identityApi.getBackstageIdentity();
 
+    let createdBy = request.createdBy ?? [];
+    if (!createdBy.length && request.filterByOwnership === 'owned') {
+      createdBy = [userEntityRef];
+    }
+
     return await this.requestRequired(
       await this.apiClient.listTasks(
         {
           query: {
-            createdBy:
-              request.filterByOwnership === 'owned'
-                ? [userEntityRef]
-                : undefined,
+            createdBy: createdBy.length ? createdBy : undefined,
+            status: request.status?.length ? request.status : undefined,
+            templateRef: request.templateRef?.length
+              ? request.templateRef
+              : undefined,
+            createdAfter: request.createdAfter?.toISOString(),
+            createdBefore: request.createdBefore?.toISOString(),
+            order: request.order?.map(o => `${o.order}:${o.field}`),
             limit: request.limit,
             offset: request.offset,
           },

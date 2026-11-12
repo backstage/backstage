@@ -508,5 +508,39 @@ describe('api', () => {
       expect(identityApi.getBackstageIdentity).toHaveBeenCalled();
       expect(result.tasks).toHaveLength(1);
     });
+
+    it('should pass owner, status, template, time range and order filters', async () => {
+      let params: URLSearchParams | undefined;
+      server.use(
+        http.get(`${mockBaseUrl}/v2/tasks`, ({ request }) => {
+          params = new URL(request.url).searchParams;
+          return HttpResponse.json({ tasks: [], totalTasks: 0 });
+        }),
+      );
+
+      identityApi.getBackstageIdentity.mockResolvedValue({
+        userEntityRef: 'user:default/me',
+      });
+
+      await apiClient.listTasks({
+        filterByOwnership: 'owned',
+        createdBy: ['user:default/foo', 'user:default/bar'],
+        status: ['completed', 'failed'],
+        templateRef: ['template:default/a'],
+        createdAfter: new Date('2026-01-01T00:00:00.000Z'),
+        createdBefore: new Date('2026-02-01T00:00:00.000Z'),
+        order: [{ order: 'asc', field: 'template_ref' }],
+      });
+
+      expect(params?.getAll('createdBy')).toEqual([
+        'user:default/foo',
+        'user:default/bar',
+      ]);
+      expect(params?.getAll('status')).toEqual(['completed', 'failed']);
+      expect(params?.getAll('templateRef')).toEqual(['template:default/a']);
+      expect(params?.get('createdAfter')).toBe('2026-01-01T00:00:00.000Z');
+      expect(params?.get('createdBefore')).toBe('2026-02-01T00:00:00.000Z');
+      expect(params?.getAll('order')).toEqual(['asc:template_ref']);
+    });
   });
 });
