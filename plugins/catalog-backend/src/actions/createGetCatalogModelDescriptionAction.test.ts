@@ -363,6 +363,69 @@ describe('createGetCatalogModelDescriptionAction', () => {
     );
   });
 
+  it('should describe tuples, boolean items and extra keys', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
+        type: 'object',
+        properties: {
+          // Draft 7 tuple, with object items whose fields are not listed
+          pair: {
+            type: 'array',
+            items: [
+              { type: 'string' },
+              { type: 'object', properties: { x: { type: 'number' } } },
+            ],
+            additionalItems: false,
+          },
+          // Draft 2020-12 tuple, where items applies after the tuple
+          point: {
+            type: 'array',
+            prefixItems: [{ type: 'number' }, true],
+            items: { type: 'string' },
+          },
+          none: { type: 'array', items: false },
+          any: { type: 'array', items: true },
+          labels: {
+            type: 'object',
+            additionalProperties: { type: 'string' },
+          },
+          closed: {
+            allOf: [
+              { type: 'object', additionalProperties: true },
+              { additionalProperties: false },
+            ],
+          },
+          patterned: {
+            type: 'object',
+            patternProperties: { '^x-': { type: 'string' } },
+          },
+          // then/else without an if still constrain the field in some drafts
+          dangling: { type: 'string', then: { minLength: 1 } },
+        },
+      })),
+    );
+
+    expect(description).toContain(
+      '* "spec.pair" (tuple of [string, object] with no further items, has nested fields not listed here)',
+    );
+    expect(description).not.toContain('"spec.pair.x"');
+    expect(description).toContain(
+      '* "spec.point" (tuple of [number, any value] followed by string)',
+    );
+    expect(description).toContain('* "spec.none" (empty array)');
+    expect(description).toContain('* "spec.any" (array)');
+    expect(description).toContain(
+      '* "spec.labels" (object, other keys: string)',
+    );
+    expect(description).toContain('* "spec.closed" (object, no other keys)');
+    expect(description).toContain(
+      '* "spec.patterned" (object, has pattern-matched keys not listed here)',
+    );
+    expect(description).toContain(
+      '* "spec.dangling" (string, has conditional constraints not listed here)',
+    );
+  });
+
   it('should fold every allOf declaration of a field', async () => {
     const description = await describeModel(
       createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({

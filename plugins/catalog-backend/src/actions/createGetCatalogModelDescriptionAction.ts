@@ -284,6 +284,8 @@ const CONDITIONAL_KEYWORDS = [
   'anyOf',
   'oneOf',
   'if',
+  'then',
+  'else',
   'not',
   'dependencies',
   'dependentRequired',
@@ -403,7 +405,31 @@ function combine(a: Schema, b: Schema): Schema {
   if (isObject(a.items) && isObject(b.items)) {
     result.items = { allOf: [a.items, b.items] };
   }
+  const aExtra = a.additionalProperties;
+  const bExtra = b.additionalProperties;
+  if (aExtra === false || bExtra === false) {
+    result.additionalProperties = false;
+  } else if (isObject(aExtra) && isObject(bExtra)) {
+    result.additionalProperties = { allOf: [aExtra, bExtra] };
+  } else if (aExtra === true && bExtra !== undefined) {
+    result.additionalProperties = bExtra;
+  }
   return result;
+}
+
+// The item schemas of a tuple, from prefixItems or an items list
+function tupleItemsOf(schema: Schema): unknown[] | undefined {
+  if (Array.isArray(schema.prefixItems)) {
+    return schema.prefixItems;
+  }
+  return Array.isArray(schema.items) ? schema.items : undefined;
+}
+
+// The schema for items after the tuple ones, if any
+function restItemsOf(schema: Schema): unknown {
+  return Array.isArray(schema.prefixItems)
+    ? schema.items
+    : schema.additionalItems;
 }
 
 // Lists the properties of a schema. Properties of array items are listed under
@@ -444,13 +470,18 @@ function collectFields(
     // one array level deep and down to a maximum depth
     let nested = field;
     let arrayLevels = 0;
-    while (isObject(nested.items)) {
+    while (!tupleItemsOf(nested) && isObject(nested.items)) {
       nested = foldAllOf(nested.items);
       arrayLevels += 1;
     }
-    if (arrayLevels <= 1 && depth + 1 < MAX_FIELD_DEPTH) {
+    // Tuple items are not listed field by field
+    const tuple = tupleItemsOf(nested);
+    const unlisted = tuple
+      ? [...tuple, restItemsOf(nested)].map(toSchema).filter(isObject)
+      : [];
+    if (!tuple && arrayLevels <= 1 && depth + 1 < MAX_FIELD_DEPTH) {
       entries.push(...collectFields(nested, path, depth + 1));
-    } else if (hasProperties(nested)) {
+    } else if ([nested, ...unlisted].some(s => hasProperties(foldAllOf(s)))) {
       entry.parts.push('has nested fields not listed here');
     }
   }
@@ -461,8 +492,8 @@ function describeType(schema: Schema): string {
   const parts: string[] = [];
   if (schema.type !== undefined) {
     const types = toArray(schema.type).filter(t => typeof t === 'string');
-    if (types.length === 1 && types[0] === 'array' && isObject(schema.items)) {
-      parts.push(`array of ${describeType(foldAllOf(schema.items))}`);
+    if (types.length === 1 && types[0] === 'array') {
+      parts.push(describeArray(schema));
     } else {
       // Declarations whose types do not overlap leave no valid type
       parts.push(types.length ? types.join(' | ') : 'no valid type');
@@ -474,6 +505,33 @@ function describeType(schema: Schema): string {
     parts.push(refs.map(r => `reference to "${r}"`).join(' and '));
   }
   return parts.length ? parts.join(', ') : 'unknown';
+}
+
+function describeArray(schema: Schema): string {
+  const tuple = tupleItemsOf(schema);
+  if (tuple) {
+    const rest = restItemsOf(schema);
+    let text = `tuple of [${tuple.map(describeItem).join(', ')}]`;
+    if (rest === false) {
+      text += ' with no further items';
+    } else if (isObject(rest)) {
+      text += ` followed by ${describeItem(rest)}`;
+    }
+    return text;
+  }
+  if (schema.items === false) {
+    return 'empty array';
+  }
+  return isObject(schema.items)
+    ? `array of ${describeItem(schema.items)}`
+    : 'array';
+}
+
+function describeItem(value: unknown): string {
+  if (typeof value === 'boolean') {
+    return value ? 'any value' : 'nothing';
+  }
+  return isObject(value) ? describeType(foldAllOf(value)) : 'unknown';
 }
 
 function describeField(
@@ -494,6 +552,17 @@ function describeField(
     } else {
       parts.push(`one of ${values.map(v => JSON.stringify(v)).join(', ')}`);
     }
+  }
+  if (schema.additionalProperties === false) {
+    parts.push('no other keys');
+  } else if (isObject(schema.additionalProperties)) {
+    parts.push(`other keys: ${describeItem(schema.additionalProperties)}`);
+  }
+  if (
+    isObject(schema.patternProperties) &&
+    Object.keys(schema.patternProperties).length
+  ) {
+    parts.push('has pattern-matched keys not listed here');
   }
   if (CONDITIONAL_KEYWORDS.some(k => k in schema)) {
     parts.push('has conditional constraints not listed here');
