@@ -17,7 +17,7 @@
 import type { LockfileDiff } from '@backstage/cli-node';
 
 /**
- * An entry for a single package in a {@link Lockfile}.
+ * An entry for a single package in a {@link PackageManagerLockfile}.
  *
  * @alpha
  */
@@ -31,7 +31,7 @@ export type LockfileEntry = {
  *
  * @alpha
  */
-export interface Lockfile {
+export interface PackageManagerLockfile {
   /** Get the entries for a single package in the lockfile */
   get(name: string): LockfileEntry[] | undefined;
 
@@ -53,7 +53,7 @@ export interface Lockfile {
    *
    * Both lockfiles must come from the same package manager.
    */
-  diff(otherLockfile: Lockfile): LockfileDiff;
+  diff(otherLockfile: PackageManagerLockfile): LockfileDiff;
 
   /**
    * Generates a sha1 hex hash of the dependency graph for a package.

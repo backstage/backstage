@@ -29,6 +29,7 @@ export * from './input';
 export * from './monorepo';
 export {
   YarnLockfile,
+  Lockfile,
   type LockfileQueryEntry,
   type LockfileDiff,
   type LockfileDiffEntry,
