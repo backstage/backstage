@@ -180,6 +180,7 @@ export type PreparerOptions = {
 export type PreparerResponse = {
   preparedDir: string;
   etag: ETag;
+  shouldCleanPreparedDirectory?: boolean;
 };
 
 // @public

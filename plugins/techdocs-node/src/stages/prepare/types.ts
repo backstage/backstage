@@ -60,6 +60,12 @@ export type PreparerResponse = {
    * see {@link ETag}
    */
   etag: ETag;
+  /**
+   * Whether the prepared directory should be removed after generation.
+   * Takes precedence over {@link PreparerBase.shouldCleanPreparedDirectory},
+   * which is used when this is not set.
+   */
+  shouldCleanPreparedDirectory?: boolean;
 };
 
 /**
