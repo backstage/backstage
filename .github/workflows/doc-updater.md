@@ -35,6 +35,9 @@ steps:
 
   - name: Install dependencies
     uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
+    env:
+      # Skip installing the Husky git hooks, which would run the docs quality check on commit.
+      HUSKY: '0'
     with:
       cache-prefix: ${{ runner.os }}-v24.x
 
