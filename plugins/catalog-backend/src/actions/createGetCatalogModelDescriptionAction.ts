@@ -26,6 +26,7 @@ import {
   compileCatalogModel,
   defaultCatalogEntityModel,
 } from '@backstage/catalog-model/alpha';
+import { isEqual } from 'lodash';
 import { ModelHolder } from '../model/ModelHolder';
 
 const PREAMBLE = `# Catalog Model
@@ -303,9 +304,9 @@ function toArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [value];
 }
 
+// Compares values deeply, so that the key order of objects does not matter
 function intersect(a: unknown[], b: unknown[]): unknown[] {
-  const keys = new Set(b.map(v => JSON.stringify(v)));
-  return a.filter(v => keys.has(JSON.stringify(v)));
+  return a.filter(x => b.some(y => isEqual(x, y)));
 }
 
 // Like intersect, but aware that every integer is also a number
@@ -531,7 +532,26 @@ function describeItem(value: unknown): string {
   if (typeof value === 'boolean') {
     return value ? 'any value' : 'nothing';
   }
-  return isObject(value) ? describeType(foldAllOf(value)) : 'unknown';
+  if (!isObject(value)) {
+    return 'unknown';
+  }
+  const schema = foldAllOf(value);
+  const values = describeAllowedValues(schema);
+  return `${describeType(schema)}${values ? ` [${values}]` : ''}`;
+}
+
+function describeAllowedValues(schema: Schema): string | undefined {
+  const values = allowedValuesOf(schema);
+  if (!values) {
+    return undefined;
+  }
+  if (!values.length) {
+    return 'no allowed values';
+  }
+  if (values.length === 1 && 'const' in schema) {
+    return `const ${JSON.stringify(values[0])}`;
+  }
+  return `one of ${values.map(v => JSON.stringify(v)).join(', ')}`;
 }
 
 function describeField(
@@ -543,15 +563,9 @@ function describeField(
   if (required) {
     parts.push('required');
   }
-  const values = allowedValuesOf(schema);
+  const values = describeAllowedValues(schema);
   if (values) {
-    if (!values.length) {
-      parts.push('no allowed values');
-    } else if (values.length === 1 && 'const' in schema) {
-      parts.push(`const ${JSON.stringify(values[0])}`);
-    } else {
-      parts.push(`one of ${values.map(v => JSON.stringify(v)).join(', ')}`);
-    }
+    parts.push(values);
   }
   if (schema.additionalProperties === false) {
     parts.push('no other keys');

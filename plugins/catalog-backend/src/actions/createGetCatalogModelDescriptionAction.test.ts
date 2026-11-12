@@ -596,6 +596,73 @@ describe('createGetCatalogModelDescriptionAction', () => {
     );
   });
 
+  it('should not group versions that differ only in allowed item values', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema(
+        [{ apiVersion: 'example.com/v1' }, { apiVersion: 'example.com/v2' }],
+        ({ apiVersion }) => ({
+          type: 'object',
+          properties: {
+            modes: {
+              type: 'array',
+              items: {
+                type: 'string',
+                enum:
+                  apiVersion === 'example.com/v1' ? ['fast'] : ['fast', 'slow'],
+              },
+            },
+            pinned: { type: 'array', items: { const: 'x' } },
+          },
+        }),
+      ),
+    );
+
+    expect(description.match(/#### Fields/g)).toHaveLength(2);
+    expect(description).toContain(
+      '* "spec.modes" (array of string [one of "fast"])',
+    );
+    expect(description).toContain(
+      '* "spec.modes" (array of string [one of "fast", "slow"])',
+    );
+    expect(description).toContain(
+      '* "spec.pinned" (array of unknown [const "x"])',
+    );
+  });
+
+  it('should compare allowed values regardless of object key order', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
+        type: 'object',
+        properties: {
+          target: {
+            allOf: [
+              {
+                enum: [
+                  { host: 'a', port: 1 },
+                  { host: 'b', port: 2 },
+                ],
+              },
+              { enum: [{ port: 1, host: 'a' }] },
+            ],
+          },
+          fixed: {
+            allOf: [
+              { const: { host: 'a', port: 1 } },
+              { const: { port: 1, host: 'a' } },
+            ],
+          },
+        },
+      })),
+    );
+
+    expect(description).toContain(
+      '* "spec.target" (unknown, one of {"host":"a","port":1})',
+    );
+    expect(description).toContain(
+      '* "spec.fixed" (unknown, const {"host":"a","port":1})',
+    );
+  });
+
   it('should emit one field block per distinct schema and group identical ones', async () => {
     const description = await describeModel(
       createModelWithKinds(
