@@ -91,11 +91,16 @@ patchedDependencies:
       },
     });
 
+    const logger = { log: jest.fn() };
     const files = await preparePnpmDistWorkspace({
       workspaceRootDir: mockDir.resolve('project'),
       targetDir: mockDir.resolve('dist'),
       bundledPackageDirs: ['packages/app'],
+      logger,
     });
+    expect(logger.log).toHaveBeenCalledWith(
+      "Removed 1 workspace project that the dist workspace doesn't contain from its pnpm-lock.yaml: packages/other",
+    );
 
     expect(files).toEqual([
       'pnpm-lock.yaml',

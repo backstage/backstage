@@ -327,7 +327,12 @@ export class PnpmLockfile implements PackageManagerLockfile {
       const isDirect = entries.get(name)?.some(e => e.node === packageId);
       if (!isDirect) {
         const { version, source } = nodes.get(packageId)!;
-        addEntry(name, { range: source ?? version, version, node: packageId });
+        addEntry(name, {
+          range: source ?? version,
+          version,
+          node: packageId,
+          transitive: true,
+        });
       }
     }
 
@@ -352,7 +357,9 @@ export class PnpmLockfile implements PackageManagerLockfile {
   get(name: string): LockfileEntry[] | undefined {
     return this.entries
       .get(name)
-      ?.map(({ range, version }) => ({ range, version }));
+      ?.map(({ range, version, transitive }) =>
+        transitive ? { range, version, transitive } : { range, version },
+      );
   }
 
   /** {@inheritDoc PackageManagerLockfile.keys} */
