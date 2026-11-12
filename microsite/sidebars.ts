@@ -335,6 +335,7 @@ export default {
             'features/software-catalog/entity-presentation',
             'features/software-catalog/audit-events',
             'features/software-catalog/unprocessed-entities',
+            'features/software-catalog/catalog-import',
             {
               type: 'category',
               label: 'API',
