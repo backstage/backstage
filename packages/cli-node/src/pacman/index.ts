@@ -20,11 +20,15 @@ export {
   type PackageManagerInstallOptions,
   type PackageInfo,
 } from './PackageManager';
-export type { Lockfile, LockfileEntry } from './Lockfile';
+export type {
+  PackageManagerLockfile,
+  LockfileEntry,
+} from './PackageManagerLockfile';
 export {
   Yarn,
   type YarnCreateOptions,
   YarnLockfile,
+  Lockfile,
   type LockfileQueryEntry,
   type LockfileDiff,
   type LockfileDiffEntry,

@@ -160,6 +160,12 @@ export function hasBackstageYarnPlugin(workspaceDir?: string): Promise<boolean>;
 // @public
 export function isMonoRepo(): Promise<boolean>;
 
+// @public @deprecated
+export const Lockfile: typeof YarnLockfile;
+
+// @public @deprecated
+export type Lockfile = YarnLockfile;
+
 // @public
 export type LockfileDiff = {
   added: LockfileDiffEntry[];

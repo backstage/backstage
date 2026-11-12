@@ -1,5 +1,5 @@
 ---
-'@backstage/cli-node': minor
+'@backstage/cli-node': patch
 ---
 
-**BREAKING**: The `Lockfile` class is renamed to `YarnLockfile`, since it only reads `yarn.lock` files. Its methods and the `LockfileQueryEntry`, `LockfileDiff`, and `LockfileDiffEntry` types are unchanged, so replacing the class name in imports is enough.
+The `Lockfile` class is now called `YarnLockfile`, since it only reads `yarn.lock` files. `Lockfile` is still exported as a deprecated alias, so existing imports keep working.

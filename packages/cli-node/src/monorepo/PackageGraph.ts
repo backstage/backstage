@@ -19,7 +19,11 @@ import { getPackages, Package } from '@manypkg/get-packages';
 import { targetPaths } from '@backstage/cli-common';
 import { PackageRole } from '../roles';
 import { GitUtils } from '../git';
-import { detectPackageManager, Lockfile, LockfileDiff } from '../pacman';
+import {
+  detectPackageManager,
+  PackageManagerLockfile,
+  LockfileDiff,
+} from '../pacman';
 import { JsonValue } from '@backstage/types';
 
 // The lockfiles of the package managers that the CLI knows about. The package
@@ -388,8 +392,8 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
       // Load the lockfile in the working tree and the one at the ref and diff
       // them. Anything that prevents an accurate diff means that we can't tell
       // which packages are affected, so we assume that all of them are.
-      let thisLockfile: Lockfile;
-      let otherLockfile: Lockfile;
+      let thisLockfile: PackageManagerLockfile;
+      let otherLockfile: PackageManagerLockfile;
       let diff: LockfileDiff;
       try {
         const packageManager = await detectPackageManager();

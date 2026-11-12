@@ -297,6 +297,28 @@ describe('run', () => {
       );
     });
 
+    // Windows has no signals that a process can end itself with
+    if (process.platform !== 'win32') {
+      it('should fail with the output attached when a signal ends the command', async () => {
+        let error: Error | undefined;
+        try {
+          await runOutput([
+            'node',
+            '--eval',
+            'console.log("partial"); setTimeout(() => process.kill(process.pid, "SIGTERM"), 100)',
+          ]);
+        } catch (err) {
+          error = err;
+        }
+        expect(error?.message).toMatch(
+          /^Command 'node .*' was ended by SIGTERM$/,
+        );
+        expect((error as Error & { stdout?: string }).stdout).toContain(
+          'partial',
+        );
+      });
+    }
+
     it('should call custom onStdout callback', async () => {
       const customChunks: Buffer[] = [];
       const output = await runOutput(

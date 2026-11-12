@@ -325,3 +325,20 @@ export class YarnLockfile {
     return hash.digest('hex');
   }
 }
+
+/**
+ * The old name of {@link YarnLockfile}.
+ *
+ * @public
+ * @deprecated Use {@link YarnLockfile} instead.
+ */
+export const Lockfile = YarnLockfile;
+
+/**
+ * The old name of {@link YarnLockfile}.
+ *
+ * @public
+ * @deprecated Use {@link YarnLockfile} instead.
+ */
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type Lockfile = YarnLockfile;

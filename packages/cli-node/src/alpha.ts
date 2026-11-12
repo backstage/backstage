@@ -20,7 +20,7 @@ export {
   type PackageManager,
   type PackageManagerInstallOptions,
   type PackageInfo,
-  type Lockfile,
+  type PackageManagerLockfile,
   type LockfileEntry,
   Yarn,
   type YarnCreateOptions,
