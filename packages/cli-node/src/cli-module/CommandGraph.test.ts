@@ -83,6 +83,20 @@ describe('CommandGraph', () => {
     expect(getLeafVariants(graph)).toHaveLength(2);
   });
 
+  it('rejects a condition on commands outside package', () => {
+    const graph = new CommandGraph();
+
+    expect(() =>
+      graph.add(
+        packageTest({ path: ['repo', 'lint'], if: () => true }),
+        moduleA,
+      ),
+    ).toThrow(
+      'Command "repo lint" from "@example/a" sets a condition, which is only supported for commands under "package"',
+    );
+    expect(graph.roots).toHaveLength(0);
+  });
+
   it('rejects commands nested below a toggleable leaf', () => {
     const graph = new CommandGraph();
     graph.add(packageTest({ if: () => true }), moduleA);

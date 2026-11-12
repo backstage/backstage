@@ -31,6 +31,13 @@ export class CommandGraph {
 
   add(command: InternalCliCommand, module: CliModule): void {
     const { path } = command;
+    if (command.if && path[0] !== 'package') {
+      throw new Error(
+        `Command "${path.join(' ')}" from "${
+          OpaqueCliModule.toInternal(module).packageName
+        }" sets a condition, which is only supported for commands under "package"`,
+      );
+    }
     let current = this.#roots;
 
     for (let i = 0; i < path.length - 1; i++) {
