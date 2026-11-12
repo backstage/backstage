@@ -12,7 +12,7 @@ Add the rules as follows, it has no options:
 
 ## Rule Details
 
-Automatically fixes imports from named to default imports. This will help you comply with [Material UI recommendations](https://mui.com/material-ui/guides/minimizing-bundle-size/) and make migrating to Material UI v5 easier.
+Automatically fixes imports from named to default imports. This keeps imports consistent for existing Material UI v4 components and helps minimize bundle size. Use [Backstage UI](https://ui.backstage.io) for new components.
 
 ### Fail
 

@@ -128,7 +128,7 @@ export const myLightTheme: UnifiedTheme = createUnifiedTheme({
   }),
   defaultPageTheme: 'home',
   components: {
-    /** @ts-ignore This is temporarily necessary until MUI V5 transition is completed. */
+    /** @ts-ignore The legacy search component override is not included in the theme types. */
     BackstageHighlightedSearchResultText: {
       styleOverrides: {
         highlight: {

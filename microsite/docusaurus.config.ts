@@ -346,6 +346,18 @@ const config: Config = {
         fromExtensions: [],
         redirects: [
           {
+            from: '/docs/tutorials/migrate-to-mui5',
+            to: '/docs/conf/user-interface#material-ui-v5-compatibility',
+          },
+          ...(useVersionedDocs
+            ? [
+                {
+                  from: '/docs/next/tutorials/migrate-to-mui5',
+                  to: '/docs/next/conf/user-interface#material-ui-v5-compatibility',
+                },
+              ]
+            : []),
+          {
             from: '/docs',
             to: '/docs/landing-page/doc-landing-page',
           },

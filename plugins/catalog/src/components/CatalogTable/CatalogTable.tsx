@@ -38,7 +38,6 @@ import {
 } from '@backstage/plugin-catalog-react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
-import { visuallyHidden } from '@mui/utils';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize, sortBy } from 'lodash';
@@ -151,7 +150,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            <Typography style={visuallyHidden}>{title}</Typography>
+            <Typography variant="srOnly">{title}</Typography>
             <OpenInNew fontSize="small" />
           </>
         ),
@@ -170,7 +169,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       return {
         icon: () => (
           <>
-            <Typography style={visuallyHidden}>{title}</Typography>
+            <Typography variant="srOnly">{title}</Typography>
             <Edit fontSize="small" />
           </>
         ),

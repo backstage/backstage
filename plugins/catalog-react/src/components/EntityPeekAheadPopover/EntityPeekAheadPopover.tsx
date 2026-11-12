@@ -16,13 +16,16 @@
 
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
-import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import HoverPopover from 'material-ui-popup-state/HoverPopover';
 import {
-  bindHover,
-  bindPopover,
-  usePopupState,
-} from 'material-ui-popup-state/hooks';
+  FocusEvent,
+  MouseEvent,
+  PropsWithChildren,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import Popover from '@material-ui/core/Popover';
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -39,7 +42,7 @@ import {
   UserCardActions,
   GroupCardActions,
 } from './CardActionComponents';
-import { debounce } from 'lodash';
+import { debounce, uniqueId } from 'lodash';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -55,8 +58,12 @@ export type EntityPeekAheadPopoverProps = PropsWithChildren<{
 
 const useStyles = makeStyles(() => {
   return {
+    popover: {
+      pointerEvents: 'none',
+    },
     popoverPaper: {
       width: '30em',
+      pointerEvents: 'auto',
     },
     descriptionTypography: {
       overflow: 'hidden',
@@ -80,16 +87,34 @@ export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
   const { t } = useTranslationRef(catalogReactTranslationRef);
   const classes = useStyles();
   const apiHolder = useApiHolder();
-  const popupState = usePopupState({
-    variant: 'popover',
-    popupId: 'entity-peek-ahead',
-  });
-  const [isHovered, setIsHovered] = useState(false);
+  const [popupId] = useState(() => uniqueId('entity-peek-ahead-'));
+  const triggerRef = useRef<HTMLSpanElement>(null);
+  const paperRef = useRef<HTMLElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const debouncedHandleMouseEnter = useMemo(
-    () => debounce(() => setIsHovered(true), delayTime),
+  const debouncedOpen = useMemo(
+    () => debounce((anchor: HTMLElement) => setAnchorEl(anchor), delayTime),
     [delayTime],
   );
+
+  useEffect(() => () => debouncedOpen.cancel(), [debouncedOpen]);
+
+  const handleClose = () => {
+    debouncedOpen.cancel();
+    setAnchorEl(null);
+  };
+
+  const handleLeave = (event: MouseEvent | FocusEvent) => {
+    const target = event.relatedTarget;
+    if (
+      target instanceof Node &&
+      (triggerRef.current?.contains(target) ||
+        paperRef.current?.contains(target))
+    ) {
+      return;
+    }
+    handleClose();
+  };
 
   const [{ loading, error, value: entity }, load] = useAsyncFn(async () => {
     const catalogApi = apiHolder.get(catalogApiRef);
@@ -103,98 +128,113 @@ export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
     return undefined;
   }, [apiHolder, entityRef]);
 
-  const handleOnMouseLeave = () => {
-    setIsHovered(false);
-    debouncedHandleMouseEnter.cancel();
-  };
-
   useEffect(() => {
-    if (popupState.isOpen && !entity && !error && !loading) {
+    if (anchorEl && !entity && !error && !loading) {
       load();
     }
-  }, [popupState.isOpen, load, entity, error, loading]);
+  }, [anchorEl, load, entity, error, loading]);
 
   return (
     <>
-      <Typography component="span" onMouseEnter={debouncedHandleMouseEnter}>
-        <Typography
-          component="span"
-          data-testid="trigger"
-          {...bindHover(popupState)}
-        >
-          {children}
-        </Typography>
+      <Typography
+        component="span"
+        ref={triggerRef}
+        onMouseEnter={event => debouncedOpen(event.currentTarget)}
+        onMouseLeave={handleLeave}
+        onFocus={event => debouncedOpen(event.currentTarget)}
+        onBlur={handleLeave}
+        onKeyDown={event => {
+          if (event.key === 'Escape') {
+            handleClose();
+          }
+        }}
+        aria-owns={anchorEl ? popupId : undefined}
+        aria-haspopup="true"
+      >
+        {children}
       </Typography>
-      {isHovered && (
-        <HoverPopover
-          PaperProps={{
-            className: classes.popoverPaper,
-          }}
-          {...bindPopover(popupState)}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-          onMouseLeave={handleOnMouseLeave}
-        >
-          <Card>
-            <CardContent>
-              {error && <ResponseErrorPanel error={error} />}
-              {loading && <Progress />}
-              {entity && (
-                <>
-                  <Typography color="textSecondary">
-                    {entity.metadata.namespace}
+      <Popover
+        id={popupId}
+        className={classes.popover}
+        PaperProps={{
+          className: classes.popoverPaper,
+          onMouseLeave: handleLeave,
+          onBlur: handleLeave,
+        }}
+        TransitionProps={{
+          onEntering: element => {
+            paperRef.current = element;
+          },
+          onExited: () => {
+            paperRef.current = null;
+          },
+        }}
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        disableAutoFocus
+        disableEnforceFocus
+        disableRestoreFocus
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <Card>
+          <CardContent>
+            {error && <ResponseErrorPanel error={error} />}
+            {loading && <Progress />}
+            {entity && (
+              <>
+                <Typography color="textSecondary">
+                  {entity.metadata.namespace}
+                </Typography>
+                <Typography variant="h5" component="div">
+                  {entity.metadata.name}
+                </Typography>
+                <Typography color="textSecondary" gutterBottom>
+                  {entity.kind}
+                </Typography>
+                {entity.metadata.description && (
+                  <Typography
+                    className={classes.descriptionTypography}
+                    paragraph
+                  >
+                    {entity.metadata.description}
                   </Typography>
-                  <Typography variant="h5" component="div">
-                    {entity.metadata.name}
-                  </Typography>
-                  <Typography color="textSecondary" gutterBottom>
-                    {entity.kind}
-                  </Typography>
-                  {entity.metadata.description && (
-                    <Typography
-                      className={classes.descriptionTypography}
-                      paragraph
-                    >
-                      {entity.metadata.description}
-                    </Typography>
-                  )}
-                  <Typography>{entity.spec?.type?.toString()}</Typography>
-                  <Box marginTop="0.5em">
-                    {(entity.metadata.tags || [])
-                      .slice(0, maxTagChips)
-                      .map(tag => {
-                        return <Chip key={tag} size="small" label={tag} />;
-                      })}
-                    {entity.metadata.tags?.length &&
-                      entity.metadata.tags?.length > maxTagChips && (
-                        <Tooltip title={t('entityPeekAheadPopover.title')}>
-                          <Chip key="other-tags" size="small" label="..." />
-                        </Tooltip>
-                      )}
-                  </Box>
-                </>
-              )}
-            </CardContent>
-            {!error && entity && (
-              <CardActions>
-                <>
-                  {isUserEntity(entity) && <UserCardActions entity={entity} />}
-                  {isGroupEntity(entity) && (
-                    <GroupCardActions entity={entity} />
-                  )}
-                  <EntityCardActions entity={entity} />
-                </>
-              </CardActions>
+                )}
+                <Typography>{entity.spec?.type?.toString()}</Typography>
+                <Box marginTop="0.5em">
+                  {(entity.metadata.tags || [])
+                    .slice(0, maxTagChips)
+                    .map(tag => {
+                      return <Chip key={tag} size="small" label={tag} />;
+                    })}
+                  {entity.metadata.tags?.length &&
+                    entity.metadata.tags?.length > maxTagChips && (
+                      <Tooltip title={t('entityPeekAheadPopover.title')}>
+                        <Chip key="other-tags" size="small" label="..." />
+                      </Tooltip>
+                    )}
+                </Box>
+              </>
             )}
-          </Card>
-        </HoverPopover>
-      )}
+          </CardContent>
+          {!error && entity && (
+            <CardActions>
+              <>
+                {isUserEntity(entity) && <UserCardActions entity={entity} />}
+                {isGroupEntity(entity) && <GroupCardActions entity={entity} />}
+                <EntityCardActions entity={entity} />
+              </>
+            </CardActions>
+          )}
+        </Card>
+      </Popover>
     </>
   );
 };
