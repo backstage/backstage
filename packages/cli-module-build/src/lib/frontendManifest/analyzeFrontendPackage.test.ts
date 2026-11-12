@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
+import { resolve as resolvePath } from 'node:path';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { analyzeFrontendPackage } from './analyzeFrontendPackage';
 
 const mockDir = createMockDirectory();
+
+const repoRoot = resolvePath(__dirname, '../../../../..');
+
+// The blueprints are read from the source of the real packages
+const modules: { [specifier: string]: string } = {
+  '@backstage/frontend-plugin-api': resolvePath(
+    repoRoot,
+    'packages/frontend-plugin-api/src/index.ts',
+  ),
+  '@backstage/plugin-catalog-react/alpha': resolvePath(
+    repoRoot,
+    'plugins/catalog-react/src/alpha/index.ts',
+  ),
+};
 
 function analyze(
   files: { [path: string]: string },
@@ -26,7 +41,11 @@ function analyze(
   ],
 ) {
   mockDir.setContent(files);
-  return analyzeFrontendPackage({ packageDir: mockDir.path, entryPoints });
+  return analyzeFrontendPackage({
+    packageDir: mockDir.path,
+    entryPoints,
+    resolveModule: specifier => modules[specifier],
+  });
 }
 
 const API = `'@backstage/frontend-plugin-api'`;
@@ -56,7 +75,6 @@ describe('analyzeFrontendPackage', () => {
             path: paths.root,
             title,
             routeRef: rootRouteRef,
-            icon: <span />,
             loader: () => import('./Page').then(m => <m.Page />),
           },
         });
@@ -114,6 +132,10 @@ describe('analyzeFrontendPackage', () => {
                     'core.title': 'Settings',
                   },
                   routeRefName: 'settings',
+                  configOutputs: {
+                    path: { dataRefId: 'core.routing.path', type: 'string' },
+                    title: { dataRefId: 'core.title', type: 'string' },
+                  },
                 },
               },
             ],
@@ -139,7 +161,6 @@ describe('analyzeFrontendPackage', () => {
               path: PATH,
               title: 'Overridden',
               routeRef: rootRouteRef,
-              icon: <span />,
               loader: async () => <div>{config.filter}</div>,
             });
           },
@@ -196,6 +217,8 @@ describe('analyzeFrontendPackage', () => {
       return entry.manifest.notDeferrableReason;
     };
 
+    const output = (id: string, reason: string) =>
+      `the '${id}' output of the extension can't be read without running it: ${reason}`;
     expect(
       reasonOf(
         plugin(
@@ -203,26 +226,41 @@ describe('analyzeFrontendPackage', () => {
           `let path = '/demo';`,
         ),
       ),
-    ).toBe(`'path' must be declared with const (src/index.ts:7)`);
+    ).toBe(
+      output(
+        'core.routing.path',
+        `'path' must be declared with const (src/index.ts:7)`,
+      ),
+    );
     expect(
       reasonOf(
         plugin(
           `PageBlueprint.make({ params: { path: getPath(), loader: async () => null } })`,
         ),
       ),
-    ).toBe(`the 'path' param is not a literal value (src/index.ts:7)`);
+    ).toBe(
+      output(
+        'core.routing.path',
+        `the 'path' param is not a literal value (src/index.ts:7)`,
+      ),
+    );
+    // Params that the factory outputs must be literals, while params that
+    // it only uses for the element can be anything
     expect(
       reasonOf(
         plugin(
-          `SubPageBlueprint.makeWithOverrides({ factory: orig => orig({ path: 'x', title: 'X' }) })`,
+          `SubPageBlueprint.make({ params: { path: 'x', title: 'X', icon: getIcon(), loader: async () => null } })`,
           `import { SubPageBlueprint } from ${API};`,
         ),
       ),
     ).toBe(
-      `the extension is created with 'SubPageBlueprint.makeWithOverrides', but only 'SubPageBlueprint.make' can be deferred (src/index.ts:7)`,
+      output(
+        'core.icon',
+        `the 'icon' param is not a literal value (src/index.ts:7)`,
+      ),
     );
-    // A page made with makeWithOverrides must only pass literal params to
-    // the original factory
+    // A page made with makeWithOverrides must only pass params to the
+    // original factory
     const overrides = (options: string) =>
       reasonOf(plugin(`PageBlueprint.makeWithOverrides({ ${options} })`));
     expect(
@@ -236,7 +274,12 @@ describe('analyzeFrontendPackage', () => {
       overrides(
         `factory: (orig, { config }) => orig({ path: config.path, loader: async () => null })`,
       ),
-    ).toBe(`'config' is not a constant value (src/index.ts:7)`);
+    ).toBe(
+      output(
+        'core.routing.path',
+        `'config' is not a constant value (src/index.ts:7)`,
+      ),
+    );
     expect(
       overrides(
         `inputs: {}, factory: orig => orig({ path: '/', loader: async () => null })`,
@@ -259,17 +302,43 @@ describe('analyzeFrontendPackage', () => {
         ),
       ),
     ).toBe(
-      `the extension is created with 'createExtension', but only extensions made with PageBlueprint, SubPageBlueprint can be deferred (src/index.ts:7)`,
+      `the extension is created with 'createExtension', but only extensions made with the make or makeWithOverrides method of a blueprint can be deferred (src/index.ts:7)`,
     );
-    // Entity cards output a filter function, which can't be stored
+    // Function and predicate filters are turned into functions, which can't
+    // be stored
     expect(
       reasonOf(
         plugin(
-          `EntityCardBlueprint.make({ params: { loader: async () => null } })`,
+          `EntityCardBlueprint.make({ params: { filter: () => true, loader: async () => null } })`,
         ),
       ),
     ).toBe(
-      `the extension is created with 'EntityCardBlueprint.make', but only extensions made with PageBlueprint, SubPageBlueprint can be deferred (src/index.ts:7)`,
+      output(
+        'catalog.entity-filter-function',
+        `the 'filter' param is not a literal value (src/index.ts:7)`,
+      ),
+    );
+    expect(
+      reasonOf(
+        plugin(
+          `EntityCardBlueprint.make({ params: { filter: { kind: 'component' }, loader: async () => null } })`,
+        ),
+      ),
+    ).toBe(
+      output(
+        'catalog.entity-filter-function',
+        `the result of calling 'filterPredicateToFilterFunction' (@backstage/plugin-catalog-react/src/alpha/blueprints/resolveEntityFilterData.ts:52)`,
+      ),
+    );
+    expect(
+      reasonOf(
+        plugin(
+          `MissingBlueprint.make({ params: {} })`,
+          `import { MissingBlueprint } from '@internal/missing';`,
+        ),
+      ),
+    ).toBe(
+      `the 'MissingBlueprint' blueprint is imported from '@internal/missing', which can't be resolved (src/index.ts:7)`,
     );
     expect(
       reasonOf(
@@ -281,39 +350,251 @@ describe('analyzeFrontendPackage', () => {
     expect(
       reasonOf(
         plugin(
-          `PageBlueprint.make({ attachTo: { id: 'page:other', input: 'pages' }, params: { path: '/', loader: async () => null } })`,
+          `PageBlueprint.make({ attachTo: [{ id: 'page:a', input: 'pages' }, { id: 'page:b', input: 'pages' }], params: { path: '/', loader: async () => null } })`,
         ),
       ),
-    ).toBe(`the page 'page:demo' does not attach to app/routes`);
+    ).toBe(`the extension 'page:demo' attaches to more than one extension`);
     expect(reasonOf(plugin(''))).toBe('the plugin has no extensions');
   });
 
-  it('should never defer plugins with APIs', () => {
-    const files = {
-      'src/index.ts': `
+  it('should read entity cards and APIs', () => {
+    const result = analyze(
+      {
+        'src/index.tsx': `
         import { createFrontendPlugin } from ${API};
-        import { api, page } from './extensions';
+        import { api, card, configuredCard, content } from './extensions';
         export default createFrontendPlugin({
           pluginId: 'demo',
-          extensions: [page, api],
+          extensions: [card, configuredCard, content, api],
         });
       `,
-      'src/extensions.tsx': `
-        import { ApiBlueprint, PageBlueprint } from ${API};
+        'src/api.ts': `
+        import { createApiRef } from ${API};
+        export const demoApiRef = createApiRef<{}>().with({ id: 'plugin.demo.client' });
+      `,
+        'src/extensions.tsx': `
+        import { ApiBlueprint, discoveryApiRef } from ${API};
+        import {
+          EntityCardBlueprint,
+          EntityContentBlueprint,
+        } from '@backstage/plugin-catalog-react/alpha';
+        import { z } from 'zod';
+        import { demoApiRef } from './api';
         export const api = ApiBlueprint.make({
           name: 'client',
-          params: define => define({ api: x, deps: {}, factory: () => ({}) }),
+          params: define =>
+            define({
+              api: demoApiRef,
+              deps: { discovery: discoveryApiRef },
+              factory: () => ({}),
+            }),
         });
-        export const page = PageBlueprint.make({
-          params: { path: '/demo', loader: async () => <div /> },
+        export const card = EntityCardBlueprint.make({
+          params: {
+            filter: 'kind:component',
+            type: 'info',
+            loader: () => import('./Card').then(m => <m.Card />),
+          },
+        });
+        export const content = EntityContentBlueprint.make({
+          params: {
+            path: 'demo',
+            title: 'Demo',
+            group: 'development',
+            loader: () => import('./Content').then(m => <m.Content />),
+          },
+        });
+        export const configuredCard = EntityCardBlueprint.makeWithOverrides({
+          name: 'configured',
+          configSchema: { height: z.number().optional() },
+          factory(originalFactory, { config }) {
+            return originalFactory({
+              loader: async () => <div>{config.height}</div>,
+            });
+          },
         });
       `,
-    };
-    const reason =
-      'the plugin provides an API, and plugins that provide APIs are loaded with the app (src/extensions.tsx:3)';
+      },
+      [{ mount: '.', path: 'src/index.tsx' }],
+    );
 
-    expect(analyze(files).entryPoints['.']).toMatchObject({
-      manifest: { deferrable: false, notDeferrableReason: reason },
+    const configOutputs = {
+      filter: { dataRefId: 'catalog.entity-filter-expression', type: 'string' },
+      type: { dataRefId: 'catalog.entity-card-type', type: 'string' },
+    };
+    expect(result.entryPoints['.']).toEqual({
+      manifest: expect.objectContaining({
+        deferrable: true,
+        extensions: [
+          {
+            id: 'entity-card:demo',
+            kind: 'entity-card',
+            attachTo: { id: 'entity-content:catalog/overview', input: 'cards' },
+            disabled: false,
+            element: {
+              data: {
+                'catalog.entity-filter-expression': 'kind:component',
+                'catalog.entity-card-type': 'info',
+              },
+              configOutputs,
+            },
+          },
+          {
+            id: 'entity-card:demo/configured',
+            kind: 'entity-card',
+            attachTo: { id: 'entity-content:catalog/overview', input: 'cards' },
+            disabled: false,
+            element: { data: {}, configOutputs, loadedConfig: ['height'] },
+          },
+          // The outputs of entity content are found from its factory as well
+          {
+            id: 'entity-content:demo',
+            kind: 'entity-content',
+            attachTo: { id: 'page:catalog/entity', input: 'contents' },
+            disabled: false,
+            element: {
+              data: {
+                'core.routing.path': 'demo',
+                'catalog.entity-content-title': 'Demo',
+                'catalog.entity-content-group': 'development',
+              },
+              configOutputs: {
+                path: { dataRefId: 'core.routing.path', type: 'string' },
+                title: {
+                  dataRefId: 'catalog.entity-content-title',
+                  type: 'string',
+                },
+                filter: configOutputs.filter,
+                group: {
+                  dataRefId: 'catalog.entity-content-group',
+                  type: 'string',
+                },
+                icon: {
+                  dataRefId: 'catalog.entity-content-icon',
+                  type: 'string',
+                },
+              },
+            },
+          },
+          {
+            id: 'api:demo/client',
+            kind: 'api',
+            attachTo: { id: 'root', input: 'apis' },
+            disabled: false,
+            api: {
+              apiRefId: 'plugin.demo.client',
+              deps: { discovery: 'core.discovery' },
+            },
+          },
+        ],
+      }),
+    });
+  });
+
+  it('should find the outputs of extensions from the factory of their blueprint', () => {
+    const files = (extensions: string) => ({
+      'src/index.ts': `
+        import { createFrontendPlugin } from ${API};
+        import { WidgetBlueprint, LoopBlueprint } from './blueprints';
+        export default createFrontendPlugin({
+          pluginId: 'demo',
+          extensions: [${extensions}],
+        });
+      `,
+      'src/blueprints.ts': `
+        import {
+          coreExtensionData,
+          createExtensionBlueprint,
+          createExtensionDataRef,
+        } from ${API};
+        import { z } from 'zod';
+
+        const labelDataRef = createExtensionDataRef<string>().with({ id: 'demo.label' });
+        const sizeDataRef = createExtensionDataRef<number>().with({ id: 'demo.size' });
+
+        function* labelData(value: unknown, config: { label?: string }) {
+          if (typeof config.label === 'string') {
+            yield labelDataRef(config.label);
+          } else if (typeof value === 'string') {
+            yield labelDataRef(value);
+          }
+        }
+
+        export const WidgetBlueprint = createExtensionBlueprint({
+          kind: 'widget',
+          attachTo: { id: 'app/root', input: 'widgets' },
+          output: [coreExtensionData.reactElement, labelDataRef, sizeDataRef],
+          configSchema: {
+            label: z.string().optional(),
+            size: z.number().optional(),
+            mode: z.string().optional(),
+            extra: z.string().optional(),
+          },
+          *factory(
+            params: { label?: string; size?: number; render: () => unknown },
+            { config, node },
+          ) {
+            console.log('creating', node.spec.id);
+            yield coreExtensionData.reactElement(params.render(node, config.extra));
+            yield* labelData(params.label, config);
+            const size = config.size ?? params.size;
+            const mode = config.mode ?? 'full';
+            if (size !== undefined && mode === 'full') {
+              yield sizeDataRef(size);
+            }
+          },
+        });
+
+        export const LoopBlueprint = createExtensionBlueprint({
+          kind: 'loop',
+          attachTo: { id: 'app/root', input: 'widgets' },
+          output: [coreExtensionData.reactElement],
+          *factory(params: { items: string[] }) {
+            for (const item of params.items) {
+              yield coreExtensionData.reactElement(item);
+            }
+          },
+        });
+      `,
+    });
+
+    const widget = analyze(
+      files(
+        `WidgetBlueprint.make({ params: { label: 'Hello', size: 2, render: () => null } })`,
+      ),
+    ).entryPoints['.'];
+    expect(widget).toMatchObject({
+      manifest: {
+        deferrable: true,
+        extensions: [
+          {
+            id: 'widget:demo',
+            element: {
+              data: { 'demo.label': 'Hello', 'demo.size': 2 },
+              // The size is a number without config, so number config is
+              // applied by the stand-in. The mode isn't mapped, since a
+              // comparison with its value can't be evaluated, so config for
+              // it loads the plugin when the app starts.
+              configOutputs: {
+                label: { dataRefId: 'demo.label', type: 'string' },
+                size: { dataRefId: 'demo.size', type: 'number' },
+              },
+              loadedConfig: ['extra'],
+            },
+          },
+        ],
+      },
+    });
+
+    const loop = analyze(
+      files(`LoopBlueprint.make({ params: { items: ['a'] } })`),
+    ).entryPoints['.'];
+    expect(loop).toMatchObject({
+      manifest: {
+        deferrable: false,
+        notDeferrableReason:
+          "the factory of the 'LoopBlueprint' blueprint can't be read for the extension: the factory runs a statement that cannot be read (src/blueprints.ts:50)",
+      },
     });
   });
 

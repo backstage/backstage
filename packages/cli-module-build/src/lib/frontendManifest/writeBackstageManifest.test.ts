@@ -37,6 +37,25 @@ describe('writeBackstageManifest', () => {
         export default createFrontendModule({ pluginId: 'other', extensions: [] });
       `,
       'src/utils.ts': `export const notAFeature = 1;`,
+      // The blueprint is read from the installed package
+      'node_modules/@backstage/frontend-plugin-api/package.json':
+        JSON.stringify({
+          name: '@backstage/frontend-plugin-api',
+          main: 'index.js',
+        }),
+      'node_modules/@backstage/frontend-plugin-api/index.js': `
+        import { createExtensionBlueprint } from './wiring.js';
+        const routePath = createExtensionDataRef().with({ id: 'core.routing.path' });
+        const reactElement = createExtensionDataRef().with({ id: 'core.reactElement' });
+        export const PageBlueprint = createExtensionBlueprint({
+          kind: 'page',
+          attachTo: { id: 'app/routes', input: 'routes' },
+          *factory(params, { config }) {
+            yield routePath(config.path ?? params.path);
+            yield reactElement(params.loader);
+          },
+        });
+      `,
     });
 
     await writeBackstageManifest({
