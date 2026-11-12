@@ -65,7 +65,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
 
       if (Array.isArray(data)) {
         // We're an array - process all entries recursively
-        const items = await Promise.all(data.map(item => process(item)));
+        const items = await settleAll(data.map(item => process(item)));
         return items.every(([, changed]) => !changed)
           ? [data, false]
           : [items.map(([item]) => item), true];
@@ -75,7 +75,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
       if (!keys.some(k => k.startsWith('$'))) {
         // We're an object but no placeholders at this level - process all
         // entries recursively
-        const entries = await Promise.all(
+        const entries = await settleAll(
           Object.entries(data).map(([k, v]) =>
             process(v).then(vp => [k, vp] as const),
           ),
@@ -134,6 +134,22 @@ export class PlaceholderProcessor implements CatalogProcessor {
     const [result] = await process(entity);
     return result;
   }
+}
+
+/**
+ * Like Promise.all, but waits for every promise to settle before rejecting.
+ * This makes sure that no resolver is still running, and possibly emitting,
+ * after processing of the entity has finished.
+ */
+async function settleAll<T>(promises: Promise<T>[]): Promise<T[]> {
+  const results = await Promise.allSettled(promises);
+  const failure = results.find(
+    (r): r is PromiseRejectedResult => r.status === 'rejected',
+  );
+  if (failure) {
+    throw failure.reason;
+  }
+  return results.map(r => (r as PromiseFulfilledResult<T>).value);
 }
 
 /*

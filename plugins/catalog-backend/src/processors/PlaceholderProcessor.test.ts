@@ -781,6 +781,53 @@ describe('PlaceholderProcessor', () => {
     });
   });
 
+  it('waits for all placeholders to finish before failing', async () => {
+    let finishSlow: () => void = () => {};
+    const slowDone = new Promise<void>(resolve => {
+      finishSlow = resolve;
+    });
+    const processor = new PlaceholderProcessor({
+      resolvers: {
+        fail: async () => {
+          throw new Error('boom');
+        },
+        slow: async ({ emit }) => {
+          await slowDone;
+          emit({ type: 'refresh', key: 'url:slow' });
+          return 'slow';
+        },
+      },
+      reader,
+      integrations,
+    });
+
+    const emitted = new Array<CatalogProcessorResult>();
+    let settled = false;
+    const result = processor
+      .preProcessEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: { a: { $fail: 'x' }, b: [{ $slow: 'y' }] },
+        },
+        { type: 'fake', target: 'http://example.com' },
+        r => emitted.push(r),
+      )
+      .finally(() => {
+        settled = true;
+      });
+
+    // The failing placeholder must not end processing while another one is
+    // still running
+    await new Promise(resolve => setTimeout(resolve, 10));
+    expect(settled).toBe(false);
+
+    finishSlow();
+    await expect(result).rejects.toThrow('boom');
+    expect(emitted).toEqual([{ type: 'refresh', key: 'url:slow' }]);
+  });
+
   it('accepts arbitrary object as value', async () => {
     const processor = new PlaceholderProcessor({
       resolvers: {
