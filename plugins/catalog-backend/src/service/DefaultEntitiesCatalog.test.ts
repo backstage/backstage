@@ -40,6 +40,7 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { EntitiesRequest } from '../catalog/types';
 import { buildEntitySearch } from '../database/operations/stitcher/buildEntitySearch';
 import { entitiesResponseToObjects } from './response';
+import { INDIRECT_IN_MIN_VALUES } from './request/longInLists';
 
 jest.setTimeout(60_000);
 
@@ -2924,9 +2925,13 @@ describe.each(databases.eachSupportedId())(
           ],
         });
         const shortClaims = ['user:default/me', 'group:default/a'];
+        // Long enough to be matched as sets inside the $any and the $not
         const longClaims = [
           ...shortClaims,
-          ...Array.from({ length: 20 }, (_, i) => `group:default/other-${i}`),
+          ...Array.from(
+            { length: INDIRECT_IN_MIN_VALUES },
+            (_, i) => `group:default/other-${i}`,
+          ),
         ];
 
         const collect = async (filter: FilterPredicate) => {
@@ -2950,9 +2955,10 @@ describe.each(databases.eachSupportedId())(
             });
             pages.push(names(response.items));
           }
+          // More than a small first page, which would probe the lists per row
           const unordered = await catalog.queryEntities({
             filter,
-            limit: 10,
+            limit: 1000,
             credentials: mockCredentials.none(),
           });
           const { entities } = await catalog.entities({

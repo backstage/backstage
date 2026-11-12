@@ -16,7 +16,7 @@
 
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyEntityFilterToQuery } from './applyEntityFilterToQuery';
-import { IN_SUBQUERY_MIN_VALUES } from './longInLists';
+import { INDIRECT_IN_MIN_VALUES, IN_SUBQUERY_MIN_VALUES } from './longInLists';
 import {
   DbFinalEntitiesRow,
   DbRefreshStateRow,
@@ -36,7 +36,7 @@ const databases = TestDatabases.create();
 describe('PostgreSQL query generation', () => {
   function compile(
     filter: FilterPredicate,
-    options?: { matchLongInListsPerRow?: boolean },
+    options?: { matchLongInListsPerRow?: boolean; smallFirstPage?: boolean },
   ) {
     const knex = knexFactory({ client: 'pg' });
     const query = knex('final_entities').select('*');
@@ -135,49 +135,78 @@ describe('PostgreSQL query generation', () => {
     expect(repeated.sql).not.toContain('"in_set_2"');
   });
 
-  it('chooses between a joined set and an IN set for long $in lists', () => {
-    const owned = {
+  it('chooses between a joined set, an IN set and the per-row probe for long $in lists', () => {
+    const groups = (length: number) => ({
       'relations.ownedBy': {
-        $in: Array.from(
-          { length: IN_SUBQUERY_MIN_VALUES },
-          (_, i) => `group:default/team-${i}`,
-        ),
+        $in: Array.from({ length }, (_, i) => `group:default/team-${i}`),
       },
-    };
+    });
+    const owned = groups(IN_SUBQUERY_MIN_VALUES);
+    const ownedLong = groups(INDIRECT_IN_MIN_VALUES);
+    const absent = { 'metadata.annotations.x': { $exists: false } };
     const inSet =
       '"final_entities"."entity_id" in (select "search_flt"."entity_id" from "search" as "search_flt"';
+    const joined = '"in_set_1"."entity_id" is not null';
+    const perRow =
+      '"search_flt"."key" = ? and ("search_flt"."value" = ANY(?::text[]))';
+    const form = (sql: string) => {
+      if (sql.includes(joined)) {
+        return sql.includes(inSet) ? 'both' : 'join';
+      }
+      return sql.includes(inSet) ? 'in' : 'row';
+    };
 
-    // Joined when the list decides the result, or when it is negated
+    // A direct condition of the filter is a set from the lower threshold:
+    // joined, or an IN set when a narrower condition is next to it
+    expect(form(compile({ $all: [{ kind: 'component' }, owned] }).sql)).toBe(
+      'join',
+    );
+    expect(
+      form(
+        compile({
+          $all: [{ 'relations.partOf': 'component:default/a' }, owned],
+        }).sql,
+      ),
+    ).toBe('in');
+    expect(form(compile({ 'metadata.name': 'a', ...owned }).sql)).toBe('in');
+
+    // A list inside an $any or a $not is probed per row below the higher
+    // threshold, and on small first pages
     for (const filter of [
-      { $all: [{ kind: 'component' }, owned] },
-      {
-        $all: [
-          { kind: 'component' },
-          { $any: [owned, { 'metadata.annotations.x': { $exists: false } }] },
-        ],
-      },
+      { $any: [{ kind: { $in: ['component', 'api'] } }, owned] },
+      { $all: [{ kind: 'component' }, { $any: [owned, absent] }] },
       { $not: { $any: [owned, { 'metadata.annotations.x': 'y' }] } },
     ] as FilterPredicate[]) {
-      const query = compile(filter);
-      expect(query.sql).toContain('"in_set_1"."entity_id" is not null');
-      expect(query.sql).not.toContain(inSet);
+      expect(form(compile(filter).sql)).toBe('row');
+    }
+    for (const filter of [
+      { $any: [ownedLong, absent] },
+      { $not: ownedLong },
+    ] as FilterPredicate[]) {
+      expect(form(compile(filter, { smallFirstPage: true }).sql)).toBe('row');
     }
 
-    // An IN set when a narrower condition or a broad alternative exists
-    for (const filter of [
-      { $all: [{ 'relations.partOf': 'component:default/a' }, owned] },
-      { $all: [{ 'metadata.name': 'a', ...owned }] },
-      { $any: [{ kind: { $in: ['component', 'api'] } }, owned] },
-    ] as FilterPredicate[]) {
-      const query = compile(filter);
-      expect(query.sql).toContain(inSet);
-      expect(query.sql).not.toContain('in_set_');
-    }
+    // From the higher threshold, it is an IN set, or joined when negated so
+    // that it can be anti-joined
+    expect(form(compile({ $any: [ownedLong, absent] }).sql)).toBe('in');
+    expect(
+      form(compile({ $all: [{ kind: 'component' }, { $not: ownedLong }] }).sql),
+    ).toBe('join');
+
+    // A list that is joined as a direct condition reuses that set where it
+    // appears again inside an $any, even on small first pages
+    const reused = compile(
+      { $all: [{ kind: 'component', ...owned }, { $any: [owned, absent] }] },
+      { smallFirstPage: true },
+    ).sql;
+    expect(reused.split(joined)).toHaveLength(3);
+    expect(reused).not.toContain('"in_set_2"');
+    expect(reused).not.toContain(inSet);
 
     // Probed per row when the list is on a broad field, even if long
     const types = {
       'spec.type': {
-        $in: Array.from({ length: IN_SUBQUERY_MIN_VALUES }, (_, i) => `t${i}`),
+        $in: Array.from({ length: INDIRECT_IN_MIN_VALUES }, (_, i) => `t${i}`),
       },
     };
     for (const filter of [
@@ -186,12 +215,10 @@ describe('PostgreSQL query generation', () => {
       { $any: [types, owned] },
     ] as FilterPredicate[]) {
       const query = compile(filter);
-      expect(query.sql).toContain(
-        '"search_flt"."key" = ? and ("search_flt"."value" = ANY(?::text[]))',
-      );
+      expect(query.sql).toContain(perRow);
       expect(query.sql).toContain('exists');
     }
-    expect(compile({ $any: [types, owned] }).sql).toContain(inSet);
+    expect(form(compile({ $any: [types, ownedLong] }).sql)).toBe('in');
 
     // Large flat filters are analyzed in linear time, not by checking every
     // sibling of every condition (16 million checks for this one)
@@ -202,14 +229,13 @@ describe('PostgreSQL query generation', () => {
     const negated = labels.map(label => ({ $not: label }));
     const narrowed = compile({ $all: [...labels, owned] as FilterPredicate[] });
     const alternated = compile({
-      $any: [...negated, owned] as FilterPredicate[],
+      $any: [...negated, ownedLong] as FilterPredicate[],
     });
-    const joined = compile({ $all: [...negated, owned] as FilterPredicate[] });
+    const direct = compile({ $all: [...negated, owned] as FilterPredicate[] });
     expect(Date.now() - start).toBeLessThan(2000);
-    expect(narrowed.sql).toContain(inSet);
-    expect(alternated.sql).not.toContain(inSet);
-    expect(alternated.sql).toContain('"in_set_1"."entity_id" is not null');
-    expect(joined.sql).toContain('"in_set_1"."entity_id" is not null');
+    expect(form(narrowed.sql)).toBe('in');
+    expect(form(alternated.sql)).toBe('in');
+    expect(form(direct.sql)).toBe('join');
   });
 });
 
@@ -491,12 +517,12 @@ describe.each(databases.eachSupportedId())(
 
       it('filters with long $in lists next to narrow or broad conditions', async () => {
         const padding = Array.from(
-          { length: IN_SUBQUERY_MIN_VALUES },
+          { length: INDIRECT_IN_MIN_VALUES },
           (_, i) => `other-${i}`,
         );
         // Each filter puts a long list next to a narrow condition in an $all,
-        // or next to a broad alternative in an $any, so that PostgreSQL uses
-        // the IN form; the results must match those of the short lists
+        // or inside an $any, so that PostgreSQL uses the IN form; the results
+        // must match those of the short lists
         const filters = (long: boolean): FilterPredicate[] => {
           const tags = { $in: ['java', 'backend', ...(long ? padding : [])] };
           const owners = {

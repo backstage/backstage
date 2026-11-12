@@ -24,8 +24,9 @@ import { Knex } from 'knex';
 import { whereInArray } from '../../database/util';
 import { searchExists, SEARCH_FLT_ALIAS as S } from './searchSubquery';
 import {
-  findJoinedLongInLists,
+  findLongInLists,
   isLongInList,
+  LongInForm,
   longInListId,
 } from './longInLists';
 
@@ -74,43 +75,46 @@ export function assertObjectPredicate(filter: FilterPredicate): void {
 const inSetCounts = new WeakMap<Knex.QueryBuilder, number>();
 
 /**
- * The long `$in` lists of a filter that are matched in the JOIN form, see
+ * The long `$in` lists of a filter that are matched as sets, see
  * `longInLists.ts`.
  */
 type InSets = {
   /** The joined set alias per distinct list */
   aliases: Map<string, string>;
-  /** The keys of the field expressions whose lists are joined */
-  joined: WeakMap<object, Set<string>>;
-  /** Whether long lists are matched as sets at all, or always per row */
-  sets: boolean;
+  /** The form per key of the field expressions whose lists are sets */
+  forms: WeakMap<object, Map<string, LongInForm>>;
 };
 
+const NO_IN_SETS: InSets = { aliases: new Map(), forms: new WeakMap() };
+
 /**
- * Joins one set of entity IDs per distinct long `$in` list that is to be
- * matched in the JOIN form onto the root query, as a derived table that is
- * joined with a LEFT JOIN onto the candidate rows. This happens up front,
- * since knex compiles the joins before it runs the where clause callbacks.
+ * Finds the long `$in` lists of a filter that are matched as sets, and joins
+ * one set of entity IDs per distinct list in the JOIN form onto the root
+ * query, as a derived table that is joined with a LEFT JOIN onto the
+ * candidate rows. This happens up front, since knex compiles the joins before
+ * it runs the where clause callbacks.
  */
 function joinLongInSets(options: {
   filter: FilterPredicate;
   rootQuery: Knex.QueryBuilder;
   onEntityIdField: string;
   knex: Knex;
+  smallFirstPage: boolean;
 }): InSets {
-  const { rootQuery, onEntityIdField, knex } = options;
-  const inSets: InSets = {
-    aliases: new Map(),
-    joined: new WeakMap(),
-    sets: true,
-  };
+  const { rootQuery, onEntityIdField, knex, smallFirstPage } = options;
+  const inSets: InSets = { aliases: new Map(), forms: new WeakMap() };
 
-  for (const { filter, keyAnyCase, value } of findJoinedLongInLists(
+  for (const { filter, keyAnyCase, value, form } of findLongInLists(
     options.filter,
+    { smallFirstPage },
   )) {
+    const forms = inSets.forms.get(filter) ?? new Map<string, LongInForm>();
+    forms.set(keyAnyCase, form);
+    inSets.forms.set(filter, forms);
+
     const key = keyAnyCase.toLowerCase();
     const id = longInListId(key, value);
-    if (!inSets.aliases.has(id)) {
+    if (form === 'join' && !inSets.aliases.has(id)) {
       const index = (inSetCounts.get(rootQuery) ?? 0) + 1;
       inSetCounts.set(rootQuery, index);
       const alias = `in_set_${index}`;
@@ -125,9 +129,6 @@ function joinLongInSets(options: {
       );
       inSets.aliases.set(id, alias);
     }
-    const joined = inSets.joined.get(filter) ?? new Set<string>();
-    joined.add(keyAnyCase);
-    inSets.joined.set(filter, joined);
   }
 
   return inSets;
@@ -139,9 +140,9 @@ export function applyPredicateEntityFilterToQuery(options: {
   onEntityIdField: string;
   knex: Knex;
   /**
-   * The joined sets for long `$in` lists, keyed by list. Computed by the
-   * outermost call and passed along to the nested ones. Only PostgreSQL
-   * matches long lists as sets; other databases always match per row.
+   * The sets for long `$in` lists. Computed by the outermost call and passed
+   * along to the nested ones. Only PostgreSQL matches long lists as sets;
+   * other databases always match per row.
    */
   inSets?: InSets;
   /**
@@ -150,6 +151,12 @@ export function applyPredicateEntityFilterToQuery(options: {
    * work.
    */
   matchLongInListsPerRow?: boolean;
+  /**
+   * Whether the query is the first page of a short list, which can stop
+   * early. Lists that are not direct conditions of the filter are then
+   * probed per row, see `longInLists.ts`.
+   */
+  smallFirstPage?: boolean;
 }): Knex.QueryBuilder {
   const { filter, targetQuery, onEntityIdField, knex } = options;
   const inSets =
@@ -160,8 +167,9 @@ export function applyPredicateEntityFilterToQuery(options: {
           rootQuery: targetQuery,
           onEntityIdField,
           knex,
+          smallFirstPage: Boolean(options.smallFirstPage),
         })
-      : { aliases: new Map(), joined: new WeakMap(), sets: false });
+      : NO_IN_SETS);
 
   assertObjectPredicate(filter);
 
@@ -221,16 +229,18 @@ export function applyPredicateEntityFilterToQuery(options: {
   }
   return targetQuery.andWhere(inner => {
     for (const [keyAnyCase, value] of Object.entries(filter)) {
-      if (inSets.joined.get(filter)?.has(keyAnyCase)) {
-        // A long list in the JOIN form: its set of entity IDs was joined onto
-        // the candidate rows up front, see `joinLongInSets`
-        const alias = inSets.aliases.get(
-          longInListId(keyAnyCase.toLowerCase(), value),
-        );
+      const alias =
+        isLongInList(keyAnyCase, value) &&
+        inSets.aliases.get(longInListId(keyAnyCase.toLowerCase(), value));
+      if (alias) {
+        // A long list whose set of entity IDs was joined onto the candidate
+        // rows up front, see `joinLongInSets`. A list that is joined for one
+        // condition reuses that set wherever else it appears, which costs
+        // nothing more.
         inner.whereNotNull(`${alias}.entity_id`);
         continue;
       }
-      if (inSets.sets && isLongInList(keyAnyCase, value)) {
+      if (inSets.forms.get(filter)?.get(keyAnyCase) === 'in') {
         // A long list in the IN form: an uncorrelated set that is computed
         // once per query and hashed, instead of probing the list once per
         // candidate row. See `longInLists.ts` for when each form is used.

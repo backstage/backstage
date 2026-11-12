@@ -32,22 +32,35 @@
  * - JOIN: the set is a derived table, joined with a LEFT JOIN onto the
  *   candidate rows, and the condition becomes `alias.entity_id IS NOT NULL`.
  *   The planner can drive the query from the set, which is fast when the list
- *   decides which entities match (the owned entities page, late pages of a
- *   small kind such as battery scenario 20 for groups). It can also be
- *   anti-joined when negated (scenario 18).
+ *   decides which entities match, as on the owned entities page. It can also
+ *   be anti-joined when negated (scenario 18).
  * - IN: the condition becomes `entity_id IN (SELECT ...)`, a hashed set that
  *   is checked per row. This keeps the candidate rows in their order, so an
- *   ordered and limited page can still stop early. That matters when another
- *   condition is more selective than the list (scenario 12) or when the list
- *   is an alternative to a broad condition (scenario 19); the JOIN form makes
- *   the planner join and sort the whole catalog there.
+ *   ordered and limited page can still stop early, and its cost does not
+ *   depend on the planner estimating the size of the set well.
  *
- * Neither form is best everywhere, so the choice is made per list from the
- * shape of the filter alone, see `chooseLongInForm`. When changing the
- * threshold or the rule, re-measure at least scenarios 12, 13, 14, 18, 19, 20
- * and 21 and the owned entities page of the query battery, with and without
- * permissions and with several claim lists, see
- * `src/tests/performance/query-battery/queries.md`. The shortcuts in
+ * Building a set costs time up front, while a per-row probe only costs time
+ * for the rows it checks. So sets are used only where the probe is known to
+ * cost more, see `chooseLongInForm`:
+ *
+ * - A list that is a direct condition of the filter, reached from the root
+ *   through `$all` only, decides which entities match. It is a set from
+ *   `IN_SUBQUERY_MIN_VALUES` values: IN when a sibling condition is narrower,
+ *   otherwise JOIN (the owned entities page: 6.6 s became 3.7 s at 174 claims,
+ *   3.4 s became 0.35 s at 40).
+ * - A list inside an `$any` or a `$not`, such as the claims of a conditional
+ *   permission policy, is a set only from `INDIRECT_IN_MIN_VALUES` values, and
+ *   never on a first page of up to 100 entities, where the probe stops early.
+ *   It is IN, or JOIN when negated, since only a join can become an anti-join.
+ *   With 174 claims this took late pages of groups from 18 s to 1.7 s and
+ *   permissioned streams from 40 s to 9 s. Shorter lists, and JOIN sets in
+ *   these places, were slower than the probe: a JOIN set whose size the
+ *   planner underestimated took scenario 14 with 40 claims from 2.6 s to 25 s.
+ *
+ * When changing the thresholds or the rule, re-measure at least scenarios 1,
+ * 3, 7, 12, 13, 14, 15, 18, 19, 20 and 21 and the owned entities page of the
+ * query battery, with and without permissions and with several claim lists,
+ * see `src/tests/performance/query-battery/queries.md`. The shortcuts in
  * `slim-profile.md` next to it depend on both, and are invalid for such a
  * change.
  *
@@ -68,6 +81,14 @@ import {
  * Shorter lists produce exactly the same SQL as before sets were introduced.
  */
 export const IN_SUBQUERY_MIN_VALUES = 10;
+
+/**
+ * The number of values at which a list that is not a direct condition of the
+ * filter, but sits inside an `$any` or a `$not`, is matched as a set. Shorter
+ * such lists keep the per-row probe, whose cost only stands out for very long
+ * lists.
+ */
+export const INDIRECT_IN_MIN_VALUES = 100;
 
 /**
  * The fields whose single values usually match a large share of the catalog,
@@ -208,23 +229,8 @@ function isNarrowFilter(filter: unknown): boolean {
   });
 }
 
-/**
- * Whether a filter can match entities through a condition other than a long
- * `$in` list or the absence of a field.
- */
-function isBroadFilter(filter: unknown): boolean {
-  if (!isObject(filter) || '$not' in filter) {
-    return false;
-  }
-  if ('$all' in filter || '$any' in filter) {
-    const list = '$all' in filter ? filter.$all : filter.$any;
-    return Array.isArray(list) && list.some(isBroadFilter);
-  }
-  return Object.entries(filter).some(
-    ([keyAnyCase, value]) =>
-      !isLongInList(keyAnyCase, value as FilterPredicateValue) &&
-      !(isObject(value) && '$exists' in value && !value.$exists),
-  );
+function countTrue(values: boolean[]): number {
+  return values.reduce((count, value) => count + (value ? 1 : 0), 0);
 }
 
 /**
@@ -232,89 +238,89 @@ function isBroadFilter(filter: unknown): boolean {
  * concerned.
  */
 type LongInContext = {
+  /** Whether the list is reached from the root through `$all` only */
+  direct: boolean;
   /** Whether the list is inside a `$not` */
   negated: boolean;
   /** Whether a sibling of the list in some `$all` narrows down the result */
   narrowed: boolean;
-  /** Whether a sibling of the list in some `$any` matches broadly */
-  alternated: boolean;
 };
 
-/**
- * The rule that picks the form of a long `$in` list, see the top of this file.
- *
- * - Inside a `$not`: always JOIN. A negated `IN` set can not be planned as an
- *   anti-join, and was rescanned once per row instead (scenario 18 with a
- *   claim that owns a large share of the catalog: 40 ms became 5.9 s).
- * - Next to a narrow condition in an `$all`: IN. The other condition already
- *   picks few entities, and joining the whole set first is wasted work
- *   (scenario 12 with a large claim list: 2.4 s as IN, 36 s as JOIN).
- * - Next to a broad condition in an `$any`: IN. Most entities match the broad
- *   branch, so a page can stop early while walking in order (scenario 19:
- *   about 10 ms as IN, 2.5 s as JOIN).
- * - Otherwise: JOIN (the owned entities page: 1.7-3 s became 13-177 ms;
- *   scenario 20 for groups: 22.7 s became 0.35 s).
- */
-function chooseLongInForm(context: LongInContext): 'join' | 'in' {
-  if (context.negated) {
-    return 'join';
-  }
-  if (context.narrowed || context.alternated) {
-    return 'in';
-  }
-  return 'join';
-}
-
-function countTrue(values: boolean[]): number {
-  return values.reduce((count, value) => count + (value ? 1 : 0), 0);
-}
+/** How a long `$in` list is matched as a set, see the top of this file */
+export type LongInForm = 'join' | 'in';
 
 /**
- * A long `$in` list that is to be matched in the JOIN form.
+ * A long `$in` list that is to be matched as a set.
  */
-export type JoinedLongInList = {
+export type LongInList = {
   /** The field expression object that contains the list */
   filter: object;
   /** The field key, as written in the filter */
   keyAnyCase: string;
   value: FilterPredicateValue;
+  form: LongInForm;
 };
 
 /**
- * Finds the long `$in` lists of a filter that are to be matched in the JOIN
- * form, in the order they appear. All other long lists use the IN form.
+ * The rule that picks how a long `$in` list is matched, or `undefined` to
+ * keep the per-row probe. See the top of this file.
  */
-export function findJoinedLongInLists(
+function chooseLongInForm(
+  context: LongInContext,
+  value: FilterPredicateValue,
+  smallFirstPage: boolean,
+): LongInForm | undefined {
+  if (context.direct) {
+    return context.narrowed ? 'in' : 'join';
+  }
+  if (smallFirstPage || countInValues(value) < INDIRECT_IN_MIN_VALUES) {
+    return undefined;
+  }
+  return context.negated ? 'join' : 'in';
+}
+
+/**
+ * Finds the long `$in` lists of a filter that are to be matched as sets, in
+ * the order they appear, with the form of each. All other lists are probed
+ * per row.
+ */
+export function findLongInLists(
   filter: FilterPredicate,
-): JoinedLongInList[] {
-  const result: JoinedLongInList[] = [];
+  options?: { smallFirstPage?: boolean },
+): LongInList[] {
+  const smallFirstPage = Boolean(options?.smallFirstPage);
+  const result: LongInList[] = [];
 
   const visit = (node: unknown, context: LongInContext) => {
     if (!isObject(node)) {
       return;
     }
     if ('$not' in node) {
-      visit(node.$not, { ...context, negated: true });
+      visit(node.$not, { ...context, direct: false, negated: true });
       return;
     }
-    if ('$all' in node || '$any' in node) {
-      const isAll = '$all' in node;
-      const list = isAll ? node.$all : node.$any;
-      if (!Array.isArray(list)) {
+    if ('$any' in node) {
+      if (Array.isArray(node.$any)) {
+        for (const child of node.$any) {
+          visit(child, { ...context, direct: false });
+        }
+      }
+      return;
+    }
+    if ('$all' in node) {
+      if (!Array.isArray(node.$all)) {
         return;
       }
       // Classify each child once, so that asking whether any sibling of a
-      // child qualifies is a subtraction rather than a scan of the siblings
-      const qualifies = list.map(isAll ? isNarrowFilter : isBroadFilter);
-      const total = countTrue(qualifies);
-      list.forEach((child, index) => {
-        const bySibling = total - (qualifies[index] ? 1 : 0) > 0;
-        visit(
-          child,
-          isAll
-            ? { ...context, narrowed: context.narrowed || bySibling }
-            : { ...context, alternated: context.alternated || bySibling },
-        );
+      // child is narrow is a subtraction rather than a scan of the siblings
+      const narrow = node.$all.map(isNarrowFilter);
+      const total = countTrue(narrow);
+      node.$all.forEach((child, index) => {
+        const bySibling = total - (narrow[index] ? 1 : 0) > 0;
+        visit(child, {
+          ...context,
+          narrowed: context.narrowed || bySibling,
+        });
       });
       return;
     }
@@ -329,16 +335,22 @@ export function findJoinedLongInLists(
       }
       const narrowed =
         context.narrowed || narrowTotal - (narrowEntries[index] ? 1 : 0) > 0;
-      if (chooseLongInForm({ ...context, narrowed }) === 'join') {
+      const form = chooseLongInForm(
+        { ...context, narrowed },
+        value as FilterPredicateValue,
+        smallFirstPage,
+      );
+      if (form) {
         result.push({
           filter: node,
           keyAnyCase,
           value: value as FilterPredicateValue,
+          form,
         });
       }
     }
   };
 
-  visit(filter, { negated: false, narrowed: false, alternated: false });
+  visit(filter, { direct: true, negated: false, narrowed: false });
   return result;
 }
