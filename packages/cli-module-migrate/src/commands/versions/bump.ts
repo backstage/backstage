@@ -38,7 +38,7 @@ import {
 } from '@backstage/release-manifests';
 import { migrateMovedPackages } from './migrate';
 import { runInstall } from '../../lib/utils';
-import { getCatalogName } from '../../lib/catalogs';
+import { getCatalogName, isBumpedRange } from '../../lib/catalogs';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 const DEP_TYPES = [
@@ -290,8 +290,9 @@ export default async ({ args, info }: CliCommandContext) => {
 
     const breakingUpdates = new Map<string, { from: string; to: string }>();
     const catalogUpdates = new Map<string, Map<string, string>>();
-    // Every catalog that is referenced, whether it is bumped or not
-    const referencedCatalogs = new Set<string>();
+    // Every catalog that is referenced, whether it is bumped or not, with
+    // the dependencies that refer to it
+    const referencedCatalogs = new Map<string, Set<string>>();
     // Nothing is written until all updates are known to apply
     const packageUpdates = new Map<string, object>();
     await runConcurrentTasks({
@@ -315,12 +316,12 @@ export default async ({ args, info }: CliCommandContext) => {
                 ? getCatalogName(oldRange)
                 : undefined;
               if (catalogName) {
-                referencedCatalogs.add(catalogName);
+                const dependents =
+                  referencedCatalogs.get(catalogName) ?? new Set();
+                dependents.add(`${dep.name} in ${name}`);
+                referencedCatalogs.set(catalogName, dependents);
               }
-              const selected = catalogFlag
-                ? catalogName === catalogFlag
-                : catalogName === undefined || catalogName === 'default';
-              if (!selected) {
+              if (!isBumpedRange(oldRange, catalogFlag, Boolean(catalogs))) {
                 continue;
               }
 
@@ -384,16 +385,20 @@ export default async ({ args, info }: CliCommandContext) => {
       },
     });
 
+    // pnpm would fail on these anyway, so fail before writing anything
     const missingCatalogs = Array.from(referencedCatalogs).filter(
-      catalogName => !catalogs?.[catalogName],
+      ([catalogName]) => !catalogs?.[catalogName],
     );
     if (missingCatalogs.length > 0) {
       throw new Error(
-        `Packages refer to ${missingCatalogs
-          .map(catalogName => `the ${catalogName} catalog`)
-          .join(
-            ', ',
-          )}, which the workspace does not define. No files were changed.`,
+        `${missingCatalogs
+          .map(
+            ([catalogName, dependents]) =>
+              `${Array.from(dependents).join(', ')} ${
+                dependents.size === 1 ? 'refers' : 'refer'
+              } to the ${catalogName} catalog, which the workspace does not define.`,
+          )
+          .join(' ')} No files were changed.`,
       );
     }
 
@@ -407,8 +412,9 @@ export default async ({ args, info }: CliCommandContext) => {
       }
     }
 
-    // The catalogs are written at once and first, since that is the step
-    // that can fail on the contents of a file
+    // The catalogs are written first, since that is the step that can fail
+    // on the contents of a file. The writes are not atomic, so if a later
+    // write fails, the catalogs stay bumped.
     if (!dryRun) {
       if (catalogUpdates.size > 0) {
         await packageManager.updateCatalogs!(
@@ -468,8 +474,10 @@ export default async ({ args, info }: CliCommandContext) => {
     if (!skipMigrate) {
       console.log();
 
+      // Only the dependencies that the bump updated are migrated
       const changed = await migrateMovedPackages({
         pattern: patternFlag,
+        onlyBumped: { catalog: catalogFlag },
       });
 
       if (changed && !skipInstall) {
@@ -512,9 +520,14 @@ function warnAboutOverrides(
 ) {
   const pinned = Object.entries(overrides ?? {})
     .filter(([selector, value]) => {
-      // The overridden package is the last one in the selector, as in
-      // parent>package@range
-      const target = selector.split('>').pop()!;
+      // The overridden package follows the parent in the selector, as in
+      // parent>package@range. Like pnpm, split at the first `>` that doesn't
+      // follow a space, `|` or `@`, so that a range such as `>=1.0.0` stays
+      // in one piece.
+      const trimmed = selector.trim();
+      const delimiter = trimmed.search(/[^ |@]>/);
+      const target =
+        delimiter === -1 ? trimmed : trimmed.slice(delimiter + 2).trim();
       const versionAt = target.indexOf('@', 1);
       const name = versionAt === -1 ? target : target.slice(0, versionAt);
       return (

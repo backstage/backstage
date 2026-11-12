@@ -264,6 +264,76 @@ catalogs:
     });
   });
 
+  it('should only migrate the dependencies that a bump updates when asked', async () => {
+    const pnpmDir = createMockDirectory();
+    overrideTargetPaths(pnpmDir.path);
+    const packageJson = (name: string, range: string) =>
+      JSON.stringify({ name, dependencies: { '@backstage/custom': range } });
+    pnpmDir.setContent({
+      'package.json': JSON.stringify({ name: 'root' }),
+      'pnpm-workspace.yaml': `packages:
+  - packages/*
+
+catalog:
+  '@backstage/custom': ^1.0.1
+
+catalogs:
+  next:
+    '@backstage/custom': ^1.1.0
+`,
+      node_modules: {
+        '@backstage': {
+          custom: {
+            'package.json': JSON.stringify({
+              name: '@backstage/custom',
+              version: '1.0.1',
+              backstage: { moved: '@backstage-community/custom' },
+            }),
+          },
+        },
+      },
+      packages: {
+        range: { 'package.json': packageJson('range', '^1.0.1') },
+        default: { 'package.json': packageJson('default', 'catalog:') },
+        next: { 'package.json': packageJson('next', 'catalog:next') },
+      },
+    });
+    const readDependencies = async (name: string) =>
+      Object.keys(
+        (await fs.readJson(pnpmDir.resolve(`packages/${name}/package.json`)))
+          .dependencies,
+      );
+
+    // With --catalog, only the references to that catalog
+    await withLogCollector(async () => {
+      await expect(
+        migrateMovedPackages({ onlyBumped: { catalog: 'next' } }),
+      ).resolves.toBe(true);
+    });
+    await expect(readDependencies('next')).resolves.toEqual([
+      '@backstage-community/custom',
+    ]);
+    await expect(readDependencies('range')).resolves.toEqual([
+      '@backstage/custom',
+    ]);
+    await expect(readDependencies('default')).resolves.toEqual([
+      '@backstage/custom',
+    ]);
+
+    // Without it, the version ranges and the default catalog
+    await withLogCollector(async () => {
+      await expect(migrateMovedPackages({ onlyBumped: {} })).resolves.toBe(
+        true,
+      );
+    });
+    await expect(readDependencies('range')).resolves.toEqual([
+      '@backstage-community/custom',
+    ]);
+    await expect(readDependencies('default')).resolves.toEqual([
+      '@backstage-community/custom',
+    ]);
+  });
+
   it('should replace the occurrences of the moved package in files inside the correct package', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({

@@ -379,6 +379,16 @@ overrides:
         default: expect.objectContaining({ lodash: '^4.17.21' }),
       }),
     );
+
+    // New keys get double quotes in a file that only uses double quotes
+    const doubleQuotedYaml = `catalog:\n  "@backstage/core": "^1.0.0"\n  react: ^18.0.0\n`;
+    mockDir.setContent({ 'pnpm-workspace.yaml': doubleQuotedYaml });
+    await local.updateCatalogs({
+      default: { '@backstage-community/plugin-x': '^1.0.0' },
+    });
+    expect(mockDir.content()).toEqual({
+      'pnpm-workspace.yaml': `${doubleQuotedYaml}  "@backstage-community/plugin-x": ^1.0.0\n`,
+    });
   });
 
   it('should load the lockfile and name workspace packages from the workspace root', async () => {

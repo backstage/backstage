@@ -21,3 +21,19 @@ export function getCatalogName(range: string): string | undefined {
   }
   return range.slice('catalog:'.length) || 'default';
 }
+
+/**
+ * Whether `versions:bump` updates a dependency with the given range. With
+ * `--catalog <name>` it only updates the references to that catalog, and
+ * otherwise the version ranges and the references to the default catalog.
+ */
+export function isBumpedRange(
+  range: string,
+  catalog: string | undefined,
+  hasCatalogs: boolean,
+): boolean {
+  const catalogName = hasCatalogs ? getCatalogName(range) : undefined;
+  return catalog
+    ? catalogName === catalog
+    : catalogName === undefined || catalogName === 'default';
+}

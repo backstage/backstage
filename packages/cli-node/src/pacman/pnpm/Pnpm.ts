@@ -19,7 +19,7 @@ import { run, runOutput, RunOptions, targetPaths } from '@backstage/cli-common';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import semver from 'semver';
-import { Document, isScalar, parseDocument, Scalar } from 'yaml';
+import { Document, isScalar, parseDocument, Scalar, visit } from 'yaml';
 import {
   PackageInfo,
   PackageManager,
@@ -366,7 +366,24 @@ export class Pnpm implements PackageManager {
       for (const { path, version } of added) {
         updatedDoc.setIn(path, version);
       }
-      updated = updatedDoc.toString(STRINGIFY_OPTIONS);
+      // The existing entries keep their quotes, and the new ones get double
+      // quotes when the file has no single-quoted strings but double-quoted
+      // ones
+      let singleQuoted = 0;
+      let doubleQuoted = 0;
+      visit(updatedDoc, {
+        Scalar(_key, node) {
+          if (node.type === Scalar.QUOTE_SINGLE) {
+            singleQuoted += 1;
+          } else if (node.type === Scalar.QUOTE_DOUBLE) {
+            doubleQuoted += 1;
+          }
+        },
+      });
+      updated = updatedDoc.toString({
+        ...STRINGIFY_OPTIONS,
+        singleQuote: singleQuoted > 0 || doubleQuoted === 0,
+      });
     }
 
     await fs.writeFile(this.workspaceFilePath(), updated);
