@@ -206,7 +206,8 @@ The following rules apply when several modules register the same path:
 
 A module that is installed on its own and has `if` set does not replace
 the matching command in a default module set. The default command stays
-available as the fallback.
+available as the fallback. Setting `if` on a command outside `package`, for
+example by passing it to `addCommand`, is an error.
 
 ## Command context
 
