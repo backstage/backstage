@@ -20,7 +20,7 @@ import {
   PackageManager,
   PackageManagerInstallOptions,
 } from '../PackageManager';
-import { Lockfile } from '../Lockfile';
+import { PackageManagerLockfile } from '../PackageManagerLockfile';
 import { YarnLockfile } from './YarnLockfile';
 import { YarnVersion } from './types';
 import { run, runOutput, RunOptions, targetPaths } from '@backstage/cli-common';
@@ -229,14 +229,14 @@ export class Yarn implements PackageManager {
   }
 
   /** Loads the `yarn.lock` file in the workspace root. */
-  async loadLockfile(): Promise<Lockfile> {
+  async loadLockfile(): Promise<PackageManagerLockfile> {
     return YarnLockfile.load(
       resolvePath(this.workspaceRootDir, this.lockfileName()),
     );
   }
 
   /** Parses the given `yarn.lock` contents. */
-  async parseLockfile(contents: string): Promise<Lockfile> {
+  async parseLockfile(contents: string): Promise<PackageManagerLockfile> {
     return YarnLockfile.parse(contents);
   }
 
