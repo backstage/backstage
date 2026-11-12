@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { ConfigApi } from '@backstage/frontend-plugin-api';
-import { DocumentTitleApi } from '@backstage/frontend-plugin-api';
+import { ConfigApi, DocumentTitleApi } from '@backstage/frontend-plugin-api';
 
 const DEFAULT_APP_TITLE = 'Backstage';
 
 function readAppTitle(configApi: ConfigApi) {
-  return configApi.getOptionalString('app.title') ?? DEFAULT_APP_TITLE;
+  return configApi.getOptionalString('app.title') || DEFAULT_APP_TITLE;
 }
 
 /**

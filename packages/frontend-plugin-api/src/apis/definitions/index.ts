@@ -34,12 +34,12 @@ export * from './auth';
 
 export * from './AlertApi';
 export * from './AppLanguageApi';
-export * from './DocumentTitleApi';
 export * from './AppLifecycleApi';
 export * from './AppThemeApi';
 export * from './SwappableComponentsApi';
 export * from './ConfigApi';
 export * from './DiscoveryApi';
+export * from './DocumentTitleApi';
 export * from './ErrorApi';
 export * from './FeatureFlagsApi';
 export * from './FetchApi';

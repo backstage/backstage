@@ -36,7 +36,7 @@ function ItemDetails(props: { item: Item }) {
 
 The title replaces the segment of the page or sub-page that the component is rendered within, and the default comes back when the component is no longer rendered. When called from an extension without a route path of its own, such as a card, it applies to the closest enclosing page. See [Document title](../building-apps/03-built-in-extensions.md#document-title) for how the app formats the final title.
 
-If you write your own blueprint for extensions that are shown as a page or tab, pass the resolved title to the `title` option of `ExtensionBoundary` or `ExtensionBoundary.lazy` to contribute it as the default segment.
+If you write your own blueprint for extensions that are shown as a page or tab, pass the resolved title to the `title` option of `ExtensionBoundary` or `ExtensionBoundary.lazy` to contribute it as the default segment. If the title is a translation message reference, also pass it as `titleTranslation`, so that the segment follows language changes.
 
 ### SubPage - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.SubPageBlueprint.html)
 

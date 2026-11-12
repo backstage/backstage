@@ -97,7 +97,8 @@ export function useNodeTitle(
  * by default is its title. This hook replaces that segment, for example with
  * the name of the item that the page is showing. When called from within an
  * extension that does not have a route path of its own, such as a card, it
- * applies to the closest enclosing page.
+ * applies to the closest enclosing page, or to the closest extension if there
+ * is no enclosing page.
  *
  * Passing an empty or undefined title keeps the default segment, which is
  * useful while the title is still loading. How the segments are turned into
