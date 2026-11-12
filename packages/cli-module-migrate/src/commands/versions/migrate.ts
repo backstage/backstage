@@ -20,7 +20,7 @@ import { cli } from 'cleye';
 import { readJson, writeJson } from 'fs-extra';
 import { minimatch } from 'minimatch';
 import { runInstall } from '../../lib/utils';
-import { getCatalogName } from '../../lib/catalogs';
+import { getCatalogName, isBumpedRange } from '../../lib/catalogs';
 import replace from 'replace-in-file';
 import { detectPackageManager } from '@backstage/cli-node/alpha';
 import type { CliCommandContext } from '@backstage/cli-node';
@@ -76,6 +76,12 @@ export default async ({ args, info }: CliCommandContext) => {
 export async function migrateMovedPackages(options?: {
   pattern?: string;
   skipCodeChanges?: boolean;
+  /**
+   * Only migrates the dependencies that `versions:bump` updates, with or
+   * without `--catalog <catalog>`. Without this option all dependencies are
+   * migrated.
+   */
+  onlyBumped?: { catalog?: string };
 }) {
   console.log(
     'Checking for moved packages to the @backstage-community namespace...',
@@ -106,6 +112,16 @@ export async function migrateMovedPackages(options?: {
       }
       for (const [depName, depVersion] of Object.entries(depsObj)) {
         if (options?.pattern && !minimatch(depName, options.pattern)) {
+          continue;
+        }
+        if (
+          options?.onlyBumped &&
+          !isBumpedRange(
+            depVersion,
+            options.onlyBumped.catalog,
+            Boolean(catalogs),
+          )
+        ) {
           continue;
         }
         let packageInfo: BackstagePackageJson;
