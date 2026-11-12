@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.2.3
+
+### Patch Changes
+
+- 7a3e967: Fixed matching of action input values in scaffolder permission policies, including identifiers that are provided either as numbers or as strings.
+
 ## 4.2.0
 
 ### Minor Changes
