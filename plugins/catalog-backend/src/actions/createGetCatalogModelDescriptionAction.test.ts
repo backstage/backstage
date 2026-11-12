@@ -80,48 +80,42 @@ const model: CatalogModel = {
               allowedKinds: ['Group', 'User'],
             },
           ],
+          // The flat shape that compiled models produce: composition keywords
+          // are not allowed on the root or on its direct properties
           jsonSchema: {
-            allOf: [
-              {
-                $ref: 'Entity',
-                properties: { hiddenFromBase: { type: 'string' } },
+            type: 'object',
+            properties: {
+              apiVersion: { type: 'string' },
+              kind: { type: 'string' },
+              metadata: {
+                type: 'object',
+                properties: { name: { type: 'string' } },
               },
-              {
+              spec: {
+                type: 'object',
+                required: ['owner', 'lifecycle'],
                 properties: {
-                  apiVersion: { type: 'string' },
-                  kind: { type: 'string' },
-                  metadata: {
-                    type: 'object',
-                    properties: { name: { type: 'string' } },
+                  owner: {
+                    type: 'string',
+                    description: 'The owner of the component.',
                   },
-                  spec: {
+                  lifecycle: {
+                    type: 'string',
+                    enum: ['production', 'experimental'],
+                  },
+                  tags: { type: 'array', items: { type: 'string' } },
+                  ids: {
+                    type: 'array',
+                    items: { type: ['string', 'number'] },
+                  },
+                  links: { $ref: '#/definitions/Links' },
+                  nested: {
                     type: 'object',
-                    required: ['owner'],
-                    allOf: [{ required: ['lifecycle'] }],
-                    properties: {
-                      owner: {
-                        type: 'string',
-                        description: 'The owner of the component.',
-                      },
-                      lifecycle: {
-                        type: 'string',
-                        enum: ['production', 'experimental'],
-                      },
-                      tags: { type: 'array', items: { type: 'string' } },
-                      ids: {
-                        type: 'array',
-                        items: { type: ['string', 'number'] },
-                      },
-                      links: { $ref: '#/definitions/Links' },
-                      nested: {
-                        type: 'object',
-                        properties: { deep: { type: 'number' } },
-                      },
-                    },
+                    properties: { deep: { type: 'number' } },
                   },
                 },
               },
-            ],
+            },
           },
         }
       : undefined,
@@ -324,7 +318,6 @@ describe('createGetCatalogModelDescriptionAction', () => {
     expect(description).toContain(
       '* "spec.links" (reference to "#/definitions/Links")',
     );
-    // Required in a different allOf entry than the one declaring the property
     expect(description).toContain(
       '* "spec.lifecycle" (string, required, one of "production", "experimental")',
     );
@@ -336,36 +329,37 @@ describe('createGetCatalogModelDescriptionAction', () => {
     // Base fields are not repeated for every kind
     expect(description).not.toContain('"metadata.name" (');
     expect(description).not.toContain('"apiVersion" (');
-    expect(description).not.toContain('hiddenFromBase');
   });
 
-  it('should merge every declaration of a field', async () => {
+  it('should fold every allOf declaration of a field', async () => {
     const description = await describeModel(
       createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
         type: 'object',
-        allOf: [
-          // Required in a sibling of the entry that declares the properties
-          { required: ['owner', 'team'] },
-          {
-            properties: {
-              owner: { type: 'string' },
-              team: { $ref: '#/definitions/Team' },
-              mode: { type: 'string', description: 'The mode.' },
-            },
-          },
-          {
-            properties: {
-              // Stacked on the declaration above, narrowing it to an enum
-              mode: { enum: ['fast', 'slow'] },
-              team: { description: 'The owning team.' },
-            },
-          },
-        ],
-        anyOf: [
-          { properties: { variant: { type: 'string', enum: ['a'] } } },
-          { properties: { variant: { type: 'string', enum: ['b'] } } },
-        ],
         properties: {
+          cfg: {
+            type: 'object',
+            allOf: [
+              // Required in a sibling of the entry that declares the properties
+              { required: ['owner', 'team'] },
+              {
+                properties: {
+                  owner: { type: 'string' },
+                  team: { $ref: '#/definitions/Team' },
+                  mode: { type: 'string', description: 'The mode.' },
+                },
+              },
+              {
+                properties: {
+                  // Stacked on the declaration above, narrowing it to an enum
+                  mode: { enum: ['fast', 'slow', 'off'] },
+                  team: { description: 'The owning team.' },
+                },
+              },
+              { properties: { mode: { enum: ['fast', 'slow'] } } },
+            ],
+          },
+          // Composition on the property itself
+          level: { allOf: [{ type: 'string' }, { enum: ['low', 'high'] }] },
           endpoints: {
             type: 'array',
             items: {
@@ -382,15 +376,18 @@ describe('createGetCatalogModelDescriptionAction', () => {
       })),
     );
 
-    expect(description).toContain('* "spec.owner" (string, required)');
+    expect(description).toContain('* "spec.cfg" (object)');
+    expect(description).toContain('* "spec.cfg.owner" (string, required)');
     expect(description).toContain(
-      '* "spec.team" (required, reference to "#/definitions/Team"): The owning team.',
+      '* "spec.cfg.team" (reference to "#/definitions/Team", required): The owning team.',
+    );
+    // Allowed values are intersected across every declaration
+    expect(description).toContain(
+      '* "spec.cfg.mode" (string, one of "fast", "slow"): The mode.',
     );
     expect(description).toContain(
-      '* "spec.mode" (string, one of "fast", "slow"): The mode.',
+      '* "spec.level" (string, one of "low", "high")',
     );
-    // Alternatives widen the allowed values
-    expect(description).toContain('* "spec.variant" (string, one of "a", "b")');
     // Properties of array items are addressed through the array path
     expect(description).toContain('* "spec.endpoints" (array of object)');
     expect(description).toContain('* "spec.endpoints.url" (string, required)');
@@ -399,9 +396,34 @@ describe('createGetCatalogModelDescriptionAction', () => {
       '* "spec.refs" (array of reference to "#/definitions/Ref")',
     );
     // Every field is described once
-    expect(description.match(/"spec.mode"/g)).toHaveLength(1);
-    expect(description.match(/"spec.team"/g)).toHaveLength(1);
-    expect(description.match(/"spec.variant"/g)).toHaveLength(1);
+    expect(description.match(/"spec.cfg.mode"/g)).toHaveLength(1);
+    expect(description.match(/"spec.cfg.team"/g)).toHaveLength(1);
+  });
+
+  it('should mark fields with alternative schemas instead of expanding them', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
+        type: 'object',
+        properties: {
+          options: {
+            type: 'object',
+            properties: { mode: { type: 'string' } },
+            anyOf: [
+              { properties: { mode: { enum: ['fast'] } } },
+              { properties: { label: { type: 'string' } } },
+            ],
+          },
+        },
+      })),
+    );
+
+    expect(description).toContain(
+      '* "spec.options" (object, has conditional constraints not listed here)',
+    );
+    // Only the unconditional declaration is described
+    expect(description).toContain('* "spec.options.mode" (string)');
+    expect(description).not.toContain('"spec.options.label"');
+    expect(description).not.toContain('one of "fast"');
   });
 
   it('should not group versions that differ only in a stacked constraint', async () => {
@@ -410,19 +432,19 @@ describe('createGetCatalogModelDescriptionAction', () => {
         [{ apiVersion: 'example.com/v1' }, { apiVersion: 'example.com/v2' }],
         ({ apiVersion }) => ({
           type: 'object',
-          allOf: [
-            { properties: { mode: { type: 'string' } } },
-            {
-              properties: {
-                mode: {
+          properties: {
+            mode: {
+              allOf: [
+                { type: 'string' },
+                {
                   enum:
                     apiVersion === 'example.com/v1'
                       ? ['fast']
                       : ['fast', 'slow'],
                 },
-              },
+              ],
             },
-          ],
+          },
         }),
       ),
     );
