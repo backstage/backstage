@@ -24,7 +24,7 @@ import {
   TableProps,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { HeaderPage } from '@backstage/ui';
+import { Container, HeaderPage } from '@backstage/ui';
 import { CatalogTable, CatalogTableRow } from '@backstage/plugin-catalog';
 import {
   EntityKindPicker,
@@ -196,7 +196,7 @@ export const NfsApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
   return (
     <>
       <HeaderPage title={generatedSubtitle} customActions={headerActions} />
-      <Content>
+      <Container>
         <ApiExplorerPageContent
           initiallySelectedFilter={initiallySelectedFilter}
           columns={columns}
@@ -204,7 +204,7 @@ export const NfsApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
           ownerPickerMode={ownerPickerMode}
           pagination={pagination}
         />
-      </Content>
+      </Container>
     </>
   );
 };
