@@ -15,7 +15,7 @@
  */
 
 import { Yarn } from './yarn';
-import { Lockfile } from './Lockfile';
+import { PackageManagerLockfile } from './PackageManagerLockfile';
 import { targetPaths } from '@backstage/cli-common';
 import { RunOnOutput, RunOptions } from '@backstage/cli-common';
 import fs from 'fs-extra';
@@ -121,11 +121,11 @@ export interface PackageManager {
   /** Fetches information about the given package, usually from NPM. */
   fetchPackageInfo(name: string): Promise<PackageInfo>;
 
-  /** Reads the lockfile in the workspace root. See {@link Lockfile} */
-  loadLockfile(): Promise<Lockfile>;
+  /** Reads the lockfile in the workspace root. See {@link PackageManagerLockfile} */
+  loadLockfile(): Promise<PackageManagerLockfile>;
 
-  /** Parses the given string as a {@link Lockfile}. */
-  parseLockfile(contents: string): Promise<Lockfile>;
+  /** Parses the given string as a {@link PackageManagerLockfile}. */
+  parseLockfile(contents: string): Promise<PackageManagerLockfile>;
 
   /**
    * Whether the package manager supports the 'backstage:^' version protocol.
