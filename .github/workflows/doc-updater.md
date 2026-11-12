@@ -8,14 +8,18 @@ on:
     pull-requests: read
   steps:
     - id: check
+      # A failing check means "too many open docs PRs". continue-on-error keeps the run
+      # green, and the activation gate reads steps.check.outcome, which stays "failure".
+      continue-on-error: true
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
         MAX_OPEN_PRS=8
         if [[ "$GITHUB_EVENT_NAME" != "schedule" ]]; then exit 0; fi
-        COUNT=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --search 'in:title "[docs]"' --json number --jq 'length')
+        COUNT=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --search 'in:title docs' --limit 1000 --json title --jq '[.[] | select(.title | startswith("[docs] "))] | length')
         [[ "$COUNT" -lt "$MAX_OPEN_PRS" ]]
-      # exits 0 if not scheduled or <MAX_OPEN_PRS open PRs, 1 if ≥MAX_OPEN_PRS
+      # exits 0 if not scheduled or <MAX_OPEN_PRS open PRs, 1 if ≥MAX_OPEN_PRS.
+      # The search is a loose prefilter: GitHub search ignores the brackets, so jq checks the title prefix.
 
 if: needs.pre_activation.outputs.check_result == 'success'
 
