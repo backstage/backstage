@@ -17,7 +17,7 @@ export const changelog_0_12_0: ChangelogProps[] = [
     commitSha: '46a9adc',
   },
   {
-    components: [],
+    components: ['bui-tokens'],
     version: '0.12.0',
     prs: ['32723'],
     description: `**BREAKING**: Removed gray scale tokens and renamed background surface tokens to neutral tokens
@@ -148,7 +148,7 @@ Note: Provider components use \`data-bg\` (values: \`neutral-1\` through \`neutr
     commitSha: '7898df0',
   },
   {
-    components: [],
+    components: ['bui-tokens'],
     version: '0.12.0',
     prs: ['32837'],
     description: `**BREAKING:** Renamed, added, and removed CSS tokens.
@@ -249,7 +249,7 @@ Remove any references to \`--bui-border-hover\`, \`--bui-border-pressed\`, and \
     commitSha: '058ffd9',
   },
   {
-    components: ['link'],
+    components: ['link', 'bui-tokens'],
     version: '0.12.0',
     prs: ['32608'],
     description: `**BREAKING**: Removed link and tint color tokens, added new status foreground tokens, and improved Link component styling
@@ -321,7 +321,7 @@ If you're using status foreground colors on colored backgrounds, update to the n
     commitSha: '644e303',
   },
   {
-    components: [],
+    components: ['bui-tokens'],
     version: '0.12.0',
     prs: ['32825'],
     description: `Fixed dark theme \`--bui-fg-secondary\` and \`--bui-fg-disabled\` tokens using black-based \`oklch(0% ...)\` instead of white-based \`oklch(100% ...)\`, making secondary and disabled text visible on dark backgrounds.`,
@@ -411,7 +411,7 @@ If you're using status foreground colors on colored backgrounds, update to the n
     commitSha: 'a0fe1b2',
   },
   {
-    components: ['alert'],
+    components: ['alert', 'bui-tokens'],
     version: '0.12.0',
     prs: ['32520'],
     description: `Added new \`Alert\` component with support for status variants (info, success, warning, danger), icons, loading states, and custom actions.
