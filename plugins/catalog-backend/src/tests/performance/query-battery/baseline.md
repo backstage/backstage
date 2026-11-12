@@ -605,46 +605,58 @@ pages too.
 
 ### Setup
 
-- The same beta replica as above, now 751,424 entities. Master is
-  `33ee6b59f2bc`, which includes the change above. Master and this change ran
-  interleaved in the same session, case by case, as above.
+- The same beta replica as above, now 752,912 entities, with `work_mem` at
+  32MB. Master is `33ee6b59f2bc`, which includes the change above. Master and
+  this change ran interleaved in the same session, case by case, with medians
+  of three runs.
 - Claim lists of 3, 10, 40 and 99 claims, 99 claims that include the largest
-  group (117,501 entities), and 174 claims that include it. Every case
-  returned the same entities as master.
-- Measured: scenarios 1, 3, 6 (1,000 refs), 7, 12, 13, 14, 15, 16, 18, 19,
-  20 and 21 and the owned entities page, with and without permissions. Facets
-  and counts use the set compiler and are not affected.
+  group (117,501 entities), and 174 claims that include it.
+- Measured: every scenario in the harness with every claim list, with and
+  without permissions, including facets, counts, by-ref lookups, the
+  namespace variants, the owned entities pages and the component, group,
+  unfiltered, owned and scenario 21 streams. Scenarios 9 and 11 are not in
+  the harness and do not compile `$in` filters. Every query case returned the
+  same entities as master. Five streams over most of the catalog differed in
+  checksum, by one to a few dozen entities, from changes to the replica
+  between the two runs.
 
 ### Results
 
-| Query                       | Claims   | master | this change |
-| --------------------------- | -------- | -----: | ----------: |
-| 1 component page            | 40       |  23 ms |        5 ms |
-| 1 component page            | 174      |  43 ms |        5 ms |
-| 3 unfiltered page           | 40       |  20 ms |        1 ms |
-| 3 unfiltered page           | 174      | 161 ms |        1 ms |
-| 3 unfiltered page           | 99 large | 178 ms |        1 ms |
-| 7 full text                 | 99       |  65 ms |       16 ms |
-| 15 list page                | 99       |  48 ms |        2 ms |
-| 16 component page           | 99       |  50 ms |        3 ms |
-| 18 negated page             | 99       |  48 ms |        1 ms |
-| 19 with permission page     | 99       |  97 ms |        3 ms |
-| 6 by ref, 1,000 refs        | 174      | 203 ms |       57 ms |
-| 20 late group page          | 99       | 1.41 s |      451 ms |
-| 20 late group page          | 99 large | 9.63 s |      454 ms |
-| 20 late group page          | 174      | 1.79 s |      463 ms |
-| 20 late component page      | 174      | 2.43 s |      465 ms |
-| Owned page, with permission | 99 large | 4.83 s |      658 ms |
-| Owned page, with permission | 174      | 4.22 s |      612 ms |
+| Query                                 | Claims   | master | this change |
+| ------------------------------------- | -------- | -----: | ----------: |
+| 1 component page                      | 40       |  22 ms |        3 ms |
+| 1 component page                      | 174      |  43 ms |        3 ms |
+| 1 component page in a namespace       | 10       |   5 ms |       13 ms |
+| 1 component page in a namespace       | 99       |  48 ms |       13 ms |
+| 3 unfiltered page                     | 40       |  19 ms |        1 ms |
+| 3 unfiltered page                     | 174      | 157 ms |        1 ms |
+| 3 unfiltered page                     | 99 large | 174 ms |        1 ms |
+| 15 list page                          | 99       |  46 ms |        2 ms |
+| 16 component page                     | 99       |  48 ms |        4 ms |
+| 18 negated page                       | 99       |  47 ms |        1 ms |
+| 19 with permission page               | 99       |  93 ms |        3 ms |
+| 6 by ref, 1,000 refs                  | 174      | 196 ms |       57 ms |
+| 20 late group page                    | 99       | 1.43 s |      469 ms |
+| 20 late group page                    | 99 large | 9.67 s |      465 ms |
+| 20 late group page                    | 174      | 1.76 s |      465 ms |
+| 20 late component page                | 174      | 2.54 s |      465 ms |
+| Owned page, with permission           | 99 large | 4.86 s |      681 ms |
+| Owned page, with permission           | 174      | 4.13 s |      612 ms |
+| Owned page in a namespace, permission | 174      | 4.19 s |      3.31 s |
 
-Everything else measured within noise of master: scenarios 12, 13 and 14 at
-all claim counts, by-ref lookups below 100 claims, scenario 21, and the owned
-page without permissions. This removes the scenario 20 regression of the
-change above.
+Everything else measured within noise of master: scenarios 7, 12, 13 and 14
+at all claim counts, facets and counts, which use the set compiler, by-ref
+lookups below 100 claims, scenario 21, the owned pages without permissions,
+and all streams. This removes the scenario 20 regression of the change above.
+
+The one slower case is the component page in a namespace with 10 claims,
+from 5 ms to 13 ms. It is the shortest list that is hashed, and the hashed
+probe costs a little more than the plain one there. Every longer list on
+that page got faster.
 
 Scenario 14 with 99 claims that include the largest group is still as slow
-as on master, 24.2 s there and at the 30 s timeout here. It is a page of
-10,000 entities with fewer than 100 values, so it keeps the plain probe.
+as on master, 24 s on both. It is a page of 10,000 entities with fewer than
+100 values, so it keeps the plain probe.
 
 ### Rules that were measured and not used
 
