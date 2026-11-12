@@ -47,8 +47,18 @@ export interface FrontendExtensionManifest {
   element?: {
     data: { [dataRefId: string]: unknown };
     routeRefName?: string;
+    configOutputs?: {
+      [configKey: string]: { dataRefId: string; type?: ManifestValueType };
+    };
+    loadedConfig?: string[];
+  };
+  api?: {
+    apiRefId: string;
+    deps: { [name: string]: string };
   };
 }
+
+export type ManifestValueType = 'string' | 'number' | 'boolean' | 'object';
 
 export interface FrontendFeatureManifest {
   manifestVersion: typeof FRONTEND_MANIFEST_VERSION;

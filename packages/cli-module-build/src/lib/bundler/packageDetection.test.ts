@@ -281,6 +281,30 @@ describe('createDetectedModulesEntryPoint', () => {
       packageDir,
       joinPath(appDir, 'node_modules', '@test/plugin-workspace'),
     );
+    // The blueprint is read from the installed package
+    const apiDir = joinPath(
+      appDir,
+      'node_modules/@backstage/frontend-plugin-api',
+    );
+    await writePackage(apiDir, {
+      name: '@backstage/frontend-plugin-api',
+      main: 'index.js',
+    });
+    await fs.outputFile(
+      joinPath(apiDir, 'index.js'),
+      `
+        const routePath = createExtensionDataRef().with({ id: 'core.routing.path' });
+        const reactElement = createExtensionDataRef().with({ id: 'core.reactElement' });
+        export const PageBlueprint = createExtensionBlueprint({
+          kind: 'page',
+          attachTo: { id: 'app/routes', input: 'routes' },
+          *factory(params, { config }) {
+            yield routePath(config.path ?? params.path);
+            yield reactElement(params.loader);
+          },
+        });
+      `,
+    );
     await fs.writeJson(joinPath(appDir, 'package.json'), {
       name: 'app',
       dependencies: { '@test/plugin-workspace': '*' },
