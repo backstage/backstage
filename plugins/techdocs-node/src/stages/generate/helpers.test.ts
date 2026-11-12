@@ -1433,6 +1433,101 @@ site_description: *name
       expect(warn).not.toHaveBeenCalled();
     });
 
+    it('should rewrite a config that uses a tag in flow context', async () => {
+      const original = `site_name: Test site name
+nav:
+  - Home: index.md
+  - Env: [!ENV DOCS_PAGE]
+`;
+      mockDir.setContent({ 'mkdocs_flow_tag.yml': original });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_flow_tag.yml'),
+        mockLogger,
+      );
+
+      const after = await fs.readFile(
+        mockDir.resolve('mkdocs_flow_tag.yml'),
+        'utf8',
+      );
+      expect(after).not.toBe(original);
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('should leave a clean config untouched when additional keys are allowed', async () => {
+      // The headline scenario of #32859: an allowed key added through
+      // dangerouslyAllowAdditionalKeys must not force a rewrite on its own.
+      const original = `# Site configuration
+site_name: Test site name
+hooks:
+  - hooks/main.py
+`;
+      mockDir.setContent({ 'mkdocs_allowed_clean.yml': original });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_allowed_clean.yml'),
+        mockLogger,
+        ['hooks'],
+      );
+
+      const after = await fs.readFile(
+        mockDir.resolve('mkdocs_allowed_clean.yml'),
+        'utf8',
+      );
+      expect(after).toBe(original);
+      expect(yaml.load(after)).toEqual({
+        site_name: 'Test site name',
+        hooks: ['hooks/main.py'],
+      });
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.stringContaining('Removed the following'),
+      );
+    });
+
+    it('should rewrite silent markdown_extensions mutations', async () => {
+      const emptyMapping = `site_name: Test site name
+markdown_extensions:
+  - {}
+`;
+      const nullSnippets = `site_name: Test site name
+markdown_extensions:
+  pymdownx.snippets: null
+`;
+      mockDir.setContent({
+        'mkdocs_empty_mapping.yml': emptyMapping,
+        'mkdocs_null_snippets.yml': nullSnippets,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_empty_mapping.yml'),
+        mockLogger,
+      );
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_null_snippets.yml'),
+        mockLogger,
+      );
+
+      const afterEmptyMapping = await fs.readFile(
+        mockDir.resolve('mkdocs_empty_mapping.yml'),
+        'utf8',
+      );
+      expect(afterEmptyMapping).not.toBe(emptyMapping);
+      expect(yaml.load(afterEmptyMapping)).toEqual({
+        site_name: 'Test site name',
+        markdown_extensions: [],
+      });
+
+      const afterNullSnippets = await fs.readFile(
+        mockDir.resolve('mkdocs_null_snippets.yml'),
+        'utf8',
+      );
+      expect(afterNullSnippets).not.toBe(nullSnippets);
+      expect(yaml.load(afterNullSnippets)).toEqual({
+        site_name: 'Test site name',
+        markdown_extensions: { 'pymdownx.snippets': {} },
+      });
+    });
+
     it('should remove multiple disallowed keys and list them all in the warning', async () => {
       const mkdocsWithMultipleDisallowed = `site_name: Test
 hooks:

@@ -402,13 +402,15 @@ export const patchMkdocsYmlWithFontDisabled = async (
 // agree on every YAML construct: with duplicate merge keys js-yaml takes the
 // first mapping and PyYAML the last, so a file can sanitize clean here and
 // still load different content in MkDocs. Rewriting such a file makes MkDocs
-// read exactly what was validated. The match is deliberately eager: a false
-// positive costs one rewrite, which is what always used to happen, while a
-// false negative lets unvalidated config through.
+// read exactly what was validated. A false positive only costs a rewrite,
+// while a false negative lets unvalidated config through, so anchors, aliases
+// and merge keys are matched eagerly. Tags are matched where YAML can start
+// one: at the beginning of the source, or after whitespace or a flow
+// indicator, which is what the prefix class below captures.
 const usesYamlFeatures = (source: string): boolean =>
   /(^|[\s[{,])[&*]\S/.test(source) ||
   /<<\s*:/.test(source) ||
-  /(^|\s)!/.test(source);
+  /(^|[\s[{,])!/.test(source);
 
 /**
  * Sanitize mkdocs.yml by keeping only allowed configuration keys.
@@ -520,6 +522,10 @@ export const sanitizeMkdocsYml = async (
         // Check every key, not just the first, so that a multi-key mapping
         // cannot smuggle a dangerous name past the filter.
         const extensionEntries = Object.entries(ext);
+        if (extensionEntries.length === 0) {
+          removedEntries.push('malformed extension declaration');
+          return [];
+        }
         const dangerousNames = extensionEntries
           .map(([extensionName]) => extensionName)
           .filter(
@@ -548,6 +554,11 @@ export const sanitizeMkdocsYml = async (
                 Object.keys(extensionConfig).length > 0)
             ) {
               removedEntries.push(`${extensionName} configuration`);
+            } else if (extensionConfig === null) {
+              // A null value is rewritten to an empty mapping below. Nothing
+              // is logged for it, so flag the change to keep MkDocs reading
+              // exactly what was validated.
+              didSanitize = true;
             }
             sanitizedExtension[extensionName] = {};
           } else if (isPlainObject(extensionConfig)) {
