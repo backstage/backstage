@@ -363,9 +363,9 @@ function checkKnownKeywords(schema: unknown, path: string = '') {
     // ajv rejects all formats, since no format definitions are added to it
     if (keyword === 'format') {
       throw new TypeError(
-        `Invalid JSON schema: unknown format ${JSON.stringify(
-          value,
-        )} at path ${path || '<root>'}`,
+        `Invalid JSON schema: unknown format ${JSON.stringify(value)} at path ${
+          path || '<root>'
+        }`,
       );
     }
     if (!KNOWN_KEYWORDS.has(keyword)) {
