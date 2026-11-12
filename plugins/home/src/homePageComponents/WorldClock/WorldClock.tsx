@@ -15,31 +15,15 @@
  */
 
 import { useState, useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import { Flex, Text } from '@backstage/ui';
 import { getTimes, type ClockConfig } from './clocks';
-
-const useStyles = makeStyles(theme => ({
-  label: {
-    fontWeight: theme.typography.fontWeightBold,
-    fontSize: theme.typography.fontSize * 1.5,
-    marginBottom: theme.spacing(0.5),
-    lineHeight: 1,
-  },
-  value: {
-    fontSize: theme.typography.fontSize * 1.5,
-    lineHeight: 1,
-    color: theme.palette.text.secondary,
-  },
-}));
+import styles from './WorldClock.module.css';
 
 export const WorldClock = (props: {
   clockConfigs?: ClockConfig[];
   customTimeFormat?: Intl.DateTimeFormatOptions;
 }) => {
   const { clockConfigs, customTimeFormat } = props;
-  const classes = useStyles();
   const [clocks, setClocks] = useState(() =>
     getTimes(clockConfigs, customTimeFormat),
   );
@@ -57,27 +41,25 @@ export const WorldClock = (props: {
 
   if (!clockConfigs?.length) {
     return (
-      <Typography color="textSecondary">
+      <Text as="p" color="secondary">
         No clocks configured. Add clock configurations in your app-config.yaml
         to display world clocks.
-      </Typography>
+      </Text>
     );
   }
 
   return (
-    <Grid container spacing={4}>
+    <Flex gap="8" className={styles.container}>
       {clocks.map(clock => (
-        <Grid
-          item
-          key={clock.label}
-          aria-label={`${clock.label}: ${clock.value}`}
-        >
-          <Typography className={classes.label}>{clock.label}</Typography>
-          <Typography className={classes.value}>
+        <div key={clock.label} aria-label={`${clock.label}: ${clock.value}`}>
+          <Text as="p" weight="bold" color="primary" className={styles.label}>
+            {clock.label}
+          </Text>
+          <Text as="p" color="secondary" className={styles.value}>
             <time dateTime={clock.dateTime}>{clock.value}</time>
-          </Typography>
-        </Grid>
+          </Text>
+        </div>
       ))}
-    </Grid>
+    </Flex>
   );
 };
