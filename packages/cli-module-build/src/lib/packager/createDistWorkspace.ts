@@ -287,6 +287,7 @@ export async function createDistWorkspace(
             .map(target =>
               relativePath(targetPaths.workspaceRootDir, target.dir),
             ),
+          logger,
         })
       : [];
 

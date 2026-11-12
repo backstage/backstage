@@ -61,13 +61,27 @@ export async function preparePnpmDistWorkspace(options: {
   workspaceRootDir: string;
   targetDir: string;
   bundledPackageDirs: string[];
+  logger?: { log(msg: string): void };
 }): Promise<string[]> {
-  const { workspaceRootDir, targetDir, bundledPackageDirs } = options;
+  const { workspaceRootDir, targetDir, bundledPackageDirs, logger } = options;
   const files = new Array<string>();
 
   const lockfilePath = resolvePath(targetDir, LOCKFILE);
   if (await fs.pathExists(lockfilePath)) {
-    await pruneLockfileImporters(lockfilePath, targetDir, bundledPackageDirs);
+    const removed = await pruneLockfileImporters(
+      lockfilePath,
+      targetDir,
+      bundledPackageDirs,
+    );
+    if (removed.length > 0) {
+      const shown = removed.slice(0, 5).join(', ');
+      const more = removed.length > 5 ? ` and ${removed.length - 5} more` : '';
+      logger?.log(
+        `Removed ${removed.length} workspace ${
+          removed.length === 1 ? 'project' : 'projects'
+        } that the dist workspace doesn't contain from its ${LOCKFILE}: ${shown}${more}`,
+      );
+    }
     files.push(LOCKFILE);
   }
 
@@ -136,12 +150,18 @@ export async function restorePnpmDependencyRanges(
   await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
 }
 
+/**
+ * Empties the lockfile entries of bundled packages, and removes the entries
+ * of workspace projects that the dist workspace doesn't contain. Returns the
+ * directories of the removed projects.
+ */
 async function pruneLockfileImporters(
   lockfilePath: string,
   targetDir: string,
   bundledPackageDirs: string[],
-): Promise<void> {
+): Promise<string[]> {
   const bundledDirs = new Set(bundledPackageDirs.map(toPosixPath));
+  const removed = new Set<string>();
 
   // A lockfile can have a separate document for the package manager itself
   const docs = parseAllDocuments(await fs.readFile(lockfilePath, 'utf8'));
@@ -164,6 +184,7 @@ async function pruneLockfileImporters(
         !(await fs.pathExists(resolvePath(targetDir, dir, 'package.json')))
       ) {
         importers.delete(item.key);
+        removed.add(dir);
         changed = true;
       }
     }
@@ -176,6 +197,7 @@ async function pruneLockfileImporters(
       docs.map(doc => doc.toString(STRINGIFY_OPTIONS)).join('\n'),
     );
   }
+  return Array.from(removed);
 }
 
 function toPosixPath(path: string) {

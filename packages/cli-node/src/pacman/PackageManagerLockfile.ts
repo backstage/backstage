@@ -24,6 +24,13 @@ import type { LockfileDiff } from '@backstage/cli-node';
 export type LockfileEntry = {
   range: string;
   version: string;
+  /**
+   * Set for a package that only other packages depend on, which pnpm lists
+   * under the version that it resolved to. Its range is then that version, or
+   * the source of a package from git or a tarball, not a range that a
+   * `package.json` declares.
+   */
+  transitive?: boolean;
 };
 
 /**
