@@ -125,7 +125,10 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     const group = config.group ?? params.group ?? params.defaultGroup;
 
     yield coreExtensionData.reactElement(
-      ExtensionBoundary.lazy(node, params.loader, { title }),
+      ExtensionBoundary.lazy(node, params.loader, {
+        title,
+        titleTranslation: translation,
+      }),
     );
 
     yield coreExtensionData.routePath(path);

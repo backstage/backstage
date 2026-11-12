@@ -53,7 +53,6 @@ import {
   translationApiRef,
   appLanguageApiRef,
 } from '@backstage/frontend-plugin-api';
-import { Helmet } from 'react-helmet';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppLanguageSelector } from '../../../../packages/core-app-api/src/apis/implementations/AppLanguageApi';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -450,7 +449,7 @@ describe('Entity page', () => {
         'AAA',
         'Övrigt',
       ]);
-      expect(Helmet.peek().title).toContain('AAA');
+      await waitFor(() => expect(document.title).toContain('AAA'));
       await userEvent.keyboard('{Escape}');
       const subscriptions = observe.mock.calls.length;
       act(() => languageApi.setLanguage('de'));
@@ -501,7 +500,7 @@ describe('Entity page', () => {
       expect(
         await screen.findByRole(itemRole, { name: 'Zulu' }),
       ).toBeInTheDocument();
-      expect(Helmet.peek().title).toContain('Zulu');
+      await waitFor(() => expect(document.title).toContain('Zulu'));
       expect(screen.getByLabelText('Entity page state')).toBe(input);
       expect(input).toHaveValue('initial preserved');
       expect(mount).toHaveBeenCalledTimes(1);
@@ -513,19 +512,19 @@ describe('Entity page', () => {
       await act(async () => languageApi.setLanguage('sv'));
       await act(async () => languageApi.setLanguage('fr'));
       expect(errorApi.post).not.toHaveBeenCalled();
-      expect(Helmet.peek().title).toContain('AAA');
+      await waitFor(() => expect(document.title).toContain('AAA'));
       await userEvent.click(
         screen.getByRole('button', { name: 'Refresh entity' }),
       );
       expect(
         await screen.findByText('After failed load', { selector: 'output' }),
       ).toBeInTheDocument();
-      expect(Helmet.peek().title).toContain('AAA');
+      await waitFor(() => expect(document.title).toContain('AAA'));
       await act(async () =>
         rejectFrench(new Error('Unavailable title resource')),
       );
       expect(errorApi.post).toHaveBeenCalledTimes(1);
-      expect(Helmet.peek().title).toContain('AAA');
+      await waitFor(() => expect(document.title).toContain('AAA'));
       await userEvent.click(
         screen.getByRole('button', { name: 'Refresh entity' }),
       );
@@ -534,13 +533,13 @@ describe('Entity page', () => {
       ).toBeInTheDocument();
       expect(screen.getByText('New Swedish tab')).toBeInTheDocument();
       expect(screen.queryByText('New tab')).not.toBeInTheDocument();
-      expect(Helmet.peek().title).toContain('AAA');
+      await waitFor(() => expect(document.title).toContain('AAA'));
       expect(screen.getByLabelText('Entity page state')).toBe(input);
       expect(input).toHaveValue('initial preserved');
       expect(mount).toHaveBeenCalledTimes(1);
       expect(unmount).not.toHaveBeenCalled();
       await act(async () => languageApi.setLanguage('en'));
-      expect(Helmet.peek().title).toContain('Zulu');
+      await waitFor(() => expect(document.title).toContain('Zulu'));
     },
   );
 

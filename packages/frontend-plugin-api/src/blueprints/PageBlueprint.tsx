@@ -96,6 +96,9 @@ function PageContent(props: {
     subPages?.some(page => page.node === match.node),
   );
   const selected = subPages?.find(page => page.node === selectedMatch?.node);
+  // The page owns the translated sub-page labels, so it also registers the
+  // document title segment of the selected sub-page
+  useNodeTitle(selected?.node, selected?.label, 'default');
   const firstPath = subPages?.[0]?.path;
   useEffect(() => {
     if (
@@ -183,7 +186,7 @@ function PluginPageShell(props: {
     }));
   const headerActionsApi = useApi(pluginHeaderActionsApiRef);
   const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
-  useNodeTitle(node, title, 'default');
+  useNodeTitle(node, titles?.[0] ?? title, 'default');
 
   if (!titles) {
     return <Progress />;

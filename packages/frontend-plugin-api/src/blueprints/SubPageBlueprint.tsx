@@ -131,7 +131,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
     }
 
     yield coreExtensionData.reactElement(
-      ExtensionBoundary.lazy(node, params.loader, { title }),
+      ExtensionBoundary.lazy(node, params.loader),
     );
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);

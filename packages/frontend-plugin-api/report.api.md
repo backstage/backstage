@@ -1275,6 +1275,7 @@ export namespace ExtensionBoundary {
     loader: () => Promise<JSX.Element>,
     options?: {
       title?: string;
+      titleTranslation?: TranslationRefTuple<undefined>;
     },
   ): JSX.Element;
   // (undocumented)
@@ -1293,6 +1294,7 @@ export interface ExtensionBoundaryProps {
   // (undocumented)
   node: AppNode;
   title?: string;
+  titleTranslation?: TranslationRefTuple<undefined>;
 }
 
 // @public (undocumented)
