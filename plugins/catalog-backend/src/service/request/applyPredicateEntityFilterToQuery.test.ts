@@ -16,6 +16,7 @@
 
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyEntityFilterToQuery } from './applyEntityFilterToQuery';
+import { INDIRECT_IN_MIN_VALUES, IN_SUBQUERY_MIN_VALUES } from './longInLists';
 import {
   DbFinalEntitiesRow,
   DbRefreshStateRow,
@@ -33,7 +34,10 @@ jest.setTimeout(60_000);
 const databases = TestDatabases.create();
 
 describe('PostgreSQL query generation', () => {
-  function compile(filter: FilterPredicate) {
+  function compile(
+    filter: FilterPredicate,
+    options?: { matchLongInListsPerRow?: boolean; smallFirstPage?: boolean },
+  ) {
     const knex = knexFactory({ client: 'pg' });
     const query = knex('final_entities').select('*');
 
@@ -42,6 +46,7 @@ describe('PostgreSQL query generation', () => {
       targetQuery: query,
       onEntityIdField: 'final_entities.entity_id',
       knex,
+      ...options,
     });
 
     return query.toSQL();
@@ -73,6 +78,164 @@ describe('PostgreSQL query generation', () => {
       'relations.ownedby',
       ['group:default/team-a', 'group:default/team-b'],
     ]);
+  });
+
+  it('matches long $in lists against a joined set', () => {
+    const values = Array.from(
+      { length: IN_SUBQUERY_MIN_VALUES },
+      (_, i) => `Group:Default/Team-${i}`,
+    );
+    const plain = compile({ 'relations.ownedBy': { $in: values } });
+    const relation = compile({
+      relations: { $contains: { type: 'ownedBy', targetRef: { $in: values } } },
+    });
+    const short = compile({
+      'relations.ownedBy': { $in: values.slice(1) },
+    });
+
+    for (const query of [plain, relation]) {
+      expect(query.sql).toContain(
+        'left join (select distinct "search_flt"."entity_id" from "search" as "search_flt" where "search_flt"."entity_id" is not null and "search_flt"."key" = ? and ("search_flt"."value" = ANY(?::text[]))) as "in_set_1" on "in_set_1"."entity_id" = "final_entities"."entity_id"',
+      );
+      expect(query.sql).toContain('"in_set_1"."entity_id" is not null');
+      expect(query.sql).not.toContain('exists');
+      expect(query.bindings).toEqual([
+        'relations.ownedby',
+        values.map(v => v.toLowerCase()),
+      ]);
+    }
+    expect(short.sql).toContain('exists');
+    expect(short.sql).not.toContain('in_set');
+
+    // Callers that have already narrowed the rows can opt out of the sets,
+    // at any depth
+    const nested: FilterPredicate[] = [
+      { 'relations.ownedBy': { $in: values } },
+      {
+        $all: [{ kind: 'component' }, { 'relations.ownedBy': { $in: values } }],
+      },
+      { $any: [{ kind: 'api' }, { 'relations.ownedBy': { $in: values } }] },
+      { $not: { 'relations.ownedBy': { $in: values } } },
+    ];
+    for (const filter of nested) {
+      const perRow = compile(filter, { matchLongInListsPerRow: true });
+      expect(perRow.sql).toContain('exists');
+      expect(perRow.sql).not.toContain('in_set');
+      expect(perRow.sql).not.toContain('"entity_id" in (select');
+    }
+
+    // The same list in another case or key order reuses the joined set
+    const repeated = compile({
+      $all: [
+        { 'relations.ownedBy': { $in: values } },
+        { 'RELATIONS.OWNEDBY': { $in: values.map(v => v.toUpperCase()) } },
+      ],
+    });
+    expect(repeated.sql).toContain('"in_set_1"');
+    expect(repeated.sql).not.toContain('"in_set_2"');
+  });
+
+  it('chooses between a joined set, an IN set and the per-row probe for long $in lists', () => {
+    const groups = (length: number) => ({
+      'relations.ownedBy': {
+        $in: Array.from({ length }, (_, i) => `group:default/team-${i}`),
+      },
+    });
+    const owned = groups(IN_SUBQUERY_MIN_VALUES);
+    const ownedLong = groups(INDIRECT_IN_MIN_VALUES);
+    const absent = { 'metadata.annotations.x': { $exists: false } };
+    const inSet =
+      '"final_entities"."entity_id" in (select "search_flt"."entity_id" from "search" as "search_flt"';
+    const joined = '"in_set_1"."entity_id" is not null';
+    const perRow =
+      '"search_flt"."key" = ? and ("search_flt"."value" = ANY(?::text[]))';
+    const form = (sql: string) => {
+      if (sql.includes(joined)) {
+        return sql.includes(inSet) ? 'both' : 'join';
+      }
+      return sql.includes(inSet) ? 'in' : 'row';
+    };
+
+    // A direct condition of the filter is a set from the lower threshold:
+    // joined, or an IN set when a narrower condition is next to it
+    expect(form(compile({ $all: [{ kind: 'component' }, owned] }).sql)).toBe(
+      'join',
+    );
+    expect(
+      form(
+        compile({
+          $all: [{ 'relations.partOf': 'component:default/a' }, owned],
+        }).sql,
+      ),
+    ).toBe('in');
+    expect(form(compile({ 'metadata.name': 'a', ...owned }).sql)).toBe('in');
+
+    // A list inside an $any or a $not is probed per row below the higher
+    // threshold, and on small first pages
+    for (const filter of [
+      { $any: [{ kind: { $in: ['component', 'api'] } }, owned] },
+      { $all: [{ kind: 'component' }, { $any: [owned, absent] }] },
+      { $not: { $any: [owned, { 'metadata.annotations.x': 'y' }] } },
+    ] as FilterPredicate[]) {
+      expect(form(compile(filter).sql)).toBe('row');
+    }
+    for (const filter of [
+      { $any: [ownedLong, absent] },
+      { $not: ownedLong },
+    ] as FilterPredicate[]) {
+      expect(form(compile(filter, { smallFirstPage: true }).sql)).toBe('row');
+    }
+
+    // From the higher threshold, it is an IN set, or joined when negated so
+    // that it can be anti-joined
+    expect(form(compile({ $any: [ownedLong, absent] }).sql)).toBe('in');
+    expect(
+      form(compile({ $all: [{ kind: 'component' }, { $not: ownedLong }] }).sql),
+    ).toBe('join');
+
+    // A list that is joined as a direct condition reuses that set where it
+    // appears again inside an $any, even on small first pages
+    const reused = compile(
+      { $all: [{ kind: 'component', ...owned }, { $any: [owned, absent] }] },
+      { smallFirstPage: true },
+    ).sql;
+    expect(reused.split(joined)).toHaveLength(3);
+    expect(reused).not.toContain('"in_set_2"');
+    expect(reused).not.toContain(inSet);
+
+    // Probed per row when the list is on a broad field, even if long
+    const types = {
+      'spec.type': {
+        $in: Array.from({ length: INDIRECT_IN_MIN_VALUES }, (_, i) => `t${i}`),
+      },
+    };
+    for (const filter of [
+      types,
+      { $all: [{ kind: 'component' }, { $not: types }] },
+      { $any: [types, owned] },
+    ] as FilterPredicate[]) {
+      const query = compile(filter);
+      expect(query.sql).toContain(perRow);
+      expect(query.sql).toContain('exists');
+    }
+    expect(form(compile({ $any: [types, ownedLong] }).sql)).toBe('in');
+
+    // Large flat filters are analyzed in linear time, not by checking every
+    // sibling of every condition (16 million checks for this one)
+    const labels = Array.from({ length: 4000 }, (_, i) => ({
+      [`metadata.labels.l${i}`]: 'v',
+    }));
+    const start = Date.now();
+    const negated = labels.map(label => ({ $not: label }));
+    const narrowed = compile({ $all: [...labels, owned] as FilterPredicate[] });
+    const alternated = compile({
+      $any: [...negated, ownedLong] as FilterPredicate[],
+    });
+    const direct = compile({ $all: [...negated, owned] as FilterPredicate[] });
+    expect(Date.now() - start).toBeLessThan(2000);
+    expect(form(narrowed.sql)).toBe('in');
+    expect(form(alternated.sql)).toBe('in');
+    expect(form(direct.sql)).toBe('join');
   });
 });
 
@@ -273,6 +436,144 @@ describe.each(databases.eachSupportedId())(
         await expect(
           query({ 'spec.type': { $in: ['service', 'openapi'] } }),
         ).resolves.toEqual(['api-d', 'service-a', 'service-b']);
+      });
+
+      it('filters with long $in lists at the top level, nested, and negated', async () => {
+        const padding = Array.from(
+          { length: IN_SUBQUERY_MIN_VALUES },
+          (_, i) => `group:default/other-${i}`,
+        );
+        const owners = { $in: ['Group:Default/Team-A', ...padding] };
+        const types = { $in: ['openapi', ...padding] };
+
+        await expect(query({ 'relations.ownedBy': owners })).resolves.toEqual([
+          'service-a',
+          'website-c',
+        ]);
+        await expect(
+          query({
+            relations: {
+              $contains: {
+                type: 'ownedBy',
+                targetRef: { $in: ['group:default/team-b', ...padding] },
+              },
+            },
+          }),
+        ).resolves.toEqual(['service-b']);
+        await expect(
+          query({
+            $all: [
+              { kind: 'component' },
+              {
+                $any: [{ 'relations.ownedBy': owners }, { 'spec.type': types }],
+              },
+            ],
+          }),
+        ).resolves.toEqual(['service-a', 'website-c']);
+        await expect(
+          query({ $not: { 'relations.ownedBy': owners } }),
+        ).resolves.toEqual(['api-d', 'bare-e', 'service-b']);
+        await expect(
+          query({
+            $all: [
+              { kind: 'component' },
+              {
+                $not: {
+                  $any: [
+                    { 'spec.type': types },
+                    { 'relations.ownedBy': owners },
+                  ],
+                },
+              },
+            ],
+          }),
+        ).resolves.toEqual(['bare-e', 'service-b']);
+        // An entity matching several values in the list appears only once
+        await expect(
+          query({ 'metadata.tags': { $in: ['java', 'backend', ...padding] } }),
+        ).resolves.toEqual(['bare-e']);
+        // Non-string values are matched like in the short form
+        await expect(
+          query({
+            'relations.ownedBy': {
+              $in: ['group:default/team-b', ...padding.map((_, i) => i)],
+            },
+          }),
+        ).resolves.toEqual(['service-b']);
+        // Lists differing only in case or key order are joined once
+        await expect(
+          query({
+            $all: [
+              { 'relations.ownedBy': owners },
+              {
+                'Relations.OwnedBy': {
+                  $in: owners.$in.map(v => v.toUpperCase()),
+                },
+              },
+            ],
+          }),
+        ).resolves.toEqual(['service-a', 'website-c']);
+      });
+
+      it('filters with long $in lists next to narrow or broad conditions', async () => {
+        const padding = Array.from(
+          { length: INDIRECT_IN_MIN_VALUES },
+          (_, i) => `other-${i}`,
+        );
+        // Each filter puts a long list next to a narrow condition in an $all,
+        // or inside an $any, so that PostgreSQL uses the IN form; the results
+        // must match those of the short lists
+        const filters = (long: boolean): FilterPredicate[] => {
+          const tags = { $in: ['java', 'backend', ...(long ? padding : [])] };
+          const owners = {
+            $in: [
+              'group:default/team-a',
+              ...(long ? padding.map(p => `group:default/${p}`) : []),
+            ],
+          };
+          return [
+            {
+              $all: [
+                { 'relations.consumesApi': 'api:default/api-d' },
+                { 'relations.ownedBy': owners },
+              ],
+            },
+            { 'metadata.name': 'bare-e', 'metadata.tags': tags },
+            { $any: [{ kind: 'api' }, { 'metadata.tags': tags }] },
+            {
+              $any: [
+                { 'spec.lifecycle': 'experimental' },
+                { 'relations.ownedBy': owners },
+              ],
+            },
+          ];
+        };
+
+        const expected = [
+          ['service-a'],
+          ['bare-e'],
+          ['api-d', 'bare-e'],
+          ['service-a', 'service-b', 'website-c'],
+        ];
+        for (const [index, filter] of filters(false).entries()) {
+          await expect(query(filter)).resolves.toEqual(expected[index]);
+        }
+        const isPostgres = knex.client.config.client === 'pg';
+        for (const [index, filter] of filters(true).entries()) {
+          await expect(query(filter)).resolves.toEqual(expected[index]);
+          const q = knex('final_entities');
+          applyEntityFilterToQuery({
+            filter,
+            targetQuery: q,
+            onEntityIdField: 'final_entities.entity_id',
+            knex,
+          });
+          const sql = q.toString();
+          expect(
+            sql.includes('"final_entities"."entity_id" in (select') &&
+              !sql.includes('in_set_'),
+          ).toBe(isPostgres);
+        }
       });
     });
 
