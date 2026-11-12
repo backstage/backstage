@@ -227,6 +227,38 @@ describe('PostgreSQL query generation', () => {
       );
     }
 
+    // A relation $contains list is probed the same way as the field form
+    const containsOwned = (length: number) => ({
+      relations: {
+        $contains: {
+          type: 'ownedBy',
+          targetRef: {
+            $in: Array.from({ length }, (_, i) => `group:default/team-${i}`),
+          },
+        },
+      },
+    });
+    for (const length of [IN_SUBQUERY_MIN_VALUES, INDIRECT_IN_MIN_VALUES]) {
+      for (const smallPage of [false, true]) {
+        const viaField = compile(
+          { $any: [groups(length), absent] },
+          { smallPage },
+        );
+        const viaContains = compile(
+          { $any: [containsOwned(length), absent] },
+          { smallPage },
+        );
+        expect(viaContains.sql).toBe(viaField.sql);
+        expect(viaContains.bindings).toEqual(viaField.bindings);
+      }
+    }
+    expect(
+      compile(
+        { $any: [containsOwned(IN_SUBQUERY_MIN_VALUES), absent] },
+        { smallPage: true },
+      ).sql,
+    ).toContain(hashedPerRow);
+
     // Probed per row when the list is on a broad field, even if long
     const types = {
       'spec.type': {
