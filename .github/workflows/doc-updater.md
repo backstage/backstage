@@ -255,7 +255,6 @@ timeout-minutes: 60
 safe-outputs:
   create-pull-request:
     max: 1
-    expires: 2d
     title-prefix: '[docs] '
     labels: [documentation, automation]
     draft: true
