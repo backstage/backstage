@@ -561,7 +561,7 @@ export type FavoriteToggleProps = ComponentProps<typeof IconButton> & {
   onToggle: (value: boolean) => void;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type FeatureCalloutCircleClassKey =
   | '@keyframes pulsateSlightly'
   | '@keyframes pulsateAndFade'
@@ -573,7 +573,7 @@ export type FeatureCalloutCircleClassKey =
 
 // Warning: (ae-forgotten-export) The symbol "Props_4" needs to be exported by the entry point index.d.ts
 //
-// @public
+// @public @deprecated
 export function FeatureCalloutCircular(
   props: PropsWithChildren<Props_4>,
 ): JSX_2.Element;
@@ -586,10 +586,10 @@ export function Gauge(props: GaugeProps): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props_10" needs to be exported by the entry point index.d.ts
 //
-// @public
+// @public @deprecated
 export function GaugeCard(props: Props_10): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type GaugeCardClassKey = 'root';
 
 // @public (undocumented)
@@ -800,12 +800,12 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles_2>> & {
 // Warning: (ae-forgotten-export) The symbol "Props_7" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Lifecycle" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function Lifecycle(props: Props_7): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "LifecycleClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LifecycleClassKey = 'alpha' | 'beta';
 
 // Warning: (ae-forgotten-export) The symbol "Props_11" needs to be exported by the entry point index.d.ts
@@ -1319,27 +1319,27 @@ export type SignInProviderConfig = {
 // Warning: (ae-forgotten-export) The symbol "StepperProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SimpleStepper" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function SimpleStepper(
   props: PropsWithChildren<StepperProps>,
 ): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "SimpleStepperFooterClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type SimpleStepperFooterClassKey = 'root';
 
 // Warning: (ae-forgotten-export) The symbol "StepProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SimpleStepperStep" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function SimpleStepperStep(
   props: PropsWithChildren<StepProps>,
 ): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "SimpleStepperStepClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type SimpleStepperStepClassKey = 'end';
 
 // @public (undocumented)
@@ -1609,7 +1609,7 @@ export type TableToolbarClassKey = 'root' | 'title' | 'searchField';
 
 // Warning: (ae-missing-release-tag) "TrendLine" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function TrendLine(
   props: SparklinesProps &
     Pick<SparklinesLineProps, 'color'> & {

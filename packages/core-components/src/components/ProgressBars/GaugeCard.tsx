@@ -36,7 +36,10 @@ type Props = {
   getColor?: GaugePropsGetColor;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated GaugeCard is deprecated. Compose a gauge with a card instead.
+ */
 export type GaugeCardClassKey = 'root';
 
 const useStyles = makeStyles(
@@ -57,7 +60,7 @@ const useStyles = makeStyles(
  * {@link Gauge} with header, subheader and footer
  *
  * @public
- *
+ * @deprecated Compose a gauge with a card instead.
  */
 export function GaugeCard(props: Props) {
   const classes = useStyles(props);

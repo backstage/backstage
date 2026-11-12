@@ -44,12 +44,18 @@ export const VerticalStepperContext = createContext<InternalState>({
   onStepChange: noop,
 });
 
+/**
+ * @deprecated Compose an application-specific workflow instead of using SimpleStepper.
+ */
 export interface StepperProps {
   elevated?: boolean;
   onStepChange?: (prevIndex: number, nextIndex: number) => void;
   activeStep?: number;
 }
 
+/**
+ * @deprecated Compose an application-specific workflow instead of using SimpleStepper.
+ */
 export function SimpleStepper(props: PropsWithChildren<StepperProps>) {
   const { children, elevated, onStepChange, activeStep = 0 } = props;
   const [stepIndex, setStepIndex] = useState<number>(activeStep);
