@@ -24,7 +24,10 @@ import startCase from 'lodash/startCase';
 import upperCase from 'lodash/upperCase';
 import upperFirst from 'lodash/upperFirst';
 import lowerFirst from 'lodash/lowerFirst';
-import { detectPackageManager, Lockfile } from '@backstage/cli-node/alpha';
+import {
+  detectPackageManager,
+  PackageManagerLockfile,
+} from '@backstage/cli-node/alpha';
 
 import { createPackageVersionProvider } from '../version';
 
@@ -48,7 +51,7 @@ export class PortableTemplater {
   static async create(options: CreatePortableTemplaterOptions = {}) {
     const packageManager = await detectPackageManager();
 
-    let lockfile: Lockfile | undefined;
+    let lockfile: PackageManagerLockfile | undefined;
     try {
       lockfile = await packageManager.loadLockfile();
     } catch {

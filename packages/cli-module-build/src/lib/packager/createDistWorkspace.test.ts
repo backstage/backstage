@@ -25,23 +25,21 @@ describe('getDefaultWorkspaceFiles', () => {
     overrideTargetPaths(mockDir.path);
   });
 
-  it('copies the lockfile when there is one, and warns when there is not', async () => {
-    const logger = { warn: jest.fn() };
-    const yarn = { lockfileName: () => 'yarn.lock' };
+  it('copies the lockfile, and fails without one', async () => {
+    const yarn = {
+      lockfileName: () => 'yarn.lock',
+      getCommandHint: (args: string[]) => ['yarn', ...args].join(' '),
+    };
 
     mockDir.setContent({ 'package.json': '{}', 'yarn.lock': '' });
-    await expect(getDefaultWorkspaceFiles(yarn, logger)).resolves.toEqual([
+    await expect(getDefaultWorkspaceFiles(yarn)).resolves.toEqual([
       'yarn.lock',
       'package.json',
     ]);
-    expect(logger.warn).not.toHaveBeenCalled();
 
     mockDir.setContent({ 'package.json': '{}' });
-    await expect(getDefaultWorkspaceFiles(yarn, logger)).resolves.toEqual([
-      'package.json',
-    ]);
-    expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('There is no yarn.lock in the workspace root'),
+    await expect(getDefaultWorkspaceFiles(yarn)).rejects.toThrow(
+      "There is no yarn.lock in the workspace root, which the dist workspace is installed from. Run 'yarn install' to create it.",
     );
   });
 });
