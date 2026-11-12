@@ -13,21 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ScmIntegrationIcon } from './ScmIntegrationIcon';
 
 describe('<ScmIntegrationIcon />', () => {
-  it('renders without exploding (github)', async () => {
-    const { baseElement } = await renderInTestApp(
-      <ScmIntegrationIcon type="github" />,
-    );
-    expect(baseElement.querySelector('svg')).toBeInTheDocument();
+  it('renders the registered system icon', async () => {
+    await renderInTestApp(<ScmIntegrationIcon type="custom" />, {
+      icons: {
+        custom: () => <svg role="img" aria-label="Custom integration" />,
+      },
+    });
+    expect(
+      screen.getByRole('img', { name: 'Custom integration' }),
+    ).toBeInTheDocument();
   });
 
-  it('renders without exploding (unknown)', async () => {
-    const { baseElement } = await renderInTestApp(
-      <ScmIntegrationIcon type="unknown" />,
-    );
-    expect(baseElement.querySelector('svg')).toBeInTheDocument();
-  });
+  it.each(['unknown', undefined])(
+    'renders a decorative fallback for type %s',
+    async type => {
+      const { container } = await renderInTestApp(
+        <ScmIntegrationIcon type={type} />,
+      );
+      const icon = container.querySelector('svg');
+      expect(icon).toHaveClass('remixicon');
+      expect(icon).toHaveAttribute('aria-hidden', 'true');
+      expect(icon).toHaveAttribute('focusable', 'false');
+      expect(icon).toHaveAttribute('width', '1em');
+      expect(icon).toHaveAttribute('height', '1em');
+      expect(icon).toHaveStyle({
+        fontSize: '1.5rem',
+        display: 'inline-block',
+        flexShrink: 0,
+      });
+    },
+  );
 });
