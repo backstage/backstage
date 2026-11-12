@@ -59,10 +59,10 @@ import { entityFilterToFilterPredicate } from './request/entityFilterToFilterPre
 import { processRawEntitiesResult } from './response';
 
 /**
- * The largest limit at which a first page is matched as one that can stop
- * early, see `request/longInLists.ts`.
+ * The largest limit at which a page is matched as one that can stop early,
+ * see `request/longInLists.ts`.
  */
-const SMALL_FIRST_PAGE_LIMIT = 100;
+const SMALL_PAGE_LIMIT = 100;
 const DEFAULT_LIMIT = 200;
 
 function parsePagination(input?: EntityPagination): EntityPagination {
@@ -427,10 +427,10 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           targetQuery: q,
           onEntityIdField: 'final_entities.entity_id',
           knex: this.database,
-          // A first page of a short list can stop early, so long lists that
-          // are not direct conditions are cheaper to probe per row there
-          smallFirstPage:
-            limit <= SMALL_FIRST_PAGE_LIMIT && !cursor.orderFieldValues,
+          // A small page can stop early, so long lists that are not direct
+          // conditions are cheaper to probe per row there. The count has no
+          // limit and reads every match, so it is never a small page.
+          smallPage: !options?.asSet && limit <= SMALL_PAGE_LIMIT,
         };
         if (options?.asSet && this.useSetFilter(filter)) {
           applySetEntityFilterToQuery(filterOptions);

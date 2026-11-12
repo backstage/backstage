@@ -24,7 +24,7 @@ export function applyEntityFilterToQuery(options: {
   onEntityIdField: string;
   knex: Knex;
   matchLongInListsPerRow?: boolean;
-  smallFirstPage?: boolean;
+  smallPage?: boolean;
 }): Knex.QueryBuilder {
   const {
     filter,
@@ -32,7 +32,7 @@ export function applyEntityFilterToQuery(options: {
     onEntityIdField,
     knex,
     matchLongInListsPerRow,
-    smallFirstPage,
+    smallPage,
   } = options;
 
   if (!filter) {
@@ -45,6 +45,6 @@ export function applyEntityFilterToQuery(options: {
     onEntityIdField,
     knex,
     matchLongInListsPerRow,
-    smallFirstPage,
+    smallPage,
   });
 }

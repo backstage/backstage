@@ -40,8 +40,11 @@ on a field other than `kind`, `metadata.namespace`, `spec.type` and
 hashed, instead of the per-row `EXISTS (... = ANY(:claims))` shown in the
 reference SQL. A list that is a direct condition of the filter is a set from
 10 values. A list inside an `$any` or a `$not`, like the claims in the
-permission predicate, is a set only from 100 values and not on a first page of
-up to 100 entities. See `src/service/request/longInLists.ts` for the details.
+permission predicate, is a set only from 100 values and not on a page of up
+to 100 entities. A list that stays per row is matched against a hash of the
+list, as `(value || '') = ANY(:claims)` in a probe with `OFFSET 0`, from 100
+values, and on pages of up to 100 entities from 10 values. See
+`src/service/request/longInLists.ts` for the details.
 For any variant with 10 or more claims, capture the SQL that the method call
 actually generates (for example with knex query logging) and measure that
 instead.
@@ -699,9 +702,9 @@ const permission = {
 
 In page queries, and in all queries on other databases, `<permission>` in the
 reference SQL below stands for the following. This is the per-row form,
-which is used for fewer than 100 claims and on first pages of up to 100
-entities; otherwise, capture the generated SQL as described in
-[How to run](#how-to-run).
+which is used for fewer than 10 claims, and for fewer than 100 claims on pages
+of more than 100 entities; otherwise, capture the generated SQL as described
+in [How to run](#how-to-run).
 
 ```sql
 (
@@ -1227,8 +1230,10 @@ These should NEVER appear in any of the above queries:
    `metadata.namespace`, `spec.type` and `spec.lifecycle` are probed per row
    on purpose, since each of their values matches a large share of the catalog
    (see scenario 21). So are lists inside an `$any` or a `$not` with fewer
-   than 100 values or on a first page of up to 100 entities, where the probe
-   costs less than building the set.
+   than 100 values or on a page of up to 100 entities, where the probe costs
+   less than building the set. Probes of 100 values or more, and of 10 or more
+   on such pages, should show the hashed `(value || '') = ANY(...)` filter
+   rather than an `= ANY` index condition.
 
 Facets and count queries (scenarios 15-18) have no LIMIT and must visit the
 whole filtered set. For those queries, a bounded spill of an intermediate set
