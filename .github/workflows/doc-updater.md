@@ -16,10 +16,10 @@ on:
       run: |
         MAX_OPEN_PRS=8
         if [[ "$GITHUB_EVENT_NAME" != "schedule" ]]; then exit 0; fi
-        COUNT=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --author app/github-actions --search 'in:title docs' --limit 1000 --json title --jq '[.[] | select(.title | startswith("[docs] "))] | length')
+        COUNT=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --label automation --search 'in:title docs' --limit 1000 --json title --jq '[.[] | select(.title | startswith("[docs] "))] | length')
         [[ "$COUNT" -lt "$MAX_OPEN_PRS" ]]
       # exits 0 if not scheduled or <MAX_OPEN_PRS open PRs, 1 if ≥MAX_OPEN_PRS.
-      # The search is a loose prefilter: GitHub search ignores the brackets, so jq checks the title prefix. Only PRs opened by the workflow (github-actions[bot]) count.
+      # The search is a loose prefilter: GitHub search ignores the brackets, so jq checks the title prefix. Only PRs that the workflow labels `automation` count, whichever token opened them.
 
 if: needs.pre_activation.outputs.check_result == 'success'
 
