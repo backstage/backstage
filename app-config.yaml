@@ -7,7 +7,13 @@ app:
   packages: all # ✨
   experimental:
     deferredRemotes: true
-    deferredPackages: true
+    # The catalog graph plugin and the lazy package demo are deferred. The
+    # other plugins that support deferred loading are bundled with the app
+    # until the example app is ready to defer them too.
+    deferredPackages:
+      exclude:
+        - '@backstage/plugin-auth'
+        - '@backstage/plugin-catalog-import'
 
   #datadogRum:
   #  clientToken: '123456789'
