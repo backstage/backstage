@@ -588,8 +588,8 @@ describe('KubernetesFetcher', () => {
       );
     });
     it('should suppress 404 errors and return only successful resources', async () => {
-      const warn = jest.spyOn(logger, 'warn');
-      warn.mockClear();
+      const debug = jest.spyOn(logger, 'debug');
+      debug.mockClear();
       worker.use(
         http.get('http://localhost:9999/api/v1/pods', ({ request: req }) =>
           response(
@@ -629,11 +629,13 @@ describe('KubernetesFetcher', () => {
           },
         ],
       });
-      expect(warn).not.toHaveBeenCalled();
+      expect(debug).toHaveBeenCalledWith(
+        expect.stringContaining('not found on cluster'),
+      );
     });
     it('should suppress 404 for a custom resource and return other resources', async () => {
-      const warn = jest.spyOn(logger, 'warn');
-      warn.mockClear();
+      const debug = jest.spyOn(logger, 'debug');
+      debug.mockClear();
       worker.use(
         http.get('http://localhost:9999/api/v1/pods', ({ request: req }) =>
           response(
@@ -688,7 +690,9 @@ describe('KubernetesFetcher', () => {
           expect.objectContaining({ type: 'services' }),
         ]),
       );
-      expect(warn).not.toHaveBeenCalled();
+      expect(debug).toHaveBeenCalledWith(
+        expect.stringContaining('not found on cluster'),
+      );
     });
     // they're in testErrorResponse
     // eslint-disable-next-line jest/expect-expect
@@ -1421,14 +1425,56 @@ describe('KubernetesFetcher', () => {
         new Set(['ns-a', 'ns-b']),
       );
 
-      expect(result.errors).toStrictEqual([
-        {
-          errorType: 'NOT_FOUND',
-          resourcePath: '/apis/metrics.k8s.io/v1beta1/namespaces/ns-b/pods',
-          statusCode: 404,
-        },
-      ]);
+      expect(result.errors).toStrictEqual([]);
       expect(result.responses).toMatchObject(POD_METRICS_FIXTURE);
+    });
+    it('should suppress NOT_FOUND when the metrics API is unavailable', async () => {
+      const logger = mockServices.logger.mock();
+      const debug = jest.spyOn(logger, 'debug');
+      const sutWithLogger = new KubernetesClientBasedFetcher({
+        logger,
+        connection: new KubernetesConnection({ logger }),
+      });
+      worker.use(
+        http.get(
+          'http://localhost:9999/api/v1/namespaces/ns-a/pods',
+          ({ request: req }) =>
+            response(
+              checkToken(req, 'token'),
+              withLabels(req, {
+                items: [{ metadata: { name: 'pod-name' } }],
+              }),
+            ),
+        ),
+        http.get(
+          'http://localhost:9999/apis/metrics.k8s.io/v1beta1/namespaces/ns-a/pods',
+          () =>
+            HttpResponse.json(
+              {
+                kind: 'Status',
+                apiVersion: 'v1',
+                status: 'Failure',
+                code: 404,
+              },
+              { status: 404 },
+            ),
+        ),
+      );
+
+      const result = await sutWithLogger.fetchPodMetricsByNamespaces(
+        {
+          name: 'cluster1',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        new Set(['ns-a']),
+      );
+
+      expect(result.errors).toStrictEqual([]);
+      expect(debug).toHaveBeenCalledWith(
+        expect.stringContaining('not found on cluster'),
+      );
     });
     it('should mask secret data values with ***', async () => {
       worker.use(

@@ -61,9 +61,11 @@ function fetchResultsToResponseWrapper(
 }
 
 export class KubernetesClientBasedFetcher implements KubernetesFetcher {
+  private readonly logger: LoggerService;
   private readonly connection: KubernetesConnection;
 
-  constructor({ connection }: KubernetesClientBasedFetcherOptions) {
+  constructor({ logger, connection }: KubernetesClientBasedFetcherOptions) {
+    this.logger = logger;
     this.connection = connection;
   }
 
@@ -101,10 +103,9 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
     return Promise.all(fetchResults)
       .then(fetchResultsToResponseWrapper)
-      .then(wrapper => ({
-        ...wrapper,
-        errors: wrapper.errors.filter(e => e.errorType !== 'NOT_FOUND'),
-      }));
+      .then(wrapper =>
+        this.suppressNotFound(wrapper, params.clusterDetails.name),
+      );
   }
 
   async fetchPodMetricsByNamespaces(
@@ -122,7 +123,25 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       ),
     );
 
-    return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
+    return Promise.all(fetchResults)
+      .then(fetchResultsToResponseWrapper)
+      .then(wrapper => this.suppressNotFound(wrapper, clusterDetails.name));
+  }
+
+  private suppressNotFound(
+    wrapper: FetchResponseWrapper,
+    clusterName: string,
+  ): FetchResponseWrapper {
+    const errors = wrapper.errors.filter(e => {
+      if (e.errorType === 'NOT_FOUND') {
+        this.logger.debug(
+          `Resource "${e.resourcePath}" not found on cluster "${clusterName}", skipping`,
+        );
+        return false;
+      }
+      return true;
+    });
+    return { ...wrapper, errors };
   }
 
   private async fetchPodMetricsForNamespace(
