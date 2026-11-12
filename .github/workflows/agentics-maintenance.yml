@@ -39,7 +39,7 @@ name: Agentic Maintenance
 
 on:
   schedule:
-    - cron: "37 */6 * * *"  # Every 6 hours (based on minimum expires: 2 days)
+    - cron: '37 */6 * * *' # Every 6 hours (based on minimum expires: 2 days)
   workflow_dispatch:
     inputs:
       operation:
@@ -308,7 +308,7 @@ jobs:
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           GH_AW_JOB_CHECK_RUN_ID: ${{ job.check_run_id }}
-          GH_AW_WORKFLOW_ID: "agentics-maintenance"
+          GH_AW_WORKFLOW_ID: 'agentics-maintenance'
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_AW_RUN_URL: ${{ inputs.run_url }}
         with:
