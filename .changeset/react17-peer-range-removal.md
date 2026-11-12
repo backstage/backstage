@@ -1,0 +1,55 @@
+---
+'@backstage/app-defaults': major
+'@backstage/dev-utils': major
+'@backstage/frontend-adapter-react-router-v6': minor
+'@backstage/frontend-app-api': minor
+'@backstage/frontend-defaults': minor
+'@backstage/frontend-dev-utils': minor
+'@backstage/frontend-dynamic-feature-loader': minor
+'@backstage/frontend-plugin-api': minor
+'@backstage/frontend-test-utils': minor
+'@backstage/integration-react': major
+'@backstage/module-federation-common': minor
+'@backstage/plugin-api-docs': minor
+'@backstage/plugin-api-docs-module-protoc-gen-doc': minor
+'@backstage/plugin-app': minor
+'@backstage/plugin-app-react': minor
+'@backstage/plugin-app-visualizer': minor
+'@backstage/plugin-auth': minor
+'@backstage/plugin-auth-react': minor
+'@backstage/plugin-catalog': major
+'@backstage/plugin-catalog-graph': minor
+'@backstage/plugin-catalog-import': minor
+'@backstage/plugin-catalog-react': major
+'@backstage/plugin-catalog-unprocessed-entities': minor
+'@backstage/plugin-config-schema': minor
+'@backstage/plugin-devtools': minor
+'@backstage/plugin-devtools-react': minor
+'@backstage/plugin-home': minor
+'@backstage/plugin-home-react': minor
+'@backstage/plugin-kubernetes': minor
+'@backstage/plugin-kubernetes-cluster': minor
+'@backstage/plugin-kubernetes-react': minor
+'@backstage/plugin-mui-to-bui': minor
+'@backstage/plugin-notifications': minor
+'@backstage/plugin-org': minor
+'@backstage/plugin-org-react': minor
+'@backstage/plugin-permission-react': minor
+'@backstage/plugin-scaffolder': major
+'@backstage/plugin-scaffolder-node-test-utils': minor
+'@backstage/plugin-scaffolder-react': major
+'@backstage/plugin-search': major
+'@backstage/plugin-search-react': major
+'@backstage/plugin-signals': minor
+'@backstage/plugin-signals-react': minor
+'@backstage/plugin-techdocs': major
+'@backstage/plugin-techdocs-addons-test-utils': major
+'@backstage/plugin-techdocs-module-addons-contrib': major
+'@backstage/plugin-techdocs-react': major
+'@backstage/plugin-user-settings': minor
+'@backstage/test-utils': major
+'@backstage/theme': minor
+'@backstage/version-bridge': major
+---
+
+Removed support for React 17; the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#158).
