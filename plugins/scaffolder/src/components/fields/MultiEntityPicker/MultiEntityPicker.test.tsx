@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
+import {
+  type CatalogApi,
+  CATALOG_FILTER_EXISTS,
+} from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -22,7 +25,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { MultiEntityPicker } from './MultiEntityPicker';
@@ -32,6 +35,18 @@ import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { scaffolderTranslationRef } from '../../../translation';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+
+jest.mock('@backstage/plugin-scaffolder-react/alpha', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-react/alpha'),
+  useScaffolderTheme: jest.fn(),
+}));
+
+const mockUseScaffolderTheme = jest.mocked(useScaffolderTheme);
+const originalIntersectionObserver = globalThis.IntersectionObserver;
+
+type SpiedCatalogApi = CatalogApi &
+  Pick<jest.Mocked<CatalogApi>, 'getEntitiesByRefs' | 'queryEntities'>;
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -53,14 +68,30 @@ describe('<MultiEntityPicker />', () => {
 
   let props: FieldProps<string[]>;
 
-  const catalogApi = catalogApiMock.mock({
-    streamEntities: jest.fn(async function* () {
-      yield entities;
-    }),
-  });
+  let catalogApi: SpiedCatalogApi;
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
+    mockUseScaffolderTheme.mockReturnValue('mui');
+    Object.defineProperty(globalThis, 'IntersectionObserver', {
+      configurable: true,
+      value: class {
+        readonly root = null;
+        readonly rootMargin = '';
+        readonly thresholds = [];
+        disconnect() {}
+        observe() {}
+        takeRecords() {
+          return [];
+        }
+        unobserve() {}
+      },
+    });
+    const api = catalogApiMock({ entities });
+    catalogApi = Object.assign(api, {
+      queryEntities: jest.spyOn(api, 'queryEntities'),
+      getEntitiesByRefs: jest.spyOn(api, 'getEntitiesByRefs'),
+    });
     Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
@@ -76,7 +107,13 @@ describe('<MultiEntityPicker />', () => {
     );
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => {
+    jest.resetAllMocks();
+    Object.defineProperty(globalThis, 'IntersectionObserver', {
+      configurable: true,
+      value: originalIntersectionObserver,
+    });
+  });
 
   describe('without allowedKinds and catalogFilter', () => {
     beforeEach(() => {
@@ -98,7 +135,107 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith({});
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith({
+        limit: 20,
+        orderFields: [{ field: 'metadata.name', order: 'asc' }],
+        totalItems: 'exclude',
+      });
+    });
+
+    it('loads past a fully selected first page, but only when opened', async () => {
+      catalogApi.queryEntities
+        .mockResolvedValueOnce({
+          items: [entities[0]],
+          totalItems: 0,
+          pageInfo: { nextCursor: 'next-page' },
+        })
+        .mockResolvedValueOnce({
+          items: [entities[1]],
+          totalItems: 0,
+          pageInfo: {},
+        });
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} formData={['group:default/team-a']} />
+        </Wrapper>,
+      );
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(1);
+      fireEvent.mouseDown(screen.getByRole('textbox'));
+      fireEvent.click(await screen.findByRole('option', { name: 'squad-b' }));
+      expect(catalogApi.queryEntities).toHaveBeenLastCalledWith({
+        cursor: 'next-page',
+        limit: 20,
+      });
+      expect(onChange).toHaveBeenCalledWith([
+        'group:default/team-a',
+        'group:default/squad-b',
+      ]);
+    });
+
+    it('loads another page when scrolling near the bottom, including keyboard padding', async () => {
+      const page = Array.from({ length: 20 }, (_, i) =>
+        makeEntity('Group', 'default', `team-${i}`),
+      );
+      catalogApi.queryEntities
+        .mockResolvedValueOnce({
+          items: page,
+          totalItems: 0,
+          pageInfo: { nextCursor: 'next-page' },
+        })
+        .mockResolvedValueOnce({
+          items: [entities[1]],
+          totalItems: 0,
+          pageInfo: {},
+        });
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+      fireEvent.mouseDown(screen.getByRole('textbox'));
+      const listbox = await screen.findByRole('listbox');
+      Object.defineProperties(listbox, {
+        scrollHeight: { value: 736 },
+        clientHeight: { value: 378 },
+      });
+      fireEvent.scroll(listbox, { target: { scrollTop: 342 } });
+      await waitFor(() =>
+        expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2),
+      );
+      expect(catalogApi.queryEntities).toHaveBeenLastCalledWith({
+        cursor: 'next-page',
+        limit: 20,
+      });
+    });
+
+    it('does not automatically retry a failed underfilled page until reopened', async () => {
+      catalogApi.queryEntities
+        .mockResolvedValueOnce({
+          items: [entities[0]],
+          totalItems: 0,
+          pageInfo: { nextCursor: 'next-page' },
+        })
+        .mockRejectedValueOnce(new Error('Temporary failure'))
+        .mockResolvedValueOnce({
+          items: [entities[1]],
+          totalItems: 0,
+          pageInfo: {},
+        });
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} formData={['group:default/team-a']} />
+        </Wrapper>,
+      );
+      await act(async () => fireEvent.mouseDown(screen.getByRole('textbox')));
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2);
+      expect(screen.queryByRole('option')).not.toBeInTheDocument();
+
+      fireEvent.keyDown(screen.getByRole('textbox'), { key: 'Escape' });
+      fireEvent.mouseDown(screen.getByRole('textbox'));
+      expect(
+        await screen.findByRole('option', { name: 'squad-b' }),
+      ).toBeInTheDocument();
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(3);
     });
 
     it('updates even if there is not an exact match', async () => {
@@ -114,6 +251,107 @@ describe('<MultiEntityPicker />', () => {
       fireEvent.blur(input);
 
       expect(onChange).toHaveBeenCalledWith(['squ']);
+    });
+
+    it('filters entities through the catalog as the user types', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      fireEvent.change(getByRole('textbox'), { target: { value: 'team' } });
+
+      await waitFor(() =>
+        expect(catalogApi.queryEntities).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            fullTextFilter: expect.objectContaining({ term: 'team' }),
+          }),
+        ),
+      );
+    });
+
+    it('clears BUI server filtering after selecting an entity', async () => {
+      mockUseScaffolderTheme.mockReturnValue('bui');
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+      const input = screen.getByRole('combobox');
+
+      fireEvent.change(input, { target: { value: 'team' } });
+      await waitFor(() =>
+        expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2),
+      );
+      await userEvent.click(
+        screen.getByRole('button', { name: /Show suggestions/ }),
+      );
+      await userEvent.click(
+        await screen.findByRole('option', { name: 'team-a' }),
+      );
+
+      expect(onChange).toHaveBeenCalledWith(['group:default/team-a']);
+      await waitFor(() =>
+        expect(catalogApi.queryEntities).toHaveBeenCalledTimes(3),
+      );
+      expect(catalogApi.queryEntities).toHaveBeenLastCalledWith(
+        expect.not.objectContaining({ fullTextFilter: expect.anything() }),
+      );
+    });
+
+    it('looks up valid selected refs without arbitrary values', async () => {
+      props = {
+        ...props,
+        formData: ['arbitrary-value', 'group:default/team-a'],
+      } as unknown as FieldProps<string[]>;
+
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+      await waitFor(() =>
+        expect(catalogApi.queryEntities).toHaveBeenCalledTimes(1),
+      );
+
+      expect(catalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
+        entityRefs: ['group:default/team-a'],
+      });
+    });
+
+    it('does not offer or add a canonical duplicate of a shorthand BUI value', async () => {
+      mockUseScaffolderTheme.mockReturnValue('bui');
+      catalogApi.getEntitiesByRefs.mockResolvedValueOnce({
+        items: [
+          {
+            ...entities[0],
+            metadata: { ...entities[0].metadata, title: 'Team A' },
+          },
+        ],
+      });
+      props = {
+        ...props,
+        formData: ['team-a'],
+        uiSchema: { 'ui:options': { defaultKind: 'Group' } },
+      } as unknown as FieldProps<string[]>;
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+      const input = screen.getByRole('combobox');
+      await userEvent.click(
+        screen.getByRole('button', { name: /Show suggestions/ }),
+      );
+
+      expect(screen.getByText('Team A')).toBeInTheDocument();
+      expect(
+        screen.queryByRole('option', { name: 'Team A' }),
+      ).not.toBeInTheDocument();
+      fireEvent.change(input, { target: { value: 'team-a' } });
+      fireEvent.blur(input);
+      expect(onChange).not.toHaveBeenCalled();
     });
   });
 
@@ -141,10 +379,6 @@ describe('<MultiEntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('searches for a specific group entity', async () => {
@@ -154,19 +388,20 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith({
-        query: {},
-        filter: [
-          {
-            kind: ['Group'],
-            'metadata.name': 'test-entity',
-          },
-          {
-            kind: ['User'],
-            'metadata.name': 'test-entity',
-          },
-        ],
-      });
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-entity',
+            },
+            {
+              kind: ['User'],
+              'metadata.name': 'test-entity',
+            },
+          ],
+        }),
+      );
     });
 
     it('allow single top level filter', async () => {
@@ -179,23 +414,20 @@ describe('<MultiEntityPicker />', () => {
         },
       };
 
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
-
       await renderInTestApp(
         <Wrapper>
           <MultiEntityPicker {...props} uiSchema={uiSchema} />
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith({
-        query: {},
-        filter: {
-          kind: ['Group'],
-          'metadata.name': 'test-entity',
-        },
-      });
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: {
+            kind: ['Group'],
+            'metadata.name': 'test-entity',
+          },
+        }),
+      );
     });
 
     it('search for entities containing an specific key', async () => {
@@ -216,15 +448,16 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith({
-        query: {},
-        filter: [
-          {
-            kind: ['User'],
-            'metadata.annotation.some/anotation': CATALOG_FILTER_EXISTS,
-          },
-        ],
-      });
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: [
+            {
+              kind: ['User'],
+              'metadata.annotation.some/anotation': CATALOG_FILTER_EXISTS,
+            },
+          ],
+        }),
+      );
     });
   });
 
@@ -249,10 +482,6 @@ describe('<MultiEntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('searches for a Group entity', async () => {
@@ -262,15 +491,16 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith({
-        query: {},
-        filter: [
-          {
-            kind: ['Group'],
-            'metadata.name': 'test-group',
-          },
-        ],
-      });
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: [
+            {
+              kind: ['Group'],
+              'metadata.name': 'test-group',
+            },
+          ],
+        }),
+      );
     });
   });
 
@@ -318,10 +548,6 @@ describe('<MultiEntityPicker />', () => {
     });
 
     it('preserves existing data on selecting an existing option', async () => {
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
-
       const { getByRole } = await renderInTestApp(
         <Wrapper>
           <MultiEntityPicker {...props} />
@@ -331,6 +557,9 @@ describe('<MultiEntityPicker />', () => {
       const input = getByRole('textbox');
 
       fireEvent.mouseDown(input);
+      expect(
+        screen.queryByRole('option', { name: 'team-a' }),
+      ).not.toBeInTheDocument();
       const optionA = screen.getByText('squad-b');
       await userEvent.click(optionA as HTMLElement);
 
@@ -356,10 +585,6 @@ describe('<MultiEntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('returns the full entityRef when entity exists in the list', async () => {
@@ -417,10 +642,6 @@ describe('<MultiEntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('User enters clear input', async () => {
@@ -508,10 +729,6 @@ describe('<MultiEntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
     it('Prevents user from modifying input when ui:disabled is true', async () => {
       props.formData = ['component/default:myentity'];
@@ -550,10 +767,6 @@ describe('<MultiEntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('User enters clear input', async () => {
@@ -649,10 +862,6 @@ describe('<MultiEntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('User enters clear input', async () => {
@@ -748,10 +957,6 @@ describe('<MultiEntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('User enters clear input', async () => {
@@ -855,8 +1060,10 @@ describe('<MultiEntityPicker />', () => {
         formData,
       } as unknown as FieldProps<any>;
 
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield testEntities;
+      catalogApi.queryEntities.mockResolvedValue({
+        items: testEntities,
+        totalItems: 0,
+        pageInfo: {},
       });
     });
 
@@ -1065,8 +1272,10 @@ describe('<MultiEntityPicker />', () => {
           profile: { displayName: item.metadata.name.replace('-', ' ') },
         },
       }));
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield items;
+      catalogApi.queryEntities.mockResolvedValue({
+        items,
+        totalItems: 0,
+        pageInfo: {},
       });
 
       const { getByRole, getByText } = await renderInTestApp(
@@ -1096,8 +1305,10 @@ describe('<MultiEntityPicker />', () => {
           title: item.metadata.name.replace('-', ' ').toUpperCase(),
         },
       }));
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield items;
+      catalogApi.queryEntities.mockResolvedValue({
+        items,
+        totalItems: 0,
+        pageInfo: {},
       });
 
       const { getByRole, getByText } = await renderInTestApp(
