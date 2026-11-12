@@ -26,6 +26,8 @@ import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { InternalFrontendFeatureLoader } from '../../frontend-plugin-api/src/wiring/createFrontendFeatureLoader';
 import { resetFederationGlobalInfo } from '@module-federation/runtime-core';
 import { Config } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
+import { OpaqueDeferredFrontendFeature } from '@internal/frontend';
 
 const baseUrl = 'http://localhost:7007';
 
@@ -300,6 +302,100 @@ describe('dynamicFrontendFeaturesLoader', () => {
         name: 'test_plugin',
       },
     ]);
+  });
+
+  it('should defer the plugins of remotes with a deferrable frontend manifest', async () => {
+    const createManifest = (deferrable: boolean) => ({
+      manifestVersion: 1,
+      type: 'plugin',
+      pluginId: 'test-plugin',
+      deferrable,
+      routes: [],
+      externalRoutes: [],
+      extensions: [],
+    });
+    const remote = (packageName: string, deferrable: boolean) => ({
+      packageName,
+      exposedModules: ['.'],
+      remoteInfo: {
+        name: 'test_plugin',
+        entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
+      },
+      frontendManifest: {
+        manifestVersion: 1,
+        exposedModules: { '.': createManifest(deferrable) },
+      },
+    });
+    const mockRemotes = (remotes: unknown[]) =>
+      server.use(
+        http.get(`${baseUrl}/.backstage/dynamic-features/remotes`, () =>
+          HttpResponse.json(remotes),
+        ),
+        http.get(
+          `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
+          () =>
+            HttpResponse.json({
+              name: 'test_plugin',
+              ...manifestDummyData,
+              exposes: [
+                {
+                  id: 'test_plugin:.',
+                  name: '.',
+                  path: '.',
+                  ...manifestExposedRemoteDummyData,
+                },
+              ],
+            }),
+        ),
+      );
+    const plugin = createFrontendPlugin({
+      pluginId: 'test-plugin',
+      extensions: [],
+    });
+    mocks.federation.get.mockReturnValue({ default: plugin });
+    const load = (deferredRemotes: JsonValue) =>
+      (
+        dynamicFrontendFeaturesLoader({
+          moduleFederation: { plugins: testModuleFederationPlugins },
+        }) as InternalFrontendFeatureLoader
+      ).loader({
+        config: mockApis.config({
+          data: {
+            app: { experimental: { deferredRemotes } },
+            backend: { baseUrl },
+            dynamicPlugins: {},
+          },
+        }),
+      });
+
+    // The deferrable plugin is only loaded when the app asks for it
+    mockRemotes([remote('plugin-test-dynamic', true)]);
+    const [deferred] = await load(true);
+    expect(mocks.federation.get).not.toHaveBeenCalled();
+    expect(OpaqueDeferredFrontendFeature.isType(deferred)).toBe(true);
+    const internal = OpaqueDeferredFrontendFeature.toInternal(deferred);
+    expect(internal.name).toBe('plugin-test-dynamic');
+    expect(internal.manifest).toEqual(createManifest(true));
+    await expect(internal.load()).resolves.toEqual({ default: plugin });
+    expect(mocks.federation.get).toHaveBeenCalledTimes(1);
+    expect(mocks.console.error).not.toHaveBeenCalled();
+
+    // Plugins that aren't deferrable, or whose package is excluded, and all
+    // plugins when deferral isn't enabled, are loaded right away
+    for (const [remotes, deferredRemotes] of [
+      [[remote('plugin-test-dynamic', false)], true],
+      [
+        [remote('plugin-test-dynamic', true)],
+        { exclude: ['plugin-test-dynamic'] },
+      ],
+      [[remote('plugin-test-dynamic', true)], false],
+    ] as Array<[unknown[], JsonValue]>) {
+      resetFederationGlobalInfo();
+      mocks.federation.get.mockClear();
+      mockRemotes(remotes);
+      await expect(load(deferredRemotes)).resolves.toEqual([plugin]);
+      expect(mocks.federation.get).toHaveBeenCalledTimes(1);
+    }
   });
 
   it('should load several dynamic frontend plugins', async () => {

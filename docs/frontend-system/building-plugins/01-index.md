@@ -232,6 +232,29 @@ The `ExampleEntityContent` itself is again a regular React component where you c
 
 For a more complete list of the different kinds of extensions that you can create for your plugin, see the [extension blueprints](./03-common-extension-blueprints.md) section.
 
+## Deferred loading
+
+:::note
+Deferred loading is experimental, and the details described here may change.
+:::
+
+An app that loads your plugin as a [module federation remote](../building-apps/07-module-federation.md#deferred-loading) and enables `app.experimental.deferredRemotes` can defer loading it. So can an app that installs your plugin through [feature discovery](../building-apps/05-installing-plugins.md#deferred-loading) and enables `app.experimental.deferredPackages`, in which case the app build turns your plugin into a remote. A _deferred plugin_ starts out as a stand-in that is built from a manifest, and the real plugin code is loaded the first time one of its pages is visited or one of its elements is rendered. If loading the code fails, for example because of a network error, it is retried a couple of times before an error is shown.
+
+The CLI creates the manifest by analyzing the source code of your plugin without running it. If your plugin is in the workspace of the app, this happens when the app is built or started. When you build your plugin with `backstage-cli package build --module-federation` or `backstage-cli package bundle`, it writes the manifest to `dist/backstage-manifest.json`, next to the module federation manifest. The same file is written to the `dist` folder of your package when it is packed for publishing with `backstage-cli package prepack`, so that published packages carry it. A published package or remote without this file is loaded together with the app.
+
+A plugin can be deferred if its default export is a direct call to `createFrontendPlugin`, and each of its extensions is one of the following:
+
+- A page that is made with `PageBlueprint.make` and attaches to `app/routes`. A page can also be made with `PageBlueprint.makeWithOverrides`, as long as its factory does nothing but return `originalFactory({ ... })` with the params, and it only adds a `configSchema`, not `inputs` or `output`.
+- A sub-page that is made with `SubPageBlueprint.make`, without an icon.
+
+The `path` and `title` params, and the extension `name`, `attachTo`, and `disabled` options, must be literal values or constants that hold literal values, which can be imported from other modules of your package. A `routeRef` param must be one of the route refs in the `routes` of the plugin. Other extensions that are made with `makeWithOverrides`, and extensions made with `createExtension` or with other blueprints, such as the entity cards and contents of the catalog, prevent the plugin from being deferred, and so does an `if` predicate on the plugin or on any of its extensions.
+
+A plugin that provides a utility API is always loaded together with the app, since utility APIs are created when the app starts.
+
+The analysis fails closed: if any of these values can't be read, the plugin is loaded together with the app, and the manifest records the reason in its `notDeferrableReason` field, along with the location in your source code.
+
+If an app has any config in `app.extensions` for an element of your plugin, such as a sub-page, the plugin is loaded right after the app has started. Config for the pages of your plugin does not have this effect, and is applied to the stand-in of the page.
+
 ## Related topics
 
 The following guides cover cross-cutting concerns for building frontend plugins:

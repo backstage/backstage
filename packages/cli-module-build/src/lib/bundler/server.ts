@@ -30,6 +30,10 @@ import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import { ServeOptions } from './types';
 import { createRuntimeSharedDependenciesEntryPoint } from './moduleFederation';
+import {
+  buildDeferredRemotes,
+  DEFERRED_REMOTES_DIR,
+} from './buildDeferredRemotes';
 
 export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
@@ -116,12 +120,32 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     options.moduleFederationRemote,
   );
 
+  const webpack = process.env.LEGACY_WEBPACK_BUILD
+    ? (require('webpack') as typeof import('webpack'))
+    : undefined;
+
   const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
     config: fullConfig,
     targetPath: paths.targetPath,
     watch() {
       triggerReload();
     },
+    // Deferred packages are built as remotes into the output directory of
+    // the app, where the dynamic features backend serves them from. They are
+    // built once, and again when the dependencies of the app change.
+    onDeferredPackages: options.moduleFederationRemote
+      ? undefined
+      : async packages => {
+          await buildDeferredRemotes({
+            packages,
+            targetDir: resolvePath(paths.targetDist, DEFERRED_REMOTES_DIR),
+            appDir: paths.targetPath,
+            frontendConfig,
+            frontendAppConfigs: latestFrontendAppConfigs,
+            fullConfig,
+            webpack,
+          });
+        },
   });
 
   const moduleFederationSharedDependenciesEntryPoint =
@@ -131,10 +155,6 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
         triggerReload();
       },
     });
-
-  const webpack = process.env.LEGACY_WEBPACK_BUILD
-    ? (require('webpack') as typeof import('webpack'))
-    : undefined;
 
   const commonConfigOptions = {
     ...options,

@@ -28,6 +28,12 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { ShareStrategy, UserOptions } from '@module-federation/runtime/types';
 import { loadModuleFederationHostShared } from '@backstage/module-federation-common';
+import { Config } from '@backstage/config';
+import {
+  FRONTEND_MANIFEST_VERSION,
+  FrontendFeatureManifest,
+  OpaqueDeferredFrontendFeature,
+} from '@internal/frontend';
 
 /**
  *
@@ -74,6 +80,7 @@ export function dynamicFrontendFeaturesLoader(
 
       const appPackageName =
         config.getOptionalString('app.packageName') ?? 'app';
+      const deferredRemotes = readDeferredRemotesConfig(config);
       let frontendPluginRemotes: Array<Remote>;
       try {
         const apiClient = new DefaultApiClient({
@@ -162,6 +169,21 @@ export function dynamicFrontendFeaturesLoader(
                   exposedModuleName === '.'
                     ? remote.remoteInfo.name
                     : `${remote.remoteInfo.name}/${exposedModuleName}`;
+
+                // A deferrable plugin is loaded once one of its pages or
+                // elements is rendered, rather than before the app starts.
+                const manifest = deferredRemotes.isDeferred(remote.packageName)
+                  ? readDeferrableManifest(remote, exposedModuleName)
+                  : undefined;
+                if (manifest) {
+                  return createDeferredFeature({
+                    name: remote.packageName,
+                    manifest,
+                    remoteModuleName,
+                    instance,
+                  });
+                }
+
                 let module: Module;
                 try {
                   module = await instance.loadRemote<Module>(remoteModuleName);
@@ -214,4 +236,70 @@ function isLoadable(obj: unknown): obj is FrontendFeature {
     );
   }
   return false;
+}
+
+const DEFERRED_REMOTES_KEY = 'app.experimental.deferredRemotes';
+
+function readDeferredRemotesConfig(config: Config) {
+  const value = config.getOptional(DEFERRED_REMOTES_KEY);
+  if (value === undefined || value === false) {
+    return { isDeferred: () => false };
+  }
+  const exclude =
+    value === true
+      ? []
+      : config.getOptionalStringArray(`${DEFERRED_REMOTES_KEY}.exclude`) ?? [];
+  return {
+    isDeferred: (packageName: string) => !exclude.includes(packageName),
+  };
+}
+
+/**
+ * Returns the manifest of an exposed module if it is a plugin that can be
+ * deferred. A manifest of an unknown version is ignored, which loads the
+ * module before the app starts.
+ */
+function readDeferrableManifest(
+  remote: Remote,
+  exposedModuleName: string,
+): FrontendFeatureManifest | undefined {
+  const frontendManifest = remote.frontendManifest;
+  if (frontendManifest?.manifestVersion !== FRONTEND_MANIFEST_VERSION) {
+    return undefined;
+  }
+  const manifest = frontendManifest.exposedModules[exposedModuleName] as
+    | Partial<FrontendFeatureManifest>
+    | undefined;
+  if (
+    manifest?.manifestVersion !== FRONTEND_MANIFEST_VERSION ||
+    manifest.type !== 'plugin' ||
+    manifest.deferrable !== true
+  ) {
+    return undefined;
+  }
+  return manifest as FrontendFeatureManifest;
+}
+
+function createDeferredFeature(options: {
+  name: string;
+  manifest: FrontendFeatureManifest;
+  remoteModuleName: string;
+  instance: ModuleFederation;
+}): FrontendFeature {
+  const { remoteModuleName, instance } = options;
+  // The app installs a stand-in for the plugin, which loads the remote
+  // module the first time one of its pages or elements is rendered.
+  return OpaqueDeferredFrontendFeature.createInstance('v1', {
+    name: options.name,
+    manifest: options.manifest,
+    async load() {
+      const module = await instance.loadRemote<Module>(remoteModuleName);
+      if (!module) {
+        throw new Error(
+          `The remote module '${remoteModuleName}' of dynamic plugin '${options.name}' is empty`,
+        );
+      }
+      return { default: module.default };
+    },
+  }) as unknown as FrontendFeature;
 }
