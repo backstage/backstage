@@ -18,11 +18,11 @@ import {
   createElement,
   useContext,
   useMemo,
+  useSyncExternalStore,
   type ComponentType,
   type Context,
   type ReactNode,
 } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import type {
   AppHistoryApi,
   AppHistorySnapshot,

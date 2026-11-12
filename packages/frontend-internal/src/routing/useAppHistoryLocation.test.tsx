@@ -18,14 +18,6 @@ import { act, renderHook } from '@testing-library/react';
 import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { useAppHistoryLocation } from './useAppHistoryLocation';
 
-// React 17 does not expose the native hook. Exercise the shim's fallback while
-// the regular adapter suites continue to exercise React 18's native hook.
-jest.mock('react', () => ({
-  ...jest.requireActual('react'),
-  useSyncExternalStore: undefined,
-  startTransition: undefined,
-}));
-
 describe('useAppHistoryLocation', () => {
   it('tracks the app history location and keeps a stable snapshot reference', () => {
     const appHistory = createMockAppHistory({
