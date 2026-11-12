@@ -169,7 +169,7 @@ against the page rather than against the app root.
 yarn --cwd plugins/<plugin-name> add @backstage/frontend-adapter-tanstack-router
 ```
 
-Install `@tanstack/react-router@1.131.2` and `@tanstack/history@1.131.2` alongside
+Install `@tanstack/react-router@1.170.0` and `@tanstack/history@1.162.0` alongside
 the adapter. The router peer dependency is pinned to a release that supports
 React 18 type checking without a package patch.
 
@@ -252,15 +252,24 @@ export const ToolsPageRouter = createTanStackPageRouter({
 
 The `history` uses app-absolute paths and shares the app's browser timeline.
 The supplied `routePaths` contains the page's mount patterns in TanStack syntax,
-including parameters. Optional static segments produce multiple unique patterns,
-including repeated segments such as `/foo?/foo?`; mount
-the plugin's routes at each one. For a `/` mount, attach the plugin's routes
+including parameters and literal suffixes such as `:document.json`, translated to
+`{$document}.json`. Optional static and dynamic segments produce multiple unique
+patterns; mount the plugin's routes at each one. When optional parameters can
+match the same segment, the earlier parameter takes precedence. Repeated optional
+static segments such as `/foo?/foo?` also produce unique patterns. For a `/` mount, attach the plugin's routes
 directly to the root route. Keep TanStack's
 `basepath` at `/`; the adapter applies the deployment basename when producing
 browser hrefs. A target such as `/catalog` can then leave the plugin through
 TanStack's own `Link` or `navigate`, including when generated from a route ref. Render `ToolsPageRouter` in the lazy page component the same way as above.
 TanStack types stay inside the adapter package and your plugin, so nothing leaks
 into the framework's public contract.
+
+A trailing `?` makes the whole suffix segment optional: `:document.json?`
+matches either `report.json` or an omitted segment. Placing `?` before the suffix,
+as in `/docs/:document?.json`, makes the value and its leading slash optional
+while keeping the suffix: it matches `/docs/report.json` and `/docs.json`.
+Suffixes match case insensitively, and parameter names such as `file-id` and
+`123id` work with suffixes as well as full segments.
 
 The adapter uses TanStack's native history implementation for subscriptions,
 push and replace blockers, and navigation state. Backstage's app history owns
@@ -273,6 +282,10 @@ Numeric history traversal may finish asynchronously and notify through
 Custom histories can omit snapshot metadata they cannot report. Without entry
 indices and keys, back availability and entry-based restoration are limited: the adapter cannot infer
 a browser stack from the URLs it has visited.
+
+Native relative links refresh when the current catch-all value changes. For
+example, a `Link` with `to="./edit"` points to `/docs/edit` at `/docs`, and to
+`/docs/edit/edit` after navigating to `/docs/edit`.
 
 TanStack push and replace blockers apply to navigation through that adapter.
 They do not block navigation initiated by another adapter, browser traversal,

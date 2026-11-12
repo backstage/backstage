@@ -36,9 +36,11 @@ import {
   useCanGoBack,
   useLocation,
   useRouter,
+  useParams,
   createRootRoute,
   createRoute,
   createRouter,
+  type AnyRouter,
 } from '@tanstack/react-router';
 import {
   TanStackPageContent,
@@ -98,6 +100,255 @@ describe('createTanStackPageRouter', () => {
       }
     },
   );
+
+  it.each([false, true])(
+    'preserves named mount parameters with a custom router %s',
+    async custom => {
+      function Probe() {
+        const params = useParams({ strict: false });
+        const { _splat, '*': splat, ...named } = params;
+        const router = useRouter();
+        return (
+          <>
+            <p>Params: {JSON.stringify(named)}</p>
+            <button onClick={() => router.navigate({ to: './details' })}>
+              Native details
+            </button>
+          </>
+        );
+      }
+      const PageRouter = custom
+        ? createTanStackPageRouter({
+            createRouter: ({ history, routePaths }) => {
+              const root = createRootRoute({ component: Outlet });
+              return createRouter({
+                history,
+                routeTree: root.addChildren(
+                  routePaths.map(path => {
+                    const page = createRoute({
+                      getParentRoute: () => root,
+                      path,
+                      component: () => (
+                        <>
+                          <TanStackPageContent />
+                          <Outlet />
+                        </>
+                      ),
+                    });
+                    return page.addChildren([
+                      createRoute({
+                        getParentRoute: () => page,
+                        path: '$',
+                        component: () => null,
+                      }),
+                    ]);
+                  }),
+                ),
+              });
+            },
+          })
+        : TanStackPageRouter;
+      for (const [mountPath, samples] of [
+        [
+          '/docs/:document.json',
+          [
+            ['/docs/report.json', { document: 'report' }],
+            ['/docs/report.JSON', { document: 'report' }],
+            ['/docs/a%2Fb.json', { document: 'a/b' }],
+            ['/docs/%252F.json', { document: '%2F' }],
+            ['/docs/space%20caf%C3%A9.json/', { document: 'space café' }],
+            ['/docs/report.json/details', { document: 'report' }],
+          ],
+        ],
+        [
+          '/docs/:document.json?',
+          [
+            ['/docs/report.json', { document: 'report' }],
+            ['/docs/report.JSON', { document: 'report' }],
+            ['/docs/a%2Fb.json', { document: 'a/b' }],
+            ['/docs/%252F.json', { document: '%2F' }],
+            ['/docs/.json', {}],
+            ['/docs', {}],
+          ],
+        ],
+        [
+          '/teams/:team?',
+          [
+            ['/teams/otters', { team: 'otters' }],
+            ['/teams', {}],
+          ],
+        ],
+        [
+          '/teams/edit?/:team?/:project?',
+          [
+            ['/teams/otters', { team: 'otters' }],
+            ['/teams/edit/otters', { team: 'otters' }],
+            [
+              '/teams/edit/otters/backstage',
+              { team: 'otters', project: 'backstage' },
+            ],
+            ['/teams/edit', {}],
+            ['/teams', {}],
+          ],
+        ],
+        [
+          '/docs/:document.café',
+          [
+            ['/docs/report.caf%C3%A9', { document: 'report' }],
+            ['/docs/report.CAF%C3%89', { document: 'report' }],
+          ],
+        ],
+        [
+          '/docs/:file-id.json',
+          [
+            ['/docs/report.JSON', { 'file-id': 'report' }],
+            ['/docs/space%20caf%C3%A9.json/', { 'file-id': 'space café' }],
+          ],
+        ],
+        [
+          '/docs/:123id.json?',
+          [
+            ['/docs/report.JSON', { '123id': 'report' }],
+            ['/docs', {}],
+          ],
+        ],
+        [
+          '/docs/:document?.json',
+          [
+            ['/docs/report.JSON', { document: 'report' }],
+            ['/docs/a%2Fb.json', { document: 'a/b' }],
+            ['/docs/%252F.json', { document: '%2F' }],
+            ['/docs.json', {}],
+            ['/docs.JSON/details', {}],
+          ],
+        ],
+        [
+          '/docs/:team?/:document?.json',
+          [
+            [
+              '/docs/otters/report.JSON',
+              { team: 'otters', document: 'report' },
+            ],
+            ['/docs/otters.JSON', { team: 'otters' }],
+            ['/docs.JSON', {}],
+          ],
+        ],
+        [
+          '/docs/:file-id/:123id?',
+          [
+            ['/docs/report/next', { 'file-id': 'report', '123id': 'next' }],
+            ['/docs/report', { 'file-id': 'report' }],
+          ],
+        ],
+      ] as const) {
+        const view = renderInTestApp(
+          <PageRouter>
+            <Probe />
+          </PageRouter>,
+          {
+            mountPath,
+            initialRouteEntries: [samples[0][0]],
+          },
+        );
+        for (const [pathname, params] of samples) {
+          await act(async () => view.appHistory.navigate(pathname));
+          expect(
+            await screen.findByText(`Params: ${JSON.stringify(params)}`),
+          ).toBeInTheDocument();
+        }
+        view.unmount();
+      }
+      const view = renderInTestApp(
+        <PageRouter>
+          <Probe />
+        </PageRouter>,
+        {
+          mountPath: '/docs/:document.json',
+          initialRouteEntries: ['/docs/report.json'],
+        },
+      );
+      await screen.findByText('Params: {"document":"report"}');
+      await act(async () =>
+        screen.getByRole('button', { name: 'Native details' }).click(),
+      );
+      expect(view.appHistory.getSnapshot().location.pathname).toBe(
+        '/docs/report.json/details',
+      );
+      expect(
+        await screen.findByText('Params: {"document":"report"}'),
+      ).toBeInTheDocument();
+      await act(async () =>
+        screen.getByRole('button', { name: 'Native details' }).click(),
+      );
+      expect(view.appHistory.getSnapshot().location.pathname).toBe(
+        '/docs/report.json/details/details',
+      );
+      view.unmount();
+    },
+  );
+
+  it('preserves native serializers, route-template matching and location masks', async () => {
+    let nativeRouter: AnyRouter;
+    const PageRouter = createTanStackPageRouter({
+      createRouter: ({ history, routePaths }) => {
+        const root = createRootRoute({ component: Outlet });
+        const page = createRoute({
+          getParentRoute: () => root,
+          path: `${routePaths[0]}/{$id}/$`,
+          params: {
+            parse: params => ({ ...params, id: Number(params.id) }),
+            stringify: params => ({
+              ...params,
+              id: String(params.id).padStart(3, '0'),
+            }),
+          },
+          component: TanStackPageContent,
+        });
+        nativeRouter = createRouter({
+          history,
+          routeTree: root.addChildren([page]),
+        });
+        return nativeRouter;
+      },
+    });
+    function Probe() {
+      return <p>Location: {useLocation().pathname}</p>;
+    }
+    const view = renderInTestApp(
+      <PageRouter>
+        <Probe />
+      </PageRouter>,
+      {
+        mountPath: '/docs',
+        initialRouteEntries: ['/docs/007/a'],
+      },
+    );
+    await screen.findByText('Location: /docs/007/a');
+    expect(nativeRouter!.matchRoute({ to: '/docs/{$id}/$' })).not.toBe(false);
+    const params = jest.fn(p => p);
+    expect(nativeRouter!.buildLocation({ to: './details', params }).href).toBe(
+      '/docs/007/a/details',
+    );
+    expect(params).toHaveBeenCalledTimes(1);
+    expect(params).toHaveBeenCalledWith(expect.objectContaining({ id: 7 }));
+    const masked = nativeRouter!.parseLocation({
+      ...nativeRouter!.history.location,
+      href: '/docs/pretty',
+      pathname: '/docs/pretty',
+      state: {
+        __TSR_index: 0,
+        __tempLocation: {
+          ...nativeRouter!.history.location,
+          href: '/docs/007/a',
+          pathname: '/docs/007/a',
+          state: { __TSR_index: 0 },
+        },
+      },
+    });
+    expect(masked.pathname).toBe('/docs/007/a');
+    expect(masked.maskedLocation?.pathname).toBe('/docs/pretty');
+    view.unmount();
+  });
 
   it('keeps an optional parent scope outside a matched child during navigation', async () => {
     function ParentProbe() {

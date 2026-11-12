@@ -3,3 +3,7 @@
 ---
 
 Added `TanStackPageRouter` for page-scoped TanStack routing with app-owned history, including `createTanStackPageRouter` and `TanStackPageContent` for plugin-owned route trees; `@tanstack/react-router` and `@tanstack/history` are peer dependencies. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps and the [TanStack page router guide](https://backstage.io/docs/frontend-system/building-plugins/page-routers#use-tanstack-router) for setup, navigation blockers, and custom history requirements.
+
+Use `@tanstack/react-router` version `1.170.0` and `@tanstack/history` version `1.162.0` or later. Mount parameters support literal suffixes, case-insensitive matching, and optional values while preserving their names in native TanStack hooks.
+
+Native relative link hrefs now refresh when the current catch-all value changes, keeping them aligned with imperative navigation.

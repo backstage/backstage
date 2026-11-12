@@ -663,13 +663,17 @@ describe('TanStack + RR v6 coexistence', () => {
           '/catalog-mix/overview/edit',
         );
       });
-      // Native links and BUI keep using the matched page scope.
+      // Relative hrefs refresh when the current catch-all value changes.
       expect(screen.getByTestId('tanstack-pathname').textContent).toBe(
         '/catalog-mix/overview/edit',
       );
       expect(screen.getByTestId('tanstack-below')).toHaveAttribute(
         'href',
-        '/catalog-mix/overview/edit',
+        '/catalog-mix/overview/edit/edit',
+      );
+      expect(screen.getByTestId('tanstack-bui-href')).toHaveAttribute(
+        'href',
+        '/catalog-mix/overview/edit/edit',
       );
     });
 

@@ -17,17 +17,14 @@ TanStack Router is a peer dependency, so install it alongside the adapter:
 
 ```sh
 cd <package-dir> # if within a monorepo
-yarn add @backstage/frontend-adapter-tanstack-router @tanstack/react-router@1.131.2 @tanstack/history@1.131.2
+yarn add @backstage/frontend-adapter-tanstack-router @tanstack/react-router@1.170.0 @tanstack/history@1.162.0
 ```
 
-The adapter pins `@tanstack/react-router` to `1.131.2`, the latest release
-verified to pass strict dependency type checking with React 18 without a
-package patch. Newer releases through `1.170.36` have declaration errors
-in TanStack Router or its router-core dependency.
-
-This issue may already be fixed in a newer TanStack Router release when you read
-this. Check the [latest releases](https://github.com/TanStack/router/releases)
-and the adapter's current peer dependency range before choosing a version.
+The adapter pins `@tanstack/react-router` to `1.170.0`, which supports the
+framework's suffix parameter names, case-insensitive suffix matching, and named
+optional parameters alongside catch-all routes. It passes strict dependency
+type checking with React 18. Newer TanStack releases have declaration errors
+with React 18; check compatibility before changing the pinned version.
 
 ## Usage
 
