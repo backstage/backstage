@@ -109,19 +109,6 @@ export function createExtensionBlueprintParams<T extends object = object>(
   params: T,
 ): ExtensionBlueprintParams<T>;
 
-// @alpha
-export interface DocumentTitleApi {
-  setTitle(options: { segments: string[] }): void;
-}
-
-// @alpha
-export const documentTitleApiRef: ApiRef_2<
-  DocumentTitleApi,
-  'core.document-title'
-> & {
-  readonly $$type: '@backstage/ApiRef';
-};
-
 // @public (undocumented)
 export interface Extension<TConfig, TConfigInput = TConfig> {
   // (undocumented)
@@ -657,9 +644,6 @@ export interface SubRouteRef<
   // (undocumented)
   readonly T: TParams;
 }
-
-// @alpha
-export function usePageTitle(title: string | undefined): void;
 
 // (No @packageDocumentation comment for this package)
 ```

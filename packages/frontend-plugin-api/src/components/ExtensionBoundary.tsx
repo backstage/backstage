@@ -36,6 +36,7 @@ import {
 import { coreExtensionData } from '../wiring';
 import { AppNodeProvider } from './AppNodeProvider';
 import { Progress } from './DefaultSwappableComponents';
+import { useNodeTitle } from '../pageTitle';
 
 function useOptionalErrorApi(): ErrorApi | undefined {
   try {
@@ -77,7 +78,18 @@ const RouteTracker = (props: RouteTrackerProps) => {
 export interface ExtensionBoundaryProps {
   errorPresentation?: 'error-api' | 'error-display';
   node: AppNode;
+  /**
+   * The default document title segment of this extension, for extensions
+   * that are shown as a page or tab of their own. The content can replace it
+   * using {@link usePageTitle}.
+   */
+  title?: string;
   children: ReactNode;
+}
+
+function DefaultPageTitle(props: { node: AppNode; title: string }) {
+  useNodeTitle(props.node, props.title, 'default');
+  return null;
 }
 
 /** @public */
@@ -129,6 +141,7 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
 
   return (
     <AppNodeProvider node={node}>
+      {props.title && <DefaultPageTitle node={node} title={props.title} />}
       <Suspense fallback={<Progress />}>{content}</Suspense>
     </AppNodeProvider>
   );
@@ -139,12 +152,13 @@ export namespace ExtensionBoundary {
   export function lazy(
     appNode: AppNode,
     loader: () => Promise<JSX.Element>,
+    options?: { title?: string },
   ): JSX.Element {
     const ExtensionComponent = reactLazy(() =>
       loader().then(element => ({ default: () => element })),
     );
     return (
-      <ExtensionBoundary node={appNode}>
+      <ExtensionBoundary node={appNode} title={options?.title}>
         <ExtensionComponent />
       </ExtensionBoundary>
     );

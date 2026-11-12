@@ -15,7 +15,6 @@
  */
 
 import { ApiBlueprint, coreApis } from '@backstage/frontend-plugin-api';
-import { documentTitleApiRef } from '@backstage/frontend-plugin-api/alpha';
 import { z } from 'zod/v4';
 import { DefaultDocumentTitleApi } from '../apis/DefaultDocumentTitleApi';
 
@@ -31,7 +30,7 @@ export const DocumentTitleApi = ApiBlueprint.makeWithOverrides({
   factory(originalFactory, { config }) {
     return originalFactory(defineParams =>
       defineParams({
-        api: documentTitleApiRef,
+        api: coreApis.documentTitle,
         deps: { configApi: coreApis.config },
         factory: ({ configApi }) =>
           new DefaultDocumentTitleApi({

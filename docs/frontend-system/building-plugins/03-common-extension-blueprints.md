@@ -23,10 +23,10 @@ To enable sub-pages on a page, you can either omit the `loader` param to use the
 
 Existing pages retain implicit React Router v6 matches. To migrate a page or select another routing library, render its adapter inside the page's lazily loaded component — see [Choose a router for a page](10-page-routers.md).
 
-The page title and the titles of its sub-pages are also used for the browser's document title, one segment for each. To show something more specific, such as the name of the item a page is showing, call `usePageTitle` from within the page or sub-page content. This API is currently in alpha:
+The page title and the titles of its sub-pages are also used for the browser's document title, one segment for each. To show something more specific, such as the name of the item a page is showing, call `usePageTitle` from within the page or sub-page content:
 
 ```tsx
-import { usePageTitle } from '@backstage/frontend-plugin-api/alpha';
+import { usePageTitle } from '@backstage/frontend-plugin-api';
 
 function ItemDetails(props: { item: Item }) {
   usePageTitle(props.item.name);
@@ -35,6 +35,8 @@ function ItemDetails(props: { item: Item }) {
 ```
 
 The title replaces the segment of the page or sub-page that the component is rendered within, and the default comes back when the component is no longer rendered. When called from an extension without a route path of its own, such as a card, it applies to the closest enclosing page. See [Document title](../building-apps/03-built-in-extensions.md#document-title) for how the app formats the final title.
+
+If you write your own blueprint for extensions that are shown as a page or tab, pass the resolved title to the `title` option of `ExtensionBoundary` or `ExtensionBoundary.lazy` to contribute it as the default segment.
 
 ### SubPage - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.SubPageBlueprint.html)
 

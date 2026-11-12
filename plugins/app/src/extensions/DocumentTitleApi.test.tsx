@@ -21,19 +21,36 @@ import {
   PageBlueprint,
   SubPageBlueprint,
   createFrontendPlugin,
+  usePageTitle,
 } from '@backstage/frontend-plugin-api';
-import { usePageTitle } from '@backstage/frontend-plugin-api/alpha';
 import { ConfigReader } from '@backstage/config';
 import { useState } from 'react';
 import { DefaultDocumentTitleApi } from '../apis/DefaultDocumentTitleApi';
 
+function ItemTitle(props: { name: string | undefined }) {
+  usePageTitle(props.name);
+  return null;
+}
+
 function ItemDetails() {
-  const [name, setName] = useState('first-item');
-  usePageTitle(name);
+  const [name, setName] = useState<string | undefined>('first-item');
+  const [shown, setShown] = useState(true);
   return (
-    <button type="button" onClick={() => setName('second-item')}>
-      Rename
-    </button>
+    <>
+      {shown && <ItemTitle name={name} />}
+      <button type="button" onClick={() => setName('second-item')}>
+        Rename
+      </button>
+      <button type="button" onClick={() => setName(undefined)}>
+        Clear
+      </button>
+      <button type="button" onClick={() => setName('')}>
+        Empty
+      </button>
+      <button type="button" onClick={() => setShown(s => !s)}>
+        Toggle
+      </button>
+    </>
   );
 }
 
@@ -168,12 +185,41 @@ describe('DocumentTitleApi', () => {
     await userEvent.click(rename);
     expect(titleSetter).toHaveBeenCalledTimes(writesAfterLoad + 1);
 
+    // Clearing the custom title, or removing the component that sets it,
+    // brings back the default title of the same sub-page
+    await userEvent.click(screen.getByRole('button', { name: 'Clear' }));
+    await waitFor(() =>
+      expect(document.title).toBe('Details | Things | My Portal'),
+    );
+    await userEvent.click(rename);
+    await waitFor(() =>
+      expect(document.title).toBe('second-item | Things | My Portal'),
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Empty' }));
+    await waitFor(() =>
+      expect(document.title).toBe('Details | Things | My Portal'),
+    );
+    await userEvent.click(rename);
+    await waitFor(() =>
+      expect(document.title).toBe('second-item | Things | My Portal'),
+    );
+    const toggle = screen.getByRole('button', { name: 'Toggle' });
+    await userEvent.click(toggle);
+    await waitFor(() =>
+      expect(document.title).toBe('Details | Things | My Portal'),
+    );
+    await userEvent.click(toggle);
+    await waitFor(() =>
+      expect(document.title).toBe('second-item | Things | My Portal'),
+    );
+    const writesBeforeSwitch = titleSetter.mock.calls.length;
+
     await userEvent.click(screen.getByRole('tab', { name: 'Other' }));
     await screen.findByText('Other content');
     await waitFor(() =>
       expect(document.title).toBe('Other | Things | My Portal'),
     );
-    expect(titleSetter).toHaveBeenCalledTimes(writesAfterLoad + 2);
+    expect(titleSetter).toHaveBeenCalledTimes(writesBeforeSwitch + 1);
     titleSetter.mockRestore();
   });
 

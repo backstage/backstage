@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { ReactElement, useMemo } from 'react';
-import { Helmet } from 'react-helmet';
 import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
 import { NotFoundErrorPage } from '@backstage/frontend-plugin-api';
 import { EntityTabsPanel } from './EntityTabsPanel';
@@ -91,7 +90,7 @@ type EntityTabsProps = {
 export function EntityTabs(props: EntityTabsProps) {
   const { routes, groupDefinitions, defaultContentOrder, showIcons } = props;
 
-  const { index, route, element } = useSelectedSubRoute(routes);
+  const { index, element } = useSelectedSubRoute(routes);
 
   const tabs = useMemo(
     () =>
@@ -122,10 +121,7 @@ export function EntityTabs(props: EntityTabsProps) {
         groupDefinitions={groupDefinitions}
         defaultContentOrder={defaultContentOrder}
       />
-      <EntityTabsPanel>
-        <Helmet title={route?.title} />
-        {element ?? <NotFoundErrorPage />}
-      </EntityTabsPanel>
+      <EntityTabsPanel>{element ?? <NotFoundErrorPage />}</EntityTabsPanel>
     </>
   );
 }

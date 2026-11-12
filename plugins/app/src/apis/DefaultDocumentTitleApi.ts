@@ -15,7 +15,7 @@
  */
 
 import { ConfigApi } from '@backstage/frontend-plugin-api';
-import { DocumentTitleApi } from '@backstage/frontend-plugin-api/alpha';
+import { DocumentTitleApi } from '@backstage/frontend-plugin-api';
 
 const DEFAULT_APP_TITLE = 'Backstage';
 

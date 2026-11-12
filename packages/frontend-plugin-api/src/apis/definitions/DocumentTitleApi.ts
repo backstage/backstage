@@ -30,7 +30,7 @@ import { createApiRef } from '../system';
  * Plugins should not call this API directly, but register title segments
  * instead.
  *
- * @alpha
+ * @public
  */
 export interface DocumentTitleApi {
   /**
@@ -48,7 +48,7 @@ export interface DocumentTitleApi {
 /**
  * The {@link ApiRef} of {@link DocumentTitleApi}.
  *
- * @alpha
+ * @public
  */
 export const documentTitleApiRef = createApiRef<DocumentTitleApi>().with({
   id: 'core.document-title',

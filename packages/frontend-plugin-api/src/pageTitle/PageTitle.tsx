@@ -113,8 +113,10 @@ export function useNodeTitle(
  * }
  * ```
  *
- * @alpha
+ * @public
  */
 export function usePageTitle(title: string | undefined): void {
-  useNodeTitle(findRoutableNode(useAppNode()), title, 'custom');
+  const node = useAppNode();
+  // Without a routable node above, the title applies to the closest node
+  useNodeTitle(findRoutableNode(node) ?? node, title, 'custom');
 }

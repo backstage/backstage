@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { AppNode, useApiHolder } from '@backstage/frontend-plugin-api';
-import { documentTitleApiRef } from '@backstage/frontend-plugin-api/alpha';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  AppNode,
+  coreApis,
+  useApiHolder,
+} from '@backstage/frontend-plugin-api';
 import {
   createVersionedContext,
   createVersionedValueMap,
@@ -37,7 +40,7 @@ type ContextMap = {
   1: { register(entry: TitleRecord): Registration };
 };
 
-const PageTitleContext =
+export const PageTitleContext =
   createVersionedContext<ContextMap>('page-title-context');
 
 function getDepth(node: AppNode): number {
@@ -72,12 +75,13 @@ function toSegments(records: TitleRecord[]): string[] {
 /**
  * Collects the page titles registered by the page blueprints, extension
  * boundaries and `usePageTitle` from `@backstage/frontend-plugin-api`, and
- * forwards them to the `DocumentTitleApi` whenever they change.
+ * forwards them to the `DocumentTitleApi` whenever they change. Used by
+ * {@link PageRegistryProvider}.
  *
  * @internal
  */
-export function PageTitleRegistryProvider(props: { children: ReactNode }) {
-  const documentTitleApi = useApiHolder().get(documentTitleApiRef);
+export function usePageTitleRegistry() {
+  const documentTitleApi = useApiHolder().get(coreApis.documentTitle);
   const [records, setRecords] = useState<TitleRecord[]>([]);
 
   // The registry never changes, so the context value is created only once
@@ -125,9 +129,5 @@ export function PageTitleRegistryProvider(props: { children: ReactNode }) {
     documentTitleApi.setTitle({ segments });
   }, [documentTitleApi, records]);
 
-  return (
-    <PageTitleContext.Provider value={value}>
-      {props.children}
-    </PageTitleContext.Provider>
-  );
+  return value;
 }
