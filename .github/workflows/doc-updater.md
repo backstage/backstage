@@ -31,7 +31,7 @@ steps:
       set -euo pipefail
       OUT_DIR=/tmp/gh-aw/agent
       mkdir -p "$OUT_DIR"
-      gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 100 \
+      gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 1000 \
         --json number,title,body,files --jq . > "$OUT_DIR/open-prs.json"
       node - "$OUT_DIR" <<'EOF'
       const fs = require('fs');
@@ -39,7 +39,10 @@ steps:
       const { execFileSync } = require('child_process');
       const outDir = process.argv[2];
       const repo = process.env.GITHUB_REPOSITORY;
-      const prs = JSON.parse(fs.readFileSync(path.join(outDir, 'open-prs.json'), 'utf8'));
+      const dumpPath = path.join(outDir, 'open-prs.json');
+      const prs = JSON.parse(fs.readFileSync(dumpPath, 'utf8'));
+      // Remove the raw dump right away, so contributor-controlled text is not left readable for the agent.
+      fs.unlinkSync(dumpPath);
 
       // Concatenated docs text, used to hint whether a changeset's terms are already documented.
       const skipDirs = new Set(['releases', 'reference', 'references', 'node_modules']);
@@ -239,7 +242,18 @@ safe-outputs:
     title-prefix: '[docs] '
     labels: [documentation, automation]
     draft: true
-    protected-files: blocked
+    protected-files:
+      policy: blocked
+      # Matched by basename. allowed-files below still limits README.md edits to package READMEs.
+      exclude:
+        - README.md
+    allowed-files:
+      - docs/features/**
+      - docs/backend-system/**
+      - docs/frontend-system/**
+      - docs/conf/**
+      - packages/*/README.md
+      - plugins/*/README.md
 
 source: githubnext/agentics/workflows/doc-updater.md@main
 source-sha: '139fa09ef17cde4135e696ff8e7af09bc5ddfa6e'
@@ -297,7 +311,7 @@ Edit the files with the edit tool. Write for adopters in plain language, in the 
 
 ## Step 6. Self-check
 
-- Run `npx prettier --check <edited files>`. Fix any formatting problem it reports.
+- Run `npx --yes prettier@2.8.8 --config packages/cli/config/prettier.json --check <edited files>`. The checkout has no installed dependencies, so the root Prettier config cannot load; this runs the version pinned in `yarn.lock` with the dependency-free config. Fix any formatting problem it reports.
 - Re-check every source reference: run `sed -n '<line>p' <path>` for each one and confirm that the line supports the claim. Fix the reference, or remove the claim and move it to "Needs human review".
 - If `vale` is available on the path, run `node scripts/check-docs-quality.js <edited files>` and fix what it reports. Otherwise, write "Vale: not run" in the pull request body.
 - If the self-check fails and you cannot fix it, do not open the pull request. Call `noop` with the reason.
