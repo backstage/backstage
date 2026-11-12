@@ -29,6 +29,7 @@ import {
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { bucketBoundaries, McpServerSessionAttributes } from '../metrics';
 import { McpServerConfig } from '../config';
+import { toJsonRpcError } from './errorResponse';
 
 export const createStreamableRouter = ({
   mcpService,
@@ -121,11 +122,12 @@ export const createStreamableRouter = ({
       logger.error(err.message);
 
       if (!res.headersSent) {
-        res.status(500).json({
+        const { status, code, message } = toJsonRpcError(err);
+        res.status(status).json({
           jsonrpc: '2.0',
           error: {
-            code: -32603,
-            message: 'Internal server error',
+            code: code,
+            message: message,
           },
           id: null,
         });
