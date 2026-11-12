@@ -31,6 +31,41 @@ describe('WinstonLogger', () => {
     expect(childLogger).toBeInstanceOf(WinstonLogger);
   });
 
+  it('adds a single timestamp to JSON logs in production', () => {
+    const env = jest.replaceProperty(process, 'env', {
+      ...process.env,
+      NODE_ENV: 'production',
+    });
+    try {
+      const mockTransport = new Transport({
+        log: jest.fn(),
+        logv: jest.fn(),
+      });
+
+      const logger = WinstonLogger.create({
+        meta: { service: 'backstage' },
+        transports: [mockTransport],
+      });
+
+      logger.info('hello', { plugin: 'catalog' });
+
+      const info = (mockTransport.log as jest.Mock).mock.calls[0][0];
+      const parsed = JSON.parse(info[MESSAGE]);
+      expect(parsed).toEqual({
+        level: 'info',
+        message: 'hello',
+        plugin: 'catalog',
+        service: 'backstage',
+        timestamp: expect.stringMatching(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
+        ),
+      });
+      expect(info[MESSAGE].match(/"timestamp"/g)).toHaveLength(1);
+    } finally {
+      env.restore();
+    }
+  });
+
   it('should redact and escape regex', () => {
     const mockTransport = new Transport({
       log: jest.fn(),

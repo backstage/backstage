@@ -48,7 +48,7 @@ export const rootLoggerServiceFactory = createServiceFactory({
       level: process.env.LOG_LEVEL || rootLoggerConfig.level || 'info',
       format:
         process.env.NODE_ENV === 'production'
-          ? format.json()
+          ? format.combine(format.timestamp(), format.json())
           : WinstonLogger.colorFormat(),
       transports: [new transports.Console()],
     });

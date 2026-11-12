@@ -250,12 +250,9 @@ describe('MiddlewareFactory', () => {
       await request(app).get('/').expect(200);
 
       expect(logger.info).toHaveBeenCalledWith(
-        expect.stringContaining(
-          '[2024-11-20T00:00:00.000Z] "GET / HTTP/1.1" 200 0 "-" "-"',
-        ),
+        expect.stringContaining('"GET / HTTP/1.1" 200 0 "-" "-"'),
         {
           type: 'incomingRequest',
-          date: '2024-11-20T00:00:00.000Z',
           method: 'GET',
           url: '/',
           status: 200,
@@ -278,11 +275,10 @@ describe('MiddlewareFactory', () => {
 
       expect(logger.info).toHaveBeenCalledWith(
         expect.stringContaining(
-          '[2024-11-20T00:00:00.000Z] "GET / HTTP/1.1" 200 11 "test-referrer" "test-agent"',
+          '"GET / HTTP/1.1" 200 11 "test-referrer" "test-agent"',
         ),
         {
           type: 'incomingRequest',
-          date: '2024-11-20T00:00:00.000Z',
           method: 'GET',
           url: '/',
           status: 200,
