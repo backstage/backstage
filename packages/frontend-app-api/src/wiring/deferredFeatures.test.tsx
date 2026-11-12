@@ -17,6 +17,7 @@
 import { ConfigReader } from '@backstage/config';
 import {
   ApiBlueprint,
+  configApiRef,
   coreExtensionData,
   createApiRef,
   createExtension,
@@ -28,6 +29,7 @@ import {
   createRouteRef,
   FrontendFeature,
   PageBlueprint,
+  useApi,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { act, fireEvent, render, screen } from '@testing-library/react';
@@ -260,7 +262,8 @@ describe('deferred features', () => {
     ).resolves.not.toHaveLength(0);
     missingPage.unmount();
 
-    // A plugin with an API, which can't be added once the app has started
+    // A plugin with an API that isn't in its manifest, which can't be added
+    // once the app has started
     const serviceApiRef = createApiRef<{ name: string }>({
       id: 'plugin.deferred.service',
     });
@@ -281,7 +284,7 @@ describe('deferred features', () => {
     );
     await expect(
       screen.findAllByText(
-        /The deferred 'deferred-pkg' package can't be loaded, it provides the 'api:deferred' API, and plugins that provide APIs can't be deferred/,
+        /The deferred 'deferred-pkg' package can't be loaded, it provides the 'api:deferred' API, which is not in its manifest/,
       ),
     ).resolves.not.toHaveLength(0);
     withApi.unmount();
@@ -482,7 +485,13 @@ describe('deferred features', () => {
           kind: 'host-content',
           attachTo: { id: 'page:host', input: 'contents' },
           disabled: false,
-          element: { data: { 'test.content.title': 'Score tab' } },
+          element: {
+            data: { 'test.content.title': 'Score tab' },
+            configOutputs: {
+              title: { dataRefId: 'test.content.title', type: 'string' },
+            },
+            loadedConfig: ['height'],
+          },
         },
       ],
     };
@@ -496,6 +505,15 @@ describe('deferred features', () => {
       config: new ConfigReader({
         app: {
           routes: { bindings: { 'scored.configuredLink': 'host.root' } },
+          // The stub applies the title, and leaves the height to the real
+          // extension, so the plugin isn't loaded right away
+          extensions: [
+            {
+              'host-content:scored': {
+                config: { title: 'Configured tab', height: 3 },
+              },
+            },
+          ],
         },
       }),
       __internal: { deferredFeatures },
@@ -509,7 +527,7 @@ describe('deferred features', () => {
     // Both the default and the configured external route bindings apply.
     render(app.element);
     await expect(
-      screen.findByRole('heading', { name: 'Score tab' }),
+      screen.findByRole('heading', { name: 'Configured tab' }),
     ).resolves.toBeInTheDocument();
     await expect(
       screen.findByText('Score at /scored host=/ configured=/'),
@@ -520,7 +538,27 @@ describe('deferred features', () => {
     );
   });
 
-  it('should not defer a plugin with an API', () => {
+  it('should load a plugin with an API when the API is first used', async () => {
+    type GreetingApi = { greet(): string };
+    // The consumer uses a synchronous ref, while the stub registers the API
+    // as async, so that it can load the plugin
+    const greetingApiRef = createApiRef<GreetingApi>().with({
+      id: 'test.greeting',
+    });
+    const realPlugin = createRealDeferredPlugin().withOverrides({
+      extensions: [
+        ApiBlueprint.make({
+          params: defineParams =>
+            defineParams({
+              api: greetingApiRef,
+              deps: { config: configApiRef },
+              factory: ({ config }) => ({
+                greet: () => `Hello from ${config.getString('app.title')}`,
+              }),
+            }),
+        }),
+      ],
+    });
     const apiManifest: FrontendFeatureManifest = {
       ...manifest,
       extensions: [
@@ -530,25 +568,39 @@ describe('deferred features', () => {
           kind: 'api',
           attachTo: { id: 'root', input: 'apis' },
           disabled: false,
+          api: { apiRefId: 'test.greeting', deps: { config: 'core.config' } },
         },
       ],
     };
-    expect(() =>
-      prepareSpecializedApp({
-        features: [noSignInAppPlugin],
-        __internal: {
-          deferredFeatures: [
-            {
-              name: 'api-pkg',
-              manifest: apiManifest,
-              load: async () => ({ default: createRealDeferredPlugin() }),
-            },
-          ],
-        },
-      } as CreateSpecializedAppInternalOptions),
-    ).toThrow(
-      "The 'api-pkg' package can't be deferred, it provides the 'api:deferred' API",
-    );
+
+    function Greeting() {
+      return <div>{useApi(greetingApiRef).greet()}</div>;
+    }
+    const eagerPlugin = createFrontendPlugin({
+      pluginId: 'eager',
+      extensions: [
+        PageBlueprint.make({
+          params: { path: '/', loader: async () => <Greeting /> },
+        }),
+      ],
+    });
+
+    const load = jest.fn(async () => ({ default: realPlugin }));
+    const app = prepareSpecializedApp({
+      features: [noSignInAppPlugin, eagerPlugin],
+      config: new ConfigReader({ app: { title: 'the real API' } }),
+      __internal: {
+        deferredFeatures: [{ name: 'api-pkg', manifest: apiManifest, load }],
+      },
+    } as CreateSpecializedAppInternalOptions).finalize();
+    expect(app.errors).toBeUndefined();
+    expect(load).not.toHaveBeenCalled();
+
+    render(app.element);
+    await expect(
+      screen.findByText('Hello from the real API'),
+    ).resolves.toBeInTheDocument();
+    expect(load).toHaveBeenCalledTimes(1);
   });
 
   it('should install deferred features that are passed as features', async () => {
@@ -574,46 +626,54 @@ describe('deferred features', () => {
     expect(load).toHaveBeenCalledTimes(1);
   });
 
-  it('should load a plugin right away if its stub can not apply the config', async () => {
-    const realPlugin = createRealDeferredPlugin();
-    const load = jest.fn(async () => ({ default: realPlugin }));
-    const configuredManifest: FrontendFeatureManifest = {
-      ...manifest,
-      extensions: [
-        ...manifest.extensions,
-        {
-          id: 'host-content:deferred',
-          kind: 'host-content',
-          attachTo: { id: 'app/root', input: 'elements' },
-          disabled: false,
-          element: { data: {} },
-        },
-      ],
-    };
+  // The stub can't apply config that it doesn't map to an output, nor an
+  // empty value, since the build-time analysis assumes values aren't empty
+  it.each([{ other: 'Other' }, { title: '' }])(
+    'should load a plugin right away if its stub can not apply the config %p',
+    async config => {
+      const realPlugin = createRealDeferredPlugin();
+      const load = jest.fn(async () => ({ default: realPlugin }));
+      const configuredManifest: FrontendFeatureManifest = {
+        ...manifest,
+        extensions: [
+          ...manifest.extensions,
+          {
+            id: 'host-content:deferred',
+            kind: 'host-content',
+            attachTo: { id: 'app/root', input: 'elements' },
+            disabled: false,
+            element: {
+              data: {},
+              configOutputs: {
+                title: { dataRefId: 'test.content.title', type: 'string' },
+              },
+            },
+          },
+        ],
+      };
 
-    const app = prepareSpecializedApp({
-      features: [noSignInAppPlugin],
-      config: new ConfigReader({
-        app: {
-          extensions: [
-            { 'host-content:deferred': { config: { title: 'Other' } } },
+      const app = prepareSpecializedApp({
+        features: [noSignInAppPlugin],
+        config: new ConfigReader({
+          app: {
+            extensions: [{ 'host-content:deferred': { config } }],
+          },
+        }),
+        __internal: {
+          deferredFeatures: [
+            { name: 'deferred-pkg', manifest: configuredManifest, load },
           ],
         },
-      }),
-      __internal: {
-        deferredFeatures: [
-          { name: 'deferred-pkg', manifest: configuredManifest, load },
-        ],
-      },
-    } as CreateSpecializedAppInternalOptions).finalize();
+      } as CreateSpecializedAppInternalOptions).finalize();
 
-    // The plugin is loaded without rendering anything
-    await new Promise(resolve => setTimeout(resolve, 0));
-    expect(load).toHaveBeenCalledTimes(1);
-    expect(app.tree.nodes.get('page:deferred')?.spec.plugin.routes).toBe(
-      realPlugin.routes,
-    );
-  });
+      // The plugin is loaded without rendering anything
+      await new Promise(resolve => setTimeout(resolve, 0));
+      expect(load).toHaveBeenCalledTimes(1);
+      expect(app.tree.nodes.get('page:deferred')?.spec.plugin.routes).toBe(
+        realPlugin.routes,
+      );
+    },
+  );
 });
 
 describe('DeferredFeatureController', () => {
@@ -640,7 +700,10 @@ describe('DeferredFeatureController', () => {
     const graft = jest.fn(
       (entry: { manifest: { pluginId: string } }, _loaded: unknown) => {
         const id = entry.manifest.pluginId;
-        return new Map([[`page:${id}`, <div>{id}</div>]]);
+        return {
+          elements: new Map([[`page:${id}`, <div>{id}</div>]]),
+          apiFactories: new Map(),
+        };
       },
     );
     const controller = new DeferredFeatureController({
@@ -701,7 +764,7 @@ describe('DeferredFeatureController', () => {
       if (entry.manifest.pluginId === 'grafted') {
         throw new Error('graft failed');
       }
-      return new Map();
+      return { elements: new Map(), apiFactories: new Map() };
     });
     const controller = new DeferredFeatureController({
       entries: [flaky, broken, grafted],

@@ -15,7 +15,10 @@
  */
 
 import {
+  AnyApiFactory,
+  ApiBlueprint,
   coreExtensionData,
+  createApiRef,
   createExtension,
   createExtensionDataRef,
   createExternalRouteRef,
@@ -66,14 +69,18 @@ const DEFAULT_RETRY_DELAYS_MS = [250, 1000];
 
 /**
  * Adds a loaded plugin to the app, and returns the elements that replace the
- * elements of the stub pages and extensions, keyed by extension ID.
+ * elements of the stub pages and extensions, keyed by extension ID, along
+ * with the factories of the APIs of the plugin, keyed by API ref ID.
  *
  * @internal
  */
 export type DeferredPluginGrafter = (
   entry: DeferredFrontendFeature,
   loadedFeature: unknown,
-) => Map<string, JSX.Element>;
+) => {
+  elements: Map<string, JSX.Element>;
+  apiFactories: Map<string, AnyApiFactory>;
+};
 
 /**
  * Loads deferred plugins on request, one at a time and at most once each, and
@@ -86,6 +93,7 @@ export class DeferredFeatureController {
   readonly #states = new Map<string, DeferredPluginState>();
   readonly #loads = new Map<string, Promise<void>>();
   readonly #elements = new Map<string, JSX.Element>();
+  readonly #apiFactories = new Map<string, AnyApiFactory>();
   readonly #listeners = new Set<() => void>();
   readonly #graft: DeferredPluginGrafter;
   readonly #retryDelaysMs: number[];
@@ -113,6 +121,46 @@ export class DeferredFeatureController {
 
   getElement(extensionId: string): JSX.Element | undefined {
     return this.#elements.get(extensionId);
+  }
+
+  /**
+   * Loads the plugin, and creates one of its APIs with the factory of the
+   * loaded plugin and the dependencies that were resolved for the stub.
+   */
+  async createApi(options: {
+    pluginId: string;
+    apiRefId: string;
+    deps: { [name: string]: string };
+    resolvedDeps: { [name: string]: unknown };
+  }): Promise<unknown> {
+    const { pluginId, apiRefId } = options;
+    await this.load(pluginId);
+    const state = this.getState(pluginId);
+    if (state.status === 'failed') {
+      throw state.error;
+    }
+    const factory = this.#apiFactories.get(apiRefId);
+    if (!factory) {
+      throw new Error(
+        `The '${pluginId}' plugin was loaded, but it doesn't provide the '${apiRefId}' API from its manifest`,
+      );
+    }
+    const deps = Object.entries(factory.deps).map(
+      ([name, ref]) => `${name}:${ref.id}`,
+    );
+    const expectedDeps = Object.entries(options.deps).map(
+      ([name, id]) => `${name}:${id}`,
+    );
+    if (deps.sort().join(',') !== expectedDeps.sort().join(',')) {
+      throw new Error(
+        `The '${apiRefId}' API of the '${pluginId}' plugin depends on [${deps.join(
+          ', ',
+        )}], but its manifest lists [${expectedDeps.join(
+          ', ',
+        )}], so the manifest is likely out of date`,
+      );
+    }
+    return factory.factory(options.resolvedDeps);
   }
 
   subscribe(listener: () => void): () => void {
@@ -151,9 +199,12 @@ export class DeferredFeatureController {
     const load = this.#queue
       .then(async () => {
         const loaded = await this.#loadWithRetries(entry);
-        const elements = this.#graft(entry, loaded?.default);
+        const { elements, apiFactories } = this.#graft(entry, loaded?.default);
         for (const [extensionId, element] of elements) {
           this.#elements.set(extensionId, element);
+        }
+        for (const [apiRefId, factory] of apiFactories) {
+          this.#apiFactories.set(apiRefId, factory);
         }
         this.#setState(pluginId, { status: 'loaded' });
       })
@@ -274,6 +325,22 @@ function parseExtensionId(
 }
 
 /**
+ * A config schema for a single key that accepts any value, since the config
+ * of a stub is validated by the real extension once the plugin has loaded.
+ */
+const anyConfigValueSchema = {
+  '~standard': {
+    version: 1 as const,
+    vendor: 'backstage',
+    validate: (value: unknown) => ({ value }),
+    jsonSchema: {
+      input: () => ({}),
+      output: () => ({}),
+    },
+  },
+};
+
+/**
  * Creates a stub for an extension that renders an element outside of
  * app/routes. It outputs the data recorded in the manifest, and an element
  * that loads the real plugin.
@@ -301,11 +368,24 @@ function createStubElementExtension(options: {
     );
   }
 
+  // Config can replace the value of an output, or add one that the source
+  // code doesn't set.
+  const configOutputs = Object.entries(element.configOutputs ?? {});
+  for (const [, { dataRefId }] of configOutputs) {
+    if (!dataRefs.some(ref => ref.id === dataRefId)) {
+      dataRefs.push(createExtensionDataRef<unknown>().with({ id: dataRefId }));
+    }
+  }
+
   const output: ExtensionDataRef[] = [
     coreExtensionData.reactElement,
-    ...dataRefs,
+    ...dataRefs.map(ref => ref.optional()),
     ...(routeRef ? [coreExtensionData.routeRef] : []),
   ];
+
+  const configSchema = Object.fromEntries(
+    configOutputs.map(([key]) => [key, anyConfigValueSchema]),
+  );
 
   return createExtension({
     kind: options.kind,
@@ -313,19 +393,68 @@ function createStubElementExtension(options: {
     attachTo,
     disabled: extension.disabled,
     output,
-    *factory({ node }) {
+    configSchema,
+    *factory({ node, config }) {
       yield coreExtensionData.reactElement(
         <ExtensionBoundary node={node}>
           {options.createElement()}
         </ExtensionBoundary>,
       );
+      const values = new Map(Object.entries(element.data));
+      for (const [key, { dataRefId }] of configOutputs) {
+        const value = (config as { [key: string]: unknown })[key];
+        if (value !== undefined) {
+          values.set(dataRefId, value);
+        }
+      }
       for (const ref of dataRefs) {
-        yield ref(element.data[ref.id]);
+        if (values.get(ref.id) !== undefined) {
+          yield ref(values.get(ref.id));
+        }
       }
       if (routeRef) {
         yield coreExtensionData.routeRef(routeRef);
       }
     },
+  });
+}
+
+/**
+ * Creates a stub for an API, which loads the plugin when the API is first
+ * used and then creates the API with the factory of the plugin.
+ */
+function createStubApiExtension(options: {
+  extension: FrontendFeatureManifest['extensions'][number];
+  name?: string;
+  pluginId: string;
+  controller: DeferredFeatureController;
+}) {
+  const { extension, pluginId, controller } = options;
+  const api = extension.api!;
+  const deps = Object.fromEntries(
+    Object.entries(api.deps).map(([name, id]) => [
+      name,
+      createApiRef<unknown>().with({ id }),
+    ]),
+  );
+  return ApiBlueprint.make({
+    name: options.name,
+    disabled: extension.disabled,
+    params: defineParams =>
+      defineParams({
+        api: createApiRef<unknown>().with({
+          id: api.apiRefId,
+          loading: 'async',
+        }),
+        deps,
+        factory: resolvedDeps =>
+          controller.createApi({
+            pluginId,
+            apiRefId: api.apiRefId,
+            deps: api.deps,
+            resolvedDeps,
+          }),
+      }),
   });
 }
 
@@ -372,6 +501,12 @@ export function createDeferredPluginStub(
         return [];
       }
       const { kind, name } = parsedId;
+
+      if (extension.api) {
+        return [
+          createStubApiExtension({ extension, name, pluginId, controller }),
+        ];
+      }
 
       if (extension.element && kind !== 'page') {
         return [
@@ -471,22 +606,14 @@ export function createDeferredPlugins(options: {
     if (eagerPlugins.has(manifest.pluginId)) {
       return false;
     }
-    // APIs are created when the app starts, so a plugin that provides one
-    // can't be deferred.
-    const api = manifest.extensions.find(extension => extension.kind === 'api');
-    if (api) {
-      throw new Error(
-        `The '${entry.name}' package can't be deferred, it provides the '${api.id}' API`,
-      );
-    }
     const configuredExtensionId = findDeferredConfigConflict(
       manifest,
       options.extensionParameters,
     );
     if (configuredExtensionId) {
-      // The stub of an element can't apply config, so the plugin is loaded
-      // right after the app has started, which applies the config as soon as
-      // possible.
+      // The stub of an element can't apply this config, so the plugin is
+      // loaded right after the app has started, which applies the config as
+      // soon as possible.
       preloadPluginIds.push(manifest.pluginId);
     }
     return true;
@@ -509,7 +636,7 @@ export function createDeferredPlugins(options: {
     for (const extensionId of skippedExtensionIds) {
       options.collector.report({
         code: 'EXTENSION_IGNORED',
-        message: `The '${extensionId}' extension of the deferred '${entry.manifest.pluginId}' plugin was ignored, because only pages and elements that are attached to a single parent and have an ID of the form '<kind>:${entry.manifest.pluginId}' or '<kind>:${entry.manifest.pluginId}/<name>' can be deferred`,
+        message: `The '${extensionId}' extension of the deferred '${entry.manifest.pluginId}' plugin was ignored, because only pages, elements and APIs that are attached to a single parent and have an ID of the form '<kind>:${entry.manifest.pluginId}' or '<kind>:${entry.manifest.pluginId}/<name>' can be deferred`,
         context: { plugin, extensionId },
       });
     }

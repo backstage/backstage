@@ -15,6 +15,8 @@
  */
 
 import {
+  AnyApiFactory,
+  ApiBlueprint,
   ApiHolder,
   AppNodeSpec,
   AppTree,
@@ -151,15 +153,17 @@ function updateRouteBindings(options: {
  *
  * @remarks
  *
- * The real pages and elements replace the stubs in the app tree and are
- * instantiated, but the rest of the tree keeps its instances. The stub
+ * The real pages, elements and APIs replace the stubs in the app tree and
+ * are instantiated, but the rest of the tree keeps its instances. The stub
  * elements are already rendered by their parents, for example `app/routes`
  * or an entity page, so they render the real elements that are returned from
- * here. A deferred plugin can't provide APIs, since APIs are created when
- * the app starts, so a loaded plugin that provides one fails to load.
+ * here. The stub APIs are already registered, and create the real APIs with
+ * the factories that are returned from here. A loaded plugin that provides an
+ * API that isn't in its manifest fails to load, since APIs can't be added
+ * once the app has started.
  *
- * @returns The current feature list, and the real elements keyed by
- * extension ID.
+ * @returns The current feature list, the real elements keyed by extension
+ * ID, and the real API factories keyed by API ref ID.
  * @internal
  */
 export function graftDeferredPlugin(options: {
@@ -177,7 +181,11 @@ export function graftDeferredPlugin(options: {
   routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef | undefined>;
   routeResolutionApi: RouteResolutionApiProxy;
   appTreeApi: AppTreeApiProxy;
-}): { features: FrontendFeature[]; elements: Map<string, JSX.Element> } {
+}): {
+  features: FrontendFeature[];
+  elements: Map<string, JSX.Element>;
+  apiFactories: Map<string, AnyApiFactory>;
+} {
   const { entry, stub, tree, collector } = options;
   const pluginId = entry.manifest.pluginId;
 
@@ -223,17 +231,19 @@ export function graftDeferredPlugin(options: {
   const existingIds = new Set(
     Array.from(tree.nodes.keys()).filter(id => !stubExtensionIds.has(id)),
   );
-  // APIs are created when the app starts, so they can't be added once the app
-  // is running. This is checked before the tree is changed.
+  // APIs are registered when the app starts, so only the APIs that have a
+  // stub can be added once the app is running. This is checked before the
+  // tree is changed.
   const api = specs.find(
     spec =>
       !spec.disabled &&
       !existingIds.has(spec.id) &&
+      !stubExtensionIds.has(spec.id) &&
       isAttachedTo(spec, APIS_ATTACHMENT),
   );
   if (api) {
     throw new Error(
-      `The deferred '${entry.name}' package can't be loaded, it provides the '${api.id}' API, and plugins that provide APIs can't be deferred. Its manifest is likely out of date.`,
+      `The deferred '${entry.name}' package can't be loaded, it provides the '${api.id}' API, which is not in its manifest. Its manifest is likely out of date.`,
     );
   }
   const graftSpecs = selectGraftableSpecs({
@@ -270,6 +280,7 @@ export function graftDeferredPlugin(options: {
   registerFeatureFlagDeclarationsInHolder(options.apis, [plugin], collector);
 
   const elements = new Map<string, JSX.Element>();
+  const apiFactories = new Map<string, AnyApiFactory>();
   for (const node of newNodes) {
     if (!stubExtensionIds.has(node.spec.id)) {
       continue;
@@ -287,6 +298,12 @@ export function graftDeferredPlugin(options: {
     if (element) {
       elements.set(node.spec.id, element);
     }
+    const apiFactory = instantiated?.instance?.getData(
+      ApiBlueprint.dataRefs.factory,
+    );
+    if (apiFactory) {
+      apiFactories.set(apiFactory.api.id, apiFactory);
+    }
   }
 
   initializePhaseRouting({
@@ -296,5 +313,5 @@ export function graftDeferredPlugin(options: {
     routeRefsById,
   });
 
-  return { features, elements };
+  return { features, elements, apiFactories };
 }

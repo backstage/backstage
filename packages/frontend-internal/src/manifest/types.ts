@@ -32,9 +32,9 @@ export interface FrontendFeatureManifest {
   /**
    * True only when every rule for deferring a plugin passes. A deferrable
    * plugin only provides pages and extensions that output a React element
-   * along with JSON data, and it provides at least one page or element that
-   * loads the plugin when it is rendered. Plugins that provide APIs are never
-   * deferrable.
+   * along with JSON data, and APIs whose implementation is loaded with the
+   * plugin on first use. It provides at least one page or element that loads
+   * the plugin when it is rendered.
    */
   deferrable: boolean;
   /** Why the plugin isn't deferrable, for the CLI report. */
@@ -67,8 +67,9 @@ export interface FrontendExtensionManifest {
   /**
    * Only for extensions that output a React element but aren't pages that
    * attach to app/routes. The stub of such an extension outputs this data
-   * as it was declared in the source code, which means that it can't apply
-   * any config from `app.extensions`.
+   * as the factory of its blueprint outputs it for the params of the
+   * extension, along with the config from `app.extensions` for the keys in
+   * `configOutputs`.
    */
   element?: {
     /**
@@ -78,8 +79,34 @@ export interface FrontendExtensionManifest {
     data: { [dataRefId: string]: unknown };
     /** The key in plugin.routes whose RouteRef the extension outputs. */
     routeRefName?: string;
+    /**
+     * Config keys whose value replaces an output, keyed by config key, as
+     * found by analyzing the factory of the blueprint of the extension. The
+     * analysis assumes that the value isn't empty.
+     */
+    configOutputs?: {
+      [configKey: string]: { dataRefId: string; type?: ManifestValueType };
+    };
+    /**
+     * Config keys that only affect the element, which are applied once the
+     * plugin has loaded.
+     */
+    loadedConfig?: string[];
+  };
+  /**
+   * Only for APIs. The stub of the API loads the plugin when the API is first
+   * used, and then creates the API with the factory of the plugin.
+   */
+  api?: {
+    /** The ID of the API ref. */
+    apiRefId: string;
+    /** The IDs of the API refs that the factory depends on, keyed by name. */
+    deps: { [name: string]: string };
   };
 }
+
+/** The type of a JSON value in a manifest. */
+export type ManifestValueType = 'string' | 'number' | 'boolean' | 'object';
 
 /**
  * A plugin that is only loaded once one of its pages or elements is

@@ -88,6 +88,7 @@ import {
 } from './treeLifecycle';
 import {
   createDeferredPlugins,
+  type DeferredPluginGrafter,
   DeferredFrontendFeature,
 } from './deferredFeatures';
 import { graftDeferredPlugin } from './graftDeferredPlugin';
@@ -552,7 +553,7 @@ export function prepareSpecializedApp(
   function graftDeferred(
     entry: DeferredFrontendFeature,
     loadedFeature: unknown,
-  ): Map<string, JSX.Element> {
+  ): ReturnType<DeferredPluginGrafter> {
     if (!finalized) {
       throw new Error(
         `The deferred '${entry.manifest.pluginId}' plugin can't be loaded before the app is finalized`,
@@ -599,7 +600,7 @@ export function prepareSpecializedApp(
     }
 
     phase.appLifecycleApi.notifyChanged();
-    return result.elements;
+    return { elements: result.elements, apiFactories: result.apiFactories };
   }
 
   const finalization = createFinalizationController({
