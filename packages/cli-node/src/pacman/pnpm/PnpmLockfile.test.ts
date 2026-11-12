@@ -84,14 +84,14 @@ describe('PnpmLockfile', () => {
 
     // Direct dependencies use the specifier as range, transitive ones the version
     expect(lockfile.get('is-number')).toEqual([
-      { range: '6.0.0', version: '6.0.0' },
+      { range: '6.0.0', version: '6.0.0', transitive: true },
       { range: '^7.0.0', version: '7.0.0' },
     ]);
     expect(lockfile.get('is-odd')).toEqual([
       { range: '^3.0.0', version: '3.0.1' },
     ]);
     expect(lockfile.get('loose-envify')).toEqual([
-      { range: '1.4.0', version: '1.4.0' },
+      { range: '1.4.0', version: '1.4.0', transitive: true },
     ]);
     // Optional dependencies
     expect(lockfile.get('kind-of')).toEqual([
@@ -150,7 +150,7 @@ describe('PnpmLockfile', () => {
       { range: 'workspace:packages/b', version: 'link:packages/b' },
     ]);
     expect(unpinned.get('is-number')).toEqual([
-      { range: '6.0.0', version: '6.0.0' },
+      { range: '6.0.0', version: '6.0.0', transitive: true },
       { range: '^7.0.0', version: '7.0.0' },
     ]);
   });
@@ -679,6 +679,7 @@ snapshots:
       {
         range: `git+https://git.example.com/acme/fork-pkg.git#${FORK_COMMIT}`,
         version: '1.5.0',
+        transitive: true,
       },
     ]);
 

@@ -15,7 +15,10 @@
  */
 
 import semver from 'semver';
-import type { PackageManagerLockfile } from '@backstage/cli-node/alpha';
+import type {
+  LockfileEntry,
+  PackageManagerLockfile,
+} from '@backstage/cli-node/alpha';
 
 /* eslint-disable @backstage/no-relative-monorepo-imports */
 /*
@@ -124,22 +127,19 @@ export function createPackageVersionProvider(
   lockfile?: PackageManagerLockfile,
   options?: {
     preferBackstageProtocol?: boolean;
-    /**
-     * Widens a lockfile range that is an exact version to a caret range of it.
-     * pnpm lists packages that are only depended on transitively under their
-     * exact version, and a new package should get a range that keeps the
-     * version that is installed rather than pin it.
-     */
-    widenExactRanges?: boolean;
   },
 ) {
-  // A prerelease version hint stays pinned, like it does without a lockfile
-  const toRange = (range: string, versionHint?: string) =>
-    options?.widenExactRanges &&
-    semver.valid(range) &&
+  // pnpm lists a package that only other packages depend on under the
+  // version it resolved to, and a new package should get a range that keeps
+  // that version rather than pin it. A prerelease version hint stays pinned,
+  // like it does without a lockfile, and so do exact ranges that a
+  // package.json declares.
+  const toRange = (entry: LockfileEntry, versionHint?: string) =>
+    entry.transitive &&
+    semver.valid(entry.range) &&
     !(versionHint && semver.prerelease(versionHint))
-      ? `^${range}`
-      : range;
+      ? `^${entry.range}`
+      : entry.range;
 
   return (name: string, versionHint?: string): string | undefined => {
     const packageVersion = packageVersions[name];
@@ -197,7 +197,7 @@ export function createPackageVersionProvider(
           semver.satisfies(versionHint, entry.range),
         );
         return toRange(
-          (preferred.length ? preferred : highestEntries).slice(-1)[0].range,
+          (preferred.length ? preferred : highestEntries).slice(-1)[0],
           versionHint,
         );
       }
@@ -209,7 +209,7 @@ export function createPackageVersionProvider(
     const highestRange = validRanges?.slice(-1)[0];
 
     if (highestRange?.range) {
-      return toRange(highestRange.range, versionHint);
+      return toRange(highestRange, versionHint);
     }
     if (packageVersion) {
       return `^${packageVersion}`;

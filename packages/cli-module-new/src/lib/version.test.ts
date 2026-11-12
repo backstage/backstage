@@ -16,7 +16,10 @@
 
 import { packageVersions, createPackageVersionProvider } from './version';
 import { YarnLockfile } from '@backstage/cli-node';
-import type { Lockfile } from '@backstage/cli-node/alpha';
+import type {
+  LockfileEntry,
+  PackageManagerLockfile,
+} from '@backstage/cli-node/alpha';
 import corePluginApiPkg from '@backstage/core-plugin-api/package.json';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import fs from 'node:fs';
@@ -172,36 +175,39 @@ describe('createPackageVersionProvider', () => {
     expect(provider('f', '17.2.4')).toBe('^17.2.4');
   });
 
-  it('should widen exact ranges when asked, as pnpm lists transitive packages under their version', async () => {
-    const entries: Record<string, { range: string; version: string }[]> = {
-      '@backstage/errors': [{ range: '1.0.0', version: '1.0.0' }],
+  it('should widen the exact ranges of transitive packages, which pnpm lists under their version', async () => {
+    const entries: Record<string, LockfileEntry[]> = {
+      '@backstage/errors': [
+        { range: '1.0.0', version: '1.0.0', transitive: true },
+      ],
       express: [
-        { range: '4.21.2', version: '4.21.2' },
+        { range: '4.21.2', version: '4.21.2', transitive: true },
         { range: '^4.17.1', version: '4.21.2' },
       ],
-      zod: [{ range: '3.25.76', version: '3.25.76' }],
+      zod: [{ range: '3.25.76', version: '3.25.76', transitive: true }],
       '@material-ui/lab': [
-        { range: '4.0.0-alpha.61', version: '4.0.0-alpha.61' },
+        {
+          range: '4.0.0-alpha.61',
+          version: '4.0.0-alpha.61',
+          transitive: true,
+        },
       ],
       '@backstage/plugin-catalog-node': [
         {
           range: packageVersions['@backstage/plugin-catalog-node'],
           version: packageVersions['@backstage/plugin-catalog-node'],
+          transitive: true,
         },
       ],
+      // A version that a package.json pins on purpose
+      react: [{ range: '18.2.0', version: '18.2.0' }],
     };
     const lockfile = {
       get: (name: string) => entries[name],
-    } as unknown as Lockfile;
-
-    const pinned = createPackageVersionProvider(lockfile);
-    expect(pinned('@backstage/errors', '1.0.0')).toBe('1.0.0');
-    expect(pinned('zod', '3.25.76')).toBe('3.25.76');
+    } as unknown as PackageManagerLockfile;
 
     // The range keeps the installed version, rather than the one of the CLI
-    const provider = createPackageVersionProvider(lockfile, {
-      widenExactRanges: true,
-    });
+    const provider = createPackageVersionProvider(lockfile);
     expect(provider('@backstage/errors', '1.0.0')).toBe('^1.0.0');
     expect(provider('express', '4.17.1')).toBe('^4.17.1');
     expect(provider('zod', '3.25.76')).toBe('^3.25.76');
@@ -214,6 +220,8 @@ describe('createPackageVersionProvider', () => {
     expect(provider('@backstage/plugin-catalog-node')).toBe(
       `^${packageVersions['@backstage/plugin-catalog-node']}`,
     );
+    // An exact range that a package.json declares stays exact
+    expect(provider('react', '18.2.0')).toBe('18.2.0');
   });
 
   describe('with backstage protocol options', () => {
