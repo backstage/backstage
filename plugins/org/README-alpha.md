@@ -11,11 +11,11 @@ This is a plugin that extends the Catalog entity page with some users and groups
 
 Here is a Catalog group page showing the group profile, members, and ownership cards:
 
-![Group Page example](./docs/group-page-example.png)
+![Group Page example](../../docs/assets/software-catalog/group-page-example.png)
 
 And below is an example of how a user page looks with the user profile and ownership cards:
 
-![Group Page example](./docs/user-profile-example.png)
+![Group Page example](../../docs/assets/software-catalog/user-profile-example.png)
 
 ## Table of Content
 
@@ -145,7 +145,7 @@ For more information about where to place extension overrides, see the official 
 
 An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that displays group members with avatars, names, and emails. Clicking a member's name opens the user's catalog page; clicking an email opens your default mail client.
 
-By default, each member avatar uses `member.spec.profile.picture` from the catalog. When that field is empty, the card shows initials. To customize avatar rendering, override the shared `UserAvatar` swappable component (see [README.md](./README.md#useravatar-and-custom-member-avatars)).
+By default, each member avatar uses `member.spec.profile.picture` from the catalog. When that field is empty, the card shows initials. To customize avatar rendering, override the shared `UserAvatar` swappable component (see the official [documentation](https://backstage.io/docs/features/software-catalog/org#custom-member-avatars)).
 
 | Kind          | Namespace | Name           | Id                             |
 | ------------- | --------- | -------------- | ------------------------------ |
@@ -172,7 +172,7 @@ app:
 ```
 
 > [!NOTE]
-> User avatar rendering is **not** configurable through `app-config.yaml`. See [README.md](./README.md#useravatar-and-custom-member-avatars).
+> User avatar rendering is **not** configurable through `app-config.yaml`. See the official [documentation](https://backstage.io/docs/features/software-catalog/org#custom-member-avatars).
 
 #### Override
 
