@@ -1259,6 +1259,9 @@ overrides:
   '@backstage/theme': $@backstage/theme
   '@backstage/plugin-x': 'catalog:'
   '@backstage/plugin-y': '-'
+  '@backstage/theme@>=1.0.0': 1.0.0
+  b@>=1>@backstage/core@<2: 1.0.5
+  'c> @backstage/core': 1.0.5
 `,
     );
     const { warn: warnings } = await withLogCollector(
@@ -1270,7 +1273,7 @@ overrides:
     expect(
       warnings.filter(warning => warning.startsWith('The workspace overrides')),
     ).toEqual([
-      'The workspace overrides @backstage/core, a>@backstage/theme@^1. Overrides take precedence over package.json and the catalogs, so these packages keep the versions that the overrides set. Update or remove the overrides to bump them.',
+      'The workspace overrides @backstage/core, a>@backstage/theme@^1, @backstage/theme@>=1.0.0, b@>=1>@backstage/core@<2, c> @backstage/core. Overrides take precedence over package.json and the catalogs, so these packages keep the versions that the overrides set. Update or remove the overrides to bump them.',
     ]);
   });
 
@@ -1288,6 +1291,15 @@ overrides:
       mockDir.resolve('pnpm-workspace.yaml'),
       workspaceYaml.replace(/# Versions shared[\s\S]*lodash: \^4.0.0\n\n/, ''),
     );
+    // A dependency in more than one field is named once
+    await fs.writeJson(mockDir.resolve('packages/a/package.json'), {
+      name: 'a',
+      dependencies: {
+        '@backstage/core': 'catalog:',
+        '@backstage/theme': 'catalog:backstage-next',
+      },
+      peerDependencies: { '@backstage/core': 'catalog:' },
+    });
     const before = mockDir.content();
 
     await expect(
@@ -1295,7 +1307,7 @@ overrides:
         bump({ args: ['--skip-migrate'], info }),
       ),
     ).rejects.toThrow(
-      'Packages refer to the default catalog, which the workspace does not define. No files were changed.',
+      '@backstage/core in a refers to the default catalog, which the workspace does not define. No files were changed.',
     );
     expect(mockDir.content()).toEqual(before);
     expect(runObj.run).not.toHaveBeenCalled();
@@ -1311,7 +1323,7 @@ overrides:
         bump({ args: ['--skip-migrate'], info }),
       ),
     ).rejects.toThrow(
-      'Packages refer to the backstage-next catalog, which the workspace does not define. No files were changed.',
+      '@backstage/theme in a refers to the backstage-next catalog, which the workspace does not define. No files were changed.',
     );
     expect(mockDir.content()).toEqual(beforeNamed);
   });
