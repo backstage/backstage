@@ -18,39 +18,36 @@ import { OpaqueCliModule } from '@internal/cli';
 import { createCliModule } from './createCliModule';
 
 describe('createCliModule', () => {
-  it('only allows isEnabled on package commands', async () => {
-    const packageModule = createCliModule({
+  it('registers package commands under package, with an optional condition', async () => {
+    const condition = () => true;
+    const module = createCliModule({
       packageJson: { name: '@example/package' },
-      init: async reg => {
-        reg.addCommand({
-          path: ['package', 'test'],
-          description: 'Test the package',
-          isEnabled: () => true,
-          execute: async () => {},
-        });
-      },
-    });
-    await expect(
-      OpaqueCliModule.toInternal(packageModule).commands,
-    ).resolves.toEqual([
-      expect.objectContaining({ path: ['package', 'test'] }),
-    ]);
-
-    const repoModule = createCliModule({
-      packageJson: { name: '@example/repo' },
       init: async reg => {
         reg.addCommand({
           path: ['repo', 'test'],
           description: 'Test the repository',
-          isEnabled: () => true,
+          execute: async () => {},
+        });
+        reg.addPackageCommand({
+          command: ['lint'],
+          description: 'Lint the package',
+          if: condition,
+          execute: async () => {},
+        });
+        reg.addPackageCommand({
+          command: ['test', 'unit'],
+          description: 'Test the package',
           execute: async () => {},
         });
       },
     });
-    await expect(
-      OpaqueCliModule.toInternal(repoModule).commands,
-    ).rejects.toThrow(
-      'Command "repo test" from "@example/repo" sets isEnabled, which is only supported for commands under "package"',
-    );
+
+    const commands = await OpaqueCliModule.toInternal(module).commands;
+    expect(commands).toEqual([
+      expect.objectContaining({ path: ['repo', 'test'] }),
+      expect.objectContaining({ path: ['package', 'lint'], if: condition }),
+      expect.objectContaining({ path: ['package', 'test', 'unit'] }),
+    ]);
+    expect(commands[1]).not.toHaveProperty('command');
   });
 });

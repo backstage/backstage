@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-import { CliCommand, CliModule } from '@backstage/cli-node';
+import { CliCommand, CliModule, CliPackageContext } from '@backstage/cli-node';
 import { OpaqueType } from '@internal/opaque';
+
+/**
+ * A registered command, along with the optional condition set through
+ * `addPackageCommand`.
+ */
+export interface InternalCliCommand extends CliCommand {
+  if?: (context: CliPackageContext) => boolean | Promise<boolean>;
+}
 
 export const OpaqueCliModule = OpaqueType.create<{
   public: CliModule;
   versions: {
     readonly version: 'v1';
     readonly packageName: string;
-    readonly commands: Promise<ReadonlyArray<CliCommand>>;
+    readonly commands: Promise<ReadonlyArray<InternalCliCommand>>;
   };
 }>({
   type: '@backstage/CliModule',

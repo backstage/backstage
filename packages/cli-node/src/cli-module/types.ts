@@ -102,24 +102,6 @@ export interface CliCommand {
    */
   experimental?: boolean;
   /**
-   * An optional predicate that makes the command toggleable per package.
-   * Only allowed for commands whose path starts with `package`.
-   *
-   * Several modules may register the same `package` command path as long as
-   * at most one of them omits `isEnabled`. When the command is invoked, the
-   * predicate of each variant is evaluated against the package at the
-   * current working directory. If exactly one variant is enabled it is run;
-   * if several are enabled an error is thrown. If none are enabled, the
-   * variant without `isEnabled` is run as a fallback, and if there is no
-   * fallback an error is thrown.
-   *
-   * @example
-   * ```
-   * isEnabled: ({ packageJson }) => Boolean(packageJson.devDependencies?.vitest)
-   * ```
-   */
-  isEnabled?: (context: CliPackageContext) => boolean | Promise<boolean>;
-  /**
    * The command implementation, either as a direct function or as a loader
    * that returns the implementation as a default export. The loader form
    * is useful for deferring heavy imports until the command is invoked.
@@ -143,6 +125,36 @@ export interface CliCommand {
           default: (context: CliCommandContext) => Promise<void>;
         }>;
       };
+}
+
+/**
+ * A command that runs in the context of a single package, registered with
+ * `addPackageCommand`. It is available as `backstage-cli package <command>`.
+ *
+ * Several modules may register the same package command as long as at most
+ * one of them omits `if`. When the command is invoked, the `if` condition of
+ * each registration is evaluated against the package at the current working
+ * directory. If exactly one is enabled it is run, and if several are enabled
+ * an error is thrown. If none are enabled, the registration without `if` is
+ * run as a fallback, and if there is no fallback an error is thrown.
+ *
+ * @public
+ */
+export interface CliPackageCommand extends Omit<CliCommand, 'path'> {
+  /**
+   * The command path relative to `package`. For example, `['lint']` maps to
+   * `backstage-cli package lint`.
+   */
+  command: string[];
+  /**
+   * An optional condition that makes the command toggleable per package.
+   *
+   * @example
+   * ```
+   * if: ({ packageJson }) => Boolean(packageJson.devDependencies?.vitest)
+   * ```
+   */
+  if?: (context: CliPackageContext) => boolean | Promise<boolean>;
 }
 
 /**

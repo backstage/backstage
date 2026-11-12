@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { CliCommand, CliModule } from '@backstage/cli-node';
+import { CliModule } from '@backstage/cli-node';
+import type { InternalCliCommand } from './InternalCliModule';
 import { OpaqueType } from '@internal/opaque';
 
 /** @internal */
@@ -46,7 +47,7 @@ export const OpaqueCommandTreeNode = OpaqueType.create<{
  * provided it.
  */
 export interface CommandLeafVariant {
-  readonly command: CliCommand;
+  readonly command: InternalCliCommand;
   readonly module?: CliModule;
 }
 
@@ -58,7 +59,7 @@ export const OpaqueCommandLeafNode = OpaqueType.create<{
     /**
      * All implementations registered for this command path. There is always
      * at least one variant. Multiple variants are only present for toggleable
-     * commands, where at most one variant lacks an `isEnabled` predicate.
+     * commands, where at most one variant lacks an `if` predicate.
      */
     readonly variants: CommandLeafVariant[];
   };

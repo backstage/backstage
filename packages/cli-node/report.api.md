@@ -113,7 +113,6 @@ export interface CliCommand {
         }>;
       };
   experimental?: boolean;
-  isEnabled?: (context: CliPackageContext) => boolean | Promise<boolean>;
   path: string[];
 }
 
@@ -130,6 +129,12 @@ export interface CliCommandContext {
 export interface CliModule {
   // (undocumented)
   readonly $$type: '@backstage/CliModule';
+}
+
+// @public
+export interface CliPackageCommand extends Omit<CliCommand, 'path'> {
+  command: string[];
+  if?: (context: CliPackageContext) => boolean | Promise<boolean>;
 }
 
 // @public
@@ -152,6 +157,7 @@ export function createCliModule(options: {
   };
   init: (registry: {
     addCommand: (command: CliCommand) => void;
+    addPackageCommand: (command: CliPackageCommand) => void;
   }) => Promise<void>;
 }): CliModule;
 

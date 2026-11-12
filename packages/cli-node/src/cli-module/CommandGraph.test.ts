@@ -21,7 +21,7 @@ import {
 } from '@internal/cli';
 import { CommandGraph } from './CommandGraph';
 import { createCliModule } from './createCliModule';
-import type { CliCommand } from './types';
+import type { InternalCliCommand } from '@internal/cli';
 
 const moduleA = createCliModule({
   packageJson: { name: '@example/a' },
@@ -36,7 +36,9 @@ const moduleC = createCliModule({
   init: async () => {},
 });
 
-function packageTest(overrides: Partial<CliCommand> = {}): CliCommand {
+function packageTest(
+  overrides: Partial<InternalCliCommand> = {},
+): InternalCliCommand {
   return {
     path: ['package', 'test'],
     description: 'Test the package',
@@ -54,9 +56,9 @@ function getLeafVariants(graph: CommandGraph) {
 describe('CommandGraph', () => {
   it('collects toggleable variants alongside at most one fallback', () => {
     const graph = new CommandGraph();
-    const toggledA = packageTest({ isEnabled: () => true });
+    const toggledA = packageTest({ if: () => true });
     const fallback = packageTest();
-    const toggledC = packageTest({ isEnabled: () => false });
+    const toggledC = packageTest({ if: () => false });
 
     graph.add(toggledA, moduleA);
     graph.add(fallback, moduleB);
@@ -70,9 +72,9 @@ describe('CommandGraph', () => {
     ]);
   });
 
-  it('rejects a second variant without isEnabled', () => {
+  it('rejects a second variant without if', () => {
     const graph = new CommandGraph();
-    graph.add(packageTest({ isEnabled: () => true }), moduleA);
+    graph.add(packageTest({ if: () => true }), moduleA);
     graph.add(packageTest(), moduleB);
 
     expect(() => graph.add(packageTest(), moduleC)).toThrow(
@@ -83,7 +85,7 @@ describe('CommandGraph', () => {
 
   it('rejects commands nested below a toggleable leaf', () => {
     const graph = new CommandGraph();
-    graph.add(packageTest({ isEnabled: () => true }), moduleA);
+    graph.add(packageTest({ if: () => true }), moduleA);
 
     expect(() =>
       graph.add(packageTest({ path: ['package', 'test', 'deep'] }), moduleB),
@@ -98,7 +100,7 @@ describe('CommandGraph', () => {
     const [packageNode] = graph.roots;
     expect(isCommandNodeHidden(packageNode)).toBe(true);
 
-    graph.add(packageTest({ isEnabled: () => true }), moduleB);
+    graph.add(packageTest({ if: () => true }), moduleB);
     expect(isCommandNodeHidden(packageNode)).toBe(false);
   });
 });

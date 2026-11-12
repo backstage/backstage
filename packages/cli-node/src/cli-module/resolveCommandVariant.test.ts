@@ -21,7 +21,8 @@ import {
   findCliPackageContext,
   resolveCommandVariant,
 } from './resolveCommandVariant';
-import type { CliCommand, CliPackageContext } from './types';
+import type { InternalCliCommand } from '@internal/cli';
+import type { CliPackageContext } from './types';
 
 const context: CliPackageContext = {
   dir: '/repo/packages/foo',
@@ -30,13 +31,13 @@ const context: CliPackageContext = {
 
 function variant(
   moduleName: string,
-  isEnabled?: CliCommand['isEnabled'],
+  condition?: InternalCliCommand['if'],
 ): CommandVariant {
   return {
     command: {
       path: ['package', 'test'],
       description: `Test from ${moduleName}`,
-      isEnabled,
+      if: condition,
       execute: async () => {},
     },
     module: createCliModule({
@@ -48,20 +49,20 @@ function variant(
 
 describe('resolveCommandVariant', () => {
   it('selects the single enabled variant, or the fallback when none are enabled', async () => {
-    const isEnabledA = jest.fn((ctx: CliPackageContext) =>
+    const ifA = jest.fn((ctx: CliPackageContext) =>
       ctx.packageJson.name.endsWith('foo'),
     );
-    const isEnabledB = jest.fn(async () => false);
-    const a = variant('@example/a', isEnabledA);
-    const b = variant('@example/b', isEnabledB);
+    const ifB = jest.fn(async () => false);
+    const a = variant('@example/a', ifA);
+    const b = variant('@example/b', ifB);
     const fallback = variant('@example/fallback');
     const getContext = jest.fn(async () => context);
 
     await expect(
       resolveCommandVariant([fallback, a, b], getContext),
     ).resolves.toBe(a.command);
-    expect(isEnabledA).toHaveBeenCalledWith(context);
-    expect(isEnabledB).toHaveBeenCalledWith(context);
+    expect(ifA).toHaveBeenCalledWith(context);
+    expect(ifB).toHaveBeenCalledWith(context);
 
     await expect(
       resolveCommandVariant([b, fallback], getContext),

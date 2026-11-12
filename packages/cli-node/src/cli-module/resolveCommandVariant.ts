@@ -18,11 +18,12 @@ import { OpaqueCliModule } from '@internal/cli';
 import { ForwardedError, InputError, NotFoundError } from '@backstage/errors';
 import fs from 'fs-extra';
 import { dirname, resolve as resolvePath } from 'node:path';
-import type { CliCommand, CliModule, CliPackageContext } from './types';
+import type { InternalCliCommand } from '@internal/cli';
+import type { CliModule, CliPackageContext } from './types';
 
 /** A single implementation of a command path. */
 export interface CommandVariant {
-  command: CliCommand;
+  command: InternalCliCommand;
   module?: CliModule;
 }
 
@@ -61,21 +62,21 @@ function describeModule(variant: CommandVariant): string {
 /**
  * Selects which variant of a command to run.
  *
- * A single variant without `isEnabled` is returned directly without looking
- * up the package context. Otherwise, the `isEnabled` predicates are evaluated
+ * A single variant without `if` is returned directly without looking
+ * up the package context. Otherwise, the `if` predicates are evaluated
  * against the package context: exactly one enabled variant is selected, more
  * than one is an error, and none falls back to the variant without
- * `isEnabled`, or is an error if there is no fallback.
+ * `if`, or is an error if there is no fallback.
  */
 export async function resolveCommandVariant(
   variants: ReadonlyArray<CommandVariant>,
   getPackageContext: () => Promise<CliPackageContext | undefined>,
-): Promise<CliCommand> {
+): Promise<InternalCliCommand> {
   if (variants.length === 0) {
     throw new Error('Command has no implementations');
   }
-  const fallback = variants.find(v => !v.command.isEnabled);
-  const toggled = variants.filter(v => v.command.isEnabled);
+  const fallback = variants.find(v => !v.command.if);
+  const toggled = variants.filter(v => v.command.if);
   if (toggled.length === 0) {
     return variants[0].command;
   }
@@ -86,7 +87,7 @@ export async function resolveCommandVariant(
   const enabled: CommandVariant[] = [];
   if (context) {
     for (const variant of toggled) {
-      if (await variant.command.isEnabled!(context)) {
+      if (await variant.command.if!(context)) {
         enabled.push(variant);
       }
     }

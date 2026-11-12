@@ -15,6 +15,7 @@
  */
 
 export { OpaqueCliModule } from './InternalCliModule';
+export type { InternalCliCommand } from './InternalCliModule';
 export type {
   CommandNode,
   CommandTreeNode,

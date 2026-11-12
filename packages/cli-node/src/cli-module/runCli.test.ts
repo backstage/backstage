@@ -581,10 +581,10 @@ describe('runCli', () => {
       createCliModule({
         packageJson: { name: '@example/vitest' },
         init: async reg => {
-          reg.addCommand({
-            path: ['package', 'test'],
+          reg.addPackageCommand({
+            command: ['test'],
             description: 'Test with Vitest',
-            isEnabled: usesVitest,
+            if: usesVitest,
             execute: async ({ args }) => {
               calls.push(`vitest ${args.join(' ')}`);
             },
@@ -621,10 +621,10 @@ describe('runCli', () => {
       createCliModule({
         packageJson: { name: '@example/vitest' },
         init: async reg => {
-          reg.addCommand({
-            path: ['package', 'test'],
+          reg.addPackageCommand({
+            command: ['test'],
             description: 'Test with Vitest',
-            isEnabled: () => true,
+            if: () => true,
             execute: async () => {},
           });
         },
@@ -669,10 +669,10 @@ describe('runCli', () => {
         createCliModule({
           packageJson: { name: '@example/vitest' },
           init: async reg => {
-            reg.addCommand({
-              path: ['package', 'test'],
+            reg.addPackageCommand({
+              command: ['test'],
               description: 'Test with Vitest',
-              isEnabled: () => false,
+              if: () => false,
               execute,
             });
           },
