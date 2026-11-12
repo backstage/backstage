@@ -24,6 +24,7 @@ export type {
   AzureDevOpsCredentialKind,
   AzureCredentialBase,
   AzureClientSecretCredential,
+  AzureClientCertificateCredential,
   AzureManagedIdentityCredential,
   AzureManagedIdentityClientAssertionCredential,
   PersonalAccessTokenCredential,
