@@ -38,32 +38,25 @@ export async function command(opts: OptionValues) {
 
   let packages = await PackageGraph.listTargetPackages();
 
-  // Paths in git diffs and at git refs are relative to the root of the
-  // repository
-  const { stdout: gitRootRaw } = await exec('git', [
-    'rev-parse',
-    '--show-toplevel',
-  ]);
-  const gitRoot = gitRootRaw.toString().trim();
-
   let since = '';
   if (opts.since) {
     const { stdout: sinceRaw } = await exec('git', ['rev-parse', opts.since]);
     since = sinceRaw.toString().trim();
-    const { stdout: changedFilesRaw } = await exec('git', [
-      'diff',
-      '--name-only',
-      since,
-    ]);
+    // Lists the changed files relative to the installation root
+    const { stdout: changedFilesRaw } = await exec(
+      'git',
+      ['diff', '--name-only', '--relative', since],
+      { cwd: targetPaths.installationRootDir },
+    );
     const changedFiles = changedFilesRaw.toString().trim();
 
     const changedOpenApiSpecs = changedFiles
       .split('\n')
       .filter(e => e.endsWith(YAML_SCHEMA_PATH))
-      .map(e => resolvePath(gitRoot, e));
+      .map(e => resolvePath(targetPaths.installationRootDir, e));
 
     packages = packages.filter(pkg =>
-      changedOpenApiSpecs.some(e => e.startsWith(`${pkg.dir}/`)),
+      changedOpenApiSpecs.some(e => e.startsWith(`${pkg.dir}${sep}`)),
     );
   }
 
@@ -79,6 +72,15 @@ export async function command(opts: OptionValues) {
     console.log('No OpenAPI spec changes detected.');
     return;
   }
+
+  // Paths at git refs are relative to the root of the repository, so they
+  // get the path of the installation inside the repository in front
+  const { stdout: gitPrefixRaw } = await exec(
+    'git',
+    ['rev-parse', '--show-prefix'],
+    { cwd: targetPaths.installationRootDir },
+  );
+  const gitPrefix = gitPrefixRaw.toString().trim();
 
   const { stdout: currentSha } = await exec('git', ['rev-parse', 'HEAD']);
   const sha = currentSha.toString().trim();
@@ -104,9 +106,7 @@ export async function command(opts: OptionValues) {
       .split(sep)
       .join(posix.sep);
     const baseRef = since || DEFAULT_BASE_REF;
-    const baseSpec = `${baseRef}:${relativePath(gitRoot, specPath)
-      .split(sep)
-      .join(posix.sep)}`;
+    const baseSpec = `${baseRef}:${gitPrefix}${relativeSpecPath}`;
 
     try {
       const { stdout } = await exec(

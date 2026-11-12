@@ -205,6 +205,51 @@ describe('targetPaths', () => {
       'yarn/packages/app/package.json': '{}',
       // A package that is not part of any workspace
       'standalone/package.json': '{}',
+      // Yarn projects inside a pnpm workspace that matches every directory
+      'pnpm-all/pnpm-workspace.yaml': "packages:\n  - '**'\n",
+      'pnpm-all/yarn-lock/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm-all/yarn-lock/yarn.lock': '',
+      'pnpm-all/yarn-lock/packages/a/package.json': '{}',
+      'pnpm-all/yarn-field/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+        packageManager: 'yarn@4.18.1+sha512.abc',
+      }),
+      'pnpm-all/yarn-field/packages/a/package.json': '{}',
+      // A yarn.lock left behind after moving to pnpm doesn't count
+      'pnpm-all/migrated/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+        packageManager: 'pnpm@12.14.0',
+      }),
+      'pnpm-all/migrated/yarn.lock': '',
+      'pnpm-all/migrated/packages/a/package.json': '{}',
+      'pnpm-all/dev-engines/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+        devEngines: { packageManager: [{ name: 'bun' }, { name: 'pnpm' }] },
+      }),
+      'pnpm-all/dev-engines/yarn.lock': '',
+      'pnpm-all/dev-engines/packages/a/package.json': '{}',
+      // A package manager that isn't supported doesn't decide, the lockfiles do
+      'pnpm-all/npm-field/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+        packageManager: 'npm@10.0.0',
+      }),
+      'pnpm-all/npm-field/yarn.lock': '',
+      'pnpm-all/npm-field/packages/a/package.json': '{}',
+      'pnpm-all/both-lockfiles/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm-all/both-lockfiles/yarn.lock': '',
+      'pnpm-all/both-lockfiles/pnpm-lock.yaml': '',
+      'pnpm-all/both-lockfiles/packages/a/package.json': '{}',
+      // A broken pnpm-workspace.yaml above a Yarn project isn't read
+      'broken-pnpm/pnpm-workspace.yaml': 'packages: [\n',
+      'broken-pnpm/yarn/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'broken-pnpm/yarn/yarn.lock': '',
+      'broken-pnpm/yarn/packages/a/package.json': '{}',
     };
     for (const [path, content] of Object.entries(files)) {
       fs.mkdirSync(dirname(resolvePath(tmpDir, path)), { recursive: true });
@@ -328,6 +373,51 @@ describe('targetPaths', () => {
       'pnpm-app/backstage.json',
     );
     expectRoots('yarn/packages/app', 'yarn', 'yarn', 'yarn/backstage.json');
+
+    // A Yarn project is a workspace of its own, even when the patterns of a
+    // pnpm workspace above include it
+    expectRoots(
+      'pnpm-all/yarn-lock/packages/a',
+      'pnpm-all/yarn-lock',
+      'pnpm-all/yarn-lock',
+      'pnpm-all/yarn-lock/backstage.json',
+    );
+    expectRoots(
+      'pnpm-all/yarn-field/packages/a',
+      'pnpm-all/yarn-field',
+      'pnpm-all/yarn-field',
+      'pnpm-all/yarn-field/backstage.json',
+    );
+    expectRoots(
+      'pnpm-all/migrated/packages/a',
+      'pnpm-all',
+      'pnpm-all/migrated',
+      'pnpm-all/migrated/backstage.json',
+    );
+    expectRoots(
+      'pnpm-all/dev-engines/packages/a',
+      'pnpm-all',
+      'pnpm-all/dev-engines',
+      'pnpm-all/dev-engines/backstage.json',
+    );
+    expectRoots(
+      'pnpm-all/npm-field/packages/a',
+      'pnpm-all/npm-field',
+      'pnpm-all/npm-field',
+      'pnpm-all/npm-field/backstage.json',
+    );
+    expectRoots(
+      'pnpm-all/both-lockfiles/packages/a',
+      'pnpm-all',
+      'pnpm-all/both-lockfiles',
+      'pnpm-all/both-lockfiles/backstage.json',
+    );
+    expectRoots(
+      'broken-pnpm/yarn/packages/a',
+      'broken-pnpm/yarn',
+      'broken-pnpm/yarn',
+      'broken-pnpm/yarn/backstage.json',
+    );
 
     // Without a backstage.json, the path points into the installation root
     expectRoots(
