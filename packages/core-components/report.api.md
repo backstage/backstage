@@ -91,13 +91,13 @@ export type AutoLogoutProps = {
   logoutIfDisconnected?: boolean;
 };
 
-// @public
+// @public @deprecated
 export function Avatar(props: AvatarProps): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type AvatarClassKey = 'avatar';
 
-// @public
+// @public @deprecated
 export interface AvatarProps {
   classes?: {
     [key in 'avatar' | 'avatarText']?: string;
@@ -108,7 +108,7 @@ export interface AvatarProps {
   picture?: string;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type BackstageContentClassKey = 'root' | 'stretch' | 'noPadding';
 
 // Warning: (ae-forgotten-export) The symbol "BackstageComponentsNameToClassKey" needs to be exported by the entry point index.d.ts
@@ -120,16 +120,16 @@ export type BackstageOverrides = Overrides & {
   >;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type BoldHeaderClassKey = 'root' | 'title' | 'subheader';
 
-// @public
+// @public @deprecated
 export function BottomLink(props: BottomLinkProps): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type BottomLinkClassKey = 'root' | 'boxTitle' | 'arrow';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type BottomLinkProps = {
   link: string;
   title: string;
@@ -164,10 +164,10 @@ export type CardActionsTopRightClassKey = 'root';
 
 // Warning: (ae-forgotten-export) The symbol "CardTabProps" needs to be exported by the entry point index.d.ts
 //
-// @public
+// @public @deprecated
 export function CardTab(props: PropsWithChildren<CardTabProps>): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type CardTabClassKey = 'root' | 'selected';
 
 // @public (undocumented)
@@ -176,7 +176,7 @@ export function CatalogIcon(props: IconComponentProps): JSX_2.Element;
 // @public (undocumented)
 export function ChatIcon(props: IconComponentProps): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type ClosedDropdownClassKey = 'icon';
 
 // @public
@@ -195,17 +195,17 @@ export interface CodeSnippetProps {
 
 // Warning: (ae-forgotten-export) The symbol "Props_12" needs to be exported by the entry point index.d.ts
 //
-// @public
+// @public @deprecated
 export function Content(props: PropsWithChildren<Props_12>): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "ContentHeaderProps" needs to be exported by the entry point index.d.ts
 //
-// @public
+// @public @deprecated
 export function ContentHeader(
   props: PropsWithChildren<ContentHeaderProps>,
 ): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type ContentHeaderClassKey =
   | 'container'
   | 'leftItemsBox'
@@ -289,10 +289,10 @@ export const coreComponentsTranslationRef: TranslationRef<
   }
 >;
 
-// @public
+// @public @deprecated
 export function CreateButton(props: CreateButtonProps): JSX_2.Element | null;
 
-// @public
+// @public @deprecated
 export type CreateButtonProps = {
   title: string;
 } & Partial<Pick<LinkProps_3, 'to'>>;
@@ -542,18 +542,18 @@ export type ErrorPanelProps = {
   title?: string;
 };
 
-// @public
+// @public @deprecated
 export function FavoriteToggle(props: FavoriteToggleProps): JSX_2.Element;
 
-// @public
+// @public @deprecated
 export function FavoriteToggleIcon(props: {
   isFavorite: boolean;
 }): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type FavoriteToggleIconClassKey = 'icon' | 'iconBorder';
 
-// @public
+// @public @deprecated
 export type FavoriteToggleProps = ComponentProps<typeof IconButton> & {
   id: string;
   title: string;
@@ -636,10 +636,10 @@ export function GroupIcon(props: IconComponentProps): JSX_2.Element;
 // @public
 export function Header(props: PropsWithChildren<Props_13>): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function HeaderActionMenu(props: HeaderActionMenuProps): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type HeaderActionMenuItem = {
   label?: ListItemTextProps['primary'];
   secondaryLabel?: ListItemTextProps['secondary'];
@@ -648,7 +648,7 @@ export type HeaderActionMenuItem = {
   onClick?: (event: MouseEvent_2<HTMLElement>) => void;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type HeaderActionMenuProps = {
   actionItems: HeaderActionMenuItem[];
 };
@@ -667,26 +667,26 @@ export type HeaderClassKey =
 
 // Warning: (ae-forgotten-export) The symbol "Props_5" needs to be exported by the entry point index.d.ts
 //
-// @public
+// @public @deprecated
 export function HeaderIconLinkRow(props: Props_5): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type HeaderIconLinkRowClassKey = 'links';
 
 // Warning: (ae-forgotten-export) The symbol "HeaderLabelProps" needs to be exported by the entry point index.d.ts
 //
-// @public
+// @public @deprecated
 export function HeaderLabel(props: HeaderLabelProps): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type HeaderLabelClassKey = 'root' | 'label' | 'value';
 
 // Warning: (ae-forgotten-export) The symbol "HeaderTabsProps" needs to be exported by the entry point index.d.ts
 //
-// @public
+// @public @deprecated
 export function HeaderTabs(props: HeaderTabsProps): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type HeaderTabsClassKey =
   | 'tabsWrapper'
   | 'defaultTab'
@@ -718,10 +718,10 @@ export type HorizontalScrollGridClassKey =
 // @public
 export type IconComponentProps = ComponentProps<IconComponent>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function IconLinkVertical(input: IconLinkVerticalProps): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type IconLinkVerticalClassKey =
   | 'link'
   | 'disabled'
@@ -731,7 +731,7 @@ export type IconLinkVerticalClassKey =
 
 // Warning: (ae-missing-release-tag) "IconLinkVerticalProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type IconLinkVerticalProps = {
   color?: 'primary' | 'secondary';
   disabled?: boolean;
@@ -769,28 +769,28 @@ export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
 // @public @deprecated
 export function ItemCard(props: ItemCardProps): JSX_2.Element;
 
-// @public
+// @public @deprecated
 export function ItemCardGrid(props: ItemCardGridProps): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type ItemCardGridClassKey = 'root';
 
 // Warning: (ae-forgotten-export) The symbol "styles" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
   children?: ReactNode;
 };
 
-// @public
+// @public @deprecated
 export function ItemCardHeader(props: ItemCardHeaderProps): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type ItemCardHeaderClassKey = 'root';
 
 // Warning: (ae-forgotten-export) The symbol "styles_2" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type ItemCardHeaderProps = Partial<WithStyles<typeof styles_2>> & {
   title?: ReactNode;
   subtitle?: ReactNode;
@@ -816,22 +816,22 @@ export function LinearGauge(props: Props_11): JSX_2.Element | null;
 
 // Warning: (ae-missing-release-tag) "Link" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public @deprecated
 export const Link: (props: LinkProps) => JSX.Element;
 
-// @public
+// @public @deprecated
 export const LinkButton: (props: LinkButtonProps) => JSX.Element;
 
-// @public
+// @public @deprecated
 export type LinkButtonProps = ButtonProps_2 &
   Omit<LinkProps, 'variant' | 'color'>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LinkClassKey = 'visuallyHidden' | 'externalLink';
 
 // Warning: (ae-missing-release-tag) "LinkProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type LinkProps = Omit<LinkProps_2, 'to'> &
   Omit<LinkProps_3, 'to'> & {
     to: string;
@@ -957,18 +957,18 @@ export type OAuthRequestDialogClassKey =
 
 // Warning: (ae-missing-release-tag) "OpenedDropdownClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type OpenedDropdownClassKey = 'icon';
 
 // Warning: (ae-forgotten-export) The symbol "Props_9" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "OverflowTooltip" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function OverflowTooltip(props: Props_9): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "OverflowTooltipClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type OverflowTooltipClassKey = 'container';
 
 // Warning: (ae-forgotten-export) The symbol "Props_15" needs to be exported by the entry point index.d.ts
@@ -1028,10 +1028,10 @@ export function RoutedTabs(props: { routes: SubRoute_2[] }): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "SelectProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function Select(props: SelectProps): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type SelectClassKey =
   | 'formControl'
   | 'label'
@@ -1040,13 +1040,13 @@ export type SelectClassKey =
   | 'checkbox'
   | 'root';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type SelectedItems = string | string[] | number | number[];
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type SelectInputBaseClassKey = 'root' | 'input';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type SelectItem = {
   label: string;
   value: string | number;
@@ -1430,12 +1430,12 @@ export type SubmenuOptions = {
 // Warning: (ae-forgotten-export) The symbol "SubvalueCellProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SubvalueCell" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function SubvalueCell(props: SubvalueCellProps): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "SubvalueCellClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type SubvalueCellClassKey = 'value' | 'subvalue';
 
 // Warning: (ae-forgotten-export) The symbol "SupportButtonProps" needs to be exported by the entry point index.d.ts
@@ -1476,7 +1476,7 @@ export type SupportItemLink = {
 
 // Warning: (ae-missing-release-tag) "Tab" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type Tab = {
   id: string;
   label: string;
@@ -1491,12 +1491,12 @@ export type Tab = {
 // Warning: (ae-forgotten-export) The symbol "Props_17" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "TabbedCard" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function TabbedCard(props: PropsWithChildren<Props_17>): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "TabbedCardClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type TabbedCardClassKey = 'root' | 'indicator';
 
 // Warning: (ae-missing-release-tag) "TabbedLayout" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)

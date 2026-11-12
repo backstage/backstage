@@ -17,7 +17,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { ReactNode } from 'react';
 import { IconLinkVertical, IconLinkVerticalProps } from './IconLinkVertical';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link HeaderIconLinkRow} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type HeaderIconLinkRowClassKey = 'links';
 
 const useStyles = makeStyles(
@@ -44,6 +48,9 @@ type Props = {
  *
  * @public
  *
+ * @deprecated Compose `Link`, `Flex` or `Grid`, and icons using
+ * `@backstage/ui` instead. Keep a navigation landmark around the links
+ * and arrange each icon and label to suit the layout.
  */
 export function HeaderIconLinkRow(props: Props) {
   const { links, children } = props;

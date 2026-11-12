@@ -21,7 +21,11 @@ import { CSSProperties } from 'react';
 import { extractInitials, stringToColor } from './utils';
 import classNames from 'classnames';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link Avatar} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type AvatarClassKey = 'avatar';
 
 const useStyles = makeStyles(
@@ -46,6 +50,8 @@ const useStyles = makeStyles(
  * Properties for {@link Avatar}.
  *
  * @public
+ * @deprecated Use the replacement described in {@link Avatar} instead.
+ * BUI components use their own props and styling contracts.
  */
 export interface AvatarProps {
   /**
@@ -75,6 +81,8 @@ export interface AvatarProps {
  * @remarks
  *
  * Based on https://v4.mui.com/components/avatars/#avatar with some styling adjustment and two-letter initials
+ * @deprecated Use `Avatar` from `@backstage/ui` instead. Rename `displayName` to
+ * `name` and `picture` to `src`, and adapt sizing and styles to the BUI props.
  */
 export function Avatar(props: AvatarProps) {
   const { displayName, picture, customStyles } = props;

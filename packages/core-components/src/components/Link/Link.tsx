@@ -47,7 +47,11 @@ export function isReactRouterBeta(): boolean {
   return !obj.index;
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link Link} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type LinkClassKey = 'visuallyHidden' | 'externalLink';
 
 const useStyles = makeStyles(
@@ -108,6 +112,10 @@ if (originalWindowOpen && !originalWindowOpen.__backstage) {
   window.open = newOpen;
 }
 
+/**
+ * @deprecated Use the replacement described in {@link Link} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type LinkProps = Omit<MaterialLinkProps, 'to'> &
   Omit<RouterLinkProps, 'to'> & {
     to: string;
@@ -239,6 +247,9 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
 
 /**
  * Thin wrapper combining UnstyledLink with material-ui's Link component.
+ * @deprecated Use `Link` from `@backstage/ui` instead. Rename `to` to `href`.
+ * For external links, explicitly set `target` and `rel` and compose any
+ * external-link icon and accessible new-window announcement you need.
  */
 export const Link = forwardRef<any, LinkProps>((props, ref) => {
   return <MaterialLink {...props} ref={ref} component={UnstyledLink} />;
