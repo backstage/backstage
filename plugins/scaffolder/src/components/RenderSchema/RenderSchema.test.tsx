@@ -151,7 +151,7 @@ describe('JSON schema UI rendering', () => {
     return waitFor(() => getRowById(container, rowId));
   };
 
-  const assertBasicSchemaProperties = (
+  const assertBasicSchemaProperties = async (
     q: {
       [P in keyof qt]: BoundFunction<qt[P]>;
     } & { container: HTMLElement },
@@ -164,6 +164,7 @@ describe('JSON schema UI rendering', () => {
       expect(tr).toBeInTheDocument();
 
       const pt = (basic.properties![p] as JSONSchema7).type;
+      await within(tr).findByText(`the ${pt}`);
       const headerCells = within(tr).queryAllByRole('rowheader');
       const dataCells = within(tr).getAllByRole('gridcell');
       const allCells = [...headerCells, ...dataCells];
@@ -249,7 +250,7 @@ describe('JSON schema UI rendering', () => {
     const b = await xp('basic');
     const m = await xp('msvs');
 
-    assertBasicSchemaProperties(
+    await assertBasicSchemaProperties(
       { ...within(b.expansion), container: b.expansion },
       `${id}.basic`,
     );
@@ -302,7 +303,7 @@ describe('JSON schema UI rendering', () => {
       const expanded = await findByTestId('expansion_test');
       expect(expanded).toBeInTheDocument();
 
-      assertBasicSchemaProperties(
+      await assertBasicSchemaProperties(
         { ...within(expanded), container: expanded },
         'test',
       );
@@ -387,7 +388,7 @@ describe('JSON schema UI rendering', () => {
       const rendered = await renderInTestApp(
         <LocalRenderSchema strategy="properties" schema={basic} />,
       );
-      assertBasicSchemaProperties(rendered, 'test');
+      await assertBasicSchemaProperties(rendered, 'test');
     });
     it('enum', async () => {
       const rendered = await renderInTestApp(
@@ -399,7 +400,7 @@ describe('JSON schema UI rendering', () => {
       const rendered = await renderInTestApp(
         <LocalRenderSchema strategy="properties" schema={deep} />,
       );
-      assertDeepSchemaProperties(rendered, 'test');
+      await assertDeepSchemaProperties(rendered, 'test');
     });
     it('require oneOf', async () => {
       const schema: JSONSchema7 = {
