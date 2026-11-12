@@ -20,7 +20,6 @@ import cookieParser from 'cookie-parser';
 import {
   AuditorService,
   AuthService,
-  DatabaseService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
@@ -71,7 +70,7 @@ const revokeOfflineSessionsRequestSchema = z.object({
 
 interface RouterOptions {
   logger: LoggerService;
-  database: DatabaseService;
+  database: AuthDatabase;
   config: RootConfigService;
   discovery: DiscoveryService;
   auth: AuthService;
@@ -81,6 +80,7 @@ interface RouterOptions {
   ownershipResolver?: AuthOwnershipResolver;
   httpAuth: HttpAuthService;
   auditor?: AuditorService;
+  userInfo: UserInfoDatabase;
   offlineAccess?: OfflineAccessService;
 }
 
@@ -91,11 +91,12 @@ export async function createRouter(
     logger,
     config,
     discovery,
-    database: db,
+    database,
     tokenFactoryAlgorithm,
     providerFactories = {},
     httpAuth,
     auditor,
+    userInfo,
     offlineAccess,
   } = options;
 
@@ -104,14 +105,9 @@ export async function createRouter(
   const appUrl = config.getString('app.baseUrl');
   const authUrl = await discovery.getExternalBaseUrl('auth');
   const backstageTokenExpiration = readBackstageTokenExpiration(config);
-  const database = AuthDatabase.create(db);
 
   const keyStore = await KeyStores.fromConfig(config, {
     logger,
-    database,
-  });
-
-  const userInfo = await UserInfoDatabase.create({
     database,
   });
 
