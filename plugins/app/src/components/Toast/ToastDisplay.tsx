@@ -103,13 +103,31 @@ export function ToastDisplay(props: ToastApiMessageDisplayProps) {
         links: toast.links,
       };
 
-      // Use the timeout from the toast message if provided
-      const options = toast.timeout ? { timeout: toast.timeout } : {};
+      // Guard against re-entrant calls when closing from the toast queue
+      let isClosingFromQueue = false;
+
+      // Use the timeout from the toast message if provided, and notify the
+      // ToastApi forwarder when dismissed from the queue (timeout or close button)
+      const options = {
+        ...(toast.timeout ? { timeout: toast.timeout } : {}),
+        onClose: () => {
+          isClosingFromQueue = true;
+          try {
+            toast.close();
+          } finally {
+            isClosingFromQueue = false;
+          }
+        },
+      };
 
       const queueKey = toastQueue.add(content, options);
 
       // When the toast is programmatically closed, remove it from the queue
-      toast.onClose(() => toastQueue.close(queueKey));
+      toast.onClose(() => {
+        if (!isClosingFromQueue) {
+          toastQueue.close(queueKey);
+        }
+      });
     });
 
     return () => subscription.unsubscribe();
