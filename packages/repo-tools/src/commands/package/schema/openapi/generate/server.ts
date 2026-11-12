@@ -27,6 +27,7 @@ import {
   TS_SCHEMA_PATH,
 } from '../../../../../lib/openapi/constants';
 import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
+import { formatFiles } from '../../../../../lib/formatter';
 import { targetPaths } from '@backstage/cli-common';
 import {
   getOpenApiGeneratorKey,
@@ -35,7 +36,10 @@ import {
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
 
-async function generateSpecFile() {
+/**
+ * Writes the router and index files, returning the path of the index file.
+ */
+async function writeSpecFiles() {
   const openapiPath = await getPathToCurrentOpenApiSpec();
   const yaml = loadYaml(await fs.readFile(openapiPath, 'utf8'));
 
@@ -77,14 +81,7 @@ export const createOpenApiRouter = async (
     export * from './generated';`,
   );
 
-  await exec(`yarn backstage-cli package lint`, ['--fix', tsPath, indexFile]);
-  if (
-    await fs.pathExists(targetPaths.resolveRoot('node_modules/.bin/prettier'))
-  ) {
-    await exec(`yarn prettier`, ['--write', tsPath, indexFile], {
-      cwd: targetPaths.rootDir,
-    });
-  }
+  return indexFile;
 }
 
 async function generate(
@@ -146,21 +143,6 @@ async function generate(
     }
   }
 
-  await exec(
-    `yarn backstage-cli package lint --fix ${resolvedOutputDirectory}`,
-    [],
-    {
-      signal: abortSignal?.signal,
-    },
-  );
-
-  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
-  if (prettier) {
-    await exec(`${prettier} --write ${resolvedOutputDirectory}`, [], {
-      signal: abortSignal?.signal,
-    });
-  }
-
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
   fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));
 
@@ -173,7 +155,33 @@ async function generate(
     force: true,
   });
 
-  await generateSpecFile();
+  // The router file is written to the output directory, so all the generated
+  // files are linted and formatted in a single run each.
+  const indexFile = await writeSpecFiles();
+
+  let lintError: Error | undefined;
+  try {
+    await exec(
+      `yarn backstage-cli package lint`,
+      ['--fix', resolvedOutputDirectory, indexFile],
+      { signal: abortSignal?.signal },
+    );
+  } catch (error) {
+    lintError = error;
+  }
+
+  // Format even if linting fails, so that the files are still formatted while
+  // the lint error, which is the one worth reporting, fails the command
+  await formatFiles([resolvedOutputDirectory, indexFile], {
+    signal: abortSignal?.signal,
+  }).catch(error => {
+    if (!lintError) {
+      throw error;
+    }
+  });
+  if (lintError) {
+    throw lintError;
+  }
 }
 
 export async function command(
@@ -185,14 +193,15 @@ export async function command(
     isWatch?: boolean;
   },
   serverAdditionalProperties?: string,
-): Promise<void> {
+): Promise<boolean> {
   try {
     await generate(serverAdditionalProperties, abortSignal);
     console.log(chalk.green('Generated server files.'));
+    return true;
   } catch (err) {
     if (err.name === 'AbortError') {
       console.debug('Server generation aborted.');
-      return;
+      return true;
     }
     if (isWatch) {
       console.log(chalk.red(`Server generation failed:`));
@@ -203,5 +212,6 @@ export async function command(
       console.log(chalk.red(err.message));
       console.log(chalk.red(`OpenAPI server stub generation failed.`));
     }
+    return false;
   }
 }
