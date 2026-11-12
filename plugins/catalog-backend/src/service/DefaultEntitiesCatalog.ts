@@ -428,8 +428,9 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           onEntityIdField: 'final_entities.entity_id',
           knex: this.database,
           // A small page can stop early, so long lists that are not direct
-          // conditions are cheaper to probe per row there
-          smallPage: limit <= SMALL_PAGE_LIMIT,
+          // conditions are cheaper to probe per row there. The count has no
+          // limit and reads every match, so it is never a small page.
+          smallPage: !options?.asSet && limit <= SMALL_PAGE_LIMIT,
         };
         if (options?.asSet && this.useSetFilter(filter)) {
           applySetEntityFilterToQuery(filterOptions);
