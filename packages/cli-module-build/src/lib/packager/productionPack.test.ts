@@ -154,6 +154,70 @@ describe('productionPack', () => {
     });
   });
 
+  it('should write a Backstage manifest for frontend plugins', async () => {
+    const pluginPackageJson = {
+      name: 'test-plugin',
+      version: '1.0.0',
+      backstage: { role: 'frontend-plugin' },
+      files: ['dist'],
+    };
+    mockDir.setContent({
+      plugin: {
+        'package.json': JSON.stringify(pluginPackageJson),
+        src: {
+          'index.ts': `
+            import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+            export default createFrontendPlugin({ pluginId: 'test', extensions: [] });
+          `,
+        },
+        dist: { 'index.esm.js': '' },
+      },
+      library: {
+        'package.json': JSON.stringify({
+          name: 'test-library',
+          version: '1.0.0',
+          backstage: { role: 'web-library' },
+          files: ['dist'],
+        }),
+        src: { 'index.ts': 'export const a = 1;' },
+        dist: { 'index.esm.js': '' },
+      },
+    });
+
+    await productionPack({
+      packageDir: mockDir.resolve('plugin'),
+      targetDir: mockDir.resolve('plugin-target'),
+    });
+    await productionPack({
+      packageDir: mockDir.resolve('library'),
+      targetDir: mockDir.resolve('library-target'),
+    });
+
+    const pluginContent = mockDir.content({
+      path: 'plugin-target',
+      shouldReadAsText: true,
+    }) as { dist: Record<string, string> };
+    const manifest = JSON.parse(pluginContent.dist['backstage-manifest.json']);
+    expect(manifest).toMatchObject({
+      manifestVersion: 1,
+      packageName: 'test-plugin',
+      role: 'frontend-plugin',
+    });
+    expect(manifest.frontend.exposedModules['.']).toMatchObject({
+      type: 'plugin',
+      pluginId: 'test',
+    });
+    expect(
+      mockDir.content({ path: 'library-target', shouldReadAsText: true }),
+    ).toEqual(
+      expect.objectContaining({
+        dist: expect.not.objectContaining({
+          'backstage-manifest.json': expect.anything(),
+        }),
+      }),
+    );
+  });
+
   it('should compile multiple package schemas together', async () => {
     mockDir.setContent({
       a: {

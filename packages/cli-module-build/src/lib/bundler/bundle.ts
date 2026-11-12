@@ -29,6 +29,13 @@ import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import chalk from 'chalk';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { createRuntimeSharedDependenciesEntryPoint } from './moduleFederation';
+import { writeBackstageManifest } from '../frontendManifest/writeBackstageManifest';
+import { BACKSTAGE_MANIFEST_FILE_NAME } from '../frontendManifest/types';
+import {
+  buildDeferredRemotes,
+  DEFERRED_REMOTES_DIR,
+} from './buildDeferredRemotes';
+import { DeferredPackage } from './packageDetection';
 
 // TODO(Rugvip): Limits from CRA, we might want to tweak these though.
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
@@ -56,6 +63,7 @@ export async function buildBundle(options: BuildOptions) {
   };
 
   const configs: Configuration[] = [];
+  let deferredPackages = new Array<DeferredPackage>();
   if (options.moduleFederationRemote) {
     // Package detection is disabled for remote bundles
     configs.push(await createConfig(paths, commonConfigOptions));
@@ -63,6 +71,9 @@ export async function buildBundle(options: BuildOptions) {
     const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
       config: options.fullConfig,
       targetPath: paths.targetPath,
+      async onDeferredPackages(packages) {
+        deferredPackages = packages;
+      },
     });
 
     const moduleFederationSharedDependenciesEntryPoint =
@@ -136,6 +147,38 @@ export async function buildBundle(options: BuildOptions) {
   if (!stats) {
     throw new Error('No stats returned');
   }
+
+  // Written after the build, since the output directory is emptied before it.
+  // The manifest lets apps defer loading the plugins of the remote.
+  if (options.moduleFederationRemote?.backstageManifest) {
+    await fs.writeJson(
+      resolvePath(paths.targetDist, BACKSTAGE_MANIFEST_FILE_NAME),
+      options.moduleFederationRemote.backstageManifest,
+      { spaces: 2 },
+    );
+  } else if (options.moduleFederationRemote) {
+    await writeBackstageManifest({
+      packageDir: paths.targetPath,
+      distDir: paths.targetDist,
+      exposes: options.moduleFederationRemote.exposes ?? {
+        '.': paths.targetEntry,
+      },
+    });
+  }
+  // The remotes are written to the output directory of the app after the
+  // app is built, since the output directory is emptied before the build.
+  if (deferredPackages.length > 0) {
+    await buildDeferredRemotes({
+      packages: deferredPackages,
+      targetDir: resolvePath(paths.targetDist, DEFERRED_REMOTES_DIR),
+      appDir: paths.targetPath,
+      frontendConfig: options.frontendConfig,
+      frontendAppConfigs: options.frontendAppConfigs,
+      fullConfig: options.fullConfig,
+      webpack,
+    });
+  }
+
   const [mainStats, authStats] = stats.stats;
 
   if (statsJsonEnabled) {

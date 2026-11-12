@@ -33,13 +33,17 @@
   },
   "dependencies": {
     "@backstage/config": "workspace:^",
+    "@backstage/filter-predicates": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/module-federation-common": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@backstage/version-bridge": "workspace:^",
     "@module-federation/enhanced": "~2.9.0",
     "@module-federation/runtime": "~2.9.0",
     "@module-federation/sdk": "~2.9.0",
     "cross-fetch": "^4.0.0",
-    "uri-template": "^2.0.0"
+    "uri-template": "^2.0.0",
+    "use-sync-external-store": "^1.7.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

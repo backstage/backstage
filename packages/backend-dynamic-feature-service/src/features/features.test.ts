@@ -716,6 +716,21 @@ Require stack:
             name: 'backstage__plugin_test',
             type: 'global',
           },
+          // Read from the backstage-manifest.json file next to the manifest
+          frontendManifest: {
+            manifestVersion: 1,
+            exposedModules: {
+              '.': {
+                manifestVersion: 1,
+                type: 'plugin',
+                pluginId: 'test',
+                deferrable: true,
+                routes: [],
+                externalRoutes: [],
+                extensions: [],
+              },
+            },
+          },
         },
       ]);
       expect(mockedTransport.logs).toContainEqual(

@@ -29,6 +29,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import {
   createExtensionDataContainer,
+  OpaqueDeferredFrontendFeature,
   OpaqueFrontendPlugin,
 } from '@internal/frontend';
 import { OpaqueType } from '@internal/opaque';
@@ -85,6 +86,11 @@ import {
   createBootstrapApp,
   prepareFinalizedTree,
 } from './treeLifecycle';
+import {
+  createDeferredPlugins,
+  DeferredFrontendFeature,
+} from './deferredFeatures';
+import { graftDeferredPlugin } from './graftDeferredPlugin';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -270,6 +276,13 @@ export interface CreateSpecializedAppInternalOptions
      * afterwards.
      */
     onDispose?(dispose: () => void): void;
+
+    /**
+     * Plugins that start out as stubs built from their manifests, and are
+     * loaded the first time one of their pages is rendered. A plugin that is
+     * also in `features` is used from there instead.
+     */
+    deferredFeatures?: DeferredFrontendFeature[];
   };
 }
 
@@ -289,11 +302,42 @@ export function prepareSpecializedApp(
 ): PreparedSpecializedApp {
   const internalOptions = options as CreateSpecializedAppInternalOptions;
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
-  const features = deduplicateFeatures(options?.features ?? []).map(
-    createPluginInfoAttacher(config, options?.advanced?.pluginInfoResolver),
+  const attachPluginInfo = createPluginInfoAttacher(
+    config,
+    options?.advanced?.pluginInfoResolver,
   );
+  // Feature loaders can provide plugins that are deferred, such as the
+  // plugins of module federation remotes, which are installed as stubs.
+  const allFeatures = options?.features ?? [];
+  const eagerFeatures = deduplicateFeatures(
+    allFeatures.filter(
+      feature => !OpaqueDeferredFrontendFeature.isType(feature),
+    ),
+  );
+  const deferredEntries: DeferredFrontendFeature[] = [
+    ...(internalOptions?.__internal?.deferredFeatures ?? []),
+    ...allFeatures.filter(OpaqueDeferredFrontendFeature.isType).map(feature => {
+      const { name, manifest, load } =
+        OpaqueDeferredFrontendFeature.toInternal(feature);
+      return { name, manifest, load };
+    }),
+  ];
 
   const collector = createErrorCollector();
+  const extensionParameters = readAppExtensionsConfig(config);
+
+  const deferred = createDeferredPlugins({
+    entries: deferredEntries,
+    eagerFeatures,
+    extensionParameters,
+    attachPluginInfo,
+    collector,
+    graft: graftDeferred,
+  });
+  let features = [
+    ...eagerFeatures.map(attachPluginInfo),
+    ...deferred.stubs.values(),
+  ];
 
   const tree = resolveAppTree(
     'root',
@@ -302,7 +346,7 @@ export function prepareSpecializedApp(
       builtinExtensions: [
         resolveExtensionDefinition(Root, { namespace: 'root' }),
       ],
-      parameters: readAppExtensionsConfig(config),
+      parameters: extensionParameters,
       forbidden: new Set(['root']),
       collector,
     }),
@@ -382,6 +426,7 @@ export function prepareSpecializedApp(
   });
 
   let finalized: FinalizedSpecializedApp | undefined;
+  let finalizedPredicateContext: ExtensionPredicateContext | undefined;
   let bootstrapApp: BootstrapSpecializedApp | undefined;
   const signInRuntime: SignInRuntime = { requiresSignIn: false };
 
@@ -456,6 +501,9 @@ export function prepareSpecializedApp(
   function finalizeWithSessionState(
     finalizedSessionState: SpecializedAppSessionState,
   ) {
+    finalizedPredicateContext = OpaqueSpecializedAppSessionState.toInternal(
+      finalizedSessionState,
+    ).predicateContext;
     return finalizeFromSessionState({
       finalized,
       finalizedSessionState,
@@ -495,6 +543,63 @@ export function prepareSpecializedApp(
   function setFinalized(finalizedApp: FinalizedSpecializedApp) {
     finalized = finalizedApp;
     phase.appLifecycleApi.markFinalized();
+    for (const pluginId of deferred.preloadPluginIds) {
+      deferred.controller.load(pluginId);
+    }
+  }
+
+  // Adds a loaded deferred plugin to the finalized app, in place of its stub.
+  function graftDeferred(
+    entry: DeferredFrontendFeature,
+    loadedFeature: unknown,
+  ): Map<string, JSX.Element> {
+    if (!finalized) {
+      throw new Error(
+        `The deferred '${entry.manifest.pluginId}' plugin can't be loaded before the app is finalized`,
+      );
+    }
+    const stub = deferred.stubs.get(entry.manifest.pluginId);
+    if (!stub) {
+      throw new Error(
+        `No stub exists for the deferred '${entry.manifest.pluginId}' plugin`,
+      );
+    }
+
+    const graftCollector = createErrorCollector();
+    const result = graftDeferredPlugin({
+      entry,
+      loadedFeature,
+      stub,
+      features,
+      attachPluginInfo,
+      tree,
+      config,
+      apis: phase.apis,
+      collector: graftCollector,
+      extensionFactoryMiddleware: mergedExtensionFactoryMiddleware,
+      predicateContext: finalizedPredicateContext,
+      routeBindings,
+      routeResolutionApi: phase.routeResolutionApi,
+      appTreeApi: phase.appTreeApi,
+    });
+    features = result.features;
+
+    const errors = graftCollector.collectErrors();
+    if (errors) {
+      // The app has already started, so these can only be reported as
+      // warnings, the same way as for recoverable startup errors.
+      // eslint-disable-next-line no-console
+      console.warn(
+        `Loading the deferred '${
+          entry.manifest.pluginId
+        }' plugin encountered warnings:\n${errors
+          .map(error => `${error.code}: ${error.message}`)
+          .join('\n')}`,
+      );
+    }
+
+    phase.appLifecycleApi.notifyChanged();
+    return result.elements;
   }
 
   const finalization = createFinalizationController({

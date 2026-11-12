@@ -47,6 +47,41 @@ Feature discovery requires that your app is built using the `@backstage/cli`, wh
 
 For more details on how feature discovery works under the hood, see the [Feature Discovery](../architecture/10-app.md#feature-discovery) architecture documentation.
 
+### Deferred loading
+
+:::note
+Deferred loading is experimental, and the details described here may change.
+:::
+
+You can let the app load discovered plugins on demand, rather than loading them all before the app starts. The plugins are then loaded in the same way as [deferred module federation remotes](./07-module-federation.md#deferred-loading), so your app must install the `dynamicFrontendFeaturesLoader` and your backend must include the dynamic features service, see [Module federation](./07-module-federation.md). Enable this by setting `app.experimental.deferredPackages` together with `app.packages` and `app.experimental.deferredRemotes`:
+
+```yaml title="app-config.yaml"
+app:
+  packages: all
+  experimental:
+    deferredPackages: true
+    deferredRemotes: true
+```
+
+When you build or start the app, the CLI leaves each package whose plugins support deferred loading out of the app bundle, and builds it as a module federation remote in the `dist/remotes` folder of your app instead. The dynamic features backend lists these remotes in its `/remotes` endpoint together with your dynamic plugins, as long as `app.packageName` names your app package and the backend can resolve that package. The app then loads a plugin from its remote the first time one of its pages is visited or one of its elements is rendered.
+
+Whether a plugin supports deferred loading is decided by analyzing its source code, see [Deferred loading](../building-plugins/01-index.md#deferred-loading). Plugins in your workspace are analyzed when you build or start the app. Plugins that you install from npm must include the `dist/backstage-manifest.json` file that is written when they are packed for publishing, otherwise they are bundled with the app. A package is only built as a remote if all of its plugins and modules support deferred loading. When you build or start the app, the CLI prints which packages are built as remotes and why the others are not. During `yarn start`, the remotes are built once when the app starts, so you need to restart the app to pick up changes to a deferred plugin.
+
+To always bundle some plugins with the app, list their packages in `exclude`:
+
+```yaml title="app-config.yaml"
+app:
+  packages: all
+  experimental:
+    deferredPackages:
+      exclude:
+        - '@backstage/plugin-catalog'
+```
+
+A plugin that you pass to `createApp` in the `features` option is used instead of a deferred plugin with the same plugin ID. If you pass a module for a deferred plugin, that plugin is loaded together with the app so that the module applies to it.
+
+If you have any config in `app.extensions` for an element of a deferred plugin, such as a sub-page, the plugin is loaded right after the app has started, since the config can only be applied once the plugin is loaded. Config for the pages of a plugin does not have this effect. Plugins that provide utility APIs are always loaded together with the app.
+
 ## Manual installation
 
 If your app does not have [feature discovery](#feature-discovery) enabled, or if you need more control over the plugin installation, you can install plugins manually. This is done by importing the plugin and passing it to `createApp`:

@@ -60,6 +60,9 @@ When building a plugin as a module federation remote, the CLI:
 2. Produces the bundle assets in the `dist` folder, including:
    - a `mf-manifest.json` file which contains the module federation manifest
    - a `remoteEntry.js` file which is the main entrypoint for the remote module
+   - a `backstage-manifest.json` file which describes the frontend plugins and modules that the remote exposes, which lets an app [defer loading them](#deferred-loading)
+
+The `package bundle` command builds frontend plugins the same way, so its output includes these files too.
 
 ## Runtime Usage
 
@@ -160,6 +163,38 @@ export default app.createRoot();
 Note that, on top of the standard API, we plan to provide a more simplified way to configure module federation remotes.
 
 Additionally, the [`dynamicFrontendFeaturesLoader`](https://github.com/backstage/backstage/blob/master/packages/frontend-dynamic-feature-loader/src/loader.ts) provided in the [`@backstage/frontend-dynamic-feature-loader`](https://github.com/backstage/backstage/blob/master/packages/frontend-dynamic-feature-loader/README.md) package, which provides an integrated solution to load module federation remotes as dynamic frontend plugins, is a more complete example of a feature loader based on the module federation support.
+
+## Deferred loading
+
+:::note
+Deferred loading is experimental, and the details described here may change.
+:::
+
+An app that loads remotes with the `dynamicFrontendFeaturesLoader` can defer loading the plugins of the remotes until they are used, rather than loading all of them before the app starts. This is enabled with the `app.experimental.deferredRemotes` config:
+
+```yaml title="app-config.yaml"
+app:
+  experimental:
+    deferredRemotes: true
+```
+
+The app then installs a stand-in for each plugin that supports deferred loading, and loads the exposed module of the plugin from its remote the first time one of its pages is visited or one of its elements is rendered. If loading the module fails, for example because of a network error, it is retried a couple of times before an error is shown.
+
+Whether a plugin supports deferred loading is decided when its remote is built, by analyzing its source code. The result is written to the `backstage-manifest.json` file of the remote, which the dynamic features backend serves together with the remote. See [Deferred loading](../building-plugins/01-index.md#deferred-loading) for which plugins can be deferred. Remotes without this file, modules, and plugins that can't be deferred are loaded before the app starts, as before.
+
+To always load the plugins of some remotes before the app starts, list their package names in `exclude`:
+
+```yaml title="app-config.yaml"
+app:
+  experimental:
+    deferredRemotes:
+      exclude:
+        - '@internal/plugin-my-plugin'
+```
+
+A plugin that you pass to `createApp` in the `features` option is used instead of a deferred plugin with the same plugin ID. If you pass a module for a deferred plugin, that plugin is loaded before the app starts so that the module applies to it.
+
+If you have any config in `app.extensions` for an element of a deferred plugin, such as a sub-page, the plugin is loaded right after the app has started, since the config can only be applied once the plugin is loaded. Config for the pages of a plugin does not have this effect.
 
 ## Default Shared Dependencies
 

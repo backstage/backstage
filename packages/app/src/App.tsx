@@ -15,6 +15,7 @@
  */
 
 import { createApp } from '@backstage/frontend-defaults';
+import { dynamicFrontendFeaturesLoader } from '@backstage/frontend-dynamic-feature-loader';
 import { pagesPlugin } from './examples/pagesPlugin';
 import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
@@ -97,6 +98,7 @@ const app = createApp({
     appModuleHome,
     appModuleScaffolder,
     ...collectedLegacyPlugins,
+    dynamicFrontendFeaturesLoader(),
   ],
   advanced: {
     pluginInfoResolver,

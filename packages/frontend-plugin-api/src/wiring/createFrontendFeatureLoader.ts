@@ -122,7 +122,9 @@ function isFeatureOrLoader(
     return (
       obj.$$type === '@backstage/FrontendPlugin' ||
       obj.$$type === '@backstage/FrontendModule' ||
-      obj.$$type === '@backstage/FrontendFeatureLoader'
+      obj.$$type === '@backstage/FrontendFeatureLoader' ||
+      // A plugin that the app installs as a stand-in, and loads on demand
+      obj.$$type === '@backstage/DeferredFrontendFeature'
     );
   }
   return false;
