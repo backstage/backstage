@@ -162,7 +162,7 @@ module.exports = { hooks: {} };
     });
   });
 
-  it('optionally fails when a pnpmfile loads a package that the target does not find', async () => {
+  it('optionally warns when a pnpmfile seems to load a package that the target does not find', async () => {
     const pnpmfile = `const fs = require('node:fs');
 const path = require('path');
 const semver = require('semver');
@@ -174,12 +174,18 @@ console.log('removed from "dependencies"');
 module.exports = { hooks: {} };
 `;
     mockDir.setContent({ 'project/.pnpmfile.cjs': pnpmfile, target: {} });
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     await expect(copy({})).resolves.toMatchObject({
       files: ['.pnpmfile.cjs'],
     });
-    await expect(copy({}, true)).rejects.toThrow(
-      'The pnpmfile .pnpmfile.cjs loads semver, @scope/pkg, which is not installed where the target is written. Write the target inside the project, or remove the import from the pnpmfile.',
+    expect(warn).not.toHaveBeenCalled();
+    await expect(copy({}, true)).resolves.toMatchObject({
+      files: ['.pnpmfile.cjs'],
+    });
+    expect(warn).toHaveBeenCalledWith(
+      'The pnpmfile .pnpmfile.cjs seems to load semver, @scope/pkg, which is not installed where the target is written. If pnpm fails to load the pnpmfile, write the target inside the project, or remove the import from the pnpmfile.',
     );
+    warn.mockClear();
 
     // Packages are found in the node_modules of any parent directory
     mockDir.setContent({
@@ -190,5 +196,7 @@ module.exports = { hooks: {} };
     await expect(copy({}, true)).resolves.toMatchObject({
       files: ['.pnpmfile.cjs'],
     });
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
   });
 });
