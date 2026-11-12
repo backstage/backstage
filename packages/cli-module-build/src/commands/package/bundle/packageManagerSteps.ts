@@ -310,20 +310,58 @@ const PNPM_SETTINGS_WITHOUT_EFFECT_ON_BUNDLE = new Set([
 // Lines of an .npmrc file that pick the registry of all or of scoped packages
 const NPMRC_REGISTRY_PATTERN = /^\s*(@[^\s:=]+:)?registry\s*=/;
 
-// The user and password in a URL
-const URL_CREDENTIALS_PATTERN = /(:\/\/)[^/@\s]*@/;
+// The user and password in a URL that can't be parsed, up to the last `@`
+// before the path
+const URL_CREDENTIALS_PATTERN = /(:\/\/)[^/?#\s]*@/;
 
-// Removes the credentials from the URLs in a registry setting
+// A `${VAR}` placeholder, which pnpm doesn't expand in the registry settings
+// of a project
+const ENV_PLACEHOLDER_PATTERN = /\$\{[^}]*\}/;
+
+/**
+ * Removes what may be a credential from a registry URL: the user and the
+ * password, and the query string, which some registries take a token in.
+ * pnpm keeps its metadata cache of a registry by the rest of the URL, so the
+ * offline steps still find it. The path is kept, since it is part of the
+ * registry.
+ *
+ * Returns undefined for a URL with a `${VAR}` placeholder. pnpm ignores such
+ * a project setting, so the source project used another registry, and the
+ * URL without its credentials and placeholders would point the bundle at a
+ * registry that the source didn't use.
+ */
+function stripCredentialsFromUrl(url: string): string | undefined {
+  if (ENV_PLACEHOLDER_PATTERN.test(url)) {
+    return undefined;
+  }
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return url.replace(URL_CREDENTIALS_PATTERN, '$1');
+  }
+  if (!parsed.username && !parsed.password && !parsed.search) {
+    return url;
+  }
+  parsed.username = '';
+  parsed.password = '';
+  parsed.search = '';
+  parsed.hash = '';
+  return parsed.toString();
+}
+
+// Removes the credentials from the URLs in a registry setting, and leaves out
+// the URLs that pnpm ignores
 function stripUrlCredentials(value: unknown): unknown {
   if (typeof value === 'string') {
-    return value.replace(URL_CREDENTIALS_PATTERN, '$1');
+    return stripCredentialsFromUrl(value);
   }
   if (value && typeof value === 'object' && !Array.isArray(value)) {
     return Object.fromEntries(
-      Object.entries(value).map(([key, entry]) => [
-        key,
-        stripUrlCredentials(entry),
-      ]),
+      Object.entries(value).flatMap(([key, entry]) => {
+        const stripped = stripUrlCredentials(entry);
+        return stripped === undefined ? [] : [[key, stripped]];
+      }),
     );
   }
   return value;
@@ -437,27 +475,58 @@ const pnpmSteps: BundlePackageManagerSteps = {
     if (await fs.pathExists(npmrcPath)) {
       const registryLines = (await fs.readFile(npmrcPath, 'utf8'))
         .split(/\r?\n/)
-        .filter(line => NPMRC_REGISTRY_PATTERN.test(line));
+        .filter(line => NPMRC_REGISTRY_PATTERN.test(line))
+        .flatMap(line => {
+          const separator = line.indexOf('=');
+          // Like pnpm, a value ends at a `#` or `;` comment
+          const url = stripCredentialsFromUrl(
+            line
+              .slice(separator + 1)
+              .replace(/[#;].*$/, '')
+              .trim(),
+          );
+          return url === undefined
+            ? []
+            : [`${line.slice(0, separator).trim()}=${url}`];
+        });
       if (registryLines.length > 0) {
         await fs.writeFile(
           joinPath(targetDir, '.npmrc'),
-          `${registryLines
-            .map(line => line.trim().replace(URL_CREDENTIALS_PATTERN, '$1'))
-            .join('\n')}\n`,
+          `${registryLines.join('\n')}\n`,
         );
       }
     }
   },
 
-  async readRootOverrides({ rootDir }) {
+  async readRootOverrides({ rootDir, rootPkg }) {
     const { overrides } = await readPnpmWorkspaceConfig(rootDir);
     if (!overrides || typeof overrides !== 'object') {
       return undefined;
     }
+    // pnpm resolves a `$name` reference from the dependencies of the root
+    // package.json, which the bundle doesn't have, so it is resolved here
+    const rootDependencies: Record<string, string> = {
+      ...rootPkg.devDependencies,
+      ...rootPkg.dependencies,
+      ...rootPkg.optionalDependencies,
+    };
     return Object.fromEntries(
-      Object.entries(overrides).filter(
-        ([, value]) => typeof value === 'string',
-      ),
+      Object.entries(overrides)
+        .filter((entry): entry is [string, string] => {
+          return typeof entry[1] === 'string';
+        })
+        .map(([selector, value]) => {
+          if (!value.startsWith('$')) {
+            return [selector, value];
+          }
+          const name = value.slice(1);
+          if (!Object.hasOwn(rootDependencies, name)) {
+            throw new Error(
+              `The override of ${selector} refers to ${value}, but the root package.json has no dependency on ${name}`,
+            );
+          }
+          return [selector, rootDependencies[name]];
+        }),
     );
   },
 
@@ -491,7 +560,10 @@ const pnpmSteps: BundlePackageManagerSteps = {
       } else if (PNPM_REGISTRY_SETTINGS.has(key)) {
         // Like in the .npmrc, the credentials are left out, and pnpm keeps
         // its metadata cache of a registry without them
-        config[key] = stripUrlCredentials(value);
+        const stripped = stripUrlCredentials(value);
+        if (stripped !== undefined) {
+          config[key] = stripped;
+        }
       } else {
         config[key] = value;
       }
