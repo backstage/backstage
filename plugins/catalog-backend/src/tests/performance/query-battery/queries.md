@@ -29,18 +29,22 @@ same request with the `<permission>` predicate from scenarios 15-19 combined
 with its filter using `$all`). Scenarios 8, 9 and 11 do not go through the
 permission layer and only have a `_nop` variant.
 
-**Use several claim lists.** Long `$in` lists of 10 or more values are matched
-differently from short ones, so measure the `_perm` variants with at least 3,
-10 and 40 claims, and a list where a single claim owns a large share of the
-catalog.
+**Use several claim lists.** Long `$in` lists are matched differently from
+short ones, so measure the `_perm` variants with at least 3, 10 and 40 claims,
+and a list of 100 or more that includes a single claim owning a large share
+of the catalog.
 
-**Capture the generated SQL for long lists.** On PostgreSQL, an `$in` list of
-10 or more values on a field other than `kind`, `spec.type` and
-`spec.lifecycle` is compiled as a set of entity IDs, either joined or hashed,
-not as the per-row `EXISTS (... = ANY(:claims))` shown in the reference SQL.
-The reference SQL in this file is accurate only for short lists. For any
-variant with 10 or more claims, capture the SQL that the method call actually
-generates (for example with knex query logging) and measure that instead.
+**Capture the generated SQL for long lists.** On PostgreSQL, a long `$in` list
+on a field other than `kind`, `metadata.namespace`, `spec.type` and
+`spec.lifecycle` can be compiled as a set of entity IDs, either joined or
+hashed, instead of the per-row `EXISTS (... = ANY(:claims))` shown in the
+reference SQL. A list that is a direct condition of the filter is a set from
+10 values. A list inside an `$any` or a `$not`, like the claims in the
+permission predicate, is a set only from 100 values and not on a first page of
+up to 100 entities. See `src/service/request/longInLists.ts` for the details.
+For any variant with 10 or more claims, capture the SQL that the method call
+actually generates (for example with knex query logging) and measure that
+instead.
 
 For a faster run that relies on documented assumptions, see the
 [slim profile](./slim-profile.md). It must not be used without checking those
@@ -694,9 +698,10 @@ const permission = {
 ```
 
 In page queries, and in all queries on other databases, `<permission>` in the
-reference SQL below stands for the following. This is the short-list form
-(fewer than 10 claims); for longer lists, capture the generated SQL as
-described in [How to run](#how-to-run).
+reference SQL below stands for the following. This is the per-row form,
+which is used for fewer than 100 claims and on first pages of up to 100
+entities; otherwise, capture the generated SQL as described in
+[How to run](#how-to-run).
 
 ```sql
 (
@@ -1185,18 +1190,15 @@ const types = [
 }
 ```
 
-**Healthy plan**: Lists on `kind`, `spec.type` and `spec.lifecycle` are
-probed per row, as with short lists: each of their values matches a large
-share of the catalog, so a set of them is close to the whole catalog. Lists on
-other fields are matched once as a set of entity IDs, either joined or hashed.
-The total cost of a full stream grows with the number of matching entities,
-not with entities times list length.
+**Healthy plan**: Lists on `kind`, `metadata.namespace`, `spec.type` and
+`spec.lifecycle` are probed per row, as with short lists: each of their values
+matches a large share of the catalog, so a set of them is close to the whole
+catalog. The total cost of a full stream grows with the number of matching
+entities.
 
 **Anti-patterns**:
 
-- Per-row `= ANY(array)` SubPlans (global anti-pattern 6) for lists on
-  fields other than `kind`, `spec.type` and `spec.lifecycle`. Per-row probes
-  of lists on those three fields are intended and are not a regression.
+- A set of entity IDs built for a list on one of the broad fields.
 - A negated list planned as a filter that scans a materialized set again for every
   row.
 
@@ -1221,9 +1223,12 @@ These should NEVER appear in any of the above queries:
    `EXISTS (... s.value = ANY(:values))` with a loop count in the tens of
    thousands. Each time the index scan restarts, it sorts the array again with
    collation-aware comparisons, so the cost per loop grows with the length of the array even
-   though only one index page is read. Exception: lists on `kind`,
-   `spec.type` and `spec.lifecycle` are probed per row on purpose, since each
-   of their values matches a large share of the catalog (see scenario 21).
+   though only one index page is read. Exceptions: lists on `kind`,
+   `metadata.namespace`, `spec.type` and `spec.lifecycle` are probed per row
+   on purpose, since each of their values matches a large share of the catalog
+   (see scenario 21). So are lists inside an `$any` or a `$not` with fewer
+   than 100 values or on a first page of up to 100 entities, where the probe
+   costs less than building the set.
 
 Facets and count queries (scenarios 15-18) have no LIMIT and must visit the
 whole filtered set. For those queries, a bounded spill of an intermediate set

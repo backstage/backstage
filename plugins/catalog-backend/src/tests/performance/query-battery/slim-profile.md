@@ -24,18 +24,20 @@ requested anyway. Never fall back to a smaller matrix silently.
 
 - **Cut:** when the candidate generates byte-identical SQL to the baseline for
   a case, run it once to compare results, and reuse the baseline's timing.
-- **Assumption:** on PostgreSQL, only `$in` lists with at least
-  `IN_SUBQUERY_MIN_VALUES` values (10 at the time of writing, see
-  `src/service/request/longInLists.ts`), on fields other than the broad ones
-  (`kind`, `spec.type` and `spec.lifecycle`), are compiled differently. Scenarios
-  without permissions, short claim lists and filters with short lists produce
-  the same SQL.
+- **Assumption:** on PostgreSQL, only `$in` lists on fields other than the
+  broad ones (`kind`, `metadata.namespace`, `spec.type` and `spec.lifecycle`)
+  are compiled differently, and only from `IN_SUBQUERY_MIN_VALUES` values (10
+  at the time of writing) as direct conditions of the filter, or from
+  `INDIRECT_IN_MIN_VALUES` values (100) inside an `$any` or a `$not` and not on
+  first pages of up to 100 entities. See `src/service/request/longInLists.ts`.
+  Scenarios without permissions, short claim lists and filters with short lists
+  produce the same SQL.
 - **Check:** compare the generated SQL strings, not the claim count. Read the
-  threshold from the code under test and print it in the report.
-- **Invalidated by:** any change to the threshold, to the broad fields, to which operators are
-  compiled as sets, or to the rule that decides when a long list is joined as a
-  set rather than matched with `IN`. If the threshold changes, also revisit the
-  claim lists in C4.
+  thresholds from the code under test and print them in the report.
+- **Invalidated by:** any change to the thresholds, to the broad fields, to
+  which operators are compiled as sets, or to the rule that decides when a long
+  list is a set, joined or matched with `IN`. If a threshold changes, also
+  revisit the claim lists in C4.
 
 ### C3. One run instead of a median of five
 
@@ -47,26 +49,25 @@ requested anyway. Never fall back to a smaller matrix silently.
   shared database vary by up to about 1.5x, and one-off spikes of 3x happen.
 - **Invalidated by:** a change aimed at smaller effects.
 
-### C4. Claim lists of 3, 10, 40, and one large claim
+### C4. Claim lists of 3, 10, 40, and a long list with one large claim
 
-- **Cut:** measure the `_perm` variants with 3 claims (below the threshold), 10
-  (at it), 40 (a large but realistic membership), and a list that includes one
-  claim owning a large share of the catalog.
-- **Assumption:** lists of more than about 40 claims are not a supported
-  performance target at the time of writing. The large claim covers both a long
-  list and a huge single set.
+- **Cut:** measure the `_perm` variants with 3 claims (below the lower
+  threshold), 10 (at it), 40 (a large but realistic membership), and a list of
+  over 100 claims that includes one claim owning a large share of the catalog.
+- **Assumption:** the permission predicate's lists only become sets from the
+  higher threshold, so the long list covers both a set inside an `$any` and a
+  huge single set.
 - **Invalidated by:** a threshold change (the lists must include
-  `threshold - 1` and `threshold`), a decision to support longer lists, or a
-  large-claim result close to a bar. Add a long list without the large claim
-  then.
+  `threshold - 1` and `threshold` for each), or a long-list result close to a
+  bar. Add a long list without the large claim then.
 
 ### C5. Skip the unfiltered stream
 
 - **Cut:** skip streaming the whole catalog without a request filter.
 - **Assumption:** its SQL is identical to the baseline's (C2). This only
-  holds for claim lists under the threshold: with 10 or more claims the
-  permission filter's ownership list is long, the SQL differs, and the
-  stream must run.
+  holds for claim lists under the higher threshold: with 100 or more claims
+  the permission filter's lists are sets, the SQL differs, and the stream must
+  run.
 - **Check:** as in C2. If the SQL differs, it must run.
 - **Invalidated by:** changes to the permission filter used, or to the
   streaming query itself (cursor or ordering).
@@ -83,8 +84,9 @@ requested anyway. Never fall back to a smaller matrix silently.
 - Checking plans for per-row `= ANY(array)` SubPlans, lost LIMIT
   short-circuiting, and large sorts. Per-row probes of lists on `kind`,
   `spec.type` and `spec.lifecycle` are intended and are not flagged.
-- Scenarios 12, 13, 14, 18, 19, 20 and 21, and the owned-entities page.
-  These are known to be sensitive to how long lists are compiled.
+- Scenarios 1, 3, 7, 12, 13, 14, 15, 18, 19, 20 and 21, and the
+  owned-entities page. These are known to be sensitive to how long lists are
+  compiled.
 - On a replica: checking `pg_is_in_recovery()` first, running one query at a
   time, and checking `pg_stat_activity` for leftovers at the end.
 
@@ -92,6 +94,6 @@ requested anyway. Never fall back to a smaller matrix silently.
 
 Every slim report starts with:
 
-1. The threshold and the join-or-`IN` rule found in the code under test.
+1. The thresholds and the rule for sets found in the code under test.
 2. For each cut C1-C6: applied or not, and why.
 3. Which cases were rerun under C3.

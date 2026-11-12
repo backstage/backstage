@@ -490,150 +490,99 @@ the median of three warm runs after one warm-up, shown as master / this change.
 The page queries run the same SQL before and after, so their timing
 differences are run-to-run variation.
 
-## Long `$in` lists (2026-11-03)
+## Long `$in` lists (2026-11-12)
 
-On PostgreSQL, an `$in` list of 10 or more values on a field other than
-`kind`, `metadata.namespace`, `spec.type` and `spec.lifecycle` is matched as a
-set of entity IDs, either joined (anti-joined under `$not`) or hashed, instead
-of a per-row `= ANY(array)` probe. This applies to paginated queries, the
-legacy entity listing, and facets of filters without a disjunction or
-negation. Facets and counts with a disjunction or negation already use set
-operations and keep their SQL, as do lists with fewer than 10 values, lists
-on the broad fields, and lookups by entity ref (see
-[below](#lookups-by-entity-ref-2026-11-11)). `metadata.namespace` was added to
-the broad fields after the measurements in this section, see
-[below](#namespace-as-a-broad-field-2026-11-11).
+On PostgreSQL, a long `$in` list on a field other than `kind`,
+`metadata.namespace`, `spec.type` and `spec.lifecycle` can be matched as a set
+of entity IDs computed once per query, instead of a per-row `= ANY(array)`
+probe. The rule, from `src/service/request/longInLists.ts`:
 
-Measured on the production-scale staging replica (PostgreSQL 18.6, about 712k
-entities) with SQL captured from `DefaultEntitiesCatalog` on this change and
-on master, using the [slim profile](./slim-profile.md):
+- A list that is a direct condition of the filter, reached from the root
+  through `$all` only, is a set from 10 values. It is an IN set when a
+  narrower condition is next to it, and joined otherwise. This is the shape of
+  the owned entities page.
+- A list inside an `$any` or a `$not`, such as the claims of the conditional
+  permission policy in scenarios 15-19, is a set only from 100 values, and not
+  on a first page of up to 100 entities. It is an IN set, or joined when
+  negated, so that it can be anti-joined.
+- A list that is joined for one condition reuses that set where the same list
+  appears again.
+- Lookups by entity ref, facets and counts of filters with a disjunction or a
+  negation, and lists shorter than 10 values keep the SQL they had before.
 
-- The threshold in the code is 10 values. Lists under `$not` are joined;
-  other lists are joined unless they have a narrow `$all` sibling or a broad
-  positive `$any` sibling, in which case they are hashed.
-- Cases whose SQL is byte-identical to master ran once: every `_nop` variant,
-  every 3-claim variant, all facets and counts (scenarios 2, 4, 5, 10, 15-18
-  facets and counts), and the scenario 21 streams, whose lists are on
-  `spec.type`.
-- Cases with different SQL ran once per side; cases between 0.5x and 2x or
-  near a bar were rerun 5 times interleaved and report the median.
-- Claim lists of 3, 10 and 40 claims, and a 174-entry list that includes one
-  claim matching about 117k entities. Lists longer than about 40 claims are
-  not a performance target.
-- Every changed case returned the same entities as master. The unfiltered
-  stream at 174 entries differed between two runs taken minutes apart, from
-  ingestion during the run; back-to-back runs of both forms matched.
+### Setup
 
-| Query                                 | Claims |        master |  this change |
-| ------------------------------------- | -----: | ------------: | -----------: |
-| 1 component page                      |     10 |          8 ms |        32 ms |
-| 1 component page                      |    174 |         67 ms |       590 ms |
-| 3 unfiltered page                     |    174 |        176 ms |       695 ms |
-| 7 full text component                 |  10/40 |      51/54 ms |   207/219 ms |
-| 7 full text component                 |    174 |         76 ms |       408 ms |
-| 12 ordered selective OR               |     10 |         4.0 s |        4.9 s |
-| 12 ordered selective OR               |     40 |         4.2 s |        4.8 s |
-| 12 ordered selective OR               |    174 |         6.3 s |        3.0 s |
-| 13 deep dataset ID                    |  10/40 |    337/536 ms |   327/330 ms |
-| 13 deep dataset ID                    |    174 |        840 ms |       1.39 s |
-| 14 deep dataset name                  |     10 |         4.8 s |        2.6 s |
-| 14 deep dataset name                  |     40 |        15.7 s |        2.7 s |
-| 14 deep dataset name                  |    174 |         >60 s |        6.5 s |
-| 15 permission list page               |    174 |         37 ms |       595 ms |
-| 18 negated disjunction page           |    174 |         33 ms |       523 ms |
-| 19 large in under or page             |    174 |         19 ms |       144 ms |
-| 19 with permission, page              |    174 |         54 ms |       824 ms |
-| 20 late component page                |  10/40 |    315/388 ms |   298/312 ms |
-| 20 late component page                |    174 |        459 ms |       1.52 s |
-| 20 late group page                    |  10/40 |    296/301 ms |   354/292 ms |
-| 20 late group page                    |    174 |        24.7 s |       872 ms |
-| Owned page                            |     10 |         1.8 s |        1.1 s |
-| Owned page                            |     40 |         2.0 s |       168 ms |
-| Owned page                            |    174 |         >60 s |       602 ms |
-| Component stream, total / worst page  |     10 |   7.4 / 1.9 s |  4.5 / 1.1 s |
-| Component stream, total / worst page  |     40 |  16.0 / 3.8 s |  4.1 / 0.9 s |
-| Component stream, total / worst page  |    174 | 55.9 / 13.7 s |  7.7 / 2.0 s |
-| Group stream, total / worst page      |     40 |   7.0 / 3.6 s |  1.7 / 0.9 s |
-| Group stream, total / worst page      |    174 | 25.3 / 13.0 s |  3.3 / 1.7 s |
-| Unfiltered stream, total / worst page |  10/40 |   38.5/38.3 s |  37.4/38.4 s |
-| Unfiltered stream, total / worst page |    174 |  50.1 / 0.9 s | 93.4 / 2.9 s |
+- Beta read replica of a production-like catalog: PostgreSQL 18.6, 745,776
+  entities, `work_mem = 32MB`. The largest group owns 117,449 entities. This
+  is not production, so compare ratios and plan shapes rather than absolute
+  timings.
+- Master is `175375aebc2f`. Master and this change ran interleaved in the
+  same session, case by case.
+- `EXPLAIN (ANALYZE, BUFFERS)` of the SQL captured from `DefaultEntitiesCatalog`,
+  median of three runs after one warm-up, with a 30 s statement timeout.
+  Streams are paged `queryEntities` calls ordered by entity ID, 10,000 per
+  page, timed by wall clock, one run each (two for the unfiltered stream).
+- Claim lists of 3, 10 and 40 claims, and one of 174 that includes the
+  largest group. Every case returned the same entities as master.
+- Not measured: scenarios 9 and 11, whose SQL this change does not touch, and
+  `work_mem = 4MB`.
 
-Cases not listed, with 10 to 40 claims, are within 2x of master and under
-30 ms.
+### Same SQL as master
 
-### Lookups by entity ref (2026-11-11)
+- Every scenario without permissions, and every 3-claim variant.
+- All facets and counts: scenarios 2, 4, 5, 10, and the facets and counts of
+  15-18.
+- Lookups by entity ref (scenario 6), with 1 and with 1,000 refs.
+- Scenario 21, whose lists are on `spec.type`.
+- Every first page with permissions: scenarios 1, 3, 7, 15, 16, 18 and 19 at
+  all claim counts, including scenario 1 with a namespace condition.
+- Every 10- and 40-claim variant of scenarios 12, 13, 14 and 20.
 
-The table above first measured scenario 6 at 174 claims with the list as a
-set: 0.6 ms on master against 13 ms. Since the refs already pick the rows,
-lookups by ref now keep the per-row form at any list length, which is the SQL
-master produces.
+### Different SQL
 
-Measured on the beta read replica (PostgreSQL, about 728k entities) with
-wall-clock timings of `entitiesBatch` calls under the scenario 15 permission
-filter, median of 3 runs over 2 rounds:
+| Query                           | Claims |        master | this change |
+| ------------------------------- | -----: | ------------: | ----------: |
+| Owned page                      |     10 |         72 ms |       34 ms |
+| Owned page                      |     40 |        3.40 s |      359 ms |
+| Owned page                      |    174 |        6.60 s |      3.67 s |
+| Owned page, namespace           |     40 |        3.44 s |      400 ms |
+| Owned page, namespace           |    174 |        6.66 s |      3.72 s |
+| 12 ordered selective OR         |    174 |        5.41 s |      2.98 s |
+| 13 deep dataset ID              |    174 |        572 ms |      589 ms |
+| 14 deep dataset name            |    174 |         >30 s |      5.01 s |
+| 20 late group page              |    174 |       18.27 s |      1.68 s |
+| 20 late component page          |    174 |        527 ms |      2.42 s |
+| Component stream, total / worst |    174 | 40.0 / 10.3 s | 9.0 / 2.6 s |
+| Group stream, total / worst     |    174 |  18.3 / 9.3 s | 5.0 / 2.6 s |
+| Unfiltered stream, total        |    174 |   60.5-66.7 s | 58.6-61.2 s |
 
-| Refs | Claims | per row (this change) |   as a set |
-| ---: | -----: | --------------------: | ---------: |
-|    1 |   3-40 |              37-54 ms |   47-62 ms |
-|    1 |    174 |                 43 ms |     194 ms |
-|   10 |    174 |                 51 ms |     190 ms |
-|  100 |    174 |                202 ms |     209 ms |
-| 1000 |   3-40 |             86-104 ms | 153-192 ms |
-| 1000 |    174 |                232 ms |     287 ms |
-| 5000 |   3-40 |            260-320 ms | 486-550 ms |
-| 5000 |    174 |                427 ms |     618 ms |
+The component and group streams at 40 claims, and the unfiltered stream at 40
+claims, have the same SQL as master and took the same time (8.2-8.4 s, 4.9-5.2
+s and 49-53 s).
 
-The per-row form is as fast or faster at every batch size, so there is no
-batch size above which the set form is used.
+The one regression is scenario 20 for components with 174 claims. On master,
+the page walks the names from the cursor and checks each of the 85 candidates
+per row. With the hashed set, the planner instead filters all entities up
+front, materializes the 45,872 permitted components, and scans that again for
+each of the 85 candidates (3.9 million rows removed by the join filter). The
+same page for groups, where master checks far more candidates, goes from
+18.3 s to 1.7 s.
 
-### Namespace as a broad field (2026-11-11)
+### Rules that were measured and not used
 
-Besides keeping long lists of namespaces per row, this stops a
-`metadata.namespace` condition from counting as a narrow sibling of a long
-list in an `$all`, as the namespace filter of the catalog page would. Such a
-list now uses the JOIN form instead of the IN form, the same as without the
-namespace condition.
+All on the same replica and claim lists, against master:
 
-Measured on the beta read replica (about 728k entities) with wall-clock
-timings of `DefaultEntitiesCatalog` calls, adding
-`'metadata.namespace': 'default'` to the request filter of scenarios 1, 7 and
-15, the owned page, and a conjunctive `spec.type` facet of owned components
-without permissions. Medians of 3 runs over 2 rounds; both rules returned the
-same entities. 3-claim lists are below the threshold and unchanged.
-
-| Query                   | Claims |   namespace narrow |  namespace broad |
-| ----------------------- | -----: | -----------------: | ---------------: |
-| 1 component page        |  10/40 |       44 / 58-2441 |          47 / 89 |
-| 1 component page        |    174 |        1.25-1.36 s |          415-433 |
-| 7 full text component   |  10/40 |     55-94 / 72-117 | 94-105 / 147-162 |
-| 7 full text component   |    174 |           199-1352 |          435-543 |
-| 15 permission list page |  10/40 |            46 / 60 |          47 / 86 |
-| 15 permission list page |    174 |                190 |              410 |
-| Owned page              |  10/40 |     110 / 747-1974 |         75 / 425 |
-| Owned page              |    174 |             1.92 s |         576-1827 |
-| Facet, owned components |  10/40 | 100-111 / 594-1185 |         68 / 390 |
-| Facet, owned components |    174 |                372 |          351-800 |
-
-Times in ms unless noted; ranges are the two rounds. The broad rule removes
-the multi-second outliers of the component and owned pages at 40 claims,
-where the IN form switched between plans, at the cost of slower scenario 15
-pages at 40 and 174 claims and about 40 ms more on the full-text page.
-
-### Comparison
-
-- Against the 2026-09-12 baseline: the unchanged scenarios 1-11 keep their
-  plan shapes. Absolute timings are not comparable for the claim-dependent
-  rows, since that baseline had no permission variants.
-- Against master: the long lists remove the per-row `= ANY(array)` SubPlans
-  (global anti-pattern 6) from every changed query. The largest gains are
-  where master probed the list once per candidate row of a large set: the
-  owned page, scenario 14, late group pages and the permissioned streams.
-- Costs: small pages with 10-40 claims move from single-digit milliseconds to
-  tens of milliseconds, and full-text pages from about 50 ms to about 210 ms,
-  because the set is built before the page stops early. With the 174-entry
-  list, the set holds about 117k entities: small pages take 0.4-0.8 s,
-  scenarios 13 and 20 on components cross 1 s, and the unfiltered stream
-  nearly doubles. Scenario 12 at 10-40 claims is 0.6-0.9 s slower, with the
-  same plan shape as master.
-- Scenario 14 with the 174-entry list is still over 5 s, and scenario 11
-  (unchanged, 18.6 s) remains a known slow scenario.
+- Every long list as a set from 10 values, JOIN or IN chosen from the
+  siblings (the first version of this change). Every permissioned first page
+  became slower, up to 15-30 times with 174 claims (scenario 15: 20 ms to
+  617 ms). Scenario 14 with 40 claims went from 2.6 s to 25 s: the planner
+  estimated the joined set at 653 rows instead of 17,787, chose a nested loop,
+  and scanned the materialized set again for each of the 10,001 rows.
+- The same with a threshold of 40: the same results at 40 and 174 claims,
+  including the 25 s case.
+- The same with a threshold of 100: no regressions at 10 and 40 claims, but
+  first pages with 174 claims stayed at 0.6-0.8 s.
+- The chosen rule with JOIN instead of IN for lists inside an `$any`: faster
+  for late pages (scenario 20 for groups 1.07 s, for components 1.11 s) but
+  slower for scenarios 13 (1.08 s) and 14 (6.3 s) and the streams, and exposed
+  to the misestimate above.
