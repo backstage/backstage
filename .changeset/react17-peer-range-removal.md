@@ -52,4 +52,4 @@
 '@backstage/version-bridge': major
 ---
 
-Removed support for React 17; the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#158).
+Removed support for React 17; the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
