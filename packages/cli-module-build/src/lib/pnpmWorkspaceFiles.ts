@@ -52,8 +52,8 @@ const PACKAGE_IMPORT_PATTERN =
  * the target directory, under a name that no other copied file uses, also
  * when names are compared without case. A
  * pnpmfile that loads other local files fails, since those are not copied.
- * With `checkPackageImports`, a pnpmfile also fails when it loads a package
- * that is not installed where the target directory is.
+ * With `checkPackageImports`, a pnpmfile that seems to load a package that
+ * is not installed where the target directory is gets a warning.
  *
  * Returns the copied files, relative to the target directory, and the
  * settings that point at the copies. `pnpmfile` is only returned when the
@@ -193,8 +193,9 @@ export async function copyPnpmWorkspaceFiles(options: {
 
 /**
  * Fails when a pnpmfile loads local files, since only the pnpmfile itself is
- * copied and the install would not find them. Optionally also fails when it
- * loads a package that is not installed in a parent directory of the copy.
+ * copied and the install would not find them. Optionally also warns when it
+ * seems to load a package that is not installed in a parent directory of the
+ * copy.
  */
 async function checkPnpmfileImports(
   pnpmfilePath: string,
@@ -238,11 +239,14 @@ async function checkPnpmfileImports(
       missing.push(packageName);
     }
   }
+  // The search is textual and may find an import that isn't one, such as one
+  // in a string, so it only warns. pnpm fails on a real one when it loads the
+  // pnpmfile.
   if (missing.length > 0) {
-    throw new Error(
-      `The pnpmfile ${name} loads ${missing.join(
+    console.warn(
+      `The pnpmfile ${name} seems to load ${missing.join(
         ', ',
-      )}, which is not installed where ${targetName} is written. Write ${targetName} inside the project, or remove the import from the pnpmfile.`,
+      )}, which is not installed where ${targetName} is written. If pnpm fails to load the pnpmfile, write ${targetName} inside the project, or remove the import from the pnpmfile.`,
     );
   }
 }
