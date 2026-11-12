@@ -57,6 +57,12 @@ export class PlaceholderProcessor implements CatalogProcessor {
     location: LocationSpec,
     emit: CatalogProcessorEmit,
   ): Promise<Entity> {
+    // The first resolver error, in the order the errors happened. Every level
+    // of the traversal waits for all of its children to finish, so that no
+    // resolver is still running, and possibly emitting, after processing of
+    // the entity has completed. This is the error that then gets reported.
+    let firstError: { error: unknown } | undefined;
+
     const process = async (data: any): Promise<[any, boolean]> => {
       if (!data || !(data instanceof Object)) {
         // Scalars can't have placeholders
@@ -65,7 +71,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
 
       if (Array.isArray(data)) {
         // We're an array - process all entries recursively
-        const items = await Promise.all(data.map(item => process(item)));
+        const items = await settleAll(data.map(item => process(item)));
         return items.every(([, changed]) => !changed)
           ? [data, false]
           : [items.map(([item]) => item), true];
@@ -75,7 +81,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
       if (!keys.some(k => k.startsWith('$'))) {
         // We're an object but no placeholders at this level - process all
         // entries recursively
-        const entries = await Promise.all(
+        const entries = await settleAll(
           Object.entries(data).map(([k, v]) =>
             process(v).then(vp => [k, vp] as const),
           ),
@@ -118,22 +124,39 @@ export class PlaceholderProcessor implements CatalogProcessor {
           base,
         });
 
-      return [
-        await resolver({
-          key: resolverKey,
-          value: resolverValue,
-          baseUrl: location.target,
-          read,
-          resolveUrl,
-          emit,
-        }),
-        true,
-      ];
+      try {
+        return [
+          await resolver({
+            key: resolverKey,
+            value: resolverValue,
+            baseUrl: location.target,
+            read,
+            resolveUrl,
+            emit,
+          }),
+          true,
+        ];
+      } catch (error) {
+        firstError ??= { error };
+        throw error;
+      }
     };
 
-    const [result] = await process(entity);
-    return result;
+    try {
+      const [result] = await process(entity);
+      return result;
+    } catch (error) {
+      throw firstError ? firstError.error : error;
+    }
   }
+}
+
+/**
+ * Like Promise.all, but waits for every promise to finish before rejecting.
+ */
+async function settleAll<T>(promises: Promise<T>[]): Promise<T[]> {
+  await Promise.allSettled(promises);
+  return Promise.all(promises);
 }
 
 /*

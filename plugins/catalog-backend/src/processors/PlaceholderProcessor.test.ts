@@ -781,6 +781,63 @@ describe('PlaceholderProcessor', () => {
     });
   });
 
+  it('waits for all placeholders to finish before failing, reporting the first error', async () => {
+    let release: () => void = () => {};
+    const gate = new Promise<void>(resolve => {
+      release = resolve;
+    });
+    const processor = new PlaceholderProcessor({
+      resolvers: {
+        failLate: async () => {
+          await gate;
+          throw new Error('late');
+        },
+        failEarly: async () => {
+          throw new Error('early');
+        },
+        slow: async ({ emit }) => {
+          await gate;
+          emit({ type: 'refresh', key: 'url:slow' });
+          return 'slow';
+        },
+      },
+      reader,
+      integrations,
+    });
+
+    const emitted = new Array<CatalogProcessorResult>();
+    let settled = false;
+    const result = processor
+      .preProcessEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: {
+            a: { $failLate: 'x' },
+            b: { c: [{ $failEarly: 'y' }] },
+            d: [{ e: { $slow: 'z' } }],
+          },
+        },
+        { type: 'fake', target: 'http://example.com' },
+        r => emitted.push(r),
+      )
+      .finally(() => {
+        settled = true;
+      });
+
+    // The failing placeholder must not end processing while others are still
+    // running
+    await new Promise(resolve => setTimeout(resolve, 10));
+    expect(settled).toBe(false);
+
+    release();
+    // The error that happened first is reported, even though it comes later
+    // in the entity and is nested deeper
+    await expect(result).rejects.toThrow('early');
+    expect(emitted).toEqual([{ type: 'refresh', key: 'url:slow' }]);
+  });
+
   it('accepts arbitrary object as value', async () => {
     const processor = new PlaceholderProcessor({
       resolvers: {
