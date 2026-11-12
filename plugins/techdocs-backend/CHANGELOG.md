@@ -1,5 +1,13 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.4.2
+
+### Patch Changes
+
+- f8a717e: Restricts `markdown_extensions` in `mkdocs.yml` to known extension names before documentation generation, in both the MkDocs and Zensical engines. Extension names outside the permitted set are removed from the configuration with a warning. Allow additional extensions, for example from a custom build image, with the new `techdocs.generator.mkdocs.dangerouslyAllowAdditionalExtensions` configuration, or the `--dangerouslyAllowAdditionalExtensions` flag when using the TechDocs CLI.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@2.2.1
+
 ## 2.4.1
 
 ### Patch Changes
