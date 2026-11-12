@@ -587,6 +587,109 @@ describe('KubernetesFetcher', () => {
         'Received 401 status when fetching "/api/v1/services" from cluster "cluster1"; body=[{"kind":"Status","apiVersion":"v1","code":401}]',
       );
     });
+    it('should suppress 404 errors and return only successful resources', async () => {
+      const warn = jest.spyOn(logger, 'warn');
+      warn.mockClear();
+      worker.use(
+        http.get('http://localhost:9999/api/v1/pods', ({ request: req }) =>
+          response(
+            checkToken(req, 'token'),
+            withLabels(req, {
+              items: [{ metadata: { name: 'pod-name' } }],
+            }),
+          ),
+        ),
+        http.get('http://localhost:9999/api/v1/services', () =>
+          HttpResponse.json(
+            { kind: 'Status', apiVersion: 'v1', status: 'Failure', code: 404 },
+            { status: 404 },
+          ),
+        ),
+      );
+
+      const result = await sut.fetchObjectsForService({
+        serviceId: 'some-service',
+        clusterDetails: {
+          name: 'cluster1',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        credential: { type: 'bearer token', token: 'token' },
+        objectTypesToFetch: OBJECTS_TO_FETCH,
+        labelSelector: '',
+        customResources: [],
+      });
+
+      expect(result).toStrictEqual({
+        errors: [],
+        responses: [
+          {
+            type: 'pods',
+            resources: [{ metadata: { name: 'pod-name', labels: {} } }],
+          },
+        ],
+      });
+      expect(warn).not.toHaveBeenCalled();
+    });
+    it('should suppress 404 for a custom resource and return other resources', async () => {
+      const warn = jest.spyOn(logger, 'warn');
+      warn.mockClear();
+      worker.use(
+        http.get('http://localhost:9999/api/v1/pods', ({ request: req }) =>
+          response(
+            checkToken(req, 'token'),
+            withLabels(req, {
+              items: [{ metadata: { name: 'pod-name' } }],
+            }),
+          ),
+        ),
+        http.get('http://localhost:9999/api/v1/services', ({ request: req }) =>
+          response(checkToken(req, 'token'), withLabels(req, { items: [] })),
+        ),
+        http.get(
+          'http://localhost:9999/apis/argoproj.io/v1alpha1/rollouts',
+          () =>
+            HttpResponse.json(
+              {
+                kind: 'Status',
+                apiVersion: 'v1',
+                status: 'Failure',
+                code: 404,
+              },
+              { status: 404 },
+            ),
+        ),
+      );
+
+      const result = await sut.fetchObjectsForService({
+        serviceId: 'some-service',
+        clusterDetails: {
+          name: 'cluster1',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        credential: { type: 'bearer token', token: 'token' },
+        objectTypesToFetch: OBJECTS_TO_FETCH,
+        labelSelector: '',
+        customResources: [
+          {
+            group: 'argoproj.io',
+            apiVersion: 'v1alpha1',
+            plural: 'rollouts',
+            objectType: 'customresources',
+          },
+        ],
+      });
+
+      expect(result.errors).toStrictEqual([]);
+      expect(result.responses).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ type: 'pods' }),
+          expect.objectContaining({ type: 'services' }),
+        ]),
+      );
+      expect(warn).not.toHaveBeenCalled();
+    });
     // they're in testErrorResponse
     // eslint-disable-next-line jest/expect-expect
     it('should return pods, system error', async () => {

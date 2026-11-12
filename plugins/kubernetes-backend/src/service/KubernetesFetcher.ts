@@ -99,7 +99,12 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
         ),
       );
 
-    return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
+    return Promise.all(fetchResults)
+      .then(fetchResultsToResponseWrapper)
+      .then(wrapper => ({
+        ...wrapper,
+        errors: wrapper.errors.filter(e => e.errorType !== 'NOT_FOUND'),
+      }));
   }
 
   async fetchPodMetricsByNamespaces(
