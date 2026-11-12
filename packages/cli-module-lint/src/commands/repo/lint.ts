@@ -25,7 +25,10 @@ import {
   runWorkerQueueThreads,
   SuccessCache,
 } from '@backstage/cli-node';
-import { detectPackageManager, Lockfile } from '@backstage/cli-node/alpha';
+import {
+  detectPackageManager,
+  PackageManagerLockfile,
+} from '@backstage/cli-node/alpha';
 import { targetPaths } from '@backstage/cli-common';
 
 import { createScriptOptionsParser } from '../../lib/optionsParser';
@@ -113,7 +116,9 @@ export default async ({ args, info }: CliCommandContext) => {
     name: 'lint',
     basePath: successCacheDir,
   });
-  let cacheContext: { entries: Set<string>; lockfile: Lockfile } | undefined;
+  let cacheContext:
+    | { entries: Set<string>; lockfile: PackageManagerLockfile }
+    | undefined;
   if (useSuccessCache) {
     // The cache keys depend on the lockfile, so without one there is no cache
     const packageManager = await detectPackageManager();
