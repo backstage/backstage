@@ -67,7 +67,11 @@ export type TargetPaths = {
    * with one is part of a pnpm workspace above it when the `packages`
    * patterns of that workspace include the directory or a directory inside
    * it, and a workspace of its own otherwise. For example, `apps/*` and
-   * `apps/backstage/packages/*` both include `apps/backstage`. The lockfile
+   * `apps/backstage/packages/*` both include `apps/backstage`. A Yarn project,
+   * as the package manager detection of `@backstage/cli-node` sees it, is
+   * always a workspace of its own: its `packageManager` field, or else
+   * `devEngines.packageManager`, names Yarn, or neither names Yarn or pnpm
+   * and it has a `yarn.lock` file but no `pnpm-lock.yaml`. The lockfile
    * and the package manager configuration live here, and installs act on
    * everything inside it.
    *
@@ -293,20 +297,51 @@ export function setTargetPathsOverride(override: TargetPaths | undefined) {
   targetPathsOverride = override;
 }
 
-function hasWorkspacesField(dir: string): boolean {
+function readPackageJson(dir: string): Record<string, unknown> | undefined {
   const pkgJsonPath = resolvePath(dir, 'package.json');
   if (!fs.existsSync(pkgJsonPath)) {
-    return false;
+    return undefined;
   }
   try {
     const content = fs.readFileSync(pkgJsonPath, 'utf8');
-    const data = JSON.parse(content);
-    return Boolean(data.workspaces);
+    return JSON.parse(content);
   } catch (error) {
     throw new Error(
       `Failed to parse package.json file while searching for root, ${error}`,
     );
   }
+}
+
+function hasWorkspacesField(dir: string): boolean {
+  return Boolean(readPackageJson(dir)?.workspaces);
+}
+
+/**
+ * Returns true if `dir` is the root of a Yarn project, decided the same way
+ * as the package manager detection in `@backstage/cli-node`. The
+ * `packageManager` field decides when it names Yarn or pnpm, or else
+ * `devEngines.packageManager`, where the first of Yarn and pnpm counts. That
+ * way a lockfile left behind after a migration does not count. Otherwise the
+ * lockfiles decide, and `pnpm-lock.yaml` wins over `yarn.lock`.
+ */
+function isYarnProject(dir: string): boolean {
+  const data = readPackageJson(dir);
+  const devEngines = data?.devEngines as { packageManager?: unknown };
+  const devEngineNames = [devEngines?.packageManager].flat().flatMap(entry => {
+    const name = (entry as { name?: unknown } | undefined)?.name;
+    return typeof name === 'string' ? [name] : [];
+  });
+  const declared =
+    typeof data?.packageManager === 'string'
+      ? data.packageManager.split('@')[0]
+      : devEngineNames.find(name => name === 'yarn' || name === 'pnpm');
+  if (declared === 'yarn' || declared === 'pnpm') {
+    return declared === 'yarn';
+  }
+  return (
+    !fs.existsSync(resolvePath(dir, 'pnpm-lock.yaml')) &&
+    fs.existsSync(resolvePath(dir, 'yarn.lock'))
+  );
 }
 
 function hasPnpmWorkspaceFile(dir: string): boolean {
@@ -385,14 +420,16 @@ function findAncestorDir(
  * Finds the root of the Yarn, npm, or pnpm workspace that contains `dir`.
  * pnpm reads its workspace packages from `pnpm-workspace.yaml` and ignores
  * the `workspaces` field, so that field only starts a workspace of its own
- * when no pnpm workspace above includes the directory.
+ * when no pnpm workspace above includes the directory. A Yarn project is
+ * always a workspace of its own, whatever pnpm workspace is above it.
  */
 function findWorkspaceRootDir(dir: string): string | undefined {
   return findAncestorDir(
     dir,
     path =>
       hasPnpmWorkspaceFile(path) ||
-      (hasWorkspacesField(path) && !isInPnpmWorkspace(path)),
+      (hasWorkspacesField(path) &&
+        (isYarnProject(path) || !isInPnpmWorkspace(path))),
   );
 }
 

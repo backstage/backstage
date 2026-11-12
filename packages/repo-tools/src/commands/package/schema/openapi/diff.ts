@@ -42,17 +42,16 @@ async function check(opts: OptionValues) {
     baseRef = branch.toString().trim();
   }
 
-  // Paths at a git ref are relative to the root of the repository
-  const { stdout: gitRoot } = await exec('git', [
-    'rev-parse',
-    '--show-toplevel',
-  ]);
-  const baseSpec = `${baseRef}:${relativePath(
-    gitRoot.toString().trim(),
-    resolvedOpenapiPath,
-  )
-    .split(sep)
-    .join(posix.sep)}`;
+  // Paths at a git ref are relative to the root of the repository, so they
+  // get the path of the installation inside the repository in front
+  const { stdout: gitPrefix } = await exec(
+    'git',
+    ['rev-parse', '--show-prefix'],
+    { cwd: targetPaths.installationRootDir },
+  );
+  const baseSpec = `${baseRef}:${gitPrefix
+    .toString()
+    .trim()}${relativeSpecPath}`;
   const subcommand = opts.json ? 'changelog' : 'breaking';
   const formatArgs = opts.json ? ['--format', 'json'] : [];
   const failArgs = !opts.ignore && !opts.json ? ['--fail-on', 'ERR'] : [];
