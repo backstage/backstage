@@ -23,6 +23,16 @@ type PageWithHeaderProps = ComponentProps<typeof Header> & {
   themeId: string;
 };
 
+/**
+ * A legacy page layout with a header.
+ * @public
+ * @deprecated Legacy page shell, superseded for new frontend development. Use
+ * `PageBlueprint` and `PageLayout` from `@backstage/frontend-plugin-api` for
+ * framework-managed pages. For standalone layouts, compose `PluginHeader` or
+ * `Header` from `@backstage/ui` with your content. Migrate legacy page themes,
+ * arbitrary header content, document titles, and focus handling explicitly;
+ * these APIs are not prop-for-prop replacements.
+ */
 export function PageWithHeader(props: PropsWithChildren<PageWithHeaderProps>) {
   const { themeId, children, ...restProps } = props;
   return (
