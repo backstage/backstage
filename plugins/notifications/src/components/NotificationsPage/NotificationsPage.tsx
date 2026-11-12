@@ -209,7 +209,7 @@ function NotificationsPageContent(
   }, [fetchedHighlightedNotification]);
 
   const onUpdate = () => {
-    throttledSetRefresh(true);
+    throttledSetRefresh();
   };
 
   const notifications = value?.[0]?.notifications;
