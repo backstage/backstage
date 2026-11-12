@@ -188,13 +188,16 @@ ${describeFieldGroups(resolveFieldGroups(kind, model))}`;
 
 type Schema = Record<string, any>;
 
+// A field, rendered as one list item: its path, the facts known about it, and
+// its description
 type FieldEntry = {
   path: string;
-  lines: string[];
+  parts: string[];
+  description?: string;
 };
 
 type FieldGroup = {
-  entries: FieldEntry[];
+  lines: string[];
   apiVersions: string[];
   specType?: string;
 };
@@ -217,30 +220,25 @@ function resolveFieldGroups(
     }
     const entries = collectFields(resolved.jsonSchema, '', 0);
     for (const relationField of resolved.relationFields) {
-      const line = describeRelationField(relationField);
+      const part = describeRelationField(relationField);
       const existing = entries.find(e => e.path === relationField.path);
       if (existing) {
-        existing.lines.push(line);
+        existing.parts.push(part);
       } else {
-        entries.push({
-          path: relationField.path,
-          lines: [line],
-        });
+        entries.push({ path: relationField.path, parts: [part] });
       }
     }
     if (!entries.length) {
       continue;
     }
-    const key = JSON.stringify([
-      entries.flatMap(e => e.lines),
-      version.specType ?? null,
-    ]);
+    const lines = entries.map(renderField);
+    const key = JSON.stringify([lines, version.specType ?? null]);
     const group = groups.get(key);
     if (group) {
       group.apiVersions.push(version.apiVersion);
     } else {
       groups.set(key, {
-        entries,
+        lines,
         apiVersions: [version.apiVersion],
         specType: version.specType,
       });
@@ -252,13 +250,18 @@ function resolveFieldGroups(
 function describeFieldGroups(groups: FieldGroup[]): string {
   const blocks: string[] = [];
   for (const group of groups) {
-    const lines = group.entries.flatMap(entry => entry.lines);
     const label = `${group.apiVersions.join(', ')}${
       group.specType ? `; spec.type: "${group.specType}"` : ''
     }`;
-    blocks.push(`#### Fields (${label})\n\n${lines.join('\n')}\n`);
+    blocks.push(`#### Fields (${label})\n\n${group.lines.join('\n')}\n`);
   }
   return blocks.length ? `\n${blocks.join('\n')}` : '';
+}
+
+function renderField(entry: FieldEntry): string {
+  return `* "${entry.path}" (${entry.parts.join(', ')})${
+    entry.description ? `: ${entry.description}` : ''
+  }`;
 }
 
 function describeRelationField(
@@ -270,14 +273,22 @@ function describeRelationField(
       ? `allowed kinds: ${field.allowedKinds.join(', ')}`
       : undefined,
   ].filter(Boolean);
-  return `* "${field.path}" → relation "${field.relation}"${
-    details.length ? ` (${details.join('; ')})` : ''
+  return `relation "${field.relation}"${
+    details.length ? ` [${details.join('; ')}]` : ''
   }`;
 }
 
 // Keywords whose constraints apply only in some cases. They are not expanded;
 // the field is marked instead, so that a reader knows the listing is partial.
-const CONDITIONAL_KEYWORDS = ['anyOf', 'oneOf', 'if', 'not'];
+const CONDITIONAL_KEYWORDS = [
+  'anyOf',
+  'oneOf',
+  'if',
+  'not',
+  'dependencies',
+  'dependentRequired',
+  'dependentSchemas',
+];
 
 function isObject(value: unknown): value is Schema {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -332,7 +343,25 @@ function foldAllOf(schema: Schema): Schema {
     return schema;
   }
   const { allOf, ...rest } = schema;
-  return allOf.filter(isObject).map(foldAllOf).reduce(combine, rest);
+  return allOf
+    .map(toSchema)
+    .filter(isObject)
+    .map(foldAllOf)
+    .reduce(combine, rest);
+}
+
+// Boolean schemas allow anything (true) or nothing (false)
+function toSchema(value: unknown): Schema | undefined {
+  if (typeof value === 'boolean') {
+    return value ? {} : { enum: [] };
+  }
+  return isObject(value) ? value : undefined;
+}
+
+function hasProperties(schema: Schema): boolean {
+  return (
+    isObject(schema.properties) && Object.keys(schema.properties).length > 0
+  );
 }
 
 function combine(a: Schema, b: Schema): Schema {
@@ -390,15 +419,39 @@ function collectFields(
   for (const [name, raw] of Object.entries(
     isObject(node.properties) ? node.properties : {},
   )) {
-    if (!isObject(raw) || (!prefix && BASE_FIELDS.has(name))) {
+    if (!prefix && BASE_FIELDS.has(name)) {
+      continue;
+    }
+    const path = prefix ? `${prefix}.${name}` : name;
+    if (typeof raw === 'boolean') {
+      entries.push({
+        path,
+        parts: [
+          raw ? 'any value' : 'not allowed',
+          ...(required.has(name) ? ['required'] : []),
+        ],
+      });
+      continue;
+    }
+    if (!isObject(raw)) {
       continue;
     }
     const field = foldAllOf(raw);
-    const path = prefix ? `${prefix}.${name}` : name;
-    entries.push(describeField(path, field, required.has(name)));
-    if (depth + 1 < MAX_FIELD_DEPTH) {
-      const nested = isObject(field.items) ? field.items : field;
+    const entry = describeField(path, field, required.has(name));
+    entries.push(entry);
+
+    // Fields of array items are listed under the path of the array, but only
+    // one array level deep and down to a maximum depth
+    let nested = field;
+    let arrayLevels = 0;
+    while (isObject(nested.items)) {
+      nested = foldAllOf(nested.items);
+      arrayLevels += 1;
+    }
+    if (arrayLevels <= 1 && depth + 1 < MAX_FIELD_DEPTH) {
       entries.push(...collectFields(nested, path, depth + 1));
+    } else if (hasProperties(nested)) {
+      entry.parts.push('has nested fields not listed here');
     }
   }
   return entries;
@@ -450,14 +503,7 @@ function describeField(
     typeof schema.description === 'string'
       ? schema.description.replace(/\s+/g, ' ').trim()
       : '';
-  return {
-    path,
-    lines: [
-      `* "${path}" (${parts.join(', ')})${
-        description ? `: ${description}` : ''
-      }`,
-    ],
-  };
+  return { path, parts, description: description || undefined };
 }
 
 function describeAnnotation(annotation: CatalogModelAnnotationSummary): string {

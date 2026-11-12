@@ -206,10 +206,12 @@ function createModelWithSpecSchema(
   };
 }
 
-async function describeModel(testModel: CatalogModel): Promise<string> {
+async function describeModel(testModel?: CatalogModel): Promise<string> {
   const mockActionsRegistry = actionsRegistryServiceMock();
   createGetCatalogModelDescriptionAction({
-    modelHolder: ModelHolder.modelPassthroughForTest(testModel),
+    modelHolder: testModel
+      ? ModelHolder.modelPassthroughForTest(testModel)
+      : undefined,
     actionsRegistry: mockActionsRegistry,
   });
   const result = await mockActionsRegistry.invoke({
@@ -221,19 +223,7 @@ async function describeModel(testModel: CatalogModel): Promise<string> {
 
 describe('createGetCatalogModelDescriptionAction', () => {
   it('should return a markdown description of the catalog model', async () => {
-    const mockActionsRegistry = actionsRegistryServiceMock();
-
-    createGetCatalogModelDescriptionAction({
-      modelHolder: ModelHolder.modelPassthroughForTest(model),
-      actionsRegistry: mockActionsRegistry,
-    });
-
-    const result = await mockActionsRegistry.invoke({
-      id: 'test:get-catalog-model-description',
-      input: {},
-    });
-
-    const description = (result as any).output.description as string;
+    const description = await describeModel(model);
 
     expect(description).toContain('# Catalog Model');
     expect(description).toContain('## Entity Kinds');
@@ -269,50 +259,37 @@ describe('createGetCatalogModelDescriptionAction', () => {
   });
 
   it('should fall back to the default model when no model holder is provided', async () => {
-    const mockActionsRegistry = actionsRegistryServiceMock();
-
-    createGetCatalogModelDescriptionAction({
-      modelHolder: undefined,
-      actionsRegistry: mockActionsRegistry,
-    });
-
-    const result = await mockActionsRegistry.invoke({
-      id: 'test:get-catalog-model-description',
-      input: {},
-    });
-
-    const description = (result as any).output.description as string;
+    const description = await describeModel();
 
     expect(description).toContain('# Catalog Model');
     expect(description).toContain('## Entity Kinds');
     expect(description).toContain('### Entity Kind "Component"');
-    expect(description).toContain('"spec.lifecycle"');
-    expect(description).toContain('"spec.owner"');
+    // Full field lines, since the preamble mentions some field paths too
+    expect(description).toContain(
+      '* "spec.lifecycle" (string, required): The lifecycle state of the component.',
+    );
+    expect(description).toContain(
+      '* "spec.owner" (string, required, relation "ownedBy" [default kind: Group; allowed kinds: Group, User]): An entity reference to the owner of the component.',
+    );
+    // A relation without a declared field still gets its own line
+    expect(description).toContain(
+      '* "spec.dependencyOf" (relation "dependencyOf")',
+    );
   });
 
   it('should describe kind fields and relation fields', async () => {
-    const mockActionsRegistry = actionsRegistryServiceMock();
-
-    createGetCatalogModelDescriptionAction({
-      modelHolder: ModelHolder.modelPassthroughForTest(model),
-      actionsRegistry: mockActionsRegistry,
-    });
-
-    const result = await mockActionsRegistry.invoke({
-      id: 'test:get-catalog-model-description',
-      input: {},
-    });
-
-    const description = (result as any).output.description as string;
+    const description = await describeModel(model);
 
     // Versions with identical fields are grouped
     expect(description.match(/#### Fields/g)).toHaveLength(2);
     expect(description).toContain(
       '#### Fields (backstage.io/v1alpha1, backstage.io/v1beta1)',
     );
+    // The relation is described on the line of the field that generates it
     expect(description).toContain(
-      '* "spec.owner" (string, required): The owner of the component.',
+      '* "spec.owner" (string, required, relation "ownedBy" [default kind: Group; allowed kinds: Group, User]): The owner of the component.',
     );
+    expect(description).not.toContain('"spec.owner" →');
     expect(description).toContain('* "spec.tags" (array of string)');
     expect(description).toContain('* "spec.ids" (array of string | number)');
     expect(description).toContain(
@@ -322,13 +299,68 @@ describe('createGetCatalogModelDescriptionAction', () => {
       '* "spec.lifecycle" (string, required, one of "production", "experimental")',
     );
     expect(description).toContain('* "spec.nested.deep" (number)');
-    expect(description).toContain(
-      '* "spec.owner" → relation "ownedBy" (default kind: Group; allowed kinds: Group, User)',
-    );
 
     // Base fields are not repeated for every kind
     expect(description).not.toContain('"metadata.name" (');
     expect(description).not.toContain('"apiVersion" (');
+  });
+
+  it('should flag fields whose details are not fully listed', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
+        type: 'object',
+        properties: {
+          // Fields beyond the maximum depth are not listed
+          a: {
+            type: 'object',
+            properties: {
+              b: {
+                type: 'object',
+                properties: { c: { type: 'string' } },
+              },
+            },
+          },
+          // Fields of arrays of arrays are not listed
+          matrix: {
+            type: 'array',
+            items: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: { cell: { type: 'string' } },
+              },
+            },
+          },
+          contact: {
+            type: 'object',
+            dependentRequired: { email: ['name'] },
+            properties: { email: { type: 'string' } },
+          },
+          // Boolean schemas allow anything or nothing
+          anything: true,
+          nothing: false,
+          narrowed: { allOf: [{ type: 'string' }, false] },
+        },
+      })),
+    );
+
+    expect(description).toContain(
+      '* "spec.a.b" (object, has nested fields not listed here)',
+    );
+    expect(description).not.toContain('"spec.a.b.c"');
+    expect(description).toContain(
+      '* "spec.matrix" (array of array of object, has nested fields not listed here)',
+    );
+    expect(description).not.toContain('"spec.matrix.cell"');
+    expect(description).toContain(
+      '* "spec.contact" (object, has conditional constraints not listed here)',
+    );
+    expect(description).toContain('* "spec.contact.email" (string)');
+    expect(description).toContain('* "spec.anything" (any value)');
+    expect(description).toContain('* "spec.nothing" (not allowed)');
+    expect(description).toContain(
+      '* "spec.narrowed" (string, no allowed values)',
+    );
   });
 
   it('should fold every allOf declaration of a field', async () => {
@@ -544,12 +576,13 @@ describe('createGetCatalogModelDescriptionAction', () => {
     expect(description.match(/"spec.common"/g)).toHaveLength(4);
   });
 
-  it('should grow linearly with the number of kinds', async () => {
+  it('should grow by a fixed amount per kind', async () => {
     const describeKinds = (count: number) =>
       describeModel(
         createModelWithKinds(
           Array.from({ length: count }, (_, i) => ({
-            kind: `Custom${i}`,
+            // Equal-length names, so that every kind renders the same size
+            kind: `Custom${String(i).padStart(3, '0')}`,
             versions: [
               { apiVersion: 'example.com/v1' },
               { apiVersion: 'example.com/v2' },
@@ -560,17 +593,18 @@ describe('createGetCatalogModelDescriptionAction', () => {
         ),
       );
 
-    const small = await describeKinds(10);
-    const large = await describeKinds(50);
+    const [small, medium, large] = await Promise.all(
+      [10, 30, 50].map(describeKinds),
+    );
 
     // Identical versions are grouped, so every kind renders exactly one field
     // block no matter how many versions it has
     expect(small.match(/#### Fields/g)).toHaveLength(10);
     expect(large.match(/#### Fields/g)).toHaveLength(50);
 
-    // The fixed preamble does not scale with the number of kinds, so with
-    // linear growth 5x the kinds must produce strictly less than 5x the text
-    expect(large.length).toBeGreaterThan(small.length);
-    expect(large.length).toBeLessThan(small.length * 5);
+    // Every additional kind adds the same amount of text
+    const perKind = (medium.length - small.length) / 20;
+    expect(perKind).toBeGreaterThan(0);
+    expect(large.length - medium.length).toBe(perKind * 20);
   });
 });
