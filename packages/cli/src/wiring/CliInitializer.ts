@@ -33,7 +33,7 @@ interface TaggedFeature {
    * overlap with an individually-added module, allowing explicit module
    * additions to take precedence without causing conflicts.
    *
-   * Toggleable commands, i.e. those with `isEnabled`, do not count as
+   * Toggleable commands, i.e. those with `if`, do not count as
    * overlapping, since they are only active for some packages and rely on
    * the array-sourced command as the fallback.
    */
@@ -77,7 +77,7 @@ export class CliInitializer {
       if (!fromArray && OpaqueCliModule.isType(feature)) {
         const cmds = await OpaqueCliModule.toInternal(feature).commands;
         for (const cmd of cmds) {
-          if (!cmd.isEnabled) {
+          if (!cmd.if) {
             individualPaths.add(cmd.path.join(' '));
           }
         }

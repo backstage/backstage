@@ -19,8 +19,8 @@ import {
   OpaqueCommandLeafNode,
   OpaqueCommandTreeNode,
 } from '@internal/cli';
-import type { CommandNode } from '@internal/cli';
-import type { CliCommand, CliModule } from './types';
+import type { CommandNode, InternalCliCommand } from '@internal/cli';
+import type { CliModule } from './types';
 
 export class CommandGraph {
   readonly #roots: CommandNode[] = [];
@@ -29,7 +29,7 @@ export class CommandGraph {
     return this.#roots;
   }
 
-  add(command: CliCommand, module: CliModule): void {
+  add(command: InternalCliCommand, module: CliModule): void {
     const { path } = command;
     let current = this.#roots;
 
@@ -57,10 +57,10 @@ export class CommandGraph {
     if (existing) {
       if (OpaqueCommandLeafNode.isType(existing)) {
         // Multiple variants of the same leaf are allowed as long as at most
-        // one of them lacks an isEnabled predicate, which acts as the fallback.
+        // one of them lacks an if predicate, which acts as the fallback.
         const { variants } = OpaqueCommandLeafNode.toInternal(existing);
-        const fallback = variants.find(v => !v.command.isEnabled);
-        if (command.isEnabled || !fallback) {
+        const fallback = variants.find(v => !v.command.if);
+        if (command.if || !fallback) {
           variants.push({ command, module });
           return;
         }

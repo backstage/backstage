@@ -329,10 +329,10 @@ describe('CliInitializer', () => {
     const toggledModule = createCliModule({
       packageJson: { name: '@backstage/toggled' },
       init: async reg =>
-        reg.addCommand({
-          path: ['package', 'test'],
+        reg.addPackageCommand({
+          command: ['test'],
           description: 'toggled test',
-          isEnabled: ({ packageJson }) => packageJson.name === 'toggled-pkg',
+          if: ({ packageJson }) => packageJson.name === 'toggled-pkg',
           execute: async () => {
             calls.push('toggled');
           },

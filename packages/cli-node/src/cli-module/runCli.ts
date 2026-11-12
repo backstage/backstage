@@ -20,7 +20,7 @@ import {
   OpaqueCommandTreeNode,
   isCommandNodeHidden,
 } from '@internal/cli';
-import type { CommandNode } from '@internal/cli';
+import type { CommandNode, InternalCliCommand } from '@internal/cli';
 import { ForwardedError, isError, stringifyError } from '@backstage/errors';
 import chalk from 'chalk';
 import { cli, command } from 'cleye';
@@ -30,7 +30,7 @@ import {
   findCliPackageContext,
   resolveCommandVariant,
 } from './resolveCommandVariant';
-import type { CliCommand, CliModule } from './types';
+import type { CliModule, CliPackageCommand } from './types';
 
 interface HelpNode {
   id?: string;
@@ -165,7 +165,7 @@ function createHelpOptions(options: {
     } else {
       const { name, variants } = OpaqueCommandLeafNode.toInternal(node);
       // The fallback is the default implementation, so it describes the command
-      const described = variants.find(v => !v.command.isEnabled) ?? variants[0];
+      const described = variants.find(v => !v.command.if) ?? variants[0];
       commandRows.push([name, described.command.description]);
     }
   }
@@ -218,7 +218,7 @@ function createHelpOptions(options: {
 }
 
 async function executeCommand(
-  commandToExecute: CliCommand,
+  commandToExecute: InternalCliCommand,
   args: string[],
   programName: string,
 ): Promise<void> {
@@ -366,9 +366,9 @@ function hasVersionFlag(args: string[]): boolean {
  * to the caller.
  *
  * Multiple modules may provide the same `package` command if all but at most
- * one of them declare `isEnabled`. The variant to run is selected at invocation
+ * one of them declare `if`. The variant to run is selected at invocation
  * time based on the package at the current working directory, see
- * {@link CliCommand.isEnabled}.
+ * {@link CliPackageCommand.if}.
  *
  * Invoking the program or a command group without a subcommand displays
  * help for that level and completes successfully. Command groups and commands
