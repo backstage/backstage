@@ -32,10 +32,6 @@ interface TaggedFeature {
    * Array-sourced modules are silently skipped when any of their commands
    * overlap with an individually-added module, allowing explicit module
    * additions to take precedence without causing conflicts.
-   *
-   * Toggleable commands, i.e. those with `isEnabled`, do not count as
-   * overlapping, since they are only active for some packages and rely on
-   * the array-sourced command as the fallback.
    */
   fromArray: boolean;
 }
@@ -69,17 +65,13 @@ export class CliInitializer {
     const resolvedGroups = await Promise.all(this.#uninitiazedFeatures);
     const allFeatures = resolvedGroups.flat();
 
-    // Collect command paths from individually-added modules. Toggleable
-    // commands are excluded so that array-sourced modules remain available
-    // as the fallback for packages where the toggled command is not enabled.
+    // Collect command paths from individually-added modules
     const individualPaths = new Set<string>();
     for (const { feature, fromArray } of allFeatures) {
       if (!fromArray && OpaqueCliModule.isType(feature)) {
         const cmds = await OpaqueCliModule.toInternal(feature).commands;
         for (const cmd of cmds) {
-          if (!cmd.isEnabled) {
-            individualPaths.add(cmd.path.join(' '));
-          }
+          individualPaths.add(cmd.path.join(' '));
         }
       }
     }

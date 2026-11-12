@@ -14,26 +14,6 @@
  * limitations under the License.
  */
 
-import type { BackstagePackageJson } from '../monorepo';
-
-/**
- * Information about the package that a package command is being run in,
- * used to decide whether a toggleable command is enabled.
- *
- * @public
- */
-export interface CliPackageContext {
-  /**
-   * The absolute path to the package directory, which is the directory of
-   * the nearest `package.json` at or above the current working directory.
-   */
-  dir: string;
-  /**
-   * The contents of the package's `package.json`.
-   */
-  packageJson: BackstagePackageJson;
-}
-
 /**
  * The context provided to a CLI command at the time of execution.
  *
@@ -101,24 +81,6 @@ export interface CliCommand {
    * output but can still be invoked.
    */
   experimental?: boolean;
-  /**
-   * An optional predicate that makes the command toggleable per package.
-   * Only allowed for commands whose path starts with `package`.
-   *
-   * Several modules may register the same `package` command path as long as
-   * at most one of them omits `isEnabled`. When the command is invoked, the
-   * predicate of each variant is evaluated against the package at the
-   * current working directory. If exactly one variant is enabled it is run;
-   * if several are enabled an error is thrown. If none are enabled, the
-   * variant without `isEnabled` is run as a fallback, and if there is no
-   * fallback an error is thrown.
-   *
-   * @example
-   * ```
-   * isEnabled: ({ packageJson }) => Boolean(packageJson.devDependencies?.vitest)
-   * ```
-   */
-  isEnabled?: (context: CliPackageContext) => boolean | Promise<boolean>;
   /**
    * The command implementation, either as a direct function or as a loader
    * that returns the implementation as a default export. The loader form
