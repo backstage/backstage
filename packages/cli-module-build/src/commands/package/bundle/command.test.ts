@@ -776,12 +776,16 @@ storeDir: .pnpm-store
 minimumReleaseAge: 4320
 overrides:
   some-dep: 1.0.0
+  ref-dep: $ref-dep
 patchedDependencies:
   patched-dep@2.0.0: patches/patched-dep.patch
-registry: https://\${NPM_USER}:\${NPM_PASS}@registry.example.com/
+registry: https://registry.example.com/
 registries:
+  '@env': https://\${NPM_USER}:\${NPM_PASS}@env.example.com/
   '@ws': https://user:secret@ws.example.com/
   '@open': https://open.example.com/
+  '@at': https://reader:pa@ss@at.example.com/npm/
+  '@query': https://query.example.com/npm/?token=secret
 catalog:
   react: ^18.0.0
 customSetting: true
@@ -798,15 +802,17 @@ customSetting: true
           'package.json': JSON.stringify({
             name: 'root',
             packageManager: 'pnpm@12.7.0',
+            devDependencies: { 'ref-dep': '^3.1.0' },
           }),
           'pnpm-workspace.yaml': pnpmWorkspace,
           'pnpm-lock.yaml': '# root pnpm-lock.yaml',
           'patches/patched-dep.patch': '# patch',
           '.pnpmfile.cjs': 'module.exports = { hooks: {} };',
           '.npmrc': [
-            'registry=https://registry.example.com/',
+            'registry=https://registry.example.com/ # the mirror',
             ' @priv:registry = https://priv.example.com/',
             '@cred:registry=https://${NPM_USER}:${NPM_PASS}@cred.example.com/',
+            '@query:registry=https://query.example.com/npm/?token=secret',
             '//priv.example.com/:_authToken=secret',
             'strict-ssl=false',
           ].join('\n'),
@@ -829,17 +835,22 @@ customSetting: true
           nodeLinker: 'hoisted',
           storeDir: joinPath(mockDir.path, '.pnpm-store'),
           minimumReleaseAge: 4320,
-          // Credentials are left out like in the .npmrc
+          // Credentials are left out like in the .npmrc, and so are the
+          // URLs with placeholders, which pnpm ignores
           registry: 'https://registry.example.com/',
           registries: {
             '@ws': 'https://ws.example.com/',
             '@open': 'https://open.example.com/',
+            '@at': 'https://at.example.com/npm/',
+            '@query': 'https://query.example.com/npm/',
           },
           catalog: { react: '^18.0.0' },
           patchedDependencies: {
             'patched-dep@2.0.0': 'patches/patched-dep.patch',
           },
-          overrides: { 'some-dep': '1.0.0' },
+          // A reference to a root dependency is resolved, since the bundle
+          // doesn't have that dependency
+          overrides: { 'some-dep': '1.0.0', 'ref-dep': '^3.1.0' },
         });
         await expectPathExists(
           [ctx.targetDir, 'patches', 'patched-dep.patch'],
@@ -850,7 +861,7 @@ customSetting: true
         await expect(
           fs.readFile(joinPath(ctx.targetDir, '.npmrc'), 'utf8'),
         ).resolves.toBe(
-          'registry=https://registry.example.com/\n@priv:registry = https://priv.example.com/\n@cred:registry=https://cred.example.com/\n',
+          'registry=https://registry.example.com/\n@priv:registry=https://priv.example.com/\n@query:registry=https://query.example.com/npm/\n',
         );
         await expectPathExists([ctx.targetDir, '.yarnrc.yml'], false);
         await expect(
@@ -899,7 +910,7 @@ customSetting: true
         await expectPathExists([ctx.targetDir, '.pnpmfile.cjs'], true);
       });
 
-      it('should fail rather than leave out a patch or a package of the pnpmfile', async () => {
+      it('should fail rather than leave out a patch, and warn about packages of the pnpmfile', async () => {
         await fs.remove(mockDir.resolve('patches/patched-dep.patch'));
         await expect(bundleCommand(defaultOpts)).rejects.toThrow(
           `The patch files of patched-dep@2.0.0 at ${mockDir.resolve(
@@ -907,16 +918,34 @@ customSetting: true
           )} were not found, so the bundle can't be patched`,
         );
 
+        expect(mockRun).not.toHaveBeenCalledWith(
+          expect.arrayContaining(['pnpm', 'install']),
+          expect.anything(),
+        );
+
+        // A package that the pnpmfile seems to load only gives a warning,
+        // since the search may find text that isn't an import
         mockDir.addContent({
           'patches/patched-dep.patch': '# patch',
           '.pnpmfile.cjs': "require('pnpmfile-only-dep');",
         });
-        await expect(bundleCommand(defaultOpts)).rejects.toThrow(
-          'The pnpmfile .pnpmfile.cjs loads pnpmfile-only-dep, which is not installed where the bundle is written.',
+        await bundleCommand(defaultOpts);
+        expect(console.warn).toHaveBeenCalledWith(
+          expect.stringContaining(
+            'The pnpmfile .pnpmfile.cjs seems to load pnpmfile-only-dep, which is not installed where the bundle is written.',
+          ),
         );
-        expect(mockRun).not.toHaveBeenCalledWith(
-          expect.arrayContaining(['pnpm', 'install']),
-          expect.anything(),
+      });
+
+      it('should fail when an override refers to a dependency that the root does not have', async () => {
+        mockDir.addContent({
+          'pnpm-workspace.yaml': pnpmWorkspace.replace(
+            'ref-dep: $ref-dep',
+            'ref-dep: $missing-dep',
+          ),
+        });
+        await expect(bundleCommand(defaultOpts)).rejects.toThrow(
+          'The override of ref-dep refers to $missing-dep, but the root package.json has no dependency on missing-dep',
         );
       });
 
