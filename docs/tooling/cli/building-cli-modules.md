@@ -176,6 +176,38 @@ export default async ({ args, info }: CliCommandContext) => {
 };
 ```
 
+### Toggling package commands
+
+Commands under `package` can set `isEnabled`, a predicate that receives the
+package directory and its `package.json`. This lets several modules provide the
+same command path, such as `package lint`, with the right one running for each
+package:
+
+```ts
+reg.addCommand({
+  path: ['package', 'lint'],
+  description: 'Lint the package with oxlint',
+  isEnabled: ({ packageJson }) =>
+    'oxlint' in (packageJson.devDependencies ?? {}),
+  execute: { loader: () => import('./commands/lint') },
+});
+```
+
+The predicate is evaluated for the package in the current working directory.
+The following rules apply when several modules register the same path:
+
+- At most one of them may omit `isEnabled`. That command is the fallback, and
+  a second command without `isEnabled` is reported as a conflict.
+- If exactly one command is enabled, it runs.
+- If more than one command is enabled, the CLI fails and lists the modules.
+- If none is enabled, the fallback runs. Without a fallback, the CLI fails
+  with an error that names the package and the candidate modules.
+
+A module that is installed on its own and has `isEnabled` set does not replace
+the matching command in a default module set. The default command stays
+available as the fallback. Setting `isEnabled` on a command outside `package`
+is an error.
+
 ## Command context
 
 The execute function receives a `CliCommandContext` with two fields:

@@ -62,8 +62,18 @@ export function createCliModule(options: {
   }
 
   const commands: CliCommand[] = [];
+  const addCommand = (command: CliCommand) => {
+    if (command.isEnabled && command.path[0] !== 'package') {
+      throw new Error(
+        `Command "${command.path.join(' ')}" from "${
+          options.packageJson.name
+        }" sets isEnabled, which is only supported for commands under "package"`,
+      );
+    }
+    commands.push(command);
+  };
   const commandsPromise = Promise.resolve()
-    .then(() => options.init({ addCommand: command => commands.push(command) }))
+    .then(() => options.init({ addCommand }))
     .then(() => commands);
 
   return OpaqueCliModule.createInstance('v1', {

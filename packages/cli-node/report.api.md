@@ -113,6 +113,7 @@ export interface CliCommand {
         }>;
       };
   experimental?: boolean;
+  isEnabled?: (context: CliPackageContext) => boolean | Promise<boolean>;
   path: string[];
 }
 
@@ -129,6 +130,12 @@ export interface CliCommandContext {
 export interface CliModule {
   // (undocumented)
   readonly $$type: '@backstage/CliModule';
+}
+
+// @public
+export interface CliPackageContext {
+  dir: string;
+  packageJson: BackstagePackageJson;
 }
 
 // @public
