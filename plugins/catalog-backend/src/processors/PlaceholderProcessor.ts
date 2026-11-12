@@ -155,13 +155,8 @@ export class PlaceholderProcessor implements CatalogProcessor {
  * Like Promise.all, but waits for every promise to finish before rejecting.
  */
 async function settleAll<T>(promises: Promise<T>[]): Promise<T[]> {
-  const results = await Promise.allSettled(promises);
-  for (const r of results) {
-    if (r.status === 'rejected') {
-      throw r.reason;
-    }
-  }
-  return results.map(r => (r as PromiseFulfilledResult<T>).value);
+  await Promise.allSettled(promises);
+  return Promise.all(promises);
 }
 
 /*
