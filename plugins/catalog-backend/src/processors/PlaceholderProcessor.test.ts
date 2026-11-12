@@ -781,18 +781,22 @@ describe('PlaceholderProcessor', () => {
     });
   });
 
-  it('waits for all placeholders to finish before failing', async () => {
-    let finishSlow: () => void = () => {};
-    const slowDone = new Promise<void>(resolve => {
-      finishSlow = resolve;
+  it('waits for all placeholders to finish before failing, reporting the first error', async () => {
+    let release: () => void = () => {};
+    const gate = new Promise<void>(resolve => {
+      release = resolve;
     });
     const processor = new PlaceholderProcessor({
       resolvers: {
-        fail: async () => {
-          throw new Error('boom');
+        failLate: async () => {
+          await gate;
+          throw new Error('late');
+        },
+        failEarly: async () => {
+          throw new Error('early');
         },
         slow: async ({ emit }) => {
-          await slowDone;
+          await gate;
           emit({ type: 'refresh', key: 'url:slow' });
           return 'slow';
         },
@@ -809,7 +813,11 @@ describe('PlaceholderProcessor', () => {
           apiVersion: 'a',
           kind: 'k',
           metadata: { name: 'n' },
-          spec: { a: { $fail: 'x' }, b: [{ $slow: 'y' }] },
+          spec: {
+            a: { $failLate: 'x' },
+            b: { c: [{ $failEarly: 'y' }] },
+            d: [{ e: { $slow: 'z' } }],
+          },
         },
         { type: 'fake', target: 'http://example.com' },
         r => emitted.push(r),
@@ -818,13 +826,15 @@ describe('PlaceholderProcessor', () => {
         settled = true;
       });
 
-    // The failing placeholder must not end processing while another one is
-    // still running
+    // The failing placeholder must not end processing while others are still
+    // running
     await new Promise(resolve => setTimeout(resolve, 10));
     expect(settled).toBe(false);
 
-    finishSlow();
-    await expect(result).rejects.toThrow('boom');
+    release();
+    // The error that happened first is reported, even though it comes later
+    // in the entity and is nested deeper
+    await expect(result).rejects.toThrow('early');
     expect(emitted).toEqual([{ type: 'refresh', key: 'url:slow' }]);
   });
 

@@ -57,7 +57,21 @@ export class PlaceholderProcessor implements CatalogProcessor {
     location: LocationSpec,
     emit: CatalogProcessorEmit,
   ): Promise<Entity> {
-    const process = async (data: any): Promise<[any, boolean]> => {
+    // Every step of the traversal that is still running, so that a failure
+    // can wait for the others before processing finishes
+    const running = new Set<Promise<unknown>>();
+
+    const process = (data: any): Promise<[any, boolean]> => {
+      const step = processStep(data);
+      running.add(step);
+      step.then(
+        () => running.delete(step),
+        () => running.delete(step),
+      );
+      return step;
+    };
+
+    const processStep = async (data: any): Promise<[any, boolean]> => {
       if (!data || !(data instanceof Object)) {
         // Scalars can't have placeholders
         return [data, false];
@@ -65,7 +79,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
 
       if (Array.isArray(data)) {
         // We're an array - process all entries recursively
-        const items = await settleAll(data.map(item => process(item)));
+        const items = await Promise.all(data.map(item => process(item)));
         return items.every(([, changed]) => !changed)
           ? [data, false]
           : [items.map(([item]) => item), true];
@@ -75,7 +89,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
       if (!keys.some(k => k.startsWith('$'))) {
         // We're an object but no placeholders at this level - process all
         // entries recursively
-        const entries = await settleAll(
+        const entries = await Promise.all(
           Object.entries(data).map(([k, v]) =>
             process(v).then(vp => [k, vp] as const),
           ),
@@ -131,25 +145,19 @@ export class PlaceholderProcessor implements CatalogProcessor {
       ];
     };
 
-    const [result] = await process(entity);
-    return result;
+    try {
+      const [result] = await process(entity);
+      return result;
+    } catch (error) {
+      // Let resolvers that are still running finish, so that none of them
+      // emits after processing of the entity has completed. The original
+      // error is the one that gets reported.
+      while (running.size) {
+        await Promise.allSettled([...running]);
+      }
+      throw error;
+    }
   }
-}
-
-/**
- * Like Promise.all, but waits for every promise to settle before rejecting.
- * This makes sure that no resolver is still running, and possibly emitting,
- * after processing of the entity has finished.
- */
-async function settleAll<T>(promises: Promise<T>[]): Promise<T[]> {
-  const results = await Promise.allSettled(promises);
-  const failure = results.find(
-    (r): r is PromiseRejectedResult => r.status === 'rejected',
-  );
-  if (failure) {
-    throw failure.reason;
-  }
-  return results.map(r => (r as PromiseFulfilledResult<T>).value);
 }
 
 /*
