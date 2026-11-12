@@ -48,8 +48,7 @@
     "@backstage/filter-predicates": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@backstage/version-bridge": "workspace:^",
-    "use-sync-external-store": "^1.7.0"
+    "@backstage/version-bridge": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -63,7 +62,6 @@
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/react": "^18.0.0",
-    "@types/use-sync-external-store": "^1.7.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2"
   },
