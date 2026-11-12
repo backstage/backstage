@@ -102,7 +102,7 @@ export default class HTTPServer {
           }
 
           if (request.url?.startsWith(this.proxyEndpoint)) {
-            if (request.url?.endsWith('.html')) {
+            if (!this.sourcePreview && request.url?.endsWith('.html')) {
               proxyHtmlWithLivereloadInjection({
                 request,
                 response,

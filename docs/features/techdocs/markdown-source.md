@@ -11,9 +11,13 @@ data: it does not run Python plugins, macros, JavaScript, or executable examples
 
 For backend builds, set `techdocs.migration.publishing` to `dual` to publish HTML
 and source together, or `source` to skip MkDocs. The default is `legacy`.
+Source publication is implemented by the built-in MkDocs generator; other
+engines, including Zensical, do not publish source in these modes. With a
+non-MkDocs engine, enabling either mode can also cause repeated backend builds
+because its metadata does not record the configured publishing mode.
 
-For CI builds, run `techdocs-cli generate --publishing dual` (or `source`), then
-publish the complete output directory with the existing `techdocs-cli publish`
+For CI builds using MkDocs, run `techdocs-cli generate --publishing dual` (or
+`source`), then publish the complete output directory with the existing `techdocs-cli publish`
 command. Both formats use the same storage provider. Keep `_techdocs` reserved for
 TechDocs. Source assets have their own copies and are stored as inert JSON files.
 
@@ -97,7 +101,8 @@ that change headings or searchable content must also run during ingestion.
 Run `techdocs-cli serve --publishing source --source-dir .` to preview without
 MkDocs, or use `--publishing dual` to compare both formats. Changes rebuild the
 preview and reload the browser. A failed rebuild retains the last successful
-preview and displays the build error. The preview command uses the bundled
+preview and displays the build error. Source preview uses the built-in MkDocs
+generator rather than the selected engine. The preview command uses the bundled
 Backstage app; when developing this repository, use its embedded app development
 server with `TECHDOCS_CLI_DEV_MODE=1 techdocs-cli serve --publishing source`
 running alongside it, or provide an existing preview bundle with `--preview-app-bundle-path`.

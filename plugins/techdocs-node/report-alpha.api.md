@@ -4,10 +4,10 @@
 
 ```ts
 import type { GeneratorRunOptions } from '@backstage/plugin-techdocs-node';
-import { TechDocsMarkdownTransform } from '@backstage/plugin-techdocs-common/alpha';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { SpawnOptionsWithoutStdio } from 'node:child_process';
 import type { TechDocsContainerRunner } from '@backstage/plugin-techdocs-node';
+import { TechDocsMarkdownTransform } from '@backstage/plugin-techdocs-common/alpha';
 import { Writable } from 'node:stream';
 import * as yaml from 'js-yaml';
 
@@ -20,6 +20,18 @@ export const createOrUpdateMetadata: (
   logger: LoggerService,
   engine?: string,
 ) => Promise<void>;
+
+// @alpha
+export function generateTechDocsSource(
+  options: GeneratorRunOptions,
+  legacy: boolean,
+  transforms?: TechDocsMarkdownTransform[],
+): Promise<void>;
+
+// @alpha
+export function migrateTechDocsConfig(inputDir: string): Promise<{
+  diagnostics: string[];
+}>;
 
 // @alpha
 export const MKDOCS_SCHEMA: yaml.Schema;
@@ -64,18 +76,6 @@ export const validateMkdocsYaml: (
   inputDir: string,
   mkdocsYmlFileString: string,
 ) => Promise<string | undefined>;
-
-// @alpha
-export function generateTechDocsSource(
-  options: GeneratorRunOptions,
-  legacy: boolean,
-  transforms?: TechDocsMarkdownTransform[],
-): Promise<void>;
-
-// @alpha
-export function migrateTechDocsConfig(inputDir: string): Promise<{
-  diagnostics: string[];
-}>;
 
 // (No @packageDocumentation comment for this package)
 ```
