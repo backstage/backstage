@@ -19,6 +19,7 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
+import { Schema, Validator } from 'jsonschema';
 
 import { Octokit } from 'octokit';
 
@@ -175,5 +176,19 @@ describe('github:repo:rulesets:create', () => {
     ).rejects.toThrow(/No user credentials provided/);
     expect(octokitMock).not.toHaveBeenCalled();
     expect(mockOctokit.rest.repos.createRepoRuleset).not.toHaveBeenCalled();
+  });
+
+  it('should validate bypass actor ids', () => {
+    const validator = new Validator();
+    const isValid = (bypassActors: unknown) =>
+      validator.validate(
+        { ...mockContext.input, bypassActors },
+        action.schema?.input as Schema,
+      ).valid;
+
+    expect(isValid([{ actor_id: 5, actor_type: 'RepositoryRole' }])).toBe(true);
+    expect(isValid([{ actor_id: null, actor_type: 'DeployKey' }])).toBe(true);
+    expect(isValid([{ actor_type: 'OrganizationAdmin' }])).toBe(true);
+    expect(isValid([{ actor_id: 1.5, actor_type: 'Team' }])).toBe(false);
   });
 });
