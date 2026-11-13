@@ -167,11 +167,13 @@ export default async ({ args, info }: CliCommandContext) => {
       // If we can't list workspace packages, continue without them
     }
 
-    // Collect all package names from lockfile, or only the workspace packages
-    // without one, whose versions are known from their package.json
-    const allPackages = lockfile
-      ? [...lockfile.keys()]
-      : [...workspacePackages.keys()];
+    // Collect all package names from the lockfile and the workspace, since
+    // the lockfile may not list the workspace packages, as with Yarn 1, or
+    // those that aren't installed yet
+    const allPackages = new Set([
+      ...(lockfile?.keys() ?? []),
+      ...workspacePackages.keys(),
+    ]);
     const includePatterns = options.include || [];
 
     // Collect installed (non-local) packages
