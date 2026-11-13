@@ -256,7 +256,6 @@ export class DefaultHttpAuthService implements HttpAuthService {
   }
 
   async #getCookieOptions(_req: Request): Promise<{
-    domain: string;
     httpOnly: true;
     secure: boolean;
     priority: 'high';
@@ -274,7 +273,6 @@ export class DefaultHttpAuthService implements HttpAuthService {
       externalBaseUrl.hostname === 'localhost';
 
     return {
-      domain: externalBaseUrl.hostname,
       httpOnly: true,
       secure,
       priority: 'high',
