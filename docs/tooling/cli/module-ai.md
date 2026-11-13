@@ -406,6 +406,7 @@ git credentials and `gh` login for that host.
 
 - Skills that were synced earlier are never removed, even if they no longer apply. Use `skills remove` to remove them.
 - Rules are not handled. Only skills are installed.
+- Source locations must use `https:`. Skills with a plain `http:` source location are skipped, so that they cannot be changed in transit.
 - Skills with a ref that contains `/`, GitHub Enterprise hosts with a port, and refs or paths that contain `#`, `?`, or `\` are skipped.
 - Source locations without the GitLab `/-/` form must have exactly an `owner/repo` path before `/tree/`. GitLab sources in nested groups need the `/-/tree/` form.
 - Components are matched through source locations in the GitHub `/tree/` or GitLab `/-/tree/` form. For other hosts, or when the source location is longer than 200 characters, pass `--entity`.

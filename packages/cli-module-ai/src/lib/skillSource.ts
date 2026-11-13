@@ -171,8 +171,8 @@ export function parseSkillSource(
   } catch {
     return fail('source location is not a valid URL');
   }
-  if (url.protocol !== 'https:' && url.protocol !== 'http:') {
-    return fail('source location must be an http(s) URL');
+  if (url.protocol !== 'https:') {
+    return fail('source location must be an https URL');
   }
 
   const segments = url.pathname.split('/').filter(Boolean);
