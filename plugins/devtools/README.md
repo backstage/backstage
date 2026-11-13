@@ -36,7 +36,7 @@ Lists the configuration being used by your current running Backstage instance.
 
 ### Scheduled Tasks
 
-Scheduled tasks can be viewed and triggered under the `Scheduled Tasks` tab. [See below to configure](#scheduled-tasks-configuration).
+Scheduled tasks can be viewed and triggered under the `Scheduled Tasks` tab. Expand a task ID to view its worker state, cadence, scope, timing, and last run error. Use the table search and column headings to filter and sort tasks. [See below to configure](#scheduled-tasks-configuration).
 
 ![Example of Scheduled Tasks tab](./docs/devtools-scheduled-tasks-tab.png)
 
@@ -65,6 +65,8 @@ The following sections will help you get the DevTools plugin setup and running.
 You need to setup the [DevTools backend plugin](../devtools-backend/README.md) before you move forward with any of the following steps if you haven't already.
 
 ### Frontend
+
+DevTools content uses Backstage UI. Ensure your app imports `@backstage/ui/css/styles.css` once at its entry point. Loading states use the progress component provided by the new frontend system; legacy apps without a compatibility provider do not display a loading indicator. Existing `DevToolsLayout` routes and `tabProps` customizations remain supported.
 
 Install the `@backstage/plugin-devtools` package in your frontend app:
 

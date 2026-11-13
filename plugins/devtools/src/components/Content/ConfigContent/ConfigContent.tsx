@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Progress, WarningPanel } from '@backstage/core-components';
+import { Progress } from '@backstage/frontend-plugin-api';
 import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
 import { Alert, Box, Text } from '@backstage/ui';
 import useObservable from 'react-use/esm/useObservable';
@@ -67,9 +67,12 @@ export const ConfigContent = () => {
     <Box>
       {configInfo && configInfo.error && (
         <Box pb="2">
-          <WarningPanel title="Config validation failed">
-            <WarningContent error={configInfo.error} />
-          </WarningPanel>
+          <Alert
+            status="warning"
+            icon
+            title="Config validation failed"
+            description={<WarningContent error={configInfo.error} />}
+          />
         </Box>
       )}
       <Box bg="neutral" p="4">

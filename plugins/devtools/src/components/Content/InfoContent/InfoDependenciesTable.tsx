@@ -14,40 +14,35 @@
  * limitations under the License.
  */
 
-import { Table, TableColumn } from '@backstage/core-components';
+import { CellText } from '@backstage/ui';
 import { PackageDependency } from '@backstage/plugin-devtools-common';
-
-const columns: TableColumn[] = [
-  {
-    title: 'Name',
-    width: 'auto',
-    field: 'name',
-    defaultSort: 'asc',
-  },
-  {
-    title: 'Versions',
-    width: 'auto',
-    field: 'versions',
-  },
-];
+import { DevToolsTable } from '../DevToolsTable';
 
 export const InfoDependenciesTable = ({
   infoDependencies,
 }: {
   infoDependencies: PackageDependency[] | undefined;
-}) => {
-  return (
-    <Table
-      title="Package Dependencies"
-      options={{
-        paging: true,
-        pageSize: 15,
-        pageSizeOptions: [15, 30, 100],
-        loadingType: 'linear',
-        padding: 'dense',
-      }}
-      columns={columns}
-      data={infoDependencies || []}
-    />
-  );
-};
+}) => (
+  <DevToolsTable
+    title="Package Dependencies"
+    data={(infoDependencies ?? []).map(item => ({ ...item, id: item.name }))}
+    pageSize={15}
+    pageSizeOptions={[15, 30, 100]}
+    initialSort="name"
+    columns={[
+      {
+        id: 'name',
+        label: 'Name',
+        isSortable: true,
+        isRowHeader: true,
+        cell: item => <CellText title={item.name} />,
+      },
+      {
+        id: 'versions',
+        label: 'Versions',
+        isSortable: true,
+        cell: item => <CellText title={String(item.versions)} />,
+      },
+    ]}
+  />
+);

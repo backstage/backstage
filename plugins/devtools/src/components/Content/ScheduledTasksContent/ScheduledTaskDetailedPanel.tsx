@@ -14,32 +14,8 @@
  * limitations under the License.
  */
 import { TaskApiTasksResponse } from '@backstage/plugin-devtools-common/alpha';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    detailPanel: {
-      padding: theme.spacing(2),
-      backgroundColor: theme.palette.background.default,
-    },
-    detailLabel: {
-      fontWeight: 'bold',
-      marginRight: theme.spacing(1),
-    },
-    errorIcon: {
-      color: theme.palette.error.main,
-      marginRight: theme.spacing(1),
-      fontSize: '1.2rem',
-    },
-    detailPanelAlert: {
-      marginBottom: theme.spacing(2),
-    },
-  }),
-);
+import { Alert, Box, Text } from '@backstage/ui';
+import styles from './ScheduledTasksContent.module.css';
 
 /** @public */
 export const ScheduledTaskDetailPanel = ({
@@ -47,58 +23,49 @@ export const ScheduledTaskDetailPanel = ({
 }: {
   rowData: TaskApiTasksResponse;
 }) => {
-  const classes = useStyles();
   const lastRunError = rowData.taskState?.lastRunError;
-
-  const DetailItem = ({ title, value }: { title: string; value: any }) => (
-    <>
-      <Grid item xs={3}>
-        <Typography variant="subtitle2" className={classes.detailLabel}>
-          {title}:
-        </Typography>
-      </Grid>
-      <Grid item xs={9}>
-        <Typography variant="body2" component="code">
-          {value || 'N/A'}
-        </Typography>
-      </Grid>
-    </>
-  );
-
+  const details = [
+    ['Worker State', rowData.workerState?.status],
+    ['Frequency (Cadence)', rowData.settings?.cadence?.toString()],
+    ['Scope', rowData.scope],
+    [
+      'Started At',
+      rowData.taskState?.status === 'running' && rowData.taskState.startedAt
+        ? new Date(rowData.taskState.startedAt).toLocaleString()
+        : undefined,
+    ],
+    [
+      'Times Out At',
+      rowData.taskState?.status === 'running' && rowData.taskState.timesOutAt
+        ? new Date(rowData.taskState.timesOutAt).toLocaleString()
+        : undefined,
+    ],
+  ];
   return (
-    <Box className={classes.detailPanel}>
+    <Box p="4">
       {lastRunError && (
-        <Alert severity="error" className={classes.detailPanelAlert}>
-          <strong>Last Run Error:</strong> {lastRunError}
-        </Alert>
+        <Alert
+          status="danger"
+          icon
+          title="Last Run Error"
+          description={lastRunError}
+          mb="4"
+        />
       )}
-
-      <Grid container spacing={1}>
-        <DetailItem title="Worker State" value={rowData.workerState?.status} />
-        <DetailItem
-          title="Frequency (Cadence)"
-          value={rowData.settings?.cadence?.toString()}
-        />
-        <DetailItem title="Scope" value={rowData.scope} />
-        <DetailItem
-          title="Started At"
-          value={
-            rowData.taskState?.status === 'running' &&
-            rowData.taskState.startedAt
-              ? new Date(rowData.taskState.startedAt).toLocaleString()
-              : 'N/A'
-          }
-        />
-        <DetailItem
-          title="Times Out At"
-          value={
-            rowData.taskState?.status === 'running' &&
-            rowData.taskState.timesOutAt
-              ? new Date(rowData.taskState.timesOutAt).toLocaleString()
-              : 'N/A'
-          }
-        />
-      </Grid>
+      <dl className={styles.details}>
+        {details.map(([title, value]) => (
+          <div key={title}>
+            <dt>
+              <Text weight="bold">{title}:</Text>
+            </dt>
+            <dd>
+              <Text>
+                <code>{value || 'N/A'}</code>
+              </Text>
+            </dd>
+          </div>
+        ))}
+      </dl>
     </Box>
   );
 };

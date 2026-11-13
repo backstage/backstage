@@ -15,7 +15,7 @@
  */
 
 import type { ReactElement } from 'react';
-import { Progress } from '@backstage/core-components';
+import { Progress } from '@backstage/frontend-plugin-api';
 import { Alert, Box, Button, Card, CardBody, Flex, Text } from '@backstage/ui';
 import { useInfo } from '../../../hooks';
 import { InfoDependenciesTable } from './InfoDependenciesTable';

@@ -14,122 +14,97 @@
  * limitations under the License.
  */
 
+import { Progress } from '@backstage/frontend-plugin-api';
+import { Alert, Cell, CellText, Flex, Text } from '@backstage/ui';
 import {
-  Progress,
-  StatusError,
-  StatusOK,
-  StatusWarning,
-  Table,
-  TableColumn,
-} from '@backstage/core-components';
+  RiCheckboxCircleLine,
+  RiErrorWarningLine,
+  RiQuestionLine,
+} from '@remixicon/react';
 import { ExternalDependency } from '@backstage/plugin-devtools-common';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
 import { useExternalDependencies } from '../../../hooks';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    paperStyle: {
-      padding: theme.spacing(2),
-    },
-  }),
-);
+import { DevToolsTable } from '../DevToolsTable';
 
 export const getExternalDependencyStatus = (
   result: Partial<ExternalDependency> | undefined,
 ) => {
-  switch (result?.status) {
-    case 'Healthy':
-      return (
-        <Typography component="span">
-          <StatusOK /> {result.status}
-        </Typography>
-      );
-    case 'Unhealthy':
-      return (
-        <Typography component="span">
-          <StatusError /> {`${result.status}`}
-        </Typography>
-      );
-    case undefined:
-    default:
-      return (
-        <Typography component="span">
-          <StatusWarning /> Unknown
-        </Typography>
-      );
+  let icon = (
+    <RiQuestionLine aria-hidden style={{ color: 'var(--bui-fg-warning)' }} />
+  );
+  let status = 'Unknown';
+  if (result?.status === 'Healthy') {
+    icon = (
+      <RiCheckboxCircleLine
+        aria-hidden
+        style={{ color: 'var(--bui-fg-positive)' }}
+      />
+    );
+    status = result.status;
+  } else if (result?.status === 'Unhealthy') {
+    icon = (
+      <RiErrorWarningLine
+        aria-hidden
+        style={{ color: 'var(--bui-fg-negative)' }}
+      />
+    );
+    status = result.status;
   }
+  return (
+    <Flex align="center" gap="2">
+      {icon}
+      <Text>{status}</Text>
+    </Flex>
+  );
 };
-
-const columns: TableColumn[] = [
-  {
-    title: 'Name',
-    width: 'auto',
-    field: 'name',
-  },
-  {
-    title: 'Target',
-    width: 'auto',
-    field: 'target',
-  },
-  {
-    title: 'Type',
-    width: 'auto',
-    field: 'type',
-  },
-  {
-    title: 'Status',
-    width: 'auto',
-    render: (row: Partial<ExternalDependency>) => (
-      <Grid container direction="column">
-        <Grid item>
-          <Typography variant="button">
-            {getExternalDependencyStatus(row)}
-          </Typography>
-        </Grid>
-        <Grid item>{row.error && <Typography>{row.error}</Typography>}</Grid>
-      </Grid>
-    ),
-  },
-];
 
 /** @public */
 export const ExternalDependenciesContent = () => {
-  const classes = useStyles();
   const { externalDependencies, loading, error } = useExternalDependencies();
-
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+  if (loading) return <Progress />;
+  if (error)
+    return <Alert status="danger" icon title={error.message} role="alert" />;
+  if (!externalDependencies?.length) {
+    return <Alert status="info" title="No external dependencies found" />;
   }
-
-  if (!externalDependencies || externalDependencies.length === 0) {
-    return (
-      <Box>
-        <Paper className={classes.paperStyle}>
-          <Typography>No external dependencies found</Typography>
-        </Paper>
-      </Box>
-    );
-  }
-
   return (
-    <Table
+    <DevToolsTable
       title="Status"
-      options={{
-        paging: true,
-        pageSize: 20,
-        pageSizeOptions: [20, 50, 100],
-        loadingType: 'linear',
-        showEmptyDataSourceMessage: !loading,
-      }}
-      columns={columns}
-      data={externalDependencies || []}
+      data={externalDependencies.map((item, id) => ({ ...item, id }))}
+      pageSize={20}
+      pageSizeOptions={[20, 50, 100]}
+      columns={[
+        {
+          id: 'name',
+          label: 'Name',
+          isSortable: true,
+          isRowHeader: true,
+          cell: item => <CellText title={item.name} />,
+        },
+        {
+          id: 'target',
+          label: 'Target',
+          isSortable: true,
+          cell: item => <CellText title={item.target} />,
+        },
+        {
+          id: 'type',
+          label: 'Type',
+          isSortable: true,
+          cell: item => <CellText title={item.type} />,
+        },
+        {
+          id: 'status',
+          label: 'Status',
+          cell: item => (
+            <Cell>
+              <Flex direction="column" gap="1">
+                {getExternalDependencyStatus(item)}
+                {item.error && <Text>{item.error}</Text>}
+              </Flex>
+            </Cell>
+          ),
+        },
+      ]}
     />
   );
 };

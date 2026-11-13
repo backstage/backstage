@@ -1,0 +1,23 @@
+@layer components {
+  .pluginSelector {
+    min-width: 240px;
+    margin-bottom: var(--bui-space-4);
+  }
+
+  .details {
+    margin: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .details > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--bui-space-2);
+    margin-bottom: var(--bui-space-2);
+  }
+
+  .details dd {
+    margin: 0;
+  }
+}
