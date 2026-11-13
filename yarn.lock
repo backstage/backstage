@@ -199,7 +199,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apidevtools/json-schema-ref-parser@npm:^15.3.5":
+"@apidevtools/json-schema-ref-parser@npm:^15.3.6":
   version: 15.5.2
   resolution: "@apidevtools/json-schema-ref-parser@npm:15.5.2"
   dependencies:
@@ -4592,7 +4592,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-openapi@workspace:plugins/catalog-backend-module-openapi"
   dependencies:
-    "@apidevtools/json-schema-ref-parser": "npm:^15.3.5"
+    "@apidevtools/json-schema-ref-parser": "npm:^15.3.6"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
