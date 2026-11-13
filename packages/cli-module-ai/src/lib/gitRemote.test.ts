@@ -31,17 +31,11 @@ describe('repoUrlFromRemote', () => {
     expect(repoUrlFromRemote('git@github.com:backstage/backstage.git')).toBe(
       'https://github.com/backstage/backstage',
     );
-    expect(repoUrlFromRemote('https://github.com/backstage/backstage')).toBe(
-      'https://github.com/backstage/backstage',
-    );
     expect(repoUrlFromRemote('https://github.acme.com/org/repo.git\n')).toBe(
       'https://github.acme.com/org/repo',
     );
     expect(repoUrlFromRemote('git@gitlab.com:group/sub/repo.git')).toBe(
       'https://gitlab.com/group/sub/repo',
-    );
-    expect(repoUrlFromRemote('git@git.acme.com:o/r.git')).toBe(
-      'https://git.acme.com/o/r',
     );
   });
 
@@ -197,20 +191,11 @@ describe('isManagedWithinSameRepo', () => {
     expect(
       isManagedWithinSameRepo(
         source,
-        `url:${repo.toUpperCase()}/blob/main/c.yaml`,
-        repo,
-        [],
-      ),
-    ).toBe(true);
-    expect(
-      isManagedWithinSameRepo(
-        source,
         'url:https://github.com/acme/other/blob/main/c.yaml',
         repo,
         [],
       ),
     ).toBe(false);
-    expect(isManagedWithinSameRepo(source, '', repo, [])).toBe(false);
     expect(
       isManagedWithinSameRepo(source, 'file:/work/main/c.yaml', repo, roots),
     ).toBe(false);

@@ -137,13 +137,20 @@ describe('findComponent', () => {
   const repo = 'https://github.acme.com/acme/mono';
   // A component read from a catalog file, as the catalog records in the
   // managed-by-location annotation.
-  const located = (name: string, managedBy: string): Entity => ({
+  const annotated = (
+    name: string,
+    annotations: Record<string, string>,
+  ): Entity => ({
     ...component(name),
-    metadata: {
-      ...component(name).metadata,
-      annotations: { 'backstage.io/managed-by-location': `url:${managedBy}` },
-    },
+    metadata: { ...component(name).metadata, annotations },
   });
+  const located = (name: string, managedBy: string) =>
+    annotated(name, { 'backstage.io/managed-by-location': `url:${managedBy}` });
+  const declared = (name: string, source: string, managedBy: string) =>
+    annotated(name, {
+      'backstage.io/source-location': `url:${source}`,
+      'backstage.io/managed-by-location': `url:${managedBy}`,
+    });
   const catalog = (registered: Entity[]) =>
     mockClient.queryEntities.mockImplementation(async () => page(registered));
   const find = (repoPrefix: string) =>
@@ -199,21 +206,6 @@ describe('findComponent', () => {
   });
 
   it('prefers the source location over the catalog file location, nearest folder first', async () => {
-    const declared = (
-      name: string,
-      sourceLocation: string,
-      managedBy: string,
-    ) =>
-      ({
-        ...component(name),
-        metadata: {
-          ...component(name).metadata,
-          annotations: {
-            'backstage.io/source-location': `url:${sourceLocation}`,
-            'backstage.io/managed-by-location': `url:${managedBy}`,
-          },
-        },
-      } as Entity);
     // Both are registered from a central catalog file in the same repository.
     const central = `${repo}/blob/main/catalog/all.yaml`;
     const api = declared('api', `${repo}/tree/main/services/api`, central);
@@ -257,18 +249,15 @@ describe('findComponent', () => {
   });
 
   it('fails pointing at --entity when no source location or catalog file matches', async () => {
-    const declared: Entity = {
-      ...component('declared'),
-      metadata: {
-        ...component('declared').metadata,
-        annotations: {
-          'backstage.io/managed-by-location':
-            'url:https://github.acme.com/acme/catalog/blob/main/svc.yaml',
-          'backstage.io/source-location': `url:${repo}/tree/main/services/elsewhere`,
-        },
-      },
-    };
-    catalog([declared, located('other', `${repo}/blob/main/other/c.yaml`)]);
+    const registeredElsewhere = declared(
+      'declared',
+      `${repo}/tree/main/services/elsewhere`,
+      'https://github.acme.com/acme/catalog/blob/main/svc.yaml',
+    );
+    catalog([
+      registeredElsewhere,
+      located('other', `${repo}/blob/main/other/c.yaml`),
+    ]);
     await expect(find('services/svc/src')).rejects.toThrow(
       /No Component with a backstage.io\/source-location or backstage.io\/managed-by-location at or above https:\/\/github.acme.com\/acme\/mono\/services\/svc\/src was found.*--entity/,
     );
@@ -288,22 +277,8 @@ describe('findComponent', () => {
       fs.mkdirSync(path.join(main, 'svc'), { recursive: true });
       fs.mkdirSync(path.join(worktree, 'other'), { recursive: true });
       fs.symlinkSync(main, link);
-      const file = (name: string, p: string): Entity => ({
-        ...component(name),
-        metadata: {
-          ...component(name).metadata,
-          annotations: { 'backstage.io/managed-by-location': `file:${p}` },
-        },
-      });
-      catalog([
-        file('root', path.join(main, 'catalog-info.yaml')),
-        // Registered through a symlink to the main checkout.
-        file('svc', path.join(link, 'svc', 'catalog-info.yaml')),
-        file('other', path.join(worktree, 'other', 'catalog-info.yaml')),
-        // Outside of the checkouts, so it never matches.
-        file('outside', path.join(base, 'outside', 'catalog-info.yaml')),
-        located('remote', `${repo}/blob/main/remote/catalog-info.yaml`),
-      ]);
+      const file = (name: string, p: string) =>
+        annotated(name, { 'backstage.io/managed-by-location': `file:${p}` });
       const findFile = (repoPrefix: string) =>
         findComponent({
           client: mockClient,
@@ -314,16 +289,10 @@ describe('findComponent', () => {
         });
 
       const sourced = (name: string, source: string, managedBy: string) =>
-        ({
-          ...component(name),
-          metadata: {
-            ...component(name).metadata,
-            annotations: {
-              'backstage.io/source-location': `file:${source}`,
-              'backstage.io/managed-by-location': managedBy,
-            },
-          },
-        } as Entity);
+        annotated(name, {
+          'backstage.io/source-location': `file:${source}`,
+          'backstage.io/managed-by-location': managedBy,
+        });
       fs.mkdirSync(path.join(main, 'good'), { recursive: true });
       fs.mkdirSync(path.join(main, 'bad'), { recursive: true });
       fs.mkdirSync(path.join(main, 'bad2'), { recursive: true });
