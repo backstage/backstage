@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 import chalk from 'chalk';
-import type { ExecException } from 'node:child_process';
 import { relative as relativePath, sep, posix } from 'node:path';
-import { exec } from '../../../../lib/exec';
 import { DEFAULT_BASE_REF } from '../../../../lib/openapi/constants';
 import { getPathToCurrentOpenApiSpec } from '../../../../lib/openapi/helpers';
 import { ensureOasdiffInstalled } from '../../../util';
 import { OptionValues } from 'commander';
 import { targetPaths } from '@backstage/cli-common';
+import { runOutputWithStderr } from '../../../../lib/runOutputWithStderr';
+import { SignalTerminatedError } from '../../../../lib/waitForExitOrSignal';
 
 async function check(opts: OptionValues) {
   await ensureOasdiffInstalled();
@@ -36,10 +36,10 @@ async function check(opts: OptionValues) {
 
   let baseRef = opts.since;
   if (!baseRef) {
-    const { stdout: branch } = await exec(
-      `git merge-base --fork-point ${DEFAULT_BASE_REF}`,
+    baseRef = await runOutputWithStderr(
+      ['git', 'merge-base', '--fork-point', DEFAULT_BASE_REF],
+      { env: { FORCE_COLOR: undefined } },
     );
-    baseRef = branch.toString().trim();
   }
 
   const baseSpec = `${baseRef}:${relativeSpecPath}`;
@@ -50,14 +50,22 @@ async function check(opts: OptionValues) {
   let output = '';
   let failed = false;
   try {
-    const { stdout } = await exec(
-      'oasdiff',
-      [subcommand, baseSpec, relativeSpecPath, ...formatArgs, ...failArgs],
-      { cwd: targetPaths.rootDir },
+    output = await runOutputWithStderr(
+      [
+        'oasdiff',
+        subcommand,
+        baseSpec,
+        relativeSpecPath,
+        ...formatArgs,
+        ...failArgs,
+      ],
+      { cwd: targetPaths.rootDir, env: { FORCE_COLOR: undefined } },
     );
-    output = stdout.toString();
   } catch (err) {
-    output = (err as ExecException).stdout ?? '';
+    if (err instanceof SignalTerminatedError) {
+      throw err;
+    }
+    output = (err as { stdout?: string }).stdout ?? '';
     failed = true;
   }
 

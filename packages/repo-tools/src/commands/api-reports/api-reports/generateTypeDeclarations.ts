@@ -17,6 +17,7 @@
 import fs from 'fs-extra';
 import { run, ExitCodeError } from '@backstage/cli-common';
 import { targetPaths } from '@backstage/cli-common';
+import { waitForExitOrSignal } from '../../../lib/waitForExitOrSignal';
 
 /**
  * Generates the TypeScript declaration files for the specified project, using the provided `tsconfig.json` file.
@@ -31,21 +32,23 @@ import { targetPaths } from '@backstage/cli-common';
 export async function generateTypeDeclarations(tsconfigFilePath: string) {
   await fs.remove(targetPaths.resolveRoot('dist-types'));
   try {
-    await run(
-      [
-        'yarn',
-        'tsc',
-        '--project',
-        tsconfigFilePath,
-        '--skipLibCheck',
-        'false',
-        '--incremental',
-        'false',
-      ],
-      {
-        cwd: targetPaths.rootDir,
-      },
-    ).waitForExit();
+    await waitForExitOrSignal(
+      run(
+        [
+          'yarn',
+          'tsc',
+          '--project',
+          tsconfigFilePath,
+          '--skipLibCheck',
+          'false',
+          '--incremental',
+          'false',
+        ],
+        {
+          cwd: targetPaths.rootDir,
+        },
+      ),
+    );
   } catch (error) {
     if (error instanceof ExitCodeError) {
       process.exit(error.code);

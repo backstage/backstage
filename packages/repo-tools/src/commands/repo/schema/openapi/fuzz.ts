@@ -15,7 +15,7 @@
  */
 import { PackageGraph } from '@backstage/cli-node';
 import { OptionValues } from 'commander';
-import { exec } from '../../../../lib/exec';
+import { runOutputWithStderr } from '../../../../lib/runOutputWithStderr';
 import chalk from 'chalk';
 
 export async function command(opts: OptionValues) {
@@ -36,13 +36,14 @@ export async function command(opts: OptionValues) {
   const fuzzablePackages = packages.filter(e => e.packageJson.scripts?.fuzz);
   try {
     for (const pkg of fuzzablePackages) {
-      await exec('yarn', ['fuzz'], {
+      await runOutputWithStderr(['yarn', 'fuzz'], {
         cwd: pkg.dir,
       });
     }
     console.log(chalk.green(`Successfully fuzzed.`));
   } catch (err) {
     console.error(err.stdout);
+    console.error(err.message);
     process.exit(1);
   }
 }

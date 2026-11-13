@@ -23,7 +23,9 @@ import {
   resolve as resolvePath,
   posix,
 } from 'node:path';
-import { exec } from '../../lib/exec';
+import { run } from '@backstage/cli-common';
+import { waitForExitOrSignal } from '../../lib/waitForExitOrSignal';
+import { runOutputWithStderr } from '../../lib/runOutputWithStderr';
 import { ForwardedError } from '@backstage/errors';
 import { Readable } from 'node:stream';
 import { finished } from 'node:stream/promises';
@@ -49,6 +51,8 @@ const GIT_ENV = {
   HOME: '',
   XDG_CONFIG_HOME: '',
   USERPROFILE: '',
+  // Output is parsed, so don't let run() force colors
+  FORCE_COLOR: undefined,
 };
 
 interface PatchContext {
@@ -131,7 +135,7 @@ export default async (
 
     if (!opts.skipInstall) {
       console.log("Running 'yarn install' in target workspace");
-      await exec('yarn', ['install'], {
+      await runOutputWithStderr(['yarn', 'install'], {
         cwd: ctx.targetRoot,
       }).catch(() => {
         throw new Error(
@@ -240,15 +244,13 @@ async function generatePatch(
     return undefined;
   }
   const cleanPackageName = ctx.packageName.replace('/', '-');
-  const describeResult = await exec(
-    'git',
-    ['describe', '--always', '--dirty', "--exclude='*'"],
+  const describe = await runOutputWithStderr(
+    ['git', 'describe', '--always', '--dirty', '--exclude=*'],
     {
       cwd: ctx.sourceRepo.root.dir,
-      env: { ...process.env, ...GIT_ENV },
+      env: GIT_ENV,
     },
   );
-  const describe = describeResult.stdout.toString('utf8').trim();
   const name = `${cleanPackageName}-${version}-${describe}.patch`;
   const patchDir = joinPath(ctx.targetRepo.root.dir, '.yarn', 'patches');
 
@@ -274,15 +276,18 @@ function tryParsePatchResolution(value?: string): string | undefined {
 
 // Build and pack the source package to an archive in the work directory
 async function buildTargetArchive(ctx: PatchContext): Promise<string> {
-  await exec('yarn', ['build'], {
+  await runOutputWithStderr(['yarn', 'build'], {
     cwd: ctx.sourcePkg.dir,
   });
 
   const archiveName = 'target.tgz';
 
-  await exec('yarn', ['pack', '--out', joinPath(ctx.workDir, archiveName)], {
-    cwd: ctx.sourcePkg.dir,
-  });
+  await runOutputWithStderr(
+    ['yarn', 'pack', '--out', joinPath(ctx.workDir, archiveName)],
+    {
+      cwd: ctx.sourcePkg.dir,
+    },
+  );
 
   return archiveName;
 }
@@ -345,30 +350,24 @@ async function generatePatchForArchives(
   );
 
   // Init git and populate index
-  await exec('git', ['init'], {
+  await runOutputWithStderr(['git', 'init'], { cwd: patchDir, env: GIT_ENV });
+  await runOutputWithStderr(['git', 'add', '.'], {
     cwd: patchDir,
-    env: { ...process.env, ...GIT_ENV },
-  });
-  await exec('git', ['add', '.'], {
-    cwd: patchDir,
-    env: { ...process.env, ...GIT_ENV },
+    env: GIT_ENV,
   });
   // Commit the base archive contents, so that we can later add all files and diff against the index
-  await exec(
-    'git',
+  await runOutputWithStderr(
     [
+      'git',
       '-c',
-      'user.name="patcher"',
+      'user.name=patcher',
       '-c',
-      'user.email="patcher@acme.org"',
+      'user.email=patcher@acme.org',
       'commit',
       '-m',
       'base',
     ],
-    {
-      cwd: patchDir,
-      env: { ...process.env, ...GIT_ENV },
-    },
+    { cwd: patchDir, env: GIT_ENV },
   );
 
   // Remove all existing files
@@ -386,28 +385,33 @@ async function generatePatchForArchives(
   await tar.extract({ file: headPath, cwd: patchDir, strip: 1 });
 
   // Add and diff against index, to make sure we include untracked files
-  await exec('git', ['add', '.'], {
+  await runOutputWithStderr(['git', 'add', '.'], {
     cwd: patchDir,
-    env: { ...process.env, ...GIT_ENV },
+    env: GIT_ENV,
   });
-  const { stdout: patch } = await exec(
-    'git',
-    [
-      '-c',
-      'core.safecrlf=false',
-      'diff',
-      '--cached',
-      '--src-prefix=a/',
-      '--dst-prefix=b/',
-      '--ignore-cr-at-eol',
-      '--full-index',
-      '--no-renames',
-      '--text',
-    ],
-    {
-      cwd: patchDir,
-      env: { ...process.env, ...GIT_ENV },
-    },
+  // The diff must keep its trailing newline, so don't use runOutput which trims
+  const chunks = new Array<Buffer>();
+  await waitForExitOrSignal(
+    run(
+      [
+        'git',
+        '-c',
+        'core.safecrlf=false',
+        'diff',
+        '--cached',
+        '--src-prefix=a/',
+        '--dst-prefix=b/',
+        '--ignore-cr-at-eol',
+        '--full-index',
+        '--no-renames',
+        '--text',
+      ],
+      {
+        cwd: patchDir,
+        env: GIT_ENV,
+        onStdout: data => chunks.push(data),
+      },
+    ),
   );
-  return patch.toString('utf8');
+  return Buffer.concat(chunks).toString('utf8');
 }
