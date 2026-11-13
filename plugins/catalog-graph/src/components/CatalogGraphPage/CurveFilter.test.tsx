@@ -14,37 +14,26 @@
  * limitations under the License.
  */
 
-import { waitFor, screen, within } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CurveFilter } from './CurveFilter';
 import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<CurveFilter/>', () => {
-  test('should display current curve label', async () => {
-    const onChange = jest.fn();
-    await renderInTestApp(
-      <CurveFilter value="curveMonotoneX" onChange={onChange} />,
-    );
-
-    expect(screen.getByText('Monotone X')).toBeInTheDocument();
-  });
-
-  test('should select an alternative curve factory', async () => {
+  test('should display the current curve and select an alternative', async () => {
     const onChange = jest.fn();
     await renderInTestApp(
       <CurveFilter value="curveStepBefore" onChange={onChange} />,
     );
 
-    expect(screen.getByText('Step Before')).toBeInTheDocument();
+    const trigger = screen.getByRole('button', { name: /Step Before/ });
+    expect(trigger).toBeInTheDocument();
 
+    await userEvent.click(trigger);
     await userEvent.click(
-      within(screen.getByTestId('select')).getByRole('button'),
+      await screen.findByRole('option', { name: 'Monotone X' }),
     );
-    await userEvent.click(screen.getByText('Monotone X'));
 
-    await waitFor(() => {
-      expect(screen.getByText('Monotone X')).toBeInTheDocument();
-      expect(onChange).toHaveBeenCalledWith('curveMonotoneX');
-    });
+    expect(onChange).toHaveBeenCalledWith('curveMonotoneX');
   });
 });

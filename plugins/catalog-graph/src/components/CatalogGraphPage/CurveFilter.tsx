@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Select, SelectedItems } from '@backstage/core-components';
-import Box from '@material-ui/core/Box';
+import { Select } from '@backstage/ui';
 import { useCallback } from 'react';
 import { catalogGraphTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
@@ -36,21 +35,19 @@ export const CurveFilter = ({ value, onChange }: Props) => {
   };
 
   const handleChange = useCallback(
-    (v: SelectedItems) => onChange(v as Curve),
+    (v: unknown) => onChange(v as Curve),
     [onChange],
   );
 
   return (
-    <Box pb={1} pt={1}>
-      <Select
-        label={t('catalogGraphPage.curveFilter.title')}
-        selected={value}
-        items={curves.map(v => ({
-          label: CURVE_DISPLAY_NAMES[v],
-          value: v,
-        }))}
-        onChange={handleChange}
-      />
-    </Box>
+    <Select
+      label={t('catalogGraphPage.curveFilter.title')}
+      value={value}
+      options={curves.map(v => ({
+        label: CURVE_DISPLAY_NAMES[v],
+        value: v,
+      }))}
+      onChange={handleChange}
+    />
   );
 };

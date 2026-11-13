@@ -19,22 +19,18 @@ import userEvent from '@testing-library/user-event';
 import { SwitchFilter } from './SwitchFilter';
 
 describe('<SwitchFilter/>', () => {
-  test('should render value', () => {
-    render(<SwitchFilter label="My label" value={false} onChange={() => {}} />);
-
-    expect(screen.getByLabelText('My label')).toBeInTheDocument();
-    expect(screen.getByLabelText('My label')).not.toBeChecked();
-  });
-
-  test('should toggle value', async () => {
+  test('should render and toggle the value', async () => {
     const onChange = jest.fn();
-    render(<SwitchFilter label="My label" value onChange={onChange} />);
+    const { rerender } = render(
+      <SwitchFilter label="My label" value={false} onChange={onChange} />,
+    );
 
-    expect(screen.getByLabelText('My label')).toBeInTheDocument();
-    expect(screen.getByLabelText('My label')).toBeChecked();
+    expect(screen.getByRole('switch', { name: 'My label' })).not.toBeChecked();
 
-    await userEvent.click(screen.getByLabelText('My label'));
+    rerender(<SwitchFilter label="My label" value onChange={onChange} />);
+    expect(screen.getByRole('switch', { name: 'My label' })).toBeChecked();
 
+    await userEvent.click(screen.getByRole('switch', { name: 'My label' }));
     expect(onChange).toHaveBeenCalledWith(false);
   });
 });
