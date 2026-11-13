@@ -16,6 +16,7 @@
 
 export {
   AnalyticsImplementationBlueprint,
+  type AnalyticsImplementation,
   type AnalyticsImplementationFactory,
 } from './AnalyticsImplementationBlueprint';
 export { AppRootWrapperBlueprint } from './AppRootWrapperBlueprint';
