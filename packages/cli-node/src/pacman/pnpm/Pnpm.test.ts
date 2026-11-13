@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { resolve as resolvePath } from 'node:path';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { run, runOutput } from '@backstage/cli-common';
 import { NotFoundError } from '@backstage/errors';
@@ -60,6 +61,8 @@ snapshots:
 
 describe('Pnpm', () => {
   let pnpm: Pnpm;
+  // Resolved like the workspace root, which is a drive path on Windows
+  const projectDir = resolvePath('/project');
 
   // The pnpm lockfile libraries are ES modules, which are slow to load the
   // first time in tests
@@ -69,7 +72,7 @@ describe('Pnpm', () => {
   }, 60_000);
 
   beforeAll(async () => {
-    pnpm = await Pnpm.create({ workspaceRootDir: '/project' });
+    pnpm = await Pnpm.create({ workspaceRootDir: projectDir });
     mockRunOutput.mockResolvedValueOnce('12.7.0\n');
     await pnpm.version();
   });
@@ -86,7 +89,7 @@ describe('Pnpm', () => {
 
   it('should detect the pnpm version when pnpm first runs, and require 11.28 or 12.7', async () => {
     expect(mockRunOutput).toHaveBeenCalledWith(['pnpm', '--version'], {
-      cwd: '/project',
+      cwd: projectDir,
       env: { pnpm_config_lockfile: 'false' },
     });
     mockRunOutput.mockClear();
@@ -142,7 +145,7 @@ describe('Pnpm', () => {
   it('should run commands and scripts in the workspace root by default', async () => {
     await pnpm.run(['--version']);
     expect(mockRun).toHaveBeenLastCalledWith(['pnpm', '--version'], {
-      cwd: '/project',
+      cwd: projectDir,
     });
 
     await pnpm.runScript('lint', ['--fix'], { cwd: '/project/packages/a' });
@@ -153,7 +156,7 @@ describe('Pnpm', () => {
     await pnpm.runWorkspaceScript('backend', 'start', ['--inspect']);
     expect(mockRun).toHaveBeenLastCalledWith(
       ['pnpm', '--filter', 'backend', 'run', 'start', '--inspect'],
-      { cwd: '/project' },
+      { cwd: projectDir },
     );
 
     const onStdout = jest.fn();
@@ -170,7 +173,24 @@ describe('Pnpm', () => {
       signalCode: 'SIGINT',
     } as unknown as ReturnType<typeof run>);
     await expect(pnpm.install()).rejects.toThrow(
-      "Command 'pnpm install' was ended by SIGINT",
+      expect.objectContaining({
+        message: "Command 'pnpm install' was ended by SIGINT",
+        signal: 'SIGINT',
+      }),
+    );
+
+    // Also when the signal ends the version check that runs first
+    const interrupted = await Pnpm.create({ workspaceRootDir: '/interrupted' });
+    mockRunOutput.mockRejectedValueOnce(
+      Object.assign(new Error("Command 'pnpm --version' was ended by SIGINT"), {
+        signal: 'SIGINT',
+      }),
+    );
+    await expect(interrupted.install()).rejects.toThrow(
+      expect.objectContaining({
+        message: expect.stringContaining('Failed to determine pnpm version'),
+        signal: 'SIGINT',
+      }),
     );
   });
 
@@ -182,7 +202,7 @@ describe('Pnpm', () => {
     try {
       await pnpm.install();
       expect(mockRun).toHaveBeenLastCalledWith(['pnpm', 'install'], {
-        cwd: '/project',
+        cwd: projectDir,
         env: expect.objectContaining({
           PATH: process.env.PATH,
           [npmConfigVar]: undefined,
@@ -194,7 +214,7 @@ describe('Pnpm', () => {
       await pnpm.install({ immutable: true, offline: true });
       expect(mockRun).toHaveBeenLastCalledWith(
         ['pnpm', 'install', '--frozen-lockfile', '--offline'],
-        expect.objectContaining({ cwd: '/project' }),
+        expect.objectContaining({ cwd: projectDir }),
       );
 
       const onStdout = jest.fn();
@@ -208,7 +228,7 @@ describe('Pnpm', () => {
       expect(mockRun).toHaveBeenLastCalledWith(
         ['pnpm', 'install', '--no-frozen-lockfile'],
         {
-          cwd: '/project',
+          cwd: projectDir,
           env: expect.objectContaining({ FORCE_COLOR: 'true' }),
           onStdout,
           onStderr,
@@ -241,7 +261,7 @@ describe('Pnpm', () => {
     });
     expect(mockRunOutput).toHaveBeenLastCalledWith(
       ['pnpm', 'view', 'my-package', '--json'],
-      { cwd: '/project' },
+      { cwd: projectDir },
     );
 
     // pnpm exits with an error and prints the error as JSON for a missing package

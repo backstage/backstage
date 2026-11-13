@@ -136,8 +136,11 @@ export class Pnpm implements PackageManager {
     await child.waitForExit();
     // Waiting for the exit also succeeds when a signal ended the process
     if (child.signalCode) {
-      throw new Error(
-        `Command 'pnpm ${args.join(' ')}' was ended by ${child.signalCode}`,
+      throw Object.assign(
+        new Error(
+          `Command 'pnpm ${args.join(' ')}' was ended by ${child.signalCode}`,
+        ),
+        { signal: child.signalCode },
       );
     }
   }
@@ -310,7 +313,12 @@ function detectPnpmVersion(dir: string): Promise<string> {
       }
       return version;
     } catch (error) {
-      throw new ForwardedError('Failed to determine pnpm version', error);
+      // Keeps the signal that ended the check, like the errors of commands
+      const signal = (error as { signal?: string } | undefined)?.signal;
+      throw Object.assign(
+        new ForwardedError('Failed to determine pnpm version', error),
+        signal ? { signal } : {},
+      );
     }
   });
 
