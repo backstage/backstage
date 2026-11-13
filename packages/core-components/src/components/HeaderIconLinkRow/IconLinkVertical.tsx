@@ -21,6 +21,10 @@ import { Link } from '../Link';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 
+/**
+ * @deprecated Use the replacement described in {@link IconLinkVertical} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type IconLinkVerticalProps = {
   color?: 'primary' | 'secondary';
   disabled?: boolean;
@@ -31,7 +35,11 @@ export type IconLinkVerticalProps = {
   title?: string;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link IconLinkVertical} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type IconLinkVerticalClassKey =
   | 'link'
   | 'disabled'
@@ -66,7 +74,12 @@ const useIconStyles = makeStyles(
   { name: 'BackstageIconLinkVertical' },
 );
 
-/** @public */
+/**
+ * @public
+ * @deprecated Compose `Link`, `Text`, and layout from `@backstage/ui` with
+ * an icon instead. Pass the destination as `href` and use `isDisabled` for
+ * disabled links.
+ */
 export function IconLinkVertical({
   color = 'primary',
   disabled = false,
