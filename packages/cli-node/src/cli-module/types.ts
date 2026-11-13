@@ -14,6 +14,26 @@
  * limitations under the License.
  */
 
+import type { BackstagePackageJson } from '../monorepo';
+
+/**
+ * Information about the package that a package command is being run in,
+ * used to decide whether a toggleable command is enabled.
+ *
+ * @public
+ */
+export interface CliPackageContext {
+  /**
+   * The absolute path to the package directory, which is the directory of
+   * the nearest `package.json` at or above the current working directory.
+   */
+  dir: string;
+  /**
+   * The contents of the package's `package.json`.
+   */
+  packageJson: BackstagePackageJson;
+}
+
 /**
  * The context provided to a CLI command at the time of execution.
  *
@@ -105,6 +125,36 @@ export interface CliCommand {
           default: (context: CliCommandContext) => Promise<void>;
         }>;
       };
+}
+
+/**
+ * A command that runs in the context of a single package, registered with
+ * `addPackageCommand`. It is available as `backstage-cli package <command>`.
+ *
+ * Several modules may register the same package command as long as at most
+ * one of them omits `if`. When the command is invoked, the `if` condition of
+ * each registration is evaluated against the package at the current working
+ * directory. If exactly one is enabled it is run, and if several are enabled
+ * an error is thrown. If none are enabled, the registration without `if` is
+ * run as a fallback, and if there is no fallback an error is thrown.
+ *
+ * @public
+ */
+export interface CliPackageCommand extends Omit<CliCommand, 'path'> {
+  /**
+   * The command path relative to `package`. For example, `['lint']` maps to
+   * `backstage-cli package lint`.
+   */
+  command: string[];
+  /**
+   * An optional condition that makes the command toggleable per package.
+   *
+   * @example
+   * ```
+   * if: ({ packageJson }) => Boolean(packageJson.devDependencies?.vitest)
+   * ```
+   */
+  if?: (context: CliPackageContext) => boolean | Promise<boolean>;
 }
 
 /**

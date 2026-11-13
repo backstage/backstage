@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { CliCommand, CliModule } from '@backstage/cli-node';
+import { CliModule } from '@backstage/cli-node';
+import type { InternalCliCommand } from './InternalCliModule';
 import { OpaqueType } from '@internal/opaque';
 
 /** @internal */
@@ -41,13 +42,26 @@ export const OpaqueCommandTreeNode = OpaqueType.create<{
   versions: ['v1'],
 });
 
+/**
+ * A single implementation of a command path, along with the module that
+ * provided it.
+ */
+export interface CommandLeafVariant {
+  readonly command: InternalCliCommand;
+  readonly module?: CliModule;
+}
+
 export const OpaqueCommandLeafNode = OpaqueType.create<{
   public: CommandLeafNode;
   versions: {
     readonly version: 'v1';
     readonly name: string;
-    readonly command: CliCommand;
-    readonly module?: CliModule;
+    /**
+     * All implementations registered for this command path. There is always
+     * at least one variant. Multiple variants are only present for toggleable
+     * commands, where at most one variant lacks an `if` predicate.
+     */
+    readonly variants: CommandLeafVariant[];
   };
 }>({
   type: '@backstage/CommandLeafNode',
@@ -56,13 +70,15 @@ export const OpaqueCommandLeafNode = OpaqueType.create<{
 
 /**
  * Checks whether a command node should be hidden from help output.
- * Leaf nodes are hidden if they are deprecated or experimental.
+ * Leaf nodes are hidden if all of their variants are deprecated or experimental.
  * Tree nodes are hidden if all of their children are hidden.
  */
 export function isCommandNodeHidden(node: CommandNode): boolean {
   if (OpaqueCommandLeafNode.isType(node)) {
-    const { command } = OpaqueCommandLeafNode.toInternal(node);
-    return !!command.deprecated || !!command.experimental;
+    const { variants } = OpaqueCommandLeafNode.toInternal(node);
+    return variants.every(
+      ({ command }) => !!command.deprecated || !!command.experimental,
+    );
   }
   const { children } = OpaqueCommandTreeNode.toInternal(node);
   return children.every(child => isCommandNodeHidden(child));

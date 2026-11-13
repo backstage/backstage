@@ -176,6 +176,39 @@ export default async ({ args, info }: CliCommandContext) => {
 };
 ```
 
+### Toggling package commands
+
+Register commands under `package` with `addPackageCommand`. The `command`
+option is the path relative to `package`, so `['lint']` registers
+`package lint`. A package command can set `if`, a condition that receives the
+package directory and its `package.json`. This lets several modules provide the
+same command, such as `package lint`, with the right one running for each
+package:
+
+```ts
+reg.addPackageCommand({
+  command: ['lint'],
+  description: 'Lint the package with oxlint',
+  if: ({ packageJson }) => 'oxlint' in (packageJson.devDependencies ?? {}),
+  execute: { loader: () => import('./commands/lint') },
+});
+```
+
+The condition is evaluated for the package in the current working directory.
+The following rules apply when several modules register the same path:
+
+- At most one of them may omit `if`. That command is the fallback, and
+  a second command without `if` is reported as a conflict.
+- If exactly one command is enabled, it runs.
+- If more than one command is enabled, the CLI fails and lists the modules.
+- If none is enabled, the fallback runs. Without a fallback, the CLI fails
+  with an error that names the package and the candidate modules.
+
+A module that is installed on its own and has `if` set does not replace
+the matching command in a default module set. The default command stays
+available as the fallback. Setting `if` on a command outside `package`, for
+example by passing it to `addCommand`, is an error.
+
 ## Command context
 
 The execute function receives a `CliCommandContext` with two fields:

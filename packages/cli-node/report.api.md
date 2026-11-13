@@ -132,6 +132,18 @@ export interface CliModule {
 }
 
 // @public
+export interface CliPackageCommand extends Omit<CliCommand, 'path'> {
+  command: string[];
+  if?: (context: CliPackageContext) => boolean | Promise<boolean>;
+}
+
+// @public
+export interface CliPackageContext {
+  dir: string;
+  packageJson: BackstagePackageJson;
+}
+
+// @public
 export type ConcurrentTasksOptions<TItem> = {
   concurrencyFactor?: number;
   items: Iterable<TItem>;
@@ -145,6 +157,7 @@ export function createCliModule(options: {
   };
   init: (registry: {
     addCommand: (command: CliCommand) => void;
+    addPackageCommand: (command: CliPackageCommand) => void;
   }) => Promise<void>;
 }): CliModule;
 
