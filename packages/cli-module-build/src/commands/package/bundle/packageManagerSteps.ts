@@ -310,10 +310,6 @@ const PNPM_SETTINGS_WITHOUT_EFFECT_ON_BUNDLE = new Set([
 // Lines of an .npmrc file that pick the registry of all or of scoped packages
 const NPMRC_REGISTRY_PATTERN = /^\s*(@[^\s:=]+:)?registry\s*=/;
 
-// The user and password in a URL that can't be parsed, up to the last `@`
-// before the path
-const URL_CREDENTIALS_PATTERN = /(:\/\/)[^/?#\s]*@/;
-
 // A `${VAR}` placeholder, which pnpm doesn't expand in the registry settings
 // of a project
 const ENV_PLACEHOLDER_PATTERN = /\$\{[^}]*\}/;
@@ -328,19 +324,23 @@ const ENV_PLACEHOLDER_PATTERN = /\$\{[^}]*\}/;
  * Returns undefined for a URL with a `${VAR}` placeholder. pnpm ignores such
  * a project setting, so the source project used another registry, and the
  * URL without its credentials and placeholders would point the bundle at a
- * registry that the source didn't use.
+ * registry that the source didn't use. Also returns undefined for a URL that
+ * can't be parsed, which pnpm can't use either, and whose credentials can't
+ * be found safely, and for a URL with a control character, such as a line
+ * break from an escape in a quoted `.npmrc` value, which would add a line to
+ * the `.npmrc` of the bundle.
  */
 function stripCredentialsFromUrl(url: string): string | undefined {
-  if (ENV_PLACEHOLDER_PATTERN.test(url)) {
+  if (ENV_PLACEHOLDER_PATTERN.test(url) || hasControlCharacter(url)) {
     return undefined;
   }
   let parsed: URL;
   try {
     parsed = new URL(url);
   } catch {
-    return url.replace(URL_CREDENTIALS_PATTERN, '$1');
+    return undefined;
   }
-  if (!parsed.username && !parsed.password && !parsed.search) {
+  if (!parsed.username && !parsed.password && !parsed.search && !parsed.hash) {
     return url;
   }
   parsed.username = '';
@@ -350,8 +350,55 @@ function stripCredentialsFromUrl(url: string): string | undefined {
   return parsed.toString();
 }
 
+/**
+ * Reads the value of an `.npmrc` setting like pnpm does: a value in quotes
+ * is unquoted, and other values end at a `#` or `;` comment that isn't
+ * escaped with a backslash.
+ */
+function readNpmrcValue(rawValue: string): string {
+  let value = rawValue.trim();
+  const quote = value.charAt(0);
+  if ((quote === '"' || quote === "'") && value.endsWith(quote)) {
+    if (quote === "'") {
+      value = value.slice(1, -1);
+    }
+    try {
+      return String(JSON.parse(value));
+    } catch {
+      return value;
+    }
+  }
+  let unescaped = '';
+  let escaped = false;
+  for (const char of value) {
+    if (escaped) {
+      unescaped += '\\;#'.includes(char) ? char : `\\${char}`;
+      escaped = false;
+    } else if (char === ';' || char === '#') {
+      break;
+    } else if (char === '\\') {
+      escaped = true;
+    } else {
+      unescaped += char;
+    }
+  }
+  return (escaped ? `${unescaped}\\` : unescaped).trim();
+}
+
+function hasControlCharacter(value: string): boolean {
+  for (let index = 0; index < value.length; index++) {
+    const code = value.charCodeAt(index);
+    if (code < 0x20 || code === 0x7f) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Removes the credentials from the URLs in a registry setting, and leaves out
-// the URLs that pnpm ignores
+// the URLs that pnpm ignores. A registry is either listed with its URL as the
+// value, for example by scope, or declared with its URL as the key and its
+// settings as the value, which are kept as they are.
 function stripUrlCredentials(value: unknown): unknown {
   if (typeof value === 'string') {
     return stripCredentialsFromUrl(value);
@@ -359,8 +406,12 @@ function stripUrlCredentials(value: unknown): unknown {
   if (value && typeof value === 'object' && !Array.isArray(value)) {
     return Object.fromEntries(
       Object.entries(value).flatMap(([key, entry]) => {
-        const stripped = stripUrlCredentials(entry);
-        return stripped === undefined ? [] : [[key, stripped]];
+        if (typeof entry === 'string') {
+          const url = stripCredentialsFromUrl(entry);
+          return url === undefined ? [] : [[key, url]];
+        }
+        const url = stripCredentialsFromUrl(key);
+        return url === undefined ? [] : [[url, entry]];
       }),
     );
   }
@@ -473,22 +524,31 @@ const pnpmSteps: BundlePackageManagerSteps = {
     // keeps the metadata cache of a registry without its credentials.
     const npmrcPath = joinPath(rootDir, '.npmrc');
     if (await fs.pathExists(npmrcPath)) {
-      const registryLines = (await fs.readFile(npmrcPath, 'utf8'))
-        .split(/\r?\n/)
-        .filter(line => NPMRC_REGISTRY_PATTERN.test(line))
-        .flatMap(line => {
+      // Any line break ends a line, as in pnpm 11, so that a setting can't
+      // hide in the value of another. Like in pnpm, the last line of a
+      // setting wins, also when that line is left out.
+      const registrySettings = new Map<string, string | undefined>();
+      for (const line of (await fs.readFile(npmrcPath, 'utf8')).split(
+        /[\r\n]+/,
+      )) {
+        if (NPMRC_REGISTRY_PATTERN.test(line)) {
           const separator = line.indexOf('=');
-          // Like pnpm, a value ends at a `#` or `;` comment
-          const url = stripCredentialsFromUrl(
-            line
-              .slice(separator + 1)
-              .replace(/[#;].*$/, '')
-              .trim(),
+          registrySettings.set(
+            line.slice(0, separator).trim(),
+            stripCredentialsFromUrl(readNpmrcValue(line.slice(separator + 1))),
           );
-          return url === undefined
-            ? []
-            : [`${line.slice(0, separator).trim()}=${url}`];
-        });
+        }
+      }
+      const registryLines = Array.from(registrySettings).flatMap(
+        ([key, url]) => {
+          if (url === undefined) {
+            return [];
+          }
+          // A value that pnpm would cut at a comment or unescape is quoted
+          const value = /[;#\\]/.test(url) ? JSON.stringify(url) : url;
+          return [`${key}=${value}`];
+        },
+      );
       if (registryLines.length > 0) {
         await fs.writeFile(
           joinPath(targetDir, '.npmrc'),
