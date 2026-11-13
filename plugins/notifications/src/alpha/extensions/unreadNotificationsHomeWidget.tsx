@@ -26,7 +26,8 @@ const defaultCardLayout = {
   height: {
     minRows: 5,
     maxRows: 14,
-    defaultRows: 10,
+    // Fits the default maxMessages (5) plus card chrome; users can resize in edit mode.
+    defaultRows: 8,
   },
 } as const;
 

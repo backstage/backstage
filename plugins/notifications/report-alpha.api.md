@@ -215,6 +215,8 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'unreadCard.viewAll': 'View All';
     readonly 'unreadCard.columnNotification': 'Notification';
     readonly 'unreadCard.columnActions': 'Actions';
+    readonly 'unreadCard.sortNewest': 'Sorted by newest first';
+    readonly 'unreadCard.sortOldest': 'Sorted by oldest first';
     readonly 'unreadCard.resultsCount': '{{displayed}} results out of {{total}}';
   }
 >;

@@ -234,9 +234,6 @@ export const NotificationsTable = ({
             <div
               id={`notification-${notification.id}`}
               tabIndex={isHighlighted ? -1 : undefined}
-              className={
-                isHighlighted ? styles.highlightedNotification : undefined
-              }
             >
               <Flex gap="4" align="center">
                 <div className={styles.severityItem}>
@@ -344,6 +341,12 @@ export const NotificationsTable = ({
           pageSize,
           header: true,
           sorting: false,
+          rowStyle: (rowData: Notification) =>
+            rowData.id === highlightedNotificationId
+              ? {
+                  backgroundColor: 'var(--bui-bg-info, #dbeafe)',
+                }
+              : {},
         }}
         title={title}
         onPageChange={onPageChange}
