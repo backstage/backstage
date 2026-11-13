@@ -19,8 +19,8 @@ import {
   AsyncEntityProvider,
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
-import { render, screen } from '@testing-library/react';
-import { ReactNode, useEffect } from 'react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { ReactNode, useEffect, useState } from 'react';
 import { isKind } from './conditions';
 import { EntitySwitch } from './EntitySwitch';
 import { TestApiProvider, mockApis } from '@backstage/frontend-test-utils';
@@ -519,71 +519,60 @@ describe('EntitySwitch', () => {
     expect(screen.queryByText('B')).not.toBeInTheDocument();
   });
 
-  it('should not evaluate async condition repeatedly on re-renders', async () => {
-    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
-    const asyncCond = jest.fn().mockImplementation(() => Promise.resolve(true));
+  it('should not evaluate async conditions again when the parent re-renders or the entity is refetched', async () => {
+    const asyncCond = jest.fn(async () => true);
+    const onMount = jest.fn();
 
-    const content = (
-      <EntitySwitch>
-        <EntitySwitch.Case if={asyncCond} children="Async Content" />
-        <EntitySwitch.Case children="Fallback" />
-      </EntitySwitch>
-    );
+    const Content = () => {
+      useEffect(() => onMount(), []);
+      return <p>Async Content</p>;
+    };
 
-    const { rerender } = render(
+    // Re-renders create new children elements, and a refetch delivers a new
+    // entity object with the same content
+    const Page = () => {
+      const [, setCount] = useState(0);
+      const [entity, setEntity] = useState(
+        () => ({ metadata: { name: 'mock' }, kind: 'component' } as Entity),
+      );
+      return (
+        <>
+          <button onClick={() => setCount(c => c + 1)}>Re-render</button>
+          <button onClick={() => setEntity(e => ({ ...e }))}>Refetch</button>
+          <EntityProvider entity={entity}>
+            <EntitySwitch>
+              <EntitySwitch.Case if={asyncCond} children={<Content />} />
+              <EntitySwitch.Case children="Fallback" />
+            </EntitySwitch>
+          </EntityProvider>
+        </>
+      );
+    };
+
+    render(
       <Wrapper>
-        <EntityProvider entity={entity}>{content}</EntityProvider>
+        <Page />
       </Wrapper>,
     );
-
     await expect(
       screen.findByText('Async Content'),
     ).resolves.toBeInTheDocument();
-    const initialCallCount = asyncCond.mock.calls.length;
+    expect(asyncCond).toHaveBeenCalledTimes(1);
 
-    rerender(
-      <Wrapper>
-        <EntityProvider entity={entity}>{content}</EntityProvider>
-      </Wrapper>,
-    );
-
+    fireEvent.click(screen.getByText('Re-render'));
+    fireEvent.click(screen.getByText('Re-render'));
     await expect(
       screen.findByText('Async Content'),
     ).resolves.toBeInTheDocument();
-    expect(asyncCond).toHaveBeenCalledTimes(initialCallCount);
-  });
+    expect(asyncCond).toHaveBeenCalledTimes(1);
 
-  it('should evict cached entry if async condition rejects to allow retry', async () => {
-    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
-    const asyncCond = jest
-      .fn()
-      .mockRejectedValueOnce(new Error('transient failure'))
-      .mockResolvedValueOnce(true);
-
-    const content = (
-      <EntitySwitch>
-        <EntitySwitch.Case if={asyncCond} children="Async Content" />
-        <EntitySwitch.Case children="Fallback" />
-      </EntitySwitch>
-    );
-
-    const { rerender } = render(
-      <Wrapper>
-        <EntityProvider entity={entity}>{content}</EntityProvider>
-      </Wrapper>,
-    );
-
-    await expect(screen.findByText('Fallback')).resolves.toBeInTheDocument();
-
-    rerender(
-      <Wrapper>
-        <EntityProvider entity={entity}>{content}</EntityProvider>
-      </Wrapper>,
-    );
-
+    fireEvent.click(screen.getByText('Refetch'));
+    expect(screen.getByText('Async Content')).toBeInTheDocument();
     await expect(
       screen.findByText('Async Content'),
     ).resolves.toBeInTheDocument();
     expect(asyncCond).toHaveBeenCalledTimes(2);
+    expect(onMount).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText('Fallback')).not.toBeInTheDocument();
   });
 });

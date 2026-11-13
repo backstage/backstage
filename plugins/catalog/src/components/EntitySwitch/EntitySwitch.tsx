@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useAsyncEntity } from '@backstage/plugin-catalog-react';
-import { ReactNode, ReactElement, useRef } from 'react';
+import { ReactNode, ReactElement, useMemo, useRef } from 'react';
 import {
   attachComponentData,
   useApiHolder,
@@ -48,6 +48,10 @@ interface EntitySwitchCase {
   children: JSX.Element;
 }
 
+// The outcome of evaluating each case, where `undefined` marks a default case
+type CaseOutcome = boolean | Promise<boolean> | undefined;
+type CaseMatch = boolean | undefined;
+
 /**
  * Props for the {@link EntitySwitch} component.
  * @public
@@ -61,138 +65,128 @@ export interface EntitySwitchProps {
 export const EntitySwitch = (props: EntitySwitchProps) => {
   const { entity, loading } = useAsyncEntity();
   const apis = useApiHolder();
-  const promiseCache = useRef(
-    new WeakMap<
-      (
-        entity: Entity,
-        context: { apis: ApiHolder },
-      ) => boolean | Promise<boolean>,
-      { entity: Entity; apis: ApiHolder; result: boolean | Promise<boolean> }
-    >(),
+
+  const cases = useElementFilter(props.children, collection =>
+    collection
+      .selectByComponentData({
+        key: ENTITY_SWITCH_KEY,
+        withStrictError: 'Child of EntitySwitch is not an EntitySwitch.Case',
+      })
+      .getElements()
+      .map((element: ReactElement) => element.props as EntitySwitchCase),
   );
 
-  const cases = useElementFilter(
-    props.children,
-    collection =>
-      collection
-        .selectByComponentData({
-          key: ENTITY_SWITCH_KEY,
-          withStrictError: 'Child of EntitySwitch is not an EntitySwitch.Case',
-        })
-        .getElements()
-        .map<EntitySwitchCase>(
-          (element: ReactElement) => element.props as EntitySwitchCase,
-        ),
-    [props.children],
-  );
+  // The children are new elements on every parent render, so the conditions
+  // are only evaluated again when their actual inputs change.
+  const conditions = useShallowStableArray(cases.map(c => c.if));
+  const outcomes = useMemo((): CaseOutcome[] | undefined => {
+    if (loading && !entity) {
+      return undefined;
+    }
+    return conditions.map(condition => {
+      if (!entity) {
+        return condition === undefined;
+      }
+      return condition?.(entity, { apis });
+    });
+  }, [conditions, entity, loading, apis]);
 
-  if (loading && !entity) {
-    return null as unknown as JSX.Element;
+  if (!outcomes) {
+    return <></>;
   }
 
-  if (!entity) {
-    return getDefaultChildren(cases);
-  }
-
-  const results = cases.map(switchCase => {
-    if (!switchCase.if) {
-      return { if: undefined, children: switchCase.children };
-    }
-
-    const cached = promiseCache.current.get(switchCase.if);
-    if (cached && cached.entity === entity) {
-      return { if: cached.result, children: switchCase.children };
-    }
-
-    const condition = switchCase.if;
-    const res = condition(entity, { apis });
-    if (typeof res === 'object' && res !== null && 'then' in res) {
-      (res as Promise<unknown>).catch(() => {
-        if (promiseCache.current.get(condition)?.result === res) {
-          promiseCache.current.delete(condition);
-        }
-      });
-    }
-    promiseCache.current.set(condition, { entity, apis, result: res });
-    return { if: res, children: switchCase.children };
-  });
-
-  const hasAsyncCases = results.some(
-    r => typeof r.if === 'object' && 'then' in r.if,
-  );
-
-  if (hasAsyncCases) {
+  if (outcomes.some(isPromiseLike)) {
     return (
       <AsyncEntitySwitch
-        results={results}
+        // Reset any previously resolved matches when switching entity
+        key={entity ? stringifyEntityRef(entity) : undefined}
+        cases={cases}
+        outcomes={outcomes}
         renderMultipleMatches={props.renderMultipleMatches}
       />
     );
   }
 
-  if (props.renderMultipleMatches === 'all') {
-    const children = results.filter(r => r.if).map(r => r.children);
-    if (children.length === 0) {
-      return getDefaultChildren(cases);
-    }
-    return <>{children}</>;
-  }
-
-  return results.find(r => r.if)?.children ?? getDefaultChildren(cases);
+  return selectChildren(
+    cases,
+    outcomes as CaseMatch[],
+    props.renderMultipleMatches,
+  );
 };
 
 function AsyncEntitySwitch({
-  results,
+  cases,
+  outcomes,
   renderMultipleMatches,
 }: {
-  results: Array<{ if?: boolean | Promise<boolean>; children: JSX.Element }>;
+  cases: EntitySwitchCase[];
+  outcomes: CaseOutcome[];
   renderMultipleMatches?: 'first' | 'all';
 }) {
-  const { loading, value } = useAsync(async () => {
-    const promises = results.map(
-      async ({ if: condition, children: output }) => {
-        try {
-          if (await condition) {
-            return output;
+  const { value: matches } = useAsync(
+    () =>
+      Promise.all(
+        outcomes.map(async (outcome): Promise<CaseMatch> => {
+          if (outcome === undefined) {
+            return undefined;
           }
-        } catch {
-          /* ignored */
-        }
-        return null;
-      },
-    );
+          try {
+            return Boolean(await outcome);
+          } catch {
+            return false;
+          }
+        }),
+      ),
+    [outcomes],
+  );
 
-    if (renderMultipleMatches === 'all') {
-      const children = (await Promise.all(promises)).filter(Boolean);
-      if (children.length === 0) {
-        return getDefaultChildrenFromResults(results);
-      }
-      return <>{children}</>;
-    }
-
-    return (
-      (await Promise.all(promises)).find(Boolean) ??
-      getDefaultChildrenFromResults(results)
-    );
-  }, [results]);
-
-  if (loading || !value) {
+  // While conditions are evaluated again for the same entity, keep rendering
+  // the previous matches rather than unmounting the content.
+  if (!matches || matches.length !== cases.length) {
     return null;
   }
 
-  return value;
+  return selectChildren(cases, matches, renderMultipleMatches);
 }
 
-function getDefaultChildren(cases: EntitySwitchCase[]) {
+function selectChildren(
+  cases: EntitySwitchCase[],
+  matches: CaseMatch[],
+  renderMultipleMatches?: 'first' | 'all',
+) {
+  if (renderMultipleMatches === 'all') {
+    const children = cases.filter((_, i) => matches[i]).map(c => c.children);
+    if (children.length > 0) {
+      return <>{children}</>;
+    }
+  } else {
+    const match = cases.find((_, i) => matches[i]);
+    if (match) {
+      return match.children;
+    }
+  }
+  return cases.filter((_, i) => matches[i] === undefined)[0]?.children ?? null;
+}
+
+function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
   return (
-    cases.filter(switchCase => switchCase.if === undefined)[0]?.children ?? null
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as PromiseLike<unknown>).then === 'function'
   );
 }
 
-function getDefaultChildrenFromResults(
-  results: Array<{ if?: boolean | Promise<boolean>; children: JSX.Element }>,
-) {
-  return results.filter(r => r.if === undefined)[0]?.children ?? null;
+// Returns the previous array instance as long as its items are the same
+function useShallowStableArray<T>(array: T[]): T[] {
+  const ref = useRef(array);
+  const prev = ref.current;
+  if (
+    prev.length !== array.length ||
+    prev.some((item, index) => item !== array[index])
+  ) {
+    ref.current = array;
+  }
+  return ref.current;
 }
 
 EntitySwitch.Case = EntitySwitchCaseComponent;
