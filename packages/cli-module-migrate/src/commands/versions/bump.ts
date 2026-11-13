@@ -291,8 +291,21 @@ export default async ({ args, info }: CliCommandContext) => {
     const breakingUpdates = new Map<string, { from: string; to: string }>();
     const catalogUpdates = new Map<string, Map<string, string>>();
     // Every catalog that is referenced, whether it is bumped or not, with
-    // the dependencies that refer to it
+    // the dependencies that refer to it, including those without a new
+    // version, since pnpm fails on all of them
     const referencedCatalogs = new Map<string, Set<string>>();
+    if (catalogs) {
+      for (const [depName, pkgs] of dependencyMap) {
+        for (const pkg of pkgs) {
+          const catalogName = getCatalogName(pkg.range);
+          if (catalogName) {
+            const dependents = referencedCatalogs.get(catalogName) ?? new Set();
+            dependents.add(`${depName} in ${pkg.name}`);
+            referencedCatalogs.set(catalogName, dependents);
+          }
+        }
+      }
+    }
     // Nothing is written until all updates are known to apply
     const packageUpdates = new Map<string, object>();
     await runConcurrentTasks({
@@ -315,12 +328,6 @@ export default async ({ args, info }: CliCommandContext) => {
               const catalogName = catalogs
                 ? getCatalogName(oldRange)
                 : undefined;
-              if (catalogName) {
-                const dependents =
-                  referencedCatalogs.get(catalogName) ?? new Set();
-                dependents.add(`${dep.name} in ${name}`);
-                referencedCatalogs.set(catalogName, dependents);
-              }
               if (!isBumpedRange(oldRange, catalogFlag, Boolean(catalogs))) {
                 continue;
               }
