@@ -224,9 +224,18 @@ describe('isManagedWithinSameRepo', () => {
         roots,
       ),
     ).toBe(true);
+    // A linked worktree and its main checkout are the same checkout.
     expect(
       isManagedWithinSameRepo(fileSource, 'file:/work/wt/c.yaml', repo, roots),
-    ).toBe(false);
+    ).toBe(true);
+    expect(
+      isManagedWithinSameRepo(
+        'file:/work/wt/svc',
+        'file:/work/main/c.yaml',
+        repo,
+        roots,
+      ),
+    ).toBe(true);
     expect(
       isManagedWithinSameRepo(fileSource, 'file:/else/c.yaml', repo, roots),
     ).toBe(false);
