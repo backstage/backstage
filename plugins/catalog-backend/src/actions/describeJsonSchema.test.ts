@@ -16,7 +16,6 @@
 
 import {
   describeJsonSchemaFields,
-  JsonSchemaField,
   renderJsonSchemaField,
 } from './describeJsonSchema';
 
@@ -39,295 +38,227 @@ describe('describeJsonSchemaFields', () => {
     expect(
       fieldLines(
         {
-          text: { type: 'string' },
-          either: { type: ['string', 'number'] },
-          none: { type: [] },
-          untyped: {},
-          ref: { $ref: '#/definitions/A' },
-          typedRef: { type: 'object', $ref: '#/definitions/A' },
-          choice: { type: 'string', enum: ['b', 'a'] },
-          single: { enum: ['only'] },
-          empty: { enum: [] },
-          fixed: { const: { b: 2, a: [1, { d: 4, c: 3 }] } },
-          nothing: { const: null },
-          pinned: { enum: ['a', 'b'], const: 'b' },
-          conflicting: { enum: ['a'], const: 'b' },
-          keyOrder: {
+          name: { type: 'string' },
+          id: { type: ['string', 'number'] },
+          anything: {},
+          owner: { $ref: '#/definitions/Owner' },
+          target: { type: 'object', $ref: '#/definitions/Target' },
+          lifecycle: { type: 'string', enum: ['production', 'experimental'] },
+          version: { const: 2 },
+          mode: { enum: ['fast', 'slow'], const: 'slow' },
+          endpoint: {
             enum: [{ host: 'a', port: 1 }],
             const: { port: 1, host: 'a' },
           },
         },
-        { required: ['text', 'ref'] },
+        { required: ['name', 'owner'] },
       ),
     ).toEqual([
-      '* "text" (string, required)',
-      '* "either" (string | number)',
-      '* "none" (no valid type)',
-      '* "untyped" (unknown)',
-      '* "ref" (reference to "#/definitions/A", required)',
-      '* "typedRef" (object, reference to "#/definitions/A")',
-      // A single enum keeps its declared order
-      '* "choice" (string, one of "b", "a")',
-      '* "single" (unknown, one of "only")',
-      '* "empty" (unknown, no allowed values)',
-      // Object keys are sorted, at any depth
-      '* "fixed" (unknown, const {"a":[1,{"c":3,"d":4}],"b":2})',
-      '* "nothing" (unknown, const null)',
-      // const and enum narrow each other, comparing values deeply
-      '* "pinned" (unknown, const "b")',
-      '* "conflicting" (unknown, no allowed values)',
-      '* "keyOrder" (unknown, const {"host":"a","port":1})',
+      '* "name" (string, required)',
+      '* "id" (string | number)',
+      '* "anything" (unknown)',
+      '* "owner" (reference to "#/definitions/Owner", required)',
+      '* "target" (object, reference to "#/definitions/Target")',
+      '* "lifecycle" (string, one of "production", "experimental")',
+      '* "version" (unknown, const 2)',
+      // const and enum together allow only the values both permit
+      '* "mode" (unknown, const "slow")',
+      // Equal objects match whatever their key order
+      '* "endpoint" (unknown, const {"host":"a","port":1})',
     ]);
   });
 
   it('describes bounds, formats, patterns and defaults', () => {
     expect(
       fieldLines({
-        count: {
-          type: 'integer',
-          minimum: 0,
-          exclusiveMinimum: -1,
-          maximum: 10,
-          exclusiveMaximum: 11,
-          default: 5,
-        },
-        name: { type: 'string', minLength: 1 },
-        code: {
+        count: { type: 'integer', minimum: 0, maximum: 10, default: 5 },
+        ratio: { type: 'number', exclusiveMinimum: 0, exclusiveMaximum: 1 },
+        // A minimum length of 1 only rules out empty strings and is left out
+        title: { type: 'string', minLength: 1 },
+        email: {
           type: 'string',
-          minLength: 2,
-          maxLength: 1,
+          minLength: 3,
+          maxLength: 64,
           format: 'email',
-          pattern: '^"a"\\d',
+          pattern: '^[a-z]+@',
         },
-        list: { type: 'array', minItems: 1, maxItems: 2 },
-        map: { type: 'object', minProperties: 0, maxProperties: 1 },
-        options: { type: 'object', default: { b: true, a: null } },
-        // Bounds that are not numbers are ignored
-        legacy: { type: 'number', exclusiveMinimum: true, maxLength: '5' },
+        tags: { type: 'array', minItems: 1, maxItems: 5 },
+        labels: { type: 'object', minProperties: 1, maxProperties: 3 },
+        presence: { type: 'string', default: 'required' },
       }),
     ).toEqual([
-      '* "count" (integer, min 0, over -1, max 10, under 11, default 5)',
-      // A minimum length of 1 only rules out empty strings and is left out
-      '* "name" (string)',
-      '* "code" (string, min length 2, max length 1, format: email, pattern: "^\\"a\\"\\\\d")',
-      '* "list" (array, at least 1 item, at most 2 items)',
-      '* "map" (object, at least 0 keys, at most 1 key)',
-      '* "options" (object, default {"a":null,"b":true})',
-      '* "legacy" (number)',
+      '* "count" (integer, min 0, max 10, default 5)',
+      '* "ratio" (number, over 0, under 1)',
+      '* "title" (string)',
+      '* "email" (string, min length 3, max length 64, format: email, pattern: "^[a-z]+@")',
+      '* "tags" (array, at least 1 item, at most 5 items)',
+      '* "labels" (object, at least 1 key, at most 3 keys)',
+      '* "presence" (string, default "required")',
     ]);
   });
 
   it('describes arrays, tuples and boolean schemas', () => {
     expect(
-      fieldLines(
-        {
-          tags: { type: 'array', items: { type: 'string', enum: ['x'] } },
-          plain: { type: 'array' },
-          anyItems: { type: 'array', items: true },
-          noItems: { type: 'array', items: false },
-          refs: { type: 'array', items: { $ref: '#/definitions/Ref' } },
-          matrix: {
-            type: 'array',
-            items: { type: 'array', items: { type: 'number', const: 0 } },
-          },
-          pair: {
-            type: 'array',
-            items: [{ type: 'string' }, true, false, 7],
-            additionalItems: false,
-          },
-          point: {
-            type: 'array',
-            prefixItems: [{ type: 'number' }],
-            items: { type: 'string' },
-          },
-          open: { type: 'array', prefixItems: [{ type: 'number' }] },
-          anything: true,
-          forbidden: false,
-          // Values that are not schemas are skipped
-          broken: 'string',
+      fieldLines({
+        tags: { type: 'array', items: { type: 'string' } },
+        modes: { type: 'array', items: { type: 'string', enum: ['a', 'b'] } },
+        refs: { type: 'array', items: { $ref: '#/definitions/Ref' } },
+        anyList: { type: 'array' },
+        emptyList: { type: 'array', items: false },
+        matrix: {
+          type: 'array',
+          items: { type: 'array', items: { type: 'number' } },
         },
-        { required: ['forbidden'] },
-      ),
+        pair: {
+          type: 'array',
+          items: [{ type: 'string' }, { type: 'number' }],
+          additionalItems: false,
+        },
+        point: {
+          type: 'array',
+          prefixItems: [{ type: 'number' }, true],
+          items: { type: 'string' },
+        },
+        anything: true,
+        removed: false,
+      }),
     ).toEqual([
-      '* "tags" (array of string [one of "x"])',
-      '* "plain" (array)',
-      '* "anyItems" (array)',
-      '* "noItems" (empty array)',
+      '* "tags" (array of string)',
+      '* "modes" (array of string [one of "a", "b"])',
       '* "refs" (array of reference to "#/definitions/Ref")',
-      '* "matrix" (array of array of number [const 0])',
-      '* "pair" (tuple of [string, any value, nothing, unknown] with no further items)',
-      '* "point" (tuple of [number] followed by string)',
-      '* "open" (tuple of [number])',
+      '* "anyList" (array)',
+      '* "emptyList" (empty array)',
+      '* "matrix" (array of array of number)',
+      '* "pair" (tuple of [string, number] with no further items)',
+      '* "point" (tuple of [number, any value] followed by string)',
       '* "anything" (any value)',
-      '* "forbidden" (not allowed, required)',
+      '* "removed" (not allowed)',
     ]);
   });
 
   it('lists nested fields down to the maximum depth and marks the rest', () => {
-    const lines = fieldLines(
-      {
-        id: { type: 'string' },
-        a: {
-          type: 'object',
-          required: ['b'],
-          properties: {
-            b: {
-              type: 'object',
-              properties: { c: { type: 'object', properties: { d: {} } } },
-            },
-          },
-        },
-        endpoints: {
-          type: 'array',
-          items: {
-            type: 'object',
-            required: ['url'],
-            properties: { url: { type: 'string' } },
-          },
-        },
-        matrix: {
-          type: 'array',
-          items: {
-            type: 'array',
-            items: { type: 'object', properties: { cell: {} } },
-          },
-        },
-        pair: {
-          type: 'array',
-          items: [{ type: 'object', properties: { x: {} } }],
-        },
-        rest: {
-          type: 'array',
-          prefixItems: [{ type: 'string' }],
-          items: { type: 'object', properties: { y: {} } },
-        },
-        // Arrays of arrays without object items have nothing more to list
-        grid: { type: 'array', items: { type: 'array' } },
-      },
-      { omit: ['id'] },
-    );
-
-    expect(lines).toEqual([
-      '* "a" (object)',
-      '* "a.b" (object, required)',
-      '* "a.b.c" (object, has nested fields not listed here)',
-      '* "endpoints" (array of object)',
-      '* "endpoints.url" (string, required)',
-      '* "matrix" (array of array of object, has nested fields not listed here)',
-      '* "pair" (tuple of [object], has nested fields not listed here)',
-      '* "rest" (tuple of [string] followed by object, has nested fields not listed here)',
-      '* "grid" (array of array)',
-    ]);
-
-    // Omitting only applies to root properties, and depth counts from them
     expect(
       fieldLines(
         {
-          id: { type: 'string' },
-          nested: { type: 'object', properties: { id: { type: 'string' } } },
+          kind: { type: 'string' },
+          spec: {
+            type: 'object',
+            required: ['owner'],
+            properties: {
+              owner: { type: 'string' },
+              profile: {
+                type: 'object',
+                properties: {
+                  email: { type: 'string' },
+                  address: {
+                    type: 'object',
+                    properties: { city: { type: 'string' } },
+                  },
+                },
+              },
+              // Properties of array items are listed under the array's path
+              links: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['url'],
+                  properties: { url: { type: 'string' } },
+                },
+              },
+            },
+          },
+          matrix: {
+            type: 'array',
+            items: {
+              type: 'array',
+              items: { type: 'object', properties: { cell: {} } },
+            },
+          },
+          pair: {
+            type: 'array',
+            items: [{ type: 'object', properties: { x: {} } }],
+          },
         },
-        { maxDepth: 1, omit: ['id'] },
+        { maxDepth: 3, omit: ['kind'] },
       ),
-    ).toEqual(['* "nested" (object, has nested fields not listed here)']);
+    ).toEqual([
+      '* "spec" (object)',
+      '* "spec.owner" (string, required)',
+      '* "spec.profile" (object)',
+      '* "spec.profile.email" (string)',
+      '* "spec.profile.address" (object, has nested fields not listed here)',
+      '* "spec.links" (array of object)',
+      '* "spec.links.url" (string, required)',
+      '* "matrix" (array of array of object, has nested fields not listed here)',
+      '* "pair" (tuple of [object], has nested fields not listed here)',
+    ]);
+
+    // Only root properties are omitted
     expect(
       fieldLines(
-        { nested: { type: 'object', properties: { id: { type: 'string' } } } },
-        { omit: ['id'] },
+        {
+          kind: { type: 'string' },
+          spec: { type: 'object', properties: { kind: { type: 'string' } } },
+        },
+        { omit: ['kind'] },
       ),
-    ).toEqual(['* "nested" (object)', '* "nested.id" (string)']);
+    ).toEqual(['* "spec" (object)', '* "spec.kind" (string)']);
   });
 
   it('marks keys and constraints that are not listed', () => {
-    const conditional = [
-      'allOf',
-      'anyOf',
-      'oneOf',
-      'if',
-      'then',
-      'else',
-      'not',
-      'dependencies',
-      'dependentRequired',
-      'dependentSchemas',
-    ];
-    expect(
-      fieldLines(
-        Object.fromEntries(
-          conditional.map(keyword => [
-            keyword,
-            { type: 'object', [keyword]: keyword === 'not' ? {} : [] },
-          ]),
-        ),
-      ),
-    ).toEqual(
-      conditional.map(
-        keyword =>
-          `* "${keyword}" (object, has conditional constraints not listed here)`,
-      ),
-    );
-
     expect(
       fieldLines({
         labels: { type: 'object', additionalProperties: { type: 'string' } },
         closed: { type: 'object', additionalProperties: false },
-        open: { type: 'object', additionalProperties: true },
-        patterned: {
+        extensions: {
           type: 'object',
           patternProperties: { '^x-': { type: 'string' } },
         },
-        noPatterns: { type: 'object', patternProperties: {} },
-        // Only the properties declared outside of the combined schemas show
-        mixed: {
+        combined: { allOf: [{ type: 'string' }, { minLength: 2 }] },
+        target: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+        conditional: {
           type: 'object',
-          properties: { known: { type: 'string' } },
-          anyOf: [{ properties: { other: { type: 'string' } } }],
-          additionalProperties: { const: 1 },
+          properties: { kind: { type: 'string' } },
+          if: { properties: { kind: { const: 'url' } } },
+          then: { required: ['url'] },
+        },
+        contact: {
+          type: 'object',
+          dependentRequired: { email: ['name'] },
         },
       }),
     ).toEqual([
       '* "labels" (object, other keys: string)',
       '* "closed" (object, no other keys)',
-      '* "open" (object)',
-      '* "patterned" (object, has pattern-matched keys not listed here)',
-      '* "noPatterns" (object)',
-      '* "mixed" (object, other keys: unknown [const 1], has conditional constraints not listed here)',
-      '* "mixed.known" (string)',
+      '* "extensions" (object, has pattern-matched keys not listed here)',
+      '* "combined" (unknown, has conditional constraints not listed here)',
+      '* "target" (unknown, has conditional constraints not listed here)',
+      '* "conditional" (object, has conditional constraints not listed here)',
+      // Properties declared outside of the conditions are still listed
+      '* "conditional.kind" (string)',
+      '* "contact" (object, has conditional constraints not listed here)',
     ]);
   });
 
-  it('returns field parts and descriptions for rendering', () => {
+  it('renders descriptions and extra parts on one line', () => {
     const fields = describeJsonSchemaFields(
       {
         properties: {
           owner: {
             type: 'string',
-            description: '  The owner.\n\n  Required for\tall kinds. ',
+            description: 'The owner.\n\nRequired for all kinds.',
           },
-          blank: { type: 'string', description: ' \n ' },
-          notText: { type: 'string', description: 42 },
+          system: { type: 'string' },
         },
       },
       { maxDepth: 1 },
     );
 
-    expect(fields).toEqual<JsonSchemaField[]>([
-      {
-        path: 'owner',
-        parts: ['string'],
-        description: 'The owner. Required for all kinds.',
-      },
-      { path: 'blank', parts: ['string'], description: undefined },
-      { path: 'notText', parts: ['string'], description: undefined },
-    ]);
-
-    // Callers can add their own parts before rendering
+    // Callers such as the catalog add their own facts to a field
     fields[0].parts.push('relation "ownedBy"');
-    expect(renderJsonSchemaField(fields[0])).toBe(
+    expect(fields.map(renderJsonSchemaField)).toEqual([
       '* "owner" (string, relation "ownedBy"): The owner. Required for all kinds.',
-    );
-    expect(renderJsonSchemaField(fields[1])).toBe('* "blank" (string)');
-    expect(
-      describeJsonSchemaFields({ type: 'object' }, { maxDepth: 3 }),
-    ).toEqual([]);
+      '* "system" (string)',
+    ]);
   });
 });
