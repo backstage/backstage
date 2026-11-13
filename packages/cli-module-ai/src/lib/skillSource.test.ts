@@ -84,7 +84,10 @@ describe('parseSkillSource', () => {
     expect(reason(undefined)).toMatch(/backstage\.io\/source-location/);
     expect(reason('https://github.com/a/b/tree/main/x')).toMatch(/"url:"/);
     expect(reason('url:not a url')).toMatch(/valid URL/);
-    expect(reason('url:ssh://git@github.com/a/b/tree/main/x')).toMatch(/http/);
+    expect(reason('url:ssh://git@github.com/a/b/tree/main/x')).toMatch(/https/);
+    expect(reason('url:http://github.com/a/b/tree/main/x')).toBe(
+      'source location must be an https URL',
+    );
     expect(reason('url:https://github.com/a/b')).toMatch(/tree URL/);
     expect(reason('url:https://github.com/a/b/tree/main')).toMatch(
       /repository root/,
