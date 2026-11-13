@@ -56,10 +56,6 @@ export interface SelectSkillsInput {
   probe?: LocalSkillProbe;
 }
 
-export function entityRefOf(entity: Entity): string {
-  return stringifyEntityRef(entity);
-}
-
 export function relationTargets(entity: Entity, type: string): string[] {
   return (entity.relations ?? [])
     .filter(relation => relation.type === type)
@@ -86,14 +82,14 @@ function scopeReason(
 export function selectSkills(input: SelectSkillsInput): SkillDecision[] {
   const pool = new Map<string, Entity>();
   for (const entity of [...input.candidates, ...input.dependencies]) {
-    pool.set(entityRefOf(entity), entity);
+    pool.set(stringifyEntityRef(entity), entity);
   }
   const decisions = new Map<string, SkillDecision>();
   const queue: Array<{ ref: string; parent: string }> = [];
   const enqueued = new Set<string>();
 
   const enqueueDependencies = (entity: Entity) => {
-    const parent = entityRefOf(entity);
+    const parent = stringifyEntityRef(entity);
     for (const ref of relationTargets(entity, 'dependsOn')) {
       if (!enqueued.has(ref)) {
         enqueued.add(ref);
@@ -107,7 +103,7 @@ export function selectSkills(input: SelectSkillsInput): SkillDecision[] {
     via: SkillDecision['via'],
     selectedReason: string,
   ): SkillDecision => {
-    const ref = entityRefOf(entity);
+    const ref = stringifyEntityRef(entity);
     const name = entity.metadata.name;
     const skipped = (reason: string): SkillDecision => ({
       ref,
@@ -149,7 +145,7 @@ export function selectSkills(input: SelectSkillsInput): SkillDecision[] {
   };
 
   for (const entity of input.candidates) {
-    const ref = entityRefOf(entity);
+    const ref = stringifyEntityRef(entity);
     const reason = scopeReason(entity, input.scope);
     if (!reason) {
       decisions.set(ref, {

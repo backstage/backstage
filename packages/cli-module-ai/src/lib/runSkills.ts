@@ -133,16 +133,10 @@ export async function runSkills(
 /** Finds the `skills` CLI entry point inside this module's own dependencies. */
 export function resolveSkillsBin(): string {
   const packageJsonPath = require.resolve('skills/package.json');
-  const pkg: { bin?: string | Record<string, string> } = JSON.parse(
+  const pkg: { bin: { skills: string } } = JSON.parse(
     fs.readFileSync(packageJsonPath, 'utf8'),
   );
-  const bin = typeof pkg.bin === 'string' ? pkg.bin : pkg.bin?.skills;
-  if (!bin) {
-    throw new Error(
-      'The installed "skills" package does not declare a skills binary',
-    );
-  }
-  return path.resolve(path.dirname(packageJsonPath), bin);
+  return path.resolve(path.dirname(packageJsonPath), pkg.bin.skills);
 }
 
 /**
