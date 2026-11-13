@@ -177,6 +177,26 @@ describe('info', () => {
     expect(textLogs).toContain('pnpm: 12.7.0');
   });
 
+  it('lists the local packages that the lockfile leaves out', async () => {
+    // A Yarn 1 lockfile has no entries for workspace packages
+    mockPackageManager('yarn', '1.22.22', async () =>
+      YarnLockfile.parse(`# yarn lockfile v1
+
+"@backstage/core@^1.0.5":
+  version "1.0.6"
+`),
+    );
+
+    const output = await runForJsonOutput(['--format', 'json']);
+    expect(output.dependencies).toEqual({
+      '@backstage/core': [{ version: '1.0.6' }],
+    });
+    expect(output.local).toEqual({
+      '@backstage/local': [{ version: '0.3.0' }],
+      'my-local-plugin': [{ version: '1.2.0' }],
+    });
+  });
+
   it('reports without installed versions when the lockfile cannot be read', async () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     mockPackageManager('yarn', '4.1.0', async () => {

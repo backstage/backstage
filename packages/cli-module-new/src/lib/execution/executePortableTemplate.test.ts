@@ -99,6 +99,54 @@ describe('executePortableTemplate', () => {
     expect(mockRunScript).toHaveBeenCalledTimes(2);
   });
 
+  it('stops when a signal ends a command', async () => {
+    mockInstall.mockRejectedValueOnce(
+      Object.assign(new Error("Command 'yarn install' was ended by SIGINT"), {
+        signal: 'SIGINT',
+      }),
+    );
+    await executePortableTemplate(options);
+
+    expect(mockRunScript).not.toHaveBeenCalled();
+    expect(Task.error).toHaveBeenCalledWith(
+      "Command 'yarn install' was ended by SIGINT",
+    );
+    expect(Task.error).toHaveBeenCalledWith('🔥  Failed to create plugin!');
+    expect(Task.log).not.toHaveBeenCalledWith(
+      expect.stringContaining('Successfully created'),
+    );
+  });
+
+  it('stops when the CLI gets a signal during a command, however it ends', async () => {
+    const listeners = process.listenerCount('SIGINT');
+    // Yarn 4 exits with an exit code after Ctrl+C, rather than by the signal
+    mockInstall.mockImplementationOnce(async () => {
+      process.listeners('SIGINT').at(-1)!('SIGINT');
+      throw new Error("Command 'yarn install' exited with code 129");
+    });
+    await executePortableTemplate(options);
+
+    expect(mockRunScript).not.toHaveBeenCalled();
+    expect(Task.error).toHaveBeenCalledWith(
+      "Command 'yarn install' was interrupted by SIGINT",
+    );
+    expect(Task.error).toHaveBeenCalledWith('🔥  Failed to create plugin!');
+    expect(process.listenerCount('SIGINT')).toBe(listeners);
+
+    // Also when the command succeeds after the signal
+    jest.mocked(Task.error).mockClear();
+    mockRunScript.mockImplementationOnce(async () => {
+      process.listeners('SIGTERM').at(-1)!('SIGTERM');
+    });
+    await executePortableTemplate(options);
+    expect(Task.error).toHaveBeenCalledWith(
+      "Command 'yarn lint --fix' was interrupted by SIGTERM",
+    );
+    expect(Task.log).not.toHaveBeenCalledWith(
+      expect.stringContaining('Successfully created'),
+    );
+  });
+
   it('does not touch the package manager with skipInstall', async () => {
     await executePortableTemplate({ ...options, skipInstall: true });
 
