@@ -163,7 +163,7 @@ COPY --chown=node:node backstage.json ./
 ENV NODE_ENV=production
 
 # The skeleton contains the package.json of each package in the monorepo,
-# along with pnpm-lock.yaml, pnpm-workspace.yaml and any patch files that the install needs.
+# along with pnpm-lock.yaml, pnpm-workspace.yaml and any patch files and pnpmfile that the install needs.
 # With the root package.json, that's enough to run pnpm install.
 COPY --chown=node:node package.json packages/backend/dist/skeleton.tar.gz ./
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
@@ -171,6 +171,8 @@ RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 # For private registries, pass the token as an .npmrc build secret, since the build
 # doesn't see your environment variables. For example:
 #   NPMRC="//npm.acme.example/:_authToken=$NPM_TOKEN" pnpm build-image --secret id=npmrc,env=NPMRC
+# The registries in pnpm-workspace.yaml are part of the skeleton, but registry settings
+# that are only in an .npmrc file must be in the secret too.
 RUN --mount=type=secret,id=npmrc,target=/home/node/.npmrc,uid=1000 \
     --mount=type=cache,target=/home/node/.local/share/pnpm/store,sharing=locked,uid=1000,gid=1000 \
     pnpm install --frozen-lockfile --prod
@@ -324,12 +326,12 @@ CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app
 ```
 
 For a pnpm app, the first stage copies `pnpm-lock.yaml`,
-`pnpm-workspace.yaml`, and any patch files instead of the Yarn files, the
+`pnpm-workspace.yaml`, any patch files, and the pnpmfile instead of the Yarn files, the
 second stage installs pnpm and runs `pnpm install --frozen-lockfile`,
 `pnpm tsc`, and `pnpm --filter backend build`, and the last stage installs pnpm
 and copies the root `package.json`, `backstage.json`, and the extracted
-skeleton, which already holds the `pnpm-lock.yaml`, `pnpm-workspace.yaml`, and
-patch files that `pnpm install --frozen-lockfile --prod` needs. Point the cache
+skeleton, which already holds the `pnpm-lock.yaml`, `pnpm-workspace.yaml`,
+patch files, and pnpmfile that `pnpm install --frozen-lockfile --prod` needs. Point the cache
 mounts at the pnpm store, `/home/node/.local/share/pnpm/store`.
 
 Note that a newly created Backstage app will typically not have a `plugins/`
