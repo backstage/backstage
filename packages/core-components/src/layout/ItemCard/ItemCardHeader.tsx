@@ -24,7 +24,11 @@ import {
 import Typography from '@material-ui/core/Typography';
 import { ReactNode } from 'react';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link ItemCardHeader} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type ItemCardHeaderClassKey = 'root';
 
 const styles = (theme: Theme) =>
@@ -40,7 +44,11 @@ const styles = (theme: Theme) =>
 
 const useStyles = makeStyles(styles, { name: 'BackstageItemCardHeader' });
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link ItemCardHeader} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
   /**
    * A large title to show in the header, providing the main heading.
@@ -77,6 +85,8 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
  * `<ItemCardHeader title="Hello" classes={{ root: myClassName }} />`
  *
  * @public
+ * @deprecated Compose `CardHeader` and `Text` from `@backstage/ui` instead.
+ * Supply the title, subtitle, and custom content as children and adapt styling.
  */
 export function ItemCardHeader(props: ItemCardHeaderProps) {
   const { title, subtitle, children } = props;

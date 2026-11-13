@@ -27,6 +27,8 @@ import { UnstyledLink, LinkProps } from '../Link/Link';
  * @remarks
  *
  * See {@link https://v4.mui.com/api/button/#props | Material UI Button Props} for all properties
+ * @deprecated Use the replacement described in {@link LinkButton} instead.
+ * BUI components use their own props and styling contracts.
  */
 export type LinkButtonProps = MaterialButtonProps &
   Omit<LinkProps, 'variant' | 'color'>;
@@ -43,6 +45,9 @@ const LinkWrapper = forwardRef<any, LinkProps>((props, ref) => (
  *
  * @public
  * @remarks
+ * @deprecated Use `ButtonLink` from `@backstage/ui` instead. Rename `to` to
+ * `href` and adapt button variants and sizes to the BUI props. Explicitly
+ * configure external-link targets and presentation where needed.
  */
 export const LinkButton = forwardRef<any, LinkButtonProps>((props, ref) => (
   <MaterialButton ref={ref} component={LinkWrapper} {...props} />

@@ -83,6 +83,13 @@ Analytics event forwarding is implemented as a Backstage [Utility API](../utilit
 provided API need only provide a single method `captureEvent`, which takes
 an `AnalyticsEvent` object.
 
+Use `AnalyticsImplementationBlueprint` from `@backstage/plugin-app-react` to
+provide integrations. The same package exports `AnalyticsImplementation` for
+explicitly typing an integration and `AnalyticsImplementationFactory` for its
+factory. Import `AnalyticsImplementation` from this package instead of
+`@backstage/frontend-plugin-api`. Event types, the Analytics API, `useAnalytics`,
+and `AnalyticsContext` remain in `@backstage/frontend-plugin-api`.
+
 A simple implementation using `AnalyticsImplementationBlueprint`:
 
 ```ts

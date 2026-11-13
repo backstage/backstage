@@ -94,7 +94,7 @@ const app = createApp({
 
 Currently there are only three different built-in Swappable Components that you can replace the implementations of, and these live in `@backstage/frontend-plugin-api`. They are as follows:
 
-- `<Progress />`
+- `<Progress />`: accepts no component-specific props. Custom implementations can use `{}` as their props type.
 - `<ErrorDisplay />`
 - `<NotFoundErrorPage />`
 

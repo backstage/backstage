@@ -20,7 +20,11 @@ import Typography from '@material-ui/core/Typography';
 import { ReactNode, PropsWithChildren } from 'react';
 import { Link } from '../../components/Link';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link HeaderLabel} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type HeaderLabelClassKey = 'root' | 'label' | 'value';
 
 const useStyles = makeStyles(
@@ -80,6 +84,8 @@ type HeaderLabelProps = {
  *
  * @public
  *
+ * @deprecated Use the `metadata` prop of `Header` from `@backstage/ui`, or
+ * compose BUI `Text` and `Link` for a standalone label and value.
  */
 export function HeaderLabel(props: HeaderLabelProps) {
   const { label, value, url, contentTypograpyRootComponent } = props;
