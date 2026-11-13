@@ -17,12 +17,6 @@ import { JsonObject } from '@backstage/types';
 import { CustomFieldValidator } from '../../../extensions';
 import { createAsyncValidators } from './createAsyncValidators';
 
-type UrlItem = {
-  icon?: string;
-  title?: string;
-  url: string;
-};
-
 describe('createAsyncValidators', () => {
   it('should call the correct functions for validation', async () => {
     const schema: JsonObject = {
@@ -408,7 +402,6 @@ describe('createAsyncValidators', () => {
   });
 
   it('should call validator for array object property from a custom field extension', async () => {
-    let validatorTriggered = false;
     const validationErrors = [] as string[];
 
     const schema: JsonObject = {
@@ -434,20 +427,15 @@ describe('createAsyncValidators', () => {
     };
 
     const validators = {
-      CustomLinkField: (input: unknown) => {
+      CustomLinkField: jest.fn((input: unknown) => {
         const regex = /https?:\/\/(\S+)/;
-        const items = input instanceof Array ? input : [input];
 
-        items.forEach((item: UrlItem) => {
-          if (!regex.test(item.url)) {
-            validationErrors.push(
-              `Url ${item.url} is invalid. Urls must start with http:// or https://`,
-            );
-          }
-        });
-
-        validatorTriggered = true;
-      },
+        if (!regex.test(String(input))) {
+          validationErrors.push(
+            `Url ${input} is invalid. Urls must start with http:// or https://`,
+          );
+        }
+      }),
     };
 
     const validate = createAsyncValidators(schema, validators, {
@@ -458,8 +446,82 @@ describe('createAsyncValidators', () => {
       links: [{ url: 'http://my-url.spotify.com' }],
     });
 
-    expect(validatorTriggered).toBe(true);
+    expect(validators.CustomLinkField).toHaveBeenCalledWith(
+      'http://my-url.spotify.com',
+      expect.anything(),
+      expect.anything(),
+    );
     expect(validationErrors).toEqual([]);
+  });
+
+  it('should validate each item field separately in an array of objects', async () => {
+    const schema: JsonObject = {
+      type: 'object',
+      properties: {
+        owners: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              primary: { type: 'string', 'ui:field': 'EntityRefField' },
+              secondary: { type: 'string', 'ui:field': 'EntityRefField' },
+              note: { type: 'string' },
+            },
+          },
+        },
+        tags: {
+          type: 'array',
+          items: { type: 'object' },
+        },
+      },
+    };
+
+    const validators = {
+      EntityRefField: jest.fn(
+        (value: unknown, { addError }: { addError: (msg: string) => void }) => {
+          if (!String(value).includes(':')) {
+            addError(`${value} is not a valid entity ref`);
+          }
+        },
+      ),
+    };
+
+    const validate = createAsyncValidators(
+      schema,
+      validators as Record<string, CustomFieldValidator<unknown>>,
+      {
+        apiHolder: { get: jest.fn() },
+      },
+    );
+
+    await expect(
+      validate({
+        owners: [
+          { primary: 'bad', secondary: 'user:default/b', note: 'x' },
+          { primary: 'user:default/c', secondary: 'user:default/d' },
+        ],
+        tags: [{ name: 'tag' }],
+      }),
+    ).resolves.toEqual({
+      owners: {
+        0: {
+          primary: expect.objectContaining({
+            __errors: ['bad is not a valid entity ref'],
+          }),
+          secondary: expect.objectContaining({ __errors: [] }),
+        },
+        1: {
+          primary: expect.objectContaining({ __errors: [] }),
+          secondary: expect.objectContaining({ __errors: [] }),
+        },
+      },
+      tags: { 0: {} },
+    });
+
+    expect(validators.EntityRefField).toHaveBeenCalledTimes(4);
+    expect(
+      validators.EntityRefField.mock.calls.map(([value]) => value),
+    ).toEqual(['bad', 'user:default/b', 'user:default/c', 'user:default/d']);
   });
 
   it('should validate field in the dependencies in an array field', async () => {
