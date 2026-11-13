@@ -31,7 +31,7 @@ Before using the AI commands you need:
 Without `--entity`, the commands look up the component in the catalog based on
 your current folder in the repository of the git `origin` remote:
 
-The command uses the component whose `backstage.io/source-location` annotation points at the current folder or the nearest parent folder of that repository, which is the annotation catalog providers set for components registered from a repository. Any entity can declare this annotation, so if several components point at the same folder, the command fails and asks you to pass `--entity`.
+The command uses the component whose `backstage.io/source-location` annotation points at the current folder or the nearest parent folder of that repository, which is the annotation catalog providers set for components registered from a repository. Any entity can declare this annotation, so the command only trusts it when the entity's `backstage.io/managed-by-location` annotation, which entities cannot set themselves, is in the same repository, or for a `file:` location, a `file:` location in the same checkout. If several components point at the same folder, the command fails and asks you to pass `--entity`.
 
 If no component has a matching `backstage.io/source-location`, the command falls back to the component that was read from a catalog file, such as `catalog-info.yaml`, in the current folder or the nearest parent folder. The catalog records this in the `backstage.io/managed-by-location` annotation, which entities cannot set themselves. If several components were read from catalog files in that folder, or none match, the command fails and asks you to pass `--entity`.
 

@@ -35,6 +35,7 @@ import {
   getOriginUrl,
   getRepoPrefix,
   getRepoRoot,
+  isManagedWithinSameRepo,
   parseCatalogFileFolder,
   parseFileLocationFolder,
   parseSourceLocationFolder,
@@ -99,6 +100,19 @@ async function queryComponentsByLocation(options: {
   const entities = await queryAllEntities(client, { query }, token);
   return entities.flatMap(entity => {
     const location = entity.metadata.annotations?.[annotation] ?? '';
+    // A source location is declared by the entity itself, so it only counts
+    // when the catalog read the entity from the same repository.
+    if (
+      isFolder &&
+      !isManagedWithinSameRepo(
+        location,
+        entity.metadata.annotations?.[MANAGED_BY_LOCATION] ?? '',
+        repoUrl,
+        fileRoots,
+      )
+    ) {
+      return [];
+    }
     const fileFolder = parseFileLocationFolder(location, fileRoots, {
       isFolder,
     });
@@ -124,7 +138,9 @@ const listRefs = (candidates: ComponentCandidate[]) =>
  * folder in the git remote repository:
  *
  * 1. Components whose `backstage.io/source-location` is the current folder or
- *    one of its ancestors in this repository. The nearest folder wins.
+ *    one of its ancestors in this repository, and whose
+ *    `backstage.io/managed-by-location` is in the same repository. The nearest
+ *    folder wins.
  * 2. Only when that finds nothing, components whose
  *    `backstage.io/managed-by-location` is a catalog file in this repository,
  *    where the folder of the catalog file that is the nearest ancestor of the
