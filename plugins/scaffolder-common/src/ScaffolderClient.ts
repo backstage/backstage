@@ -40,7 +40,11 @@ import {
   ScaffolderStreamLogsOptions,
   ScaffolderTask,
 } from './api';
-import { DefaultApiClient, TaskStatus, TypedResponse } from './schema/openapi';
+import {
+  DefaultApiIsomorphicClient,
+  TaskStatus,
+  TypedResponse,
+} from './schema/openapi';
 
 /**
  * An API to interact with the scaffolder backend.
@@ -48,7 +52,7 @@ import { DefaultApiClient, TaskStatus, TypedResponse } from './schema/openapi';
  * @public
  */
 export class ScaffolderClient implements ScaffolderApi {
-  private readonly apiClient: DefaultApiClient;
+  private readonly apiClient: DefaultApiIsomorphicClient;
   private readonly discoveryApi: {
     getBaseUrl(pluginId: string): Promise<string>;
   };
@@ -76,7 +80,7 @@ export class ScaffolderClient implements ScaffolderApi {
     scmIntegrationsApi: ScmIntegrationRegistry;
     useLongPollingLogs?: boolean;
   }) {
-    this.apiClient = new DefaultApiClient(options);
+    this.apiClient = new DefaultApiIsomorphicClient(options);
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi ?? { fetch };
     this.scmIntegrationsApi = options.scmIntegrationsApi;
