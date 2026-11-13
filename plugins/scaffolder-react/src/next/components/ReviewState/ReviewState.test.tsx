@@ -613,4 +613,62 @@ describe('ReviewState', () => {
     // handles options for property in dependencies in third schema
     expect(queryByRole('row', { name: 'Test 5 bar5' })).toBeInTheDocument();
   });
+
+  it('should mask secrets nested in arrays and unexploded objects', () => {
+    const password = { type: 'string', 'ui:widget': 'password' };
+    const formState = {
+      tokens: ['secret-1', 'secret-2'],
+      settings: { user: 'bob', token: 'secret-3', internal: 'secret-4' },
+      services: [{ name: 'github', apiKey: 'secret-5' }],
+    };
+
+    const schemas: ParsedTemplateSchema[] = [
+      {
+        mergedSchema: {
+          type: 'object',
+          properties: {
+            tokens: { type: 'array', items: password },
+            settings: {
+              type: 'object',
+              'ui:backstage': { review: { explode: false } },
+              properties: {
+                user: { type: 'string' },
+                token: password,
+                internal: {
+                  type: 'string',
+                  'ui:backstage': { review: { show: false } },
+                },
+              },
+            },
+            services: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  apiKey: {
+                    type: 'string',
+                    'ui:backstage': { review: { mask: '<hidden>' } },
+                  },
+                },
+              },
+            },
+          },
+        },
+        schema: {},
+        title: 'test',
+        uiSchema: {},
+      },
+    ];
+
+    const { queryByText, getAllByText, getByText } = render(
+      <ReviewState formState={formState} schemas={schemas} />,
+    );
+
+    expect(queryByText(/secret-/)).not.toBeInTheDocument();
+    expect(getAllByText('******')).toHaveLength(3);
+    expect(getByText('<hidden>')).toBeInTheDocument();
+    expect(getByText('bob')).toBeInTheDocument();
+    expect(getByText('github')).toBeInTheDocument();
+  });
 });

@@ -15,7 +15,7 @@
  */
 import { StructuredMetadataTable } from '@backstage/core-components';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { Draft07 as JSONSchema } from 'json-schema-library';
+import { Draft07 as JSONSchema, JsonSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 import { isJsonObject, formatKey, findSchemaForKey } from './util';
 
@@ -33,6 +33,77 @@ export type ReviewStateProps = {
    */
   schemaFormState?: JsonObject;
 };
+
+type ReviewOverride = { kind: 'hide' } | { kind: 'mask'; value: string };
+
+function getReviewOverride(
+  definition: JsonSchema | undefined,
+): ReviewOverride | undefined {
+  const reviewOptions = definition?.['ui:backstage']?.review;
+  if (reviewOptions?.mask) {
+    return { kind: 'mask', value: reviewOptions.mask };
+  }
+  if (reviewOptions?.show === false) {
+    return { kind: 'hide' };
+  }
+  if (
+    definition?.['ui:widget'] === 'password' ||
+    definition?.['ui:field']?.toLowerCase() === 'secret'
+  ) {
+    return { kind: 'mask', value: '******' };
+  }
+  return undefined;
+}
+
+/**
+ * Applies review masks and `show: false` to the items and fields nested in
+ * an array or unexploded object, as these are rendered as a single value.
+ */
+function maskNestedValue(
+  key: string,
+  value: JsonValue,
+  parsedSchema: JSONSchema,
+  formState: JsonObject,
+): JsonValue {
+  const maskChild = (
+    pointer: string,
+    child: JsonValue,
+  ): JsonValue | undefined => {
+    const override = getReviewOverride(
+      parsedSchema.getSchema({ pointer: `#/${pointer}`, data: formState }),
+    );
+    if (override?.kind === 'hide') {
+      return undefined;
+    }
+    if (override?.kind === 'mask') {
+      return override.value;
+    }
+    return maskNestedValue(pointer, child, parsedSchema, formState);
+  };
+
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) => {
+      const masked = maskChild(`${key}/${index}`, item);
+      return masked === undefined ? [] : [masked];
+    });
+  }
+
+  if (!isJsonObject(value)) {
+    return value;
+  }
+
+  const result: JsonObject = {};
+  for (const [nestedKey, nestedValue] of Object.entries(value)) {
+    if (nestedValue === undefined) {
+      continue;
+    }
+    const masked = maskChild(`${key}/${nestedKey}`, nestedValue);
+    if (masked !== undefined) {
+      result[nestedKey] = masked;
+    }
+  }
+  return result;
+}
 
 function processSchema(
   key: string,
@@ -53,20 +124,12 @@ function processSchema(
 
   if (definitionInSchema) {
     const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
-    if (backstageReviewOptions) {
-      if (backstageReviewOptions.mask) {
-        return [[name, backstageReviewOptions.mask]];
-      }
-      if (backstageReviewOptions.show === false) {
-        return [];
-      }
+    const override = getReviewOverride(definitionInSchema);
+    if (override?.kind === 'mask') {
+      return [[name, override.value]];
     }
-
-    if (
-      definitionInSchema['ui:widget'] === 'password' ||
-      definitionInSchema['ui:field']?.toLowerCase() === 'secret'
-    ) {
-      return [[name, '******']];
+    if (override?.kind === 'hide') {
+      return [];
     }
 
     if (definitionInSchema.enum && definitionInSchema.enumNames) {
@@ -86,6 +149,10 @@ function processSchema(
         processSchema(`${key}/${nestedKey}`, nestedValue, schema, formState),
       );
     }
+  }
+
+  if (Array.isArray(value) || isJsonObject(value)) {
+    return [[name, maskNestedValue(key, value, parsedSchema, formState)]];
   }
 
   return [[name, value]];
