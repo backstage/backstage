@@ -82,3 +82,18 @@ export const tracingServiceRef = createServiceRef<
 >({
   id: 'alpha.core.tracing',
 });
+
+/**
+ * Service for accessing the AI models configured under `ai.providers`.
+ *
+ * See `AIModelsService`
+ * and {@link https://backstage.io/docs/backend-system/core-services/ai-models | the service docs}
+ * for more information.
+ *
+ * @alpha
+ */
+export const aiModelsServiceRef = createServiceRef<
+  import('./AIModelsService').AIModelsService
+>({
+  id: 'alpha.core.aiModels',
+});

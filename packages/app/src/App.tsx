@@ -17,6 +17,8 @@
 import { createApp } from '@backstage/frontend-defaults';
 import { pagesPlugin } from './examples/pagesPlugin';
 import notFoundErrorPage from './examples/notFoundErrorPageExtension';
+import aiGatewayPlugin from '@backstage/plugin-ai-gateway-react/alpha';
+import aiCodeReviewPlugin from '@internal/plugin-example-ai-code-review';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
 import homePlugin from '@backstage/plugin-home/alpha';
 
@@ -92,6 +94,8 @@ const app = createApp({
     homePlugin,
     appVisualizerPlugin,
     kubernetesPlugin,
+    aiGatewayPlugin,
+    aiCodeReviewPlugin,
     notFoundErrorPageModule,
     appModuleNav,
     appModuleHome,
