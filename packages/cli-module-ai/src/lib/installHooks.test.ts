@@ -152,11 +152,16 @@ describe('installHooks', () => {
         },
       }),
     );
+    fs.chmodSync(path.join(root, '.claude/settings.local.json'), 0o600);
     await installHooks({
       ...base(),
       agents: ['claude-code'],
       instance: 'prod',
     });
+
+    expect(
+      fs.statSync(path.join(root, '.claude/settings.local.json')).mode & 0o777,
+    ).toBe(0o600);
 
     expect(JSON.parse(read('.claude/settings.local.json'))).toEqual({
       permissions: { allow: ['Bash(ls)'] },

@@ -140,6 +140,37 @@ export function resolveSkillsBin(): string {
 }
 
 /**
+ * Tokens that `skills` or `gh` send to the host in `GH_HOST`. `skills` sends
+ * `GITHUB_TOKEN` and `GH_TOKEN` to `https://$GH_HOST/api/v3`, and `gh` sends
+ * the enterprise tokens to `GH_HOST`.
+ */
+const HOST_TOKEN_VARIABLES = [
+  'GITHUB_TOKEN',
+  'GH_TOKEN',
+  'GH_ENTERPRISE_TOKEN',
+  'GITHUB_ENTERPRISE_TOKEN',
+];
+
+function childEnv(env: Record<string, string>): NodeJS.ProcessEnv {
+  const result: NodeJS.ProcessEnv = {
+    DISABLE_TELEMETRY: '1',
+    ...process.env,
+    ...env,
+  };
+  // An invocation's GH_HOST comes from catalog data. Unless it is the host the
+  // user set themselves, keep tokens for other hosts away from it.
+  if (
+    env.GH_HOST &&
+    env.GH_HOST.toLowerCase() !== process.env.GH_HOST?.trim().toLowerCase()
+  ) {
+    for (const name of HOST_TOKEN_VARIABLES) {
+      delete result[name];
+    }
+  }
+  return result;
+}
+
+/**
  * Creates a runner for `skills`. In quiet mode the output of `skills` on
  * standard output is discarded, so that nothing but the caller's own output
  * reaches it, and standard input is closed so that it can never prompt.
@@ -155,7 +186,7 @@ export function createSkillsRunner(
         cwd,
         // skills reports telemetry that can include the source repository
         // path, so it is off unless the user has set DISABLE_TELEMETRY.
-        env: { DISABLE_TELEMETRY: '1', ...process.env, ...env },
+        env: childEnv(env),
       });
       child.on('error', reject);
       child.on('close', code => resolve(code ?? 1));

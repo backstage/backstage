@@ -226,9 +226,11 @@ export async function installHooks(
     }
     fs.mkdirSync(path.dirname(file), { recursive: true });
     // Write next to the target and rename, so that a crash cannot leave a
-    // partly written settings file behind.
+    // partly written settings file behind. Settings can hold secrets, so the
+    // replacement keeps the permissions of the existing file.
     const temp = `${file}.${process.pid}.tmp`;
-    fs.writeFileSync(temp, json);
+    const mode = fs.existsSync(file) ? fs.statSync(file).mode : undefined;
+    fs.writeFileSync(temp, json, { mode });
     fs.renameSync(temp, file);
     const excludedFrom = await excludeFromGit(
       options.rootDir,

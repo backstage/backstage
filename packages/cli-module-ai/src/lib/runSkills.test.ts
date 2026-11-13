@@ -163,7 +163,7 @@ describe('runSkills', () => {
 });
 
 describe('createSkillsRunner', () => {
-  const originalTelemetry = process.env.DISABLE_TELEMETRY;
+  const originalEnv = { ...process.env };
   let dir: string;
   let bin: string;
   let out: string;
@@ -179,6 +179,7 @@ describe('createSkillsRunner', () => {
         cwd: process.cwd(),
         telemetry: process.env.DISABLE_TELEMETRY,
         ghHost: process.env.GH_HOST,
+        tokens: [process.env.GH_TOKEN, process.env.GH_ENTERPRISE_TOKEN],
       }));
       process.exit(Number(process.env.TEST_EXIT || 0));`,
     );
@@ -186,13 +187,7 @@ describe('createSkillsRunner', () => {
   });
   afterEach(() => {
     fs.rmSync(dir, { recursive: true, force: true });
-    delete process.env.TEST_OUT;
-    delete process.env.TEST_EXIT;
-    if (originalTelemetry === undefined) {
-      delete process.env.DISABLE_TELEMETRY;
-    } else {
-      process.env.DISABLE_TELEMETRY = originalTelemetry;
-    }
+    process.env = { ...originalEnv };
   });
   const read = () => JSON.parse(fs.readFileSync(out, 'utf8'));
 
@@ -207,12 +202,30 @@ describe('createSkillsRunner', () => {
       cwd: fs.realpathSync(dir),
       telemetry: '1',
       ghHost: 'h.example.com',
+      tokens: [null, null],
     });
 
     process.env.DISABLE_TELEMETRY = '0';
     await run(['add', 'y'], {});
     expect(read().telemetry).toBe('0');
     expect(read().cwd).toBe(fs.realpathSync(process.cwd()));
+  });
+
+  it('keeps GitHub tokens away from a GH_HOST that the user did not set', async () => {
+    process.env.GH_TOKEN = 'gh-token';
+    process.env.GH_ENTERPRISE_TOKEN = 'ghe-token';
+    delete process.env.GH_HOST;
+    const run = createSkillsRunner(bin);
+
+    await run(['add', 'x'], { GH_HOST: 'evil.example.com' });
+    expect(read().tokens).toEqual([null, null]);
+
+    await run(['add', 'x'], {});
+    expect(read().tokens).toEqual(['gh-token', 'ghe-token']);
+
+    process.env.GH_HOST = 'GHE.example.com';
+    await run(['add', 'x'], { GH_HOST: 'ghe.example.com' });
+    expect(read().tokens).toEqual(['gh-token', 'ghe-token']);
   });
 
   it('propagates the exit code and rejects when the process cannot be spawned', async () => {
