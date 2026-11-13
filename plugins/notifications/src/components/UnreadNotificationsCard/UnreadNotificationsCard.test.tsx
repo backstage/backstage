@@ -15,8 +15,7 @@
  */
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { Notification } from '@backstage/plugin-notifications-common';
 import { NotificationsApi, notificationsApiRef } from '../../api';
 import { UnreadNotificationsCard } from './UnreadNotificationsCard';
@@ -172,8 +171,6 @@ describe('UnreadNotificationsCard', () => {
   });
 
   it('toggles created sort order from the Notification column header', async () => {
-    const user = userEvent.setup();
-
     await renderInTestApp(
       <TestApiProvider apis={[[notificationsApiRef, notificationsApi]]}>
         <UnreadNotificationsCard />
@@ -186,7 +183,7 @@ describe('UnreadNotificationsCard', () => {
       screen.getByRole('button', { name: 'Sorted by newest first' }),
     ).toBeInTheDocument();
 
-    await user.click(
+    fireEvent.click(
       screen.getByRole('button', { name: 'Sorted by newest first' }),
     );
 
