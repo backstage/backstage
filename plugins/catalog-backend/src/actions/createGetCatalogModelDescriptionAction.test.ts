@@ -540,6 +540,76 @@ describe('createGetCatalogModelDescriptionAction', () => {
     );
   });
 
+  it('should combine allOf entries independently of their order', async () => {
+    const first = {
+      type: ['string', 'number'],
+      description: 'First.',
+      enum: ['c', 'a', 'b'],
+      minLength: 1,
+      maxLength: 10,
+      format: 'email',
+      default: 'a',
+    };
+    const second = {
+      type: ['number', 'string'],
+      description: 'Second.',
+      enum: ['b', 'a'],
+      minLength: 3,
+      maxLength: 5,
+      format: 'idn-email',
+      default: 'b',
+    };
+    const describeIn = (entries: object[]) =>
+      describeModel(
+        createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
+          type: 'object',
+          properties: {
+            value: { allOf: entries },
+            obj: {
+              type: 'object',
+              allOf: entries.map((_, i) => ({
+                properties:
+                  i === 0
+                    ? { b: { type: 'string' }, shared: { description: 'B.' } }
+                    : { a: { type: 'string' }, shared: { description: 'A.' } },
+              })),
+            },
+            list: {
+              type: 'array',
+              allOf: entries.map((_, i) =>
+                i === 0
+                  ? { items: [{ type: 'string' }], additionalItems: false }
+                  : { items: { type: 'string', enum: ['x', 'y'] } },
+              ),
+            },
+            target: {
+              allOf: entries.map((_, i) => ({
+                $ref: i === 0 ? '#/definitions/B' : '#/definitions/A',
+              })),
+            },
+          },
+        })),
+      );
+
+    const forward = await describeIn([first, second]);
+    const backward = await describeIn([second, first]);
+
+    expect(backward).toBe(forward);
+    expect(forward).toContain(
+      '* "spec.value" (number | string, one of "a", "b"): First. Second.',
+    );
+    expect(forward).toContain('* "spec.obj.shared" (unknown): A. B.');
+    expect(forward.indexOf('"spec.obj.a"')).toBeLessThan(
+      forward.indexOf('"spec.obj.b"'),
+    );
+    expect(forward).toContain(
+      '* "spec.list" (tuple of [string [one of "x", "y"]] with no further items)',
+    );
+    expect(forward).toContain(
+      '* "spec.target" (reference to "#/definitions/A" and reference to "#/definitions/B")',
+    );
+  });
+
   it('should mark fields with alternative schemas instead of expanding them', async () => {
     const description = await describeModel(
       createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({

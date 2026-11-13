@@ -26,7 +26,6 @@ import {
   compileCatalogModel,
   defaultCatalogEntityModel,
 } from '@backstage/catalog-model/alpha';
-import { isEqual } from 'lodash';
 import { ModelHolder } from '../model/ModelHolder';
 
 const PREAMBLE = `# Catalog Model
@@ -304,9 +303,41 @@ function toArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [value];
 }
 
-// Compares values deeply, so that the key order of objects does not matter
+// Serializes a JSON value with sorted object keys, so that equal values always
+// produce the same string regardless of key order
+function canonical(value: unknown): string {
+  if (Array.isArray(value)) {
+    return `[${value.map(canonical).join(',')}]`;
+  }
+  if (isObject(value)) {
+    return `{${Object.keys(value)
+      .sort()
+      .map(key => `${JSON.stringify(key)}:${canonical(value[key])}`)
+      .join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+// The values present in both lists, compared deeply and in a stable order
 function intersect(a: unknown[], b: unknown[]): unknown[] {
-  return a.filter(x => b.some(y => isEqual(x, y)));
+  const inB = new Set(b.map(canonical));
+  const result = new Map<string, unknown>();
+  for (const value of a) {
+    const key = canonical(value);
+    if (inB.has(key)) {
+      result.set(key, value);
+    }
+  }
+  return [...result.keys()].sort().map(key => result.get(key));
+}
+
+// The distinct values of a keyword across two schemas, in a stable order
+function union(a: unknown, b: unknown): unknown[] {
+  const result = new Map<string, unknown>();
+  for (const value of [...toArray(a), ...toArray(b)]) {
+    result.set(canonical(value), value);
+  }
+  return [...result.keys()].sort().map(key => result.get(key));
 }
 
 // Like intersect, but aware that every integer is also a number
@@ -324,7 +355,7 @@ function intersectTypes(a: unknown[], b: unknown[]): unknown[] {
       }
     }
   }
-  return [...result];
+  return [...result].sort();
 }
 
 // The values allowed by enum and const together, or undefined if unrestricted
@@ -337,10 +368,11 @@ function allowedValuesOf(schema: Schema): unknown[] | undefined {
   return fromEnum ?? fromConst;
 }
 
-// Folds inline allOf entries into the schema. Every entry applies, so types
-// and allowed values are intersected, required names and references are
-// joined, and properties declared more than once are folded the same way when
-// visited. A folded schema is only used for rendering, so $ref may hold a list.
+// Folds inline allOf entries into the schema. Every entry applies, so they are
+// combined without regard to their order (see combine), and properties
+// declared more than once are folded the same way when visited. A folded
+// schema is only used for rendering, so keywords such as $ref and description
+// may hold a list of values.
 function foldAllOf(schema: Schema): Schema {
   if (!Array.isArray(schema.allOf)) {
     return schema;
@@ -367,6 +399,30 @@ function hasProperties(schema: Schema): boolean {
   );
 }
 
+// Lower bounds narrow by taking the largest value, upper bounds the smallest
+const LOWER_BOUNDS = [
+  'minimum',
+  'exclusiveMinimum',
+  'minLength',
+  'minItems',
+  'minProperties',
+  'minContains',
+];
+const UPPER_BOUNDS = [
+  'maximum',
+  'exclusiveMaximum',
+  'maxLength',
+  'maxItems',
+  'maxProperties',
+  'maxContains',
+];
+
+// Marks a default that entries disagree on, so that later entries cannot
+// bring one back
+const CONFLICTING_DEFAULT = Symbol('conflicting default');
+
+// Combines two schemas that both apply. The result does not depend on which of
+// them comes first, and no constraint of either is lost.
 function combine(a: Schema, b: Schema): Schema {
   const result: Schema = { ...b, ...a };
   if (a.type !== undefined && b.type !== undefined) {
@@ -384,38 +440,93 @@ function combine(a: Schema, b: Schema): Schema {
       result.enum = values;
     }
   }
-  const refs = [...new Set([...toArray(a.$ref), ...toArray(b.$ref)])];
-  if (refs.length > 1) {
-    result.$ref = refs;
-  }
-  if (a.required || b.required) {
-    result.required = [
-      ...new Set([...toArray(a.required), ...toArray(b.required)]),
-    ];
-  }
-  if (isObject(a.properties) && isObject(b.properties)) {
-    result.properties = { ...a.properties, ...b.properties };
-    for (const name of Object.keys(a.properties)) {
-      if (name in b.properties) {
-        result.properties[name] = {
-          allOf: [a.properties[name], b.properties[name]],
-        };
-      }
+  // Every one of these applies, so all distinct values are kept
+  for (const key of ['$ref', 'description', 'format', 'pattern', 'required']) {
+    if (a[key] !== undefined && b[key] !== undefined) {
+      const values = union(a[key], b[key]);
+      result[key] =
+        values.length === 1 && key !== 'required' ? values[0] : values;
     }
   }
-  if (isObject(a.items) && isObject(b.items)) {
-    result.items = { allOf: [a.items, b.items] };
+  for (const key of LOWER_BOUNDS) {
+    if (typeof a[key] === 'number' && typeof b[key] === 'number') {
+      result[key] = Math.max(a[key], b[key]);
+    }
   }
+  for (const key of UPPER_BOUNDS) {
+    if (typeof a[key] === 'number' && typeof b[key] === 'number') {
+      result[key] = Math.min(a[key], b[key]);
+    }
+  }
+  if (
+    'default' in a &&
+    'default' in b &&
+    (a.default === CONFLICTING_DEFAULT ||
+      b.default === CONFLICTING_DEFAULT ||
+      canonical(a.default) !== canonical(b.default))
+  ) {
+    result.default = CONFLICTING_DEFAULT;
+  }
+  if (isObject(a.properties) && isObject(b.properties)) {
+    // Fields declared across entries are listed by name, independent of order
+    const names = [
+      ...new Set([...Object.keys(a.properties), ...Object.keys(b.properties)]),
+    ].sort();
+    result.properties = Object.fromEntries(
+      names.map(name => [name, bothOf(a.properties[name], b.properties[name])]),
+    );
+  }
+  combineItems(a, b, result);
   const aExtra = a.additionalProperties;
   const bExtra = b.additionalProperties;
-  if (aExtra === false || bExtra === false) {
-    result.additionalProperties = false;
-  } else if (isObject(aExtra) && isObject(bExtra)) {
-    result.additionalProperties = { allOf: [aExtra, bExtra] };
-  } else if (aExtra === true && bExtra !== undefined) {
-    result.additionalProperties = bExtra;
+  if (aExtra !== undefined && bExtra !== undefined) {
+    result.additionalProperties = bothOf(aExtra, bExtra);
   }
   return result;
+}
+
+// A schema that requires both of two, possibly missing or boolean, schemas
+function bothOf(a: unknown, b: unknown): unknown {
+  if (a === undefined || a === true) {
+    return b;
+  }
+  if (b === undefined || b === true) {
+    return a;
+  }
+  if (a === false || b === false) {
+    return false;
+  }
+  return { allOf: [a, b] };
+}
+
+// Combines the item schemas of two arrays. A tuple item applies together with
+// the other side's item at the same position, or its schema for all items.
+function combineItems(a: Schema, b: Schema, result: Schema) {
+  const aTuple = tupleItemsOf(a);
+  const bTuple = tupleItemsOf(b);
+  const aRest = aTuple ? restItemsOf(a) : a.items;
+  const bRest = bTuple ? restItemsOf(b) : b.items;
+  if (!aTuple && !bTuple) {
+    if (aRest !== undefined && bRest !== undefined) {
+      result.items = bothOf(aRest, bRest);
+    }
+    return;
+  }
+  const length = Math.max(aTuple?.length ?? 0, bTuple?.length ?? 0);
+  const itemAt = (tuple: unknown[] | undefined, rest: unknown, i: number) =>
+    tuple && i < tuple.length ? tuple[i] : rest;
+  result.prefixItems = Array.from(
+    { length },
+    (_, i) =>
+      bothOf(itemAt(aTuple, aRest, i), itemAt(bTuple, bRest, i)) ?? true,
+  );
+  delete result.additionalItems;
+  const rest = bothOf(aRest, bRest);
+  if (rest === undefined) {
+    delete result.items;
+  } else {
+    result.items = rest;
+  }
 }
 
 // The item schemas of a tuple, from prefixItems or an items list
@@ -549,9 +660,9 @@ function describeAllowedValues(schema: Schema): string | undefined {
     return 'no allowed values';
   }
   if (values.length === 1 && 'const' in schema) {
-    return `const ${JSON.stringify(values[0])}`;
+    return `const ${canonical(values[0])}`;
   }
-  return `one of ${values.map(v => JSON.stringify(v)).join(', ')}`;
+  return `one of ${values.map(canonical).join(', ')}`;
 }
 
 function describeField(
@@ -582,10 +693,11 @@ function describeField(
     parts.push('has conditional constraints not listed here');
   }
   // Each field is a single list item, so line breaks are collapsed
-  const description =
-    typeof schema.description === 'string'
-      ? schema.description.replace(/\s+/g, ' ').trim()
-      : '';
+  const description = toArray(schema.description)
+    .filter((d): d is string => typeof d === 'string')
+    .map(d => d.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+    .join(' ');
   return { path, parts, description: description || undefined };
 }
 
