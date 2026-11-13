@@ -396,7 +396,11 @@ environment, your value is used instead. To opt in to telemetry, set
 
 `skills` only recognizes tree URLs on a GitHub Enterprise host when the
 `GH_HOST` environment variable matches that host. For these sources the module
-sets `GH_HOST` for that one invocation only.
+sets `GH_HOST` for that one invocation only. Unless your own `GH_HOST` is that
+host, the invocation does not receive `GITHUB_TOKEN`, `GH_TOKEN`,
+`GH_ENTERPRISE_TOKEN`, or `GITHUB_ENTERPRISE_TOKEN`, so that a source location
+in the catalog cannot send your tokens to another host. `skills` then uses your
+git credentials and `gh` login for that host.
 
 ## Limitations
 
