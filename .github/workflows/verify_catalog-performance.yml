@@ -35,6 +35,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
+          --shm-size=1g
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
@@ -46,6 +47,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
+          --shm-size=1g
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
@@ -79,7 +81,12 @@ jobs:
           cache-prefix: ${{ runner.os }}-v24.x
 
       - name: catalog performance tests
-        run: yarn test plugins/catalog-backend/src/tests/performance
+        run: |
+          yarn test \
+            plugins/catalog-backend/src/tests/performance/getEntitiesPerformance \
+            plugins/catalog-backend/src/tests/performance/getProcessableEntitiesPerformance \
+            plugins/catalog-backend/src/tests/performance/providerDeltaMutations \
+            plugins/catalog-backend/src/tests/performance/stitchingPerformance
         env:
           PERFORMANCE_TEST: 1
           PERFORMANCE_RESULTS_FILE: ${{ runner.temp }}/perf/current.jsonl
@@ -96,3 +103,146 @@ jobs:
 
       - name: compare against master
         run: node scripts/compare-catalog-performance.js "$RUNNER_TEMP/perf/current.jsonl" "$RUNNER_TEMP/perf/baseline.jsonl"
+
+  query-battery:
+    permissions:
+      contents: read
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pg: 14
+            image: postgres:14@sha256:14bfab572eec6abf65892e1db7c3ba8d41b2a2855c1b143664907d6e146eb6e1
+          - pg: 18
+            image: postgres:18@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336
+
+    services:
+      postgres:
+        image: ${{ matrix.image }}
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --shm-size=1g
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432/tcp
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=8192 --experimental-vm-modules
+      PERFORMANCE_TEST: 1
+      PERFORMANCE_DATABASE_IDS: POSTGRES_${{ matrix.pg }}
+      # Plan invariant violations are reported in the job summary, not failed
+      PERFORMANCE_PLAN_CHECKS: report
+      BACKSTAGE_TEST_DISABLE_DOCKER: 1
+
+    name: Catalog Performance Query Battery (Postgres ${{ matrix.pg }})
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: use node.js 24.x
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24.22.1
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
+        with:
+          cache-prefix: ${{ runner.os }}-v24.x
+
+      - name: configure database
+        run: |
+          mkdir -p "$RUNNER_TEMP/perf"
+          echo "PERFORMANCE_RESULTS_FILE=$RUNNER_TEMP/perf/current.jsonl" >> "$GITHUB_ENV"
+          echo "PERFORMANCE_PLAN_FINDINGS_FILE=$RUNNER_TEMP/perf/plan-findings.jsonl" >> "$GITHUB_ENV"
+          echo "DATASET_DUMP=$RUNNER_TEMP/perf/dataset.dump" >> "$GITHUB_ENV"
+          echo "PG_CONTAINER=${{ job.services.postgres.id }}" >> "$GITHUB_ENV"
+          echo "BACKSTAGE_TEST_DATABASE_POSTGRES${{ matrix.pg }}_CONNECTION_STRING=postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}" >> "$GITHUB_ENV"
+
+      - name: restore dataset snapshot
+        id: dataset
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ runner.temp }}/perf/dataset.dump
+          key: catalog-perf-dataset-v3-pg${{ matrix.pg }}-${{ hashFiles('plugins/catalog-backend/migrations/**', 'plugins/catalog-backend/src/tests/performance/lib/dataset.ts', 'plugins/catalog-backend/src/tests/performance/lib/preloadDataset.ts') }}
+
+      # Restore with the tools inside the service container, so they match the server version
+      - name: restore dataset into the template database
+        if: steps.dataset.outputs.cache-hit == 'true'
+        run: |
+          docker cp "$DATASET_DUMP" "$PG_CONTAINER:/tmp/dataset.dump"
+          docker exec "$PG_CONTAINER" createdb -U postgres catalog_perf_template
+          docker exec "$PG_CONTAINER" pg_restore -U postgres -d catalog_perf_template -j4 /tmp/dataset.dump
+          docker exec "$PG_CONTAINER" rm /tmp/dataset.dump
+          rm "$DATASET_DUMP"
+
+      - name: preload dataset
+        run: node --require @backstage/cli/config/nodeTransform.cjs plugins/catalog-backend/src/tests/performance/lib/preloadDataset.ts
+
+      # The template refuses connections after preloading, so open it briefly to dump it
+      - name: dump dataset snapshot
+        if: steps.dataset.outputs.cache-hit != 'true'
+        run: |
+          docker exec "$PG_CONTAINER" psql -U postgres -c 'ALTER DATABASE catalog_perf_template WITH ALLOW_CONNECTIONS true'
+          # Postgres 18 dumps statistics only when asked to, and older versions cannot
+          STATISTICS=""
+          if [ "${{ matrix.pg }}" -ge 18 ]; then STATISTICS="--statistics"; fi
+          docker exec "$PG_CONTAINER" pg_dump -U postgres -Fc $STATISTICS -f /tmp/dataset.dump catalog_perf_template
+          docker exec "$PG_CONTAINER" psql -U postgres -c 'ALTER DATABASE catalog_perf_template WITH ALLOW_CONNECTIONS false'
+          docker cp "$PG_CONTAINER:/tmp/dataset.dump" "$DATASET_DUMP"
+          docker exec "$PG_CONTAINER" rm /tmp/dataset.dump
+
+      - name: save dataset snapshot
+        if: steps.dataset.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ runner.temp }}/perf/dataset.dump
+          key: ${{ steps.dataset.outputs.cache-primary-key }}
+
+      - name: catalog query battery tests
+        run: |
+          yarn test plugins/catalog-backend/src/tests/performance/queryBattery
+
+      # Each of these clones the ~7 GB dataset, so run them one at a time to keep
+      # at most one clone on the service's disk
+      - name: catalog dataset clone tests
+        if: ${{ !cancelled() }}
+        run: |
+          yarn test --runInBand \
+            plugins/catalog-backend/src/tests/performance/orphanCleanup \
+            plugins/catalog-backend/src/tests/performance/ancestry \
+            plugins/catalog-backend/src/tests/performance/refreshAtScale \
+            plugins/catalog-backend/src/tests/performance/stitchQueue
+
+      - name: restore baseline
+        if: ${{ !cancelled() }}
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: |
+            ${{ runner.temp }}/perf/baseline.jsonl
+            ${{ runner.temp }}/perf/baseline-plan-findings.jsonl
+          key: catalog-perf-battery-baseline-v2-pg${{ matrix.pg }}-none
+          restore-keys: catalog-perf-battery-baseline-v2-pg${{ matrix.pg }}-
+
+      # Runs even if a test failed, but there is nothing to compare if none ran
+      - name: compare against master
+        if: ${{ !cancelled() }}
+        run: |
+          if [ ! -f "$RUNNER_TEMP/perf/current.jsonl" ]; then
+            echo "No timings were recorded, skipping the comparison"
+            exit 0
+          fi
+          node scripts/compare-catalog-performance.js "$RUNNER_TEMP/perf/current.jsonl" "$RUNNER_TEMP/perf/baseline.jsonl" "$RUNNER_TEMP/perf/plan-findings.jsonl" "$RUNNER_TEMP/perf/baseline-plan-findings.jsonl"
