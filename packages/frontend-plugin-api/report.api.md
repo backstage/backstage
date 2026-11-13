@@ -84,11 +84,6 @@ export type AnalyticsEventAttributes = {
 };
 
 // @public
-export type AnalyticsImplementation = {
-  captureEvent(event: AnalyticsEvent): void;
-};
-
-// @public
 export type AnalyticsTracker = {
   captureEvent: (
     action: string,
