@@ -33,5 +33,4 @@
   .notificationInfoRow:not(:first-child) {
     margin-left: var(--bui-space-1);
   }
-
 }
