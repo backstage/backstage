@@ -178,7 +178,7 @@ export const spec = {
         name: 'orderField',
         in: 'query',
         description:
-          'By default the entities are returned ordered by their internal uid. You can\ncustomize the `orderField` query parameters to affect that ordering.\n\nFor example, to return entities by their name:\n\n`/entities/by-query?orderField=metadata.name,asc`\n\nEach parameter can be followed by `asc` for ascending lexicographical order or\n`desc` for descending (reverse) lexicographical order.\n\n**Note:** although `orderField` accepts a list, the `entities/by-query`\nendpoint currently applies only the first value; any additional order\nfields are ignored (the backend logs a warning). Multi-field ordering is\ntracked in https://github.com/backstage/backstage/issues/17560. For\nmulti-field ordering today, use the legacy `GET /entities` `order`\nparameter.\n',
+          'By default the entities are returned ordered by their internal uid. You can\ncustomize the `orderField` query parameters to affect that ordering.\n\nFor example, to return entities by their name:\n\n`/entities/by-query?orderField=metadata.name,asc`\n\nEach parameter can be followed by `asc` for ascending lexicographical order or\n`desc` for descending (reverse) lexicographical order.\n\nYou can pass `orderField` multiple times to sort by several fields. The\nfields are applied in the order given, with later fields breaking ties\nbetween earlier ones. Entities that do not have a value for a field are\nsorted as if the value were empty.\n\n`/entities/by-query?orderField=spec.type,asc&orderField=metadata.name,desc`\n',
         required: false,
         allowReserved: true,
         schema: {
