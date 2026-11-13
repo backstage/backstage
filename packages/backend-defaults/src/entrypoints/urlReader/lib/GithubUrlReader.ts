@@ -374,6 +374,11 @@ export class GithubUrlReader implements UrlReaderService {
     const response = await fetch(urlAsString, init);
 
     if (!response.ok) {
+      if (response.body) {
+        response.body.on('error', () => {});
+        response.body.resume();
+      }
+
       let message = `Request failed for ${urlAsString}, ${response.status} ${response.statusText}`;
 
       if (response.status === 304) {

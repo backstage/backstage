@@ -28,6 +28,7 @@ import fs from 'fs-extra';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'node:path';
+import { Readable } from 'node:stream';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   GhBlobResponse,
@@ -233,6 +234,33 @@ describe('GithubUrlReader', () => {
           { etag: 'foo' },
         ),
       ).rejects.toThrow(/rate limit exceeded/);
+    });
+
+    it('should resume response body on non-OK responses to prevent socket leaks', async () => {
+      const resumeSpy = jest.spyOn(Readable.prototype, 'resume');
+
+      worker.use(
+        http.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock/contents/main',
+          () => {
+            return new HttpResponse('503 Service Unavailable', {
+              status: 503,
+              statusText: 'Service Temporarily Unavailable',
+            });
+          },
+        ),
+      );
+
+      await expect(
+        gheProcessor.readUrl(
+          'https://github.com/backstage/mock/tree/blob/main',
+        ),
+      ).rejects.toThrow(
+        /Request failed for .*, 503 Service Temporarily Unavailable/,
+      );
+
+      expect(resumeSpy).toHaveBeenCalled();
+      resumeSpy.mockRestore();
     });
 
     it('should return etag and last-modified from the response', async () => {
