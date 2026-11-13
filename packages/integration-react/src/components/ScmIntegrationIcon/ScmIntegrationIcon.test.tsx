@@ -39,13 +39,8 @@ describe('<ScmIntegrationIcon />', () => {
       expect(icon).toHaveClass('remixicon');
       expect(icon).toHaveAttribute('aria-hidden', 'true');
       expect(icon).toHaveAttribute('focusable', 'false');
-      expect(icon).toHaveAttribute('width', '1em');
-      expect(icon).toHaveAttribute('height', '1em');
-      expect(icon).toHaveStyle({
-        fontSize: '1.5rem',
-        display: 'inline-block',
-        flexShrink: 0,
-      });
+      expect(icon).toHaveAttribute('width', '24');
+      expect(icon).toHaveAttribute('height', '24');
     },
   );
 });

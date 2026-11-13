@@ -39,19 +39,5 @@ export const ScmIntegrationIcon = (props: ScmIntegrationIconProps) => {
   const { type } = props;
   const app = useApp();
   const Icon = type ? app.getSystemIcon(type) : undefined;
-  return Icon ? (
-    <Icon />
-  ) : (
-    <RiCodeLine
-      size="1em"
-      aria-hidden="true"
-      focusable="false"
-      style={{
-        fontSize: '1.5rem',
-        display: 'inline-block',
-        flexShrink: 0,
-        userSelect: 'none',
-      }}
-    />
-  );
+  return Icon ? <Icon /> : <RiCodeLine aria-hidden="true" focusable="false" />;
 };
