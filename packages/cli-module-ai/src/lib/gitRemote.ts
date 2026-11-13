@@ -176,7 +176,7 @@ export function parseFileLocationFolder(
  * claim a folder of a repository it was not registered from. A `url:` source
  * location requires a `url:` managed-by location in the same repository. A
  * `file:` source location requires a `file:` managed-by location inside the
- * same checkout root.
+ * checkout, which includes the main checkout and its linked worktrees.
  */
 export function isManagedWithinSameRepo(
   sourceLocation: string,
@@ -185,11 +185,12 @@ export function isManagedWithinSameRepo(
   roots: string[],
 ): boolean {
   if (sourceLocation.startsWith('file:')) {
-    return roots.some(
-      root =>
-        parseFileLocationFolder(sourceLocation, [root], { isFolder: true }) !==
-          undefined &&
-        parseFileLocationFolder(managedByLocation, [root]) !== undefined,
+    // The roots are the worktree and the main checkout of the same repository,
+    // so a location in either of them is in the same checkout.
+    return (
+      parseFileLocationFolder(sourceLocation, roots, { isFolder: true }) !==
+        undefined &&
+      parseFileLocationFolder(managedByLocation, roots) !== undefined
     );
   }
   return managedByLocation
