@@ -231,6 +231,56 @@ describe('describeJsonSchemaFields', () => {
     ).toEqual(['* "spec" (object)', '* "spec.kind" (string)']);
   });
 
+  it('lists properties and items only where the type allows them', () => {
+    expect(
+      fieldLines({
+        nullable: {
+          type: ['object', 'null'],
+          properties: { name: { type: 'string' } },
+        },
+        untyped: { properties: { name: { type: 'string' } } },
+        // items only apply to arrays, and properties only to objects
+        record: {
+          type: 'object',
+          properties: { name: { type: 'string' } },
+          items: { type: 'object', properties: { stray: { type: 'string' } } },
+        },
+        text: { type: 'string', properties: { stray: { type: 'string' } } },
+        list: {
+          type: 'array',
+          properties: { stray: { type: 'string' } },
+          items: { type: 'object', properties: { url: { type: 'string' } } },
+        },
+        // A schema for both objects and arrays has both kinds of fields
+        either: {
+          type: ['object', 'array'],
+          properties: { name: { type: 'string' } },
+          items: { type: 'object', properties: { url: { type: 'string' } } },
+        },
+        loose: {
+          properties: { name: { type: 'string' } },
+          items: { properties: { url: { type: 'string' } } },
+        },
+      }),
+    ).toEqual([
+      '* "nullable" (object | null)',
+      '* "nullable.name" (string)',
+      '* "untyped" (unknown)',
+      '* "untyped.name" (string)',
+      '* "record" (object)',
+      '* "record.name" (string)',
+      '* "text" (string)',
+      '* "list" (array of object)',
+      '* "list.url" (string)',
+      '* "either" (object | array of object)',
+      '* "either.name" (string)',
+      '* "either.url" (string)',
+      '* "loose" (unknown)',
+      '* "loose.name" (string)',
+      '* "loose.url" (string)',
+    ]);
+  });
+
   it('marks keys and constraints that are not listed', () => {
     expect(
       fieldLines({

@@ -101,9 +101,18 @@ function allowedValuesOf(schema: Schema): unknown[] | undefined {
   return fromEnum ?? fromConst;
 }
 
-function hasProperties(schema: Schema): boolean {
+// Whether a schema's type allows the given type, which it does if it has none
+function allowsType(schema: Schema, type: string): boolean {
+  return schema.type === undefined || toArray(schema.type).includes(type);
+}
+
+// Whether a schema declares properties that apply, since they only apply to
+// objects
+function hasObjectProperties(schema: Schema): boolean {
   return (
-    isObject(schema.properties) && Object.keys(schema.properties).length > 0
+    allowsType(schema, 'object') &&
+    isObject(schema.properties) &&
+    Object.keys(schema.properties).length > 0
   );
 }
 
@@ -120,6 +129,33 @@ function restItemsOf(schema: Schema): unknown {
   return Array.isArray(schema.prefixItems)
     ? schema.items
     : schema.additionalItems;
+}
+
+// The item schemas of an array whose properties can be listed under the path
+// of the array, and those that cannot: tuple items and items of nested arrays.
+// Items only apply to arrays.
+function arrayItemsOf(schema: Schema): {
+  listed: Schema[];
+  unlisted: Schema[];
+} {
+  if (!allowsType(schema, 'array')) {
+    return { listed: [], unlisted: [] };
+  }
+  const tuple = tupleItemsOf(schema);
+  if (tuple) {
+    return {
+      listed: [],
+      unlisted: [...tuple, restItemsOf(schema)].filter(isObject),
+    };
+  }
+  if (!isObject(schema.items)) {
+    return { listed: [], unlisted: [] };
+  }
+  const deeper = arrayItemsOf(schema.items);
+  return {
+    listed: [schema.items],
+    unlisted: [...deeper.listed, ...deeper.unlisted],
+  };
 }
 
 /**
@@ -174,22 +210,20 @@ function collectFields(
     const entry = describeField(path, field, required.has(name));
     entries.push(entry);
 
-    // Fields of array items are listed under the path of the array, but only
-    // one array level deep and down to a maximum depth
-    let nested = field;
-    let arrayLevels = 0;
-    while (!tupleItemsOf(nested) && isObject(nested.items)) {
-      nested = nested.items;
-      arrayLevels += 1;
+    // The field's own properties and those of its array items are listed
+    // under its path, but only one array level deep and down to a maximum
+    // depth. A schema that allows both objects and arrays has both.
+    const items = arrayItemsOf(field);
+    const listed = [field, ...items.listed].filter(hasObjectProperties);
+    let unlisted = items.unlisted;
+    if (depth + 1 < options.maxDepth) {
+      for (const nested of listed) {
+        entries.push(...collectFields(nested, path, depth + 1, options));
+      }
+    } else {
+      unlisted = [...listed, ...unlisted];
     }
-    // Tuple items are not listed field by field
-    const tuple = tupleItemsOf(nested);
-    const unlisted = tuple
-      ? [...tuple, restItemsOf(nested)].filter(isObject)
-      : [];
-    if (!tuple && arrayLevels <= 1 && depth + 1 < options.maxDepth) {
-      entries.push(...collectFields(nested, path, depth + 1, options));
-    } else if ([nested, ...unlisted].some(hasProperties)) {
+    if (unlisted.some(hasObjectProperties)) {
       entry.parts.push('has nested fields not listed here');
     }
   }
