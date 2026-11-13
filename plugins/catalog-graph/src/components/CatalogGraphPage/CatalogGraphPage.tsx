@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import { parseEntityRef } from '@backstage/catalog-model';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { Header, Page, SupportButton } from '@backstage/core-components';
-import { useAnalytics, useRouteRef } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
+  catalogApiRef,
   entityPresentationSnapshot,
+  useEntityPresentation,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { Flex, FullPage, Text, ToggleButton } from '@backstage/ui';
+import { Alert, Flex, FullPage, Text, ToggleButton } from '@backstage/ui';
 import { RiFilterLine, RiFullscreenLine } from '@remixicon/react';
 import classNames from 'classnames';
-import { MouseEvent, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { MouseEvent, useCallback, useMemo } from 'react';
+import useAsync from 'react-use/esm/useAsync';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   EntityRelationsGraph,
   EntityRelationsGraphProps,
@@ -37,7 +40,10 @@ import { SelectedKindsFilter } from './SelectedKindsFilter';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
 import { SwitchFilter } from './SwitchFilter';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
-import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import {
+  BreadcrumbEntry,
+  useTranslationRef,
+} from '@backstage/frontend-plugin-api';
 import { catalogGraphTranslationRef } from '../../translation';
 import { Direction, EntityNode } from '../../lib/types';
 import styles from './CatalogGraphPage.module.css';
@@ -70,16 +76,16 @@ type CatalogGraphPageProps = {
   };
 } & Partial<EntityRelationsGraphProps>;
 
-function CatalogGraphPageContent(
-  props: CatalogGraphPageProps & { headerVariant: 'legacy' | 'bui' },
+type HeaderVariant = 'legacy' | 'bui';
+
+type CatalogGraphPageState = ReturnType<typeof useCatalogGraphPage>;
+
+function CatalogGraphRoots(
+  props: Omit<CatalogGraphPageProps, 'initialState'> &
+    CatalogGraphPageState & { headerVariant: HeaderVariant },
 ) {
-  const { headerVariant, ...pageProps } = props;
-  const { relationPairs, initialState, entityFilter, showArrowHeads } =
-    pageProps;
-  const { t } = useTranslationRef(catalogGraphTranslationRef);
-  const navigate = useNavigate();
-  const catalogEntityRoute = useRouteRef(entityRouteRef);
   const {
+    headerVariant,
     maxDepth,
     setMaxDepth,
     selectedKinds,
@@ -98,7 +104,13 @@ function CatalogGraphPageContent(
     setRootEntityNames,
     showFilters,
     toggleShowFilters,
-  } = useCatalogGraphPage({ initialState });
+    ...pageProps
+  } = props;
+  const { relationPairs, entityFilter, showArrowHeads } = pageProps;
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
+  const navigate = useNavigate();
+  const { pathname, search } = useLocation();
+  const catalogEntityRoute = useRouteRef(entityRouteRef);
   const analytics = useAnalytics();
   const onNodeClick = useCallback(
     (node: EntityNode, event: MouseEvent<unknown>) => {
@@ -124,6 +136,22 @@ function CatalogGraphPageContent(
     [catalogEntityRoute, navigate, setRootEntityNames, analytics],
   );
 
+  const catalogApi = useApi(catalogApiRef);
+  const firstRoot = rootEntityNames[0];
+  const firstRootTitle = useEntityPresentation(firstRoot).primaryTitle;
+  const rootEntityRefs = useMemo(
+    () => rootEntityNames.map(e => stringifyEntityRef(e)),
+    [rootEntityNames],
+  );
+  const { value: rootEntities } = useAsync(async () => {
+    const { items } = await catalogApi.getEntitiesByRefs({
+      entityRefs: rootEntityRefs,
+      fields: ['kind', 'metadata.name', 'metadata.namespace'],
+    });
+    return rootEntityRefs.map((ref, index) => ({ ref, found: !!items[index] }));
+  }, [catalogApi, rootEntityRefs]);
+  const missingRefs = rootEntities?.filter(e => !e.found).map(e => e.ref) ?? [];
+
   const pageContent = (
     <div className={styles.root}>
       <Flex justify="between" align="center">
@@ -138,6 +166,15 @@ function CatalogGraphPageContent(
           {t('catalogGraphPage.supportButtonDescription')}
         </SupportButton>
       </Flex>
+      {missingRefs.length > 0 && (
+        <Alert
+          status="warning"
+          title={t('catalogGraphPage.entityNotFoundTitle')}
+          description={t('catalogGraphPage.entityNotFoundDescription', {
+            refs: missingRefs.join(', '),
+          })}
+        />
+      )}
       <div
         className={classNames(styles.layout, {
           [styles.layoutWithFilters]: showFilters,
@@ -210,21 +247,81 @@ function CatalogGraphPageContent(
     </div>
   );
 
+  const rootEntityTitle =
+    rootEntityNames.length > 1
+      ? `${firstRootTitle} ${t('catalogGraphPage.additionalRootEntities', {
+          count: rootEntityNames.length - 1,
+        })}`
+      : firstRootTitle;
+
   if (headerVariant === 'bui') {
+    // The plugin header has no subtitle, so the root entities are shown as an
+    // extra breadcrumb that links to the first root entity. A trailing crumb
+    // for this page keeps the entity crumb from being the current one.
     // FullPage sizes itself to the viewport below the plugin header, which
-    // gives the graph a definite height even when there is no root entity.
-    return <FullPage>{pageContent}</FullPage>;
+    // gives the graph a definite height.
+    return (
+      <BreadcrumbEntry
+        entry={{
+          label: rootEntityTitle,
+          href: catalogEntityRoute({
+            kind: firstRoot.kind.toLowerCase(),
+            namespace: firstRoot.namespace.toLowerCase(),
+            name: firstRoot.name,
+          }),
+        }}
+      >
+        <BreadcrumbEntry
+          entry={{
+            label: t('catalogGraphPage.breadcrumbTitle'),
+            href: `${pathname}${search}`,
+          }}
+        >
+          <FullPage>{pageContent}</FullPage>
+        </BreadcrumbEntry>
+      </BreadcrumbEntry>
+    );
   }
 
   return (
     <Page themeId="home">
-      <Header
-        title={t('catalogGraphPage.title')}
-        subtitle={rootEntityNames
-          .map(e => entityPresentationSnapshot(e).primaryTitle)
-          .join(', ')}
-      />
+      <Header title={t('catalogGraphPage.title')} subtitle={rootEntityTitle} />
       <div className={styles.legacyContent}>{pageContent}</div>
+    </Page>
+  );
+}
+
+function CatalogGraphPageContent(
+  props: CatalogGraphPageProps & { headerVariant: HeaderVariant },
+) {
+  const { initialState, ...rest } = props;
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
+  const state = useCatalogGraphPage({ initialState });
+
+  if (state.rootEntityNames.length > 0) {
+    return <CatalogGraphRoots {...rest} {...state} />;
+  }
+
+  // Without a root entity there is nothing to show, and nothing on the page
+  // can select one.
+  const emptyState = (
+    <div className={styles.root}>
+      <Alert
+        status="info"
+        title={t('catalogGraphPage.noRootEntityTitle')}
+        description={t('catalogGraphPage.noRootEntityDescription')}
+      />
+    </div>
+  );
+
+  if (props.headerVariant === 'bui') {
+    return <FullPage>{emptyState}</FullPage>;
+  }
+
+  return (
+    <Page themeId="home">
+      <Header title={t('catalogGraphPage.title')} />
+      <div className={styles.legacyContent}>{emptyState}</div>
     </Page>
   );
 }
