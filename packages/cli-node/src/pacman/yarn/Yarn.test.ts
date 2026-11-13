@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { resolve as resolvePath } from 'node:path';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { run, runOutput } from '@backstage/cli-common';
 import { NotFoundError } from '@backstage/errors';
@@ -37,13 +38,17 @@ const mockHasBackstageYarnPlugin = jest.mocked(hasBackstageYarnPlugin);
 
 const mockDir = createMockDirectory();
 
+// Resolved like the workspace root, which is a drive path on Windows
+const classicDir = resolvePath('/classic');
+const berryDir = resolvePath('/berry');
+
 describe('Yarn', () => {
   let classic: Yarn;
   let berry: Yarn;
 
   beforeAll(async () => {
-    classic = await Yarn.create({ workspaceRootDir: '/classic' });
-    berry = await Yarn.create({ workspaceRootDir: '/berry' });
+    classic = await Yarn.create({ workspaceRootDir: classicDir });
+    berry = await Yarn.create({ workspaceRootDir: berryDir });
 
     mockRunOutput.mockResolvedValueOnce('1.22.22\n');
     await classic.version();
@@ -63,10 +68,10 @@ describe('Yarn', () => {
 
   it('should detect the yarn version in the workspace root', async () => {
     expect(mockRunOutput).toHaveBeenCalledWith(['yarn', '--version'], {
-      cwd: '/classic',
+      cwd: classicDir,
     });
     expect(mockRunOutput).toHaveBeenCalledWith(['yarn', '--version'], {
-      cwd: '/berry',
+      cwd: berryDir,
     });
 
     expect(classic.name()).toBe('yarn');
@@ -107,14 +112,31 @@ describe('Yarn', () => {
       signalCode: 'SIGTERM',
     } as unknown as ReturnType<typeof run>);
     await expect(berry.install()).rejects.toThrow(
-      "Command 'yarn install' was ended by SIGTERM",
+      expect.objectContaining({
+        message: "Command 'yarn install' was ended by SIGTERM",
+        signal: 'SIGTERM',
+      }),
+    );
+
+    // Also when the signal ends the version check
+    const yarn = await Yarn.create({ workspaceRootDir: '/interrupted' });
+    mockRunOutput.mockRejectedValueOnce(
+      Object.assign(new Error("Command 'yarn --version' was ended by SIGINT"), {
+        signal: 'SIGINT',
+      }),
+    );
+    await expect(yarn.install({ immutable: true })).rejects.toThrow(
+      expect.objectContaining({
+        message: expect.stringContaining('Failed to determine yarn version'),
+        signal: 'SIGINT',
+      }),
     );
   });
 
   it('should run commands and scripts in the workspace root by default', async () => {
     await berry.run(['--version']);
     expect(mockRun).toHaveBeenLastCalledWith(['yarn', '--version'], {
-      cwd: '/berry',
+      cwd: berryDir,
     });
 
     await berry.runScript('lint', ['--fix'], { cwd: '/berry/packages/a' });
@@ -125,7 +147,7 @@ describe('Yarn', () => {
     await berry.runWorkspaceScript('backend', 'pack', ['--inspect']);
     expect(mockRun).toHaveBeenLastCalledWith(
       ['yarn', 'workspace', 'backend', 'run', 'pack', '--inspect'],
-      { cwd: '/berry' },
+      { cwd: berryDir },
     );
 
     expect(berry.getCommandHint(['backstage-cli', 'repo', 'fix'])).toBe(
@@ -141,7 +163,7 @@ describe('Yarn', () => {
     try {
       await berry.install();
       expect(mockRun).toHaveBeenLastCalledWith(['yarn', 'install'], {
-        cwd: '/berry',
+        cwd: berryDir,
         env: expect.objectContaining({
           PATH: process.env.PATH,
           [npmConfigVar]: undefined,
@@ -162,7 +184,7 @@ describe('Yarn', () => {
       await classic.install({ immutable: true, offline: true });
       expect(mockRun).toHaveBeenLastCalledWith(
         ['yarn', 'install', '--frozen-lockfile', '--offline'],
-        expect.objectContaining({ cwd: '/classic' }),
+        expect.objectContaining({ cwd: classicDir }),
       );
 
       const onStdout = jest.fn();
@@ -175,7 +197,7 @@ describe('Yarn', () => {
         onStderr,
       });
       expect(mockRun).toHaveBeenLastCalledWith(['yarn', 'install'], {
-        cwd: '/berry',
+        cwd: berryDir,
         env: expect.objectContaining({
           YARN_ENABLE_IMMUTABLE_INSTALLS: 'false',
           YARN_ENABLE_NETWORK: '0',
@@ -217,7 +239,7 @@ describe('Yarn', () => {
     });
     expect(mockRunOutput).toHaveBeenLastCalledWith(
       ['yarn', 'info', '--json', 'my-package'],
-      { cwd: '/classic' },
+      { cwd: classicDir },
     );
 
     mockRunOutput.mockResolvedValueOnce('');
@@ -238,7 +260,7 @@ describe('Yarn', () => {
     });
     expect(mockRunOutput).toHaveBeenLastCalledWith(
       ['yarn', 'npm', 'info', '--json', 'my-package'],
-      { cwd: '/berry' },
+      { cwd: berryDir },
     );
 
     const notFound = new Error('Command failed');
@@ -286,6 +308,6 @@ b@^2:
     await expect(berry.supportsBackstageVersionProtocol()).resolves.toBe(true);
     mockHasBackstageYarnPlugin.mockResolvedValueOnce(false);
     await expect(berry.supportsBackstageVersionProtocol()).resolves.toBe(false);
-    expect(mockHasBackstageYarnPlugin).toHaveBeenCalledWith('/berry');
+    expect(mockHasBackstageYarnPlugin).toHaveBeenCalledWith(berryDir);
   });
 });

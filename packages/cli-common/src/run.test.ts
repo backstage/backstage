@@ -313,6 +313,7 @@ describe('run', () => {
         expect(error?.message).toMatch(
           /^Command 'node .*' was ended by SIGTERM$/,
         );
+        expect((error as Error & { signal?: string }).signal).toBe('SIGTERM');
         expect((error as Error & { stdout?: string }).stdout).toContain(
           'partial',
         );
