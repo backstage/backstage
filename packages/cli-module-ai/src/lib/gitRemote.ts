@@ -24,10 +24,12 @@ import { errorMessage } from './errorMessage';
 export type ExecFn = (
   file: string,
   args: string[],
+  options?: { cwd?: string },
 ) => Promise<{ stdout: string }>;
 
 const execFileAsync = promisify(execFile);
-export const defaultExec: ExecFn = (file, args) => execFileAsync(file, args);
+export const defaultExec: ExecFn = (file, args, options) =>
+  execFileAsync(file, args, { ...options, encoding: 'utf8' });
 
 /**
  * Normalizes a git remote URL (ssh, https, with or without `.git`) to the
@@ -56,11 +58,12 @@ export function repoUrlFromRemote(url: string): string {
  * trailing slash. This is an empty string at the repository root.
  */
 export async function getRepoPrefix(
+  cwd = process.cwd(),
   exec: ExecFn = defaultExec,
 ): Promise<string> {
   let stdout: string;
   try {
-    ({ stdout } = await exec('git', ['rev-parse', '--show-prefix']));
+    ({ stdout } = await exec('git', ['rev-parse', '--show-prefix'], { cwd }));
   } catch (error) {
     throw new Error(
       `Could not determine the current folder in the git repository (${errorMessage(
@@ -208,13 +211,14 @@ function realpathOrResolve(target: string): string {
 }
 
 export async function getOriginUrl(
+  cwd = process.cwd(),
   exec: ExecFn = defaultExec,
 ): Promise<string> {
   const hint =
     'Run from inside a git repository with an origin remote, or pass --entity.';
   let stdout: string;
   try {
-    ({ stdout } = await exec('git', ['remote', 'get-url', 'origin']));
+    ({ stdout } = await exec('git', ['remote', 'get-url', 'origin'], { cwd }));
   } catch (error) {
     throw new Error(
       `Could not read the "origin" git remote (${errorMessage(
@@ -234,10 +238,13 @@ export async function getOriginUrl(
  * directory, or undefined when not inside one.
  */
 export async function getRepoRoot(
+  cwd = process.cwd(),
   exec: ExecFn = defaultExec,
 ): Promise<string | undefined> {
   try {
-    const { stdout } = await exec('git', ['rev-parse', '--show-toplevel']);
+    const { stdout } = await exec('git', ['rev-parse', '--show-toplevel'], {
+      cwd,
+    });
     return stdout.trim() || undefined;
   } catch {
     return undefined;
@@ -250,14 +257,15 @@ export async function getRepoRoot(
  * checkout that the worktree was created from.
  */
 export async function getMainCheckoutRoot(
+  cwd = process.cwd(),
   exec: ExecFn = defaultExec,
 ): Promise<string | undefined> {
   try {
-    const { stdout } = await exec('git', [
-      'rev-parse',
-      '--path-format=absolute',
-      '--git-common-dir',
-    ]);
+    const { stdout } = await exec(
+      'git',
+      ['rev-parse', '--path-format=absolute', '--git-common-dir'],
+      { cwd },
+    );
     const gitDir = stdout.trim();
     return path.basename(gitDir) === '.git' ? path.dirname(gitDir) : undefined;
   } catch {

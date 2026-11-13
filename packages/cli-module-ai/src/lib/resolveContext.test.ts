@@ -120,17 +120,13 @@ describe('queryAllEntities', () => {
     mockClient.queryEntities
       .mockResolvedValueOnce(page([component('a')], 'c1'))
       .mockResolvedValueOnce(page([component('b')]));
-    const items = await queryAllEntities(
-      mockClient,
-      { query: { kind: 'Component' } },
-      'tok',
-    );
+    const items = await queryAllEntities(mockClient, {
+      query: { kind: 'Component' },
+    });
     expect(items.map(i => i.metadata.name)).toEqual(['a', 'b']);
-    expect(mockClient.queryEntities).toHaveBeenNthCalledWith(
-      2,
-      { cursor: 'c1' },
-      { token: 'tok' },
-    );
+    expect(mockClient.queryEntities).toHaveBeenNthCalledWith(2, {
+      cursor: 'c1',
+    });
   });
 });
 
@@ -154,13 +150,11 @@ describe('findComponent', () => {
     });
   const catalog = (registered: Entity[]) =>
     mockClient.queryEntities.mockImplementation(async () => page(registered));
-  const find = (repoPrefix: string) =>
-    findComponent({
-      client: mockClient,
-      token: 'tok',
-      remoteUrl: 'git@github.acme.com:acme/mono.git',
-      repoPrefix,
-    });
+  const find = (repoPrefix: string) => {
+    mockGetOriginUrl.mockResolvedValue('git@github.acme.com:acme/mono.git');
+    mockGetRepoPrefix.mockResolvedValue(repoPrefix);
+    return findComponent({ client: mockClient });
+  };
 
   it('picks the component whose catalog file is in the nearest ancestor folder', async () => {
     const root = located('root', `${repo}/blob/main/catalog-info.yaml`);
@@ -188,21 +182,18 @@ describe('findComponent', () => {
     // Each lookup queries source locations first, then catalog file locations.
     expect(mockClient.queryEntities).toHaveBeenCalledTimes(12);
     for (const annotation of ['source-location', 'managed-by-location']) {
-      expect(mockClient.queryEntities).toHaveBeenCalledWith(
-        {
-          query: {
-            $all: [
-              { kind: 'Component' },
-              {
-                [`metadata.annotations.backstage.io/${annotation}`]: {
-                  $hasPrefix: `url:${repo}/`,
-                },
+      expect(mockClient.queryEntities).toHaveBeenCalledWith({
+        query: {
+          $all: [
+            { kind: 'Component' },
+            {
+              [`metadata.annotations.backstage.io/${annotation}`]: {
+                $hasPrefix: `url:${repo}/`,
               },
-            ],
-          },
+            },
+          ],
         },
-        { token: 'tok' },
-      );
+      });
     }
   });
 
@@ -260,11 +251,9 @@ describe('findComponent', () => {
       located('other', `${repo}/blob/main/other/c.yaml`),
     ]);
     await expect(find('services/svc/src')).rejects.toThrow(
-      /No Component with a backstage.io\/source-location or backstage.io\/managed-by-location at or above https:\/\/github.acme.com\/acme\/mono\/services\/svc\/src was found.*--entity/,
+      /No Component found: looked for a backstage.io\/source-location or a backstage.io\/managed-by-location\. .*--entity/,
     );
-    await expect(find('')).rejects.toThrow(
-      /at or above https:\/\/github.acme.com\/acme\/mono was found.*--entity/,
-    );
+    await expect(find('')).rejects.toThrow(/No Component found.*--entity/);
   });
 
   it('matches catalog files registered as file: locations inside the checkout roots, by real path', async () => {
@@ -280,14 +269,13 @@ describe('findComponent', () => {
       fs.symlinkSync(main, link);
       const file = (name: string, p: string) =>
         annotated(name, { 'backstage.io/managed-by-location': `file:${p}` });
-      const findFile = (repoPrefix: string) =>
-        findComponent({
-          client: mockClient,
-          token: 'tok',
-          remoteUrl: 'git@github.acme.com:acme/mono.git',
-          repoPrefix,
-          fileRoots: [worktree, main],
-        });
+      const findFile = (repoPrefix: string) => {
+        mockGetOriginUrl.mockResolvedValue('git@github.acme.com:acme/mono.git');
+        mockGetRepoPrefix.mockResolvedValue(repoPrefix);
+        mockGetRepoRoot.mockResolvedValue(worktree);
+        mockGetMainRoot.mockResolvedValue(main);
+        return findComponent({ client: mockClient });
+      };
 
       const sourced = (name: string, source: string, managedBy: string) =>
         annotated(name, {
@@ -334,38 +322,63 @@ describe('findComponent', () => {
       expect((await findFile('')).metadata.name).toBe('root');
       for (const annotation of ['source-location', 'managed-by-location']) {
         const key = `metadata.annotations.backstage.io/${annotation}`;
-        expect(mockClient.queryEntities).toHaveBeenCalledWith(
-          {
-            query: {
-              $all: [
-                { kind: 'Component' },
-                {
-                  $any: [
-                    { [key]: { $hasPrefix: `url:${repo}/` } },
-                    { [key]: { $hasPrefix: 'file:' } },
-                  ],
-                },
-              ],
-            },
+        expect(mockClient.queryEntities).toHaveBeenCalledWith({
+          query: {
+            $all: [
+              { kind: 'Component' },
+              {
+                $any: [
+                  { [key]: { $hasPrefix: `url:${repo}/` } },
+                  { [key]: { $hasPrefix: 'file:' } },
+                ],
+              },
+            ],
           },
-          { token: 'tok' },
-        );
+        });
       }
     } finally {
       fs.rmSync(base, { recursive: true, force: true });
     }
   });
 
+  it('tries custom resolvers in order and lists them when none finds a component', async () => {
+    const calls: string[] = [];
+    const resolver = (description: string, found?: Entity) => ({
+      description,
+      resolve: jest.fn(async () => {
+        calls.push(description);
+        return found;
+      }),
+    });
+    const first = resolver('a first');
+    const second = resolver('a second', component('second'));
+    const third = resolver('a third', component('third'));
+    const found = await findComponent({
+      client: mockClient,
+      resolvers: [first, second, third],
+    });
+    expect(found.metadata.name).toBe('second');
+    expect(calls).toEqual(['a first', 'a second']);
+    expect(second.resolve).toHaveBeenCalledWith({
+      cwd: process.cwd(),
+      catalog: mockClient,
+    });
+    await expect(
+      findComponent({ client: mockClient, resolvers: [first, resolver('b')] }),
+    ).rejects.toThrow(
+      'No Component found: looked for a first or b. Use --entity to select the component.',
+    );
+  });
+
   it('fetches an explicit --entity, defaulting kind and namespace', async () => {
     mockClient.getEntityByRef.mockResolvedValue(component('svc'));
-    await findComponent({ client: mockClient, token: 'tok', entity: 'svc' });
+    await findComponent({ client: mockClient, entity: 'svc' });
     expect(mockClient.getEntityByRef).toHaveBeenCalledWith(
       'component:default/svc',
-      { token: 'tok' },
     );
     mockClient.getEntityByRef.mockResolvedValue(undefined);
     await expect(
-      findComponent({ client: mockClient, token: 'tok', entity: 'svc' }),
+      findComponent({ client: mockClient, entity: 'svc' }),
     ).rejects.toThrow(/component:default\/svc.*not found/);
   });
 });
@@ -400,7 +413,7 @@ describe('collectAncestorGroups', () => {
         'group:default/root': group('root', ['group:default/team-a']),
       }),
     );
-    const result = await collectAncestorGroups(mockClient, 'tok', [
+    const result = await collectAncestorGroups(mockClient, [
       'user:default/jane',
       'group:default/team-a',
     ]);
@@ -422,7 +435,7 @@ describe('collectAncestorGroups', () => {
       ]),
     );
     mockClient.getEntitiesByRefs.mockImplementation(lookup(chain));
-    const result = await collectAncestorGroups(mockClient, 'tok', [ref(0)]);
+    const result = await collectAncestorGroups(mockClient, [ref(0)]);
     expect(result).toEqual(
       Array.from({ length: MAX_GROUP_DEPTH }, (_, i) => ref(i + 1)),
     );
@@ -491,7 +504,7 @@ describe('fetchDependencies', () => {
         'airesource:default/hidden': skill('hidden', 'group:default/a'),
       }),
     );
-    const fetched = await fetchDependencies(mockClient, 'tok', [
+    const fetched = await fetchDependencies(mockClient, [
       skill('mine', 'group:default/a', ['airesource:default/base']),
     ]);
     expect(fetched.map(e => e.metadata.name)).toEqual([

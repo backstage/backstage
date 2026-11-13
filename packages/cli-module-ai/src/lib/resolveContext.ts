@@ -20,10 +20,7 @@ import {
   type Entity,
 } from '@backstage/catalog-model';
 import { isSkillAiResourceEntity } from '@backstage/catalog-model/alpha';
-import type {
-  FilterPredicate,
-  FilterPredicateExpression,
-} from '@backstage/filter-predicates';
+import type { FilterPredicate } from '@backstage/filter-predicates';
 import {
   createCatalogClient,
   getEntitiesInBatches,
@@ -31,16 +28,9 @@ import {
   type CatalogReader,
 } from './catalogClient';
 import {
-  getMainCheckoutRoot,
-  getOriginUrl,
-  getRepoPrefix,
-  getRepoRoot,
-  isManagedWithinSameRepo,
-  parseCatalogFileFolder,
-  parseFileLocationFolder,
-  parseSourceLocationFolder,
-  repoUrlFromRemote,
-} from './gitRemote';
+  defaultComponentResolvers,
+  type ComponentResolver,
+} from './componentResolvers';
 import { fetchIdentity } from './identity';
 import { resolveAuth } from './resolveAuth';
 import {
@@ -68,104 +58,19 @@ export const MAX_GROUP_DEPTH = 20;
 const isKind = (ref: string, kind: string) =>
   parseEntityRef(ref).kind.toLocaleLowerCase('en-US') === kind;
 
-const SOURCE_LOCATION = 'backstage.io/source-location';
-const MANAGED_BY_LOCATION = 'backstage.io/managed-by-location';
-
-interface ComponentCandidate {
-  entity: Entity;
-  /** The possible repo-relative folders of the component, as segment lists. */
-  folders: string[][];
-}
-
-async function queryComponentsByLocation(options: {
-  client: CatalogReader;
-  token: string;
-  repoUrl: string;
-  fileRoots: string[];
-  annotation: string;
-  /** Whether the annotation points at the folder, or at a catalog file. */
-  isFolder: boolean;
-}): Promise<ComponentCandidate[]> {
-  const { client, token, repoUrl, fileRoots, annotation, isFolder } = options;
-  // A path type that cannot start with `$`, which marks predicate operators.
-  const path: `metadata.${string}` = `metadata.annotations.${annotation}`;
-  const urlMatch: FilterPredicateExpression = {};
-  urlMatch[path] = { $hasPrefix: `url:${repoUrl}/` };
-  const fileMatch: FilterPredicateExpression = {};
-  fileMatch[path] = { $hasPrefix: 'file:' };
-  const query: FilterPredicate = {
-    $all: [
-      { kind: 'Component' },
-      fileRoots.length > 0 ? { $any: [urlMatch, fileMatch] } : urlMatch,
-    ],
-  };
-  const entities = await queryAllEntities(client, { query }, token);
-  return entities.flatMap(entity => {
-    const location = entity.metadata.annotations?.[annotation] ?? '';
-    // A source location is declared by the entity itself, so it only counts
-    // when the catalog read the entity from the same repository.
-    if (
-      isFolder &&
-      !isManagedWithinSameRepo(
-        location,
-        entity.metadata.annotations?.[MANAGED_BY_LOCATION] ?? '',
-        repoUrl,
-        fileRoots,
-      )
-    ) {
-      return [];
-    }
-    const fileFolder = parseFileLocationFolder(location, fileRoots, {
-      isFolder,
-    });
-    const folders = fileFolder
-      ? [fileFolder]
-      : (isFolder ? parseSourceLocationFolder : parseCatalogFileFolder)(
-          location,
-          repoUrl,
-        );
-    return folders ? [{ entity, folders }] : [];
-  });
-}
-
-const isAt = (candidate: ComponentCandidate, folder: string) =>
-  candidate.folders.some(f => f.join('/') === folder);
-
-const listRefs = (candidates: ComponentCandidate[]) =>
-  candidates.map(c => stringifyEntityRef(c.entity)).join(', ');
-
 /**
  * Finds the component to resolve against. With an explicit entity, that
- * entity is fetched. Otherwise the component is matched against the current
- * folder in the git remote repository:
- *
- * 1. Components whose `backstage.io/source-location` is the current folder or
- *    one of its ancestors in this repository, and whose
- *    `backstage.io/managed-by-location` is in the same repository. The nearest
- *    folder wins.
- * 2. Only when that finds nothing, components whose
- *    `backstage.io/managed-by-location` is a catalog file in this repository,
- *    where the folder of the catalog file that is the nearest ancestor of the
- *    current folder wins.
- *
- * Locations registered as `file:` inside one of the given checkout roots are
- * considered too. If several components match the nearest folder, the lookup
- * fails and asks for an explicit entity.
+ * entity is fetched. Otherwise the resolvers are tried in order, and the first
+ * one that finds a component wins. By default these look at the current folder
+ * in the git remote repository, see {@link defaultComponentResolvers}. If
+ * several components match, the lookup fails and asks for an explicit entity.
  */
 export async function findComponent(options: {
   client: CatalogReader;
-  token: string;
   entity?: string;
-  remoteUrl?: string;
-  /** The current folder relative to the repository root, empty at the root. */
-  repoPrefix?: string;
-  /**
-   * Checkout roots, such as the repository root and the main checkout root of
-   * a linked worktree, inside which `file:` locations are matched.
-   */
-  fileRoots?: string[];
+  resolvers?: ComponentResolver[];
 }): Promise<Entity> {
-  const { client, token } = options;
+  const { client } = options;
   if (options.entity) {
     const refString = stringifyEntityRef(
       parseEntityRef(options.entity, {
@@ -173,54 +78,26 @@ export async function findComponent(options: {
         defaultNamespace: 'default',
       }),
     );
-    const entity = await client.getEntityByRef(refString, { token });
+    const entity = await client.getEntityByRef(refString);
     if (!entity) {
       throw new Error(`Entity ${refString} was not found in the catalog`);
     }
     return entity;
   }
-  if (!options.remoteUrl) {
-    throw new Error('Either an entity or a git remote URL is required');
-  }
-  const repoUrl = repoUrlFromRemote(options.remoteUrl);
-  const folder = (options.repoPrefix ?? '').split('/').filter(Boolean);
-  // The current folder first, then each ancestor up to the repo root.
-  const ancestors = folder.map((_, i) =>
-    folder.slice(0, folder.length - i).join('/'),
-  );
-  ancestors.push('');
-
-  const lookups = [
-    { annotation: SOURCE_LOCATION, isFolder: true },
-    { annotation: MANAGED_BY_LOCATION, isFolder: false },
-  ];
-  for (const lookup of lookups) {
-    const candidates = await queryComponentsByLocation({
-      client,
-      token,
-      repoUrl,
-      fileRoots: options.fileRoots ?? [],
-      ...lookup,
+  const resolvers = options.resolvers ?? defaultComponentResolvers;
+  for (const resolver of resolvers) {
+    const entity = await resolver.resolve({
+      cwd: process.cwd(),
+      catalog: client,
     });
-    for (const wanted of ancestors) {
-      const matches = candidates.filter(c => isAt(c, wanted));
-      if (matches.length === 1) {
-        return matches[0].entity;
-      }
-      if (matches.length > 1) {
-        throw new Error(
-          `Multiple Components have a ${lookup.annotation} in ${repoUrl}${
-            wanted ? `/${wanted}` : ''
-          }: ${listRefs(matches)}. Use --entity to select one.`,
-        );
-      }
+    if (entity) {
+      return entity;
     }
   }
-
-  const location =
-    folder.length > 0 ? `${repoUrl}/${folder.join('/')}` : repoUrl;
   throw new Error(
-    `No Component with a ${SOURCE_LOCATION} or ${MANAGED_BY_LOCATION} at or above ${location} was found in the catalog. Use --entity to select the component.`,
+    `No Component found: looked for ${resolvers
+      .map(r => r.description)
+      .join(' or ')}. Use --entity to select the component.`,
   );
 }
 
@@ -238,14 +115,13 @@ export function readOwnerAndSystem(component: Entity): {
 
 export async function collectAncestorGroups(
   client: CatalogReader,
-  token: string,
   startRefs: string[],
 ): Promise<string[]> {
   const visited = new Set(startRefs.map(r => r.toLocaleLowerCase('en-US')));
   const ancestors: string[] = [];
   let frontier = [...visited].filter(ref => isKind(ref, 'group'));
   for (let depth = 0; depth < MAX_GROUP_DEPTH && frontier.length > 0; depth++) {
-    const entities = await getEntitiesInBatches(client, token, frontier, [
+    const entities = await getEntitiesInBatches(client, frontier, [
       'kind',
       'metadata.name',
       'metadata.namespace',
@@ -298,7 +174,6 @@ export function buildSkillQuery(
 
 export async function fetchDependencies(
   client: CatalogReader,
-  token: string,
   candidates: Entity[],
 ): Promise<Entity[]> {
   const known = new Set(candidates.map(stringifyEntityRef));
@@ -313,7 +188,7 @@ export async function fetchDependencies(
   let pending = [...initial];
   pending.forEach(ref => known.add(ref));
   while (pending.length > 0) {
-    const items = await getEntitiesInBatches(client, token, pending);
+    const items = await getEntitiesInBatches(client, pending);
     const next: string[] = [];
     for (const item of items) {
       if (!item) continue;
@@ -349,29 +224,18 @@ export async function resolveSelection(
   options: ResolveSelectionOptions,
 ): Promise<ResolveSelectionResult> {
   const { baseUrl, accessToken } = await resolveAuth(options.instance);
-  const client = createCatalogClient(baseUrl);
+  const client = createCatalogClient(baseUrl, accessToken);
   const identity = await fetchIdentity(baseUrl, accessToken);
 
-  const remoteUrl = options.entity ? undefined : await getOriginUrl();
-  const repoPrefix = options.entity ? undefined : await getRepoPrefix();
-  const fileRoots = options.entity
-    ? undefined
-    : [await getRepoRoot(), await getMainCheckoutRoot()].filter(
-        (root): root is string => Boolean(root),
-      );
   const component = await findComponent({
     client,
-    token: accessToken,
     entity: options.entity,
-    remoteUrl,
-    repoPrefix,
-    fileRoots,
   });
   const { owner, system } = readOwnerAndSystem(component);
 
   const ownershipRefs = identity.ent.map(r => r.toLocaleLowerCase('en-US'));
   const groupRefs = ownershipRefs.filter(ref => isKind(ref, 'group'));
-  const ancestorGroupRefs = await collectAncestorGroups(client, accessToken, [
+  const ancestorGroupRefs = await collectAncestorGroups(client, [
     ...groupRefs,
     ...(owner ? [owner] : []),
   ]);
@@ -386,10 +250,8 @@ export async function resolveSelection(
   const scope: SelectionScope = { system, owners };
 
   const query = buildSkillQuery(scope);
-  const candidates = query
-    ? await queryAllEntities(client, { query }, accessToken)
-    : [];
-  const dependencies = await fetchDependencies(client, accessToken, candidates);
+  const candidates = query ? await queryAllEntities(client, { query }) : [];
+  const dependencies = await fetchDependencies(client, candidates);
 
   const decisions = selectSkills({
     candidates,
