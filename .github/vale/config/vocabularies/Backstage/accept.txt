@@ -167,6 +167,7 @@ Fargate
 faqs
 featureful
 Figma
+Filestore
 firehydrant
 Firekube
 Firestore
@@ -254,6 +255,7 @@ Koyeb
 KPIs
 kroki
 Kuang
+kubeconfig
 kubectl
 kubernetes
 Lainfiesta
@@ -467,6 +469,7 @@ scrollbars
 sdks
 SearchField
 seb
+seccomp
 semlas
 semver
 sendmail

@@ -28,11 +28,13 @@ techdocs:
 
 `techdocs.generator.runIn`
 
-**Options:** `'docker'` or `'local'`
+**Options:** `'docker'`, `'local'` or `'kubernetes'`
 
-This determines how to run the generator - whether to spin up the techdocs-container docker image or to run mkdocs locally (assuming all the dependencies are taken care of).
+This determines how to run the generator - whether to spin up the techdocs-container docker image, to run mkdocs locally (assuming all the dependencies are taken care of), or to run the techdocs-container image as a Kubernetes Job.
 
 You want to change this to `'local'` if you are running Backstage using your own custom Docker setup and want to avoid running into Docker in Docker situation. [Read more here](https://backstage.io/docs/features/techdocs/getting-started/#disabling-docker-in-docker-situation-optional).
+
+Use `'kubernetes'` if Backstage runs in Kubernetes and you want each build to run in its own pod. This also requires the [Kubernetes](#kubernetes) options.
 
 **Example:**
 
@@ -48,7 +50,7 @@ techdocs:
 
 (Optional) This can be used to control the docker image used during documentation generation. This can be useful if you want to use MkDocs plugins or other packages that are not included in the default techdocs-container (spotify/techdocs).
 
-**Note:** This setting is only used when `techdocs.generator.runIn` is set to `'docker'`, and only for the MkDocs engine. Zensical builds use `techdocs.generator.zensical.dockerImage`, see [Zensical Engine](./engines-zensical.md#docker-image).
+**Note:** This setting is only used when `techdocs.generator.runIn` is set to `'docker'` or `'kubernetes'`, and only for the MkDocs engine. Zensical builds use `techdocs.generator.zensical.dockerImage`, see [Zensical Engine](./engines-zensical.md#docker-image).
 
 **Example:**
 
@@ -65,7 +67,7 @@ techdocs:
 
 (Optional) This can be used to disable pulling the latest docker image by default. This can be useful when you are using a custom `techdocs.generator.dockerImage` and you have a custom docker login requirement. For example, you need to login to AWS ECR to pull the docker image.
 
-**Note:** Disabling this requires the docker image was pulled by other means before running the techdocs generator.
+**Note:** Disabling this requires the docker image was pulled by other means before running the techdocs generator. When `techdocs.generator.runIn` is `'kubernetes'`, this sets the build pod's `imagePullPolicy` to `IfNotPresent` instead of `Always`.
 
 **Example:**
 
@@ -85,6 +87,8 @@ techdocs:
 
 You can set `authconfig` to provide registry credentials. For supported fields and more examples, see the [Dockerode docs for pulling from private repos](https://github.com/apocas/dockerode?tab=readme-ov-file#pull-from-private-repos).
 
+**Note:** This setting is only used when `techdocs.generator.runIn` is set to `'docker'`. For `'kubernetes'`, use [`techdocs.generator.kubernetes.imagePullSecrets`](#kubernetes) instead.
+
 **Example:**
 
 ```yaml
@@ -98,6 +102,52 @@ techdocs:
         username: ${REGISTRY_USERNAME}
         password: ${REGISTRY_PASSWORD}
         serveraddress: 'https://index.docker.io/v1'
+```
+
+### Kubernetes
+
+`techdocs.generator.kubernetes`
+
+(Required when `techdocs.generator.runIn` is `'kubernetes'`) Configures how documentation is generated in Kubernetes Jobs. Backstage and the build Jobs share a PersistentVolumeClaim: Backstage prepares the documentation source on it, and the Job writes the generated site back to it. For setup steps, see [How to run TechDocs builds as Kubernetes Jobs](./how-to-guides.md#how-to-run-techdocs-builds-as-kubernetes-jobs).
+
+Backstage connects to the cluster using its in-cluster service account, or the kubeconfig referenced by the `KUBECONFIG` environment variable or `~/.kube/config`.
+
+| Option                    | Description                                                                                                                                                      |
+| :------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `volumeClaimName`         | (Required) Name of the PersistentVolumeClaim shared by Backstage and the build Jobs.                                                                             |
+| `workRoot`                | (Required) Path where the PersistentVolumeClaim is mounted in the Backstage container. It must contain `backend.workingDirectory`, and is usually the same path. |
+| `namespace`               | Namespace the build Jobs run in. It must be the namespace of the PersistentVolumeClaim. Defaults to the namespace of the current kubeconfig context.             |
+| `nodeName`                | Name of the node Backstage runs on. Usually set from the pod's `spec.nodeName` through the Kubernetes downward API.                                              |
+| `nodeAffinity`            | How strongly build Jobs are scheduled onto `nodeName`: `'preferred'`, `'required'` or `'none'`. Defaults to `'preferred'`, and has no effect without `nodeName`. |
+| `imagePullSecrets`        | Names of Secrets used to pull `techdocs.generator.dockerImage` from a private registry.                                                                          |
+| `activeDeadlineSeconds`   | Maximum duration of a build before it is stopped. Defaults to `600`.                                                                                             |
+| `ttlSecondsAfterFinished` | How long finished build Jobs are kept before Kubernetes deletes them. Defaults to `300`.                                                                         |
+| `cleanupIntervalSeconds`  | Minimum time between checks for build directories left on the shared volume by interrupted builds. Defaults to `600`.                                            |
+| `resources`               | Resource `requests` and `limits` for the build container.                                                                                                        |
+
+**Example:**
+
+```yaml
+backend:
+  workingDirectory: /var/backstage/work
+techdocs:
+  generator:
+    runIn: 'kubernetes'
+    kubernetes:
+      namespace: backstage
+      volumeClaimName: techdocs-work
+      workRoot: /var/backstage/work
+      nodeName: ${NODE_NAME}
+      nodeAffinity: 'preferred'
+      imagePullSecrets:
+        - registry-creds
+      activeDeadlineSeconds: 1200
+      resources:
+        requests:
+          cpu: 250m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
 ```
 
 ### MkDocs Configuration
