@@ -2098,12 +2098,9 @@ export type ProfileInfoApi = {
 
 // @public (undocumented)
 export const Progress: {
-  (props: ProgressProps): JSX.Element | null;
-  ref: SwappableComponentRef_2<ProgressProps, ProgressProps>;
+  (props: {}): JSX.Element | null;
+  ref: SwappableComponentRef_2<{}, {}>;
 };
-
-// @public (undocumented)
-export type ProgressProps = {};
 
 // @public
 export type RouteFunc<TParams extends AnyRouteRefParams> = (
