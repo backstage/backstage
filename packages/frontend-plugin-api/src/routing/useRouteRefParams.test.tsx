@@ -34,8 +34,10 @@ import { createSubRouteRef } from './SubRouteRef';
 const mockRouteNode = {} as AppNode;
 
 // Isolate routing consumers from extension rendering; app tests cover real node ancestry.
-jest.mock('../components/AppNodeProvider', () => {
-  const actual = jest.requireActual('../components/AppNodeProvider');
+jest.mock('../../../frontend-internal/src/wiring/useAppNode', () => {
+  const actual = jest.requireActual(
+    '../../../frontend-internal/src/wiring/useAppNode',
+  );
   return { ...actual, useAppNode: () => actual.useAppNode() ?? mockRouteNode };
 });
 
