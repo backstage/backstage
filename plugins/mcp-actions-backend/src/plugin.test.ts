@@ -354,48 +354,63 @@ describe('Mcp Backend', () => {
       expect(response.status).toBe(404);
     });
 
-    it('should expose default oauth-protected-resource when DCR is enabled', async () => {
-      const mockExternalBaseUrl = 'http://external.local:0/api';
-      const mockDiscovery = mockServices.discovery.mock({
-        getExternalBaseUrl: async pluginId =>
-          `${mockExternalBaseUrl}/${pluginId}`,
-      });
-
-      const { server } = await startTestBackend({
-        features: [
-          mcpPlugin,
-          mockPluginWithActions,
-          mockDiscovery.factory,
-          mockServices.rootConfig.factory({
-            data: {
-              backend: {
-                actions: {
-                  pluginSources: ['local'],
-                },
-              },
-              auth: {
-                experimentalDynamicClientRegistration: {
-                  enabled: true,
-                },
-              },
+    it.each([
+      {
+        name: 'DCR',
+        auth: { experimentalDynamicClientRegistration: { enabled: true } },
+      },
+      {
+        name: 'static clients',
+        auth: {
+          staticClients: [
+            {
+              clientId: 'integration',
+              redirectUris: ['https://example.com/callback'],
             },
-          }),
-        ],
-      });
+          ],
+        },
+      },
+    ])(
+      'should expose default oauth-protected-resource for $name',
+      async ({ auth }) => {
+        const mockExternalBaseUrl = 'http://external.local:0/api';
+        const mockDiscovery = mockServices.discovery.mock({
+          getExternalBaseUrl: async pluginId =>
+            `${mockExternalBaseUrl}/${pluginId}`,
+        });
 
-      const response = await request(server).get(
-        '/.well-known/oauth-protected-resource/api/mcp-actions/v1',
-      );
-      expect(response.status).toBe(200);
-      expect(response.body.resource).toMatch(/\/api\/mcp-actions\/v1$/);
-      expect(response.body.authorization_servers).toHaveLength(1);
-      expect(response.body.authorization_servers[0]).toMatch(/\/api\/auth$/);
-      expect(response.body.resource).toContain(`${mockExternalBaseUrl}`);
-      expect(response.body.authorization_servers[0]).toContain(
-        `${mockExternalBaseUrl}/`,
-      );
-      expect(response.body.scopes_supported).toEqual(['openid']);
-    });
+        const { server } = await startTestBackend({
+          features: [
+            mcpPlugin,
+            mockPluginWithActions,
+            mockDiscovery.factory,
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['local'],
+                  },
+                },
+                auth,
+              },
+            }),
+          ],
+        });
+
+        const response = await request(server).get(
+          '/.well-known/oauth-protected-resource/api/mcp-actions/v1',
+        );
+        expect(response.status).toBe(200);
+        expect(response.body.resource).toMatch(/\/api\/mcp-actions\/v1$/);
+        expect(response.body.authorization_servers).toHaveLength(1);
+        expect(response.body.authorization_servers[0]).toMatch(/\/api\/auth$/);
+        expect(response.body.resource).toContain(`${mockExternalBaseUrl}`);
+        expect(response.body.authorization_servers[0]).toContain(
+          `${mockExternalBaseUrl}/`,
+        );
+        expect(response.body.scopes_supported).toEqual(['openid']);
+      },
+    );
 
     it('should include offline_access in scopes_supported when refresh tokens are enabled', async () => {
       const mockExternalBaseUrl = 'http://external.local:0/api';

@@ -204,8 +204,14 @@ export class OfflineAccessService {
     refreshToken: string;
     tokenIssuer: TokenIssuer;
     clientId?: string;
+    isClientAuthenticationRequired?: (oidcClientId: string) => boolean;
   }): Promise<{ accessToken: string; refreshToken: string }> {
-    const { refreshToken, tokenIssuer, clientId } = options;
+    const {
+      refreshToken,
+      tokenIssuer,
+      clientId,
+      isClientAuthenticationRequired,
+    } = options;
 
     let sessionId: string;
     try {
@@ -229,6 +235,13 @@ export class OfflineAccessService {
       throw new AuthenticationError(
         'Refresh token was not issued to this client',
       );
+    }
+
+    if (
+      session.oidcClientId &&
+      isClientAuthenticationRequired?.(session.oidcClientId)
+    ) {
+      throw new AuthenticationError('Client authentication required');
     }
 
     // Verify the caller actually holds a valid token, not just the session ID
