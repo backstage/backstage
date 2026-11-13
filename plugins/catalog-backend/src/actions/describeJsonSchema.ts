@@ -200,12 +200,15 @@ function describeType(schema: Schema): string {
   const parts: string[] = [];
   if (schema.type !== undefined) {
     const types = toArray(schema.type).filter(t => typeof t === 'string');
-    if (types.length === 1 && types[0] === 'array') {
-      parts.push(describeArray(schema));
-    } else {
-      // A type keyword that lists no type names allows no value
-      parts.push(types.length ? types.join(' | ') : 'no valid type');
-    }
+    // An array is described with its items, also as part of a type union.
+    // A type keyword that lists no type names allows no value.
+    parts.push(
+      types.length
+        ? types
+            .map(t => (t === 'array' ? describeArray(schema) : t))
+            .join(' | ')
+        : 'no valid type',
+    );
   }
   // Referenced definitions are not resolved, but the field must still show
   if (typeof schema.$ref === 'string') {
@@ -241,8 +244,10 @@ function describeItem(value: unknown): string {
   if (!isObject(value)) {
     return 'unknown';
   }
-  const values = describeAllowedValues(value);
-  return `${describeType(value)}${values ? ` [${values}]` : ''}`;
+  const details = describeDetails(value);
+  return `${describeType(value)}${
+    details.length ? ` [${details.join(', ')}]` : ''
+  }`;
 }
 
 function describeAllowedValues(schema: Schema): string | undefined {
@@ -309,6 +314,21 @@ function describeField(
   if (required) {
     parts.push('required');
   }
+  parts.push(...describeDetails(schema));
+  // Each field is a single list item, so line breaks are collapsed
+  const description =
+    typeof schema.description === 'string'
+      ? schema.description.replace(/\s+/g, ' ').trim()
+      : '';
+  return { path, parts, description: description || undefined };
+}
+
+// Everything known about a schema besides its type: allowed values,
+// constraints, other keys, and markers for what is not listed. Fields and
+// item schemas share it, so that no restriction is shown for one but not the
+// other.
+function describeDetails(schema: Schema): string[] {
+  const parts: string[] = [];
   const values = describeAllowedValues(schema);
   if (values) {
     parts.push(values);
@@ -328,10 +348,5 @@ function describeField(
   if (CONDITIONAL_KEYWORDS.some(k => k in schema)) {
     parts.push('has conditional constraints not listed here');
   }
-  // Each field is a single list item, so line breaks are collapsed
-  const description =
-    typeof schema.description === 'string'
-      ? schema.description.replace(/\s+/g, ' ').trim()
-      : '';
-  return { path, parts, description: description || undefined };
+  return parts;
 }

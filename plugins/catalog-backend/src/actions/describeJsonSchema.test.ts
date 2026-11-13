@@ -121,6 +121,28 @@ describe('describeJsonSchemaFields', () => {
         },
         anything: true,
         removed: false,
+        // Items show the same details as fields
+        codes: {
+          type: 'array',
+          items: { type: 'string', maxLength: 4, pattern: '^[A-Z]+$' },
+        },
+        slots: {
+          type: 'array',
+          items: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+        },
+        range: {
+          type: 'array',
+          prefixItems: [
+            { type: 'integer', minimum: 0 },
+            { type: 'integer', maximum: 100 },
+          ],
+          items: false,
+        },
+        // An array that is one member of a type union keeps its items
+        aliases: {
+          type: ['array', 'null'],
+          items: { type: 'string', enum: ['a', 'b'] },
+        },
       }),
     ).toEqual([
       '* "tags" (array of string)',
@@ -133,6 +155,10 @@ describe('describeJsonSchemaFields', () => {
       '* "point" (tuple of [number, any value] followed by string)',
       '* "anything" (any value)',
       '* "removed" (not allowed)',
+      '* "codes" (array of string [max length 4, pattern: "^[A-Z]+$"])',
+      '* "slots" (array of unknown [has conditional constraints not listed here])',
+      '* "range" (tuple of [integer [min 0], integer [max 100]] with no further items)',
+      '* "aliases" (array of string [one of "a", "b"] | null)',
     ]);
   });
 
@@ -209,6 +235,10 @@ describe('describeJsonSchemaFields', () => {
     expect(
       fieldLines({
         labels: { type: 'object', additionalProperties: { type: 'string' } },
+        annotations: {
+          type: 'object',
+          additionalProperties: { type: 'string', maxLength: 63 },
+        },
         closed: { type: 'object', additionalProperties: false },
         extensions: {
           type: 'object',
@@ -229,6 +259,7 @@ describe('describeJsonSchemaFields', () => {
       }),
     ).toEqual([
       '* "labels" (object, other keys: string)',
+      '* "annotations" (object, other keys: string [max length 63])',
       '* "closed" (object, no other keys)',
       '* "extensions" (object, has pattern-matched keys not listed here)',
       '* "combined" (unknown, has conditional constraints not listed here)',
