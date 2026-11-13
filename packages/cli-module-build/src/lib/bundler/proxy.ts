@@ -15,7 +15,7 @@
  */
 
 import type { DevServerProxyConfigArray } from '@rspack/core';
-import { styleText } from 'node:util';
+import chalk from 'chalk';
 
 /**
  * Translates the `proxy` configuration in a package.json to the option names
@@ -28,9 +28,15 @@ import { styleText } from 'node:util';
 export function translateLegacyProxyOptions(
   proxy: unknown,
 ): DevServerProxyConfigArray | undefined {
-  // Any other shape is passed through for the dev server itself to validate.
+  if (proxy === undefined || proxy === null) {
+    return undefined;
+  }
+  // The dev server doesn't validate its options, and fails in confusing ways
+  // on anything other than an array.
   if (!Array.isArray(proxy)) {
-    return proxy as DevServerProxyConfigArray | undefined;
+    throw new Error(
+      'The "proxy" configuration in your package.json must be an array of proxy entries',
+    );
   }
 
   const outdated = new Set<string>();
@@ -53,16 +59,15 @@ export function translateLegacyProxyOptions(
     outdated.add('`path` is no longer supported, rename it to `context`');
 
     // Both current options win over `path`: `pathFilter` by spread order, and
-    // `context` by the check, so that a half migrated entry resolves the same
-    // way on both dev servers.
+    // `context` by the check, as the legacy WebPack dev server also prefers
+    // `context` over `path`.
     return rest.context === undefined ? { pathFilter: path, ...rest } : rest;
   });
 
   if (outdated.size > 0) {
     // eslint-disable-next-line no-console
     console.warn(
-      styleText(
-        'yellow',
+      chalk.yellow(
         `\nDEPRECATION WARNING: The "proxy" configuration in your package.json is out of date:\n${[
           ...outdated,
         ]

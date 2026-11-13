@@ -2163,7 +2163,7 @@ __metadata:
     "@rollup/plugin-json": "npm:^6.0.0"
     "@rollup/plugin-node-resolve": "npm:^15.0.0"
     "@rollup/plugin-yaml": "npm:^4.0.0"
-    "@rspack/core": "npm:^2.2.2"
+    "@rspack/core": "npm:^2.3.2"
     "@rspack/dev-server": "npm:^2.2.1"
     "@rspack/plugin-react-refresh": "npm:^2.0.2"
     "@swc/core": "npm:^1.15.6"
@@ -15992,7 +15992,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/core@npm:^2.2.2":
+"@rspack/core@npm:^2.3.2":
   version: 2.3.2
   resolution: "@rspack/core@npm:2.3.2"
   dependencies:

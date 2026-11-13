@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import webpack from 'webpack';
 import { createConfig } from './config';
 import { BundlingPaths } from './paths';
 import { BundlingOptions } from './types';
@@ -48,6 +49,16 @@ function createOptions(
 }
 
 describe('createConfig', () => {
+  const lazyCompilation = process.env.EXPERIMENTAL_LAZY_COMPILATION;
+
+  afterEach(() => {
+    if (lazyCompilation === undefined) {
+      delete process.env.EXPERIMENTAL_LAZY_COMPILATION;
+    } else {
+      process.env.EXPERIMENTAL_LAZY_COMPILATION = lazyCompilation;
+    }
+  });
+
   it('places deferredEntryPoints after targetEntry, and targetEntry after additionalEntryPoints', async () => {
     const options = createOptions({
       additionalEntryPoints: ['additional-entry-package'],
@@ -77,5 +88,24 @@ describe('createConfig', () => {
 
     expect(entryArray).toContain(paths.targetEntry);
     expect(entryArray).toHaveLength(2); // webpack-public-path + targetEntry
+  });
+
+  // Rspack and WebPack each reject the other's shape for these options, so a
+  // mix-up only shows up when the bundler validates the config.
+  it('uses the option shapes that each bundler accepts', async () => {
+    process.env.EXPERIMENTAL_LAZY_COMPILATION = 'true';
+
+    const rspackConfig = await createConfig(paths, createOptions());
+    expect(rspackConfig.lazyCompilation).toBe(true);
+    expect(rspackConfig.experiments).toBeUndefined();
+    expect(rspackConfig.module?.parser?.javascript).toEqual({
+      exportsPresence: 'auto',
+      requireAlias: true,
+    });
+
+    const webpackConfig = await createConfig(paths, createOptions({ webpack }));
+    expect(webpackConfig).not.toHaveProperty('lazyCompilation');
+    expect(webpackConfig.experiments).toEqual({ lazyCompilation: true });
+    expect(webpackConfig.module?.parser).toBeUndefined();
   });
 });
