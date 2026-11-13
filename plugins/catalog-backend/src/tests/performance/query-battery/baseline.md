@@ -680,3 +680,75 @@ as on master, 24 s on both. It is a page of 10,000 entities with fewer than
   with `ANY(ARRAY(SELECT ... ORDER BY))`, saved 70% per probe, but hid the
   values from the planner: scenario 14 with 99 claims went from 2.6 s to
   14 s.
+
+## Sorting after matching (2026-11-13)
+
+On PostgreSQL, a sorted query whose filter has a long list as a direct
+condition, such as the owned entities page, now orders by
+`(value || '')` instead of `value`. The index of the sort field cannot
+provide that order, so PostgreSQL builds the set of entity IDs first, hash
+joins it with the sort field, and sorts the matches. Before, it could instead
+walk the index of the sort field and compare each row against the whole
+materialized set, expecting to fill the page after a few rows.
+
+### Why the plan changed between runs
+
+With `LIMIT 21`, the planner costs the walk as if the owned entities were
+spread evenly in name order. On the beta replica the claims own about 18% of
+the catalog, but only about 40 of the first 5,600 names, so the walk compared
+5,600 rows against 136,000 IDs (254 million rows removed by the join filter).
+Whether the planner picks the walk or the set-first plan depends on its row
+estimates, which change whenever the table is analyzed: on the same day the
+174-claim page took 0.53 s in one run and 47.9 s in the next, with the same
+SQL. The new ordering takes that choice away.
+
+Related, and not changed here: a per-row probe inside an `$any` is an
+alternative to a hashed set, and PostgreSQL picks one when planning, as the
+cheaper of `startup + num_exec * per_call`, where `num_exec` is twice the
+estimated rows of the node that evaluates it. On the inner side of a nested
+loop that estimate is per loop, about 2, even when the probe runs tens of
+thousands of times. A claim list whose owners are estimated well, such as one
+that includes a group among the most common values of `search.value`, then
+gets the per-row probe, which re-sorts the list on every row. Scenario 14
+with 40 claims took 9 s in one run and 2.6 s an hour later, and with 99
+claims including the largest group 23 s to 100 s across runs. PostgreSQL 17
+and 18 behave the same here.
+
+### Setup
+
+- The beta replica, PostgreSQL 18.6, 759,742 entities, `work_mem` at 32MB.
+  The largest group owns 117,514 entities. Master and this change ran
+  interleaved, median of three runs, with a 120 s statement timeout so that
+  the slow plan could finish.
+- Measured: all owned entities pages (with and without permissions, any
+  kind, by namespace, legacy entities, counts and facets), scenarios 1, 3, 7,
+  12, 14, 15, 16, 18, 19 and 20, and all streams, with every claim list.
+  Every query case returned the same entities as master. Streams are not
+  sorted by a field, so their SQL is unchanged.
+
+### Results
+
+| Owned page, any kind, no permissions | master | this change |
+| ------------------------------------ | -----: | ----------: |
+| 3 claims                             |  12 ms |       13 ms |
+| 10 claims                            |  50 ms |       52 ms |
+| 40 claims                            | 439 ms |      443 ms |
+| 99 claims                            | 1.02 s |      1.03 s |
+| 99 claims with the largest group     | 16.7 s |      575 ms |
+| 174 claims                           | 47.4 s |      521 ms |
+
+Every other owned page, and every other scenario and stream, measured within
+noise of master: those plans already built the set first.
+
+### Rules that were measured and not used
+
+- Matching direct lists in the IN form instead of the JOIN form. PostgreSQL
+  then walked the names with a per-row probe of the list, 2.5 s at 174
+  claims, and most owned pages got 1.5 to 6 times slower.
+- Walking the sort field with a hashed per-row probe. It took 13-68 ms with
+  the battery's claim lists, but 19 s with 10 claims that own 73 entities
+  whose names sort last, since the walk then reads almost every name.
+- Matching lists inside an `$any` as an IN set from 10 values on pages of
+  more than 100 entities. It fixed scenario 14 with 99 claims including the
+  largest group (22.9 s to 5.0 s), but scenario 14 with 40 or 99 claims went
+  from 2.6 s to 4.8 s and scenario 12 from 3.5 s to 4.3 s.
