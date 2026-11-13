@@ -284,11 +284,13 @@ function describeConstraints(schema: Schema): string[] {
   const parts: string[] = [];
   for (const [keyword, label, unit] of BOUND_LABELS) {
     const bound = schema[keyword];
-    // A minimum length of 1 only rules out empty strings, which is implied
-    if (
-      typeof bound === 'number' &&
-      !(keyword === 'minLength' && bound === 1)
-    ) {
+    if (typeof bound !== 'number') {
+      continue;
+    }
+    if (keyword === 'minLength' && bound === 1) {
+      // Common enough to deserve a shorter wording
+      parts.push('non-empty');
+    } else {
       const suffix = unit ? ` ${unit}${bound === 1 ? '' : 's'}` : '';
       parts.push(`${label} ${bound}${suffix}`);
     }

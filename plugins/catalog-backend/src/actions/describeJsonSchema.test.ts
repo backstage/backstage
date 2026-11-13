@@ -73,7 +73,7 @@ describe('describeJsonSchemaFields', () => {
       fieldLines({
         count: { type: 'integer', minimum: 0, maximum: 10, default: 5 },
         ratio: { type: 'number', exclusiveMinimum: 0, exclusiveMaximum: 1 },
-        // A minimum length of 1 only rules out empty strings and is left out
+        // A minimum length of 1 gets a shorter wording
         title: { type: 'string', minLength: 1 },
         email: {
           type: 'string',
@@ -89,7 +89,7 @@ describe('describeJsonSchemaFields', () => {
     ).toEqual([
       '* "count" (integer, min 0, max 10, default 5)',
       '* "ratio" (number, over 0, under 1)',
-      '* "title" (string)',
+      '* "title" (string, non-empty)',
       '* "email" (string, min length 3, max length 64, format: email, pattern: "^[a-z]+@")',
       '* "tags" (array, at least 1 item, at most 5 items)',
       '* "labels" (object, at least 1 key, at most 3 keys)',

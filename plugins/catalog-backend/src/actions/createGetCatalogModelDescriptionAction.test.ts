@@ -266,10 +266,10 @@ describe('createGetCatalogModelDescriptionAction', () => {
     expect(description).toContain('### Entity Kind "Component"');
     // Full field lines, since the preamble mentions some field paths too
     expect(description).toContain(
-      '* "spec.lifecycle" (string, required): The lifecycle state of the component.',
+      '* "spec.lifecycle" (string, required, non-empty): The lifecycle state of the component.',
     );
     expect(description).toContain(
-      '* "spec.owner" (string, required, relation "ownedBy" [default kind: Group; allowed kinds: Group, User]): An entity reference to the owner of the component.',
+      '* "spec.owner" (string, required, non-empty, relation "ownedBy" [default kind: Group; allowed kinds: Group, User]): An entity reference to the owner of the component.',
     );
     // A relation without a declared field still gets its own line
     expect(description).toContain(
@@ -523,8 +523,8 @@ describe('createGetCatalogModelDescriptionAction', () => {
     expect(description).toContain(
       '* "spec.email" (string, min length 3, max length 64, format: email, pattern: "^[a-z]")',
     );
-    // A minimum length of 1 is implied and left out
-    expect(description).toContain('* "spec.name" (string)');
+    // A minimum length of 1 gets a shorter wording
+    expect(description).toContain('* "spec.name" (string, non-empty)');
     expect(description).toContain(
       '* "spec.notes" (string): Free text. Spans several lines.',
     );
