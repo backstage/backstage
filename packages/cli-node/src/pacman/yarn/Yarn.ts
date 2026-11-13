@@ -141,8 +141,11 @@ export class Yarn implements PackageManager {
     await child.waitForExit();
     // Waiting for the exit also succeeds when a signal ended the process
     if (child.signalCode) {
-      throw new Error(
-        `Command 'yarn ${args.join(' ')}' was ended by ${child.signalCode}`,
+      throw Object.assign(
+        new Error(
+          `Command 'yarn ${args.join(' ')}' was ended by ${child.signalCode}`,
+        ),
+        { signal: child.signalCode },
       );
     }
   }
@@ -277,7 +280,12 @@ function detectYarnVersion(dir: string): Promise<YarnVersion> {
         : 'berry';
       return { version: versionString, codename };
     } catch (error) {
-      throw new ForwardedError('Failed to determine yarn version', error);
+      // Keeps the signal that ended the check, like the errors of commands
+      const signal = (error as { signal?: string } | undefined)?.signal;
+      throw Object.assign(
+        new ForwardedError('Failed to determine yarn version', error),
+        signal ? { signal } : {},
+      );
     }
   });
 
