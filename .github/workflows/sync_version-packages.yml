@@ -19,11 +19,11 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        uses: step-security/harden-runner@v2.22.1
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
           filter: blob:none
@@ -31,7 +31,7 @@ jobs:
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
       - name: Use Node.js 24.x
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: 24.22.1
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -41,7 +41,7 @@ jobs:
 
       - name: Create Release Pull Request
         id: changesets
-        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
+        uses: changesets/action@v1.9.0
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           # Calls out to `changeset version`, but also runs prettier
@@ -56,7 +56,7 @@ jobs:
 
       - name: Link Next Release Changelog
         if: ${{ steps.changesets.outputs.pullRequestNumber != '' }}
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
@@ -80,7 +80,7 @@ jobs:
 
       - name: Discord notification
         if: ${{ failure() }}
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        uses: actions/github-script@v9.0.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:

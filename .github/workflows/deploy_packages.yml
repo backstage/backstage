@@ -68,15 +68,15 @@ jobs:
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: ${{ matrix.node-version == '26.x' && '26.13.0' || '24.22.1' }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
+        uses: backstage/actions/yarn-install@v0.7.13
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -99,7 +99,7 @@ jobs:
 
       - name: Restore backstage-cli cache
         id: backstage-cli-cache
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        uses: actions/cache/restore@v6.1.0
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
@@ -131,14 +131,14 @@ jobs:
 
       - name: Save backstage-cli cache
         if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        uses: actions/cache/save@v6.1.0
         with:
           path: .cache/backstage-cli
           key: ${{ steps.backstage-cli-cache.outputs.cache-primary-key }}
 
       - name: Discord notification
         if: ${{ failure() }}
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        uses: actions/github-script@v9.0.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
@@ -175,13 +175,13 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        uses: step-security/harden-runner@v2.22.1
         with:
           egress-policy: audit
 
       # Notify maintainers that a new release is ready to be published
       - name: Discord notification
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        uses: actions/github-script@v9.0.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_MAINTAINERS_WEBHOOK }}
         with:
