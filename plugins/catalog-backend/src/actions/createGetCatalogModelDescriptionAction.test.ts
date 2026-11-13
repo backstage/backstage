@@ -266,10 +266,10 @@ describe('createGetCatalogModelDescriptionAction', () => {
     expect(description).toContain('### Entity Kind "Component"');
     // Full field lines, since the preamble mentions some field paths too
     expect(description).toContain(
-      '* "spec.lifecycle" (string, required): The lifecycle state of the component.',
+      '* "spec.lifecycle" (string, required, min length 1): The lifecycle state of the component.',
     );
     expect(description).toContain(
-      '* "spec.owner" (string, required, relation "ownedBy" [default kind: Group; allowed kinds: Group, User]): An entity reference to the owner of the component.',
+      '* "spec.owner" (string, required, min length 1, relation "ownedBy" [default kind: Group; allowed kinds: Group, User]): An entity reference to the owner of the component.',
     );
     // A relation without a declared field still gets its own line
     expect(description).toContain(
@@ -548,6 +548,7 @@ describe('createGetCatalogModelDescriptionAction', () => {
       minLength: 1,
       maxLength: 10,
       format: 'email',
+      pattern: '^a',
       default: 'a',
     };
     const second = {
@@ -557,6 +558,7 @@ describe('createGetCatalogModelDescriptionAction', () => {
       minLength: 3,
       maxLength: 5,
       format: 'idn-email',
+      pattern: '^[ab]',
       default: 'b',
     };
     const describeIn = (entries: object[]) =>
@@ -582,6 +584,22 @@ describe('createGetCatalogModelDescriptionAction', () => {
                   : { items: { type: 'string', enum: ['x', 'y'] } },
               ),
             },
+            count: {
+              type: 'integer',
+              allOf: entries.map((_, i) =>
+                i === 0
+                  ? { exclusiveMinimum: 0, maximum: 10, default: 5 }
+                  : { exclusiveMinimum: 2, maximum: 8, default: 5 },
+              ),
+            },
+            tags: {
+              type: 'array',
+              items: { type: 'string' },
+              allOf: entries.map((_, i) => ({
+                minItems: i === 0 ? 1 : 2,
+                maxItems: i === 0 ? 4 : 1,
+              })),
+            },
             target: {
               allOf: entries.map((_, i) => ({
                 $ref: i === 0 ? '#/definitions/B' : '#/definitions/A',
@@ -596,7 +614,14 @@ describe('createGetCatalogModelDescriptionAction', () => {
 
     expect(backward).toBe(forward);
     expect(forward).toContain(
-      '* "spec.value" (number | string, one of "a", "b"): First. Second.',
+      '* "spec.value" (number | string, one of "a", "b", min length 3, max length 5, format: email and idn-email, pattern: "^[ab]" and "^a"): First. Second.',
+    );
+    // Bounds take the tightest value, and only an agreed default is shown
+    expect(forward).toContain(
+      '* "spec.count" (integer, over 2, max 8, default 5)',
+    );
+    expect(forward).toContain(
+      '* "spec.tags" (array of string, at least 2 items, at most 1 item)',
     );
     expect(forward).toContain('* "spec.obj.shared" (unknown): A. B.');
     expect(forward.indexOf('"spec.obj.a"')).toBeLessThan(

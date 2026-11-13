@@ -665,6 +665,47 @@ function describeAllowedValues(schema: Schema): string | undefined {
   return `one of ${values.map(canonical).join(', ')}`;
 }
 
+// Short wording for bounds, as [keyword, label, unit]. Units are pluralized
+// when the bound is not 1.
+const BOUND_LABELS: Array<[string, string, string?]> = [
+  ['minimum', 'min'],
+  ['exclusiveMinimum', 'over'],
+  ['maximum', 'max'],
+  ['exclusiveMaximum', 'under'],
+  ['minLength', 'min length'],
+  ['maxLength', 'max length'],
+  ['minItems', 'at least', 'item'],
+  ['maxItems', 'at most', 'item'],
+  ['minProperties', 'at least', 'key'],
+  ['maxProperties', 'at most', 'key'],
+];
+
+// Bounds, formats, patterns and the default value of a schema
+function describeConstraints(schema: Schema): string[] {
+  const parts: string[] = [];
+  for (const [keyword, label, unit] of BOUND_LABELS) {
+    const bound = schema[keyword];
+    if (typeof bound === 'number') {
+      const suffix = unit ? ` ${unit}${bound === 1 ? '' : 's'}` : '';
+      parts.push(`${label} ${bound}${suffix}`);
+    }
+  }
+  const formats = toArray(schema.format).filter(f => typeof f === 'string');
+  if (formats.length) {
+    parts.push(`format: ${formats.join(' and ')}`);
+  }
+  const patterns = toArray(schema.pattern).filter(p => typeof p === 'string');
+  if (patterns.length) {
+    parts.push(
+      `pattern: ${patterns.map(p => JSON.stringify(p)).join(' and ')}`,
+    );
+  }
+  if ('default' in schema && schema.default !== CONFLICTING_DEFAULT) {
+    parts.push(`default ${canonical(schema.default)}`);
+  }
+  return parts;
+}
+
 function describeField(
   path: string,
   schema: Schema,
@@ -678,6 +719,7 @@ function describeField(
   if (values) {
     parts.push(values);
   }
+  parts.push(...describeConstraints(schema));
   if (schema.additionalProperties === false) {
     parts.push('no other keys');
   } else if (isObject(schema.additionalProperties)) {
