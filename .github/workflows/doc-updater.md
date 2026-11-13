@@ -264,10 +264,7 @@ safe-outputs:
       exclude:
         - README.md
     allowed-files:
-      - docs/features/**
-      - docs/backend-system/**
-      - docs/frontend-system/**
-      - docs/conf/**
+      - docs/**
       - packages/*/README.md
       - plugins/*/README.md
 
