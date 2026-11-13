@@ -105,11 +105,7 @@ export function parseSourceLocationFolder(
   repoUrl: string,
 ): string[][] | undefined {
   const prefix = `url:${repoUrl}/`;
-  if (
-    !location
-      .toLocaleLowerCase('en-US')
-      .startsWith(prefix.toLocaleLowerCase('en-US'))
-  ) {
+  if (!startsWithIgnoreCase(location, prefix)) {
     return undefined;
   }
   const segments = location
@@ -159,10 +155,11 @@ export function parseFileLocationFolder(
   );
   for (const root of roots) {
     const relative = path.relative(realpathOrResolve(root), dir);
-    if (relative === '..' || relative.startsWith(`..${path.sep}`)) {
-      continue;
-    }
-    if (path.isAbsolute(relative)) {
+    if (
+      relative === '..' ||
+      relative.startsWith(`..${path.sep}`) ||
+      path.isAbsolute(relative)
+    ) {
       continue;
     }
     return relative.split(path.sep).filter(Boolean);
@@ -193,9 +190,13 @@ export function isManagedWithinSameRepo(
       parseFileLocationFolder(managedByLocation, roots) !== undefined
     );
   }
-  return managedByLocation
+  return startsWithIgnoreCase(managedByLocation, `url:${repoUrl}/`);
+}
+
+function startsWithIgnoreCase(value: string, prefix: string): boolean {
+  return value
     .toLocaleLowerCase('en-US')
-    .startsWith(`url:${repoUrl}/`.toLocaleLowerCase('en-US'));
+    .startsWith(prefix.toLocaleLowerCase('en-US'));
 }
 
 function realpathOrResolve(target: string): string {

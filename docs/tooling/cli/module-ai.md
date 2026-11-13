@@ -29,7 +29,7 @@ Before using the AI commands you need:
 ## How the component is found
 
 Without `--entity`, the commands look up the component in the catalog based on
-your current folder in the repository of the git `origin` remote:
+your current folder in the repository of the git `origin` remote.
 
 The command uses the component whose `backstage.io/source-location` annotation points at the current folder or the nearest parent folder of that repository, which is the annotation catalog providers set for components registered from a repository. Any entity can declare this annotation, so the command only trusts it when the entity's `backstage.io/managed-by-location` annotation, which entities cannot set themselves, is in the same repository, or for a `file:` location, a `file:` location in the same checkout, where a linked checkout of the repository counts as the same checkout as the main one. If several components point at the same folder, the command fails and asks you to pass `--entity`.
 
@@ -301,8 +301,8 @@ flag, `ai resolve` reports these skills as skipped with the reason
 
 With the flag, the path must be absolute, exist, be a directory, and contain
 `SKILL.md` directly. A trailing slash and the `file:///absolute/path` form are
-accepted, percent-encoded characters such as `%20` are decoded in both forms, and symlinks are resolved to the real path, which is what `skills add`
-receives. Skills that share a directory are installed once. In hook mode, a
+accepted, percent-encoded characters such as `%20` are decoded in both forms,
+and symlinks are resolved to the real path, which is what `skills add` receives. Skills that share a directory are installed once. In hook mode, a
 local skill is skipped when `skills-lock.json` records it from the same
 directory and its folder is present, so edits to the skill are not picked up
 by the hook. Run `ai skills sync --allow-file-sources` to install them again.
@@ -373,17 +373,15 @@ is detected, the command fails and asks you to pass `--agent`.
 
 - If you are not logged in, or the token was rejected, the command fails with a message pointing to `backstage-cli auth login`.
 - If there is no git remote or no matching component, the command fails with a message suggesting `--entity`.
-- If more than one component has a source location at the same nearest folder, the command fails and lists the candidates. Pass `--entity` to choose one.
-- A skill that cannot be installed is reported as skipped with the reason. This never fails the command on its own.
 - If `skills add` exits with a non-zero code, the command reports which skill failed, continues with the remaining skills, and exits with a non-zero code at the end.
 
 ## Supported `skills` version
 
 This module pins `skills` to version 1.7.0 and runs it from its own
 dependencies, so the `skills` package itself is not downloaded when you run the
-command. Fetching the skills from their repositories is done by `skills`. The module depends on how
-the `skills add` command parses GitHub and GitLab tree URLs and on its `-a`,
-`-y`, and `-g` flags. Other versions are not supported.
+command. The module depends on how the `skills add` command parses GitHub and
+GitLab tree URLs and on its `-a`, `-y`, and `-g` flags. Other versions are not
+supported.
 
 ### Telemetry
 
