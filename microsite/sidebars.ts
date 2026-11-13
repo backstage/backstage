@@ -443,6 +443,7 @@ export default {
         sidebarElementWithIndex({ label: 'Azure DevOps' }, [
           'integrations/azure/locations',
           'integrations/azure/discovery',
+          'integrations/azure/events',
         ]),
         sidebarElementWithIndex({ label: 'Microsoft Entra ID' }, [
           'integrations/azure/org',
