@@ -39,12 +39,15 @@
     padding: var(--bui-space-4);
   }
 
+  /* In the column layout the filters keep their natural height, so the
+     layout scrolls when the filters and the graph don't both fit. */
   .layout {
     display: flex;
     flex-direction: column;
     gap: var(--bui-space-4);
     flex: 1;
     min-height: 0;
+    overflow-y: auto;
   }
 
   .filters {
@@ -71,12 +74,14 @@
     gap: var(--bui-space-2);
   }
 
+  /* Keeps the graph usable on short viewports instead of collapsing it to
+     its border below the filters. */
   .graphWrapper {
     position: relative;
     display: flex;
     flex: 1;
     min-width: 0;
-    min-height: 0;
+    min-height: 320px;
     background-color: var(--bui-bg-neutral-1);
     border: 1px solid var(--bui-border-1);
     border-radius: var(--bui-radius-2);
@@ -114,6 +119,13 @@
       display: grid;
       grid-template-columns: minmax(0, 2fr) minmax(0, 10fr);
       grid-template-rows: minmax(0, 1fr);
+      overflow: hidden;
+    }
+
+    /* The filters scroll on their own next to the graph, so the graph can
+       shrink to the available height. */
+    .layoutWithFilters .graphWrapper {
+      min-height: 0;
     }
 
     .filters {
