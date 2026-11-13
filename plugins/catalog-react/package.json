@@ -84,7 +84,7 @@
     "classnames": "^2.2.6",
     "lodash": "^4.17.21",
     "material-ui-popup-state": "^5.3.6",
-    "qs": "^6.15.2",
+    "qs": "^6.17.0",
     "react-use": "^17.2.4",
     "react-window": "^1.8.10",
     "yaml": "^2.0.0",
