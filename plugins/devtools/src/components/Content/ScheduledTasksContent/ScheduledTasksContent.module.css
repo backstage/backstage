@@ -1,20 +1,46 @@
 @layer components {
+  .content {
+    display: grid;
+    gap: var(--bui-space-4);
+    min-width: 0;
+  }
+
   .pluginSelector {
-    min-width: 240px;
-    margin-bottom: var(--bui-space-4);
+    width: min(100%, 320px);
+  }
+
+  .taskButton {
+    max-width: 100%;
+    justify-content: flex-start;
+    font-family: var(--bui-font-monospace);
+    font-weight: var(--bui-font-weight-regular);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: left;
+  }
+
+  .dialogHeader {
+    padding: var(--bui-space-4) var(--bui-space-6);
+    overflow-wrap: anywhere;
+  }
+
+  .dialogBody {
+    padding: var(--bui-space-6);
   }
 
   .details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: var(--bui-space-6);
     margin: 0;
     white-space: normal;
     overflow-wrap: anywhere;
   }
 
   .details > div {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    align-content: start;
     gap: var(--bui-space-2);
-    margin-bottom: var(--bui-space-2);
   }
 
   .details dd {

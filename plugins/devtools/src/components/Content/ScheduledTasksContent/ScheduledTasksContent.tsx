@@ -16,9 +16,11 @@
 
 import { useState } from 'react';
 import {
-  Accordion,
-  AccordionTrigger,
-  AccordionPanel,
+  Button,
+  DialogTrigger,
+  Dialog,
+  DialogHeader,
+  DialogBody,
   Alert,
   Box,
   ButtonIcon,
@@ -35,6 +37,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {
+  RiArrowRightSLine,
   RiRefreshLine,
   RiStopLine,
   RiMoonLine,
@@ -117,15 +120,26 @@ export const ScheduledTasksContent = () => {
       isRowHeader: true,
       cell: rowData => (
         <Cell>
-          <Accordion>
-            <AccordionTrigger title={rowData.taskId} />
-            <AccordionPanel>
-              <ScheduledTaskDetailPanel rowData={rowData} />
-            </AccordionPanel>
-          </Accordion>
+          <DialogTrigger>
+            <Button
+              variant="tertiary"
+              className={styles.taskButton}
+              iconEnd={<RiArrowRightSLine size={16} />}
+            >
+              {rowData.taskId}
+            </Button>
+            <Dialog width={640}>
+              <DialogHeader className={styles.dialogHeader}>
+                {rowData.taskId}
+              </DialogHeader>
+              <DialogBody className={styles.dialogBody}>
+                <ScheduledTaskDetailPanel rowData={rowData} />
+              </DialogBody>
+            </Dialog>
+          </DialogTrigger>
           {rowData.taskState?.lastRunError && (
-            <Text color="danger">
-              <RiErrorWarningLine size={16} aria-hidden /> Last run failed
+            <Text variant="body-small" color="danger">
+              <RiErrorWarningLine size={14} aria-hidden /> Last run failed
             </Text>
           )}
         </Cell>
@@ -142,14 +156,14 @@ export const ScheduledTasksContent = () => {
             {rowData.taskState?.status === 'running' && (
               <CircularProgress
                 color="inherit"
-                size={24}
+                size={16}
                 aria-label="Task running"
               />
             )}
             {rowData.taskState?.status === 'idle' && (
               <RiMoonLine size={16} aria-hidden />
             )}
-            <Text>
+            <Text variant="body-small">
               {rowData.taskState
                 ? { running: 'Running', idle: 'Idle' }[rowData.taskState.status]
                 : 'N/A'}
@@ -261,9 +275,10 @@ export const ScheduledTasksContent = () => {
     (error as ResponseError).statusCode === 404;
 
   return (
-    <Box>
+    <Box className={styles.content}>
       <Autocomplete
         className={styles.pluginSelector}
+        size="small"
         freeSolo
         options={plugins}
         value={selectedPlugin}
@@ -289,6 +304,7 @@ export const ScheduledTasksContent = () => {
         <Alert
           status="danger"
           icon
+          role="alert"
           title={
             isNotFoundError
               ? 'No Scheduled Tasks Found'
@@ -318,7 +334,7 @@ export const ScheduledTasksContent = () => {
       {!isLoadingDifferentPlugin && !error && scheduledTasks && (
         <DevToolsTable
           key={selectedPlugin}
-          title={`Scheduled Tasks (${selectedPlugin})`}
+          title="Scheduled tasks"
           columns={columns}
           data={scheduledTasks.map(task => ({ ...task, id: task.taskId }))}
           emptyState={

@@ -42,7 +42,7 @@ export const ScheduledTaskDetailPanel = ({
     ],
   ];
   return (
-    <Box p="4">
+    <Box>
       {lastRunError && (
         <Alert
           status="danger"
@@ -56,12 +56,12 @@ export const ScheduledTaskDetailPanel = ({
         {details.map(([title, value]) => (
           <div key={title}>
             <dt>
-              <Text weight="bold">{title}:</Text>
+              <Text variant="body-small" color="secondary">
+                {title}
+              </Text>
             </dt>
             <dd>
-              <Text>
-                <code>{value || 'N/A'}</code>
-              </Text>
+              <Text>{value || 'N/A'}</Text>
             </dd>
           </div>
         ))}

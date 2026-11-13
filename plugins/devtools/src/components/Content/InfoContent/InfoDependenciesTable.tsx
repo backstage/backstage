@@ -24,7 +24,7 @@ export const InfoDependenciesTable = ({
   infoDependencies: PackageDependency[] | undefined;
 }) => (
   <DevToolsTable
-    title="Package Dependencies"
+    title="Package dependencies"
     data={(infoDependencies ?? []).map(item => ({ ...item, id: item.name }))}
     pageSize={15}
     pageSizeOptions={[15, 30, 100]}
@@ -33,6 +33,7 @@ export const InfoDependenciesTable = ({
       {
         id: 'name',
         label: 'Name',
+        minWidth: 260,
         isSortable: true,
         isRowHeader: true,
         cell: item => <CellText title={item.name} />,
@@ -40,6 +41,7 @@ export const InfoDependenciesTable = ({
       {
         id: 'versions',
         label: 'Versions',
+        minWidth: 180,
         isSortable: true,
         cell: item => <CellText title={String(item.versions)} />,
       },

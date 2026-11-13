@@ -228,7 +228,7 @@ describe('ScheduledTasksContent', () => {
       screen.getByText(/The plugin ID is spelled correctly/i),
     ).toBeInTheDocument();
   });
-  it('expands task details and preserves cancel feedback and refresh', async () => {
+  it('opens task details and preserves cancel feedback and refresh', async () => {
     mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValue({
       scheduledTasks: [
         {
@@ -248,9 +248,10 @@ describe('ScheduledTasksContent', () => {
     );
     await renderComponent();
     const details = await screen.findByRole('button', { name: 'task-a' });
-    expect(details).toHaveAttribute('aria-expanded', 'false');
+    details.focus();
     fireEvent.click(details);
-    expect(details).toHaveAttribute('aria-expanded', 'true');
+    const dialog = await screen.findByRole('dialog', { name: 'task-a' });
+    expect(dialog).toBeVisible();
     expect(await screen.findByText('Previous run failed')).toBeVisible();
     expect(screen.getByText('PT1M')).toBeVisible();
     expect(screen.getByText('global')).toBeVisible();
@@ -260,6 +261,14 @@ describe('ScheduledTasksContent', () => {
     expect(
       screen.getByText(new Date('2026-01-01T12:05:00Z').toLocaleString()),
     ).toBeVisible();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Close' }));
+    expect(
+      await screen.findByRole('button', { name: 'Trigger' }),
+    ).toBeVisible();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByRole('row', { name: /task-a/ })).toHaveFocus(),
+    );
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
     await waitFor(() =>
       expect(mockToastApi.post).toHaveBeenCalledWith({

@@ -18,13 +18,16 @@ import { ReactNode } from 'react';
 import { get, orderBy } from 'lodash';
 import {
   ColumnConfig,
-  Flex,
+  Card,
+  CardHeader,
+  CardBody,
   SearchField,
   Table,
   TableItem,
   Text,
   useTable,
 } from '@backstage/ui';
+import styles from './Content.module.css';
 
 /** Shared client-side sorting, search, and pagination for DevTools screens. */
 export function DevToolsTable<T extends TableItem>({
@@ -34,7 +37,7 @@ export function DevToolsTable<T extends TableItem>({
   pageSize = 5,
   pageSizeOptions = [5, 10, 20],
   initialSort,
-  emptyState = <Text>No records to display</Text>,
+  emptyState = <Text color="secondary">No records to display</Text>,
 }: {
   title: string;
   data: T[];
@@ -68,18 +71,26 @@ export function DevToolsTable<T extends TableItem>({
   });
 
   return (
-    <Flex direction="column" gap="4">
-      <Flex align="center" justify="between" style={{ flexWrap: 'wrap' }}>
+    <Card className={styles.panel}>
+      <CardHeader className={styles.header}>
         <Text as="h2" variant="title-small">
           {title}
         </Text>
         <SearchField
+          className={styles.search}
+          placeholder="Search"
           aria-label={`Search ${title}`}
           value={search.value}
           onChange={search.onChange}
         />
-      </Flex>
-      <Table {...tableProps} columnConfig={columns} emptyState={emptyState} />
-    </Flex>
+      </CardHeader>
+      <CardBody className={styles.tableBody}>
+        <Table
+          {...tableProps}
+          columnConfig={columns}
+          emptyState={<div className={styles.emptyState}>{emptyState}</div>}
+        />
+      </CardBody>
+    </Card>
   );
 }

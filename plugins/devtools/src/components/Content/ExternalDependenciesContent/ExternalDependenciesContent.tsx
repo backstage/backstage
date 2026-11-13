@@ -23,18 +23,24 @@ import {
 } from '@remixicon/react';
 import { ExternalDependency } from '@backstage/plugin-devtools-common';
 import { useExternalDependencies } from '../../../hooks';
+import styles from '../Content.module.css';
 import { DevToolsTable } from '../DevToolsTable';
 
 export const getExternalDependencyStatus = (
   result: Partial<ExternalDependency> | undefined,
 ) => {
   let icon = (
-    <RiQuestionLine aria-hidden style={{ color: 'var(--bui-fg-warning)' }} />
+    <RiQuestionLine
+      size={16}
+      aria-hidden
+      style={{ color: 'var(--bui-fg-warning)' }}
+    />
   );
   let status = 'Unknown';
   if (result?.status === 'Healthy') {
     icon = (
       <RiCheckboxCircleLine
+        size={16}
         aria-hidden
         style={{ color: 'var(--bui-fg-positive)' }}
       />
@@ -43,6 +49,7 @@ export const getExternalDependencyStatus = (
   } else if (result?.status === 'Unhealthy') {
     icon = (
       <RiErrorWarningLine
+        size={16}
         aria-hidden
         style={{ color: 'var(--bui-fg-negative)' }}
       />
@@ -52,7 +59,9 @@ export const getExternalDependencyStatus = (
   return (
     <Flex align="center" gap="2">
       {icon}
-      <Text>{status}</Text>
+      <Text variant="body-small" weight="bold">
+        {status}
+      </Text>
     </Flex>
   );
 };
@@ -68,7 +77,7 @@ export const ExternalDependenciesContent = () => {
   }
   return (
     <DevToolsTable
-      title="Status"
+      title="External dependencies"
       data={externalDependencies.map((item, id) => ({ ...item, id }))}
       pageSize={20}
       pageSizeOptions={[20, 50, 100]}
@@ -76,6 +85,7 @@ export const ExternalDependenciesContent = () => {
         {
           id: 'name',
           label: 'Name',
+          minWidth: 180,
           isSortable: true,
           isRowHeader: true,
           cell: item => <CellText title={item.name} />,
@@ -83,23 +93,34 @@ export const ExternalDependenciesContent = () => {
         {
           id: 'target',
           label: 'Target',
+          minWidth: 240,
           isSortable: true,
-          cell: item => <CellText title={item.target} />,
+          cell: item => (
+            <Cell>
+              <code className={styles.code}>{item.target}</code>
+            </Cell>
+          ),
         },
         {
           id: 'type',
           label: 'Type',
+          width: 130,
           isSortable: true,
           cell: item => <CellText title={item.type} />,
         },
         {
           id: 'status',
           label: 'Status',
+          minWidth: 220,
           cell: item => (
             <Cell>
               <Flex direction="column" gap="1">
                 {getExternalDependencyStatus(item)}
-                {item.error && <Text>{item.error}</Text>}
+                {item.error && (
+                  <Text variant="body-small" color="secondary">
+                    {item.error}
+                  </Text>
+                )}
               </Flex>
             </Cell>
           ),

@@ -16,7 +16,16 @@
 
 import type { ReactElement } from 'react';
 import { Progress } from '@backstage/frontend-plugin-api';
-import { Alert, Box, Button, Card, CardBody, Flex, Text } from '@backstage/ui';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  Flex,
+  Text,
+} from '@backstage/ui';
 import { useInfo } from '../../../hooks';
 import { InfoDependenciesTable } from './InfoDependenciesTable';
 import {
@@ -26,6 +35,7 @@ import {
   RiNodejsLine,
 } from '@remixicon/react';
 import { BackstageLogoIcon } from './BackstageLogoIcon';
+import styles from '../Content.module.css';
 import { DevToolsInfo } from '@backstage/plugin-devtools-common';
 
 const copyToClipboard = ({ about }: { about: DevToolsInfo | undefined }) => {
@@ -50,17 +60,19 @@ const InfoCell = ({
   label: string;
   value: string | undefined;
 }) => (
-  <Flex direction="row" align="center" gap="2">
-    {icon}
-    <Flex direction="column" gap="0.5">
-      <Text variant="body-medium" weight="bold">
+  <div className={styles.summaryItem}>
+    <span className={styles.summaryIcon} aria-hidden="true">
+      {icon}
+    </span>
+    <Flex direction="column" gap="1">
+      <Text variant="body-small" color="secondary">
         {label}
       </Text>
-      <Text variant="body-small" color="secondary">
-        {value}
+      <Text variant="body-medium" weight="bold" className={styles.summaryValue}>
+        {value || 'N/A'}
       </Text>
     </Flex>
-  </Flex>
+  </div>
 );
 
 /** @public */
@@ -73,53 +85,43 @@ export const InfoContent = () => {
     return <Alert status="danger" icon title={error.message} role="alert" />;
   }
   return (
-    <Box>
-      <Box mb="2">
-        <Card>
-          <CardBody>
-            <Flex
-              direction={{ initial: 'column', md: 'row' }}
-              align={{ initial: 'stretch', md: 'center' }}
-              justify="between"
-              gap="4"
-            >
-              <Flex
-                direction={{ initial: 'column', md: 'row' }}
-                align={{ initial: 'start', md: 'center' }}
-                gap={{ initial: '3', md: '6' }}
-              >
-                <InfoCell
-                  icon={<RiComputerLine />}
-                  label="Operating System"
-                  value={about?.operatingSystem}
-                />
-                <InfoCell
-                  icon={<RiCpuLine />}
-                  label="Resource utilization"
-                  value={about?.resourceUtilization}
-                />
-                <InfoCell
-                  icon={<RiNodejsLine />}
-                  label="NodeJS Version"
-                  value={about?.nodeJsVersion}
-                />
-                <InfoCell
-                  icon={<BackstageLogoIcon />}
-                  label="Backstage Version"
-                  value={about?.backstageVersion}
-                />
-              </Flex>
-              <Button
-                variant="secondary"
-                onPress={() => copyToClipboard({ about })}
-                iconStart={<RiFileCopyLine />}
-              >
-                Copy Info to Clipboard
-              </Button>
-            </Flex>
-          </CardBody>
-        </Card>
-      </Box>
+    <Box className={styles.stack}>
+      <Card className={styles.panel}>
+        <CardHeader className={styles.header}>
+          <Text as="h2" variant="title-small">
+            System information
+          </Text>
+          <Button
+            variant="secondary"
+            onPress={() => copyToClipboard({ about })}
+            iconStart={<RiFileCopyLine size={16} />}
+          >
+            Copy info
+          </Button>
+        </CardHeader>
+        <CardBody className={styles.summaryGrid}>
+          <InfoCell
+            icon={<RiComputerLine size={20} />}
+            label="Operating system"
+            value={about?.operatingSystem}
+          />
+          <InfoCell
+            icon={<RiCpuLine size={20} />}
+            label="Resources"
+            value={about?.resourceUtilization}
+          />
+          <InfoCell
+            icon={<RiNodejsLine size={20} />}
+            label="Node.js"
+            value={about?.nodeJsVersion}
+          />
+          <InfoCell
+            icon={<BackstageLogoIcon width={20} height={20} />}
+            label="Backstage"
+            value={about?.backstageVersion}
+          />
+        </CardBody>
+      </Card>
       <InfoDependenciesTable infoDependencies={about?.dependencies} />
     </Box>
   );

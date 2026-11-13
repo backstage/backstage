@@ -36,7 +36,7 @@ Lists the configuration being used by your current running Backstage instance.
 
 ### Scheduled Tasks
 
-Scheduled tasks can be viewed and triggered under the `Scheduled Tasks` tab. Expand a task ID to view its worker state, cadence, scope, timing, and last run error. Use the table search and column headings to filter and sort tasks. [See below to configure](#scheduled-tasks-configuration).
+Scheduled tasks can be viewed and triggered under the `Scheduled Tasks` tab. Select a task ID to open its details, including worker state, cadence, scope, timing, and last run error. Use the table search and column headings to filter and sort tasks. [See below to configure](#scheduled-tasks-configuration).
 
 ![Example of Scheduled Tasks tab](./docs/devtools-scheduled-tasks-tab.png)
 
