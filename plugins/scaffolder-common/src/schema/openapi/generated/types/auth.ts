@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,13 @@
  */
 
 /**
- * This is a copy of FetchApi, to avoid importing core-plugin-api.
+ * This is a structural copy of the parts of the backend AuthService that the
+ * generated backend client needs, to avoid importing backend-plugin-api.
  */
-export type FetchApi = {
-  fetch: typeof fetch;
+export type AuthApi = {
+  getOwnServiceCredentials(): Promise<unknown>;
+  getPluginRequestToken(options: {
+    onBehalfOf: unknown;
+    targetPluginId: string;
+  }): Promise<{ token: string }>;
 };
