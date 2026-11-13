@@ -339,7 +339,8 @@ describe('createGetCatalogModelDescriptionAction', () => {
           // Boolean schemas allow anything or nothing
           anything: true,
           nothing: false,
-          narrowed: { allOf: [{ type: 'string' }, false] },
+          // allOf entries are not merged yet, only marked
+          combined: { allOf: [{ type: 'string' }, false] },
         },
       })),
     );
@@ -359,7 +360,7 @@ describe('createGetCatalogModelDescriptionAction', () => {
     expect(description).toContain('* "spec.anything" (any value)');
     expect(description).toContain('* "spec.nothing" (not allowed)');
     expect(description).toContain(
-      '* "spec.narrowed" (string, no allowed values)',
+      '* "spec.combined" (unknown, has conditional constraints not listed here)',
     );
   });
 
@@ -389,12 +390,7 @@ describe('createGetCatalogModelDescriptionAction', () => {
             type: 'object',
             additionalProperties: { type: 'string' },
           },
-          closed: {
-            allOf: [
-              { type: 'object', additionalProperties: true },
-              { additionalProperties: false },
-            ],
-          },
+          closed: { type: 'object', additionalProperties: false },
           patterned: {
             type: 'object',
             patternProperties: { '^x-': { type: 'string' } },
@@ -426,34 +422,19 @@ describe('createGetCatalogModelDescriptionAction', () => {
     );
   });
 
-  it('should fold every allOf declaration of a field', async () => {
+  it('should mark allOf instead of merging its entries', async () => {
     const description = await describeModel(
       createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
         type: 'object',
         properties: {
           cfg: {
             type: 'object',
+            properties: { owner: { type: 'string' } },
             allOf: [
-              // Required in a sibling of the entry that declares the properties
-              { required: ['owner', 'team'] },
-              {
-                properties: {
-                  owner: { type: 'string' },
-                  team: { $ref: '#/definitions/Team' },
-                  mode: { type: 'string', description: 'The mode.' },
-                },
-              },
-              {
-                properties: {
-                  // Stacked on the declaration above, narrowing it to an enum
-                  mode: { enum: ['fast', 'slow', 'off'] },
-                  team: { description: 'The owning team.' },
-                },
-              },
-              { properties: { mode: { enum: ['fast', 'slow'] } } },
+              { required: ['owner'] },
+              { properties: { mode: { type: 'string' } } },
             ],
           },
-          // Composition on the property itself
           level: { allOf: [{ type: 'string' }, { enum: ['low', 'high'] }] },
           endpoints: {
             type: 'array',
@@ -471,17 +452,14 @@ describe('createGetCatalogModelDescriptionAction', () => {
       })),
     );
 
-    expect(description).toContain('* "spec.cfg" (object)');
-    expect(description).toContain('* "spec.cfg.owner" (string, required)');
     expect(description).toContain(
-      '* "spec.cfg.team" (reference to "#/definitions/Team", required): The owning team.',
+      '* "spec.cfg" (object, has conditional constraints not listed here)',
     );
-    // Allowed values are intersected across every declaration
+    // Only the properties declared outside of allOf are listed
+    expect(description).toContain('* "spec.cfg.owner" (string)');
+    expect(description).not.toContain('"spec.cfg.mode"');
     expect(description).toContain(
-      '* "spec.cfg.mode" (string, one of "fast", "slow"): The mode.',
-    );
-    expect(description).toContain(
-      '* "spec.level" (string, one of "low", "high")',
+      '* "spec.level" (unknown, has conditional constraints not listed here)',
     );
     // Properties of array items are addressed through the array path
     expect(description).toContain('* "spec.endpoints" (array of object)');
@@ -490,30 +468,37 @@ describe('createGetCatalogModelDescriptionAction', () => {
     expect(description).toContain(
       '* "spec.refs" (array of reference to "#/definitions/Ref")',
     );
-    // Every field is described once
-    expect(description.match(/"spec.cfg.mode"/g)).toHaveLength(1);
-    expect(description.match(/"spec.cfg.team"/g)).toHaveLength(1);
   });
 
-  it('should combine conflicting allOf declarations without dropping any', async () => {
+  it('should describe types, references, allowed values and constraints', async () => {
     const description = await describeModel(
       createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
         type: 'object',
         properties: {
-          // Every referenced definition applies
-          target: {
-            allOf: [{ $ref: '#/definitions/A' }, { $ref: '#/definitions/B' }],
+          typedRef: { type: 'object', $ref: '#/definitions/A' },
+          // const and enum in the same schema narrow each other
+          pinned: { enum: ['a', 'b'], const: 'b' },
+          impossible: { enum: ['a'], const: 'b' },
+          count: {
+            type: 'integer',
+            exclusiveMinimum: 0,
+            maximum: 8,
+            default: 5,
           },
-          typedRef: {
-            allOf: [{ type: 'object' }, { $ref: '#/definitions/A' }],
+          tags: {
+            type: 'array',
+            items: { type: 'string' },
+            minItems: 1,
+            maxItems: 4,
           },
-          // const and enum narrow each other, in one schema or across several
-          pinned: { allOf: [{ enum: ['a', 'b'] }, { const: 'a' }] },
-          pinnedInline: { enum: ['a', 'b'], const: 'b' },
-          impossible: { allOf: [{ enum: ['a'] }, { const: 'b' }] },
-          // Types that do not overlap, and integer as a subset of number
-          broken: { allOf: [{ type: 'string' }, { type: 'number' }] },
-          count: { allOf: [{ type: 'number' }, { type: 'integer' }] },
+          email: {
+            type: 'string',
+            minLength: 3,
+            maxLength: 64,
+            format: 'email',
+            pattern: '^[a-z]',
+          },
+          name: { type: 'string', minLength: 1 },
           notes: {
             type: 'string',
             description: 'Free text.\n\nSpans several lines.',
@@ -523,115 +508,25 @@ describe('createGetCatalogModelDescriptionAction', () => {
     );
 
     expect(description).toContain(
-      '* "spec.target" (reference to "#/definitions/A" and reference to "#/definitions/B")',
-    );
-    expect(description).toContain(
       '* "spec.typedRef" (object, reference to "#/definitions/A")',
     );
-    expect(description).toContain('* "spec.pinned" (unknown, const "a")');
-    expect(description).toContain('* "spec.pinnedInline" (unknown, const "b")');
+    expect(description).toContain('* "spec.pinned" (unknown, const "b")');
     expect(description).toContain(
       '* "spec.impossible" (unknown, no allowed values)',
     );
-    expect(description).toContain('* "spec.broken" (no valid type)');
-    expect(description).toContain('* "spec.count" (integer)');
+    expect(description).toContain(
+      '* "spec.count" (integer, over 0, max 8, default 5)',
+    );
+    expect(description).toContain(
+      '* "spec.tags" (array of string, at least 1 item, at most 4 items)',
+    );
+    expect(description).toContain(
+      '* "spec.email" (string, min length 3, max length 64, format: email, pattern: "^[a-z]")',
+    );
+    // A minimum length of 1 is implied and left out
+    expect(description).toContain('* "spec.name" (string)');
     expect(description).toContain(
       '* "spec.notes" (string): Free text. Spans several lines.',
-    );
-  });
-
-  it('should combine allOf entries independently of their order', async () => {
-    const first = {
-      type: ['string', 'number'],
-      description: 'First.',
-      enum: ['c', 'a', 'b'],
-      minLength: 1,
-      maxLength: 10,
-      format: 'email',
-      pattern: '^a',
-      default: 'a',
-    };
-    const second = {
-      type: ['number', 'string'],
-      description: 'Second.',
-      enum: ['b', 'a'],
-      minLength: 3,
-      maxLength: 5,
-      format: 'idn-email',
-      pattern: '^[ab]',
-      default: 'b',
-    };
-    const describeIn = (entries: object[]) =>
-      describeModel(
-        createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
-          type: 'object',
-          properties: {
-            value: { allOf: entries },
-            obj: {
-              type: 'object',
-              allOf: entries.map((_, i) => ({
-                properties:
-                  i === 0
-                    ? { b: { type: 'string' }, shared: { description: 'B.' } }
-                    : { a: { type: 'string' }, shared: { description: 'A.' } },
-              })),
-            },
-            list: {
-              type: 'array',
-              allOf: entries.map((_, i) =>
-                i === 0
-                  ? { items: [{ type: 'string' }], additionalItems: false }
-                  : { items: { type: 'string', enum: ['x', 'y'] } },
-              ),
-            },
-            count: {
-              type: 'integer',
-              allOf: entries.map((_, i) =>
-                i === 0
-                  ? { exclusiveMinimum: 0, maximum: 10, default: 5 }
-                  : { exclusiveMinimum: 2, maximum: 8, default: 5 },
-              ),
-            },
-            tags: {
-              type: 'array',
-              items: { type: 'string' },
-              allOf: entries.map((_, i) => ({
-                minItems: i === 0 ? 1 : 2,
-                maxItems: i === 0 ? 4 : 1,
-              })),
-            },
-            target: {
-              allOf: entries.map((_, i) => ({
-                $ref: i === 0 ? '#/definitions/B' : '#/definitions/A',
-              })),
-            },
-          },
-        })),
-      );
-
-    const forward = await describeIn([first, second]);
-    const backward = await describeIn([second, first]);
-
-    expect(backward).toBe(forward);
-    expect(forward).toContain(
-      '* "spec.value" (number | string, one of "a", "b", min length 3, max length 5, format: email and idn-email, pattern: "^[ab]" and "^a"): First. Second.',
-    );
-    // Bounds take the tightest value, and only an agreed default is shown
-    expect(forward).toContain(
-      '* "spec.count" (integer, over 2, max 8, default 5)',
-    );
-    expect(forward).toContain(
-      '* "spec.tags" (array of string, at least 2 items, at most 1 item)',
-    );
-    expect(forward).toContain('* "spec.obj.shared" (unknown): A. B.');
-    expect(forward.indexOf('"spec.obj.a"')).toBeLessThan(
-      forward.indexOf('"spec.obj.b"'),
-    );
-    expect(forward).toContain(
-      '* "spec.list" (tuple of [string [one of "x", "y"]] with no further items)',
-    );
-    expect(forward).toContain(
-      '* "spec.target" (reference to "#/definitions/A" and reference to "#/definitions/B")',
     );
   });
 
@@ -661,7 +556,7 @@ describe('createGetCatalogModelDescriptionAction', () => {
     expect(description).not.toContain('one of "fast"');
   });
 
-  it('should not group versions that differ only in a stacked constraint', async () => {
+  it('should not group versions that differ only in allowed values', async () => {
     const description = await describeModel(
       createModelWithSpecSchema(
         [{ apiVersion: 'example.com/v1' }, { apiVersion: 'example.com/v2' }],
@@ -669,15 +564,9 @@ describe('createGetCatalogModelDescriptionAction', () => {
           type: 'object',
           properties: {
             mode: {
-              allOf: [
-                { type: 'string' },
-                {
-                  enum:
-                    apiVersion === 'example.com/v1'
-                      ? ['fast']
-                      : ['fast', 'slow'],
-                },
-              ],
+              type: 'string',
+              enum:
+                apiVersion === 'example.com/v1' ? ['fast'] : ['fast', 'slow'],
             },
           },
         }),
@@ -730,31 +619,18 @@ describe('createGetCatalogModelDescriptionAction', () => {
         type: 'object',
         properties: {
           target: {
-            allOf: [
-              {
-                enum: [
-                  { host: 'a', port: 1 },
-                  { host: 'b', port: 2 },
-                ],
-              },
-              { enum: [{ port: 1, host: 'a' }] },
+            enum: [
+              { host: 'a', port: 1 },
+              { host: 'b', port: 2 },
             ],
-          },
-          fixed: {
-            allOf: [
-              { const: { host: 'a', port: 1 } },
-              { const: { port: 1, host: 'a' } },
-            ],
+            const: { port: 1, host: 'a' },
           },
         },
       })),
     );
 
     expect(description).toContain(
-      '* "spec.target" (unknown, one of {"host":"a","port":1})',
-    );
-    expect(description).toContain(
-      '* "spec.fixed" (unknown, const {"host":"a","port":1})',
+      '* "spec.target" (unknown, const {"host":"a","port":1})',
     );
   });
 

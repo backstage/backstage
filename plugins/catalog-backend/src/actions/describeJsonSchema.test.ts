@@ -51,20 +51,15 @@ describe('describeJsonSchemaFields', () => {
     expect(fieldLines(schema)).toContain('* "id" (string)');
   });
 
-  it('gives the same result for allOf entries in any order', () => {
-    const a = {
-      type: 'integer',
-      minimum: 1,
-      description: 'A.',
-      enum: [3, 1, 2],
-    };
-    const b = { type: 'number', minimum: 2, description: 'B.', enum: [2, 3] };
-    const fields = (entries: object[]) =>
-      fieldLines({ properties: { value: { allOf: entries } } });
-
-    expect(fields([a, b])).toEqual(fields([b, a]));
-    expect(fields([a, b])).toEqual([
-      '* "value" (integer, one of 2, 3, min 2): A. B.',
+  it('marks allOf instead of merging it', () => {
+    expect(
+      fieldLines({
+        properties: {
+          value: { allOf: [{ type: 'integer' }, { minimum: 2 }] },
+        },
+      }),
+    ).toEqual([
+      '* "value" (unknown, has conditional constraints not listed here)',
     ]);
   });
 

@@ -35,9 +35,12 @@ export function renderJsonSchemaField(entry: JsonSchemaField): string {
   }`;
 }
 
-// Keywords whose constraints apply only in some cases. They are not expanded;
-// the field is marked instead, so that a reader knows the listing is partial.
+// Keywords that combine or condition schemas. They are not expanded; the field
+// is marked instead, so that a reader knows the listing is partial.
 const CONDITIONAL_KEYWORDS = [
+  // TODO: Support merging the entries of allOf, so that their constraints are
+  // listed as part of the field instead of only being marked
+  'allOf',
   'anyOf',
   'oneOf',
   'if',
@@ -88,33 +91,6 @@ function intersect(a: unknown[], b: unknown[]): unknown[] {
   return [...result.keys()].sort().map(key => result.get(key));
 }
 
-// The distinct values of a keyword across two schemas, in a stable order
-function union(a: unknown, b: unknown): unknown[] {
-  const result = new Map<string, unknown>();
-  for (const value of [...toArray(a), ...toArray(b)]) {
-    result.set(canonical(value), value);
-  }
-  return [...result.keys()].sort().map(key => result.get(key));
-}
-
-// Like intersect, but aware that every integer is also a number
-function intersectTypes(a: unknown[], b: unknown[]): unknown[] {
-  const result = new Set<unknown>();
-  for (const x of a) {
-    for (const y of b) {
-      if (x === y) {
-        result.add(x);
-      } else if (
-        (x === 'integer' && y === 'number') ||
-        (x === 'number' && y === 'integer')
-      ) {
-        result.add('integer');
-      }
-    }
-  }
-  return [...result].sort();
-}
-
 // The values allowed by enum and const together, or undefined if unrestricted
 function allowedValuesOf(schema: Schema): unknown[] | undefined {
   const fromEnum = Array.isArray(schema.enum) ? schema.enum : undefined;
@@ -125,165 +101,10 @@ function allowedValuesOf(schema: Schema): unknown[] | undefined {
   return fromEnum ?? fromConst;
 }
 
-// Folds inline allOf entries into the schema. Every entry applies, so they are
-// combined without regard to their order (see combine), and properties
-// declared more than once are folded the same way when visited. A folded
-// schema is only used for rendering, so keywords such as $ref and description
-// may hold a list of values.
-function foldAllOf(schema: Schema): Schema {
-  if (!Array.isArray(schema.allOf)) {
-    return schema;
-  }
-  const { allOf, ...rest } = schema;
-  return allOf
-    .map(toSchema)
-    .filter(isObject)
-    .map(foldAllOf)
-    .reduce(combine, rest);
-}
-
-// Boolean schemas allow anything (true) or nothing (false)
-function toSchema(value: unknown): Schema | undefined {
-  if (typeof value === 'boolean') {
-    return value ? {} : { enum: [] };
-  }
-  return isObject(value) ? value : undefined;
-}
-
 function hasProperties(schema: Schema): boolean {
   return (
     isObject(schema.properties) && Object.keys(schema.properties).length > 0
   );
-}
-
-// Lower bounds narrow by taking the largest value, upper bounds the smallest
-const LOWER_BOUNDS = [
-  'minimum',
-  'exclusiveMinimum',
-  'minLength',
-  'minItems',
-  'minProperties',
-  'minContains',
-];
-const UPPER_BOUNDS = [
-  'maximum',
-  'exclusiveMaximum',
-  'maxLength',
-  'maxItems',
-  'maxProperties',
-  'maxContains',
-];
-
-// Marks a default that entries disagree on, so that later entries cannot
-// bring one back
-const CONFLICTING_DEFAULT = Symbol('conflicting default');
-
-// Combines two schemas that both apply. The result does not depend on which of
-// them comes first, and no constraint of either is lost.
-function combine(a: Schema, b: Schema): Schema {
-  const result: Schema = { ...b, ...a };
-  if (a.type !== undefined && b.type !== undefined) {
-    result.type = intersectTypes(toArray(a.type), toArray(b.type));
-  }
-  const aValues = allowedValuesOf(a);
-  const bValues = allowedValuesOf(b);
-  if (aValues && bValues) {
-    const values = intersect(aValues, bValues);
-    delete result.enum;
-    delete result.const;
-    if (values.length === 1 && ('const' in a || 'const' in b)) {
-      result.const = values[0];
-    } else {
-      result.enum = values;
-    }
-  }
-  // Every one of these applies, so all distinct values are kept
-  for (const key of ['$ref', 'description', 'format', 'pattern', 'required']) {
-    if (a[key] !== undefined && b[key] !== undefined) {
-      const values = union(a[key], b[key]);
-      result[key] =
-        values.length === 1 && key !== 'required' ? values[0] : values;
-    }
-  }
-  for (const key of LOWER_BOUNDS) {
-    if (typeof a[key] === 'number' && typeof b[key] === 'number') {
-      result[key] = Math.max(a[key], b[key]);
-    }
-  }
-  for (const key of UPPER_BOUNDS) {
-    if (typeof a[key] === 'number' && typeof b[key] === 'number') {
-      result[key] = Math.min(a[key], b[key]);
-    }
-  }
-  if (
-    'default' in a &&
-    'default' in b &&
-    (a.default === CONFLICTING_DEFAULT ||
-      b.default === CONFLICTING_DEFAULT ||
-      canonical(a.default) !== canonical(b.default))
-  ) {
-    result.default = CONFLICTING_DEFAULT;
-  }
-  if (isObject(a.properties) && isObject(b.properties)) {
-    // Fields declared across entries are listed by name, independent of order
-    const names = [
-      ...new Set([...Object.keys(a.properties), ...Object.keys(b.properties)]),
-    ].sort();
-    result.properties = Object.fromEntries(
-      names.map(name => [name, bothOf(a.properties[name], b.properties[name])]),
-    );
-  }
-  combineItems(a, b, result);
-  const aExtra = a.additionalProperties;
-  const bExtra = b.additionalProperties;
-  if (aExtra !== undefined && bExtra !== undefined) {
-    result.additionalProperties = bothOf(aExtra, bExtra);
-  }
-  return result;
-}
-
-// A schema that requires both of two, possibly missing or boolean, schemas
-function bothOf(a: unknown, b: unknown): unknown {
-  if (a === undefined || a === true) {
-    return b;
-  }
-  if (b === undefined || b === true) {
-    return a;
-  }
-  if (a === false || b === false) {
-    return false;
-  }
-  return { allOf: [a, b] };
-}
-
-// Combines the item schemas of two arrays. A tuple item applies together with
-// the other side's item at the same position, or its schema for all items.
-function combineItems(a: Schema, b: Schema, result: Schema) {
-  const aTuple = tupleItemsOf(a);
-  const bTuple = tupleItemsOf(b);
-  const aRest = aTuple ? restItemsOf(a) : a.items;
-  const bRest = bTuple ? restItemsOf(b) : b.items;
-  if (!aTuple && !bTuple) {
-    if (aRest !== undefined && bRest !== undefined) {
-      result.items = bothOf(aRest, bRest);
-    }
-    return;
-  }
-  const length = Math.max(aTuple?.length ?? 0, bTuple?.length ?? 0);
-  const itemAt = (tuple: unknown[] | undefined, rest: unknown, i: number) =>
-    tuple && i < tuple.length ? tuple[i] : rest;
-  result.prefixItems = Array.from(
-    { length },
-    (_, i) =>
-      bothOf(itemAt(aTuple, aRest, i), itemAt(bTuple, bRest, i)) ?? true,
-  );
-  delete result.additionalItems;
-  const rest = bothOf(aRest, bRest);
-  if (rest === undefined) {
-    delete result.items;
-  } else {
-    result.items = rest;
-  }
 }
 
 // The item schemas of a tuple, from prefixItems or an items list
@@ -328,30 +149,28 @@ function collectFields(
   depth: number,
   options: DescribeJsonSchemaFieldsOptions,
 ): JsonSchemaField[] {
-  const node = foldAllOf(schema);
-  const required = new Set(toArray(node.required));
+  const required = new Set(toArray(schema.required));
   const entries: JsonSchemaField[] = [];
-  for (const [name, raw] of Object.entries(
-    isObject(node.properties) ? node.properties : {},
+  for (const [name, field] of Object.entries(
+    isObject(schema.properties) ? schema.properties : {},
   )) {
     if (!prefix && options.omitRootProperties?.has(name)) {
       continue;
     }
     const path = prefix ? `${prefix}.${name}` : name;
-    if (typeof raw === 'boolean') {
+    if (typeof field === 'boolean') {
       entries.push({
         path,
         parts: [
-          raw ? 'any value' : 'not allowed',
+          field ? 'any value' : 'not allowed',
           ...(required.has(name) ? ['required'] : []),
         ],
       });
       continue;
     }
-    if (!isObject(raw)) {
+    if (!isObject(field)) {
       continue;
     }
-    const field = foldAllOf(raw);
     const entry = describeField(path, field, required.has(name));
     entries.push(entry);
 
@@ -360,17 +179,17 @@ function collectFields(
     let nested = field;
     let arrayLevels = 0;
     while (!tupleItemsOf(nested) && isObject(nested.items)) {
-      nested = foldAllOf(nested.items);
+      nested = nested.items;
       arrayLevels += 1;
     }
     // Tuple items are not listed field by field
     const tuple = tupleItemsOf(nested);
     const unlisted = tuple
-      ? [...tuple, restItemsOf(nested)].map(toSchema).filter(isObject)
+      ? [...tuple, restItemsOf(nested)].filter(isObject)
       : [];
     if (!tuple && arrayLevels <= 1 && depth + 1 < options.maxDepth) {
       entries.push(...collectFields(nested, path, depth + 1, options));
-    } else if ([nested, ...unlisted].some(s => hasProperties(foldAllOf(s)))) {
+    } else if ([nested, ...unlisted].some(hasProperties)) {
       entry.parts.push('has nested fields not listed here');
     }
   }
@@ -389,9 +208,8 @@ function describeType(schema: Schema): string {
     }
   }
   // Referenced definitions are not resolved, but the field must still show
-  const refs = toArray(schema.$ref).filter(r => typeof r === 'string');
-  if (refs.length) {
-    parts.push(refs.map(r => `reference to "${r}"`).join(' and '));
+  if (typeof schema.$ref === 'string') {
+    parts.push(`reference to "${schema.$ref}"`);
   }
   return parts.length ? parts.join(', ') : 'unknown';
 }
@@ -423,9 +241,8 @@ function describeItem(value: unknown): string {
   if (!isObject(value)) {
     return 'unknown';
   }
-  const schema = foldAllOf(value);
-  const values = describeAllowedValues(schema);
-  return `${describeType(schema)}${values ? ` [${values}]` : ''}`;
+  const values = describeAllowedValues(value);
+  return `${describeType(value)}${values ? ` [${values}]` : ''}`;
 }
 
 function describeAllowedValues(schema: Schema): string | undefined {
@@ -471,17 +288,13 @@ function describeConstraints(schema: Schema): string[] {
       parts.push(`${label} ${bound}${suffix}`);
     }
   }
-  const formats = toArray(schema.format).filter(f => typeof f === 'string');
-  if (formats.length) {
-    parts.push(`format: ${formats.join(' and ')}`);
+  if (typeof schema.format === 'string') {
+    parts.push(`format: ${schema.format}`);
   }
-  const patterns = toArray(schema.pattern).filter(p => typeof p === 'string');
-  if (patterns.length) {
-    parts.push(
-      `pattern: ${patterns.map(p => JSON.stringify(p)).join(' and ')}`,
-    );
+  if (typeof schema.pattern === 'string') {
+    parts.push(`pattern: ${JSON.stringify(schema.pattern)}`);
   }
-  if ('default' in schema && schema.default !== CONFLICTING_DEFAULT) {
+  if ('default' in schema) {
     parts.push(`default ${canonical(schema.default)}`);
   }
   return parts;
@@ -516,10 +329,9 @@ function describeField(
     parts.push('has conditional constraints not listed here');
   }
   // Each field is a single list item, so line breaks are collapsed
-  const description = toArray(schema.description)
-    .filter((d): d is string => typeof d === 'string')
-    .map(d => d.replace(/\s+/g, ' ').trim())
-    .filter(Boolean)
-    .join(' ');
+  const description =
+    typeof schema.description === 'string'
+      ? schema.description.replace(/\s+/g, ' ').trim()
+      : '';
   return { path, parts, description: description || undefined };
 }
