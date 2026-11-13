@@ -203,7 +203,7 @@ function describeType(schema: Schema): string {
     if (types.length === 1 && types[0] === 'array') {
       parts.push(describeArray(schema));
     } else {
-      // Declarations whose types do not overlap leave no valid type
+      // A type keyword that lists no type names allows no value
       parts.push(types.length ? types.join(' | ') : 'no valid type');
     }
   }
