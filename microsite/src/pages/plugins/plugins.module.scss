@@ -76,6 +76,13 @@
     height: 1rem;
   }
 
+  :global(.pluginsResultCount) {
+    clear: both;
+    min-height: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--ifm-color-emphasis-700);
+  }
+
   :global(.search) {
     float: right;
     margin-bottom: 1rem;
