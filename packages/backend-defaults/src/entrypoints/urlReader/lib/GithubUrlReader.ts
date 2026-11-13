@@ -374,6 +374,10 @@ export class GithubUrlReader implements UrlReaderService {
     const response = await fetch(urlAsString, init);
 
     if (!response.ok) {
+      // Drain the body that we are about to discard, since the underlying
+      // connection is otherwise never released if the body is large.
+      response.body.resume();
+
       let message = `Request failed for ${urlAsString}, ${response.status} ${response.statusText}`;
 
       if (response.status === 304) {

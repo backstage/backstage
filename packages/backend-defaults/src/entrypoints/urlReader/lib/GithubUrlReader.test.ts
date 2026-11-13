@@ -27,6 +27,8 @@ import {
 import fs from 'fs-extra';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
+import { createServer, globalAgent } from 'node:http';
+import { AddressInfo } from 'node:net';
 import path from 'node:path';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
@@ -1049,5 +1051,59 @@ describe('GithubUrlReader', () => {
         ),
       ).rejects.toThrow(NotFoundError);
     });
+  });
+});
+
+// Runs against a real HTTP server rather than MSW, since the mocked responses
+// don't hold on to any underlying connection.
+describe('GithubUrlReader connections', () => {
+  it('should release the connection when a request fails with a large response body', async () => {
+    const server = createServer((_req, res) => {
+      res.writeHead(503, { 'content-type': 'text/html' });
+      res.end(Buffer.alloc(1_000_000, 'x'));
+    });
+    await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+    const { port } = server.address() as AddressInfo;
+    const baseUrl = `http://127.0.0.1:${port}`;
+
+    const reader = new GithubUrlReader(
+      new GithubIntegration(
+        readGithubIntegrationConfig(
+          new ConfigReader({
+            host: new URL(baseUrl).host,
+            apiBaseUrl: `${baseUrl}/api/v3`,
+          }),
+        ),
+      ),
+      { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
+    );
+
+    // Sockets that are still busy with a request, as opposed to having been
+    // closed or returned to the pool of free sockets.
+    const busySocketCount = () =>
+      globalAgent.sockets[globalAgent.getName({ host: '127.0.0.1', port })]
+        ?.length ?? 0;
+
+    try {
+      for (let i = 0; i < 5; i++) {
+        await expect(
+          reader.readUrl(`${baseUrl}/backstage/mock/blob/main/file-${i}.yaml`),
+        ).rejects.toThrow('503 Service Unavailable');
+      }
+      await expect(
+        reader.readTree(`${baseUrl}/backstage/mock/tree/main`),
+      ).rejects.toThrow('503 Service Unavailable');
+      await expect(
+        reader.search(`${baseUrl}/backstage/mock/blob/main/**/*.yaml`),
+      ).rejects.toThrow('503 Service Unavailable');
+
+      for (let i = 0; i < 100 && busySocketCount() > 0; i++) {
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+      expect(busySocketCount()).toBe(0);
+    } finally {
+      server.closeAllConnections();
+      await new Promise(resolve => server.close(resolve));
+    }
   });
 });
