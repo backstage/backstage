@@ -767,6 +767,12 @@ describe('OidcService', () => {
           idToken: mockToken,
           scope: 'openid',
         });
+        expect(mocks.tokenIssuer.issueToken).toHaveBeenCalledWith({
+          claims: {
+            sub: 'user:default/test',
+            azp: client.clientId,
+          },
+        });
       });
 
       it('should throw error for invalid grant type', async () => {

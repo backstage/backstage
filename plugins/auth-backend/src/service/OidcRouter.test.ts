@@ -728,6 +728,7 @@ describe('OidcRouter', () => {
         expect(tokenIssuer.issueToken).toHaveBeenCalledWith({
           claims: {
             sub: MOCK_USER_ENTITY_REF,
+            azp: client.clientId,
           },
         });
         const replayResponse = await request(server)
@@ -859,6 +860,7 @@ describe('OidcRouter', () => {
         expect(tokenIssuer.issueToken).toHaveBeenCalledWith({
           claims: {
             sub: 'user:default/test-user-pkce',
+            azp: client.clientId,
           },
         });
       });
@@ -996,6 +998,7 @@ describe('OidcRouter', () => {
         expect(tokenIssuer.issueToken).toHaveBeenCalledWith({
           claims: {
             sub: 'user:default/test-user-s256',
+            azp: client.clientId,
           },
         });
       });
@@ -1097,7 +1100,7 @@ describe('OidcRouter', () => {
       });
 
       it('should refresh a token without client credentials', async () => {
-        const { server, tokenResponse, mocks } =
+        const { server, tokenResponse, client, mocks } =
           await doAuthFlowWithOfflineAccess(databaseId);
 
         mocks.tokenIssuer.issueToken.mockResolvedValue({
@@ -1123,6 +1126,13 @@ describe('OidcRouter', () => {
         expect(refreshResponse.body.refresh_token).not.toBe(
           tokenResponse.body.refresh_token,
         );
+
+        expect(mocks.tokenIssuer.issueToken).toHaveBeenLastCalledWith({
+          claims: {
+            sub: MOCK_USER_ENTITY_REF,
+            azp: client.clientId,
+          },
+        });
       });
 
       it('should reject refresh for a different public client', async () => {

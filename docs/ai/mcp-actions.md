@@ -233,6 +233,13 @@ auth:
     #   - 'http://[::1]:*/*'
 ```
 
+Tokens issued through this flow carry an `azp` claim holding the `client_id` of
+the client that obtained them, both on the initial exchange and after a refresh.
+Tokens from an interactive Backstage sign-in have no `azp` claim. A backend that
+receives a Backstage token can read this claim to tell which MCP client a request
+originated from, for example to audit tool calls or to refuse a sensitive action
+to third-party clients.
+
 #### Migrating from Dynamic Client Registration
 
 Backstage previously supported experimental Dynamic Client Registration (DCR).

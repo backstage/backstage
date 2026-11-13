@@ -562,6 +562,7 @@ export class OidcService {
     const { token } = await this.tokenIssuer.issueToken({
       claims: {
         sub: session.userEntityRef,
+        azp: session.clientId,
       },
     });
 
