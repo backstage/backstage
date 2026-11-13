@@ -52,6 +52,7 @@ import {
   collectAncestorGroups,
   fetchDependencies,
   findComponent,
+  MAX_GROUP_DEPTH,
   readOwnerAndSystem,
   resolveSelection,
 } from './resolveContext';
@@ -410,6 +411,22 @@ describe('collectAncestorGroups', () => {
     );
     expect(requested).not.toContain('user:default/jane');
     expect(mockClient.getEntitiesByRefs).toHaveBeenCalledTimes(3);
+  });
+
+  it('stops after the maximum group depth and returns the ancestors found so far', async () => {
+    const ref = (i: number) => `group:default/g${i}`;
+    const chain = Object.fromEntries(
+      Array.from({ length: MAX_GROUP_DEPTH + 10 }, (_, i) => [
+        ref(i),
+        group(`g${i}`, [ref(i + 1)]),
+      ]),
+    );
+    mockClient.getEntitiesByRefs.mockImplementation(lookup(chain));
+    const result = await collectAncestorGroups(mockClient, 'tok', [ref(0)]);
+    expect(result).toEqual(
+      Array.from({ length: MAX_GROUP_DEPTH }, (_, i) => ref(i + 1)),
+    );
+    expect(mockClient.getEntitiesByRefs).toHaveBeenCalledTimes(MAX_GROUP_DEPTH);
   });
 });
 

@@ -62,6 +62,9 @@ export interface ResolvedContext {
   ancestorGroupRefs: string[];
 }
 
+/** Group hierarchy levels followed before the ancestor lookup stops. */
+export const MAX_GROUP_DEPTH = 20;
+
 const isKind = (ref: string, kind: string) =>
   parseEntityRef(ref).kind.toLocaleLowerCase('en-US') === kind;
 
@@ -241,7 +244,7 @@ export async function collectAncestorGroups(
   const visited = new Set(startRefs.map(r => r.toLocaleLowerCase('en-US')));
   const ancestors: string[] = [];
   let frontier = [...visited].filter(ref => isKind(ref, 'group'));
-  while (frontier.length > 0) {
+  for (let depth = 0; depth < MAX_GROUP_DEPTH && frontier.length > 0; depth++) {
     const entities = await getEntitiesInBatches(client, token, frontier, [
       'kind',
       'metadata.name',
