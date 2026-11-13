@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+// Cache compiled code between runs to speed up startup. Honors NODE_COMPILE_CACHE and NODE_DISABLE_COMPILE_CACHE.
+require('node:module').enableCompileCache?.();
+
 const path = require('node:path');
 
 /* eslint-disable-next-line no-restricted-syntax */

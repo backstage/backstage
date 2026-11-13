@@ -15,5 +15,8 @@
  * limitations under the License.
  */
 
+// Cache compiled code between runs to speed up startup. Honors NODE_COMPILE_CACHE and NODE_DISABLE_COMPILE_CACHE.
+require('node:module').enableCompileCache?.();
+
 require('@backstage/cli/config/nodeTransform.cjs');
 require('../src/alpha');
