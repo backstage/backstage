@@ -43,8 +43,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Get new events for the provided subscription
-   * @param subscriptionId -
+   * {@inheritDoc DefaultApiIsomorphicClient.getSubscriptionEvents}
    */
   public async getSubscriptionEvents(
     // @ts-ignore
@@ -55,8 +54,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Publish a new event
-   * @param postEventRequest -
+   * {@inheritDoc DefaultApiIsomorphicClient.postEvent}
    */
   public async postEvent(
     // @ts-ignore
@@ -67,9 +65,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Ensures that the subscription exists with the provided configuration
-   * @param subscriptionId -
-   * @param putSubscriptionRequest -
+   * {@inheritDoc DefaultApiIsomorphicClient.putSubscription}
    */
   public async putSubscription(
     // @ts-ignore

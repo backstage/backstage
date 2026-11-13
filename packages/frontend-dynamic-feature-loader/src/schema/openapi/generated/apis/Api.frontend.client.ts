@@ -43,7 +43,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Get the Module Federation remote definitions.
+   * {@inheritDoc DefaultApiIsomorphicClient.getRemotes}
    */
   public async getRemotes(
     // @ts-ignore

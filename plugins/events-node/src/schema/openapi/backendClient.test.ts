@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { DefaultApiBackendClient } from './generated';
 
 describe('DefaultApiBackendClient', () => {
   const request = { body: { event: { topic: 'topic', payload: {} } } };
 
-  it('resolves the base url with discovery and authenticates with a plugin request token', async () => {
+  it('resolves the base url with discovery and authenticates with a plugin request token for the given credentials', async () => {
     const fetch = jest.fn(async () => new Response(null, { status: 201 }));
     const auth = mockServices.auth();
     const getPluginRequestToken = jest.spyOn(auth, 'getPluginRequestToken');
@@ -29,15 +29,17 @@ describe('DefaultApiBackendClient', () => {
       auth,
       fetchApi: { fetch },
     });
+    const credentials = mockCredentials.user();
 
-    await client.postEvent(request);
+    await client.postEvent(request, { credentials });
 
+    expect(getPluginRequestToken).toHaveBeenCalledTimes(1);
     expect(getPluginRequestToken).toHaveBeenCalledWith({
-      onBehalfOf: await auth.getOwnServiceCredentials(),
+      onBehalfOf: credentials,
       targetPluginId: 'events',
     });
     const { token } = await auth.getPluginRequestToken({
-      onBehalfOf: await auth.getOwnServiceCredentials(),
+      onBehalfOf: credentials,
       targetPluginId: 'events',
     });
     expect(fetch).toHaveBeenCalledWith(
@@ -47,30 +49,6 @@ describe('DefaultApiBackendClient', () => {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
-        },
-      }),
-    );
-  });
-
-  it('uses an explicit token instead of requesting one', async () => {
-    const fetch = jest.fn(async () => new Response(null, { status: 201 }));
-    const auth = mockServices.auth();
-    const getPluginRequestToken = jest.spyOn(auth, 'getPluginRequestToken');
-    const client = new DefaultApiBackendClient({
-      discovery: mockServices.discovery(),
-      auth,
-      fetchApi: { fetch },
-    });
-
-    await client.postEvent(request, { token: 'my-token' });
-
-    expect(getPluginRequestToken).not.toHaveBeenCalled();
-    expect(fetch).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer my-token',
         },
       }),
     );

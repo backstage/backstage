@@ -1,4 +1,5 @@
 {{>licenseInfo}}
+import { BackstageCredentials } from '../types/auth';
 {{#apiInfo}}
 {{#apis}}
 {{#imports}}
@@ -31,15 +32,11 @@ export interface RequestOptions {
  */
 export interface BackendRequestOptions {
   /**
-   * The credentials to make the request on behalf of. Defaults to the
-   * credentials of the calling service.
+   * The credentials to make the request on behalf of. Pass the credentials of
+   * an incoming request, or `auth.getOwnServiceCredentials()` for requests
+   * made by the service itself.
    */
-  credentials?: unknown;
-  /**
-   * An explicit plugin request token. When set, no token is requested from the
-   * auth service.
-   */
-  token?: string;
+  credentials: BackstageCredentials;
 }
 {{#apis}}
 {{#operations}}

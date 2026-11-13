@@ -47,8 +47,8 @@ import { ListTemplatingExtensions } from './Api.types';
 
 /**
  * A client for use in the backend. The base URL is resolved through the
- * discovery service, and a plugin request token is requested from the auth
- * service unless one is passed in the request options.
+ * discovery service, and each request is authenticated with a plugin request
+ * token for the credentials passed in the request options.
  *
  * @public
  */
@@ -69,262 +69,177 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * Returns a list of all installed actions.
+   * {@inheritDoc DefaultApiIsomorphicClient.listActions}
    */
   public async listActions(
     // @ts-ignore
     request: ListActions,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<Array<Action>>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.listActions(request, { token });
   }
 
   /**
-   * Perform an autocomplete for the given provider and resource.
-   * @param provider -
-   * @param resource -
-   * @param autocompleteRequest -
+   * {@inheritDoc DefaultApiIsomorphicClient.autocomplete}
    */
   public async autocomplete(
     // @ts-ignore
     request: Autocomplete,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<Autocomplete200Response>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.autocomplete(request, { token });
   }
 
   /**
-   * Sends a signal to a task broker to cancel the running task by taskId.
-   * @param taskId -
+   * {@inheritDoc DefaultApiIsomorphicClient.cancelTask}
    */
   public async cancelTask(
     // @ts-ignore
     request: CancelTask,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<CancelTask200Response>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.cancelTask(request, { token });
   }
 
   /**
-   * Get a task by ID.
-   * @param taskId -
+   * {@inheritDoc DefaultApiIsomorphicClient.getTask}
    */
   public async getTask(
     // @ts-ignore
     request: GetTask,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<SerializedTask>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.getTask(request, { token });
   }
 
   /**
-   * Returns a list of tasks, filtering by ownership and/or status if given.
-   * @param createdBy - Created by
-   * @param limit - Number of records to return in the response.
-   * @param offset - Number of records to skip in the query page.
-   * @param order - Order
-   * @param status - Status
+   * {@inheritDoc DefaultApiIsomorphicClient.listTasks}
    */
   public async listTasks(
     // @ts-ignore
     request: ListTasks,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<ListTasksResponse>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.listTasks(request, { token });
   }
 
   /**
-   * Starts the task again from the point where it failed.
-   * @param taskId -
-   * @param retryRequest -
+   * {@inheritDoc DefaultApiIsomorphicClient.retry}
    */
   public async retry(
     // @ts-ignore
     request: Retry,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<Scaffold201Response>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.retry(request, { token });
   }
 
   /**
-   * Executes the scaffolding of a component, given a template and its parameter values.
-   * @param scaffolderScaffoldOptions -
+   * {@inheritDoc DefaultApiIsomorphicClient.scaffold}
    */
   public async scaffold(
     // @ts-ignore
     request: Scaffold,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<Scaffold201Response>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.scaffold(request, { token });
   }
 
   /**
-   * Get events for a task by ID.
-   * @param taskId -
-   * @param after - Offset event ID to stream events after.
+   * {@inheritDoc DefaultApiIsomorphicClient.streamLogsPolling}
    */
   public async streamLogsPolling(
     // @ts-ignore
     request: StreamLogsPolling,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<Array<SerializedTaskEvent>>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.streamLogsPolling(request, { token });
   }
 
   /**
-   * Perform a dry-run of a template
-   * @param dryRunRequest -
+   * {@inheritDoc DefaultApiIsomorphicClient.dryRun}
    */
   public async dryRun(
     // @ts-ignore
     request: DryRun,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<DryRun200Response>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.dryRun(request, { token });
   }
 
   /**
-   * Get template parameter schema.
-   * @param namespace -
-   * @param kind -
-   * @param name -
+   * {@inheritDoc DefaultApiIsomorphicClient.getTemplateParameterSchema}
    */
   public async getTemplateParameterSchema(
     // @ts-ignore
     request: GetTemplateParameterSchema,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<TemplateParameterSchema>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.getTemplateParameterSchema(request, { token });
   }
 
   /**
-   * Returns a structure describing the available templating extensions.
+   * {@inheritDoc DefaultApiIsomorphicClient.listTemplatingExtensions}
    */
   public async listTemplatingExtensions(
     // @ts-ignore
     request: ListTemplatingExtensions,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<ListTemplatingExtensionsResponse>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.listTemplatingExtensions(request, { token });
   }

@@ -119,6 +119,49 @@ describe('DefaultEventsService', () => {
     const mswServer = setupServer();
     registerMswTestHooks(mswServer);
 
+    it('falls back to local events if no token can be issued for the events backend', async () => {
+      const logger = mockServices.logger.mock();
+      const auth = mockServices.auth();
+      jest
+        .spyOn(auth, 'getPluginRequestToken')
+        .mockRejectedValue(new Error('Unable to generate legacy token'));
+      const fetchSpy = jest.fn();
+      mswServer.events.on('request:start', fetchSpy);
+      const service = DefaultEventsService.create({ logger }).forPlugin('a', {
+        auth,
+        logger,
+        discovery: mockServices.discovery(),
+        lifecycle: mockServices.lifecycle.mock(),
+      });
+
+      const received = new Array<EventParams>();
+      await service.subscribe({
+        id: 'tester',
+        topics: ['test'],
+        async onEvent(event) {
+          received.push(event);
+        },
+      });
+      await service.publish({ topic: 'test', eventPayload: { foo: 'bar' } });
+      await service.publish({ topic: 'test', eventPayload: { foo: 'baz' } });
+
+      expect(received).toEqual([
+        { topic: 'test', eventPayload: { foo: 'bar' } },
+        { topic: 'test', eventPayload: { foo: 'baz' } },
+      ]);
+      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(auth.getPluginRequestToken).toHaveBeenCalledWith({
+        onBehalfOf: await auth.getOwnServiceCredentials(),
+        targetPluginId: 'events',
+      });
+      expect(logger.warn).toHaveBeenCalledWith(
+        'The events backend is not available and neither is legacy auth. Future events will not be persisted.',
+      );
+
+      mswServer.events.removeListener('request:start', fetchSpy);
+      await (service as any).shutdown();
+    });
+
     it('should read events from events bus API', async () => {
       const logger = mockServices.logger.mock();
       const service = DefaultEventsService.create({ logger }).forPlugin('a', {

@@ -30,7 +30,7 @@ info:
 All three clients expose the same methods. They differ in how they find the plugin and how they authenticate.
 
 - `DefaultApiFrontendClient` is for frontend plugins. It takes only a `fetchApi` and sends requests to `plugin://<pluginId>/...` URLs. Only the `FetchApi` of a Backstage app resolves these URLs and adds credentials, so pass it `fetchApiRef` from the app. A plain `fetch` can not be used. Pass `{ token }` in the request options only if you need to override the credentials.
-- `DefaultApiBackendClient` is for backend plugins and modules. It takes the `discovery` and `auth` services, resolves the base URL through discovery, and requests a plugin request token from the auth service for each call. Pass `{ token }` in the request options to use your own token, or `{ credentials }` to make the call on behalf of someone other than your own service.
+- `DefaultApiBackendClient` is for backend plugins and modules. It takes the `discovery` and `auth` services and resolves the base URL through discovery. Each call requires `{ credentials }` in the request options, and the client requests a plugin request token for those credentials from the auth service. Pass the credentials of an incoming request to make the call on behalf of its caller, or `await auth.getOwnServiceCredentials()` to make the call as your own service.
 - `DefaultApiIsomorphicClient` is for code that runs in both environments, such as a public client package. It takes a `discoveryApi` and an optional `fetchApi`, and only authenticates when you pass `{ token }` in the request options.
 
 ```ts
@@ -39,6 +39,9 @@ const client = new DefaultApiFrontendClient({ fetchApi });
 
 // Backend
 const client = new DefaultApiBackendClient({ discovery, auth });
+await client.getEntities(request, {
+  credentials: await httpAuth.credentials(req),
+});
 
 // Isomorphic
 const client = new DefaultApiIsomorphicClient({ discoveryApi, fetchApi });

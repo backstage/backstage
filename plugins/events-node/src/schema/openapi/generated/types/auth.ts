@@ -15,13 +15,21 @@
  */
 
 /**
+ * This is a structural copy of the parts of the backend `BackstageCredentials`
+ * type that the generated backend client needs, to avoid importing
+ * backend-plugin-api.
+ */
+export type BackstageCredentials = {
+  $$type: '@backstage/BackstageCredentials';
+};
+
+/**
  * This is a structural copy of the parts of the backend AuthService that the
  * generated backend client needs, to avoid importing backend-plugin-api.
  */
 export type AuthApi = {
-  getOwnServiceCredentials(): Promise<unknown>;
   getPluginRequestToken(options: {
-    onBehalfOf: unknown;
+    onBehalfOf: BackstageCredentials;
     targetPluginId: string;
   }): Promise<{ token: string }>;
 };

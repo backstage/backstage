@@ -27,8 +27,8 @@ import { GetRemotes } from './Api.types';
 
 /**
  * A client for use in the backend. The base URL is resolved through the
- * discovery service, and a plugin request token is requested from the auth
- * service unless one is passed in the request options.
+ * discovery service, and each request is authenticated with a plugin request
+ * token for the credentials passed in the request options.
  *
  * @public
  */
@@ -49,23 +49,17 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * Get the Module Federation remote definitions.
+   * {@inheritDoc DefaultApiIsomorphicClient.getRemotes}
    */
   public async getRemotes(
     // @ts-ignore
     request: GetRemotes,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<Array<Remote>>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.getRemotes(request, { token });
   }

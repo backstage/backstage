@@ -34,7 +34,9 @@ export class DefaultApiFrontendClient {
     {{#operations}}
 
     {{#operation}}
-{{>apis/operationDocs}}
+    /**
+     * {@inheritDoc DefaultApiIsomorphicClient.{{nickname}}}
+     */
     public async {{nickname}}(
         // @ts-ignore
         request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},

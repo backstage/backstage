@@ -63,7 +63,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Returns a list of all installed actions.
+   * {@inheritDoc DefaultApiIsomorphicClient.listActions}
    */
   public async listActions(
     // @ts-ignore
@@ -74,10 +74,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Perform an autocomplete for the given provider and resource.
-   * @param provider -
-   * @param resource -
-   * @param autocompleteRequest -
+   * {@inheritDoc DefaultApiIsomorphicClient.autocomplete}
    */
   public async autocomplete(
     // @ts-ignore
@@ -88,8 +85,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Sends a signal to a task broker to cancel the running task by taskId.
-   * @param taskId -
+   * {@inheritDoc DefaultApiIsomorphicClient.cancelTask}
    */
   public async cancelTask(
     // @ts-ignore
@@ -100,8 +96,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Get a task by ID.
-   * @param taskId -
+   * {@inheritDoc DefaultApiIsomorphicClient.getTask}
    */
   public async getTask(
     // @ts-ignore
@@ -112,12 +107,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Returns a list of tasks, filtering by ownership and/or status if given.
-   * @param createdBy - Created by
-   * @param limit - Number of records to return in the response.
-   * @param offset - Number of records to skip in the query page.
-   * @param order - Order
-   * @param status - Status
+   * {@inheritDoc DefaultApiIsomorphicClient.listTasks}
    */
   public async listTasks(
     // @ts-ignore
@@ -128,9 +118,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Starts the task again from the point where it failed.
-   * @param taskId -
-   * @param retryRequest -
+   * {@inheritDoc DefaultApiIsomorphicClient.retry}
    */
   public async retry(
     // @ts-ignore
@@ -141,8 +129,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Executes the scaffolding of a component, given a template and its parameter values.
-   * @param scaffolderScaffoldOptions -
+   * {@inheritDoc DefaultApiIsomorphicClient.scaffold}
    */
   public async scaffold(
     // @ts-ignore
@@ -153,9 +140,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Get events for a task by ID.
-   * @param taskId -
-   * @param after - Offset event ID to stream events after.
+   * {@inheritDoc DefaultApiIsomorphicClient.streamLogsPolling}
    */
   public async streamLogsPolling(
     // @ts-ignore
@@ -166,8 +151,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Perform a dry-run of a template
-   * @param dryRunRequest -
+   * {@inheritDoc DefaultApiIsomorphicClient.dryRun}
    */
   public async dryRun(
     // @ts-ignore
@@ -178,10 +162,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Get template parameter schema.
-   * @param namespace -
-   * @param kind -
-   * @param name -
+   * {@inheritDoc DefaultApiIsomorphicClient.getTemplateParameterSchema}
    */
   public async getTemplateParameterSchema(
     // @ts-ignore
@@ -192,7 +173,7 @@ export class DefaultApiFrontendClient {
   }
 
   /**
-   * Returns a structure describing the available templating extensions.
+   * {@inheritDoc DefaultApiIsomorphicClient.listTemplatingExtensions}
    */
   public async listTemplatingExtensions(
     // @ts-ignore

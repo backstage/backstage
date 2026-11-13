@@ -27,8 +27,8 @@ import { GetSubscriptionEvents, PostEvent, PutSubscription } from './Api.types';
 
 /**
  * A client for use in the backend. The base URL is resolved through the
- * discovery service, and a plugin request token is requested from the auth
- * service unless one is passed in the request options.
+ * discovery service, and each request is authenticated with a plugin request
+ * token for the credentials passed in the request options.
  *
  * @public
  */
@@ -49,71 +49,49 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * Get new events for the provided subscription
-   * @param subscriptionId -
+   * {@inheritDoc DefaultApiIsomorphicClient.getSubscriptionEvents}
    */
   public async getSubscriptionEvents(
     // @ts-ignore
     request: GetSubscriptionEvents,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<void | GetSubscriptionEvents200Response>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.getSubscriptionEvents(request, { token });
   }
 
   /**
-   * Publish a new event
-   * @param postEventRequest -
+   * {@inheritDoc DefaultApiIsomorphicClient.postEvent}
    */
   public async postEvent(
     // @ts-ignore
     request: PostEvent,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<void>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.postEvent(request, { token });
   }
 
   /**
-   * Ensures that the subscription exists with the provided configuration
-   * @param subscriptionId -
-   * @param putSubscriptionRequest -
+   * {@inheritDoc DefaultApiIsomorphicClient.putSubscription}
    */
   public async putSubscription(
     // @ts-ignore
     request: PutSubscription,
-    options?: BackendRequestOptions,
+    options: BackendRequestOptions,
   ): Promise<TypedResponse<void>> {
-    const token =
-      options?.token ??
-      (
-        await this.auth.getPluginRequestToken({
-          onBehalfOf:
-            options?.credentials ??
-            (await this.auth.getOwnServiceCredentials()),
-          targetPluginId: pluginId,
-        })
-      ).token;
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: options.credentials,
+      targetPluginId: pluginId,
+    });
 
     return this.client.putSubscription(request, { token });
   }
