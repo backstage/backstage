@@ -1060,6 +1060,8 @@ describe('GithubUrlReader connections', () => {
   it('should release the connection when a request fails with a large response body', async () => {
     const server = createServer((_req, res) => {
       res.writeHead(503, { 'content-type': 'text/html' });
+      // Must be larger than the socket and stream buffers combined, since a
+      // smaller body completes without being read and never shows the leak.
       res.end(Buffer.alloc(1_000_000, 'x'));
     });
     await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));

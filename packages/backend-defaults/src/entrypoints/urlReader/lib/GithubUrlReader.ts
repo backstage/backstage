@@ -375,8 +375,10 @@ export class GithubUrlReader implements UrlReaderService {
 
     if (!response.ok) {
       // Drain the body that we are about to discard, since the underlying
-      // connection is otherwise never released if the body is large.
-      response.body.resume();
+      // connection is otherwise never released if the body is large. The
+      // error listener keeps a connection that drops mid-drain from surfacing
+      // as an uncaught exception.
+      response.body.on('error', () => {}).resume();
 
       let message = `Request failed for ${urlAsString}, ${response.status} ${response.statusText}`;
 
