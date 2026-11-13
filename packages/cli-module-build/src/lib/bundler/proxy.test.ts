@@ -71,4 +71,16 @@ describe('translateLegacyProxyOptions', () => {
 
     expect(warn).toHaveBeenCalledTimes(1);
   });
+
+  it('rejects a proxy configuration that is not an array', () => {
+    expect(() =>
+      translateLegacyProxyOptions({
+        '/api': { target: 'http://localhost:7007' },
+      }),
+    ).toThrow('must be an array');
+    expect(() => translateLegacyProxyOptions('http://localhost:7007')).toThrow(
+      'must be an array',
+    );
+    expect(translateLegacyProxyOptions(null)).toBeUndefined();
+  });
 });

@@ -218,12 +218,28 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       host,
       port,
       // Without this middleware the `lazyCompilation` option does nothing; it
-      // no-ops when the compiler doesn't set the option. Goes last to keep its
-      // trigger endpoint behind the host header check.
-      setupMiddlewares: middlewares =>
-        webpack
-          ? middlewares
-          : [...middlewares, lazyCompilationMiddleware(compiler)],
+      // no-ops when the compiler doesn't set the option. It goes right before
+      // the dev middleware: after the host header checks, and before the proxy
+      // entries, which could otherwise forward its trigger requests.
+      setupMiddlewares: middlewares => {
+        if (webpack) {
+          return middlewares;
+        }
+        const lazyCompilation = lazyCompilationMiddleware(compiler);
+        const devMiddlewareIndex = middlewares.findIndex(
+          middleware =>
+            typeof middleware === 'object' &&
+            middleware.name === '@rspack/dev-middleware',
+        );
+        if (devMiddlewareIndex === -1) {
+          return [...middlewares, lazyCompilation];
+        }
+        return [
+          ...middlewares.slice(0, devMiddlewareIndex),
+          lazyCompilation,
+          ...middlewares.slice(devMiddlewareIndex),
+        ];
+      },
       // The legacy WebPack dev server runs the `http-proxy-middleware` major
       // that accepts the old option names, so it needs no translation.
       proxy: webpack
