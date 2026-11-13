@@ -786,6 +786,12 @@ registries:
   '@open': https://open.example.com/
   '@at': https://reader:pa@ss@at.example.com/npm/
   '@query': https://query.example.com/npm/?token=secret
+  '@invalid': not a url
+  'https://decl.example.com/npm/?token=secret':
+    prefix: work
+    serverType: artifactory
+    scopes:
+      - '@decl'
 catalog:
   react: ^18.0.0
 customSetting: true
@@ -813,6 +819,21 @@ customSetting: true
             ' @priv:registry = https://priv.example.com/',
             '@cred:registry=https://${NPM_USER}:${NPM_PASS}@cred.example.com/',
             '@query:registry=https://query.example.com/npm/?token=secret',
+            // Quoted values are unquoted like pnpm does, and a # in quotes is
+            // not a comment
+            '@dq:registry="https://dq.example.com/npm/?token=secret"',
+            "@sq:registry='https://sq.example.com/#fragment'",
+            '@invalid:registry=not a url',
+            // Any line break ends a line, an escaped line break in quotes
+            // can't add a line, and a value with a ; is written in quotes
+            '@cr:registry=https://cr.example.com/\r//cr.example.com/:_authToken=crtoken',
+            '@nl:registry="https://nl.example.com/\\n//nl.example.com/:_authToken=nltoken"',
+            '@semi:registry="https://semi.example.com/a;b/"',
+            // The last line of a setting wins, also when it is left out
+            '@last:registry=https://last.example.com/a/',
+            '@last:registry=https://last.example.com/b/',
+            '@gone:registry=https://gone.example.com/a/',
+            '@gone:registry="https://gone.example.com/b/\t"',
             '//priv.example.com/:_authToken=secret',
             'strict-ssl=false',
           ].join('\n'),
@@ -836,13 +857,19 @@ customSetting: true
           storeDir: joinPath(mockDir.path, '.pnpm-store'),
           minimumReleaseAge: 4320,
           // Credentials are left out like in the .npmrc, and so are the
-          // URLs with placeholders, which pnpm ignores
+          // URLs with placeholders, which pnpm ignores, and invalid URLs
           registry: 'https://registry.example.com/',
           registries: {
             '@ws': 'https://ws.example.com/',
             '@open': 'https://open.example.com/',
             '@at': 'https://at.example.com/npm/',
             '@query': 'https://query.example.com/npm/',
+            // A registry declared by its URL keeps its settings
+            'https://decl.example.com/npm/': {
+              prefix: 'work',
+              serverType: 'artifactory',
+              scopes: ['@decl'],
+            },
           },
           catalog: { react: '^18.0.0' },
           patchedDependencies: {
@@ -861,7 +888,7 @@ customSetting: true
         await expect(
           fs.readFile(joinPath(ctx.targetDir, '.npmrc'), 'utf8'),
         ).resolves.toBe(
-          'registry=https://registry.example.com/\n@priv:registry=https://priv.example.com/\n@query:registry=https://query.example.com/npm/\n',
+          'registry=https://registry.example.com/\n@priv:registry=https://priv.example.com/\n@query:registry=https://query.example.com/npm/\n@dq:registry=https://dq.example.com/npm/\n@sq:registry=https://sq.example.com/\n@cr:registry=https://cr.example.com/\n@semi:registry="https://semi.example.com/a;b/"\n@last:registry=https://last.example.com/b/\n',
         );
         await expectPathExists([ctx.targetDir, '.yarnrc.yml'], false);
         await expect(
