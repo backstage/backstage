@@ -78,6 +78,34 @@ describe('skills lock', () => {
     ).toBe(false);
   });
 
+  it('matches skill paths as they are written in the install URL', () => {
+    const encodedLock = {
+      version: 1,
+      skills: {
+        spaced: {
+          source: 'acme/skills',
+          ref: 'main',
+          sourceType: 'github',
+          skillPath: 'my skills/s/SKILL.md',
+        },
+        percent: {
+          source: 'acme/skills',
+          ref: 'main',
+          sourceType: 'github',
+          skillPath: 'a%20b/SKILL.md',
+        },
+      },
+    };
+    const url = (u: string) =>
+      isSkillInstalled(encodedLock, u, () => true, '/');
+    const base = 'https://github.com/acme/skills/tree/main';
+    expect(url(`${base}/my skills/s`)).toBe(true);
+    expect(url(`${base}/my%20skills/s`)).toBe(false);
+    expect(url(`${base}/a%20b`)).toBe(true);
+    expect(url(`${base}/a b`)).toBe(false);
+    expect(url(`${base}/my skills/s/?x=1#y`)).toBe(true);
+  });
+
   it('requires the skill folder to exist for every target agent', () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ai-lock-dirs-'));
     try {
@@ -101,6 +129,18 @@ describe('skills lock', () => {
       expect(installed(['claude-code'])).toBe(true);
       expect(installed(['claude-code', 'codex'])).toBe(true);
       expect(installed(['claude-code', 'codex', 'cursor'])).toBe(true);
+
+      // The shared directory does not prove an install for agents that have
+      // their own directory, and unknown agents are never installed.
+      expect(installed(['continue'])).toBe(false);
+      expect(installed(['windsurf'])).toBe(false);
+      expect(installed(['codex', 'windsurf'])).toBe(false);
+      expect(installed(['no-such-agent'])).toBe(false);
+      fs.mkdirSync(path.join(dir, '.continue', 'skills', 'a'), {
+        recursive: true,
+      });
+      expect(installed(['continue'])).toBe(true);
+      expect(installed(['continue', 'windsurf'])).toBe(false);
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }

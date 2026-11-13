@@ -15,6 +15,7 @@
  */
 
 import {
+  getKnownRefs,
   getMainCheckoutRoot,
   getOriginUrl,
   getRepoRoot,
@@ -111,6 +112,56 @@ describe('parseCatalogFileFolder', () => {
       parseCatalogFileFolder('file:/work/repo/catalog-info.yaml', repo),
     ).toBeUndefined();
     expect(parseCatalogFileFolder('', repo)).toBeUndefined();
+  });
+});
+
+describe('parseSourceLocationFolder with known refs', () => {
+  const repo = 'https://github.com/a/b';
+  const at = (path: string, refs?: string[]) =>
+    parseSourceLocationFolder(`url:${repo}/tree/${path}`, repo, refs);
+
+  it('splits the ref from the path using the longest known ref', () => {
+    expect(at('main/services/api')).toEqual([['services', 'api'], ['api']]);
+    expect(at('main/services/api', ['main'])).toEqual([['services', 'api']]);
+    expect(at('main/services/api', ['main', 'main/services'])).toEqual([
+      ['api'],
+    ]);
+    expect(at('feature/x', ['feature/x'])).toEqual([[]]);
+    // No known ref matches, so every split is returned.
+    expect(at('main/services/api', ['dev'])).toEqual([
+      ['services', 'api'],
+      ['api'],
+    ]);
+    expect(
+      parseCatalogFileFolder(`url:${repo}/blob/main/a/b/c.yaml`, repo, [
+        'main',
+      ]),
+    ).toEqual([['a', 'b']]);
+  });
+});
+
+describe('getKnownRefs', () => {
+  it('lists branches, tags and origin branches without their prefixes', async () => {
+    const exec = jest.fn().mockResolvedValue({
+      stdout: [
+        'refs/heads/main',
+        'refs/heads/feature/x',
+        'refs/tags/v1',
+        'refs/remotes/origin/HEAD',
+        'refs/remotes/origin/main',
+        'refs/remotes/origin/dev',
+        '',
+      ].join('\n'),
+    });
+    await expect(getKnownRefs('/work', exec)).resolves.toEqual([
+      'main',
+      'feature/x',
+      'v1',
+      'dev',
+    ]);
+    await expect(
+      getKnownRefs('/work', jest.fn().mockRejectedValue(new Error('no git'))),
+    ).resolves.toEqual([]);
   });
 });
 

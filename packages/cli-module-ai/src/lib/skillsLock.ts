@@ -16,6 +16,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { AGENT_SKILLS_DIRS } from './agentSkillsDirs';
 
 /** The parts of an entry in `skills-lock.json` that we compare against. */
 interface SkillsLockEntry {
@@ -82,32 +83,25 @@ function normalizeRepo(value: string): string | undefined {
 }
 
 /**
- * Project skills directories per agent, from the agent table in `skills`
- * 1.7.0 (node_modules/skills/dist/cli.mjs, `skillsDir`). Claude Code is the
- * one common agent with its own directory. Agents that are not listed use
- * `.agents/skills`; if that is wrong for an agent, its skills are never
- * seen as installed and are installed again, which is safe.
- */
-const SKILLS_DIRS: Record<string, string> = {
-  'claude-code': path.join('.claude', 'skills'),
-};
-const DEFAULT_SKILLS_DIR = path.join('.agents', 'skills');
-
-/**
  * Returns a check for whether a skill folder exists in the project skills
  * directory of every one of the given agents. The lock file has no agent
  * information, so it cannot tell which agents a skill was installed for.
+ * Agents without a known skills directory are treated as not installed, so
+ * that their skills are installed again, which is safe.
  */
 export function skillPresence(
   rootDir: string,
   agents: string[],
 ): (skillName: string) => boolean {
   return skillName =>
-    agents.every(agent =>
-      fs.existsSync(
-        path.join(rootDir, SKILLS_DIRS[agent] ?? DEFAULT_SKILLS_DIR, skillName),
-      ),
-    );
+    agents.every(agent => {
+      const dir = Object.hasOwn(AGENT_SKILLS_DIRS, agent)
+        ? AGENT_SKILLS_DIRS[agent]
+        : undefined;
+      return (
+        dir !== undefined && fs.existsSync(path.join(rootDir, dir, skillName))
+      );
+    });
 }
 
 /**
@@ -132,16 +126,15 @@ export function isSkillInstalled(
         isPresent(name),
     );
   }
-  let url: URL;
-  try {
-    url = new URL(installUrl);
-  } catch {
-    return false;
-  }
-  const match = url.pathname.match(/^(.*?)(?:\/-)?\/tree\/([^/]+)\/(.+)$/);
+  // The path is taken from the original string rather than from `URL`, which
+  // would percent-encode it differently than `skills` records it in the lock.
+  const match = installUrl.match(
+    /^(https?:\/\/[^/?#]+)(\/.*?)(?:\/-)?\/tree\/([^/?#]+)\/([^?#]+)/,
+  );
   if (!match) return false;
-  const [, repoPath, ref, skillDir] = match;
-  const repo = normalizeRepo(`${url.origin}${repoPath}`);
+  const [, origin, repoPath, ref, rawSkillDir] = match;
+  const skillDir = rawSkillDir.replace(/\/+$/, '');
+  const repo = normalizeRepo(`${origin}${repoPath}`);
 
   return Object.entries(lock.skills).some(([name, entry]) => {
     if (entry.ref !== ref) return false;

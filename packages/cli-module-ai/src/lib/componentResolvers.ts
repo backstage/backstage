@@ -21,6 +21,7 @@ import type {
 } from '@backstage/filter-predicates';
 import { queryAllEntities, type CatalogReader } from './catalogClient';
 import {
+  getKnownRefs,
   getMainCheckoutRoot,
   getOriginUrl,
   getRepoPrefix,
@@ -50,17 +51,22 @@ interface ComponentCandidate {
   entity: Entity;
   /** The possible repo-relative folders of the component, as segment lists. */
   folders: string[][];
+  /** Whether the location can be split into a ref and a folder in several ways. */
+  ambiguous: boolean;
 }
 
 async function queryComponentsByLocation(options: {
   catalog: CatalogReader;
   repoUrl: string;
   fileRoots: string[];
+  /** Branches and tags, to find the end of the ref in a location URL. */
+  knownRefs: string[];
   annotation: string;
   /** Whether the annotation points at the folder, or at a catalog file. */
   isFolder: boolean;
 }): Promise<ComponentCandidate[]> {
-  const { catalog, repoUrl, fileRoots, annotation, isFolder } = options;
+  const { catalog, repoUrl, fileRoots, knownRefs, annotation, isFolder } =
+    options;
   // A path type that cannot start with `$`, which marks predicate operators.
   const path: `metadata.${string}` = `metadata.annotations.${annotation}`;
   const urlMatch: FilterPredicateExpression = {};
@@ -97,8 +103,9 @@ async function queryComponentsByLocation(options: {
       : (isFolder ? parseSourceLocationFolder : parseCatalogFileFolder)(
           location,
           repoUrl,
+          knownRefs,
         );
-    return folders ? [{ entity, folders }] : [];
+    return folders ? [{ entity, folders, ambiguous: folders.length > 1 }] : [];
   });
 }
 
@@ -138,15 +145,26 @@ function locationResolver(options: {
       );
       ancestors.push('');
 
+      const knownRefs = await getKnownRefs(cwd);
       const candidates = await queryComponentsByLocation({
         catalog,
         repoUrl,
         fileRoots,
+        knownRefs,
         annotation,
         isFolder,
       });
       for (const wanted of ancestors) {
         const matches = candidates.filter(c => isAt(c, wanted));
+        if (matches.length === 1 && matches[0].ambiguous) {
+          throw new Error(
+            `The ${annotation} of ${listRefs(
+              matches,
+            )} does not show where its ref ends and its folder starts, so it may not be in ${repoUrl}${
+              wanted ? `/${wanted}` : ''
+            }. Fetch the branch or tag of the location, or use --entity to select the component.`,
+          );
+        }
         if (matches.length === 1) {
           return matches[0].entity;
         }

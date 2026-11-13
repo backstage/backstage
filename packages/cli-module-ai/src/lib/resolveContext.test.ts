@@ -20,6 +20,7 @@ const mockGetOriginUrl = jest.fn();
 const mockGetRepoPrefix = jest.fn();
 const mockGetRepoRoot = jest.fn();
 const mockGetMainRoot = jest.fn();
+const mockGetKnownRefs = jest.fn();
 const mockClient: jest.Mocked<CatalogReader> = {
   queryEntities: jest.fn(),
   getEntitiesByRefs: jest.fn(),
@@ -41,6 +42,7 @@ jest.mock('./gitRemote', () => ({
   getRepoPrefix: (...args: unknown[]) => mockGetRepoPrefix(...args),
   getRepoRoot: (...args: unknown[]) => mockGetRepoRoot(...args),
   getMainCheckoutRoot: (...args: unknown[]) => mockGetMainRoot(...args),
+  getKnownRefs: (...args: unknown[]) => mockGetKnownRefs(...args),
 }));
 
 import fs from 'node:fs';
@@ -148,11 +150,16 @@ describe('findComponent', () => {
       'backstage.io/source-location': `url:${source}`,
       'backstage.io/managed-by-location': `url:${managedBy}`,
     });
+  let knownRefs: string[] = ['main'];
+  beforeEach(() => {
+    knownRefs = ['main'];
+  });
   const catalog = (registered: Entity[]) =>
     mockClient.queryEntities.mockImplementation(async () => page(registered));
   const find = (repoPrefix: string) => {
     mockGetOriginUrl.mockResolvedValue('git@github.acme.com:acme/mono.git');
     mockGetRepoPrefix.mockResolvedValue(repoPrefix);
+    mockGetKnownRefs.mockResolvedValue(knownRefs);
     return findComponent({ client: mockClient });
   };
 
@@ -226,6 +233,27 @@ describe('findComponent', () => {
     await expect(find('services/api')).rejects.toThrow(
       /Multiple Components have a backstage.io\/source-location in .*mono\/services\/api: component:default\/api, component:default\/api2.*--entity/,
     );
+  });
+
+  it('does not match a folder that is only the end of the path after the ref', async () => {
+    const central = `${repo}/blob/main/catalog/all.yaml`;
+    const nested = declared(
+      'nested',
+      `${repo}/tree/main/services/api`,
+      central,
+    );
+    catalog([nested]);
+    await expect(find('api')).rejects.toThrow(/No component/i);
+    expect((await find('services/api')).metadata.name).toBe('nested');
+
+    // The longest known ref wins, so this is the folder `api` on `main/services`.
+    knownRefs = ['main', 'main/services'];
+    expect((await find('api')).metadata.name).toBe('nested');
+    await expect(find('services/api')).rejects.toThrow(/No component/i);
+
+    // Without a known ref the location is ambiguous, so it is not guessed.
+    knownRefs = [];
+    await expect(find('api')).rejects.toThrow(/where its ref ends.*--entity/);
   });
 
   it('fails when several catalog files in the nearest folder define a component, pointing at --entity', async () => {

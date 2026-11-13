@@ -85,13 +85,18 @@ export async function getRepoPrefix(
 export function parseCatalogFileFolder(
   location: string,
   repoUrl: string,
+  knownRefs?: string[],
 ): string[][] | undefined {
   const segments = location.split(/[?#]/)[0].split('/');
   // A catalog file location never ends with a slash; drop the file name.
   if (!segments[segments.length - 1]) {
     return undefined;
   }
-  return parseSourceLocationFolder(segments.slice(0, -1).join('/'), repoUrl);
+  return parseSourceLocationFolder(
+    segments.slice(0, -1).join('/'),
+    repoUrl,
+    knownRefs,
+  );
 }
 
 /**
@@ -99,13 +104,20 @@ export function parseCatalogFileFolder(
  * the given repository, as `url:<repo>/tree/<ref>/<path>` (GitHub) or
  * `url:<repo>/-/tree/<ref>/<path>` (GitLab), also with `blob`. Returns the
  * possible repo-relative folders as segment lists, one for each way to split
- * the ref from the path, since refs can contain slashes. The repo root is only
- * returned when the location has nothing but a ref. Returns undefined when the
- * location is not inside the repository or has an unsupported shape.
+ * the ref from the path, since refs can contain slashes.
+ *
+ * When `knownRefs` is given, only splits where the ref is one of them are
+ * returned, and the longest such ref wins, so the result has a single folder.
+ * The repo root is returned when the location has nothing but a ref. If
+ * `knownRefs` is not given or none of them matches, every split is returned,
+ * which callers must treat as ambiguous when there is more than one. Returns
+ * undefined when the location is not inside the repository or has an
+ * unsupported shape.
  */
 export function parseSourceLocationFolder(
   location: string,
   repoUrl: string,
+  knownRefs?: string[],
 ): string[][] | undefined {
   const prefix = `url:${repoUrl}/`;
   if (!startsWithIgnoreCase(location, prefix)) {
@@ -126,10 +138,51 @@ export function parseSourceLocationFolder(
   if (rest.length === 0) {
     return undefined;
   }
+  if (knownRefs && knownRefs.length > 0) {
+    const known = new Set(knownRefs);
+    for (let refLength = rest.length; refLength >= 1; refLength--) {
+      if (known.has(rest.slice(0, refLength).join('/'))) {
+        return [rest.slice(refLength)];
+      }
+    }
+  }
   if (rest.length === 1) {
     return [[]];
   }
   return rest.slice(1).map((_, i) => rest.slice(i + 1));
+}
+
+/**
+ * Lists the branches and tags that the repository knows about, including the
+ * remote-tracking branches of `origin` without their remote prefix. These are
+ * used to find where the ref ends in a `tree/<ref>/<path>` location. Returns
+ * an empty list when they cannot be read.
+ */
+export async function getKnownRefs(
+  cwd = process.cwd(),
+  exec: ExecFn = defaultExec,
+): Promise<string[]> {
+  try {
+    const { stdout } = await exec(
+      'git',
+      [
+        'for-each-ref',
+        '--format=%(refname)',
+        'refs/heads',
+        'refs/tags',
+        'refs/remotes/origin',
+      ],
+      { cwd },
+    );
+    const refs = stdout
+      .split('\n')
+      .map(line => line.trim())
+      .map(line => line.replace(/^refs\/(?:heads|tags|remotes\/origin)\//, ''))
+      .filter(ref => ref && ref !== 'HEAD');
+    return [...new Set(refs)];
+  } catch {
+    return [];
+  }
 }
 
 /**

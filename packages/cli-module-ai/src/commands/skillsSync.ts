@@ -38,6 +38,7 @@ interface SyncFlags {
   entity?: string;
   agent: string[];
   global?: boolean;
+  'dry-run'?: boolean;
   instance?: string;
   'allow-file-sources'?: boolean;
   verbose?: boolean;
@@ -77,6 +78,12 @@ async function syncInHook(flags: SyncFlags) {
     const pending = invocations.filter(
       invocation => !isSkillInstalled(lock, invocation.source, isPresent, cwd),
     );
+    if (flags['dry-run']) {
+      for (const invocation of pending) {
+        process.stdout.write(`${formatSkillsCommand(invocation)}\n`);
+      }
+      return;
+    }
     const { failed } = await runSkills(
       pending,
       createSkillsRunner(undefined, { quiet: true }),
