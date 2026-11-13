@@ -45,7 +45,28 @@ export class DefaultApiIsomorphicClient {
         const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
         const token = options?.token;
-{{>apis/operationRequest}}
+        const uriTemplate = `{{{path}}}{{#hasQueryParams}}{?{{#queryParams}}{{baseName}}{{#isArray}}{{#isExplode}}*{{/isExplode}}{{/isArray}}{{^-last}},{{/-last}}{{/queryParams}}}{{/hasQueryParams}}`;
+
+        const uri = parser.parse(uriTemplate).expand({
+        {{#pathParams}}
+            {{baseName}}: request.path.{{paramName}},
+        {{/pathParams}}
+        {{#hasQueryParams}}
+            ...request.query,
+        {{/hasQueryParams}}
+        })
+
+        const init: RequestInit = {
+            headers: {
+                {{#hasHeaderParams}}
+                ...request.header,
+                {{/hasHeaderParams}}
+                'Content-Type': 'application/json',
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            method: '{{httpMethod}}',
+            {{#hasBodyParam}} body: JSON.stringify(request.body), {{/hasBodyParam}}
+        };
 
         return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
     }

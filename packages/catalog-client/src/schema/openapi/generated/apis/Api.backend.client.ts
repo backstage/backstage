@@ -19,10 +19,8 @@
 // ******************************************************************
 
 import { AuthApi } from '../types/auth';
-import { DiscoveryApi } from '../types/discovery';
-import { FetchApi } from '../types/fetch';
 import { pluginId } from '../pluginId';
-import * as parser from 'uri-template';
+import { DefaultApiIsomorphicClient } from './Api.isomorphic.client';
 import { BackendRequestOptions, TypedResponse } from './Api.types';
 import { EntitiesBatchResponse } from '../models/EntitiesBatchResponse.model';
 import { EntitiesQueryResponse } from '../models/EntitiesQueryResponse.model';
@@ -67,18 +65,19 @@ import {
  * @public
  */
 export class DefaultApiBackendClient {
-  private readonly discovery: DiscoveryApi;
   private readonly auth: AuthApi;
-  private readonly fetchApi: FetchApi;
+  private readonly client: DefaultApiIsomorphicClient;
 
   constructor(options: {
     discovery: { getBaseUrl(pluginId: string): Promise<string> };
     auth: AuthApi;
     fetchApi?: { fetch: typeof fetch };
   }) {
-    this.discovery = options.discovery;
     this.auth = options.auth;
-    this.fetchApi = options.fetchApi || { fetch };
+    this.client = new DefaultApiIsomorphicClient({
+      discoveryApi: options.discovery,
+      fetchApi: options.fetchApi || { fetch },
+    });
   }
 
   /**
@@ -90,8 +89,6 @@ export class DefaultApiBackendClient {
     request: DeleteEntityByUid,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<void>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -102,21 +99,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/entities/by-uid/{uid}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      uid: request.path.uid,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'DELETE',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.deleteEntityByUid(request, { token });
   }
 
   /**
@@ -133,8 +117,6 @@ export class DefaultApiBackendClient {
     request: GetEntities,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<Array<Entity>>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -145,21 +127,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/entities{?fields,limit,filter*,offset,after,order*}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      ...request.query,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.getEntities(request, { token });
   }
 
   /**
@@ -179,8 +148,6 @@ export class DefaultApiBackendClient {
     request: GetEntitiesByQuery,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -191,21 +158,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/entities/by-query{?fields,limit,offset,orderField*,cursor,filter*,totalItems,fullTextFilterTerm,fullTextFilterFields}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      ...request.query,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.getEntitiesByQuery(request, { token });
   }
 
   /**
@@ -218,8 +172,6 @@ export class DefaultApiBackendClient {
     request: GetEntitiesByRefs,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<EntitiesBatchResponse>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -230,22 +182,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/entities/by-refs{?filter*}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      ...request.query,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.getEntitiesByRefs(request, { token });
   }
 
   /**
@@ -259,8 +197,6 @@ export class DefaultApiBackendClient {
     request: GetEntityAncestryByName,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<EntityAncestryResponse>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -271,23 +207,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/entities/by-name/{kind}/{namespace}/{name}/ancestry`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      kind: request.path.kind,
-      namespace: request.path.namespace,
-      name: request.path.name,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.getEntityAncestryByName(request, { token });
   }
 
   /**
@@ -301,8 +222,6 @@ export class DefaultApiBackendClient {
     request: GetEntityByName,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<Entity>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -313,23 +232,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/entities/by-name/{kind}/{namespace}/{name}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      kind: request.path.kind,
-      namespace: request.path.namespace,
-      name: request.path.name,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.getEntityByName(request, { token });
   }
 
   /**
@@ -341,8 +245,6 @@ export class DefaultApiBackendClient {
     request: GetEntityByUid,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<Entity>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -353,21 +255,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/entities/by-uid/{uid}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      uid: request.path.uid,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.getEntityByUid(request, { token });
   }
 
   /**
@@ -380,8 +269,6 @@ export class DefaultApiBackendClient {
     request: GetEntityFacets,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<EntityFacetsResponse>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -392,21 +279,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/entity-facets{?facet*,filter*}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      ...request.query,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.getEntityFacets(request, { token });
   }
 
   /**
@@ -418,8 +292,6 @@ export class DefaultApiBackendClient {
     request: QueryEntitiesByPredicate,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -430,20 +302,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/entities/by-query`;
 
-    const uri = parser.parse(uriTemplate).expand({});
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.queryEntitiesByPredicate(request, { token });
   }
 
   /**
@@ -455,8 +315,6 @@ export class DefaultApiBackendClient {
     request: QueryEntityFacetsByPredicate,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<EntityFacetsResponse>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -467,20 +325,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/entity-facets`;
 
-    const uri = parser.parse(uriTemplate).expand({});
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.queryEntityFacetsByPredicate(request, { token });
   }
 
   /**
@@ -492,8 +338,6 @@ export class DefaultApiBackendClient {
     request: RefreshEntity,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<void>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -504,20 +348,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/refresh`;
 
-    const uri = parser.parse(uriTemplate).expand({});
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.refreshEntity(request, { token });
   }
 
   /**
@@ -529,8 +361,6 @@ export class DefaultApiBackendClient {
     request: ValidateEntity,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<void>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -541,20 +371,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/validate-entity`;
 
-    const uri = parser.parse(uriTemplate).expand({});
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.validateEntity(request, { token });
   }
 
   /**
@@ -566,8 +384,6 @@ export class DefaultApiBackendClient {
     request: AnalyzeLocation,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<AnalyzeLocationResponse>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -578,20 +394,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/analyze-location`;
 
-    const uri = parser.parse(uriTemplate).expand({});
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.analyzeLocation(request, { token });
   }
 
   /**
@@ -605,8 +409,6 @@ export class DefaultApiBackendClient {
     request: CreateLocation,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<CreateLocation201Response>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -617,22 +419,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/locations{?dryRun,onConflict}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      ...request.query,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.createLocation(request, { token });
   }
 
   /**
@@ -644,8 +432,6 @@ export class DefaultApiBackendClient {
     request: DeleteLocation,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<void>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -656,21 +442,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/locations/{id}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      id: request.path.id,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'DELETE',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.deleteLocation(request, { token });
   }
 
   /**
@@ -682,8 +455,6 @@ export class DefaultApiBackendClient {
     request: GetLocation,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<Location>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -694,21 +465,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/locations/{id}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      id: request.path.id,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.getLocation(request, { token });
   }
 
   /**
@@ -722,8 +480,6 @@ export class DefaultApiBackendClient {
     request: GetLocationByEntity,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<Location>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -734,23 +490,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/locations/by-entity/{kind}/{namespace}/{name}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      kind: request.path.kind,
-      namespace: request.path.namespace,
-      name: request.path.name,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.getLocationByEntity(request, { token });
   }
 
   /**
@@ -761,8 +502,6 @@ export class DefaultApiBackendClient {
     request: GetLocations,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<Array<GetLocations200ResponseInner>>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -773,19 +512,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/locations`;
 
-    const uri = parser.parse(uriTemplate).expand({});
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.getLocations(request, { token });
   }
 
   /**
@@ -797,8 +525,6 @@ export class DefaultApiBackendClient {
     request: GetLocationsByQuery,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<LocationsQueryResponse>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -809,20 +535,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/locations/by-query`;
 
-    const uri = parser.parse(uriTemplate).expand({});
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.getLocationsByQuery(request, { token });
   }
 
   /**
@@ -835,8 +549,6 @@ export class DefaultApiBackendClient {
     request: UpdateLocation,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<Location>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -847,21 +559,7 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/locations/{id}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      id: request.path.id,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'PUT',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.updateLocation(request, { token });
   }
 }

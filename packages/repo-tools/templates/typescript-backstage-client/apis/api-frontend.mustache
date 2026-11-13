@@ -1,7 +1,5 @@
 {{>licenseInfo}}
-import { FetchApi } from '../types/fetch';
-import {pluginId} from '../pluginId';
-import * as parser from 'uri-template';
+import { DefaultApiIsomorphicClient } from './Api.isomorphic.client';
 import { RequestOptions, TypedResponse } from './Api.types';
 {{#apiInfo}}
 {{#apis}}
@@ -19,12 +17,17 @@ import { {{#operations}}{{#operation}}{{#lambda.pascalcase}}{{nickname}}{{/lambd
  * @public
  */
 export class DefaultApiFrontendClient {
-    private readonly fetchApi: FetchApi;
+    private readonly client: DefaultApiIsomorphicClient;
 
     constructor(options: {
         fetchApi: { fetch: typeof fetch };
     }) {
-        this.fetchApi = options.fetchApi;
+        this.client = new DefaultApiIsomorphicClient({
+            discoveryApi: {
+                getBaseUrl: async (pluginId: string) => `plugin://${pluginId}`,
+            },
+            fetchApi: options.fetchApi,
+        });
     }
 
     {{#apis}}
@@ -37,10 +40,7 @@ export class DefaultApiFrontendClient {
         request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
         options?: RequestOptions
     ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
-        const token = options?.token;
-{{>apis/operationRequest}}
-
-        return await this.fetchApi.fetch(`plugin://${pluginId}${uri}`, init);
+        return this.client.{{nickname}}(request, options);
     }
 
     {{/operation}}

@@ -1,9 +1,7 @@
 {{>licenseInfo}}
 import { AuthApi } from '../types/auth';
-import { DiscoveryApi } from '../types/discovery';
-import { FetchApi } from '../types/fetch';
 import {pluginId} from '../pluginId';
-import * as parser from 'uri-template';
+import { DefaultApiIsomorphicClient } from './Api.isomorphic.client';
 import { BackendRequestOptions, TypedResponse } from './Api.types';
 {{#apiInfo}}
 {{#apis}}
@@ -21,18 +19,19 @@ import { {{#operations}}{{#operation}}{{#lambda.pascalcase}}{{nickname}}{{/lambd
  * @public
  */
 export class DefaultApiBackendClient {
-    private readonly discovery: DiscoveryApi;
     private readonly auth: AuthApi;
-    private readonly fetchApi: FetchApi;
+    private readonly client: DefaultApiIsomorphicClient;
 
     constructor(options: {
         discovery: { getBaseUrl(pluginId: string): Promise<string> };
         auth: AuthApi;
         fetchApi?: { fetch: typeof fetch };
     }) {
-        this.discovery = options.discovery;
         this.auth = options.auth;
-        this.fetchApi = options.fetchApi || { fetch };
+        this.client = new DefaultApiIsomorphicClient({
+            discoveryApi: options.discovery,
+            fetchApi: options.fetchApi || { fetch },
+        });
     }
 
     {{#apis}}
@@ -45,8 +44,6 @@ export class DefaultApiBackendClient {
         request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
         options?: BackendRequestOptions
     ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
-        const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
         const token =
             options?.token ??
             (
@@ -57,9 +54,8 @@ export class DefaultApiBackendClient {
                     targetPluginId: pluginId,
                 })
             ).token;
-{{>apis/operationRequest}}
 
-        return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+        return this.client.{{nickname}}(request, { token });
     }
 
     {{/operation}}

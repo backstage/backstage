@@ -19,10 +19,8 @@
 // ******************************************************************
 
 import { AuthApi } from '../types/auth';
-import { DiscoveryApi } from '../types/discovery';
-import { FetchApi } from '../types/fetch';
 import { pluginId } from '../pluginId';
-import * as parser from 'uri-template';
+import { DefaultApiIsomorphicClient } from './Api.isomorphic.client';
 import { BackendRequestOptions, TypedResponse } from './Api.types';
 import { GetSubscriptionEvents200Response } from '../models/GetSubscriptionEvents200Response.model';
 import { GetSubscriptionEvents, PostEvent, PutSubscription } from './Api.types';
@@ -35,18 +33,19 @@ import { GetSubscriptionEvents, PostEvent, PutSubscription } from './Api.types';
  * @public
  */
 export class DefaultApiBackendClient {
-  private readonly discovery: DiscoveryApi;
   private readonly auth: AuthApi;
-  private readonly fetchApi: FetchApi;
+  private readonly client: DefaultApiIsomorphicClient;
 
   constructor(options: {
     discovery: { getBaseUrl(pluginId: string): Promise<string> };
     auth: AuthApi;
     fetchApi?: { fetch: typeof fetch };
   }) {
-    this.discovery = options.discovery;
     this.auth = options.auth;
-    this.fetchApi = options.fetchApi || { fetch };
+    this.client = new DefaultApiIsomorphicClient({
+      discoveryApi: options.discovery,
+      fetchApi: options.fetchApi || { fetch },
+    });
   }
 
   /**
@@ -58,8 +57,6 @@ export class DefaultApiBackendClient {
     request: GetSubscriptionEvents,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<void | GetSubscriptionEvents200Response>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -70,21 +67,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/bus/v1/subscriptions/{subscriptionId}/events`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      subscriptionId: request.path.subscriptionId,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.getSubscriptionEvents(request, { token });
   }
 
   /**
@@ -96,8 +80,6 @@ export class DefaultApiBackendClient {
     request: PostEvent,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<void>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -108,20 +90,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/bus/v1/events`;
 
-    const uri = parser.parse(uriTemplate).expand({});
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.postEvent(request, { token });
   }
 
   /**
@@ -134,8 +104,6 @@ export class DefaultApiBackendClient {
     request: PutSubscription,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<void>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -146,21 +114,7 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/bus/v1/subscriptions/{subscriptionId}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      subscriptionId: request.path.subscriptionId,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'PUT',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.putSubscription(request, { token });
   }
 }

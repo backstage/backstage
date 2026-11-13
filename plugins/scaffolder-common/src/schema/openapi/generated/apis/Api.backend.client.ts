@@ -19,10 +19,8 @@
 // ******************************************************************
 
 import { AuthApi } from '../types/auth';
-import { DiscoveryApi } from '../types/discovery';
-import { FetchApi } from '../types/fetch';
 import { pluginId } from '../pluginId';
-import * as parser from 'uri-template';
+import { DefaultApiIsomorphicClient } from './Api.isomorphic.client';
 import { BackendRequestOptions, TypedResponse } from './Api.types';
 import { Action } from '../models/Action.model';
 import { ListActions } from './Api.types';
@@ -55,18 +53,19 @@ import { ListTemplatingExtensions } from './Api.types';
  * @public
  */
 export class DefaultApiBackendClient {
-  private readonly discovery: DiscoveryApi;
   private readonly auth: AuthApi;
-  private readonly fetchApi: FetchApi;
+  private readonly client: DefaultApiIsomorphicClient;
 
   constructor(options: {
     discovery: { getBaseUrl(pluginId: string): Promise<string> };
     auth: AuthApi;
     fetchApi?: { fetch: typeof fetch };
   }) {
-    this.discovery = options.discovery;
     this.auth = options.auth;
-    this.fetchApi = options.fetchApi || { fetch };
+    this.client = new DefaultApiIsomorphicClient({
+      discoveryApi: options.discovery,
+      fetchApi: options.fetchApi || { fetch },
+    });
   }
 
   /**
@@ -77,8 +76,6 @@ export class DefaultApiBackendClient {
     request: ListActions,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<Array<Action>>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -89,19 +86,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/v2/actions`;
 
-    const uri = parser.parse(uriTemplate).expand({});
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.listActions(request, { token });
   }
 
   /**
@@ -115,8 +101,6 @@ export class DefaultApiBackendClient {
     request: Autocomplete,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<Autocomplete200Response>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -127,23 +111,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/v2/autocomplete/{provider}/{resource}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      provider: request.path.provider,
-      resource: request.path.resource,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.autocomplete(request, { token });
   }
 
   /**
@@ -155,8 +124,6 @@ export class DefaultApiBackendClient {
     request: CancelTask,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<CancelTask200Response>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -167,21 +134,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/v2/tasks/{taskId}/cancel`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      taskId: request.path.taskId,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'POST',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.cancelTask(request, { token });
   }
 
   /**
@@ -193,8 +147,6 @@ export class DefaultApiBackendClient {
     request: GetTask,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<SerializedTask>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -205,21 +157,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/v2/tasks/{taskId}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      taskId: request.path.taskId,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.getTask(request, { token });
   }
 
   /**
@@ -235,8 +174,6 @@ export class DefaultApiBackendClient {
     request: ListTasks,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<ListTasksResponse>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -247,21 +184,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/v2/tasks{?createdBy*,limit,offset,order*,status*}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      ...request.query,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.listTasks(request, { token });
   }
 
   /**
@@ -274,8 +198,6 @@ export class DefaultApiBackendClient {
     request: Retry,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<Scaffold201Response>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -286,22 +208,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/v2/tasks/{taskId}/retry`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      taskId: request.path.taskId,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.retry(request, { token });
   }
 
   /**
@@ -313,8 +221,6 @@ export class DefaultApiBackendClient {
     request: Scaffold,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<Scaffold201Response>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -325,20 +231,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/v2/tasks`;
 
-    const uri = parser.parse(uriTemplate).expand({});
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.scaffold(request, { token });
   }
 
   /**
@@ -351,8 +245,6 @@ export class DefaultApiBackendClient {
     request: StreamLogsPolling,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<Array<SerializedTaskEvent>>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -363,22 +255,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/v2/tasks/{taskId}/events{?after}`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      taskId: request.path.taskId,
-      ...request.query,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.streamLogsPolling(request, { token });
   }
 
   /**
@@ -390,8 +268,6 @@ export class DefaultApiBackendClient {
     request: DryRun,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<DryRun200Response>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -402,20 +278,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/v2/dry-run`;
 
-    const uri = parser.parse(uriTemplate).expand({});
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.dryRun(request, { token });
   }
 
   /**
@@ -429,8 +293,6 @@ export class DefaultApiBackendClient {
     request: GetTemplateParameterSchema,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<TemplateParameterSchema>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -441,23 +303,8 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/v2/templates/{namespace}/{kind}/{name}/parameter-schema`;
 
-    const uri = parser.parse(uriTemplate).expand({
-      namespace: request.path.namespace,
-      kind: request.path.kind,
-      name: request.path.name,
-    });
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.getTemplateParameterSchema(request, { token });
   }
 
   /**
@@ -468,8 +315,6 @@ export class DefaultApiBackendClient {
     request: ListTemplatingExtensions,
     options?: BackendRequestOptions,
   ): Promise<TypedResponse<ListTemplatingExtensionsResponse>> {
-    const baseUrl = await this.discovery.getBaseUrl(pluginId);
-
     const token =
       options?.token ??
       (
@@ -480,18 +325,7 @@ export class DefaultApiBackendClient {
           targetPluginId: pluginId,
         })
       ).token;
-    const uriTemplate = `/v2/templating-extensions`;
 
-    const uri = parser.parse(uriTemplate).expand({});
-
-    const init: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      method: 'GET',
-    };
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    return this.client.listTemplatingExtensions(request, { token });
   }
 }
