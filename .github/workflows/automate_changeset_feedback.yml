@@ -23,11 +23,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        uses: step-security/harden-runner@v2.22.1
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           # Fetch the commit that's merged into the base rather than the target ref
           # This will let us diff only the contents of the PR, without fetching more history
@@ -39,7 +39,7 @@ jobs:
       - name: fetch base
         run: git fetch --depth 1 origin "$GITHUB_BASE_REF"
 
-      - uses: backstage/actions/changeset-feedback@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
+      - uses: backstage/actions/changeset-feedback@v0.7.13
         name: Generate feedback
         with:
           diff-ref: 'origin/master'

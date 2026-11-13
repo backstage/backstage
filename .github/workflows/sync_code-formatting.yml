@@ -10,29 +10,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        uses: step-security/harden-runner@v2.22.1
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           # Fetch changes to previous commit - required for 'only_changed' in Prettier action
           fetch-depth: 0
           filter: blob:none
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: 24.22.1
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
+        uses: backstage/actions/yarn-install@v0.7.13
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: Run Prettier on ADOPTERS.md
-        uses: creyD/prettier_action@8c18391fdc98ed0d884c6345f03975edac71b8f0 # v4.6
+        uses: creyD/prettier_action@v4.6
         with:
           # Modifies commit only if prettier autofixed the ADOPTERS.md
           prettier_options: --config docs/prettier.config.js --write ADOPTERS.md
