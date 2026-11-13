@@ -31,13 +31,95 @@ export class BitbucketCloudClient {
   listWorkspaces(
     options?: FilterAndSortOptions & PartialResponseOptions,
   ): WithPagination<Models.PaginatedWorkspaces, Models.Workspace>;
-  // (undocumented)
+  // @deprecated (undocumented)
   searchCode(
     workspace: string,
     query: string,
     options?: FilterAndSortOptions & PartialResponseOptions,
     pagelen?: number,
   ): WithPagination<Models.SearchResultPage, Models.SearchCodeSearchResult>;
+  searchWorkspaceCode(
+    workspace: string,
+    query: CodeSearch.Query,
+    options?: {
+      maxResults?: number;
+    },
+  ): AsyncGenerator<CodeSearch.ResultPage, void>;
+}
+
+// @public
+export namespace CodeSearch {
+  export type AttributeFilter =
+    | {
+        attribute: string;
+        eq: string;
+      }
+    | {
+        attribute: string;
+        wildcard: string;
+      };
+  // (undocumented)
+  export type Filter =
+    | AttributeFilter
+    | {
+        and: Filter[];
+      }
+    | {
+        or: Filter[];
+      }
+    | {
+        not: Filter;
+      };
+  // (undocumented)
+  export interface MatchedFile {
+    // (undocumented)
+    branch_or_tag_name?: string;
+    // (undocumented)
+    is_default_branch?: boolean;
+    // (undocumented)
+    language?: string | null;
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    path: string;
+    // (undocumented)
+    repositoryId: string;
+    // (undocumented)
+    url: string;
+    version: string;
+  }
+  // (undocumented)
+  export interface Query {
+    // (undocumented)
+    filters?: Filter;
+    // (undocumented)
+    search_term: string;
+  }
+  // (undocumented)
+  export interface Repository {
+    // (undocumented)
+    host: string;
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    ns: string;
+    // (undocumented)
+    url: string;
+  }
+  // (undocumented)
+  export interface ResultPage {
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    matched_files?: MatchedFile[];
+    // (undocumented)
+    pagination?: {
+      next_cursor?: string;
+      has_more?: boolean;
+    };
+    // (undocumented)
+    repositories?: Repository[];
+  }
 }
 
 // @public (undocumented)

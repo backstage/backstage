@@ -70,6 +70,8 @@ export default async function generate(opts: OptionValues) {
   const disableExternalFonts = opts.disableExternalFonts;
   const defaultPlugins = opts.defaultPlugin;
   const dangerouslyAllowAdditionalKeys = opts.dangerouslyAllowAdditionalKeys;
+  const dangerouslyAllowAdditionalExtensions =
+    opts.dangerouslyAllowAdditionalExtensions;
 
   logger.info(`Using source dir ${sourceDir}`);
   logger.info(`Will output generated files in ${outputDir}`);
@@ -95,6 +97,7 @@ export default async function generate(opts: OptionValues) {
           disableExternalFonts,
           defaultPlugins,
           dangerouslyAllowAdditionalKeys,
+          dangerouslyAllowAdditionalExtensions,
         },
       },
     },

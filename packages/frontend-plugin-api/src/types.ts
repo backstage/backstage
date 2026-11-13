@@ -18,9 +18,6 @@ import { ReactNode } from 'react';
 import type { FrontendPlugin } from './wiring/createFrontendPlugin';
 
 /** @public */
-export type ProgressProps = {};
-
-/** @public */
 export type NotFoundErrorPageProps = {
   children?: ReactNode;
 };

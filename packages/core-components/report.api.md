@@ -58,10 +58,10 @@ import { TooltipProps } from '@material-ui/core/Tooltip';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { WithStyles } from '@material-ui/core/styles';
 
-// @public
+// @public @deprecated
 export function AlertDisplay(props: AlertDisplayProps): JSX_2.Element | null;
 
-// @public
+// @public @deprecated
 export type AlertDisplayProps = {
   anchorOrigin?: {
     vertical: 'top' | 'bottom';
@@ -70,10 +70,10 @@ export type AlertDisplayProps = {
   transientTimeoutMs?: number;
 };
 
-// @public
+// @public @deprecated
 export function AppIcon(props: AppIconProps): JSX_2.Element;
 
-// @public
+// @public @deprecated
 export type AppIconProps = IconComponentProps & {
   id: string;
   Fallback?: IconComponent;
@@ -150,7 +150,7 @@ export type BreadcrumbsCurrentPageClassKey = 'root';
 // @public (undocumented)
 export type BreadcrumbsStyledBoxClassKey = 'root';
 
-// @public
+// @public @deprecated
 export function BrokenImageIcon(props: IconComponentProps): JSX_2.Element;
 
 // @public @deprecated (undocumented)
@@ -170,10 +170,10 @@ export function CardTab(props: PropsWithChildren<CardTabProps>): JSX_2.Element;
 // @public (undocumented)
 export type CardTabClassKey = 'root' | 'selected';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function CatalogIcon(props: IconComponentProps): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function ChatIcon(props: IconComponentProps): JSX_2.Element;
 
 // @public (undocumented)
@@ -300,7 +300,7 @@ export type CreateButtonProps = {
 // @public (undocumented)
 export type CustomProviderClassKey = 'form' | 'button';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function DashboardIcon(props: IconComponentProps): JSX_2.Element;
 
 // @public
@@ -490,10 +490,10 @@ export type DismissableBannerClassKey =
 // @public @deprecated (undocumented)
 export type DismissbleBannerClassKey = DismissableBannerClassKey;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function DocsIcon(props: IconComponentProps): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function EmailIcon(props: IconComponentProps): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props_2" needs to be exported by the entry point index.d.ts
@@ -625,15 +625,15 @@ export type GaugePropsGetColorOptions = {
   max?: number;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function GitHubIcon(props: IconComponentProps): JSX_2.Element;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function GroupIcon(props: IconComponentProps): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props_13" needs to be exported by the entry point index.d.ts
 //
-// @public
+// @public @deprecated
 export function Header(props: PropsWithChildren<Props_13>): JSX_2.Element;
 
 // @public (undocumented)
@@ -653,7 +653,7 @@ export type HeaderActionMenuProps = {
   actionItems: HeaderActionMenuItem[];
 };
 
-// @public (undocumented)
+// @public @deprecated
 export type HeaderClassKey =
   | 'header'
   | 'leftItemsBox'
@@ -693,7 +693,7 @@ export type HeaderTabsClassKey =
   | 'selected'
   | 'tabRoot';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function HelpIcon(props: IconComponentProps): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props_6" needs to be exported by the entry point index.d.ts
@@ -715,7 +715,7 @@ export type HorizontalScrollGridClassKey =
   | 'buttonLeft'
   | 'buttonRight';
 
-// @public
+// @public @deprecated
 export type IconComponentProps = ComponentProps<IconComponent>;
 
 // @public (undocumented)
@@ -972,20 +972,16 @@ export function OverflowTooltip(props: Props_9): JSX_2.Element;
 export type OverflowTooltipClassKey = 'container';
 
 // Warning: (ae-forgotten-export) The symbol "Props_15" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "Page" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated
 export function Page(props: Props_15): JSX_2.Element;
 
-// Warning: (ae-missing-release-tag) "PageClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated
 export type PageClassKey = 'root';
 
 // Warning: (ae-forgotten-export) The symbol "PageWithHeaderProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "PageWithHeader" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public (undocumented)
+// @public @deprecated
 export function PageWithHeader(
   props: PropsWithChildren<PageWithHeaderProps>,
 ): JSX_2.Element;
@@ -1021,9 +1017,7 @@ export function ResponseErrorPanel(props: ErrorPanelProps): JSX_2.Element;
 // @public (undocumented)
 export type ResponseErrorPanelClassKey = 'text' | 'divider';
 
-// Warning: (ae-missing-release-tag) "RoutedTabs" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public @deprecated
 export function RoutedTabs(props: { routes: SubRoute_2[] }): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "SelectProps" needs to be exported by the entry point index.d.ts
@@ -1345,7 +1339,7 @@ export type SimpleStepperStepClassKey = 'end';
 // @public (undocumented)
 export type StackDetailsClassKey = 'title';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function StarIcon(props: IconComponentProps): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "StatusAborted" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1502,14 +1496,14 @@ export type TabbedCardClassKey = 'root' | 'indicator';
 // Warning: (ae-missing-release-tag) "TabbedLayout" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 // Warning: (ae-missing-release-tag) "TabbedLayout" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
-// @public
+// @public @deprecated
 export function TabbedLayout(props: PropsWithChildren<{}>): JSX_2.Element;
 
 // @public (undocumented)
 export namespace TabbedLayout {
   var // Warning: (ae-forgotten-export) The symbol "SubRoute" needs to be exported by the entry point index.d.ts
     //
-    // (undocumented)
+    // @deprecated (undocumented)
     Route: (props: SubRoute) => null;
 }
 
@@ -1617,7 +1611,7 @@ export function TrendLine(
     },
 ): JSX_2.Element | null;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function UnstarredIcon(props: IconComponentProps): JSX_2.Element;
 
 // @public
@@ -1635,7 +1629,7 @@ export function useQueryParamState<T>(
   debounceTime?: number,
 ): [T | undefined, SetQueryParams<T>];
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function UserIcon(props: IconComponentProps): JSX_2.Element;
 
 // @public
@@ -1674,7 +1668,7 @@ export const useSidebarPinState: () => SidebarPinState;
 // @public (undocumented)
 export function useSupportConfig(): SupportConfig;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export function WarningIcon(props: IconComponentProps): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "WarningProps" needs to be exported by the entry point index.d.ts
@@ -1697,7 +1691,7 @@ export type WarningPanelClassKey =
 //
 // src/components/DependencyGraph/types.d.ts:22:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
 // src/components/DependencyGraph/types.d.ts:26:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
-// src/components/TabbedLayout/RoutedTabs.d.ts:8:5 - (ae-forgotten-export) The symbol "SubRoute_2" needs to be exported by the entry point index.d.ts
+// src/components/TabbedLayout/RoutedTabs.d.ts:17:5 - (ae-forgotten-export) The symbol "SubRoute_2" needs to be exported by the entry point index.d.ts
 // src/components/Table/Table.d.ts:20:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
 // src/layout/ErrorBoundary/ErrorBoundary.d.ts:8:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
 ```

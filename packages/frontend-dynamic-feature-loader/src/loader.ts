@@ -187,7 +187,7 @@ export function dynamicFrontendFeaturesLoader(
                 if (!isLoadable(defaultEntry)) {
                   // eslint-disable-next-line no-console
                   console.debug(
-                    `Skipping dynamic plugin remote module '${remote}' since it doesn't export a new 'FrontendFeature' as default export.`,
+                    `Skipping dynamic plugin remote module '${remoteModuleName}' since it doesn't export a new 'FrontendFeature' or 'FrontendFeatureLoader' as default export.`,
                   );
                   return undefined;
                 }
@@ -199,18 +199,24 @@ export function dynamicFrontendFeaturesLoader(
         )
       )
         .flat()
-        .filter((feature): feature is FrontendFeature => feature !== undefined);
+        .filter(
+          (feature): feature is FrontendFeature | FrontendFeatureLoader =>
+            feature !== undefined,
+        );
 
       return [...features];
     },
   });
 }
 
-function isLoadable(obj: unknown): obj is FrontendFeature {
+function isLoadable(
+  obj: unknown,
+): obj is FrontendFeature | FrontendFeatureLoader {
   if (obj !== null && typeof obj === 'object' && '$$type' in obj) {
     return (
       obj.$$type === '@backstage/FrontendPlugin' ||
-      obj.$$type === '@backstage/FrontendModule'
+      obj.$$type === '@backstage/FrontendModule' ||
+      obj.$$type === '@backstage/FrontendFeatureLoader'
     );
   }
   return false;

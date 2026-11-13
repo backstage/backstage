@@ -46,6 +46,7 @@ export const sanitizeMkdocsYml: (
   logger: LoggerService,
   additionalAllowedKeys?: string[],
   additionalAllowedPlugins?: string[],
+  additionalAllowedExtensions?: string[],
 ) => Promise<void>;
 
 // @alpha

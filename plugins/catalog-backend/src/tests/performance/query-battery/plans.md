@@ -2519,3 +2519,1839 @@ Planning:
 Planning Time: 1.228 ms
 Execution Time: 2756.619 ms
 ```
+
+## Long `$in` lists (2026-11-12)
+
+Plans of this change and of master on the beta read replica described in
+`baseline.md`, with SQL captured from `DefaultEntitiesCatalog` and the 174-entry
+claim list. Claim lists are shown as `:claims`. The exact JSON plans for both
+are in `plans.json` under keys starting with `long-in`.
+
+## long-in owned page, 174 claims (this change)
+
+```text
+Limit  (cost=36800.42..276123.18 rows=21 width=1094) (actual time=1261.449..3697.643 rows=21.00 loops=1)
+  Buffers: shared hit=622825
+  ->  Nested Loop  (cost=36800.42..489349267.82 rows=42936 width=1094) (actual time=1261.448..3697.625 rows=21.00 loops=1)
+        Join Filter: ((final_entities.entity_id)::text = (search.entity_id)::text)
+        Rows Removed by Join Filter: 17581534
+        Buffers: shared hit=622825
+        ->  Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..202414.91 rows=1633305 width=73) (actual time=0.059..8.868 rows=4101.00 loops=1)
+              Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+              Heap Fetches: 810
+              Index Searches: 1
+              Buffers: shared hit=3411
+        ->  Materialize  (cost=36799.73..5304795.61 rows=19749 width=1132) (actual time=0.058..0.501 rows=4287.14 loops=4101)
+              Storage: Memory  Maximum Storage: 2460kB
+              Buffers: shared hit=619414
+              ->  Hash Join  (cost=36799.73..5304696.87 rows=19749 width=1132) (actual time=237.607..1239.955 rows=4288.00 loops=1)
+                    Hash Cond: ((final_entities.entity_id)::text = (search_flt_1.entity_id)::text)
+                    Join Filter: ((search_flt_1.entity_id IS NOT NULL) OR (ANY ((final_entities.entity_id)::text = (hashed SubPlan 2).col1)) OR (NOT (ANY ((final_entities.entity_id)::text = (hashed SubPlan 4).col1))))
+                    Buffers: shared hit=619414
+                    ->  Nested Loop  (cost=1.12..5267713.42 rows=70416 width=1095) (actual time=0.317..971.217 rows=45872.00 loops=1)
+                          Buffers: shared hit=462513
+                          ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..14418.81 rows=107641 width=37) (actual time=0.028..34.155 rows=45872.00 loops=1)
+                                Index Cond: ((key = 'kind'::text) AND (value = 'component'::text))
+                                Heap Fetches: 7988
+                                Index Searches: 1
+                                Buffers: shared hit=49425
+                          ->  Memoize  (cost=0.43..49.63 rows=1 width=1058) (actual time=0.020..0.020 rows=1.00 loops=45872)
+                                Cache Key: search_flt.entity_id
+                                Cache Mode: logical
+                                Hits: 0  Misses: 45872  Evictions: 0  Overflows: 0  Memory Usage: 29050kB
+                                Buffers: shared hit=413088
+                                ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..49.62 rows=1 width=1058) (actual time=0.018..0.018 rows=1.00 loops=45872)
+                                      Index Cond: ((entity_id)::text = (search_flt.entity_id)::text)
+                                      Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = (hashed SubPlan 6).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 8).col1)))) AND ((NOT EXISTS(SubPlan 9)) OR (NOT EXISTS(SubPlan 11)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 14).col1)))))
+                                      Index Searches: 45872
+                                      Buffers: shared hit=413088
+                                      SubPlan 6
+                                        ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..8.71 rows=1 width=32) (actual time=0.024..0.024 rows=0.00 loops=1)
+                                              Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                                              Heap Fetches: 0
+                                              Index Searches: 1
+                                              Buffers: shared hit=5
+                                      SubPlan 8
+                                        ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..9.53 rows=42 width=32) (actual time=0.022..0.031 rows=18.00 loops=1)
+                                              Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                              Heap Fetches: 0
+                                              Index Searches: 1
+                                              Buffers: shared hit=22
+                                      SubPlan 9
+                                        ->  Index Only Scan using search_entity_key_value_idx on search search_flt_6  (cost=0.69..8.71 rows=1 width=0) (actual time=0.010..0.010 rows=0.00 loops=45872)
+                                              Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.a'::text))
+                                              Heap Fetches: 0
+                                              Index Searches: 45872
+                                              Buffers: shared hit=229360
+                                      SubPlan 11
+                                        ->  Index Only Scan using search_entity_key_value_idx on search search_flt_7  (cost=0.69..8.71 rows=1 width=0) (never executed)
+                                              Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.b'::text))
+                                              Heap Fetches: 0
+                                              Index Searches: 0
+                                      SubPlan 14
+                                        ->  Index Only Scan using search_key_value_entity_idx on search search_flt_8  (cost=0.69..9.53 rows=42 width=32) (never executed)
+                                              Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                              Heap Fetches: 0
+                                              Index Searches: 0
+                    ->  Hash  (cost=34161.42..34161.42 rows=210975 width=37) (actual time=235.567..235.570 rows=136281.00 loops=1)
+                          Buckets: 262144  Batches: 1  Memory Usage: 11231kB
+                          Buffers: shared hit=156901
+                          ->  HashAggregate  (cost=32051.67..34161.42 rows=210975 width=37) (actual time=165.152..199.545 rows=136281.00 loops=1)
+                                Group Key: search_flt_1.entity_id
+                                Batches: 1  Memory Usage: 12313kB
+                                Buffers: shared hit=156901
+                                ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..31488.10 rows=225426 width=37) (actual time=0.930..110.550 rows=136285.00 loops=1)
+                                      Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (':claims')) AND (entity_id IS NOT NULL) AND (entity_id IS NOT NULL))
+                                      Heap Fetches: 30603
+                                      Index Searches: 155
+                                      Buffers: shared hit=156901
+                    SubPlan 2
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..822.12 rows=32 width=32) (never executed)
+                            Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (':claims')))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 4
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..409.31 rows=3057 width=32) (never executed)
+                            Index Cond: (key = 'metadata.annotations.example.com/readers'::text)
+                            Heap Fetches: 0
+                            Index Searches: 0
+Planning:
+  Buffers: shared hit=72
+Planning Time: 6.481 ms
+Execution Time: 3698.561 ms
+```
+
+## long-in owned page, 174 claims (master)
+
+```text
+Limit  (cost=35672.89..318016.47 rows=21 width=1094) (actual time=4299.563..6770.420 rows=21.00 loops=1)
+  Buffers: shared hit=274492
+  ->  Nested Loop  (cost=35672.89..251697918.88 rows=18718 width=1094) (actual time=4299.561..6770.401 rows=21.00 loops=1)
+        Join Filter: ((final_entities.entity_id)::text = (search.entity_id)::text)
+        Rows Removed by Join Filter: 17581534
+        Buffers: shared hit=274492
+        ->  Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..203387.78 rows=1633305 width=73) (actual time=0.033..9.722 rows=4101.00 loops=1)
+              Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+              Heap Fetches: 810
+              Index Searches: 1
+              Buffers: shared hit=3411
+        ->  Materialize  (cost=35672.20..40553211.87 rows=8610 width=1132) (actual time=0.059..1.246 rows=4287.14 loops=4101)
+              Storage: Memory  Maximum Storage: 2460kB
+              Buffers: shared hit=271081
+              ->  Nested Loop  (cost=35672.20..40553168.82 rows=8610 width=1132) (actual time=243.242..4274.436 rows=4288.00 loops=1)
+                    Join Filter: ((final_entities.entity_id)::text = (search_flt.entity_id)::text)
+                    Buffers: shared hit=271081
+                    ->  Hash Join  (cost=35671.77..106280.57 rows=23744 width=74) (actual time=242.202..310.965 rows=4288.00 loops=1)
+                          Hash Cond: ((search_flt.entity_id)::text = (search_flt_1.entity_id)::text)
+                          Buffers: shared hit=206326
+                          ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..14418.81 rows=107641 width=37) (actual time=0.022..36.625 rows=45872.00 loops=1)
+                                Index Cond: ((key = 'kind'::text) AND (value = 'component'::text))
+                                Heap Fetches: 7988
+                                Index Searches: 1
+                                Buffers: shared hit=49425
+                          ->  Hash  (cost=33033.90..33033.90 rows=210975 width=37) (actual time=240.558..240.562 rows=136281.00 loops=1)
+                                Buckets: 262144  Batches: 1  Memory Usage: 11231kB
+                                Buffers: shared hit=156901
+                                ->  HashAggregate  (cost=30924.15..33033.90 rows=210975 width=37) (actual time=171.022..206.483 rows=136281.00 loops=1)
+                                      Group Key: (search_flt_1.entity_id)::text
+                                      Batches: 1  Memory Usage: 18457kB
+                                      Buffers: shared hit=156901
+                                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..30360.58 rows=225426 width=37) (actual time=0.881..108.837 rows=136285.00 loops=1)
+                                            Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (':claims')))
+                                            Heap Fetches: 30603
+                                            Index Searches: 155
+                                            Buffers: shared hit=156901
+                    ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..1703.44 rows=1 width=1058) (actual time=0.922..0.922 rows=1.00 loops=4288)
+                          Index Cond: ((entity_id)::text = (search_flt_1.entity_id)::text)
+                          Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = (hashed SubPlan 8).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1)))) AND ((NOT EXISTS(SubPlan 11)) OR (NOT EXISTS(SubPlan 13)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 16).col1)))) AND (EXISTS(SubPlan 1) OR (ANY ((entity_id)::text = (hashed SubPlan 4).col1)) OR (NOT EXISTS(SubPlan 5))))
+                          Index Searches: 4288
+                          Buffers: shared hit=64755
+                          SubPlan 8
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..8.71 rows=1 width=32) (actual time=0.024..0.024 rows=0.00 loops=1)
+                                  Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                                  Heap Fetches: 0
+                                  Index Searches: 1
+                                  Buffers: shared hit=5
+                          SubPlan 10
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_6  (cost=0.69..9.53 rows=42 width=32) (actual time=0.027..0.041 rows=18.00 loops=1)
+                                  Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                  Heap Fetches: 0
+                                  Index Searches: 1
+                                  Buffers: shared hit=22
+                          SubPlan 11
+                            ->  Index Only Scan using search_entity_key_value_idx on search search_flt_7  (cost=0.69..8.71 rows=1 width=0) (actual time=0.012..0.012 rows=0.00 loops=4288)
+                                  Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.a'::text))
+                                  Heap Fetches: 0
+                                  Index Searches: 4288
+                                  Buffers: shared hit=21440
+                          SubPlan 13
+                            ->  Index Only Scan using search_entity_key_value_idx on search search_flt_8  (cost=0.69..8.71 rows=1 width=0) (never executed)
+                                  Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.b'::text))
+                                  Heap Fetches: 0
+                                  Index Searches: 0
+                          SubPlan 16
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_9  (cost=0.69..9.53 rows=42 width=32) (never executed)
+                                  Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                  Heap Fetches: 0
+                                  Index Searches: 0
+                          SubPlan 1
+                            ->  Index Only Scan using search_entity_key_value_idx on search search_flt_2  (cost=0.69..822.24 rows=1 width=0) (actual time=0.898..0.898 rows=1.00 loops=4288)
+                                  Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'relations.ownedby'::text) AND (value = ANY (':claims')))
+                                  Heap Fetches: 833
+                                  Index Searches: 4288
+                                  Buffers: shared hit=26126
+                          SubPlan 4
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..822.12 rows=32 width=32) (never executed)
+                                  Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (':claims')))
+                                  Heap Fetches: 0
+                                  Index Searches: 0
+                          SubPlan 5
+                            ->  Index Only Scan using search_entity_key_value_idx on search search_flt_4  (cost=0.69..8.71 rows=1 width=0) (never executed)
+                                  Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.annotations.example.com/readers'::text))
+                                  Heap Fetches: 0
+                                  Index Searches: 0
+Planning:
+  Buffers: shared hit=150
+Planning Time: 9.106 ms
+Execution Time: 6772.753 ms
+```
+
+## long-in 12 ordered selective OR, 174 claims (this change)
+
+```text
+Limit  (cost=79158509.19..79158514.19 rows=2001 width=1094) (actual time=2931.545..2931.934 rows=2001.00 loops=1)
+  Buffers: shared hit=1531865
+  ->  Sort  (cost=79158509.19..79159056.98 rows=219117 width=1094) (actual time=2931.543..2931.786 rows=2001.00 loops=1)
+        Sort Key: search.value, final_entities.entity_id
+        Sort Method: quicksort  Memory: 1720kB
+        Buffers: shared hit=1531865
+        ->  Nested Loop  (cost=32311.23..79145398.87 rows=219117 width=1094) (actual time=1198.811..2903.843 rows=2025.00 loops=1)
+              Buffers: shared hit=1531865
+              ->  Seq Scan on final_entities  (cost=32310.54..78710658.81 rows=100789 width=1058) (actual time=1198.769..2866.762 rows=2025.00 loops=1)
+                    Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = ((hashed SubPlan 1).col1)::text)) OR (ANY ((entity_id)::text = ((hashed SubPlan 2).col1)::text)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 4).col1)))) AND ((ANY ((entity_id)::text = (hashed SubPlan 6).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 8).col1)))) AND ((NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 12).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 14).col1)))) AND (((ANY ((entity_id)::text = (hashed SubPlan 16).col1)) AND (ANY ((entity_id)::text = (hashed SubPlan 18).col1)) AND (ANY ((entity_id)::text = (hashed SubPlan 20).col1))) OR ((ANY ((entity_id)::text = (hashed SubPlan 22).col1)) AND (ANY ((entity_id)::text = (hashed SubPlan 24).col1)) AND (ANY ((entity_id)::text = (hashed SubPlan 26).col1)))))
+                    Rows Removed by Filter: 751240
+                    Buffers: shared hit=1520811
+                    SubPlan 1
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..30924.34 rows=225426 width=37) (actual time=0.923..104.587 rows=136285.00 loops=1)
+                            Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (':claims')) AND (entity_id IS NOT NULL))
+                            Heap Fetches: 30603
+                            Index Searches: 155
+                            Buffers: shared hit=156901
+                    SubPlan 2
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..822.55 rows=32 width=37) (actual time=0.901..0.902 rows=0.00 loops=1)
+                            Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (':claims')) AND (entity_id IS NOT NULL))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 4
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..409.31 rows=3057 width=32) (actual time=0.023..0.023 rows=0.00 loops=1)
+                            Index Cond: (key = 'metadata.annotations.example.com/readers'::text)
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 6
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..8.71 rows=1 width=32) (actual time=0.018..0.019 rows=0.00 loops=1)
+                            Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 8
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..9.53 rows=42 width=32) (actual time=0.026..0.031 rows=18.00 loops=1)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=22
+                    SubPlan 10
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..409.31 rows=3057 width=32) (actual time=0.011..0.012 rows=0.00 loops=1)
+                            Index Cond: (key = 'spec.a'::text)
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 12
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_6  (cost=0.69..409.31 rows=3057 width=32) (never executed)
+                            Index Cond: (key = 'spec.b'::text)
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 14
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_7  (cost=0.69..9.53 rows=42 width=32) (never executed)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 16
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_8  (cost=0.69..74185.53 rows=568246 width=32) (actual time=0.059..181.410 rows=264762.00 loops=1)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'subcomponent'::text))
+                            Heap Fetches: 94413
+                            Index Searches: 1
+                            Buffers: shared hit=354639
+                    SubPlan 18
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_9  (cost=0.69..80508.51 rows=618312 width=32) (actual time=0.061..189.017 rows=264762.00 loops=1)
+                            Index Cond: ((key = 'spec.type'::text) AND (value = 'workflow'::text))
+                            Heap Fetches: 94877
+                            Index Searches: 1
+                            Buffers: shared hit=355152
+                    SubPlan 20
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_10  (cost=0.69..9.03 rows=17 width=32) (actual time=0.049..0.474 rows=1088.00 loops=1)
+                            Index Cond: ((key = 'relations.partof'::text) AND (value = 'component:default/content_analytics_dbt'::text))
+                            Heap Fetches: 151
+                            Index Searches: 1
+                            Buffers: shared hit=570
+                    SubPlan 22
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_11  (cost=0.69..61438.03 rows=468115 width=32) (actual time=0.057..132.487 rows=205773.00 loops=1)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'api'::text))
+                            Heap Fetches: 62598
+                            Index Searches: 1
+                            Buffers: shared hit=263242
+                    SubPlan 24
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_12  (cost=0.69..54372.61 rows=413043 width=32) (actual time=0.041..136.350 rows=205423.00 loops=1)
+                            Index Cond: ((key = 'spec.type'::text) AND (value = 'dataset'::text))
+                            Heap Fetches: 62432
+                            Index Searches: 1
+                            Buffers: shared hit=263124
+                    SubPlan 26
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_13  (cost=0.69..8.89 rows=10 width=32) (actual time=0.046..0.609 rows=937.00 loops=1)
+                            Index Cond: ((key = 'relations.apiprovidedby'::text) AND (value = 'component:default/content_analytics_dbt'::text))
+                            Heap Fetches: 295
+                            Index Searches: 1
+                            Buffers: shared hit=1065
+              ->  Index Only Scan using search_entity_key_value_idx on search  (cost=0.69..4.30 rows=1 width=73) (actual time=0.017..0.017 rows=1.00 loops=2025)
+                    Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.name'::text) AND (value IS NOT NULL))
+                    Heap Fetches: 430
+                    Index Searches: 2025
+                    Buffers: shared hit=11054
+Planning:
+  Buffers: shared hit=22
+Planning Time: 5.154 ms
+Execution Time: 2933.582 ms
+```
+
+## long-in 12 ordered selective OR, 174 claims (master)
+
+```text
+Limit  (cost=1.12..25620290.78 rows=2001 width=1094) (actual time=2349.579..5311.609 rows=2001.00 loops=1)
+  Buffers: shared hit=1752293
+  ->  Nested Loop  (cost=1.12..2805517746.64 rows=219117 width=1094) (actual time=2349.578..5311.312 rows=2001.00 loops=1)
+        Buffers: shared hit=1752293
+        ->  Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..202414.91 rows=1633305 width=73) (actual time=0.026..54.589 rows=79041.00 loops=1)
+              Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+              Heap Fetches: 15376
+              Index Searches: 1
+              Buffers: shared hit=62824
+        ->  Memoize  (cost=0.43..1752.21 rows=1 width=1058) (actual time=0.066..0.066 rows=0.03 loops=79041)
+              Cache Key: search.entity_id
+              Cache Mode: logical
+              Hits: 0  Misses: 79041  Evictions: 0  Overflows: 0  Memory Usage: 8875kB
+              Buffers: shared hit=1689469
+              ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..1752.20 rows=1 width=1058) (actual time=0.065..0.065 rows=0.03 loops=79041)
+                    Index Cond: ((entity_id)::text = (search.entity_id)::text)
+                    Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = (hashed SubPlan 8).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1)))) AND ((NOT EXISTS(SubPlan 11)) OR (NOT EXISTS(SubPlan 13)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 16).col1)))) AND ((EXISTS(SubPlan 17) AND EXISTS(SubPlan 19) AND (ANY ((entity_id)::text = (hashed SubPlan 22).col1))) OR (EXISTS(SubPlan 23) AND EXISTS(SubPlan 25) AND (ANY ((entity_id)::text = (hashed SubPlan 28).col1)))) AND (EXISTS(SubPlan 1) OR (ANY ((entity_id)::text = (hashed SubPlan 4).col1)) OR (NOT EXISTS(SubPlan 5))))
+                    Rows Removed by Filter: 1
+                    Index Searches: 79041
+                    Buffers: shared hit=1689469
+                    SubPlan 8
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..8.71 rows=1 width=32) (actual time=0.022..0.022 rows=0.00 loops=1)
+                            Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 10
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..9.53 rows=42 width=32) (actual time=0.023..0.031 rows=18.00 loops=1)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=22
+                    SubPlan 11
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_5  (cost=0.69..8.71 rows=1 width=0) (actual time=0.012..0.012 rows=0.00 loops=79031)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.a'::text))
+                            Heap Fetches: 0
+                            Index Searches: 79031
+                            Buffers: shared hit=395155
+                    SubPlan 13
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_6  (cost=0.69..8.71 rows=1 width=0) (never executed)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.b'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 16
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_7  (cost=0.69..9.53 rows=42 width=32) (never executed)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 17
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_8  (cost=0.69..8.71 rows=1 width=0) (actual time=0.008..0.008 rows=0.14 loops=79031)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'kind'::text) AND (value = 'subcomponent'::text))
+                            Heap Fetches: 2377
+                            Index Searches: 79031
+                            Buffers: shared hit=403342
+                    SubPlan 19
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_9  (cost=0.69..8.71 rows=1 width=0) (actual time=0.009..0.009 rows=1.00 loops=10951)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.type'::text) AND (value = 'workflow'::text))
+                            Heap Fetches: 2380
+                            Index Searches: 10951
+                            Buffers: shared hit=62940
+                    SubPlan 22
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_10  (cost=0.69..9.03 rows=17 width=32) (actual time=0.031..0.524 rows=1088.00 loops=1)
+                            Index Cond: ((key = 'relations.partof'::text) AND (value = 'component:default/content_analytics_dbt'::text))
+                            Heap Fetches: 151
+                            Index Searches: 1
+                            Buffers: shared hit=570
+                    SubPlan 23
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_11  (cost=0.69..8.71 rows=1 width=0) (actual time=0.008..0.008 rows=0.22 loops=77953)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'kind'::text) AND (value = 'api'::text))
+                            Heap Fetches: 3727
+                            Index Searches: 77953
+                            Buffers: shared hit=397787
+                    SubPlan 25
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_12  (cost=0.69..8.71 rows=1 width=0) (actual time=0.009..0.009 rows=0.99 loops=16852)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.type'::text) AND (value = 'dataset'::text))
+                            Heap Fetches: 3676
+                            Index Searches: 16852
+                            Buffers: shared hit=92183
+                    SubPlan 28
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_13  (cost=0.69..8.89 rows=10 width=32) (actual time=0.025..0.637 rows=937.00 loops=1)
+                            Index Cond: ((key = 'relations.apiprovidedby'::text) AND (value = 'component:default/content_analytics_dbt'::text))
+                            Heap Fetches: 295
+                            Index Searches: 1
+                            Buffers: shared hit=1065
+                    SubPlan 1
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt  (cost=0.69..822.24 rows=1 width=0) (actual time=0.880..0.880 rows=0.00 loops=2001)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'relations.ownedby'::text) AND (value = ANY (':claims')))
+                            Heap Fetches: 0
+                            Index Searches: 2001
+                            Buffers: shared hit=10005
+                    SubPlan 4
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..822.12 rows=32 width=32) (actual time=0.881..0.881 rows=0.00 loops=1)
+                            Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (':claims')))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 5
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_2  (cost=0.69..8.71 rows=1 width=0) (actual time=0.010..0.010 rows=0.00 loops=2001)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.annotations.example.com/readers'::text))
+                            Heap Fetches: 0
+                            Index Searches: 2001
+                            Buffers: shared hit=10005
+Planning:
+  Buffers: shared hit=22
+Planning Time: 7.768 ms
+Execution Time: 5312.729 ms
+```
+
+## long-in 13 deep dataset ID, 174 claims (this change)
+
+```text
+Limit  (cost=32312.35..2922503.05 rows=10001 width=1058) (actual time=437.703..541.430 rows=10001.00 loops=1)
+  Buffers: shared hit=680969
+  ->  Merge Join  (cost=32312.35..5160153.94 rows=17744 width=1058) (actual time=437.701..540.584 rows=10001.00 loops=1)
+        Merge Cond: ((final_entities.entity_id)::text = (search_flt.entity_id)::text)
+        Buffers: shared hit=680969
+        ->  Merge Join  (cost=32311.66..5097391.79 rows=28478 width=1095) (actual time=293.401..384.869 rows=10001.00 loops=1)
+              Merge Cond: ((final_entities.entity_id)::text = (search_flt_1.entity_id)::text)
+              Buffers: shared hit=437665
+              ->  Index Scan using final_entities_pkey on final_entities  (cost=32310.97..5041724.46 rows=51798 width=1058) (actual time=151.051..216.494 rows=36715.00 loops=1)
+                    Index Cond: ((entity_id)::text > 'e'::text)
+                    Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = ((hashed SubPlan 1).col1)::text)) OR (ANY ((entity_id)::text = ((hashed SubPlan 2).col1)::text)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 4).col1)))) AND ((ANY ((entity_id)::text = (hashed SubPlan 6).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 8).col1)))) AND ((NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 12).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 14).col1)))))
+                    Rows Removed by Filter: 120
+                    Index Searches: 1
+                    Buffers: shared hit=194477
+                    SubPlan 1
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..30924.34 rows=225426 width=37) (actual time=0.880..102.928 rows=136285.00 loops=1)
+                            Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (':claims')) AND (entity_id IS NOT NULL))
+                            Heap Fetches: 30603
+                            Index Searches: 155
+                            Buffers: shared hit=156901
+                    SubPlan 2
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..822.55 rows=32 width=37) (actual time=0.920..0.920 rows=0.00 loops=1)
+                            Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (':claims')) AND (entity_id IS NOT NULL))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 4
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..409.31 rows=3057 width=32) (actual time=0.022..0.022 rows=0.00 loops=1)
+                            Index Cond: (key = 'metadata.annotations.example.com/readers'::text)
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 6
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..8.71 rows=1 width=32) (actual time=0.016..0.017 rows=0.00 loops=1)
+                            Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 8
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_6  (cost=0.69..9.53 rows=42 width=32) (actual time=0.022..0.027 rows=18.00 loops=1)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=22
+                    SubPlan 10
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_7  (cost=0.69..409.31 rows=3057 width=32) (actual time=0.011..0.012 rows=0.00 loops=1)
+                            Index Cond: (key = 'spec.a'::text)
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 12
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_8  (cost=0.69..409.31 rows=3057 width=32) (never executed)
+                            Index Cond: (key = 'spec.b'::text)
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 14
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_9  (cost=0.69..9.53 rows=42 width=32) (never executed)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+              ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..54372.61 rows=413043 width=37) (actual time=0.021..115.315 rows=189906.00 loops=1)
+                    Index Cond: ((key = 'spec.type'::text) AND (value = 'dataset'::text))
+                    Heap Fetches: 57697
+                    Index Searches: 1
+                    Buffers: shared hit=243188
+        ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..61438.03 rows=468115 width=37) (actual time=0.029..111.881 rows=190232.00 loops=1)
+              Index Cond: ((key = 'kind'::text) AND (value = 'api'::text))
+              Heap Fetches: 57860
+              Index Searches: 1
+              Buffers: shared hit=243304
+Planning:
+  Buffers: shared hit=72
+Planning Time: 4.465 ms
+Execution Time: 542.233 ms
+```
+
+## long-in 13 deep dataset ID, 174 claims (master)
+
+```text
+Limit  (cost=1.80..86765089.88 rows=10001 width=1058) (actual time=439.776..543.608 rows=10001.00 loops=1)
+  Buffers: shared hit=680969
+  ->  Merge Join  (cost=1.80..153940580.02 rows=17744 width=1058) (actual time=439.775..542.783 rows=10001.00 loops=1)
+        Merge Cond: ((final_entities.entity_id)::text = (search_flt.entity_id)::text)
+        Buffers: shared hit=680969
+        ->  Merge Join  (cost=1.11..153877817.87 rows=28478 width=1095) (actual time=299.093..390.676 rows=10001.00 loops=1)
+              Merge Cond: ((final_entities.entity_id)::text = (search_flt_1.entity_id)::text)
+              Buffers: shared hit=437665
+              ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..153822150.54 rows=51798 width=1058) (actual time=155.462..221.565 rows=36715.00 loops=1)
+                    Index Cond: ((entity_id)::text > 'e'::text)
+                    Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = (hashed SubPlan 8).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1)))) AND ((NOT (ANY ((entity_id)::text = (hashed SubPlan 12).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 14).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 16).col1)))) AND ((ANY ((entity_id)::text = (hashed SubPlan 2).col1)) OR (ANY ((entity_id)::text = (hashed SubPlan 4).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 6).col1)))))
+                    Rows Removed by Filter: 120
+                    Index Searches: 1
+                    Buffers: shared hit=194477
+                    SubPlan 8
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..8.71 rows=1 width=32) (actual time=0.033..0.034 rows=0.00 loops=1)
+                            Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 10
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_6  (cost=0.69..9.53 rows=42 width=32) (actual time=0.024..0.032 rows=18.00 loops=1)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=22
+                    SubPlan 12
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_7  (cost=0.69..409.31 rows=3057 width=32) (actual time=0.011..0.012 rows=0.00 loops=1)
+                            Index Cond: (key = 'spec.a'::text)
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 14
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_8  (cost=0.69..409.31 rows=3057 width=32) (never executed)
+                            Index Cond: (key = 'spec.b'::text)
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 16
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_9  (cost=0.69..9.53 rows=42 width=32) (never executed)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 2
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..30360.58 rows=225426 width=32) (actual time=0.907..104.952 rows=136285.00 loops=1)
+                            Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (':claims')))
+                            Heap Fetches: 30603
+                            Index Searches: 155
+                            Buffers: shared hit=156901
+                    SubPlan 4
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..822.12 rows=32 width=32) (actual time=0.930..0.931 rows=0.00 loops=1)
+                            Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (':claims')))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 6
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..409.31 rows=3057 width=32) (actual time=0.023..0.023 rows=0.00 loops=1)
+                            Index Cond: (key = 'metadata.annotations.example.com/readers'::text)
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+              ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..54372.61 rows=413043 width=37) (actual time=0.024..115.864 rows=189906.00 loops=1)
+                    Index Cond: ((key = 'spec.type'::text) AND (value = 'dataset'::text))
+                    Heap Fetches: 57697
+                    Index Searches: 1
+                    Buffers: shared hit=243188
+        ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..61438.03 rows=468115 width=37) (actual time=0.030..110.230 rows=190232.00 loops=1)
+              Index Cond: ((key = 'kind'::text) AND (value = 'api'::text))
+              Heap Fetches: 57860
+              Index Searches: 1
+              Buffers: shared hit=243304
+Planning:
+  Buffers: shared hit=72
+Planning Time: 6.969 ms
+Execution Time: 544.382 ms
+```
+
+## long-in 14 deep dataset name, 174 claims (this change)
+
+```text
+Limit  (cost=40163229.27..40163254.28 rows=10001 width=1094) (actual time=4912.599..4915.133 rows=10001.00 loops=1)
+  Buffers: shared hit=2044544
+  ->  Sort  (cost=40163229.27..40163499.14 rows=107947 width=1094) (actual time=4912.597..4914.409 rows=10001.00 loops=1)
+        Sort Key: search.value, final_entities.entity_id
+        Sort Method: top-N heapsort  Memory: 29802kB
+        Buffers: shared hit=2044544
+        ->  Nested Loop  (cost=159136.35..40155517.62 rows=107947 width=1094) (actual time=543.652..4696.981 rows=22223.00 loops=1)
+              Join Filter: (((final_entities.entity_id)::text = (search.entity_id)::text) AND (((search.value)::text > 's'::text) OR (((search.value)::text = 's'::text) AND ((final_entities.entity_id)::text > 'e'::text))))
+              Buffers: shared hit=2044544
+              ->  Hash Join  (cost=159135.66..39565914.57 rows=147314 width=1132) (actual time=543.178..1872.639 rows=205423.00 loops=1)
+                    Hash Cond: ((final_entities.entity_id)::text = (search_flt.entity_id)::text)
+                    Buffers: shared hit=809385
+                    ->  Hash Join  (cost=91846.19..39498004.48 rows=236426 width=1095) (actual time=357.899..1496.543 rows=205423.00 loops=1)
+                          Hash Cond: ((final_entities.entity_id)::text = (search_flt_1.entity_id)::text)
+                          Buffers: shared hit=546143
+                          ->  Seq Scan on final_entities  (cost=32310.54..39437339.99 rows=430035 width=1058) (actual time=156.786..897.056 rows=750686.00 loops=1)
+                                Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = ((hashed SubPlan 1).col1)::text)) OR (ANY ((entity_id)::text = ((hashed SubPlan 2).col1)::text)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 4).col1)))) AND ((ANY ((entity_id)::text = (hashed SubPlan 6).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 8).col1)))) AND ((NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 12).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 14).col1)))))
+                                Rows Removed by Filter: 2579
+                                Buffers: shared hit=283019
+                                SubPlan 1
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..30924.34 rows=225426 width=37) (actual time=0.899..104.460 rows=136285.00 loops=1)
+                                        Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (':claims')) AND (entity_id IS NOT NULL))
+                                        Heap Fetches: 30603
+                                        Index Searches: 155
+                                        Buffers: shared hit=156901
+                                SubPlan 2
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..822.55 rows=32 width=37) (actual time=0.945..0.946 rows=0.00 loops=1)
+                                        Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (':claims')) AND (entity_id IS NOT NULL))
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=5
+                                SubPlan 4
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..409.31 rows=3057 width=32) (actual time=0.028..0.028 rows=0.00 loops=1)
+                                        Index Cond: (key = 'metadata.annotations.example.com/readers'::text)
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=5
+                                SubPlan 6
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..8.71 rows=1 width=32) (actual time=0.016..0.017 rows=0.00 loops=1)
+                                        Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=5
+                                SubPlan 8
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_6  (cost=0.69..9.53 rows=42 width=32) (actual time=0.023..0.028 rows=18.00 loops=1)
+                                        Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=22
+                                SubPlan 10
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_7  (cost=0.69..409.31 rows=3057 width=32) (actual time=0.011..0.011 rows=0.00 loops=1)
+                                        Index Cond: (key = 'spec.a'::text)
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=5
+                                SubPlan 12
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_8  (cost=0.69..409.31 rows=3057 width=32) (never executed)
+                                        Index Cond: (key = 'spec.b'::text)
+                                        Heap Fetches: 0
+                                        Index Searches: 0
+                                SubPlan 14
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_9  (cost=0.69..9.53 rows=42 width=32) (never executed)
+                                        Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 0
+                          ->  Hash  (cost=54372.61..54372.61 rows=413043 width=37) (actual time=197.980..197.982 rows=205423.00 loops=1)
+                                Buckets: 524288  Batches: 1  Memory Usage: 17938kB
+                                Buffers: shared hit=263124
+                                ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..54372.61 rows=413043 width=37) (actual time=0.038..130.360 rows=205423.00 loops=1)
+                                      Index Cond: ((key = 'spec.type'::text) AND (value = 'dataset'::text))
+                                      Heap Fetches: 62432
+                                      Index Searches: 1
+                                      Buffers: shared hit=263124
+                    ->  Hash  (cost=61438.03..61438.03 rows=468115 width=37) (actual time=184.795..184.796 rows=205773.00 loops=1)
+                          Buckets: 524288  Batches: 1  Memory Usage: 17962kB
+                          Buffers: shared hit=263242
+                          ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..61438.03 rows=468115 width=37) (actual time=0.039..127.902 rows=205773.00 loops=1)
+                                Index Cond: ((key = 'kind'::text) AND (value = 'api'::text))
+                                Heap Fetches: 62598
+                                Index Searches: 1
+                                Buffers: shared hit=263242
+              ->  Index Only Scan using search_entity_key_value_idx on search  (cost=0.69..3.98 rows=1 width=73) (actual time=0.013..0.013 rows=0.11 loops=205423)
+                    Index Cond: ((entity_id = (search_flt.entity_id)::text) AND (key = 'metadata.name'::text) AND (value IS NOT NULL))
+                    Filter: (((value)::text > 's'::text) OR ((value)::text = 's'::text))
+                    Rows Removed by Filter: 1
+                    Heap Fetches: 50101
+                    Index Searches: 205423
+                    Buffers: shared hit=1235159
+Planning:
+  Buffers: shared hit=150
+Planning Time: 6.590 ms
+Execution Time: 4916.209 ms
+```
+
+## long-in 14 deep dataset name, 174 claims (master)
+
+Exceeded the 30 s statement timeout.
+
+## long-in 20 late group page, 174 claims (this change)
+
+```text
+Limit  (cost=38749.76..456970.46 rows=21 width=1094) (actual time=1532.885..1719.912 rows=21.00 loops=1)
+  Buffers: shared hit=816332
+  ->  Nested Loop  (cost=38749.76..262103807.13 rows=13159 width=1094) (actual time=1532.883..1719.885 rows=21.00 loops=1)
+        Join Filter: (((final_entities.entity_id)::text = (search.entity_id)::text) AND (((search.value)::text > 't'::text) OR (((search.value)::text = 't'::text) AND ((final_entities.entity_id)::text > ''::text))))
+        Rows Removed by Join Filter: 731205
+        Buffers: shared hit=816332
+        ->  Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..210581.43 rows=394265 width=73) (actual time=443.883..444.475 rows=39.00 loops=1)
+              Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+              Filter: (((value)::text > 't'::text) OR ((value)::text = 't'::text))
+              Rows Removed by Filter: 716654
+              Heap Fetches: 192276
+              Index Searches: 1
+              Buffers: shared hit=513042
+        ->  Materialize  (cost=38749.07..39445032.74 rows=25076 width=1095) (actual time=4.478..29.799 rows=18749.38 loops=39)
+              Storage: Memory  Maximum Storage: 22966kB
+              Buffers: shared hit=303290
+              ->  Hash Join  (cost=38749.07..39444907.36 rows=25076 width=1095) (actual time=174.620..1016.666 rows=19018.00 loops=1)
+                    Hash Cond: ((final_entities.entity_id)::text = (search_flt.entity_id)::text)
+                    Buffers: shared hit=303290
+                    ->  Seq Scan on final_entities  (cost=32310.54..39437339.99 rows=430035 width=1058) (actual time=161.044..822.768 rows=750686.00 loops=1)
+                          Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = ((hashed SubPlan 1).col1)::text)) OR (ANY ((entity_id)::text = ((hashed SubPlan 2).col1)::text)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 4).col1)))) AND ((ANY ((entity_id)::text = (hashed SubPlan 6).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 8).col1)))) AND ((NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 12).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 14).col1)))))
+                          Rows Removed by Filter: 2579
+                          Buffers: shared hit=283019
+                          SubPlan 1
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..30924.34 rows=225426 width=37) (actual time=0.902..104.599 rows=136285.00 loops=1)
+                                  Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (':claims')) AND (entity_id IS NOT NULL))
+                                  Heap Fetches: 30603
+                                  Index Searches: 155
+                                  Buffers: shared hit=156901
+                          SubPlan 2
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..822.55 rows=32 width=37) (actual time=0.882..0.883 rows=0.00 loops=1)
+                                  Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (':claims')) AND (entity_id IS NOT NULL))
+                                  Heap Fetches: 0
+                                  Index Searches: 1
+                                  Buffers: shared hit=5
+                          SubPlan 4
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..409.31 rows=3057 width=32) (actual time=0.023..0.023 rows=0.00 loops=1)
+                                  Index Cond: (key = 'metadata.annotations.example.com/readers'::text)
+                                  Heap Fetches: 0
+                                  Index Searches: 1
+                                  Buffers: shared hit=5
+                          SubPlan 6
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..8.71 rows=1 width=32) (actual time=0.016..0.017 rows=0.00 loops=1)
+                                  Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                                  Heap Fetches: 0
+                                  Index Searches: 1
+                                  Buffers: shared hit=5
+                          SubPlan 8
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..9.53 rows=42 width=32) (actual time=0.023..0.028 rows=18.00 loops=1)
+                                  Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                  Heap Fetches: 0
+                                  Index Searches: 1
+                                  Buffers: shared hit=22
+                          SubPlan 10
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_6  (cost=0.69..409.31 rows=3057 width=32) (actual time=0.011..0.011 rows=0.00 loops=1)
+                                  Index Cond: (key = 'spec.a'::text)
+                                  Heap Fetches: 0
+                                  Index Searches: 1
+                                  Buffers: shared hit=5
+                          SubPlan 12
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_7  (cost=0.69..409.31 rows=3057 width=32) (never executed)
+                                  Index Cond: (key = 'spec.b'::text)
+                                  Heap Fetches: 0
+                                  Index Searches: 0
+                          SubPlan 14
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_8  (cost=0.69..9.53 rows=42 width=32) (never executed)
+                                  Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                  Heap Fetches: 0
+                                  Index Searches: 0
+                    ->  Hash  (cost=5890.93..5890.93 rows=43808 width=37) (actual time=13.396..13.398 rows=19018.00 loops=1)
+                          Buckets: 65536  Batches: 1  Memory Usage: 1794kB
+                          Buffers: shared hit=20271
+                          ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..5890.93 rows=43808 width=37) (actual time=0.027..9.380 rows=19018.00 loops=1)
+                                Index Cond: ((key = 'kind'::text) AND (value = 'group'::text))
+                                Heap Fetches: 3245
+                                Index Searches: 1
+                                Buffers: shared hit=20271
+Planning:
+  Buffers: shared hit=80
+Planning Time: 4.973 ms
+Execution Time: 1720.150 ms
+```
+
+## long-in 20 late group page, 174 claims (master)
+
+```text
+Limit  (cost=1.81..472891.00 rows=21 width=1094) (actual time=17984.701..18175.771 rows=21.00 loops=1)
+  Buffers: shared hit=894261
+  ->  Nested Loop  (cost=1.81..296321373.35 rows=13159 width=1094) (actual time=17984.700..18175.751 rows=21.00 loops=1)
+        Join Filter: (((final_entities.entity_id)::text = (search.entity_id)::text) AND (((search.value)::text > 't'::text) OR (((search.value)::text = 't'::text) AND ((final_entities.entity_id)::text > ''::text))))
+        Rows Removed by Join Filter: 740347
+        Buffers: shared hit=894261
+        ->  Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..210581.43 rows=394265 width=73) (actual time=439.567..440.122 rows=39.00 loops=1)
+              Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+              Filter: (((value)::text > 't'::text) OR ((value)::text = 't'::text))
+              Rows Removed by Filter: 716654
+              Heap Fetches: 192276
+              Index Searches: 1
+              Buffers: shared hit=513042
+        ->  Materialize  (cost=1.12..73662598.96 rows=25076 width=1095) (actual time=0.056..451.822 rows=18983.79 loops=39)
+              Storage: Memory  Maximum Storage: 22969kB
+              Buffers: shared hit=381219
+              ->  Nested Loop  (cost=1.12..73662473.58 rows=25076 width=1095) (actual time=2.159..17463.143 rows=19018.00 loops=1)
+                    Buffers: shared hit=381219
+                    ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..5890.93 rows=43808 width=37) (actual time=0.023..25.997 rows=19018.00 loops=1)
+                          Index Cond: ((key = 'kind'::text) AND (value = 'group'::text))
+                          Heap Fetches: 3245
+                          Index Searches: 1
+                          Buffers: shared hit=20271
+                    ->  Memoize  (cost=0.43..1703.30 rows=1 width=1058) (actual time=0.916..0.916 rows=1.00 loops=19018)
+                          Cache Key: search_flt.entity_id
+                          Cache Mode: logical
+                          Hits: 0  Misses: 19018  Evictions: 0  Overflows: 0  Memory Usage: 24028kB
+                          Buffers: shared hit=360948
+                          ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..1703.29 rows=1 width=1058) (actual time=0.912..0.912 rows=1.00 loops=19018)
+                                Index Cond: ((entity_id)::text = (search_flt.entity_id)::text)
+                                Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = (hashed SubPlan 8).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1)))) AND ((NOT EXISTS(SubPlan 11)) OR (NOT EXISTS(SubPlan 13)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 16).col1)))) AND (EXISTS(SubPlan 1) OR (ANY ((entity_id)::text = (hashed SubPlan 4).col1)) OR (NOT EXISTS(SubPlan 5))))
+                                Index Searches: 19018
+                                Buffers: shared hit=360948
+                                SubPlan 8
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..8.71 rows=1 width=32) (actual time=0.020..0.021 rows=0.00 loops=1)
+                                        Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=5
+                                SubPlan 10
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..9.53 rows=42 width=32) (actual time=0.020..0.026 rows=18.00 loops=1)
+                                        Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=22
+                                SubPlan 11
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_6  (cost=0.69..8.71 rows=1 width=0) (actual time=0.011..0.011 rows=0.00 loops=19018)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.a'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 19018
+                                        Buffers: shared hit=95090
+                                SubPlan 13
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_7  (cost=0.69..8.71 rows=1 width=0) (never executed)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.b'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 0
+                                SubPlan 16
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_8  (cost=0.69..9.53 rows=42 width=32) (never executed)
+                                        Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 0
+                                SubPlan 1
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_1  (cost=0.69..822.24 rows=1 width=0) (actual time=0.879..0.879 rows=0.01 loops=19018)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'relations.ownedby'::text) AND (value = ANY (':claims')))
+                                        Heap Fetches: 29
+                                        Index Searches: 19036
+                                        Buffers: shared hit=95349
+                                SubPlan 4
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..822.12 rows=32 width=32) (actual time=0.897..0.897 rows=0.00 loops=1)
+                                        Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (':claims')))
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=5
+                                SubPlan 5
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_3  (cost=0.69..8.71 rows=1 width=0) (actual time=0.011..0.011 rows=0.00 loops=18860)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.annotations.example.com/readers'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 18860
+                                        Buffers: shared hit=94300
+Planning:
+  Buffers: shared hit=80
+Planning Time: 7.654 ms
+Execution Time: 18175.964 ms
+```
+
+## long-in 20 late component page, 174 claims (this change)
+
+```text
+Limit  (cost=48075.55..2585871.54 rows=21 width=1094) (actual time=975.535..2441.917 rows=21.00 loops=1)
+  Buffers: shared hit=845540
+  ->  Nested Loop  (cost=48075.55..3907528812.09 rows=32334 width=1094) (actual time=975.534..2441.892 rows=21.00 loops=1)
+        Join Filter: (((final_entities.entity_id)::text = (search.entity_id)::text) AND (((search.value)::text > 't'::text) OR (((search.value)::text = 't'::text) AND ((final_entities.entity_id)::text > ''::text))))
+        Rows Removed by Join Filter: 3884584
+        Buffers: shared hit=845540
+        ->  Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..210581.43 rows=394265 width=73) (actual time=449.320..450.901 rows=85.00 loops=1)
+              Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+              Filter: (((value)::text > 't'::text) OR ((value)::text = 't'::text))
+              Rows Removed by Filter: 716654
+              Heap Fetches: 192287
+              Index Searches: 1
+              Buffers: shared hit=513096
+        ->  Materialize  (cost=48074.86..39462965.22 rows=61614 width=1095) (actual time=2.371..17.912 rows=45701.24 loops=85)
+              Storage: Memory  Maximum Storage: 26509kB
+              Buffers: shared hit=332444
+              ->  Hash Join  (cost=48074.86..39454233.15 rows=61614 width=1095) (actual time=201.454..1110.151 rows=45872.00 loops=1)
+                    Hash Cond: ((final_entities.entity_id)::text = (search_flt.entity_id)::text)
+                    Buffers: shared hit=332444
+                    ->  Seq Scan on final_entities  (cost=32310.54..39437339.99 rows=430035 width=1058) (actual time=166.572..856.887 rows=750686.00 loops=1)
+                          Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = ((hashed SubPlan 1).col1)::text)) OR (ANY ((entity_id)::text = ((hashed SubPlan 2).col1)::text)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 4).col1)))) AND ((ANY ((entity_id)::text = (hashed SubPlan 6).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 8).col1)))) AND ((NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 12).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 14).col1)))))
+                          Rows Removed by Filter: 2579
+                          Buffers: shared hit=283019
+                          SubPlan 1
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..30924.34 rows=225426 width=37) (actual time=0.917..108.931 rows=136285.00 loops=1)
+                                  Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (':claims')) AND (entity_id IS NOT NULL))
+                                  Heap Fetches: 30603
+                                  Index Searches: 155
+                                  Buffers: shared hit=156901
+                          SubPlan 2
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..822.55 rows=32 width=37) (actual time=0.892..0.892 rows=0.00 loops=1)
+                                  Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (':claims')) AND (entity_id IS NOT NULL))
+                                  Heap Fetches: 0
+                                  Index Searches: 1
+                                  Buffers: shared hit=5
+                          SubPlan 4
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..409.31 rows=3057 width=32) (actual time=0.023..0.024 rows=0.00 loops=1)
+                                  Index Cond: (key = 'metadata.annotations.example.com/readers'::text)
+                                  Heap Fetches: 0
+                                  Index Searches: 1
+                                  Buffers: shared hit=5
+                          SubPlan 6
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..8.71 rows=1 width=32) (actual time=0.018..0.019 rows=0.00 loops=1)
+                                  Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                                  Heap Fetches: 0
+                                  Index Searches: 1
+                                  Buffers: shared hit=5
+                          SubPlan 8
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..9.53 rows=42 width=32) (actual time=0.022..0.028 rows=18.00 loops=1)
+                                  Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                  Heap Fetches: 0
+                                  Index Searches: 1
+                                  Buffers: shared hit=22
+                          SubPlan 10
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_6  (cost=0.69..409.31 rows=3057 width=32) (actual time=0.012..0.012 rows=0.00 loops=1)
+                                  Index Cond: (key = 'spec.a'::text)
+                                  Heap Fetches: 0
+                                  Index Searches: 1
+                                  Buffers: shared hit=5
+                          SubPlan 12
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_7  (cost=0.69..409.31 rows=3057 width=32) (never executed)
+                                  Index Cond: (key = 'spec.b'::text)
+                                  Heap Fetches: 0
+                                  Index Searches: 0
+                          SubPlan 14
+                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_8  (cost=0.69..9.53 rows=42 width=32) (never executed)
+                                  Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                  Heap Fetches: 0
+                                  Index Searches: 0
+                    ->  Hash  (cost=14418.81..14418.81 rows=107641 width=37) (actual time=34.752..34.753 rows=45872.00 loops=1)
+                          Buckets: 131072  Batches: 1  Memory Usage: 4115kB
+                          Buffers: shared hit=49425
+                          ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..14418.81 rows=107641 width=37) (actual time=0.025..23.363 rows=45872.00 loops=1)
+                                Index Cond: ((key = 'kind'::text) AND (value = 'component'::text))
+                                Heap Fetches: 7988
+                                Index Searches: 1
+                                Buffers: shared hit=49425
+Planning:
+  Buffers: shared hit=80
+Planning Time: 4.862 ms
+Execution Time: 2442.168 ms
+```
+
+## long-in 20 late component page, 174 claims (master)
+
+```text
+Limit  (cost=1.80..436648.61 rows=21 width=1094) (actual time=449.510..525.703 rows=21.00 loops=1)
+  Buffers: shared hit=515187
+  ->  Nested Loop  (cost=1.80..672311326.83 rows=32334 width=1094) (actual time=449.508..525.696 rows=21.00 loops=1)
+        Buffers: shared hit=515187
+        ->  Nested Loop  (cost=1.11..671478775.07 rows=225678 width=1131) (actual time=449.493..524.927 rows=85.00 loops=1)
+              Buffers: shared hit=514740
+              ->  Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..210581.43 rows=394265 width=73) (actual time=447.555..447.671 rows=85.00 loops=1)
+                    Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+                    Filter: (((value)::text > 't'::text) OR ((value)::text = 't'::text))
+                    Rows Removed by Filter: 716654
+                    Heap Fetches: 192287
+                    Index Searches: 1
+                    Buffers: shared hit=513096
+              ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..1702.57 rows=1 width=1058) (actual time=0.908..0.908 rows=1.00 loops=85)
+                    Index Cond: ((entity_id)::text = (search.entity_id)::text)
+                    Filter: ((final_entity IS NOT NULL) AND (((search.value)::text > 't'::text) OR (((search.value)::text = 't'::text) AND ((entity_id)::text > ''::text))) AND ((ANY ((entity_id)::text = (hashed SubPlan 8).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1)))) AND ((NOT EXISTS(SubPlan 11)) OR (NOT EXISTS(SubPlan 13)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 16).col1)))) AND (EXISTS(SubPlan 1) OR (ANY ((entity_id)::text = (hashed SubPlan 4).col1)) OR (NOT EXISTS(SubPlan 5))))
+                    Index Searches: 85
+                    Buffers: shared hit=1644
+                    SubPlan 8
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..8.71 rows=1 width=32) (actual time=0.023..0.023 rows=0.00 loops=1)
+                            Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 10
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..9.53 rows=42 width=32) (actual time=0.024..0.029 rows=18.00 loops=1)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=22
+                    SubPlan 11
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_6  (cost=0.69..8.71 rows=1 width=0) (actual time=0.013..0.013 rows=0.00 loops=85)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.a'::text))
+                            Heap Fetches: 0
+                            Index Searches: 85
+                            Buffers: shared hit=425
+                    SubPlan 13
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_7  (cost=0.69..8.71 rows=1 width=0) (never executed)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.b'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 16
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_8  (cost=0.69..9.53 rows=42 width=32) (never executed)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 1
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_1  (cost=0.69..822.24 rows=1 width=0) (actual time=0.860..0.860 rows=0.01 loops=85)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'relations.ownedby'::text) AND (value = ANY (':claims')))
+                            Heap Fetches: 1
+                            Index Searches: 85
+                            Buffers: shared hit=427
+                    SubPlan 4
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..822.12 rows=32 width=32) (actual time=0.898..0.898 rows=0.00 loops=1)
+                            Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (':claims')))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 5
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_3  (cost=0.69..8.71 rows=1 width=0) (actual time=0.010..0.010 rows=0.00 loops=84)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.annotations.example.com/readers'::text))
+                            Heap Fetches: 0
+                            Index Searches: 84
+                            Buffers: shared hit=420
+        ->  Index Only Scan using search_entity_key_value_idx on search search_flt  (cost=0.69..3.69 rows=1 width=37) (actual time=0.009..0.009 rows=0.25 loops=85)
+              Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'kind'::text) AND (value = 'component'::text))
+              Heap Fetches: 3
+              Index Searches: 85
+              Buffers: shared hit=447
+Planning:
+  Buffers: shared hit=80
+Planning Time: 7.449 ms
+Execution Time: 525.836 ms
+```
+
+## long-in 15 permission list page, 174 claims (this change)
+
+```text
+Limit  (cost=1.12..61139.26 rows=21 width=1094) (actual time=2.123..20.129 rows=21.00 loops=1)
+  Buffers: shared hit=454
+  ->  Nested Loop  (cost=1.12..2721826028.86 rows=934905 width=1094) (actual time=2.122..20.124 rows=21.00 loops=1)
+        Buffers: shared hit=454
+        ->  Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..202414.91 rows=1633305 width=73) (actual time=0.020..0.053 rows=21.00 loops=1)
+              Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+              Heap Fetches: 5
+              Index Searches: 1
+              Buffers: shared hit=29
+        ->  Memoize  (cost=0.43..1699.94 rows=1 width=1058) (actual time=0.955..0.955 rows=1.00 loops=21)
+              Cache Key: search.entity_id
+              Cache Mode: logical
+              Hits: 0  Misses: 21  Evictions: 0  Overflows: 0  Memory Usage: 27kB
+              Buffers: shared hit=425
+              ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..1699.93 rows=1 width=1058) (actual time=0.943..0.943 rows=1.00 loops=21)
+                    Index Cond: ((entity_id)::text = (search.entity_id)::text)
+                    Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = (hashed SubPlan 8).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1)))) AND ((NOT EXISTS(SubPlan 11)) OR (NOT EXISTS(SubPlan 13)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 16).col1)))) AND (EXISTS(SubPlan 1) OR (ANY ((entity_id)::text = (hashed SubPlan 4).col1)) OR (NOT EXISTS(SubPlan 5))))
+                    Index Searches: 21
+                    Buffers: shared hit=425
+                    SubPlan 8
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..8.71 rows=1 width=32) (actual time=0.020..0.020 rows=0.00 loops=1)
+                            Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 10
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..9.53 rows=42 width=32) (actual time=0.023..0.030 rows=18.00 loops=1)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=22
+                    SubPlan 11
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_5  (cost=0.69..8.71 rows=1 width=0) (actual time=0.014..0.014 rows=0.00 loops=21)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.a'::text))
+                            Heap Fetches: 0
+                            Index Searches: 21
+                            Buffers: shared hit=105
+                    SubPlan 13
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_6  (cost=0.69..8.71 rows=1 width=0) (never executed)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.b'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 16
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_7  (cost=0.69..9.53 rows=42 width=32) (never executed)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 1
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt  (cost=0.69..822.24 rows=1 width=0) (actual time=0.862..0.862 rows=0.10 loops=21)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'relations.ownedby'::text) AND (value = ANY (':claims')))
+                            Heap Fetches: 2
+                            Index Searches: 21
+                            Buffers: shared hit=109
+                    SubPlan 4
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..822.12 rows=32 width=32) (actual time=0.873..0.873 rows=0.00 loops=1)
+                            Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (':claims')))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 5
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_2  (cost=0.69..8.71 rows=1 width=0) (actual time=0.010..0.010 rows=0.00 loops=19)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.annotations.example.com/readers'::text))
+                            Heap Fetches: 0
+                            Index Searches: 19
+                            Buffers: shared hit=95
+Planning:
+  Buffers: shared hit=22
+Planning Time: 6.386 ms
+Execution Time: 20.255 ms
+```
+
+## long-in 15 permission list page, 174 claims (master)
+
+```text
+Limit  (cost=1.12..61139.26 rows=21 width=1094) (actual time=2.294..20.272 rows=21.00 loops=1)
+  Buffers: shared hit=454
+  ->  Nested Loop  (cost=1.12..2721826028.86 rows=934905 width=1094) (actual time=2.293..20.268 rows=21.00 loops=1)
+        Buffers: shared hit=454
+        ->  Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..202414.91 rows=1633305 width=73) (actual time=0.022..0.058 rows=21.00 loops=1)
+              Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+              Heap Fetches: 5
+              Index Searches: 1
+              Buffers: shared hit=29
+        ->  Memoize  (cost=0.43..1699.94 rows=1 width=1058) (actual time=0.961..0.962 rows=1.00 loops=21)
+              Cache Key: search.entity_id
+              Cache Mode: logical
+              Hits: 0  Misses: 21  Evictions: 0  Overflows: 0  Memory Usage: 27kB
+              Buffers: shared hit=425
+              ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..1699.93 rows=1 width=1058) (actual time=0.948..0.948 rows=1.00 loops=21)
+                    Index Cond: ((entity_id)::text = (search.entity_id)::text)
+                    Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = (hashed SubPlan 8).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1)))) AND ((NOT EXISTS(SubPlan 11)) OR (NOT EXISTS(SubPlan 13)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 16).col1)))) AND (EXISTS(SubPlan 1) OR (ANY ((entity_id)::text = (hashed SubPlan 4).col1)) OR (NOT EXISTS(SubPlan 5))))
+                    Index Searches: 21
+                    Buffers: shared hit=425
+                    SubPlan 8
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..8.71 rows=1 width=32) (actual time=0.020..0.020 rows=0.00 loops=1)
+                            Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 10
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..9.53 rows=42 width=32) (actual time=0.023..0.031 rows=18.00 loops=1)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=22
+                    SubPlan 11
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_5  (cost=0.69..8.71 rows=1 width=0) (actual time=0.014..0.014 rows=0.00 loops=21)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.a'::text))
+                            Heap Fetches: 0
+                            Index Searches: 21
+                            Buffers: shared hit=105
+                    SubPlan 13
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_6  (cost=0.69..8.71 rows=1 width=0) (never executed)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.b'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 16
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_7  (cost=0.69..9.53 rows=42 width=32) (never executed)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 1
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt  (cost=0.69..822.24 rows=1 width=0) (actual time=0.858..0.858 rows=0.10 loops=21)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'relations.ownedby'::text) AND (value = ANY (':claims')))
+                            Heap Fetches: 2
+                            Index Searches: 21
+                            Buffers: shared hit=109
+                    SubPlan 4
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..822.12 rows=32 width=32) (actual time=1.030..1.030 rows=0.00 loops=1)
+                            Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (':claims')))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 5
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_2  (cost=0.69..8.71 rows=1 width=0) (actual time=0.010..0.010 rows=0.00 loops=19)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.annotations.example.com/readers'::text))
+                            Heap Fetches: 0
+                            Index Searches: 19
+                            Buffers: shared hit=95
+Planning:
+  Buffers: shared hit=22
+Planning Time: 6.438 ms
+Execution Time: 20.397 ms
+```
+
+## Hashed per-row probes (2026-11-12)
+
+Plans of this change and of master on the beta read replica described in
+`baseline.md`, from the full run of that section. Claim lists are shown as
+`:claims`. The exact JSON plans for both are in `plans.json` under keys
+starting with `hashed`.
+
+## hashed 3 unfiltered page, 174 claims (this change)
+
+```text
+Limit  (cost=0.42..2616.47 rows=21 width=1053) (actual time=0.199..0.566 rows=21.00 loops=1)
+  Buffers: shared hit=259
+  ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..53783317.60 rows=431740 width=1053) (actual time=0.198..0.563 rows=21.00 loops=1)
+        Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = (hashed SubPlan 6).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 8).col1)))) AND ((NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 12).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 14).col1)))) AND (EXISTS(SubPlan 1) OR EXISTS(SubPlan 2) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 4).col1)))))
+        Index Searches: 1
+        Buffers: shared hit=259
+        SubPlan 6
+          ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..8.71 rows=1 width=32) (actual time=0.033..0.033 rows=0.00 loops=1)
+                Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                Heap Fetches: 0
+                Index Searches: 1
+                Buffers: shared hit=5
+        SubPlan 8
+          ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..9.35 rows=33 width=32) (actual time=0.031..0.039 rows=18.00 loops=1)
+                Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                Heap Fetches: 0
+                Index Searches: 1
+                Buffers: shared hit=22
+        SubPlan 10
+          ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..348.92 rows=2287 width=32) (actual time=0.011..0.011 rows=0.00 loops=1)
+                Index Cond: (key = 'spec.a'::text)
+                Heap Fetches: 0
+                Index Searches: 1
+                Buffers: shared hit=5
+        SubPlan 12
+          ->  Index Only Scan using search_key_value_entity_idx on search search_flt_6  (cost=0.69..348.92 rows=2287 width=32) (never executed)
+                Index Cond: (key = 'spec.b'::text)
+                Heap Fetches: 0
+                Index Searches: 0
+        SubPlan 14
+          ->  Index Only Scan using search_key_value_entity_idx on search search_flt_7  (cost=0.69..9.35 rows=33 width=32) (never executed)
+                Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                Heap Fetches: 0
+                Index Searches: 0
+        SubPlan 1
+          ->  Index Only Scan using search_entity_key_value_idx on search search_flt  (cost=1.12..9.15 rows=1 width=4) (actual time=0.010..0.010 rows=0.29 loops=21)
+                Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'relations.ownedby'::text))
+                Filter: (((value)::text || ''::text) = ANY (:claims::text[]))
+                Rows Removed by Filter: 0
+                Heap Fetches: 5
+                Index Searches: 21
+                Buffers: shared hit=122
+        SubPlan 2
+          ->  Index Only Scan using search_entity_key_value_idx on search search_flt_1  (cost=1.12..9.15 rows=1 width=4) (actual time=0.009..0.009 rows=0.00 loops=15)
+                Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.annotations.example.com/readers'::text))
+                Filter: (((value)::text || ''::text) = ANY (:claims::text[]))
+                Heap Fetches: 0
+                Index Searches: 15
+                Buffers: shared hit=75
+        SubPlan 4
+          ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..348.92 rows=2287 width=32) (actual time=0.029..0.029 rows=0.00 loops=1)
+                Index Cond: (key = 'metadata.annotations.example.com/readers'::text)
+                Heap Fetches: 0
+                Index Searches: 1
+                Buffers: shared hit=5
+Planning Time: 1.286 ms
+Execution Time: 0.669 ms
+```
+
+## hashed 3 unfiltered page, 174 claims (master)
+
+```text
+Limit  (cost=0.42..62269.50 rows=21 width=1053) (actual time=162.573..162.631 rows=21.00 loops=1)
+  Buffers: shared hit=159418
+  ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..1280192903.40 rows=431740 width=1053) (actual time=162.571..162.626 rows=21.00 loops=1)
+        Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = (hashed SubPlan 8).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1)))) AND ((NOT (ANY ((entity_id)::text = (hashed SubPlan 12).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 14).col1))) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 16).col1)))) AND ((ANY ((entity_id)::text = (hashed SubPlan 2).col1)) OR (ANY ((entity_id)::text = (hashed SubPlan 4).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 6).col1)))))
+        Index Searches: 1
+        Buffers: shared hit=159418
+        SubPlan 8
+          ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..8.71 rows=1 width=32) (actual time=0.031..0.031 rows=0.00 loops=1)
+                Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                Heap Fetches: 0
+                Index Searches: 1
+                Buffers: shared hit=5
+        SubPlan 10
+          ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..9.35 rows=33 width=32) (actual time=0.026..0.034 rows=18.00 loops=1)
+                Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                Heap Fetches: 0
+                Index Searches: 1
+                Buffers: shared hit=22
+        SubPlan 12
+          ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..348.92 rows=2287 width=32) (actual time=0.012..0.013 rows=0.00 loops=1)
+                Index Cond: (key = 'spec.a'::text)
+                Heap Fetches: 0
+                Index Searches: 1
+                Buffers: shared hit=5
+        SubPlan 14
+          ->  Index Only Scan using search_key_value_entity_idx on search search_flt_6  (cost=0.69..348.92 rows=2287 width=32) (never executed)
+                Index Cond: (key = 'spec.b'::text)
+                Heap Fetches: 0
+                Index Searches: 0
+        SubPlan 16
+          ->  Index Only Scan using search_key_value_entity_idx on search search_flt_7  (cost=0.69..9.35 rows=33 width=32) (never executed)
+                Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                Heap Fetches: 0
+                Index Searches: 0
+        SubPlan 2
+          ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..32545.99 rows=214842 width=32) (actual time=0.862..108.077 rows=136344.00 loops=1)
+                Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (:claims::text[])))
+                Heap Fetches: 32866
+                Index Searches: 155
+                Buffers: shared hit=159351
+        SubPlan 4
+          ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..821.63 rows=27 width=32) (actual time=0.861..0.861 rows=0.00 loops=1)
+                Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (:claims::text[])))
+                Heap Fetches: 0
+                Index Searches: 1
+                Buffers: shared hit=5
+        SubPlan 6
+          ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..348.92 rows=2287 width=32) (actual time=0.023..0.023 rows=0.00 loops=1)
+                Index Cond: (key = 'metadata.annotations.example.com/readers'::text)
+                Heap Fetches: 0
+                Index Searches: 1
+                Buffers: shared hit=5
+Planning Time: 6.009 ms
+Execution Time: 162.765 ms
+```
+
+## hashed 20 late group page, 99 claims with the largest group (this change)
+
+```text
+Limit  (cost=1.80..60198.19 rows=21 width=1089) (actual time=451.364..453.319 rows=21.00 loops=1)
+  Buffers: shared hit=526795
+  ->  Nested Loop  (cost=1.80..22920495.13 rows=7996 width=1089) (actual time=451.363..453.315 rows=21.00 loops=1)
+        Buffers: shared hit=526795
+        ->  Nested Loop  (cost=1.11..22305792.62 rows=166480 width=1126) (actual time=450.917..452.983 rows=39.00 loops=1)
+              Buffers: shared hit=526579
+              ->  Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..182500.35 rows=290962 width=73) (actual time=450.700..450.731 rows=39.00 loops=1)
+                    Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+                    Filter: (((value)::text > 't'::text) OR ((value)::text = 't'::text))
+                    Rows Removed by Filter: 718952
+                    Heap Fetches: 203815
+                    Index Searches: 1
+                    Buffers: shared hit=525587
+              ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..76.02 rows=1 width=1053) (actual time=0.056..0.056 rows=1.00 loops=39)
+                    Index Cond: ((entity_id)::text = (search.entity_id)::text)
+                    Filter: ((final_entity IS NOT NULL) AND (((search.value)::text > 't'::text) OR (((search.value)::text = 't'::text) AND ((entity_id)::text > ''::text))) AND ((ANY ((entity_id)::text = (hashed SubPlan 6).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 8).col1)))) AND ((NOT EXISTS(SubPlan 9)) OR (NOT EXISTS(SubPlan 11)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 14).col1)))) AND (EXISTS(SubPlan 1) OR EXISTS(SubPlan 2) OR (NOT EXISTS(SubPlan 3))))
+                    Index Searches: 39
+                    Buffers: shared hit=992
+                    SubPlan 6
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..8.71 rows=1 width=32) (actual time=0.022..0.022 rows=0.00 loops=1)
+                            Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 8
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..9.35 rows=33 width=32) (actual time=0.020..0.025 rows=18.00 loops=1)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=22
+                    SubPlan 9
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_6  (cost=0.69..8.71 rows=1 width=0) (actual time=0.013..0.013 rows=0.00 loops=39)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.a'::text))
+                            Heap Fetches: 0
+                            Index Searches: 39
+                            Buffers: shared hit=195
+                    SubPlan 11
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_7  (cost=0.69..8.71 rows=1 width=0) (never executed)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.b'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 14
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_8  (cost=0.69..9.35 rows=33 width=32) (never executed)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 1
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_1  (cost=0.94..8.96 rows=1 width=4) (actual time=0.009..0.009 rows=0.00 loops=39)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'relations.ownedby'::text))
+                            Filter: (((value)::text || ''::text) = ANY (:claims::text[]))
+                            Rows Removed by Filter: 1
+                            Heap Fetches: 10
+                            Index Searches: 39
+                            Buffers: shared hit=224
+                    SubPlan 2
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_2  (cost=0.94..8.96 rows=1 width=4) (actual time=0.010..0.010 rows=0.00 loops=39)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.annotations.example.com/readers'::text))
+                            Filter: (((value)::text || ''::text) = ANY (:claims::text[]))
+                            Heap Fetches: 0
+                            Index Searches: 39
+                            Buffers: shared hit=195
+                    SubPlan 3
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_3  (cost=0.69..8.71 rows=1 width=0) (actual time=0.009..0.009 rows=0.00 loops=39)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.annotations.example.com/readers'::text))
+                            Heap Fetches: 0
+                            Index Searches: 39
+                            Buffers: shared hit=195
+        ->  Index Only Scan using search_entity_key_value_idx on search search_flt  (cost=0.69..3.69 rows=1 width=37) (actual time=0.008..0.008 rows=0.54 loops=39)
+              Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'kind'::text) AND (value = 'group'::text))
+              Heap Fetches: 4
+              Index Searches: 39
+              Buffers: shared hit=216
+Planning:
+  Buffers: shared hit=80
+Planning Time: 2.994 ms
+Execution Time: 453.433 ms
+```
+
+## hashed 20 late group page, 99 claims with the largest group (master)
+
+```text
+Limit  (cost=1.81..450691.96 rows=21 width=1089) (actual time=9557.324..9757.052 rows=21.00 loops=1)
+  Buffers: shared hit=906763
+  ->  Nested Loop  (cost=1.81..171605640.16 rows=7996 width=1089) (actual time=9557.322..9757.031 rows=21.00 loops=1)
+        Join Filter: (((final_entities.entity_id)::text = (search.entity_id)::text) AND (((search.value)::text > 't'::text) OR (((search.value)::text = 't'::text) AND ((final_entities.entity_id)::text > ''::text))))
+        Rows Removed by Join Filter: 740541
+        Buffers: shared hit=906763
+        ->  Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..182500.35 rows=290962 width=73) (actual time=449.892..450.504 rows=39.00 loops=1)
+              Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+              Filter: (((value)::text > 't'::text) OR ((value)::text = 't'::text))
+              Rows Removed by Filter: 718952
+              Heap Fetches: 203793
+              Index Searches: 1
+              Buffers: shared hit=525565
+        ->  Materialize  (cost=1.12..35665414.29 rows=20737 width=1090) (actual time=0.035..235.528 rows=18988.77 loops=39)
+              Storage: Memory  Maximum Storage: 22967kB
+              Buffers: shared hit=381198
+              ->  Nested Loop  (cost=1.12..35665310.61 rows=20737 width=1090) (actual time=1.317..9025.872 rows=19023.00 loops=1)
+                    Buffers: shared hit=381198
+                    ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..5513.16 rows=36242 width=37) (actual time=0.026..22.132 rows=19023.00 loops=1)
+                          Index Cond: ((key = 'kind'::text) AND (value = 'group'::text))
+                          Heap Fetches: 3524
+                          Index Searches: 1
+                          Buffers: shared hit=20555
+                    ->  Memoize  (cost=0.43..997.52 rows=1 width=1053) (actual time=0.473..0.473 rows=1.00 loops=19023)
+                          Cache Key: search_flt.entity_id
+                          Cache Mode: logical
+                          Hits: 0  Misses: 19023  Evictions: 0  Overflows: 0  Memory Usage: 24026kB
+                          Buffers: shared hit=360643
+                          ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..997.51 rows=1 width=1053) (actual time=0.469..0.469 rows=1.00 loops=19023)
+                                Index Cond: ((entity_id)::text = (search_flt.entity_id)::text)
+                                Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = (hashed SubPlan 8).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1)))) AND ((NOT EXISTS(SubPlan 11)) OR (NOT EXISTS(SubPlan 13)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 16).col1)))) AND (EXISTS(SubPlan 1) OR (ANY ((entity_id)::text = (hashed SubPlan 4).col1)) OR (NOT EXISTS(SubPlan 5))))
+                                Index Searches: 19023
+                                Buffers: shared hit=360643
+                                SubPlan 8
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..8.71 rows=1 width=32) (actual time=0.024..0.025 rows=0.00 loops=1)
+                                        Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=5
+                                SubPlan 10
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..9.35 rows=33 width=32) (actual time=0.021..0.026 rows=18.00 loops=1)
+                                        Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=22
+                                SubPlan 11
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_6  (cost=0.69..8.71 rows=1 width=0) (actual time=0.010..0.010 rows=0.00 loops=19023)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.a'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 19023
+                                        Buffers: shared hit=95115
+                                SubPlan 13
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_7  (cost=0.69..8.71 rows=1 width=0) (never executed)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.b'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 0
+                                SubPlan 16
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_8  (cost=0.69..9.35 rows=33 width=32) (never executed)
+                                        Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 0
+                                SubPlan 1
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_1  (cost=0.69..469.31 rows=1 width=0) (actual time=0.439..0.439 rows=0.01 loops=19023)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'relations.ownedby'::text) AND (value = ANY (:claims::text[])))
+                                        Heap Fetches: 64
+                                        Index Searches: 19041
+                                        Buffers: shared hit=95509
+                                SubPlan 4
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..469.27 rows=22 width=32) (actual time=0.470..0.470 rows=0.00 loops=1)
+                                        Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (:claims::text[])))
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=5
+                                SubPlan 5
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_3  (cost=0.69..8.71 rows=1 width=0) (actual time=0.010..0.010 rows=0.00 loops=18754)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.annotations.example.com/readers'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 18754
+                                        Buffers: shared hit=93770
+Planning:
+  Buffers: shared hit=80
+Planning Time: 5.467 ms
+Execution Time: 9757.265 ms
+```
+
+## hashed owned page with permission, 174 claims (this change)
+
+```text
+Limit  (cost=216691.64..232652.50 rows=21 width=1089) (actual time=593.058..602.011 rows=21.00 loops=1)
+  Buffers: shared hit=1053392
+  ->  Nested Loop  (cost=216691.64..13970389.80 rows=18096 width=1089) (actual time=593.057..602.006 rows=21.00 loops=1)
+        Join Filter: ((final_entities.entity_id)::text = (search_flt.entity_id)::text)
+        Buffers: shared hit=1053392
+        ->  Nested Loop  (cost=216690.95..13219603.89 rows=211210 width=1163) (actual time=592.896..601.461 rows=57.00 loops=1)
+              Join Filter: ((search_flt_1.entity_id IS NOT NULL) OR EXISTS(SubPlan 1) OR (NOT (ANY ((final_entities.entity_id)::text = (hashed SubPlan 3).col1))))
+              Buffers: shared hit=1053083
+              ->  Gather Merge  (cost=216690.53..239202.80 rows=193294 width=110) (actual time=592.735..599.958 rows=57.00 loops=1)
+                    Workers Planned: 2
+                    Workers Launched: 2
+                    Buffers: shared hit=1052543
+                    ->  Sort  (cost=215690.50..215891.85 rows=80539 width=110) (actual time=577.951..577.973 rows=321.33 loops=3)
+                          Sort Key: search.value, search.entity_id
+                          Sort Method: quicksort  Memory: 8306kB
+                          Buffers: shared hit=1052543
+                          Worker 0:  Sort Method: quicksort  Memory: 7776kB
+                          Worker 1:  Sort Method: quicksort  Memory: 7724kB
+                          ->  Hash Join  (cost=38618.20..209127.62 rows=80539 width=110) (actual time=264.669..515.744 rows=45446.67 loops=3)
+                                Hash Cond: ((search.entity_id)::text = (search_flt_1.entity_id)::text)
+                                Buffers: shared hit=1052527
+                                ->  Parallel Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..169163.61 rows=512951 width=73) (actual time=0.073..158.074 rows=250988.33 loops=3)
+                                      Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+                                      Heap Fetches: 220383
+                                      Index Searches: 1
+                                      Buffers: shared hit=574409
+                                ->  Hash  (cost=36139.75..36139.75 rows=198221 width=37) (actual time=262.059..262.061 rows=136340.00 loops=3)
+                                      Buckets: 262144  Batches: 1  Memory Usage: 11235kB
+                                      Buffers: shared hit=478118
+                                      ->  HashAggregate  (cost=34157.54..36139.75 rows=198221 width=37) (actual time=190.718..221.041 rows=136340.00 loops=3)
+                                            Group Key: search_flt_1.entity_id
+                                            Batches: 1  Memory Usage: 12313kB
+                                            Buffers: shared hit=478118
+                                            Worker 0:  Batches: 1  Memory Usage: 12313kB
+                                            Worker 1:  Batches: 1  Memory Usage: 12313kB
+                                            ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..33620.44 rows=214842 width=37) (actual time=0.986..127.594 rows=136344.00 loops=3)
+                                                  Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (:claims::text[])) AND (entity_id IS NOT NULL) AND (entity_id IS NOT NULL))
+                                                  Heap Fetches: 98661
+                                                  Index Searches: 465
+                                                  Buffers: shared hit=478118
+              ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..49.29 rows=1 width=1053) (actual time=0.025..0.025 rows=1.00 loops=57)
+                    Index Cond: ((entity_id)::text = (search.entity_id)::text)
+                    Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = (hashed SubPlan 5).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 7).col1)))) AND ((NOT EXISTS(SubPlan 8)) OR (NOT EXISTS(SubPlan 10)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 13).col1)))))
+                    Index Searches: 57
+                    Buffers: shared hit=540
+                    SubPlan 5
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..8.71 rows=1 width=32) (actual time=0.023..0.024 rows=0.00 loops=1)
+                            Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=5
+                    SubPlan 7
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..9.35 rows=33 width=32) (actual time=0.034..0.044 rows=18.00 loops=1)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 1
+                            Buffers: shared hit=22
+                    SubPlan 8
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_6  (cost=0.69..8.71 rows=1 width=0) (actual time=0.013..0.013 rows=0.00 loops=57)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.a'::text))
+                            Heap Fetches: 0
+                            Index Searches: 57
+                            Buffers: shared hit=285
+                    SubPlan 10
+                      ->  Index Only Scan using search_entity_key_value_idx on search search_flt_7  (cost=0.69..8.71 rows=1 width=0) (never executed)
+                            Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.b'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 13
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_8  (cost=0.69..9.35 rows=33 width=32) (never executed)
+                            Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                            Heap Fetches: 0
+                            Index Searches: 0
+              SubPlan 1
+                ->  Index Only Scan using search_entity_key_value_idx on search search_flt_2  (cost=1.12..9.15 rows=1 width=4) (never executed)
+                      Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.annotations.example.com/readers'::text))
+                      Filter: (((value)::text || ''::text) = ANY (:claims::text[]))
+                      Heap Fetches: 0
+                      Index Searches: 0
+              SubPlan 3
+                ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..348.92 rows=2287 width=32) (never executed)
+                      Index Cond: (key = 'metadata.annotations.example.com/readers'::text)
+                      Heap Fetches: 0
+                      Index Searches: 0
+        ->  Index Only Scan using search_entity_key_value_idx on search search_flt  (cost=0.69..3.54 rows=1 width=37) (actual time=0.009..0.009 rows=0.37 loops=57)
+              Index Cond: ((entity_id = (search.entity_id)::text) AND (key = 'kind'::text) AND (value = 'component'::text))
+              Heap Fetches: 6
+              Index Searches: 57
+              Buffers: shared hit=309
+Planning:
+  Buffers: shared hit=72
+Planning Time: 3.959 ms
+Execution Time: 605.617 ms
+```
+
+## hashed owned page with permission, 174 claims (master)
+
+```text
+Limit  (cost=38619.32..280171.20 rows=21 width=1089) (actual time=1297.952..3822.897 rows=21.00 loops=1)
+  Buffers: shared hit=626881
+  ->  Nested Loop  (cost=38619.32..208187322.30 rows=18096 width=1089) (actual time=1297.950..3822.881 rows=21.00 loops=1)
+        Join Filter: ((final_entities.entity_id)::text = (search.entity_id)::text)
+        Rows Removed by Join Filter: 19328906
+        Buffers: shared hit=626881
+        ->  Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..176344.93 rows=1231083 width=73) (actual time=0.040..7.491 rows=5024.00 loops=1)
+              Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+              Heap Fetches: 1020
+              Index Searches: 1
+              Buffers: shared hit=4174
+        ->  Materialize  (cost=38618.64..3201881.81 rows=11091 width=1127) (actual time=0.046..0.409 rows=3847.32 loops=5024)
+              Storage: Memory  Maximum Storage: 2351kB
+              Buffers: shared hit=622707
+              ->  Hash Join  (cost=38618.64..3201826.35 rows=11091 width=1127) (actual time=229.787..1187.424 rows=3848.00 loops=1)
+                    Hash Cond: ((final_entities.entity_id)::text = (search_flt_1.entity_id)::text)
+                    Join Filter: ((search_flt_1.entity_id IS NOT NULL) OR (ANY ((final_entities.entity_id)::text = (hashed SubPlan 2).col1)) OR (NOT (ANY ((final_entities.entity_id)::text = (hashed SubPlan 4).col1))))
+                    Buffers: shared hit=622707
+                    ->  Nested Loop  (cost=1.12..3163097.87 rows=42274 width=1090) (actual time=0.339..929.788 rows=45883.00 loops=1)
+                          Buffers: shared hit=463335
+                          ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..9814.20 rows=64648 width=37) (actual time=0.021..32.425 rows=45883.00 loops=1)
+                                Index Cond: ((key = 'kind'::text) AND (value = 'component'::text))
+                                Heap Fetches: 8782
+                                Index Searches: 1
+                                Buffers: shared hit=50235
+                          ->  Memoize  (cost=0.43..49.85 rows=1 width=1053) (actual time=0.019..0.019 rows=1.00 loops=45883)
+                                Cache Key: search_flt.entity_id
+                                Cache Mode: logical
+                                Hits: 0  Misses: 45883  Evictions: 0  Overflows: 0  Memory Usage: 29065kB
+                                Buffers: shared hit=413100
+                                ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..49.84 rows=1 width=1053) (actual time=0.018..0.018 rows=1.00 loops=45883)
+                                      Index Cond: ((entity_id)::text = (search_flt.entity_id)::text)
+                                      Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = (hashed SubPlan 6).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 8).col1)))) AND ((NOT EXISTS(SubPlan 9)) OR (NOT EXISTS(SubPlan 11)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 14).col1)))))
+                                      Index Searches: 45883
+                                      Buffers: shared hit=413100
+                                      SubPlan 6
+                                        ->  Index Only Scan using search_key_value_entity_idx on search search_flt_4  (cost=0.69..8.71 rows=1 width=32) (actual time=0.037..0.038 rows=0.00 loops=1)
+                                              Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                                              Heap Fetches: 0
+                                              Index Searches: 1
+                                              Buffers: shared hit=5
+                                      SubPlan 8
+                                        ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..9.35 rows=33 width=32) (actual time=0.022..0.031 rows=18.00 loops=1)
+                                              Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                              Heap Fetches: 0
+                                              Index Searches: 1
+                                              Buffers: shared hit=22
+                                      SubPlan 9
+                                        ->  Index Only Scan using search_entity_key_value_idx on search search_flt_6  (cost=0.69..8.71 rows=1 width=0) (actual time=0.010..0.010 rows=0.00 loops=45883)
+                                              Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.a'::text))
+                                              Heap Fetches: 0
+                                              Index Searches: 45883
+                                              Buffers: shared hit=229415
+                                      SubPlan 11
+                                        ->  Index Only Scan using search_entity_key_value_idx on search search_flt_7  (cost=0.69..8.71 rows=1 width=0) (never executed)
+                                              Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.b'::text))
+                                              Heap Fetches: 0
+                                              Index Searches: 0
+                                      SubPlan 14
+                                        ->  Index Only Scan using search_key_value_entity_idx on search search_flt_8  (cost=0.69..9.35 rows=33 width=32) (never executed)
+                                              Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                              Heap Fetches: 0
+                                              Index Searches: 0
+                    ->  Hash  (cost=36139.75..36139.75 rows=198221 width=37) (actual time=227.786..227.789 rows=136340.00 loops=1)
+                          Buckets: 262144  Batches: 1  Memory Usage: 11235kB
+                          Buffers: shared hit=159372
+                          ->  HashAggregate  (cost=34157.54..36139.75 rows=198221 width=37) (actual time=163.896..194.353 rows=136340.00 loops=1)
+                                Group Key: search_flt_1.entity_id
+                                Batches: 1  Memory Usage: 12313kB
+                                Buffers: shared hit=159372
+                                ->  Index Only Scan using search_key_value_entity_idx on search search_flt_1  (cost=0.69..33620.44 rows=214842 width=37) (actual time=0.884..110.051 rows=136344.00 loops=1)
+                                      Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (:claims::text[])) AND (entity_id IS NOT NULL) AND (entity_id IS NOT NULL))
+                                      Heap Fetches: 32887
+                                      Index Searches: 155
+                                      Buffers: shared hit=159372
+                    SubPlan 2
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..821.63 rows=27 width=32) (never executed)
+                            Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (:claims::text[])))
+                            Heap Fetches: 0
+                            Index Searches: 0
+                    SubPlan 4
+                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..348.92 rows=2287 width=32) (never executed)
+                            Index Cond: (key = 'metadata.annotations.example.com/readers'::text)
+                            Heap Fetches: 0
+                            Index Searches: 0
+Planning:
+  Buffers: shared hit=72
+Planning Time: 6.308 ms
+Execution Time: 3826.399 ms
+```
+
+## hashed 1 component page in a namespace, 10 claims (this change)
+
+```text
+Limit  (cost=2.51..23602.48 rows=21 width=1089) (actual time=9.578..12.722 rows=21.00 loops=1)
+  Buffers: shared hit=1561
+  ->  Nested Loop  (cost=2.51..93849241.26 rows=83510 width=1089) (actual time=9.577..12.718 rows=21.00 loops=1)
+        Join Filter: ((final_entities.entity_id)::text = (search_flt_1.entity_id)::text)
+        Buffers: shared hit=1561
+        ->  Nested Loop  (cost=1.82..93611931.00 rows=60349 width=1163) (actual time=9.561..12.508 rows=21.00 loops=1)
+              Buffers: shared hit=1436
+              ->  Nested Loop  (cost=1.12..91841273.01 rows=704390 width=1126) (actual time=0.369..2.898 rows=45.00 loops=1)
+                    Buffers: shared hit=1192
+                    ->  Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..176317.57 rows=1231083 width=73) (actual time=0.025..0.069 rows=45.00 loops=1)
+                          Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+                          Heap Fetches: 7
+                          Index Searches: 1
+                          Buffers: shared hit=48
+                    ->  Memoize  (cost=0.43..76.37 rows=1 width=1053) (actual time=0.062..0.062 rows=1.00 loops=45)
+                          Cache Key: search.entity_id
+                          Cache Mode: logical
+                          Hits: 0  Misses: 45  Evictions: 0  Overflows: 0  Memory Usage: 51kB
+                          Buffers: shared hit=1144
+                          ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..76.36 rows=1 width=1053) (actual time=0.056..0.056 rows=1.00 loops=45)
+                                Index Cond: ((entity_id)::text = (search.entity_id)::text)
+                                Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = (hashed SubPlan 6).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 8).col1)))) AND ((NOT EXISTS(SubPlan 9)) OR (NOT EXISTS(SubPlan 11)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 14).col1)))) AND (EXISTS(SubPlan 1) OR EXISTS(SubPlan 2) OR (NOT EXISTS(SubPlan 3))))
+                                Index Searches: 45
+                                Buffers: shared hit=1144
+                                SubPlan 6
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..8.71 rows=1 width=32) (actual time=0.020..0.020 rows=0.00 loops=1)
+                                        Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=5
+                                SubPlan 8
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_6  (cost=0.69..9.35 rows=33 width=32) (actual time=0.023..0.031 rows=18.00 loops=1)
+                                        Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=22
+                                SubPlan 9
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_7  (cost=0.69..8.71 rows=1 width=0) (actual time=0.013..0.013 rows=0.00 loops=45)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.a'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 45
+                                        Buffers: shared hit=225
+                                SubPlan 11
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_8  (cost=0.69..8.71 rows=1 width=0) (never executed)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.b'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 0
+                                SubPlan 14
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_9  (cost=0.69..9.35 rows=33 width=32) (never executed)
+                                        Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 0
+                                SubPlan 1
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_2  (cost=0.71..8.74 rows=1 width=4) (actual time=0.009..0.009 rows=0.00 loops=45)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'relations.ownedby'::text))
+                                        Filter: (((value)::text || ''::text) = ANY (:claims::text[]))
+                                        Rows Removed by Filter: 1
+                                        Heap Fetches: 8
+                                        Index Searches: 45
+                                        Buffers: shared hit=262
+                                SubPlan 2
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_3  (cost=0.71..8.74 rows=1 width=4) (actual time=0.011..0.011 rows=0.00 loops=45)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.annotations.example.com/readers'::text))
+                                        Filter: (((value)::text || ''::text) = ANY (:claims::text[]))
+                                        Heap Fetches: 0
+                                        Index Searches: 45
+                                        Buffers: shared hit=225
+                                SubPlan 3
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_4  (cost=0.69..8.71 rows=1 width=0) (actual time=0.010..0.010 rows=0.00 loops=45)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.annotations.example.com/readers'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 45
+                                        Buffers: shared hit=225
+              ->  Memoize  (cost=0.70..4.00 rows=1 width=37) (actual time=0.213..0.213 rows=0.47 loops=45)
+                    Cache Key: final_entities.entity_id
+                    Cache Mode: logical
+                    Hits: 0  Misses: 45  Evictions: 0  Overflows: 0  Memory Usage: 6kB
+                    Buffers: shared hit=244
+                    ->  Index Only Scan using search_entity_key_value_idx on search search_flt  (cost=0.69..3.99 rows=1 width=37) (actual time=0.009..0.009 rows=0.47 loops=45)
+                          Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'kind'::text) AND (value = 'component'::text))
+                          Heap Fetches: 2
+                          Index Searches: 45
+                          Buffers: shared hit=244
+        ->  Index Only Scan using search_entity_key_value_idx on search search_flt_1  (cost=0.69..3.92 rows=1 width=37) (actual time=0.009..0.009 rows=1.00 loops=21)
+              Index Cond: ((entity_id = (search.entity_id)::text) AND (key = 'metadata.namespace'::text) AND (value = 'default'::text))
+              Heap Fetches: 3
+              Index Searches: 21
+              Buffers: shared hit=125
+Planning:
+  Buffers: shared hit=150
+Planning Time: 3.171 ms
+Execution Time: 12.894 ms
+```
+
+## hashed 1 component page in a namespace, 10 claims (master)
+
+```text
+Limit  (cost=2.50..49362.81 rows=21 width=1089) (actual time=3.046..5.353 rows=21.00 loops=1)
+  Buffers: shared hit=3807
+  ->  Nested Loop  (cost=2.50..196289511.24 rows=83510 width=1089) (actual time=3.045..5.349 rows=21.00 loops=1)
+        Join Filter: ((final_entities.entity_id)::text = (search_flt_1.entity_id)::text)
+        Buffers: shared hit=3807
+        ->  Nested Loop  (cost=1.81..196052200.98 rows=60349 width=1163) (actual time=3.030..5.123 rows=21.00 loops=1)
+              Join Filter: ((final_entities.entity_id)::text = (search_flt.entity_id)::text)
+              Buffers: shared hit=3682
+              ->  Nested Loop  (cost=1.12..193282332.69 rows=704390 width=1126) (actual time=3.014..4.716 rows=45.00 loops=1)
+                    Buffers: shared hit=3438
+                    ->  Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..176317.57 rows=1231083 width=73) (actual time=0.032..0.081 rows=45.00 loops=1)
+                          Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+                          Heap Fetches: 7
+                          Index Searches: 1
+                          Buffers: shared hit=48
+                    ->  Memoize  (cost=0.43..160.91 rows=1 width=1053) (actual time=0.102..0.102 rows=1.00 loops=45)
+                          Cache Key: search.entity_id
+                          Cache Mode: logical
+                          Hits: 0  Misses: 45  Evictions: 0  Overflows: 0  Memory Usage: 51kB
+                          Buffers: shared hit=3390
+                          ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..160.90 rows=1 width=1053) (actual time=0.096..0.096 rows=1.00 loops=45)
+                                Index Cond: ((entity_id)::text = (search.entity_id)::text)
+                                Filter: ((final_entity IS NOT NULL) AND ((ANY ((entity_id)::text = (hashed SubPlan 8).col1)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 10).col1)))) AND ((NOT EXISTS(SubPlan 11)) OR (NOT EXISTS(SubPlan 13)) OR (NOT (ANY ((entity_id)::text = (hashed SubPlan 16).col1)))) AND ((ANY ((entity_id)::text = (hashed SubPlan 2).col1)) OR (ANY ((entity_id)::text = (hashed SubPlan 4).col1)) OR (NOT EXISTS(SubPlan 5))))
+                                Index Searches: 45
+                                Buffers: shared hit=3390
+                                SubPlan 8
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_5  (cost=0.69..8.71 rows=1 width=32) (actual time=0.021..0.022 rows=0.00 loops=1)
+                                        Index Cond: ((key = 'spec.custom'::text) AND (value = 'x'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=5
+                                SubPlan 10
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_6  (cost=0.69..9.35 rows=33 width=32) (actual time=0.024..0.032 rows=18.00 loops=1)
+                                        Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=22
+                                SubPlan 11
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_7  (cost=0.69..8.71 rows=1 width=0) (actual time=0.013..0.013 rows=0.00 loops=45)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.a'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 45
+                                        Buffers: shared hit=225
+                                SubPlan 13
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_8  (cost=0.69..8.71 rows=1 width=0) (never executed)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'spec.b'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 0
+                                SubPlan 16
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_9  (cost=0.69..9.35 rows=33 width=32) (never executed)
+                                        Index Cond: ((key = 'kind'::text) AND (value = 'template'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 0
+                                SubPlan 2
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_2  (cost=0.69..66.39 rows=189 width=32) (actual time=0.053..1.956 rows=1927.00 loops=1)
+                                        Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (:claims::text[])))
+                                        Heap Fetches: 871
+                                        Index Searches: 10
+                                        Buffers: shared hit=2728
+                                SubPlan 4
+                                  ->  Index Only Scan using search_key_value_entity_idx on search search_flt_3  (cost=0.69..50.98 rows=1 width=32) (actual time=0.053..0.053 rows=0.00 loops=1)
+                                        Index Cond: ((key = 'metadata.annotations.example.com/readers'::text) AND (value = ANY (:claims::text[])))
+                                        Heap Fetches: 0
+                                        Index Searches: 1
+                                        Buffers: shared hit=5
+                                SubPlan 5
+                                  ->  Index Only Scan using search_entity_key_value_idx on search search_flt_4  (cost=0.69..8.71 rows=1 width=0) (actual time=0.011..0.011 rows=0.00 loops=45)
+                                        Index Cond: ((entity_id = (final_entities.entity_id)::text) AND (key = 'metadata.annotations.example.com/readers'::text))
+                                        Heap Fetches: 0
+                                        Index Searches: 45
+                                        Buffers: shared hit=225
+              ->  Index Only Scan using search_entity_key_value_idx on search search_flt  (cost=0.69..3.92 rows=1 width=37) (actual time=0.009..0.009 rows=0.47 loops=45)
+                    Index Cond: ((entity_id = (search.entity_id)::text) AND (key = 'kind'::text) AND (value = 'component'::text))
+                    Heap Fetches: 2
+                    Index Searches: 45
+                    Buffers: shared hit=244
+        ->  Index Only Scan using search_entity_key_value_idx on search search_flt_1  (cost=0.69..3.92 rows=1 width=37) (actual time=0.010..0.010 rows=1.00 loops=21)
+              Index Cond: ((entity_id = (search.entity_id)::text) AND (key = 'metadata.namespace'::text) AND (value = 'default'::text))
+              Heap Fetches: 3
+              Index Searches: 21
+              Buffers: shared hit=125
+Planning:
+  Buffers: shared hit=150
+Planning Time: 3.957 ms
+Execution Time: 5.510 ms
+```

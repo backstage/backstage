@@ -32,8 +32,4 @@ export * from './translation';
 export * from './breadcrumbs';
 export * from './wiring';
 
-export type {
-  ProgressProps,
-  NotFoundErrorPageProps,
-  ErrorDisplayProps,
-} from './types';
+export type { NotFoundErrorPageProps, ErrorDisplayProps } from './types';

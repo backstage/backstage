@@ -35,9 +35,12 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
+import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { EntitiesRequest } from '../catalog/types';
 import { buildEntitySearch } from '../database/operations/stitcher/buildEntitySearch';
 import { entitiesResponseToObjects } from './response';
+import { INDIRECT_IN_MIN_VALUES } from './request/longInLists';
 
 jest.setTimeout(60_000);
 
@@ -2915,6 +2918,245 @@ describe.each(databases.eachSupportedId())(
         expect(
           entitiesResponseToObjects(response.items).map(e => e!.metadata.name),
         ).toEqual(['owned', 'readable']);
+      });
+
+      it('gives the same results for long $in lists as for short ones', async () => {
+        const catalog = await setupFacetsCatalog([
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'owned' },
+            spec: {},
+            relations: [
+              { type: 'ownedBy', targetRef: 'group:default/a' },
+              { type: 'ownedBy', targetRef: 'user:default/me' },
+            ],
+          },
+          {
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name: 'unrestricted' },
+            spec: {},
+            relations: [{ type: 'ownedBy', targetRef: 'group:default/b' }],
+          },
+          {
+            apiVersion: 'a',
+            kind: 'API',
+            metadata: {
+              name: 'readable',
+              annotations: { 'example.com/readers': 'group:default/a' },
+            },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'API',
+            metadata: {
+              name: 'restricted',
+              annotations: { 'example.com/readers': 'group:default/b' },
+            },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'Template',
+            metadata: { name: 'template' },
+            spec: {},
+          },
+        ]);
+
+        const permissionFilter = (claims: string[]): FilterPredicate => ({
+          $all: [
+            {
+              $any: [
+                { 'relations.ownedBy': { $in: claims } },
+                { 'metadata.annotations.example.com/readers': { $in: claims } },
+                {
+                  $not: {
+                    'metadata.annotations.example.com/readers': {
+                      $exists: true,
+                    },
+                  },
+                },
+              ],
+            },
+            { $not: { 'relations.ownedBy': { $in: claims } } },
+          ],
+        });
+        const shortClaims = ['user:default/me', 'group:default/a'];
+        // Long enough to be matched as sets inside the $any and the $not
+        const longClaims = [
+          ...shortClaims,
+          ...Array.from(
+            { length: INDIRECT_IN_MIN_VALUES },
+            (_, i) => `group:default/other-${i}`,
+          ),
+        ];
+
+        const collect = async (filter: FilterPredicate) => {
+          const names = (
+            items: Parameters<typeof entitiesResponseToObjects>[0],
+          ) => entitiesResponseToObjects(items).map(e => e!.metadata.name);
+          const pages: string[][] = [];
+          let response = await catalog.queryEntities({
+            filter,
+            orderFields: [{ field: 'metadata.name', order: 'asc' }],
+            limit: 1,
+            credentials: mockCredentials.none(),
+          });
+          const totalItems = response.totalItems;
+          pages.push(names(response.items));
+          while (response.pageInfo.nextCursor) {
+            response = await catalog.queryEntities({
+              cursor: response.pageInfo.nextCursor,
+              limit: 1,
+              credentials: mockCredentials.none(),
+            });
+            pages.push(names(response.items));
+          }
+          // More than a small first page, which would probe the lists per row
+          const unordered = await catalog.queryEntities({
+            filter,
+            limit: 1000,
+            credentials: mockCredentials.none(),
+          });
+          const { entities } = await catalog.entities({
+            filter,
+            credentials: mockCredentials.none(),
+          });
+          const batch = await catalog.entitiesBatch({
+            entityRefs: [
+              'component:default/owned',
+              'component:default/unrestricted',
+              'api:default/readable',
+              'api:default/restricted',
+            ],
+            filter,
+            credentials: mockCredentials.none(),
+          });
+          const facets = await catalog.facets({
+            facets: ['kind'],
+            filter,
+            credentials: mockCredentials.none(),
+          });
+          return {
+            pages,
+            totalItems,
+            unordered: names(unordered.items).toSorted(),
+            entities: names(entities).toSorted(),
+            batch: entitiesResponseToObjects(batch.items).map(
+              e => e?.metadata.name ?? null,
+            ),
+            facets,
+          };
+        };
+
+        const expected = await collect(permissionFilter(shortClaims));
+        expect(expected.pages).toEqual([
+          ['readable'],
+          ['template'],
+          ['unrestricted'],
+        ]);
+        await expect(collect(permissionFilter(longClaims))).resolves.toEqual(
+          expected,
+        );
+      });
+
+      it('matches long $in lists the same way on every page of a permissioned query', async () => {
+        const inner = await setupFacetsCatalog(
+          ['a', 'b', 'c', 'd', 'e'].map(name => ({
+            apiVersion: 'a',
+            kind: 'Component',
+            metadata: { name },
+            spec: {},
+            relations: [
+              {
+                type: 'ownedBy',
+                targetRef: name === 'b' ? 'group:default/x' : 'group:default/a',
+              },
+              {
+                type: 'partOf',
+                targetRef:
+                  name === 'e' ? 'system:default/t' : 'system:default/s',
+              },
+            ],
+          })),
+        );
+        const claims = [
+          'group:default/a',
+          ...Array.from({ length: 20 }, (_, i) => `group:default/other-${i}`),
+        ];
+        const catalog = new AuthorizedEntitiesCatalog(
+          inner,
+          mockServices.permissions.mock({
+            authorizeConditional: async () => [
+              {
+                result: AuthorizeResult.CONDITIONAL,
+                pluginId: 'catalog',
+                resourceType: 'catalog-entity',
+                conditions: {
+                  rule: 'IS_ENTITY_OWNER',
+                  resourceType: 'catalog-entity',
+                  params: { claims },
+                },
+              },
+            ],
+          }),
+          () => ({ key: 'relations.ownedBy', values: claims }),
+        );
+
+        // Collects the form of the long list in each page's main query
+        const sqls: string[] = [];
+        const onQuery = (q: { sql: string }) => sqls.push(q.sql);
+        const forms = () => {
+          const result = sqls
+            .filter(sql => sql.includes('final_entities'))
+            .map(sql => {
+              if (sql.includes('in_set_')) {
+                return 'join';
+              }
+              return sql.includes('"entity_id" in (select') ? 'in' : 'row';
+            });
+          sqls.length = 0;
+          return result;
+        };
+
+        knex.on('query', onQuery);
+        try {
+          const names: string[][] = [];
+          const pageForms: string[][] = [];
+          let response = await catalog.queryEntities({
+            filter: { 'relations.partOf': 'system:default/s' },
+            orderFields: [{ field: 'metadata.name', order: 'asc' }],
+            limit: 2,
+            credentials: mockCredentials.none(),
+          });
+          for (;;) {
+            names.push(
+              entitiesResponseToObjects(response.items).map(
+                e => e!.metadata.name,
+              ),
+            );
+            pageForms.push(forms());
+            if (!response.pageInfo.nextCursor) {
+              break;
+            }
+            response = await catalog.queryEntities({
+              cursor: response.pageInfo.nextCursor,
+              limit: 2,
+              credentials: mockCredentials.none(),
+            });
+          }
+
+          expect(names).toEqual([['a', 'c'], ['d']]);
+          // The partOf condition is narrower than the list on every page
+          expect(pageForms.flat()).not.toContain('join');
+          expect(pageForms.flat().includes('in')).toBe(
+            databaseId.startsWith('POSTGRES'),
+          );
+        } finally {
+          knex.removeListener('query', onQuery);
+        }
       });
 
       it('filters with both filter and query combined', async () => {

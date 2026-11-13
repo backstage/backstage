@@ -26,7 +26,6 @@ import {
   SwappableComponentsApi,
   ErrorDisplayProps,
   NotFoundErrorPageProps,
-  ProgressProps,
   ExternalRouteRef,
   IconComponent,
   IconElement,
@@ -53,7 +52,7 @@ import { type RouteResolver } from '../../../core-plugin-api/src/routing/useRout
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 
 class CompatComponentsApi implements SwappableComponentsApi {
-  readonly #Progress: ComponentType<ProgressProps>;
+  readonly #Progress: ComponentType<{}>;
   readonly #NotFoundErrorPage: ComponentType<NotFoundErrorPageProps>;
   readonly #ErrorBoundaryFallback: ComponentType<ErrorDisplayProps>;
 

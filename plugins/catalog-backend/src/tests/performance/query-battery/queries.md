@@ -22,6 +22,37 @@ Record execution time, plan shape, and buffer usage in `baseline.md`. Keep one
 readable representative full plan per scenario in `plans.md` and the exact
 machine-diffable final-run output in `plans.json`.
 
+**Run every scenario with and without permissions.** The plans of a request
+with and without a conditional permission filter are very different, so each
+scenario 1-14 and 20 has two variants: `_nop` (as written) and `_perm` (the
+same request with the `<permission>` predicate from scenarios 15-19 combined
+with its filter using `$all`). Scenarios 8, 9 and 11 do not go through the
+permission layer and only have a `_nop` variant.
+
+**Use several claim lists.** Long `$in` lists are matched differently from
+short ones, so measure the `_perm` variants with at least 3, 10 and 40 claims,
+and a list of 100 or more that includes a single claim owning a large share
+of the catalog.
+
+**Capture the generated SQL for long lists.** On PostgreSQL, a long `$in` list
+on a field other than `kind`, `metadata.namespace`, `spec.type` and
+`spec.lifecycle` can be compiled as a set of entity IDs, either joined or
+hashed, instead of the per-row `EXISTS (... = ANY(:claims))` shown in the
+reference SQL. A list that is a direct condition of the filter is a set from
+10 values. A list inside an `$any` or a `$not`, like the claims in the
+permission predicate, is a set only from 100 values and not on a page of up
+to 100 entities. A list that stays per row is matched against a hash of the
+list, as `(value || '') = ANY(:claims)` in a probe with `OFFSET 0`, from 100
+values, and on pages of up to 100 entities from 10 values. See
+`src/service/request/longInLists.ts` for the details.
+For any variant with 10 or more claims, capture the SQL that the method call
+actually generates (for example with knex query logging) and measure that
+instead.
+
+For a faster run that relies on documented assumptions, see the
+[slim profile](./slim-profile.md). It must not be used without checking those
+assumptions first.
+
 ---
 
 ## 1. Paginated entity list (kind=component, ordered by name)
@@ -670,7 +701,10 @@ const permission = {
 ```
 
 In page queries, and in all queries on other databases, `<permission>` in the
-reference SQL below stands for:
+reference SQL below stands for the following. This is the per-row form,
+which is used for fewer than 10 claims, and for fewer than 100 claims on pages
+of more than 100 entities; otherwise, capture the generated SQL as described
+in [How to run](#how-to-run).
 
 ```sql
 (
@@ -1083,6 +1117,96 @@ needed. Execution time is in the low tens of milliseconds.
 
 ---
 
+## 20. Late page of a selective list ordered by name
+
+**User action**: Paging forward in the catalog table to names starting late in
+the alphabet, for a kind with few entities (`group`) and one with many
+(`component`).
+
+**Method call**:
+
+```ts
+catalog.queryEntities({
+  filter: { kind: 'group' }, // and { kind: 'component' }
+  orderFields: [{ field: 'metadata.name', order: 'asc' }],
+  cursor, // positioned after names starting with 't'
+  limit: 20,
+  credentials,
+});
+```
+
+A cursor carries its own filter and ordering, and `queryEntities` ignores the
+top-level `filter` and `orderFields` when a cursor is given. Fetch a separate
+cursor for each kind and for each permission and claim-list variant, rather
+than reusing one and changing the filter.
+
+**Reference SQL**: Scenario 1 with the cursor condition added:
+
+```sql
+AND (search.value > 't' OR (search.value = 't' AND final_entities.entity_id > ''))
+```
+
+**Healthy plan**: Without permissions, walks `metadata.name` from the cursor
+and stops after 21 rows. With permissions, a small kind such as `group` is
+driven from the kind or the permission set, not from the name order.
+
+**Anti-patterns**:
+
+- Walking the name index from the cursor while checking every entity of
+  another kind against the permission filter per row. For `group` this reads
+  the rest of the catalog to find 21 rows, with a per-row `= ANY(:claims)`
+  probe for each.
+
+---
+
+## 21. Request filters with a long `$in` list
+
+**User action**: A client filtering on many values of one field, for example a
+script or plugin streaming entities of 30 different `spec.type` values. These
+cases have no permission filter, and the list length does not depend on the
+user.
+
+**Method calls**: `catalog.queryEntitiesStream` or paged `queryEntities`
+ordered by entity ID, with each of these filters:
+
+```ts
+const types = [
+  /* 30 spec.type values */
+];
+
+// adv_types_or_api
+{
+  $any: [{ 'spec.type': { $in: types } }, { kind: 'api' }];
+}
+
+// adv_types_or_broad
+{
+  $any: [
+    { 'spec.type': { $in: [...types, 'workflow', 'dataset'] } },
+    { 'spec.lifecycle': 'production' },
+  ];
+}
+
+// adv_comp_not_types
+{
+  $all: [{ kind: 'component' }, { $not: { 'spec.type': { $in: types } } }];
+}
+```
+
+**Healthy plan**: Lists on `kind`, `metadata.namespace`, `spec.type` and
+`spec.lifecycle` are probed per row, as with short lists: each of their values
+matches a large share of the catalog, so a set of them is close to the whole
+catalog. The total cost of a full stream grows with the number of matching
+entities.
+
+**Anti-patterns**:
+
+- A set of entity IDs built for a list on one of the broad fields.
+- A negated list planned as a filter that scans a materialized set again for every
+  row.
+
+---
+
 ## Global anti-patterns
 
 These should NEVER appear in any of the above queries:
@@ -1102,7 +1226,14 @@ These should NEVER appear in any of the above queries:
    `EXISTS (... s.value = ANY(:values))` with a loop count in the tens of
    thousands. Each time the index scan restarts, it sorts the array again with
    collation-aware comparisons, so the cost per loop grows with the length of the array even
-   though only one index page is read.
+   though only one index page is read. Exceptions: lists on `kind`,
+   `metadata.namespace`, `spec.type` and `spec.lifecycle` are probed per row
+   on purpose, since each of their values matches a large share of the catalog
+   (see scenario 21). So are lists inside an `$any` or a `$not` with fewer
+   than 100 values or on a page of up to 100 entities, where the probe costs
+   less than building the set. Probes of 100 values or more, and of 10 or more
+   on such pages, should show the hashed `(value || '') = ANY(...)` filter
+   rather than an `= ANY` index condition.
 
 Facets and count queries (scenarios 15-18) have no LIMIT and must visit the
 whole filtered set. For those queries, a bounded spill of an intermediate set
