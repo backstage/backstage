@@ -118,14 +118,16 @@ export function selectSkills(input: SelectSkillsInput): SkillDecision[] {
     });
 
     const agents = isSkillAiResourceEntity(entity) ? entity.spec.agents : [];
-    if (agents && agents.length > 0) {
-      if (!agents.some(agent => input.agents.includes(agent))) {
-        return skipped(
-          `supports agents [${agents.join(', ')}], not [${input.agents.join(
-            ', ',
-          )}]`,
-        );
-      }
+    if (
+      agents &&
+      agents.length > 0 &&
+      !agents.some(agent => input.agents.includes(agent))
+    ) {
+      return skipped(
+        `supports agents [${agents.join(', ')}], not [${input.agents.join(
+          ', ',
+        )}]`,
+      );
     }
 
     const parsed = parseSkillSource(

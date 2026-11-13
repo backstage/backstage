@@ -136,6 +136,7 @@ describe('runSkills', () => {
       [inv('a', { GH_HOST: 'h.example.com' }), inv('b'), inv('c')],
       run,
       log,
+      '/work/repo',
     );
     expect(run).toHaveBeenCalledTimes(3);
     expect(run).toHaveBeenNthCalledWith(
@@ -148,7 +149,7 @@ describe('runSkills', () => {
         '-y',
       ],
       { GH_HOST: 'h.example.com' },
-      undefined,
+      '/work/repo',
     );
     expect(result.failed).toEqual([
       'airesource:default/a',
@@ -158,27 +159,6 @@ describe('runSkills', () => {
       expect.stringContaining('airesource:default/a'),
     );
     expect(log).toHaveBeenCalledWith(expect.stringContaining('spawn failed'));
-  });
-});
-
-describe('runSkills cwd', () => {
-  it('passes the working directory to the runner', async () => {
-    const run = jest.fn().mockResolvedValue(0);
-    await runSkills(
-      [
-        {
-          ref: 'airesource:default/a',
-          source: 'https://github.com/acme/skills/tree/main/skills/a',
-          agents: ['codex'],
-          global: false,
-          env: {},
-        },
-      ],
-      run,
-      jest.fn(),
-      '/work/repo',
-    );
-    expect(run).toHaveBeenCalledWith(expect.any(Array), {}, '/work/repo');
   });
 });
 

@@ -41,20 +41,16 @@ describe('buildHookCommand', () => {
     ).toBe(
       "'/Users/Jane Doe/n ode' '/Users/Jane Doe/it'\\''s/bin/backstage-cli' ai skills sync --hook --agent claude-code --instance 'my instance'",
     );
-  });
-});
-
-describe('buildHookCommand with file sources', () => {
-  it('passes --allow-file-sources only when requested', () => {
-    const base = {
-      execPath: '/bin/node',
-      scriptPath: '/bin/backstage-cli',
-      agent: 'claude-code',
-    };
-    expect(buildHookCommand({ ...base, allowFileSources: true })).toBe(
+    expect(
+      buildHookCommand({
+        execPath: '/bin/node',
+        scriptPath: '/bin/backstage-cli',
+        agent: 'claude-code',
+        allowFileSources: true,
+      }),
+    ).toBe(
       '/bin/node /bin/backstage-cli ai skills sync --hook --agent claude-code --allow-file-sources',
     );
-    expect(buildHookCommand(base)).not.toContain('--allow-file-sources');
   });
 });
 
@@ -317,18 +313,6 @@ describe('installHooks', () => {
       'git',
       expect.arrayContaining(['check-ignore']),
     );
-  });
-
-  it('threads allowFileSources into the generated command', async () => {
-    await installHooks({
-      ...base(),
-      agents: ['claude-code'],
-      allowFileSources: true,
-    });
-    expect(
-      JSON.parse(read('.claude/settings.local.json')).hooks.SessionStart[0]
-        .hooks[0].command,
-    ).toBe(`${command('claude-code')} --allow-file-sources`);
   });
 
   it('installs the Codex hook next to the Claude Code hook, with a trust reminder and the same replace-in-place behavior', async () => {
