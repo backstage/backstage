@@ -1326,6 +1326,32 @@ overrides:
       '@backstage/theme in a refers to the backstage-next catalog, which the workspace does not define. No files were changed.',
     );
     expect(mockDir.content()).toEqual(beforeNamed);
+
+    // So must a catalog that a package without a new version refers to
+    const fetchPackageInfo = mockFetchPackageInfo.getMockImplementation()!;
+    mockFetchPackageInfo.mockImplementation(async name => {
+      if (name === '@backstage/gone') {
+        throw new NotFoundError('Nope');
+      }
+      return fetchPackageInfo(name);
+    });
+    await fs.writeFile(mockDir.resolve('pnpm-workspace.yaml'), workspaceYaml);
+    await fs.writeJson(mockDir.resolve('packages/a/package.json'), {
+      name: 'a',
+      dependencies: {
+        '@backstage/core': 'catalog:',
+        '@backstage/gone': 'catalog:missing',
+      },
+    });
+    const beforeUnknown = mockDir.content();
+    await expect(
+      withLogCollector(['log', 'warn'], () =>
+        bump({ args: ['--skip-migrate'], info }),
+      ),
+    ).rejects.toThrow(
+      '@backstage/gone in a refers to the missing catalog, which the workspace does not define. No files were changed.',
+    );
+    expect(mockDir.content()).toEqual(beforeUnknown);
   });
 
   it('should write the catalogs before any package.json file', async () => {
