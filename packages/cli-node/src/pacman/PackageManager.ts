@@ -69,6 +69,12 @@ export type PackageManagerInstallOptions = {
  * command run it in the workspace root unless a `cwd` is given, and never in
  * the current working directory of the process.
  *
+ * Methods that run a command reject when it fails. When a signal ends the
+ * command, the error has a `signal` property with the name of the signal, like
+ * the errors of `node:child_process`. A package manager that handles the
+ * signal itself, as Yarn does while it runs a script, exits with an exit code
+ * instead.
+ *
  * @alpha
  */
 export interface PackageManager {

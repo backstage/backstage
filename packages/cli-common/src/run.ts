@@ -165,7 +165,8 @@ export function run(args: string[], options: RunOptions = {}): RunChildProcess {
  *
  * Fails when the command exits with a non-zero exit code, or when a signal
  * ends it, since its output may then be incomplete. On error, both stdout and
- * stderr are attached to the error object as properties.
+ * stderr are attached to the error object as properties, and when a signal
+ * ended the command, the `signal` property has the name of the signal.
  *
  * @public
  */
@@ -194,8 +195,11 @@ export async function runOutput(
     });
     await child.waitForExit();
     if (child.signalCode) {
-      throw new Error(
-        `Command '${args.join(' ')}' was ended by ${child.signalCode}`,
+      throw Object.assign(
+        new Error(
+          `Command '${args.join(' ')}' was ended by ${child.signalCode}`,
+        ),
+        { signal: child.signalCode },
       );
     }
 
