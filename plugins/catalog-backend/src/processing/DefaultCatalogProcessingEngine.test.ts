@@ -1019,4 +1019,53 @@ describe('DefaultCatalogProcessingEngine', () => {
     );
     await engine.stop();
   });
+
+  it('creates processing histograms with explicit second-scale bucket boundaries', () => {
+    const metrics = metricsServiceMock.mock();
+    void new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: mockServices.logger.mock(),
+      processingDatabase: db,
+      knex: {} as any,
+      orchestrator,
+      createHash: () => hash,
+      scheduler: mockServices.scheduler(),
+      events: mockServices.events.mock(),
+      metrics,
+    });
+
+    expect(metrics.createHistogram).toHaveBeenCalledWith(
+      'catalog.processing.duration',
+      expect.objectContaining({
+        advice: expect.objectContaining({
+          explicitBucketBoundaries: [
+            0, 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 75, 100, 250,
+            500, 750, 1000,
+          ],
+        }),
+      }),
+    );
+    expect(metrics.createHistogram).toHaveBeenCalledWith(
+      'catalog.processors.duration',
+      expect.objectContaining({
+        advice: expect.objectContaining({
+          explicitBucketBoundaries: [
+            0, 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 75, 100, 250,
+            500, 750, 1000,
+          ],
+        }),
+      }),
+    );
+    expect(metrics.createHistogram).toHaveBeenCalledWith(
+      'catalog.processing.queue.delay',
+      expect.objectContaining({
+        advice: expect.objectContaining({
+          explicitBucketBoundaries: [
+            0, 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 75, 100, 250,
+            500, 750, 1000,
+          ],
+        }),
+      }),
+    );
+  });
 });
