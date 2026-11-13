@@ -29,7 +29,7 @@ export type ApiHolder = {
 };
 
 // @public
-export type ApiRef<T, TId extends string = string> = {
+export type ApiRef<T = unknown, TId extends string = string> = {
   readonly $$type?: '@backstage/ApiRef';
   readonly id: TId;
   readonly T: T;

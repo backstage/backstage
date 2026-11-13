@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { AnyApiFactory, ApiFactory } from '../apis/system';
+import { ApiFactory } from '../apis/system';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 import { createExtensionBlueprintParams } from '../wiring/createExtensionBlueprint';
 
-const factoryDataRef = createExtensionDataRef<AnyApiFactory>().with({
+const factoryDataRef = createExtensionDataRef<ApiFactory>().with({
   id: 'core.api.factory',
 });
 
@@ -40,7 +40,7 @@ export const ApiBlueprint = createExtensionBlueprint({
     TDeps extends { [name in string]: unknown },
   >(
     params: ApiFactory<TApi, TImpl, TDeps>,
-  ) => createExtensionBlueprintParams(params as AnyApiFactory),
+  ) => createExtensionBlueprintParams(params as ApiFactory),
   *factory(params) {
     yield factoryDataRef(params);
   },

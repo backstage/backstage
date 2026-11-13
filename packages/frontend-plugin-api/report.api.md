@@ -100,7 +100,7 @@ export type AnalyticsTracker = {
   ) => void;
 };
 
-// @public
+// @public @deprecated
 export type AnyApiFactory = ApiFactory<
   unknown,
   unknown,
@@ -109,7 +109,7 @@ export type AnyApiFactory = ApiFactory<
   }
 >;
 
-// @public
+// @public @deprecated
 export type AnyApiRef = ApiRef<unknown>;
 
 // @public
@@ -128,25 +128,23 @@ export const ApiBlueprint: ExtensionBlueprint_2<{
     TDeps extends { [name in string]: unknown },
   >(
     params: ApiFactory<TApi, TImpl, TDeps>,
-  ) => ExtensionBlueprintParams_2<AnyApiFactory>;
-  output: ExtensionDataRef_2<AnyApiFactory, 'core.api.factory', {}>;
+  ) => ExtensionBlueprintParams_2<ApiFactory>;
+  output: ExtensionDataRef_2<ApiFactory, 'core.api.factory', {}>;
   inputs: {};
   config: {};
   configInput: {};
   dataRefs: {
-    factory: ConfigurableExtensionDataRef_2<
-      AnyApiFactory,
-      'core.api.factory',
-      {}
-    >;
+    factory: ConfigurableExtensionDataRef_2<ApiFactory, 'core.api.factory', {}>;
   };
 }>;
 
 // @public
 export type ApiFactory<
-  Api,
-  Impl extends Api,
+  Api = unknown,
+  Impl extends Api = Api,
   Deps extends {
+    [name in string]: unknown;
+  } = {
     [name in string]: unknown;
   },
 > = {
@@ -161,7 +159,7 @@ export type ApiHolder = {
 };
 
 // @public
-export type ApiRef<T, TId extends string = string> = {
+export type ApiRef<T = unknown, TId extends string = string> = {
   readonly $$type?: '@backstage/ApiRef';
   readonly id: TId;
   readonly T: T;
