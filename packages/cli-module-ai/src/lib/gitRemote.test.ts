@@ -48,13 +48,18 @@ describe('repoUrlFromRemote', () => {
 describe('getRepoPrefix', () => {
   it('returns the folder without a trailing slash, empty at the root', async () => {
     const exec = jest.fn().mockResolvedValue({ stdout: 'packages/a/\n' });
-    await expect(getRepoPrefix(exec)).resolves.toBe('packages/a');
-    expect(exec).toHaveBeenCalledWith('git', ['rev-parse', '--show-prefix']);
+    await expect(getRepoPrefix('/work', exec)).resolves.toBe('packages/a');
+    expect(exec).toHaveBeenCalledWith('git', ['rev-parse', '--show-prefix'], {
+      cwd: '/work',
+    });
     await expect(
-      getRepoPrefix(jest.fn().mockResolvedValue({ stdout: '\n' })),
+      getRepoPrefix('/work', jest.fn().mockResolvedValue({ stdout: '\n' })),
     ).resolves.toBe('');
     await expect(
-      getRepoPrefix(jest.fn().mockRejectedValue(new Error('not a repo'))),
+      getRepoPrefix(
+        '/work',
+        jest.fn().mockRejectedValue(new Error('not a repo')),
+      ),
     ).rejects.toThrow(/not a repo.*--entity/);
   });
 });
@@ -114,44 +119,53 @@ describe('getOriginUrl', () => {
     const exec = jest
       .fn()
       .mockResolvedValue({ stdout: 'git@github.com:a/b.git\n' });
-    await expect(getOriginUrl(exec)).resolves.toBe('git@github.com:a/b.git');
-    expect(exec).toHaveBeenCalledWith('git', ['remote', 'get-url', 'origin']);
+    await expect(getOriginUrl('/work', exec)).resolves.toBe(
+      'git@github.com:a/b.git',
+    );
+    expect(exec).toHaveBeenCalledWith('git', ['remote', 'get-url', 'origin'], {
+      cwd: '/work',
+    });
   });
 
   it('fails with guidance when there is no origin remote', async () => {
     const exec = jest.fn().mockRejectedValue(new Error('No such remote'));
-    await expect(getOriginUrl(exec)).rejects.toThrow(
+    await expect(getOriginUrl('/work', exec)).rejects.toThrow(
       /Could not read the "origin" git remote \(No such remote\).*--entity/,
     );
     const empty = jest.fn().mockResolvedValue({ stdout: '  \n' });
-    await expect(getOriginUrl(empty)).rejects.toThrow(/--entity/);
+    await expect(getOriginUrl('/work', empty)).rejects.toThrow(/--entity/);
   });
 });
 
 describe('getRepoRoot', () => {
   it('returns the trimmed top-level directory, or undefined outside a repository', async () => {
     const exec = jest.fn().mockResolvedValue({ stdout: '/work/repo\n' });
-    await expect(getRepoRoot(exec)).resolves.toBe('/work/repo');
-    expect(exec).toHaveBeenCalledWith('git', ['rev-parse', '--show-toplevel']);
+    await expect(getRepoRoot('/work', exec)).resolves.toBe('/work/repo');
+    expect(exec).toHaveBeenCalledWith('git', ['rev-parse', '--show-toplevel'], {
+      cwd: '/work',
+    });
 
     const notARepo = jest.fn().mockRejectedValue(new Error('not a git repo'));
-    await expect(getRepoRoot(notARepo)).resolves.toBeUndefined();
+    await expect(getRepoRoot('/work', notARepo)).resolves.toBeUndefined();
     const empty = jest.fn().mockResolvedValue({ stdout: '\n' });
-    await expect(getRepoRoot(empty)).resolves.toBeUndefined();
+    await expect(getRepoRoot('/work', empty)).resolves.toBeUndefined();
   });
 });
 
 describe('getMainCheckoutRoot', () => {
   it('returns the parent of the common git directory, also for worktrees', async () => {
     const exec = (stdout: string) => jest.fn().mockResolvedValue({ stdout });
-    await expect(getMainCheckoutRoot(exec('/work/main/.git\n'))).resolves.toBe(
-      '/work/main',
-    );
-    await expect(getMainCheckoutRoot(exec('/bare/repo.git\n'))).resolves.toBe(
-      undefined,
-    );
     await expect(
-      getMainCheckoutRoot(jest.fn().mockRejectedValue(new Error('no git'))),
+      getMainCheckoutRoot('/work', exec('/work/main/.git\n')),
+    ).resolves.toBe('/work/main');
+    await expect(
+      getMainCheckoutRoot('/work', exec('/bare/repo.git\n')),
+    ).resolves.toBe(undefined);
+    await expect(
+      getMainCheckoutRoot(
+        '/work',
+        jest.fn().mockRejectedValue(new Error('no git')),
+      ),
     ).resolves.toBe(undefined);
   });
 });

@@ -31,10 +31,21 @@ export type CatalogReader = Pick<
 
 /**
  * Creates a {@link @backstage/catalog-client#CatalogClient} that talks
- * directly to the catalog plugin's REST API of the given Backstage instance.
+ * directly to the catalog plugin's REST API of the given Backstage instance,
+ * authenticating every request with the given token.
  */
-export function createCatalogClient(baseUrl: string): CatalogClient {
+export function createCatalogClient(
+  baseUrl: string,
+  token: string,
+): CatalogClient {
   return new CatalogClient({
+    fetchApi: {
+      fetch: (input, init) => {
+        const headers = new Headers(init?.headers);
+        headers.set('Authorization', `Bearer ${token}`);
+        return fetch(input, { ...init, headers });
+      },
+    },
     discoveryApi: {
       async getBaseUrl(pluginId: string) {
         return new URL(`/api/${pluginId}`, baseUrl).toString();
@@ -47,16 +58,14 @@ export function createCatalogClient(baseUrl: string): CatalogClient {
 export async function queryAllEntities(
   client: CatalogReader,
   request: QueryEntitiesInitialRequest,
-  token: string,
 ): Promise<Entity[]> {
   const items: Entity[] = [];
-  let response = await client.queryEntities(request, { token });
+  let response = await client.queryEntities(request);
   items.push(...response.items);
   while (response.pageInfo.nextCursor) {
-    response = await client.queryEntities(
-      { cursor: response.pageInfo.nextCursor },
-      { token },
-    );
+    response = await client.queryEntities({
+      cursor: response.pageInfo.nextCursor,
+    });
     items.push(...response.items);
   }
   return items;
@@ -65,16 +74,15 @@ export async function queryAllEntities(
 /** Fetches entities by ref in batches; missing entities are `undefined`. */
 export async function getEntitiesInBatches(
   client: CatalogReader,
-  token: string,
   refs: string[],
   fields?: string[],
 ): Promise<Array<Entity | undefined>> {
   const result: Array<Entity | undefined> = [];
   for (let i = 0; i < refs.length; i += BATCH_SIZE) {
-    const { items } = await client.getEntitiesByRefs(
-      { entityRefs: refs.slice(i, i + BATCH_SIZE), fields },
-      { token },
-    );
+    const { items } = await client.getEntitiesByRefs({
+      entityRefs: refs.slice(i, i + BATCH_SIZE),
+      fields,
+    });
     result.push(...items);
   }
   return result;
