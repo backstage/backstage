@@ -37,16 +37,6 @@ describe('OfflineSessionDatabase', () => {
       ),
     });
 
-    // Create an OIDC client for testing foreign key relationships
-    await knex('oidc_clients').insert({
-      client_id: 'test-client',
-      client_name: 'Test Client',
-      client_secret: 'test-secret',
-      response_types: JSON.stringify(['code']),
-      grant_types: JSON.stringify(['authorization_code']),
-      redirect_uris: JSON.stringify(['http://localhost']),
-    });
-
     return {
       knex,
       db: OfflineSessionDatabase.create({

@@ -251,7 +251,19 @@ files.
 [Stitching](./life-of-an-entity.md#stitching) finalizes entities asynchronously via a worker queue. You can tune the following parameters under `catalog.stitchingStrategy`:
 
 - `pollingInterval` - the interval between polling for entities that need stitching
-- `stitchTimeout` - the maximum time to wait for an entity to be stitched
+- `stitchTimeout` - the lease duration before unfinished stitching work can be reclaimed
+
+Failed stitch attempts remain queued and are retried. After consecutive failures,
+the lease assigned on acquisition grows quadratically: the configured timeout is
+multiplied by the square of one plus the failure count, capped at one hour before
+adding up to 10% jitter. A configured timeout longer than one hour remains the
+minimum. Initial attempts use the configured timeout without jitter. Process
+restarts or expired leases alone do not increase the failure count.
+
+A new stitch request resets the failure count without shortening an existing
+lease. If it arrives during an attempt, that attempt makes the new request
+eligible when it finishes or fails. Errors continue to be logged; failed work is
+never discarded because of its retry count.
 
 These parameters accept a duration object, similar to the `processingInterval` parameter.
 
@@ -261,6 +273,11 @@ catalog:
     pollingInterval: { seconds: 1 }
     stitchTimeout: { minutes: 1 }
 ```
+
+Both durations must be greater than zero; invalid values prevent the catalog
+from starting. The defaults are one second between polls and a one-minute lease.
+Lease expiry allows another worker to reclaim unfinished work. It does not
+cancel the original attempt or impose a database query timeout.
 
 ## Subscribing to Catalog Errors
 

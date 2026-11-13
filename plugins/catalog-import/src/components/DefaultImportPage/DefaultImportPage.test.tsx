@@ -21,7 +21,7 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import { catalogImportApiRef, CatalogImportClient } from '../../api';
-import { DefaultImportPage } from './DefaultImportPage';
+import { DefaultImportPage, ImportPageContent } from './DefaultImportPage';
 
 describe('<DefaultImportPage />', () => {
   const fetchApi = {
@@ -60,5 +60,24 @@ describe('<DefaultImportPage />', () => {
     expect(
       screen.getByText('Start tracking your component in Backstage'),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Register an existing component',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders the content without the legacy header', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <ImportPageContent />
+      </ApiProvider>,
+    );
+
+    expect(
+      screen.getByText('Start tracking your component in Backstage'),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
   });
 });

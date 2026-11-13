@@ -44,7 +44,11 @@ export function AppNodeProvider({
 }) {
   const versionedValue = createVersionedValueMap({ 1: { node } });
 
-  return <AppNodeContext.Provider value={versionedValue} children={children} />;
+  return (
+    <AppNodeContext.Provider value={versionedValue}>
+      {children}
+    </AppNodeContext.Provider>
+  );
 }
 
 /**
@@ -53,12 +57,13 @@ export function AppNodeProvider({
  * @public
  * @remarks
  *
- * This hook will return the {@link AppNode} for the closest extension. This
- * relies on the extension using the {@link (ExtensionBoundary:function)} component in its
- * implementation, which is included by default for all common blueprints.
+ * This hook returns the {@link AppNode} from the closest extension context.
+ * The app supplies this context around the complete React element output of
+ * route-bearing extensions, including headers outside their own boundaries.
+ * The {@link (ExtensionBoundary:function)} component also supplies extension
+ * context, including for extensions without a route path.
  *
- * If the current component is not inside an {@link (ExtensionBoundary:function)}, it will
- * return `undefined`.
+ * If no extension context is available, this hook returns `undefined`.
  */
 export function useAppNode(): AppNode | undefined {
   const versionedContext = useVersionedContext<AppNodeContextMap>(CONTEXT_KEY);

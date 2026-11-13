@@ -15,12 +15,38 @@
  */
 
 import { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { APP_ROOT_PATH, useAppHistoryLocation } from '@internal/frontend';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
-import { RouteFunc, routeResolutionApiRef, useApi } from '../apis';
+import {
+  AppLifecycleApi,
+  appLifecycleApiRef,
+  RouteFunc,
+  routeResolutionApiRef,
+  useApi,
+  useApiHolder,
+} from '../apis';
+import { appHistoryApiRef } from './AppHistoryApi';
+import { LocationContext, useRouterContext } from './reactRouterContext';
+
+const appLifecycleApiFallback: AppLifecycleApi = {
+  isFinalized: () => true,
+  subscribe: () => () => {},
+};
+
+/** The pathname a route ref is resolved relative to. */
+function useSourcePath(): string {
+  const appHistory = useApiHolder().get(appHistoryApiRef);
+  const appLocation = useAppHistoryLocation(appHistory);
+  const routerLocation = useRouterContext(LocationContext)?.location;
+
+  return (
+    appLocation?.pathname ?? routerLocation?.pathname ?? APP_ROOT_PATH.pathname
+  );
+}
 
 /**
  * React hook for constructing URLs to routes.
@@ -39,12 +65,20 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
     | SubRouteRef<TParams>
     | ExternalRouteRef<TParams>,
 ): RouteFunc<TParams> | undefined {
-  const { pathname } = useLocation();
+  const sourcePath = useSourcePath();
   const routeResolutionApi = useApi(routeResolutionApiRef);
+  const appLifecycleApi =
+    useApiHolder().get(appLifecycleApiRef) ?? appLifecycleApiFallback;
+  const isFinalized = useSyncExternalStore(
+    appLifecycleApi.subscribe,
+    appLifecycleApi.isFinalized,
+  );
 
   const routeFunc = useMemo(
-    () => routeResolutionApi.resolve(routeRef, { sourcePath: pathname }),
-    [routeResolutionApi, routeRef, pathname],
+    () => routeResolutionApi.resolve(routeRef, { sourcePath }),
+    // Resolve before app is finalized and re-evaluate again after
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [routeResolutionApi, routeRef, sourcePath, isFinalized],
   );
 
   return routeFunc;

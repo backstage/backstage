@@ -27,7 +27,6 @@ import { trace } from '@opentelemetry/api';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
 import { createCounterMetric, createSummaryMetric } from '../util/metrics';
 import { CatalogProcessingOrchestrator, EntityProcessingResult } from './types';
-import { markForStitching } from '../database/operations/stitcher/markForStitching';
 import { startTaskPipeline } from './TaskPipeline';
 import { Config } from '@backstage/config';
 import {
@@ -36,6 +35,7 @@ import {
   withActiveSpan,
 } from '../util/opentelemetry';
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
+import { markForStitching } from '../database/operations/stitcher/markForStitching';
 import { EventsService } from '@backstage/plugin-events-node';
 import { CATALOG_ERRORS_TOPIC } from '../constants';
 import { retryOnDeadlock } from '../database/util';
@@ -273,58 +273,65 @@ export class DefaultCatalogProcessingEngine {
                   );
                 });
 
-              await this.processingDatabase.transaction(async tx => {
-                await this.processingDatabase.updateProcessedEntityErrors(tx, {
-                  id,
-                  errors: errorsString,
-                  resultHash,
-                });
-              });
-
-              await markForStitching({
-                knex: this.knex,
-                entityRefs: [stringifyEntityRef(unprocessedEntity)],
-              });
+              await retryOnDeadlock(
+                () =>
+                  this.processingDatabase.transaction(async tx => {
+                    await this.processingDatabase.updateProcessedEntityErrors(
+                      tx,
+                      {
+                        id,
+                        errors: errorsString,
+                        resultHash,
+                      },
+                    );
+                    await markForStitching({
+                      knex: tx as Knex.Transaction,
+                      entityRefs: [stringifyEntityRef(unprocessedEntity)],
+                    });
+                  }),
+                this.knex,
+              );
 
               track.markSuccessfulWithErrors();
               return;
             }
 
             result.completedEntity.metadata.uid = id;
-            const { relationsChange } = await retryOnDeadlock(
+            await retryOnDeadlock(
               () =>
-                this.processingDatabase.transaction(async tx =>
-                  this.processingDatabase.updateProcessedEntity(tx, {
-                    id,
-                    processedEntity: result.completedEntity,
-                    resultHash,
-                    errors: errorsString,
-                    relations: result.relations,
-                    deferredEntities: result.deferredEntities,
-                    locationKey,
-                    refreshKeys: result.refreshKeys,
-                  }),
-                ),
+                this.processingDatabase.transaction(async tx => {
+                  const { relationsChange } =
+                    await this.processingDatabase.updateProcessedEntity(tx, {
+                      id,
+                      processedEntity: result.completedEntity,
+                      resultHash,
+                      errors: errorsString,
+                      relations: result.relations,
+                      deferredEntities: result.deferredEntities,
+                      locationKey,
+                      refreshKeys: result.refreshKeys,
+                    });
+
+                  // Only stitch entities whose relations actually changed.
+                  // In steady state (no relation changes), this is just the
+                  // entity itself — no unnecessary stitching of neighbors.
+                  const setOfThingsToStitch = new Set<string>([
+                    stringifyEntityRef(result.completedEntity),
+                  ]);
+                  for (const r of relationsChange.deleted) {
+                    setOfThingsToStitch.add(r.source_entity_ref);
+                  }
+                  for (const r of relationsChange.inserted) {
+                    setOfThingsToStitch.add(r.source_entity_ref);
+                  }
+
+                  await markForStitching({
+                    knex: tx as Knex.Transaction,
+                    entityRefs: setOfThingsToStitch,
+                  });
+                }),
               this.knex,
             );
-
-            // Only stitch entities whose relations actually changed.
-            // In steady state (no relation changes), this is just the
-            // entity itself — no unnecessary stitching of neighbors.
-            const setOfThingsToStitch = new Set<string>([
-              stringifyEntityRef(result.completedEntity),
-            ]);
-            for (const r of relationsChange.deleted) {
-              setOfThingsToStitch.add(r.source_entity_ref);
-            }
-            for (const r of relationsChange.inserted) {
-              setOfThingsToStitch.add(r.source_entity_ref);
-            }
-
-            await markForStitching({
-              knex: this.knex,
-              entityRefs: setOfThingsToStitch,
-            });
 
             track.markSuccessfulWithChanges();
           } catch (error) {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { readFileSync } from 'node:fs';
+
 export function parseEntityRef(ref: string): {
   kind?: string;
   namespace?: string;
@@ -33,4 +35,18 @@ export function parseEntityRef(ref: string): {
     namespace: slash > 0 ? remainder.slice(0, slash) : undefined,
     name: slash > 0 ? remainder.slice(slash + 1) : remainder,
   };
+}
+
+/**
+ * Reads the content of a file, or of stdin if the path is `-`.
+ */
+export async function readFileOrStdin(path: string): Promise<string> {
+  if (path !== '-') {
+    return readFileSync(path, 'utf8');
+  }
+  const chunks: Buffer[] = [];
+  for await (const chunk of process.stdin) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks).toString('utf8');
 }

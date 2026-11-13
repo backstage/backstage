@@ -23,7 +23,11 @@ import { Helmet } from 'react-helmet';
  * TODO: favoriteable capability
  */
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link ContentHeader} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type ContentHeaderClassKey =
   | 'container'
   | 'leftItemsBox'
@@ -116,8 +120,11 @@ type ContentHeaderProps = {
  *
  * @public
  *
+ * @deprecated Compose a heading, description, and actions using `Text`,
+ * `Flex`, and `Box` from `@backstage/ui`, or use the BUI page header.
+ * Manage the document title separately; this component sets it via Helmet,
+ * which a BUI heading composition does not preserve automatically.
  */
-
 export function ContentHeader(props: PropsWithChildren<ContentHeaderProps>) {
   const {
     description,

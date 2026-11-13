@@ -23,10 +23,8 @@ import {
   ConfigApi,
   coreExtensionData,
   AppNode,
-  ExtensionFactoryMiddleware,
   FrontendFeature,
   IdentityApi,
-  identityApiRef,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -71,6 +69,7 @@ import {
   type ExtensionPredicateContext,
 } from './predicates';
 import { FrontendApiRegistry } from './FrontendApiRegistry';
+import { ExtensionFactoryMiddleware } from './types';
 import {
   ApiFactoryEntry,
   collectApiFactoryEntries,
@@ -101,10 +100,12 @@ function deduplicateFeatures(
       if (!OpaqueFrontendPlugin.isType(feature)) {
         return true;
       }
-      if (seenIds.has(feature.id)) {
+      const pluginId =
+        feature.pluginId ?? OpaqueFrontendPlugin.toInternal(feature).id;
+      if (seenIds.has(pluginId)) {
         return false;
       }
-      seenIds.add(feature.id);
+      seenIds.add(pluginId);
       return true;
     })
     .reverse();
@@ -256,17 +257,20 @@ export interface CreateSpecializedAppInternalOptions
   extends PrepareSpecializedAppOptions {
   __internal?: {
     apiFactoryOverrides?: AnyApiFactory[];
-  };
-}
 
-export function createSessionStateFromApis(
-  apis: ApiHolder,
-): SpecializedAppSessionState {
-  return OpaqueSpecializedAppSessionState.createInstance('v1', {
-    apis,
-    identityApi: apis.get(identityApiRef),
-    predicateContext: EMPTY_PREDICATE_CONTEXT,
-  });
+    /**
+     * Called once during preparation with a callback that releases the browser
+     * resources owned by the app, most notably the `popstate` listener that
+     * backs app navigation.
+     *
+     * Preparing an app without ever calling it leaves that listener attached
+     * for the lifetime of the page, so every re-run of app creation — as
+     * happens on every hot reload in development — adds another one. The
+     * callback is safe to call more than once, but the app must not be used
+     * afterwards.
+     */
+    onDispose?(dispose: () => void): void;
+  };
 }
 
 /**
@@ -369,6 +373,9 @@ export function prepareSpecializedApp(
     routeBindings,
     staticFactories: phaseStaticFactories,
   });
+  // The phase APIs own a window `popstate` listener, so hand teardown to the
+  // caller as soon as it exists rather than waiting for finalization.
+  internalOptions?.__internal?.onDispose?.(() => phase.dispose());
   const predicateContextLoader = createPredicateContextLoader({
     apis: phase.apis,
     predicateReferences,
@@ -485,13 +492,16 @@ export function prepareSpecializedApp(
     });
   }
 
+  function setFinalized(finalizedApp: FinalizedSpecializedApp) {
+    finalized = finalizedApp;
+    phase.appLifecycleApi.markFinalized();
+  }
+
   const finalization = createFinalizationController({
     getFinalized() {
       return finalized;
     },
-    setFinalized(finalizedApp) {
-      finalized = finalizedApp;
-    },
+    setFinalized,
     finalizeFromSessionState: finalizeWithSessionState,
     finalizeFromBootstrapError: finalizeWithBootstrapError,
   });
@@ -620,8 +630,9 @@ export function prepareSpecializedApp(
         );
       }
 
-      finalized = finalizeWithSessionState(finalizedSessionState);
-      return finalized;
+      const finalizedApp = finalizeWithSessionState(finalizedSessionState);
+      setFinalized(finalizedApp);
+      return finalizedApp;
     },
   };
 }

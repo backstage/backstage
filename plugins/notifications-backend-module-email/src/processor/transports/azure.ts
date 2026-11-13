@@ -38,19 +38,20 @@ export const createAzureTransport = async (config: Config) => {
       mail: MailMessage,
       callback: (err: Error | null, info: {} | null) => Promise<void>,
     ) => {
-      const envelope = mail.data.envelope || mail.message.getEnvelope();
-      const from =
-        typeof envelope.from === 'string'
-          ? envelope.from
-          : config.getString('senderAddress');
-      const to =
-        typeof envelope.to === 'string' ? [envelope.to] : envelope.to ?? [];
+      const message = mail.message;
+      if (!message) {
+        callback(new Error('Message has not been compiled'), null);
+        return;
+      }
+
+      const envelope = message.getEnvelope();
+      const from = envelope.from || config.getString('senderAddress');
       const recipients: EmailRecipients = {
-        to: to.map(address => ({ address })),
+        to: envelope.to.map(address => ({ address })),
       };
 
       const content = {
-        subject: mail.message.getHeader('Subject'),
+        subject: String(message.getHeader('Subject') ?? ''),
         html:
           typeof mail.data.html === 'string'
             ? mail.data.html

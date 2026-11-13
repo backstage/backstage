@@ -61,21 +61,21 @@ help [command]                                 display help for command
 
 ### [Catalog Module](./module-catalog.md)
 
-| Command              | Description                                          |
-| -------------------- | ---------------------------------------------------- |
-| `catalog list`       | List catalog entities with optional kind/type filter |
-| `catalog get`        | Get a specific catalog entity by reference           |
-| `catalog validate`   | Validate entity YAML against the catalog schema      |
-| `catalog register`   | Register a catalog entity from a location URL        |
-| `catalog unregister` | Unregister a catalog entity by location              |
+| Command              | Description                                                               |
+| -------------------- | ------------------------------------------------------------------------- |
+| `catalog list`       | List catalog entities with optional filters                               |
+| `catalog get`        | Get a specific catalog entity by reference                                |
+| `catalog validate`   | Validate an entity YAML file or standard input against the catalog schema |
+| `catalog register`   | Register a catalog entity from a location URL                             |
+| `catalog unregister` | Unregister a catalog entity by location                                   |
 
 ### [Scaffolder Module](./module-scaffolder.md)
 
-| Command            | Description                                         |
-| ------------------ | --------------------------------------------------- |
-| `template list`    | List available software templates                   |
-| `template execute` | Execute a software template by reference            |
-| `template dry-run` | Validate a software template without making changes |
+| Command            | Description                                              |
+| ------------------ | -------------------------------------------------------- |
+| `template list`    | List available software templates                        |
+| `template execute` | Execute a software template by reference                 |
+| `template dry-run` | Validate a software template file without making changes |
 
 ### [Search Module](./module-search.md)
 

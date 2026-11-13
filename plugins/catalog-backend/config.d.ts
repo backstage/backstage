@@ -168,9 +168,12 @@ export interface Config {
      * The strategy to use when stitching together the final entities.
      */
     stitchingStrategy?: {
-      /** Polling interval for tasks in seconds */
+      /** Interval between queue polls. Must be greater than zero. */
       pollingInterval?: HumanDuration | string;
-      /** How long to wait for a stitch to complete before giving up in seconds */
+      /**
+       * Lease duration before unfinished work can be reclaimed. Must be greater
+       * than zero. This does not cancel an attempt when its lease expires.
+       */
       stitchTimeout?: HumanDuration | string;
     };
 

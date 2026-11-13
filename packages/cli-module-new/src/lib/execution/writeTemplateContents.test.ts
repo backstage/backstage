@@ -70,7 +70,9 @@ describe('writeTemplateContents', () => {
       },
     );
 
-    expect(relativePath(mockDir.path, targetDir)).toBe('plugins/plugin-test');
+    expect(relativePath(mockDir.path, targetDir).replace(/\\/g, '/')).toBe(
+      'plugins/plugin-test',
+    );
     expect(mockDir.content()).toEqual({
       'package.json': JSON.stringify({
         workspaces: { packages: ['packages/*', 'plugins/*'] },
@@ -96,14 +98,26 @@ describe('writeTemplateContents', () => {
             content: '{"x":1}',
             path: 'test.json',
           },
+          {
+            content: 'component={{ extensionName }}',
+            path: 'src/extensions/{{ extensionName }}.tsx',
+            syntax: 'handlebars',
+          },
         ],
-        role: 'frontend-plugin',
-        values: {},
+        role: 'frontend-plugin-module',
+        values: {
+          extensionName: 'MyFieldExtension',
+        },
       },
       {
         ...baseConfig,
-        roleParams: { role: 'frontend-plugin', pluginId: 'test' },
-        packageName: '@internal/plugin-test',
+        roleParams: {
+          role: 'frontend-plugin-module',
+          pluginId: 'test',
+          moduleId: 'my-field',
+          pluginPackage: '@backstage/plugin-test',
+        },
+        packageName: '@internal/plugin-test-module-my-field',
         packagePath: 'out',
       },
     );
@@ -116,6 +130,11 @@ describe('writeTemplateContents', () => {
         'test.txt': 'test',
         'plugin.txt': 'id=test',
         'test.json': '{"x":1}',
+        src: {
+          extensions: {
+            'MyFieldExtension.tsx': 'component=MyFieldExtension',
+          },
+        },
       },
     });
   });

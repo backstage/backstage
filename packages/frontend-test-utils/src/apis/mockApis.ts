@@ -15,31 +15,49 @@
  */
 
 import {
-  alertApiRef,
-  analyticsApiRef,
-  configApiRef,
-  discoveryApiRef,
-  errorApiRef,
-  fetchApiRef,
-  featureFlagsApiRef,
-  identityApiRef,
-  storageApiRef,
-  translationApiRef,
+  coreApis,
+  appHistoryApiRef,
+  routeResolutionApiRef,
   type AnalyticsApi,
+  type AnalyticsEvent,
+  type AppHistoryApi,
+  type AppNavigateOptions,
+  type RouteResolutionApi,
   type ConfigApi,
   type DiscoveryApi,
   type ErrorApi,
+  type ErrorApiError,
+  type ErrorApiErrorContext,
   type FetchApi,
+  type FeatureFlagsApi,
   type FeatureFlagState,
   type IdentityApi,
   type StorageApi,
   type TranslationApi,
+  type AppLanguageApi,
+  type AppLifecycleApi,
+  type AppTheme,
+  type AppThemeApi,
+  type IconsApi,
+  type IconElement,
+  type OAuthRequestApi,
+  type PluginHeaderActionsApi,
+  type ToastApi,
+  type ToastApiMessage,
 } from '@backstage/frontend-plugin-api';
+import {
+  alertApiRef,
+  type AlertApi,
+  type AlertMessage,
+} from '@backstage/core-plugin-api';
 import {
   permissionApiRef,
   type PermissionApi,
 } from '@backstage/plugin-permission-react';
+import { JSX } from 'react';
 import { JsonObject } from '@backstage/types';
+import { OAuthRequestManager } from '@backstage/core-app-api';
+import Observable from 'zen-observable';
 import {
   AuthorizeResult,
   EvaluatePermissionRequest,
@@ -57,41 +75,73 @@ import {
   attachMockApiFactory,
   type MockWithApiFactory,
 } from './MockWithApiFactory';
-import { createApiMock } from './createApiMock';
+import { createApiMock, type ApiMock } from './createApiMock';
+import {
+  createMockAppHistory,
+  type MockAppHistory,
+  type MockAppHistoryOptions,
+} from './createMockAppHistory';
+import {
+  createMockRouteResolutionApi,
+  type MockRouteResolutionApi,
+  type MockRouteResolutionApiOptions,
+} from './createMockRouteResolutionApi';
+
+function createObservableState<T>(initialValue: T) {
+  let value = initialValue;
+  const listeners = new Set<(nextValue: T) => void>();
+  return {
+    get: () => value,
+    set(nextValue: T) {
+      if (value === nextValue) {
+        return;
+      }
+      value = nextValue;
+      listeners.forEach(listener => listener(nextValue));
+    },
+    observable: new Observable<T>(subscriber => {
+      const listener = (nextValue: T) => subscriber.next(nextValue);
+      listeners.add(listener);
+      subscriber.next(value);
+      return () => {
+        listeners.delete(listener);
+      };
+    }),
+  };
+}
 
 /**
  * Mock implementations of the core utility APIs, to be used in tests.
+ * Each {@link @backstage/frontend-plugin-api#coreApis} member has a matching
+ * `.mock()` helper. Some APIs also provide functional fake instances.
  *
  * @public
  * @remarks
  *
- * There are some variations among the APIs depending on what needs tests
- * might have, but overall there are two main usage patterns:
- *
- * 1: Creating an actual fake API instance, often with a simplified version
- * of functionality, by calling the mock API itself as a function.
+ * Call `.mock()` to create an API whose methods are plain `jest.fn()` stubs
+ * without default behavior. Supply partial implementations for methods used
+ * by your test, then make assertions using Jest:
  *
  * ```ts
- * // The function often accepts parameters that control its behavior
- * const foo = mockApis.foo();
+ * const discovery = mockApis.discovery.mock({
+ *   getBaseUrl: async pluginId => `http://example.com/api/${pluginId}`,
+ * });
+ * await discovery.getBaseUrl('catalog');
+ * expect(discovery.getBaseUrl).toHaveBeenCalledWith('catalog');
  * ```
  *
- * 2: Creating a mock API, where all methods are replaced with jest mocks, by
- * calling the API's `mock` function.
+ * Some APIs also provide functional fake instances, created by calling the
+ * helper directly. These maintain state or provide other useful behavior:
  *
  * ```ts
- * // You can optionally supply a subset of its methods to implement
- * const foo = mockApis.foo.mock({
- *   someMethod: () => 'mocked result',
- * });
- * // After exercising your test, you can make assertions on the mock:
- * expect(foo.someMethod).toHaveBeenCalledTimes(2);
- * expect(foo.otherMethod).toHaveBeenCalledWith(testData);
+ * const toast = mockApis.toast();
+ * toast.post({ title: 'Saved' });
+ * expect(toast.getToasts()).toEqual([{ title: 'Saved' }]);
  * ```
  */
 export namespace mockApis {
   /**
-   * Fake implementation of {@link @backstage/frontend-plugin-api#AlertApi}.
+   * Fake implementation of {@link @backstage/core-plugin-api#AlertApi}.
    *
    * @public
    * @example
@@ -102,22 +152,26 @@ export namespace mockApis {
    * expect(alertApi.getAlerts()).toHaveLength(1);
    * ```
    */
-  export function alert(): MockWithApiFactory<MockAlertApi> {
+  export function alert(): MockWithApiFactory<AlertApi> & {
+    clearAlerts(): void;
+    getAlerts(): AlertMessage[];
+    waitForAlert(
+      predicate: (alert: AlertMessage) => boolean,
+      timeoutMs?: number,
+    ): Promise<AlertMessage>;
+  } {
     const instance = new MockAlertApi();
-    return attachMockApiFactory(
-      alertApiRef,
-      instance,
-    ) as MockWithApiFactory<MockAlertApi>;
+    return attachMockApiFactory(alertApiRef, instance);
   }
   /**
-   * Mock helpers for {@link @backstage/frontend-plugin-api#AlertApi}.
+   * Mock helpers for {@link @backstage/core-plugin-api#AlertApi}.
    *
    * @public
    */
   export namespace alert {
     /**
      * Creates a mock implementation of
-     * {@link @backstage/frontend-plugin-api#AlertApi}. All methods are
+     * {@link @backstage/core-plugin-api#AlertApi}. All methods are
      * replaced with jest mock functions, and you can optionally pass in a
      * subset of methods with an explicit implementation.
      *
@@ -144,12 +198,13 @@ export namespace mockApis {
    */
   export function featureFlags(options?: {
     initialStates?: Record<string, FeatureFlagState>;
-  }): MockWithApiFactory<MockFeatureFlagsApi> {
+  }): MockWithApiFactory<FeatureFlagsApi> & {
+    getState(): Record<string, FeatureFlagState>;
+    setState(states: Record<string, FeatureFlagState>): void;
+    clearState(): void;
+  } {
     const instance = new MockFeatureFlagsApi(options);
-    return attachMockApiFactory(
-      featureFlagsApiRef,
-      instance,
-    ) as MockWithApiFactory<MockFeatureFlagsApi>;
+    return attachMockApiFactory(coreApis.featureFlags, instance);
   }
   /**
    * Mock helpers for {@link @backstage/frontend-plugin-api#FeatureFlagsApi}.
@@ -165,7 +220,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(featureFlagsApiRef, () => ({
+    export const mock = createApiMock(coreApis.featureFlags, () => ({
       registerFlag: jest.fn(),
       getRegisteredFlags: jest.fn(),
       isActive: jest.fn(),
@@ -178,11 +233,11 @@ export namespace mockApis {
    *
    * @public
    */
-  export function analytics(): MockAnalyticsApi &
-    MockWithApiFactory<AnalyticsApi> {
+  export function analytics(): MockWithApiFactory<AnalyticsApi> & {
+    getEvents(): AnalyticsEvent[];
+  } {
     const instance = new MockAnalyticsApi();
-    return attachMockApiFactory(analyticsApiRef, instance) as MockAnalyticsApi &
-      MockWithApiFactory<AnalyticsApi>;
+    return attachMockApiFactory(coreApis.analytics, instance);
   }
 
   /**
@@ -191,7 +246,7 @@ export namespace mockApis {
    * @public
    */
   export namespace analytics {
-    export const mock = createApiMock(analyticsApiRef, () => ({
+    export const mock = createApiMock(coreApis.analytics, () => ({
       captureEvent: jest.fn(),
     }));
   }
@@ -202,13 +257,9 @@ export namespace mockApis {
    *
    * @public
    */
-  export function translation(): MockTranslationApi &
-    MockWithApiFactory<TranslationApi> {
+  export function translation(): MockWithApiFactory<TranslationApi> {
     const instance = MockTranslationApi.create();
-    return attachMockApiFactory(
-      translationApiRef,
-      instance,
-    ) as MockTranslationApi & MockWithApiFactory<TranslationApi>;
+    return attachMockApiFactory(coreApis.translation, instance);
   }
 
   /**
@@ -222,7 +273,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(translationApiRef, () => ({
+    export const mock = createApiMock(coreApis.translation, () => ({
       getTranslation: jest.fn(),
       translation$: jest.fn(),
     }));
@@ -235,10 +286,9 @@ export namespace mockApis {
    */
   export function config(options?: {
     data?: JsonObject;
-  }): MockConfigApi & MockWithApiFactory<ConfigApi> {
+  }): MockWithApiFactory<ConfigApi> {
     const instance = new MockConfigApi({ data: options?.data ?? {} });
-    return attachMockApiFactory(configApiRef, instance) as MockConfigApi &
-      MockWithApiFactory<ConfigApi>;
+    return attachMockApiFactory(coreApis.config, instance);
   }
 
   /**
@@ -247,7 +297,7 @@ export namespace mockApis {
    * @public
    */
   export namespace config {
-    export const mock = createApiMock(configApiRef, () => ({
+    export const mock = createApiMock(coreApis.config, () => ({
       has: jest.fn(),
       keys: jest.fn(),
       get: jest.fn(),
@@ -274,15 +324,14 @@ export namespace mockApis {
    */
   export function discovery(options?: {
     baseUrl?: string;
-  }): DiscoveryApi & MockWithApiFactory<DiscoveryApi> {
+  }): MockWithApiFactory<DiscoveryApi> {
     const baseUrl = options?.baseUrl ?? 'http://example.com';
     const instance: DiscoveryApi = {
       async getBaseUrl(pluginId: string) {
         return `${baseUrl}/api/${pluginId}`;
       },
     };
-    return attachMockApiFactory(discoveryApiRef, instance) as DiscoveryApi &
-      MockWithApiFactory<DiscoveryApi>;
+    return attachMockApiFactory(coreApis.discovery, instance);
   }
 
   /**
@@ -291,7 +340,7 @@ export namespace mockApis {
    * @public
    */
   export namespace discovery {
-    export const mock = createApiMock(discoveryApiRef, () => ({
+    export const mock = createApiMock(coreApis.discovery, () => ({
       getBaseUrl: jest.fn(),
     }));
   }
@@ -329,8 +378,7 @@ export namespace mockApis {
       },
       async signOut() {},
     };
-    return attachMockApiFactory(identityApiRef, instance) as IdentityApi &
-      MockWithApiFactory<IdentityApi>;
+    return attachMockApiFactory(coreApis.identity, instance);
   }
 
   /**
@@ -339,7 +387,7 @@ export namespace mockApis {
    * @public
    */
   export namespace identity {
-    export const mock = createApiMock(identityApiRef, () => ({
+    export const mock = createApiMock(coreApis.identity, () => ({
       getBackstageIdentity: jest.fn(),
       getCredentials: jest.fn(),
       getProfileInfo: jest.fn(),
@@ -359,17 +407,14 @@ export namespace mockApis {
       | ((
           request: EvaluatePermissionRequest,
         ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY);
-  }): MockPermissionApi & MockWithApiFactory<PermissionApi> {
+  }): MockWithApiFactory<PermissionApi> {
     const authorizeInput = options?.authorize;
     const handler =
       typeof authorizeInput === 'function'
         ? authorizeInput
         : () => authorizeInput ?? AuthorizeResult.ALLOW;
     const instance = new MockPermissionApi(handler);
-    return attachMockApiFactory(
-      permissionApiRef,
-      instance,
-    ) as MockPermissionApi & MockWithApiFactory<PermissionApi>;
+    return attachMockApiFactory(permissionApiRef, instance);
   }
 
   /**
@@ -390,10 +435,9 @@ export namespace mockApis {
    */
   export function storage(options?: {
     data?: JsonObject;
-  }): MockStorageApi & MockWithApiFactory<StorageApi> {
+  }): MockWithApiFactory<StorageApi> {
     const instance = MockStorageApi.create(options?.data);
-    return attachMockApiFactory(storageApiRef, instance) as MockStorageApi &
-      MockWithApiFactory<StorageApi>;
+    return attachMockApiFactory(coreApis.storage, instance);
   }
 
   /**
@@ -402,7 +446,7 @@ export namespace mockApis {
    * @public
    */
   export namespace storage {
-    export const mock = createApiMock(storageApiRef, () => ({
+    export const mock = createApiMock(coreApis.storage, () => ({
       forBucket: jest.fn(),
       snapshot: jest.fn(),
       set: jest.fn(),
@@ -418,10 +462,18 @@ export namespace mockApis {
    */
   export function error(options?: {
     collect?: boolean;
-  }): MockErrorApi & MockWithApiFactory<ErrorApi> {
+  }): MockWithApiFactory<ErrorApi> & {
+    getErrors(): Array<{
+      error: ErrorApiError;
+      context?: ErrorApiErrorContext;
+    }>;
+    waitForError(
+      pattern: RegExp,
+      timeoutMs?: number,
+    ): Promise<{ error: ErrorApiError; context?: ErrorApiErrorContext }>;
+  } {
     const instance = new MockErrorApi(options);
-    return attachMockApiFactory(errorApiRef, instance) as MockErrorApi &
-      MockWithApiFactory<ErrorApi>;
+    return attachMockApiFactory(coreApis.error, instance);
   }
 
   /**
@@ -430,7 +482,7 @@ export namespace mockApis {
    * @public
    */
   export namespace error {
-    export const mock = createApiMock(errorApiRef, () => ({
+    export const mock = createApiMock(coreApis.error, () => ({
       post: jest.fn(),
       error$: jest.fn(),
     }));
@@ -443,10 +495,9 @@ export namespace mockApis {
    */
   export function fetch(
     options?: MockFetchApiOptions,
-  ): MockFetchApi & MockWithApiFactory<FetchApi> {
+  ): MockWithApiFactory<FetchApi> {
     const instance = new MockFetchApi(options);
-    return attachMockApiFactory(fetchApiRef, instance) as MockFetchApi &
-      MockWithApiFactory<FetchApi>;
+    return attachMockApiFactory(coreApis.fetch, instance);
   }
 
   /**
@@ -455,8 +506,454 @@ export namespace mockApis {
    * @public
    */
   export namespace fetch {
-    export const mock = createApiMock(fetchApiRef, () => ({
+    export const mock = createApiMock(coreApis.fetch, () => ({
       fetch: jest.fn(),
+    }));
+  }
+
+  /**
+   * Creates an in-memory language selector. Defaults to English, emits the
+   * current language on subscription, and notifies subscribers when it changes.
+   *
+   * @public
+   */
+  export function appLanguage(options?: {
+    defaultLanguage?: string;
+    availableLanguages?: string[];
+  }): MockWithApiFactory<AppLanguageApi> {
+    const defaultLanguage = options?.defaultLanguage ?? 'en';
+    const languages = [
+      ...new Set([defaultLanguage, ...(options?.availableLanguages ?? [])]),
+    ];
+    const state = createObservableState({ language: defaultLanguage });
+    return attachMockApiFactory<AppLanguageApi>(coreApis.appLanguage, {
+      getAvailableLanguages: () => ({ languages: [...languages] }),
+      getLanguage: () => ({ ...state.get() }),
+      setLanguage(language = defaultLanguage) {
+        if (!languages.includes(language)) {
+          throw new Error(`Language '${language}' is not available`);
+        }
+        if (language !== state.get().language) {
+          state.set({ language });
+        }
+      },
+      language$: () => state.observable,
+    });
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#AppLanguageApi}.
+   *
+   * @public
+   */
+  export namespace appLanguage {
+    /**
+     * Creates a mock with jest functions for all methods.
+     * Pass partial implementations to customize the behavior.
+     *
+     * @public
+     */
+    export const mock = createApiMock(coreApis.appLanguage, () => ({
+      getAvailableLanguages: jest.fn(),
+      setLanguage: jest.fn(),
+      getLanguage: jest.fn(),
+      language$: jest.fn(),
+    }));
+  }
+
+  /**
+   * Creates an in-memory app lifecycle, finalized by default. Use `setFinalized`
+   * to simulate lifecycle changes and notify subscribers.
+   *
+   * @public
+   */
+  export function appLifecycle(options?: {
+    finalized?: boolean;
+  }): MockWithApiFactory<AppLifecycleApi> & {
+    setFinalized(finalized: boolean): void;
+  } {
+    let finalized = options?.finalized ?? true;
+    const listeners = new Set<() => void>();
+    return attachMockApiFactory<
+      AppLifecycleApi,
+      AppLifecycleApi & { setFinalized(finalized: boolean): void }
+    >(coreApis.appLifecycle, {
+      isFinalized: () => finalized,
+      subscribe(listener: () => void) {
+        listeners.add(listener);
+        return () => {
+          listeners.delete(listener);
+        };
+      },
+      setFinalized(value: boolean) {
+        if (value !== finalized) {
+          finalized = value;
+          listeners.forEach(listener => listener());
+        }
+      },
+    });
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#AppLifecycleApi}.
+   *
+   * @public
+   */
+  export namespace appLifecycle {
+    /**
+     * Creates a mock with jest functions for all methods.
+     * Pass partial implementations to customize the behavior.
+     *
+     * @public
+     */
+    export const mock = createApiMock(coreApis.appLifecycle, () => ({
+      isFinalized: jest.fn(),
+      subscribe: jest.fn(),
+    }));
+  }
+
+  /**
+   * Creates an in-memory theme selector with no installed themes or selected
+   * theme by default. Changes notify subscribers without using browser storage.
+   *
+   * @public
+   */
+  export function appTheme(options?: {
+    themes?: AppTheme[];
+    activeThemeId?: string;
+  }): MockWithApiFactory<AppThemeApi> {
+    const themes = [...(options?.themes ?? [])];
+    const state = createObservableState<string | undefined>(
+      options?.activeThemeId,
+    );
+    return attachMockApiFactory<AppThemeApi>(coreApis.appTheme, {
+      getInstalledThemes: () => [...themes],
+      getActiveThemeId: () => state.get(),
+      setActiveThemeId: themeId => state.set(themeId),
+      activeThemeId$: () => state.observable,
+    });
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#AppThemeApi}.
+   *
+   * @public
+   */
+  export namespace appTheme {
+    /**
+     * Creates a mock with jest functions for all methods.
+     * Pass partial implementations to customize the behavior.
+     *
+     * @public
+     */
+    export const mock = createApiMock(coreApis.appTheme, () => ({
+      getInstalledThemes: jest.fn(),
+      activeThemeId$: jest.fn(),
+      getActiveThemeId: jest.fn(),
+      setActiveThemeId: jest.fn(),
+    }));
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#AppTreeApi}.
+   *
+   * @public
+   */
+  export namespace appTree {
+    /**
+     * Creates a mock with jest functions for all methods.
+     * Pass partial implementations to customize the behavior.
+     *
+     * @public
+     */
+    export const mock = createApiMock(coreApis.appTree, () => ({
+      getTree: jest.fn(),
+      getNodesByRoutePath: jest.fn(),
+    }));
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#DialogApi}.
+   *
+   * @public
+   */
+  export namespace dialog {
+    /**
+     * Creates a mock with jest functions for all methods.
+     * Pass partial implementations to customize the behavior.
+     *
+     * @public
+     */
+    export const mock = createApiMock(coreApis.dialog, () => ({
+      open: jest.fn(),
+    }));
+  }
+
+  /**
+   * Creates an icon lookup backed by the supplied elements, empty by default.
+   *
+   * @public
+   */
+  export function icons(options?: {
+    icons?: Record<string, IconElement>;
+  }): MockWithApiFactory<IconsApi> {
+    const entries = new Map(Object.entries(options?.icons ?? {}));
+    return attachMockApiFactory<IconsApi>(coreApis.icons, {
+      icon: key => entries.get(key),
+      listIconKeys: () => [...entries.keys()],
+    });
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#IconsApi}.
+   *
+   * @public
+   */
+  export namespace icons {
+    /**
+     * Creates a mock with jest functions for all methods.
+     * Pass partial implementations to customize the behavior.
+     *
+     * @public
+     */
+    export const mock = createApiMock(coreApis.icons, () => ({
+      icon: jest.fn(),
+      listIconKeys: jest.fn(),
+    }));
+  }
+
+  /**
+   * Creates an in-memory OAuth request coordinator. Requests remain pending
+   * until triggered or rejected through `authRequest$()`.
+   *
+   * @public
+   */
+  export function oauthRequest(): MockWithApiFactory<OAuthRequestApi> {
+    return attachMockApiFactory(
+      coreApis.oauthRequest,
+      new OAuthRequestManager(),
+    );
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#OAuthRequestApi}.
+   *
+   * @public
+   */
+  export namespace oauthRequest {
+    /**
+     * Creates a mock with jest functions for all methods.
+     * Pass partial implementations to customize the behavior.
+     *
+     * @public
+     */
+    export const mock = createApiMock(coreApis.oauthRequest, () => ({
+      createAuthRequester: jest.fn(),
+      authRequest$: jest.fn(),
+    }));
+  }
+
+  /**
+   * Creates a lookup of header actions by plugin ID, empty by default.
+   *
+   * @public
+   */
+  export function pluginHeaderActions(options?: {
+    actions?: Record<string, Array<JSX.Element | null>>;
+  }): MockWithApiFactory<PluginHeaderActionsApi> {
+    const actions = new Map(Object.entries(options?.actions ?? {}));
+    return attachMockApiFactory<PluginHeaderActionsApi>(
+      coreApis.pluginHeaderActions,
+      {
+        getPluginHeaderActions: pluginId => [...(actions.get(pluginId) ?? [])],
+      },
+    );
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#PluginHeaderActionsApi}.
+   *
+   * @public
+   */
+  export namespace pluginHeaderActions {
+    /**
+     * Creates a mock with jest functions for all methods.
+     * Pass partial implementations to customize the behavior.
+     *
+     * @public
+     */
+    export const mock = createApiMock(coreApis.pluginHeaderActions, () => ({
+      getPluginHeaderActions: jest.fn(),
+    }));
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#PluginWrapperApi}.
+   *
+   * @public
+   */
+  export namespace pluginWrapper {
+    /**
+     * Creates a mock with jest functions for all methods.
+     * Pass partial implementations to customize the behavior.
+     *
+     * @public
+     */
+    export const mock = createApiMock(coreApis.pluginWrapper, () => ({
+      getRootWrapper: jest.fn(),
+      getPluginWrapper: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/frontend-plugin-api#AppHistoryApi}.
+   *
+   * @public
+   */
+  export function appHistory(
+    options?: MockAppHistoryOptions,
+  ): MockAppHistory & MockWithApiFactory<AppHistoryApi> {
+    const instance = createMockAppHistory(options);
+    return attachMockApiFactory(appHistoryApiRef, instance) as MockAppHistory &
+      MockWithApiFactory<AppHistoryApi>;
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#AppHistoryApi}.
+   * Backed by in-memory history: navigation still validates paths and emits
+   * locations even when the call is observed by a Jest mock.
+   *
+   * @public
+   */
+  export namespace appHistory {
+    export const mock: (
+      partialImpl?: Partial<AppHistoryApi> | undefined,
+    ) => ApiMock<AppHistoryApi> = partialImpl => {
+      // Preserve location updates when observing navigation.
+      const { navigate, ...rest } = partialImpl ?? {};
+      const instance = createMockAppHistory({ navigate });
+      const navigateMock = jest.fn(
+        (
+          ...args:
+            | [path: string, options?: AppNavigateOptions]
+            | [delta: number]
+        ) => {
+          if (typeof args[0] === 'number') {
+            instance.navigate(args[0]);
+          } else if (args.length === 1) {
+            instance.navigate(args[0]);
+          } else {
+            instance.navigate(args[0], args[1]);
+          }
+        },
+      ) as unknown as jest.MockedFunction<AppHistoryApi['navigate']>;
+
+      return createApiMock(appHistoryApiRef, () => ({
+        getSnapshot: jest.fn(instance.getSnapshot),
+        subscribe: jest.fn(instance.subscribe),
+        navigate: navigateMock,
+        createHref: jest.fn(
+          (...args: Parameters<AppHistoryApi['createHref']>) =>
+            instance.createHref(...args),
+        ),
+      }))(rest);
+    };
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/frontend-plugin-api#RouteResolutionApi}.
+   *
+   * @public
+   */
+  export function routeResolution(
+    options?: MockRouteResolutionApiOptions,
+  ): MockRouteResolutionApi & MockWithApiFactory<RouteResolutionApi> {
+    const instance = createMockRouteResolutionApi(options);
+    return attachMockApiFactory(
+      routeResolutionApiRef,
+      instance,
+    ) as MockRouteResolutionApi & MockWithApiFactory<RouteResolutionApi>;
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#RouteResolutionApi}.
+   *
+   * @public
+   */
+  export namespace routeResolution {
+    /**
+     * Creates a mock with jest functions for all methods.
+     * Pass partial implementations to customize the behavior.
+     *
+     * @public
+     */
+    export const mock = createApiMock(routeResolutionApiRef, () => ({
+      resolve: jest.fn(),
+      resolvePath: jest.fn<
+        ReturnType<RouteResolutionApi['resolvePath']>,
+        Parameters<RouteResolutionApi['resolvePath']>
+      >(() => ({ matches: [] })),
+    }));
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#SwappableComponentsApi}.
+   *
+   * @public
+   */
+  export namespace swappableComponents {
+    /**
+     * Creates a mock with jest functions for all methods.
+     * Pass partial implementations to customize the behavior.
+     *
+     * @public
+     */
+    export const mock = createApiMock(coreApis.swappableComponents, () => ({
+      getComponent: jest.fn(),
+    }));
+  }
+
+  /**
+   * Collects toast notifications without rendering them or scheduling timeouts.
+   * `getToasts` returns active messages; closing a handle removes its message.
+   *
+   * @public
+   */
+  export function toast(): MockWithApiFactory<ToastApi> & {
+    getToasts(): ToastApiMessage[];
+  } {
+    const toasts = new Set<{ message: ToastApiMessage }>();
+    return attachMockApiFactory<
+      ToastApi,
+      ToastApi & { getToasts(): ToastApiMessage[] }
+    >(coreApis.toast, {
+      post(message: ToastApiMessage) {
+        const entry = { message };
+        toasts.add(entry);
+        return {
+          close: () => {
+            toasts.delete(entry);
+          },
+        };
+      },
+      getToasts: () => [...toasts].map(entry => entry.message),
+    });
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#ToastApi}.
+   *
+   * @public
+   */
+  export namespace toast {
+    /**
+     * Creates a mock with jest functions for all methods.
+     * Pass partial implementations to customize the behavior.
+     *
+     * @public
+     */
+    export const mock = createApiMock(coreApis.toast, () => ({
+      post: jest.fn(),
     }));
   }
 }

@@ -40,6 +40,7 @@ import {
   createHttpServer,
 } from '@backstage/backend-defaults/rootHttpRouter';
 import { HostDiscovery } from '@backstage/backend-defaults/discovery';
+import { connectionsServiceFactory } from '@backstage/backend-defaults/alpha';
 import {
   actionsRegistryServiceMock,
   actionsServiceMock,
@@ -92,6 +93,7 @@ export const defaultServiceFactories = [
   mockServices.events.factory(),
 
   // Alpha services
+  connectionsServiceFactory,
   actionsRegistryServiceMock.factory(),
   actionsServiceMock.factory(),
   metricsServiceMock.factory(),
@@ -250,10 +252,21 @@ export async function startTestBackend<TExtensionPoints extends any[]>(
       health: coreServices.rootHealth,
     },
     async factory({ config, lifecycle, rootLogger, health }) {
-      const router = DefaultRootHttpRouter.create();
       const logger = rootLogger.child({ service: 'rootHttpRouter' });
 
       const app = express();
+
+      server = await createHttpServer(
+        app,
+        { listen: { host: '', port: 0 } },
+        { logger },
+      );
+
+      const router = DefaultRootHttpRouter.create({
+        server,
+        lifecycle,
+        logger,
+      });
 
       const middleware = MiddlewareFactory.create({ config, logger });
       const healthRouter = createHealthRouter({ config, health });
@@ -262,12 +275,6 @@ export async function startTestBackend<TExtensionPoints extends any[]>(
       app.use(router.handler());
       app.use(middleware.notFound());
       app.use(middleware.error());
-
-      server = await createHttpServer(
-        app,
-        { listen: { host: '', port: 0 } },
-        { logger },
-      );
 
       lifecycle.addShutdownHook(() => server.stop(), { logger });
 

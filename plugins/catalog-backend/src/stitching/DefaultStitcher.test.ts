@@ -35,6 +35,54 @@ const databases = TestDatabases.create();
 describe.each(databases.eachSupportedId())('Stitcher, %p', databaseId => {
   const logger = mockServices.logger.mock();
 
+  if (databaseId.startsWith('POSTGRES')) {
+    it('promptly follows up a request made during a claimed stitch', async () => {
+      const db = await databases.init(databaseId);
+      await applyDatabaseMigrations(db);
+      const entityRef = 'k:ns/not-yet-ingested';
+      await markForStitching({ knex: db, entityRefs: [entityRef] });
+      const initial = await db('stitch_queue').first();
+      const stitcher = new DefaultStitcher({
+        knex: db,
+        logger,
+        metrics: metricsServiceMock.mock(),
+        strategy: {
+          pollingInterval: { milliseconds: 50 },
+          stitchTimeout: { minutes: 1 },
+        },
+      });
+      const blocker = await db.transaction();
+      let released = false;
+      try {
+        // Block the processed-entity read, but leave queue pickup and enqueue
+        // available. This creates a real, deterministic in-flight request.
+        await blocker.raw('lock table refresh_state in access exclusive mode');
+        await stitcher.start();
+        await waitForCondition(async () => {
+          const row = await db('stitch_queue').first();
+          return row.stitch_ticket !== initial.stitch_ticket;
+        }, 5_000);
+        const claimed = await db('stitch_queue').first();
+        await markForStitching({ knex: db, entityRefs: [entityRef] });
+        const requested = await db('stitch_queue').first();
+        expect(requested.stitch_ticket).not.toBe(claimed.stitch_ticket);
+        expect(requested.next_stitch_at).toEqual(claimed.next_stitch_at);
+        await blocker.commit();
+        released = true;
+        await waitForCondition(
+          async () => (await db('stitch_queue')).length === 0,
+          5_000,
+        );
+        await expect(db('final_entities')).resolves.toEqual([]);
+      } finally {
+        if (!released) {
+          await blocker.rollback();
+        }
+        await stitcher.stop();
+      }
+    });
+  }
+
   it('runs the happy path', async () => {
     const db = await databases.init(databaseId);
     await applyDatabaseMigrations(db);

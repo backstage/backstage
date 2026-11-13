@@ -18,16 +18,12 @@ import { renderHook } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
-import {
-  routeResolutionApiRef,
-  RouteResolutionApi,
-  RouteFunc,
-} from '@backstage/frontend-plugin-api';
+import { RouteFunc } from '@backstage/frontend-plugin-api';
 import { useRouteRef } from './useRouteRef';
 import { createRouteRef } from './RouteRef';
 import { createExternalRouteRef } from './ExternalRouteRef';
 import { createBrowserHistory } from 'history';
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, mockApis } from '@backstage/frontend-test-utils';
 
 describe('useRouteRef', () => {
   describe('old app system', () => {
@@ -169,14 +165,12 @@ describe('useRouteRef', () => {
       const routeRef = createRouteRef({ id: 'ref1' });
       const mockRouteFunc: RouteFunc<any> = jest.fn(() => '/new-route');
 
-      const mockRouteResolutionApi: RouteResolutionApi = {
-        resolve: jest.fn(() => mockRouteFunc),
-      };
+      const mockRouteResolutionApi = mockApis.routeResolution.mock({
+        resolve: () => mockRouteFunc,
+      });
 
       const wrapper = ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider
-          apis={[[routeResolutionApiRef, mockRouteResolutionApi]]}
-        >
+        <TestApiProvider apis={[mockRouteResolutionApi]}>
           <MemoryRouter initialEntries={['/my-page']}>{children}</MemoryRouter>
         </TestApiProvider>
       );
@@ -198,14 +192,10 @@ describe('useRouteRef', () => {
         optional: true,
       });
 
-      const mockRouteResolutionApi: RouteResolutionApi = {
-        resolve: jest.fn(() => undefined),
-      };
+      const mockRouteResolutionApi = mockApis.routeResolution.mock();
 
       const wrapper = ({ children }: PropsWithChildren<{}>) => (
-        <TestApiProvider
-          apis={[[routeResolutionApiRef, mockRouteResolutionApi]]}
-        >
+        <TestApiProvider apis={[mockRouteResolutionApi]}>
           <MemoryRouter initialEntries={['/my-page']}>{children}</MemoryRouter>
         </TestApiProvider>
       );

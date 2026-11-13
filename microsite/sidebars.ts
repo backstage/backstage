@@ -1,6 +1,6 @@
 import { releases } from './releases';
 
-function tryToLoadCustomSidebar(ref) {
+function tryToLoadCustomSidebar(ref: string) {
   try {
     return require(ref);
   } catch (e) {
@@ -201,6 +201,7 @@ export default {
             'auth/oidc',
             'auth/add-auth-provider',
             'auth/service-to-service-auth',
+            'auth/offline-access',
             'auth/autologout',
             'auth/troubleshooting',
           ],
@@ -396,6 +397,12 @@ export default {
             'features/techdocs/concepts',
             'features/techdocs/addons',
             'features/techdocs/architecture',
+            {
+              type: 'category',
+              label: 'Engines',
+              link: { type: 'doc', id: 'features/techdocs/engines' },
+              items: ['features/techdocs/engines-zensical'],
+            },
             'features/techdocs/extensions',
             'features/techdocs/creating-and-publishing',
             'features/techdocs/configuration',
@@ -606,6 +613,7 @@ export default {
                 'frontend-system/building-plugins/testing',
                 'frontend-system/building-plugins/common-extension-blueprints',
                 'frontend-system/building-plugins/built-in-data-refs',
+                'frontend-system/building-plugins/page-routers',
                 'frontend-system/building-plugins/migrating',
                 'frontend-system/building-plugins/internationalization',
                 'frontend-system/building-plugins/analytics',
@@ -642,6 +650,14 @@ export default {
               ],
             ),
           ],
+        ),
+        sidebarElementWithIndex(
+          {
+            label: 'Common Libraries',
+            description:
+              'Shared libraries for frontend and backend development.',
+          },
+          ['common-libraries/index', 'common-libraries/errors'],
         ),
         sidebarElementWithIndex(
           {
@@ -692,6 +708,7 @@ export default {
             'tooling/package-metadata',
           ],
         ),
+        'tooling/codemods',
         sidebarElementWithIndex(
           {
             label: 'User Interface',

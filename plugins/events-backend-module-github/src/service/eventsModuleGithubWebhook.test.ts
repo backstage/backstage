@@ -35,6 +35,7 @@ describe('eventsModuleGithubWebhook', () => {
       headers: {
         'x-hub-signature-256': signature,
       },
+      query: {},
       raw: {
         body: payloadBuffer,
         encoding: 'utf-8',

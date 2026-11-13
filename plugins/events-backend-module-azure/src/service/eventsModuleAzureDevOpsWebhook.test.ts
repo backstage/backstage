@@ -35,6 +35,7 @@ describe('eventsModuleAzureDevOpsWebhook', () => {
         body: Buffer.from('{}'),
         encoding: 'utf-8',
       },
+      query: {},
     } as RequestDetails;
   };
 

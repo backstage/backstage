@@ -20,7 +20,7 @@ import {
   SessionShouldRefreshFunc,
   GetSessionOptions,
 } from './types';
-import { AuthConnector } from '../AuthConnector';
+import { AuthConnector, isAuthConnectionError } from '../AuthConnector';
 import { SessionScopeHelper, hasScopes } from './common';
 import { SessionStateTracker } from './SessionStateTracker';
 
@@ -86,6 +86,17 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
         }
         return refreshedSession;
       } catch (error) {
+        // A transient connectivity failure doesn't mean the session is invalid.
+        // Keep it so a later call can refresh once connectivity returns, and
+        // never open an interactive login popup for it — surface the error to
+        // an optional-less caller so it can retry.
+        if (isAuthConnectionError(error)) {
+          if (options.optional) {
+            return undefined;
+          }
+          throw error;
+        }
+
         this.removeLocalSession();
 
         if (options.optional) {
@@ -109,7 +120,17 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
         this.currentSession = newSession;
         // The session might not have the scopes requested so go back and check again
         return this.getSession(options);
-      } catch {
+      } catch (error) {
+        // As above, a transient connectivity failure must neither sign the user
+        // out nor trigger an interactive login popup. We can reach this point
+        // with a session that is still valid and merely lacks the requested
+        // scopes, so removing it would discard a working session.
+        if (isAuthConnectionError(error)) {
+          if (options.optional) {
+            return undefined;
+          }
+          throw error;
+        }
         this.removeLocalSession();
         // If the refresh attempt fails we assume we don't have a session, so continue to create one.
       }

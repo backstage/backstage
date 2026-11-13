@@ -25,8 +25,9 @@ Any `--config` options in the `start` script in `package.json` of the selected
 packages will be picked up and used, unless a `--config` option is provided to
 this command, in which case it will be used instead.
 
-Any `--require` option in the `start` script in `package.json` of the selected
-backend package will be picked up and used.
+Any `--require` and `--import` options in the `start` script in `package.json`
+of the selected backend package will be picked up and used, unless the same
+option is provided to this command, in which case it will be used instead.
 
 ```text
 Usage: backstage-cli repo start [options] [packageNameOrPath...]
@@ -41,7 +42,8 @@ Options:
   --config <path>       Config files to load instead of app-config.yaml (default: [])
   --inspect [host]      Enable debugger in Node.js environments. Applies to backend package only
   --inspect-brk [host]  Enable debugger in Node.js environments, breaking before code starts. Applies to backend package only
-  --require <path>      Add a --require argument to the node process. Applies to backend package only
+  --require <path>      Add --require arguments to the node process. Applies to backend package only (default: [])
+  --import <path>       Add --import arguments to the node process. Applies to backend package only (default: [])
   --link <path>         Link an external workspace for module resolution
 ```
 
@@ -85,7 +87,8 @@ Options:
   --config <path>     Config files to load instead of app-config.yaml (default: [])
   --role <name>       Run the command with an explicit package role
   --check             Enable type checking and linting if available
-  --require <path>    Add a --require argument to the node process
+  --require <path>    Add --require arguments to the node process (default: [])
+  --import <path>     Add --import arguments to the node process (default: [])
   --link <path>       Link an external workspace for module resolution
   --entrypoint <path> Entry directory path (uses index file) or entry file path (without extension). Defaults to "dev"
   --inspect [host]    Enable the Node.js inspector, optionally at a specific host:port

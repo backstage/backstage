@@ -18,6 +18,50 @@ import { ErrorResponseBody } from '../serialization';
 import { ResponseError } from './ResponseError';
 
 describe('ResponseError', () => {
+  it('recognizes error shapes with shallow checks of additional fields', () => {
+    const value: unknown = {
+      name: 'ResponseError',
+      message: 'failed',
+      response: {},
+      body: {},
+      cause: { name: 'OtherError', message: 'cause' },
+      statusCode: 500,
+      statusText: 'Internal Server Error',
+    };
+    expect(value).not.toBeInstanceOf(ResponseError);
+    expect(ResponseError.is(value)).toBe(true);
+    if (!ResponseError.is(value)) {
+      throw new Error('Expected a ResponseError');
+    }
+    const narrowed: ResponseError = value;
+    expect(narrowed.statusCode).toBe(500);
+
+    for (const invalid of [
+      undefined,
+      null,
+      false,
+      42,
+      'ResponseError',
+      [],
+      {},
+    ]) {
+      expect(ResponseError.is(invalid)).toBe(false);
+    }
+    for (const [field, invalidValues] of Object.entries({
+      name: [undefined, '', 'Error'],
+      message: [undefined, 42],
+      response: [undefined, null, [], 'response'],
+      body: [undefined, null, [], 'body'],
+      cause: [undefined, null, {}, 'cause'],
+      statusCode: [undefined, '500'],
+      statusText: [undefined, 500],
+    })) {
+      for (const invalid of invalidValues) {
+        expect(ResponseError.is({ ...value, [field]: invalid })).toBe(false);
+      }
+    }
+  });
+
   it('constructs itself from a response', async () => {
     const body: ErrorResponseBody = {
       error: { name: 'Fours', message: 'Expected fives', stack: 'lines' },
@@ -33,6 +77,7 @@ describe('ResponseError', () => {
     };
 
     const e = await ResponseError.fromResponse(response as Response);
+    expect(ResponseError.is(e)).toBe(true);
     expect(e.name).toEqual('ResponseError');
     expect(e.message).toEqual('Request failed with 444 Fours');
     expect(e.statusCode).toEqual(444);

@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-import { FeatureFlagState } from '@backstage/frontend-plugin-api';
+import {
+  coreApis,
+  type AppNode,
+  createRouteRef,
+  FeatureFlagState,
+  type AppLocation,
+  type PendingOAuthRequest,
+} from '@backstage/frontend-plugin-api';
+import { createElement } from 'react';
 import { mockApis } from './mockApis';
+import { getMockApiFactory } from './MockWithApiFactory';
 
 describe('mockApis', () => {
   describe('alert', () => {
@@ -87,33 +96,393 @@ describe('mockApis', () => {
     });
   });
 
-  describe('re-exported APIs from test-utils', () => {
-    it('should have analytics', () => {
-      expect(mockApis.analytics).toBeDefined();
+  it('provides a registered jest mock for every core API', () => {
+    for (const name of Object.keys(coreApis) as (keyof typeof coreApis)[]) {
+      const mock = mockApis[name].mock();
+      const factory = getMockApiFactory(mock)!;
+      expect(factory.api).toBe(coreApis[name]);
+      expect(factory.deps).toEqual({});
+      expect(factory.factory({})).toBe(mock);
+      if (name === 'appHistory') {
+        // Methods preserve in-memory navigation and supply a default location snapshot.
+        continue;
+      }
+      if (name === 'routeResolution') {
+        // resolvePath supplies an empty match list by default.
+        continue;
+      }
+      for (const method of Object.values(mock)) {
+        expect(jest.isMockFunction(method)).toBe(true);
+        expect((method as jest.Mock).getMockImplementation()).toBeUndefined();
+      }
+    }
+    expect(getMockApiFactory(mockApis.permission.mock())?.api.id).toBe(
+      'plugin.permission.api',
+    );
+  });
+
+  it('keeps language and theme selections in memory and notifies subscribers', async () => {
+    const language = mockApis.appLanguage({ availableLanguages: ['en', 'sv'] });
+    const languageListener = jest.fn();
+    const subscription = language.language$().subscribe(languageListener);
+    await Promise.resolve();
+    expect(language.getAvailableLanguages()).toEqual({
+      languages: ['en', 'sv'],
+    });
+    expect(languageListener).toHaveBeenLastCalledWith({ language: 'en' });
+    language.setLanguage('sv');
+    expect(language.getLanguage()).toEqual({ language: 'sv' });
+    expect(languageListener).toHaveBeenLastCalledWith({ language: 'sv' });
+    language.setLanguage();
+    expect(language.getLanguage()).toEqual({ language: 'en' });
+    expect(() => language.setLanguage('unknown')).toThrow('not available');
+    subscription.unsubscribe();
+    languageListener.mockClear();
+    language.setLanguage('sv');
+    expect(languageListener).not.toHaveBeenCalled();
+    expect(mockApis.appLanguage().getLanguage()).toEqual({ language: 'en' });
+
+    const theme = mockApis.appTheme();
+    const themeListener = jest.fn();
+    const themeSubscription = theme.activeThemeId$().subscribe(themeListener);
+    await Promise.resolve();
+    expect(theme.getInstalledThemes()).toEqual([]);
+    expect(themeListener).toHaveBeenLastCalledWith(undefined);
+    theme.setActiveThemeId('dark');
+    expect(theme.getActiveThemeId()).toBe('dark');
+    expect(themeListener).toHaveBeenLastCalledWith('dark');
+    theme.setActiveThemeId();
+    expect(theme.getActiveThemeId()).toBeUndefined();
+    themeSubscription.unsubscribe();
+    themeListener.mockClear();
+    theme.setActiveThemeId('light');
+    expect(themeListener).not.toHaveBeenCalled();
+    expect(getMockApiFactory(language)?.api).toBe(coreApis.appLanguage);
+    expect(getMockApiFactory(theme)?.api).toBe(coreApis.appTheme);
+  });
+
+  it('supports lifecycle changes and plugin-scoped lookups', () => {
+    const lifecycle = mockApis.appLifecycle({ finalized: false });
+    const listener = jest.fn();
+    const unsubscribe = lifecycle.subscribe(listener);
+    expect(lifecycle.isFinalized()).toBe(false);
+    lifecycle.setFinalized(true);
+    lifecycle.setFinalized(true);
+    expect(lifecycle.isFinalized()).toBe(true);
+    expect(listener).toHaveBeenCalledTimes(1);
+    unsubscribe();
+    lifecycle.setFinalized(false);
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(mockApis.appLifecycle().isFinalized()).toBe(true);
+
+    const element = createElement('span', null, 'Custom');
+    const icons = mockApis.icons({ icons: { custom: element } });
+    expect(icons.icon('custom')).toBe(element);
+    expect(icons.listIconKeys()).toEqual(['custom']);
+    expect(icons.icon('missing')).toBeUndefined();
+    expect(mockApis.icons().listIconKeys()).toEqual([]);
+
+    const actions = mockApis.pluginHeaderActions({
+      actions: { test: [element] },
+    });
+    expect(actions.getPluginHeaderActions('test')).toEqual([element]);
+    expect(actions.getPluginHeaderActions('other')).toEqual([]);
+    expect(
+      mockApis.pluginHeaderActions().getPluginHeaderActions('test'),
+    ).toEqual([]);
+    for (const [api, ref] of [
+      [lifecycle, coreApis.appLifecycle],
+      [icons, coreApis.icons],
+      [actions, coreApis.pluginHeaderActions],
+    ]) {
+      expect(getMockApiFactory(api)?.api).toBe(ref);
+    }
+  });
+
+  it('collects toasts and closes each posted notification independently', () => {
+    const toast = mockApis.toast();
+    const message = { title: 'Test' };
+    const first = toast.post(message);
+    const second = toast.post(message);
+    expect(toast.getToasts()).toEqual([message, message]);
+    first.close();
+    first.close();
+    expect(toast.getToasts()).toEqual([message]);
+    second.close();
+    expect(toast.getToasts()).toEqual([]);
+    expect(mockApis.toast().getToasts()).toEqual([]);
+    expect(getMockApiFactory(toast)?.api).toBe(coreApis.toast);
+  });
+
+  it('coordinates typed OAuth requests until triggered or rejected', async () => {
+    const oauth = mockApis.oauthRequest();
+    let pending: PendingOAuthRequest[] = [];
+    const subscription = oauth.authRequest$().subscribe(value => {
+      pending = value;
+    });
+    await Promise.resolve();
+    const onAuthRequest = jest.fn(async (scopes: Set<string>) => ({
+      scopes: [...scopes].sort(),
+    }));
+    const request = oauth.createAuthRequester({
+      provider: { id: 'test', title: 'Test', icon: () => null },
+      onAuthRequest,
+    });
+    await Promise.resolve();
+    const first = request(new Set(['read']));
+    const second = request(new Set(['write']));
+    expect(onAuthRequest).not.toHaveBeenCalled();
+    expect(pending).toHaveLength(1);
+    await pending[0].trigger();
+    await expect(first).resolves.toEqual({ scopes: ['read', 'write'] });
+    await expect(second).resolves.toEqual({ scopes: ['read', 'write'] });
+    expect(onAuthRequest).toHaveBeenCalledTimes(1);
+    expect(pending).toEqual([]);
+    const rejected = request(new Set(['read']));
+    pending[0].reject();
+    await expect(rejected).rejects.toThrow();
+    subscription.unsubscribe();
+    expect(getMockApiFactory(oauth)?.api).toBe(coreApis.oauthRequest);
+  });
+
+  it('supports typed overrides including generic methods', async () => {
+    const oauth = mockApis.oauthRequest.mock({
+      createAuthRequester: ({ onAuthRequest }) => onAuthRequest,
+    });
+    const requester = oauth.createAuthRequester({
+      provider: { id: 'test', title: 'Test', icon: () => null },
+      onAuthRequest: async scopes => ({ token: [...scopes].join(' ') }),
+    });
+    const response: { token: string } = await requester(new Set(['read']));
+    expect(response).toEqual({ token: 'read' });
+    expect(oauth.createAuthRequester).toHaveBeenCalledTimes(1);
+
+    const routeRef = createRouteRef({ params: ['name'] });
+    const routing = mockApis.routeResolution.mock({
+      resolve:
+        () =>
+        (...[params]) =>
+          `/test/${(params as { name: string }).name}`,
+    });
+    expect(routing.resolve(routeRef)?.({ name: 'example' })).toBe(
+      '/test/example',
+    );
+    expect(routing.resolve).toHaveBeenCalledWith(routeRef);
+
+    const dialog = mockApis.dialog.mock({
+      open<TResult>() {
+        let resolve: (value: TResult) => void;
+        const result = new Promise<TResult>(r => {
+          resolve = r;
+        });
+        return {
+          close: (...args) => resolve(args[0] as TResult),
+          update: () => {},
+          result: () => result,
+        };
+      },
+    });
+    const handle = dialog.open<boolean>(createElement('div'));
+    const result: Promise<boolean> = handle.result();
+    handle.close(true);
+    await expect(result).resolves.toBe(true);
+    expect(dialog.open).toHaveBeenCalledTimes(1);
+
+    const icons = mockApis.icons.mock({ listIconKeys: () => ['test'] });
+    expect(icons.listIconKeys()).toEqual(['test']);
+    expect(icons.listIconKeys).toHaveBeenCalledTimes(1);
+  });
+
+  describe('appHistory', () => {
+    it('can create an instance', () => {
+      const navigate = jest.fn();
+      const history = mockApis.appHistory({ navigate });
+      history.navigate('/catalog');
+      expect(navigate).toHaveBeenCalledWith('/catalog');
+      expect(history.navigateCalls).toEqual([
+        { to: '/catalog', options: undefined },
+      ]);
     });
 
-    it('should have config', () => {
-      expect(mockApis.config).toBeDefined();
+    it('can create a mock and make assertions on it', () => {
+      const history = mockApis.appHistory.mock({
+        navigate: jest.fn(),
+      });
+      history.navigate('/tools');
+      expect(history.navigate).toHaveBeenCalledWith('/tools');
     });
 
-    it('should have discovery', () => {
-      expect(mockApis.discovery).toBeDefined();
+    it('keeps the real behavior around a supplied navigate implementation', () => {
+      const navigate = jest.fn();
+      const history = mockApis.appHistory.mock({ navigate });
+
+      history.navigate('/tools', { replace: true, state: { step: 1 } });
+
+      // The supplied implementation observes the call rather than replacing
+      // everything around it, so the location still tracks the navigation.
+      expect(navigate).toHaveBeenCalledWith('/tools', {
+        replace: true,
+        state: { step: 1 },
+      });
+      expect(history.navigate).toHaveBeenCalledWith('/tools', {
+        replace: true,
+        state: { step: 1 },
+      });
+      expect(history.getSnapshot().location).toEqual({
+        pathname: '/tools',
+        search: '',
+        hash: '',
+        state: { step: 1 },
+      });
+
+      // Arity survives the hand-off, so single-argument assertions hold.
+      history.navigate('/only-path');
+      expect(navigate.mock.calls[1]).toEqual(['/only-path']);
+
+      // External navigation is recorded without leaving the test page.
+      history.navigate('https://example.com/x');
+      history.navigate('mailto:support@example.com');
+      expect(navigate).toHaveBeenCalledTimes(4);
+      expect(navigate).toHaveBeenLastCalledWith('mailto:support@example.com');
+      expect(history.getSnapshot().location.pathname).toBe('/only-path');
     });
 
-    it('should have identity', () => {
-      expect(mockApis.identity).toBeDefined();
+    it('gives every history subscription its own handler', () => {
+      const history = mockApis.appHistory.mock();
+      const seen: string[] = [];
+      // The same function subscribing twice is two subscriptions, exactly as
+      // it is on the real app history.
+      const onNext = () => seen.push(history.getSnapshot().location.pathname);
+
+      const first = history.subscribe(onNext);
+      const second = history.subscribe(onNext);
+      expect(seen).toEqual([]);
+
+      history.navigate('/catalog');
+      expect(seen).toEqual(['/catalog', '/catalog']);
+
+      first();
+      first(); // Unsubscribing twice is harmless.
+
+      history.navigate('/tools');
+      expect(seen).toEqual(['/catalog', '/catalog', '/tools']);
+
+      second();
     });
 
-    it('should have permission', () => {
-      expect(mockApis.permission).toBeDefined();
+    it('only stops tracking the location when a test asks it to', () => {
+      const pinned: AppLocation = {
+        pathname: '/pinned',
+        search: '',
+        hash: '',
+        state: undefined,
+      };
+      const snapshot = { location: pinned };
+      const history = mockApis.appHistory.mock({
+        getSnapshot: () => snapshot,
+      });
+
+      history.navigate('/tools');
+
+      expect(history.navigate).toHaveBeenCalledWith('/tools');
+      expect(history.getSnapshot().location).toBe(pinned);
     });
 
-    it('should have storage', () => {
-      expect(mockApis.storage).toBeDefined();
+    it('has working defaults for everything a subscriber needs', () => {
+      const history = mockApis.appHistory.mock();
+
+      expect(history.createHref('/catalog')).toBe('/catalog');
+      expect(history.createHref('/catalog/foo/edit')).toBe('/catalog/foo/edit');
+      expect(history.createHref).toHaveBeenLastCalledWith('/catalog/foo/edit');
+      expect(history.getSnapshot().location).toEqual({
+        pathname: '/',
+        search: '',
+        hash: '',
+        state: undefined,
+      });
+
+      const seen: AppLocation[] = [];
+      const subscription = history.subscribe(() =>
+        seen.push(history.getSnapshot().location),
+      );
+      expect(seen).toEqual([]);
+
+      history.navigate('/tools');
+
+      expect(history.navigate).toHaveBeenCalledWith('/tools');
+      expect(history.getSnapshot().location.pathname).toBe('/tools');
+      expect(seen[0]).toBe(history.getSnapshot().location);
+
+      subscription();
+    });
+  });
+
+  describe('routeResolution', () => {
+    it('can create an instance', () => {
+      const home = createRouteRef();
+      const routeResolution = mockApis.routeResolution({
+        routes: [[home, '/home']],
+      });
+      expect(routeResolution.resolve(home)?.()).toBe('/home');
     });
 
-    it('should have translation', () => {
-      expect(mockApis.translation).toBeDefined();
+    it('supports fixed path matches with defaults and custom resolution callbacks', () => {
+      const node = {} as AppNode;
+      const options = { pathname: '/catalog/entity', node };
+      expect(mockApis.routeResolution().resolvePath(options)).toEqual({
+        matches: [],
+      });
+      const api = mockApis.routeResolution({
+        resolvePath: {
+          matches: [
+            { node, basePath: '/catalog' },
+            {
+              node,
+              basePath: '/catalog/entity',
+              routePattern: '/catalog/:name',
+              params: { name: 'entity' },
+              contributesPath: false,
+            },
+          ],
+        },
+      });
+      const result = api.resolvePath(options);
+      expect(result.matches).toEqual([
+        {
+          node,
+          basePath: '/catalog',
+          routePattern: '/catalog',
+          params: {},
+          contributesPath: true,
+        },
+        {
+          node,
+          basePath: '/catalog/entity',
+          routePattern: '/catalog/:name',
+          params: { name: 'entity' },
+          contributesPath: false,
+        },
+      ]);
+      expect(api.resolvePath({ pathname: '/unrelated' })).toEqual(result);
+      expect(api.resolvePath).toHaveBeenCalledWith(options);
+      const resolvePath = jest.fn(({ pathname }) =>
+        pathname === options.pathname ? result : { matches: [] },
+      );
+      const dynamic = mockApis.routeResolution({ resolvePath });
+      expect(dynamic.resolvePath(options)).toBe(result);
+      expect(dynamic.resolvePath({ pathname: '/unrelated' })).toEqual({
+        matches: [],
+      });
+      expect(resolvePath).toHaveBeenCalledWith(options);
+    });
+
+    it('can create a mock and make assertions on it', () => {
+      const home = createRouteRef();
+      const routeResolution = mockApis.routeResolution.mock({
+        resolve: jest.fn(() => () => '/mocked'),
+      });
+      expect(routeResolution.resolve(home)?.()).toBe('/mocked');
+      expect(routeResolution.resolve).toHaveBeenCalledWith(home);
     });
   });
 });

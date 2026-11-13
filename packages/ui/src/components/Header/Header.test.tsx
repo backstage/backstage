@@ -15,7 +15,8 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { TestRouter } from '../../testUtils/TestRouter';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
 import { Header } from './Header';
 import { HeaderMetadataStatus } from './HeaderMetadataStatus';
@@ -31,7 +32,7 @@ function renderHeader(
   initialEntry = '/app/catalog/entity',
 ) {
   return render(
-    <MemoryRouter
+    <TestRouter
       basename="/app"
       initialEntries={[initialEntry]}
       future={{ v7_startTransition: true, v7_relativeSplatPath: false }}
@@ -49,11 +50,23 @@ function renderHeader(
           />
         </Routes>
       </BUIProvider>
-    </MemoryRouter>,
+    </TestRouter>,
   );
 }
 
 describe('Header navigation', () => {
+  it('preserves an empty flat tab href as a native document link', () => {
+    renderHeader(
+      {
+        tabs: [{ id: 'current', label: 'Current document', href: '' }],
+        activeTabId: null,
+      },
+      '/app/catalog/entity/techdocs',
+    );
+
+    expect(screen.getByText('Current document')).toHaveAttribute('href', '');
+  });
+
   it.each([
     {
       name: 'inline description link',
@@ -145,10 +158,10 @@ describe('Header navigation', () => {
     );
   });
 
-  it('routes an empty flat tab href to the parent wildcard route', () => {
+  it('routes a dot flat tab href to the parent wildcard route', () => {
     renderHeader(
       {
-        tabs: [{ id: 'overview', label: 'Overview', href: '' }],
+        tabs: [{ id: 'overview', label: 'Overview', href: '.' }],
         activeTabId: null,
       },
       '/app/catalog/entity/techdocs',

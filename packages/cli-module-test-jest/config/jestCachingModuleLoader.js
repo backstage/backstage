@@ -14,14 +14,47 @@
  * limitations under the License.
  */
 
-// 'jest-runtime' is included with jest and should be kept in sync with the installed jest version
-// eslint-disable-next-line @backstage/no-undeclared-imports
-const { default: JestRuntime } = require('jest-runtime');
+const { resolveJest } = require('./getJestEnvironment');
+
+// 'jest-runtime' is included with jest and must match the installed jest version,
+// so it is loaded through jest's own @jest/core rather than resolved from here.
+const jestCorePath = require.resolve('@jest/core', { paths: [resolveJest()] });
+const jestRuntimePath = require.resolve('jest-runtime', {
+  paths: [jestCorePath],
+});
+const { default: JestRuntime } = require(jestRuntimePath);
 
 module.exports = class CachingJestRuntime extends JestRuntime {
   constructor(config, ...restArgs) {
     super(config, ...restArgs);
     this.allowLoadAsEsm = config.extensionsToTreatAsEsm.includes('.mts');
+
+    if (!this.allowLoadAsEsm) {
+      // Jest 30.5 performs this check inside its CommonJS loader instead of
+      // calling unstable_shouldLoadAsEsm below. Keep frontend tests on their
+      // configured CommonJS transforms rather than loading dependency ESM
+      // through Node.js require(esm), which does not support cyclic graphs.
+      // Older supported Jest versions do not expose _resolution and continue
+      // to call unstable_shouldLoadAsEsm below instead.
+      const resolution = this._resolution;
+      if (resolution !== undefined) {
+        if (typeof resolution.shouldLoadAsEsm !== 'function') {
+          throw new Error(
+            'The installed Jest version does not expose the expected module resolution API',
+          );
+        }
+
+        const shouldLoadAsEsm = () => false;
+        if (
+          !Reflect.set(resolution, 'shouldLoadAsEsm', shouldLoadAsEsm) ||
+          resolution.shouldLoadAsEsm !== shouldLoadAsEsm
+        ) {
+          throw new Error(
+            'The installed Jest version does not allow overriding its module resolution API',
+          );
+        }
+      }
+    }
   }
 
   // Unfortunately we need to use this unstable API to make sure that .js files

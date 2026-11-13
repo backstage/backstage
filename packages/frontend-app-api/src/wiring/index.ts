@@ -22,10 +22,6 @@ export {
   type PreparedSpecializedApp,
   type SpecializedAppSessionState,
 } from './prepareSpecializedApp';
-export {
-  createSpecializedApp,
-  type CreateSpecializedAppOptions,
-} from './createSpecializedApp';
 export { type FrontendPluginInfoResolver } from './createPluginInfoAttacher';
 export { type AppError, type AppErrorTypes } from './createErrorCollector';
 export { type ExtensionFactoryMiddleware } from './types';

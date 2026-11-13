@@ -35,34 +35,35 @@ export const signalsPlugin = createBackendPlugin({
         logger: coreServices.logger,
         config: coreServices.rootConfig,
         lifecycle: coreServices.rootLifecycle,
-        discovery: coreServices.discovery,
         userInfo: coreServices.userInfo,
         auth: coreServices.auth,
         events: eventsServiceRef,
+        instanceMetadata: coreServices.rootInstanceMetadata,
       },
       async init({
         httpRouter,
         logger,
         config,
         lifecycle,
-        discovery,
         userInfo,
         auth,
         events,
+        instanceMetadata,
       }) {
         httpRouter.use(
-          await createRouter({
+          createRouter({
+            httpRouter,
             logger,
             config,
             lifecycle,
-            discovery,
             userInfo,
             auth,
             events,
+            instanceMetadata,
           }),
         );
         httpRouter.addAuthPolicy({
-          path: '/',
+          path: '/health',
           allow: 'unauthenticated',
         });
       },

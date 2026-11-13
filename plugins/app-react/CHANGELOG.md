@@ -1,5 +1,55 @@
 # @backstage/plugin-app-react
 
+## 0.3.0-next.2
+
+### Minor Changes
+
+- df2bcee: **BREAKING**: Removed `RouterBlueprint`; remove overrides that only install `BrowserRouter`, move global providers to `AppRootWrapperBlueprint`, and render routing adapters inside lazily loaded page components. For custom navigation, provide `AppHistoryApi` through an `ApiBlueprint` factory for `appHistoryApiRef` that is available during initialization without an `if` predicate. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/core-plugin-api@1.12.12-next.2
+
+## 0.3.0-next.1
+
+### Minor Changes
+
+- 5c29a89: **BREAKING**: Removed the deprecated flat `items` prop from custom navigation components. Use the `navItems` collection instead.
+
+  Use `navItems.rest()` instead of iterating over `items`. Replace `item.to` with `item.href` and `item.text` with `item.title`. The `item.icon` value is a React element, so render it directly instead of using it as a component type.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/core-plugin-api@1.12.11
+
+## 0.2.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+
 ## 0.2.7
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @backstage/release-manifests
 
+## 0.0.16-next.0
+
+### Patch Changes
+
+- b8777d1: Updated the `requirements` example in the README to the Node.js 24 and 26 range.
+
+## 0.0.15
+
+### Patch Changes
+
+- 5834faa: Release manifests now include requirements such as supported Node.js versions when that information is available from the release.
+
+## 0.0.15-next.0
+
+### Patch Changes
+
+- 5834faa: Release manifests now include requirements such as supported Node.js versions when that information is available from the release.
+
 ## 0.0.14
 
 ### Patch Changes

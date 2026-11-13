@@ -15,7 +15,6 @@
  */
 
 import { QueryEntitiesInitialRequest } from '@backstage/catalog-client';
-import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { compact, isEqual } from 'lodash';
 import { useMemo, useRef } from 'react';
@@ -23,7 +22,7 @@ import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityUserFilter } from '../../filters';
 import { useEntityList, useStarredEntities } from '../../hooks';
-import { reduceCatalogFilters } from '../../utils/filters';
+import { combinePredicates, reduceCatalogFilters } from '../../utils/filters';
 
 export function useStarredEntitiesCount() {
   const catalogApi = useApi(catalogApiRef);
@@ -36,24 +35,13 @@ export function useStarredEntitiesCount() {
     const compacted = compact(Object.values(allFilters));
     const { orderFields, ...catalogFilters } = reduceCatalogFilters(compacted);
 
-    const facet = 'metadata.name';
-
     const newRequest: QueryEntitiesInitialRequest = {
       ...catalogFilters,
-      filter: {
-        ...catalogFilters.filter,
-        /**
-         * here we are filtering entities by `name`. Given this filter,
-         * the response might contain more entities than expected, in case multiple entities
-         * of different kind or namespace share the same name. Those extra entities are filtered out
-         * client side by `EntityUserFilter`, so they won't be visible to the user.
-         */
-        [facet]: Array.from(starredEntities).map(e => parseEntityRef(e).name),
-      },
-      /**
-       * limit is set to a high value as we are not expecting many starred entities
-       */
-      limit: 1000,
+      query: combinePredicates([
+        catalogFilters.query,
+        EntityUserFilter.starred(Array.from(starredEntities)).getCatalogQuery(),
+      ]),
+      limit: 0,
     };
     if (isEqual(newRequest, prevRequest.current)) {
       return prevRequest.current;
@@ -68,23 +56,8 @@ export function useStarredEntitiesCount() {
       return 0;
     }
 
-    /**
-     * given a list of starred entity refs and some filters coming from CatalogPage,
-     * it reduces the list of starred entities, to a list of entities that matches the
-     * provided filters. It won't be possible to getEntitiesByRefs
-     * as the method doesn't accept any filter.
-     */
-    const response = await catalogApi.queryEntities(request);
-
-    return response.items
-      .map(e =>
-        stringifyEntityRef({
-          kind: e.kind,
-          namespace: e.metadata.namespace,
-          name: e.metadata.name,
-        }),
-      )
-      .filter(e => starredEntities.has(e)).length;
+    const { totalItems } = await catalogApi.queryEntities(request);
+    return totalItems;
   }, [request, starredEntities]);
 
   const filter = useMemo(

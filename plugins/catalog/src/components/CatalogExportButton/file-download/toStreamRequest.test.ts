@@ -16,6 +16,7 @@
 import { toStreamRequest } from './toStreamRequest';
 import {
   DefaultEntityFilters,
+  EntityKindFilter,
   EntityTextFilter,
   EntityOrderFilter,
 } from '@backstage/plugin-catalog-react';
@@ -381,6 +382,33 @@ describe('toStreamRequest', () => {
           ],
         },
         orderFields: [{ field: 'metadata.name', order: 'asc' }],
+      });
+    });
+  });
+
+  describe('with predicate filters', () => {
+    it('passes predicates as a query alongside legacy filters', () => {
+      const filters = {
+        kind: new EntityKindFilter('component', 'Component'),
+        legacy: {
+          getCatalogFilters: () => ({ 'spec.type': 'service' }),
+        },
+        both: {
+          getCatalogFilters: () => ({ 'spec.lifecycle': 'ignored' }),
+          getCatalogQuery: () => ({
+            $not: { 'spec.lifecycle': 'experimental' },
+          }),
+        },
+      } as DefaultEntityFilters;
+
+      expect(toStreamRequest(filters)).toEqual({
+        filter: { 'spec.type': 'service' },
+        query: {
+          $all: [
+            { kind: 'component' },
+            { $not: { 'spec.lifecycle': 'experimental' } },
+          ],
+        },
       });
     });
   });

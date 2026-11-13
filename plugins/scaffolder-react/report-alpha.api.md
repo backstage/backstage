@@ -225,6 +225,8 @@ export interface ParsedTemplateSchema {
   title: string;
   // (undocumented)
   uiSchema: UiSchema;
+  // (undocumented)
+  when?: string | boolean;
 }
 
 // @alpha
@@ -234,6 +236,7 @@ export const ReviewState: (props: ReviewStateProps) => JSX_2.Element;
 export type ReviewStateProps = {
   schemas: ParsedTemplateSchema[];
   formState: JsonObject;
+  schemaFormState?: JsonObject;
 };
 
 // @alpha
@@ -335,6 +338,40 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'templateOutputs.title': 'Text Output';
   }
 >;
+
+// @alpha
+export type ScaffolderTemplateFilter = (
+  template: TemplateEntityV1beta3,
+) => boolean;
+
+// @alpha
+export const ScaffolderTemplateFilterBlueprint: ExtensionBlueprint<{
+  kind: 'scaffolder-template-filter';
+  params: ScaffolderTemplateFilterBlueprintParams;
+  output: ExtensionDataRef<
+    ScaffolderTemplateFilterHook,
+    'scaffolder.template-filter-hook',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    useTemplateFilter: ConfigurableExtensionDataRef<
+      ScaffolderTemplateFilterHook,
+      'scaffolder.template-filter-hook',
+      {}
+    >;
+  };
+}>;
+
+// @alpha
+export interface ScaffolderTemplateFilterBlueprintParams {
+  useTemplateFilter: ScaffolderTemplateFilterHook;
+}
+
+// @alpha
+export type ScaffolderTemplateFilterHook = () => ScaffolderTemplateFilter;
 
 // @alpha (undocumented)
 export const scaffolderTemplateOutputsBlueprint: ExtensionBlueprint<{

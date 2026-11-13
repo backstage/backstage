@@ -89,17 +89,22 @@ const rootHttpRouterServiceFactoryWithOptions = (
 
       const trustProxy = config.getOptional('backend.trustProxy');
 
-      const router = DefaultRootHttpRouter.create({ indexPath });
-      const middleware = MiddlewareFactory.create({ config, logger });
-      const routes = router.handler();
-
-      const healthRouter = createHealthRouter({ config, health });
-
       const server = await createHttpServer(
         app,
         readHttpServerOptions(config.getOptionalConfig('backend')),
         { logger },
       );
+
+      const router = DefaultRootHttpRouter.create({
+        indexPath,
+        server,
+        lifecycle,
+        logger,
+      });
+      const middleware = MiddlewareFactory.create({ config, logger });
+      const routes = router.handler();
+
+      const healthRouter = createHealthRouter({ config, health });
 
       configure({
         app,

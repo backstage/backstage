@@ -16,9 +16,30 @@
 
 import { renderInTestApp } from '@backstage/test-utils';
 import { MarkdownContent } from './MarkdownContent';
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+
+let mockRendererLoaded = false;
+jest.mock('./MarkdownRenderer', () => {
+  mockRendererLoaded = true;
+  return jest.requireActual('./MarkdownRenderer');
+});
 
 describe('<MarkdownContent />', () => {
+  // Must run first, before any other test has rendered MarkdownContent.
+  it('loads the renderer on first render rather than on import', async () => {
+    expect(mockRendererLoaded).toBe(false);
+
+    const { container } = render(
+      <MarkdownContent content="Some **bold** text" />,
+    );
+    expect(container).toBeEmptyDOMElement();
+
+    expect(
+      await screen.findByText('bold', { selector: 'strong' }),
+    ).toBeInTheDocument();
+    expect(mockRendererLoaded).toBe(true);
+  });
+
   it('render MarkdownContent component', async () => {
     await renderInTestApp(
       <MarkdownContent content={'# H1\n' + '## H2\n' + '### H3'} />,

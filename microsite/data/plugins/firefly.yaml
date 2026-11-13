@@ -8,4 +8,5 @@ documentation: https://docs.firefly.ai/firefly-docs/integrations/backstage
 iconUrl: https://avatars.githubusercontent.com/u/100200663?s=400&v=4
 npmPackageName: '@fireflyai/backstage-plugin-firefly'
 addedDate: '2025-04-07'
-status: active
+status: inactive
+staleSince: '2026-11-04'

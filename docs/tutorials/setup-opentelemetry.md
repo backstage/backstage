@@ -14,9 +14,11 @@ We will use the OpenTelemetry Node SDK and the `auto-instrumentations-node` pack
 
 Backstage packages, such as the catalog, use the OpenTelemetry API to send custom traces and metrics.
 The `auto-instrumentations-node` will automatically create spans for code called in libraries like Express.
+Adding `@opentelemetry/api` directly to your backend makes sure that the SDK and the Backstage packages share a single version of the API that the SDK supports.
 
 ```bash
 yarn --cwd packages/backend add \
+    @opentelemetry/api \
     @opentelemetry/sdk-node \
     @opentelemetry/auto-instrumentations-node \
     @opentelemetry/exporter-prometheus \
@@ -41,15 +43,15 @@ if (isMainThread) {
     OTLPTraceExporter,
   } = require('@opentelemetry/exporter-trace-otlp-http');
 
-  // By default exports the metrics on localhost:9464/metrics
-  const prometheusExporter = new PrometheusExporter();
+  // Exports the metrics on port 9464 at /metrics, on all network interfaces
+  const prometheusExporter = new PrometheusExporter({ host: '0.0.0.0' });
   // We post the traces to localhost:4318/v1/traces
   const otlpTraceExporter = new OTLPTraceExporter({
     // Default Jaeger URL trace endpoint.
     url: 'http://localhost:4318/v1/traces',
   });
   const sdk = new NodeSDK({
-    metricReader: prometheusExporter,
+    metricReaders: [prometheusExporter],
     traceExporter: otlpTraceExporter,
     instrumentations: [getNodeAutoInstrumentations()],
   });
@@ -58,6 +60,8 @@ if (isMainThread) {
 }
 ```
 
+The Prometheus exporter only listens on `localhost` by default. This prevents a Prometheus server running in another container or on another host from scraping it, which is why the example sets `host` to `0.0.0.0`. Leave out the `host` option if the metrics should only be reachable from the local machine.
+
 You probably won't need all of the instrumentation inside `getNodeAutoInstrumentations()` so make sure to
 check the [documentation](https://www.npmjs.com/package/@opentelemetry/auto-instrumentations-node) and tweak it properly.
 
@@ -65,17 +69,28 @@ check the [documentation](https://www.npmjs.com/package/@opentelemetry/auto-inst
 
 The default histogram buckets for OpenTelemetry are in milliseconds, but the histograms that are created for Catalog processing emit metrics in second. You might want to adjust this to what fits your need. To do this you can use the [Views feature](https://opentelemetry.io/docs/concepts/signals/metrics/#views) like this:
 
+This uses `AggregationType` from the `@opentelemetry/sdk-metrics` package, which you need to add to your backend:
+
+```bash
+yarn --cwd packages/backend add @opentelemetry/sdk-metrics
+```
+
 ```js
-const prometheus = new PrometheusExporter();
+const { AggregationType } = require('@opentelemetry/sdk-metrics');
+
+const prometheus = new PrometheusExporter({ host: '0.0.0.0' });
 const sdk = new NodeSDK({
-  metricReader: prometheus,
+  metricReaders: [prometheus],
   views: [
-    new View({
+    {
       instrumentName: 'catalog.test',
-      aggregation: new ExplicitBucketHistogramAggregation([
-        0.01, 0.1, 0.5, 1, 5, 10, 25, 50, 100, 500, 1000,
-      ]),
-    }),
+      aggregation: {
+        type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM,
+        options: {
+          boundaries: [0.01, 0.1, 0.5, 1, 5, 10, 25, 50, 100, 500, 1000],
+        },
+      },
+    },
   ],
 });
 ```
@@ -83,16 +98,21 @@ const sdk = new NodeSDK({
 The above will make all the histogram buckets use the same config. If you would like to take a more targeted approach you can do this:
 
 ```js
-const prometheus = new PrometheusExporter();
+const prometheus = new PrometheusExporter({ host: '0.0.0.0' });
 const sdk = new NodeSDK({
-  metricReader: prometheus,
+  metricReaders: [prometheus],
   views: [
-    new View({
+    {
       instrumentName: 'catalog.test',
-      aggregation: new ExplicitBucketHistogramAggregation([
-        0, 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 30, 60, 120, 300, 1000,
-      ]),
-    }),
+      aggregation: {
+        type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM,
+        options: {
+          boundaries: [
+            0, 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 30, 60, 120, 300, 1000,
+          ],
+        },
+      },
+    },
   ],
 });
 ```
@@ -118,13 +138,7 @@ You can now start your Backstage instance as usual, using `yarn start` and you'l
 
 If you are having issues getting metrics or traces working there are some helpful diagnostic tools from OpenTelemetry you can use that can help.
 
-First we need to the `@opentelemetry/api` package:
-
-```bash
-yarn --cwd packages/backend add @opentelemetry/api
-```
-
-Then we want to add the following snippet before the `sdk.start()` call:
+Add the following snippet before the `sdk.start()` call:
 
 ```js
 const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');

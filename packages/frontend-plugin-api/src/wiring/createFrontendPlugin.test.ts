@@ -142,7 +142,11 @@ describe('createFrontendPlugin', () => {
   it('should create an empty plugin', () => {
     const plugin = createFrontendPlugin({ pluginId: 'test' });
 
-    expect(plugin).toBeDefined();
+    expect(plugin.pluginId).toBe('test');
+    // @ts-expect-error The legacy alias is not part of the public API.
+    expect(plugin.id).toBe('test');
+    // @ts-expect-error Overrides also retain the alias only at runtime.
+    expect(plugin.withOverrides({}).id).toBe('test');
     expect(String(plugin)).toBe('Plugin{id=test}');
   });
 

@@ -1,5 +1,77 @@
 # @backstage/plugin-auth-backend
 
+## 0.31.0-next.2
+
+### Minor Changes
+
+- 352ad44: **BREAKING**: The deprecated experimental Dynamic Client Registration (DCR) support has been removed. Use Client ID Metadata Documents (CIMD) instead and remove `auth.experimentalDynamicClientRegistration` from your configuration. The database migration deletes registered clients and their authorization and offline sessions, invalidating existing DCR authorization codes and refresh tokens. Users must sign in again through a CIMD client. Already-issued user tokens remain valid until they expire. See the [migration guide](https://backstage.io/docs/ai/mcp-actions#migrating-from-dynamic-client-registration).
+
+### Patch Changes
+
+- 5fc15b7: Fixed authorization-code exchanges to reject supplied client IDs that do not match the client that obtained the code. These requests return `invalid_grant` without consuming the code. Exchanges that omit `client_id` remain supported for older clients but now log a deprecation warning; a future release will require it.
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/plugin-auth-node@0.7.8-next.2
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+
+## 0.30.3-next.1
+
+### Patch Changes
+
+- 97ee785: Allow Cursor clients to use Client ID Metadata Documents by default.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.8-next.1
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+
+## 0.30.3-next.0
+
+### Patch Changes
+
+- 8965c27: User tokens issued by sign-in resolvers now always have the entity refs in their `sub` and `ent` claims in canonical form, for example `user:default/jane.doe` rather than `User:default/Jane.Doe`, and duplicate `ent` refs are removed. Previously, a custom sign-in resolver could issue valid but non-canonical refs, which then failed to match stored user info and offline sessions on case-sensitive databases.
+- fa0eb7a: Added a `POST /v1/offline-sessions/revoke` endpoint that lets other backend services revoke all offline sessions (refresh tokens) of a user. The endpoint only accepts service credentials, records an audit event, and is only available when `auth.experimentalRefreshToken.enabled` is set.
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+
+## 0.30.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/plugin-auth-node@0.7.7
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-node@2.2.6
+
+## 0.30.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-auth-node@0.7.7-next.1
+  - @backstage/plugin-catalog-node@2.2.6-next.1
+
+## 0.30.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-auth-node@0.7.7-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+
 ## 0.30.1
 
 ### Patch Changes

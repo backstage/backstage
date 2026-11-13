@@ -101,7 +101,11 @@ async function main(args) {
 
       if (statusChanged) {
         pluginDataYaml.status = newStatus;
-        pluginDataYaml.staleSince = new Date().toISOString().split('T')[0];
+        if (newStatus === 'active') {
+          delete pluginDataYaml.staleSince;
+        } else {
+          pluginDataYaml.staleSince = new Date().toISOString().split('T')[0];
+        }
 
         // Write updated YAML back to file
         const yamlContent = yaml.dump(pluginDataYaml, {

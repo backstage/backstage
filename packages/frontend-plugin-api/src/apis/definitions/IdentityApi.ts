@@ -50,6 +50,7 @@ export type IdentityApi = {
  * The {@link ApiRef} of {@link IdentityApi}.
  *
  * @public
+ * @deprecated Use {@link coreApis.identity} instead.
  */
 export const identityApiRef = createApiRef<IdentityApi>().with({
   id: 'core.identity',

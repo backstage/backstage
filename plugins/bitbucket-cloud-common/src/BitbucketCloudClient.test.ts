@@ -114,6 +114,138 @@ describe('BitbucketCloudClient', () => {
     expect(results[0].file!.path).toEqual('path/to/file');
   });
 
+  it('searchWorkspaceCode', async () => {
+    // Shape of a recorded answer, with made-up names and ids.
+    const firstPage = {
+      id: '11111111-2222-4333-8444-555555555555',
+      repositories: [
+        {
+          id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+          url: 'https://bitbucket.org/ws/repo1',
+          host: 'bitbucket.org',
+          ns: 'ws',
+          name: 'repo1',
+          metadata: {
+            scm: 'bitbucket',
+            bitbucket_project: { key: 'PROJ', name: 'Project' },
+          },
+        },
+      ],
+      matched_files: [
+        {
+          id: 'f1',
+          repositoryId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+          path: 'catalog-info.yaml',
+          name: 'catalog-info.yaml',
+          language: 'YAML',
+          version: '0123456789abcdef0123456789abcdef01234567',
+          url: 'https://bitbucket.org/ws/repo1/src/0123456789abcdef0123456789abcdef01234567/catalog-info.yaml',
+          matched_chunks: [],
+          is_matched_path: false,
+          branch_or_tag_name: 'main',
+          is_default_branch: true,
+        },
+      ],
+      metadata: { total_count: 2 },
+      pagination: { next_cursor: 'cursor-1', has_more: true },
+    };
+    const secondPage = {
+      id: '11111111-2222-4333-8444-555555555555',
+      repositories: [],
+      matched_files: [
+        {
+          ...firstPage.matched_files[0],
+          id: 'f2',
+          path: 'sub/catalog-info.yaml',
+          url: 'https://bitbucket.org/ws/repo1/src/0123456789abcdef0123456789abcdef01234567/sub/catalog-info.yaml',
+        },
+      ],
+      pagination: { has_more: false },
+    };
+
+    const requests: { contentType: string | null; body: any }[] = [];
+    server.use(
+      http.post(
+        'https://api.bitbucket.org/2.0/workspaces/ws/codesearch',
+        async ({ request }) => {
+          if (
+            request.headers.get('authorization') !==
+            'Basic dGVzdC11c2VyOnRlc3QtcHc='
+          ) {
+            return new HttpResponse(null, { status: 401 });
+          }
+          if (request.headers.get('content-type') !== 'application/json') {
+            return new HttpResponse(null, { status: 415 });
+          }
+
+          const body = (await request.json()) as any;
+          requests.push({
+            contentType: request.headers.get('content-type'),
+            body,
+          });
+          return HttpResponse.json(
+            body.pagination?.next_cursor === 'cursor-1'
+              ? secondPage
+              : firstPage,
+          );
+        },
+      ),
+    );
+
+    const query = {
+      search_term: 'catalog-info.yaml',
+      filters: {
+        and: [
+          { attribute: 'path', eq: 'catalog-info.yaml' },
+          { attribute: 'project', eq: 'PROJ' },
+        ],
+      },
+    };
+
+    const paths = [];
+    for await (const page of client.searchWorkspaceCode('ws', query, {
+      maxResults: 1,
+    })) {
+      for (const file of page.matched_files ?? []) {
+        paths.push(file.path);
+      }
+    }
+
+    expect(paths).toEqual(['catalog-info.yaml', 'sub/catalog-info.yaml']);
+    expect(requests).toEqual([
+      {
+        contentType: 'application/json',
+        body: { query, config: { max_results: 1 } },
+      },
+      {
+        contentType: 'application/json',
+        body: {
+          query,
+          config: { max_results: 1 },
+          request_id: '11111111-2222-4333-8444-555555555555',
+          pagination: { next_cursor: 'cursor-1' },
+        },
+      },
+    ]);
+  });
+
+  it('searchWorkspaceCode fails on an error answer', async () => {
+    server.use(
+      http.post('https://api.bitbucket.org/2.0/workspaces/ws/codesearch', () =>
+        HttpResponse.json(
+          { type: 'error', error: { message: 'forbidden' } },
+          { status: 403 },
+        ),
+      ),
+    );
+
+    const pages = client.searchWorkspaceCode('ws', { search_term: 'x' });
+
+    await expect(pages.next()).rejects.toThrow(
+      'Unexpected response for POST https://api.bitbucket.org/2.0/workspaces/ws/codesearch. Expected 200 but got 403',
+    );
+  });
+
   it('listRepositoriesByWorkspace', async () => {
     server.use(
       http.get('https://api.bitbucket.org/2.0/repositories/ws', () => {
@@ -219,5 +351,74 @@ describe('BitbucketCloudClient', () => {
 
     expect(results).toHaveLength(1);
     expect(results[0].name).toEqual('branch1');
+  });
+
+  it('authenticates with Bearer token when token only is provided', async () => {
+    const tokenClient = BitbucketCloudClient.fromConfig({
+      host: 'bitbucket.org',
+      apiBaseUrl: 'https://api.bitbucket.org/2.0',
+      token: 'my-bearer-token',
+    });
+
+    server.use(
+      http.get('https://api.bitbucket.org/2.0/workspaces', ({ request }) => {
+        // Assert that the request includes the Bearer authorization header
+        if (request.headers.get('authorization') !== 'Bearer my-bearer-token') {
+          return new HttpResponse(null, { status: 401 });
+        }
+
+        return HttpResponse.json({
+          values: [
+            {
+              type: 'workspace',
+              slug: 'workspace1',
+            } as Models.Workspace,
+          ],
+        });
+      }),
+    );
+
+    const pagination = tokenClient.listWorkspaces();
+    const results = [];
+    for await (const result of pagination.iterateResults()) {
+      results.push(result);
+    }
+
+    expect(results).toHaveLength(1);
+    expect(results[0].slug).toEqual('workspace1');
+  });
+
+  it('uses Basic authentication when both username and token are provided', async () => {
+    const basicClient = BitbucketCloudClient.fromConfig({
+      host: 'bitbucket.org',
+      apiBaseUrl: 'https://api.bitbucket.org/2.0',
+      username: 'my-user',
+      token: 'my-token',
+    });
+
+    server.use(
+      http.get('https://api.bitbucket.org/2.0/workspaces', ({ request }) => {
+        const expectedAuth = `Basic ${Buffer.from('my-user:my-token').toString(
+          'base64',
+        )}`;
+        if (request.headers.get('authorization') !== expectedAuth) {
+          return new HttpResponse(null, { status: 401 });
+        }
+
+        return HttpResponse.json({
+          values: [
+            { type: 'workspace', slug: 'workspace1' } as Models.Workspace,
+          ],
+        });
+      }),
+    );
+
+    const pagination = basicClient.listWorkspaces();
+    const results = [];
+    for await (const result of pagination.iterateResults()) {
+      results.push(result);
+    }
+
+    expect(results).toHaveLength(1);
   });
 });

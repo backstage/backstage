@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import {
+  mockCredentials,
+  mockServices,
+  startTestBackend,
+  TestDatabases,
+} from '@backstage/backend-test-utils';
+import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import request from 'supertest';
 import { authPlugin } from './authPlugin';
 import authModuleGuestProvider from '@backstage/plugin-auth-backend-module-guest-provider';
@@ -162,6 +168,111 @@ describe('authPlugin', () => {
           ent: expectedIdentity.ownershipEntityRefs,
         },
       });
+    });
+  });
+
+  describe('offline session revocation', () => {
+    jest.setTimeout(60_000);
+
+    const databases = TestDatabases.create();
+
+    it.each(databases.eachSupportedId())(
+      'should revoke all offline sessions of a user, %p',
+      async databaseId => {
+        const knex = await databases.init(databaseId);
+        const auditor = mockServices.auditor.mock();
+
+        const { server } = await startTestBackend({
+          features: [
+            authPlugin,
+            mockServices.database.factory({ knex }),
+            auditor.factory,
+            catalogServiceMock.factory(),
+            mockServices.rootConfig.factory({
+              data: {
+                app: { baseUrl: 'http://localhost:3000' },
+                auth: { experimentalRefreshToken: { enabled: true } },
+              },
+            }),
+          ],
+        });
+
+        const sessions = ['a', 'b', 'c'].map((id, index) => ({
+          id,
+          user_entity_ref:
+            index < 2 ? 'user:default/target' : 'user:default/other',
+          oidc_client_id: null,
+          token_hash: `hash-${id}`,
+          created_at: knex.fn.now(),
+          last_used_at: knex.fn.now(),
+        }));
+        await knex('offline_sessions').insert(sessions);
+
+        // Only other backend services may call this endpoint
+        await request(server)
+          .post('/api/auth/v1/offline-sessions/revoke')
+          .set('Authorization', mockCredentials.user.header())
+          .send({ userEntityRef: 'user:default/target' })
+          .expect(403);
+        await request(server)
+          .post('/api/auth/v1/offline-sessions/revoke')
+          .set('Authorization', mockCredentials.none.header())
+          .send({ userEntityRef: 'user:default/target' })
+          .expect(401);
+
+        await request(server)
+          .post('/api/auth/v1/offline-sessions/revoke')
+          .set('Authorization', mockCredentials.service.header())
+          .send({ userEntityRef: 'group:default/target' })
+          .expect(400);
+        await request(server)
+          .post('/api/auth/v1/offline-sessions/revoke')
+          .set('Authorization', mockCredentials.service.header())
+          .send({})
+          .expect(400);
+        expect(auditor.createEvent).not.toHaveBeenCalled();
+
+        // The kind and namespace default to user and default
+        const res = await request(server)
+          .post('/api/auth/v1/offline-sessions/revoke')
+          .set('Authorization', mockCredentials.service.header())
+          .send({ userEntityRef: 'TARGET' });
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ revokedCount: 2 });
+
+        await expect(
+          knex('offline_sessions').select('id').orderBy('id'),
+        ).resolves.toEqual([{ id: 'c' }]);
+
+        expect(auditor.createEvent).toHaveBeenCalledTimes(1);
+        expect(auditor.createEvent).toHaveBeenCalledWith({
+          eventId: 'offline-sessions-revoke',
+          severityLevel: 'high',
+          request: expect.anything(),
+          meta: { userEntityRef: 'user:default/target' },
+        });
+        const event = await auditor.createEvent.mock.results[0].value;
+        expect(event.success).toHaveBeenCalledWith({
+          meta: { revokedCount: 2 },
+        });
+      },
+    );
+
+    it('should not expose the endpoint when refresh tokens are disabled', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          authPlugin,
+          mockServices.rootConfig.factory({
+            data: { app: { baseUrl: 'http://localhost:3000' } },
+          }),
+        ],
+      });
+
+      const res = await request(server)
+        .post('/api/auth/v1/offline-sessions/revoke')
+        .set('Authorization', mockCredentials.service.header())
+        .send({ userEntityRef: 'user:default/target' });
+      expect(res.status).toBe(404);
     });
   });
 });

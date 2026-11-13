@@ -29,10 +29,12 @@ export class BackstageBackend implements Backend {
   constructor(
     defaultServiceFactories: ServiceFactory[],
     extensionPointFactoryMiddleware?: ExtensionPointFactoryMiddleware[],
+    instanceId?: string,
   ) {
     this.#initializer = new BackendInitializer(
       defaultServiceFactories,
       extensionPointFactoryMiddleware,
+      instanceId,
     );
   }
 

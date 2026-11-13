@@ -26,22 +26,28 @@ export const useScheduledTasks = (plugin: string) => {
     error: asyncError,
     retry: refresh,
   } = useAsyncRetry(async () => {
-    return api.getScheduledTasksByPlugin(plugin);
+    const data = await api.getScheduledTasksByPlugin(plugin);
+    return {
+      scheduledTasks: data.scheduledTasks,
+      plugin,
+    };
   }, [api, plugin]);
 
   if (asyncError) {
     return {
       scheduledTasks: undefined,
-      loading: false,
-      error: asyncError.message,
+      loading,
+      error: asyncError,
       refresh,
+      loadedPlugin: undefined,
     };
   }
 
   return {
     scheduledTasks: value?.scheduledTasks,
     loading,
-    error: value?.error,
+    error: undefined,
     refresh,
+    loadedPlugin: value?.plugin,
   };
 };

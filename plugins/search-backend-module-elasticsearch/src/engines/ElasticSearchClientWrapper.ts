@@ -19,6 +19,10 @@ import {
   ClientOptions as ElasticSearchClientLibOptions,
 } from '@elastic/elasticsearch';
 import { Client as OpenSearchClient } from '@opensearch-project/opensearch';
+import type {
+  BulkHelper,
+  BulkStats,
+} from '@opensearch-project/opensearch/lib/Helpers.js';
 import { Readable } from 'node:stream';
 import {
   ElasticSearchClientOptions,
@@ -188,7 +192,7 @@ export class ElasticSearchClientWrapper {
     datasource: Readable;
     onDocument: (doc: any) => ElasticSearchIndexAction;
     refreshOnCompletion?: string | boolean;
-  }) {
+  }): BulkHelper<BulkStats> {
     if (this.openSearchClient) {
       return this.openSearchClient.helpers.bulk(bulkOptions);
     }

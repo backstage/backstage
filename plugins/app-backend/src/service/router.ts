@@ -17,6 +17,7 @@
 import {
   DatabaseService,
   resolvePackagePath,
+  resolveSafeChildPath,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import type { AppConfig } from '@backstage/config';
@@ -43,6 +44,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError, InputError } from '@backstage/errors';
 import { injectConfig, readFrontendConfig } from '../lib/config';
+import { filterPublicConfig } from '../lib/config/filterPublicConfig';
 
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
@@ -166,38 +168,55 @@ export async function createRouter(
 
     const publicRouter = Router();
 
-    publicRouter.use(async (req, res, next) => {
+    const getRequestCredentials = async (
+      req: express.Request,
+      res: express.Response,
+    ) => {
       try {
-        const credentials = await httpAuth.credentials(req, {
+        return await httpAuth.credentials(req, {
           allow: ['user', 'service', 'none'],
           allowLimitedAccess: true,
         });
-
-        if (credentials.principal.type === 'none') {
-          next();
-        } else {
-          next('router');
-        }
       } catch {
         // If we fail to authenticate, make sure the session cookie is cleared
         // and continue as unauthenticated. If the user is logged in they will
         // immediately be redirected back to the protected app via the POST.
+        const credentials = await auth.getNoneCredentials();
         await httpAuth.issueUserCookie(res, {
-          credentials: await auth.getNoneCredentials(),
+          credentials,
         });
-        next();
+        return credentials;
       }
-    });
+    };
 
+    // Handle sign-in before checking the existing session cookie so repeated
+    // handoffs remain idempotent for users that are already authenticated.
     publicRouter.post(
       '*',
       express.urlencoded({ extended: true }),
       async (req, res, next) => {
         if (req.body.type === 'sign-in') {
+          const existingCredentials = await getRequestCredentials(req, res);
+
+          if (auth.isPrincipal(existingCredentials, 'service')) {
+            next('router');
+            return;
+          }
+
           const credentials = await auth.authenticate(req.body.token);
 
           if (!auth.isPrincipal(credentials, 'user')) {
             throw new AuthenticationError('Invalid token, not a user');
+          }
+
+          if (
+            auth.isPrincipal(existingCredentials, 'user') &&
+            existingCredentials.principal.userEntityRef !==
+              credentials.principal.userEntityRef
+          ) {
+            throw new AuthenticationError(
+              'Refused to replace an existing authenticated session',
+            );
           }
 
           await httpAuth.issueUserCookie(res, {
@@ -215,12 +234,23 @@ export async function createRouter(
       },
     );
 
+    publicRouter.use(async (req, res, next) => {
+      const credentials = await getRequestCredentials(req, res);
+
+      if (credentials.principal.type === 'none') {
+        next();
+      } else {
+        next('router');
+      }
+    });
+
     publicRouter.use(
       await createEntryPointRouter({
         logger: logger.child({ entry: 'public' }),
         rootDir: publicDistDir,
         assetStore: assetStore?.withNamespace('public'),
-        appConfigs, // TODO(Rugvip): We should not be including the full config here
+        appConfigs,
+        configFilter: configs => filterPublicConfig(configs, config),
       }),
     );
 
@@ -246,18 +276,26 @@ async function createEntryPointRouter({
   assetStore,
   staticFallbackHandler,
   appConfigs,
+  configFilter,
 }: {
   logger: LoggerService;
   rootDir: string;
   assetStore?: StaticAssetsStore;
   staticFallbackHandler?: express.Handler;
   appConfigs?: AppConfig[];
+  configFilter?: (appConfigs: AppConfig[]) => AppConfig[];
 }) {
   const staticDir = resolvePath(rootDir, 'static');
 
   const injectResult =
     appConfigs &&
-    (await injectConfig({ appConfigs, logger, rootDir, staticDir }));
+    (await injectConfig({
+      appConfigs,
+      logger,
+      rootDir,
+      staticDir,
+      configFilter,
+    }));
 
   const router = Router();
 
@@ -294,9 +332,29 @@ async function createEntryPointRouter({
   router.use('/static', staticRouter);
 
   const rootRouter = Router();
-  rootRouter.use((req, _res, next) => {
-    // Make sure / and /index.html are handled by the HTML5 route below
-    if (req.path === '/' || req.path === '/index.html') {
+  rootRouter.use(async (req, _res, next) => {
+    // Make sure / and /index.html are handled by the HTML5 route below.
+    let isIndex = req.path === '/' || req.path === '/index.html';
+    if (injectResult?.indexHtmlContent && !isIndex) {
+      try {
+        const path = resolveSafeChildPath(
+          rootDir,
+          `.${decodeURIComponent(req.path).replaceAll('\\', '/')}`,
+        );
+        const [file, index] = await Promise.all([
+          fs.stat(path),
+          fs.stat(resolvePath(rootDir, 'index.html')),
+        ]);
+        const candidate = file.isDirectory()
+          ? await fs.stat(resolvePath(path, 'index.html'))
+          : file;
+        // Every alias of the built index must use the injected HTML as well.
+        isIndex = candidate.dev === index.dev && candidate.ino === index.ino;
+      } catch {
+        // Let express.static handle missing files, invalid paths, and malformed URL encoding.
+      }
+    }
+    if (isIndex) {
       next('router');
     } else {
       next();

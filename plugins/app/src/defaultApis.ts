@@ -63,6 +63,7 @@ import {
 import {
   ApiBlueprint,
   dialogApiRef,
+  iconsApiRef,
   toastApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -75,9 +76,30 @@ import {
   IdentityPermissionApi,
 } from '@backstage/plugin-permission-react';
 import { DefaultDialogApi } from './apis/DefaultDialogApi';
+import { legacyDialogApiRef, legacyIconsApiRef } from './apis/legacyApiRefs';
+import { LegacyDialogApi } from './apis/LegacyDialogApi';
+import { DefaultIconsApi } from './apis/DefaultIconsApi';
 import { analyticsApi } from './extensions/AnalyticsApi';
 
 export const apis = [
+  ApiBlueprint.make({
+    name: 'legacy-dialog',
+    params: defineParams =>
+      defineParams({
+        api: legacyDialogApiRef,
+        deps: { dialogApi: dialogApiRef },
+        factory: ({ dialogApi }) => new LegacyDialogApi(dialogApi),
+      }),
+  }),
+  ApiBlueprint.make({
+    name: 'legacy-icons',
+    params: defineParams =>
+      defineParams({
+        api: legacyIconsApiRef,
+        deps: { iconsApi: iconsApiRef },
+        factory: ({ iconsApi }) => DefaultIconsApi.withLegacySupport(iconsApi),
+      }),
+  }),
   ApiBlueprint.make({
     name: 'dialog',
     params: defineParams =>

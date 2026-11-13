@@ -13,7 +13,8 @@ define and read its own configuration.
 
 :::caution[Experimental]
 The connections framework is experimental. Its configuration and APIs can
-change while the public runtime boundary is completed.
+change during experimental development. The service reference is available
+from `@backstage/backend-plugin-api/alpha`.
 :::
 
 ## Why connections are useful
@@ -90,6 +91,11 @@ If you maintain a backend plugin, read
 The connection service can read existing `integrations` and top-level `aws`
 configuration at startup and convert it to connections automatically.
 Adopters do not need to change their existing configuration immediately.
+
+This conversion makes legacy configuration available to plugins that consume
+the connections service. It does not migrate plugin code or make existing
+integration APIs read `connections` configuration. Keep the legacy configuration
+needed by plugins that have not adopted the connections service.
 
 See [Migrate from legacy integrations](./connections/02-configuring-connections.md#migrate-from-legacy-integrations)
 for how automatic conversion works, precedence rules when legacy and explicit

@@ -9,13 +9,10 @@ app:
     # Default landing page configuration.
     # The catalog is mounted at /catalog by default but is overridden here to
     # serve as the root page. To switch to the Home page, comment out the
-    # catalog path override and uncomment the home path override.
+    # catalog path override and uncomment the path override under page:home below.
     - page:catalog:
         config:
           path: /
-    # - page:home:
-    #     config:
-    #       path: /
 
     # Visit tracking records which pages users navigate to and is disabled by default.
     # Enable it to populate the Most Visited and Recently Visited widgets on the Home page.
@@ -53,6 +50,7 @@ app:
               timeZone: Asia/Tokyo
     - page:home:
         config:
+          # path: /
           defaultConfig:
             - component: HomePageSearchBar
               column: 0

@@ -1,5 +1,99 @@
 # @backstage/plugin-app
 
+## 0.6.0-next.2
+
+### Minor Changes
+
+- df2bcee: Pages and sub-pages now share app-owned navigation and can use different routing libraries, with implicit React Router v6 compatibility for existing pages. **BREAKING**: Removed the `router` input from `app/root`; remove root router extensions, move global providers to `AppRootWrapperBlueprint`, and use page adapters where needed. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
+
+### Patch Changes
+
+- 9bac36e: Fixed the app remounting during finalization when root elements are added, for example ones deferred with an `if` predicate. Root elements are now keyed by their extension ID and rendered in a single fixed position, so adding one no longer moves the rest of the app in the React tree.
+- Updated dependencies
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/plugin-app-react@0.3.0-next.2
+  - @backstage/config@1.3.11-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/filter-predicates@0.2.1-next.0
+  - @backstage/integration-react@1.2.24-next.1
+  - @backstage/plugin-permission-react@0.5.7-next.1
+
+## 0.6.0-next.1
+
+### Minor Changes
+
+- cedb355: The deprecated `DialogApi.show` and `DialogApi.showModal` methods now throw errors. Use `DialogApi.open` and provide your own dialog surface and dismissal handling.
+
+  Added support for the new icons API while preserving `IconsApi.getIcon` for older plugins.
+
+- 86681bf: Removed the ignored `anchorOrigin` option from the built-in alert display extension and toast display props. Remove this option from your extension configuration. Toasts continue to appear at the bottom center of the screen.
+- 24bde66: Custom navigation components now receive `navItems` without the deprecated flat `items` collection.
+
+### Patch Changes
+
+- e55a4a8: Updated plugin identity handling to use `pluginId`, while preserving support for older plugin instances that only expose `id`.
+- 8f36712: Updated the app runtime to use the analytics implementation APIs from `@backstage/plugin-app-react`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-app-react@0.3.0-next.1
+
+## 0.5.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-app-react@0.2.9-next.0
+  - @backstage/core-components@0.18.16-next.0
+  - @backstage/integration-react@1.2.24-next.0
+  - @backstage/plugin-permission-react@0.5.7-next.0
+
+## 0.5.4
+
+### Patch Changes
+
+- 4e7a710: Updated React Aria dependencies to the October 2026 release.
+- 8747376: Declared the dependencies of internally bundled code so that the package works with strict `node_modules` layouts, and stopped loading the default API implementations just to install the default icons.
+- 1eeab07: Fixed long words in toast titles and descriptions overflowing the notification and overlapping the close button.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/config@1.3.10
+  - @backstage/filter-predicates@0.2.0
+  - @backstage/core-components@0.18.15
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/integration-react@1.2.23
+  - @backstage/plugin-app-react@0.2.8
+  - @backstage/plugin-permission-react@0.5.6
+
+## 0.5.4-next.1
+
+### Patch Changes
+
+- 4e7a710: Updated React Aria dependencies to the October 2026 release.
+- 1eeab07: Fixed long words in toast titles and descriptions overflowing the notification and overlapping the close button.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2-next.1
+  - @backstage/core-components@0.18.15-next.3
+  - @backstage/ui@0.19.0-next.0
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.2.23-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/filter-predicates@0.1.6-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-permission-react@0.5.6-next.0
+  - @backstage/plugin-app-react@0.2.8-next.0
+
 ## 0.5.3
 
 ### Patch Changes

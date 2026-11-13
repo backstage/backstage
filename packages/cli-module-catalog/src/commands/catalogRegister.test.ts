@@ -60,20 +60,13 @@ describe('catalog register', () => {
     stdoutSpy.mockRestore();
   });
 
-  it('throws when --location-url is missing', async () => {
-    (mockCli as jest.Mock).mockReturnValue({ flags: {} });
-
-    await expect(catalogRegister(ctx([]))).rejects.toThrow(
-      '--location-url is required',
-    );
-  });
-
-  it('throws when --location-url is not a valid URL', async () => {
+  it('throws when the url is not valid', async () => {
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { 'location-url': 'not-a-url' },
+      flags: {},
+      _: { url: 'not-a-url' },
     });
 
-    await expect(catalogRegister(ctx([]))).rejects.toThrow(
+    await expect(catalogRegister(ctx(['not-a-url']))).rejects.toThrow(
       'not-a-url is an invalid URL',
     );
     expect(mockAddLocation).not.toHaveBeenCalled();
@@ -82,15 +75,13 @@ describe('catalog register', () => {
   it('registers the location and outputs the location id', async () => {
     const url =
       'https://github.com/backstage/demo/blob/master/catalog-info.yaml';
-    (mockCli as jest.Mock).mockReturnValue({
-      flags: { 'location-url': url },
-    });
+    (mockCli as jest.Mock).mockReturnValue({ flags: {}, _: { url } });
     mockAddLocation.mockResolvedValue({
       location: { id: 'loc-1', type: 'url', target: url },
       entities: [],
     });
 
-    await catalogRegister(ctx(['--location-url', url]));
+    await catalogRegister(ctx([url]));
 
     expect(mockAddLocation).toHaveBeenCalledWith(
       { type: 'url', target: url },

@@ -28,9 +28,11 @@ import {
   UserListFilter,
 } from '../filters';
 import { EntityOrderQuery } from '@backstage/catalog-client';
+import { FilterPredicate } from '@backstage/filter-predicates';
 
 export interface CatalogFilters {
-  filter: Record<string, string | symbol | (string | symbol)[]>;
+  filter?: Record<string, string | symbol | (string | symbol)[]>;
+  query?: FilterPredicate;
   fullTextFilter?: {
     term: string;
   };
@@ -45,16 +47,51 @@ function isEntityOrderFilter(t: EntityFilter): t is EntityOrderFilter {
   return !!(t as EntityOrderFilter).getOrderFilters;
 }
 
-export function reduceCatalogFilters(filters: EntityFilter[]): CatalogFilters {
-  const condensedFilters = filters.reduce<CatalogFilters['filter']>(
-    (compoundFilter, filter) => {
-      return {
-        ...compoundFilter,
-        ...(filter.getCatalogFilters ? filter.getCatalogFilters() : {}),
-      };
-    },
-    {},
+/**
+ * Combines predicates using `$all`, or returns `undefined` if there are none.
+ */
+export function combinePredicates(
+  predicates: Array<FilterPredicate | undefined>,
+): FilterPredicate | undefined {
+  const defined = predicates.filter(
+    (p): p is FilterPredicate => p !== undefined,
   );
+  if (defined.length === 0) {
+    return undefined;
+  }
+  return defined.length === 1 ? defined[0] : { $all: defined };
+}
+
+/**
+ * Condenses the backend constraints of a set of filters. Filters that
+ * implement `getCatalogQuery` contribute only through that method, and their
+ * predicates are combined into a query. Others fall back to the deprecated
+ * `getCatalogFilters`, which are merged into a legacy filter. The catalog
+ * client applies both when given.
+ */
+function reduceBackendConstraints(
+  filters: EntityFilter[],
+): Pick<CatalogFilters, 'filter' | 'query'> {
+  const filter: NonNullable<CatalogFilters['filter']> = {};
+  const predicates: Array<FilterPredicate | undefined> = [];
+
+  for (const f of filters) {
+    if (f.getCatalogQuery) {
+      predicates.push(f.getCatalogQuery());
+    } else if (f.getCatalogFilters) {
+      Object.assign(filter, f.getCatalogFilters());
+    }
+  }
+
+  const query = combinePredicates(predicates);
+  return {
+    ...(Object.keys(filter).length > 0 && { filter }),
+    ...(query !== undefined && { query }),
+  };
+}
+
+export function reduceCatalogFilters(filters: EntityFilter[]): CatalogFilters {
+  const constraints = reduceBackendConstraints(filters);
 
   const fullTextFilter = filters.find(isEntityTextFilter)?.getFullTextFilters();
 
@@ -64,39 +101,38 @@ export function reduceCatalogFilters(filters: EntityFilter[]): CatalogFilters {
       order: 'asc',
     },
   ];
-  return { filter: condensedFilters, fullTextFilter, orderFields };
+  return {
+    ...constraints,
+    fullTextFilter,
+    orderFields,
+  };
 }
 
 /**
- * This function computes and returns an object containing the filters to be sent
- * to the backend. Any filter coming from `EntityKindFilter` and `EntityTypeFilter`, together
- * with custom filter set by the adopters is allowed. This function is used by `EntityListProvider`
- * and it won't be needed anymore in the future once pagination is implemented, as all the filters
- * will be applied backend-side.
+ * This function computes and returns the filters to be sent to the backend
+ * when not using pagination. Any filter coming from `EntityKindFilter` and
+ * `EntityTypeFilter`, together with custom filters set by the adopters, is
+ * allowed. The remaining builtin filters are applied frontend-side, so that
+ * pickers can compute their available options from the backend response.
  */
-export function reduceBackendCatalogFilters(filters: EntityFilter[]) {
-  const backendCatalogFilters: Record<
-    string,
-    string | symbol | (string | symbol)[]
-  > = {};
-
-  filters.forEach(filter => {
-    if (
-      filter instanceof EntityTagFilter ||
-      filter instanceof EntityOwnerFilter ||
-      filter instanceof EntityLifecycleFilter ||
-      filter instanceof EntityNamespaceFilter ||
-      filter instanceof EntityUserFilter ||
-      filter instanceof EntityOrphanFilter ||
-      filter instanceof EntityTextFilter ||
-      filter instanceof UserListFilter
-    ) {
-      return;
-    }
-    Object.assign(backendCatalogFilters, filter.getCatalogFilters?.() || {});
-  });
-
-  return backendCatalogFilters;
+export function reduceBackendCatalogFilters(
+  filters: EntityFilter[],
+): Pick<CatalogFilters, 'filter' | 'query'> {
+  return reduceBackendConstraints(
+    filters.filter(
+      filter =>
+        !(
+          filter instanceof EntityTagFilter ||
+          filter instanceof EntityOwnerFilter ||
+          filter instanceof EntityLifecycleFilter ||
+          filter instanceof EntityNamespaceFilter ||
+          filter instanceof EntityUserFilter ||
+          filter instanceof EntityOrphanFilter ||
+          filter instanceof EntityTextFilter ||
+          filter instanceof UserListFilter
+        ),
+    ),
+  );
 }
 
 export function reduceEntityFilters(

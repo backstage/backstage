@@ -136,6 +136,7 @@
 | Column           | Type                       | Nullable | Max Length | Default |
 | ---------------- | -------------------------- | -------- | ---------- | ------- |
 | `entity_ref`     | `character varying`        | false    | 255        | -       |
+| `failure_count`  | `integer`                  | false    | -          | `0`     |
 | `next_stitch_at` | `timestamp with time zone` | false    | -          | -       |
 | `stitch_ticket`  | `character varying`        | false    | 255        | -       |
 

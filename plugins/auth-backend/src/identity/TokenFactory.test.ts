@@ -235,4 +235,23 @@ describe('TokenFactory', () => {
     const verifyResult = await jwtVerify(token, keyStore);
     expect(verifyResult.protectedHeader.alg).toBe('ES256');
   });
+
+  it('should issue valid tokens signed with ML-DSA-65', async () => {
+    const factory = new TokenFactory({
+      issuer: 'my-issuer',
+      keyStore: new MemoryKeyStore(),
+      keyDurationSeconds: 5,
+      logger,
+      algorithm: 'ML-DSA-65',
+    });
+
+    const { token } = await factory.issueToken({
+      claims: { sub: entityRef, ent: [entityRef] },
+    });
+
+    const { keys } = await factory.listPublicKeys();
+    const verifyResult = await jwtVerify(token, createLocalJWKSet({ keys }));
+    expect(verifyResult.protectedHeader.alg).toBe('ML-DSA-65');
+    expect(verifyResult.payload.sub).toBe(entityRef);
+  });
 });

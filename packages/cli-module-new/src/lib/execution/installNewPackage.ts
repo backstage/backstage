@@ -29,6 +29,7 @@ export async function installNewPackage(input: PortableTemplateInput) {
     case 'plugin-web-library':
     case 'plugin-node-library':
     case 'plugin-common-library':
+    case 'cli-module':
       return; // No installation action needed for library packages
     case 'frontend-plugin':
       await addDependency(input, 'packages/app/package.json');

@@ -20,9 +20,9 @@ import { groupResponses } from '../util';
 import { detectErrorsInPods } from './pods';
 import { detectErrorsInDeployments } from './deployments';
 import { detectErrorsInHpa } from './hpas';
-import { Deployment } from 'kubernetes-models/apps/v1';
-import { HorizontalPodAutoscaler } from 'kubernetes-models/autoscaling/v2';
-import { Pod } from 'kubernetes-models/v1';
+import type { Deployment } from 'kubernetes-models/apps/v1';
+import type { HorizontalPodAutoscaler } from 'kubernetes-models/autoscaling/v2';
+import type { Pod } from 'kubernetes-models/v1';
 
 /**
  * For each cluster try to find errors in each of the object types provided

@@ -17,30 +17,26 @@
 import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { createCatalogClient } from '../lib/catalogClient';
-import { resolveAuth } from '../lib/resolveAuth';
+import { instanceFlag, resolveAuth } from '../lib/resolveAuth';
 import { writeJson } from '../lib/intentFormat';
 
 export default async ({ args, info }: CliCommandContext) => {
   const { flags } = cli(
     {
       name: info.usage,
+      strictFlags: true,
       flags: {
         'location-id': {
           type: String,
-          description: 'Location ID to unregister',
+          description:
+            'ID of the location to unregister (use this or --location-url)',
         },
         'location-url': {
           type: String,
-          description: 'Location URL to unregister',
+          description:
+            'URL of the location to unregister (use this or --location-id)',
         },
-        instance: {
-          type: String,
-          description: 'Name of the instance to use',
-        },
-        output: {
-          type: String,
-          description: 'Output format: human (default), json',
-        },
+        ...instanceFlag,
       },
     },
     undefined,
@@ -49,7 +45,12 @@ export default async ({ args, info }: CliCommandContext) => {
 
   if (!flags['location-id'] && !flags['location-url']) {
     throw new Error(
-      '--location-id or --location-url is required. Usage: catalog unregister --location-id <id>',
+      'One of --location-id or --location-url is required. Usage: catalog unregister --location-id <id>',
+    );
+  }
+  if (flags['location-id'] && flags['location-url']) {
+    throw new Error(
+      '--location-id and --location-url cannot be used together, use only one of them',
     );
   }
 

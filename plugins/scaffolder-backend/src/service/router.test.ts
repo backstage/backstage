@@ -28,11 +28,21 @@ import {
   TemplateFilter,
   TemplateGlobal,
   SerializedTaskEvent,
+  SerializedTask,
+  TaskFilters,
 } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonValue } from '@backstage/types';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  ConditionalPolicyDecision,
+} from '@backstage/plugin-permission-common';
+import {
+  createPermissionIntegrationRouter,
+  makeCreatePermissionRule,
+} from '@backstage/plugin-permission-node';
+import { z as zod } from 'zod/v3';
 import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
 import {
   mockCredentials,
@@ -205,7 +215,16 @@ const createTestRouter = async (
   const httpAuth = mockServices.httpAuth();
   const events = mockServices.events();
 
-  const permissionsRegistry = mockServices.permissionsRegistry.mock();
+  const permissionIntegrationRouter = createPermissionIntegrationRouter();
+  const permissionsRegistry = mockServices.permissionsRegistry.mock({
+    addResourceType: resource =>
+      permissionIntegrationRouter.addResourceType({
+        ...resource,
+        resourceType: resource.resourceRef.resourceType,
+      }),
+    addPermissionRules: permissionIntegrationRouter.addPermissionRules,
+    getPermissionRuleset: permissionIntegrationRouter.getPermissionRuleset,
+  });
   const router = await createRouter({
     logger,
     config: new ConfigReader({}),
@@ -246,6 +265,7 @@ const createTestRouter = async (
     logger,
     taskBroker,
     permissions,
+    permissionsRegistry,
     catalog,
   };
 };
@@ -1033,6 +1053,391 @@ describe('scaffolder router', () => {
         }),
       );
     });
+
+    it('skips validation for parameter steps whose when condition evaluates to false', async () => {
+      const templateWithConditionalParams = generateMockTemplate({
+        parameters: [
+          {
+            type: 'object',
+            required: ['provider'],
+            properties: {
+              provider: {
+                type: 'string',
+                description: 'Cloud provider',
+              },
+            },
+          },
+          {
+            type: 'object',
+            when: "${{ parameters.provider === 'AWS' }}",
+            required: ['awsRegion'],
+            properties: {
+              awsRegion: {
+                type: 'string',
+                description: 'AWS Region',
+              },
+            },
+          },
+        ],
+      });
+
+      const { router } = await createTestRouter({
+        entities: [templateWithConditionalParams, mockUser],
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            provider: 'GCP',
+          },
+        });
+
+      expect(response.status).toEqual(201);
+    });
+
+    it('strips hidden step values from task parameters', async () => {
+      const templateWithConditionalParams = generateMockTemplate({
+        parameters: [
+          {
+            type: 'object',
+            required: ['provider'],
+            properties: {
+              provider: {
+                type: 'string',
+                description: 'Cloud provider',
+              },
+            },
+          },
+          {
+            type: 'object',
+            when: "${{ parameters.provider === 'AWS' }}",
+            required: ['awsRegion'],
+            properties: {
+              awsRegion: {
+                type: 'string',
+                description: 'AWS Region',
+              },
+            },
+          },
+        ],
+      });
+
+      const { router, taskBroker } = await createTestRouter({
+        entities: [templateWithConditionalParams, mockUser],
+      });
+
+      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            provider: 'GCP',
+            awsRegion: 'us-east-1',
+          },
+        });
+
+      expect(response.status).toEqual(201);
+      expect(broker).toHaveBeenCalledWith(
+        expect.objectContaining({
+          spec: expect.objectContaining({
+            parameters: { provider: 'GCP' },
+          }),
+        }),
+      );
+    });
+
+    it('validates parameter steps whose when condition evaluates to true', async () => {
+      const templateWithConditionalParams = generateMockTemplate({
+        parameters: [
+          {
+            type: 'object',
+            required: ['provider'],
+            properties: {
+              provider: {
+                type: 'string',
+                description: 'Cloud provider',
+              },
+            },
+          },
+          {
+            type: 'object',
+            when: "${{ parameters.provider === 'AWS' }}",
+            required: ['awsRegion'],
+            properties: {
+              awsRegion: {
+                type: 'string',
+                description: 'AWS Region',
+              },
+            },
+          },
+        ],
+      });
+
+      const { router } = await createTestRouter({
+        entities: [templateWithConditionalParams, mockUser],
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            provider: 'AWS',
+          },
+        });
+
+      expect(response.status).toEqual(400);
+    });
+
+    it('falls back to validating when a when expression is malformed', async () => {
+      const templateWithBadCondition = generateMockTemplate({
+        parameters: [
+          {
+            type: 'object',
+            required: ['provider'],
+            properties: {
+              provider: {
+                type: 'string',
+                description: 'Cloud provider',
+              },
+            },
+          },
+          {
+            type: 'object',
+            when: '${{ invalid...syntax }}',
+            required: ['region'],
+            properties: {
+              region: {
+                type: 'string',
+                description: 'Region',
+              },
+            },
+          },
+        ],
+      });
+
+      const { router } = await createTestRouter({
+        entities: [templateWithBadCondition, mockUser],
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            provider: 'AWS',
+          },
+        });
+
+      // Should not 500; the malformed condition defaults to true (step visible),
+      // so validation runs and catches the missing required field
+      expect(response.status).toEqual(400);
+    });
+
+    it('does not re-evaluate user values that look like template expressions', async () => {
+      const templateWithCondition = generateMockTemplate({
+        parameters: [
+          {
+            type: 'object',
+            required: ['name'],
+            properties: {
+              name: {
+                type: 'string',
+                description: 'Name',
+              },
+            },
+          },
+          {
+            type: 'object',
+            when: "${{ parameters.name === 'test' }}",
+            required: ['extra'],
+            properties: {
+              extra: {
+                type: 'string',
+                description: 'Extra',
+              },
+            },
+          },
+        ],
+      });
+
+      const { router } = await createTestRouter({
+        entities: [templateWithCondition, mockUser],
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            name: '${{ 7 * 7 }}',
+          },
+        });
+
+      // The value '${{ 7 * 7 }}' must be compared as a literal string,
+      // not re-evaluated as a template expression. The condition is false
+      // so the conditional step is skipped and the request succeeds.
+      expect(response.status).toEqual(201);
+    });
+  });
+
+  describe('task rules registered through the permissions registry', () => {
+    const hasTaskId = makeCreatePermissionRule<
+      SerializedTask,
+      TaskFilters,
+      'scaffolder-task'
+    >()({
+      name: 'HAS_TASK_ID',
+      description: 'Matches explicitly permitted task IDs',
+      resourceType: 'scaffolder-task',
+      paramsSchema: zod.object({ taskIds: zod.array(zod.string()) }),
+      apply: (task, { taskIds }) => taskIds.includes(task.id),
+      toQuery: ({ taskIds }) => ({ key: 'id', values: taskIds }),
+    });
+
+    const condition = (taskId: string): ConditionalPolicyDecision => ({
+      result: AuthorizeResult.CONDITIONAL,
+      pluginId: 'scaffolder',
+      resourceType: 'scaffolder-task',
+      conditions: {
+        rule: hasTaskId.name,
+        resourceType: 'scaffolder-task',
+        params: { taskIds: [taskId] },
+      },
+    });
+
+    it.each(['', '/events'])(
+      'applies a module rule to task reads at /v2/tasks/:taskId%s',
+      async suffix => {
+        const {
+          unwrappedRouter: router,
+          taskBroker,
+          permissions,
+          permissionsRegistry,
+        } = await createTestRouter();
+        // Modules can register their rules before or after the router is created.
+        permissionsRegistry.addPermissionRules([hasTaskId]);
+        jest
+          .spyOn(permissions, 'authorizeConditional')
+          .mockResolvedValue([condition('allowed-task')]);
+        (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockImplementation(
+          async id => ({
+            id,
+            spec: {} as TaskSpec,
+            status: 'failed',
+            createdAt: '',
+            createdBy: 'user:default/requester',
+            secrets: { token: 'not-public' },
+          }),
+        );
+        (
+          taskBroker.event$ as jest.Mocked<TaskBroker>['event$']
+        ).mockImplementation(
+          () =>
+            new ObservableImpl(observer => {
+              setTimeout(() => observer.next({ events: [] }), 0);
+            }),
+        );
+
+        const allowed = await request(router).get(
+          `/v2/tasks/allowed-task${suffix}`,
+        );
+        expect(allowed.status).toBe(200);
+        expect(JSON.stringify(allowed.body)).not.toContain('not-public');
+        const denied = await request(router).get(
+          `/v2/tasks/other-task${suffix}`,
+        );
+        expect(denied.status).toBe(403);
+        expect(taskBroker.event$).toHaveBeenCalledTimes(suffix ? 1 : 0);
+      },
+    );
+
+    it('filters the stored task list using a module rule', async () => {
+      const {
+        unwrappedRouter: router,
+        taskBroker,
+        permissions,
+        permissionsRegistry,
+      } = await createTestRouter();
+      permissionsRegistry.addPermissionRules([hasTaskId]);
+      const spec: TaskSpec = {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [],
+        parameters: {},
+        output: {},
+      };
+      const allowed = await taskBroker.dispatch({
+        spec,
+        createdBy: 'user:default/requester',
+      });
+      await taskBroker.dispatch({ spec, createdBy: 'user:default/requester' });
+      jest
+        .spyOn(permissions, 'authorizeConditional')
+        .mockResolvedValue([condition(allowed.taskId)]);
+
+      const response = await request(router).get('/v2/tasks');
+      expect(response.status).toBe(200);
+      expect(response.body.totalTasks).toBe(1);
+      expect(
+        response.body.tasks.map((task: SerializedTask) => task.id),
+      ).toEqual([allowed.taskId]);
+      expect(taskBroker.list).toHaveBeenCalledWith(
+        expect.objectContaining({
+          permissionFilters: { key: 'id', values: [allowed.taskId] },
+        }),
+      );
+    });
+
+    it('does not grant cancellation when a module rule permits reading', async () => {
+      const {
+        unwrappedRouter: router,
+        taskBroker,
+        permissions,
+        permissionsRegistry,
+      } = await createTestRouter();
+      permissionsRegistry.addPermissionRules([hasTaskId]);
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'allowed-task',
+        spec: {} as TaskSpec,
+        status: 'open',
+        createdAt: '',
+        createdBy: 'user:default/requester',
+      });
+      jest
+        .spyOn(permissions, 'authorizeConditional')
+        .mockImplementation(async requests =>
+          requests.map(({ permission }) =>
+            permission.name === 'scaffolder.task.read'
+              ? condition('allowed-task')
+              : { result: AuthorizeResult.DENY },
+          ),
+        );
+
+      const response = await request(router).post(
+        '/v2/tasks/allowed-task/cancel',
+      );
+      expect(response.status).toBe(403);
+      expect(taskBroker.cancel).not.toHaveBeenCalled();
+    });
   });
 
   describe('GET /v2/tasks', () => {
@@ -1489,7 +1894,7 @@ describe('scaffolder router', () => {
 
       let statusCode: number | undefined = undefined;
       let headers: Record<string, string> = {};
-      const responseDataFn = jest.fn();
+      let responseData = '';
 
       const req = request(router)
         .get('/v2/tasks/a-random-id/eventstream')
@@ -1500,11 +1905,15 @@ describe('scaffolder router', () => {
             headers: Record<string, string>;
           });
 
+          res.setEncoding('utf8');
           res.on('data', chunk => {
-            responseDataFn(chunk.toString());
+            responseData += chunk;
 
             // the server expects the client to abort the request
-            if (chunk.includes('completion')) {
+            if (
+              responseData.includes('event: completion\n') &&
+              responseData.endsWith('\n\n')
+            ) {
               req.abort();
             }
           });
@@ -1517,12 +1926,10 @@ describe('scaffolder router', () => {
 
       expect(statusCode).toBe(200);
       expect(headers['content-type']).toBe('text/event-stream');
-      expect(responseDataFn).toHaveBeenCalledTimes(2);
-      expect(responseDataFn).toHaveBeenCalledWith(`event: log
+      expect(responseData).toBe(`event: log
 data: {"id":0,"taskId":"a-random-id","type":"log","createdAt":"","body":{"message":"My log message"}}
 
-`);
-      expect(responseDataFn).toHaveBeenCalledWith(`event: completion
+event: completion
 data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Finished!"}}
 
 `);
@@ -1909,6 +2316,182 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       expect(response.status).toBe(200);
     });
   });
+
+  describe.each(['/v2/tasks', '/v2/dry-run'])(
+    'conditional parameters in %s',
+    endpoint => {
+      it.each(['nested', 'reference'])(
+        'excludes hidden %s fields while preserving visible values',
+        async shape => {
+          const visible =
+            shape === 'nested'
+              ? {
+                  properties: {
+                    config: {
+                      type: 'object',
+                      properties: { project: { type: 'string' } },
+                    },
+                  },
+                }
+              : { properties: { name: { type: 'string' } } };
+          const hidden =
+            shape === 'nested'
+              ? {
+                  when: false,
+                  properties: {
+                    config: {
+                      type: 'object',
+                      properties: { awsRegion: { type: 'string' } },
+                    },
+                  },
+                }
+              : {
+                  when: false,
+                  definitions: {
+                    Hidden: {
+                      type: 'object',
+                      properties: { awsRegion: { type: 'string' } },
+                    },
+                  },
+                  allOf: [{ $ref: '#/definitions/Hidden' }],
+                };
+          const values =
+            shape === 'nested'
+              ? { config: { project: 'keep', awsRegion: 'remove' } }
+              : { name: 'keep', awsRegion: 'remove' };
+          const template = generateMockTemplate({
+            parameters: [visible, hidden],
+            output: { parameters: '${{ parameters }}' },
+          });
+          const { router, taskBroker } = await createTestRouter({
+            entities: [template, mockUser],
+          });
+          const response = await request(router)
+            .post(endpoint)
+            .send(
+              endpoint === '/v2/tasks'
+                ? {
+                    templateRef: 'template:default/create-react-app-template',
+                    values,
+                  }
+                : { template, values, directoryContents: [] },
+            );
+          expect(response.status).toBe(endpoint === '/v2/tasks' ? 201 : 200);
+          const dispatch =
+            taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+          const actual =
+            endpoint === '/v2/tasks'
+              ? dispatch.mock.calls[0][0].spec.parameters
+              : response.body.output.parameters;
+          expect(actual).toEqual(
+            shape === 'nested'
+              ? { config: { project: 'keep' } }
+              : { name: 'keep' },
+          );
+        },
+      );
+
+      it('uses Nunjitsu conditions, validates visible fields, and removes only hidden fields', async () => {
+        const template = generateMockTemplate({
+          parameters: [
+            {
+              type: 'object',
+              required: ['provider'],
+              properties: {
+                provider: { type: 'string' },
+                shared: { type: 'string' },
+              },
+            },
+            {
+              type: 'object',
+              when: "${{ parameters.provider | lower in ['aws'] and not parameters.skip }}",
+              required: ['region'],
+              properties: {
+                region: { type: 'string' },
+                shared: { type: 'string' },
+              },
+              allOf: [{ properties: { hiddenExtra: { type: 'string' } } }],
+            },
+          ],
+          output: { parameters: '${{ parameters }}' },
+        });
+        const { router, taskBroker } = await createTestRouter({
+          entities: [template, mockUser],
+        });
+        const send = (values: Record<string, JsonValue>) =>
+          request(router)
+            .post(endpoint)
+            .send(
+              endpoint === '/v2/tasks'
+                ? {
+                    templateRef: 'template:default/create-react-app-template',
+                    values,
+                  }
+                : { template, values, directoryContents: [] },
+            );
+
+        const invalid = await send({ provider: 'AWS', shared: 'keep' });
+        expect(invalid.status).toBe(400);
+        expect(invalid.body.errors).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ name: 'required', argument: 'region' }),
+          ]),
+        );
+        expect(taskBroker.dispatch).not.toHaveBeenCalled();
+
+        const valid = await send({
+          provider: 'GCP',
+          shared: 'keep',
+          region: 'remove',
+          hiddenExtra: 'remove',
+        });
+        const expected = { provider: 'GCP', shared: 'keep' };
+        const dispatch =
+          taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+        expect(valid.status).toBe(endpoint === '/v2/tasks' ? 201 : 200);
+        expect(dispatch).toHaveBeenCalledTimes(
+          endpoint === '/v2/tasks' ? 1 : 0,
+        );
+        const actual =
+          endpoint === '/v2/tasks'
+            ? dispatch.mock.calls[0][0].spec.parameters
+            : valid.body.output.parameters;
+        expect(actual).toEqual(expected);
+      });
+
+      it('keeps validation enabled for malformed conditions', async () => {
+        const template = generateMockTemplate({
+          parameters: [
+            {
+              when: '${{ invalid...syntax }}',
+              required: ['name'],
+              properties: { name: { type: 'string' } },
+            },
+          ],
+        });
+        const { router, taskBroker } = await createTestRouter({
+          entities: [template, mockUser],
+        });
+        const response = await request(router)
+          .post(endpoint)
+          .send(
+            endpoint === '/v2/tasks'
+              ? {
+                  templateRef: 'template:default/create-react-app-template',
+                  values: {},
+                }
+              : { template, values: {}, directoryContents: [] },
+          );
+        expect(response.status).toBe(400);
+        expect(response.body.errors).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ name: 'required', argument: 'name' }),
+          ]),
+        );
+        expect(taskBroker.dispatch).not.toHaveBeenCalled();
+      });
+    },
+  );
 
   describe('GET /v2/autocomplete/:provider/:resource', () => {
     it('should throw an error when the provider is not registered', async () => {

@@ -1,0 +1,14 @@
+.control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow: var(--bui-shadow);
+}
+
+.previous {
+  left: 0;
+}
+
+.next {
+  right: 0;
+}

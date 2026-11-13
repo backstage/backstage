@@ -18,8 +18,61 @@ import chalk from 'chalk';
 
 export type OutputMode = 'human' | 'json';
 
+/**
+ * Shared `--output` flag definition for commands that support both formats.
+ */
+export const outputFlag = {
+  output: {
+    type: String,
+    description: 'Output format: "human" (default) or "json"',
+  },
+};
+
 export function parseOutputFlag(flags: Record<string, unknown>): OutputMode {
-  return flags.output === 'json' ? 'json' : 'human';
+  const output = flags.output;
+  if (output === undefined || output === 'human') return 'human';
+  if (output === 'json') return 'json';
+  throw new Error(
+    `Invalid --output value "${String(output)}", expected "human" or "json"`,
+  );
+}
+
+/**
+ * Describes one fetched page of a paginated list.
+ */
+export type PageResult = {
+  /** Number of items in this page */
+  count: number;
+  /** Total number of items across all pages, if known */
+  total?: number;
+  /** Cursor for the next page, if there is one */
+  nextCursor?: string;
+};
+
+/**
+ * Prints a single page of results followed by a footer with the number of
+ * results shown, unless the page is empty. When more results exist, a hint with the `--cursor` value to
+ * continue from is printed.
+ */
+export async function printPage<T extends PageResult>(
+  fetchPage: (cursor?: string) => Promise<T>,
+  render: (page: T) => void,
+  cursor?: string,
+): Promise<void> {
+  const page = await fetchPage(cursor);
+  render(page);
+
+  if (page.count > 0) {
+    const total = page.total === undefined ? '' : ` of ${page.total}`;
+    process.stdout.write(`${chalk.dim(`Showing ${page.count}${total}`)}\n`);
+  }
+  if (page.nextCursor) {
+    process.stdout.write(
+      `${chalk.dim(
+        `More results available, use --cursor ${page.nextCursor} to show them`,
+      )}\n`,
+    );
+  }
 }
 
 export function writeJson(data: unknown): void {

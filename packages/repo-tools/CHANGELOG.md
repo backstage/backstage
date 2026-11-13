@@ -1,5 +1,83 @@
 # @backstage/repo-tools
 
+## 0.19.3-next.1
+
+### Patch Changes
+
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- 5eb2381: The generated API reference documentation no longer overwrites pages when a package exports declarations whose names only differ in case, or that share a name but are of different kinds, for example a variable and an interface or namespace. One of them keeps the existing page, and the others get a page with their kind added to the filename, for example `-interface` or `-namespace`, or a number if they are of the same kind.
+- 1fba2bb: The peer dependency check no longer enforces a shared `react-router-dom` version, so packages can declare their own supported major version. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for background on the routing changes this supports.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.2
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/cli-common@0.3.3-next.0
+  - @backstage/config-loader@1.11.5-next.0
+
+## 0.19.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
+## 0.19.2
+
+### Patch Changes
+
+- b8c8132: CLI API reports now support help output with separate groups and commands sections, including commands nested within groups.
+- 76ac6ed: Updated dependency `js-yaml` to `^5.0.0`.
+- 466bbea: Fixed CLI report generation failing when the `FORCE_COLOR` environment variable is set.
+- dec6175: When an API, CLI, SQL, or knip report is out of date in CI, the error output now shows a diff of the changes that need to be committed instead of printing the full expected report.
+- a281164: Updated SQL report generation to support newer Knex releases.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config-loader@1.11.4
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/cli-common@0.3.2
+
+## 0.19.2-next.3
+
+### Patch Changes
+
+- dec6175: When an API, CLI, SQL, or knip report is out of date in CI, the error output now shows a diff of the changes that need to be committed instead of printing the full expected report.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.2
+
+## 0.19.2-next.2
+
+### Patch Changes
+
+- b8c8132: CLI API reports now support help output with separate groups and commands sections, including commands nested within groups.
+- 76ac6ed: Updated dependency `js-yaml` to `^5.0.0`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.1
+
+## 0.19.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+
+## 0.19.2-next.0
+
+### Patch Changes
+
+- a281164: Updated SQL report generation to support newer Knex releases.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/config-loader@1.11.4-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
 ## 0.19.1
 
 ### Patch Changes

@@ -196,6 +196,62 @@ describe('BitbucketCloudEntityProvider', () => {
     return entity;
   };
 
+  const repository = (
+    slug: string,
+    projectKey: string,
+    mainbranch?: string,
+  ) => ({
+    slug,
+    project: { key: projectKey },
+    ...(mainbranch ? { mainbranch: { name: mainbranch } } : {}),
+    links: { html: { href: `https://bitbucket.org/test-ws/${slug}` } },
+  });
+
+  // Shape of a recorded code search answer, with made-up names.
+  // Fields that the provider does not use are left out.
+  const matchedFile = (slug: string, path: string) => ({
+    repositoryId: `${slug}-id`,
+    path,
+    name: path.substring(path.lastIndexOf('/') + 1),
+    language: 'YAML',
+    version: '0123456789abcdef0123456789abcdef01234567',
+    url: `https://bitbucket.org/test-ws/${slug}/src/0123456789abcdef0123456789abcdef01234567/${path}`,
+    branch_or_tag_name: 'main',
+    is_default_branch: true,
+  });
+
+  const mockBitbucket = (options: {
+    repositories: (q: string | null) => object[];
+    search: (body: any) => object[];
+  }) => {
+    const repositoryQueries: (string | null)[] = [];
+    const searchBodies: any[] = [];
+    server.use(
+      http.get(
+        'https://api.bitbucket.org/2.0/repositories/test-ws',
+        ({ request }) => {
+          const q = new URL(request.url).searchParams.get('q');
+          repositoryQueries.push(q);
+          return HttpResponse.json({ values: options.repositories(q) });
+        },
+      ),
+      http.post(
+        'https://api.bitbucket.org/2.0/workspaces/test-ws/codesearch',
+        async ({ request }) => {
+          const body = await request.json();
+          searchBodies.push(body);
+          return HttpResponse.json({
+            id: 'request-id',
+            repositories: [],
+            matched_files: options.search(body),
+            pagination: { has_more: false },
+          });
+        },
+      ),
+    );
+    return { repositoryQueries, searchBodies };
+  };
+
   afterEach(() => {
     jest.clearAllMocks();
     schedule.reset();
@@ -361,128 +417,35 @@ describe('BitbucketCloudEntityProvider', () => {
       'bitbucketCloud-provider:myProvider',
     );
 
-    server.use(
-      http.get(
-        `https://api.bitbucket.org/2.0/workspaces/test-ws/projects`,
-        () => {
-          const response = {
-            values: [
-              {
-                key: 'TEST',
-              },
-              {
-                key: 'TEST2',
-              },
-            ],
-          };
-          return HttpResponse.json(response);
-        },
-      ),
-      http.get(
-        `https://api.bitbucket.org/2.0/workspaces/test-ws/search/code`,
-        () => {
-          const response = {
-            values: [
-              {
-                // skipped as empty
-                path_matches: [],
-                file: {
-                  type: 'commit_file',
-                  path: 'path/to/ignored/file',
-                },
-              },
-              {
-                path_matches: [
-                  {
-                    match: true,
-                    text: 'catalog-custom.yaml',
-                  },
-                ],
-                file: {
-                  type: 'commit_file',
-                  path: 'custom/path/catalog-custom.yaml',
-                  commit: {
-                    repository: {
-                      // skipped as no match with filter
-                      slug: 'repo',
-                      project: {
-                        key: 'test-project',
-                      },
-                      mainbranch: {
-                        name: 'main',
-                      },
-                      links: {
-                        html: {
-                          href: 'https://bitbucket.org/test-ws/repo',
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              {
-                path_matches: [
-                  {
-                    match: true,
-                    text: 'catalog-custom.yaml',
-                  },
-                ],
-                file: {
-                  type: 'commit_file',
-                  path: 'custom/path/catalog-custom.yaml',
-                  commit: {
-                    repository: {
-                      slug: 'test-repo1',
-                      project: {
-                        // skipped as no match with filter
-                        key: 'project',
-                      },
-                      mainbranch: {
-                        name: 'main',
-                      },
-                      links: {
-                        html: {
-                          href: 'https://bitbucket.org/test-ws/test-repo1',
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              {
-                path_matches: [
-                  {
-                    match: true,
-                    text: 'catalog-custom.yaml',
-                  },
-                ],
-                file: {
-                  type: 'commit_file',
-                  path: 'custom/path/catalog-custom.yaml',
-                  commit: {
-                    repository: {
-                      slug: 'test-repo2',
-                      project: {
-                        key: 'test-project',
-                      },
-                      mainbranch: {
-                        name: 'main',
-                      },
-                      links: {
-                        html: {
-                          href: 'https://bitbucket.org/test-ws/test-repo2',
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            ],
-          };
-          return HttpResponse.json(response);
-        },
-      ),
-    );
+    const { repositoryQueries, searchBodies } = mockBitbucket({
+      repositories: () => [
+        // skipped as no match with the repo slug filter
+        repository('repo', 'test-project', 'main'),
+        // skipped as no match with the project key filter
+        repository('test-repo1', 'project', 'main'),
+        repository('test-repo2', 'test-project', 'main'),
+        // without main branch
+        repository('test-repo3', 'test-project2'),
+      ],
+      search: body => {
+        const projectKey = body.query.filters.and[1].eq;
+        if (projectKey === 'test-project') {
+          return [
+            matchedFile('test-repo2', 'custom/path/catalog-custom.yaml'),
+            // skipped as the same file is on an earlier page
+            matchedFile('test-repo2', 'custom/path/catalog-custom.yaml'),
+            // skipped as the path does not match the catalog path
+            matchedFile('test-repo2', 'custom/path/catalog-custom.yaml.bak'),
+            // skipped as the repository does not match the filters
+            matchedFile('repo', 'catalog-custom.yaml'),
+          ];
+        }
+        if (projectKey === 'test-project2') {
+          return [matchedFile('test-repo3', 'catalog-custom.yaml')];
+        }
+        return [];
+      },
+    });
 
     await provider.connect(entityProviderConnection);
 
@@ -490,58 +453,159 @@ describe('BitbucketCloudEntityProvider', () => {
     expect(taskDef.id).toEqual('bitbucketCloud-provider:myProvider:refresh');
     await (taskDef.fn as () => Promise<void>)();
 
-    const url = `https://bitbucket.org/test-ws/test-repo2/src/main/custom/path/catalog-custom.yaml`;
-    const expectedEntities = [
+    expect(repositoryQueries).toEqual([null]);
+    const pathFilter = {
+      attribute: 'path',
+      eq: 'catalog-custom.yaml',
+    };
+    expect(searchBodies).toEqual([
       {
-        entity: {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Location',
-          metadata: {
-            annotations: {
-              'backstage.io/managed-by-location': `url:${url}`,
-              'backstage.io/managed-by-origin-location': `url:${url}`,
-              'bitbucket.org/repo-url':
-                'https://bitbucket.org/test-ws/test-repo2',
-            },
-            name: 'generated-7c2e6263b6cc2d14e69fd4d029afba601ad6dc3b',
-          },
-          spec: {
-            presence: 'required',
-            target: `${url}`,
-            type: 'url',
+        query: {
+          search_term: 'catalog-custom.yaml',
+          filters: {
+            and: [pathFilter, { attribute: 'project', eq: 'test-project' }],
           },
         },
-        locationKey: 'bitbucketCloud-provider:myProvider',
+        config: { max_results: 100 },
       },
       {
-        entity: {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Location',
-          metadata: {
-            annotations: {
-              'backstage.io/managed-by-location': `url:${url}`,
-              'backstage.io/managed-by-origin-location': `url:${url}`,
-              'bitbucket.org/repo-url':
-                'https://bitbucket.org/test-ws/test-repo2',
-            },
-            name: 'generated-7c2e6263b6cc2d14e69fd4d029afba601ad6dc3b',
-          },
-          spec: {
-            presence: 'required',
-            target: `${url}`,
-            type: 'url',
+        query: {
+          search_term: 'catalog-custom.yaml',
+          filters: {
+            and: [pathFilter, { attribute: 'project', eq: 'test-project2' }],
           },
         },
-        locationKey: 'bitbucketCloud-provider:myProvider',
+        config: { max_results: 100 },
       },
-    ];
+    ]);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
-      entities: expectedEntities,
+      entities: [
+        {
+          entity: createLocationEntity(
+            'https://bitbucket.org/test-ws/test-repo2',
+            'main',
+            'custom/path/catalog-custom.yaml',
+          ),
+          locationKey: 'bitbucketCloud-provider:myProvider',
+        },
+        {
+          entity: createLocationEntity(
+            'https://bitbucket.org/test-ws/test-repo3',
+            'master',
+            'catalog-custom.yaml',
+          ),
+          locationKey: 'bitbucketCloud-provider:myProvider',
+        },
+      ],
     });
   });
+
+  it.each([
+    {
+      catalogPath: undefined,
+      pathFilter: { attribute: 'path', eq: 'catalog-info.yaml' },
+      expected: ['catalog-info.yaml'],
+    },
+    {
+      catalogPath: 'catalog-info.yaml',
+      pathFilter: { attribute: 'path', eq: 'catalog-info.yaml' },
+      expected: [
+        'catalog-info.yaml',
+        'a/catalog-info.yaml',
+        'services/x/catalog-info.yaml',
+        'services/x/y/catalog-info.yaml',
+      ],
+    },
+    {
+      catalogPath: '/services/*/catalog-info.yaml',
+      pathFilter: {
+        attribute: 'path',
+        wildcard: 'services/*/catalog-info.yaml',
+      },
+      expected: [
+        'services/x/catalog-info.yaml',
+        'services/x/y/catalog-info.yaml',
+      ],
+    },
+    {
+      catalogPath: 'x/*.yaml',
+      pathFilter: {
+        or: [
+          { attribute: 'path', wildcard: 'x/*.yaml' },
+          { attribute: 'path', wildcard: '*/x/*.yaml' },
+        ],
+      },
+      expected: [
+        'services/x/catalog-info.yaml',
+        'services/x/y/catalog-info.yaml',
+      ],
+    },
+  ])(
+    'matches files for the catalog path $catalogPath',
+    async ({ catalogPath, pathFilter, expected }) => {
+      const configuredPath = catalogPath ?? '/catalog-info.yaml';
+      const config = new ConfigReader({
+        catalog: {
+          providers: {
+            bitbucketCloud: {
+              workspace: 'test-ws',
+              catalogPath,
+              pagelen: 50,
+            },
+          },
+        },
+      });
+      const provider = BitbucketCloudEntityProvider.fromConfig(config, {
+        auth: mockServices.auth(),
+        catalog: catalogServiceMock(),
+        events: DefaultEventsService.create({ logger }),
+        logger,
+        schedule,
+      })[0];
+
+      const { searchBodies } = mockBitbucket({
+        repositories: () => [repository('repo', 'PROJ', 'main')],
+        search: () =>
+          [
+            'catalog-info.yaml',
+            'a/catalog-info.yaml',
+            'services/x/catalog-info.yaml',
+            'services/x/y/catalog-info.yaml',
+          ].map(path => matchedFile('repo', path)),
+      });
+
+      await provider.connect(entityProviderConnection);
+      await (schedule.getTasks()[0].fn as () => Promise<void>)();
+
+      expect(searchBodies).toEqual([
+        {
+          query: {
+            search_term: configuredPath.substring(
+              configuredPath.lastIndexOf('/') + 1,
+            ),
+            filters: {
+              and: [pathFilter, { attribute: 'project', eq: 'PROJ' }],
+            },
+          },
+          config: { max_results: 50 },
+        },
+      ]);
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+        type: 'full',
+        entities: expected.map(path => ({
+          entity: createLocationEntity(
+            'https://bitbucket.org/test-ws/repo',
+            'main',
+            path,
+          ),
+          locationKey: 'bitbucketCloud-provider:default',
+        })),
+      });
+    },
+  );
 
   it('update onRepoPush', async () => {
     const keptModule = createLocationEntity(
@@ -588,82 +652,27 @@ describe('BitbucketCloudEntityProvider', () => {
       schedule,
     })[0];
 
-    server.use(
-      http.get(
-        `https://api.bitbucket.org/2.0/workspaces/test-ws/search/code`,
-        ({ request }) => {
-          const query = new URL(request.url).searchParams.get('search_query');
-          if (!query || !query.includes('repo:test-repo')) {
-            return HttpResponse.json({ values: [] });
-          }
-
-          const response = {
-            values: [
-              {
-                path_matches: [
-                  {
-                    match: true,
-                    text: 'catalog-custom.yaml',
-                  },
-                ],
-                file: {
-                  type: 'commit_file',
-                  path: 'kept-module/catalog-custom.yaml',
-                  commit: {
-                    repository: {
-                      slug: 'test-repo',
-                      project: {
-                        key: 'test-project',
-                      },
-                      mainbranch: {
-                        name: 'main',
-                      },
-                      links: {
-                        html: {
-                          href: 'https://bitbucket.org/test-ws/test-repo',
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              {
-                path_matches: [
-                  {
-                    match: true,
-                    text: 'catalog-custom.yaml',
-                  },
-                ],
-                file: {
-                  type: 'commit_file',
-                  path: 'added-module/catalog-custom.yaml',
-                  commit: {
-                    repository: {
-                      slug: 'test-repo',
-                      project: {
-                        key: 'test-project',
-                      },
-                      mainbranch: {
-                        name: 'main',
-                      },
-                      links: {
-                        html: {
-                          href: 'https://bitbucket.org/test-ws/test-repo',
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            ],
-          };
-          return HttpResponse.json(response);
-        },
-      ),
-    );
+    const { repositoryQueries, searchBodies } = mockBitbucket({
+      repositories: q =>
+        q === 'slug="test-repo"'
+          ? [repository('test-repo', 'test-project', 'main')]
+          : [],
+      search: body =>
+        body.query.filters.and[1].eq === 'test-repo'
+          ? [
+              matchedFile('test-repo', 'kept-module/catalog-custom.yaml'),
+              matchedFile('test-repo', 'added-module/catalog-custom.yaml'),
+            ]
+          : [],
+    });
 
     await provider.connect(entityProviderConnection);
     await events.publish(repoPushEventParams);
+
+    expect(repositoryQueries).toEqual(['slug="test-repo"']);
+    expect(searchBodies.map(body => body.query.filters.and[1])).toEqual([
+      { attribute: 'repository', eq: 'test-repo' },
+    ]);
 
     const addedEntities = [
       {
@@ -793,54 +802,24 @@ describe('BitbucketCloudEntityProvider', () => {
       schedule,
     })[0];
 
-    server.use(
-      http.get(
-        `https://api.bitbucket.org/2.0/workspaces/test-ws/search/code`,
-        ({ request }) => {
-          const query = new URL(request.url).searchParams.get('search_query');
-          if (!query || !query.includes('repo:test-repo-new')) {
-            return HttpResponse.json({ values: [] });
-          }
-
-          const response = {
-            values: [
-              {
-                path_matches: [
-                  {
-                    match: true,
-                    text: 'catalog-custom.yaml',
-                  },
-                ],
-                file: {
-                  type: 'commit_file',
-                  path: 'module/catalog-custom.yaml',
-                  commit: {
-                    repository: {
-                      slug: 'test-repo-new',
-                      project: {
-                        key: 'test-project',
-                      },
-                      mainbranch: {
-                        name: 'main',
-                      },
-                      links: {
-                        html: {
-                          href: 'https://bitbucket.org/test-ws/test-repo-new',
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            ],
-          };
-          return HttpResponse.json(response);
-        },
-      ),
-    );
+    const { repositoryQueries, searchBodies } = mockBitbucket({
+      repositories: q =>
+        q === 'slug="test-repo-new"'
+          ? [repository('test-repo-new', 'test-project', 'main')]
+          : [],
+      search: body =>
+        body.query.filters.and[1].eq === 'test-repo-new'
+          ? [matchedFile('test-repo-new', 'module/catalog-custom.yaml')]
+          : [],
+    });
 
     await provider.connect(entityProviderConnection);
     await events.publish(repoUpdatedEventParams);
+
+    expect(repositoryQueries).toEqual(['slug="test-repo-new"']);
+    expect(searchBodies.map(body => body.query.filters.and[1])).toEqual([
+      { attribute: 'repository', eq: 'test-repo-new' },
+    ]);
 
     const addedEntities = [
       {

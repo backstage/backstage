@@ -8,7 +8,21 @@ Using the `app-config.yaml` in the Backstage app, you can configure TechDocs usi
 
 ## Generator Configuration
 
-`techdocs.generator` is used to configure how documentation sites are generated using MkDocs.
+`techdocs.generator` is used to configure how documentation sites are generated. Unless noted otherwise, these settings apply to every [documentation engine](./engines.md).
+
+### Default Engine
+
+`techdocs.generator.defaultEngine`
+
+(Optional) The [documentation engine](./engines.md) used for entities without a `backstage.io/techdocs-engine` annotation. Must be an engine with a registered generator, such as `mkdocs` (built in) or `zensical` (from the [Zensical module](./engines-zensical.md)). Defaults to `mkdocs`.
+
+**Example:**
+
+```yaml
+techdocs:
+  generator:
+    defaultEngine: 'zensical'
+```
 
 ### Run In
 
@@ -34,7 +48,7 @@ techdocs:
 
 (Optional) This can be used to control the docker image used during documentation generation. This can be useful if you want to use MkDocs plugins or other packages that are not included in the default techdocs-container (spotify/techdocs).
 
-**Note:** This setting is only used when `techdocs.generator.runIn` is set to `'docker'`.
+**Note:** This setting is only used when `techdocs.generator.runIn` is set to `'docker'`, and only for the MkDocs engine. Zensical builds use `techdocs.generator.zensical.dockerImage`, see [Zensical Engine](./engines-zensical.md#docker-image).
 
 **Example:**
 
@@ -87,6 +101,8 @@ techdocs:
 ```
 
 ### MkDocs Configuration
+
+Settings under `techdocs.generator.mkdocs` configure the MkDocs engine. The `legacyCopyReadmeMdToIndexMd` and `dangerouslyAllow*` settings also apply to Zensical builds, see [Zensical Engine](./engines-zensical.md#other-settings).
 
 #### Omit TechDocs Core Plugin
 
@@ -199,6 +215,24 @@ techdocs:
 ```
 
 Plugins listed in `defaultPlugins` are also automatically permitted and carry the same trust considerations. When using the TechDocs CLI, use `--defaultPlugin` to both add and permit a plugin.
+
+#### Permitted Markdown Extensions
+
+TechDocs also validates the `markdown_extensions` entries in `mkdocs.yml` during documentation generation. By default, it permits the extensions that are built into the `markdown` package (usable with either their short name like `admonition`, or the full module path like `markdown.extensions.admonition`), the `pymdownx.*` family of extensions, and the rendering extensions that ship with the official TechDocs build images. Other extensions are removed before the build runs, and a warning is logged.
+
+If your documentation requires another extension, for example one from a custom build image, you can extend the permitted set using `dangerouslyAllowAdditionalExtensions`. Only allow extensions that have been audited for use in your environment, including every configuration option that documentation authors can supply. Some markdown extensions load files or execute code as part of documentation generation.
+
+**Example:**
+
+```yaml
+techdocs:
+  generator:
+    mkdocs:
+      dangerouslyAllowAdditionalExtensions:
+        - markdown_inline_mermaid
+```
+
+When running `techdocs-cli generate` directly, the same behavior is available via the `--dangerouslyAllowAdditionalExtensions` CLI flag, since the CLI does not currently read this option from a config file.
 
 ## Builder Configuration
 

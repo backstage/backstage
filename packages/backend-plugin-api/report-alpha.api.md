@@ -4,8 +4,11 @@
 
 ```ts
 import { AnyZodObject } from 'zod/v3';
+import type { BackendModuleRegistrationPoints } from '@backstage/backend-plugin-api';
+import type { BackendPluginRegistrationPoints } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { BasicPermission } from '@backstage/plugin-permission-common';
+import { ConnectionsService } from '@backstage/connections';
 import { JsonObject } from '@backstage/types';
 import type { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
@@ -150,6 +153,19 @@ export interface ConnectionRegistration {
   required?: boolean;
   type: string;
 }
+
+// @alpha
+export const connectionsServiceRef: ServiceRef<
+  ConnectionsService,
+  'plugin',
+  'singleton'
+>;
+
+// @alpha
+export function declareConnection(
+  reg: BackendPluginRegistrationPoints | BackendModuleRegistrationPoints,
+  registration: ConnectionRegistration,
+): void;
 
 // @alpha
 export interface MetricAdvice {

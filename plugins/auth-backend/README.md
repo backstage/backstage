@@ -176,3 +176,7 @@ This is what the configuration looks like:
 auth:
    backstageTokenExpiration: { minutes: <user_defined_value> }
 ```
+
+## Offline Access
+
+See [Offline Access](https://backstage.io/docs/auth/offline-access) for how to enable refresh tokens for the Backstage CLI and MCP clients, and how to revoke them.
