@@ -94,11 +94,9 @@ describe('buildAppTree', () => {
       );
       return resolveAppTree(
         'parent',
-        [
-          { ...specs[0], inputs: parsed.parameters[0].inputs },
-          ...specs.slice(1),
-        ],
+        specs,
         collector,
+        new Map([['parent', parsed.parameters[0].inputs!]]),
       );
     };
     for (const [order, expected] of [
@@ -137,6 +135,7 @@ describe('buildAppTree', () => {
       expect(tree.nodes.get('entity-card:catalog/links')?.spec.disabled).toBe(
         true,
       );
+      expect(tree.root.spec).not.toHaveProperty('inputs');
     }
     const tree = build([
       'entity-card:catalog/links',
@@ -158,14 +157,11 @@ describe('buildAppTree', () => {
     ]);
     const unknown = resolveAppTree(
       'parent',
-      [
-        {
-          ...specs[0],
-          inputs: { typo: { order: ['other'] }, empty: {}, toString: {} },
-        },
-        ...specs.slice(1),
-      ],
+      specs,
       collector,
+      new Map([
+        ['parent', { typo: { order: ['other'] }, empty: {}, toString: {} }],
+      ]),
     );
     expect(
       unknown.root.edges.attachments.get('cards')?.map(n => n.spec.id),

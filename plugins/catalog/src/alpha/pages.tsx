@@ -193,7 +193,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       .default('title'),
     showNavItemIcons: z.boolean().optional().default(false),
   },
-  factory(originalFactory, { config, inputs, node }) {
+  factory(originalFactory, { config, inputs }) {
     return originalFactory({
       path: '/catalog/:namespace/:kind/:name',
       // NOTE: The `convertLegacyRouteRef` call here ensures that this route ref
@@ -247,21 +247,11 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
           })
           .sort((a, b) => Number(b.hasFilter) - Number(a.hasFilter));
 
-        const configuredGroupDefinitions =
+        const groupDefinitions =
           config.groups?.reduce(
             (rest, group) => ({ ...rest, ...group }),
             {} as EntityContentGroupDefinitions,
           ) ?? defaultEntityContentGroupDefinitions;
-
-        const hasInputOrder = node.spec.inputs?.contents?.order !== undefined;
-        const groupDefinitions = hasInputOrder
-          ? Object.fromEntries(
-              Object.entries(configuredGroupDefinitions).map(([id, group]) => [
-                id,
-                { ...group, contentOrder: 'natural' as const },
-              ]),
-            )
-          : configuredGroupDefinitions;
 
         const routes = inputs.contents.map(output => ({
           group: output.get(EntityContentBlueprint.dataRefs.group),
@@ -285,9 +275,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
             headers={headers}
             routes={routes}
             groupDefinitions={groupDefinitions}
-            defaultContentOrder={
-              hasInputOrder ? 'natural' : config.defaultContentOrder
-            }
+            defaultContentOrder={config.defaultContentOrder}
             showNavItemIcons={config.showNavItemIcons}
           />
         );

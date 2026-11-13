@@ -79,6 +79,7 @@ describe('resolveAppNodeSpecs', () => {
           c: {
             disabled: true,
             config: { title: 'Shared', nested: { keep: 1, replace: [1, 2] } },
+            inputs: { cards: { order: ['a'] } },
           },
           b: { config: { retained: true } },
         },
@@ -91,6 +92,7 @@ describe('resolveAppNodeSpecs', () => {
           c: {
             disabled: false,
             config: { title: 'Local', nested: { replace: [3] } },
+            inputs: { cards: { order: ['b', '*'] } },
           },
         },
       },
@@ -106,17 +108,21 @@ describe('resolveAppNodeSpecs', () => {
       makeExt('c'),
     ];
     const options = { builtinExtensions, ...parsed, collector };
-    const result = resolveAppNodeSpecs(options);
+    const { specs: result, inputSettings } = resolveAppNodeSpecs(options);
     expect(result.map(e => e.id)).toEqual(['a', 'b', 'c']);
     expect(result.map(e => e.disabled)).toEqual([true, true, false]);
     expect(result[2].config).toEqual({
       title: 'Local',
       nested: { keep: 1, replace: [3] },
     });
+    expect(inputSettings).toEqual(
+      new Map([['c', { cards: { order: ['b', '*'] } }]]),
+    );
+    expect(result.every(spec => !('inputs' in spec))).toBe(true);
     const reversed = resolveAppNodeSpecs({
       ...options,
       parameters: [...parsed.parameters].reverse(),
-    });
+    }).specs;
     expect(
       reversed.map(({ id, config, disabled }) => ({ id, config, disabled })),
     ).toEqual(
@@ -132,7 +138,7 @@ describe('resolveAppNodeSpecs', () => {
         builtinExtensions: [a],
         parameters: [],
         collector,
-      }),
+      }).specs,
     ).toEqual([
       {
         id: 'a',
@@ -155,7 +161,7 @@ describe('resolveAppNodeSpecs', () => {
         builtinExtensions: [a, b],
         parameters: [],
         collector,
-      }),
+      }).specs,
     ).toEqual([
       {
         id: 'a',
@@ -195,7 +201,7 @@ describe('resolveAppNodeSpecs', () => {
           },
         ],
         collector,
-      }),
+      }).specs,
     ).toEqual([
       {
         id: 'b',
@@ -243,7 +249,7 @@ describe('resolveAppNodeSpecs', () => {
           },
         ],
         collector,
-      }),
+      }).specs,
     ).toEqual([
       {
         id: 'test/a',
@@ -284,7 +290,7 @@ describe('resolveAppNodeSpecs', () => {
           },
         ],
         collector,
-      }),
+      }).specs,
     ).toEqual([
       {
         id: 'b',
@@ -325,7 +331,7 @@ describe('resolveAppNodeSpecs', () => {
           { id: 'c', disabled: false },
         ],
         collector,
-      }),
+      }).specs,
     ).toEqual([
       {
         id: 'e',
@@ -418,7 +424,7 @@ describe('resolveAppNodeSpecs', () => {
         builtinExtensions: [],
         parameters: [],
         collector,
-      }),
+      }).specs,
     ).toEqual([
       {
         id: 'test/a',
@@ -473,7 +479,7 @@ describe('resolveAppNodeSpecs', () => {
         disabled: false,
       })),
       collector,
-    });
+    }).specs;
 
     expect(result.map(r => r.extension.id)).toEqual([
       'test/b',
@@ -493,7 +499,7 @@ describe('resolveAppNodeSpecs', () => {
       parameters: [],
       forbidden: new Set(['test/forbidden']),
       collector,
-    });
+    }).specs;
     expect(result).toEqual([]);
 
     expect(collector.collectErrors()).toEqual([
@@ -526,7 +532,7 @@ describe('resolveAppNodeSpecs', () => {
       parameters: [],
       forbidden: new Set(['forbidden']),
       collector,
-    });
+    }).specs;
     expect(result).toEqual([]);
 
     expect(collector.collectErrors()).toEqual([
@@ -543,14 +549,21 @@ describe('resolveAppNodeSpecs', () => {
   });
 
   it('throws an error when a forbidden extension is parametrized', () => {
-    const result = resolveAppNodeSpecs({
+    const { specs: result, inputSettings } = resolveAppNodeSpecs({
       features: [],
-      builtinExtensions: [],
-      parameters: [{ id: 'forbidden', disabled: false }],
+      builtinExtensions: [makeExt('forbidden', 'disabled')],
+      parameters: [
+        {
+          id: 'forbidden',
+          disabled: false,
+          inputs: { cards: { order: ['a'] } },
+        },
+      ],
       forbidden: new Set(['forbidden']),
       collector,
     });
-    expect(result).toEqual([]);
+    expect(result).toMatchObject([{ id: 'forbidden', disabled: true }]);
+    expect(inputSettings.size).toBe(0);
 
     expect(collector.collectErrors()).toEqual([
       {
@@ -582,7 +595,7 @@ describe('resolveAppNodeSpecs', () => {
       builtinExtensions: [],
       parameters: [],
       collector,
-    });
+    }).specs;
     expect(specs).toHaveLength(1);
     expect(specs[0].if).toEqual(ifPredicate);
   });
@@ -614,7 +627,7 @@ describe('resolveAppNodeSpecs', () => {
       builtinExtensions: [],
       parameters: [],
       collector,
-    });
+    }).specs;
 
     expect(specs).toHaveLength(2);
     expect(specs[0].if).toEqual(pluginIf);
@@ -643,13 +656,13 @@ describe('resolveAppNodeSpecs', () => {
       builtinExtensions: [],
       parameters: [],
       collector,
-    });
+    }).specs;
     const clearedSpecs = resolveAppNodeSpecs({
       features: [plugin.withOverrides({ if: undefined })],
       builtinExtensions: [],
       parameters: [],
       collector,
-    });
+    }).specs;
 
     expect(overriddenSpecs).toHaveLength(1);
     expect(overriddenSpecs[0].if).toEqual(overrideIf);
@@ -698,7 +711,7 @@ describe('resolveAppNodeSpecs', () => {
       builtinExtensions: [],
       parameters: [],
       collector,
-    });
+    }).specs;
 
     expect(specs).toHaveLength(2);
     expect(specs[0].id).toBe('test-plugin/plugin-extension');
@@ -739,7 +752,7 @@ describe('resolveAppNodeSpecs', () => {
       builtinExtensions: [],
       parameters: [],
       collector,
-    });
+    }).specs;
     const clearedSpecs = resolveAppNodeSpecs({
       features: [
         plugin,
@@ -755,7 +768,7 @@ describe('resolveAppNodeSpecs', () => {
       builtinExtensions: [],
       parameters: [],
       collector,
-    });
+    }).specs;
 
     expect(overriddenSpecs).toHaveLength(1);
     expect(overriddenSpecs[0].if).toEqual(overrideIf);

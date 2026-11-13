@@ -21,7 +21,10 @@ import {
   FrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
-import { ExtensionParameters } from './readAppExtensionsConfig';
+import {
+  ExtensionInputSettings,
+  ExtensionParameters,
+} from './readAppExtensionsConfig';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { OpaqueFrontendPlugin } from '@internal/frontend';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -72,7 +75,10 @@ export function resolveAppNodeSpecs(options: {
   reorder?: boolean;
   forbidden?: Set<string>;
   collector: ErrorCollector;
-}): AppNodeSpec[] {
+}): {
+  specs: AppNodeSpec[];
+  inputSettings: Map<string, ExtensionInputSettings>;
+} {
   const {
     builtinExtensions = [],
     parameters = [],
@@ -168,7 +174,6 @@ export function resolveAppNodeSpecs(options: {
           disabled: internalExtension.disabled,
           if: getExtensionPredicate({ internalExtension }),
           config: undefined as unknown,
-          inputs: undefined as ExtensionParameters['inputs'],
         },
       };
     }),
@@ -183,7 +188,6 @@ export function resolveAppNodeSpecs(options: {
           disabled: internalExtension.disabled,
           if: getExtensionPredicate({ internalExtension }),
           config: undefined as unknown,
-          inputs: undefined as ExtensionParameters['inputs'],
         },
       };
     }),
@@ -216,7 +220,6 @@ export function resolveAppNodeSpecs(options: {
           disabled: internalExtension.disabled,
           if: getExtensionPredicate({ internalExtension }),
           config: undefined,
-          inputs: undefined as ExtensionParameters['inputs'],
         },
       });
     }
@@ -245,6 +248,7 @@ export function resolveAppNodeSpecs(options: {
     deduplicatedExtensions.map(e => [e.extension.id, e]),
   );
   const order = new Map<string, (typeof deduplicatedExtensions)[number]>();
+  const inputSettings = new Map<string, ExtensionInputSettings>();
   for (const overrideParam of parameters) {
     const extensionId = overrideParam.id;
 
@@ -272,7 +276,7 @@ export function resolveAppNodeSpecs(options: {
         existing.params.disabled = Boolean(overrideParam.disabled);
       }
       if (overrideParam.inputs !== undefined)
-        existing.params.inputs = overrideParam.inputs;
+        inputSettings.set(extensionId, overrideParam.inputs);
       if (reorder) order.set(extensionId, existing);
     } else {
       collector.report({
@@ -290,7 +294,7 @@ export function resolveAppNodeSpecs(options: {
     ...deduplicatedExtensions.filter(e => !order.has(e.extension.id)),
   ];
 
-  return orderedExtensions.map(param => ({
+  const specs: AppNodeSpec[] = orderedExtensions.map(param => ({
     id: param.extension.id,
     attachTo: param.params.attachTo,
     extension: param.extension,
@@ -299,6 +303,6 @@ export function resolveAppNodeSpecs(options: {
     plugin: param.params.plugin,
     source: param.params.source,
     config: param.params.config,
-    ...(param.params.inputs ? { inputs: param.params.inputs } : {}),
   }));
+  return { specs, inputSettings };
 }

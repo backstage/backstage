@@ -663,55 +663,64 @@ describe('Entity page', () => {
   );
 
   describe('Entity Page Groups', () => {
-    it('honors explicit input order over alphabetical group sorting', async () => {
-      renderTestApp({
-        features: [
-          createFrontendPlugin({
-            pluginId: 'catalog',
-            extensions: [
-              catalogEntityPage,
-              techdocsEntityContent,
-              apidocsEntityContent,
-            ],
-          }),
-        ],
-        apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
-        initialRouteEntries: [entityPath],
-        mountedRoutes: { '/catalog': convertLegacyRouteRef(rootRouteRef) },
-        config: {
-          app: {
-            extensions: {
-              'page:catalog/entity': {
-                inputs: {
-                  contents: { order: ['entity-content:catalog/techdocs', '*'] },
-                },
-                config: {
-                  defaultContentOrder: 'title',
-                  groups: [
-                    {
-                      documentation: {
-                        title: 'Documentation',
-                        contentOrder: 'title',
-                      },
+    it.each([
+      ['natural', undefined, ['TechDocs', 'ApiDocs']],
+      ['natural', 'title', ['ApiDocs', 'TechDocs']],
+      ['title', 'natural', ['TechDocs', 'ApiDocs']],
+    ] as const)(
+      'uses page sorting %s and group sorting %s with input ordering',
+      async (defaultContentOrder, contentOrder, expectedTitles) => {
+        renderTestApp({
+          features: [
+            createFrontendPlugin({
+              pluginId: 'catalog',
+              extensions: [
+                catalogEntityPage,
+                techdocsEntityContent,
+                apidocsEntityContent,
+              ],
+            }),
+          ],
+          apis: [
+            mockCatalogApi,
+            [starredEntitiesApiRef, mockStarredEntitiesApi],
+          ],
+          initialRouteEntries: [entityPath],
+          mountedRoutes: { '/catalog': convertLegacyRouteRef(rootRouteRef) },
+          config: {
+            app: {
+              extensions: {
+                'page:catalog/entity': {
+                  inputs: {
+                    contents: {
+                      order: ['entity-content:catalog/techdocs', '*'],
                     },
-                  ],
+                  },
+                  config: {
+                    defaultContentOrder,
+                    groups: [
+                      {
+                        documentation: {
+                          title: 'Documentation',
+                          ...(contentOrder ? { contentOrder } : {}),
+                        },
+                      },
+                    ],
+                  },
                 },
               },
             },
           },
-        },
-      });
-      await userEvent.click(
-        await screen.findByRole('button', { name: /Documentation/ }),
-      );
-      const items = await screen.findAllByRole('menuitemradio', {
-        name: /Docs/,
-      });
-      expect(items.map(item => item.textContent)).toEqual([
-        'TechDocs',
-        'ApiDocs',
-      ]);
-    });
+        });
+        await userEvent.click(
+          await screen.findByRole('button', { name: /Documentation/ }),
+        );
+        const items = await screen.findAllByRole('menuitemradio', {
+          name: /Docs/,
+        });
+        expect(items.map(item => item.textContent)).toEqual(expectedTitles);
+      },
+    );
 
     it('Should render a group as dropdown', async () => {
       const tester = createExtensionTester(

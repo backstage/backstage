@@ -295,19 +295,16 @@ export function prepareSpecializedApp(
 
   const collector = createErrorCollector();
 
-  const tree = resolveAppTree(
-    'root',
-    resolveAppNodeSpecs({
-      features,
-      builtinExtensions: [
-        resolveExtensionDefinition(Root, { namespace: 'root' }),
-      ],
-      ...readAppExtensionsConfig(config, collector),
-      forbidden: new Set(['root']),
-      collector,
-    }),
+  const { specs, inputSettings } = resolveAppNodeSpecs({
+    features,
+    builtinExtensions: [
+      resolveExtensionDefinition(Root, { namespace: 'root' }),
+    ],
+    ...readAppExtensionsConfig(config, collector),
+    forbidden: new Set(['root']),
     collector,
-  );
+  });
+  const tree = resolveAppTree('root', specs, collector, inputSettings);
 
   const appBasePath = getBasePath(config);
   const routeRefsById = collectRouteIds(features, collector);

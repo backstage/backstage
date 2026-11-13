@@ -543,10 +543,12 @@ Notes:
 By default, content items within each group are sorted alphabetically by title. You can change this with the `defaultContentOrder` option, which supports two modes:
 
 - **`title`** (default) — sort alphabetically by the content extension's title (case-insensitive).
-- **`natural`** — preserve the natural extension discovery/registration order.
+- **`natural`** — preserve input order, including any explicit `inputs.contents.order` configuration.
 
-An explicit `inputs.contents.order` on `page:catalog/entity` takes precedence over
-alphabetical content sorting while preserving the groups. See
+To follow an explicit `inputs.contents.order` on `page:catalog/entity`, set
+`config.defaultContentOrder: natural`. Any group with its own `contentOrder`
+setting must also use `natural` to follow input order. Group order continues to
+follow the group definitions. See
 [input ordering](../../frontend-system/building-apps/02-configuring-extensions.md#order-extension-inputs).
 
 A page-level `defaultContentOrder` sets the default for all groups, and individual groups can override it with a per-group `contentOrder`:

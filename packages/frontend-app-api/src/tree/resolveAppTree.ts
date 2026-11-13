@@ -24,6 +24,7 @@ import {
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { ErrorCollector } from '../wiring/createErrorCollector';
+import { ExtensionInputSettings } from './readAppExtensionsConfig';
 
 function indent(str: string) {
   return str.replace(/^/gm, '  ');
@@ -109,13 +110,15 @@ const isValidAttachmentPoint = (
 
 /**
  * Build the app tree by iterating through all node specs and constructing the app
- * tree with all attachments in the same order as they appear in the input specs array.
+ * tree with attachments in the same order as the input specs array, then applying
+ * configured input ordering after all attachments and redirects are resolved.
  * @internal
  */
 export function resolveAppTree(
   rootNodeId: string,
   specs: AppNodeSpec[],
   errorCollector: ErrorCollector,
+  inputSettings: Map<string, ExtensionInputSettings> = new Map(),
 ): AppTree {
   const nodes = new Map<string, SerializableAppNode>();
 
@@ -220,10 +223,10 @@ export function resolveAppTree(
     }
   }
 
-  for (const node of nodes.values()) {
-    for (const [inputName, settings] of Object.entries(
-      node.spec.inputs ?? {},
-    )) {
+  for (const [nodeId, inputs] of inputSettings) {
+    const node = nodes.get(nodeId);
+    if (!node) continue;
+    for (const [inputName, settings] of Object.entries(inputs)) {
       if (
         !Object.prototype.hasOwnProperty.call(
           toInternalExtension(node.spec.extension).inputs,

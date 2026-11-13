@@ -19,12 +19,16 @@ import { JsonValue } from '@backstage/types';
 
 import { ErrorCollector } from '../wiring/createErrorCollector';
 
+export interface ExtensionInputSettings {
+  [inputName: string]: { order?: string[] };
+}
+
 export interface ExtensionParameters {
   id: string;
   attachTo?: { id: string; input: string };
   disabled?: boolean;
   config?: unknown;
-  inputs?: { [inputName: string]: { order?: string[] } };
+  inputs?: ExtensionInputSettings;
 }
 
 const knownExtensionParameters = ['attachTo', 'disabled', 'config', 'inputs'];

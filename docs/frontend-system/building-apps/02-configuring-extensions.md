@@ -72,6 +72,8 @@ app:
             - page:scaffolder
             - '*'
     page:catalog/entity:
+      config:
+        defaultContentOrder: natural
       inputs:
         contents:
           order:
@@ -97,12 +99,12 @@ unavailable extension available. IDs that are absent from the input are ignored,
 so the same configuration can be used with optional plugins. An empty order array
 keeps the existing child order.
 
-The catalog entity page honors explicit `inputs.contents.order` over alphabetical
-content sorting within each group. Group order still follows the configured group
-definitions. Without an explicit input order,
-its existing sorting settings continue to apply. Other extensions may transform
-or sort their inputs when presenting them; input ordering determines the sequence
-delivered to their factory.
+Input ordering determines the sequence delivered to an extension's factory.
+Extensions may apply their own sorting when presenting those inputs. The catalog
+entity page sorts tabs alphabetically by default: set
+`config.defaultContentOrder: natural` to follow `inputs.contents.order` instead.
+Groups with an explicit `contentOrder` setting must also use `natural` to follow
+input order. Group order still follows the configured group definitions.
 
 ## Layer configuration files
 
