@@ -41,26 +41,11 @@ export async function fetchIdentity(
   if (!res.ok) {
     throw await ResponseError.fromResponse(res);
   }
-  return readIdentity(await res.json());
-}
-
-function readIdentity(body: unknown): UserIdentity {
-  const claims =
-    typeof body === 'object' && body !== null && 'claims' in body
-      ? body.claims
-      : undefined;
-  if (
-    typeof claims !== 'object' ||
-    claims === null ||
-    !('sub' in claims) ||
-    typeof claims.sub !== 'string' ||
-    !claims.sub
-  ) {
+  const { claims } = (await res.json()) as {
+    claims: { sub?: string; ent?: string[] };
+  };
+  if (!claims.sub) {
     throw new Error('The userinfo response did not contain a subject claim');
   }
-  const ent =
-    'ent' in claims && Array.isArray(claims.ent)
-      ? claims.ent.filter((ref): ref is string => typeof ref === 'string')
-      : [];
-  return { sub: claims.sub, ent };
+  return { sub: claims.sub, ent: claims.ent ?? [] };
 }

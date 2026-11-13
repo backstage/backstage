@@ -202,16 +202,12 @@ export async function installHooks(
       }
     }
     const command = buildHookCommand({ ...options, agent });
-    const json = `${JSON.stringify(
-      mergeHook(existing, command, file),
-      null,
-      2,
-    )}\n`;
+    const merged = mergeHook(existing, command, file);
+    const json = `${JSON.stringify(merged, null, 2)}\n`;
     await ensureNotTracked(options.rootDir, file, exec);
-    const preservedSettings =
-      existing && typeof existing === 'object'
-        ? Object.keys(existing).filter(key => key !== 'hooks').length
-        : 0;
+    const preservedSettings = Object.keys(merged).filter(
+      key => key !== 'hooks',
+    ).length;
     planned.push({ agent, file, json, command, preservedSettings });
   }
 
@@ -270,14 +266,7 @@ async function excludeFromGit(
   } catch (error) {
     // Exit code 1 means "not ignored"; anything else, such as 128 outside
     // a git repository, means there is nothing to exclude from.
-    if (
-      !(
-        typeof error === 'object' &&
-        error !== null &&
-        'code' in error &&
-        error.code === 1
-      )
-    ) {
+    if ((error as { code?: number }).code !== 1) {
       return undefined;
     }
   }

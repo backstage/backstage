@@ -42,11 +42,7 @@ export function readSkillsLock(dir: string): SkillsLock | undefined {
     const parsed = JSON.parse(
       fs.readFileSync(path.join(dir, LOCK_FILE), 'utf8'),
     );
-    if (
-      typeof parsed?.version === 'number' &&
-      parsed.skills &&
-      typeof parsed.skills === 'object'
-    ) {
+    if (parsed?.skills) {
       return parsed;
     }
   } catch {
@@ -130,8 +126,8 @@ export function isSkillInstalled(
     // Local sources are recorded relative to the directory of the lock file.
     return Object.entries(lock.skills).some(
       ([name, entry]) =>
-        entry?.sourceType === 'local' &&
-        typeof entry.source === 'string' &&
+        entry.sourceType === 'local' &&
+        entry.source !== undefined &&
         realOrResolved(path.resolve(lockDir, entry.source)) === installUrl &&
         isPresent(name),
     );
@@ -148,7 +144,7 @@ export function isSkillInstalled(
   const repo = normalizeRepo(`${url.origin}${repoPath}`);
 
   return Object.entries(lock.skills).some(([name, entry]) => {
-    if (entry?.ref !== ref) return false;
+    if (entry.ref !== ref) return false;
     const entryDir = entry.skillPath?.replace(/\/?SKILL\.md$/i, '');
     if (entryDir !== skillDir) return false;
     return (

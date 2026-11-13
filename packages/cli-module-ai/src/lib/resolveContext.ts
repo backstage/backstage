@@ -44,7 +44,6 @@ import {
 import { fetchIdentity } from './identity';
 import { resolveAuth } from './resolveAuth';
 import {
-  entityRefOf,
   relationTargets,
   selectSkills,
   type SelectionScope,
@@ -130,7 +129,7 @@ const isAt = (candidate: ComponentCandidate, folder: string) =>
   candidate.folders.some(f => f.join('/') === folder);
 
 const listRefs = (candidates: ComponentCandidate[]) =>
-  candidates.map(c => entityRefOf(c.entity)).join(', ');
+  candidates.map(c => stringifyEntityRef(c.entity)).join(', ');
 
 /**
  * Finds the component to resolve against. With an explicit entity, that
@@ -299,7 +298,7 @@ export async function fetchDependencies(
   token: string,
   candidates: Entity[],
 ): Promise<Entity[]> {
-  const known = new Set(candidates.map(entityRefOf));
+  const known = new Set(candidates.map(stringifyEntityRef));
   const fetched: Entity[] = [];
   const initial = new Set<string>();
   for (const candidate of candidates) {
@@ -401,7 +400,7 @@ export async function resolveSelection(
     context: {
       user: identity.sub,
       ownershipRefs,
-      componentRef: entityRefOf(component),
+      componentRef: stringifyEntityRef(component),
       owner,
       system,
       groupRefs,
