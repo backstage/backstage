@@ -19,6 +19,7 @@ import {
   getOriginUrl,
   getRepoRoot,
   getRepoPrefix,
+  isManagedWithinSameRepo,
   parseCatalogFileFolder,
   parseFileLocationFolder,
   parseSourceLocationFolder,
@@ -181,6 +182,62 @@ describe('parseFileLocationFolder', () => {
         isFolder: true,
       }),
     ).toEqual(['svc', 'api']);
+  });
+});
+
+describe('isManagedWithinSameRepo', () => {
+  const repo = 'https://github.com/acme/mono';
+  const roots = ['/work/wt', '/work/main'];
+
+  it('requires the managed-by location in the same repo or checkout', () => {
+    const source = `url:${repo}/tree/main/svc`;
+    expect(
+      isManagedWithinSameRepo(source, `url:${repo}/blob/main/c.yaml`, repo, []),
+    ).toBe(true);
+    expect(
+      isManagedWithinSameRepo(
+        source,
+        `url:${repo.toUpperCase()}/blob/main/c.yaml`,
+        repo,
+        [],
+      ),
+    ).toBe(true);
+    expect(
+      isManagedWithinSameRepo(
+        source,
+        'url:https://github.com/acme/other/blob/main/c.yaml',
+        repo,
+        [],
+      ),
+    ).toBe(false);
+    expect(isManagedWithinSameRepo(source, '', repo, [])).toBe(false);
+    expect(
+      isManagedWithinSameRepo(source, 'file:/work/main/c.yaml', repo, roots),
+    ).toBe(false);
+
+    const fileSource = 'file:/work/main/svc';
+    expect(
+      isManagedWithinSameRepo(
+        fileSource,
+        'file:/work/main/c.yaml',
+        repo,
+        roots,
+      ),
+    ).toBe(true);
+    expect(
+      isManagedWithinSameRepo(fileSource, 'file:/work/wt/c.yaml', repo, roots),
+    ).toBe(false);
+    expect(
+      isManagedWithinSameRepo(fileSource, 'file:/else/c.yaml', repo, roots),
+    ).toBe(false);
+    expect(
+      isManagedWithinSameRepo(
+        fileSource,
+        `url:${repo}/blob/main/c.yaml`,
+        repo,
+        roots,
+      ),
+    ).toBe(false);
   });
 });
 

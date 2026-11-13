@@ -214,21 +214,29 @@ describe('findComponent', () => {
           },
         },
       } as Entity);
-    // Both are registered from a central catalog file in another repository.
-    const central = 'https://github.acme.com/acme/catalog/blob/main/all.yaml';
+    // Both are registered from a central catalog file in the same repository.
+    const central = `${repo}/blob/main/catalog/all.yaml`;
     const api = declared('api', `${repo}/tree/main/services/api`, central);
     const web = declared('web', `${repo}/tree/main/services/web`, central);
+    // Claims a folder here, but was registered from another repository.
+    const hijack = declared(
+      'hijack',
+      `${repo}/tree/main/services/hijack`,
+      'https://github.acme.com/acme/catalog/blob/main/all.yaml',
+    );
     // Read from a catalog file in this repository, but not the source location.
     const root = located(
       'root',
       `${repo}/blob/main/services/catalog-info.yaml`,
     );
-    catalog([api, web, root]);
+    catalog([api, web, root, hijack]);
 
     expect((await find('services/api/src')).metadata.name).toBe('api');
     expect((await find('services/web')).metadata.name).toBe('web');
     // Nothing declares this source location, so the catalog file is used.
     expect((await find('services/other')).metadata.name).toBe('root');
+    // A source location without a managed-by location in this repo is ignored.
+    expect((await find('services/hijack')).metadata.name).toBe('root');
 
     catalog([api, declared('api2', `${repo}/tree/main/services/api`, central)]);
     await expect(find('services/api')).rejects.toThrow(
@@ -304,6 +312,51 @@ describe('findComponent', () => {
           repoPrefix,
           fileRoots: [worktree, main],
         });
+
+      const sourced = (name: string, source: string, managedBy: string) =>
+        ({
+          ...component(name),
+          metadata: {
+            ...component(name).metadata,
+            annotations: {
+              'backstage.io/source-location': `file:${source}`,
+              'backstage.io/managed-by-location': managedBy,
+            },
+          },
+        } as Entity);
+      fs.mkdirSync(path.join(main, 'good'), { recursive: true });
+      fs.mkdirSync(path.join(main, 'bad'), { recursive: true });
+      fs.mkdirSync(path.join(main, 'bad2'), { recursive: true });
+      catalog([
+        sourced(
+          'good',
+          path.join(main, 'good'),
+          `file:${path.join(main, 'good', 'catalog-info.yaml')}`,
+        ),
+        // Registered from a file outside of the checkout.
+        sourced(
+          'bad',
+          path.join(main, 'bad'),
+          `file:${path.join(base, 'outside', 'catalog-info.yaml')}`,
+        ),
+        // Registered from a URL in another repository.
+        sourced(
+          'bad2',
+          path.join(main, 'bad2'),
+          'url:https://github.acme.com/acme/other/blob/main/c.yaml',
+        ),
+        file('root', path.join(main, 'catalog-info.yaml')),
+      ]);
+      expect((await findFile('good/src')).metadata.name).toBe('good');
+      expect((await findFile('bad')).metadata.name).toBe('root');
+      expect((await findFile('bad2')).metadata.name).toBe('root');
+      catalog([
+        file('root', path.join(main, 'catalog-info.yaml')),
+        file('svc', path.join(link, 'svc', 'catalog-info.yaml')),
+        file('other', path.join(worktree, 'other', 'catalog-info.yaml')),
+        file('outside', path.join(base, 'outside', 'catalog-info.yaml')),
+        located('remote', `${repo}/blob/main/remote/catalog-info.yaml`),
+      ]);
 
       expect((await findFile('svc/src')).metadata.name).toBe('svc');
       expect((await findFile('other')).metadata.name).toBe('other');

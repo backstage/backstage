@@ -170,6 +170,33 @@ export function parseFileLocationFolder(
   return undefined;
 }
 
+/**
+ * Checks that the `backstage.io/managed-by-location` of an entity is in the
+ * same place as its `backstage.io/source-location`, so that the entity cannot
+ * claim a folder of a repository it was not registered from. A `url:` source
+ * location requires a `url:` managed-by location in the same repository. A
+ * `file:` source location requires a `file:` managed-by location inside the
+ * same checkout root.
+ */
+export function isManagedWithinSameRepo(
+  sourceLocation: string,
+  managedByLocation: string,
+  repoUrl: string,
+  roots: string[],
+): boolean {
+  if (sourceLocation.startsWith('file:')) {
+    return roots.some(
+      root =>
+        parseFileLocationFolder(sourceLocation, [root], { isFolder: true }) !==
+          undefined &&
+        parseFileLocationFolder(managedByLocation, [root]) !== undefined,
+    );
+  }
+  return managedByLocation
+    .toLocaleLowerCase('en-US')
+    .startsWith(`url:${repoUrl}/`.toLocaleLowerCase('en-US'));
+}
+
 function realpathOrResolve(target: string): string {
   try {
     return fs.realpathSync(target);
