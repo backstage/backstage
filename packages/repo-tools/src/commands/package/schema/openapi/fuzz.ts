@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import fs from 'fs-extra';
-import { targetPaths } from '@backstage/cli-common';
+import { runOutput, targetPaths } from '@backstage/cli-common';
 import chalk from 'chalk';
 import { spawn } from '../../../../lib/exec';
 import { getPathToCurrentOpenApiSpec } from '../../../../lib/openapi/helpers';
@@ -30,7 +30,17 @@ async function fuzz(opts: OptionValues) {
   if (!existsSync('st')) {
     console.log(
       chalk.red(
-        `Please install schemathesis globally with 'python -m pip install schemathesis'. Then run this command again.`,
+        `Please install schemathesis globally with 'python -m pip install "schemathesis>=4"'. Then run this command again.`,
+      ),
+    );
+    process.exit(1);
+  }
+
+  const version = await runOutput(['st', '--version']);
+  if (Number(version.match(/version (\d+)\./)?.[1]) < 4) {
+    console.log(
+      chalk.red(
+        `Schemathesis 4 or newer is required, found '${version}'. Please upgrade with 'python -m pip install "schemathesis>=4"'. Then run this command again.`,
       ),
     );
     process.exit(1);
@@ -47,13 +57,13 @@ async function fuzz(opts: OptionValues) {
   const args = [];
   if (opts.debug) {
     args.push(
-      '--cassette-path',
+      '--report-vcr-path',
       targetPaths.resolveRoot(join('.cassettes', `${pluginId}.yml`)),
     );
   }
 
   if (opts.limit) {
-    args.push('--hypothesis-max-examples', opts.limit);
+    args.push('--max-examples', opts.limit);
   }
   args.push('--workers', opts.workers);
 
