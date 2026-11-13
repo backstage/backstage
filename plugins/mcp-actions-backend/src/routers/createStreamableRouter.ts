@@ -17,8 +17,11 @@ import PromiseRouter from 'express-promise-router';
 import { Router } from 'express';
 import { performance } from 'node:perf_hooks';
 import { McpService } from '../services/McpService';
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { LATEST_PROTOCOL_VERSION } from '@modelcontextprotocol/sdk/types.js';
+import {
+  createMcpHandler,
+  SUPPORTED_PROTOCOL_VERSIONS,
+} from '@modelcontextprotocol/server';
+import { toNodeHandler } from '@modelcontextprotocol/node';
 import { toError } from '@backstage/errors';
 import { TracingService } from '@backstage/backend-plugin-api/alpha';
 import {
@@ -29,6 +32,13 @@ import {
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { bucketBoundaries, McpServerSessionAttributes } from '../metrics';
 import { McpServerConfig } from '../config';
+
+// The SDK exports no constant for the 2026-07-28 revision. The list bounds
+// the values that a client can put on the metric attribute.
+const KNOWN_PROTOCOL_VERSIONS: ReadonlySet<string> = new Set([
+  ...SUPPORTED_PROTOCOL_VERSIONS,
+  '2026-07-28',
+]);
 
 export const createStreamableRouter = ({
   mcpService,
@@ -62,8 +72,12 @@ export const createStreamableRouter = ({
   router.post('/', async (req, res) => {
     const sessionStart = performance.now();
 
+    const protocolVersion = req.get('mcp-protocol-version');
     const baseAttributes: McpServerSessionAttributes = {
-      'mcp.protocol.version': LATEST_PROTOCOL_VERSION,
+      ...(protocolVersion &&
+        KNOWN_PROTOCOL_VERSIONS.has(protocolVersion) && {
+          'mcp.protocol.version': protocolVersion,
+        }),
       'network.transport': 'tcp',
       'network.protocol.name': 'http',
     };
@@ -75,33 +89,28 @@ export const createStreamableRouter = ({
     });
 
     try {
-      const server = mcpService.getServer({
-        credentials: await httpAuth.credentials(req),
-        serverConfig,
-        req,
-      });
+      const credentials = await httpAuth.credentials(req);
 
-      const transport = new StreamableHTTPServerTransport({
-        // stateless implementation for now, so that we can support multiple
-        // instances of the server backend, and avoid sticky sessions.
-        sessionIdGenerator: undefined,
-      });
-
-      await server.connect(transport);
+      // One handler per request, so that the factory closes over the
+      // credentials of this request. Stateless serving lets several backend
+      // instances run without sticky sessions.
+      const handler = createMcpHandler(
+        () => mcpService.getServer({ credentials, serverConfig, req }),
+        { onerror: err => logger.error(err.message) },
+      );
 
       const ctx = tracing.propagation.extract(
         tracing.context.active(),
         req.headers,
       );
       await tracing.context.with(ctx, () =>
-        transport.handleRequest(req, res, req.body),
+        toNodeHandler(handler)(req, res, req.body),
       );
 
       await connectionEvent.success();
 
       res.on('close', async () => {
-        transport.close();
-        server.close();
+        await handler.close();
 
         const durationSeconds = (performance.now() - sessionStart) / 1000;
 

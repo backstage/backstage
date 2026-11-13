@@ -5720,15 +5720,17 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@cfworker/json-schema": "npm:^4.1.1"
-    "@modelcontextprotocol/sdk": "npm:^1.25.2"
+    "@modelcontextprotocol/client": "npm:^2.3.1"
+    "@modelcontextprotocol/core": "npm:^2.3.1"
+    "@modelcontextprotocol/node": "npm:^2.1.1"
+    "@modelcontextprotocol/sdk": "npm:1.30.0"
+    "@modelcontextprotocol/server": "npm:^2.3.1"
     "@types/express": "npm:^4.17.6"
     "@types/supertest": "npm:^2.0.8"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
     minimatch: "npm:^11.0.1"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -7663,13 +7665,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cfworker/json-schema@npm:^4.1.1":
-  version: 4.1.6
-  resolution: "@cfworker/json-schema@npm:4.1.6"
-  checksum: 10/754a4da0d280b2a2279371d652aca63dc14343dd9f4ab063b48e0e017be3303d7b236fe463827061a206f013063a2ca06d5718ad21474e695b9b268e1ea7a77b
-  languageName: node
-  linkType: hard
-
 "@changesets/apply-release-plan@npm:^7.1.1":
   version: 7.1.1
   resolution: "@changesets/apply-release-plan@npm:7.1.1"
@@ -9504,6 +9499,15 @@ __metadata:
     react: ^16 || ^17 || ^18
     react-dom: ^16 || ^17 || ^18
   checksum: 10/00ad7db43bc1904a149925693f9d99d000e237d6e7206d0ded6bf43089070e0cb5b7188bef6f2f7d0d9175039dc90838f1cb9d0cc2b7479d6139da40de637fb7
+  languageName: node
+  linkType: hard
+
+"@hono/node-server@npm:^1.19.9":
+  version: 1.19.18
+  resolution: "@hono/node-server@npm:1.19.18"
+  peerDependencies:
+    hono: ^4
+  checksum: 10/495ec2ef1bafb5b1f9cd13da98642d8424512d79804a62aa4cf0ab21e853732585e37143ab9dbe0e387be4b1835ffba797e2a4f648e316c9994093d9eabd85b3
   languageName: node
   linkType: hard
 
@@ -11474,9 +11478,45 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@modelcontextprotocol/sdk@npm:^1.25.2":
-  version: 1.32.2
-  resolution: "@modelcontextprotocol/sdk@npm:1.32.2"
+"@modelcontextprotocol/client@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "@modelcontextprotocol/client@npm:2.3.1"
+  dependencies:
+    "@modelcontextprotocol/core": "npm:2.3.1"
+    cross-spawn: "npm:^7.0.5"
+    eventsource: "npm:^3.0.2"
+    eventsource-parser: "npm:^3.0.8"
+    jose: "npm:^6.1.3"
+    pkce-challenge: "npm:^5.0.0"
+    zod: "npm:^4.2.0"
+  checksum: 10/520b1b5c20f991cbdb62a518aaff986d7de1844461885832728910ec26b8fc7eceb1020bcacdc149b047a9c9ddb9724a75b5f7501d205ebbc58dd17d32ebc7be
+  languageName: node
+  linkType: hard
+
+"@modelcontextprotocol/core@npm:2.3.1, @modelcontextprotocol/core@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "@modelcontextprotocol/core@npm:2.3.1"
+  dependencies:
+    zod: "npm:^4.2.0"
+  checksum: 10/ca30f0b162c3f8a04d0d8ca6f712a7c6aa19524178bc5eebd04b9e4738793346f8b280695da5fb30b5c371dda5fda47a3625272481b9c3b36682b12a6d639236
+  languageName: node
+  linkType: hard
+
+"@modelcontextprotocol/node@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@modelcontextprotocol/node@npm:2.1.1"
+  dependencies:
+    "@hono/node-server": "npm:^1.19.9"
+    hono: "npm:^4.11.4"
+  peerDependencies:
+    "@modelcontextprotocol/server": ^2.3.0
+  checksum: 10/3d3c769ccaab86db70b471fca8d6793f28ed672671163a1a87f8c819bd82a5e346c82686c983a38c54a247f071b20338955b6af3fae76325a220fb8f6b4911df
+  languageName: node
+  linkType: hard
+
+"@modelcontextprotocol/sdk@npm:1.30.0":
+  version: 1.30.0
+  resolution: "@modelcontextprotocol/sdk@npm:1.30.0"
   dependencies:
     "@hono/node-server": "npm:^1.19.9 || ^2.0.5"
     ajv: "npm:^8.17.1"
@@ -11503,7 +11543,17 @@ __metadata:
       optional: true
     zod:
       optional: false
-  checksum: 10/94f3dcadc817ed7e8c58fed0a7a0d921cebe31f38b936abffcb13106204a6afea9f7526eee18650299e0d9df0c90e5c2d30f0990fa4048652d3bb7859f1a7234
+  checksum: 10/369723a62ce230e55d4fc98549fb080a51916a2004f3907bfca899f5602de8791d9b252038abc6cf120a9d1c75845d2459a471b678c9b9cfc7bae5febf112b63
+  languageName: node
+  linkType: hard
+
+"@modelcontextprotocol/server@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "@modelcontextprotocol/server@npm:2.3.1"
+  dependencies:
+    "@modelcontextprotocol/core": "npm:2.3.1"
+    zod: "npm:^4.2.0"
+  checksum: 10/13bcf61340f11c6e77eb2803cdb1758534fe51ed67b536592f66355ddfcc546d0ca39741aacf2eccd1d7f92e2350733dde475b3b7627ba2251c4ea10aec194cc
   languageName: node
   linkType: hard
 
@@ -27633,10 +27683,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eventsource-parser@npm:^3.0.0, eventsource-parser@npm:^3.0.1":
-  version: 3.0.6
-  resolution: "eventsource-parser@npm:3.0.6"
-  checksum: 10/febf7058b9c2168ecbb33e92711a1646e06bd1568f60b6eb6a01a8bf9f8fcd29cc8320d57247059cacf657a296280159f21306d2e3ff33309a9552b2ef889387
+"eventsource-parser@npm:^3.0.0, eventsource-parser@npm:^3.0.1, eventsource-parser@npm:^3.0.8":
+  version: 3.1.1
+  resolution: "eventsource-parser@npm:3.1.1"
+  checksum: 10/4ed3fbd0ea5b7041c3d14e6ab686077bc1b93ce230839d50ca735a39754ee17be2402c02be9e6608b325aa7a1e151bfd341ce4c985cb0d0ac2898a0712ab4826
   languageName: node
   linkType: hard
 
@@ -46918,7 +46968,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.25 || ^4.0, zod@npm:^3.25.76 || ^4.0.0, zod@npm:^4.0.0, zod@npm:^4.1.11":
+"zod@npm:^3.25 || ^4.0, zod@npm:^3.25.76 || ^4.0.0, zod@npm:^4.0.0, zod@npm:^4.1.11, zod@npm:^4.2.0":
   version: 4.6.7
   resolution: "zod@npm:4.6.7"
   checksum: 10/3ca8b8d6bb401538e59504c543db629ea7beaa775e504c3f22269b406fdffbf1431c856d59a597bf66d8487e4d2be12b03a55d76fc2c63d9f046eae1ca173bca

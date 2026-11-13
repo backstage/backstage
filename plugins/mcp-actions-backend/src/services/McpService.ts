@@ -19,13 +19,8 @@ import {
   AuditorService,
 } from '@backstage/backend-plugin-api';
 import type { Request } from 'express';
-import { Server as McpServer } from '@modelcontextprotocol/sdk/server/index.js';
-import {
-  ListToolsRequestSchema,
-  CallToolRequestSchema,
-  Tool,
-  ToolSchema,
-} from '@modelcontextprotocol/sdk/types.js';
+import { Server as McpServer, Tool } from '@modelcontextprotocol/server';
+import { ToolSchema } from '@modelcontextprotocol/core';
 import { JsonObject } from '@backstage/types';
 import {
   ActionsService,
@@ -170,7 +165,7 @@ export class McpService {
       },
     );
 
-    server.setRequestHandler(ListToolsRequestSchema, async () => {
+    server.setRequestHandler('tools/list', async () => {
       const startTime = performance.now();
       let errorType: string | undefined;
 
@@ -238,7 +233,7 @@ export class McpService {
       }
     });
 
-    server.setRequestHandler(CallToolRequestSchema, async ({ params }) => {
+    server.setRequestHandler('tools/call', async ({ params }) => {
       const startTime = performance.now();
       let errorType: string | undefined;
       let isError = false;
