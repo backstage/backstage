@@ -1,0 +1,17 @@
+import{j as a}from"./iframe-jnmYTFb3.js";import{I as d}from"./IconLinkVertical-Dysb57TM.js";import{m as c}from"./makeStyles-BpJnXHFG.js";import"./preload-helper-PPVm8Dsz.js";import"./index-CdOJX-9o.js";import"./Box-C2sZFW6J.js";import"./styled-DtEigLlW.js";import"./Link-DMTmhcL8.js";import"./lodash-DMwpKwqE.js";import"./useApp-BB1JgkaP.js";import"./index-C7-0R-zP.js";import"./useAnalytics-BuCMBFsG.js";const m=c(e=>({links:{margin:e.spacing(2,0),display:"grid",gridAutoFlow:"column",gridAutoColumns:"min-content",gridGap:e.spacing(3),wordBreak:"keep-all"}}),{name:"BackstageHeaderIconLinkRow"});function r(e){const{links:i,children:o}=e,t=m();return a.jsxs("nav",{className:t.links,children:[i.map((l,s)=>a.jsx(d,{...l},s+1)),o]})}r.__docgenInfo={description:"HTML nav tag with links and optional custom link elements inside\n\n@public\n\n@deprecated Compose `Link`, `Flex` or `Grid`, and icons using\n`@backstage/ui` instead. Keep a navigation landmark around the links\nand arrange each icon and label to suit the layout.",methods:[],displayName:"HeaderIconLinkRow",props:{links:{required:!0,tsType:{name:"Array",elements:[{name:"signature",type:"object",raw:`{
+  color?: 'primary' | 'secondary';
+  disabled?: boolean;
+  href?: string;
+  icon?: ReactNode;
+  label: string;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
+  title?: string;
+}`,signature:{properties:[{key:"color",value:{name:"union",raw:"'primary' | 'secondary'",elements:[{name:"literal",value:"'primary'"},{name:"literal",value:"'secondary'"}],required:!1}},{key:"disabled",value:{name:"boolean",required:!1}},{key:"href",value:{name:"string",required:!1}},{key:"icon",value:{name:"ReactNode",required:!1}},{key:"label",value:{name:"string",required:!0}},{key:"onClick",value:{name:"MouseEventHandler",elements:[{name:"HTMLAnchorElement"}],raw:"MouseEventHandler<HTMLAnchorElement>",required:!1}},{key:"title",value:{name:"string",required:!1}}]}}],raw:"IconLinkVerticalProps[]"},description:""},children:{required:!1,tsType:{name:"ReactNode"},description:""}}};const L={title:"Data Display/HeaderIconLinkRow",component:r,tags:["!manifest"]},n=e=>a.jsx(r,{...e});n.args={links:[{color:"primary",disabled:!1,href:"https://google.com",label:"primary",title:"title"},{color:"secondary",disabled:!1,href:"https://google.com",label:"secondary",title:"title-2"}]};n.__docgenInfo={description:"",methods:[],displayName:"Default",props:{links:{required:!0,tsType:{name:"Array",elements:[{name:"signature",type:"object",raw:`{
+  color?: 'primary' | 'secondary';
+  disabled?: boolean;
+  href?: string;
+  icon?: ReactNode;
+  label: string;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
+  title?: string;
+}`,signature:{properties:[{key:"color",value:{name:"union",raw:"'primary' | 'secondary'",elements:[{name:"literal",value:"'primary'"},{name:"literal",value:"'secondary'"}],required:!1}},{key:"disabled",value:{name:"boolean",required:!1}},{key:"href",value:{name:"string",required:!1}},{key:"icon",value:{name:"ReactNode",required:!1}},{key:"label",value:{name:"string",required:!0}},{key:"onClick",value:{name:"MouseEventHandler",elements:[{name:"HTMLAnchorElement"}],raw:"MouseEventHandler<HTMLAnchorElement>",required:!1}},{key:"title",value:{name:"string",required:!1}}]}}],raw:"IconLinkVerticalProps[]"},description:""}}};n.parameters={...n.parameters,docs:{...n.parameters?.docs,source:{originalSource:"(args: Props) => <HeaderIconLinkRow {...args} />",...n.parameters?.docs?.source}}};const E=["Default"];export{n as Default,E as __namedExportsOrder,L as default};
