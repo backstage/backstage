@@ -139,9 +139,14 @@ function CatalogGraphRoots(
   const catalogApi = useApi(catalogApiRef);
   const firstRoot = rootEntityNames[0];
   const firstRootTitle = useEntityPresentation(firstRoot).primaryTitle;
-  const rootEntityRefs = useMemo(
-    () => rootEntityNames.map(e => stringifyEntityRef(e)),
-    [rootEntityNames],
+  // The root names are reparsed whenever the URL changes, so key the refs by
+  // value to only check for missing entities when the roots actually change.
+  const rootEntityRefsKey = JSON.stringify(
+    rootEntityNames.map(e => stringifyEntityRef(e)),
+  );
+  const rootEntityRefs = useMemo<string[]>(
+    () => JSON.parse(rootEntityRefsKey),
+    [rootEntityRefsKey],
   );
   const { value: rootEntities } = useAsync(async () => {
     const { items } = await catalogApi.getEntitiesByRefs({
