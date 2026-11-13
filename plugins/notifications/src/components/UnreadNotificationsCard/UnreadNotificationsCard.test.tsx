@@ -15,7 +15,7 @@
  */
 
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { Notification } from '@backstage/plugin-notifications-common';
 import { NotificationsApi, notificationsApiRef } from '../../api';
 import { UnreadNotificationsCard } from './UnreadNotificationsCard';
@@ -179,25 +179,20 @@ describe('UnreadNotificationsCard', () => {
 
     await screen.findByText('Important notification');
 
-    expect(
-      screen.getByRole('button', { name: 'Sorted by newest first' }),
-    ).toBeInTheDocument();
-
     fireEvent.click(
       screen.getByRole('button', { name: 'Sorted by newest first' }),
     );
 
-    await waitFor(() => {
-      expect(notificationsApi.getNotifications).toHaveBeenCalledWith({
-        limit: 5,
-        read: false,
-        sort: 'created',
-        sortOrder: 'asc',
-      });
-    });
-
+    // Header unmounts while the resorted request is in flight; wait for it to return.
     expect(
-      screen.getByRole('button', { name: 'Sorted by oldest first' }),
+      await screen.findByRole('button', { name: 'Sorted by oldest first' }),
     ).toBeInTheDocument();
+
+    expect(notificationsApi.getNotifications).toHaveBeenCalledWith({
+      limit: 5,
+      read: false,
+      sort: 'created',
+      sortOrder: 'asc',
+    });
   });
 });
