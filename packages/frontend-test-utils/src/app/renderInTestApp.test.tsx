@@ -24,7 +24,6 @@ import {
 import { act, screen, fireEvent } from '@testing-library/react';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
-  useRouteResolution,
   useAnalytics,
   createRouteRef,
   createExternalRouteRef,
@@ -43,6 +42,7 @@ import {
   useAppHref,
   appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
+import { useRouteResolution } from '@internal/frontend';
 import {
   UNSAFE_LocationContext,
   UNSAFE_NavigationContext,

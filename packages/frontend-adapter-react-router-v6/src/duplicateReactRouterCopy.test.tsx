@@ -16,10 +16,8 @@
 
 import { screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
-import {
-  useRouteResolution,
-  PageBlueprint,
-} from '@backstage/frontend-plugin-api';
+import { PageBlueprint } from '@backstage/frontend-plugin-api';
+import { useRouteResolution } from '@internal/frontend';
 import {
   UNSAFE_RouteContext,
   useInRouterContext,
@@ -57,14 +55,14 @@ const sharedReact = jest.requireActual('react');
 const sharedReactDom = jest.requireActual('react-dom');
 
 let otherCopy: typeof import('react-router-dom');
-let otherFrontend: typeof import('@backstage/frontend-plugin-api');
+let otherFrontend: typeof import('@internal/frontend');
 let otherAdapterModule: typeof import('./ReactRouterV6PageRouter');
 
 jest.isolateModules(() => {
   jest.doMock('react', () => sharedReact);
   jest.doMock('react-dom', () => sharedReactDom);
   otherCopy = require('react-router-dom');
-  otherFrontend = require('@backstage/frontend-plugin-api');
+  otherFrontend = require('@internal/frontend');
   otherAdapterModule = require('./ReactRouterV6PageRouter');
 });
 jest.dontMock('react');

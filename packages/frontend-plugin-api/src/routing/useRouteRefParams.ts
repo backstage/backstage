@@ -23,8 +23,9 @@ import {
   joinRoutePath,
   matchPath,
   useAppHistoryLocation,
+  useRouteResolution,
 } from '@internal/frontend';
-import { useRouteResolution } from './useRouteResolution';
+
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';

@@ -21,9 +21,9 @@ import {
   NavigationProvider,
   type Navigation,
   useApi,
-  useRouteResolution,
 } from '@backstage/frontend-plugin-api';
 import {
+  useRouteResolution,
   createAppHistoryRouter,
   resolveAppPath,
   createPath,
@@ -31,6 +31,7 @@ import {
   sanitizeHref,
   type ReactRouterAdapterBindings,
 } from '@internal/frontend';
+
 import {
   UNSAFE_LocationContext,
   UNSAFE_NavigationContext,

@@ -19,7 +19,6 @@ import path from 'node:path';
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
-  useRouteResolution,
   PageBlueprint,
   SubPageBlueprint,
   appHistoryApiRef,
@@ -29,7 +28,8 @@ import {
   useAppNavigate,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { useAppHistoryLocation } from '@internal/frontend';
+import { useRouteResolution, useAppHistoryLocation } from '@internal/frontend';
+
 import { Link, useLocation, useResolvedPath } from 'react-router';
 import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';

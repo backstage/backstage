@@ -30,13 +30,13 @@ import {
   sanitizeHref,
   unwrapReactRouterContext,
   type ReactRouterAdapterBindings,
+  useRouteResolution,
 } from '@internal/frontend';
 import {
   appHistoryApiRef,
   NavigationProvider,
   useApi,
   useApiHolder,
-  useRouteResolution,
   type AppHistoryApi,
   type AppNode,
   type Navigation,

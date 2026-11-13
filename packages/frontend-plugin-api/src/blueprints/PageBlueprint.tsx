@@ -23,8 +23,9 @@ import {
   joinRoutePath,
   useAppHistoryLocation,
   useTranslatedTitles,
+  useRouteResolution,
 } from '@internal/frontend';
-import { useRouteResolution } from '../routing/useRouteResolution';
+
 import {
   coreExtensionData,
   createExtensionBlueprint,

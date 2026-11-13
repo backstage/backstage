@@ -757,7 +757,7 @@ their routing scope through `RouteResolutionApi.resolvePath`, using the current
 app node and an app-relative pathname. The app compiles the routing tree and
 indexes node ancestry once, then shares matching results across consumers.
 Concrete mount paths and route patterns do not need a separate React context
-or adapter props. The `useRouteResolution` hook reads the current node from
+or adapter props. The internal `useRouteResolution` hook reads the current node from
 the existing extension boundary and resolves its ancestry at the current app
 location.
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { matchPath } from '@internal/frontend';
+import { matchPath, useRouteResolution } from '@internal/frontend';
 import { type AppNode } from '@backstage/frontend-plugin-api';
 import type { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
@@ -23,10 +23,8 @@ import {
   TestApiProvider,
   createMockAppHistory,
 } from '@backstage/frontend-test-utils';
-import {
-  useRouteResolution,
-  appHistoryApiRef,
-} from '@backstage/frontend-plugin-api';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+
 import {
   MemoryRouter,
   Route,
@@ -39,9 +37,9 @@ import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
 const mockRouteNode = {} as AppNode;
 
 // Isolate routing consumers from extension rendering; app tests cover real node ancestry.
-jest.mock('../../frontend-plugin-api/src/components/AppNodeProvider', () => {
+jest.mock('../../frontend-internal/src/wiring/useAppNode', () => {
   const actual = jest.requireActual(
-    '../../frontend-plugin-api/src/components/AppNodeProvider',
+    '../../frontend-internal/src/wiring/useAppNode',
   );
   return {
     ...actual,

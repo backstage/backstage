@@ -17,7 +17,6 @@
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
-  useRouteResolution,
   PageBlueprint,
   SubPageBlueprint,
   createFrontendPlugin,
@@ -30,6 +29,7 @@ import {
   useRouteRefParams,
   useAppHref,
 } from '@backstage/frontend-plugin-api';
+import { useRouteResolution } from '@internal/frontend';
 import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { Link, useLocation, useParams } from 'react-router-dom';
 

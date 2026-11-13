@@ -17,3 +17,4 @@
 export * from './OpaqueApiRef';
 export * from './createTranslatedMessagesSource';
 export * from './useTranslatedTitles';
+export { useApiHolder } from './useApiHolder';

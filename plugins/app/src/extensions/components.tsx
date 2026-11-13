@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import {
-  useRouteResolution,
   NotFoundErrorPage as SwappableNotFoundErrorPage,
   Progress as SwappableProgress,
   ErrorDisplay as SwappableErrorDisplay,
   PageLayout as SwappablePageLayout,
   type PageLayoutProps,
 } from '@backstage/frontend-plugin-api';
+import { useRouteResolution } from '@internal/frontend';
 import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import {
   ErrorPage,

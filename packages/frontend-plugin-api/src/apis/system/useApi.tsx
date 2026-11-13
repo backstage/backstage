@@ -15,10 +15,8 @@
  */
 
 import { ApiRef, ApiHolder } from './types';
-import { useVersionedContext } from '@backstage/version-bridge';
+import { useApiHolder as useApiHolderInternal } from '@internal/frontend';
 import { NotImplementedError } from '@backstage/errors';
-
-const emptyApiHolder: ApiHolder = Object.freeze({ get: () => undefined });
 
 /**
  * React hook for retrieving {@link ApiHolder}, an API catalog.
@@ -26,16 +24,7 @@ const emptyApiHolder: ApiHolder = Object.freeze({ get: () => undefined });
  * @public
  */
 export function useApiHolder(): ApiHolder {
-  const versionedHolder = useVersionedContext<{ 1: ApiHolder }>('api-context');
-  if (!versionedHolder) {
-    return emptyApiHolder;
-  }
-
-  const apiHolder = versionedHolder.atVersion(1);
-  if (!apiHolder) {
-    throw new NotImplementedError('ApiContext v1 not available');
-  }
-  return apiHolder;
+  return useApiHolderInternal();
 }
 
 /**
