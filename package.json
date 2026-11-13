@@ -102,6 +102,7 @@
     ]
   },
   "resolutions": {
+    "@backstage/integration-react/@remixicon/react": "~4.0.1",
     "@inquirer/type@npm:^4.0.5": "4.0.7",
     "@inquirer/type@npm:^4.0.7": "4.0.7",
     "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
@@ -196,6 +197,7 @@
     "tsConfig": "./tsconfig.json"
   },
   "resolutionsComments": {
+    "@backstage/integration-react/@remixicon/react": "Keep integration-react compatible with React 17; @remixicon/react 4.1.0 and later require React 18.2.",
     "@inquirer/type@npm:^4.0.5": "inquirer 13.4.3 declarations fail with TS2344 against @inquirer/type 4.1.1 when declaration files are checked. Keep its 4.0.x requests on 4.0.7 until Yeoman moves to Inquirer 14; see https://github.com/SBoudrias/Inquirer.js/issues/2244.",
     "@inquirer/type@npm:^4.0.7": "inquirer 13.4.3 declarations fail with TS2344 against @inquirer/type 4.1.1 when declaration files are checked. Keep its 4.0.x requests on 4.0.7 until Yeoman moves to Inquirer 14; see https://github.com/SBoudrias/Inquirer.js/issues/2244.",
     "ast-types@npm:^0.13.4": "Some transitive dependencies request ast-types 0.13.x, which predates the TypeScript 5.4 isolatedModules compatibility fix released in ast-types 0.16.2.",
