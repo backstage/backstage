@@ -42,11 +42,7 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
-  resolvePath,
   type AnyRouter,
-  type AnyRoute,
-  type BuildNextOptions,
-  type ParsedLocation,
 } from '@tanstack/react-router';
 import { createTanStackHistory } from './createTanStackHistory';
 
@@ -198,118 +194,6 @@ export function createTanStackPageRouter(
           'TanStack page routers must use the app root as basepath. Mount routes using routePaths instead.',
         );
       }
-      const originalParams = new Map<AnyRoute, AnyRoute['options']['params']>();
-      for (const route of Object.values(router.routesById)) {
-        const mountPath = [...routePaths.values()].find(
-          path =>
-            path &&
-            (route.fullPath === path || route.fullPath.startsWith(`${path}/`)),
-        );
-        const names = [
-          ...(mountPath ?? '').matchAll(/\{\$([\w-]+)\}[^/]+/g),
-        ].map(match => match[1]);
-        if (!names.length) {
-          continue;
-        }
-        const parse = route.options.params?.parse ?? route.options.parseParams;
-        originalParams.set(route, route.options.params);
-        route.options.params = {
-          ...route.options.params,
-          parse: (params: Record<string, string>) => {
-            // The framework requires a nonempty value before a literal suffix.
-            if (names.some(name => params[name] === '')) {
-              return false;
-            }
-            return parse ? parse(params) : {};
-          },
-        };
-      }
-      if (originalParams.size) {
-        try {
-          router.setRoutes(router.buildRouteTree());
-        } finally {
-          for (const [route, params] of originalParams) {
-            route.options.params = params;
-          }
-        }
-      }
-      // Keep the adapter's app-absolute encoded locations while the newer
-      // matcher handles decoding individual parameters.
-      const parseLocation = router.parseLocation;
-      router.parseLocation = (location, previous) => {
-        const parsed = parseLocation(location, previous);
-        if (router.options.rewrite || parsed.maskedLocation) {
-          return parsed;
-        }
-        return {
-          ...parsed,
-          pathname: location.pathname,
-          hash: location.hash.slice(1),
-        };
-      };
-      const getMatchedRoutes = router.getMatchedRoutes;
-      router.getMatchedRoutes = (pathname, ...args) => {
-        const decoded = router.options.rewrite
-          ? pathname
-          : parseLocation({
-              ...history.location,
-              pathname,
-              href: pathname,
-              search: '',
-              hash: '',
-              state: { __TSR_index: 0 },
-            }).pathname;
-        return getMatchedRoutes(decoded, ...args);
-      };
-      const buildLocation = router.buildLocation as (
-        location: BuildNextOptions & { leaveParams?: boolean },
-      ) => ParsedLocation;
-      router.buildLocation = locationOptions => {
-        const destination = { ...locationOptions } as BuildNextOptions & {
-          leaveParams?: boolean;
-        };
-        const to = locationOptions.to && String(locationOptions.to);
-        if (to && !to.startsWith('/')) {
-          const location =
-            locationOptions._fromLocation ?? router.latestLocation;
-          const matches = router.matchRoutes(location);
-          const from = locationOptions.from ?? matches.at(-1)?.fullPath ?? '/';
-          const resolved = resolvePath({ base: from, to });
-          const splat = resolved.match(/^(.*?\/\$)(\/.+)$/);
-          if (splat) {
-            // Newer TanStack interpolation discards everything after a splat.
-            // Resolve the mount before appending the relative tail.
-            const currentParams = matches.at(-1)?.params ?? {};
-            let params = {};
-            if (
-              locationOptions.params !== false &&
-              locationOptions.params !== null
-            ) {
-              params = { ...currentParams };
-              if (typeof locationOptions.params === 'function') {
-                Object.assign(params, locationOptions.params(currentParams));
-              } else if (locationOptions.params !== true) {
-                Object.assign(params, locationOptions.params);
-              }
-            }
-            const prefix = buildLocation({
-              ...destination,
-              to: splat[1],
-              params: () => params,
-            }).pathname;
-            destination.to = `${prefix}${splat[2]}`;
-            destination.params = () => params;
-          }
-        }
-        const result = buildLocation(destination);
-        return {
-          ...result,
-          pathname: locationOptions.leaveParams
-            ? result.pathname
-            : new URL(result.href, 'http://backstage.local').pathname,
-        };
-      };
-      router.updateLatestLocation();
       return { router, history };
     }, [appHistory, routePattern]);
     const lifecycleRef = useRef<{

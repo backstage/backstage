@@ -283,9 +283,10 @@ Custom histories can omit snapshot metadata they cannot report. Without entry
 indices and keys, back availability and entry-based restoration are limited: the adapter cannot infer
 a browser stack from the URLs it has visited.
 
-Native relative links refresh when the current catch-all value changes. For
-example, a `Link` with `to="./edit"` points to `/docs/edit` at `/docs`, and to
-`/docs/edit/edit` after navigating to `/docs/edit`.
+TanStack owns native location decoding and relative navigation. Its native hooks
+can return decoded paths while app history retains URL encoding. For
+path-relative navigation inside a catch-all route, use TanStack's
+`unsafeRelative: 'path'` option on `Link` or `navigate`.
 
 TanStack push and replace blockers apply to navigation through that adapter.
 They do not block navigation initiated by another adapter, browser traversal,

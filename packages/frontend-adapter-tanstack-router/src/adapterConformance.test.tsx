@@ -48,7 +48,9 @@ function SubPageProbe(props: { name: string }) {
       <button type="button" onClick={() => setBumped(n => n + 1)}>
         Bump
       </button>
-      <Link to={'./deep' as never}>Deep</Link>
+      <Link to={'./deep' as never} unsafeRelative="path">
+        Deep
+      </Link>
       {params._splat === 'deep' && <span data-testid="deep">deep</span>}
     </div>
   );
