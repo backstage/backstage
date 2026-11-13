@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { render, screen, act, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  act,
+  waitFor,
+  fireEvent,
+} from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
 import {
   alertApiRef,
@@ -184,6 +190,81 @@ describe('ToastDisplay', () => {
       await waitFor(() => {
         expect(screen.queryByText('Dismissable Toast')).not.toBeInTheDocument();
       });
+    });
+
+    it('should not replay dismissed toasts when ToastDisplay remounts', async () => {
+      const { unmount } = renderToastDisplay();
+
+      await act(async () => {
+        toastApi.post({
+          title: 'Dismissed Toast',
+          status: 'info',
+        });
+      });
+
+      await expect(
+        screen.findByText('Dismissed Toast'),
+      ).resolves.toBeInTheDocument();
+
+      // Dismiss via close button
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button'));
+        // Wait for animation
+        await new Promise(resolve => setTimeout(resolve, 600));
+      });
+
+      await waitFor(() => {
+        expect(screen.queryByText('Dismissed Toast')).not.toBeInTheDocument();
+      });
+
+      // Unmount and remount ToastDisplay (e.g. on theme switch)
+      unmount();
+      renderToastDisplay();
+
+      // Ensure the dismissed toast does not reappear
+      expect(screen.queryByText('Dismissed Toast')).not.toBeInTheDocument();
+    });
+
+    it('should retain non-dismissed toasts on remount while excluding dismissed ones', async () => {
+      const { unmount } = renderToastDisplay();
+
+      await act(async () => {
+        toastApi.post({ title: 'Toast Keep', status: 'success' });
+        toastApi.post({ title: 'Toast Remove', status: 'info' });
+      });
+
+      await expect(
+        screen.findByText('Toast Keep'),
+      ).resolves.toBeInTheDocument();
+      await expect(
+        screen.findByText('Toast Remove'),
+      ).resolves.toBeInTheDocument();
+
+      // Find close button for 'Toast Remove'
+      const toastRemoveElement = screen.getByText('Toast Remove');
+      const toastContainer = toastRemoveElement.closest('[data-status]');
+      const closeButton = toastContainer?.querySelector('button');
+      expect(closeButton).toBeTruthy();
+
+      await act(async () => {
+        fireEvent.click(closeButton!);
+        await new Promise(resolve => setTimeout(resolve, 600));
+      });
+
+      await waitFor(() => {
+        expect(screen.queryByText('Toast Remove')).not.toBeInTheDocument();
+      });
+      expect(screen.getByText('Toast Keep')).toBeInTheDocument();
+
+      // Unmount and remount ToastDisplay
+      unmount();
+      renderToastDisplay();
+
+      // Toast Keep should be replayed, Toast Remove should not
+      await expect(
+        screen.findByText('Toast Keep'),
+      ).resolves.toBeInTheDocument();
+      expect(screen.queryByText('Toast Remove')).not.toBeInTheDocument();
     });
   });
 
