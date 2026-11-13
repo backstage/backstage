@@ -26,7 +26,7 @@ Then add the following to your backend initialization:
 // backend.add(import('@backstage/plugin-events-backend'));
 // optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
 // backend.add(import('@backstage/plugin-events-backend-module-aws-sqs'));
-// optional - event router for gitlab. See.: https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gitlab/README.md
+// optional - event router for gitlab. See: https://backstage.io/docs/integrations/gitlab/events
 // backend.add(eventsModuleGitlabEventRouter);
 // optional - token validator for the gitlab topic
 // backend.add(eventsModuleGitlabWebhook);
@@ -62,7 +62,7 @@ The webhook(s) will need to be configured to react to `group_create`, `group_des
 
 #### Install and Configure GitLab Events Module
 
-Install and configure `@backstage/plugin-events-backend-module-gitlab` as described in [GitLab Discovery — Install and Configure GitLab Events Module](./discovery.md#install-and-configure-gitlab-events-module). The [gitlab events module](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-gitlab/README.md) routes received events from the generic topic `gitlab` to more specific ones based on the event type (for example, `gitlab.user_add_to_group`). These more specific events are what the builtin org events support expects.
+Install and configure `@backstage/plugin-events-backend-module-gitlab` as described in [GitLab Discovery — Install and Configure GitLab Events Module](./discovery.md#install-and-configure-gitlab-events-module). The [GitLab events module](./events.md) routes received events from the generic topic `gitlab` to more specific ones based on the event type (for example, `gitlab.user_add_to_group`). These more specific events are what the builtin org events support expects.
 
 ### Receiving events in Backstage
 

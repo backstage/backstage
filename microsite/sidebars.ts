@@ -463,6 +463,7 @@ export default {
           'integrations/gitlab/locations',
           'integrations/gitlab/discovery',
           'integrations/gitlab/org',
+          'integrations/gitlab/events',
         ]),
         sidebarElementWithIndex({ label: 'Gitea' }, [
           'integrations/gitea/locations',
