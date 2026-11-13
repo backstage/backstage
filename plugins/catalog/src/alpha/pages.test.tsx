@@ -676,8 +676,8 @@ describe('Entity page', () => {
               pluginId: 'catalog',
               extensions: [
                 catalogEntityPage,
-                techdocsEntityContent,
                 apidocsEntityContent,
+                techdocsEntityContent,
               ],
             }),
           ],
