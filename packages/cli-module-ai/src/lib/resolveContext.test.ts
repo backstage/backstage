@@ -177,21 +177,62 @@ describe('findComponent', () => {
     expect((await find('services/web')).metadata.name).toBe('web');
     expect((await find('services')).metadata.name).toBe('root');
     expect((await find('')).metadata.name).toBe('root');
-    expect(mockClient.queryEntities).toHaveBeenCalledTimes(6);
-    expect(mockClient.queryEntities).toHaveBeenCalledWith(
-      {
-        query: {
-          $all: [
-            { kind: 'Component' },
-            {
-              'metadata.annotations.backstage.io/managed-by-location': {
-                $hasPrefix: `url:${repo}/`,
+    // Each lookup queries source locations first, then catalog file locations.
+    expect(mockClient.queryEntities).toHaveBeenCalledTimes(12);
+    for (const annotation of ['source-location', 'managed-by-location']) {
+      expect(mockClient.queryEntities).toHaveBeenCalledWith(
+        {
+          query: {
+            $all: [
+              { kind: 'Component' },
+              {
+                [`metadata.annotations.backstage.io/${annotation}`]: {
+                  $hasPrefix: `url:${repo}/`,
+                },
               },
-            },
-          ],
+            ],
+          },
         },
-      },
-      { token: 'tok' },
+        { token: 'tok' },
+      );
+    }
+  });
+
+  it('prefers the source location over the catalog file location, nearest folder first', async () => {
+    const declared = (
+      name: string,
+      sourceLocation: string,
+      managedBy: string,
+    ) =>
+      ({
+        ...component(name),
+        metadata: {
+          ...component(name).metadata,
+          annotations: {
+            'backstage.io/source-location': `url:${sourceLocation}`,
+            'backstage.io/managed-by-location': `url:${managedBy}`,
+          },
+        },
+      } as Entity);
+    // Both are registered from a central catalog file in another repository.
+    const central = 'https://github.acme.com/acme/catalog/blob/main/all.yaml';
+    const api = declared('api', `${repo}/tree/main/services/api`, central);
+    const web = declared('web', `${repo}/tree/main/services/web`, central);
+    // Read from a catalog file in this repository, but not the source location.
+    const root = located(
+      'root',
+      `${repo}/blob/main/services/catalog-info.yaml`,
+    );
+    catalog([api, web, root]);
+
+    expect((await find('services/api/src')).metadata.name).toBe('api');
+    expect((await find('services/web')).metadata.name).toBe('web');
+    // Nothing declares this source location, so the catalog file is used.
+    expect((await find('services/other')).metadata.name).toBe('root');
+
+    catalog([api, declared('api2', `${repo}/tree/main/services/api`, central)]);
+    await expect(find('services/api')).rejects.toThrow(
+      /Multiple Components have a backstage.io\/source-location in .*mono\/services\/api: component:default\/api, component:default\/api2.*--entity/,
     );
   });
 
@@ -202,12 +243,12 @@ describe('findComponent', () => {
       located('top', `${repo}/blob/main/catalog-info.yaml`),
     ]);
     await expect(find('svc/src')).rejects.toThrow(
-      /registered from a catalog file in .*mono\/svc: component:default\/one, component:default\/two.*--entity/,
+      /have a backstage.io\/managed-by-location in .*mono\/svc: component:default\/one, component:default\/two.*--entity/,
     );
-    expect(mockClient.queryEntities).toHaveBeenCalledTimes(1);
+    expect(mockClient.queryEntities).toHaveBeenCalledTimes(2);
   });
 
-  it('fails pointing at --entity when no catalog file matches, ignoring self-declared source locations', async () => {
+  it('fails pointing at --entity when no source location or catalog file matches', async () => {
     const declared: Entity = {
       ...component('declared'),
       metadata: {
@@ -215,13 +256,13 @@ describe('findComponent', () => {
         annotations: {
           'backstage.io/managed-by-location':
             'url:https://github.acme.com/acme/catalog/blob/main/svc.yaml',
-          'backstage.io/source-location': `url:${repo}/tree/main/services/svc`,
+          'backstage.io/source-location': `url:${repo}/tree/main/services/elsewhere`,
         },
       },
     };
     catalog([declared, located('other', `${repo}/blob/main/other/c.yaml`)]);
     await expect(find('services/svc/src')).rejects.toThrow(
-      /No Component registered from a catalog file at or above https:\/\/github.acme.com\/acme\/mono\/services\/svc\/src was found.*--entity/,
+      /No Component with a backstage.io\/source-location or backstage.io\/managed-by-location at or above https:\/\/github.acme.com\/acme\/mono\/services\/svc\/src was found.*--entity/,
     );
     await expect(find('')).rejects.toThrow(
       /at or above https:\/\/github.acme.com\/acme\/mono was found.*--entity/,
@@ -268,30 +309,25 @@ describe('findComponent', () => {
       expect((await findFile('other')).metadata.name).toBe('other');
       expect((await findFile('remote/src')).metadata.name).toBe('remote');
       expect((await findFile('')).metadata.name).toBe('root');
-      expect(mockClient.queryEntities).toHaveBeenCalledWith(
-        {
-          query: {
-            $all: [
-              { kind: 'Component' },
-              {
-                $any: [
-                  {
-                    'metadata.annotations.backstage.io/managed-by-location': {
-                      $hasPrefix: `url:${repo}/`,
-                    },
-                  },
-                  {
-                    'metadata.annotations.backstage.io/managed-by-location': {
-                      $hasPrefix: 'file:',
-                    },
-                  },
-                ],
-              },
-            ],
+      for (const annotation of ['source-location', 'managed-by-location']) {
+        const key = `metadata.annotations.backstage.io/${annotation}`;
+        expect(mockClient.queryEntities).toHaveBeenCalledWith(
+          {
+            query: {
+              $all: [
+                { kind: 'Component' },
+                {
+                  $any: [
+                    { [key]: { $hasPrefix: `url:${repo}/` } },
+                    { [key]: { $hasPrefix: 'file:' } },
+                  ],
+                },
+              ],
+            },
           },
-        },
-        { token: 'tok' },
-      );
+          { token: 'tok' },
+        );
+      }
     } finally {
       fs.rmSync(base, { recursive: true, force: true });
     }

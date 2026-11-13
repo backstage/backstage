@@ -74,14 +74,33 @@ export async function getRepoPrefix(
 /**
  * Parses a `backstage.io/managed-by-location` annotation value, which is the
  * URL of the catalog file that an entity was read from, such as
- * `url:<repo>/blob/<ref>/<path>/catalog-info.yaml` (GitHub) or
- * `url:<repo>/-/blob/<ref>/<path>/catalog-info.yaml` (GitLab), also with
- * `tree`. Returns the possible repo-relative folders of that file as segment
- * lists, one for each way to split the ref from the path, since refs can
- * contain slashes. Returns undefined when the location is not a file inside
- * the repository or has an unsupported shape.
+ * `url:<repo>/blob/<ref>/<path>/catalog-info.yaml`. Returns the possible
+ * repo-relative folders of that file, split from the ref with the same rules
+ * as {@link parseSourceLocationFolder}. Returns undefined when the location is
+ * not a file inside the repository or has an unsupported shape.
  */
 export function parseCatalogFileFolder(
+  location: string,
+  repoUrl: string,
+): string[][] | undefined {
+  const segments = location.split(/[?#]/)[0].split('/');
+  // A catalog file location never ends with a slash; drop the file name.
+  if (!segments[segments.length - 1]) {
+    return undefined;
+  }
+  return parseSourceLocationFolder(segments.slice(0, -1).join('/'), repoUrl);
+}
+
+/**
+ * Parses a `backstage.io/source-location` annotation value that points into
+ * the given repository, as `url:<repo>/tree/<ref>/<path>` (GitHub) or
+ * `url:<repo>/-/tree/<ref>/<path>` (GitLab), also with `blob`. Returns the
+ * possible repo-relative folders as segment lists, one for each way to split
+ * the ref from the path, since refs can contain slashes. The repo root is only
+ * returned when the location has nothing but a ref. Returns undefined when the
+ * location is not inside the repository or has an unsupported shape.
+ */
+export function parseSourceLocationFolder(
   location: string,
   repoUrl: string,
 ): string[][] | undefined {
@@ -104,11 +123,7 @@ export function parseCatalogFileFolder(
   if (segments[0] !== 'tree' && segments[0] !== 'blob') {
     return undefined;
   }
-  // A catalog file location never ends with a slash; drop the file name.
-  if (location.split(/[?#]/)[0].endsWith('/')) {
-    return undefined;
-  }
-  const rest = segments.slice(1, -1);
+  const rest = segments.slice(1);
   if (rest.length === 0) {
     return undefined;
   }
@@ -119,15 +134,18 @@ export function parseCatalogFileFolder(
 }
 
 /**
- * Parses a `backstage.io/managed-by-location` annotation value of the form
- * `file:<absolute path to the catalog file>`. Returns the folder of the file
- * relative to the first of the given checkout roots that contains it, as a
- * segment list, or undefined if the file is not inside any of the roots. Paths
- * are compared by their real paths, so symlinks do not matter.
+ * Parses a `file:<absolute path>` annotation value. For
+ * `backstage.io/managed-by-location` the path is the catalog file, and for
+ * `backstage.io/source-location` it is the folder itself, which is selected
+ * with the `isFolder` option. Returns the folder relative to the first of the
+ * given checkout roots that contains it, as a segment list, or undefined if it
+ * is not inside any of the roots. Paths are compared by their real paths, so
+ * symlinks do not matter.
  */
 export function parseFileLocationFolder(
   location: string,
   roots: string[],
+  options?: { isFolder?: boolean },
 ): string[] | undefined {
   if (!location.startsWith('file:')) {
     return undefined;
@@ -136,7 +154,9 @@ export function parseFileLocationFolder(
   if (!path.isAbsolute(filePath)) {
     return undefined;
   }
-  const dir = realpathOrResolve(path.dirname(filePath));
+  const dir = realpathOrResolve(
+    options?.isFolder ? filePath : path.dirname(filePath),
+  );
   for (const root of roots) {
     const relative = path.relative(realpathOrResolve(root), dir);
     if (relative === '..' || relative.startsWith(`..${path.sep}`)) {

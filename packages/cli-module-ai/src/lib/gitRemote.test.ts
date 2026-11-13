@@ -21,6 +21,7 @@ import {
   getRepoPrefix,
   parseCatalogFileFolder,
   parseFileLocationFolder,
+  parseSourceLocationFolder,
   repoUrlFromRemote,
 } from './gitRemote';
 
@@ -175,5 +176,42 @@ describe('parseFileLocationFolder', () => {
     );
     expect(parseFileLocationFolder('file:c.yaml', roots)).toBe(undefined);
     expect(parseFileLocationFolder('url:https://x/y', roots)).toBe(undefined);
+    expect(
+      parseFileLocationFolder('file:/work/main/svc/api', roots, {
+        isFolder: true,
+      }),
+    ).toEqual(['svc', 'api']);
+  });
+});
+
+describe('parseSourceLocationFolder', () => {
+  const repo = 'https://github.com/acme/mono';
+
+  it('returns the possible folders of a tree location, for GitHub and GitLab', () => {
+    expect(
+      parseSourceLocationFolder(`url:${repo}/tree/main/svc/api`, repo),
+    ).toEqual([['svc', 'api'], ['api']]);
+    expect(parseSourceLocationFolder(`url:${repo}/tree/main`, repo)).toEqual([
+      [],
+    ]);
+    expect(
+      parseSourceLocationFolder(`url:${repo}/-/tree/main/svc`, repo),
+    ).toEqual([['svc']]);
+    expect(
+      parseSourceLocationFolder(`url:${repo}/tree/main/svc?x=1#y`, repo),
+    ).toEqual([['svc']]);
+  });
+
+  it('rejects other repositories and unsupported shapes', () => {
+    expect(
+      parseSourceLocationFolder(
+        'url:https://github.com/acme/other/tree/main/a',
+        repo,
+      ),
+    ).toBeUndefined();
+    expect(
+      parseSourceLocationFolder(`url:${repo}/issues/1`, repo),
+    ).toBeUndefined();
+    expect(parseSourceLocationFolder(`file:/work/svc`, repo)).toBeUndefined();
   });
 });
