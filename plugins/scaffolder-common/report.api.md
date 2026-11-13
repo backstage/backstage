@@ -98,10 +98,18 @@ export interface ScaffolderApi {
     options?: ScaffolderRequestOptions,
   ): Promise<TemplateParameterSchema>;
   listActions(options?: ScaffolderRequestOptions): Promise<ListActionsResponse>;
-  // (undocumented)
   listTasks(
     request: {
       filterByOwnership: 'owned' | 'all';
+      createdBy?: string[];
+      status?: ScaffolderTaskStatus[];
+      templateRef?: string[];
+      createdAfter?: Date;
+      createdBefore?: Date;
+      order?: {
+        field: 'created_at' | 'status' | 'created_by' | 'template_ref';
+        order: 'asc' | 'desc';
+      }[];
       limit?: number;
       offset?: number;
     },
@@ -189,13 +197,8 @@ export class ScaffolderClient implements ScaffolderApi {
     options?: ScaffolderRequestOptions,
   ): Promise<TemplateParameterSchema>;
   listActions(options?: ScaffolderRequestOptions): Promise<ListActionsResponse>;
-  // (undocumented)
   listTasks(
-    request: {
-      filterByOwnership: 'owned' | 'all';
-      limit?: number;
-      offset?: number;
-    },
+    request: Parameters<ScaffolderApi['listTasks']>[0],
     options?: ScaffolderRequestOptions,
   ): Promise<{
     tasks: ScaffolderTask[];

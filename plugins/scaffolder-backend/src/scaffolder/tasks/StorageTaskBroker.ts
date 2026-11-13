@@ -324,6 +324,9 @@ export class StorageTaskBroker implements TaskBroker {
     filters?: {
       createdBy?: string | string[];
       status?: TaskStatus | TaskStatus[];
+      templateRef?: string | string[];
+      createdAfter?: string;
+      createdBefore?: string;
     };
     pagination?: {
       limit?: number;

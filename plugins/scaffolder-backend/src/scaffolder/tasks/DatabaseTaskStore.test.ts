@@ -258,6 +258,63 @@ describe('DatabaseTaskStore', () => {
     expect(tasks2[0].id).toBeDefined();
   });
 
+  it('should list tasks filtered by template and creation time', async () => {
+    const { store, manager } = await createStore();
+    const spec = (entityRef: string) =>
+      ({ templateInfo: { entityRef } } as unknown as TaskSpec);
+
+    const { taskId: old } = await store.createTask({
+      spec: spec('template:default/a'),
+      createdBy: 'me',
+    });
+    const { taskId: mid } = await store.createTask({
+      spec: spec('template:default/b'),
+      createdBy: 'me',
+    });
+    const { taskId: recent } = await store.createTask({
+      spec: spec('template:default/a'),
+      createdBy: 'me',
+    });
+
+    const client = await manager.getClient();
+    const setCreatedAt = (id: string, createdAt: string) =>
+      client('tasks').where({ id }).update({ created_at: createdAt });
+    await setCreatedAt(old, '2026-01-01 10:00:00');
+    await setCreatedAt(mid, '2026-02-01 10:00:00');
+    await setCreatedAt(recent, '2026-03-01 10:00:00');
+
+    const ids = async (filters: Parameters<typeof store.list>[0]['filters']) =>
+      (await store.list({ filters })).tasks.map(t => t.id).sort();
+
+    expect(await ids({ templateRef: 'template:default/a' })).toEqual(
+      [old, recent].sort(),
+    );
+    expect(
+      await ids({ templateRef: ['template:default/a', 'template:default/b'] }),
+    ).toHaveLength(3);
+    expect(await ids({ templateRef: 'template:default/none' })).toEqual([]);
+
+    expect(await ids({ createdAfter: '2026-01-15T00:00:00.000Z' })).toEqual(
+      [mid, recent].sort(),
+    );
+    expect(await ids({ createdBefore: '2026-02-15T00:00:00.000Z' })).toEqual(
+      [old, mid].sort(),
+    );
+    expect(
+      await ids({
+        createdAfter: '2026-01-15T00:00:00.000Z',
+        createdBefore: '2026-02-15T00:00:00.000Z',
+        templateRef: 'template:default/b',
+      }),
+    ).toEqual([mid]);
+
+    const { totalTasks } = await store.list({
+      filters: { createdAfter: '2026-01-15T00:00:00.000Z' },
+      pagination: { limit: 1 },
+    });
+    expect(totalTasks).toBe(2);
+  });
+
   it('should limit and offset based on parameters', async () => {
     const { store } = await createStore();
 
