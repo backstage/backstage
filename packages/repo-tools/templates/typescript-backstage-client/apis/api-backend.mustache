@@ -1,0 +1,69 @@
+{{>licenseInfo}}
+import { AuthApi } from '../types/auth';
+import { DiscoveryApi } from '../types/discovery';
+import { FetchApi } from '../types/fetch';
+import {pluginId} from '../pluginId';
+import * as parser from 'uri-template';
+import { BackendRequestOptions, TypedResponse } from './Api.types';
+{{#apiInfo}}
+{{#apis}}
+{{#imports}}
+import { {{classname}} } from '{{filename}}.model{{importFileExtension}}';
+{{/imports}}
+import { {{#operations}}{{#operation}}{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}, {{/operation}}{{/operations}} } from './Api.types';
+{{/apis}}
+
+/**
+ * A client for use in the backend. The base URL is resolved through the
+ * discovery service, and a plugin request token is requested from the auth
+ * service unless one is passed in the request options.
+ *
+ * @public
+ */
+export class DefaultApiBackendClient {
+    private readonly discovery: DiscoveryApi;
+    private readonly auth: AuthApi;
+    private readonly fetchApi: FetchApi;
+
+    constructor(options: {
+        discovery: { getBaseUrl(pluginId: string): Promise<string> };
+        auth: AuthApi;
+        fetchApi?: { fetch: typeof fetch };
+    }) {
+        this.discovery = options.discovery;
+        this.auth = options.auth;
+        this.fetchApi = options.fetchApi || { fetch };
+    }
+
+    {{#apis}}
+    {{#operations}}
+
+    {{#operation}}
+{{>apis/operationDocs}}
+    public async {{nickname}}(
+        // @ts-ignore
+        request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
+        options?: BackendRequestOptions
+    ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
+        const baseUrl = await this.discovery.getBaseUrl(pluginId);
+
+        const token =
+            options?.token ??
+            (
+                await this.auth.getPluginRequestToken({
+                    onBehalfOf:
+                        options?.credentials ??
+                        (await this.auth.getOwnServiceCredentials()),
+                    targetPluginId: pluginId,
+                })
+            ).token;
+{{>apis/operationRequest}}
+
+        return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    }
+
+    {{/operation}}
+    {{/operations}}
+    {{/apis}}
+}
+{{/apiInfo}}

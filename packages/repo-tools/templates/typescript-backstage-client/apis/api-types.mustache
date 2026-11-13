@@ -1,0 +1,81 @@
+{{>licenseInfo}}
+{{#apiInfo}}
+{{#apis}}
+{{#imports}}
+import { {{classname}} } from '{{filename}}.model{{importFileExtension}}';
+{{/imports}}
+{{/apis}}
+
+/**
+ * Wraps the Response type to convey a type on the json call.
+ *
+ * @public
+ */
+export type TypedResponse<T> = Omit<Response, 'json'> & {
+  json: () => Promise<T>;
+};
+
+/**
+ * Options you can pass into a request for additional information.
+ *
+ * @public
+ */
+export interface RequestOptions {
+  token?: string;
+}
+
+/**
+ * Options you can pass into a request made by the backend client.
+ *
+ * @public
+ */
+export interface BackendRequestOptions {
+  /**
+   * The credentials to make the request on behalf of. Defaults to the
+   * credentials of the calling service.
+   */
+  credentials?: unknown;
+  /**
+   * An explicit plugin request token. When set, no token is requested from the
+   * auth service.
+   */
+  token?: string;
+}
+{{#apis}}
+{{#operations}}
+{{#operation}}
+/**
+  * @public
+  */
+export type {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}} = {
+    {{#hasPathParams}}
+    path: {
+        {{#pathParams}}
+            {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/pathParams}}
+    },
+    {{/hasPathParams}}
+    {{#hasBodyParam}}
+        {{#bodyParam}}
+        body: {{{dataType}}},
+        {{/bodyParam}}
+    {{/hasBodyParam}}
+    {{#hasQueryParams}}
+    query: {
+        {{#queryParams}}
+        {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/queryParams}}
+    },
+    {{/hasQueryParams}}
+    {{#hasHeaderParams}}
+    header: {
+        {{#headerParams}}
+        {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/headerParams}}
+    },
+    {{/hasHeaderParams}}
+}
+{{/operation}}
+{{/operations}}
+{{/apis}}
+{{/apiInfo}}

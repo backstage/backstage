@@ -90,26 +90,26 @@ export async function createRouter(
 
 From your current backend plugin directory, run `yarn backstage-repo-tools package schema openapi generate --client-package <plugin-client-directory>`. `<plugin-client-directory>` is a new directory and npm package that you should create. The general pattern is to add a new entry point to your plugin's common package, `plugins/<plugin-name>-common/client`. You should add this command to your `package.json` for future use.
 
-The generated client will have a directory `src/schema/openapi/generated` that exports a `DefaultApiClient` class and all generated types. You can use the client like so,
+The generated client will have a directory `src/schema/openapi/generated` that exports the `DefaultApiFrontendClient`, `DefaultApiBackendClient` and `DefaultApiIsomorphicClient` classes and all generated types. See [the client generation docs](./generate-client.md#choosing-a-client) for which one to use. You can use the client like so,
 
 ```diff
-+ import { DefaultApiClient } from '../schema/openapi/generated';
++ import { DefaultApiIsomorphicClient } from '../schema/openapi/generated';
 
 export class CatalogClient implements CatalogApi {
-+ private readonly apiClient: DefaultApiClient;
++ private readonly apiClient: DefaultApiIsomorphicClient;
 
   constructor(options: {
     discoveryApi: { getBaseUrl(pluginId: string): Promise<string> };
     fetchApi?: { fetch: typeof fetch };
   }) {
-+    this.apiClient = new DefaultApiClient(options);
++    this.apiClient = new DefaultApiIsomorphicClient(options);
   }
   ...
 ```
 
 usage of the types will depend on your type names.
 
-You should be able to use the generated `DefaultApi.client.ts` file out of the box for your API needs. For full customization, you can use a wrapper around the generated client to adjust the flavour of your clients.
+You should be able to use one of the generated clients out of the box for your API needs. For full customization, you can use a wrapper around the generated client to adjust the flavour of your clients.
 
 For more information, see [the docs](./generate-client.md).
 

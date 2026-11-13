@@ -1,0 +1,57 @@
+{{>licenseInfo}}
+import { DiscoveryApi } from '../types/discovery';
+import { FetchApi } from '../types/fetch';
+import crossFetch from 'cross-fetch';
+import {pluginId} from '../pluginId';
+import * as parser from 'uri-template';
+import { RequestOptions, TypedResponse } from './Api.types';
+{{#apiInfo}}
+{{#apis}}
+{{#imports}}
+import { {{classname}} } from '{{filename}}.model{{importFileExtension}}';
+{{/imports}}
+import { {{#operations}}{{#operation}}{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}, {{/operation}}{{/operations}} } from './Api.types';
+{{/apis}}
+
+/**
+ * A client that works in both the frontend and the backend. It resolves the
+ * base URL through discovery, and only authenticates when a token is passed in
+ * the request options.
+ *
+ * @public
+ */
+export class DefaultApiIsomorphicClient {
+    private readonly discoveryApi: DiscoveryApi;
+    private readonly fetchApi: FetchApi;
+
+    constructor(options: {
+        discoveryApi: { getBaseUrl(pluginId: string): Promise<string> };
+        fetchApi?: { fetch: typeof fetch };
+    }) {
+        this.discoveryApi = options.discoveryApi;
+        this.fetchApi = options.fetchApi || { fetch: crossFetch };
+    }
+
+    {{#apis}}
+    {{#operations}}
+
+    {{#operation}}
+{{>apis/operationDocs}}
+    public async {{nickname}}(
+        // @ts-ignore
+        request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
+        options?: RequestOptions
+    ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
+        const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+        const token = options?.token;
+{{>apis/operationRequest}}
+
+        return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+    }
+
+    {{/operation}}
+    {{/operations}}
+    {{/apis}}
+}
+{{/apiInfo}}

@@ -1,0 +1,50 @@
+{{>licenseInfo}}
+import { FetchApi } from '../types/fetch';
+import {pluginId} from '../pluginId';
+import * as parser from 'uri-template';
+import { RequestOptions, TypedResponse } from './Api.types';
+{{#apiInfo}}
+{{#apis}}
+{{#imports}}
+import { {{classname}} } from '{{filename}}.model{{importFileExtension}}';
+{{/imports}}
+import { {{#operations}}{{#operation}}{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}, {{/operation}}{{/operations}} } from './Api.types';
+{{/apis}}
+
+/**
+ * A client for use in the frontend. Requests are sent to
+ * `plugin://<pluginId>/...` URLs, which the `FetchApi` of the Backstage app
+ * resolves to the plugin's base URL and adds credentials to.
+ *
+ * @public
+ */
+export class DefaultApiFrontendClient {
+    private readonly fetchApi: FetchApi;
+
+    constructor(options: {
+        fetchApi: { fetch: typeof fetch };
+    }) {
+        this.fetchApi = options.fetchApi;
+    }
+
+    {{#apis}}
+    {{#operations}}
+
+    {{#operation}}
+{{>apis/operationDocs}}
+    public async {{nickname}}(
+        // @ts-ignore
+        request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
+        options?: RequestOptions
+    ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
+        const token = options?.token;
+{{>apis/operationRequest}}
+
+        return await this.fetchApi.fetch(`plugin://${pluginId}${uri}`, init);
+    }
+
+    {{/operation}}
+    {{/operations}}
+    {{/apis}}
+}
+{{/apiInfo}}
