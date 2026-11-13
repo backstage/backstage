@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { Schema } from 'ajv';
 import { Entity } from '../entity/Entity';
 import entitySchema from '../schema/Entity.schema.json';
-import { compileAjvSchema, throwAjvError } from './ajv';
+import { compileSchema, throwSchemaError } from './compileSchema';
+import { cfworkerSchemaEngine } from './engine/cfworkerSchemaEngine';
+import { SchemaEngine } from './engine/types';
 
 /**
  * Creates a validation function that takes some arbitrary data, and either
@@ -45,14 +46,24 @@ import { compileAjvSchema, throwAjvError } from './ajv';
 export function entitySchemaValidator<T extends Entity = Entity>(
   schema?: unknown,
 ): (data: unknown) => T {
-  const validate = compileAjvSchema(schema ? (schema as Schema) : entitySchema);
+  return createEntitySchemaValidator<T>(cfworkerSchemaEngine, schema);
+}
+
+export function createEntitySchemaValidator<T extends Entity = Entity>(
+  engine: SchemaEngine,
+  schema?: unknown,
+): (data: unknown) => T {
+  const validate = compileSchema(
+    engine,
+    schema ? (schema as object) : entitySchema,
+  );
 
   return data => {
-    const result = validate(data);
-    if (result === true) {
+    const errors = validate(data);
+    if (!errors) {
       return data as T;
     }
 
-    throw throwAjvError(validate.errors);
+    throw throwSchemaError(errors);
   };
 }

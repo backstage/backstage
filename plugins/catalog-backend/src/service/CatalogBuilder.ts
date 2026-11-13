@@ -22,9 +22,9 @@ import {
   FieldFormatEntityPolicy,
   makeValidator,
   NoForeignRootFieldsEntityPolicy,
-  SchemaValidEntityPolicy,
   Validators,
 } from '@backstage/catalog-model';
+import { ajvEntityValidators } from '../processing/util';
 import { ScmIntegrations } from '@backstage/integration';
 import { createHash } from 'node:crypto';
 import { Router } from 'express';
@@ -587,9 +587,9 @@ export class CatalogBuilder {
 
   private buildEntityPolicy(): EntityPolicy {
     const entityPolicies: EntityPolicy[] = this.entityPoliciesReplace
-      ? [new SchemaValidEntityPolicy(), ...this.entityPolicies]
+      ? [ajvEntityValidators.schemaValidEntityPolicy, ...this.entityPolicies]
       : [
-          new SchemaValidEntityPolicy(),
+          ajvEntityValidators.schemaValidEntityPolicy,
           new DefaultNamespaceEntityPolicy(),
           new NoForeignRootFieldsEntityPolicy(),
           new FieldFormatEntityPolicy(

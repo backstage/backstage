@@ -14,26 +14,35 @@
  * limitations under the License.
  */
 
-import Ajv, { Schema, ValidateFunction } from 'ajv';
 import entitySchema from '../schema/Entity.schema.json';
 import entityEnvelopeSchema from '../schema/EntityEnvelope.schema.json';
 import entityMetaSchema from '../schema/EntityMeta.schema.json';
 import commonSchema from '../schema/shared/common.schema.json';
+import {
+  CompiledSchema,
+  SchemaEngine,
+  SchemaValidationError,
+} from './engine/types';
 
-// A local cache of compiled schemas, to avoid duplicate work.
+type Schema = object;
+
+// A local cache of compiled schemas per engine, to avoid duplicate work.
 // The keys are JSON stringified versions of the schema
-const compiledSchemaCache = new Map<string, ValidateFunction<unknown>>();
+const compiledSchemaCache = new WeakMap<
+  SchemaEngine,
+  Map<string, CompiledSchema>
+>();
 
 // The core schemas that others can depend on
-const refDependencyCandidates = [
+const refDependencyCandidates: Schema[] = [
   entityEnvelopeSchema,
   entitySchema,
   entityMetaSchema,
   commonSchema,
 ];
 
-export function throwAjvError(
-  errors: ValidateFunction<unknown>['errors'],
+export function throwSchemaError(
+  errors: SchemaValidationError[] | undefined,
 ): never {
   if (!errors?.length) {
     throw new TypeError('Unknown error');
@@ -51,35 +60,38 @@ export function throwAjvError(
   );
 }
 
-// Compiles the given schema, and makes sure to also grab any core dependencies
-// that it depends on
-export function compileAjvSchema(
+// Compiles the given schema with the given engine, and makes sure to also
+// grab any core dependencies that it depends on
+export function compileSchema(
+  engine: SchemaEngine,
   schema: Schema,
-  options: { disableCache?: boolean } = {},
-): ValidateFunction<unknown> {
-  const disableCache = options?.disableCache ?? false;
-  const cacheKey = disableCache ? '' : JSON.stringify(schema);
+  options: { disableCache?: boolean; allErrors?: boolean } = {},
+): CompiledSchema {
+  const disableCache = options.disableCache ?? false;
+  const allErrors = options.allErrors ?? true;
+  const cacheKey = disableCache ? '' : `${allErrors}:${JSON.stringify(schema)}`;
+
+  let cache = compiledSchemaCache.get(engine);
+  if (!cache) {
+    cache = new Map();
+    compiledSchemaCache.set(engine, cache);
+  }
 
   if (!disableCache) {
-    const cached = compiledSchemaCache.get(cacheKey);
+    const cached = cache.get(cacheKey);
     if (cached) {
       return cached;
     }
   }
 
-  const extraSchemas = getExtraSchemas(schema);
-  const ajv = new Ajv({
-    allowUnionTypes: true,
-    allErrors: true,
-    validateSchema: true,
+  const compiled = engine.compile({
+    schema,
+    extraSchemas: getExtraSchemas(schema),
+    allErrors,
   });
-  if (extraSchemas.length) {
-    ajv.addSchema(extraSchemas, undefined, undefined, true);
-  }
-  const compiled = ajv.compile(schema);
 
   if (!disableCache) {
-    compiledSchemaCache.set(cacheKey, compiled);
+    cache.set(cacheKey, compiled);
   }
 
   return compiled;
@@ -93,8 +105,9 @@ function getExtraSchemas(schema: Schema): Schema[] {
   }
 
   const seen = new Set<string>();
-  if (schema.$id) {
-    seen.add(schema.$id);
+  const id = (schema as { $id?: unknown }).$id;
+  if (typeof id === 'string') {
+    seen.add(id);
   }
 
   const selected = new Array<Schema>();
@@ -107,7 +120,9 @@ function getExtraSchemas(schema: Schema): Schema[] {
       if (!seen.has(ref)) {
         seen.add(ref);
 
-        const match = refDependencyCandidates.find(c => c.$id === ref);
+        const match = refDependencyCandidates.find(
+          c => (c as { $id?: string }).$id === ref,
+        );
         if (match) {
           selected.push(match);
           todo.push(match);

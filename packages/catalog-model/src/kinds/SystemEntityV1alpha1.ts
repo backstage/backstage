@@ -17,7 +17,7 @@
 import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { Entity } from '../entity/Entity';
 import jsonSchema from '../schema/kinds/System.v1alpha1.schema.json';
-import { ajvCompiledJsonSchemaValidator } from './util';
+import { lazyKindSchemaValidator } from './util';
 
 /**
  * Backstage catalog System kind Entity. Systems group Components, Resources and APIs together.
@@ -44,7 +44,7 @@ export interface SystemEntityV1alpha1 extends Entity {
  * @public
  */
 export const systemEntityV1alpha1Validator =
-  ajvCompiledJsonSchemaValidator(jsonSchema);
+  lazyKindSchemaValidator(jsonSchema);
 
 /**
  * Extends the catalog model with the System kind.
