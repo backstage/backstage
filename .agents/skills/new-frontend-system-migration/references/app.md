@@ -59,8 +59,8 @@ Even with feature discovery enabled, you can disable specific extensions via con
 ```yaml
 app:
   extensions:
-    - page:techdocs: false
-    - page:search: false
+    page:techdocs: false
+    page:search: false
 ```
 
 ### How Discovery Works with Manual Imports
@@ -680,13 +680,13 @@ Tabs in entity pages (the `EntityLayout.Route` entries) are provided by `EntityC
 ```yaml
 app:
   extensions:
-    - page:catalog/entity:
-        config:
-          groups:
-            - overview:
-                title: Overview
-            - documentation:
-                title: Docs
+    page:catalog/entity:
+      config:
+        groups:
+          - overview:
+              title: Overview
+          - documentation:
+              title: Docs
 ```
 
 #### When is it done?

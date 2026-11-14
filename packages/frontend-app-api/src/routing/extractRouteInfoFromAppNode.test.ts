@@ -105,19 +105,16 @@ function routeInfoFromExtensions(
     extensions,
   });
 
-  const tree = resolveAppTree(
-    'root',
-    resolveAppNodeSpecs({
-      features: [appPlugin, plugin],
-      builtinExtensions: [
-        resolveExtensionDefinition(Root, { namespace: 'root' }),
-      ],
-      parameters: readAppExtensionsConfig(mockApis.config()),
-      forbidden: new Set(['root']),
-      collector,
-    }),
+  const { specs, inputSettings } = resolveAppNodeSpecs({
+    features: [appPlugin, plugin],
+    builtinExtensions: [
+      resolveExtensionDefinition(Root, { namespace: 'root' }),
+    ],
+    ...readAppExtensionsConfig(mockApis.config(), collector),
+    forbidden: new Set(['root']),
     collector,
-  );
+  });
+  const tree = resolveAppTree('root', specs, collector, inputSettings);
 
   instantiateAppNodeTree(tree.root, TestApiRegistry.from(), collector);
 
