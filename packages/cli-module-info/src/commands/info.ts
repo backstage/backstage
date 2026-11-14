@@ -143,15 +143,15 @@ export default async ({ args, info }: CliCommandContext) => {
       backstage: backstageVersion,
     };
 
-    // A missing or unreadable lockfile only means that the versions of
-    // installed packages are unknown, for example when a build system owns
-    // the installs.
+    // A missing or unreadable lockfile only means that the installed
+    // packages are unknown and left out, for example when a build system
+    // owns the installs.
     let lockfile: PackageManagerLockfile | undefined;
     try {
       lockfile = await packageManager.loadLockfile();
     } catch (error) {
       console.warn(
-        `Failed to read ${packageManager.lockfileName()}, installed package versions are not listed, ${error}`,
+        `Failed to read ${packageManager.lockfileName()}, installed packages are not listed, ${error}`,
       );
     }
     const targetPath = targetPaths.installationRootDir;

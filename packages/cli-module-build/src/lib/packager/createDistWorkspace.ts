@@ -369,7 +369,7 @@ async function moveToDistWorkspace(
         )
       : undefined;
 
-  // New an improved flow where we avoid calling the pack command
+  // New and improved flow where we avoid calling the pack command
   await Promise.all(
     fastPackPackages.map(async target => {
       logger.log(`Moving ${target.name} into dist workspace`);

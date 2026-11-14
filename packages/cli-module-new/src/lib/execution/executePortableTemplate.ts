@@ -39,6 +39,7 @@ export async function executePortableTemplate(
   const { template, input } = options;
 
   let modified = false;
+  let interrupted = false;
   try {
     const { targetDir } = await Task.forItem(
       'templating',
@@ -98,12 +99,14 @@ export async function executePortableTemplate(
         }
 
         if (interruptedBy) {
+          interrupted = true;
           throw new Error(
             `Command '${commandStr}' was interrupted by ${interruptedBy}`,
           );
         }
         if (failure) {
           if ((failure.error as { signal?: unknown } | undefined)?.signal) {
+            interrupted = true;
             throw failure.error;
           }
           Task.error(
@@ -121,6 +124,12 @@ export async function executePortableTemplate(
   } catch (error) {
     const err = toError(error);
     Task.error(err.message);
+
+    // Other failures are reported but keep the exit code, while an
+    // interrupted creation must not look like it succeeded
+    if (interrupted) {
+      process.exitCode = 1;
+    }
 
     if (modified) {
       Task.log('It seems that something went wrong in the creation process 🤔');
