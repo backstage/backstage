@@ -240,6 +240,22 @@ describe('PackageManager', () => {
         expect(warn2).toEqual([
           'The packageManager field in the root package.json names pnpm, but devEngines.packageManager names yarn. Using pnpm.',
         ]);
+
+        // An unsupported packageManager field is only reported as ignored
+        resetDetectedPackageManagers();
+        mockDir.setContent({
+          'package.json': JSON.stringify({
+            packageManager: 'bun@1.0.0',
+            devEngines: { packageManager: { name: 'pnpm' } },
+          }),
+          'pnpm-lock.yaml': '',
+        });
+        const { warn: warn3 } = await withLogCollector(async () => {
+          await expect(detectPackageManager()).resolves.toBe(mockPnpm);
+        });
+        expect(warn3).toEqual([
+          'Ignoring the packageManager field in the root package.json, since bun is not supported.',
+        ]);
       });
 
       it('should warn about a second lockfile', async () => {

@@ -255,8 +255,8 @@ export class DevToolsBackendApi {
 }
 
 // Picks the lockfile the same way as the Backstage CLI as far as needed here:
-// the packageManager field of the root package.json, or else its
-// devEngines.packageManager field, first, then whether there is a pnpm
+// the packageManager field of the root package.json, or without that field
+// its devEngines.packageManager field, first, then whether there is a pnpm
 // lockfile, and otherwise Yarn.
 async function loadLockfile(): Promise<{
   keys(): IterableIterator<string>;

@@ -111,18 +111,15 @@ function findConflict(pkg, name, expectedType) {
  */
 
 /**
- * Detects the package manager of the project, following the same order as
- * the Backstage CLI as far as needed here: the packageManager field of the
- * root package.json, or else its devEngines.packageManager field, when it
- * names a supported package manager, then the presence of a pnpm lockfile in
- * the project root, and otherwise Yarn.
- * @param {import('../lib/getPackages').ExtendedPackage} root
- * @returns {PackageManagerName}
+ * Returns the package manager that the packageManager field of a package.json
+ * names, or without that field its devEngines.packageManager field, when it
+ * is a supported one.
+ * @param {Record<string, any> | undefined} packageJson
+ * @returns {PackageManagerName | undefined}
  */
-function detectPackageManager(root) {
-  const declared = root.packageJson.packageManager;
-  const devEngines = /** @type {any} */ (root.packageJson).devEngines
-    ?.packageManager;
+function getDeclaredPackageManager(packageJson) {
+  const declared = packageJson?.packageManager;
+  const devEngines = packageJson?.devEngines?.packageManager;
   /** @type {unknown[]} */
   const devEngineNames = [devEngines].flat().map(entry => entry?.name);
   const declaredName =
@@ -132,10 +129,63 @@ function detectPackageManager(root) {
   if (declaredName === 'yarn' || declaredName === 'pnpm') {
     return declaredName;
   }
-  if (fs.existsSync(path.join(root.dir, 'pnpm-lock.yaml'))) {
-    return 'pnpm';
+  return undefined;
+}
+
+/**
+ * @param {string} dir
+ * @returns {Record<string, any> | undefined}
+ */
+function readPackageJson(dir) {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'));
+  } catch {
+    return undefined;
   }
-  return 'yarn';
+}
+
+/**
+ * Detects the package manager of the project, following the same order as
+ * the Backstage CLI as far as needed here: the packageManager field of the
+ * root package.json, or without that field its devEngines.packageManager
+ * field, when it names a supported package manager, then the lockfiles, then
+ * a pnpm-workspace.yaml file, and otherwise Yarn.
+ *
+ * The root that is found for the project is the nearest directory with a
+ * workspaces field, which for a Backstage installation in a subdirectory of a
+ * pnpm workspace is the installation rather than the workspace root. When the
+ * root has none of these, the nearest parent directory that has a lockfile or
+ * a pnpm-workspace.yaml file decides instead, in the same order.
+ * @param {import('../lib/getPackages').ExtendedPackage} root
+ * @returns {PackageManagerName}
+ */
+function detectPackageManager(root) {
+  const declared = getDeclaredPackageManager(root.packageJson);
+  if (declared) {
+    return declared;
+  }
+  for (let dir = root.dir; ; dir = path.dirname(dir)) {
+    const has = (/** @type {string} */ name) =>
+      fs.existsSync(path.join(dir, name));
+    const hasPnpmLockfile = has('pnpm-lock.yaml');
+    const hasYarnLockfile = has('yarn.lock');
+    if (hasPnpmLockfile || hasYarnLockfile || has('pnpm-workspace.yaml')) {
+      const declaredHere =
+        dir === root.dir
+          ? undefined
+          : getDeclaredPackageManager(readPackageJson(dir));
+      if (declaredHere) {
+        return declaredHere;
+      }
+      if (hasPnpmLockfile) {
+        return 'pnpm';
+      }
+      return hasYarnLockfile ? 'yarn' : 'pnpm';
+    }
+    if (path.dirname(dir) === dir) {
+      return 'yarn';
+    }
+  }
 }
 
 /**
@@ -336,7 +386,7 @@ module.exports = {
     fixable: 'code',
     messages: {
       undeclared:
-        "{{ packageName }} must be declared in {{ depsField }} of {{ packageJsonPath }}, run '{{ packageManager }} {{ dirFlag }} {{ packagePath }} add{{ addFlag }} {{ packageName }}' from the project root.",
+        "{{ packageName }} must be declared in {{ depsField }} of {{ packageJsonPath }}, run '{{ packageManager }} {{ dirFlag }} {{ packagePath }} add{{ addFlag }} {{ addSpec }}' from the project root.",
       switch:
         '{{ packageName }} is declared in {{ oldDepsField }}, but should be moved to {{ depsField }} in {{ packageJsonPath }}.',
       switchBack: 'Switch back to import declaration',
@@ -568,6 +618,12 @@ module.exports = {
                 packageManager,
               ),
               packageName: imp.packageName,
+              // pnpm only links workspace packages through the workspace
+              // protocol, and would look them up in the registry otherwise
+              addSpec:
+                packageManager === 'pnpm' && packages.map.has(imp.packageName)
+                  ? `${imp.packageName}@workspace:^`
+                  : imp.packageName,
               packageJsonPath: packageJsonPath,
             },
             // This fix callback is always executed, regardless of whether linting is run with

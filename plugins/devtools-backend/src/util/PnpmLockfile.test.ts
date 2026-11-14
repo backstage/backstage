@@ -75,6 +75,64 @@ packages:
     expect(lockfile.get('local-pkg')).toEqual([{ version: 'file:local-pkg' }]);
   });
 
+  it('should list the packages of the workspace from their package.json', async () => {
+    mockDir.setContent({
+      'pnpm-lock.yaml': `
+lockfileVersion: '9.0'
+
+importers:
+
+  .:
+    devDependencies:
+      is-number:
+        specifier: ^7.0.0
+        version: 7.0.0
+
+  plugins/foo:
+    dependencies:
+      '@internal/bar':
+        specifier: workspace:^
+        version: link:../bar
+
+  plugins/bar: {}
+
+  plugins/gone: {}
+
+packages:
+
+  is-number@7.0.0:
+    resolution: {integrity: sha512-abc}
+`,
+      'package.json': JSON.stringify({ name: 'root', private: true }),
+      plugins: {
+        foo: {
+          'package.json': JSON.stringify({
+            name: '@internal/foo',
+            version: '1.2.0',
+          }),
+        },
+        bar: {
+          'package.json': JSON.stringify({
+            name: '@internal/bar',
+            version: '0.1.0',
+          }),
+        },
+      },
+    });
+
+    const lockfile = await PnpmLockfile.load(mockDir.resolve('pnpm-lock.yaml'));
+    expect([...lockfile.keys()].sort()).toEqual([
+      '@internal/bar',
+      '@internal/foo',
+      'is-number',
+      'root',
+    ]);
+    expect(lockfile.get('@internal/foo')).toEqual([{ version: '1.2.0' }]);
+    expect(lockfile.get('@internal/bar')).toEqual([{ version: '0.1.0' }]);
+    // A package.json without a version, like that of the root
+    expect(lockfile.get('root')).toEqual([{ version: '0.0.0' }]);
+  });
+
   it('should reject lockfiles that cannot be read', async () => {
     mockDir.setContent({
       'old.yaml': `lockfileVersion: '6.0'\n`,
