@@ -510,6 +510,12 @@ The `when` field supports:
 - **Membership and built-in filters:** `${{ parameters.provider | lower in ["aws", "gcp"] }}`
 - **Boolean values:** `when: true` or `when: false`
 
+Changing a condition does not move the user away from the current step while it remains visible. A step that is hidden and later shown must be visited and validated again before review, even when its previous values are restored. The same applies when a step definition or its order changes.
+
+Before review, the wizard automatically re-checks visible steps whose validation may be out of date, including steps whose validators read values entered on other pages. Successful checks continue to the next pending step or review without another visit; a failed check opens the page that needs correction, and review and creation stay blocked until the necessary checks pass. Users can also reach previously visited visible steps to correct values on another page. If parameters re-checked from review all pass, the review stays open so the user can confirm them before selecting **Create** again.
+
+If values, definitions, or visibility change while a check is running, its result is discarded. The latest input is preserved and the wizard asks the user to check the changes and continue again. Field synchronization that does not change any values does not interrupt a running check.
+
 Custom templating filters and globals are not available in parameter step conditions. Invalid conditions keep the step visible and its parameter validation enabled.
 
 When a step becomes hidden because its condition evaluates to false, any values previously entered in that step are preserved but excluded from the final parameters passed to `spec.steps`. If the user goes back and changes an earlier answer so that the step becomes visible again, their previously entered values are restored. Filtering follows nested fields and array items, so a hidden field can be removed without removing visible fields in the same object. Fields shared with a visible step are retained, including values explicitly allowed by `additionalProperties`. Local `$ref` references are resolved within each parameter step schema. If a reference can't be resolved, the values are kept rather than filtered. Any field referenced in a `when` condition should be validated by an earlier unconditional step — because `when` conditions also control which steps are validated on the backend, a field that is not itself validated could allow users to skip conditional steps unexpectedly.

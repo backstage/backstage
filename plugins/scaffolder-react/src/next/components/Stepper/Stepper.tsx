@@ -22,26 +22,25 @@ import {
   ReviewStepProps,
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
-import { resolveParameterSteps } from '@backstage/plugin-scaffolder-common/alpha';
 import { JsonValue } from '@backstage/types';
 import { Button } from '@backstage/ui';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Alert from '@material-ui/lab/Alert';
+import { useDeepCompareMemo } from '@react-hookz/web';
 import MuiStep from '@material-ui/core/Step';
+import MuiStepButton from '@material-ui/core/StepButton';
 import MuiStepLabel from '@material-ui/core/StepLabel';
 import MuiStepper from '@material-ui/core/Stepper';
 import { makeStyles } from '@material-ui/core/styles';
-import { type IChangeEvent } from '@rjsf/core';
 import { ErrorSchema } from '@rjsf/utils';
 import { customizeValidator } from '@rjsf/validator-ajv8';
 import ajvErrors from 'ajv-errors';
 import { merge } from 'lodash';
 import {
   ComponentType,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
-  useState,
   type ReactNode,
 } from 'react';
 
@@ -51,13 +50,9 @@ import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps
 import { Form } from '../Form';
 import { PasswordWidget } from '../PasswordWidget/PasswordWidget';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
-import {
-  createAsyncValidators,
-  type FormValidation,
-} from './createAsyncValidators';
 import { ErrorListTemplate } from './ErrorListTemplate';
 import * as FieldOverrides from './FieldOverrides';
-import { hasErrors } from './utils';
+import { useStepperWizard } from './useStepperWizard';
 
 const validator = customizeValidator();
 ajvErrors(validator.ajv);
@@ -127,47 +122,19 @@ export const Stepper = (stepperProps: StepperProps) => {
     reviewButtonText = t('stepper.reviewButtonText'),
   } = components;
   const analytics = useAnalytics();
-  const { presentation, steps } = useTemplateSchema(props.manifest);
+  const parsed = useTemplateSchema(props.manifest);
+  const { presentation } = parsed;
+  // Parsing creates fresh objects on every render. Keep definitions stable so
+  // progress and error renders do not repeat completion reconciliation.
+  const steps = useDeepCompareMemo(() => parsed.steps, [parsed.steps]);
   const apiHolder = useApiHolder();
-  // Index into `steps` rather than `visibleSteps`, so that the active step
-  // stays the same when other steps are shown or hidden.
-  const [activeStepIndex, setActiveStepIndex] = useState(0);
-  const [isValidating, setIsValidating] = useState(false);
-  const [initialState] = useFormDataFromQuery(props.initialState);
-  const [stepsState, setStepsState] =
-    useState<Record<string, JsonValue>>(initialState);
-
-  const { visibleSteps, filteredFormState } = useMemo(() => {
-    const resolved = resolveParameterSteps(
-      stepsState,
-      steps.map(step => ({ schema: step.mergedSchema, when: step.when })),
+  const validators = useDeepCompareMemo(() => {
+    return Object.fromEntries(
+      props.extensions.map(({ name, validation }) => [name, validation]),
     );
-    return {
-      visibleSteps: steps.filter((_, index) => resolved.visible[index]),
-      filteredFormState: resolved.values,
-    };
-  }, [steps, stepsState]);
+  }, [props.extensions]);
 
-  // If the active step is hidden, move on to the next visible step.
-  const nextVisibleStep = visibleSteps.findIndex(
-    step => steps.indexOf(step) >= activeStepIndex,
-  );
-  const activeStep =
-    nextVisibleStep === -1 ? visibleSteps.length : nextVisibleStep;
-
-  const setActiveStep = useCallback(
-    (step: number) =>
-      setActiveStepIndex(
-        step < visibleSteps.length
-          ? steps.indexOf(visibleSteps[step])
-          : steps.length,
-      ),
-    [steps, visibleSteps],
-  );
-
-  const [errors, setErrors] = useState<undefined | FormValidation>();
-  const styles = useStyles();
-  const formWrapperRef = useRef<HTMLDivElement>(null);
+  const [initialState] = useFormDataFromQuery(props.initialState);
 
   const backLabel =
     presentation?.buttonLabels?.backButtonText ?? backButtonText;
@@ -175,6 +142,33 @@ export const Stepper = (stepperProps: StepperProps) => {
     presentation?.buttonLabels?.createButtonText ?? createButtonText;
   const reviewLabel =
     presentation?.buttonLabels?.reviewButtonText ?? reviewButtonText;
+
+  // Navigation and validation state lives in the wizard hook; this component
+  // wires the form and renders from the returned state.
+  const wizard = useStepperWizard({
+    steps,
+    validators,
+    validator,
+    apiHolder,
+    initialState,
+    onCreate,
+    createLabel,
+    analytics,
+    uiSchema: props.formProps?.uiSchema,
+    transformErrors: props.formProps?.transformErrors,
+  });
+  const {
+    visibleSteps,
+    activeStep,
+    isValidating,
+    validationInterrupted,
+    isCreating,
+    errors,
+    isStepLabelAllowed,
+  } = wizard;
+
+  const styles = useStyles();
+  const formWrapperRef = useRef<HTMLDivElement>(null);
 
   const extensions = useMemo(() => {
     return Object.fromEntries(
@@ -186,24 +180,6 @@ export const Stepper = (stepperProps: StepperProps) => {
     () => ({ ...FieldOverrides, ...extensions }),
     [extensions],
   );
-
-  const validators = useMemo(() => {
-    return Object.fromEntries(
-      props.extensions.map(({ name, validation }) => [name, validation]),
-    );
-  }, [props.extensions]);
-
-  const validation = useMemo(() => {
-    return createAsyncValidators(
-      visibleSteps[activeStep]?.mergedSchema,
-      validators,
-      { apiHolder },
-    );
-  }, [visibleSteps, activeStep, validators, apiHolder]);
-
-  const handleBack = useCallback(() => {
-    setActiveStep(activeStep - 1);
-  }, [activeStep, setActiveStep]);
 
   const currentStep = useTransformSchemaToProps(visibleSteps[activeStep], {
     layouts,
@@ -217,51 +193,7 @@ export const Stepper = (stepperProps: StepperProps) => {
     ...restFormProps
   } = props.formProps ?? {};
 
-  const handleChange = useCallback(
-    (e: IChangeEvent) => {
-      setStepsState(current => {
-        return { ...current, ...e.formData };
-      });
-    },
-    [setStepsState],
-  );
-
-  const handleNext = useCallback(
-    async ({ formData = {} }: { formData?: Record<string, JsonValue> }) => {
-      // The validation should never throw, as the validators are wrapped in a try/catch.
-      // This makes it fine to set and unset state without try/catch.
-      setErrors(undefined);
-      setIsValidating(true);
-
-      const returnedValidation = await validation(formData);
-
-      setStepsState(current => ({
-        ...current,
-        ...formData,
-      }));
-
-      setIsValidating(false);
-
-      if (hasErrors(returnedValidation)) {
-        setErrors(returnedValidation);
-      } else {
-        setErrors(undefined);
-        const stepNum = activeStep + 1;
-        analytics.captureEvent('click', `Next Step (${stepNum})`);
-        // Move to the next step that is visible with the submitted values.
-        const current = steps.indexOf(visibleSteps[activeStep]);
-        const { visible } = resolveParameterSteps(
-          { ...stepsState, ...formData },
-          steps.map(step => ({ schema: step.mergedSchema, when: step.when })),
-        );
-        const next = visible.findIndex(
-          (isVisible, index) => isVisible && index > current,
-        );
-        setActiveStepIndex(next === -1 ? steps.length : next);
-      }
-    },
-    [validation, analytics, activeStep, steps, visibleSteps, stepsState],
-  );
+  const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
 
   useEffect(() => {
     const getScrollableParent = (
@@ -285,23 +217,12 @@ export const Stepper = (stepperProps: StepperProps) => {
     }
   }, [activeStep]);
 
-  const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
-
-  const [isCreating, setIsCreating] = useState(false);
-
-  const handleCreate = useCallback(async () => {
-    setIsCreating(true);
-    analytics.captureEvent('click', `${createLabel}`);
-    try {
-      await onCreate(filteredFormState);
-    } finally {
-      setIsCreating(false);
-    }
-  }, [analytics, createLabel, filteredFormState, onCreate]);
-
   return (
     <>
       {isValidating && <LinearProgress variant="indeterminate" />}
+      {validationInterrupted && (
+        <Alert severity="info">{t('stepper.validationInterrupted')}</Alert>
+      )}
       <MuiStepper
         activeStep={activeStep}
         alternativeLabel
@@ -309,18 +230,22 @@ export const Stepper = (stepperProps: StepperProps) => {
         style={{ overflowX: 'auto' }}
       >
         {visibleSteps.map((step, index) => {
-          const isAllowedLabelClick = activeStep > index;
           return (
             <MuiStep key={steps.indexOf(step)}>
-              <MuiStepLabel
-                aria-label={t('stepper.stepIndexLabel', { index: index + 1 })}
-                style={{ cursor: isAllowedLabelClick ? 'pointer' : 'default' }}
+              <MuiStepButton
+                aria-label={t('stepper.stepLabel', {
+                  title: step.title,
+                  index: index + 1,
+                })}
+                disabled={!isStepLabelAllowed(index)}
                 onClick={() => {
-                  if (isAllowedLabelClick) setActiveStep(index);
+                  if (isStepLabelAllowed(index)) {
+                    wizard.goToStep(index);
+                  }
                 }}
               >
                 {step.title}
-              </MuiStepLabel>
+              </MuiStepButton>
             </MuiStep>
           );
         })}
@@ -335,15 +260,15 @@ export const Stepper = (stepperProps: StepperProps) => {
             key={steps.indexOf(visibleSteps[activeStep])}
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
-            formData={stepsState}
-            formContext={{ ...propFormContext, formData: stepsState }}
+            formData={wizard.stepsState}
+            formContext={{ ...propFormContext, formData: wizard.stepsState }}
             schema={currentStep.schema}
             uiSchema={mergedUiSchema}
-            onSubmit={handleNext}
+            onSubmit={wizard.handleNext}
             fields={fields}
             showErrorList="top"
             templates={{ ErrorListTemplate }}
-            onChange={handleChange}
+            onChange={wizard.handleChange}
             widgets={{ password: PasswordWidget }}
             experimental_defaultFormStateBehavior={{
               allOf: 'populateDefaults',
@@ -353,7 +278,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             <div className={styles.footer}>
               <Button
                 variant="tertiary"
-                onPress={handleBack}
+                onPress={wizard.handleBack}
                 className={styles.backButton}
                 isDisabled={activeStep < 1 || isValidating}
               >
@@ -370,32 +295,32 @@ export const Stepper = (stepperProps: StepperProps) => {
         ReviewStepComponent ? (
           <ReviewStepComponent
             disableButtons={isValidating}
-            formData={filteredFormState}
-            handleBack={handleBack}
+            formData={wizard.filteredFormState}
+            handleBack={wizard.handleBack}
             handleReset={() => {}}
             steps={visibleSteps}
-            handleCreate={handleCreate}
+            handleCreate={wizard.handleCreate}
           />
         ) : (
           <>
             <ReviewStateComponent
-              formState={filteredFormState}
-              schemaFormState={stepsState}
+              formState={wizard.filteredFormState}
+              schemaFormState={wizard.stepsState}
               schemas={visibleSteps}
             />
             <div className={styles.footer}>
               <Button
                 variant="tertiary"
-                onPress={handleBack}
+                onPress={wizard.handleBack}
                 className={styles.backButton}
-                isDisabled={activeStep < 1}
+                isDisabled={activeStep < 1 || isValidating}
               >
                 {backLabel}
               </Button>
               <Button
                 variant="primary"
-                isDisabled={isCreating}
-                onPress={handleCreate}
+                isDisabled={isCreating || isValidating}
+                onPress={wizard.handleCreate}
               >
                 {createLabel}
               </Button>
