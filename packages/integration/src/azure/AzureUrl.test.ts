@@ -207,9 +207,23 @@ describe('AzureUrl', () => {
     expect(url.getOwner()).toBe('tfs/projects');
     expect(url.getProject()).toBe('my-project');
     expect(url.getRepo()).toBe('my-repo');
+
     expect(url.getRef()).toBeUndefined();
     expect(url.getPath()).toBeUndefined();
     expect(url.getPrefix()).toBeUndefined();
+
+    expect(url.toRepoUrl()).toBe(
+      'http://my-host/tfs/projects/my-project/_git/my-repo',
+    );
+    expect(() => url.toFileUrl()).toThrow(
+      'Azure URL must point to a specific path to be able to download a file',
+    );
+    expect(url.toArchiveUrl()).toBe(
+      'http://my-host/tfs/projects/my-project/_apis/git/repositories/my-repo/items?recursionLevel=full&download=true&api-version=6.0',
+    );
+    expect(url.toCommitsUrl()).toBe(
+      'http://my-host/tfs/projects/my-project/_apis/git/repositories/my-repo/commits?api-version=6.0',
+    );
   });
 
   it('should work with the old tfs long URL form with a path and branch ref', () => {
@@ -223,6 +237,22 @@ describe('AzureUrl', () => {
     expect(url.getRef()).toBe('test-branch');
     expect(url.getPath()).toBe('/folder');
     expect(url.getPrefix()).toBe('GB');
+
+    expect(url.toRepoUrl()).toBe(
+      'http://my-host/tfs/projects/my-project/_git/my-repo?path=%2Ffolder&version=GBtest-branch',
+    );
+
+    expect(url.toFileUrl()).toBe(
+      'http://my-host/tfs/projects/my-project/_apis/git/repositories/my-repo/items?api-version=6.0&path=%2Ffolder&versionDescriptor.version=test-branch&versionDescriptor.versionType=branch',
+    );
+
+    expect(url.toArchiveUrl()).toBe(
+      'http://my-host/tfs/projects/my-project/_apis/git/repositories/my-repo/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ffolder&versionDescriptor.version=test-branch&versionDescriptor.versionType=branch',
+    );
+
+    expect(url.toCommitsUrl()).toBe(
+      'http://my-host/tfs/projects/my-project/_apis/git/repositories/my-repo/commits?api-version=6.0&searchCriteria.itemVersion.version=test-branch&searchCriteria.itemVersion.versionType=branch',
+    );
   });
 
   it('should work with the old tfs long URL form with a path and tag ref', () => {
@@ -236,6 +266,21 @@ describe('AzureUrl', () => {
     expect(url.getRef()).toBe('test-tag');
     expect(url.getPath()).toBe('/folder');
     expect(url.getPrefix()).toBe('GT');
+    expect(url.toRepoUrl()).toBe(
+      'http://my-host/tfs/projects/my-project/_git/my-repo?path=%2Ffolder&version=GTtest-tag',
+    );
+
+    expect(url.toFileUrl()).toBe(
+      'http://my-host/tfs/projects/my-project/_apis/git/repositories/my-repo/items?api-version=6.0&path=%2Ffolder&versionDescriptor.version=test-tag&versionDescriptor.versionType=tag',
+    );
+
+    expect(url.toArchiveUrl()).toBe(
+      'http://my-host/tfs/projects/my-project/_apis/git/repositories/my-repo/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ffolder&versionDescriptor.version=test-tag&versionDescriptor.versionType=tag',
+    );
+
+    expect(url.toCommitsUrl()).toBe(
+      'http://my-host/tfs/projects/my-project/_apis/git/repositories/my-repo/commits?api-version=6.0&searchCriteria.itemVersion.version=test-tag&searchCriteria.itemVersion.versionType=tag',
+    );
   });
 
   it('should reject non-branch and non-tag refs', () => {
