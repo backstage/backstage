@@ -469,6 +469,7 @@ export namespace coreApis {
   const config: typeof configApiRef;
   const dialog: typeof dialogApiRef;
   const discovery: typeof discoveryApiRef;
+  const documentTitle: typeof documentTitleApiRef;
   const error: typeof errorApiRef;
   const featureFlags: typeof featureFlagsApiRef;
   const fetch: typeof fetchApiRef;
@@ -1039,6 +1040,19 @@ export const discoveryApiRef: ApiRef_2<DiscoveryApi, 'core.discovery'> & {
 };
 
 // @public
+export interface DocumentTitleApi {
+  setTitle(options: { segments: string[] }): void;
+}
+
+// @public
+export const documentTitleApiRef: ApiRef_2<
+  DocumentTitleApi,
+  'core.document-title'
+> & {
+  readonly $$type: '@backstage/ApiRef';
+};
+
+// @public
 export type ErrorApi = {
   post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
   error$(): Observable<{
@@ -1254,6 +1268,10 @@ export namespace ExtensionBoundary {
   export function lazy(
     appNode: AppNode,
     loader: () => Promise<JSX.Element>,
+    options?: {
+      title?: string;
+      titleTranslation?: TranslationRefTuple<undefined>;
+    },
   ): JSX.Element;
   // (undocumented)
   export function lazyComponent<TProps extends {}>(
@@ -1270,6 +1288,8 @@ export interface ExtensionBoundaryProps {
   errorPresentation?: 'error-api' | 'error-display';
   // (undocumented)
   node: AppNode;
+  title?: string;
+  titleTranslation?: TranslationRefTuple<undefined>;
 }
 
 // @public (undocumented)
@@ -2560,6 +2580,9 @@ export function useBreadcrumbEntries(): {
 
 // @public
 export function useNavigation(): Navigation;
+
+// @public
+export function usePageTitle(title: string | undefined): void;
 
 // @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(

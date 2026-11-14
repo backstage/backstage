@@ -788,6 +788,23 @@ export namespace mockApis {
   }
 
   /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#DocumentTitleApi}.
+   *
+   * @public
+   */
+  export namespace documentTitle {
+    /**
+     * Creates a mock with jest functions for all methods.
+     * Pass partial implementations to customize the behavior.
+     *
+     * @public
+     */
+    export const mock = createApiMock(coreApis.documentTitle, () => ({
+      setTitle: jest.fn(),
+    }));
+  }
+
+  /**
    * Mock helpers for {@link @backstage/frontend-plugin-api#PluginWrapperApi}.
    *
    * @public

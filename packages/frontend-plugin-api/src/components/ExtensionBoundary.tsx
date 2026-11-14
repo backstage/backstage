@@ -27,7 +27,15 @@ import { ErrorDisplayBoundary } from './ErrorDisplayBoundary';
 import { ErrorApiBoundary } from './ErrorApiBoundary';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
-import { ErrorApi, errorApiRef, useApi } from '../apis';
+import {
+  appLanguageApiRef,
+  ErrorApi,
+  errorApiRef,
+  translationApiRef,
+  useApi,
+} from '../apis';
+import { useTranslatedTitles } from '@internal/frontend';
+import type { TranslationRefTuple } from '../translation/TranslationRef';
 import type { AppNode } from '../apis/definitions/AppTreeApi';
 import {
   PluginWrapperApi,
@@ -36,6 +44,7 @@ import {
 import { coreExtensionData } from '../wiring';
 import { AppNodeProvider } from './AppNodeProvider';
 import { Progress } from './DefaultSwappableComponents';
+import { useNodeTitle } from '../pageTitle';
 
 function useOptionalErrorApi(): ErrorApi | undefined {
   try {
@@ -77,7 +86,39 @@ const RouteTracker = (props: RouteTrackerProps) => {
 export interface ExtensionBoundaryProps {
   errorPresentation?: 'error-api' | 'error-display';
   node: AppNode;
+  /**
+   * The default document title segment of this extension, for extensions
+   * that are shown as a page or tab of their own. The content can replace it
+   * using {@link usePageTitle}.
+   */
+  title?: string;
+  /**
+   * A message reference for {@link ExtensionBoundaryProps.title}, resolved
+   * using the translation API so that the title follows language changes.
+   * The plain `title` is used until the message has loaded.
+   */
+  titleTranslation?: TranslationRefTuple<undefined>;
   children: ReactNode;
+}
+
+function DefaultPageTitle(props: { node: AppNode; title?: string }) {
+  useNodeTitle(props.node, props.title, 'default');
+  return null;
+}
+
+function TranslatedDefaultPageTitle(props: {
+  node: AppNode;
+  title?: string;
+  titleTranslation: TranslationRefTuple<undefined>;
+}) {
+  const titles = useTranslatedTitles({
+    translationApi: useApi(translationApiRef),
+    languageApi: useApi(appLanguageApiRef),
+    errorApi: useApi(errorApiRef),
+    selections: [props.titleTranslation],
+  });
+  useNodeTitle(props.node, titles?.[0] ?? props.title, 'default');
+  return null;
 }
 
 /** @public */
@@ -129,6 +170,15 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
 
   return (
     <AppNodeProvider node={node}>
+      {props.titleTranslation ? (
+        <TranslatedDefaultPageTitle
+          node={node}
+          title={props.title}
+          titleTranslation={props.titleTranslation}
+        />
+      ) : (
+        props.title && <DefaultPageTitle node={node} title={props.title} />
+      )}
       <Suspense fallback={<Progress />}>{content}</Suspense>
     </AppNodeProvider>
   );
@@ -139,12 +189,20 @@ export namespace ExtensionBoundary {
   export function lazy(
     appNode: AppNode,
     loader: () => Promise<JSX.Element>,
+    options?: {
+      title?: string;
+      titleTranslation?: TranslationRefTuple<undefined>;
+    },
   ): JSX.Element {
     const ExtensionComponent = reactLazy(() =>
       loader().then(element => ({ default: () => element })),
     );
     return (
-      <ExtensionBoundary node={appNode}>
+      <ExtensionBoundary
+        node={appNode}
+        title={options?.title}
+        titleTranslation={options?.titleTranslation}
+      >
         <ExtensionComponent />
       </ExtensionBoundary>
     );

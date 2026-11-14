@@ -74,6 +74,7 @@ export function useTechDocsReaderHeaderData() {
     str.replace(/[-_]/g, ' ').split(' ').map(capitalize).join(' ');
 
   let tabTitle = appTitle;
+  let pageTitle: string | undefined;
   if (!hidden) {
     const stringEntityRef = stringifyEntityRef(entityRef);
     const entityDisplayName =
@@ -85,12 +86,8 @@ export function useTechDocsReaderHeaderData() {
         .split('/')
         .map(normalizeAndSpace);
 
-    const tabTitleItems = [
-      entityDisplayName,
-      ...techdocsTabTitleItems,
-      appTitle,
-    ];
-    tabTitle = tabTitleItems.join(' | ');
+    pageTitle = [entityDisplayName, ...techdocsTabTitleItems].join(' | ');
+    tabTitle = `${pageTitle} | ${appTitle}`;
   }
 
   return {
@@ -99,6 +96,7 @@ export function useTechDocsReaderHeaderData() {
     entityRef,
     entityMetadata,
     tabTitle,
+    pageTitle,
     hidden,
     showSourceLink,
     sourceLink: locationMetadata?.target,

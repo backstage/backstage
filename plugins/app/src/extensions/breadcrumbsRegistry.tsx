@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import type { BreadcrumbEntryData } from '@backstage/frontend-plugin-api';
 import {
   createVersionedContext,
@@ -33,13 +33,13 @@ interface BreadcrumbsContextValue {
 
 type ContextMap = { 1: BreadcrumbsContextValue };
 
-const BreadcrumbsContext = createVersionedContext<ContextMap>(
+export const BreadcrumbsContext = createVersionedContext<ContextMap>(
   'breadcrumbs-context',
 );
 
 /**
- * Provides the breadcrumb registry to the component tree. This is the
- * provider side of the breadcrumbs system; the consumer side
+ * Creates the breadcrumb registry for {@link PageRegistryProvider}. This is
+ * the provider side of the breadcrumbs system; the consumer side
  * ({@link @backstage/frontend-plugin-api#BreadcrumbEntry},
  * {@link @backstage/frontend-plugin-api#useBreadcrumbEntries}) lives in
  * `@backstage/frontend-plugin-api` and reads from the same versioned
@@ -47,7 +47,7 @@ const BreadcrumbsContext = createVersionedContext<ContextMap>(
  *
  * @internal
  */
-export function BreadcrumbsRegistryProvider(props: { children: ReactNode }) {
+export function useBreadcrumbsRegistry() {
   const [entries, setEntries] = useState<BreadcrumbEntryData[]>([]);
 
   const register = useCallback((entry: BreadcrumbEntryData): Registration => {
@@ -73,14 +73,8 @@ export function BreadcrumbsRegistryProvider(props: { children: ReactNode }) {
     [entries],
   );
 
-  const value = useMemo(
+  return useMemo(
     () => createVersionedValueMap({ 1: { breadcrumbs, register } }),
     [breadcrumbs, register],
-  );
-
-  return (
-    <BreadcrumbsContext.Provider value={value}>
-      {props.children}
-    </BreadcrumbsContext.Provider>
   );
 }

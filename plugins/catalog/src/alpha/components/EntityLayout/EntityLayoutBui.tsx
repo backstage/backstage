@@ -15,18 +15,15 @@
  */
 
 import { ComponentProps, ComponentType, ReactNode, useCallback } from 'react';
-import { Helmet } from 'react-helmet';
 import { useSearchParams } from 'react-router-dom';
 import { Alert, Container } from '@backstage/ui';
-import {
-  configApiRef,
-  useApi,
-  useRouteRef,
-  useRouteRefParams,
-} from '@backstage/core-plugin-api';
+import { useRouteRef, useRouteRefParams } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Link, Progress } from '@backstage/core-components';
-import { NotFoundErrorPage } from '@backstage/frontend-plugin-api';
+import {
+  NotFoundErrorPage,
+  usePageTitle,
+} from '@backstage/frontend-plugin-api';
 import {
   entityRouteRef,
   InspectEntityDialog,
@@ -45,21 +42,14 @@ import {
   filterEntityLayoutRoutes,
 } from './entityLayoutRoutes';
 
-function EntityDocumentTitle(props: { activeContentTitle?: string }) {
-  const configApi = useApi(configApiRef);
+// The entity name replaces the entity page's document title segment, and the
+// selected entity content adds its own title as a segment below it
+function EntityDocumentTitle() {
   const routeParams = useRouteRefParams(entityRouteRef);
   const { entity } = useAsyncEntity();
   const presentation = useEntityPresentation(entity ?? routeParams);
-  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
-  return (
-    <>
-      <Helmet
-        titleTemplate={`${presentation.primaryTitle} | %s | ${appTitle}`}
-        defaultTitle={`${presentation.primaryTitle} | ${appTitle}`}
-      />
-      {props.activeContentTitle && <Helmet title={props.activeContentTitle} />}
-    </>
-  );
+  usePageTitle(presentation.primaryTitle);
+  return null;
 }
 
 function InspectEntityDialogHost() {
@@ -175,7 +165,7 @@ export function EntityLayoutBui(props: {
 
   return (
     <main>
-      <EntityDocumentTitle activeContentTitle={tabs.title} />
+      <EntityDocumentTitle />
       {HeaderComponent ? (
         <HeaderComponent tabs={tabs.tabs} activeTabId={tabs.activeTabId} />
       ) : (

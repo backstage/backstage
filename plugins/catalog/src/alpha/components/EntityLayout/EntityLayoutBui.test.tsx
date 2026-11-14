@@ -111,7 +111,9 @@ describe('EntityLayoutBui', () => {
     await renderLayout({ entity: componentEntity, path: '/overview' });
     expect(await screen.findByText('Overview content')).toBeInTheDocument();
     await waitFor(() =>
-      expect(document.title).toBe('Artist Lookup | Overview | Custom app'),
+      // The tab title is added by the entity content extension itself, which
+      // isn't part of this test
+      expect(document.title).toBe('Artist Lookup | Custom app'),
     );
   });
 

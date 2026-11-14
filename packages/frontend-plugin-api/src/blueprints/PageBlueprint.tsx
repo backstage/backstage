@@ -32,6 +32,7 @@ import {
 } from '../wiring';
 import { ExtensionBoundary, PageLayout, Progress } from '../components';
 import { BreadcrumbEntry } from '../breadcrumbs';
+import { useNodeTitle } from '../pageTitle';
 import { useApi, useApiHolder } from '../apis/system';
 import type { AppNode } from '../apis';
 import {
@@ -95,6 +96,9 @@ function PageContent(props: {
     subPages?.some(page => page.node === match.node),
   );
   const selected = subPages?.find(page => page.node === selectedMatch?.node);
+  // The page owns the translated sub-page labels, so it also registers the
+  // document title segment of the selected sub-page
+  useNodeTitle(selected?.node, selected?.label, 'default');
   const firstPath = subPages?.[0]?.path;
   useEffect(() => {
     if (
@@ -114,7 +118,11 @@ function PageContent(props: {
     }
   }, [matches, firstPath, pageMount, location, history]);
   return selected && selectedMatch ? (
+    // The key makes sure that switching between sub-pages remounts the
+    // breadcrumb and sub-page content, rather than reusing them while the
+    // previous content is shown
     <BreadcrumbEntry
+      key={selected.node.spec.id}
       entry={{ label: selected.label, href: selectedMatch.basePath }}
     >
       {selected.element}
@@ -178,6 +186,7 @@ function PluginPageShell(props: {
     }));
   const headerActionsApi = useApi(pluginHeaderActionsApiRef);
   const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+  useNodeTitle(node, titles?.[0] ?? title, 'default');
 
   if (!titles) {
     return <Progress />;
