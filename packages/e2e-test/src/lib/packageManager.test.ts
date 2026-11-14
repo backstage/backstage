@@ -78,6 +78,8 @@ describe('getPackageManager', () => {
     expect(
       isNoise('$ backstage-cli package start --config app-config.yaml'),
     ).toBe(true);
+    // pnpm 11 prints the line dimmed
+    expect(isNoise('\x1b[2m$ backstage-cli package start\x1b[22m')).toBe(true);
     expect(isNoise('2026-01-01T00:00:00.000Z backstage error $ oops')).toBe(
       false,
     );
