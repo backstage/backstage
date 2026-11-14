@@ -38,6 +38,6 @@ export type ScmIntegrationIconProps = {
 export const ScmIntegrationIcon = (props: ScmIntegrationIconProps) => {
   const { type } = props;
   const app = useApp();
-  const Icon = type ? app.getSystemIcon(type) : undefined;
-  return Icon ? <Icon /> : <RiCodeLine aria-hidden="true" focusable="false" />;
+  const Icon = (type ? app.getSystemIcon(type) : undefined) ?? RiCodeLine;
+  return <Icon />;
 };
