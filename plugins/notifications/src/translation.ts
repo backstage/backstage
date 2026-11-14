@@ -124,6 +124,8 @@ export const notificationsTranslationRef = createTranslationRef({
       emptyState: 'All caught up!',
       columnNotification: 'Notification',
       columnActions: 'Actions',
+      sortNewest: 'Sorted by newest first',
+      sortOldest: 'Sorted by oldest first',
       resultsCount: '{{displayed}} results out of {{total}}',
     },
   },

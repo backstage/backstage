@@ -15,24 +15,50 @@
  */
 
 @layer components {
-  .content {
-    min-height: 9rem;
+  .cardContent {
     display: flex;
     flex-direction: column;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
   }
 
   .columnHeader {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: var(--bui-color-bg-surface-hover, rgba(0, 0, 0, 0.04));
-    border-radius: var(--bui-radius-2, 4px);
     padding: var(--bui-space-2, 8px) var(--bui-space-5, 24px)
       var(--bui-space-2, 8px) var(--bui-space-7, 36px);
     margin-bottom: var(--bui-space-2, 8px);
-    color: var(--bui-color-fg-secondary, rgba(0, 0, 0, 0.54));
-    font-size: 0.75rem;
+    color: var(--bui-fg-secondary);
     text-transform: uppercase;
+  }
+
+  .columnSortButton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--bui-space-1, 4px);
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-transform: inherit;
+    cursor: pointer;
+  }
+
+  .columnSortButton:hover,
+  .columnSortButton:focus-visible {
+    color: var(--bui-fg-primary);
+  }
+
+  .columnSortIcon {
+    flex-shrink: 0;
   }
 
   .columnHeaderActions {
@@ -117,7 +143,7 @@
   }
 
   .emptyStateIcon {
-    color: var(--bui-color-fg-disabled, rgba(0, 0, 0, 0.38));
+    color: var(--bui-fg-secondary);
   }
 
   .resultsCount {
