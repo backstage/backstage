@@ -19,8 +19,8 @@ import {
   AsyncEntityProvider,
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
-import { render, screen } from '@testing-library/react';
-import { ReactNode, useEffect } from 'react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { ReactNode, useEffect, useState } from 'react';
 import { isKind } from './conditions';
 import { EntitySwitch } from './EntitySwitch';
 import { TestApiProvider, mockApis } from '@backstage/frontend-test-utils';
@@ -517,5 +517,62 @@ describe('EntitySwitch', () => {
     await expect(screen.findByText('C')).resolves.toBeInTheDocument();
     expect(screen.queryByText('A')).not.toBeInTheDocument();
     expect(screen.queryByText('B')).not.toBeInTheDocument();
+  });
+
+  it('should not evaluate async conditions again when the parent re-renders or the entity is refetched', async () => {
+    const asyncCond = jest.fn(async () => true);
+    const onMount = jest.fn();
+
+    const Content = () => {
+      useEffect(() => onMount(), []);
+      return <p>Async Content</p>;
+    };
+
+    // Re-renders create new children elements, and a refetch delivers a new
+    // entity object with the same content
+    const Page = () => {
+      const [, setCount] = useState(0);
+      const [entity, setEntity] = useState(
+        () => ({ metadata: { name: 'mock' }, kind: 'component' } as Entity),
+      );
+      return (
+        <>
+          <button onClick={() => setCount(c => c + 1)}>Re-render</button>
+          <button onClick={() => setEntity(e => ({ ...e }))}>Refetch</button>
+          <EntityProvider entity={entity}>
+            <EntitySwitch>
+              <EntitySwitch.Case if={asyncCond} children={<Content />} />
+              <EntitySwitch.Case children="Fallback" />
+            </EntitySwitch>
+          </EntityProvider>
+        </>
+      );
+    };
+
+    render(
+      <Wrapper>
+        <Page />
+      </Wrapper>,
+    );
+    await expect(
+      screen.findByText('Async Content'),
+    ).resolves.toBeInTheDocument();
+    expect(asyncCond).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByText('Re-render'));
+    fireEvent.click(screen.getByText('Re-render'));
+    await expect(
+      screen.findByText('Async Content'),
+    ).resolves.toBeInTheDocument();
+    expect(asyncCond).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByText('Refetch'));
+    expect(screen.getByText('Async Content')).toBeInTheDocument();
+    await expect(
+      screen.findByText('Async Content'),
+    ).resolves.toBeInTheDocument();
+    expect(asyncCond).toHaveBeenCalledTimes(2);
+    expect(onMount).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText('Fallback')).not.toBeInTheDocument();
   });
 });
