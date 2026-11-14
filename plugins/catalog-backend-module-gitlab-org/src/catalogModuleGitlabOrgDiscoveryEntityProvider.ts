@@ -23,6 +23,7 @@ import {
   GitlabOrgDiscoveryEntityProvider,
   UserTransformer,
   GroupTransformer,
+  GroupNameTransformer,
 } from '@backstage/plugin-catalog-backend-module-gitlab';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
@@ -44,6 +45,12 @@ export interface GitlabOrgEntityProviderTransformsExtensionPoint {
    * entities.
    */
   setGroupTransformer(transformer: GroupTransformer): void;
+
+  /**
+   * Set a custom transformer for the names of the Group entities. It is
+   * used for the Group names, their parents and the memberOf of the Users.
+   */
+  setGroupNameTransformer(transformer: GroupNameTransformer): void;
 }
 
 /**
@@ -68,6 +75,7 @@ export const catalogModuleGitlabOrgDiscoveryEntityProvider =
     register(env) {
       let userTransformer: UserTransformer | undefined;
       let groupTransformer: GroupTransformer | undefined;
+      let groupNameTransformer: GroupNameTransformer | undefined;
 
       env.registerExtensionPoint(
         gitlabOrgEntityProviderTransformsExtensionPoint,
@@ -83,6 +91,12 @@ export const catalogModuleGitlabOrgDiscoveryEntityProvider =
               throw new Error('Group transformer may only be set once');
             }
             groupTransformer = transformer;
+          },
+          setGroupNameTransformer(transformer) {
+            if (groupNameTransformer) {
+              throw new Error('Group name transformer may only be set once');
+            }
+            groupNameTransformer = transformer;
           },
         },
       );
@@ -103,6 +117,7 @@ export const catalogModuleGitlabOrgDiscoveryEntityProvider =
               scheduler,
               userTransformer,
               groupEntitiesTransformer: groupTransformer,
+              groupNameTransformer,
             });
           catalog.addEntityProvider(gitlabOrgDiscoveryEntityProvider);
         },
