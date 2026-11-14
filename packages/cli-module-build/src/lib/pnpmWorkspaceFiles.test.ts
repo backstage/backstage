@@ -183,7 +183,7 @@ module.exports = { hooks: {} };
       files: ['.pnpmfile.cjs'],
     });
     expect(warn).toHaveBeenCalledWith(
-      'The pnpmfile .pnpmfile.cjs seems to load semver, @scope/pkg, which is not installed where the target is written. If pnpm fails to load the pnpmfile, write the target inside the project, or remove the import from the pnpmfile.',
+      'The pnpmfile .pnpmfile.cjs seems to load semver, @scope/pkg, which are not installed where the target is written. If pnpm fails to load the pnpmfile, write the target inside the project, or remove the import from the pnpmfile.',
     );
     warn.mockClear();
 
