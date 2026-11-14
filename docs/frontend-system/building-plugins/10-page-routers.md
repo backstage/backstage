@@ -504,7 +504,7 @@ directly.
 ## Support for other libraries
 
 The three adapters above are the supported ones, and they are maintained in the
-Backstage repository. Adapters are not a plugin-side extension point: adapters obtain their mount through an internal routing hook,
+Backstage repository. Adapters are not a plugin-side extension point: adapters obtain their mount through the public `useRouteContext` API,
 but adding a supported library remains a contribution to Backstage rather
 than a plugin-side extension point.
 

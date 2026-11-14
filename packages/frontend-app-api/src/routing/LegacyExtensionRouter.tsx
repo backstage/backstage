@@ -30,13 +30,13 @@ import {
   sanitizeHref,
   unwrapReactRouterContext,
   type ReactRouterAdapterBindings,
-  useRouteResolution,
 } from '@internal/frontend';
 import {
   appHistoryApiRef,
   NavigationProvider,
   useApi,
   useApiHolder,
+  useRouteContext,
   type AppHistoryApi,
   type AppNode,
   type Navigation,
@@ -121,7 +121,7 @@ export function LegacyExtensionRouter(props: {
   const { node, children } = props;
   const parentNode = useContext(LegacyExtensionRouterContext);
   const history = useApiHolder().get(appHistoryApiRef);
-  const mounts = useRouteResolution().matches;
+  const mounts = useRouteContext().matches;
   const routePattern = mounts.at(-1)?.routePattern;
   const ownsMount = mounts.some(match => match.node === node);
   const router = useMemo(() => {

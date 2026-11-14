@@ -19,6 +19,7 @@ import path from 'node:path';
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
+  useRouteContext,
   PageBlueprint,
   SubPageBlueprint,
   appHistoryApiRef,
@@ -28,8 +29,7 @@ import {
   useAppNavigate,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { useRouteResolution, useAppHistoryLocation } from '@internal/frontend';
-
+import { useAppHistoryLocation } from '@internal/frontend';
 import { Link, useLocation, useResolvedPath } from 'react-router';
 import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
@@ -276,7 +276,7 @@ describe('multi-router coexistence', () => {
 
     const TreeV7SubPage = () => {
       const location = useLocation();
-      const pageMount = useRouteResolution().matches.at(-1);
+      const pageMount = useRouteContext().matches.at(-1);
       const homeHref = useRouteRef(homeRouteRef);
       return (
         <div data-testid="tree-subpage">
@@ -437,7 +437,7 @@ describe('multi-router coexistence', () => {
     // adapter per page, which is precisely what this case would have caught.
     const NestedProbe = () => {
       const location = useLocation();
-      const mount = useRouteResolution().matches.at(-1);
+      const mount = useRouteContext().matches.at(-1);
       return (
         <div data-testid="nested-probe">
           {/* Answered by the inner v7 adapter, scoped to the page mount. */}
@@ -513,7 +513,7 @@ describe('multi-router coexistence', () => {
       const v6Params = reactRouterV6.useParams();
       const v6Resolved = reactRouterV6.useResolvedPath('deep').pathname;
       const v7Location = useLocation();
-      const mount = useRouteResolution().matches.at(-1);
+      const mount = useRouteContext().matches.at(-1);
       return (
         <div data-testid="nested-probe">
           {/* Answered by the inner v6 adapter, scoped to the page mount. */}

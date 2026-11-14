@@ -14,25 +14,14 @@
  * limitations under the License.
  */
 
-import { useApiHolder } from '../apis/useApiHolder';
-import { useAppNode } from '../wiring/useAppNode';
-import type {
-  ApiRef,
-  AppHistoryApi,
-  RouteResolutionApi,
-  RouteResolutionMatch,
-} from '@backstage/frontend-plugin-api';
-import { useAppHistoryLocation } from './useAppHistoryLocation';
-
-// API lookups use stable IDs, avoiding runtime imports from the public package.
-const appHistoryApiRef: ApiRef<AppHistoryApi> = {
-  id: 'core.app-history',
-  T: null as unknown as AppHistoryApi,
-};
-const routeResolutionApiRef: ApiRef<RouteResolutionApi> = {
-  id: 'core.route-resolution',
-  T: null as unknown as RouteResolutionApi,
-};
+import { useApiHolder } from '../apis/system';
+import { useAppNode } from '../components/AppNodeProvider';
+import {
+  routeResolutionApiRef,
+  type RouteResolutionMatch,
+} from '../apis/definitions/RouteResolutionApi';
+import { appHistoryApiRef } from './AppHistoryApi';
+import { useAppHistoryLocation } from '@internal/frontend';
 
 const EMPTY_RESULT: { matches: readonly RouteResolutionMatch[] } = {
   matches: [],
@@ -48,9 +37,9 @@ const EMPTY_RESULT: { matches: readonly RouteResolutionMatch[] } = {
  * For a different pathname or the complete matched branch, use
  * {@link RouteResolutionApi.resolvePath} directly.
  *
- * @internal
+ * @public
  */
-export function useRouteResolution(): {
+export function useRouteContext(): {
   matches: readonly RouteResolutionMatch[];
 } {
   const node = useAppNode();

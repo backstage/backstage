@@ -44,9 +44,9 @@ import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
 const mockRouteNode = {} as AppNode;
 
 // Isolate routing consumers from extension rendering; app tests cover real node ancestry.
-jest.mock('../../frontend-internal/src/wiring/useAppNode', () => {
+jest.mock('../../frontend-plugin-api/src/components/AppNodeProvider', () => {
   const actual = jest.requireActual(
-    '../../frontend-internal/src/wiring/useAppNode',
+    '../../frontend-plugin-api/src/components/AppNodeProvider',
   );
   return {
     ...actual,

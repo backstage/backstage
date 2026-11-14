@@ -22,4 +22,3 @@ export {
 } from './InternalExtensionInput';
 export { OpaqueFrontendPlugin } from './InternalFrontendPlugin';
 export { OpaqueSwappableComponentRef } from './InternalSwappableComponentRef';
-export { useAppNode } from './useAppNode';

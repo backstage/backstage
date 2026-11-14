@@ -21,9 +21,9 @@ import {
   NavigationProvider,
   type Navigation,
   useApi,
+  useRouteContext,
 } from '@backstage/frontend-plugin-api';
 import {
-  useRouteResolution,
   createAppHistoryRouter,
   resolveAppPath,
   createPath,
@@ -31,7 +31,6 @@ import {
   sanitizeHref,
   type ReactRouterAdapterBindings,
 } from '@internal/frontend';
-
 import {
   UNSAFE_LocationContext,
   UNSAFE_NavigationContext,
@@ -140,7 +139,7 @@ export function ReactRouterV7PageRouter(props: { children?: ReactNode }) {
   // history is registered — that throw would happen before the passthrough
   // below could be reached, in exactly the apps that need it.
   const appHistory = useApiHolder().get(appHistoryApiRef);
-  const mounts = useRouteResolution().matches;
+  const mounts = useRouteContext().matches;
   const routePattern = mounts.at(-1)?.routePattern;
 
   // Only ever recreated for a genuinely different router: a new element type

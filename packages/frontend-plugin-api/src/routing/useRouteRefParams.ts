@@ -23,9 +23,8 @@ import {
   joinRoutePath,
   matchPath,
   useAppHistoryLocation,
-  useRouteResolution,
 } from '@internal/frontend';
-
+import { useRouteContext } from './useRouteContext';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
@@ -140,7 +139,7 @@ export function useRouteRefParams<Params extends AnyRouteRefParams>(
   // Subscribes to the app history: the params are read out of the location, so
   // they have to be recomputed when the app navigates.
   const location = useAppHistoryLocation(appHistory);
-  const mountChain = useRouteResolution().matches;
+  const mountChain = useRouteContext().matches;
   const legacyParams = useRouterContext(RouteContext)?.matches.at(-1)?.params;
   const pathname = location?.pathname ?? APP_ROOT_PATH.pathname;
 

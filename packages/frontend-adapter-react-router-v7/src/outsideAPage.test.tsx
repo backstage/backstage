@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { matchPath, useRouteResolution } from '@internal/frontend';
+import { matchPath } from '@internal/frontend';
 import { type AppNode } from '@backstage/frontend-plugin-api';
 import type { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
@@ -23,8 +23,10 @@ import {
   TestApiProvider,
   createMockAppHistory,
 } from '@backstage/frontend-test-utils';
-import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
-
+import {
+  useRouteContext,
+  appHistoryApiRef,
+} from '@backstage/frontend-plugin-api';
 import {
   MemoryRouter,
   Route,
@@ -37,9 +39,9 @@ import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
 const mockRouteNode = {} as AppNode;
 
 // Isolate routing consumers from extension rendering; app tests cover real node ancestry.
-jest.mock('../../frontend-internal/src/wiring/useAppNode', () => {
+jest.mock('../../frontend-plugin-api/src/components/AppNodeProvider', () => {
   const actual = jest.requireActual(
-    '../../frontend-internal/src/wiring/useAppNode',
+    '../../frontend-plugin-api/src/components/AppNodeProvider',
   );
   return {
     ...actual,
@@ -76,7 +78,7 @@ jest.mock('../../frontend-internal/src/wiring/useAppNode', () => {
 function LegacyProbe(props: { id: string }) {
   const params = useParams();
   const resolved = useResolvedPath('edit');
-  const mount = useRouteResolution().matches.at(-1);
+  const mount = useRouteContext().matches.at(-1);
   return (
     <span data-testid={props.id}>
       {JSON.stringify({

@@ -17,10 +17,10 @@
 import {
   createVersionedContext,
   createVersionedValueMap,
+  useVersionedContext,
 } from '@backstage/version-bridge';
 import type { AppNode } from '../apis/definitions/AppTreeApi';
 import { ReactNode } from 'react';
-import { useAppNode as useAppNodeInternal } from '@internal/frontend';
 
 const CONTEXT_KEY = 'app-node-context';
 
@@ -66,5 +66,14 @@ export function AppNodeProvider({
  * If no extension context is available, this hook returns `undefined`.
  */
 export function useAppNode(): AppNode | undefined {
-  return useAppNodeInternal();
+  const versionedContext = useVersionedContext<AppNodeContextMap>(CONTEXT_KEY);
+  if (!versionedContext) {
+    return undefined;
+  }
+
+  const context = versionedContext.atVersion(1);
+  if (!context) {
+    throw new Error('AppNodeContext v1 not available');
+  }
+  return context.node;
 }
