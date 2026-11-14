@@ -91,3 +91,19 @@ When you startup your Backstage app and hover over the Home option on the sideba
 ![Sidebar sub-menu example](./../../assets/getting-started/sidebar-submenu-example.png)
 
 You can see more ways to use this in the [Storybook Sidebar examples](https://backstage.io/storybook/?path=/story/layout-sidebar--sample-scalable-sidebar)
+
+## Custom Active Matching
+
+By default a `SidebarItem` is highlighted when the current pathname matches its `to` path, and a `SidebarSubmenuItem` when both the pathname and the query parameters in its `to` match. If you need different rules, for example to tell apart items that only differ in a query parameter or a hash, pass an `isActive` function. It receives the current location and replaces the default matching:
+
+```tsx title="packages/app/src/components/Root/Root.tsx"
+<SidebarItem
+  icon={DashboardIcon}
+  to="/dashboard?view=overview"
+  text="Overview"
+  isActive={location =>
+    location.pathname === '/dashboard' &&
+    new URLSearchParams(location.search).get('view') === 'overview'
+  }
+/>
+```

@@ -30,6 +30,7 @@ import { LinearProgressProps } from '@material-ui/core/LinearProgress';
 import { LinkProps as LinkProps_2 } from '@material-ui/core/Link';
 import { LinkProps as LinkProps_3 } from 'react-router-dom';
 import { ListItemTextProps } from '@material-ui/core/ListItemText';
+import type { Location as Location_2 } from 'history';
 import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import { MaterialTableProps } from '@material-table/core';
 import { MouseEvent as MouseEvent_2 } from 'react';
@@ -1281,6 +1282,7 @@ export type SidebarSubmenuItemProps = {
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
   exact?: boolean;
   initialShowDropdown?: boolean;
+  isActive?: (location: Location_2) => boolean;
 };
 
 // @public
