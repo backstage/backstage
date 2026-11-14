@@ -306,8 +306,29 @@ export default async ({ args, info }: CliCommandContext) => {
         }
       }
     }
+    // pnpm would fail on these anyway, so fail before reading or writing any
+    // package.json files
+    const missingCatalogs = Array.from(referencedCatalogs).filter(
+      ([catalogName]) => !catalogs?.[catalogName],
+    );
+    if (missingCatalogs.length > 0) {
+      throw new Error(
+        `${missingCatalogs
+          .map(
+            ([catalogName, dependents]) =>
+              `${Array.from(dependents).join(', ')} ${
+                dependents.size === 1 ? 'refers' : 'refer'
+              } to the ${catalogName} catalog, which the workspace does not define.`,
+          )
+          .join(' ')} No files were changed.`,
+      );
+    }
+
     // Nothing is written until all updates are known to apply
     const packageUpdates = new Map<string, object>();
+    // Catalog references that are left alone, since the catalogs of the
+    // package manager can't be read
+    const unreadCatalogReferences = new Set<string>();
     await runConcurrentTasks({
       concurrencyFactor: 4,
       items: versionBumps.entries(),
@@ -328,6 +349,12 @@ export default async ({ args, info }: CliCommandContext) => {
               const catalogName = catalogs
                 ? getCatalogName(oldRange)
                 : undefined;
+              // Replacing the reference with a version range would take the
+              // dependency out of the catalog
+              if (!catalogs && getCatalogName(oldRange)) {
+                unreadCatalogReferences.add(`${dep.name} in ${name}`);
+                continue;
+              }
               if (!isBumpedRange(oldRange, catalogFlag, Boolean(catalogs))) {
                 continue;
               }
@@ -392,21 +419,29 @@ export default async ({ args, info }: CliCommandContext) => {
       },
     });
 
-    // pnpm would fail on these anyway, so fail before writing anything
-    const missingCatalogs = Array.from(referencedCatalogs).filter(
-      ([catalogName]) => !catalogs?.[catalogName],
-    );
-    if (missingCatalogs.length > 0) {
-      throw new Error(
-        `${missingCatalogs
-          .map(
-            ([catalogName, dependents]) =>
-              `${Array.from(dependents).join(', ')} ${
-                dependents.size === 1 ? 'refers' : 'refer'
-              } to the ${catalogName} catalog, which the workspace does not define.`,
-          )
-          .join(' ')} No files were changed.`,
+    if (unreadCatalogReferences.size > 0) {
+      const references = Array.from(unreadCatalogReferences).sort().join(', ');
+      console.warn(
+        chalk.yellow(
+          `Left ${references} as they are, since versions:bump does not support catalogs with ${packageManager.name()}. Bump their catalog entries yourself.`,
+        ),
       );
+    }
+
+    // Dependencies that refer to a named catalog are only bumped with
+    // --catalog, so there may be nothing to bump at all. Then the release in
+    // backstage.json and the installed packages are left as they are too.
+    if (packageUpdates.size === 0 && catalogUpdates.size === 0) {
+      let message =
+        'All dependencies refer to named catalogs, so nothing was bumped. Use --catalog to bump the entries of a catalog.';
+      if (catalogFlag) {
+        message = `No dependencies refer to the ${catalogFlag} catalog, so nothing was bumped`;
+      } else if (!catalogs) {
+        message = 'All dependencies refer to catalogs, so nothing was bumped.';
+      }
+      console.log(chalk.yellow(message));
+      console.log();
+      return;
     }
 
     for (const [catalogName, entries] of catalogUpdates) {

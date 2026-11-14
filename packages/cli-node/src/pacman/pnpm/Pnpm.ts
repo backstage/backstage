@@ -317,8 +317,10 @@ export class Pnpm implements PackageManager {
 
   /**
    * Sets dependency versions in catalogs in `pnpm-workspace.yaml`, which is
-   * written once for all catalogs. Only the versions in the file change, so
-   * its comments and formatting are kept.
+   * written once for all catalogs. Existing versions are changed in place, so
+   * the comments and formatting of the file are kept. Adding an entry writes
+   * out the whole file, which keeps the comments but may change the
+   * formatting.
    */
   async updateCatalogs(
     updates: Record<string, Record<string, string>>,
