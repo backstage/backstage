@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { Progress, WarningPanel } from '@backstage/core-components';
+import { Progress } from '@backstage/frontend-plugin-api';
 import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
-import { Alert, Box, Text } from '@backstage/ui';
+import { Alert, Box, Card, CardHeader, Text } from '@backstage/ui';
 import useObservable from 'react-use/esm/useObservable';
 import ReactJson from 'react-json-view';
 import { useConfig } from '../../../hooks';
+import styles from '../Content.module.css';
 import { ConfigError } from '@backstage/plugin-devtools-common';
 
 export const WarningContent = ({ error }: { error: ConfigError }) => {
@@ -64,22 +65,36 @@ export const ConfigContent = () => {
   }
 
   return (
-    <Box>
-      {configInfo && configInfo.error && (
-        <Box pb="2">
-          <WarningPanel title="Config validation failed">
-            <WarningContent error={configInfo.error} />
-          </WarningPanel>
-        </Box>
-      )}
-      <Box bg="neutral" p="4">
-        <ReactJson
-          src={configInfo.config as object}
-          name="config"
-          enableClipboard={false}
-          theme={isDark ? 'chalk' : 'rjv-default'}
+    <Box className={styles.stack}>
+      {configInfo.error && (
+        <Alert
+          status="warning"
+          icon
+          title="Config validation failed"
+          description={<WarningContent error={configInfo.error} />}
         />
-      </Box>
+      )}
+      <Card className={styles.panel}>
+        <CardHeader className={styles.header}>
+          <Text as="h2" variant="title-small">
+            Configuration
+          </Text>
+        </CardHeader>
+        <div className={styles.jsonViewer}>
+          <ReactJson
+            src={configInfo.config as object}
+            name="config"
+            enableClipboard={false}
+            style={{
+              backgroundColor: 'transparent',
+              fontFamily: 'var(--bui-font-monospace)',
+              fontSize: 'var(--bui-font-size-3)',
+              lineHeight: 1.7,
+            }}
+            theme={isDark ? 'chalk' : 'rjv-default'}
+          />
+        </div>
+      </Card>
     </Box>
   );
 };

@@ -475,7 +475,7 @@ import { Tabs, TabList, Tab, TabPanel } from '@backstage/ui';
 ```
 
 Preserve any additional side effects from the original change handler when
-adapting it to BUI's key-based callback.
+adapting it to the key-based BUI callback.
 
 ### 11. Menu pattern
 
@@ -924,7 +924,7 @@ relative value if the target theme has a custom spacing function.
 | `background.paper`   | `var(--bui-bg-neutral-1)`                  |
 | `background.default` | `var(--bui-bg-app)`                        |
 | `primary.main`       | `var(--bui-bg-solid)` or `var(--bui-ring)` |
-| `error.main`         | `var(--bui-fg-danger)`                     |
+| `error.main`         | `var(--bui-fg-negative)`                   |
 | `action.hover`       | `var(--bui-bg-neutral-1-hover)`            |
 | `divider`            | `var(--bui-border-1)`                      |
 
