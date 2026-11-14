@@ -51,6 +51,7 @@ import {
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { applyEntityFilterToQuery } from './request/applyEntityFilterToQuery';
+import { sortsAfterMatching } from './request/longInLists';
 import {
   applySetEntityFilterToQuery,
   needsSetFilter,
@@ -412,6 +413,17 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       sortKey || 'metadata.uid',
     ];
 
+    // Cursors of permissioned requests carry the permission filter and the
+    // request filter separately. They are applied as one filter, the same way
+    // the first page combines them, since how a long `$in` list is matched
+    // depends on its siblings (see `request/longInLists.ts`).
+    const cursorFilters = [
+      ...(cursor.filter ? [entityFilterToFilterPredicate(cursor.filter)] : []),
+      ...(cursor.query ? [cursor.query] : []),
+    ];
+    const combinedFilter: FilterPredicate | undefined =
+      cursorFilters.length > 1 ? { $all: cursorFilters } : cursorFilters[0];
+
     // Shared predicate logic applied to both the list CTE and the
     // standalone count query so they stay in sync. The `searchInScope`
     // flag indicates whether a `search` table is already joined in the
@@ -438,20 +450,8 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           applyEntityFilterToQuery(filterOptions);
         }
       };
-      // Cursors of permissioned requests carry the permission filter and the
-      // request filter separately. They are applied as one filter, the same
-      // way the first page combines them, since how a long `$in` list is
-      // matched depends on its siblings (see `request/longInLists.ts`).
-      const cursorFilters = [
-        ...(cursor.filter
-          ? [entityFilterToFilterPredicate(cursor.filter)]
-          : []),
-        ...(cursor.query ? [cursor.query] : []),
-      ];
-      if (cursorFilters.length === 1) {
-        applyFilter(cursorFilters[0]);
-      } else if (cursorFilters.length > 1) {
-        applyFilter({ $all: cursorFilters });
+      if (combinedFilter) {
+        applyFilter(combinedFilter);
       }
 
       if (normalizedFullTextFilterTerm) {
@@ -578,8 +578,19 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     if (isFetchingBackwards) {
       order = invertOrder(order);
     }
+    // With a sort field, a list that is matched as a set of entity IDs is
+    // sorted after matching, see `sortsAfterMatching`
+    const sortExpression =
+      sortField &&
+      this.database.client.config.client === 'pg' &&
+      combinedFilter &&
+      sortsAfterMatching(combinedFilter, {
+        smallPage: limit <= SMALL_PAGE_LIMIT,
+      })
+        ? this.database.raw(`("filtered"."value" || '')`)
+        : 'filtered.value';
     dbQuery.orderBy([
-      ...(sortField ? [{ column: 'filtered.value', order }] : []),
+      ...(sortField ? [{ column: sortExpression, order }] : []),
       { column: 'filtered.entity_id', order },
     ]);
 
