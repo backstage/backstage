@@ -135,7 +135,7 @@ export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
                   )}
                 </TagGroup>
               )}
-              <Flex gap="1">
+              <Flex gap="1" className={styles.actions}>
                 {isUserEntity(entity) && <UserCardActions entity={entity} />}
                 {isGroupEntity(entity) && <GroupCardActions entity={entity} />}
                 <EntityCardActions entity={entity} />

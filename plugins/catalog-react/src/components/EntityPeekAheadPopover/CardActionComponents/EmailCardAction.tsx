@@ -31,13 +31,12 @@ export const EmailCardAction = (props: { email: string }) => {
       variant="tertiary"
       size="small"
       iconStart={<RiMailLine />}
-      href={t('entityPeekAheadPopover.emailCardAction.subTitle', {
+      aria-label={t('entityPeekAheadPopover.emailCardAction.title', {
         email: props.email,
       })}
+      href={`mailto:${props.email}`}
     >
-      {t('entityPeekAheadPopover.emailCardAction.title', {
-        email: props.email,
-      })}
+      {t('entityPeekAheadPopover.emailCardAction.ariaLabel')}
     </ButtonLink>
   );
 };

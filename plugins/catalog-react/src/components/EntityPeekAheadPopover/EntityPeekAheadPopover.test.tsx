@@ -37,6 +37,16 @@ const catalogApi = catalogApiMock({
       },
       spec: { type: 'service' },
     },
+    {
+      apiVersion: '',
+      kind: 'User',
+      metadata: { namespace: 'default', name: 'user1' },
+      spec: {
+        profile: {
+          email: 'a-very-long-email-address@organization.example.com',
+        },
+      },
+    },
   ],
 });
 
@@ -66,6 +76,9 @@ describe('<EntityPeekAheadPopover/>', () => {
         <EntityPeekAheadPopover entityRef="component:default/service2">
           <Button data-testid="popover2">s2</Button>
         </EntityPeekAheadPopover>
+        <EntityPeekAheadPopover entityRef="user:default/user1">
+          <Button>user</Button>
+        </EntityPeekAheadPopover>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -92,6 +105,17 @@ describe('<EntityPeekAheadPopover/>', () => {
     expect(
       await screen.findByText('Error: component:default/service2 not found'),
     ).toBeInTheDocument();
+    await interaction.hover(screen.getByRole('button', { name: 'user' }));
+    const emailAction = await screen.findByRole('link', {
+      name: 'Email a-very-long-email-address@organization.example.com',
+    });
+    expect(emailAction).toHaveTextContent('Email');
+    expect(emailAction).toHaveAttribute(
+      'href',
+      'mailto:a-very-long-email-address@organization.example.com',
+    );
+    expect(emailAction).not.toHaveTextContent('a-very-long-email-address');
+    expect(screen.getByRole('link', { name: 'Show details' })).toBeVisible();
   });
 
   it('delays loading, cancels opening on leave, and keeps previews open while keyboard focus remains', async () => {
