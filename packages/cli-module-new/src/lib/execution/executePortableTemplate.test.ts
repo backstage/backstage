@@ -62,6 +62,7 @@ describe('executePortableTemplate', () => {
   afterEach(() => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
+    process.exitCode = undefined;
   });
 
   it('installs the workspace and fixes lint in the new package', async () => {
@@ -97,6 +98,7 @@ describe('executePortableTemplate', () => {
       "Warning: Failed to execute command 'yarn install', Error: NOPE",
     );
     expect(mockRunScript).toHaveBeenCalledTimes(2);
+    expect(process.exitCode).toBeUndefined();
   });
 
   it('stops when a signal ends a command', async () => {
@@ -115,6 +117,7 @@ describe('executePortableTemplate', () => {
     expect(Task.log).not.toHaveBeenCalledWith(
       expect.stringContaining('Successfully created'),
     );
+    expect(process.exitCode).toBe(1);
   });
 
   it('stops when the CLI gets a signal during a command, however it ends', async () => {
@@ -132,6 +135,7 @@ describe('executePortableTemplate', () => {
     );
     expect(Task.error).toHaveBeenCalledWith('🔥  Failed to create plugin!');
     expect(process.listenerCount('SIGINT')).toBe(listeners);
+    expect(process.exitCode).toBe(1);
 
     // Also when the command succeeds after the signal
     jest.mocked(Task.error).mockClear();

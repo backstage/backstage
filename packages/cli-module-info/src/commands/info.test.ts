@@ -215,7 +215,7 @@ describe('info', () => {
     });
     expect(warn).toHaveBeenCalledWith(
       expect.stringContaining(
-        'Failed to read yarn.lock, installed package versions are not listed',
+        'Failed to read yarn.lock, installed packages are not listed',
       ),
     );
   });
