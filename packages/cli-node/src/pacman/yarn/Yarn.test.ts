@@ -86,6 +86,8 @@ describe('Yarn', () => {
   });
 
   it('should only detect the version when it is needed, and retry after a failure', async () => {
+    // Drop the version checks made in beforeAll, so that this test can run alone
+    mockRunOutput.mockClear();
     const yarn = await Yarn.create({ workspaceRootDir: '/flaky' });
     await yarn.loadLockfile().catch(() => {});
     await yarn.supportsBackstageVersionProtocol();
@@ -284,7 +286,6 @@ a@^1:
   version: "1.0.0"
 `,
     });
-    mockRunOutput.mockResolvedValueOnce('4.5.0\n');
     const yarn = await Yarn.create({ workspaceRootDir: mockDir.path });
 
     const loaded = await yarn.loadLockfile();
