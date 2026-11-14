@@ -30,7 +30,7 @@ import {
 import { createTranslationRef } from '../translation';
 import { act, screen, waitFor } from '@testing-library/react';
 import { ReactNode, useEffect } from 'react';
-import { useRouteResolution } from '../routing/useRouteResolution';
+import { useRouteContext } from '../routing/useRouteContext';
 import { useAppNode } from '../components/AppNodeProvider';
 import { pluginWrapperApiRef } from '../apis/definitions/PluginWrapperApi';
 import { analyticsApiRef } from '../apis/definitions/AnalyticsApi';
@@ -489,7 +489,7 @@ describe('PageBlueprint', () => {
     const SubPageRouter = ({ children }: { children?: ReactNode }) => (
       <div
         data-testid="sub-page-router"
-        data-mount={useRouteResolution().matches.at(-1)?.basePath}
+        data-mount={useRouteContext().matches.at(-1)?.basePath}
       >
         {children}
       </div>
@@ -497,7 +497,7 @@ describe('PageBlueprint', () => {
     const FirstSubPage = () => (
       <div
         data-testid="first-page"
-        data-mount={useRouteResolution().matches.at(-1)?.basePath}
+        data-mount={useRouteContext().matches.at(-1)?.basePath}
       />
     );
     const parentPage = PageBlueprint.make({
@@ -544,7 +544,7 @@ describe('PageBlueprint', () => {
     async ({ mountPath, basePath }) => {
       const Child = ({ name }: { name: string }) => (
         <p>
-          {name} at {useRouteResolution().matches.at(-1)?.basePath}
+          {name} at {useRouteContext().matches.at(-1)?.basePath}
         </p>
       );
       const parent = PageBlueprint.make({

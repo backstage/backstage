@@ -16,10 +16,7 @@
 
 import { screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
-import {
-  useRouteResolution,
-  PageBlueprint,
-} from '@backstage/frontend-plugin-api';
+import { useRouteContext, PageBlueprint } from '@backstage/frontend-plugin-api';
 import {
   UNSAFE_RouteContext,
   useInRouterContext,
@@ -107,8 +104,8 @@ describe('a duplicated copy of react-router-dom', () => {
     // The framework package is a second copy too — same isolation, same
     // reasoning. Its app-node and API contexts are shared through the version
     // bridge, which is what the behavioural assertions below rely on.
-    expect(otherFrontend.useRouteResolution).toBeInstanceOf(Function);
-    expect(otherFrontend.useRouteResolution).not.toBe(useRouteResolution);
+    expect(otherFrontend.useRouteContext).toBeInstanceOf(Function);
+    expect(otherFrontend.useRouteContext).not.toBe(useRouteContext);
     expect(otherAdapterModule.ReactRouterV6PageRouter).not.toBe(
       ReactRouterV6PageRouter,
     );
@@ -136,7 +133,7 @@ describe('a duplicated copy of react-router-dom', () => {
         inRouterContext: otherCopy.useInRouterContext(),
         // The framework's mount crosses copies intact, because it is not
         // carried on a copy-local context object.
-        mount: otherFrontend.useRouteResolution().matches.at(-1) ?? null,
+        mount: otherFrontend.useRouteContext().matches.at(-1) ?? null,
       };
       return <span data-testid="report">{JSON.stringify(report)}</span>;
     };
@@ -170,7 +167,7 @@ describe('a duplicated copy of react-router-dom', () => {
       const resolved = useResolvedPath('./deep');
       const params = useParams();
       const inRouterContext = useInRouterContext();
-      const mount = useRouteResolution().matches.at(-1);
+      const mount = useRouteContext().matches.at(-1);
       const report = {
         location: location.pathname,
         resolved: resolved.pathname,

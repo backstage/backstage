@@ -41,7 +41,7 @@ export {
   type AppSearchParamsInit,
   type SetAppSearchParams,
 } from './useAppSearchParams';
-export { useRouteResolution } from './useRouteResolution';
+export { useRouteContext } from './useRouteContext';
 
 export { RouterLink, type RouterLinkProps } from './RouterLink';
 

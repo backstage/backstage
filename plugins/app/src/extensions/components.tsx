@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  useRouteResolution,
+  useRouteContext,
   NotFoundErrorPage as SwappableNotFoundErrorPage,
   Progress as SwappableProgress,
   ErrorDisplay as SwappableErrorDisplay,
@@ -90,7 +90,7 @@ export const PageLayout = SwappableComponentBlueprint.make({
           children,
         } = props;
         // Breadcrumbs fall back to the framework-owned page mount.
-        const pageMount = useRouteResolution().matches.at(-1);
+        const pageMount = useRouteContext().matches.at(-1);
         const parentPath = normalizeBasePath(pageMount?.basePath ?? '');
         // Empty string titleLink is treated as unset (same as undefined) so the
         // breadcrumb still points at the page mount path rather than "".

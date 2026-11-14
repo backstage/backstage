@@ -19,7 +19,7 @@ import path from 'node:path';
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
-  useRouteResolution,
+  useRouteContext,
   PageBlueprint,
   SubPageBlueprint,
   appHistoryApiRef,
@@ -276,7 +276,7 @@ describe('multi-router coexistence', () => {
 
     const TreeV7SubPage = () => {
       const location = useLocation();
-      const pageMount = useRouteResolution().matches.at(-1);
+      const pageMount = useRouteContext().matches.at(-1);
       const homeHref = useRouteRef(homeRouteRef);
       return (
         <div data-testid="tree-subpage">
@@ -437,7 +437,7 @@ describe('multi-router coexistence', () => {
     // adapter per page, which is precisely what this case would have caught.
     const NestedProbe = () => {
       const location = useLocation();
-      const mount = useRouteResolution().matches.at(-1);
+      const mount = useRouteContext().matches.at(-1);
       return (
         <div data-testid="nested-probe">
           {/* Answered by the inner v7 adapter, scoped to the page mount. */}
@@ -513,7 +513,7 @@ describe('multi-router coexistence', () => {
       const v6Params = reactRouterV6.useParams();
       const v6Resolved = reactRouterV6.useResolvedPath('deep').pathname;
       const v7Location = useLocation();
-      const mount = useRouteResolution().matches.at(-1);
+      const mount = useRouteContext().matches.at(-1);
       return (
         <div data-testid="nested-probe">
           {/* Answered by the inner v6 adapter, scoped to the page mount. */}

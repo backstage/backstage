@@ -39,7 +39,7 @@ const EMPTY_RESULT: { matches: readonly RouteResolutionMatch[] } = {
  *
  * @public
  */
-export function useRouteResolution(): {
+export function useRouteContext(): {
   matches: readonly RouteResolutionMatch[];
 } {
   const node = useAppNode();

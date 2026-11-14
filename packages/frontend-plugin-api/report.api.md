@@ -2562,6 +2562,11 @@ export function useBreadcrumbEntries(): {
 export function useNavigation(): Navigation;
 
 // @public
+export function useRouteContext(): {
+  matches: readonly RouteResolutionMatch[];
+};
+
+// @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(
   routeRef:
     | RouteRef<TParams>
@@ -2573,11 +2578,6 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 export function useRouteRefParams<Params extends AnyRouteRefParams>(
   routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params;
-
-// @public
-export function useRouteResolution(): {
-  matches: readonly RouteResolutionMatch[];
-};
 
 // @public (undocumented)
 export const useTranslationRef: <TMessages extends { [key in string]: string }>(

@@ -29,7 +29,7 @@ import {
   type Navigation,
   useApi,
   useApiHolder,
-  useRouteResolution,
+  useRouteContext,
 } from '@backstage/frontend-plugin-api';
 import { isExternalTarget, sanitizeHref } from '@internal/frontend';
 import type { RouterHistory } from '@tanstack/history';
@@ -143,7 +143,7 @@ export function createTanStackPageRouter(
   options: CreateTanStackPageRouterOptions,
 ): ComponentType<{ children?: ReactNode }> {
   return function TanStackPageRouterAdapter(props: { children?: ReactNode }) {
-    const mount = useRouteResolution().matches.at(-1);
+    const mount = useRouteContext().matches.at(-1);
     const routePattern = mount?.routePattern;
     const appHistory = useApiHolder().get(appHistoryApiRef);
     const scoped = useMemo(() => {
