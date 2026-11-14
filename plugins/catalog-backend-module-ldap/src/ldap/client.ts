@@ -221,4 +221,11 @@ export class LdapClient {
     }
     return undefined;
   }
+
+  /**
+   * Closes the underlying LDAP connection.
+   */
+  async unbind(): Promise<void> {
+    await this.client.unbind();
+  }
 }

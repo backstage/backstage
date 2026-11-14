@@ -130,6 +130,21 @@ The `secret` is the password of the same user. In this example, it is given in
 the form of an environment variable `LDAP_SECRET`, that has to be set when the
 backend starts.
 
+### Parallel read behavior
+
+By default, the provider reads users and groups concurrently using separate
+LDAP connections. Set `disableParallelReads` to `true` to use one connection
+and read them sequentially. This can reduce concurrent connection load on the
+LDAP server, at the cost of a longer refresh time.
+
+```yaml
+catalog:
+  providers:
+    ldapOrg:
+      default:
+        disableParallelReads: true
+```
+
 ### users
 
 The `users` block defines the settings that govern the reading and
@@ -156,7 +171,20 @@ options:
   # to filter out disabled users.
   filter: (uid=*)
   # The attribute selectors for each item, as passed to the LDAP server.
-  attributes: ['*', '+']
+  # By default only attributes needed for entity mapping are requested. Custom
+  # `map.*` overrides are included automatically. Set `attributes: ['*', '+']`
+  # to load all attributes if your transformers need additional LDAP fields.
+  attributes:
+    - dn
+    - entryDN
+    - distinguishedName
+    - entryUUID
+    - objectGUID
+    - ipaUniqueID
+    - uid
+    - cn
+    - mail
+    - memberOf
   # This field is either 'false' to disable paging when reading from the
   # server, or an object on the form '{ pageSize: 100, pagePause: true }' that
   # specifies the details of how the paging shall work.
@@ -238,7 +266,22 @@ options:
   # to filter out disabled groups.
   filter: (&(objectClass=some-group-class)(!(groupType=email)))
   # The attribute selectors for each item, as passed to the LDAP server.
-  attributes: ['*', '+']
+  # By default only attributes needed for entity mapping are requested. Custom
+  # `map.*` overrides are included automatically. Set `attributes: ['*', '+']`
+  # to load all attributes if your transformers need additional LDAP fields.
+  attributes:
+    - dn
+    - entryDN
+    - distinguishedName
+    - entryUUID
+    - objectGUID
+    - ipaUniqueID
+    - uid
+    - cn
+    - description
+    - groupType
+    - memberOf
+    - member
   # This field is either 'false' to disable paging when reading from the
   # server, or an object on the form '{ pageSize: 100, pagePause: true }' that
   # specifies the details of how the paging shall work.
