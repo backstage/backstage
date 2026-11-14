@@ -51,13 +51,13 @@ createBackendPlugin({
 });
 ```
 
-`startActiveSpan(name, fn, options?)` runs `fn` inside a new active span. The span is finished automatically when `fn` resolves, and on a thrown error the exception is recorded, `error.type` is set from the error's `name`, and the span status is set to `ERROR` — you do not need to write a `try/catch/finally` for that.
+`startActiveSpan(name, fn)` or `startActiveSpan(name, options, fn)` runs `fn` inside a new active span. The span is finished automatically when `fn` resolves, and on a thrown error the exception is recorded, `error.type` is set from the error's `name`, and the span status is set to `ERROR` — you do not need to write a `try/catch/finally` for that.
 
 Every span emitted through the service is automatically attributed to the calling plugin via `backstage.plugin.id` (matching `pluginMetadata.getId()`). Tracing backends can use this to filter all activity for a given plugin without inspecting the OpenTelemetry instrumentation scope. If your span represents work logically owned by a different plugin (for example, a wrapper that dispatches into another plugin's code), call `span.setAttribute('backstage.plugin.id', 'other-plugin')` from inside the callback to re-attribute it.
 
 ## Span Options
 
-The third argument to `startActiveSpan` is an optional options object:
+To configure the span, pass an options object as the second argument, before the callback:
 
 | Property      | Type                       | Description                                                                                          |
 | ------------- | -------------------------- | ---------------------------------------------------------------------------------------------------- |
@@ -163,11 +163,11 @@ If both `credentials` and `request` are supplied, `credentials` wins — the ser
 async ({ credentials }) => {
   await tracing.startActiveSpan(
     'process-tool-call',
+    { credentials },
     async span => {
       // ... span automatically has backstage.principal.type, and (if enabled)
       // enduser.id matching the credentials' principal ...
     },
-    { credentials },
   );
 };
 ```
