@@ -236,6 +236,21 @@ describe('command entrypoint', () => {
     );
     expect(buildAppMock).toHaveBeenLastCalledWith(expect.any(String), 'yarn');
 
+    // A custom template only gets pnpm when the option asks for it
+    await createApp({
+      templatePath: 'templateDirectory',
+    } as unknown as Command);
+    expect(templatingMock.mock.lastCall?.[2]).toEqual(
+      expect.objectContaining({ packageManager: 'yarn' }),
+    );
+    await createApp({
+      templatePath: 'templateDirectory',
+      packageManager: 'pnpm',
+    } as unknown as Command);
+    expect(templatingMock.mock.lastCall?.[2]).toEqual(
+      expect.objectContaining({ packageManager: 'pnpm' }),
+    );
+
     process.env.npm_config_user_agent =
       'yarn/4.13.0 npm/? node/v22.12.0 linux x64';
     await createApp({} as unknown as Command);
@@ -270,7 +285,13 @@ describe('command entrypoint', () => {
       'pnpm is not available. Please install pnpm 11.28 or a later 11.x release, or pnpm 12.7 or later before creating a Backstage app.',
     );
 
-    for (const version of ['12.6.0', '11.27.1', '10.30.0']) {
+    for (const version of [
+      '12.6.0',
+      '11.27.1',
+      '10.30.0',
+      '12.7.0-rc.1',
+      '11.28.0-beta.0',
+    ]) {
       tryCommandForVersionMock.mockImplementation(async (command: string) => {
         if (command === 'pnpm -v') {
           return { version, error: undefined };
@@ -286,7 +307,13 @@ describe('command entrypoint', () => {
 
     exitMock.mockImplementation(() => undefined);
     promptMock.mockResolvedValue({ name: 'MyApp' });
-    for (const version of ['11.28.0', '12.7.0', '13.0.0']) {
+    for (const version of [
+      '11.28.0',
+      '11.28.1-rc.0',
+      '12.7.0',
+      '12.8.0-rc.1',
+      '13.0.0',
+    ]) {
       templatingMock.mockClear();
       tryCommandForVersionMock.mockImplementation(async (command: string) => {
         if (command === 'pnpm -v') {

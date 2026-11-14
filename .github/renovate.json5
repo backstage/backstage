@@ -8,6 +8,13 @@
   prConcurrentLimit: 20,
   postUpdateOptions: ['yarnDedupeHighest'],
   rangeStrategy: 'update-lockfile',
+  // The CI workflow of the create-app template is a Handlebars template,
+  // which the default file patterns of the manager don't match
+  'github-actions': {
+    managerFilePatterns: [
+      '/(^|/)templates/[^/]+/\\.github/workflows/[^/]+\\.ya?ml\\.hbs$/',
+    ],
+  },
   ignoreDeps: [
     // ignored due to licensing issues. See #10992
     '@elastic/elasticsearch',
