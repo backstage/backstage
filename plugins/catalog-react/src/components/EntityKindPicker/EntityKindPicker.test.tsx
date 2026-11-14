@@ -144,6 +144,38 @@ describe('<EntityKindPicker/>', () => {
     });
   });
 
+  it('prefers the current kind filter over stale query parameters on mount', async () => {
+    const updateFilters = jest.fn();
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            filters: { kind: new EntityKindFilter('domain', 'Domain') },
+            queryParameters: { kind: 'component' },
+            updateFilters,
+          }}
+        >
+          <EntityKindPicker />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    await waitFor(() => {
+      expect(updateFilters).toHaveBeenLastCalledWith({
+        kind: new EntityKindFilter('domain', 'Domain'),
+      });
+    });
+
+    // Initializing from the stale query param would briefly (and, when filters
+    // are live, repeatedly) apply 'component' and flood the catalog with
+    // requests when the condensed filter layout remounts this picker.
+    expect(
+      updateFilters.mock.calls.some(
+        ([update]) => update.kind?.value === 'component',
+      ),
+    ).toBe(false);
+  });
+
   it('renders unknown kinds provided in query parameters', async () => {
     await renderInTestApp(
       <ApiProvider apis={apis}>
