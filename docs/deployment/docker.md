@@ -142,6 +142,71 @@ docker run -it -p 7007:7007 backstage
 You should then start to get logs in your terminal, and then you can open your
 browser at `http://localhost:7007`
 
+### Host Build with pnpm
+
+An app that uses pnpm, see [Package Managers](../tooling/package-managers.md),
+is built on the host with `pnpm install --frozen-lockfile`, `pnpm tsc`, and
+`pnpm build:backend`. The `Dockerfile` that `@backstage/create-app` creates for
+a pnpm app installs pnpm and differs in the install step:
+
+```Dockerfile
+# Install pnpm. Keep the version in sync with the packageManager field in package.json.
+RUN npm install -g pnpm@12.14.0
+
+# From here on we use the least-privileged `node` user to run the backend.
+USER node
+WORKDIR /app
+
+COPY --chown=node:node backstage.json ./
+
+# This switches many Node.js dependencies to production mode.
+ENV NODE_ENV=production
+
+# The skeleton contains the package.json of each package in the monorepo,
+# along with pnpm-lock.yaml, pnpm-workspace.yaml and any patch files and pnpmfile that the install needs.
+# With the root package.json, that's enough to run pnpm install.
+COPY --chown=node:node package.json packages/backend/dist/skeleton.tar.gz ./
+RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
+
+# For private registries, pass the token as an .npmrc build secret, since the build
+# doesn't see your environment variables. For example:
+#   NPMRC="//npm.acme.example/:_authToken=$NPM_TOKEN" pnpm build-image --secret id=npmrc,env=NPMRC
+# The registries in pnpm-workspace.yaml are part of the skeleton, but registry settings
+# that are only in an .npmrc file must be in the secret too.
+RUN --mount=type=secret,id=npmrc,target=/home/node/.npmrc,uid=1000 \
+    --mount=type=cache,target=/home/node/.local/share/pnpm/store,sharing=locked,uid=1000,gid=1000 \
+    pnpm install --frozen-lockfile --prod
+```
+
+The skeleton of a pnpm app does not use the `pnpm-lock.yaml` of the repo as it
+is. The backend build adjusts it to the packages in the skeleton: bundled
+packages such as the app have no dependencies there, so their lockfile entries
+are emptied. The skeleton also holds `pnpm-workspace.yaml`, the patch files
+that its `patchedDependencies` setting names, and the pnpmfile, since
+`pnpm install --frozen-lockfile` fails without them. The rest of the
+`Dockerfile` is the same as for Yarn, and the `.dockerignore` leaves out the
+`.yarn` entries.
+
+To install from a private registry, pass the token as a build secret in the
+format of an `.npmrc` file:
+
+```bash
+NPMRC="//npm.acme.example/:_authToken=$NPM_TOKEN" pnpm build-image --secret id=npmrc,env=NPMRC
+```
+
+The install step mounts the secret as the `.npmrc` of the `node` user, and it is
+not stored in the image. The secret must contain the token itself, since the
+build doesn't see your environment variables, so a `${NPM_TOKEN}` placeholder
+in it becomes an empty token. Passing your `~/.npmrc` with `src=$HOME/.npmrc`
+only works if it has the token itself, and `pnpm login` and `pnpm config set`
+store tokens in the configuration directory of pnpm instead. The `registry` and
+`registries` settings in `pnpm-workspace.yaml` are part of the skeleton, but the
+skeleton has no `.npmrc` file, so settings that are only in the `.npmrc` of the
+project, such as registry and proxy settings, must be in the secret too, and a
+`cafile` must point to a file in the image. The `npm install -g pnpm` step still
+downloads pnpm from the public npm registry. A build without the secret works
+as before.
+
 ## Multi-stage Build
 
 :::note
@@ -259,6 +324,15 @@ ENV NODE_ENV=production
 
 CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
 ```
+
+For a pnpm app, the first stage copies `pnpm-lock.yaml`,
+`pnpm-workspace.yaml`, any patch files, and the pnpmfile instead of the Yarn files, the
+second stage installs pnpm and runs `pnpm install --frozen-lockfile`,
+`pnpm tsc`, and `pnpm --filter backend build`, and the last stage installs pnpm
+and copies the root `package.json`, `backstage.json`, and the extracted
+skeleton, which already holds the `pnpm-lock.yaml`, `pnpm-workspace.yaml`,
+patch files, and pnpmfile that `pnpm install --frozen-lockfile --prod` needs. Point the cache
+mounts at the pnpm store, `/home/node/.local/share/pnpm/store`.
 
 Note that a newly created Backstage app will typically not have a `plugins/`
 folder, so you will want to comment that line out. This build also does not work

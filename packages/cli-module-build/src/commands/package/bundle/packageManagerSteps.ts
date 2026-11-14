@@ -1,0 +1,750 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { run, runOutput, RunOnOutput } from '@backstage/cli-common';
+import { PackageManager, Pnpm, Yarn } from '@backstage/cli-node/alpha';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import {
+  isAbsolute,
+  join as joinPath,
+  resolve as resolvePath,
+} from 'node:path';
+import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
+import { copyPnpmWorkspaceFiles } from '../../../lib/pnpmWorkspaceFiles';
+import { createStepLogger, showLogOnError } from './stepLogger';
+
+type StepLogger = ReturnType<typeof createStepLogger>;
+
+/**
+ * The steps of the bundle command that depend on the package manager of the
+ * source project. The bundle is a project of its own, and each package
+ * manager has its own way of turning the bundle directory into a project
+ * root, carrying over dependency overrides, and pruning and installing the
+ * lockfile.
+ */
+export interface BundlePackageManagerSteps {
+  /** The lockfile that is seeded into the bundle. */
+  lockfileName: string;
+
+  /**
+   * Establishes the bundle directory as its own project root, so that the
+   * seeded lockfile is the one the package manager reads and writes even when
+   * the output directory is inside another monorepo.
+   */
+  prepareBundleDir(options: {
+    targetDir: string;
+    rootDir: string;
+    rootPkg: Record<string, any>;
+  }): Promise<void>;
+
+  /**
+   * Reads the dependency overrides of the source project, which are merged
+   * into the overrides of the bundle.
+   */
+  readRootOverrides(options: {
+    rootDir: string;
+    rootPkg: Record<string, any>;
+  }): Promise<Record<string, string> | undefined>;
+
+  /**
+   * Stores the merged overrides of the bundle where the package manager reads
+   * them. On entry they are in the `resolutions` field of `targetPkg`, which
+   * is written to the bundle `package.json` afterwards. May also add other
+   * fields to `targetPkg` that the package manager needs in the bundle.
+   */
+  writeOverrides(options: {
+    targetDir: string;
+    rootDir: string;
+    rootPkg: Record<string, any>;
+    targetPkg: Record<string, unknown>;
+  }): Promise<void>;
+
+  /**
+   * Prunes the seeded lockfile of the bundle down to the entries that its
+   * `package.json` still needs, without network access.
+   */
+  pruneLockfile(options: {
+    targetDir: string;
+    rootDir: string;
+    verbose: boolean;
+  }): Promise<void>;
+
+  /**
+   * Installs the dependencies of the bundle from the pruned lockfile into a
+   * private `node_modules`, without modifying the lockfile.
+   */
+  installDependencies(options: {
+    targetDir: string;
+    verbose: boolean;
+  }): Promise<void>;
+
+  /** Removes files that the install left behind outside of `node_modules`. */
+  cleanupAfterInstall(targetDir: string): Promise<void>;
+}
+
+/**
+ * Captures the output of a step in a log file that is shown on failure and
+ * removed on success.
+ */
+async function runLoggedStep(
+  logFilePath: string,
+  verbose: boolean,
+  prefix: string,
+  step: (log: StepLogger) => Promise<void>,
+): Promise<void> {
+  const log = createStepLogger(logFilePath, verbose, prefix);
+  try {
+    await step(log);
+  } catch (err) {
+    await log.close();
+    await showLogOnError(log.path, verbose);
+    throw err;
+  }
+  await log.close();
+  await fs.remove(log.path);
+}
+
+// ── Yarn ─────────────────────────────────────────────────────────────────
+
+const yarnSteps: BundlePackageManagerSteps = {
+  lockfileName: 'yarn.lock',
+
+  async prepareBundleDir({ targetDir, rootDir, rootPkg }) {
+    const yarnrcLines = ['nodeLinker: node-modules'];
+    try {
+      // Include yarnPath so the same Yarn version that created the lockfile
+      // is used for pruning/installing -- lockfile formats differ across
+      // major Yarn versions (e.g. ~builtin vs optional!builtin patches).
+      const resolved = await runOutput(['yarn', 'config', 'get', 'yarnPath'], {
+        cwd: rootDir,
+      });
+      const yarnPathSentinels = new Set(['undefined', 'null']);
+      if (resolved && !yarnPathSentinels.has(resolved)) {
+        yarnrcLines.push(`yarnPath: ${resolved}`);
+      }
+    } catch {
+      // yarnPath not configured — check if corepack manages the version instead
+      if (!rootPkg.packageManager) {
+        console.warn(
+          chalk.yellow(
+            'No yarnPath configured and no packageManager field found. ' +
+              'The Yarn version in PATH will be used for lockfile operations.',
+          ),
+        );
+      }
+    }
+
+    await fs.writeFile(
+      joinPath(targetDir, '.yarnrc.yml'),
+      `${yarnrcLines.join('\n')}\n`,
+    );
+  },
+
+  async readRootOverrides({ rootPkg }) {
+    return rootPkg?.resolutions;
+  },
+
+  async writeOverrides() {
+    // Yarn reads the merged overrides from the `resolutions` field of the
+    // bundle package.json, where they already are.
+  },
+
+  async pruneLockfile({ targetDir, rootDir, verbose }) {
+    const sourceCacheFolder = await runOutput(
+      ['yarn', 'config', 'get', 'cacheFolder'],
+      { cwd: rootDir },
+    );
+
+    await runLoggedStep(
+      joinPath(targetDir, 'lockfile-prune.log'),
+      verbose,
+      '[lockfile-prune] ',
+      async pruneLog => {
+        await run(
+          ['yarn', 'install', '--no-immutable', '--mode', 'update-lockfile'],
+          {
+            cwd: targetDir,
+            env: {
+              YARN_ENABLE_GLOBAL_CACHE: 'false',
+              YARN_ENABLE_NETWORK: '0',
+              YARN_ENABLE_MIRROR: 'false',
+              YARN_CACHE_FOLDER: sourceCacheFolder,
+            },
+            onStdout: pruneLog.logRunOutput('out'),
+            onStderr: pruneLog.logRunOutput('err'),
+          },
+        ).waitForExit();
+      },
+    );
+  },
+
+  async installDependencies({ targetDir, verbose }) {
+    const yarn = await Yarn.create({ workspaceRootDir: targetDir });
+    await runLoggedStep(
+      joinPath(targetDir, 'yarn-install.log'),
+      verbose,
+      '[yarn-install] ',
+      async installLog => {
+        await yarn.install({
+          immutable: true,
+          onStdout: installLog.logRunOutput('out'),
+          onStderr: installLog.logRunOutput('err'),
+        });
+      },
+    );
+  },
+
+  async cleanupAfterInstall(targetDir) {
+    // Clean up .yarn directory created during install
+    const yarnDir = joinPath(targetDir, '.yarn');
+    if (await fs.pathExists(yarnDir)) {
+      await fs.remove(yarnDir);
+    }
+  },
+};
+
+// ── pnpm ─────────────────────────────────────────────────────────────────
+
+/**
+ * Settings of the source `pnpm-workspace.yaml` that the bundle copies.
+ *
+ * The first group makes the offline steps work. pnpm's store and metadata
+ * cache are global on the machine, and the offline steps rely on both having
+ * been filled by the install in the source project, so the bundle looks in
+ * the same place. The metadata cache is kept per registry, and
+ * `minimumReleaseAge` and `resolutionMode` select between separate metadata
+ * caches, and `allowBuilds` builds the same native dependencies as the source
+ * project.
+ *
+ * The second group changes what the lockfile resolves to. pnpm records these
+ * in the lockfile and re-resolves the seeded one when they do not match, which
+ * it does without an error, so a bundle built without them is quietly wrong.
+ */
+const PNPM_SETTINGS_TO_COPY = [
+  'storeDir',
+  'cacheDir',
+  'registry',
+  'registries',
+  'namedRegistries',
+  'minimumReleaseAge',
+  'minimumReleaseAgeExclude',
+  'resolutionMode',
+  'allowBuilds',
+  'packageExtensions',
+  'peerDependencyRules',
+  'ignoredOptionalDependencies',
+  'supportedArchitectures',
+  'autoInstallPeers',
+  'excludeLinksFromLockfile',
+  'dedupePeerDependents',
+  'catalog',
+  'catalogs',
+];
+
+const PNPM_PATH_SETTINGS = new Set(['storeDir', 'cacheDir']);
+
+// Settings with registry URLs, which may hold credentials
+const PNPM_REGISTRY_SETTINGS = new Set([
+  'registry',
+  'registries',
+  'namedRegistries',
+]);
+
+/** Settings that the bundle sets itself, or handles separately. */
+const PNPM_SETTINGS_SET_BY_BUNDLE = new Set([
+  // The bundle is a single package, not the workspace of the source project
+  'packages',
+  // The bundle always uses the flat layout that Yarn produces
+  'nodeLinker',
+  // Merged with the resolutions of the plugin and written from those
+  'overrides',
+  // Copied together with the files they point at
+  'patchedDependencies',
+  'pnpmfile',
+]);
+
+/**
+ * Settings that cannot change what the bundle installs. They describe the
+ * workspace layout of the source project, which the bundle does not have, or
+ * they only affect how the package manager is used during development. The
+ * hoisting patterns are in this group because the bundle picks its own linker.
+ */
+const PNPM_SETTINGS_WITHOUT_EFFECT_ON_BUNDLE = new Set([
+  'hoist',
+  'hoistPattern',
+  'hoistWorkspacePackages',
+  'publicHoistPattern',
+  'shamefullyHoist',
+  'modulesDir',
+  'virtualStoreDir',
+  'virtualStoreDirMaxLength',
+  'enableGlobalVirtualStore',
+  'sharedWorkspaceLockfile',
+  'linkWorkspacePackages',
+  'preferWorkspacePackages',
+  'saveWorkspaceProtocol',
+  'injectWorkspacePackages',
+  'ignoreWorkspaceRootCheck',
+  'recursiveInstall',
+  'strictPeerDependencies',
+  'enablePrePostScripts',
+  'verifyDepsBeforeRun',
+  'managePackageManagerVersions',
+  'updateNotifier',
+]);
+
+// Lines of an .npmrc file that pick the registry of all or of scoped packages
+const NPMRC_REGISTRY_PATTERN = /^\s*(@[^\s:=]+:)?registry\s*=/;
+
+// A `${VAR}` placeholder, which pnpm doesn't expand in the registry settings
+// of a project
+const ENV_PLACEHOLDER_PATTERN = /\$\{[^}]*\}/;
+
+/**
+ * Removes what may be a credential from a registry URL: the user and the
+ * password, and the query string, which some registries take a token in.
+ * pnpm keeps its metadata cache of a registry by the rest of the URL, so the
+ * offline steps still find it. The path is kept, since it is part of the
+ * registry.
+ *
+ * Returns undefined for a URL with a `${VAR}` placeholder. pnpm ignores such
+ * a project setting, so the source project used another registry, and the
+ * URL without its credentials and placeholders would point the bundle at a
+ * registry that the source didn't use. Also returns undefined for a URL that
+ * can't be parsed, which pnpm can't use either, and whose credentials can't
+ * be found safely, and for a URL with a control character, such as a line
+ * break from an escape in a quoted `.npmrc` value, which would add a line to
+ * the `.npmrc` of the bundle.
+ */
+function stripCredentialsFromUrl(url: string): string | undefined {
+  if (ENV_PLACEHOLDER_PATTERN.test(url) || hasControlCharacter(url)) {
+    return undefined;
+  }
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return undefined;
+  }
+  if (!parsed.username && !parsed.password && !parsed.search && !parsed.hash) {
+    return url;
+  }
+  parsed.username = '';
+  parsed.password = '';
+  parsed.search = '';
+  parsed.hash = '';
+  return parsed.toString();
+}
+
+/**
+ * Reads the value of an `.npmrc` setting like pnpm does: a value in quotes
+ * is unquoted, and other values end at a `#` or `;` comment that isn't
+ * escaped with a backslash.
+ */
+function readNpmrcValue(rawValue: string): string {
+  let value = rawValue.trim();
+  const quote = value.charAt(0);
+  if ((quote === '"' || quote === "'") && value.endsWith(quote)) {
+    if (quote === "'") {
+      value = value.slice(1, -1);
+    }
+    try {
+      return String(JSON.parse(value));
+    } catch {
+      return value;
+    }
+  }
+  let unescaped = '';
+  let escaped = false;
+  for (const char of value) {
+    if (escaped) {
+      unescaped += '\\;#'.includes(char) ? char : `\\${char}`;
+      escaped = false;
+    } else if (char === ';' || char === '#') {
+      break;
+    } else if (char === '\\') {
+      escaped = true;
+    } else {
+      unescaped += char;
+    }
+  }
+  return (escaped ? `${unescaped}\\` : unescaped).trim();
+}
+
+function hasControlCharacter(value: string): boolean {
+  for (let index = 0; index < value.length; index++) {
+    const code = value.charCodeAt(index);
+    if (code < 0x20 || code === 0x7f) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Removes the credentials from the URLs in a registry setting, and leaves out
+// the URLs that pnpm ignores. A registry is either listed with its URL as the
+// value, for example by scope, or declared with its URL as the key and its
+// settings as the value, which are kept as they are.
+function stripUrlCredentials(value: unknown): unknown {
+  if (typeof value === 'string') {
+    return stripCredentialsFromUrl(value);
+  }
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return Object.fromEntries(
+      Object.entries(value).flatMap(([key, entry]) => {
+        if (typeof entry === 'string') {
+          const url = stripCredentialsFromUrl(entry);
+          return url === undefined ? [] : [[key, url]];
+        }
+        const url = stripCredentialsFromUrl(key);
+        return url === undefined ? [] : [[url, entry]];
+      }),
+    );
+  }
+  return value;
+}
+
+async function readPnpmWorkspaceConfig(
+  rootDir: string,
+): Promise<Record<string, unknown>> {
+  const configPath = joinPath(rootDir, 'pnpm-workspace.yaml');
+  if (!(await fs.pathExists(configPath))) {
+    return {};
+  }
+  const parsed = parseYaml(await fs.readFile(configPath, 'utf8'));
+  return parsed && typeof parsed === 'object' ? parsed : {};
+}
+
+/**
+ * Turns pnpm output about a package that its cache lacks in an offline step
+ * into a description of what is missing and which settings decide where pnpm
+ * looks for it. pnpm wraps long messages across lines, so the output is
+ * matched with collapsed whitespace.
+ */
+export function describeMissingFromPnpmCache(
+  output: string,
+): string | undefined {
+  // eslint-disable-next-line no-control-regex
+  const text = output.replace(/[│├╰─▶×]|\x1b\[[0-9;]*m/g, ' ');
+  const collapsed = text.replace(/\s+/g, ' ');
+
+  const tarball = collapsed.match(/Failed to fetch tarball for (\S+) from/);
+  if (tarball || collapsed.includes('ERR_PNPM_NO_OFFLINE_TARBALL')) {
+    const name = tarball?.[1] ?? 'a package';
+    return (
+      `pnpm has no stored copy of ${name}. The bundle uses the package ` +
+      `store from the storeDir setting in the pnpm-workspace.yaml of the ` +
+      `project, so install the project with the same settings before bundling.`
+    );
+  }
+
+  const metadata = collapsed.match(/Failed to resolve (\S+) in package mirror/);
+  if (metadata || collapsed.includes('ERR_PNPM_NO_OFFLINE_META')) {
+    const name = metadata?.[1] ?? 'a package';
+    return (
+      `pnpm has no cached metadata for ${name}. The bundle reads the ` +
+      `metadata cache of the project, which pnpm keeps per registry, so it ` +
+      `uses the registry settings from the .npmrc and pnpm-workspace.yaml of ` +
+      `the project and from your user configuration, along with the ` +
+      `cacheDir, minimumReleaseAge, and resolutionMode settings. Install the ` +
+      `project with the same settings before bundling.`
+    );
+  }
+
+  return undefined;
+}
+
+/**
+ * Runs a pnpm step that is offline. When it fails because the pnpm cache
+ * lacks a package, the error says which one and which settings decide where
+ * pnpm looks for it. The step is not retried online, since a caller that asks
+ * for an offline bundle usually has no network to fall back to.
+ */
+async function runOfflinePnpmStep(
+  log: StepLogger,
+  description: string,
+  step: (output: {
+    onStdout: RunOnOutput;
+    onStderr: RunOnOutput;
+  }) => Promise<void>,
+): Promise<void> {
+  const chunks: string[] = [];
+  const capture =
+    (forward: RunOnOutput): RunOnOutput =>
+    data => {
+      chunks.push(data.toString('utf8'));
+      forward(data);
+    };
+
+  try {
+    await step({
+      onStdout: capture(log.logRunOutput('out')),
+      onStderr: capture(log.logRunOutput('err')),
+    });
+  } catch (error) {
+    const missing = describeMissingFromPnpmCache(chunks.join(''));
+    if (missing) {
+      throw new Error(`The offline ${description} failed. ${missing}`);
+    }
+    throw error;
+  }
+}
+
+const pnpmSteps: BundlePackageManagerSteps = {
+  lockfileName: 'pnpm-lock.yaml',
+
+  async prepareBundleDir({ targetDir, rootDir }) {
+    // The bundle pnpm-workspace.yaml is written together with the overrides
+    // once those are known, which is before pnpm first runs in the bundle.
+
+    // An earlier bundle in the same directory may have left files that pnpm
+    // reads, while the current project may not have them
+    for (const file of ['.npmrc', '.pnpmfile.mjs', '.pnpmfile.cjs']) {
+      await fs.remove(joinPath(targetDir, file));
+    }
+
+    // pnpm keeps its metadata cache per registry, so the offline steps only
+    // find the packages of the project when they use the same registries.
+    // Auth settings and the credentials in registry URLs are left out, since
+    // the offline steps don't use them and the bundle may be shipped. pnpm
+    // keeps the metadata cache of a registry without its credentials.
+    const npmrcPath = joinPath(rootDir, '.npmrc');
+    if (await fs.pathExists(npmrcPath)) {
+      // Any line break ends a line, as in pnpm 11, so that a setting can't
+      // hide in the value of another. Like in pnpm, the last line of a
+      // setting wins, also when that line is left out.
+      const registrySettings = new Map<string, string | undefined>();
+      for (const line of (await fs.readFile(npmrcPath, 'utf8')).split(
+        /[\r\n]+/,
+      )) {
+        if (NPMRC_REGISTRY_PATTERN.test(line)) {
+          const separator = line.indexOf('=');
+          registrySettings.set(
+            line.slice(0, separator).trim(),
+            stripCredentialsFromUrl(readNpmrcValue(line.slice(separator + 1))),
+          );
+        }
+      }
+      const registryLines = Array.from(registrySettings).flatMap(
+        ([key, url]) => {
+          if (url === undefined) {
+            return [];
+          }
+          // A value that pnpm would cut at a comment or unescape is quoted
+          const value = /[;#\\]/.test(url) ? JSON.stringify(url) : url;
+          return [`${key}=${value}`];
+        },
+      );
+      if (registryLines.length > 0) {
+        await fs.writeFile(
+          joinPath(targetDir, '.npmrc'),
+          `${registryLines.join('\n')}\n`,
+        );
+      }
+    }
+  },
+
+  async readRootOverrides({ rootDir, rootPkg }) {
+    const { overrides } = await readPnpmWorkspaceConfig(rootDir);
+    if (!overrides || typeof overrides !== 'object') {
+      return undefined;
+    }
+    // pnpm resolves a `$name` reference from the dependencies of the root
+    // package.json, which the bundle doesn't have, so it is resolved here
+    const rootDependencies: Record<string, string> = {
+      ...rootPkg.devDependencies,
+      ...rootPkg.dependencies,
+      ...rootPkg.optionalDependencies,
+    };
+    return Object.fromEntries(
+      Object.entries(overrides)
+        .filter((entry): entry is [string, string] => {
+          return typeof entry[1] === 'string';
+        })
+        .map(([selector, value]) => {
+          if (!value.startsWith('$')) {
+            return [selector, value];
+          }
+          const name = value.slice(1);
+          if (!Object.hasOwn(rootDependencies, name)) {
+            throw new Error(
+              `The override of ${selector} refers to ${value}, but the root package.json has no dependency on ${name}`,
+            );
+          }
+          return [selector, rootDependencies[name]];
+        }),
+    );
+  },
+
+  async writeOverrides({ targetDir, rootDir, rootPkg, targetPkg }) {
+    const rootConfig = await readPnpmWorkspaceConfig(rootDir);
+
+    // The bundle may be written outside the source project, where the
+    // `packageManager` pin of the source root is not found. Carry it over so
+    // that pnpm uses the version that created the seeded lockfile.
+    if (
+      typeof rootPkg.packageManager === 'string' &&
+      rootPkg.packageManager.startsWith('pnpm@')
+    ) {
+      targetPkg.packageManager = rootPkg.packageManager;
+    }
+
+    // Establish the bundle directory as its own pnpm workspace root, with the
+    // same flat node_modules layout that Yarn produces.
+    const config: Record<string, unknown> = { nodeLinker: 'hoisted' };
+    for (const key of PNPM_SETTINGS_TO_COPY) {
+      const value = rootConfig[key];
+      if (value === undefined) {
+        continue;
+      }
+      if (PNPM_PATH_SETTINGS.has(key) && typeof value === 'string') {
+        // Relative paths are relative to the source project root
+        config[key] =
+          isAbsolute(value) || value.startsWith('~')
+            ? value
+            : resolvePath(rootDir, value);
+      } else if (PNPM_REGISTRY_SETTINGS.has(key)) {
+        // Like in the .npmrc, the credentials are left out, and pnpm keeps
+        // its metadata cache of a registry without them
+        const stripped = stripUrlCredentials(value);
+        if (stripped !== undefined) {
+          config[key] = stripped;
+        }
+      } else {
+        config[key] = value;
+      }
+    }
+
+    // A patch is applied through a file, so the files come along with the
+    // setting that names them. The pnpmfiles change what the lockfile
+    // resolves to, and their checksum is part of it.
+    const copied = await copyPnpmWorkspaceFiles({
+      workspaceRootDir: rootDir,
+      targetDir,
+      settings: rootConfig,
+      targetName: 'the bundle',
+      // The bundle is pruned before it has a node_modules directory
+      checkPackageImports: true,
+    });
+    // The bundle is usually what gets deployed, so it must not quietly ship
+    // an unpatched package
+    if (copied.missingPatches.length > 0) {
+      throw new Error(
+        `The patch files of ${copied.missingPatches
+          .map(({ name, path }) => `${name} at ${path}`)
+          .join(', ')} were not found, so the bundle can't be patched`,
+      );
+    }
+    if (Object.keys(copied.patchedDependencies).length > 0) {
+      config.patchedDependencies = copied.patchedDependencies;
+    }
+    if (copied.pnpmfile !== undefined) {
+      config.pnpmfile = copied.pnpmfile;
+    }
+
+    // pnpm ignores the `resolutions` field, so the merged overrides go into
+    // the workspace file instead.
+    const overrides = targetPkg.resolutions as
+      | Record<string, string>
+      | undefined;
+    delete targetPkg.resolutions;
+    if (overrides && Object.keys(overrides).length > 0) {
+      config.overrides = overrides;
+    }
+
+    // A setting that is neither carried nor known to be irrelevant may change
+    // what the bundle installs, so say so rather than let the difference pass
+    // unnoticed.
+    const notCarried = Object.keys(rootConfig).filter(
+      key =>
+        !PNPM_SETTINGS_TO_COPY.includes(key) &&
+        !PNPM_SETTINGS_SET_BY_BUNDLE.has(key) &&
+        !PNPM_SETTINGS_WITHOUT_EFFECT_ON_BUNDLE.has(key),
+    );
+    if (notCarried.length > 0) {
+      console.warn(
+        chalk.yellow(
+          `These pnpm settings of the project are not carried into the bundle: ${chalk.cyan(
+            notCarried.join(', '),
+          )}. If the bundle resolves dependencies differently than the ` +
+            `project, this is the first place to look.`,
+        ),
+      );
+    }
+
+    await fs.writeFile(
+      joinPath(targetDir, 'pnpm-workspace.yaml'),
+      stringifyYaml(config),
+    );
+  },
+
+  async pruneLockfile({ targetDir, verbose }) {
+    const pnpm = await Pnpm.create({ workspaceRootDir: targetDir });
+    await runLoggedStep(
+      joinPath(targetDir, 'lockfile-prune.log'),
+      verbose,
+      '[lockfile-prune] ',
+      async pruneLog => {
+        await runOfflinePnpmStep(pruneLog, 'lockfile prune', async output => {
+          // The seeded lockfile belongs to another project, so the prune must
+          // be able to rewrite it even where pnpm defaults to a frozen
+          // lockfile, such as in CI.
+          await pnpm.run(
+            ['install', '--lockfile-only', '--no-frozen-lockfile', '--offline'],
+            output,
+          );
+        });
+      },
+    );
+  },
+
+  async installDependencies({ targetDir, verbose }) {
+    const pnpm = await Pnpm.create({ workspaceRootDir: targetDir });
+    await runLoggedStep(
+      joinPath(targetDir, 'pnpm-install.log'),
+      verbose,
+      '[pnpm-install] ',
+      async installLog => {
+        await runOfflinePnpmStep(installLog, 'install', async output => {
+          await pnpm.install({ immutable: true, offline: true, ...output });
+        });
+      },
+    );
+  },
+
+  async cleanupAfterInstall() {
+    // pnpm keeps its install state inside node_modules, in the same way that
+    // Yarn keeps node_modules/.yarn-state.yml, and leaves nothing behind
+    // outside of it.
+  },
+};
+
+/** Returns the bundle steps for the package manager of the source project. */
+export function getBundlePackageManagerSteps(
+  packageManager: PackageManager,
+): BundlePackageManagerSteps {
+  switch (packageManager.name()) {
+    case 'yarn':
+      return yarnSteps;
+    case 'pnpm':
+      return pnpmSteps;
+    default:
+      throw new Error(
+        `The package bundle command does not support ${packageManager.name()}`,
+      );
+  }
+}

@@ -24,7 +24,7 @@ import {
 } from '../types';
 import { installNewPackage } from './installNewPackage';
 import { writeTemplateContents } from './writeTemplateContents';
-import { run } from '@backstage/cli-common';
+import { detectPackageManager } from '@backstage/cli-node/alpha';
 
 type ExecuteNewTemplateOptions = {
   config: PortableTemplateConfig;
@@ -55,22 +55,61 @@ export async function executePortableTemplate(
     }
 
     if (!options.skipInstall) {
-      for (const command of [
-        ['yarn', 'install'],
-        ['yarn', 'lint', '--fix'],
-      ]) {
-        const commandStr = command.join(' ');
-        try {
-          await Task.forItem('executing', commandStr, async () => {
-            await run(command, {
+      const packageManager = await detectPackageManager();
+      const ignoreOutput = () => {};
+      for (const { args, execute } of [
+        {
+          args: ['install'],
+          execute: () =>
+            packageManager.install({
+              onStdout: ignoreOutput,
+              onStderr: ignoreOutput,
+            }),
+        },
+        {
+          args: ['lint', '--fix'],
+          execute: () =>
+            packageManager.runScript('lint', ['--fix'], {
               cwd: targetDir,
               stdio: 'ignore',
-            }).waitForExit();
-          });
+            }),
+        },
+      ]) {
+        const commandStr = packageManager.getCommandHint(args);
+
+        // A signal, for example from Ctrl+C, stops the creation, while other
+        // failures are only warnings. A signal that the CLI gets is noted
+        // here, since the package manager may then exit with an exit code
+        // rather than by the signal.
+        let interruptedBy: NodeJS.Signals | undefined;
+        const onSignal = (signal: NodeJS.Signals) => {
+          interruptedBy = signal;
+        };
+        process.on('SIGINT', onSignal);
+        process.on('SIGTERM', onSignal);
+        let failure: { error: unknown } | undefined;
+        try {
+          await Task.forItem('executing', commandStr, execute);
         } catch (error) {
-          const err = toError(error);
+          failure = { error };
+        } finally {
+          process.off('SIGINT', onSignal);
+          process.off('SIGTERM', onSignal);
+        }
+
+        if (interruptedBy) {
+          throw new Error(
+            `Command '${commandStr}' was interrupted by ${interruptedBy}`,
+          );
+        }
+        if (failure) {
+          if ((failure.error as { signal?: unknown } | undefined)?.signal) {
+            throw failure.error;
+          }
           Task.error(
-            `Warning: Failed to execute command '${commandStr}', ${err}`,
+            `Warning: Failed to execute command '${commandStr}', ${toError(
+              failure.error,
+            )}`,
           );
         }
       }
