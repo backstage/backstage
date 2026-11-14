@@ -317,6 +317,46 @@ describe('<MultiEntityPicker />', () => {
       expect(onChange).toHaveBeenCalledWith(['group:default/team-a', 'squ']);
     });
 
+    it('does not offer entities that are already in the form data', async () => {
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield entities;
+      });
+
+      const { getByRole, findByRole, queryByRole } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      await userEvent.click(getByRole('textbox'));
+      await findByRole('option', { name: /squad-b/ });
+
+      expect(queryByRole('option', { name: /team-a/ })).not.toBeInTheDocument();
+    });
+
+    it('does not select the highlighted option on blur when autoSelect is false', async () => {
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield entities;
+      });
+
+      const { getByRole, findByRole } = await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker
+            {...props}
+            uiSchema={{ 'ui:options': { autoSelect: false } }}
+          />
+        </Wrapper>,
+      );
+
+      const input = getByRole('textbox');
+      await userEvent.click(input);
+      await findByRole('option', { name: /squad-b/ });
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      fireEvent.blur(input);
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
     it('preserves existing data on selecting an existing option', async () => {
       catalogApi.streamEntities.mockImplementation(async function* () {
         yield entities;

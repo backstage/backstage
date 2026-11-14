@@ -18,9 +18,11 @@ import {
   MultiEntityPicker as Component,
   MultiEntityPickerFieldSchema,
 } from '../../components/fields/MultiEntityPicker';
+import { validateMultiEntityPickerValidation } from '../../components/fields/MultiEntityPicker/MultiEntityPicker';
 
 export const MultiEntityPicker = createFormField({
   component: Component,
   name: 'MultiEntityPicker',
+  validation: validateMultiEntityPickerValidation,
   schema: MultiEntityPickerFieldSchema,
 });
