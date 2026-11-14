@@ -447,6 +447,29 @@ export const connectionTypes: {
       apiKey?: string | undefined;
     }[];
   }>;
+  readonly sonarqube: ConnectionTypeDefinition<{
+    type: 'sonarqube';
+    cardinality: 'multiton';
+    lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      host: string;
+      baseUrl: string;
+      externalBaseUrl?: string | undefined;
+    };
+    auth: readonly (
+      | {
+          method: 'none';
+        }
+      | {
+          method: 'token';
+          token: string;
+          authType: 'basic' | 'bearer';
+        }
+    )[];
+  }>;
 };
 
 // @public (undocumented)
