@@ -22,6 +22,9 @@ type Props = CSS.Properties & {
   alpha?: boolean;
 };
 
+/**
+ * @deprecated Lifecycle is deprecated. Use Text or Badge from `@backstage/ui` instead.
+ */
 export type LifecycleClassKey = 'alpha' | 'beta';
 
 const useStyles = makeStyles(
@@ -42,6 +45,9 @@ const useStyles = makeStyles(
   { name: 'BackstageLifecycle' },
 );
 
+/**
+ * @deprecated Use Text or Badge from `@backstage/ui` to display lifecycle labels instead.
+ */
 export function Lifecycle(props: Props) {
   const classes = useStyles(props);
   const { shorthand, alpha } = props;

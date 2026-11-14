@@ -24,6 +24,9 @@ import { PropsWithChildren } from 'react';
 import { SimpleStepperFooter } from './SimpleStepperFooter';
 import { StepProps } from './types';
 
+/**
+ * @deprecated Compose an application-specific workflow instead of using SimpleStepper.
+ */
 export type SimpleStepperStepClassKey = 'end';
 
 const useStyles = makeStyles(
@@ -35,6 +38,9 @@ const useStyles = makeStyles(
   { name: 'SimpleStepperStep' },
 );
 
+/**
+ * @deprecated Compose an application-specific workflow instead of using SimpleStepper.
+ */
 export function SimpleStepperStep(props: PropsWithChildren<StepProps>) {
   const { title, children, end, actions, ...muiProps } = props;
   const classes = useStyles();

@@ -16,6 +16,9 @@
 
 import { ReactElement } from 'react';
 
+/**
+ * @deprecated Compose an application-specific workflow instead of using SimpleStepper.
+ */
 export type StepActions = {
   showNext?: boolean;
   canNext?: () => boolean;
@@ -38,6 +41,9 @@ export type StepActions = {
   skipText?: string;
 };
 
+/**
+ * @deprecated Compose an application-specific workflow instead of using SimpleStepper.
+ */
 export type StepProps = {
   title: string;
   children: ReactElement;
