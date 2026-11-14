@@ -133,3 +133,48 @@ export type ScheduledTasks = {
 export type TriggerScheduledTask = {
   error?: string;
 };
+
+/**
+ * The definition of a metric instrument created through the metrics service.
+ * This mirrors `TelemetryRegistryMetric` from `@backstage/backend-plugin-api/alpha`.
+ *
+ * @alpha
+ */
+export type OpenTelemetryMetric = {
+  pluginId: string;
+  name: string;
+  type:
+    | 'counter'
+    | 'upDownCounter'
+    | 'histogram'
+    | 'gauge'
+    | 'observableCounter'
+    | 'observableUpDownCounter'
+    | 'observableGauge';
+  description?: string;
+  unit?: string;
+};
+
+/**
+ * A span name recorded through the tracing service.
+ * This mirrors `TelemetryRegistrySpan` from `@backstage/backend-plugin-api/alpha`.
+ *
+ * @alpha
+ */
+export type OpenTelemetrySpan = {
+  pluginId: string;
+  name: string;
+  kind: 'internal' | 'server' | 'client' | 'producer' | 'consumer';
+  count: number;
+  lastSeen: string;
+};
+
+/** @alpha */
+export type OpenTelemetryMetrics = {
+  metrics: OpenTelemetryMetric[];
+};
+
+/** @alpha */
+export type OpenTelemetrySpans = {
+  spans: OpenTelemetrySpan[];
+};

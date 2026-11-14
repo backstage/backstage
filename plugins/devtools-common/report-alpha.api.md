@@ -7,10 +7,48 @@ import { BasicPermission } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
 
 // @alpha (undocumented)
+export const devToolsOpenTelemetryReadPermission: BasicPermission;
+
+// @alpha (undocumented)
 export const devToolsTaskSchedulerCreatePermission: BasicPermission;
 
 // @alpha (undocumented)
 export const devToolsTaskSchedulerReadPermission: BasicPermission;
+
+// @alpha
+export type OpenTelemetryMetric = {
+  pluginId: string;
+  name: string;
+  type:
+    | 'counter'
+    | 'upDownCounter'
+    | 'histogram'
+    | 'gauge'
+    | 'observableCounter'
+    | 'observableUpDownCounter'
+    | 'observableGauge';
+  description?: string;
+  unit?: string;
+};
+
+// @alpha (undocumented)
+export type OpenTelemetryMetrics = {
+  metrics: OpenTelemetryMetric[];
+};
+
+// @alpha
+export type OpenTelemetrySpan = {
+  pluginId: string;
+  name: string;
+  kind: 'internal' | 'server' | 'client' | 'producer' | 'consumer';
+  count: number;
+  lastSeen: string;
+};
+
+// @alpha (undocumented)
+export type OpenTelemetrySpans = {
+  spans: OpenTelemetrySpan[];
+};
 
 // @alpha (undocumented)
 export type ScheduledTasks = {

@@ -65,6 +65,14 @@ export const devToolsTaskSchedulerCreatePermission = createPermission({
 });
 
 /**
+ * @alpha
+ */
+export const devToolsOpenTelemetryReadPermission = createPermission({
+  name: 'devtools.opentelemetry.read',
+  attributes: { action: 'read' },
+});
+
+/**
  * List of all Devtools permissions
  *
  * @public

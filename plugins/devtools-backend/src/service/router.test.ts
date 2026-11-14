@@ -17,9 +17,14 @@
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
+import { devToolsOpenTelemetryReadPermission } from '@backstage/plugin-devtools-common/alpha';
+import { telemetryRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { createRouter } from './router';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
 
 const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
   jest.fn();
@@ -31,6 +36,8 @@ const permissionEvaluator: PermissionEvaluator = {
   authorize: mockedAuthorize,
   authorizeConditional: mockedPermissionQuery,
 };
+
+const telemetryRegistry = telemetryRegistryServiceMock.mock();
 
 describe('createRouter', () => {
   let app: express.Express;
@@ -52,8 +59,9 @@ describe('createRouter', () => {
       discovery: mockServices.discovery(),
       permissions: permissionEvaluator,
       httpAuth: mockServices.httpAuth(),
+      telemetryRegistry,
     });
-    app = express().use(router);
+    app = express().use(router).use(mockErrorHandler());
   });
 
   beforeEach(() => {
@@ -66,6 +74,55 @@ describe('createRouter', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
+    });
+  });
+
+  describe('GET /opentelemetry/metrics and /opentelemetry/spans', () => {
+    it('returns registry contents when allowed and 403 when denied', async () => {
+      const metrics = [
+        {
+          pluginId: 'catalog',
+          name: 'catalog.entities',
+          type: 'gauge',
+          unit: '{entity}',
+        },
+      ];
+      const spans = [
+        {
+          pluginId: 'catalog',
+          name: 'refresh',
+          kind: 'internal',
+          count: 3,
+          lastSeen: '2026-01-01T00:00:00.000Z',
+        },
+      ];
+      telemetryRegistry.listMetrics.mockResolvedValue({ metrics } as any);
+      telemetryRegistry.listSpans.mockResolvedValue({ spans } as any);
+      mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
+
+      const metricsResponse = await request(app).get('/opentelemetry/metrics');
+      expect(metricsResponse.status).toBe(200);
+      expect(metricsResponse.body).toEqual({ metrics });
+
+      const spansResponse = await request(app).get('/opentelemetry/spans');
+      expect(spansResponse.status).toBe(200);
+      expect(spansResponse.body).toEqual({ spans });
+
+      expect(mockedAuthorize).toHaveBeenCalledWith(
+        [{ permission: devToolsOpenTelemetryReadPermission }],
+        expect.anything(),
+      );
+
+      mockedAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
+      telemetryRegistry.listMetrics.mockClear();
+      telemetryRegistry.listSpans.mockClear();
+
+      expect((await request(app).get('/opentelemetry/metrics')).status).toBe(
+        403,
+      );
+      expect((await request(app).get('/opentelemetry/spans')).status).toBe(403);
+      expect(telemetryRegistry.listMetrics).not.toHaveBeenCalled();
+      expect(telemetryRegistry.listSpans).not.toHaveBeenCalled();
     });
   });
 });
