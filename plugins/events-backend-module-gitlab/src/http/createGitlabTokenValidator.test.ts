@@ -58,7 +58,7 @@ describe('createGitlabTokenValidator', () => {
   const mockLogger = mockServices.logger.mock();
 
   beforeEach(() => {
-    mockLogger.warn.mockClear();
+    jest.clearAllMocks();
   });
 
   it('missing secret without dangerouslyAllowUnauthenticatedEvents rejects with HTTP 403 and warns once at creation', async () => {

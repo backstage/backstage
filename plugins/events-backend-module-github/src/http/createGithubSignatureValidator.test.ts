@@ -82,7 +82,7 @@ describe('createGithubSignatureValidator', () => {
   const mockLogger = mockServices.logger.mock();
 
   beforeEach(() => {
-    mockLogger.warn.mockClear();
+    jest.clearAllMocks();
   });
   const validSignature = sign({ secret, algorithm: 'sha256' }, payloadString);
 

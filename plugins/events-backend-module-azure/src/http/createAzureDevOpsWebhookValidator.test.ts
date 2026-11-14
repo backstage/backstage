@@ -50,7 +50,7 @@ describe('createAzureDevOpsWebhookValidator', () => {
   const mockLogger = mockServices.logger.mock();
 
   beforeEach(() => {
-    mockLogger.warn.mockClear();
+    jest.clearAllMocks();
   });
 
   const requestWithHeader = (headerSecret: string | undefined) => {
