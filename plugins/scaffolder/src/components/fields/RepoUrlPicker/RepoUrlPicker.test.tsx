@@ -461,6 +461,91 @@ describe('RepoUrlPicker', () => {
     });
   });
 
+  describe('schema.default initialization', () => {
+    it('should initialize from schema.default when formData is undefined', async () => {
+      const onSubmit = jest.fn();
+      const { getAllByRole, getByRole } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApi],
+            [scmAuthApiRef, {}],
+            [scaffolderApiRef, mockScaffolderApi],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form
+              validator={validator}
+              schema={{
+                type: 'string',
+                default: 'github.com?owner=default-owner&repo=default-repo',
+              }}
+              uiSchema={{ 'ui:field': 'RepoUrlPicker' }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+              }}
+              onSubmit={onSubmit}
+            />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      const [ownerInput, repoInput] = getAllByRole('textbox');
+      expect(ownerInput).toHaveValue('default-owner');
+      expect(repoInput).toHaveValue('default-repo');
+
+      fireEvent.click(getByRole('button'));
+
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          formData: 'github.com?owner=default-owner&repo=default-repo',
+        }),
+        expect.anything(),
+      );
+    });
+
+    it('should use formData over schema.default when formData is provided', async () => {
+      const onSubmit = jest.fn();
+      const { getAllByRole, getByRole } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApi],
+            [scmAuthApiRef, {}],
+            [scaffolderApiRef, mockScaffolderApi],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form
+              validator={validator}
+              schema={{
+                type: 'string',
+                default: 'github.com?owner=default-owner&repo=default-repo',
+              }}
+              uiSchema={{ 'ui:field': 'RepoUrlPicker' }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+              }}
+              formData="github.com?owner=actual-owner&repo=actual-repo"
+              onSubmit={onSubmit}
+            />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      const [ownerInput, repoInput] = getAllByRole('textbox');
+      expect(ownerInput).toHaveValue('actual-owner');
+      expect(repoInput).toHaveValue('actual-repo');
+
+      fireEvent.click(getByRole('button'));
+
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          formData: 'github.com?owner=actual-owner&repo=actual-repo',
+        }),
+        expect.anything(),
+      );
+    });
+  });
+
   describe('RepoUrlPicker description', () => {
     const description = {
       fromSchema: 'RepoUrlPicker description from schema',
