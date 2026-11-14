@@ -64,7 +64,13 @@ export interface BundlePackageManagerSteps {
    * Stores the merged overrides of the bundle where the package manager reads
    * them. On entry they are in the `resolutions` field of `targetPkg`, which
    * is written to the bundle `package.json` afterwards. May also add other
-   * fields to `targetPkg` that the package manager needs in the bundle.
+   * fields to `targetPkg` that the package manager needs in the bundle, and
+   * write the project files of the bundle, such as the `pnpm-workspace.yaml`
+   * of a pnpm bundle together with the patch files and pnpmfiles it points
+   * at. This finishes the project setup that `prepareBundleDir` starts, so it
+   * must run, also without overrides, before the package manager first runs
+   * in the bundle. Rejects when the bundle can't reproduce the dependency
+   * resolution of the project, for example when a patch file is missing.
    */
   writeOverrides(options: {
     targetDir: string;
@@ -228,7 +234,9 @@ const yarnSteps: BundlePackageManagerSteps = {
  * the same place. The metadata cache is kept per registry, and
  * `minimumReleaseAge` and `resolutionMode` select between separate metadata
  * caches, and `allowBuilds` builds the same native dependencies as the source
- * project.
+ * project. `pmOnFail` decides what pnpm does when it isn't the version that
+ * the bundle `package.json` pins, which offline environments often set to
+ * keep pnpm from downloading that version.
  *
  * The second group changes what the lockfile resolves to. pnpm records these
  * in the lockfile and re-resolves the seeded one when they do not match, which
@@ -244,6 +252,7 @@ const PNPM_SETTINGS_TO_COPY = [
   'minimumReleaseAgeExclude',
   'resolutionMode',
   'allowBuilds',
+  'pmOnFail',
   'packageExtensions',
   'peerDependencyRules',
   'ignoredOptionalDependencies',
@@ -430,6 +439,77 @@ async function readPnpmWorkspaceConfig(
 }
 
 /**
+ * Replaces the catalog ranges of an embedded package with the ranges in the
+ * catalogs of the source project. pnpm only resolves catalog ranges in the
+ * projects of a workspace, and the embedded packages are directory
+ * dependencies of the bundle, so a catalog range there would fail the
+ * install. They keep these ranges since the dist workspace that they come
+ * from is installed with the lockfile of the project.
+ */
+async function resolveEmbeddedCatalogRanges(
+  packageJsonPath: string,
+  rootConfig: Record<string, unknown>,
+): Promise<void> {
+  const packageJson = await fs.readJson(packageJsonPath);
+  const catalogs = (rootConfig.catalogs ?? {}) as Record<
+    string,
+    Record<string, unknown> | undefined
+  >;
+  let changed = false;
+  for (const field of [
+    'dependencies',
+    'optionalDependencies',
+    'peerDependencies',
+  ]) {
+    const ranges = packageJson[field] as Record<string, unknown> | undefined;
+    for (const [name, range] of Object.entries(ranges ?? {})) {
+      if (typeof range !== 'string' || !range.startsWith('catalog:')) {
+        continue;
+      }
+      const catalogName = range.slice('catalog:'.length) || 'default';
+      const catalog =
+        catalogName === 'default'
+          ? (rootConfig.catalog as Record<string, unknown> | undefined) ??
+            catalogs.default
+          : catalogs[catalogName];
+      const resolved = catalog?.[name];
+      if (typeof resolved === 'string') {
+        ranges![name] = resolved;
+        changed = true;
+      } else if (field !== 'peerDependencies') {
+        throw new Error(
+          `${name} in ${packageJson.name} refers to the ${catalogName} catalog, which does not define it`,
+        );
+      }
+    }
+  }
+  if (changed) {
+    await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
+  }
+}
+
+/**
+ * Reads the path of the store that pnpm uses for the project, like the Yarn
+ * steps read the cache folder of the project. When pnpm can't tell, the
+ * bundle keeps the default store, which is the same one on the same disk.
+ */
+async function readPnpmStorePath(rootDir: string): Promise<string | undefined> {
+  try {
+    // pnpm records the version that package.json pins in the lockfile on
+    // every command, which would change the lockfile of the project here
+    const storePath = (
+      await runOutput(['pnpm', 'store', 'path'], {
+        cwd: rootDir,
+        env: { pnpm_config_lockfile: 'false' },
+      })
+    ).trim();
+    return storePath || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
  * Turns pnpm output about a package that its cache lacks in an offline step
  * into a description of what is missing and which settings decide where pnpm
  * looks for it. pnpm wraps long messages across lines, so the output is
@@ -447,8 +527,9 @@ export function describeMissingFromPnpmCache(
     const name = tarball?.[1] ?? 'a package';
     return (
       `pnpm has no stored copy of ${name}. The bundle uses the package ` +
-      `store from the storeDir setting in the pnpm-workspace.yaml of the ` +
-      `project, so install the project with the same settings before bundling.`
+      `store of the project, from the storeDir setting in its ` +
+      `pnpm-workspace.yaml or else the store that pnpm picks for it, so ` +
+      `install the project with the same settings before bundling.`
     );
   }
 
@@ -601,13 +682,27 @@ const pnpmSteps: BundlePackageManagerSteps = {
       rootPkg.packageManager.startsWith('pnpm@')
     ) {
       targetPkg.packageManager = rootPkg.packageManager;
+    } else if (
+      [rootPkg.devEngines?.packageManager]
+        .flat()
+        .some(entry => entry?.name === 'pnpm')
+    ) {
+      targetPkg.devEngines = {
+        ...(targetPkg.devEngines as Record<string, unknown> | undefined),
+        packageManager: rootPkg.devEngines.packageManager,
+      };
     }
+
+    // Without a storeDir setting, pnpm uses a store on the disk of the
+    // project, so a bundle on another disk would look in another store than
+    // the one that the install of the project filled.
+    const storeDir = rootConfig.storeDir ?? (await readPnpmStorePath(rootDir));
 
     // Establish the bundle directory as its own pnpm workspace root, with the
     // same flat node_modules layout that Yarn produces.
     const config: Record<string, unknown> = { nodeLinker: 'hoisted' };
     for (const key of PNPM_SETTINGS_TO_COPY) {
-      const value = rootConfig[key];
+      const value = key === 'storeDir' ? storeDir : rootConfig[key];
       if (value === undefined) {
         continue;
       }
@@ -664,6 +759,14 @@ const pnpmSteps: BundlePackageManagerSteps = {
     delete targetPkg.resolutions;
     if (overrides && Object.keys(overrides).length > 0) {
       config.overrides = overrides;
+    }
+    for (const range of Object.values(overrides ?? {})) {
+      if (range.startsWith('file:./embedded/')) {
+        await resolveEmbeddedCatalogRanges(
+          joinPath(targetDir, range.slice('file:'.length), 'package.json'),
+          rootConfig,
+        );
+      }
     }
 
     // A setting that is neither carried nor known to be irrelevant may change

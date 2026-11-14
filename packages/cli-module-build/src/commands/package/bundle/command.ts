@@ -74,6 +74,10 @@ interface BundleOptions {
  *   and `<output-dir>` is then passed as `--pre-packed-dir`.
  * - The `--alwaysPack` flag is required so that `workspace:^` and `backstage:^`
  *   dependency specs are resolved to concrete versions in the packed output.
+ *   With pnpm, the packed packages keep their `workspace:` and `catalog:`
+ *   ranges instead. The overrides for the embedded packages cover the
+ *   `workspace:` ranges in the bundle, and the `catalog:` ranges of embedded
+ *   packages are resolved from the catalogs.
  */
 export async function bundleCommand(opts: BundleOptions): Promise<void> {
   const pkgJsonPath = targetPaths.resolve('package.json');
