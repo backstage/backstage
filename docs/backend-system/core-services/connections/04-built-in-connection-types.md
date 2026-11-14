@@ -45,6 +45,9 @@ selection rules, and a typed consumption example.
 - [Harness](./types/harness.md) supports token authentication with an optional
   additional API key.
 
+- [Jenkins](./types/jenkins.md) supports username and API token authentication
+  and explicitly configured anonymous access.
+
 ## Common behavior
 
 Every [configured connection](./01-concepts.md#configured-connection) supports the
