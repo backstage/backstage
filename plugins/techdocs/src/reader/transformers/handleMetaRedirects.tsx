@@ -22,6 +22,7 @@ import { TechDocsRedirectNotification } from '../components/TechDocsRedirectNoti
 export const handleMetaRedirects = (
   navigate: (to: string) => void,
   entityName: string,
+  redirectNowLabel: string,
 ): Transformer => {
   const redirectAfterMs = 3000;
 
@@ -68,6 +69,7 @@ export const handleMetaRedirects = (
         renderReactElement(
           <TechDocsRedirectNotification
             message="This TechDocs page is no longer maintained. Will automatically redirect to the designated replacement."
+            buttonLabel={redirectNowLabel}
             handleButtonClick={() => navigate(redirectURL)}
             autoHideDuration={redirectAfterMs}
           />,
