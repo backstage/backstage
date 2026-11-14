@@ -65,7 +65,7 @@ Add the token validator for the topic `gitlab`:
       events: env.events,
       ingresses: {
 +       gitlab: {
-+         validator: createGitlabTokenValidator(env.config),
++         validator: createGitlabTokenValidator(env.config, env.logger),
 +       },
      },
      logger: env.logger,
@@ -74,9 +74,31 @@ Add the token validator for the topic `gitlab`:
 
 ## Configuration
 
+Webhook authentication is secure by default. Requests to the module's endpoint `/api/events/http/gitlab` without a configured `webhookSecret` return an HTTP 403 Forbidden status.
+
+This only covers the module's own endpoint. Routes created solely through `events.http.topics` have no validator attached and still accept unauthenticated requests.
+
+Add the following to your `app-config.yaml`:
+
 ```yaml
 events:
   modules:
     gitlab:
       webhookSecret: your-secret-token
 ```
+
+For more details on securing webhooks on GitLab, see the [GitLab documentation](https://docs.gitlab.com/ee/user/project/integrations/webhooks.html#validate-payloads-by-using-a-secret-token).
+
+### Development and testing
+
+For development or testing environments where a webhook secret cannot be configured, you can set `dangerouslyAllowUnauthenticatedEvents: true` as an explicit escape hatch under the module configuration:
+
+```yaml
+events:
+  modules:
+    gitlab:
+      dangerouslyAllowUnauthenticatedEvents: true
+```
+
+> [!WARNING]
+> Only use `dangerouslyAllowUnauthenticatedEvents: true` for development or testing. Never enable this option in production environments.

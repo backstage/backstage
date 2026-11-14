@@ -25,10 +25,10 @@ import { createAzureDevOpsWebhookValidator } from '../http/createAzureDevOpsWebh
  * Module for the events-backend plugin,
  * registering an HTTP POST ingress for Azure DevOps webhook events.
  *
- * The ingress is only registered when
- * `events.modules.azureDevOps.webhookSecret` is configured.
- * Incoming requests are validated against the `x-ado-webhook-secret`
- * custom header using timing-safe comparison.
+ * Requests are validated against the `x-ado-webhook-secret` custom header
+ * when `events.modules.azureDevOps.webhookSecret` is configured. Without a
+ * configured secret, requests are rejected with HTTP 403 unless
+ * `events.modules.azureDevOps.dangerouslyAllowUnauthenticatedEvents` is set.
  *
  * @public
  */
@@ -40,15 +40,14 @@ export default createBackendModule({
       deps: {
         config: coreServices.rootConfig,
         events: eventsExtensionPoint,
+        logger: coreServices.logger,
       },
-      async init({ config, events }) {
-        const validator = createAzureDevOpsWebhookValidator(config);
-        if (validator) {
-          events.addHttpPostIngress({
-            topic: 'azureDevOps',
-            validator,
-          });
-        }
+      async init({ config, events, logger }) {
+        const validator = createAzureDevOpsWebhookValidator(config, logger);
+        events.addHttpPostIngress({
+          topic: 'azureDevOps',
+          validator,
+        });
       },
     });
   },
