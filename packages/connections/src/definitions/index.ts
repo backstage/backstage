@@ -20,6 +20,7 @@ export { AzureBlobStorageConnectionType } from '../schema/azureBlobStorage';
 export { AzureConnectionType } from '../schema/azure';
 export { BitbucketCloudConnectionType } from '../schema/bitbucketCloud';
 export { BitbucketServerConnectionType } from '../schema/bitbucketServer';
+export { DatadogConnectionType } from '../schema/datadog';
 export { GerritConnectionType } from '../schema/gerrit';
 export { GiteaConnectionType } from '../schema/gitea';
 export { GithubConnectionType } from '../schema/github';
