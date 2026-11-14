@@ -774,6 +774,7 @@ describe('bundle command', () => {
 nodeLinker: isolated
 storeDir: .pnpm-store
 minimumReleaseAge: 4320
+pmOnFail: ignore
 overrides:
   some-dep: 1.0.0
   ref-dep: $ref-dep
@@ -856,6 +857,7 @@ customSetting: true
           nodeLinker: 'hoisted',
           storeDir: joinPath(mockDir.path, '.pnpm-store'),
           minimumReleaseAge: 4320,
+          pmOnFail: 'ignore',
           // Credentials are left out like in the .npmrc, and so are the
           // URLs with placeholders, which pnpm ignores, and invalid URLs
           registry: 'https://registry.example.com/',
@@ -921,6 +923,58 @@ customSetting: true
         );
       });
 
+      it('should use the store and the pnpm pin of the project without settings for them', async () => {
+        const devEngines = {
+          packageManager: { name: 'pnpm', version: '^12.7.0' },
+        };
+        await fs.writeJson(mockDir.resolve('package.json'), {
+          name: 'root',
+          devEngines,
+          devDependencies: { 'ref-dep': '^3.1.0' },
+        });
+        await fs.writeFile(
+          mockDir.resolve('pnpm-workspace.yaml'),
+          pnpmWorkspace.replace('storeDir: .pnpm-store\n', ''),
+        );
+        mockRunOutput.mockImplementation(async (args: string[]) => {
+          const command = args.join(' ');
+          if (command === 'pnpm --version') {
+            return '12.7.0\n';
+          }
+          return command === 'pnpm store path' ? '/store/v10\n' : '/mock-cache';
+        });
+        const readBundleWorkspace = async () =>
+          parseYaml(
+            await fs.readFile(
+              joinPath(ctx.targetDir, 'pnpm-workspace.yaml'),
+              'utf8',
+            ),
+          );
+
+        await bundleCommand(defaultOpts);
+
+        // Without writing the lockfile of the project
+        expect(mockRunOutput).toHaveBeenCalledWith(['pnpm', 'store', 'path'], {
+          cwd: mockDir.path,
+          env: { pnpm_config_lockfile: 'false' },
+        });
+        expect((await readBundleWorkspace()).storeDir).toBe('/store/v10');
+        const pkg = await fs.readJson(joinPath(ctx.targetDir, 'package.json'));
+        expect(pkg.packageManager).toBeUndefined();
+        expect(pkg.devEngines).toEqual(devEngines);
+
+        // When pnpm can't tell, the bundle keeps the default store
+        mockRunOutput.mockImplementation(async (args: string[]) => {
+          const command = args.join(' ');
+          if (command === 'pnpm store path') {
+            throw new Error('NOPE');
+          }
+          return command === 'pnpm --version' ? '12.7.0\n' : '/mock-cache';
+        });
+        await bundleCommand(defaultOpts);
+        expect(await readBundleWorkspace()).not.toHaveProperty('storeDir');
+      });
+
       it('should replace files that an earlier bundle left behind', async () => {
         await fs.remove(mockDir.resolve('.npmrc'));
         mockDir.addContent({
@@ -961,6 +1015,65 @@ customSetting: true
           expect.stringContaining(
             'The pnpmfile .pnpmfile.cjs seems to load pnpmfile-only-dep, which is not installed where the bundle is written.',
           ),
+        );
+      });
+
+      it('should resolve the catalog ranges of embedded packages', async () => {
+        mockDir.addContent({
+          'pnpm-workspace.yaml': `${pnpmWorkspace}catalogs:\n  named:\n    left-pad: ^1.3.0\n`,
+        });
+        const commonRelDir = 'plugins/foo-common';
+        const embeddedCommon = {
+          name: '@scope/plugin-foo-common',
+          version: '1.0.0',
+          main: 'dist/index.js',
+          dependencies: {
+            react: 'catalog:',
+            'left-pad': 'catalog:named',
+            other: '^1.0.0',
+          } as Record<string, string>,
+          peerDependencies: { 'peer-only': 'catalog:' },
+        };
+        mockCreateDistWorkspace.mockImplementation(async (_pkgNames, opts) => {
+          await fs.copy(
+            joinPath(fixturesDir, 'dist-workspace', 'backend'),
+            opts.targetDir,
+          );
+          await fs.writeJson(
+            joinPath(opts.targetDir, commonRelDir, 'package.json'),
+            embeddedCommon,
+          );
+          return {
+            targets: [
+              { name: backendPkg.name, dir: ctx.pluginDir },
+              {
+                name: '@scope/plugin-foo-common',
+                dir: mockDir.resolve(commonRelDir),
+              },
+            ],
+          };
+        });
+
+        await bundleCommand(defaultOpts);
+
+        // pnpm only resolves catalog ranges in workspace projects, and the
+        // embedded packages are directory dependencies of the bundle
+        await expect(
+          fs.readJson(
+            joinPath(ctx.targetDir, 'embedded', commonRelDir, 'package.json'),
+          ),
+        ).resolves.toEqual({
+          ...embeddedCommon,
+          dependencies: {
+            react: '^18.0.0',
+            'left-pad': '^1.3.0',
+            other: '^1.0.0',
+          },
+        });
+
+        embeddedCommon.dependencies['not-in-catalog'] = 'catalog:';
+        await expect(bundleCommand(defaultOpts)).rejects.toThrow(
+          'not-in-catalog in @scope/plugin-foo-common refers to the default catalog, which does not define it',
         );
       });
 
@@ -1391,7 +1504,7 @@ describe('describeMissingFromPnpmCache', () => {
       snapshot not present in local store
 `),
     ).toMatch(
-      /^pnpm has no stored copy of is-number@6\.0\.0\. .*storeDir setting/,
+      /^pnpm has no stored copy of is-number@6\.0\.0\. .*storeDir setting in its pnpm-workspace\.yaml or else the store that pnpm picks/,
     );
 
     expect(

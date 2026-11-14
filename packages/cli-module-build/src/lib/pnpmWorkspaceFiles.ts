@@ -244,9 +244,9 @@ async function checkPnpmfileImports(
   // pnpmfile.
   if (missing.length > 0) {
     console.warn(
-      `The pnpmfile ${name} seems to load ${missing.join(
-        ', ',
-      )}, which is not installed where ${targetName} is written. If pnpm fails to load the pnpmfile, write ${targetName} inside the project, or remove the import from the pnpmfile.`,
+      `The pnpmfile ${name} seems to load ${missing.join(', ')}, which ${
+        missing.length === 1 ? 'is' : 'are'
+      } not installed where ${targetName} is written. If pnpm fails to load the pnpmfile, write ${targetName} inside the project, or remove the import from the pnpmfile.`,
     );
   }
 }
