@@ -28,7 +28,7 @@ async function check(opts: OptionValues) {
 
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
   const relativeSpecPath = relativePath(
-    targetPaths.rootDir,
+    targetPaths.installationRootDir,
     resolvedOpenapiPath,
   )
     .split(sep)
@@ -42,7 +42,16 @@ async function check(opts: OptionValues) {
     baseRef = branch.toString().trim();
   }
 
-  const baseSpec = `${baseRef}:${relativeSpecPath}`;
+  // Paths at a git ref are relative to the root of the repository, so they
+  // get the path of the installation inside the repository in front
+  const { stdout: gitPrefix } = await exec(
+    'git',
+    ['rev-parse', '--show-prefix'],
+    { cwd: targetPaths.installationRootDir },
+  );
+  const baseSpec = `${baseRef}:${gitPrefix
+    .toString()
+    .trim()}${relativeSpecPath}`;
   const subcommand = opts.json ? 'changelog' : 'breaking';
   const formatArgs = opts.json ? ['--format', 'json'] : [];
   const failArgs = !opts.ignore && !opts.json ? ['--fail-on', 'ERR'] : [];
@@ -53,7 +62,7 @@ async function check(opts: OptionValues) {
     const { stdout } = await exec(
       'oasdiff',
       [subcommand, baseSpec, relativeSpecPath, ...formatArgs, ...failArgs],
-      { cwd: targetPaths.rootDir },
+      { cwd: targetPaths.installationRootDir },
     );
     output = stdout.toString();
   } catch (err) {
