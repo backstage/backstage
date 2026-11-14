@@ -183,6 +183,104 @@ describe('AzureUrlReader', () => {
     });
   });
 
+  describe('factory', () => {
+    const originalNodeEnv = process.env.NODE_ENV;
+
+    afterEach(() => {
+      (process.env as { NODE_ENV?: string }).NODE_ENV = originalNodeEnv;
+      jest.clearAllMocks();
+    });
+
+    const createFactory = (host: string, credential: object) =>
+      AzureUrlReader.factory({
+        config: new ConfigReader({
+          integrations: { azure: [{ host, credentials: [credential] }] },
+        }),
+        logger,
+        treeResponseFactory,
+      });
+
+    it('warns about personal access tokens only for Azure DevOps Services outside of development', () => {
+      jest.clearAllMocks();
+      (process.env as { NODE_ENV?: string }).NODE_ENV = 'production';
+
+      createFactory('dev.azure.com', { personalAccessToken: 'my-pat' });
+      expect(logger.warn).toHaveBeenCalledTimes(1);
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Personal access token credentials for Azure DevOps Services (dev.azure.com) are deprecated',
+        ),
+      );
+
+      createFactory('my-org.visualstudio.com', {
+        personalAccessToken: 'my-pat',
+      });
+      expect(logger.warn).toHaveBeenCalledTimes(2);
+      expect(logger.warn).toHaveBeenLastCalledWith(
+        expect.stringContaining(
+          'after moving this integration and its repository URLs to dev.azure.com',
+        ),
+      );
+      expect(logger.warn).not.toHaveBeenNthCalledWith(
+        1,
+        expect.stringContaining('after moving'),
+      );
+
+      // Azure DevOps Server
+      createFactory('azure.mycompany.com', { personalAccessToken: 'my-pat' });
+      // Entra ID credentials
+      createFactory('dev.azure.com', { clientId: 'system-assigned' });
+      expect(logger.warn).toHaveBeenCalledTimes(2);
+
+      (process.env as { NODE_ENV?: string }).NODE_ENV = 'development';
+      createFactory('dev.azure.com', { personalAccessToken: 'my-pat' });
+      expect(logger.warn).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('rejected credentials', () => {
+    it('reports rejected credentials when Azure DevOps responds with 203', async () => {
+      worker.use(
+        http.get(
+          '*',
+          () =>
+            new HttpResponse('<html>Sign in</html>', {
+              status: 203,
+              headers: { 'Content-Type': 'text/html' },
+            }),
+        ),
+      );
+      const reader = urlReaderFactory({
+        host: 'dev.azure.com',
+        credentials: [{ personalAccessToken: 'expired-pat' }],
+      });
+
+      await expect(
+        reader.readUrl(
+          'https://dev.azure.com/org/project/_git/repo?path=catalog-info.yaml',
+        ),
+      ).rejects.toThrow(
+        /Azure DevOps rejected the provided credentials.*not expired and is not a global token/,
+      );
+      await expect(
+        reader.readTree('https://dev.azure.com/org/project/_git/repo'),
+      ).rejects.toThrow(/Azure DevOps rejected the provided credentials/);
+
+      // Azure DevOps Server still supports global PATs, so no global-token hint
+      const serverReader = urlReaderFactory({
+        host: 'azure.mycompany.com',
+        credentials: [{ personalAccessToken: 'expired-pat' }],
+      });
+      const serverError = serverReader.readUrl(
+        'https://azure.mycompany.com/org/project/_git/repo?path=catalog-info.yaml',
+      );
+      await expect(serverError).rejects.toThrow(
+        /Azure DevOps rejected the provided credentials.*check that it has not expired\./,
+      );
+      await expect(serverError).rejects.not.toThrow(/global token/);
+    });
+  });
+
   describe('readTree', () => {
     const repoBuffer = fs.readFileSync(
       path.resolve(__dirname, '__fixtures__/mock-main.zip'),
