@@ -30,7 +30,10 @@ export interface OverrideTargetPathsOptions {
    * `workspaceRootDir`. Defaults to `dir` if not provided.
    */
   rootDir?: string;
-  /** The workspace root directory. Defaults to `rootDir`. */
+  /**
+   * The workspace root directory. Defaults to `rootDir`, or else
+   * `installationRootDir`.
+   */
   workspaceRootDir?: string;
   /**
    * The Backstage installation root directory. Defaults to
@@ -73,7 +76,11 @@ export function overrideTargetPaths(
   const options =
     typeof dirOrOptions === 'string' ? { dir: dirOrOptions } : dirOrOptions;
   const dir = options.dir;
-  const workspaceRootDir = options.workspaceRootDir ?? options.rootDir ?? dir;
+  const workspaceRootDir =
+    options.workspaceRootDir ??
+    options.rootDir ??
+    options.installationRootDir ??
+    dir;
   const installationRootDir = options.installationRootDir ?? workspaceRootDir;
   const backstageJsonPath =
     options.backstageJsonPath ??

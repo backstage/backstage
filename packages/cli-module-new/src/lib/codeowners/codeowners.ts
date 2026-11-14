@@ -82,7 +82,7 @@ export async function addCodeownersEntry(
     }
   }
 
-  const rootDir = targetPaths.rootDir;
+  const rootDir = targetPaths.workspaceRootDir;
   const relativePath = path.isAbsolute(ownedPath)
     ? path.relative(rootDir, ownedPath)
     : ownedPath;
