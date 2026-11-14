@@ -454,6 +454,40 @@ describe('fixer package manager', () => {
     }
   });
 
+  it('uses the pnpm workspace root of an installation in a subdirectory', () => {
+    // The installation has a workspaces field, while the package manager
+    // configuration is in the root of the pnpm workspace above it
+    const installationDir = joinPath(
+      __dirname,
+      '__fixtures__/monorepo-pnpm-nested/apps/backstage',
+    );
+    const aDir = joinPath(installationDir, 'packages/a');
+    process.chdir(installationDir);
+    try {
+      const linter = new Linter();
+      linter.defineRule(RULE, rule);
+      const lintA = (code: string) =>
+        linter.verify(code, config, {
+          filename: joinPath(aDir, 'src/index.ts'),
+        });
+
+      expect(lintA(`import 'lodash'`).map(m => m.message)).toEqual([
+        `lodash must be declared in dependencies of ${joinPath(
+          'packages/a/package.json',
+        )}, run 'pnpm --dir ${joinPath(
+          'packages/a',
+        )} add lodash' from the project root.`,
+      ]);
+
+      lintA(`import 'directive:add-import:dependencies:lodash'`);
+      expect(jest.mocked(execFileSync).mock.calls).toEqual([
+        ['pnpm', ['add', 'lodash'], { cwd: aDir, stdio: 'inherit' }],
+      ]);
+    } finally {
+      process.chdir(FIXTURE);
+    }
+  });
+
   it('uses pnpm when there is a pnpm lockfile in the project root', () => {
     const existsSync = fs.existsSync;
     jest
@@ -469,6 +503,14 @@ describe('fixer package manager', () => {
       )}, run 'pnpm --dir ${joinPath(
         'packages/bar',
       )} add lodash' from the project root.`,
+    ]);
+    // Workspace packages are only linked through the workspace protocol
+    expect(lint(`import '@internal/foo'`).map(m => m.message)).toEqual([
+      `@internal/foo must be declared in dependencies of ${joinPath(
+        'packages/bar/package.json',
+      )}, run 'pnpm --dir ${joinPath(
+        'packages/bar',
+      )} add @internal/foo@workspace:^' from the project root.`,
     ]);
 
     lint(`import 'directive:add-import:dependencies:lodash'`);

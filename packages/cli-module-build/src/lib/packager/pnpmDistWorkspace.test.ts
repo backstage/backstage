@@ -147,6 +147,26 @@ patchedDependencies:
       'pnpm-workspace.yaml': 'pnpmfile: hooks.cjs\n',
       'hooks.cjs': 'hooks',
     });
+
+    // A missing patch file fails before the install of the dist workspace
+    mockDir.setContent({
+      project: {},
+      dist: {
+        'pnpm-workspace.yaml':
+          'patchedDependencies:\n  a@1.0.0: patches/a.patch\n',
+      },
+    });
+    await expect(
+      preparePnpmDistWorkspace({
+        workspaceRootDir: mockDir.resolve('project'),
+        targetDir: mockDir.resolve('dist'),
+        bundledPackageDirs: [],
+      }),
+    ).rejects.toThrow(
+      `The patch files of a@1.0.0 at ${mockDir.resolve(
+        'project/patches/a.patch',
+      )} were not found, so the dist workspace can't be installed`,
+    );
   });
   it('fails when the pnpmfile loads other local files', async () => {
     const prepare = () =>
