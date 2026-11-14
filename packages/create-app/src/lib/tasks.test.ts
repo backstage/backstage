@@ -495,15 +495,20 @@ describe('tasks', () => {
       expect(pnpmFiles['packages/backend/Dockerfile']).not.toContain(
         'pnpm-lock.yaml ',
       );
+      // pnpm only uses the cache mount when the store is set to it
       expect(pnpmFiles['packages/backend/Dockerfile']).toContain(
-        'pnpm install --frozen-lockfile --prod',
+        'pnpm install --frozen-lockfile --prod --store-dir /home/node/.local/share/pnpm/store\n',
       );
       // Registry settings and tokens for the install come from a build secret
       expect(pnpmFiles['packages/backend/Dockerfile']).toContain(
         'RUN --mount=type=secret,id=npmrc,target=/home/node/.npmrc,uid=1000 \\\n',
       );
-      expect(pnpmFiles['.github/workflows/ci.yml']).toContain(
-        'uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6',
+      // Renovate updates the pinned commit
+      expect(pnpmFiles['.github/workflows/ci.yml']).toMatch(
+        /uses: pnpm\/action-setup@[0-9a-f]{40} # v\d+/,
+      );
+      expect(pnpmFiles['packages/backend/Dockerfile']).toContain(
+        'RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \\\n    npm install -g pnpm@12.14.0\n',
       );
       expect(pnpmFiles['.github/workflows/ci.yml']).toContain(
         'run: pnpm install --frozen-lockfile',
@@ -514,6 +519,65 @@ describe('tasks', () => {
       expect(pnpmFiles['README.md']).toContain('pnpm install\npnpm start');
       expect(pnpmFiles['playwright.config.ts']).toContain("'pnpm start app'");
     });
+
+    it.each(['default-app', 'legacy-app'])(
+      'should leave out the other package manager in the %s template',
+      async templateName => {
+        const templateDir = resolvePath(
+          __dirname,
+          `../../templates/${templateName}`,
+        );
+        const findMentions = async (dir: string, pattern: RegExp) => {
+          // The bundled Yarn release mentions pnpm
+          const files = await recursive(dir, ['.yarn', '*.png', '*.ico']);
+          const mentions = await Promise.all(
+            files.map(async file =>
+              pattern.test(file) ||
+              pattern.test(await fs.readFile(file, 'utf-8'))
+                ? [relativePath(dir, file)]
+                : [],
+            ),
+          );
+          return mentions.flat();
+        };
+
+        await templatingTask(
+          templateDir,
+          `${templateName}-yarn`,
+          { name: 'my-app', packageManager: 'yarn', pnpm: false },
+          { exclude: file => isTemplateFileExcluded('yarn', file) },
+        );
+        await expect(
+          findMentions(`${templateName}-yarn`, /pnpm/i),
+        ).resolves.toEqual([]);
+
+        await templatingTask(
+          templateDir,
+          `${templateName}-pnpm`,
+          {
+            name: 'my-app',
+            packageManager: 'pnpm',
+            pnpm: true,
+            pnpmVersion: '12.14.0',
+          },
+          { exclude: file => isTemplateFileExcluded('pnpm', file) },
+        );
+        await expect(
+          findMentions(`${templateName}-pnpm`, /yarn/i),
+        ).resolves.toEqual([]);
+        await expect(
+          fs.readJson(`${templateName}-pnpm/package.json`),
+        ).resolves.toEqual(
+          expect.objectContaining({
+            packageManager: 'pnpm@12.14.0',
+            // Matches the Node.js versions in the engines field
+            devDependencies: expect.objectContaining({
+              '@types/node': '^24.0.0',
+            }),
+          }),
+        );
+      },
+    );
   });
 
   describe('readGitConfig', () => {

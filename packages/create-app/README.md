@@ -4,7 +4,7 @@ This package provides a CLI for creating a copy of the Backstage app.
 
 You can use the flag `--skip-install` to skip the install.
 
-Apps use Yarn by default. Pass `--package-manager pnpm` to create a pnpm workspace instead, with a `pnpm-workspace.yaml` file in place of the Yarn configuration. pnpm is also selected when the command runs through pnpm, as with `pnpm create @backstage/app`. pnpm 11.28 or a later 11.x release, or pnpm 12.7 or later, is required.
+Apps use Yarn by default. Pass `--package-manager pnpm` to create a pnpm workspace instead, with a `pnpm-workspace.yaml` file in place of the Yarn configuration. pnpm is also selected when the command runs through pnpm, as with `pnpm create @backstage/app`, except for a custom template from `--template-path`, which only uses pnpm with `--package-manager pnpm`. pnpm 11.28 or a later 11.x release, or pnpm 12.7 or later, is required.
 
 ## Usage
 
