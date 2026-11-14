@@ -19,7 +19,7 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import openBrowser from 'react-dev-utils/openBrowser';
-import { rspack } from '@rspack/core';
+import { lazyCompilationMiddleware, rspack } from '@rspack/core';
 import { RspackDevServer } from '@rspack/dev-server';
 
 import { targetPaths } from '@backstage/cli-common';
@@ -28,6 +28,7 @@ import { loadCliConfig } from '../config';
 import { createConfig, resolveBaseUrl, resolveEndpoint } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
+import { translateLegacyProxyOptions } from './proxy';
 import { ServeOptions } from './types';
 import { createRuntimeSharedDependenciesEntryPoint } from './moduleFederation';
 
@@ -216,7 +217,34 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
           : {},
       host,
       port,
-      proxy: targetPkg.proxy,
+      // Without this middleware the `lazyCompilation` option does nothing; it
+      // no-ops when the compiler doesn't set the option. It goes right before
+      // the dev middleware: after the host header checks, and before the proxy
+      // entries, which could otherwise forward its trigger requests.
+      setupMiddlewares: middlewares => {
+        if (webpack) {
+          return middlewares;
+        }
+        const lazyCompilation = lazyCompilationMiddleware(compiler);
+        const devMiddlewareIndex = middlewares.findIndex(
+          middleware =>
+            typeof middleware === 'object' &&
+            middleware.name === '@rspack/dev-middleware',
+        );
+        if (devMiddlewareIndex === -1) {
+          return [...middlewares, lazyCompilation];
+        }
+        return [
+          ...middlewares.slice(0, devMiddlewareIndex),
+          lazyCompilation,
+          ...middlewares.slice(devMiddlewareIndex),
+        ];
+      },
+      // The legacy WebPack dev server runs the `http-proxy-middleware` major
+      // that accepts the old option names, so it needs no translation.
+      proxy: webpack
+        ? targetPkg.proxy
+        : translateLegacyProxyOptions(targetPkg.proxy),
       // When the dev server is behind a proxy, the host and public hostname differ
       allowedHosts: [url.hostname],
       client: {

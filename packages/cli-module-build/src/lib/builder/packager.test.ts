@@ -14,7 +14,54 @@
  * limitations under the License.
  */
 
-import { formatErrorMessage } from './packager';
+import { rollup } from 'rollup';
+import { buildPackage, buildPackages, formatErrorMessage } from './packager';
+import { Output } from './types';
+
+const env = process.env as { NODE_ENV?: string };
+
+jest.mock('rollup', () => ({
+  rollup: jest.fn(async () => {
+    // Like postcss-load-config, which package builds use to load PostCSS
+    // configs
+    (process.env as { NODE_ENV?: string }).NODE_ENV ||= 'development';
+    return { generate: async () => {}, write: async () => {} };
+  }),
+}));
+
+jest.mock('./config', () => ({
+  makeRollupConfigs: async () => [{ output: { dir: 'dist' } }],
+}));
+
+jest.mock('fs-extra', () => ({
+  ...jest.requireActual('fs-extra'),
+  remove: async () => {},
+}));
+
+describe('package builds', () => {
+  const nodeEnv = env.NODE_ENV;
+
+  afterEach(() => {
+    env.NODE_ENV = nodeEnv;
+  });
+
+  it('restore NODE_ENV when a build sets it', async () => {
+    const options = {
+      targetDir: '/package',
+      outputs: new Set([Output.cjs]),
+      workspacePackages: [],
+    };
+    delete env.NODE_ENV;
+
+    await buildPackages([options]);
+    expect(env.NODE_ENV).toBeUndefined();
+
+    await buildPackage(options);
+    expect(env.NODE_ENV).toBeUndefined();
+
+    expect(rollup).toHaveBeenCalledTimes(2);
+  });
+});
 
 describe('formatErrorMessage with esbuild plugin error', () => {
   it('given error with missing errors array then error message should be shown', () => {
