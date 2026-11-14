@@ -43,6 +43,7 @@ describe('plugin-scanner', () => {
     type TestCase = {
       name: string;
       backstageRoot?: string;
+      workspaceRoot?: string;
       fileSystem?: any;
       config: JsonObject;
       environment?: { [key: string]: string };
@@ -139,6 +140,42 @@ Please add '${mockDir.resolve(
         expectedRootDirectory: mockDir.resolve('somewhere/dist-dynamic'),
       },
       {
+        name: 'valid config with root directory path outside the backstage root but inside the workspace root',
+        backstageRoot: mockDir.resolve('workspace/apps/backstage'),
+        workspaceRoot: mockDir.resolve('workspace'),
+        fileSystem: {
+          workspace: {
+            'dist-dynamic': {},
+          },
+        },
+        config: {
+          dynamicPlugins: {
+            rootDirectory: '../../dist-dynamic',
+          },
+        },
+        expectedRootDirectory: mockDir.resolve('workspace/dist-dynamic'),
+      },
+      {
+        name: 'valid config with root directory path outside the workspace root',
+        backstageRoot: mockDir.resolve('workspace/apps/backstage'),
+        workspaceRoot: mockDir.resolve('workspace'),
+        fileSystem: {
+          somewhere: {
+            'dist-dynamic': {},
+          },
+        },
+        config: {
+          dynamicPlugins: {
+            rootDirectory: mockDir.resolve('somewhere/dist-dynamic'),
+          },
+        },
+        expectedError: `Dynamic plugins under '${mockDir.resolve(
+          'somewhere/dist-dynamic',
+        )}' cannot access backstage modules in '${mockDir.resolve(
+          'workspace/node_modules',
+        )}'.`,
+      },
+      {
         name: 'invalid config: dynamicPlugins not an object',
         config: {
           dynamicPlugins: 1,
@@ -210,6 +247,7 @@ Please add '${mockDir.resolve(
           config: new ConfigReader(tc.config),
           logger,
           backstageRoot,
+          workspaceRoot: tc.workspaceRoot,
         });
       }
       if (tc.fileSystem) {

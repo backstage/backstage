@@ -68,6 +68,7 @@ export class DynamicPluginManager implements DynamicPluginProvider {
       config: options.config,
       logger: options.logger,
       backstageRoot: installationRoot,
+      workspaceRoot,
       preferAlpha: options.preferAlpha,
     });
     const scannedPlugins = (await scanner.scanRoot()).packages;

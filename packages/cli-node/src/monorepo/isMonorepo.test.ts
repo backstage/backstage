@@ -47,4 +47,25 @@ describe('isMonoRepo', () => {
     mockDir.setContent({});
     await expect(isMonoRepo()).resolves.toBe(false);
   });
+
+  it('should detect a pnpm monorepo by the packages of pnpm-workspace.yaml', async () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({ name: 'foo' }),
+      'pnpm-workspace.yaml': 'packages:\n  - packages/*\n',
+    });
+    await expect(isMonoRepo()).resolves.toBe(true);
+
+    // A pnpm-workspace.yaml file with only settings belongs to a single package
+    mockDir.setContent({
+      'package.json': JSON.stringify({ name: 'foo' }),
+      'pnpm-workspace.yaml': 'nodeLinker: hoisted\n',
+    });
+    await expect(isMonoRepo()).resolves.toBe(false);
+
+    mockDir.setContent({
+      'package.json': JSON.stringify({ name: 'foo' }),
+      'pnpm-workspace.yaml': 'packages: [\n',
+    });
+    await expect(isMonoRepo()).resolves.toBe(true);
+  });
 });
