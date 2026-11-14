@@ -28,6 +28,13 @@ export const catalogGraphTranslationRef = createTranslationRef({
       filterToggleButtonTitle: 'Filters',
       supportButtonDescription:
         'Start tracking your component in by adding it to the software catalog.',
+      additionalRootEntities: '(+{{count}})',
+      breadcrumbTitle: 'Relations',
+      entityNotFoundTitle: 'Entity not found',
+      entityNotFoundDescription: 'No entity was found for {{refs}}.',
+      noRootEntityTitle: 'No entity selected',
+      noRootEntityDescription:
+        'Open the graph from an entity page to see its relations.',
       simplifiedSwitchLabel: 'Simplified',
       mergeRelationsSwitchLabel: 'Merge relations',
       zoomOutDescription:
