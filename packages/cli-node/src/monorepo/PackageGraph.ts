@@ -27,8 +27,8 @@ import {
 import { JsonValue } from '@backstage/types';
 
 // The lockfiles of the package managers that the CLI knows about. The package
-// manager is only detected when one of them has changed, since that can spawn
-// a process.
+// manager is only detected when one of them has changed, since it is only
+// needed to diff the lockfile.
 const LOCKFILE_NAMES = ['yarn.lock', 'pnpm-lock.yaml'];
 
 /**
