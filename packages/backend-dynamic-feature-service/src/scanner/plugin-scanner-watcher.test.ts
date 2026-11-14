@@ -429,5 +429,64 @@ Please add '${path.resolve(
         ]),
       });
     }, 120000);
+
+    it('ignores changes to dot-prefixed root entries', async () => {
+      const logger = new MockedLogger();
+      const rootDirectory = join(backstageRootDirectory, 'dist-dynamic');
+      await mkdir(rootDirectory);
+
+      const pluginScanner = PluginScanner.create({
+        config: new ConfigReader({
+          dynamicPlugins: { rootDirectory: 'dist-dynamic' },
+        }),
+        logger,
+        backstageRoot: backstageRootDirectory,
+        preferAlpha: false,
+      });
+      await pluginScanner.trackChanges();
+      const rootDirectorySubscriber = jest.fn();
+      pluginScanner.subscribeToRootDirectoryChange(rootDirectorySubscriber);
+
+      try {
+        const hiddenDir = join(rootDirectory, '.staging-test-frontend-plugin');
+        await mkdir(hiddenDir);
+        await writeFile(
+          join(hiddenDir, 'package.json'),
+          JSON.stringify({
+            name: 'test-frontend-plugin-dynamic',
+            version: '0.0.0',
+            main: 'dist/index.cjs.js',
+            backstage: { role: 'frontend-plugin' },
+          }),
+        );
+
+        await waitForExpect(() => {
+          expect(logger.logs.debugs).toEqual(
+            expect.arrayContaining([
+              {
+                message: `rootDirectory changed (addDir - ${hiddenDir}): no need to scan plugins again`,
+              },
+              {
+                message: `rootDirectory changed (add - ${join(
+                  hiddenDir,
+                  'package.json',
+                )}): no need to scan plugins again`,
+              },
+            ]),
+          );
+        });
+        // Wait for longer than the watcher's debounce delay.
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        expect(rootDirectorySubscriber).not.toHaveBeenCalled();
+
+        // A visible entry still triggers a scan.
+        await mkdir(join(rootDirectory, 'test-frontend-plugin'));
+        await waitForExpect(() => {
+          expect(rootDirectorySubscriber).toHaveBeenCalledTimes(1);
+        });
+      } finally {
+        await pluginScanner.untrackChanges();
+      }
+    }, 30000);
   });
 });

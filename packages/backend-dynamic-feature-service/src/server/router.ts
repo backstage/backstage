@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { createOpenApiRouter, spec } from '../schema/openapi/generated';
-import { DynamicPluginProvider } from '../manager/types';
+import { DynamicPluginProvider, FrontendDynamicPlugin } from '../manager/types';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as url from 'node:url';
@@ -45,10 +45,22 @@ export async function createRouter({
 
   const typedRouter = await createOpenApiRouter();
 
-  const frontendPluginRemotes: Remote[] = [];
-
   const { default: defaultResolver, provider: resolverProvider } = resolvers;
-  for (const plugin of dynamicPlugins.frontendPlugins()) {
+  let cached:
+    | {
+        plugins: FrontendDynamicPlugin[];
+        frontendPluginRemotes: Remote[];
+        assets: express.Router;
+      }
+    | undefined;
+
+  // Returns the remote for a plugin and registers its assets, or undefined if
+  // the plugin is invalid. Errors are logged so that one broken plugin does not
+  // prevent the others from being exposed.
+  const exposePlugin = (
+    plugin: FrontendDynamicPlugin,
+    assets: express.Router,
+  ): Remote | undefined => {
     try {
       const pluginScannedPackage = dynamicPlugins.getScannedPackage(plugin);
       const pluginScannedPackagePath = path.resolve(
@@ -72,7 +84,7 @@ export async function createRouter({
         logger.error(
           `Could not find manifest '${manifestLocation}' for frontend plugin ${plugin.name}@${plugin.version}`,
         );
-        continue;
+        return undefined;
       }
 
       let manifest: JsonObject;
@@ -82,14 +94,14 @@ export async function createRouter({
         logger.error(
           `Dynamic frontend plugin manifest '${manifestLocation}' could not be parsed for plugin ${plugin.name}@${plugin.version}`,
         );
-        continue;
+        return undefined;
       }
 
       if (!manifest.name || typeof manifest.name !== 'string') {
         logger.error(
           `Error in manifest '${manifestLocation}' for plugin ${plugin.name}@${plugin.version}: module name not found`,
         );
-        continue;
+        return undefined;
       }
       if (
         !manifest.metaData ||
@@ -103,7 +115,7 @@ export async function createRouter({
         logger.error(
           `Could not find remote entry asset in the manifest '${manifestLocation}' for plugin ${plugin.name}@${plugin.version}`,
         );
-        continue;
+        return undefined;
       }
 
       if (
@@ -117,7 +129,7 @@ export async function createRouter({
         logger.error(
           `Could not find the exposes field in the manifest '${manifestLocation}' for plugin ${plugin.name}@${plugin.version}`,
         );
-        continue;
+        return undefined;
       }
 
       const getAdditionalRemoteInfo =
@@ -143,7 +155,7 @@ export async function createRouter({
         logger.error(
           `Could not find remote entry asset '${remoteEntryAssetLocation}' for frontend plugin ${plugin.name}@${plugin.version}`,
         );
-        continue;
+        return undefined;
       }
 
       const remoteAssetsPrefix = `/remotes/${plugin.name}`;
@@ -155,7 +167,7 @@ export async function createRouter({
 
       const exposedModules = manifest.exposes.map(e => e.name);
 
-      frontendPluginRemotes.push({
+      const remote: Remote = {
         packageName: plugin.name,
         remoteInfo: {
           name: manifest.name,
@@ -164,34 +176,69 @@ export async function createRouter({
         },
         exposedModules:
           overrideExposedModules?.(exposedModules, manifest) ?? exposedModules,
-      });
+      };
 
       const customizeManifest =
         providedResolver?.customizeManifest ??
         defaultResolver.customizeManifest;
       if (remoteEntryType === 'manifest' && customizeManifest) {
         const customizedContent = customizeManifest(manifest);
-        typedRouter.use(`${remoteEntryPath}`, (_, res) => {
+        assets.use(`${remoteEntryPath}`, (_, res) => {
           res.json(customizedContent);
         });
       }
-      typedRouter.use(remoteAssetsPrefix, express.static(assetsPath));
+      assets.use(remoteAssetsPrefix, express.static(assetsPath));
       logger.info(
         `Exposed dynamic frontend plugin '${plugin.name}' from '${assetsPath}' `,
       );
+      return remote;
     } catch (error) {
       logger.error(
         `Unexpected error when exposing dynamic frontend plugin '${plugin.name}@${plugin.version}'`,
         error,
       );
-      continue;
+      return undefined;
     }
-  }
+  };
 
-  logger.info(`/remotes => ${JSON.stringify(frontendPluginRemotes)}`);
+  // Rebuilt whenever the dynamic plugin manager hands out different frontend
+  // plugin objects, so that plugins added to, removed from or updated in the
+  // dynamic plugins root are picked up without a restart. A provider that
+  // returns new objects on every call causes a rebuild on every request.
+  const exposeFrontendPlugins = () => {
+    const plugins = dynamicPlugins.frontendPlugins();
+    if (cached && samePlugins(cached.plugins, plugins)) {
+      return cached;
+    }
+    const frontendPluginRemotes: Remote[] = [];
+    const assets = express.Router();
+
+    for (const plugin of plugins) {
+      const remote = exposePlugin(plugin, assets);
+      if (remote) {
+        frontendPluginRemotes.push(remote);
+      }
+    }
+
+    logger.info(`/remotes => ${JSON.stringify(frontendPluginRemotes)}`);
+    cached = { plugins, frontendPluginRemotes, assets };
+    return cached;
+  };
+
+  exposeFrontendPlugins();
   typedRouter.get('/remotes', (_, res) => {
-    res.status(200).json(frontendPluginRemotes);
+    res.status(200).json(exposeFrontendPlugins().frontendPluginRemotes);
   });
+  typedRouter.use((req, res, next) =>
+    exposeFrontendPlugins().assets(req, res, next),
+  );
 
   return typedRouter;
+}
+
+function samePlugins(
+  a: FrontendDynamicPlugin[],
+  b: FrontendDynamicPlugin[],
+): boolean {
+  return a.length === b.length && a.every((plugin, i) => plugin === b[i]);
 }
