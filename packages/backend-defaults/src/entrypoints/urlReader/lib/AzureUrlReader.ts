@@ -50,10 +50,18 @@ function isAzureDevOpsServicesHost(host: string): boolean {
  * HTTP 203 and a sign-in page when the credentials are rejected, for example
  * because a PAT has expired or been retired, so that is treated as a failure.
  */
-function assertOkResponse(response: Response, message: string): void {
+function assertOkResponse(
+  response: Response,
+  message: string,
+  host: string,
+): void {
   if (response.status === 203) {
+    // Global PATs are only retired for Azure DevOps Services, not Server
+    const patHint = isAzureDevOpsServicesHost(host)
+      ? 'check that it has not expired and is not a global token'
+      : 'check that it has not expired';
     throw new Error(
-      `${message}, Azure DevOps rejected the provided credentials. If you are using a personal access token, check that it has not expired and is not a global token. See ${PAT_DEPRECATION_DOCS_URL}`,
+      `${message}, Azure DevOps rejected the provided credentials. If you are using a personal access token, ${patHint}. See ${PAT_DEPRECATION_DOCS_URL}`,
     );
   }
   if (response.ok) {
@@ -85,7 +93,7 @@ export class AzureUrlReader implements UrlReaderService {
       ) {
         logger.warn(
           `Personal access token credentials for Azure DevOps Services (${host}) are deprecated. ` +
-            `Global personal access tokens stop working on December 1, 2026, and Microsoft recommends Microsoft Entra ID credentials over all personal access tokens. ` +
+            `Global personal access tokens stop working on January 27, 2027, and Microsoft recommends Microsoft Entra ID credentials over all personal access tokens. ` +
             `Use a service principal or managed identity instead${
               host === 'dev.azure.com'
                 ? ''
@@ -151,7 +159,11 @@ export class AzureUrlReader implements UrlReaderService {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
 
-    assertOkResponse(response, `${url} could not be read as ${builtUrl}`);
+    assertOkResponse(
+      response,
+      `${url} could not be read as ${builtUrl}`,
+      this.integration.config.host,
+    );
     return ReadUrlResponseFactory.fromResponse(response);
   }
 
@@ -179,7 +191,11 @@ export class AzureUrlReader implements UrlReaderService {
       // https://github.com/backstage/backstage/issues/8242
       ...(signal && { signal: signal as any }),
     });
-    assertOkResponse(commitsAzureResponse, `Failed to read tree from ${url}`);
+    assertOkResponse(
+      commitsAzureResponse,
+      `Failed to read tree from ${url}`,
+      this.integration.config.host,
+    );
 
     const commitSha = (await commitsAzureResponse.json()).value[0].commitId;
     if (etag && etag === commitSha) {
@@ -199,7 +215,11 @@ export class AzureUrlReader implements UrlReaderService {
       // https://github.com/backstage/backstage/issues/8242
       ...(signal && { signal: signal as any }),
     });
-    assertOkResponse(archiveAzureResponse, `Failed to read tree from ${url}`);
+    assertOkResponse(
+      archiveAzureResponse,
+      `Failed to read tree from ${url}`,
+      this.integration.config.host,
+    );
 
     // When downloading a zip archive from azure on a subpath we get an extra directory
     // layer added at the top. With for example the file /a/b/c.txt and a download of

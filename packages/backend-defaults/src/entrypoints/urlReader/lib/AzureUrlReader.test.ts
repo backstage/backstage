@@ -260,11 +260,24 @@ describe('AzureUrlReader', () => {
           'https://dev.azure.com/org/project/_git/repo?path=catalog-info.yaml',
         ),
       ).rejects.toThrow(
-        /Azure DevOps rejected the provided credentials.*expired/,
+        /Azure DevOps rejected the provided credentials.*not expired and is not a global token/,
       );
       await expect(
         reader.readTree('https://dev.azure.com/org/project/_git/repo'),
       ).rejects.toThrow(/Azure DevOps rejected the provided credentials/);
+
+      // Azure DevOps Server still supports global PATs, so no global-token hint
+      const serverReader = urlReaderFactory({
+        host: 'azure.mycompany.com',
+        credentials: [{ personalAccessToken: 'expired-pat' }],
+      });
+      const serverError = serverReader.readUrl(
+        'https://azure.mycompany.com/org/project/_git/repo?path=catalog-info.yaml',
+      );
+      await expect(serverError).rejects.toThrow(
+        /Azure DevOps rejected the provided credentials.*check that it has not expired\./,
+      );
+      await expect(serverError).rejects.not.toThrow(/global token/);
     });
   });
 
