@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.3-next.3
+
+### Patch Changes
+
+- 2c223ee: Fixed a `Item of type "refresh" was emitted after processing had completed` warning that could appear when one of several placeholders in an entity failed to resolve. Processing now waits for all placeholders to finish before reporting the first failure.
+- cd5fa5f: Improved the performance of entity queries on PostgreSQL when a filter matches a field against a long list of values, such as the ownership claims used by conditional permission policies for catalog entity reads.
+- Updated dependencies
+  - @backstage/integration@2.2.0-next.1
+
 ## 4.0.3-next.2
 
 ### Patch Changes

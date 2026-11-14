@@ -1,5 +1,18 @@
 # @backstage/core-plugin-api
 
+## 1.13.0-next.3
+
+### Minor Changes
+
+- 558c076: Exported the alpha `TranslationRefTuple` type for messages selected by calling a translation ref. Refs are now callable functions; treat them as opaque values.
+
+  **BREAKING PRODUCERS**: Translation snapshots require `t` even when `ready` is false. Custom translation APIs must provide a translator using available messages and language fallbacks.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.19.0-next.3
+
 ## 1.12.12-next.2
 
 ### Patch Changes

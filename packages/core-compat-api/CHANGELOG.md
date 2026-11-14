@@ -1,5 +1,15 @@
 # @backstage/core-compat-api
 
+## 0.6.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app-react@0.3.0-next.3
+  - @backstage/plugin-catalog-react@4.0.0-next.3
+  - @backstage/frontend-plugin-api@0.19.0-next.3
+  - @backstage/core-plugin-api@1.13.0-next.3
+
 ## 0.6.0-next.2
 
 ### Minor Changes

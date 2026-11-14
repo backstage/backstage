@@ -1,5 +1,17 @@
 # @backstage/plugin-search
 
+## 1.7.10-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.16-next.2
+  - @backstage/plugin-catalog-react@4.0.0-next.3
+  - @backstage/frontend-plugin-api@0.19.0-next.3
+  - @backstage/core-plugin-api@1.13.0-next.3
+  - @backstage/plugin-home-react@0.1.44-next.3
+  - @backstage/plugin-search-react@1.11.10-next.3
+
 ## 1.7.10-next.2
 
 ### Patch Changes

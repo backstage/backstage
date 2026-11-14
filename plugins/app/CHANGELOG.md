@@ -1,5 +1,19 @@
 # @backstage/plugin-app
 
+## 0.6.0-next.3
+
+### Patch Changes
+
+- edf309d: Ensure dismissed toasts are marked as closed in `ToastApiForwarder` so they are not replayed when `ToastDisplay` remounts (such as during theme changes).
+- ff23578: Added support for translated titles in navigation, page headers, tabs, and breadcrumbs.
+- Updated dependencies
+  - @backstage/plugin-app-react@0.3.0-next.3
+  - @backstage/core-components@0.18.16-next.2
+  - @backstage/frontend-plugin-api@0.19.0-next.3
+  - @backstage/core-plugin-api@1.13.0-next.3
+  - @backstage/integration-react@1.2.24-next.2
+  - @backstage/plugin-permission-react@0.5.7-next.2
+
 ## 0.6.0-next.2
 
 ### Minor Changes

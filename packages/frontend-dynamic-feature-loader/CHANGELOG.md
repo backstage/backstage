@@ -1,5 +1,13 @@
 # @backstage/frontend-dynamic-feature-loader
 
+## 0.1.18-next.3
+
+### Patch Changes
+
+- 27b7aaa: Support loading remote frontend features whose default export is a `FrontendFeatureLoader` and include that feature type in generated package metadata.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.19.0-next.3
+
 ## 0.1.18-next.2
 
 ### Patch Changes

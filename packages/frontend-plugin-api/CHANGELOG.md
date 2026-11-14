@@ -1,5 +1,32 @@
 # @backstage/frontend-plugin-api
 
+## 0.19.0-next.3
+
+### Minor Changes
+
+- 806a9cf: **BREAKING**: Removed the `/alpha` entry point. All of its exports are already available from `@backstage/frontend-plugin-api`; update imports to use the main entry point instead:
+
+  ```diff
+  -import { PluginWrapperBlueprint } from '@backstage/frontend-plugin-api/alpha';
+  +import { PluginWrapperBlueprint } from '@backstage/frontend-plugin-api';
+  ```
+
+  The exported APIs retain the same behavior and identity. For the deprecated `pluginWrapperApiRef`, prefer `coreApis.pluginWrapper` from the main entry point.
+
+- 0f2ffc9: **BREAKING**: Removed the `ProgressProps` type. Replace imports and usages of this type with its existing shape, `{}`. The `Progress` component and its props contract are unchanged.
+- 7285912: **BREAKING PRODUCERS**: `TranslationSnapshot` now requires `t` even when `ready` is false. Custom `TranslationApi` implementations must provide a translator using available messages and language fallbacks.
+
+### Patch Changes
+
+- d47986a: Improved type inference for deeply nested and cyclic translation messages. Required replacement values and plural counts are inferred at any depth, and count interpolation requires a numeric value.
+- 6928d62: Fixed swappable components losing their mounted state when their props change. The resolved component remains stable while its props update.
+- 641ac02: Added `coreExtensionData.titleTranslation` to provide a translation message selection alongside a static title. Consumers can opt in to translated titles. The selection must not require formatting values.
+- 7594fd4: Page and sub-page blueprints now accept typed translation message selections in their `title` parameter, using existing translation resources. Select a message by calling a translation ref, for example `myTranslationRef('page.title')`. TypeScript checks the key and rejects messages that require formatting values.
+
+  Resolved translations take precedence over configured titles in every language, including the default language. Titles wait for the selected language on first load and retain resolved values during later loads or failures, preserving page state.
+
+  `TranslationRef` values are now callable functions. Treat refs as opaque values rather than checking for plain objects or cloning them.
+
 ## 0.19.0-next.2
 
 ### Minor Changes

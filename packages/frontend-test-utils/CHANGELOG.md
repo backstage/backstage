@@ -1,5 +1,19 @@
 # @backstage/frontend-test-utils
 
+## 0.7.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app-react@0.3.0-next.3
+  - @backstage/plugin-app@0.6.0-next.3
+  - @backstage/frontend-plugin-api@0.19.0-next.3
+  - @backstage/core-app-api@1.20.7-next.3
+  - @backstage/core-plugin-api@1.13.0-next.3
+  - @backstage/frontend-app-api@0.17.0-next.3
+  - @backstage/test-utils@1.7.24-next.2
+  - @backstage/plugin-permission-react@0.5.7-next.2
+
 ## 0.7.0-next.2
 
 ### Minor Changes

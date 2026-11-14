@@ -1,5 +1,13 @@
 # @backstage/backend-defaults
 
+## 0.19.0-next.3
+
+### Patch Changes
+
+- fbd2535: Fixed a connection and memory leak in the GitHub URL reader, where every failed request with a large error response body, such as the error pages served during a GitHub Enterprise outage, left its connection open indefinitely.
+- Updated dependencies
+  - @backstage/integration@2.2.0-next.1
+
 ## 0.19.0-next.2
 
 ### Minor Changes

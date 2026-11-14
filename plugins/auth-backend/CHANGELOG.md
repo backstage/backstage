@@ -1,5 +1,11 @@
 # @backstage/plugin-auth-backend
 
+## 0.31.0-next.3
+
+### Patch Changes
+
+- 7db7c52: Respect the `auth.backstageTokenExpiration` configuration when issuing OAuth access and ID tokens from the OIDC service, instead of hard-coding a 1-hour expiry.
+
 ## 0.31.0-next.2
 
 ### Minor Changes

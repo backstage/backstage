@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.3.0-next.3
+
+### Patch Changes
+
+- e318672: Fixed matching of action input values in scaffolder permission policies, including identifiers that are provided either as numbers or as strings.
+- Updated dependencies
+  - @backstage/integration@2.2.0-next.1
+  - @backstage/plugin-scaffolder-common@2.4.0-next.2
+  - @backstage/plugin-scaffolder-node@1.0.0-next.3
+
 ## 4.3.0-next.2
 
 ### Patch Changes

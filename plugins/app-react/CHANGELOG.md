@@ -1,5 +1,14 @@
 # @backstage/plugin-app-react
 
+## 0.3.0-next.3
+
+### Patch Changes
+
+- 77c1622: Added the `AnalyticsImplementation` type, moved from `@backstage/frontend-plugin-api`, alongside `AnalyticsImplementationBlueprint` and `AnalyticsImplementationFactory`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.19.0-next.3
+  - @backstage/core-plugin-api@1.13.0-next.3
+
 ## 0.3.0-next.2
 
 ### Minor Changes
