@@ -199,7 +199,9 @@ const detectedPackageManagers = new Map<string, Promise<PackageManager>>();
  * The package manager is picked from the workspace root, in this order:
  *
  * 1. The `packageManager` field in the root `package.json`, when it names
- *    `yarn` or `pnpm`.
+ *    `yarn` or `pnpm`. Without that field, its `devEngines.packageManager`
+ *    field, when it names `yarn` or `pnpm`. When `devEngines.packageManager`
+ *    lists several, the first supported one is used.
  * 2. A `pnpm-lock.yaml` file: pnpm.
  * 3. A `yarn.lock` file: Yarn.
  * 4. A `pnpm-workspace.yaml` file: pnpm.
@@ -315,8 +317,8 @@ const SUPPORTED_PACKAGE_MANAGERS = ['yarn', 'pnpm'];
 
 /**
  * Reads the package manager that the root package.json names, from the
- * packageManager field or else from devEngines.packageManager. When
- * devEngines lists several, the first supported one is used.
+ * packageManager field, or without that field from devEngines.packageManager.
+ * When devEngines lists several, the first supported one is used.
  */
 function getDeclaredPackageManager(
   packageJson: Record<string, unknown> | undefined,
@@ -339,7 +341,11 @@ function getDeclaredPackageManager(
     devEngineNames[0];
 
   if (fromPackageManager !== undefined) {
+    // An unsupported packageManager field is ignored with a warning of its
+    // own later, so a conflict with devEngines is only reported for a
+    // supported one
     if (
+      SUPPORTED_PACKAGE_MANAGERS.includes(fromPackageManager) &&
       fromDevEngines !== undefined &&
       fromDevEngines !== fromPackageManager &&
       SUPPORTED_PACKAGE_MANAGERS.includes(fromDevEngines)

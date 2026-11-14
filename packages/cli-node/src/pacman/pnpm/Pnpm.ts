@@ -28,6 +28,11 @@ import {
 import { PackageManagerLockfile } from '../PackageManagerLockfile';
 import { PnpmLockfile } from './PnpmLockfile';
 
+// pnpm records the version that package.json pins in the lockfile on every
+// command, so commands that only read information would otherwise create or
+// change the lockfile of the project
+const READ_ONLY_ENV = { pnpm_config_lockfile: 'false' };
+
 // The pnpm versions that the CLI supports. pnpm 12.7 is the first release that
 // links workspace packages into the root node_modules under the hoisted node
 // linker, and 11.28 has the same change.
@@ -150,14 +155,20 @@ export class Pnpm implements PackageManager {
     await this.run(['run', script, ...args], options);
   }
 
-  /** Runs `pnpm --filter <workspace> run <script> [args]`. */
+  /**
+   * Runs `pnpm --filter <workspace> --fail-if-no-match run <script> [args]`,
+   * which fails like Yarn does when no workspace package has that name.
+   */
   async runWorkspaceScript(
     workspace: string,
     script: string,
     args: string[] = [],
     options?: RunOptions,
   ) {
-    await this.run(['--filter', workspace, 'run', script, ...args], options);
+    await this.run(
+      ['--filter', workspace, '--fail-if-no-match', 'run', script, ...args],
+      options,
+    );
   }
 
   /** Runs `pnpm pack --out <output>` in the package directory. */
@@ -178,6 +189,7 @@ export class Pnpm implements PackageManager {
     try {
       output = await runOutput(['pnpm', 'view', name, '--json'], {
         cwd: this.workspaceRootDir,
+        env: READ_ONLY_ENV,
       });
     } catch (error) {
       if (
@@ -301,11 +313,9 @@ function detectPnpmVersion(dir: string): Promise<string> {
 
   const promise = Promise.resolve().then(async () => {
     try {
-      // pnpm records the version that package.json pins in the lockfile on
-      // every command, which would create or change the lockfile here
       const stdout = await runOutput(['pnpm', '--version'], {
         cwd: dir,
-        env: { pnpm_config_lockfile: 'false' },
+        env: READ_ONLY_ENV,
       });
       const version = stdout.trim();
       if (!semver.valid(version)) {

@@ -107,6 +107,15 @@ export async function preparePnpmDistWorkspace(options: {
     settings,
     targetName: 'the dist workspace',
   });
+  // The frozen install of the dist workspace would fail on a missing patch
+  // file anyway, but only later and without naming it
+  if (copied.missingPatches.length > 0) {
+    throw new Error(
+      `The patch files of ${copied.missingPatches
+        .map(({ name, path }) => `${name} at ${path}`)
+        .join(', ')} were not found, so the dist workspace can't be installed`,
+    );
+  }
   files.push(...copied.files);
   for (const [name, path] of Object.entries(copied.patchedDependencies)) {
     if (settings.patchedDependencies?.[name] !== path) {

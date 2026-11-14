@@ -155,7 +155,15 @@ describe('Pnpm', () => {
 
     await pnpm.runWorkspaceScript('backend', 'start', ['--inspect']);
     expect(mockRun).toHaveBeenLastCalledWith(
-      ['pnpm', '--filter', 'backend', 'run', 'start', '--inspect'],
+      [
+        'pnpm',
+        '--filter',
+        'backend',
+        '--fail-if-no-match',
+        'run',
+        'start',
+        '--inspect',
+      ],
       { cwd: projectDir },
     );
 
@@ -261,7 +269,7 @@ describe('Pnpm', () => {
     });
     expect(mockRunOutput).toHaveBeenLastCalledWith(
       ['pnpm', 'view', 'my-package', '--json'],
-      { cwd: projectDir },
+      { cwd: projectDir, env: { pnpm_config_lockfile: 'false' } },
     );
 
     // pnpm exits with an error and prints the error as JSON for a missing package

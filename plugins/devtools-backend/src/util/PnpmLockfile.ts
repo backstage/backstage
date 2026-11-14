@@ -15,6 +15,7 @@
  */
 
 import fs from 'fs-extra';
+import { dirname, resolve as resolvePath } from 'node:path';
 import { parseAllDocuments } from 'yaml';
 
 // Matches `name@version` and `@scope/name@version`
@@ -22,6 +23,7 @@ const PACKAGE_KEY_PATTERN = /^(@[^/@]+\/[^/@]+|[^/@]+)@(.+)$/;
 
 type PnpmLockfileData = {
   lockfileVersion?: string | number;
+  importers?: Record<string, unknown>;
   packages?: Record<string, { version?: unknown } | null>;
 };
 
@@ -31,7 +33,7 @@ type LockfileQueryEntry = {
 
 /**
  * A minimal reader of `pnpm-lock.yaml` files that only provides the names and
- * versions of the resolved packages.
+ * versions of the resolved packages and of the packages in the workspace.
  */
 export class PnpmLockfile {
   static async load(path: string) {
@@ -64,24 +66,43 @@ export class PnpmLockfile {
     }
 
     const packages = new Map<string, LockfileQueryEntry[]>();
+    const addEntry = (name: string, version: string) => {
+      let queries = packages.get(name);
+      if (!queries) {
+        queries = [];
+        packages.set(name, queries);
+      }
+      queries.push({ version });
+    };
 
     for (const [key, entry] of Object.entries(data.packages ?? {})) {
       const [, name, keyVersion] = PACKAGE_KEY_PATTERN.exec(key) ?? [];
       if (!name) {
         throw new Error(`Failed to parse pnpm-lock.yaml entry '${key}'`);
       }
-
-      let queries = packages.get(name);
-      if (!queries) {
-        queries = [];
-        packages.set(name, queries);
-      }
       // A package from git or a tarball is keyed by its source, and the
       // lockfile lists its version separately
       const version = entry?.version;
-      queries.push({
-        version: typeof version === 'string' ? version : keyVersion,
-      });
+      addEntry(name, typeof version === 'string' ? version : keyVersion);
+    }
+
+    // pnpm lists the packages of the workspace as importers, keyed by their
+    // directory, without their names or versions. These are read from their
+    // package.json files, so that the packages of the workspace are listed
+    // like the workspace entries of yarn.lock.
+    const lockfileDir = dirname(path);
+    for (const dir of Object.keys(data.importers ?? {})) {
+      const packageJson = await fs
+        .readJson(resolvePath(lockfileDir, dir, 'package.json'))
+        .catch(() => undefined);
+      if (typeof packageJson?.name === 'string') {
+        addEntry(
+          packageJson.name,
+          typeof packageJson.version === 'string'
+            ? packageJson.version
+            : '0.0.0',
+        );
+      }
     }
 
     return new PnpmLockfile(packages);

@@ -1,0 +1,3 @@
+packages:
+  - apps/backstage
+  - apps/backstage/packages/*
