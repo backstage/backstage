@@ -55,8 +55,46 @@ describe('createGitlabTokenValidator', () => {
     } as Partial<RequestDetails> as unknown as RequestDetails;
   };
 
-  it('should return undefined if no secret is configured', async () => {
-    expect(createGitlabTokenValidator(configWithoutSecret)).toEqual(undefined);
+  it('missing secret without dangerouslyAllowUnauthenticatedEvents rejects with HTTP 403 and logs warning', async () => {
+    const request = requestWithToken(undefined);
+    const context = new TestContext();
+    const mockLogger = {
+      warn: jest.fn(),
+    };
+
+    const validator = createGitlabTokenValidator(
+      configWithoutSecret,
+      mockLogger as any,
+    );
+    await validator(request, context);
+
+    expect(context.details).not.toBeUndefined();
+    expect(context.details?.status).toBe(403);
+    expect(context.details?.payload).toEqual({ message: 'invalid token' });
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "Webhook secrets are required by default unless 'events.modules.gitlab.dangerouslyAllowUnauthenticatedEvents' is explicitly set to true",
+      ),
+    );
+  });
+
+  it('missing secret with dangerouslyAllowUnauthenticatedEvents: true accepts events', async () => {
+    const request = requestWithToken(undefined);
+    const context = new TestContext();
+    const configWithDanger = new ConfigReader({
+      events: {
+        modules: {
+          gitlab: {
+            dangerouslyAllowUnauthenticatedEvents: true,
+          },
+        },
+      },
+    });
+
+    const validator = createGitlabTokenValidator(configWithDanger);
+    await validator(request, context);
+
+    expect(context.details).toBeUndefined();
   });
 
   it('secret configured, reject request without token', async () => {
