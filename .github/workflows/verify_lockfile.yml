@@ -1,0 +1,34 @@
+name: Verify Lockfile
+on:
+  push:
+    branches: [master]
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2.22.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install gh-actions-lock
+        run: gh extension install github/gh-actions-lock --pin v0.4.1
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Verify lockfile
+        run: gh actions-lock --verify
+        env:
+          GH_TOKEN: ${{ github.token }}

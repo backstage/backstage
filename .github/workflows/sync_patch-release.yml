@@ -20,12 +20,12 @@ jobs:
       pull-requests: write
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        uses: step-security/harden-runner@v2.22.1
         with:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
           filter: blob:none
@@ -33,7 +33,7 @@ jobs:
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
       - name: Use Node.js 24.x
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: 24.22.1
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -57,7 +57,7 @@ jobs:
       - name: Find existing PR
         id: find-pr
         if: steps.check-patches.outputs.has_patches == 'true'
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
@@ -84,7 +84,7 @@ jobs:
 
       - name: Close PR and delete branch if no patches
         if: steps.check-patches.outputs.has_patches == 'false'
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
@@ -133,7 +133,7 @@ jobs:
       - name: Read patch files for PR metadata
         if: steps.check-patches.outputs.has_patches == 'true'
         id: read-patches
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
@@ -202,7 +202,7 @@ jobs:
 
       - name: Create or update PR
         if: steps.check-patches.outputs.has_patches == 'true'
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        uses: actions/github-script@v9.0.0
         env:
           PR_EXISTS: ${{ steps.find-pr.outputs.pr_exists }}
           PR_NUMBER: ${{ steps.find-pr.outputs.pr_number }}
