@@ -26,6 +26,13 @@ export default createCliModule({
       execute: { loader: () => import('./commands/repo/test') },
     });
 
+    reg.addRunTarget('test', {
+      description: 'Run the tests of each package',
+      packageCommand: ['package', 'test'],
+      packageArgs: ['--no-watch'],
+      includeDependents: true,
+    });
+
     reg.addCommand({
       path: ['package', 'test'],
       description:

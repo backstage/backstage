@@ -108,6 +108,53 @@ export interface CliCommand {
 }
 
 /**
+ * Options for registering a run target with `addRunTarget`.
+ *
+ * A run target is invoked as `backstage-cli repo run <name>`. It runs the
+ * given `package` command once per package in the workspace, in a separate
+ * process, and supports the `--since`, `--include-dependents` and `--watch`
+ * flags.
+ *
+ * @public
+ */
+export interface CliRunTargetOptions {
+  /**
+   * A short description of the target, displayed in the `repo run` help
+   * output.
+   */
+  description: string;
+  /**
+   * The package command to run for each package, for example
+   * `['package', 'test']`. Must start with `package`.
+   */
+  packageCommand: string[];
+  /**
+   * The `package.json` script that opts a package in to the run target. A
+   * package is included if this script starts with
+   * `backstage-cli <packageCommand>`, and any further arguments in the script
+   * are passed on to the package command.
+   *
+   * Defaults to the last segment of `packageCommand`.
+   */
+  scriptName?: string;
+  /**
+   * Arguments that are always passed to the package command, for example
+   * `['--no-watch']`.
+   */
+  packageArgs?: string[];
+  /**
+   * Whether `--since` also includes the local dependents of changed packages.
+   * Users can override this with `--include-dependents` or
+   * `--no-include-dependents`, and it also applies to `--watch` re-runs.
+   *
+   * Defaults to `true`, because a change in a package can break the packages
+   * that depend on it, so selecting only the changed packages would silently
+   * miss regressions. Set to `false` for commands where that is not the case.
+   */
+  includeDependents?: boolean;
+}
+
+/**
  * An opaque representation of a Backstage CLI plugin, created
  * using {@link createCliModule}.
  *
