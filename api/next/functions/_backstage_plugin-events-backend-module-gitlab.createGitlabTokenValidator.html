@@ -14,7 +14,7 @@
 <section class="tsd-panel">
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="creategitlabtokenvalidator"><span class="tsd-kind-call-signature">createGitlabTokenValidator</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">config</span><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_config.Config.html" class="tsd-signature-type tsd-kind-type-alias">Config</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_plugin-events-node.index.RequestValidator.html" class="tsd-signature-type tsd-kind-type-alias">RequestValidator</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#creategitlabtokenvalidator" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="creategitlabtokenvalidator"><span class="tsd-kind-call-signature">createGitlabTokenValidator</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">config</span><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_config.Config.html" class="tsd-signature-type tsd-kind-type-alias">Config</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">logger</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/_backstage_backend-plugin-api.index.LoggerService.html" class="tsd-signature-type tsd-kind-interface">LoggerService</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_plugin-events-node.index.RequestValidator.html" class="tsd-signature-type tsd-kind-type-alias">RequestValidator</a><a href="#creategitlabtokenvalidator" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Validates a configured secret token against the token received with the <code>x-gitlab-token</code> header.</p>
 <p>See <a href="https://docs.gitlab.com/ee/user/project/integrations/webhooks.html#validate-payloads-by-using-a-secret-token">https://docs.gitlab.com/ee/user/project/integrations/webhooks.html#validate-payloads-by-using-a-secret-token</a>
@@ -25,10 +25,13 @@ for more details.</p>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">config</span>: <a href="../types/_backstage_config.Config.html" class="tsd-signature-type tsd-kind-type-alias">Config</a></span>
 <div class="tsd-comment tsd-typography"><p>root config</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">logger</span>: <a href="../interfaces/_backstage_backend-plugin-api.index.LoggerService.html" class="tsd-signature-type tsd-kind-interface">LoggerService</a></span>
+<div class="tsd-comment tsd-typography"><p>logger used to report the module's authentication setup at startup</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="../types/_backstage_plugin-events-node.index.RequestValidator.html" class="tsd-signature-type tsd-kind-type-alias">RequestValidator</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <a href="../types/_backstage_plugin-events-node.index.RequestValidator.html" class="tsd-signature-type tsd-kind-type-alias">RequestValidator</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1368ad369f6b46fdb64f8274949a22e413f0096b/plugins/events-backend-module-gitlab/src/http/createGitlabTokenValidator.ts#L33">plugins/events-backend-module-gitlab/src/http/createGitlabTokenValidator.ts:33</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/8598cd157f54d995e21214a416765baed35f4589/plugins/events-backend-module-gitlab/src/http/createGitlabTokenValidator.ts#L36">plugins/events-backend-module-gitlab/src/http/createGitlabTokenValidator.ts:36</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
