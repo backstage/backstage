@@ -193,6 +193,7 @@ export default async ({ args, info }: CliCommandContext) => {
       maxWarnings: maxWarnings ?? '-1',
       successCache: cacheContext?.entries,
       rootDir: targetPaths.installationRootDir,
+      workspaceRootDir: targetPaths.workspaceRootDir,
     },
     workerFactory: async ({
       fix: workerFix,
@@ -200,6 +201,7 @@ export default async ({ args, info }: CliCommandContext) => {
       shouldCache,
       successCache,
       rootDir,
+      workspaceRootDir,
       maxWarnings: workerMaxWarnings,
     }) => {
       const { ESLint } = require('eslint') as typeof import('eslint');
@@ -253,10 +255,12 @@ export default async ({ args, info }: CliCommandContext) => {
             hash.update('\0');
             hash.update(await readFile(absPath));
             hash.update('\0');
+            // The config refers to files in the node_modules of the
+            // workspace root, which may be above the installation root
             hash.update(
               JSON.stringify(
                 await eslint.calculateConfigForFile(pathInPackage),
-              ).replaceAll(rootDir, ''),
+              ).replaceAll(workspaceRootDir, ''),
             );
             hash.update('\0');
           }

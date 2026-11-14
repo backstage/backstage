@@ -50,7 +50,7 @@
   "dependencies": {
     "@backstage/errors": "workspace:^",
     "cross-spawn": "^7.0.3",
-    "minimatch": "^10.2.1",
+    "minimatch": "^11.0.1",
     "yaml": "^2.0.0"
   },
   "devDependencies": {

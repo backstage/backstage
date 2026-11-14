@@ -145,7 +145,7 @@ describe('targetPaths', () => {
       // which a workspaces field marks, and one backstage.json at the top
       'pnpm/package.json': '{}',
       'pnpm/pnpm-workspace.yaml':
-        "packages:\n  - apps/**\n  - '!apps/excluded/**'\n  - '!apps/kept'\n  - ./libs/*\n  - other/{lib-?,svc}\n  - nested/*/packages/*\n",
+        "packages:\n  - apps/**\n  - '!apps/excluded/**'\n  - '!apps/kept'\n  - ./libs/*\n  - other/{lib-?,svc}\n  - nested/*/packages/*\n  - single/*\n  - '!single/left-out'\n",
       'pnpm/backstage.json': '{}',
       'pnpm/apps/backstage/package.json': JSON.stringify({
         workspaces: ['packages/*'],
@@ -188,6 +188,16 @@ describe('targetPaths', () => {
         workspaces: ['packages/*'],
       }),
       'pnpm/apps/kept/packages/a/package.json': '{}',
+      // A negation of the directory leaves it out when no pattern reaches
+      // inside it, here an npm workspace that isn't a Yarn project
+      'pnpm/single/left-out/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/single/left-out/packages/a/package.json': '{}',
+      'pnpm/single/in/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/single/in/packages/a/package.json': '{}',
       // A pnpm-workspace.yaml with settings only, which includes no packages
       'settings-only/pnpm-workspace.yaml': 'nodeLinker: hoisted\n',
       'settings-only/yarn/package.json': JSON.stringify({
@@ -351,6 +361,18 @@ describe('targetPaths', () => {
       'pnpm/apps/kept/packages/a',
       'pnpm',
       'pnpm/apps/kept',
+      'pnpm/backstage.json',
+    );
+    expectRoots(
+      'pnpm/single/left-out/packages/a',
+      'pnpm/single/left-out',
+      'pnpm/single/left-out',
+      'pnpm/single/left-out/backstage.json',
+    );
+    expectRoots(
+      'pnpm/single/in/packages/a',
+      'pnpm',
+      'pnpm/single/in',
       'pnpm/backstage.json',
     );
     expectRoots(

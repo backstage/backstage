@@ -67,11 +67,11 @@ export type TargetPaths = {
    * with one is part of a pnpm workspace above it when the `packages`
    * patterns of that workspace include the directory or a directory inside
    * it, and a workspace of its own otherwise. For example, `apps/*` and
-   * `apps/backstage/packages/*` both include `apps/backstage`. A Yarn project,
-   * as the package manager detection of `@backstage/cli-node` sees it, is
-   * always a workspace of its own: its `packageManager` field, or else
-   * `devEngines.packageManager`, names Yarn, or neither names Yarn or pnpm
-   * and it has a `yarn.lock` file but no `pnpm-lock.yaml`. The lockfile
+   * `apps/backstage/packages/*` both include `apps/backstage`. A Yarn project
+   * is always a workspace of its own: its `packageManager` field names Yarn,
+   * or it has no `packageManager` field and `devEngines.packageManager` names
+   * Yarn, or neither names Yarn or pnpm and it has a `yarn.lock` file but no
+   * `pnpm-lock.yaml`. The lockfile
    * and the package manager configuration live here, and installs act on
    * everything inside it.
    *
@@ -307,7 +307,7 @@ function readPackageJson(dir: string): Record<string, unknown> | undefined {
     return JSON.parse(content);
   } catch (error) {
     throw new Error(
-      `Failed to parse package.json file while searching for root, ${error}`,
+      `Failed to parse '${pkgJsonPath}' while searching for root, ${error}`,
     );
   }
 }
@@ -317,12 +317,12 @@ function hasWorkspacesField(dir: string): boolean {
 }
 
 /**
- * Returns true if `dir` is the root of a Yarn project, decided the same way
- * as the package manager detection in `@backstage/cli-node`. The
- * `packageManager` field decides when it names Yarn or pnpm, or else
- * `devEngines.packageManager`, where the first of Yarn and pnpm counts. That
- * way a lockfile left behind after a migration does not count. Otherwise the
- * lockfiles decide, and `pnpm-lock.yaml` wins over `yarn.lock`.
+ * Returns true if `dir` is the root of a Yarn project. The
+ * `packageManager` field decides when it names Yarn or pnpm. Without that
+ * field, `devEngines.packageManager` decides, where the first of Yarn and
+ * pnpm counts. That way a lockfile left behind after a migration does not
+ * count. Otherwise the lockfiles decide, and `pnpm-lock.yaml` wins over
+ * `yarn.lock`.
  */
 function isYarnProject(dir: string): boolean {
   const data = readPackageJson(dir);
@@ -355,7 +355,7 @@ function readPnpmWorkspacePatterns(dir: string): string[] {
     return Array.isArray(data?.packages) ? data.packages.map(String) : [];
   } catch (error) {
     throw new Error(
-      `Failed to parse pnpm-workspace.yaml file while searching for root, ${error}`,
+      `Failed to parse '${path}' while searching for root, ${error}`,
     );
   }
 }
@@ -364,7 +364,8 @@ function readPnpmWorkspacePatterns(dir: string): string[] {
  * Returns true if the nearest `pnpm-workspace.yaml` above `dir` includes
  * `dir` or a directory inside it in its `packages` field. Without a
  * `packages` field, a pnpm workspace only includes its root. A negated
- * pattern leaves out `dir` when it matches `dir` and everything inside it.
+ * pattern leaves out `dir` when it matches `dir` and everything inside it,
+ * or when it matches `dir` and no positive pattern reaches inside it.
  * Negated patterns that only match the directories inside `dir` are not
  * checked against the positive ones, since that would need the file system,
  * so `dir` then still counts as included.
@@ -382,14 +383,28 @@ function isInPnpmWorkspace(dir: string): boolean {
   const matchers = readPnpmWorkspacePatterns(pnpmRootDir).map(
     pattern => new Minimatch(pattern.replace(/^(!?)\.\//, '$1')),
   );
+  const positives = matchers.filter(m => !m.negate);
+  // A negated matcher returns false for the paths that its pattern matches
+  const negations = matchers.filter(m => m.negate);
+  const includesDir =
+    positives.some(m => m.match(relDir)) &&
+    !negations.some(m => !m.match(`${relDir}/`));
+  // pnpm applies a negated pattern to each package directory on its own, so
+  // `!apps/backstage` leaves out the directory but keeps the packages inside
+  // it that a longer pattern such as `apps/**` includes. Only a negation that
+  // also matches a path deep inside it, such as `!apps/backstage/**`, leaves
+  // out everything.
+  const depth = relDir.split('/').length;
+  const reachesInside = positives.some(m =>
+    m.globParts.some(
+      parts =>
+        (parts.length > depth || parts.includes('**')) &&
+        new Minimatch(parts.join('/')).match(relDir, true),
+    ),
+  );
   return (
-    matchers.some(m => !m.negate && m.match(relDir, true)) &&
-    // pnpm applies a negated pattern to each package directory on its own, so
-    // it only leaves out everything when it matches the directory and a path
-    // deep inside it, such as `!apps/backstage/**`
-    !matchers.some(
-      m => m.negate && !m.match(`${relDir}/`) && !m.match(`${relDir}/x/x`),
-    )
+    includesDir ||
+    (reachesInside && !negations.some(m => !m.match(`${relDir}/x/x`)))
   );
 }
 
