@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ArgoCdConnectionType } from '../schema/argocd';
 import { AwsConnectionType } from '../schema/aws';
 import { AwsCodeCommitConnectionType } from '../schema/awsCodeCommit';
 import { AwsS3ConnectionType } from '../schema/awsS3';
@@ -38,6 +39,7 @@ function createConnectionTypes<
 
 /** @public */
 export const connectionTypes = createConnectionTypes({
+  argocd: ArgoCdConnectionType,
   aws: AwsConnectionType,
   'aws-codecommit': AwsCodeCommitConnectionType,
   'aws-s3': AwsS3ConnectionType,

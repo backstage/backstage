@@ -42,6 +42,9 @@ selection rules, and a typed consumption example.
 
 ## Developer platforms
 
+- [Argo CD](./types/argocd.md) supports API tokens and deployment roots with
+  path prefixes, with lookup by host and port.
+
 - [Harness](./types/harness.md) supports token authentication with an optional
   additional API key.
 
