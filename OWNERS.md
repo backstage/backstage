@@ -5,13 +5,14 @@
 
 Team: @backstage/maintainers
 
-| Maintainer      | Organization | GitHub                                                | Discord       |
-| --------------- | ------------ | ----------------------------------------------------- | ------------- |
-| André Wanlin    | Spotify      | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
-| Aramis Sennyey  | DoorDash     | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
-| Ben Lambert     | Spotify      | [benjdlambert](https://github.com/benjdlambert)       | `blam#2159`   |
-| Fredrik Adelöw  | Spotify      | [freben](https://github.com/freben)                   | `freben#3926` |
-| Patrik Oldsberg | Spotify      | [Rugvip](https://github.com/Rugvip)                   | `Rugvip#0019` |
+| Maintainer      | Organization | GitHub                                                | Discord        |
+| --------------- | ------------ | ----------------------------------------------------- | -------------- |
+| André Wanlin    | Spotify      | [awanlin](https://github.com/awanlin)                 | `ahhhndre`     |
+| Aramis Sennyey  | DoorDash     | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984`  |
+| Ben Lambert     | Spotify      | [benjdlambert](https://github.com/benjdlambert)       | `blam#2159`    |
+| Fredrik Adelöw  | Spotify      | [freben](https://github.com/freben)                   | `freben#3926`  |
+| Patrik Oldsberg | Spotify      | [Rugvip](https://github.com/Rugvip)                   | `Rugvip#0019`  |
+| Paul Schultz    | Red Hat      | [schultzp2020](https://github.com/schultzp2020)       | `schultzp2020` |
 
 ## Project Areas
 
