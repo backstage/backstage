@@ -344,6 +344,48 @@ export function createGithubRepoPushAction(options: {
 >;
 
 // @public
+export function createGithubRepoRulesetsCreateAction(options: {
+  integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+  requireScmUserCredentials?: boolean;
+}): TemplateAction<
+  {
+    repoUrl: string;
+    name: string;
+    target: 'tag' | 'branch';
+    enforcement: 'active' | 'disabled' | 'evaluate';
+    conditions?:
+      | {
+          ref_name?:
+            | {
+                include?: string[] | undefined;
+                exclude?: string[] | undefined;
+              }
+            | undefined;
+        }
+      | undefined;
+    rules?:
+      | {
+          type: string;
+          parameters?: Record<string, any> | undefined;
+        }[]
+      | undefined;
+    bypassActors?:
+      | {
+          actor_type: string;
+          bypass_mode?: 'always' | 'pull_request' | 'exempt' | undefined;
+          actor_id?: number | null | undefined;
+        }[]
+      | undefined;
+    token?: string | undefined;
+  },
+  {
+    id: number;
+  },
+  'v2'
+>;
+
+// @public
 export function createGithubWebhookAction(options: {
   integrations: ScmIntegrationRegistry;
   defaultWebhookSecret?: string;
