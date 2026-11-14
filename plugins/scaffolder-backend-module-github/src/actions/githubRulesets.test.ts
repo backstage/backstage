@@ -168,17 +168,19 @@ describe('github:repo:rulesets:create', () => {
         },
       }),
     ).rejects.toThrow(/No matching integration configuration/);
-    await expect(
+    const userCredentialsAction: TemplateAction<any, any, any> =
       createGithubRepoRulesetsCreateAction({
         integrations,
         requireScmUserCredentials: true,
-      }).handler(mockContext),
-    ).rejects.toThrow(/No user credentials provided/);
+      });
+    await expect(userCredentialsAction.handler(mockContext)).rejects.toThrow(
+      /No user credentials provided/,
+    );
     expect(octokitMock).not.toHaveBeenCalled();
     expect(mockOctokit.rest.repos.createRepoRuleset).not.toHaveBeenCalled();
   });
 
-  it('should validate bypass actor ids', () => {
+  it('should validate bypass actors', () => {
     const validator = new Validator();
     const isValid = (bypassActors: unknown) =>
       validator.validate(
@@ -190,5 +192,11 @@ describe('github:repo:rulesets:create', () => {
     expect(isValid([{ actor_id: null, actor_type: 'DeployKey' }])).toBe(true);
     expect(isValid([{ actor_type: 'OrganizationAdmin' }])).toBe(true);
     expect(isValid([{ actor_id: 1.5, actor_type: 'Team' }])).toBe(false);
+    expect(
+      isValid([{ actor_id: 1, actor_type: 'Team', bypass_mode: 'exempt' }]),
+    ).toBe(true);
+    expect(
+      isValid([{ actor_id: 1, actor_type: 'Team', bypass_mode: 'never' }]),
+    ).toBe(false);
   });
 });

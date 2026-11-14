@@ -65,16 +65,14 @@ export function createGithubRepoRulesetsCreateAction(options: {
               description:
                 'The target of the ruleset - `branch` or `tag`. Default is `branch`',
             })
-            .default('branch')
-            .optional(),
+            .default('branch'),
         enforcement: z =>
           z
             .enum(['active', 'evaluate', 'disabled'], {
               description:
-                'The enforcement level of the ruleset - `active`, `evaluate` or `disabled`. Default is `active`. `evaluate` requires GitHub Enterprise',
+                'The enforcement level of the ruleset - `active`, `evaluate` or `disabled`. Default is `active`. `evaluate` is not available on all GitHub plans, see https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets',
             })
-            .default('active')
-            .optional(),
+            .default('active'),
         conditions: z =>
           z
             .object(
@@ -111,7 +109,9 @@ export function createGithubRepoRulesetsCreateAction(options: {
               z.object({
                 actor_id: z.number().int().nullable().optional(),
                 actor_type: z.string(),
-                bypass_mode: z.string().optional(),
+                bypass_mode: z
+                  .enum(['always', 'pull_request', 'exempt'])
+                  .optional(),
               }),
               {
                 description:

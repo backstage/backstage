@@ -61,7 +61,7 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: `Evaluate a ruleset requiring signed commits on release branches without enforcing it. The evaluate enforcement level requires GitHub Enterprise.`,
+    description: `Evaluate a ruleset requiring signed commits on release branches without enforcing it. The evaluate enforcement level is not available on all GitHub plans.`,
     example: yaml.stringify({
       steps: [
         {

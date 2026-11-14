@@ -352,8 +352,8 @@ export function createGithubRepoRulesetsCreateAction(options: {
   {
     repoUrl: string;
     name: string;
-    target?: 'tag' | 'branch' | undefined;
-    enforcement?: 'active' | 'disabled' | 'evaluate' | undefined;
+    target: 'tag' | 'branch';
+    enforcement: 'active' | 'disabled' | 'evaluate';
     conditions?:
       | {
           ref_name?:
@@ -373,7 +373,7 @@ export function createGithubRepoRulesetsCreateAction(options: {
     bypassActors?:
       | {
           actor_type: string;
-          bypass_mode?: string | undefined;
+          bypass_mode?: 'always' | 'pull_request' | 'exempt' | undefined;
           actor_id?: number | null | undefined;
         }[]
       | undefined;
