@@ -75,7 +75,7 @@ describe('eventsModuleGithubWebhook', () => {
       {
         status: 403,
         payload: {
-          message: 'invalid signature',
+          message: 'webhook secret not configured',
         },
       },
     ]);

@@ -4,4 +4,4 @@
 '@backstage/plugin-events-backend-module-azure': minor
 ---
 
-**BREAKING** Enforced secure-by-default webhook authentication. Webhook requests received on `/api/events/http/*` endpoints will now be rejected with an HTTP 403 Forbidden status code if no webhook secret is configured, unless the new configuration property `dangerouslyAllowUnauthenticatedEvents` is explicitly set to `true`.
+**BREAKING** Webhook events modules now require a webhook secret by default. Requests to the `/api/events/http/github`, `/api/events/http/gitlab`, and `/api/events/http/azureDevOps` endpoints are rejected with HTTP 403 when no webhook secret is configured, instead of being accepted without validation. To continue accepting unauthenticated events, for example in development environments, set the module's new `dangerouslyAllowUnauthenticatedEvents` option to `true`.

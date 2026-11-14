@@ -63,7 +63,7 @@ describe('gitlabWebhookEventsModule', () => {
       {
         status: 403,
         payload: {
-          message: 'invalid token',
+          message: 'webhook secret not configured',
         },
       },
     ]);

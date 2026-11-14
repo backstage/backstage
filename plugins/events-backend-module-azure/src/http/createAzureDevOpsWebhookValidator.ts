@@ -32,11 +32,12 @@ import { timingSafeEqual } from 'node:crypto';
  * at `events.modules.azureDevOps.webhookSecret`.
  *
  * @param config - root config
+ * @param logger - logger used to report the module's authentication setup at startup
  * @public
  */
 export function createAzureDevOpsWebhookValidator(
   config: Config,
-  logger?: LoggerService,
+  logger: LoggerService,
 ): RequestValidator {
   const secret = config.getOptionalString(
     'events.modules.azureDevOps.webhookSecret',
@@ -49,24 +50,22 @@ export function createAzureDevOpsWebhookValidator(
 
   if (!secret) {
     if (dangerouslyAllowUnauthenticatedEvents) {
+      logger.warn(
+        'dangerouslyAllowUnauthenticatedEvents is enabled for the Azure DevOps events module; incoming webhook events will be accepted without authentication',
+      );
       return async () => {};
     }
 
+    logger.warn(
+      "No webhook secret is configured for the Azure DevOps events module; incoming webhook events will be rejected with 403. Set 'events.modules.azureDevOps.webhookSecret' to enable authentication, or set 'events.modules.azureDevOps.dangerouslyAllowUnauthenticatedEvents' to true to accept unauthenticated events",
+    );
     return async (
       _request: RequestDetails,
       context: RequestValidationContext,
     ): Promise<void> => {
-      const msg =
-        "Rejecting incoming unsigned Azure DevOps event. Webhook secrets are required by default unless 'events.modules.azureDevOps.dangerouslyAllowUnauthenticatedEvents' is explicitly set to true.";
-      if (logger) {
-        logger.warn(msg);
-      } else {
-        // eslint-disable-next-line no-console
-        console.warn(msg);
-      }
       context.reject({
         status: 403,
-        payload: { message: 'invalid webhook secret' },
+        payload: { message: 'webhook secret not configured' },
       });
     };
   }

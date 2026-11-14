@@ -14,7 +14,7 @@ import { SubTopicEventRouter } from '@backstage/plugin-events-node';
 // @public
 export function createGitlabTokenValidator(
   config: Config,
-  logger?: LoggerService,
+  logger: LoggerService,
 ): RequestValidator;
 
 // @public (undocumented)

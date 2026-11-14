@@ -71,7 +71,7 @@ describe('eventsModuleAzureDevOpsWebhook', () => {
       {
         status: 403,
         payload: {
-          message: 'invalid webhook secret',
+          message: 'webhook secret not configured',
         },
       },
     ]);

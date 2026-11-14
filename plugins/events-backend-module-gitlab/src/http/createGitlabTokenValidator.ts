@@ -21,6 +21,7 @@ import {
   RequestValidationContext,
   RequestValidator,
 } from '@backstage/plugin-events-node';
+import { timingSafeEqual } from 'node:crypto';
 
 /**
  * Validates a configured secret token against the token received with the `x-gitlab-token` header.
@@ -29,11 +30,12 @@ import {
  * for more details.
  *
  * @param config - root config
+ * @param logger - logger used to report the module's authentication setup at startup
  * @public
  */
 export function createGitlabTokenValidator(
   config: Config,
-  logger?: LoggerService,
+  logger: LoggerService,
 ): RequestValidator {
   const secret = config.getOptionalString(
     'events.modules.gitlab.webhookSecret',
@@ -46,39 +48,49 @@ export function createGitlabTokenValidator(
 
   if (!secret) {
     if (dangerouslyAllowUnauthenticatedEvents) {
+      logger.warn(
+        'dangerouslyAllowUnauthenticatedEvents is enabled for the GitLab events module; incoming webhook events will be accepted without authentication',
+      );
       return async () => {};
     }
 
+    logger.warn(
+      "No webhook secret is configured for the GitLab events module; incoming webhook events will be rejected with 403. Set 'events.modules.gitlab.webhookSecret' to enable authentication, or set 'events.modules.gitlab.dangerouslyAllowUnauthenticatedEvents' to true to accept unauthenticated events",
+    );
     return async (
       _request: RequestDetails,
       context: RequestValidationContext,
     ): Promise<void> => {
-      const msg =
-        "Rejecting incoming unsigned GitLab event. Webhook secrets are required by default unless 'events.modules.gitlab.dangerouslyAllowUnauthenticatedEvents' is explicitly set to true.";
-      if (logger) {
-        logger.warn(msg);
-      } else {
-        // eslint-disable-next-line no-console
-        console.warn(msg);
-      }
       context.reject({
         status: 403,
-        payload: { message: 'invalid token' },
+        payload: { message: 'webhook secret not configured' },
       });
     };
   }
+
+  const secretBuffer = Buffer.from(secret);
 
   return async (
     request: RequestDetails,
     context: RequestValidationContext,
   ): Promise<void> => {
-    const token = request.headers['x-gitlab-token'] as string | undefined;
+    const raw = request.headers['x-gitlab-token'];
+    const token = Array.isArray(raw) ? raw[0] : raw;
 
-    if (secret !== token) {
-      context.reject({
-        status: 403,
-        payload: { message: 'invalid token' },
-      });
+    const tokenBuffer =
+      typeof token === 'string' ? Buffer.from(token) : undefined;
+
+    if (
+      tokenBuffer &&
+      tokenBuffer.length === secretBuffer.length &&
+      timingSafeEqual(tokenBuffer, secretBuffer)
+    ) {
+      return;
     }
+
+    context.reject({
+      status: 403,
+      payload: { message: 'invalid token' },
+    });
   };
 }

@@ -35,12 +35,13 @@ import { OctokitProviderService } from '../util/octokitProviderService';
  * for more details.
  *
  * @param config - root config
+ * @param logger - logger used to report the module's authentication setup at startup
  * @public
  */
 export function createGithubSignatureValidator(
   config: Config,
   octokitProvider: OctokitProviderService,
-  logger?: LoggerService,
+  logger: LoggerService,
 ): RequestValidator {
   const integrations = ScmIntegrations.fromConfig(config);
 
@@ -66,24 +67,22 @@ export function createGithubSignatureValidator(
 
   if (!genericSecret && githubAppSecrets.size === 0) {
     if (dangerouslyAllowUnauthenticatedEvents) {
+      logger.warn(
+        'dangerouslyAllowUnauthenticatedEvents is enabled for the GitHub events module; incoming webhook events will be accepted without authentication',
+      );
       return async () => {};
     }
 
+    logger.warn(
+      "No webhook secret is configured for the GitHub events module; incoming webhook events will be rejected with 403. Set 'events.modules.github.webhookSecret' to enable authentication, or set 'events.modules.github.dangerouslyAllowUnauthenticatedEvents' to true to accept unauthenticated events",
+    );
     return async (
       _request: RequestDetails,
       context: RequestValidationContext,
     ): Promise<void> => {
-      const msg =
-        "Rejecting incoming unsigned GitHub event. Webhook secrets are required by default unless 'events.modules.github.dangerouslyAllowUnauthenticatedEvents' is explicitly set to true.";
-      if (logger) {
-        logger.warn(msg);
-      } else {
-        // eslint-disable-next-line no-console
-        console.warn(msg);
-      }
       context.reject({
         status: 403,
-        payload: { message: 'invalid signature' },
+        payload: { message: 'webhook secret not configured' },
       });
     };
   }
