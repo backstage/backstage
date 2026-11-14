@@ -4,7 +4,7 @@ title: Package Managers
 description: Which package managers the Backstage CLI supports, how it detects them, and how a pnpm app differs from a Yarn app.
 ---
 
-The Backstage CLI runs package manager commands and reads the lockfile of your project. It supports Yarn and pnpm. Yarn is the default, and the rest of the documentation uses Yarn commands. Where a page says `yarn <script>` for a script of your project, a pnpm project runs `pnpm <script>` instead. Commands that are specific to Yarn, such as `yarn workspace` and `yarn install --immutable`, have their own pnpm forms, see [Commands in pnpm projects](#commands-in-pnpm-projects).
+The Backstage CLI runs package manager commands and reads the lockfile of your project. It supports Yarn and pnpm. Yarn is the default, and the rest of the documentation uses Yarn commands. Where a page says `yarn <script>` for a script of your project, a pnpm project runs `pnpm <script>` instead. Commands that are specific to Yarn have their own pnpm forms: `yarn workspace <name> <script>` becomes `pnpm --filter <name> <script>`, and `yarn install --immutable` becomes `pnpm install --frozen-lockfile`. For how the Backstage CLI commands themselves differ, see [Commands in pnpm projects](#commands-in-pnpm-projects).
 
 :::caution[Experimental]
 pnpm support is experimental. The CLI, the app template, and this page may change in ways that require manual updates to your project.
@@ -80,7 +80,7 @@ Pass `--package-manager pnpm` to `@backstage/create-app`:
 npx @backstage/create-app@latest --package-manager pnpm
 ```
 
-When the command runs through pnpm, pnpm is selected without the option:
+When the command runs through pnpm, pnpm is selected without the option, except for a custom template from `--template-path`, which only uses pnpm with the option:
 
 ```shell
 pnpm create @backstage/app
@@ -92,10 +92,10 @@ The prerequisite check verifies that pnpm 11.28 or a later 11.x release, or pnpm
 
 A pnpm app has the same packages and scripts as a Yarn app. These files differ:
 
-- `package.json` sets `packageManager` to pnpm. It has no `workspaces` field and no `resolutions` field. The `build:backend` and `build-image` scripts use `pnpm --filter backend` instead of `yarn workspace backend`. The root also depends on `@types/node`, `@types/react`, and `@types/webpack-env`, which `tsc` only finds in the root `node_modules`. The `hoisted` node linker puts them there anyway, the `isolated` one does not.
+- `package.json` sets `packageManager` to pnpm. It has no `workspaces` field and no `resolutions` field. The `build:backend` and `build-image` scripts use `pnpm --filter backend` instead of `yarn workspace backend`. The root also depends on `@types/node`, `@types/react`, and `@types/webpack-env`, which `tsc` only finds in the root `node_modules`. The `hoisted` node linker puts them there anyway, but the `isolated` one does not.
 - `pnpm-workspace.yaml` lists the workspace packages and holds the pnpm settings described below.
 - `.yarnrc.yml`, the `.yarn` directory, and `yarn.lock` are not created.
-- `packages/backend/Dockerfile` installs pnpm with `npm install -g pnpm@<version>`, where the version matches the `packageManager` field. It copies `package.json`, `backstage.json`, and the skeleton archive, and installs with `pnpm install --frozen-lockfile --prod`, with an optional `.npmrc` build secret for private registries, see [Host Build with pnpm](../deployment/docker.md#host-build-with-pnpm). The skeleton archive holds `pnpm-lock.yaml`, `pnpm-workspace.yaml`, any patch files, and the pnpmfile, see [Commands in pnpm projects](#commands-in-pnpm-projects). The cache mount points at the pnpm store.
+- `packages/backend/Dockerfile` installs pnpm with `npm install -g pnpm@<version>`, where the version matches the `packageManager` field. It copies `package.json`, `backstage.json`, and the skeleton archive, and installs with `pnpm install --frozen-lockfile --prod`, with an optional `.npmrc` build secret for private registries, see [Host Build with pnpm](../deployment/docker.md#host-build-with-pnpm). The skeleton archive holds `pnpm-lock.yaml`, `pnpm-workspace.yaml`, any patch files, and the pnpmfile, see [Commands in pnpm projects](#commands-in-pnpm-projects). The cache mount points at the pnpm store, and the install sets the store to that directory with `--store-dir`, since pnpm would otherwise put a store inside the image.
 - `.github/workflows/ci.yml` sets up pnpm with `pnpm/action-setup` and installs with `pnpm install --frozen-lockfile`.
 - `.gitignore` ignores `pnpm-debug.log*` instead of the Yarn files, and `.dockerignore` drops the `.yarn` entries.
 - `.prettierignore` ignores `pnpm-lock.yaml`, so that `prettier:check` does not fail on the lockfile.
@@ -150,7 +150,7 @@ allowBuilds:
 
 - A plain range, such as `^1.2.0`, is updated in the `package.json` that declares it.
 - A `catalog:` reference is updated in the default catalog of the root `pnpm-workspace.yaml`.
-- A `catalog:<name>` reference is left alone, unless you pass `--catalog <name>`.
+- A `catalog:<name>` reference is left alone, unless you pass `--catalog <name>`. When all Backstage dependencies refer to named catalogs, the command without `--catalog` changes nothing, not even the release in `backstage.json`.
 
 With `--catalog <name>`, the command updates the entries of that catalog and nothing else. This is useful when you deliberately keep a second release line, such as a `backstage-next` catalog during a migration:
 
@@ -188,8 +188,8 @@ The CLI commands work the same in Yarn and pnpm projects. These are the differen
 
 Two tools outside the CLI also follow the package manager:
 
-- The fix of the `no-undeclared-imports` rule in `@backstage/eslint-plugin` uses `pnpm add` and `pnpm remove`. It picks pnpm from the `packageManager` or `devEngines.packageManager` field of the root `package.json`, or from a `pnpm-lock.yaml` file in the workspace root.
-- The **Info** tab of the DevTools plugin reads `pnpm-lock.yaml` in pnpm projects. It lists packages installed from the registry. Packages in the workspace itself are not listed in pnpm projects.
+- The fix of the `no-undeclared-imports` rule in `@backstage/eslint-plugin` uses `pnpm add` and `pnpm remove`. It picks pnpm from the `packageManager` or `devEngines.packageManager` field of the root `package.json`, or from a `pnpm-lock.yaml` or `pnpm-workspace.yaml` file in the workspace root, also for an installation in a subdirectory of the workspace.
+- The **Info** tab of the DevTools plugin reads `pnpm-lock.yaml` in pnpm projects. It lists the installed packages, and the packages in the workspace with the versions in their `package.json` files.
 
 ## Running under a build system
 
@@ -207,24 +207,24 @@ The CLI and the backend work with both the `hoisted` and the `isolated` node lin
 
 Two more things change under `isolated`:
 
-- `tsc` only finds the types that the `tsconfig.json` of the CLI names, `@types/node` and `@types/webpack-env`, in the root `node_modules`. The template declares them, together with `@types/react`, in the root `package.json`. An app that was created before, or migrated from Yarn, needs to add them.
+- `tsc` only finds the types that the `tsconfig.json` of the CLI names, `@types/node`, `@types/jest`, and `@types/webpack-env`, in the root `node_modules`. The template declares them, together with `@types/react`, in the root `package.json`. An app that was created before, or migrated from Yarn, needs to add the ones it doesn't declare there.
 - The app shares a default set of dependencies with dynamic frontend plugins through module federation, among them `react`, `@material-ui/core`, `@material-ui/styles`, `@mui/material`, and `@emotion/react`. Under `isolated`, a dependency is only shared when the app can import it, which means the app package declares it. The build prints which shared dependencies it skips. Add the ones that your dynamic frontend plugins rely on to the dependencies of the app.
 
 pnpm 11.28 and later 11.x releases, and pnpm 12.7 and later, link workspace packages into the root `node_modules` under `hoisted`, as Yarn does. Under `isolated` with the default `hoist: true`, every package is also linked into the hidden `node_modules/.pnpm/node_modules` directory.
 
-If you set `hoistWorkspacePackages: false`, the backend no longer finds the app package that it serves. Add the app package to the `dependencies` of the root `package.json`, which links it into the root `node_modules`. Use `dependencies` rather than `devDependencies`, so that production installs keep it.
+If you set `hoistWorkspacePackages: false`, the backend no longer finds the app package that it serves. Add the app package to the `dependencies` of the root `package.json` with the `workspace:` protocol, as in `"app": "workspace:*"`, which links it into the root `node_modules`. Without that protocol, pnpm looks the package up in the registry. Use `dependencies` rather than `devDependencies`, so that production installs keep it.
 
 ## Known gaps
 
 - Layouts where a package can only see its own dependencies are not supported: `hoist: false`, and the global virtual store when the backend is started with plain `node` rather than through `pnpm`. `resolvePackagePath` from `@backstage/backend-plugin-api` cannot find other packages in these layouts, so backend plugins that locate their own files with it, such as their database migrations, fail to start. Keep hoisting enabled for the backend packages, or start the backend through `pnpm` when you use the global virtual store.
 - Windows is not supported for pnpm projects.
 - The `backstage:^` version protocol needs the Backstage Yarn plugin.
-- These `@backstage/repo-tools` commands resolve binaries from the root `node_modules/.bin` or run `yarn`, and do not work in pnpm projects: `package-docs`, the OpenAPI schema commands, `api-reports`, and `type-deps`. `generate-patch` works with Yarn patches only.
+- These `@backstage/repo-tools` commands resolve binaries from the root `node_modules/.bin`, run `yarn`, or read `yarn.lock`, and do not work in pnpm projects: `package-docs`, the OpenAPI schema commands, and `api-reports`. `generate-patch` works with Yarn patches only.
 - `pm verify-patches` from the Yarn package manager module works with Yarn only. `@backstage/cli-defaults` includes the module, so a pnpm app installs it too. The Yarn packages that the command needs, such as `@yarnpkg/core`, are optional peer dependencies of the module, which pnpm does not install.
 - Only one Backstage version per workspace is supported, apart from a deliberate second release line in a named catalog.
-- `create-app` cannot generate an app into an existing pnpm workspace yet.
+- `create-app` cannot generate an app into an existing pnpm workspace.
 - Only lockfile version 9 is supported, which pnpm 9 through 12 write.
-- Catalogs are not supported in Yarn projects.
+- Catalogs are not supported in Yarn projects. `versions:bump` leaves the `catalog:` references of a Yarn project as they are and warns about them, so bump the catalog entries in `.yarnrc.yml` yourself.
 - The Backstage repository itself uses Yarn. Contributing to Backstage does not involve pnpm.
 
 ## Migrating an existing app from Yarn to pnpm
@@ -245,6 +245,6 @@ Try the migration on a branch. These steps follow the differences between the Ya
 1. Optionally, run `pnpm import`. It creates `pnpm-lock.yaml` from `yarn.lock`, so that the first install keeps the versions that Yarn had locked instead of resolving every dependency again.
 1. Delete `yarn.lock`, `.yarnrc.yml`, and the `.yarn` directory. Remove the Yarn entries from `.gitignore` and `.dockerignore`, and add `pnpm-debug.log*` to `.gitignore` and `pnpm-lock.yaml` to `.prettierignore`. If the project has Yarn patches in `.yarn/patches`, keep a copy and remove the `patch:` entries from `overrides`. Recreate each patch after the first `pnpm install`: run `pnpm patch <package>`, apply the changes in the directory it prints, and run `pnpm patch-commit <directory>` to write the patch file and the `patchedDependencies` entry.
 1. Run `pnpm install`. When a dependency runs a build script that `allowBuilds` does not cover, the install fails with `ERR_PNPM_IGNORED_BUILDS` and lists the packages. Add each of them to `allowBuilds`, then run `pnpm install` again.
-1. Update `packages/backend/Dockerfile`: install pnpm with `npm install -g pnpm@<version>`, remove the lines that copy the Yarn files, copy only `package.json` and the skeleton archive before the install, since the skeleton holds `pnpm-lock.yaml`, `pnpm-workspace.yaml`, any patch files, and the pnpmfile, and replace `yarn workspaces focus --all --production` with `pnpm install --frozen-lockfile --prod`. Change the cache mount of the install step to the pnpm store, `/home/node/.local/share/pnpm/store`, and add the `.npmrc` secret mount if you install from a private registry. See [Host Build with pnpm](../deployment/docker.md#host-build-with-pnpm).
+1. Update `packages/backend/Dockerfile`: install pnpm with `npm install -g pnpm@<version>`, remove the lines that copy the Yarn files, drop `yarn.lock` from the line that copies `package.json` and the skeleton archive before the install, since the skeleton holds `pnpm-lock.yaml`, `pnpm-workspace.yaml`, any patch files, and the pnpmfile, and replace `yarn workspaces focus --all --production` with `pnpm install --frozen-lockfile --prod`. Change the cache mount of the install step to the pnpm store, `/home/node/.local/share/pnpm/store`, pass the same directory to `pnpm install` with `--store-dir`, and add the `.npmrc` secret mount if you install from a private registry. See [Host Build with pnpm](../deployment/docker.md#host-build-with-pnpm).
 1. Update your CI workflow to set up pnpm and run `pnpm install --frozen-lockfile` instead of `yarn install --immutable`. Replace every remaining `yarn` command in the workflow with `pnpm`, and remove the corepack and Yarn cache steps. Add a `pnpm/action-setup` step before `actions/setup-node`, and set `cache: pnpm` on `actions/setup-node`.
-1. Run `pnpm tsc`, `pnpm build:all`, and `pnpm test` to verify the project.
+1. Run `pnpm tsc`, `pnpm build:all`, and `pnpm test:all` to verify the project.

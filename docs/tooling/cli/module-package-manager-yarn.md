@@ -15,7 +15,7 @@ for guidance on creating Yarn patches for locally modified Backstage packages.
 
 The command verifies Yarn's native `patch:` protocol, available in Yarn 2 and
 later. It does not inspect patches managed by tools such as `patch-package` in
-Yarn Classic repositories. The module is Yarn only, see
+Yarn Classic repositories. The module works with Yarn only. See
 [Package Managers](../package-managers.md).
 
 :::caution
