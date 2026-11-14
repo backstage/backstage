@@ -15,16 +15,16 @@
  */
 
 import { screen } from '@testing-library/react';
+import { useState } from 'react';
 import user from '@testing-library/user-event';
 import { MaxDepthFilter } from './MaxDepthFilter';
 import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<MaxDepthFilter/>', () => {
-  test('should display current value', async () => {
+  test('should display the current value', async () => {
     await renderInTestApp(<MaxDepthFilter value={5} onChange={() => {}} />);
 
-    expect(screen.getByLabelText('maxp')).toBeInTheDocument();
-    expect(screen.getByLabelText('maxp')).toHaveValue(5);
+    expect(screen.getByRole('textbox', { name: 'Max depth' })).toHaveValue('5');
   });
 
   test('should display infinite if non finite', async () => {
@@ -33,45 +33,47 @@ describe('<MaxDepthFilter/>', () => {
     );
 
     expect(screen.getByPlaceholderText(/Infinite/)).toBeInTheDocument();
-    expect(screen.getByLabelText('maxp')).toHaveValue(null);
+    expect(screen.getByRole('textbox', { name: 'Max depth' })).toHaveValue('');
   });
 
-  test('should clear max depth', async () => {
+  test('should report the entered depth, and infinite when cleared', async () => {
     const onChange = jest.fn();
-    await renderInTestApp(<MaxDepthFilter value={10} onChange={onChange} />);
+    const Controlled = () => {
+      const [value, setValue] = useState(5);
+      return (
+        <MaxDepthFilter
+          value={value}
+          onChange={v => {
+            setValue(v);
+            onChange(v);
+          }}
+        />
+      );
+    };
+    await renderInTestApp(<Controlled />);
 
+    const input = screen.getByRole('textbox', { name: 'Max depth' });
     expect(onChange).not.toHaveBeenCalled();
-    await user.click(screen.getByLabelText('clear max depth'));
-    expect(onChange).toHaveBeenCalledWith(Number.POSITIVE_INFINITY);
+
+    await user.clear(input);
+    await user.tab();
+    expect(onChange).toHaveBeenLastCalledWith(Number.POSITIVE_INFINITY);
+
+    await user.type(input, '10');
+    await user.tab();
+    expect(onChange).toHaveBeenLastCalledWith(10);
+    expect(input).toHaveValue('10');
   });
 
-  test('should set max depth to undefined if below one', async () => {
+  test('should treat a committed zero as unlimited depth', async () => {
     const onChange = jest.fn();
-    await renderInTestApp(<MaxDepthFilter value={1} onChange={onChange} />);
+    await renderInTestApp(<MaxDepthFilter value={3} onChange={onChange} />);
 
-    await user.clear(screen.getByLabelText('maxp'));
-    await user.type(screen.getByLabelText('maxp'), '0');
+    const input = screen.getByRole('textbox', { name: 'Max depth' });
+    await user.clear(input);
+    await user.type(input, '0');
+    await user.tab();
 
-    expect(onChange).toHaveBeenCalledWith(Number.POSITIVE_INFINITY);
-  });
-
-  test('should select direction', async () => {
-    let value = 5;
-    await renderInTestApp(
-      <MaxDepthFilter
-        value={value}
-        onChange={v => {
-          value = v;
-        }}
-      />,
-    );
-
-    expect(screen.getByLabelText('maxp')).toHaveValue(5);
-    expect(value).toBe(5);
-
-    await user.clear(screen.getByLabelText('maxp'));
-    expect(value).toBe(Number.POSITIVE_INFINITY);
-    await user.type(screen.getByLabelText('maxp'), '10');
-    expect(value).toBe(10);
+    expect(onChange).toHaveBeenLastCalledWith(Number.POSITIVE_INFINITY);
   });
 });

@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+import { TestApiProvider } from '@backstage/frontend-test-utils';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 import { CatalogGraphPage, NfsCatalogGraphPage } from './CatalogGraphPage';
 
 jest.mock('../EntityRelationsGraph', () => ({
@@ -27,6 +31,11 @@ const initialState = {
   showFilters: false,
   rootEntityRefs: ['component:default/my-service'],
 };
+
+const apis = [
+  catalogApiMock({ entities: [] }),
+  [catalogGraphApiRef, new DefaultCatalogGraphApi()],
+] as const;
 
 const renderOptions = {
   mountedRoutes: {
@@ -44,9 +53,33 @@ describe('NfsCatalogGraphPage', () => {
     expect(
       await screen.findByTestId('entity-relations-graph'),
     ).toBeInTheDocument();
+    expect(screen.getByRole('main')).toContainElement(
+      screen.getByTestId('entity-relations-graph'),
+    );
     expect(screen.getByText('Filters')).toBeInTheDocument();
     expect(screen.queryByText('Catalog Graph')).not.toBeInTheDocument();
     expect(screen.queryByText('my-service')).not.toBeInTheDocument();
+  });
+
+  it('toggles the filters panel', async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={apis}>
+        <NfsCatalogGraphPage
+          initialState={{ ...initialState, showFilters: true }}
+        />
+      </TestApiProvider>,
+      renderOptions,
+    );
+
+    expect(await screen.findByText('Max depth')).toBeInTheDocument();
+    expect(screen.getByRole('switch', { name: 'Simplified' })).toBeChecked();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+
+    expect(screen.queryByText('Max depth')).not.toBeInTheDocument();
+    expect(
+      await screen.findByTestId('entity-relations-graph'),
+    ).toBeInTheDocument();
   });
 
   it('keeps the legacy header on the legacy page', async () => {

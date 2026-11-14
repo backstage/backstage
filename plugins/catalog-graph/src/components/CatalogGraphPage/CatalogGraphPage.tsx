@@ -15,25 +15,15 @@
  */
 
 import { parseEntityRef } from '@backstage/catalog-model';
-import {
-  Content,
-  ContentHeader,
-  Header,
-  Page,
-  SupportButton,
-} from '@backstage/core-components';
+import { Header, Page, SupportButton } from '@backstage/core-components';
 import { useAnalytics, useRouteRef } from '@backstage/core-plugin-api';
 import {
   entityPresentationSnapshot,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
-import ToggleButton from '@material-ui/lab/ToggleButton';
+import { Flex, FullPage, Text, ToggleButton } from '@backstage/ui';
+import { RiFilterLine, RiFullscreenLine } from '@remixicon/react';
+import classNames from 'classnames';
 import { MouseEvent, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -50,8 +40,13 @@ import { useCatalogGraphPage } from './useCatalogGraphPage';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { catalogGraphTranslationRef } from '../../translation';
 import { Direction, EntityNode } from '../../lib/types';
+import styles from './CatalogGraphPage.module.css';
 
-/** @public */
+/**
+ * @public
+ * @deprecated The catalog graph page is styled with CSS modules and no longer
+ * reads theme overrides, so this type has no effect and will be removed.
+ */
 export type CatalogGraphPageClassKey =
   | 'content'
   | 'container'
@@ -60,61 +55,6 @@ export type CatalogGraphPageClassKey =
   | 'graph'
   | 'legend'
   | 'filters';
-
-const useStyles = makeStyles(
-  theme => ({
-    content: {
-      minHeight: 0,
-    },
-    container: {
-      height: '100%',
-      maxHeight: '100%',
-      minHeight: 0,
-    },
-    fullHeight: {
-      maxHeight: '100%',
-      display: 'flex',
-      minHeight: 0,
-    },
-    graphWrapper: {
-      position: 'relative',
-      flex: 1,
-      minHeight: 0,
-      display: 'flex',
-    },
-    graph: {
-      flex: 1,
-      minHeight: 0,
-    },
-    legend: {
-      position: 'absolute',
-      bottom: 0,
-      right: 0,
-      padding: theme.spacing(1),
-      '& .icon': {
-        verticalAlign: 'bottom',
-      },
-    },
-    filters: {
-      display: 'grid',
-      gridGap: theme.spacing(1),
-      gridAutoRows: 'auto',
-      [theme.breakpoints.up('lg')]: {
-        display: 'block',
-      },
-      [theme.breakpoints.only('md')]: {
-        gridTemplateColumns: 'repeat(3, 1fr)',
-      },
-      [theme.breakpoints.only('sm')]: {
-        gridTemplateColumns: 'repeat(2, 1fr)',
-      },
-      [theme.breakpoints.down('xs')]: {
-        gridTemplateColumns: 'repeat(1, 1fr)',
-      },
-    },
-  }),
-  { name: 'PluginCatalogGraphCatalogGraphPage' },
-);
 
 type CatalogGraphPageProps = {
   initialState?: {
@@ -138,7 +78,6 @@ function CatalogGraphPageContent(
     pageProps;
   const { t } = useTranslationRef(catalogGraphTranslationRef);
   const navigate = useNavigate();
-  const classes = useStyles();
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const {
     maxDepth,
@@ -186,25 +125,26 @@ function CatalogGraphPageContent(
   );
 
   const pageContent = (
-    <Content stretch className={classes.content}>
-      <ContentHeader
-        titleComponent={
-          <ToggleButton
-            value="show filters"
-            selected={showFilters}
-            onChange={() => toggleShowFilters()}
-          >
-            <FilterListIcon /> {t('catalogGraphPage.filterToggleButtonTitle')}
-          </ToggleButton>
-        }
-      >
+    <div className={styles.root}>
+      <Flex justify="between" align="center">
+        <ToggleButton
+          isSelected={showFilters}
+          onChange={toggleShowFilters}
+          iconStart={<RiFilterLine aria-hidden />}
+        >
+          {t('catalogGraphPage.filterToggleButtonTitle')}
+        </ToggleButton>
         <SupportButton>
           {t('catalogGraphPage.supportButtonDescription')}
         </SupportButton>
-      </ContentHeader>
-      <Grid container alignItems="stretch" className={classes.container}>
+      </Flex>
+      <div
+        className={classNames(styles.layout, {
+          [styles.layoutWithFilters]: showFilters,
+        })}
+      >
         {showFilters && (
-          <Grid item xs={12} lg={2} className={classes.filters}>
+          <div className={styles.filters}>
             <MaxDepthFilter value={maxDepth} onChange={setMaxDepth} />
             <SelectedKindsFilter
               value={selectedKinds}
@@ -216,62 +156,64 @@ function CatalogGraphPageContent(
             />
             <DirectionFilter value={direction} onChange={setDirection} />
             <CurveFilter value={curve} onChange={setCurve} />
-            <SwitchFilter
-              value={unidirectional}
-              onChange={setUnidirectional}
-              label={t('catalogGraphPage.simplifiedSwitchLabel')}
-            />
-            <SwitchFilter
-              value={mergeRelations}
-              onChange={setMergeRelations}
-              label={t('catalogGraphPage.mergeRelationsSwitchLabel')}
-            />
-          </Grid>
+            <div className={styles.switches}>
+              <SwitchFilter
+                value={unidirectional}
+                onChange={setUnidirectional}
+                label={t('catalogGraphPage.simplifiedSwitchLabel')}
+              />
+              <SwitchFilter
+                value={mergeRelations}
+                onChange={setMergeRelations}
+                label={t('catalogGraphPage.mergeRelationsSwitchLabel')}
+              />
+            </div>
+          </div>
         )}
-        <Grid item xs className={classes.fullHeight}>
-          <Paper className={classes.graphWrapper}>
-            <Typography
-              variant="caption"
-              color="textSecondary"
-              display="block"
-              className={classes.legend}
-            >
-              <ZoomOutMap className="icon" />{' '}
-              {t('catalogGraphPage.zoomOutDescription')}
-            </Typography>
-            <EntityRelationsGraph
-              {...pageProps}
-              rootEntityNames={rootEntityNames}
-              maxDepth={maxDepth}
-              kinds={
-                selectedKinds && selectedKinds.length > 0
-                  ? selectedKinds
-                  : undefined
-              }
-              relations={
-                selectedRelations && selectedRelations.length > 0
-                  ? selectedRelations
-                  : undefined
-              }
-              mergeRelations={mergeRelations}
-              unidirectional={unidirectional}
-              showArrowHeads={showArrowHeads}
-              onNodeClick={onNodeClick}
-              direction={direction}
-              relationPairs={relationPairs}
-              entityFilter={entityFilter}
-              className={classes.graph}
-              zoom="enabled"
-              curve={curve}
-            />
-          </Paper>
-        </Grid>
-      </Grid>
-    </Content>
+        <div className={styles.graphWrapper}>
+          <Text
+            as="p"
+            variant="body-x-small"
+            color="secondary"
+            className={styles.legend}
+          >
+            <RiFullscreenLine size={16} aria-hidden />{' '}
+            {t('catalogGraphPage.zoomOutDescription')}
+          </Text>
+          <EntityRelationsGraph
+            {...pageProps}
+            rootEntityNames={rootEntityNames}
+            maxDepth={maxDepth}
+            kinds={
+              selectedKinds && selectedKinds.length > 0
+                ? selectedKinds
+                : undefined
+            }
+            relations={
+              selectedRelations && selectedRelations.length > 0
+                ? selectedRelations
+                : undefined
+            }
+            mergeRelations={mergeRelations}
+            unidirectional={unidirectional}
+            showArrowHeads={showArrowHeads}
+            onNodeClick={onNodeClick}
+            direction={direction}
+            relationPairs={relationPairs}
+            entityFilter={entityFilter}
+            className={styles.graph}
+            zoom="enabled"
+            curve={curve}
+          />
+        </div>
+      </div>
+    </div>
   );
 
   if (headerVariant === 'bui') {
-    return pageContent;
+    // FullPage sizes itself to the viewport below the plugin header, which
+    // gives the graph a definite height even when there is no root entity.
+    return <FullPage>{pageContent}</FullPage>;
   }
 
   return (
@@ -282,7 +224,7 @@ function CatalogGraphPageContent(
           .map(e => entityPresentationSnapshot(e).primaryTitle)
           .join(', ')}
       />
-      {pageContent}
+      <div className={styles.legacyContent}>{pageContent}</div>
     </Page>
   );
 }

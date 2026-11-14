@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Select, SelectedItems } from '@backstage/core-components';
-import Box from '@material-ui/core/Box';
+import { Select } from '@backstage/ui';
 import { useCallback } from 'react';
 import { Direction } from '../../lib/types';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
@@ -34,21 +33,19 @@ export const DirectionFilter = ({ value, onChange }: Props) => {
     [Direction.BOTTOM_TOP]: t('catalogGraphPage.directionFilter.bottomToTop'),
   };
   const handleChange = useCallback(
-    (v: SelectedItems) => onChange(v as Direction),
+    (v: unknown) => onChange(v as Direction),
     [onChange],
   );
 
   return (
-    <Box pb={1} pt={1}>
-      <Select
-        label={t('catalogGraphPage.directionFilter.title')}
-        selected={value}
-        items={Object.values(Direction).map(v => ({
-          label: DIRECTION_DISPLAY_NAMES[v],
-          value: v,
-        }))}
-        onChange={handleChange}
-      />
-    </Box>
+    <Select
+      label={t('catalogGraphPage.directionFilter.title')}
+      value={value}
+      options={Object.values(Direction).map(v => ({
+        label: DIRECTION_DISPLAY_NAMES[v],
+        value: v,
+      }))}
+      onChange={handleChange}
+    />
   );
 };

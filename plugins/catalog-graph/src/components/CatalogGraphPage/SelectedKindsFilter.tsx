@@ -13,34 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Select } from '@backstage/ui';
 import { useCallback, useEffect, useMemo } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogGraphTranslationRef } from '../../translation';
-import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
-/** @public */
+/**
+ * @public
+ * @deprecated The filter is styled with CSS modules and no longer reads theme
+ * overrides, so this type has no effect and will be removed.
+ */
 export type SelectedKindsFilterClassKey = 'formControl';
-
-const useStyles = makeStyles(
-  {
-    formControl: {
-      maxWidth: 300,
-    },
-  },
-  { name: 'PluginCatalogGraphSelectedKindsFilter' },
-);
 
 export type Props = {
   value: string[] | undefined;
@@ -48,7 +35,6 @@ export type Props = {
 };
 
 export const SelectedKindsFilter = ({ value, onChange }: Props) => {
-  const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const catalogApi = useApi(catalogApiRef);
   const { t } = useTranslationRef(catalogGraphTranslationRef);
@@ -68,62 +54,37 @@ export const SelectedKindsFilter = ({ value, onChange }: Props) => {
     }
   }, [error, alertApi]);
 
-  const normalizedKinds = useMemo(
-    () => (kinds ? kinds.map(k => k.toLowerCase()) : kinds),
+  const options = useMemo(
+    () => kinds?.map(k => ({ value: k.toLowerCase(), label: k })),
     [kinds],
   );
 
+  // Selecting everything, or nothing, is the same as not filtering by kind
   const handleChange = useCallback(
-    (_: unknown, v: string[]) => {
+    (selection: unknown) => {
+      const selected = selection as string[];
       onChange(
-        normalizedKinds && normalizedKinds.every(r => v.includes(r))
+        !selected.length ||
+          (options && options.every(o => selected.includes(o.value)))
           ? undefined
-          : v,
+          : selected,
       );
     },
-    [normalizedKinds, onChange],
+    [options, onChange],
   );
 
-  const handleEmpty = useCallback(() => {
-    onChange(value?.length ? value : undefined);
-  }, [value, onChange]);
-
-  if (!kinds?.length || !normalizedKinds?.length || error) {
+  if (!options?.length || error) {
     return <></>;
   }
 
   return (
-    <Box pb={1} pt={1}>
-      <Typography variant="button">
-        {t('catalogGraphPage.selectedKindsFilter.title')}
-      </Typography>
-      <Autocomplete
-        className={classes.formControl}
-        multiple
-        limitTags={4}
-        disableCloseOnSelect
-        aria-label={t('catalogGraphPage.selectedKindsFilter.title')}
-        options={normalizedKinds}
-        value={value ?? normalizedKinds}
-        getOptionLabel={k => kinds[normalizedKinds.indexOf(k)] ?? k}
-        onChange={handleChange}
-        onBlur={handleEmpty}
-        renderOption={(option, { selected }) => (
-          <FormControlLabel
-            control={
-              <Checkbox
-                icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
-                checkedIcon={<CheckBoxIcon fontSize="small" />}
-                checked={selected}
-              />
-            }
-            label={kinds[normalizedKinds.indexOf(option)] ?? option}
-          />
-        )}
-        size="small"
-        popupIcon={<ExpandMoreIcon data-testid="selected-kinds-expand" />}
-        renderInput={params => <TextField {...params} variant="outlined" />}
-      />
-    </Box>
+    <Select
+      selectionMode="multiple"
+      search
+      label={t('catalogGraphPage.selectedKindsFilter.title')}
+      options={options}
+      value={value ?? options.map(o => o.value)}
+      onChange={handleChange}
+    />
   );
 };
