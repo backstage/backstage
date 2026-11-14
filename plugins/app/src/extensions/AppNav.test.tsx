@@ -20,9 +20,13 @@ import {
   PageBlueprint,
   createExtension,
   createFrontendModule,
+  createFrontendPlugin,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { NavContentBlueprint } from '@backstage/plugin-app-react';
+import {
+  NavContentBlueprint,
+  NavElementBlueprint,
+} from '@backstage/plugin-app-react';
 import { legacyNavItemTargetDataRef } from './legacyNavItem';
 
 const DEFAULT_CONFIG = {
@@ -119,5 +123,61 @@ describe('AppNav', () => {
     await expect(
       screen.findByText('1 nav item provided'),
     ).resolves.toBeInTheDocument();
+  });
+
+  it('should render only the nav elements the app lists, by slot and in order', async () => {
+    const element = (name: string) =>
+      NavElementBlueprint.make({
+        name,
+        params: { loader: async () => <span>{`element ${name}`}</span> },
+      });
+
+    renderTestApp({
+      extensions: [mockPage],
+      features: [
+        createFrontendPlugin({
+          pluginId: 'x',
+          extensions: [
+            element('a'),
+            element('b'),
+            element('c'),
+            element('not-listed'),
+          ],
+        }),
+      ],
+      config: {
+        ...DEFAULT_CONFIG,
+        app: {
+          ...DEFAULT_CONFIG.app,
+          extensions: [
+            {
+              'app/nav': {
+                config: {
+                  elements: {
+                    start: ['nav-element:x/c'],
+                    // `x/c` is already placed, and unknown IDs are ignored.
+                    end: [
+                      'nav-element:x/b',
+                      'nav-element:x/a',
+                      'nav-element:x/c',
+                      'nav-element:x/unknown',
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    const nav = await screen.findByRole('navigation');
+    await within(nav).findByText('element a');
+    const texts = Array.from(
+      nav.querySelectorAll('span'),
+      span => span.textContent,
+    ).filter(text => text?.startsWith('element ') || text === 'My Plugin');
+
+    expect(texts).toEqual(['element c', 'My Plugin', 'element b', 'element a']);
   });
 });

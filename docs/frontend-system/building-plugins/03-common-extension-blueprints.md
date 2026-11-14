@@ -65,6 +65,36 @@ Nav content extensions allow you to replace the entire navbar with your own comp
 
 Your custom component receives a `navItems` prop—a collection with `take(id)` and `rest()` methods for placing specific items in custom positions. Nav items are auto-discovered from page extensions, and metadata (title, icon) comes from page config, nav item extensions, or plugin defaults. Use `navItems.take('page:home')` to take a specific item by extension ID, and `navItems.rest()` to get all remaining items.
 
+It also receives a `navSlots` prop with the elements that plugins add through `NavElementBlueprint` and the app lists in the `app/nav` config: `navSlots.start` for content before the page links and `navSlots.end` for content after them, each in config order. Render each slot once where it belongs in your layout. The config decides which elements show and where, so your component never refers to an element by ID.
+
+### NavElement - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.NavElementBlueprint.html)
+
+Nav element extensions add content to the app's navigation that is not a link to a page, such as a list of user shortcuts or a search button. Links to pages need no extension of their own: they are discovered from page extensions.
+
+A nav element renders its own content, loaded lazily:
+
+```tsx
+import { NavElementBlueprint } from '@backstage/plugin-app-react';
+
+const shortcutsNavElement = NavElementBlueprint.make({
+  params: {
+    loader: () => import('./ShortcutsNav').then(m => <m.ShortcutsNav />),
+  },
+});
+```
+
+A nav element only renders where the app lists it, in the `elements` config of the `app/nav` extension. The app picks the slot, `start` before the page links or `end` after them, and the order within it. Plugins can't add themselves to the navigation, so your README should show the line that adds your element:
+
+```yaml
+app:
+  extensions:
+    - app/nav:
+        config:
+          elements:
+            end:
+              - nav-element:shortcuts
+```
+
 ### AppRootWrapper - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.AppRootWrapperBlueprint.html)
 
 App root wrapper extensions install React components that wrap the entire app root. Use them for global providers, such as a query client, that every plugin in the app needs. They are the replacement for providers that used to be bundled into a custom root router component.

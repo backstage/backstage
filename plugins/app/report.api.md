@@ -77,8 +77,22 @@ const appPlugin: OverridableFrontendPlugin<
       name: 'layout';
     }>;
     'app/nav': OverridableExtensionDefinition<{
-      config: {};
-      configInput: {};
+      config: {
+        elements:
+          | {
+              start?: string[] | undefined;
+              end?: string[] | undefined;
+            }
+          | undefined;
+      };
+      configInput: {
+        elements?:
+          | {
+              start?: string[] | undefined;
+              end?: string[] | undefined;
+            }
+          | undefined;
+      };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         items: ExtensionInput<
@@ -91,6 +105,14 @@ const appPlugin: OverridableFrontendPlugin<
             'core.nav-item.target',
             {}
           >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+        elements: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
           {
             singleton: false;
             optional: false;

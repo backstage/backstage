@@ -52,6 +52,25 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: HomePageWidgetBlueprintParams;
     }>;
+    'nav-element:notifications': OverridableExtensionDefinition<{
+      config: {
+        webNotificationsEnabled: boolean | undefined;
+        titleCounterEnabled: boolean | undefined;
+        snackbarEnabled: boolean | undefined;
+      };
+      configInput: {
+        webNotificationsEnabled?: boolean | undefined;
+        titleCounterEnabled?: boolean | undefined;
+        snackbarEnabled?: boolean | undefined;
+      };
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      kind: 'nav-element';
+      name: undefined;
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
     'page:notifications': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;

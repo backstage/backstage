@@ -21,7 +21,9 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/frontend-plugin-api';
+import { NavElementBlueprint } from '@backstage/plugin-app-react';
 import { RiNotification3Line } from '@remixicon/react';
+import { z } from 'zod/v4';
 import { rootRouteRef } from './routes';
 import { NotificationsClient, notificationsApiRef } from './api';
 import { unreadNotificationsHomeWidget } from './alpha/extensions/unreadNotificationsHomeWidget';
@@ -47,6 +49,26 @@ const api = ApiBlueprint.make({
     }),
 });
 
+const navElement = NavElementBlueprint.makeWithOverrides({
+  configSchema: {
+    webNotificationsEnabled: z.boolean().optional(),
+    titleCounterEnabled: z.boolean().optional(),
+    snackbarEnabled: z.boolean().optional(),
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      loader: () =>
+        import('./components/NotificationsSideBarItem').then(m => (
+          <m.NotificationsSidebarItem
+            webNotificationsEnabled={config.webNotificationsEnabled}
+            titleCounterEnabled={config.titleCounterEnabled}
+            snackbarEnabled={config.snackbarEnabled}
+          />
+        )),
+    });
+  },
+});
+
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'notifications',
@@ -56,8 +78,7 @@ export default createFrontendPlugin({
   routes: {
     root: rootRouteRef,
   },
-  // TODO(Rugvip): Nav item (i.e. NotificationsSidebarItem) currently needs to be installed manually
-  extensions: [page, api, unreadNotificationsHomeWidget],
+  extensions: [page, api, navElement, unreadNotificationsHomeWidget],
 });
 
 import { notificationsTranslationRef as _notificationsTranslationRef } from './translation';

@@ -25,7 +25,7 @@ The recipients of notifications have to be entities in the catalog, e.g., of the
 
 Otherwise, no specific configuration is needed for the front-end notifications plugin.
 
-The `NotificationsSidebarItem` component can be used as an active left-side menu item in the front-end. Since the notifications plugin does not yet include a built-in navigation item, it needs to be added manually to your sidebar through a `NavContentBlueprint` in a custom app module. See the [Getting Started](./index.md#add-notifications-sidebar-item) guide for setup instructions.
+The plugin provides a `nav-element:notifications` extension that shows the unread count in the app's sidebar. List it in the `app/nav` config to show it. See the [Getting Started](./index.md#add-notifications-sidebar-item) guide for setup instructions.
 
 ![Notifications Page](notificationsPage.png)
 

@@ -47,6 +47,12 @@ app:
         ownerEntityRefs: [cubic-belugas]
 
   extensions:
+    # Nav elements from plugins only render when listed here, by slot and in order
+    - app/nav:
+        config:
+          elements:
+            end:
+              - nav-element:notifications
     # set availableLanguages example
     - api:app/app-language:
         config:

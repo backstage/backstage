@@ -76,21 +76,27 @@ Once installed, the notifications plugin is automatically available in your app 
 
 ### Add Notifications Sidebar Item
 
-The notifications plugin does not yet include a built-in navigation item, so you need to add the `NotificationsSidebarItem` component to your sidebar manually. If you have a custom sidebar through a `NavContentBlueprint`, add the component there:
+The notifications plugin provides a `nav-element:notifications` extension with the unread count, web notifications and snackbar. To show it, list it in the `app/nav` config, under `end` (after the page links) or `start` (before them):
 
-```tsx
-import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
-
-// Inside your NavContentBlueprint component:
-<Sidebar>
-  <SidebarGroup label="Menu" icon={<MenuIcon />}>
-    {/* ... other items ... */}
-  </SidebarGroup>
-  <SidebarGroup label="Settings" icon={<SettingsIcon />} to="/settings">
-    <NotificationsSidebarItem />
-  </SidebarGroup>
-</Sidebar>;
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - app/nav:
+        config:
+          elements:
+            end:
+              - nav-element:notifications
+    # Optional: change the defaults of the sidebar item
+    - nav-element:notifications:
+        config:
+          webNotificationsEnabled: true
+          titleCounterEnabled: true
+          snackbarEnabled: true
 ```
+
+If you have a custom sidebar through a `NavContentBlueprint`, it needs to render `navSlots.start` and `navSlots.end`. The element links to the notifications page, so you can hide the separate page link with `navItems.take('page:notifications')`.
+
+If you previously added the `NotificationsSidebarItem` component to your sidebar by hand, remove it when you list the element. You can keep rendering the component yourself if you need options that config can't express, such as `renderItem`.
 
 ### Optional: Add Signals
 

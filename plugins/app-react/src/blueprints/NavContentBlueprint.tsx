@@ -95,6 +95,16 @@ export interface NavContentComponentProps {
    * for placing specific items in specific positions.
    */
   navItems: NavContentNavItems;
+  /**
+   * Elements contributed by plugins through `NavElementBlueprint`, as listed
+   * in the `app/nav` config: `start` before the page links and `end` after
+   * them, each in config order. The config decides which elements show and
+   * where, so render each slot once as it is.
+   */
+  navSlots: {
+    start: JSX.Element[];
+    end: JSX.Element[];
+  };
 }
 
 /**

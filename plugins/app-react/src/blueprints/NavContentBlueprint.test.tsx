@@ -37,6 +37,8 @@ function mockNode(id: string): AppNode {
   return { spec: { id } } as AppNode;
 }
 
+const emptyNavSlots = { start: [], end: [] };
+
 function mockNavItems(items: NavContentNavItem[]): NavContentNavItems {
   const taken = new Set<string>();
   let restItems: NavContentNavItem[] | undefined;
@@ -161,9 +163,12 @@ describe('NavContentBlueprint', () => {
     };
 
     const { error } = await withLogCollector(['error'], async () => {
-      renderInTestApp(<Component navItems={mockNavItems([])} />, {
-        apis: [[errorApiRef, errorApi]],
-      });
+      renderInTestApp(
+        <Component navItems={mockNavItems([])} navSlots={emptyNavSlots} />,
+        {
+          apis: [[errorApiRef, errorApi]],
+        },
+      );
     });
 
     expect(errorApi.post).toHaveBeenCalledWith(
@@ -224,7 +229,9 @@ describe('NavContentBlueprint', () => {
     const tester = createExtensionTester(extension);
     const Component = tester.get(NavContentBlueprint.dataRefs.component);
 
-    render(<Component navItems={mockNavItems(items)} />);
+    render(
+      <Component navItems={mockNavItems(items)} navSlots={emptyNavSlots} />,
+    );
 
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
       'href',
@@ -285,7 +292,9 @@ describe('NavContentBlueprint', () => {
     const tester = createExtensionTester(extension);
     const Component = tester.get(NavContentBlueprint.dataRefs.component);
 
-    render(<Component navItems={mockNavItems(items)} />);
+    render(
+      <Component navItems={mockNavItems(items)} navSlots={emptyNavSlots} />,
+    );
 
     const homeLink = screen.getByText('Home');
     expect(homeLink).toBeInTheDocument();
@@ -348,7 +357,9 @@ describe('NavContentBlueprint', () => {
     const tester = createExtensionTester(extension);
     const Component = tester.get(NavContentBlueprint.dataRefs.component);
 
-    render(<Component navItems={mockNavItems(items)} />);
+    render(
+      <Component navItems={mockNavItems(items)} navSlots={emptyNavSlots} />,
+    );
 
     expect(screen.getByText('Catalog').closest('nav')).toBeTruthy();
     expect(screen.queryByText('DevTools')?.closest('nav')).toBeFalsy();

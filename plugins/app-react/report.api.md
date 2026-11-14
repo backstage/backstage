@@ -14,6 +14,7 @@ import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { IdentityApi } from '@backstage/frontend-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
@@ -141,6 +142,10 @@ export type NavContentComponent = (
 // @public
 export interface NavContentComponentProps {
   navItems: NavContentNavItems;
+  navSlots: {
+    start: JSX.Element[];
+    end: JSX.Element[];
+  };
 }
 
 // @public
@@ -167,6 +172,19 @@ export interface NavContentNavItemsWithComponent {
   rest(options?: { sortBy?: 'title' }): JSX.Element[];
   take(id: string): JSX.Element | null;
 }
+
+// @public
+export const NavElementBlueprint: ExtensionBlueprint<{
+  kind: 'nav-element';
+  params: {
+    loader: () => Promise<JSX.Element>;
+  };
+  output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: never;
+}>;
 
 // @public
 export const SignInPageBlueprint: ExtensionBlueprint<{

@@ -802,7 +802,7 @@ import { NavContentBlueprint } from '@backstage/plugin-app-react';
 
 export const SidebarContent = NavContentBlueprint.make({
   params: {
-    component: ({ navItems }) => {
+    component: ({ navItems, navSlots }) => {
       const nav = navItems.withComponent(item => (
         <SidebarItem icon={() => item.icon} to={item.href} text={item.title} />
       ));
@@ -813,6 +813,7 @@ export const SidebarContent = NavContentBlueprint.make({
           <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
             <SidebarSearchModal />
           </SidebarGroup>
+          {navSlots.start}
           <SidebarDivider />
           <SidebarGroup label="Menu" icon={<MenuIcon />}>
             {nav.take('page:catalog')}
@@ -822,6 +823,8 @@ export const SidebarContent = NavContentBlueprint.make({
               {nav.rest({ sortBy: 'title' })}
             </SidebarScrollWrapper>
           </SidebarGroup>
+          <SidebarDivider />
+          {navSlots.end}
         </Sidebar>
       );
     },
@@ -832,6 +835,8 @@ export const SidebarContent = NavContentBlueprint.make({
 If your custom sidebar uses the removed flat `items` prop, use `navItems.rest()` to get the remaining items. Replace `item.to` with `item.href` and `item.text` with `item.title`. The `item.icon` value is a React element rather than a component type, so replace `<SidebarItem {...item} />` with `<SidebarItem icon={() => item.icon} to={item.href} text={item.title} />`, as shown above.
 
 If you don't want to auto-populate the list, remove the rendering of that `SidebarGroup`.
+
+The `navSlots` prop holds content that plugins add to the navigation through `NavElementBlueprint`, such as user shortcuts. Render `navSlots.start` and `navSlots.end` once in your sidebar. Nav elements only render when you list them in the `elements` config of `app/nav`, by slot and in order (see [App nav](./03-built-in-extensions.md#app-nav)). When a plugin you already render by hand in the sidebar gains a nav element, remove that code from the sidebar and list the element instead.
 
 You might also notice that when you're rendering additional fixed icons for plugins (e.g. Search in a dedicated group) these might become duplicated, since that page is also included in `nav.rest()`. To exclude an item from the remaining list, call `nav.take('page:search')` before calling `nav.rest()` — you can discard the return value. Items that have been taken will not appear in `rest()`.
 

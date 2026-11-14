@@ -30,7 +30,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { NavContentBlueprint } from '@backstage/plugin-app-react';
 import { SidebarSearchModal } from '@backstage/plugin-search';
-import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
 import { UserSettingsSignInAvatar } from '@backstage/plugin-user-settings';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -100,7 +99,7 @@ export const appModuleNav = createFrontendModule({
   extensions: [
     NavContentBlueprint.make({
       params: {
-        component: ({ navItems }) => {
+        component: ({ navItems, navSlots }) => {
           const nav = navItems.withComponent(item => (
             <SidebarItem
               icon={() => item.icon}
@@ -110,12 +109,15 @@ export const appModuleNav = createFrontendModule({
           ));
           // Consume without rendering — handled by the search modal
           nav.take('page:search');
+          // Consume without rendering — the notifications nav element links to it
+          nav.take('page:notifications');
           return (
             <Sidebar>
               <SidebarLogo />
               <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
                 <SidebarSearchModal />
               </SidebarGroup>
+              {navSlots.start}
               <SidebarDivider />
               <SidebarGroup label="Menu" icon={<MenuIcon />}>
                 {nav.take('page:home')}
@@ -127,6 +129,7 @@ export const appModuleNav = createFrontendModule({
                 </SidebarScrollWrapper>
               </SidebarGroup>
               <SidebarDivider />
+              {navSlots.end}
               <SidebarSpace />
               <SidebarDivider />
               <SidebarGroup
@@ -134,7 +137,6 @@ export const appModuleNav = createFrontendModule({
                 icon={<UserSettingsSignInAvatar />}
                 to="/settings"
               >
-                <NotificationsSidebarItem />
                 {nav.take('page:devtools')}
                 {nav.take('page:user-settings')}
               </SidebarGroup>
