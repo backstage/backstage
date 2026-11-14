@@ -151,7 +151,10 @@ a pnpm app installs pnpm and differs in the install step:
 
 ```Dockerfile
 # Install pnpm. Keep the version in sync with the packageManager field in package.json.
-RUN npm install -g pnpm@12.14.0
+# Like the dependency install below, this reads the optional npmrc secret, so
+# that pnpm can come from a private registry. This step runs as root.
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \
+    npm install -g pnpm@12.14.0
 
 # From here on we use the least-privileged `node` user to run the backend.
 USER node
@@ -173,9 +176,11 @@ RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 #   NPMRC="//npm.acme.example/:_authToken=$NPM_TOKEN" pnpm build-image --secret id=npmrc,env=NPMRC
 # The registries in pnpm-workspace.yaml are part of the skeleton, but registry settings
 # that are only in an .npmrc file must be in the secret too.
+# The store is set to the cache mount, since pnpm would otherwise put a store
+# inside the image when its default store is on another filesystem.
 RUN --mount=type=secret,id=npmrc,target=/home/node/.npmrc,uid=1000 \
     --mount=type=cache,target=/home/node/.local/share/pnpm/store,sharing=locked,uid=1000,gid=1000 \
-    pnpm install --frozen-lockfile --prod
+    pnpm install --frozen-lockfile --prod --store-dir /home/node/.local/share/pnpm/store
 ```
 
 The skeleton of a pnpm app does not use the `pnpm-lock.yaml` of the repo as it
@@ -203,9 +208,9 @@ store tokens in the configuration directory of pnpm instead. The `registry` and
 `registries` settings in `pnpm-workspace.yaml` are part of the skeleton, but the
 skeleton has no `.npmrc` file, so settings that are only in the `.npmrc` of the
 project, such as registry and proxy settings, must be in the secret too, and a
-`cafile` must point to a file in the image. The `npm install -g pnpm` step still
-downloads pnpm from the public npm registry. A build without the secret works
-as before.
+`cafile` must point to a file in the image. The `npm install -g pnpm` step
+mounts the same secret as the `.npmrc` of the `root` user, so it downloads pnpm
+from the registry in the secret. A build without the secret works as before.
 
 ## Multi-stage Build
 
@@ -332,7 +337,9 @@ second stage installs pnpm and runs `pnpm install --frozen-lockfile`,
 and copies the root `package.json`, `backstage.json`, and the extracted
 skeleton, which already holds the `pnpm-lock.yaml`, `pnpm-workspace.yaml`,
 patch files, and pnpmfile that `pnpm install --frozen-lockfile --prod` needs. Point the cache
-mounts at the pnpm store, `/home/node/.local/share/pnpm/store`.
+mounts at the pnpm store, `/home/node/.local/share/pnpm/store`, and pass the
+same directory to `pnpm install` with `--store-dir`. pnpm otherwise creates a
+store inside the project, since a cache mount is on another filesystem.
 
 Note that a newly created Backstage app will typically not have a `plugins/`
 folder, so you will want to comment that line out. This build also does not work
