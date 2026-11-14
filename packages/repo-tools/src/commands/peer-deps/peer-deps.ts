@@ -32,22 +32,23 @@ const desiredLocalVersionsOfDependencies = {
 };
 
 const peerDependencies = {
-  '@types/react': '^17.0.0 || ^18.0.0',
-  react: '^17.0.0 || ^18.0.0',
-  'react-dom': '^17.0.0 || ^18.0.0',
-};
-
-// Packages that have dropped React 17 support and only support React 18+
-const peerDependenciesReact18Only = {
   '@types/react': '^18.0.0',
   react: '^18.0.0',
   'react-dom': '^18.0.0',
 };
 
-const react18OnlyPackages = new Set([
-  '@backstage/frontend-adapter-react-router-v7',
-  '@backstage/frontend-adapter-tanstack-router',
-  '@backstage/ui',
+// Packages that still support React 17, which are the old frontend system APIs
+const peerDependenciesReact17And18 = {
+  '@types/react': '^17.0.0 || ^18.0.0',
+  react: '^17.0.0 || ^18.0.0',
+  'react-dom': '^17.0.0 || ^18.0.0',
+};
+
+const react17Packages = new Set([
+  '@backstage/core-app-api',
+  '@backstage/core-compat-api',
+  '@backstage/core-components',
+  '@backstage/core-plugin-api',
 ]);
 
 const groupsOfPeerDependencies = [['@types/react', 'react', 'react-dom']];
@@ -91,8 +92,8 @@ const matchesDependency = (dep: string, packageJson: ExtendedPackageJSON) => {
 };
 
 const getExpectedPeerDependencies = (packageJson: ExtendedPackageJSON) => {
-  if (react18OnlyPackages.has(packageJson.name!)) {
-    return peerDependenciesReact18Only;
+  if (react17Packages.has(packageJson.name!)) {
+    return peerDependenciesReact17And18;
   }
   return peerDependencies;
 };
