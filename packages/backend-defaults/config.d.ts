@@ -144,6 +144,50 @@ export interface Config {
         high?: 'debug' | 'info' | 'warn' | 'error';
         critical?: 'debug' | 'info' | 'warn' | 'error';
       };
+
+      /**
+       * Whether query strings are stripped from request URLs before audit
+       * events are emitted, to avoid credentials passed in the URL from
+       * ending up in the audit trail. Defaults to `true`.
+       */
+      sanitizeRequestQuery?: boolean;
+
+      /**
+       * The maximum length of string values in audit event metadata.
+       * Longer strings are truncated to this length before the event is
+       * emitted. Use `-1` to disable truncation entirely.
+       *
+       * Defaults to `4096`.
+       */
+      maxMetaStringLength?: number;
+
+      /**
+       * Additional metadata keys whose values are redacted (replaced with
+       * `[REDACTED]`) before audit events are emitted, in addition to the
+       * default denylist of `token`, `password`, `secret`, `authorization`
+       * and `cookie`. Matching is case-insensitive and recursive.
+       *
+       * Set to an empty array to disable redaction entirely, in which case
+       * only this list applies and the default denylist is dropped.
+       */
+      redactMetaKeys?: string[];
+
+      /**
+       * Optional per-severity sampling probabilities for audit events, as a
+       * number between 0 and 1. Events of a severity level without a
+       * configured probability are always emitted. Use `0` to drop all
+       * events of a severity level. The `critical` severity must use a
+       * probability greater than 0, so that critical audit events can never
+       * be sampled away entirely.
+       *
+       * Defaults to no sampling.
+       */
+      sampling?: {
+        low?: number;
+        medium?: number;
+        high?: number;
+        critical?: number;
+      };
     };
 
     /**
