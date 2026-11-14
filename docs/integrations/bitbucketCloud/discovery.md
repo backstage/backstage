@@ -69,10 +69,20 @@ To use the entity provider, you'll need a [Bitbucket Cloud integration set up](l
 
 The entity provider uses the
 [workspace code search API](https://developer.atlassian.com/cloud/bitbucket/rest/api-group-workspaces/#api-workspaces-workspace-codesearch-post)
-of Bitbucket Cloud. This API needs a credential that identifies a user,
-for example a `username` (your Atlassian account email) and an API `token`.
-The token needs the scopes `read:repository:bitbucket` and `read:workspace:bitbucket`.
-Bitbucket Cloud rejects app passwords for this API.
+of Bitbucket Cloud when the integration credential can call it. That API needs
+a credential that identifies a user, for example a `username` (your Atlassian
+account email) and an API `token` with the scopes `read:repository:bitbucket`
+and `read:workspace:bitbucket`. An API token is the faster choice for a large
+workspace, because one search covers the workspace.
+
+Bitbucket Cloud answers `403` for credentials that do not identify a user.
+That includes an OAuth consumer (`clientId` and `clientSecret`), an app
+password, and an API key. It answers `404` when code search is not enabled
+for the workspace. Discovery then lists the matching repositories and checks
+the catalog path with the source API, which accepts the same credentials as
+the rest of the integration. An absolute catalog path such as
+`/catalog-info.yaml` is one request per repository. Any other path walks the
+repository tree.
 
 Additionally, you need to configure your entity provider instance(s):
 

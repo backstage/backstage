@@ -27,6 +27,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import {
+  BitbucketCloudApiError,
   BitbucketCloudClient,
   CodeSearch,
   Events,
@@ -362,14 +363,35 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
   private async findCatalogFiles(
     repoSlug?: string,
   ): Promise<IngestionTarget[]> {
-    const workspace = this.config.workspace;
-
     // The code search results do not hold the main branch and the project of
-    // a repository. Load them from the repository list instead.
+    // a repository. Load them from the repository list instead, and only
+    // search projects that still have a repository after `filters`.
     const repositories = (await this.findRepositories(repoSlug)).filter(
       repository => this.matchesFilters(repository),
     );
 
+    try {
+      return await this.findCatalogFilesByCodeSearch(repositories, repoSlug);
+    } catch (error) {
+      // Code search answers 403 for credentials that do not identify a user
+      // (the OAuth consumer from bitbucket.org/site/oauth2, app passwords,
+      // and API keys), 404 when the feature is disabled, and 410 when the
+      // endpoint is gone. Those credentials can still read source files.
+      if (!isUnavailableCodeSearch(error)) {
+        throw error;
+      }
+      this.logger.warn(
+        `Workspace code search answered ${error.status}. Discovering catalog files with the source API instead`,
+      );
+      return this.findCatalogFilesBySource(repositories);
+    }
+  }
+
+  private async findCatalogFilesByCodeSearch(
+    repositories: Models.Repository[],
+    repoSlug?: string,
+  ): Promise<IngestionTarget[]> {
+    const workspace = this.config.workspace;
     const repositoriesByProject = new Map<string, Models.Repository[]>();
     for (const repository of repositories) {
       const projectKey = repository.project!.key!;
@@ -398,6 +420,102 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     return results;
   }
 
+  private async findCatalogFilesBySource(
+    repositories: Models.Repository[],
+  ): Promise<IngestionTarget[]> {
+    const pattern = BitbucketCloudEntityProvider.toPathPattern(
+      this.config.catalogPath,
+    );
+    const exactFile = BitbucketCloudEntityProvider.toExactSourcePath(
+      this.config.catalogPath,
+    );
+    const targets: IngestionTarget[] = [];
+
+    for (const repository of repositories) {
+      const slug = repository.slug;
+      const repoUrl = repository.links?.html?.href;
+      if (!slug || !repoUrl) {
+        continue;
+      }
+      const commit =
+        repository.mainbranch?.target?.hash ??
+        repository.mainbranch?.name ??
+        DEFAULT_BRANCH;
+      let paths: string[];
+      if (!exactFile) {
+        paths = await this.matchingSourcePaths(slug, commit, pattern);
+      } else if (
+        await this.client.repositorySourceFileExists(
+          this.config.workspace,
+          slug,
+          commit,
+          exactFile,
+        )
+      ) {
+        paths = [exactFile];
+      } else {
+        paths = [];
+      }
+
+      for (const path of paths) {
+        targets.push({
+          fileUrl: BitbucketCloudEntityProvider.toUrl(repository, path),
+          repoUrl,
+        });
+      }
+    }
+
+    return targets;
+  }
+
+  private async matchingSourcePaths(
+    repoSlug: string,
+    commit: string,
+    pattern: RegExp,
+  ): Promise<string[]> {
+    const matches: string[] = [];
+    const pending = [''];
+    const seen = new Set<string>();
+
+    while (pending.length > 0) {
+      const directory = pending.pop()!;
+      if (!seen.add(directory)) {
+        continue;
+      }
+
+      for await (const entry of this.client.listRepositorySource(
+        this.config.workspace,
+        repoSlug,
+        commit,
+        directory,
+      )) {
+        if (entry.type === 'commit_file' && pattern.test(entry.path)) {
+          matches.push(entry.path);
+        } else if (entry.type === 'commit_directory' && !seen.has(entry.path)) {
+          pending.push(entry.path);
+        }
+      }
+    }
+
+    return matches;
+  }
+
+  /**
+   * An absolute catalog path without wildcards is one file. Any other path
+   * can match in more than one directory, so discovery has to walk the tree.
+   */
+  private static toExactSourcePath(catalogPath: string): string | undefined {
+    if (
+      !catalogPath.startsWith('/') ||
+      catalogPath.startsWith('//') ||
+      /[*?]/.test(catalogPath)
+    ) {
+      return undefined;
+    }
+    const path = catalogPath.substring(1);
+    return path.length > 0 ? path : undefined;
+  }
+
   private async findRepositories(
     repoSlug?: string,
   ): Promise<Models.Repository[]> {
@@ -406,6 +524,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       'values.slug',
       'values.project.key',
       'values.mainbranch.name',
+      'values.mainbranch.target.hash',
       'values.links.html.href',
     ].join(',');
     const q = repoSlug ? `slug="${repoSlug}"` : undefined;
@@ -564,4 +683,13 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       presence: 'required',
     };
   }
+}
+
+function isUnavailableCodeSearch(
+  error: unknown,
+): error is BitbucketCloudApiError {
+  return (
+    error instanceof BitbucketCloudApiError &&
+    (error.status === 403 || error.status === 404 || error.status === 410)
+  );
 }
