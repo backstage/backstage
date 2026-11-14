@@ -136,16 +136,52 @@ encountered, Yarn creates a `node_modules` folder within a particular package.
 This can lead to multiple versions of the same package being installed and used
 in the same app.
 
-All Backstage core packages are implemented in such as way that package
-duplication is **not** a problem. For example, duplicate installations of
-packages like `@backstage/core-plugin-api`, `@backstage/core-components`,
+All Backstage core packages are implemented in such a way that package
+duplication is **not** a problem for isolated runtime APIs. For example, duplicate
+installations of packages like `@backstage/core-plugin-api`, `@backstage/core-components`,
 `@backstage/plugin-catalog-react`, and `@backstage/backend-plugin-api` are all
 acceptable.
 
-While package duplication might be acceptable in many cases, you might want to
-deduplicate packages for the purpose of optimizing bundle size and installation
-speed. We recommend using deduplication utilities such as `yarn dedupe` to trim
-down the number of duplicate packages.
+While package duplication might be acceptable in many cases, you should deduplicate
+packages to optimize bundle size, avoid installation bloat, and prevent subtle
+version mismatch bugs.
+
+### Deduplicate with `yarn dedupe`
+
+We recommend running `yarn dedupe` directly after every `yarn backstage-cli versions:bump`:
+
+```bash
+yarn dedupe
+```
+
+When upgrading Backstage packages, `yarn.lock` might retain older resolved versions
+of transitive `@backstage/*` dependencies if semver ranges in intermediate packages
+allow them. Running `yarn dedupe` consolidates duplicate package entries by reusing
+the highest matching version across your lockfile without requiring manual resolution edits.
+
+### Identifying duplicate dependencies
+
+To check whether multiple versions of a package exist in your repository, use `yarn why`:
+
+```bash
+yarn why @backstage/plugin-techdocs-node
+```
+
+If multiple versions are listed in the output (for example, version `2.0.0` satisfying
+transitive plugins and `2.0.2` used by newer backend packages), Yarn is installing
+and resolving multiple copies of that library.
+
+### Example: Stale lockfile entries causing build errors
+
+Consider an upgrade scenario where a newer version of Backstage is bumped, but
+transitive plugins specify a dependency range like `"@backstage/plugin-techdocs-node": "^2.0.0"`.
+Because `yarn.lock` already has an existing resolution for `2.0.0`, Yarn may continue
+using `2.0.0` for those plugins while installing `2.0.2` elsewhere in the monorepo.
+
+This version divergence can lead to confusing build or runtime errors—such as
+TechDocs failing to build documentation with `Unsupported Python YAML tag` because
+an older parser helper is loaded from the outdated package resolution. Running
+`yarn dedupe` resolves both consumers to `2.0.2` and eliminates the stale resolution.
 
 ## Proxy
 
