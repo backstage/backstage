@@ -44,9 +44,6 @@ const templatePackagePaths = [
 ];
 
 export async function runCommand(opts: OptionValues) {
-  const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
-  print(`CLI E2E test root: ${rootDir}\n`);
-
   // The package manager used for the created app, the dist workspace is
   // always built and installed with Yarn since it is part of this repo
   const pm = getPackageManager(opts.packageManager);
@@ -58,6 +55,9 @@ export async function runCommand(opts: OptionValues) {
       'The --keep-pnpm-version option is only supported for pnpm',
     );
   }
+
+  const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
+  print(`CLI E2E test root: ${rootDir}\n`);
 
   print('Building dist workspace');
   const workspaceDir = await buildDistWorkspace('workspace', rootDir);
