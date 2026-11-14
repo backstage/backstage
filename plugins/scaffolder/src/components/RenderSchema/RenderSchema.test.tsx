@@ -151,7 +151,7 @@ describe('JSON schema UI rendering', () => {
     return waitFor(() => getRowById(container, rowId));
   };
 
-  const assertBasicSchemaProperties = (
+  const assertBasicSchemaProperties = async (
     q: {
       [P in keyof qt]: BoundFunction<qt[P]>;
     } & { container: HTMLElement },
@@ -172,7 +172,9 @@ describe('JSON schema UI rendering', () => {
       expect(cellTexts[0]).toContain(p);
       const valueCell = cellTexts[1];
       expect(valueCell).toContain(String(pt));
-      expect(valueCell).toContain(`the ${pt}`);
+      expect(
+        await within(allCells[1]).findByText(`the ${pt}`),
+      ).toBeInTheDocument();
 
       if (basic.required?.includes(p)) {
         expect(cellTexts[0]).toContain('*');
@@ -249,7 +251,7 @@ describe('JSON schema UI rendering', () => {
     const b = await xp('basic');
     const m = await xp('msvs');
 
-    assertBasicSchemaProperties(
+    await assertBasicSchemaProperties(
       { ...within(b.expansion), container: b.expansion },
       `${id}.basic`,
     );
@@ -302,7 +304,7 @@ describe('JSON schema UI rendering', () => {
       const expanded = await findByTestId('expansion_test');
       expect(expanded).toBeInTheDocument();
 
-      assertBasicSchemaProperties(
+      await assertBasicSchemaProperties(
         { ...within(expanded), container: expanded },
         'test',
       );
@@ -387,7 +389,7 @@ describe('JSON schema UI rendering', () => {
       const rendered = await renderInTestApp(
         <LocalRenderSchema strategy="properties" schema={basic} />,
       );
-      assertBasicSchemaProperties(rendered, 'test');
+      await assertBasicSchemaProperties(rendered, 'test');
     });
     it('enum', async () => {
       const rendered = await renderInTestApp(
@@ -399,7 +401,7 @@ describe('JSON schema UI rendering', () => {
       const rendered = await renderInTestApp(
         <LocalRenderSchema strategy="properties" schema={deep} />,
       );
-      assertDeepSchemaProperties(rendered, 'test');
+      await assertDeepSchemaProperties(rendered, 'test');
     });
     it('require oneOf', async () => {
       const schema: JSONSchema7 = {
