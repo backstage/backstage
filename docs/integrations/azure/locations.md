@@ -84,7 +84,7 @@ See the Azure DevOps documentation on how to grant access to the [managed identi
 
 ### Using a personal access token (PAT)
 
-:::warning Deprecated for Azure DevOps Services
+:::caution[Deprecated for Azure DevOps Services]
 
 Personal access tokens are deprecated for Azure DevOps Services (`dev.azure.com` and `*.visualstudio.com`). Microsoft [retires global personal access tokens](https://devblogs.microsoft.com/devops/retirement-of-global-personal-access-tokens-in-azure-devops/), which work across all organizations you can access, on December 1, 2026. Organization-scoped personal access tokens keep working, but Microsoft recommends Microsoft Entra ID credentials over all personal access tokens. Backstage logs a warning at startup when a personal access token is configured for Azure DevOps Services, unless `NODE_ENV` is `development`.
 
