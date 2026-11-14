@@ -47,7 +47,6 @@ import { RateLimitStoreFactory } from '../../../lib/RateLimitStoreFactory.ts';
 import { rateLimitMiddleware } from '../../../lib/rateLimitMiddleware.ts';
 
 type LogMeta = {
-  date: string;
   method: string;
   url: string;
   status: number;
@@ -63,7 +62,6 @@ function getLogMeta(req: Request, res: Response): LogMeta {
   const contentLength = Number(res.getHeader('content-length'));
 
   const meta: LogMeta = {
-    date: new Date().toISOString(),
     method: req.method,
     url: req.originalUrl ?? req.url,
     status: res.statusCode,
@@ -182,11 +180,11 @@ export class MiddlewareFactory {
       res.on('finish', () => {
         const meta = getLogMeta(req, res);
         logger.info(
-          `[${meta.date}] "${meta.method} ${meta.url} HTTP/${
-            meta.httpVersion
-          }" ${meta.status} ${meta.contentLength ?? 0} "${
-            meta.referrer ?? '-'
-          }" "${meta.userAgent ?? '-'}"`,
+          `"${meta.method} ${meta.url} HTTP/${meta.httpVersion}" ${
+            meta.status
+          } ${meta.contentLength ?? 0} "${meta.referrer ?? '-'}" "${
+            meta.userAgent ?? '-'
+          }"`,
           {
             type: 'incomingRequest',
             ...meta,
