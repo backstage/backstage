@@ -21,7 +21,11 @@ import yargs from 'yargs';
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import type * as JestCli from 'jest-cli';
 import { relative as relativePath } from 'node:path';
-import { Lockfile, PackageGraph, SuccessCache } from '@backstage/cli-node';
+import { PackageGraph, SuccessCache } from '@backstage/cli-node';
+import {
+  detectPackageManager,
+  PackageManagerLockfile,
+} from '@backstage/cli-node/alpha';
 
 import {
   findOwnPaths,
@@ -61,22 +65,30 @@ interface TestGlobal {
   };
 }
 
+type JestSuccessCacheBridge = NonNullable<
+  TestGlobal['__backstageCli_jestSuccessCache']
+>;
+
 /**
  * Use git to get the HEAD tree hashes of each package in the project.
  */
 async function readPackageTreeHashes(graph: PackageGraph) {
   const pkgs = Array.from(graph.values()).map(pkg => ({
     ...pkg,
-    path: relativePath(targetPaths.rootDir, pkg.dir),
+    path: relativePath(targetPaths.installationRootDir, pkg.dir),
   }));
-  const output = await runOutput([
-    'git',
-    'ls-tree',
-    '--format=%(objectname)=%(path)',
-    'HEAD',
-    '--',
-    ...pkgs.map(pkg => pkg.path),
-  ]);
+  // Paths given to and printed by git ls-tree are relative to its working directory
+  const output = await runOutput(
+    [
+      'git',
+      'ls-tree',
+      '--format=%(objectname)=%(path)',
+      'HEAD',
+      '--',
+      ...pkgs.map(pkg => pkg.path),
+    ],
+    { cwd: targetPaths.installationRootDir },
+  );
 
   const map = new Map(
     output
@@ -127,6 +139,130 @@ export function createFlagFinder(args: string[]) {
       }
     }
     return false;
+  };
+}
+
+/**
+ * Creates the bridge that the Jest configuration and the result processor use
+ * to skip the projects whose tests passed before, and to record the ones that
+ * pass. Without a readable lockfile there are no cache keys, so every project
+ * runs and the cache is neither read nor written.
+ */
+export function createSuccessCacheBridge(options: {
+  cache: Pick<SuccessCache, 'read' | 'write'>;
+  graph: PackageGraph;
+  selectedProjects?: string[];
+}): JestSuccessCacheBridge {
+  const { cache, graph, selectedProjects } = options;
+
+  // Shared state for the bridge
+  const projectHashes = new Map<string, string>();
+  const outputSuccessCache = new Array<string>();
+  let cacheUnavailable = false;
+
+  return {
+    // This is called by `config/jest.js` after the project configs have been gathered
+    async filterConfigs(projectConfigs, globalRootConfig) {
+      // The cache keys depend on the lockfile, so without one there is no cache
+      const packageManager = await detectPackageManager();
+      let lockfile: PackageManagerLockfile;
+      try {
+        lockfile = await packageManager.loadLockfile();
+      } catch (error) {
+        console.warn(
+          `Failed to read ${packageManager.lockfileName()}, running all tests without the success cache, ${error}`,
+        );
+        cacheUnavailable = true;
+        return projectConfigs;
+      }
+      const cacheEntries = await cache.read();
+      const getPackageTreeHash = await readPackageTreeHashes(graph);
+
+      // Base hash shared by all projects
+      const baseHash = crypto.createHash('sha1');
+      baseHash.update('v1'); // The version of this implementation
+      baseHash.update('\0');
+      baseHash.update(process.version); // Node.js version
+      baseHash.update('\0');
+      baseHash.update(SuccessCache.trimPaths(JSON.stringify(globalRootConfig))); // Variable global jest config
+      const baseSha = baseHash.digest('hex');
+
+      return projectConfigs.filter(project => {
+        const packageName = project.displayName;
+        const pkg = graph.get(packageName);
+        if (!pkg) {
+          throw new Error(`Package ${packageName} not found in package graph`);
+        }
+
+        const hash = crypto.createHash('sha1');
+
+        hash.update(baseSha); // Global base hash
+
+        const packageTreeSha = getPackageTreeHash(packageName);
+        hash.update(packageTreeSha); // Hash for target package contents
+
+        for (const [depName, depPkg] of pkg.allLocalDependencies) {
+          const depHash = getPackageTreeHash(depPkg.name);
+          hash.update(`${depName}:${depHash}`); // Hash for each local monorepo dependency contents
+        }
+
+        // The project ID is a hash of the transform configuration, which helps
+        // us bust the cache when any changes are made to the transform implementation.
+        hash.update(SuccessCache.trimPaths(JSON.stringify(project)));
+        hash.update(lockfile.getDependencyTreeHash(packageName));
+
+        const sha = hash.digest('hex');
+
+        projectHashes.set(packageName, sha);
+
+        if (cacheEntries.has(sha)) {
+          if (!selectedProjects || selectedProjects.includes(packageName)) {
+            console.log(`Skipped ${packageName} due to cache hit`);
+          }
+          outputSuccessCache.push(sha);
+          return undefined;
+        }
+
+        return project;
+      });
+    },
+    // This is called by `config/jestCacheResultProcess.cjs` after all tests have run
+    async reportResults(results) {
+      // The cache is neither read nor written when it is unavailable
+      if (cacheUnavailable) {
+        return;
+      }
+
+      const successful = new Set<string>();
+      const failed = new Set<string>();
+
+      for (const testResult of results.testResults) {
+        for (const [pkgName, pkg] of graph) {
+          if (isChildPath(pkg.dir, testResult.testFilePath)) {
+            if (
+              testResult.testExecError ||
+              testResult.failureMessage ||
+              testResult.numFailingTests > 0
+            ) {
+              failed.add(pkgName);
+              successful.delete(pkgName);
+            } else if (!failed.has(pkgName)) {
+              successful.add(pkgName);
+            }
+            break;
+          }
+        }
+      }
+
+      for (const pkgName of successful) {
+        const sha = projectHashes.get(pkgName);
+        if (sha) {
+          outputSuccessCache.push(sha);
+        }
+      }
+
+      await cache.write(outputSuccessCache);
+    },
   };
 }
 
@@ -348,106 +484,13 @@ export default async ({ args, info }: CliCommandContext) => {
     });
     const graph = await getPackageGraph();
 
-    // Shared state for the bridge
-    const projectHashes = new Map<string, string>();
-    const outputSuccessCache = new Array<string>();
-
     // Set up a bridge with the @backstage/cli/config/jest configuration file. These methods
     // are picked up by the config script itself, as well as the custom result processor.
-    testGlobal.__backstageCli_jestSuccessCache = {
-      // This is called by `config/jest.js` after the project configs have been gathered
-      async filterConfigs(projectConfigs, globalRootConfig) {
-        const cacheEntries = await cache.read();
-        const lockfile = await Lockfile.load(
-          targetPaths.resolveRoot('yarn.lock'),
-        );
-        const getPackageTreeHash = await readPackageTreeHashes(graph);
-
-        // Base hash shared by all projects
-        const baseHash = crypto.createHash('sha1');
-        baseHash.update('v1'); // The version of this implementation
-        baseHash.update('\0');
-        baseHash.update(process.version); // Node.js version
-        baseHash.update('\0');
-        baseHash.update(
-          SuccessCache.trimPaths(JSON.stringify(globalRootConfig)),
-        ); // Variable global jest config
-        const baseSha = baseHash.digest('hex');
-
-        return projectConfigs.filter(project => {
-          const packageName = project.displayName;
-          const pkg = graph.get(packageName);
-          if (!pkg) {
-            throw new Error(
-              `Package ${packageName} not found in package graph`,
-            );
-          }
-
-          const hash = crypto.createHash('sha1');
-
-          hash.update(baseSha); // Global base hash
-
-          const packageTreeSha = getPackageTreeHash(packageName);
-          hash.update(packageTreeSha); // Hash for target package contents
-
-          for (const [depName, depPkg] of pkg.allLocalDependencies) {
-            const depHash = getPackageTreeHash(depPkg.name);
-            hash.update(`${depName}:${depHash}`); // Hash for each local monorepo dependency contents
-          }
-
-          // The project ID is a hash of the transform configuration, which helps
-          // us bust the cache when any changes are made to the transform implementation.
-          hash.update(SuccessCache.trimPaths(JSON.stringify(project)));
-          hash.update(lockfile.getDependencyTreeHash(packageName));
-
-          const sha = hash.digest('hex');
-
-          projectHashes.set(packageName, sha);
-
-          if (cacheEntries.has(sha)) {
-            if (!selectedProjects || selectedProjects.includes(packageName)) {
-              console.log(`Skipped ${packageName} due to cache hit`);
-            }
-            outputSuccessCache.push(sha);
-            return undefined;
-          }
-
-          return project;
-        });
-      },
-      // This is called by `config/jestCacheResultProcess.cjs` after all tests have run
-      async reportResults(results) {
-        const successful = new Set<string>();
-        const failed = new Set<string>();
-
-        for (const testResult of results.testResults) {
-          for (const [pkgName, pkg] of graph) {
-            if (isChildPath(pkg.dir, testResult.testFilePath)) {
-              if (
-                testResult.testExecError ||
-                testResult.failureMessage ||
-                testResult.numFailingTests > 0
-              ) {
-                failed.add(pkgName);
-                successful.delete(pkgName);
-              } else if (!failed.has(pkgName)) {
-                successful.add(pkgName);
-              }
-              break;
-            }
-          }
-        }
-
-        for (const pkgName of successful) {
-          const sha = projectHashes.get(pkgName);
-          if (sha) {
-            outputSuccessCache.push(sha);
-          }
-        }
-
-        await cache.write(outputSuccessCache);
-      },
-    };
+    testGlobal.__backstageCli_jestSuccessCache = createSuccessCacheBridge({
+      cache,
+      graph,
+      selectedProjects,
+    });
   }
 
   await runJest(args);

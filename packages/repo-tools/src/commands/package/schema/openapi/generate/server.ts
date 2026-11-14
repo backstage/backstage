@@ -20,6 +20,7 @@ import fs from 'fs-extra';
 import { loadYaml } from '../../../../../lib/yaml';
 import { dirname, join, resolve } from 'node:path';
 import { exec } from '../../../../../lib/exec';
+import { resolveNodeModulesPath } from '../../../../../lib/paths';
 import {
   OLD_SCHEMA_PATH,
   OPENAPI_IGNORE_FILES,
@@ -78,11 +79,9 @@ export const createOpenApiRouter = async (
   );
 
   await exec(`yarn backstage-cli package lint`, ['--fix', tsPath, indexFile]);
-  if (
-    await fs.pathExists(targetPaths.resolveRoot('node_modules/.bin/prettier'))
-  ) {
+  if (await fs.pathExists(resolveNodeModulesPath('.bin/prettier'))) {
     await exec(`yarn prettier`, ['--write', tsPath, indexFile], {
-      cwd: targetPaths.rootDir,
+      cwd: targetPaths.installationRootDir,
     });
   }
 }
@@ -154,8 +153,8 @@ async function generate(
     },
   );
 
-  const prettier = targetPaths.resolveRoot('node_modules/.bin/prettier');
-  if (prettier) {
+  const prettier = resolveNodeModulesPath('.bin/prettier');
+  if (await fs.pathExists(prettier)) {
     await exec(`${prettier} --write ${resolvedOutputDirectory}`, [], {
       signal: abortSignal?.signal,
     });

@@ -15,7 +15,7 @@
  */
 
 import { packageVersions, createPackageVersionProvider } from './version';
-import { Lockfile } from '@backstage/cli-node';
+import { YarnLockfile } from '@backstage/cli-node';
 import corePluginApiPkg from '@backstage/core-plugin-api/package.json';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import fs from 'node:fs';
@@ -85,7 +85,7 @@ describe('createPackageVersionProvider', () => {
     });
 
     const lockfilePath = mockDir.resolve('yarn.lock');
-    const lockfile = await Lockfile.load(lockfilePath);
+    const lockfile = await YarnLockfile.load(lockfilePath);
     const provider = createPackageVersionProvider(lockfile);
 
     expect(provider('a', '0.1.5')).toBe('^0.1.0');
@@ -145,7 +145,7 @@ describe('createPackageVersionProvider', () => {
 `,
     });
 
-    const lockfile = await Lockfile.load(mockDir.resolve('yarn.lock'));
+    const lockfile = await YarnLockfile.load(mockDir.resolve('yarn.lock'));
     const provider = createPackageVersionProvider(lockfile);
 
     // Newer majors are not picked up
@@ -181,7 +181,7 @@ describe('createPackageVersionProvider', () => {
       });
 
       const lockfilePath = mockDir.resolve('yarn.lock');
-      const lockfile = await Lockfile.load(lockfilePath);
+      const lockfile = await YarnLockfile.load(lockfilePath);
       const provider = createPackageVersionProvider(lockfile, {
         preferBackstageProtocol: true,
       });
@@ -205,7 +205,7 @@ describe('createPackageVersionProvider', () => {
       });
 
       const lockfilePath = mockDir.resolve('yarn.lock');
-      const lockfile = await Lockfile.load(lockfilePath);
+      const lockfile = await YarnLockfile.load(lockfilePath);
       const provider = createPackageVersionProvider(lockfile, {
         preferBackstageProtocol: true,
       });
@@ -230,7 +230,7 @@ describe('createPackageVersionProvider', () => {
       });
 
       const lockfilePath = mockDir.resolve('yarn.lock');
-      const lockfile = await Lockfile.load(lockfilePath);
+      const lockfile = await YarnLockfile.load(lockfilePath);
       const provider = createPackageVersionProvider(lockfile, {
         preferBackstageProtocol: true,
       });
@@ -251,7 +251,7 @@ describe('createPackageVersionProvider', () => {
       });
 
       const lockfilePath = mockDir.resolve('yarn.lock');
-      const lockfile = await Lockfile.load(lockfilePath);
+      const lockfile = await YarnLockfile.load(lockfilePath);
       const provider = createPackageVersionProvider(lockfile, {
         preferBackstageProtocol: false,
       });
@@ -270,7 +270,7 @@ describe('createPackageVersionProvider', () => {
       });
 
       const lockfilePath = mockDir.resolve('yarn.lock');
-      const lockfile = await Lockfile.load(lockfilePath);
+      const lockfile = await YarnLockfile.load(lockfilePath);
       const provider = createPackageVersionProvider(lockfile);
 
       expect(provider('@backstage/core-plugin-api')).toBe('*');
