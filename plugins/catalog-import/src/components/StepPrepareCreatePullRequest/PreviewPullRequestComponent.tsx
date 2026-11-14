@@ -16,9 +16,7 @@
 
 import { MarkdownContent } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
+import { Card, CardBody, CardHeader, Text } from '@backstage/ui';
 
 import { catalogImportTranslationRef } from '../../translation';
 
@@ -44,14 +42,18 @@ export const PreviewPullRequestComponent = (
   const { title, description, classes } = props;
   const { t } = useTranslationRef(catalogImportTranslationRef);
   return (
-    <Card variant="outlined" className={classes?.card}>
-      <CardHeader
-        title={title}
-        subheader={t('stepPrepareCreatePullRequest.previewPr.subheader')}
-      />
-      <CardContent className={classes?.cardContent}>
+    <Card className={classes?.card}>
+      <CardHeader>
+        <Text as="h3" variant="title-small" weight="bold">
+          {title}
+        </Text>
+        <Text as="p" variant="body-large" color="secondary">
+          {t('stepPrepareCreatePullRequest.previewPr.subheader')}
+        </Text>
+      </CardHeader>
+      <CardBody className={classes?.cardContent}>
         <MarkdownContent content={description} />
-      </CardContent>
+      </CardBody>
     </Card>
   );
 };
