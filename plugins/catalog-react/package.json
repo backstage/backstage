@@ -83,6 +83,7 @@
     "classnames": "^2.2.6",
     "lodash": "^4.17.21",
     "qs": "^6.15.2",
+    "react-aria": "~3.53.0",
     "react-use": "^17.2.4",
     "react-window": "^1.8.10",
     "yaml": "^2.0.0",

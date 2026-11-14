@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-react': patch
 ---
 
-Removed the Material UI v5 component dependency from entity peek-ahead popovers. The popovers use Material UI v4 alongside the surrounding card components.
+Migrated entity peek-ahead previews to Backstage UI, removing their Material UI v5 dependency. Previews retain delayed opening on hover and support keyboard navigation into their content.

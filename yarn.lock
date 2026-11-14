@@ -4892,6 +4892,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     qs: "npm:^6.15.2"
     react: "npm:^18.0.2"
+    react-aria: "npm:~3.53.0"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
     react-test-renderer: "npm:^16.13.1"

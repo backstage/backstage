@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { act, fireEvent, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import { EntityPeekAheadPopover } from './EntityPeekAheadPopover';
 import { ApiProvider } from '@backstage/core-app-api';
@@ -32,10 +32,10 @@ const catalogApi = catalogApiMock({
       metadata: {
         namespace: 'default',
         name: 'service1',
+        description: 'Example service',
+        tags: ['java', 'backend', 'production', 'critical', 'extra'],
       },
-      spec: {
-        tags: ['java'],
-      },
+      spec: { type: 'service' },
     },
   ],
 });
@@ -43,7 +43,21 @@ const catalogApi = catalogApiMock({
 const apis = TestApiRegistry.from([catalogApiRef, catalogApi]);
 
 describe('<EntityPeekAheadPopover/>', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+  afterEach(() => {
+    const dialog = screen.queryByRole('dialog');
+    if (dialog) {
+      fireEvent.keyDown(dialog, { key: 'Escape' });
+    }
+    cleanup();
+    act(() => jest.runOnlyPendingTimers());
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
   it('loads entity details and errors on hover', async () => {
+    const interaction = user.setup({ advanceTimers: jest.advanceTimersByTime });
     await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityPeekAheadPopover entityRef="component:default/service1">
@@ -61,26 +75,35 @@ describe('<EntityPeekAheadPopover/>', () => {
     );
     expect(screen.getByText('s1')).toBeInTheDocument();
     expect(screen.queryByText('service1')).toBeNull();
-    await user.hover(screen.getByTestId('popover1'));
+    fireEvent.pointerMove(document.body, { pointerType: 'mouse' });
+    await interaction.hover(screen.getByTestId('popover1'));
     expect(await screen.findByText('service1')).toBeInTheDocument();
+    expect(screen.getByText('Example service')).toBeVisible();
+    expect(screen.getByText('service')).toBeVisible();
+    expect(screen.getByText('java')).toBeVisible();
+    expect(screen.queryByText('extra')).not.toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Drill into the entity to see all of the tags.'),
+    ).toBeVisible();
 
     expect(screen.getByText('s2')).toBeInTheDocument();
     expect(screen.queryByText('service2')).toBeNull();
-    await user.hover(screen.getByTestId('popover2'));
+    await interaction.hover(screen.getByTestId('popover2'));
     expect(
       await screen.findByText('Error: component:default/service2 not found'),
     ).toBeInTheDocument();
   });
 
-  it('delays opening, cancels on leave, and allows interaction with the popover', async () => {
-    jest.useFakeTimers();
+  it('delays loading, cancels opening on leave, and keeps previews open while keyboard focus remains', async () => {
+    const interaction = user.setup({ advanceTimers: jest.advanceTimersByTime });
     const getEntity = jest.spyOn(catalogApi, 'getEntityByRef');
     getEntity.mockClear();
-    const { unmount } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityPeekAheadPopover entityRef="component:default/service1">
           <Button>Peek</Button>
         </EntityPeekAheadPopover>
+        <Button>Outside</Button>
       </ApiProvider>,
       {
         mountedRoutes: {
@@ -88,66 +111,75 @@ describe('<EntityPeekAheadPopover/>', () => {
         },
       },
     );
-    const trigger = screen.getByText('Peek').closest('button')!;
-
+    const trigger = screen.getByRole('button', { name: 'Peek' });
     jest
       .spyOn(trigger.parentElement!, 'getBoundingClientRect')
-      .mockReturnValue({
-        x: 200,
-        y: 100,
-        top: 100,
-        left: 200,
-        bottom: 120,
-        right: 300,
-        width: 100,
-        height: 20,
-        toJSON: () => ({}),
-      });
-    fireEvent.mouseEnter(trigger);
+      .mockReturnValue(new DOMRect(200, 100, 100, 20));
+    // React Aria starts hover previews only after observing pointer movement.
+    fireEvent.pointerMove(document.body, { pointerType: 'mouse' });
+    await interaction.hover(trigger);
     act(() => jest.advanceTimersByTime(499));
     expect(getEntity).not.toHaveBeenCalled();
-    fireEvent.mouseLeave(trigger);
-    act(() => jest.advanceTimersByTime(500));
-    expect(screen.queryByText('service1')).not.toBeInTheDocument();
+    await interaction.unhover(trigger);
+    act(() => jest.advanceTimersByTime(1000));
     expect(getEntity).not.toHaveBeenCalled();
 
-    fireEvent.mouseEnter(trigger);
-    act(() => jest.advanceTimersByTime(500));
-    const title = await screen.findByText('service1');
-    const popover = title.closest('[id]')!;
-    const paper = title.closest('.MuiPopover-paper')!;
-    expect(trigger.closest('[aria-owns]')).toHaveAttribute(
-      'aria-owns',
-      popover.id,
-    );
-    expect(popover).toHaveStyle({ pointerEvents: 'none' });
-    expect(paper).toHaveStyle({
-      pointerEvents: 'auto',
-      top: '120px',
-      left: '250px',
-    });
-    fireEvent.mouseLeave(trigger, { relatedTarget: title });
-    fireEvent.mouseEnter(title, { relatedTarget: trigger });
-    expect(title).toBeVisible();
-    const link = screen.getByRole('button', { name: 'Show' });
-    expect(link).toHaveAttribute('href', '/catalog/default/Component/service1');
-    fireEvent.mouseLeave(paper, { relatedTarget: trigger });
-    expect(title).toBeVisible();
-    fireEvent.mouseLeave(trigger);
-    act(() => jest.advanceTimersByTime(500));
-    expect(screen.queryByText('service1')).not.toBeInTheDocument();
-
-    fireEvent.focus(trigger);
+    await interaction.tab();
+    expect(trigger).toHaveFocus();
     act(() => jest.advanceTimersByTime(500));
     expect(await screen.findByText('service1')).toBeVisible();
-    fireEvent.keyDown(trigger, { key: 'Escape' });
-    act(() => jest.advanceTimersByTime(500));
-    expect(screen.queryByText('service1')).not.toBeInTheDocument();
-    fireEvent.focus(trigger);
-    unmount();
-    act(() => jest.advanceTimersByTime(500));
-    expect(jest.getTimerCount()).toBe(0);
-    getEntity.mockRestore();
-    jest.useRealTimers();
+    const dialog = screen.getByRole('dialog', {
+      name: 'component:default/service1',
+    });
+    expect(dialog).toHaveAttribute('data-placement', 'bottom');
+    const link = screen.getByRole('link', { name: 'Show' });
+    expect(link).toHaveAttribute('href', '/catalog/default/Component/service1');
+
+    // Ending a hover must not dismiss a preview that still has keyboard focus.
+    await interaction.hover(trigger);
+    await interaction.unhover(trigger);
+    act(() => jest.advanceTimersByTime(1000));
+    expect(dialog).toBeVisible();
+    fireEvent.pointerMove(document.body, {
+      pointerType: 'mouse',
+      clientX: 900,
+      clientY: 600,
+    });
+    act(() => jest.advanceTimersByTime(1000));
+    expect(trigger).toHaveFocus();
+    expect(dialog).toBeVisible();
+
+    await interaction.tab();
+    expect(screen.getByRole('row', { name: 'java' })).toHaveFocus();
+    await interaction.tab();
+    expect(link).toHaveFocus();
+    expect(dialog).toBeVisible();
+    await interaction.keyboard('{Escape}');
+    act(() => jest.advanceTimersByTime(1000));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    fireEvent.pointerMove(document.body, { pointerType: 'mouse' });
+    await interaction.hover(trigger);
+    act(() => jest.advanceTimersByTime(1000));
+    const reopened = await screen.findByRole('dialog');
+    expect(reopened).toBeVisible();
+    expect(getEntity).toHaveBeenCalledTimes(1);
+    jest
+      .spyOn(reopened, 'getBoundingClientRect')
+      .mockReturnValue(new DOMRect(200, 130, 300, 200));
+    fireEvent.pointerMove(reopened, {
+      pointerType: 'mouse',
+      clientX: 250,
+      clientY: 160,
+    });
+    act(() => screen.getByRole('button', { name: 'Outside' }).focus());
+    act(() => jest.advanceTimersByTime(1000));
+    expect(reopened).toBeVisible();
+    fireEvent.pointerMove(document.body, {
+      pointerType: 'mouse',
+      clientX: 900,
+      clientY: 600,
+    });
+    act(() => jest.advanceTimersByTime(1000));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

@@ -15,36 +15,30 @@
  */
 
 import useAsyncFn from 'react-use/esm/useAsyncFn';
-import { catalogApiRef } from '../../api';
-import {
-  FocusEvent,
-  MouseEvent,
-  PropsWithChildren,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import Popover from '@material-ui/core/Popover';
-import Box from '@material-ui/core/Box';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Chip from '@material-ui/core/Chip';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import { PropsWithChildren, useRef } from 'react';
+import { useFocusable } from 'react-aria';
 import { useApiHolder } from '@backstage/core-plugin-api';
 import { isGroupEntity, isUserEntity } from '@backstage/catalog-model';
-import { Progress, ResponseErrorPanel } from '@backstage/core-components';
+import {
+  Alert,
+  Box,
+  Flex,
+  Popover,
+  PreviewTrigger,
+  Skeleton,
+  Tag,
+  TagGroup,
+  Text,
+} from '@backstage/ui';
+import { catalogApiRef } from '../../api';
 import {
   EntityCardActions,
   UserCardActions,
   GroupCardActions,
 } from './CardActionComponents';
-import { debounce, uniqueId } from 'lodash';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import styles from './EntityPeekAheadPopover.module.css';
 
 /**
  * Properties for an entity popover on hover of a component.
@@ -53,188 +47,103 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
  */
 export type EntityPeekAheadPopoverProps = PropsWithChildren<{
   entityRef: string;
+  /** The opening delay in milliseconds. Defaults to 500. */
   delayTime?: number;
 }>;
 
-const useStyles = makeStyles(() => {
-  return {
-    popover: {
-      pointerEvents: 'none',
-    },
-    popoverPaper: {
-      width: '30em',
-      pointerEvents: 'auto',
-    },
-    descriptionTypography: {
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      display: '-webkit-box',
-      WebkitLineClamp: 2,
-      WebkitBoxOrient: 'vertical',
-    },
-  };
-});
-
-const maxTagChips = 4;
+// Keep accepting arbitrary children without requiring them to forward a DOM ref
+// or React Aria's interaction props. Focus events from child links still bubble.
+function PeekAheadTrigger({ children }: PropsWithChildren<{}>) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const { focusableProps } = useFocusable({}, ref);
+  return (
+    <Text<'span'> as="span" {...focusableProps} ref={ref} tabIndex={-1}>
+      {children}
+    </Text>
+  );
+}
 
 /**
- * Shows an entity popover on hover of a component.
+ * Shows an interactive entity preview on hover or keyboard focus.
  *
  * @public
  */
 export const EntityPeekAheadPopover = (props: EntityPeekAheadPopoverProps) => {
   const { entityRef, children, delayTime = 500 } = props;
   const { t } = useTranslationRef(catalogReactTranslationRef);
-  const classes = useStyles();
   const apiHolder = useApiHolder();
-  const [popupId] = useState(() => uniqueId('entity-peek-ahead-'));
-  const triggerRef = useRef<HTMLSpanElement>(null);
-  const paperRef = useRef<HTMLElement | null>(null);
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-
-  const debouncedOpen = useMemo(
-    () => debounce((anchor: HTMLElement) => setAnchorEl(anchor), delayTime),
-    [delayTime],
-  );
-
-  useEffect(() => () => debouncedOpen.cancel(), [debouncedOpen]);
-
-  const handleClose = () => {
-    debouncedOpen.cancel();
-    setAnchorEl(null);
-  };
-
-  const handleLeave = (event: MouseEvent | FocusEvent) => {
-    const target = event.relatedTarget;
-    if (
-      target instanceof Node &&
-      (triggerRef.current?.contains(target) ||
-        paperRef.current?.contains(target))
-    ) {
-      return;
-    }
-    handleClose();
-  };
-
   const [{ loading, error, value: entity }, load] = useAsyncFn(async () => {
     const catalogApi = apiHolder.get(catalogApiRef);
-    if (catalogApi) {
-      const retrievedEntity = await catalogApi.getEntityByRef(entityRef);
-      if (!retrievedEntity) {
-        throw new Error(`${entityRef} not found`);
-      }
-      return retrievedEntity;
+    if (!catalogApi) {
+      return undefined;
     }
-    return undefined;
+    const retrievedEntity = await catalogApi.getEntityByRef(entityRef);
+    if (!retrievedEntity) {
+      throw new Error(`${entityRef} not found`);
+    }
+    return retrievedEntity;
   }, [apiHolder, entityRef]);
 
-  useEffect(() => {
-    if (anchorEl && !entity && !error && !loading) {
-      load();
-    }
-  }, [anchorEl, load, entity, error, loading]);
-
   return (
-    <>
-      <Typography
-        component="span"
-        ref={triggerRef}
-        onMouseEnter={event => debouncedOpen(event.currentTarget)}
-        onMouseLeave={handleLeave}
-        onFocus={event => debouncedOpen(event.currentTarget)}
-        onBlur={handleLeave}
-        onKeyDown={event => {
-          if (event.key === 'Escape') {
-            handleClose();
-          }
-        }}
-        aria-owns={anchorEl ? popupId : undefined}
-        aria-haspopup="true"
-      >
-        {children}
-      </Typography>
+    <PreviewTrigger
+      delay={delayTime}
+      onOpenChange={isOpen => {
+        if (isOpen && !entity && !error && !loading) {
+          load();
+        }
+      }}
+    >
+      <PeekAheadTrigger>{children}</PeekAheadTrigger>
       <Popover
-        id={popupId}
-        className={classes.popover}
-        PaperProps={{
-          className: classes.popoverPaper,
-          onMouseLeave: handleLeave,
-          onBlur: handleLeave,
-        }}
-        TransitionProps={{
-          onEntering: element => {
-            paperRef.current = element;
-          },
-          onExited: () => {
-            paperRef.current = null;
-          },
-        }}
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        disableAutoFocus
-        disableEnforceFocus
-        disableRestoreFocus
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
+        placement="bottom"
+        className={styles.popover}
+        aria-label={entityRef}
       >
-        <Card>
-          <CardContent>
-            {error && <ResponseErrorPanel error={error} />}
-            {loading && <Progress />}
-            {entity && (
-              <>
-                <Typography color="textSecondary">
+        <Flex direction="column" gap="3">
+          {error && <Alert status="danger" title={error.toString()} />}
+          {loading && <Skeleton height={120} />}
+          {entity && (
+            <>
+              <Box>
+                <Text as="p" color="secondary">
                   {entity.metadata.namespace}
-                </Typography>
-                <Typography variant="h5" component="div">
+                </Text>
+                <Text as="h3" variant="title-small">
                   {entity.metadata.name}
-                </Typography>
-                <Typography color="textSecondary" gutterBottom>
+                </Text>
+                <Text as="p" color="secondary">
                   {entity.kind}
-                </Typography>
-                {entity.metadata.description && (
-                  <Typography
-                    className={classes.descriptionTypography}
-                    paragraph
-                  >
-                    {entity.metadata.description}
-                  </Typography>
-                )}
-                <Typography>{entity.spec?.type?.toString()}</Typography>
-                <Box marginTop="0.5em">
-                  {(entity.metadata.tags || [])
-                    .slice(0, maxTagChips)
-                    .map(tag => {
-                      return <Chip key={tag} size="small" label={tag} />;
-                    })}
-                  {entity.metadata.tags?.length &&
-                    entity.metadata.tags?.length > maxTagChips && (
-                      <Tooltip title={t('entityPeekAheadPopover.title')}>
-                        <Chip key="other-tags" size="small" label="..." />
-                      </Tooltip>
-                    )}
-                </Box>
-              </>
-            )}
-          </CardContent>
-          {!error && entity && (
-            <CardActions>
-              <>
+                </Text>
+              </Box>
+              {entity.metadata.description && (
+                <Text as="p" className={styles.description}>
+                  {entity.metadata.description}
+                </Text>
+              )}
+              {entity.spec?.type && (
+                <Text as="p">{entity.spec.type.toString()}</Text>
+              )}
+              {!!entity.metadata.tags?.length && (
+                <TagGroup aria-label={t('entityTagPicker.title')}>
+                  {entity.metadata.tags.slice(0, 4).map(tag => (
+                    <Tag key={tag}>{tag}</Tag>
+                  ))}
+                  {entity.metadata.tags.length > 4 && (
+                    <Tag aria-label={t('entityPeekAheadPopover.title')}>
+                      ...
+                    </Tag>
+                  )}
+                </TagGroup>
+              )}
+              <Flex gap="1">
                 {isUserEntity(entity) && <UserCardActions entity={entity} />}
                 {isGroupEntity(entity) && <GroupCardActions entity={entity} />}
                 <EntityCardActions entity={entity} />
-              </>
-            </CardActions>
+              </Flex>
+            </>
           )}
-        </Card>
+        </Flex>
       </Popover>
-    </>
+    </PreviewTrigger>
   );
 };

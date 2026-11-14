@@ -15,11 +15,10 @@
  */
 
 import { entityRouteRef } from '../../../routes';
-import IconButton from '@material-ui/core/IconButton';
-import InfoIcon from '@material-ui/icons/Info';
+import { ButtonLink } from '@backstage/ui';
+import { RiInformationLine } from '@remixicon/react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Entity, getCompoundEntityRef } from '@backstage/catalog-model';
-import { Link } from '@backstage/core-components';
 import { catalogReactTranslationRef } from '../../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -33,13 +32,14 @@ export const EntityCardActions = (props: { entity: Entity }) => {
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   return (
-    <IconButton
-      component={Link}
+    <ButtonLink
+      variant="tertiary"
+      size="small"
+      iconStart={<RiInformationLine />}
       aria-label={t('entityPeekAheadPopover.entityCardActionsAriaLabel')}
-      title={t('entityPeekAheadPopover.entityCardActionsTitle')}
-      to={entityRoute(getCompoundEntityRef(props.entity))}
+      href={entityRoute(getCompoundEntityRef(props.entity))}
     >
-      <InfoIcon />
-    </IconButton>
+      {t('entityPeekAheadPopover.entityCardActionsTitle')}
+    </ButtonLink>
   );
 };

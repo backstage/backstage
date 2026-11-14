@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import IconButton from '@material-ui/core/IconButton';
-import EmailIcon from '@material-ui/icons/Email';
-import { Link } from '@backstage/core-components';
+import { ButtonLink } from '@backstage/ui';
+import { RiMailLine } from '@remixicon/react';
 import { catalogReactTranslationRef } from '../../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
@@ -28,17 +27,18 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 export const EmailCardAction = (props: { email: string }) => {
   const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
-    <IconButton
-      component={Link}
+    <ButtonLink
+      variant="tertiary"
+      size="small"
+      iconStart={<RiMailLine />}
       aria-label={t('entityPeekAheadPopover.emailCardAction.ariaLabel')}
-      title={t('entityPeekAheadPopover.emailCardAction.title', {
-        email: props.email,
-      })}
-      to={t('entityPeekAheadPopover.emailCardAction.subTitle', {
+      href={t('entityPeekAheadPopover.emailCardAction.subTitle', {
         email: props.email,
       })}
     >
-      <EmailIcon />
-    </IconButton>
+      {t('entityPeekAheadPopover.emailCardAction.title', {
+        email: props.email,
+      })}
+    </ButtonLink>
   );
 };
