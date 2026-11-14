@@ -6,6 +6,7 @@ import {
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
 import { TodoPage } from './TodoPage';
+import { {{ pluginVar }} } from '../../plugin';
 
 describe('TodoPage', () => {
   const server = setupServer();
@@ -22,7 +23,7 @@ describe('TodoPage', () => {
       ),
     );
 
-    await renderInTestApp(<TodoPage />);
+    renderInTestApp(<TodoPage />, { features: [{{ pluginVar }}] });
 
     expect(await screen.findByText('Mocked task')).toBeInTheDocument();
   });
@@ -37,7 +38,7 @@ describe('TodoPage', () => {
       ),
     );
 
-    await renderInTestApp(<TodoPage />);
+    renderInTestApp(<TodoPage />, { features: [{{ pluginVar }}] });
 
     expect(await screen.findByText('Install the backend plugin')).toBeInTheDocument();
   });

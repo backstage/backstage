@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type ComponentType, type ReactNode } from 'react';
+import { Suspense, type ComponentType, type ReactNode } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import {
   type AppError,
@@ -83,7 +83,8 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   config?: JsonObject;
 
   /**
-   * Additional features to add to the test app.
+   * Additional features to add to the test app. Test rendering extensions are
+   * retained when features include a plugin named `test`.
    */
   features?: FrontendFeature[];
 
@@ -214,6 +215,11 @@ const testAppPlugin = createTestAppPlugin([
  * @public
  * Renders the given element in a test app, for use in unit tests.
  *
+ * Content that suspends renders nothing until it is ready. Only that content
+ * needs asynchronous queries such as `findByText`; synchronous content remains
+ * available immediately. Supply a Suspense boundary inside the element for a
+ * custom fallback. The Suspense boundary does not catch rendering errors.
+ *
  * Navigation is owned by a {@link @backstage/frontend-plugin-api#AppHistoryApi}
  * with in-memory history, the same seam as production, and is returned as
  * `appHistory`.
@@ -253,10 +259,18 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
         : { id: 'app/root', input: 'children' },
       output: [coreExtensionData.reactElement],
       factory: ({ node }) => {
+        let content = (
+          <Suspense fallback={null}>
+            {!asChrome && PageRouter ? (
+              <PageRouter>{element}</PageRouter>
+            ) : (
+              element
+            )}
+          </Suspense>
+        );
         if (asChrome) {
-          return [coreExtensionData.reactElement(element)];
+          return [coreExtensionData.reactElement(content)];
         }
-        let content = PageRouter ? <PageRouter>{element}</PageRouter> : element;
 
         if (mountPath) {
           // Every mount hosts what sits below it, the app root included: `'/'`

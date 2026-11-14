@@ -110,8 +110,9 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
+        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'page:catalog-import': OverridableExtensionDefinition<{

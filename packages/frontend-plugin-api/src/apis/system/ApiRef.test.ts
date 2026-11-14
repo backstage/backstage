@@ -15,9 +15,225 @@
  */
 
 import { createApiRef } from './ApiRef';
-import type { ApiRef as ApiRefType } from './types';
+import type {
+  AnyApiRef,
+  AnyApiFactory,
+  ApiFactory,
+  TypesToApiRefs,
+  ApiHolder,
+  ApiLookupResult,
+  ApiRef as ApiRefType,
+} from './types';
+import { createApiFactory } from './helpers';
 
 describe('ApiRef', () => {
+  it('should preserve async capability in refs, factories, and lookups', async () => {
+    const sync = createApiRef<{ value: string }>().with({ id: 'sync' });
+    const legacyShape = { id: 'legacy', T: { value: 'legacy' } };
+    const legacySync: ApiRefType<{ value: string }> = legacyShape;
+    expect(legacySync).toBe(legacyShape);
+    // @ts-expect-error Async refs must carry their runtime loading marker.
+    const invalidAsyncRef: ApiRefType<{ value: string }, string, 'async'> =
+      legacyShape;
+    expect(invalidAsyncRef).toBe(legacyShape);
+    const asyncRef = createApiRef<{ value: string }>().with({
+      id: 'async',
+      loading: 'async',
+    });
+    const typedRef: ApiRefType<{ value: string }, 'async', 'async'> = asyncRef;
+    expect(typedRef.loading).toBe('async');
+    expect(sync.loading).toBeUndefined();
+    const defaultSync: ApiRefType<{ value: string }> = sync;
+    const broadSync: AnyApiRef<{ value: string }> = sync;
+    const broadAsync: AnyApiRef<{ value: string }> = asyncRef;
+    const broadLiteral: ApiRefType<
+      { value: string },
+      'async',
+      'sync' | 'async'
+    > = asyncRef;
+    expect(defaultSync).toBe(sync);
+    expect(broadSync).toBe(sync);
+    expect(broadLiteral).toBe(asyncRef);
+    // @ts-expect-error Widening loading mode must preserve the API's type.
+    const wrongApi: AnyApiRef<{ value: number }> = asyncRef;
+    expect(wrongApi).toBe(asyncRef);
+    // @ts-expect-error Async capability cannot be erased into a synchronous ref.
+    const syncRef: ApiRefType<{ value: string }> = asyncRef;
+    expect(syncRef).toBe(asyncRef);
+
+    const factory = createApiFactory({
+      api: asyncRef,
+      deps: { sync },
+      factory: async ({ sync: dependency }) => ({ value: dependency.value }),
+    });
+    await expect(factory.factory({ sync: { value: 'lazy' } })).resolves.toEqual(
+      {
+        value: 'lazy',
+      },
+    );
+    createApiFactory({
+      api: sync,
+      deps: {},
+      // @ts-expect-error Only opted-in refs support asynchronous factories.
+      factory: async () => ({ value: 'invalid' }),
+    });
+    createApiFactory({
+      api: sync,
+      // @ts-expect-error Synchronous APIs cannot depend on async-capable APIs.
+      deps: { dependency: asyncRef },
+      factory: () => ({ value: 'invalid' }),
+    });
+
+    const promise = Promise.resolve({ value: 'loaded' });
+    const holder: ApiHolder = {
+      get: ((ref: AnyApiRef) =>
+        ref.loading === 'async'
+          ? promise
+          : { value: 'sync' }) as ApiHolder['get'],
+    };
+
+    function lookup<TApiRef extends AnyApiRef>(ref: TApiRef) {
+      return holder.get(ref);
+    }
+
+    function lookupSync<TApi, TId extends string>(
+      ref: ApiRefType<TApi, TId>,
+    ): TApi | undefined {
+      return holder.get(ref);
+    }
+
+    const previousRef: Pick<
+      ApiRefType<{ value: string }>,
+      '$$type' | 'id' | 'T'
+    > = sync;
+    const previous: { value: string } | undefined = lookup(previousRef);
+    const explicit: { value: string } | undefined = holder.get<{
+      value: string;
+    }>(sync);
+    const legacy: { value: string } | undefined = lookup(
+      createApiRef<{ value: string }>({ id: 'legacy' }),
+    );
+    const synchronous: { value: string } | undefined = lookup(sync);
+    const deps: TypesToApiRefs<{ dependency: { value: string } }> = {
+      dependency: sync,
+    };
+    const dependency: { value: string } | undefined = lookup(deps.dependency);
+    expect(dependency?.value).toBe('sync');
+    const genericSynchronous: { value: string } | undefined = lookupSync(sync);
+    const annotated: { value: string } | undefined = lookup(defaultSync);
+    const asynchronous: Promise<{ value: string }> | undefined =
+      lookup(asyncRef);
+    const broadResult:
+      | { value: string }
+      | Promise<{ value: string }>
+      | undefined = lookup(broadAsync);
+    // @ts-expect-error An unspecified mode cannot promise synchronous lookup.
+    const invalidSync: { value: string } | undefined = lookup(broadAsync);
+    // @ts-expect-error An unspecified mode cannot promise asynchronous lookup either.
+    const invalidAsync: Promise<{ value: string }> | undefined =
+      lookup(broadSync);
+    const missing: ApiLookupResult<typeof asyncRef> = undefined;
+    // @ts-expect-error Missing APIs must not be represented by a promise.
+    const invalidMissing: ApiLookupResult<typeof asyncRef> =
+      Promise.resolve(undefined);
+    expect(missing).toBeUndefined();
+    await expect(invalidMissing).resolves.toBeUndefined();
+    expect(broadResult).toBe(promise);
+    expect(invalidSync).toBe(promise);
+    expect(invalidAsync).toEqual({ value: 'sync' });
+    expect(previous?.value).toBe('sync');
+    expect(explicit?.value).toBe('sync');
+    expect(legacy?.value).toBe('sync');
+    expect(annotated?.value).toBe('sync');
+    // @ts-expect-error Explicit API arguments still check the implementation type.
+    const invalidExplicit = holder.get<number>(sync);
+    expect(invalidExplicit).toEqual({ value: 'sync' });
+    // @ts-expect-error A present async API is returned as a promise.
+    const incorrect: { value: string } | undefined = lookup(asyncRef);
+    expect(incorrect).toBe(promise);
+    expect(synchronous?.value).toBe('sync');
+    expect(genericSynchronous?.value).toBe('sync');
+    await expect(asynchronous).resolves.toEqual({ value: 'loaded' });
+  });
+
+  it('should keep existing factory declarations synchronous and catch-all factories broad', () => {
+    type Api = { value: string };
+    const sync = createApiRef<Api>().with({ id: 'sync' });
+    const asyncRef = createApiRef<Api>().with({
+      id: 'async',
+      loading: 'async',
+    });
+    const defaultDeps: TypesToApiRefs<{ dependency: Api }> = {
+      dependency: sync,
+    };
+    const factory: ApiFactory<Api, Api, { dependency: Api }> = {
+      api: sync,
+      deps: defaultDeps,
+      factory: ({ dependency }) => dependency,
+    };
+    const implementation: Api = factory.factory({
+      dependency: { value: 'sync' },
+    });
+    expect(implementation).toEqual({ value: 'sync' });
+    const invalidFactory: ApiFactory<Api, Api, {}> = {
+      api: sync,
+      deps: {},
+      // @ts-expect-error Existing factory types require synchronous implementations.
+      factory: async () => ({ value: 'invalid' }),
+    };
+    expect(invalidFactory.api).toBe(sync);
+    const invalidDeps: ApiFactory<Api, Api, { dependency: Api }> = {
+      api: sync,
+      // @ts-expect-error Existing factory types require synchronous dependencies.
+      deps: { dependency: asyncRef },
+      factory: () => ({ value: 'invalid' }),
+    };
+    expect(invalidDeps.api).toBe(sync);
+    const broad: AnyApiFactory = createApiFactory({
+      api: asyncRef,
+      deps: { dependency: asyncRef },
+      factory: async ({ dependency }) => dependency,
+    });
+    expect(broad.api).toBe(asyncRef);
+  });
+
+  it('should preserve IDs and loading modes through generic refs', () => {
+    type Api = { value: string };
+    const ref = createApiRef<Api>().with({ id: 'legacy-id' });
+    const legacy: ApiRefType<Api, 'legacy-id'> = ref;
+    const explicit: ApiRefType<Api, 'legacy-id', 'sync'> = legacy;
+    const roundTrip: ApiRefType<Api, 'legacy-id'> = explicit;
+    const defaultRef: ApiRefType<Api> = roundTrip;
+
+    function widenId<TId extends string>(
+      api: ApiRefType<Api, TId>,
+    ): ApiRefType<Api, string, 'sync'> {
+      return api;
+    }
+    function forwardRef<TId extends string, TLoading extends 'sync' | 'async'>(
+      api: ApiRefType<Api, TId, TLoading>,
+    ) {
+      return api;
+    }
+
+    const asyncRef = createApiRef<Api>().with({
+      id: 'async',
+      loading: 'async',
+    });
+    const forwarded: ApiRefType<Api, 'async', 'async'> = forwardRef(asyncRef);
+    const unspecified: AnyApiRef<Api> = asyncRef;
+    expect(widenId(legacy)).toBe(ref);
+    expect(defaultRef).toBe(ref);
+    expect(forwarded).toBe(asyncRef);
+    expect(unspecified).toBe(asyncRef);
+    // @ts-expect-error Omitting the loading parameter requires a synchronous ref.
+    const invalidLegacy: ApiRefType<Api, 'async'> = asyncRef;
+    expect(invalidLegacy).toBe(asyncRef);
+    // @ts-expect-error Invalid loading modes are rejected.
+    const invalidMode: ApiRefType<Api, string, 'lazy'> = ref;
+    expect(invalidMode).toBe(ref);
+  });
+
   it('should be created with config', () => {
     const ref = createApiRef({ id: 'abc' });
     expect(ref.$$type).toBe('@backstage/ApiRef');

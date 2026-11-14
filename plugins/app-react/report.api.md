@@ -55,7 +55,7 @@ export type AnalyticsImplementationFactory<
     [name in string]: unknown;
   } = {},
 > = {
-  deps: TypesToApiRefs<Deps>;
+  deps: TypesToApiRefs<Deps, 'sync'>;
   factory(deps: Deps): AnalyticsImplementation;
 };
 

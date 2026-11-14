@@ -30,6 +30,7 @@ import {
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesConnection } from './KubernetesConnection';
 import { http, HttpResponse } from 'msw';
+import { FetchError } from 'node-fetch';
 import { setupServer } from 'msw/node';
 import {
   mockServices,
@@ -1224,7 +1225,6 @@ describe('KubernetesFanOutHandler', () => {
           http.get('https://works/api/v1/services', () =>
             HttpResponse.json({ items: services }),
           ),
-          http.get('https://fails/api/v1/pods', () => HttpResponse.error()),
           http.get('https://fails/api/v1/services', () =>
             HttpResponse.json({ items: services }),
           ),
@@ -1254,11 +1254,31 @@ describe('KubernetesFanOutHandler', () => {
             }),
         };
         const logger = mockServices.logger.mock();
+        const connection = new KubernetesConnection({ logger });
+        const fetchWithConnection =
+          connection.fetchWithConnection.bind(connection);
+        jest
+          .spyOn(connection, 'fetchWithConnection')
+          .mockImplementation(
+            (cluster, credential, resourcePath, labelSelector) => {
+              if (cluster.name === 'fails' && resourcePath === '/api/v1/pods') {
+                return Promise.reject(
+                  new FetchError('Network error', 'system'),
+                );
+              }
+              return fetchWithConnection(
+                cluster,
+                credential,
+                resourcePath,
+                labelSelector,
+              );
+            },
+          );
         const kubernetesFanOutHandler = new KubernetesFanOutHandler({
           logger,
           fetcher: new KubernetesClientBasedFetcher({
             logger,
-            connection: new KubernetesConnection({ logger }),
+            connection,
           }),
           serviceLocator: fleet,
           customResources: [],
@@ -1316,8 +1336,7 @@ describe('KubernetesFanOutHandler', () => {
               errors: [
                 {
                   errorType: 'FETCH_ERROR',
-                  message:
-                    'request to https://fails/api/v1/pods?labelSelector=backstage.io%2Fkubernetes-id%3Dtest-component failed, reason: Network error',
+                  message: 'Network error',
                 },
               ],
             },

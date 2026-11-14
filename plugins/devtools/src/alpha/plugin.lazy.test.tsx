@@ -19,6 +19,9 @@ describe('devtools alpha entry point', () => {
     jest.doMock('@backstage/core-components', () => {
       throw new Error('core-components was loaded eagerly');
     });
+    jest.doMock('../api/DevToolsClient', () => {
+      throw new Error('DevToolsClient was loaded eagerly');
+    });
 
     expect(() => require('./plugin')).not.toThrow();
   });

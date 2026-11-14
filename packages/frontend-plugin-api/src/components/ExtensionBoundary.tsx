@@ -36,20 +36,27 @@ import {
 import { coreExtensionData } from '../wiring';
 import { AppNodeProvider } from './AppNodeProvider';
 import { Progress } from './DefaultSwappableComponents';
+import { isError } from '@backstage/errors';
 
 function useOptionalErrorApi(): ErrorApi | undefined {
   try {
     return useApi(errorApiRef);
-  } catch {
-    return undefined;
+  } catch (error) {
+    if (isError(error) && error.name === 'NotImplementedError') {
+      return undefined;
+    }
+    throw error;
   }
 }
 
 function useOptionalPluginWrapperApi(): PluginWrapperApi | undefined {
   try {
     return useApi(pluginWrapperApiRef);
-  } catch {
-    return undefined;
+  } catch (error) {
+    if (isError(error) && error.name === 'NotImplementedError') {
+      return undefined;
+    }
+    throw error;
   }
 }
 type RouteTrackerProps = PropsWithChildren<{

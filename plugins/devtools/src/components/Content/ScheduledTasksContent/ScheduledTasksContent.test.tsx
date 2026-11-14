@@ -20,7 +20,7 @@ import {
   mockApis,
 } from '@backstage/test-utils';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
-import { configApiRef } from '@backstage/core-plugin-api';
+import { configApiRef, createApiRef } from '@backstage/core-plugin-api';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { devToolsApiRef, DevToolsApi } from '../../../api';
@@ -83,7 +83,10 @@ describe('ScheduledTasksContent', () => {
         apis={[
           [configApiRef, configApi],
           [toastApiRef, mockToastApi],
-          [devToolsApiRef, mockDevToolsApi],
+          [
+            createApiRef<DevToolsApi>({ id: devToolsApiRef.id }),
+            mockDevToolsApi,
+          ],
           [permissionApiRef, mockApis.permission()],
         ]}
       >

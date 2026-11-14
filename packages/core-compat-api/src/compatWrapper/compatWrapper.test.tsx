@@ -87,6 +87,7 @@ describe('BackwardsCompatProvider', () => {
                   {app
                     .getPlugins()
                     .map(p => p.getId())
+                    .sort()
                     .join(', ')}
                   {'\n'}
                   components: {Object.keys(app.getComponents()).join(', ')}
@@ -105,7 +106,7 @@ describe('BackwardsCompatProvider', () => {
     );
 
     expect(screen.getByTestId('ctx').textContent).toMatchInlineSnapshot(`
-      "plugins: test, app
+      "plugins: app, test
       components: NotFoundErrorPage, BootErrorPage, Progress, Router, ErrorBoundaryFallback
       icons: brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, user, warning, star, unstarred, externalLink"
     `);

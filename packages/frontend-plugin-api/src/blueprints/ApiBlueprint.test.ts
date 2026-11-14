@@ -20,6 +20,44 @@ import { ApiBlueprint } from './ApiBlueprint';
 import { createApiRef } from '../apis/system';
 
 describe('ApiBlueprint', () => {
+  it('should type async factories and their resolved dependencies', () => {
+    const sync = createApiRef<{ value: string }>().with({ id: 'sync' });
+    const asyncRef = createApiRef<{ value: string }>().with({
+      id: 'async',
+      loading: 'async',
+    });
+    expect(
+      ApiBlueprint.make({
+        params: defineParams =>
+          defineParams({
+            api: asyncRef,
+            deps: { sync, asyncRef },
+            factory: async deps => ({
+              value: deps.sync.value + deps.asyncRef.value,
+            }),
+          }),
+      }),
+    ).toBeDefined();
+    ApiBlueprint.make({
+      params: defineParams =>
+        defineParams({
+          api: sync,
+          deps: {},
+          // @ts-expect-error Async factories require an opted-in ref.
+          factory: async () => ({ value: 'invalid' }),
+        }),
+    });
+    ApiBlueprint.make({
+      params: defineParams =>
+        defineParams({
+          api: sync,
+          // @ts-expect-error Async dependencies require an opted-in dependent ref.
+          deps: { asyncRef },
+          factory: () => ({ value: 'invalid' }),
+        }),
+    });
+  });
+
   it('should create an extension with sensible defaults', () => {
     const api = createApiRef<{ foo: string }>().with({ id: 'test' });
 

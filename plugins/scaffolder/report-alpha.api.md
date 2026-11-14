@@ -6,7 +6,6 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
-import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
@@ -78,8 +77,9 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
+        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:scaffolder/form-decorators': OverridableExtensionDefinition<{
@@ -106,8 +106,9 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
+        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:scaffolder/form-fields': OverridableExtensionDefinition<{
@@ -134,8 +135,9 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
+        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'entity-icon-link:scaffolder/launch-template': OverridableExtensionDefinition<{
@@ -757,13 +759,19 @@ export const formDecoratorsApi: OverridableExtensionDefinition<{
     TApi,
     TImpl extends TApi,
     TDeps extends { [name in string]: unknown },
+    TLoading extends 'sync' | 'async' = 'sync',
   >(
-    params: ApiFactory<TApi, TImpl, TDeps>,
+    params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
   ) => ExtensionBlueprintParams<AnyApiFactory>;
 }>;
 
 // @public (undocumented)
-export const formDecoratorsApiRef: ApiRef<ScaffolderFormDecoratorsApi> & {
+export const formDecoratorsApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: string;
+  readonly T: ScaffolderFormDecoratorsApi;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 

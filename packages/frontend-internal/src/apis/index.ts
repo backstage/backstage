@@ -15,5 +15,6 @@
  */
 
 export * from './OpaqueApiRef';
+export * from './ResolvedApiPromise';
 export * from './createTranslatedMessagesSource';
 export * from './useTranslatedTitles';

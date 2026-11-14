@@ -65,7 +65,8 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
   extensions?: ExtensionDefinition<any>[];
 
   /**
-   * Additional features to add to the test app.
+   * Additional features to add to the test app. Test rendering extensions are
+   * retained when features include a plugin named `test`.
    */
   features?: FrontendFeature[];
 

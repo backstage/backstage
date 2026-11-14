@@ -54,6 +54,75 @@ const MyComponent = () => {
 };
 ```
 
+### Async-capable APIs
+
+For refs declared with `loading: 'async'`, `useApi` still returns the API instance.
+It suspends while the implementation is loading and throws if initialization
+fails. Extension boundaries, including those used by `PageBlueprint`, provide
+Suspense and error handling. Components rendered outside those boundaries need
+their own React `Suspense` and error boundaries.
+
+Outside rendering, await the result of `apis.get()`:
+
+```ts
+const workApi = await apis.get(workApiRef);
+if (workApi) {
+  await workApi.doWork();
+}
+```
+
+Present async-capable APIs always return a promise from `get()`, even when their
+implementation is synchronous or already loaded. Missing APIs return `undefined`
+immediately. Initialization failures reject the promise and are cached for
+subsequent lookups. Synchronous refs continue returning instances or
+`undefined` directly.
+
+When rendering under a legacy API context, `useApiHolder` from the new frontend
+system adapts synchronous implementations to the same async lookup contract.
+Factory construction in legacy apps remains synchronous.
+
+`get()` infers its result from the ref's type, so generic helpers can preserve
+the loading mode without branching:
+
+```ts
+import type { AnyApiRef, ApiHolder } from '@backstage/frontend-plugin-api';
+
+function lookup<TApiRef extends AnyApiRef>(apis: ApiHolder, ref: TApiRef) {
+  return apis.get(ref);
+}
+```
+
+Refs without a `loading` member in their type are treated as synchronous.
+`ApiRef<T>` also describes a synchronous ref. `AnyApiRef<T>` accepts either
+loading mode, so lookup results for that type include both direct values and
+promises. Awaiting the result handles either mode.
+
+Custom API holders must preserve promise identity across repeated lookups of
+an async-capable ref.
+
+### Migrating existing refs
+
+An existing API can change to `loading: 'async'` while keeping its ID. The
+updated new frontend system's `useApi` supports both older synchronous refs and
+new async-capable refs, regardless of the registered factory's loading mode.
+Components using older refs can therefore consume the migrated API without
+changing their hook calls. They may now suspend, so they need a Suspense boundary.
+Older framework versions whose hooks do not support suspension need upgrading.
+
+Existing synchronous factories and overrides can still implement an API whose
+ref has become async-capable. Async lookups return a stable promise for the same
+instance that synchronous lookups receive directly. The ref used to register the
+factory determines whether its construction and dependencies can be asynchronous.
+
+A direct synchronous `apis.get()` call cannot wait for an async implementation,
+even if that implementation has already loaded. It throws an error explaining
+which API requires async access. Update the package exporting the ref, then await
+`apis.get(ref)`, or use `useApi(ref)` during rendering. If a synchronous factory
+depends on a migrated async API, its error identifies the consuming API and the
+dependency path. Mark the consuming API's ref `loading: 'async'` and update its
+factory as needed. An async factory resolves dependencies asynchronously even
+when its dependency refs come from older synchronous versions.
+
 ## Via dependencies
 
 Your utility APIs can depend on other utility APIs in their factories. You do this by declaring `deps` on your `createApiFactory`, and reading the outcome in your `factory`.
