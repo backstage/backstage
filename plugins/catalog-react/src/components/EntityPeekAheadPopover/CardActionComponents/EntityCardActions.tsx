@@ -36,7 +36,6 @@ export const EntityCardActions = (props: { entity: Entity }) => {
       variant="tertiary"
       size="small"
       iconStart={<RiInformationLine />}
-      aria-label={t('entityPeekAheadPopover.entityCardActionsAriaLabel')}
       href={entityRoute(getCompoundEntityRef(props.entity))}
     >
       {t('entityPeekAheadPopover.entityCardActionsTitle')}

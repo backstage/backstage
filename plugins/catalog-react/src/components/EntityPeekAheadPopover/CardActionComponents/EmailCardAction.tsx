@@ -31,7 +31,6 @@ export const EmailCardAction = (props: { email: string }) => {
       variant="tertiary"
       size="small"
       iconStart={<RiMailLine />}
-      aria-label={t('entityPeekAheadPopover.emailCardAction.ariaLabel')}
       href={t('entityPeekAheadPopover.emailCardAction.subTitle', {
         email: props.email,
       })}

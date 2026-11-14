@@ -132,7 +132,7 @@ describe('<EntityPeekAheadPopover/>', () => {
       name: 'component:default/service1',
     });
     expect(dialog).toHaveAttribute('data-placement', 'bottom');
-    const link = screen.getByRole('link', { name: 'Show' });
+    const link = screen.getByRole('link', { name: 'Show details' });
     expect(link).toHaveAttribute('href', '/catalog/default/Component/service1');
 
     // Ending a hover must not dismiss a preview that still has keyboard focus.
