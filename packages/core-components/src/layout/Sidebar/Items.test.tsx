@@ -28,6 +28,10 @@ import { SidebarItem, SidebarSearchField, SidebarExpandButton } from './Items';
 import { renderHook } from '@testing-library/react';
 import { makeStyles } from '@material-ui/core/styles';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
+import type { Location } from 'history';
+import { SidebarSubmenu } from './SidebarSubmenu';
+import { SidebarSubmenuItem } from './SidebarSubmenuItem';
 
 const useStyles = makeStyles({
   spotlight: {
@@ -140,5 +144,98 @@ describe('Items', () => {
       fireEvent(await screen.findByPlaceholderText('Search'), searchEvent);
       expect(searchEvent.defaultPrevented).toBeTruthy();
     });
+  });
+});
+
+describe('isActive', () => {
+  const isCatalogKind = (kind: string) => (location: Location) =>
+    location.pathname === '/catalog' &&
+    new URLSearchParams(location.search).get('filters[kind]') === kind;
+  const isApiKind = jest.fn(isCatalogKind('api'));
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    await renderInTestApp(
+      <Sidebar>
+        <SidebarItem
+          icon={HomeIcon}
+          to="/catalog?filters[kind]=component"
+          text="Components"
+        />
+        <SidebarItem
+          icon={HomeIcon}
+          to="/catalog?filters[kind]=api"
+          text="APIs"
+        />
+        <SidebarItem
+          icon={HomeIcon}
+          to="/catalog?filters[kind]=component"
+          text="Custom Components"
+          isActive={isCatalogKind('component')}
+        />
+        <SidebarItem
+          icon={HomeIcon}
+          to="/catalog?filters[kind]=api"
+          text="Custom APIs"
+          isActive={isApiKind}
+        />
+        <SidebarItem
+          icon={MenuBookIcon}
+          onClick={() => {}}
+          text="Kinds"
+          isActive={isCatalogKind('component')}
+        >
+          <SidebarSubmenu title="Kinds">
+            <SidebarSubmenuItem title="Default match" to="/catalog#apis" />
+            <SidebarSubmenuItem
+              title="Hash match"
+              to="/catalog#apis"
+              isActive={location => location.hash === '#apis'}
+            />
+          </SidebarSubmenu>
+        </SidebarItem>
+      </Sidebar>,
+      { routeEntries: ['/catalog?filters[kind]=api'] },
+    );
+  });
+
+  it('should only compare the pathname when isActive is not provided', async () => {
+    expect(
+      await screen.findByRole('link', { name: 'Components' }),
+    ).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'APIs' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+  });
+
+  it('should use isActive to decide whether a link item is active', async () => {
+    expect(
+      await screen.findByRole('link', { name: 'Custom APIs' }),
+    ).toHaveAttribute('aria-current', 'page');
+    expect(
+      screen.getByRole('link', { name: 'Custom Components' }),
+    ).not.toHaveAttribute('aria-current');
+    expect(isApiKind).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pathname: '/catalog',
+        search: '?filters[kind]=api',
+      }),
+    );
+  });
+
+  it('should use isActive on items with a submenu and on submenu items', async () => {
+    expect(
+      (await screen.findByRole('button', { name: 'Kinds' })).className,
+    ).not.toMatch(/selected/);
+
+    await userEvent.hover(screen.getByTestId('item-with-submenu'));
+
+    expect(
+      (await screen.findByRole('link', { name: 'Default match' })).className,
+    ).toMatch(/selected/);
+    expect(
+      screen.getByRole('link', { name: 'Hash match' }).className,
+    ).not.toMatch(/selected/);
   });
 });
