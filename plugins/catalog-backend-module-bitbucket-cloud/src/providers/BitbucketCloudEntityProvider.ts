@@ -474,14 +474,20 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     pattern: RegExp,
   ): Promise<string[]> {
     const matches: string[] = [];
-    const pending = [''];
+    // A directory listing can repeat a path on a later page.
+    const matched = new Set<string>();
+    const pending = [
+      BitbucketCloudEntityProvider.toSourceScanRoot(this.config.catalogPath),
+    ];
     const seen = new Set<string>();
 
     while (pending.length > 0) {
       const directory = pending.pop()!;
-      if (!seen.add(directory)) {
+      // Set.add returns the set, so it is not a "newly inserted" check.
+      if (seen.has(directory)) {
         continue;
       }
+      seen.add(directory);
 
       for await (const entry of this.client.listRepositorySource(
         this.config.workspace,
@@ -489,7 +495,12 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
         commit,
         directory,
       )) {
-        if (entry.type === 'commit_file' && pattern.test(entry.path)) {
+        if (
+          entry.type === 'commit_file' &&
+          pattern.test(entry.path) &&
+          !matched.has(entry.path)
+        ) {
+          matched.add(entry.path);
           matches.push(entry.path);
         } else if (entry.type === 'commit_directory' && !seen.has(entry.path)) {
           pending.push(entry.path);
@@ -498,6 +509,43 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     }
 
     return matches;
+  }
+
+  /**
+   * Directory where a source walk starts.
+   *
+   * An absolute catalog path starts at the longest directory prefix that
+   * contains no wildcard. A path anchored under `services` does not list
+   * sibling trees. A relative path, or a wildcard in the first segment,
+   * starts at the repository root. An empty segment from a double slash or
+   * a trailing slash ends the prefix. Listing a missing prefix, or a file
+   * at that prefix, uses a trailing slash; the source API answers 404 and
+   * the walk finds nothing.
+   */
+  private static toSourceScanRoot(catalogPath: string): string {
+    if (!catalogPath.startsWith('/')) {
+      return '';
+    }
+
+    // toPathPattern removes one leading slash. `//foo` is not a repo path.
+    const relative = catalogPath.slice(1);
+    const slash = relative.lastIndexOf('/');
+    if (slash < 0) {
+      return '';
+    }
+
+    const literal: string[] = [];
+    for (const segment of relative.slice(0, slash).split('/')) {
+      if (
+        segment.length === 0 ||
+        segment.includes('*') ||
+        segment.includes('?')
+      ) {
+        break;
+      }
+      literal.push(segment);
+    }
+    return literal.join('/');
   }
 
   /**

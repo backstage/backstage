@@ -81,8 +81,12 @@ password, and an API key. It answers `404` when code search is not enabled
 for the workspace. Discovery then lists the matching repositories and checks
 the catalog path with the source API, which accepts the same credentials as
 the rest of the integration. An absolute catalog path such as
-`/catalog-info.yaml` is one request per repository. Any other path walks the
-repository tree.
+`/catalog-info.yaml` is one request per repository. A wildcard path walks
+from the longest directory prefix with no `*` or `?`. For example,
+`/services/*/catalog-info.yaml` lists `services` and skips unrelated
+directories. A relative path, and an absolute path with a wildcard in the
+first segment such as `/catalog-*.yaml`, still walks from the repository
+root. A prefix that is missing, or a file at that prefix, adds no locations.
 
 Additionally, you need to configure your entity provider instance(s):
 
