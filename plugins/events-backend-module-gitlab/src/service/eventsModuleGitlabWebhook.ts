@@ -26,8 +26,6 @@ import { createGitlabTokenValidator } from '../http/createGitlabTokenValidator';
  * registering an HTTP POST ingress with request validator
  * which verifies the webhook token based on a secret.
  *
- * Registers the `GitlabEventRouter`.
- *
  * @public
  */
 export default createBackendModule({
@@ -38,15 +36,14 @@ export default createBackendModule({
       deps: {
         config: coreServices.rootConfig,
         events: eventsExtensionPoint,
+        logger: coreServices.logger,
       },
-      async init({ config, events }) {
-        const validator = createGitlabTokenValidator(config);
-        if (validator) {
-          events.addHttpPostIngress({
-            topic: 'gitlab',
-            validator: createGitlabTokenValidator(config),
-          });
-        }
+      async init({ config, events, logger }) {
+        const validator = createGitlabTokenValidator(config, logger);
+        events.addHttpPostIngress({
+          topic: 'gitlab',
+          validator,
+        });
       },
     });
   },

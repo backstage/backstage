@@ -567,6 +567,7 @@ export default {
                 'backend-system/core-services/root-logger',
                 'backend-system/core-services/scheduler',
                 'backend-system/core-services/token-manager',
+                'backend-system/core-services/tracing',
                 'backend-system/core-services/url-reader',
                 'backend-system/core-services/user-info',
                 'backend-system/core-services/actions-registry',

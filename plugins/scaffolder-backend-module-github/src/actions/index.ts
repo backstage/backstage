@@ -30,3 +30,4 @@ export { createPublishGithubAction } from './github';
 export { createGithubAutolinksAction } from './githubAutolinks';
 export { createGithubPagesEnableAction } from './githubPagesEnable';
 export { createGithubBranchProtectionAction } from './githubBranchProtection';
+export { createGithubRepoRulesetsCreateAction } from './githubRulesets';
