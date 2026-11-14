@@ -44,7 +44,9 @@ await eventRouter.subscribe();
 
 ## Configuration
 
-Webhook authentication is secure by default. Requests to `/api/events/http/*` (such as `/api/events/http/azureDevOps`) without a configured `webhookSecret` return an HTTP 403 Forbidden status.
+Webhook authentication is secure by default. Requests to the module's endpoint `/api/events/http/azureDevOps` without a configured `webhookSecret` return an HTTP 403 Forbidden status.
+
+This only covers the module's own endpoint. Routes created solely through `events.http.topics` have no validator attached and still accept unauthenticated requests.
 
 Add the following to your `app-config.yaml`:
 

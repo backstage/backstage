@@ -64,7 +64,9 @@ Add the signature validator for the topic `github`:
 
 ## Configuration
 
-Webhook authentication is secure by default. Requests to `/api/events/http/*` (such as `/api/events/http/github`) without a configured `webhookSecret` return an HTTP 403 Forbidden status.
+Webhook authentication is secure by default. Requests to the module's endpoint `/api/events/http/github` without a configured webhook secret return an HTTP 403 Forbidden status. A secret is configured either as a single shared secret via `events.modules.github.webhookSecret`, or per GitHub App via the `webhookSecret` of an entry in `integrations.github[].apps`.
+
+This only covers the module's own endpoint. Routes created solely through `events.http.topics` have no validator attached and still accept unauthenticated requests.
 
 Add the following to your `app-config.yaml`:
 
