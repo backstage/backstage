@@ -343,6 +343,7 @@ export default {
               items: catalogSidebar,
             },
             'features/software-catalog/creating-the-catalog-graph',
+            'features/software-catalog/catalog-graph',
             'features/software-catalog/faq',
           ],
         ),
