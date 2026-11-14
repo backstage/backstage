@@ -775,18 +775,25 @@ describe('OidcService', () => {
           config: {
             auth: {
               backstageTokenExpiration: '2 hours',
+              clientIdMetadataDocuments: {
+                enabled: true,
+                allowedClientIdPatterns: ['https://example.com/*'],
+                allowedRedirectUriPatterns: ['*'],
+              },
             },
           },
         });
         const mockToken = 'mock-jwt-token';
         mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
 
-        const client = await service.registerClient({
+        const client = createCimdClient({
           clientName: 'Test Client',
           redirectUris: ['http://localhost:8080/callback'],
         });
 
         const authSession = await service.createAuthorizationSession({
+          codeChallenge: 'test-code-verifier',
+          codeChallengeMethod: 'plain',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
@@ -801,6 +808,8 @@ describe('OidcService', () => {
         const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
 
         const tokenResult = await service.exchangeCodeForToken({
+          clientId: client.clientId,
+          codeVerifier: 'test-code-verifier',
           code,
           redirectUri: 'http://localhost:8080/callback',
           grantType: 'authorization_code',
