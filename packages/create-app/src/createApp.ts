@@ -64,7 +64,9 @@ const PNPM_ONLY_FILES = ['pnpm-workspace.yaml'];
 /**
  * Picks the package manager for the created app from the `--package-manager`
  * option, falling back to pnpm when the command runs through pnpm, for
- * example with `pnpm create @backstage/app`, and to Yarn otherwise.
+ * example with `pnpm create @backstage/app`, and to Yarn otherwise. A custom
+ * template from `--template-path` may not support pnpm, so it only gets pnpm
+ * through the option.
  */
 export function resolvePackageManager(opts: OptionValues): PackageManagerName {
   if (opts.packageManager !== undefined) {
@@ -74,6 +76,9 @@ export function resolvePackageManager(opts: OptionValues): PackageManagerName {
       );
     }
     return opts.packageManager;
+  }
+  if (opts.templatePath) {
+    return 'yarn';
   }
   return process.env.npm_config_user_agent?.startsWith('pnpm/')
     ? 'pnpm'
@@ -95,15 +100,23 @@ export function isTemplateFileExcluded(
   return PNPM_ONLY_FILES.includes(file);
 }
 
+// The same versions as the range '^11.28.0 || >=12.7.0' that the Backstage
+// CLI checks with prereleases included, without a dependency on semver
 function isSupportedPnpmVersion(version: string): boolean {
-  const [major, minor] = version.split('.').map(Number);
-  if (!Number.isInteger(major) || !Number.isInteger(minor)) {
+  const match = version.match(/^(\d+)\.(\d+)\.(\d+)(-\S+)?$/);
+  if (!match) {
     return false;
   }
+  const [major, minor, patch] = match.slice(1, 4).map(Number);
+  // A prerelease comes before its release, so 12.7.0-rc.1 is below 12.7.0
+  const isPrereleaseOfMinimum = Boolean(match[4]) && patch === 0;
   if (major === 11) {
-    return minor >= 28;
+    return minor > 28 || (minor === 28 && !isPrereleaseOfMinimum);
   }
-  return major > 12 || (major === 12 && minor >= 7);
+  return (
+    major > 12 ||
+    (major === 12 && (minor > 7 || (minor === 7 && !isPrereleaseOfMinimum)))
+  );
 }
 
 export default async (opts: OptionValues): Promise<void> => {

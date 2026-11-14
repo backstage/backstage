@@ -47,7 +47,7 @@ const main = (argv: string[]) => {
     .addOption(
       new Option(
         '--package-manager <name>',
-        'Package manager for the created app. Defaults to pnpm when run through pnpm, otherwise yarn',
+        'Package manager for the created app. Defaults to pnpm when run through pnpm without --template-path, otherwise yarn',
       ).choices(['yarn', 'pnpm']),
     )
     .action(cmd => createApp(cmd));

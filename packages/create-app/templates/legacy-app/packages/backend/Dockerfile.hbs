@@ -38,7 +38,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 {{#if pnpm}}
 # Install pnpm. Keep the version in sync with the packageManager field in package.json.
-RUN npm install -g pnpm@{{pnpmVersion}}
+# Like the dependency install below, this reads the optional npmrc secret, so
+# that pnpm can come from a private registry. This step runs as root.
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \
+    npm install -g pnpm@{{pnpmVersion}}
 
 {{/if}}
 # From here on we use the least-privileged `node` user to run the backend.
@@ -72,9 +75,11 @@ RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 #   NPMRC="//npm.acme.example/:_authToken=$NPM_TOKEN" pnpm build-image --secret id=npmrc,env=NPMRC
 # The registries in pnpm-workspace.yaml are part of the skeleton, but registry settings
 # that are only in an .npmrc file must be in the secret too.
+# The store is set to the cache mount, since pnpm would otherwise put a store
+# inside the image when its default store is on another filesystem.
 RUN --mount=type=secret,id=npmrc,target=/home/node/.npmrc,uid=1000 \
     --mount=type=cache,target=/home/node/.local/share/pnpm/store,sharing=locked,uid=1000,gid=1000 \
-    pnpm install --frozen-lockfile --prod
+    pnpm install --frozen-lockfile --prod --store-dir /home/node/.local/share/pnpm/store
 {{else}}
 # and along with yarn.lock and the root package.json, that's enough to run yarn install.
 COPY --chown=node:node yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
