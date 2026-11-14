@@ -16,6 +16,7 @@
 
 import {
   AuthService,
+  BackstageCredentials,
   DiscoveryService,
   LifecycleService,
   LoggerService,
@@ -27,7 +28,7 @@ import {
   EventsService,
   EventsServiceSubscribeOptions,
 } from './EventsService';
-import { DefaultApiClient } from '../generated';
+import { DefaultApiBackendClient } from '../schema/openapi/generated';
 import { ResponseError } from '@backstage/errors';
 
 const POLL_BACKOFF_START_MS = 1_000;
@@ -119,7 +120,7 @@ class PluginEventsService implements EventsService {
   private readonly localBus: LocalEventBus;
   private readonly logger: LoggerService;
   private readonly mode: EventBusMode;
-  private client?: DefaultApiClient;
+  private client?: DefaultApiBackendClient;
   private readonly auth?: AuthService;
 
   constructor(
@@ -127,7 +128,7 @@ class PluginEventsService implements EventsService {
     localBus: LocalEventBus,
     logger: LoggerService,
     mode: EventBusMode,
-    client?: DefaultApiClient,
+    client?: DefaultApiBackendClient,
     auth?: AuthService,
   ) {
     this.pluginId = pluginId;
@@ -150,19 +151,20 @@ class PluginEventsService implements EventsService {
       if (!client) {
         return;
       }
-      const token = await this.#getToken();
-      if (!token) {
+      const res = await this.#withLegacyTokenFallback(options =>
+        client.postEvent(
+          {
+            body: {
+              event: { payload: params.eventPayload, topic: params.topic },
+              notifiedSubscribers,
+            },
+          },
+          options,
+        ),
+      );
+      if (!res) {
         return;
       }
-      const res = await client.postEvent(
-        {
-          body: {
-            event: { payload: params.eventPayload, topic: params.topic },
-            notifiedSubscribers,
-          },
-        },
-        { token },
-      );
 
       if (!res.ok) {
         if (res.status === 404 && this.mode !== 'always') {
@@ -212,18 +214,18 @@ class PluginEventsService implements EventsService {
         return; // shutting down
       }
       try {
-        const token = await this.#getToken();
-        if (!token) {
-          return;
-        }
-
         if (hasSubscription) {
-          const res = await client.getSubscriptionEvents(
-            {
-              path: { subscriptionId },
-            },
-            { token },
+          const res = await this.#withLegacyTokenFallback(options =>
+            client.getSubscriptionEvents(
+              {
+                path: { subscriptionId },
+              },
+              options,
+            ),
           );
+          if (!res) {
+            return;
+          }
 
           if (res.status === 202) {
             // 202 means there were no immediately available events, but the
@@ -285,13 +287,18 @@ class PluginEventsService implements EventsService {
 
         // If we haven't yet created the subscription, or if it was removed, create a new one
         if (!hasSubscription) {
-          const res = await client.putSubscription(
-            {
-              path: { subscriptionId },
-              body: { topics },
-            },
-            { token },
+          const res = await this.#withLegacyTokenFallback(options =>
+            client.putSubscription(
+              {
+                path: { subscriptionId },
+                body: { topics },
+              },
+              options,
+            ),
           );
+          if (!res) {
+            return;
+          }
           hasSubscription = true;
           if (!res.ok) {
             if (res.status === 404 && this.mode !== 'always') {
@@ -329,17 +336,21 @@ class PluginEventsService implements EventsService {
     poll();
   }
 
-  async #getToken() {
+  /**
+   * Makes a request to the events backend on behalf of this service. Returns
+   * `undefined` if no token could be issued because the events backend is not
+   * installed and legacy auth is disabled.
+   */
+  async #withLegacyTokenFallback<T>(
+    request: (options: { credentials: BackstageCredentials }) => Promise<T>,
+  ): Promise<T | undefined> {
     if (!this.auth) {
       throw new Error('Auth service not available');
     }
 
+    const credentials = await this.auth.getOwnServiceCredentials();
     try {
-      const { token } = await this.auth.getPluginRequestToken({
-        onBehalfOf: await this.auth.getOwnServiceCredentials(),
-        targetPluginId: 'events',
-      });
-      return token;
+      return await request({ credentials });
     } catch (error) {
       // This is a bit hacky, but handles the case where new auth is used
       // without legacy auth fallback, and the events backend is not installed
@@ -451,8 +462,9 @@ export class DefaultEventsService implements EventsService {
   ): EventsService {
     const client =
       options && this.mode !== 'never'
-        ? new DefaultApiClient({
-            discoveryApi: options.discovery,
+        ? new DefaultApiBackendClient({
+            discovery: options.discovery,
+            auth: options.auth,
             fetchApi: { fetch }, // use native node fetch
           })
         : undefined;

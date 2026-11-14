@@ -25,12 +25,23 @@ files:
     destinationFilename: types/fetch.ts
   types/discovery.ts:
     destinationFilename: types/discovery.ts
+  types/auth.ts:
+    destinationFilename: types/auth.ts
   apis/index.mustache:
     templateType: SupportingFiles
     destinationFilename: apis/index.ts
-  apis/api-all.mustache:
+  apis/api-types.mustache:
     templateType: SupportingFiles
-    destinationFilename: apis/Api.client.ts
+    destinationFilename: apis/Api.types.ts
+  apis/api-frontend.mustache:
+    templateType: SupportingFiles
+    destinationFilename: apis/Api.frontend.client.ts
+  apis/api-backend.mustache:
+    templateType: SupportingFiles
+    destinationFilename: apis/Api.backend.client.ts
+  apis/api-isomorphic.mustache:
+    templateType: SupportingFiles
+    destinationFilename: apis/Api.isomorphic.client.ts
   pluginId.mustache:
     templateType: SupportingFiles
     destinationFilename: pluginId.ts

@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export * from './Api.client';
+export * from './Api.types';
+export * from './Api.frontend.client';
+export * from './Api.backend.client';
+export * from './Api.isomorphic.client';

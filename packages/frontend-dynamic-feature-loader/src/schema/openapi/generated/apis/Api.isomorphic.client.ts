@@ -23,34 +23,18 @@ import { FetchApi } from '../types/fetch';
 import crossFetch from 'cross-fetch';
 import { pluginId } from '../pluginId';
 import * as parser from 'uri-template';
+import { RequestOptions, TypedResponse } from './Api.types';
 import { Remote } from '../models/Remote.model';
+import { GetRemotes } from './Api.types';
 
 /**
- * Wraps the Response type to convey a type on the json call.
+ * A client that works in both the frontend and the backend. It resolves the
+ * base URL through discovery, and only authenticates when a token is passed in
+ * the request options.
  *
  * @public
  */
-export type TypedResponse<T> = Omit<Response, 'json'> & {
-  json: () => Promise<T>;
-};
-
-/**
- * Options you can pass into a request for additional information.
- *
- * @public
- */
-export interface RequestOptions {
-  token?: string;
-}
-/**
- * @public
- */
-export type GetRemotes = {};
-
-/**
- * @public
- */
-export class DefaultApiClient {
+export class DefaultApiIsomorphicClient {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
 
@@ -72,16 +56,19 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<Array<Remote>>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/remotes`;
 
     const uri = parser.parse(uriTemplate).expand({});
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'GET',
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 }

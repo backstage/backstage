@@ -1,0 +1,61 @@
+{{>licenseInfo}}
+import { AuthApi } from '../types/auth';
+import {pluginId} from '../pluginId';
+import { DefaultApiIsomorphicClient } from './Api.isomorphic.client';
+import { BackendRequestOptions, TypedResponse } from './Api.types';
+{{#apiInfo}}
+{{#apis}}
+{{#imports}}
+import { {{classname}} } from '{{filename}}.model{{importFileExtension}}';
+{{/imports}}
+import { {{#operations}}{{#operation}}{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}, {{/operation}}{{/operations}} } from './Api.types';
+{{/apis}}
+
+/**
+ * A client for use in the backend. The base URL is resolved through the
+ * discovery service, and each request is authenticated with a plugin request
+ * token for the credentials passed in the request options.
+ *
+ * @public
+ */
+export class DefaultApiBackendClient {
+    private readonly auth: AuthApi;
+    private readonly client: DefaultApiIsomorphicClient;
+
+    constructor(options: {
+        discovery: { getBaseUrl(pluginId: string): Promise<string> };
+        auth: AuthApi;
+        fetchApi?: { fetch: typeof fetch };
+    }) {
+        this.auth = options.auth;
+        this.client = new DefaultApiIsomorphicClient({
+            discoveryApi: options.discovery,
+            fetchApi: options.fetchApi || { fetch },
+        });
+    }
+
+    {{#apis}}
+    {{#operations}}
+
+    {{#operation}}
+    /**
+     * {@inheritDoc DefaultApiIsomorphicClient.{{nickname}}}
+     */
+    public async {{nickname}}(
+        // @ts-ignore
+        request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
+        options: BackendRequestOptions
+    ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
+        const { token } = await this.auth.getPluginRequestToken({
+            onBehalfOf: options.credentials,
+            targetPluginId: pluginId,
+        });
+
+        return this.client.{{nickname}}(request, { token });
+    }
+
+    {{/operation}}
+    {{/operations}}
+    {{/apis}}
+}
+{{/apiInfo}}

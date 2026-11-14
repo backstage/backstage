@@ -23,216 +23,50 @@ import { FetchApi } from '../types/fetch';
 import crossFetch from 'cross-fetch';
 import { pluginId } from '../pluginId';
 import * as parser from 'uri-template';
+import { RequestOptions, TypedResponse } from './Api.types';
 import { EntitiesBatchResponse } from '../models/EntitiesBatchResponse.model';
 import { EntitiesQueryResponse } from '../models/EntitiesQueryResponse.model';
 import { Entity } from '../models/Entity.model';
 import { EntityAncestryResponse } from '../models/EntityAncestryResponse.model';
 import { EntityFacetsResponse } from '../models/EntityFacetsResponse.model';
-import { GetEntitiesByRefsRequest } from '../models/GetEntitiesByRefsRequest.model';
-import { QueryEntitiesByPredicateRequest } from '../models/QueryEntitiesByPredicateRequest.model';
-import { QueryEntityFacetsByPredicateRequest } from '../models/QueryEntityFacetsByPredicateRequest.model';
-import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
-import { ValidateEntityRequest } from '../models/ValidateEntityRequest.model';
-import { AnalyzeLocationRequest } from '../models/AnalyzeLocationRequest.model';
+import {
+  DeleteEntityByUid,
+  GetEntities,
+  GetEntitiesByQuery,
+  GetEntitiesByRefs,
+  GetEntityAncestryByName,
+  GetEntityByName,
+  GetEntityByUid,
+  GetEntityFacets,
+  QueryEntitiesByPredicate,
+  QueryEntityFacetsByPredicate,
+  RefreshEntity,
+  ValidateEntity,
+} from './Api.types';
 import { AnalyzeLocationResponse } from '../models/AnalyzeLocationResponse.model';
 import { CreateLocation201Response } from '../models/CreateLocation201Response.model';
-import { CreateLocationRequest } from '../models/CreateLocationRequest.model';
 import { GetLocations200ResponseInner } from '../models/GetLocations200ResponseInner.model';
-import { GetLocationsByQueryRequest } from '../models/GetLocationsByQueryRequest.model';
 import { Location } from '../models/Location.model';
-import { LocationInput } from '../models/LocationInput.model';
 import { LocationsQueryResponse } from '../models/LocationsQueryResponse.model';
+import {
+  AnalyzeLocation,
+  CreateLocation,
+  DeleteLocation,
+  GetLocation,
+  GetLocationByEntity,
+  GetLocations,
+  GetLocationsByQuery,
+  UpdateLocation,
+} from './Api.types';
 
 /**
- * Wraps the Response type to convey a type on the json call.
+ * A client that works in both the frontend and the backend. It resolves the
+ * base URL through discovery, and only authenticates when a token is passed in
+ * the request options.
  *
  * @public
  */
-export type TypedResponse<T> = Omit<Response, 'json'> & {
-  json: () => Promise<T>;
-};
-
-/**
- * Options you can pass into a request for additional information.
- *
- * @public
- */
-export interface RequestOptions {
-  token?: string;
-}
-/**
- * @public
- */
-export type DeleteEntityByUid = {
-  path: {
-    uid: string;
-  };
-};
-/**
- * @public
- */
-export type GetEntities = {
-  query: {
-    fields?: Array<string>;
-    limit?: number;
-    filter?: Array<string>;
-    offset?: number;
-    after?: string;
-    order?: Array<string>;
-  };
-};
-/**
- * @public
- */
-export type GetEntitiesByQuery = {
-  query: {
-    fields?: Array<string>;
-    limit?: number;
-    offset?: number;
-    orderField?: Array<string>;
-    cursor?: string;
-    filter?: Array<string>;
-    totalItems?: 'include' | 'exclude';
-    fullTextFilterTerm?: string;
-    fullTextFilterFields?: Array<string>;
-  };
-};
-/**
- * @public
- */
-export type GetEntitiesByRefs = {
-  body: GetEntitiesByRefsRequest;
-  query: {
-    filter?: Array<string>;
-  };
-};
-/**
- * @public
- */
-export type GetEntityAncestryByName = {
-  path: {
-    kind: string;
-    namespace: string;
-    name: string;
-  };
-};
-/**
- * @public
- */
-export type GetEntityByName = {
-  path: {
-    kind: string;
-    namespace: string;
-    name: string;
-  };
-};
-/**
- * @public
- */
-export type GetEntityByUid = {
-  path: {
-    uid: string;
-  };
-};
-/**
- * @public
- */
-export type GetEntityFacets = {
-  query: {
-    facet: Array<string>;
-    filter?: Array<string>;
-  };
-};
-/**
- * @public
- */
-export type QueryEntitiesByPredicate = {
-  body: QueryEntitiesByPredicateRequest;
-};
-/**
- * @public
- */
-export type QueryEntityFacetsByPredicate = {
-  body: QueryEntityFacetsByPredicateRequest;
-};
-/**
- * @public
- */
-export type RefreshEntity = {
-  body: RefreshEntityRequest;
-};
-/**
- * @public
- */
-export type ValidateEntity = {
-  body: ValidateEntityRequest;
-};
-/**
- * @public
- */
-export type AnalyzeLocation = {
-  body: AnalyzeLocationRequest;
-};
-/**
- * @public
- */
-export type CreateLocation = {
-  body: CreateLocationRequest;
-  query: {
-    dryRun?: string;
-    onConflict?: 'refresh' | 'reject';
-  };
-};
-/**
- * @public
- */
-export type DeleteLocation = {
-  path: {
-    id: string;
-  };
-};
-/**
- * @public
- */
-export type GetLocation = {
-  path: {
-    id: string;
-  };
-};
-/**
- * @public
- */
-export type GetLocationByEntity = {
-  path: {
-    kind: string;
-    namespace: string;
-    name: string;
-  };
-};
-/**
- * @public
- */
-export type GetLocations = {};
-/**
- * @public
- */
-export type GetLocationsByQuery = {
-  body: GetLocationsByQueryRequest;
-};
-/**
- * @public
- */
-export type UpdateLocation = {
-  path: {
-    id: string;
-  };
-  body: LocationInput;
-};
-
-/**
- * @public
- */
-export class DefaultApiClient {
+export class DefaultApiIsomorphicClient {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
 
@@ -255,19 +89,22 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/entities/by-uid/{uid}`;
 
     const uri = parser.parse(uriTemplate).expand({
       uid: request.path.uid,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'DELETE',
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -286,19 +123,22 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<Array<Entity>>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/entities{?fields,limit,filter*,offset,after,order*}`;
 
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'GET',
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -320,19 +160,22 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/entities/by-query{?fields,limit,offset,orderField*,cursor,filter*,totalItems,fullTextFilterTerm,fullTextFilterFields}`;
 
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'GET',
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -347,20 +190,23 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<EntitiesBatchResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/entities/by-refs{?filter*}`;
 
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'POST',
       body: JSON.stringify(request.body),
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -376,6 +222,7 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<EntityAncestryResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/entities/by-name/{kind}/{namespace}/{name}/ancestry`;
 
     const uri = parser.parse(uriTemplate).expand({
@@ -384,13 +231,15 @@ export class DefaultApiClient {
       name: request.path.name,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'GET',
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -406,6 +255,7 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<Entity>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/entities/by-name/{kind}/{namespace}/{name}`;
 
     const uri = parser.parse(uriTemplate).expand({
@@ -414,13 +264,15 @@ export class DefaultApiClient {
       name: request.path.name,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'GET',
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -434,19 +286,22 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<Entity>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/entities/by-uid/{uid}`;
 
     const uri = parser.parse(uriTemplate).expand({
       uid: request.path.uid,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'GET',
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -461,19 +316,22 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<EntityFacetsResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/entity-facets{?facet*,filter*}`;
 
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'GET',
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -487,18 +345,21 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/entities/by-query`;
 
     const uri = parser.parse(uriTemplate).expand({});
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'POST',
       body: JSON.stringify(request.body),
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -512,18 +373,21 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<EntityFacetsResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/entity-facets`;
 
     const uri = parser.parse(uriTemplate).expand({});
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'POST',
       body: JSON.stringify(request.body),
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -537,18 +401,21 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/refresh`;
 
     const uri = parser.parse(uriTemplate).expand({});
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'POST',
       body: JSON.stringify(request.body),
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -562,18 +429,21 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/validate-entity`;
 
     const uri = parser.parse(uriTemplate).expand({});
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'POST',
       body: JSON.stringify(request.body),
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -587,18 +457,21 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<AnalyzeLocationResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/analyze-location`;
 
     const uri = parser.parse(uriTemplate).expand({});
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'POST',
       body: JSON.stringify(request.body),
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -614,20 +487,23 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<CreateLocation201Response>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/locations{?dryRun,onConflict}`;
 
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'POST',
       body: JSON.stringify(request.body),
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -641,19 +517,22 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/locations/{id}`;
 
     const uri = parser.parse(uriTemplate).expand({
       id: request.path.id,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'DELETE',
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -667,19 +546,22 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<Location>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/locations/{id}`;
 
     const uri = parser.parse(uriTemplate).expand({
       id: request.path.id,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'GET',
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -695,6 +577,7 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<Location>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/locations/by-entity/{kind}/{namespace}/{name}`;
 
     const uri = parser.parse(uriTemplate).expand({
@@ -703,13 +586,15 @@ export class DefaultApiClient {
       name: request.path.name,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'GET',
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -722,17 +607,20 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<Array<GetLocations200ResponseInner>>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/locations`;
 
     const uri = parser.parse(uriTemplate).expand({});
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'GET',
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -746,18 +634,21 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<LocationsQueryResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/locations/by-query`;
 
     const uri = parser.parse(uriTemplate).expand({});
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'POST',
       body: JSON.stringify(request.body),
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -772,19 +663,22 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<Location>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/locations/{id}`;
 
     const uri = parser.parse(uriTemplate).expand({
       id: request.path.id,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'PUT',
       body: JSON.stringify(request.body),
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 }

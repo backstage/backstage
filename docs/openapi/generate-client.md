@@ -22,5 +22,27 @@ info:
 
 1. Run `yarn backstage-repo-tools package schema openapi generate --client-package <directory>`. This will create a new folder in `<directory>/src/schema/openapi/generated` to house the generated content.
 2. You should not need to import anything from subfolders of the `src/schema/openapi/generated` parent folder, everything you should require will be accessible from the `src/schema/openapi/generated/index.ts` file. Of note,
-3. `DefaultApiClient` - this is the client that you can use to access your specific spec.
-4. Any request or response types - these will be available from the index and should match the names in your spec.
+3. `DefaultApiFrontendClient`, `DefaultApiBackendClient` and `DefaultApiIsomorphicClient` - these are the clients that you can use to access your specific spec. See [Choosing a client](#choosing-a-client).
+4. Any request or response types - these will be available from the index and should match the names in your spec. All three clients share them.
+
+### Choosing a client
+
+All three clients expose the same methods. They differ in how they find the plugin and how they authenticate.
+
+- `DefaultApiFrontendClient` is for frontend plugins. It takes only a `fetchApi` and sends requests to `plugin://<pluginId>/...` URLs. Only the `FetchApi` of a Backstage app resolves these URLs and adds credentials, so pass it `fetchApiRef` from the app. A plain `fetch` can not be used. Pass `{ token }` in the request options only if you need to override the credentials.
+- `DefaultApiBackendClient` is for backend plugins and modules. It takes the `discovery` and `auth` services and resolves the base URL through discovery. Each call requires `{ credentials }` in the request options, and the client requests a plugin request token for those credentials from the auth service. Pass the credentials of an incoming request to make the call on behalf of its caller, or `await auth.getOwnServiceCredentials()` to make the call as your own service.
+- `DefaultApiIsomorphicClient` is for code that runs in both environments, such as a public client package. It takes a `discoveryApi` and an optional `fetchApi`, and only authenticates when you pass `{ token }` in the request options.
+
+```ts
+// Frontend
+const client = new DefaultApiFrontendClient({ fetchApi });
+
+// Backend
+const client = new DefaultApiBackendClient({ discovery, auth });
+await client.getEntities(request, {
+  credentials: await httpAuth.credentials(req),
+});
+
+// Isomorphic
+const client = new DefaultApiIsomorphicClient({ discoveryApi, fetchApi });
+```

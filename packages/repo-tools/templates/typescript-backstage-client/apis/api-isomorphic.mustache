@@ -4,72 +4,23 @@ import { FetchApi } from '../types/fetch';
 import crossFetch from 'cross-fetch';
 import {pluginId} from '../pluginId';
 import * as parser from 'uri-template';
+import { RequestOptions, TypedResponse } from './Api.types';
 {{#apiInfo}}
 {{#apis}}
 {{#imports}}
 import { {{classname}} } from '{{filename}}.model{{importFileExtension}}';
 {{/imports}}
+import { {{#operations}}{{#operation}}{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}, {{/operation}}{{/operations}} } from './Api.types';
 {{/apis}}
 
 /**
- * Wraps the Response type to convey a type on the json call.
+ * A client that works in both the frontend and the backend. It resolves the
+ * base URL through discovery, and only authenticates when a token is passed in
+ * the request options.
  *
  * @public
  */
-export type TypedResponse<T> = Omit<Response, 'json'> & {
-  json: () => Promise<T>;
-};
-
-/**
- * Options you can pass into a request for additional information.
- *
- * @public
- */
-export interface RequestOptions {
-  token?: string;
-}
-{{#apis}}
-{{#operations}}
-{{#operation}}
-/**
-  * @public
-  */
-export type {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}} = {
-    {{#hasPathParams}}
-    path: {
-        {{#pathParams}}
-            {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
-        {{/pathParams}}
-    },
-    {{/hasPathParams}}
-    {{#hasBodyParam}}
-        {{#bodyParam}}
-        body: {{{dataType}}},
-        {{/bodyParam}}
-    {{/hasBodyParam}}
-    {{#hasQueryParams}}
-    query: {
-        {{#queryParams}}
-        {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
-        {{/queryParams}}
-    },
-    {{/hasQueryParams}}
-    {{#hasHeaderParams}}
-    header: {
-        {{#headerParams}}
-        {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
-        {{/headerParams}}
-    },
-    {{/hasHeaderParams}}
-}
-{{/operation}}
-{{/operations}}
-{{/apis}}
-
-/**
- * @public
- */
-export class DefaultApiClient {
+export class DefaultApiIsomorphicClient {
     private readonly discoveryApi: DiscoveryApi;
     private readonly fetchApi: FetchApi;
 
@@ -85,17 +36,7 @@ export class DefaultApiClient {
     {{#operations}}
 
     {{#operation}}
-    /**
-     {{#notes}}
-     * {{&notes}}
-     {{/notes}}
-     {{#summary}}
-     * {{&summary}}
-     {{/summary}}
-     {{#allParams}}
-     * @param {{paramName}} - {{description}}
-     {{/allParams}}
-     */
+{{>apis/operationDocs}}
     public async {{nickname}}(
         // @ts-ignore
         request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
@@ -103,6 +44,7 @@ export class DefaultApiClient {
     ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
         const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+        const token = options?.token;
         const uriTemplate = `{{{path}}}{{#hasQueryParams}}{?{{#queryParams}}{{baseName}}{{#isArray}}{{#isExplode}}*{{/isExplode}}{{/isArray}}{{^-last}},{{/-last}}{{/queryParams}}}{{/hasQueryParams}}`;
 
         const uri = parser.parse(uriTemplate).expand({
@@ -114,17 +56,19 @@ export class DefaultApiClient {
         {{/hasQueryParams}}
         })
 
-        return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+        const init: RequestInit = {
             headers: {
                 {{#hasHeaderParams}}
                 ...request.header,
                 {{/hasHeaderParams}}
                 'Content-Type': 'application/json',
-                ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+                ...(token && { Authorization: `Bearer ${token}` }),
             },
             method: '{{httpMethod}}',
             {{#hasBodyParam}} body: JSON.stringify(request.body), {{/hasBodyParam}}
-        });
+        };
+
+        return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
     }
 
     {{/operation}}

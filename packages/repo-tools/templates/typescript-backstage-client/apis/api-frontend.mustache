@@ -1,0 +1,52 @@
+{{>licenseInfo}}
+import { DefaultApiIsomorphicClient } from './Api.isomorphic.client';
+import { RequestOptions, TypedResponse } from './Api.types';
+{{#apiInfo}}
+{{#apis}}
+{{#imports}}
+import { {{classname}} } from '{{filename}}.model{{importFileExtension}}';
+{{/imports}}
+import { {{#operations}}{{#operation}}{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}, {{/operation}}{{/operations}} } from './Api.types';
+{{/apis}}
+
+/**
+ * A client for use in the frontend. Requests are sent to
+ * `plugin://<pluginId>/...` URLs, which the `FetchApi` of the Backstage app
+ * resolves to the plugin's base URL and adds credentials to.
+ *
+ * @public
+ */
+export class DefaultApiFrontendClient {
+    private readonly client: DefaultApiIsomorphicClient;
+
+    constructor(options: {
+        fetchApi: { fetch: typeof fetch };
+    }) {
+        this.client = new DefaultApiIsomorphicClient({
+            discoveryApi: {
+                getBaseUrl: async (pluginId: string) => `plugin://${pluginId}`,
+            },
+            fetchApi: options.fetchApi,
+        });
+    }
+
+    {{#apis}}
+    {{#operations}}
+
+    {{#operation}}
+    /**
+     * {@inheritDoc DefaultApiIsomorphicClient.{{nickname}}}
+     */
+    public async {{nickname}}(
+        // @ts-ignore
+        request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
+        options?: RequestOptions
+    ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
+        return this.client.{{nickname}}(request, options);
+    }
+
+    {{/operation}}
+    {{/operations}}
+    {{/apis}}
+}
+{{/apiInfo}}
