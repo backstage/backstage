@@ -227,7 +227,7 @@ jobs:
         ports:
           - 5432/tcp
       postgres14:
-        image: postgres:14@sha256:14bfab572eec6abf65892e1db7c3ba8d41b2a2855c1b143664907d6e146eb6e1
+        image: postgres:14@sha256:980b7cb415aa0f812f65bdec8f6f599be408d8ed9c83ffcaa12650eac397b264
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
