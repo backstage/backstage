@@ -114,13 +114,16 @@ export async function migrateMovedPackages(options?: {
         if (options?.pattern && !minimatch(depName, options.pattern)) {
           continue;
         }
+        // versions:bump leaves catalog references alone when the catalogs
+        // can't be read, so they are not migrated after a bump either
         if (
           options?.onlyBumped &&
-          !isBumpedRange(
-            depVersion,
-            options.onlyBumped.catalog,
-            Boolean(catalogs),
-          )
+          ((!catalogs && getCatalogName(depVersion) !== undefined) ||
+            !isBumpedRange(
+              depVersion,
+              options.onlyBumped.catalog,
+              Boolean(catalogs),
+            ))
         ) {
           continue;
         }

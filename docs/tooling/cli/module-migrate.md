@@ -28,13 +28,13 @@ Options:
   --json            Print the resolved versions as JSON, only together with --dry-run
 ```
 
-Each new version is written where the dependency is declared. A version range is updated in the `package.json` file that declares it. In pnpm workspaces, a `catalog:` reference is updated in the default catalog of `pnpm-workspace.yaml` instead. References to named catalogs are left alone, unless the catalog is passed with `--catalog`, in which case only that catalog is updated. This is useful when you deliberately keep a second release line, such as a `backstage-next` catalog during a migration:
+Each new version is written where the dependency is declared. A version range is updated in the `package.json` file that declares it. In pnpm workspaces, a `catalog:` reference is updated in the default catalog of `pnpm-workspace.yaml` instead. In Yarn projects, the command doesn't read the catalogs, so it leaves `catalog:` references as they are and warns about them. References to named catalogs are left alone, unless the catalog is passed with `--catalog`, in which case only that catalog is updated. When all dependencies refer to named catalogs, the command changes nothing without `--catalog`, not even the release in `backstage.json`. Passing a catalog is useful when you deliberately keep a second release line, such as a `backstage-next` catalog during a migration:
 
 ```bash
 backstage-cli versions:bump --catalog backstage-next --release next
 ```
 
-A catalog belongs to the whole pnpm workspace, so bumping it also moves every other package in the workspace that refers to it, including packages outside of the Backstage installation that you run the command in. If a package refers to a catalog that `pnpm-workspace.yaml` doesn't define, the command fails before it changes any files.
+A catalog belongs to the whole pnpm workspace, so bumping it also moves every other package in the workspace that refers to it, including packages outside of the Backstage installation that you run the command in. If a Backstage dependency of the installation refers to a catalog that `pnpm-workspace.yaml` doesn't define, the command fails before it changes any files.
 
 `--dry-run --json` prints the resolved version of each package as JSON and changes no files, which lets other tools reuse the version resolution.
 

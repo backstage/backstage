@@ -155,6 +155,87 @@ describe('bump', () => {
   const worker = setupServer();
   registerMswTestHooks(worker);
 
+  it('should leave catalog references alone when the catalogs cannot be read', async () => {
+    mockDir.setContent({
+      'yarn.lock': lockfileMock,
+      'package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'backstage.json': JSON.stringify({ version: '1.0.0' }),
+      packages: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: {
+              '@backstage/core': 'catalog:',
+            },
+          }),
+        },
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            dependencies: {
+              '@backstage/core': '^1.0.3',
+              '@backstage/theme': 'catalog:next',
+            },
+          }),
+        },
+      },
+    });
+
+    jest.spyOn(runObj, 'run').mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    } as any);
+    worker.use(
+      http.get('https://versions.backstage.io/v1/tags/main/manifest.json', () =>
+        HttpResponse.json({ packages: [] }),
+      ),
+    );
+    const { warn: warnings } = await withLogCollector(
+      ['log', 'warn'],
+      async () => {
+        await bump({ args: ['--release', 'main', '--skip-migrate'], info });
+      },
+    );
+    // Yarn catalogs are not read, so the references would turn into ranges
+    expect(warnings).toContain(
+      'Left @backstage/core in a, @backstage/theme in b as they are, since versions:bump does not support catalogs with yarn. Bump their catalog entries yourself.',
+    );
+    await expect(
+      fs.readJson(mockDir.resolve('packages/a/package.json')),
+    ).resolves.toEqual({
+      name: 'a',
+      dependencies: { '@backstage/core': 'catalog:' },
+    });
+    await expect(
+      fs.readJson(mockDir.resolve('packages/b/package.json')),
+    ).resolves.toEqual({
+      name: 'b',
+      dependencies: {
+        '@backstage/core': '^1.0.6',
+        '@backstage/theme': 'catalog:next',
+      },
+    });
+
+    // When every dependency with a new version refers to a catalog, nothing
+    // is bumped, and backstage.json is left alone
+    await fs.writeJson(mockDir.resolve('packages/b/package.json'), {
+      name: 'b',
+      dependencies: { '@backstage/theme': 'catalog:next' },
+    });
+    await fs.writeJson(mockDir.resolve('backstage.json'), { version: '1.0.0' });
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+      await bump({ args: ['--release', 'main', '--skip-migrate'], info });
+    });
+    expect(logs).toContain(
+      'All dependencies refer to catalogs, so nothing was bumped.',
+    );
+    await expect(
+      fs.readJson(mockDir.resolve('backstage.json')),
+    ).resolves.toEqual({ version: '1.0.0' });
+  });
+
   it('should bump backstage dependencies', async () => {
     mockDir.setContent({
       'yarn.lock': lockfileMock,
@@ -1248,6 +1329,31 @@ catalogs:
     ).resolves.toEqual({ version: '1.0.0' });
   });
 
+  it('should leave backstage.json alone when only named catalogs are referenced', async () => {
+    await fs.writeJson(mockDir.resolve('packages/a/package.json'), {
+      name: 'a',
+      dependencies: { '@backstage/theme': 'catalog:backstage-next' },
+    });
+    await fs.remove(mockDir.resolve('packages/b'));
+
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+      await bump({ args: [], info });
+    });
+    expect(logs).toEqual(
+      expect.arrayContaining([
+        'All dependencies refer to named catalogs, so nothing was bumped. Use --catalog to bump the entries of a catalog.',
+      ]),
+    );
+    expect(logs.join('\n')).not.toContain('Version bump complete!');
+    expect(
+      await fs.readFile(mockDir.resolve('pnpm-workspace.yaml'), 'utf8'),
+    ).toBe(workspaceYaml);
+    await expect(
+      fs.readJson(mockDir.resolve('backstage.json')),
+    ).resolves.toEqual({ version: '1.0.0' });
+    expect(runObj.run).not.toHaveBeenCalled();
+  });
+
   it('should warn about overrides that pin the bumped packages', async () => {
     await fs.writeFile(
       mockDir.resolve('pnpm-workspace.yaml'),
@@ -1302,14 +1408,14 @@ overrides:
     });
     const before = mockDir.content();
 
-    await expect(
-      withLogCollector(['log', 'warn'], () =>
-        bump({ args: ['--skip-migrate'], info }),
-      ),
-    ).rejects.toThrow(
-      '@backstage/core in a refers to the default catalog, which the workspace does not define. No files were changed.',
-    );
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+      await expect(bump({ args: ['--skip-migrate'], info })).rejects.toThrow(
+        '@backstage/core in a refers to the default catalog, which the workspace does not define. No files were changed.',
+      );
+    });
     expect(mockDir.content()).toEqual(before);
+    // The range in b would be bumped, but nothing is listed as bumped
+    expect(logs.join('\n')).not.toContain('bumping');
     expect(runObj.run).not.toHaveBeenCalled();
 
     // A named catalog that is not bumped must exist as well
