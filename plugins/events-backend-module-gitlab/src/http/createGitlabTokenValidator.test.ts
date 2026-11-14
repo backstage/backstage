@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import {
   RequestDetails,
@@ -54,7 +55,7 @@ describe('createGitlabTokenValidator', () => {
       },
     } as Partial<RequestDetails> as unknown as RequestDetails;
   };
-  const mockLogger = { warn: jest.fn() };
+  const mockLogger = mockServices.logger.mock();
 
   beforeEach(() => {
     mockLogger.warn.mockClear();
@@ -63,7 +64,7 @@ describe('createGitlabTokenValidator', () => {
   it('missing secret without dangerouslyAllowUnauthenticatedEvents rejects with HTTP 403 and warns once at creation', async () => {
     const validator = createGitlabTokenValidator(
       configWithoutSecret,
-      mockLogger as any,
+      mockLogger,
     );
 
     expect(mockLogger.warn).toHaveBeenCalledTimes(1);
@@ -99,10 +100,7 @@ describe('createGitlabTokenValidator', () => {
       },
     });
 
-    const validator = createGitlabTokenValidator(
-      configWithDanger,
-      mockLogger as any,
-    );
+    const validator = createGitlabTokenValidator(configWithDanger, mockLogger);
 
     expect(mockLogger.warn).toHaveBeenCalledTimes(1);
     expect(mockLogger.warn).toHaveBeenCalledWith(
@@ -119,10 +117,7 @@ describe('createGitlabTokenValidator', () => {
     const request = requestWithToken(undefined);
     const context = new TestContext();
 
-    const validator = createGitlabTokenValidator(
-      configWithSecret,
-      mockLogger as any,
-    );
+    const validator = createGitlabTokenValidator(configWithSecret, mockLogger);
     await validator(request, context);
 
     expect(context.details).not.toBeUndefined();
@@ -134,10 +129,7 @@ describe('createGitlabTokenValidator', () => {
     const request = requestWithToken('invalid-token');
     const context = new TestContext();
 
-    const validator = createGitlabTokenValidator(
-      configWithSecret,
-      mockLogger as any,
-    );
+    const validator = createGitlabTokenValidator(configWithSecret, mockLogger);
     await validator(request, context);
 
     expect(context.details).not.toBeUndefined();
@@ -149,10 +141,7 @@ describe('createGitlabTokenValidator', () => {
     const request = requestWithToken(validToken);
     const context = new TestContext();
 
-    const validator = createGitlabTokenValidator(
-      configWithSecret,
-      mockLogger as any,
-    );
+    const validator = createGitlabTokenValidator(configWithSecret, mockLogger);
     await validator(request, context);
 
     expect(context.details).toBeUndefined();

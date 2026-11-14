@@ -26,8 +26,6 @@ import { createGitlabTokenValidator } from '../http/createGitlabTokenValidator';
  * registering an HTTP POST ingress with request validator
  * which verifies the webhook token based on a secret.
  *
- * Registers the `GitlabEventRouter`.
- *
  * @public
  */
 export default createBackendModule({

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import {
   RequestDetails,
@@ -78,7 +79,7 @@ describe('createGithubSignatureValidator', () => {
   };
   const payloadString = JSON.stringify(payload);
   const payloadBuffer = Buffer.from(payloadString);
-  const mockLogger = { warn: jest.fn() };
+  const mockLogger = mockServices.logger.mock();
 
   beforeEach(() => {
     mockLogger.warn.mockClear();
@@ -103,7 +104,7 @@ describe('createGithubSignatureValidator', () => {
     const validator = createGithubSignatureValidator(
       configWithoutSecret,
       octokitProvider,
-      mockLogger as any,
+      mockLogger,
     );
 
     expect(mockLogger.warn).toHaveBeenCalledTimes(1);
@@ -142,7 +143,7 @@ describe('createGithubSignatureValidator', () => {
     const validator = createGithubSignatureValidator(
       configWithDanger,
       octokitProvider,
-      mockLogger as any,
+      mockLogger,
     );
 
     expect(mockLogger.warn).toHaveBeenCalledTimes(1);
@@ -163,7 +164,7 @@ describe('createGithubSignatureValidator', () => {
     const validator = createGithubSignatureValidator(
       configWithSecret,
       octokitProvider,
-      mockLogger as any,
+      mockLogger,
     );
     await validator(request, context);
 
@@ -179,7 +180,7 @@ describe('createGithubSignatureValidator', () => {
     const validator = createGithubSignatureValidator(
       configWithSecret,
       octokitProvider,
-      mockLogger as any,
+      mockLogger,
     );
     await validator(request, context);
 
@@ -195,7 +196,7 @@ describe('createGithubSignatureValidator', () => {
     const validator = createGithubSignatureValidator(
       configWithSecret,
       octokitProvider,
-      mockLogger as any,
+      mockLogger,
     );
     await validator(request, context);
 
@@ -218,7 +219,7 @@ describe('createGithubSignatureValidator', () => {
     const validator = createGithubSignatureValidator(
       configWithAppSecret,
       octokitProvider,
-      mockLogger as any,
+      mockLogger,
     );
     await validator(request, context);
 

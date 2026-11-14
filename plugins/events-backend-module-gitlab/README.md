@@ -65,7 +65,7 @@ Add the token validator for the topic `gitlab`:
       events: env.events,
       ingresses: {
 +       gitlab: {
-+         validator: createGitlabTokenValidator(env.config),
++         validator: createGitlabTokenValidator(env.config, env.logger),
 +       },
      },
      logger: env.logger,

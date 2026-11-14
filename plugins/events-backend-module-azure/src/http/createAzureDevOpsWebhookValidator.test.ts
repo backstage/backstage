@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import {
   RequestDetails,
@@ -46,7 +47,7 @@ describe('createAzureDevOpsWebhookValidator', () => {
       },
     },
   });
-  const mockLogger = { warn: jest.fn() };
+  const mockLogger = mockServices.logger.mock();
 
   beforeEach(() => {
     mockLogger.warn.mockClear();
@@ -69,7 +70,7 @@ describe('createAzureDevOpsWebhookValidator', () => {
   it('missing secret without dangerouslyAllowUnauthenticatedEvents rejects with HTTP 403 and warns once at creation', async () => {
     const validator = createAzureDevOpsWebhookValidator(
       configWithoutSecret,
-      mockLogger as any,
+      mockLogger,
     );
 
     expect(mockLogger.warn).toHaveBeenCalledTimes(1);
@@ -107,7 +108,7 @@ describe('createAzureDevOpsWebhookValidator', () => {
 
     const validator = createAzureDevOpsWebhookValidator(
       configWithDanger,
-      mockLogger as any,
+      mockLogger,
     );
 
     expect(mockLogger.warn).toHaveBeenCalledTimes(1);
@@ -127,7 +128,7 @@ describe('createAzureDevOpsWebhookValidator', () => {
 
     const validator = createAzureDevOpsWebhookValidator(
       configWithSecret,
-      mockLogger as any,
+      mockLogger,
     );
     await validator(request, context);
 
@@ -140,7 +141,7 @@ describe('createAzureDevOpsWebhookValidator', () => {
 
     const validator = createAzureDevOpsWebhookValidator(
       configWithSecret,
-      mockLogger as any,
+      mockLogger,
     );
     await validator(request, context);
 
@@ -157,7 +158,7 @@ describe('createAzureDevOpsWebhookValidator', () => {
 
     const validator = createAzureDevOpsWebhookValidator(
       configWithSecret,
-      mockLogger as any,
+      mockLogger,
     );
     await validator(request, context);
 
