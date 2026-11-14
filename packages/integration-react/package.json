@@ -36,16 +36,16 @@
     "@backstage/config": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/integration": "workspace:^",
-    "@material-ui/core": "^4.12.2",
-    "@material-ui/icons": "^4.9.1"
+    "@remixicon/react": "~4.0.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/core-components": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",

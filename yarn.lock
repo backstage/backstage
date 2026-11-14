@@ -3360,15 +3360,15 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@material-ui/core": "npm:^4.12.2"
-    "@material-ui/icons": "npm:^4.9.1"
+    "@backstage/ui": "workspace:^"
+    "@remixicon/react": "npm:~4.0.1"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
+    "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
@@ -15551,6 +15551,15 @@ __metadata:
   peerDependencies:
     react: ">=18.2.0"
   checksum: 10/10241f2e07826ce7d595cf9687a35c96cc9cf9eb68a9431d7dfa1b9df479dbef302874d28c0502cee2a536cf34722de7c49ed12d10a2b071e4e42ba4a278c516
+  languageName: node
+  linkType: hard
+
+"@remixicon/react@npm:~4.0.1":
+  version: 4.0.1
+  resolution: "@remixicon/react@npm:4.0.1"
+  peerDependencies:
+    react: ">=0.14.0"
+  checksum: 10/5eaa40f54252f678253b00f6fbadf6659013d4d52908f458f9415d533a303c65cc51c1bb89cc490cd0f1462f8830aa53903890d377a00eb5798c8a7651fffe5c
   languageName: node
   linkType: hard
 
