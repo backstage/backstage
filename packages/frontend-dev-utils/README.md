@@ -15,5 +15,6 @@ yarn add -D @backstage/frontend-dev-utils
 
 ## Documentation
 
+- [New frontend system](https://backstage.io/docs/frontend-system/)
 - [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
 - [Backstage Documentation](https://backstage.io/docs)
