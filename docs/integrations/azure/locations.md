@@ -89,6 +89,7 @@ See the Azure DevOps documentation on how to grant access to the [managed identi
 Personal access tokens are deprecated for Azure DevOps Services (`dev.azure.com` and `*.visualstudio.com`). Microsoft [retires global personal access tokens](https://devblogs.microsoft.com/devops/retirement-of-global-personal-access-tokens-in-azure-devops/), which work across all organizations you can access, on December 1, 2026. Organization-scoped personal access tokens keep working, but Microsoft recommends Microsoft Entra ID credentials over all personal access tokens. Backstage logs a warning at startup when a personal access token is configured for Azure DevOps Services, unless `NODE_ENV` is `development`.
 
 - In production, use a [service principal](#using-a-service-principal-with-a-client-secret) or a [managed identity](#using-a-system-assigned-managed-identity).
+- Microsoft Entra ID credentials only work with the `dev.azure.com` host. If your integration uses a legacy `*.visualstudio.com` host, change the integration `host` and your repository URLs, such as catalog locations, to `dev.azure.com` before switching credentials. Otherwise Backstage fails to start.
 - For local development, sign in with the Azure CLI (`az login`) and leave out `credentials` for `dev.azure.com`. Backstage then falls back to [`DefaultAzureCredential`](https://learn.microsoft.com/en-us/javascript/api/@azure/identity/defaultazurecredential), which picks up your Azure CLI sign-in.
 
 Personal access tokens are still supported for Azure DevOps Server.

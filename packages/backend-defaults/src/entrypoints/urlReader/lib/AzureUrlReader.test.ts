@@ -216,6 +216,15 @@ describe('AzureUrlReader', () => {
         personalAccessToken: 'my-pat',
       });
       expect(logger.warn).toHaveBeenCalledTimes(2);
+      expect(logger.warn).toHaveBeenLastCalledWith(
+        expect.stringContaining(
+          'after moving this integration and its repository URLs to dev.azure.com',
+        ),
+      );
+      expect(logger.warn).not.toHaveBeenNthCalledWith(
+        1,
+        expect.stringContaining('after moving'),
+      );
 
       // Azure DevOps Server
       createFactory('azure.mycompany.com', { personalAccessToken: 'my-pat' });

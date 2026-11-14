@@ -86,7 +86,11 @@ export class AzureUrlReader implements UrlReaderService {
         logger.warn(
           `Personal access token credentials for Azure DevOps Services (${host}) are deprecated. ` +
             `Global personal access tokens stop working on December 1, 2026, and Microsoft recommends Microsoft Entra ID credentials over all personal access tokens. ` +
-            `Use a service principal or managed identity instead, see ${PAT_DEPRECATION_DOCS_URL}`,
+            `Use a service principal or managed identity instead${
+              host === 'dev.azure.com'
+                ? ''
+                : ', after moving this integration and its repository URLs to dev.azure.com'
+            }, see ${PAT_DEPRECATION_DOCS_URL}`,
         );
       }
       const reader = new AzureUrlReader(integration, {
