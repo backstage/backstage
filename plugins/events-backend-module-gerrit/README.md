@@ -10,4 +10,9 @@ From the root of your Backstage project, run:
 yarn --cwd packages/backend add @backstage/plugin-events-backend-module-gerrit
 ```
 
+```ts
+// packages/backend/src/index.ts
+backend.add(import('@backstage/plugin-events-backend-module-gerrit'));
+```
+
 See [Gerrit Events](https://backstage.io/docs/integrations/gerrit/events/) for backend setup and routing examples.

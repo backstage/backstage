@@ -30,11 +30,3 @@ yarn --cwd packages/backend add @backstage/plugin-events-backend-module-gerrit
 // packages/backend/src/index.ts
 backend.add(import('@backstage/plugin-events-backend-module-gerrit'));
 ```
-
-### Legacy Backend System
-
-```ts
-// packages/backend/src/plugins/events.ts
-const eventRouter = new GerritEventRouter({ events: env.events });
-await eventRouter.subscribe();
-```
