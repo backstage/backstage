@@ -24,6 +24,7 @@ asciidoc
 async
 Atlassian
 autocomplete
+autoincrement
 autofix
 autologout
 automations
@@ -31,6 +32,7 @@ autoscaling
 autoselect
 Avro
 backend's
+backfilled
 backoff
 backported
 backporting
@@ -100,6 +102,7 @@ cron
 cronjobs
 crontab
 css
+cutover
 cve
 CVEs
 daemonsets
@@ -113,9 +116,11 @@ debounces
 debouncing
 debuggability
 declaratively
+dedupe
 deduplicate
 deduplicated
 deduplication
+deletedness
 deliverables
 denormalized
 dependabot
@@ -409,6 +414,7 @@ pygments
 pymdown
 pymdownx
 rankdir
+readback
 readme
 readmes
 readonly
@@ -554,6 +560,7 @@ togglable
 tokenizer
 tolerations
 Tolerations
+tombstoned
 toolchain
 toolsets
 tooltip
