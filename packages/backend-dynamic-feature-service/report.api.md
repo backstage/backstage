@@ -4,13 +4,11 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { BackstagePackageJson } from '@backstage/cli-node';
 import { Config } from '@backstage/config';
 import { ConfigSchema } from '@backstage/config-loader';
 import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PackagePlatform } from '@backstage/cli-node';
-import { PackageRole } from '@backstage/cli-node';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
@@ -34,6 +32,83 @@ export type BackendDynamicPluginInstaller = NewBackendPluginInstaller;
 export interface BackendPluginProvider {
   // (undocumented)
   backendPlugins(options?: { includeFailed?: boolean }): BackendDynamicPlugin[];
+}
+
+// @public
+export interface BackstagePackageJson {
+  // (undocumented)
+  backstage?: {
+    role?: PackageRole;
+    moved?: string;
+    inline?: boolean;
+    pluginId?: string | null;
+    pluginPackage?: string;
+    pluginPackages?: string[];
+    peerModules?: string[];
+    features?: Record<
+      string,
+      | '@backstage/BackendFeature'
+      | '@backstage/BackstagePlugin'
+      | '@backstage/FrontendPlugin'
+      | '@backstage/FrontendModule'
+    >;
+  };
+  // (undocumented)
+  bundled?: boolean;
+  // (undocumented)
+  dependencies?: {
+    [key: string]: string;
+  };
+  // (undocumented)
+  devDependencies?: {
+    [key: string]: string;
+  };
+  // (undocumented)
+  exports?: JsonValue;
+  // (undocumented)
+  files?: string[];
+  // (undocumented)
+  main?: string;
+  // (undocumented)
+  module?: string;
+  // (undocumented)
+  name: string;
+  // (undocumented)
+  optionalDependencies?: {
+    [key: string]: string;
+  };
+  // (undocumented)
+  peerDependencies?: {
+    [key: string]: string;
+  };
+  // (undocumented)
+  private?: boolean;
+  // (undocumented)
+  publishConfig?: {
+    access?: 'public' | 'restricted';
+    directory?: string;
+    registry?: string;
+  };
+  // (undocumented)
+  repository?:
+    | string
+    | {
+        type: string;
+        url: string;
+        directory: string;
+      };
+  // (undocumented)
+  scripts?: {
+    [key: string]: string;
+  };
+  // (undocumented)
+  type?: 'module' | 'commonjs';
+  // (undocumented)
+  types?: string;
+  // (undocumented)
+  typesVersions?: Record<string, Record<string, string[]>>;
+  // (undocumented)
+  version: string;
 }
 
 // @public (undocumented)
@@ -275,6 +350,23 @@ export interface NewBackendPluginInstaller {
   // (undocumented)
   kind: 'new';
 }
+
+// @public
+export type PackagePlatform = 'node' | 'web' | 'common';
+
+// @public
+export type PackageRole =
+  | 'frontend'
+  | 'backend'
+  | 'cli'
+  | 'cli-module'
+  | 'web-library'
+  | 'node-library'
+  | 'common-library'
+  | 'frontend-plugin'
+  | 'frontend-plugin-module'
+  | 'backend-plugin'
+  | 'backend-plugin-module';
 
 // @public
 export interface RemoteInfo {
