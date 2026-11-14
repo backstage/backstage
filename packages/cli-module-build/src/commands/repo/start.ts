@@ -157,7 +157,7 @@ export async function findTargetPackages(
       pkg => nameOrPath === pkg.packageJson.name,
     );
     if (!matchingPackage) {
-      const absPath = targetPaths.resolveRoot(nameOrPath);
+      const absPath = targetPaths.resolveInstallationRoot(nameOrPath);
       matchingPackage = packages.find(
         pkg => relativePath(pkg.dir, absPath) === '',
       );
@@ -179,7 +179,7 @@ export async function findTargetPackages(
     );
     if (matchingPackages.length > 1) {
       // Final fallback is to check for the package path within the monorepo, packages/app or packages/backend
-      const expectedPath = targetPaths.resolveRoot(
+      const expectedPath = targetPaths.resolveInstallationRoot(
         role === 'frontend' ? 'packages/app' : 'packages/backend',
       );
       const matchByPath = matchingPackages.find(
