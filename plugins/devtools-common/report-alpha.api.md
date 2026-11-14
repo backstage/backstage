@@ -19,18 +19,13 @@ export type ScheduledTasks = {
 };
 
 // @alpha
-export interface TaskApiTasksResponse {
-  // (undocumented)
+export type TaskApiTasksResponse = {
+  taskId: string;
   pluginId: string;
-  // (undocumented)
   scope: 'global' | 'local';
-  // (undocumented)
   settings: {
     version: number;
   } & JsonObject;
-  // (undocumented)
-  taskId: string;
-  // (undocumented)
   taskState:
     | {
         status: 'running';
@@ -46,7 +41,6 @@ export interface TaskApiTasksResponse {
         lastRunEndedAt?: string;
       }
     | null;
-  // (undocumented)
   workerState:
     | {
         status: 'initial-wait';
@@ -58,7 +52,7 @@ export interface TaskApiTasksResponse {
         status: 'running';
       }
     | null;
-}
+};
 
 // @alpha (undocumented)
 export type TriggerScheduledTask = {

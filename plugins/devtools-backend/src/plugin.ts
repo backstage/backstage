@@ -18,12 +18,15 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { createRouter } from './service/router';
 import { devToolsPermissions } from '@backstage/plugin-devtools-common';
 import {
   devToolsTaskSchedulerReadPermission,
   devToolsTaskSchedulerCreatePermission,
 } from '@backstage/plugin-devtools-common/alpha';
+import { DevToolsBackendApi } from './api';
+import { createDevToolsActions } from './actions';
 
 /**
  * DevTools backend plugin
@@ -41,7 +44,9 @@ export const devtoolsPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         discovery: coreServices.discovery,
         httpAuth: coreServices.httpAuth,
+        auth: coreServices.auth,
         permissionsRegistry: coreServices.permissionsRegistry,
+        actionsRegistry: actionsRegistryServiceRef,
       },
       async init({
         config,
@@ -50,10 +55,15 @@ export const devtoolsPlugin = createBackendPlugin({
         httpRouter,
         discovery,
         httpAuth,
+        auth,
         permissionsRegistry,
+        actionsRegistry,
       }) {
+        const devToolsBackendApi = new DevToolsBackendApi(logger, config);
+
         httpRouter.use(
           await createRouter({
+            devToolsBackendApi,
             config,
             logger,
             permissions,
@@ -70,6 +80,15 @@ export const devtoolsPlugin = createBackendPlugin({
           devToolsTaskSchedulerReadPermission,
           devToolsTaskSchedulerCreatePermission,
         ]);
+
+        createDevToolsActions({
+          devToolsBackendApi,
+          auth,
+          config,
+          discovery,
+          permissions,
+          actionsRegistry,
+        });
       },
     });
   },
