@@ -56,8 +56,8 @@
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/ui": "workspace:^",
-    "@tanstack/history": "1.131.2",
-    "@tanstack/react-router": "1.131.2",
+    "@tanstack/history": "1.162.0",
+    "@tanstack/react-router": "1.170.0",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
@@ -68,8 +68,8 @@
     "react-dom": "^18.0.2"
   },
   "peerDependencies": {
-    "@tanstack/history": "^1.131.2",
-    "@tanstack/react-router": "1.131.2",
+    "@tanstack/history": "^1.162.0",
+    "@tanstack/react-router": "1.170.0",
     "@types/react": "^18.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"

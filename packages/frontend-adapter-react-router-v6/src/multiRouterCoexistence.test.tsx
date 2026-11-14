@@ -31,6 +31,7 @@ import {
 import {
   Link as TanStackLink,
   useLocation as useTanStackLocation,
+  useRouter as useTanStackRouter,
 } from '@tanstack/react-router';
 import {
   Link as V6Link,
@@ -494,18 +495,26 @@ describe('TanStack + RR v6 coexistence', () => {
      * A TanStack consumer's own answers: the location it is given, and the
      * app-absolute href its `<Link>` produces.
      *
-     * Native and BUI relative targets must resolve identically. App-absolute
-     * targets keep their meaning regardless of this scope.
+     * Native path-relative targets and their resolved app-absolute hrefs
+     * share the same app history.
      */
     function TanStackTargetProbe(props: { selfSegment: string }) {
       const location = useTanStackLocation();
+      const editHref = useTanStackRouter().buildLocation({
+        to: TANSTACK_BELOW,
+        unsafeRelative: 'path',
+      }).href;
       return (
         <div data-testid="tanstack-probe">
           <span data-testid="tanstack-pathname">{location.pathname}</span>
-          <BuiLink data-testid="tanstack-bui-href" href={V6_BELOW}>
+          <BuiLink data-testid="tanstack-bui-href" href={editHref}>
             Edit
           </BuiLink>
-          <TanStackLink to={TANSTACK_BELOW} data-testid="tanstack-below">
+          <TanStackLink
+            to={TANSTACK_BELOW}
+            unsafeRelative="path"
+            data-testid="tanstack-below"
+          >
             Edit
           </TanStackLink>
           {/* A target whose own first segment repeats the page's. The second
@@ -513,6 +522,7 @@ describe('TanStack + RR v6 coexistence', () => {
               caller did not ask for, is the bug. */}
           <TanStackLink
             to={`./${props.selfSegment}`}
+            unsafeRelative="path"
             data-testid="tanstack-self-naming"
           >
             Self
@@ -640,7 +650,7 @@ describe('TanStack + RR v6 coexistence', () => {
         'href',
         '/catalog-mix/overview/edit',
       );
-      // BUI uses the same native scope.
+      // BUI accepts the app-absolute href resolved by TanStack.
       expect(screen.getByTestId('tanstack-bui-href').getAttribute('href')).toBe(
         '/catalog-mix/overview/edit',
       );
@@ -663,13 +673,17 @@ describe('TanStack + RR v6 coexistence', () => {
           '/catalog-mix/overview/edit',
         );
       });
-      // Native links and BUI keep using the matched page scope.
+      // Relative hrefs refresh when the current catch-all value changes.
       expect(screen.getByTestId('tanstack-pathname').textContent).toBe(
         '/catalog-mix/overview/edit',
       );
       expect(screen.getByTestId('tanstack-below')).toHaveAttribute(
         'href',
-        '/catalog-mix/overview/edit',
+        '/catalog-mix/overview/edit/edit',
+      );
+      expect(screen.getByTestId('tanstack-bui-href')).toHaveAttribute(
+        'href',
+        '/catalog-mix/overview/edit/edit',
       );
     });
 

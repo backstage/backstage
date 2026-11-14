@@ -115,8 +115,9 @@ export interface CreateTanStackPageRouterOptions {
   createRouter(options: {
     history: RouterHistory;
     /**
-     * App-absolute mount patterns in TanStack syntax. Optional static segments
-     * produce multiple unique patterns. Mount a route tree at each pattern, never by
+     * App-absolute mount patterns in TanStack syntax. Optional segments
+     * produce multiple unique patterns, preserving earlier parameter names when
+     * patterns have the same shape. Mount a route tree at each pattern, never by
      * setting basepath. For `/`, attach the routes directly to the root route.
      */
     routePaths: readonly string[];
@@ -151,33 +152,42 @@ export function createTanStackPageRouter(
         return undefined;
       }
       const history = createTanStackHistory(appHistory);
-      // TanStack supports optional parameters, but not optional static segments.
-      // Expand only the latter so parameter changes keep the same route tree.
+      // Keep required variants first, as the framework does. Deduplicate each
+      // expansion by shape so equivalent paths retain the earlier param name.
       const routePaths = routePattern
         .replace(/\/\*$/, '')
         .split('/')
         .filter(Boolean)
-        .reduce<string[]>(
-          (paths, segment) => {
-            const param = segment.match(/^:([\w-]+)(\?)?$/);
-            let part = segment.replace(/\?$/, '');
-            let expandOptional = segment.endsWith('?');
-            if (param) {
-              part = `$${param[1]}`;
-              if (param[2] && /^[a-zA-Z_$][\w$]*$/.test(param[1])) {
-                part = `{-$${param[1]}}`;
-                expandOptional = false;
+        .reduce((paths, segment) => {
+          const optional = segment.endsWith('?');
+          const required = segment.replace(/\?$/, '');
+          const param = required.match(/^:([\w-]+)(\?)?(.*)$/);
+          const part = param ? `{$${param[1]}}${param[3]}` : required;
+          const shape = param ? `{$param}${param[3]}` : required;
+          const expanded = new Map<string, string>();
+          for (const [pathShape, path] of paths) {
+            const candidates = [[`${pathShape}/${shape}`, `${path}/${part}`]];
+            // :name?.json omits the value and its slash, but keeps the suffix.
+            if (param?.[2] && path) {
+              candidates.push([
+                `${pathShape}${param[3]}`,
+                `${path}${param[3]}`,
+              ]);
+            }
+            if (optional) {
+              candidates.push([pathShape, path]);
+            }
+            for (const [candidateShape, candidate] of candidates) {
+              if (!expanded.has(candidateShape)) {
+                expanded.set(candidateShape, candidate);
               }
             }
-            const included = paths.map(path => `${path}/${part}`);
-            return expandOptional ? [...included, ...paths] : included;
-          },
-          [''],
-        )
-        .map(path => path || '/');
+          }
+          return expanded;
+        }, new Map([['', '']]));
       const router = options.createRouter({
         history,
-        routePaths: [...new Set(routePaths)],
+        routePaths: [...routePaths.values()].map(path => path || '/'),
       });
       if (router.basepath !== '/') {
         throw new Error(

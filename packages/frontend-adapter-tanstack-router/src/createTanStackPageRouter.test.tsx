@@ -36,6 +36,7 @@ import {
   useCanGoBack,
   useLocation,
   useRouter,
+  useParams,
   createRootRoute,
   createRoute,
   createRouter,
@@ -95,6 +96,157 @@ describe('createTanStackPageRouter', () => {
         expect(
           await screen.findByText(`Path: ${pathname}`),
         ).toBeInTheDocument();
+      }
+    },
+  );
+
+  it.each([false, true])(
+    'preserves named mount parameters with a custom router %s',
+    async custom => {
+      function Probe() {
+        const params = useParams({ strict: false });
+        const { _splat, '*': splat, ...named } = params;
+        return <p>Params: {JSON.stringify(named)}</p>;
+      }
+      const PageRouter = custom
+        ? createTanStackPageRouter({
+            createRouter: ({ history, routePaths }) => {
+              const root = createRootRoute({ component: Outlet });
+              return createRouter({
+                history,
+                routeTree: root.addChildren(
+                  routePaths.map(path => {
+                    const page = createRoute({
+                      getParentRoute: () => root,
+                      path,
+                      component: () => (
+                        <>
+                          <TanStackPageContent />
+                          <Outlet />
+                        </>
+                      ),
+                    });
+                    return page.addChildren([
+                      createRoute({
+                        getParentRoute: () => page,
+                        path: '$',
+                        component: () => null,
+                      }),
+                    ]);
+                  }),
+                ),
+              });
+            },
+          })
+        : TanStackPageRouter;
+      for (const [mountPath, samples] of [
+        [
+          '/docs/:document.json',
+          [
+            ['/docs/report.json', { document: 'report' }],
+            ['/docs/report.JSON', { document: 'report' }],
+            ['/docs/a%2Fb.json', { document: 'a/b' }],
+            ['/docs/%252F.json', { document: '%2F' }],
+            ['/docs/space%20caf%C3%A9.json/', { document: 'space café' }],
+            ['/docs/report.json/details', { document: 'report' }],
+          ],
+        ],
+        [
+          '/docs/:document.json?',
+          [
+            ['/docs/report.json', { document: 'report' }],
+            ['/docs/report.JSON', { document: 'report' }],
+            ['/docs/a%2Fb.json', { document: 'a/b' }],
+            ['/docs/%252F.json', { document: '%2F' }],
+            ['/docs', {}],
+          ],
+        ],
+        [
+          '/teams/:team?',
+          [
+            ['/teams/otters', { team: 'otters' }],
+            ['/teams', {}],
+          ],
+        ],
+        [
+          '/teams/edit?/:team?/:project?',
+          [
+            ['/teams/otters', { team: 'otters' }],
+            ['/teams/edit/otters', { team: 'otters' }],
+            [
+              '/teams/edit/otters/backstage',
+              { team: 'otters', project: 'backstage' },
+            ],
+            ['/teams/edit', {}],
+            ['/teams', {}],
+          ],
+        ],
+        [
+          '/docs/:document.café',
+          [
+            ['/docs/report.caf%C3%A9', { document: 'report' }],
+            ['/docs/report.CAF%C3%89', { document: 'report' }],
+          ],
+        ],
+        [
+          '/docs/:file-id.json',
+          [
+            ['/docs/report.JSON', { 'file-id': 'report' }],
+            ['/docs/space%20caf%C3%A9.json/', { 'file-id': 'space café' }],
+          ],
+        ],
+        [
+          '/docs/:123id.json?',
+          [
+            ['/docs/report.JSON', { '123id': 'report' }],
+            ['/docs', {}],
+          ],
+        ],
+        [
+          '/docs/:document?.json',
+          [
+            ['/docs/report.JSON', { document: 'report' }],
+            ['/docs/a%2Fb.json', { document: 'a/b' }],
+            ['/docs/%252F.json', { document: '%2F' }],
+            ['/docs.json', {}],
+            ['/docs.JSON/details', {}],
+          ],
+        ],
+        [
+          '/docs/:team?/:document?.json',
+          [
+            [
+              '/docs/otters/report.JSON',
+              { team: 'otters', document: 'report' },
+            ],
+            ['/docs/otters.JSON', { team: 'otters' }],
+            ['/docs.JSON', {}],
+          ],
+        ],
+        [
+          '/docs/:file-id/:123id?',
+          [
+            ['/docs/report/next', { 'file-id': 'report', '123id': 'next' }],
+            ['/docs/report', { 'file-id': 'report' }],
+          ],
+        ],
+      ] as const) {
+        const view = renderInTestApp(
+          <PageRouter>
+            <Probe />
+          </PageRouter>,
+          {
+            mountPath,
+            initialRouteEntries: [samples[0][0]],
+          },
+        );
+        for (const [pathname, params] of samples) {
+          await act(async () => view.appHistory.navigate(pathname));
+          expect(
+            await screen.findByText(`Params: ${JSON.stringify(params)}`),
+          ).toBeInTheDocument();
+        }
+        view.unmount();
       }
     },
   );
@@ -182,7 +334,7 @@ describe('createTanStackPageRouter', () => {
         const location = useLocation();
         return <p>Path: {location.pathname}</p>;
       }
-      renderInTestApp(
+      const { appHistory } = renderInTestApp(
         <TanStackPageRouter>
           <Probe />
         </TanStackPageRouter>,
@@ -192,8 +344,9 @@ describe('createTanStackPageRouter', () => {
         },
       );
       expect(
-        await screen.findByText(`Path: ${initialRoute}`),
+        await screen.findByText(`Path: ${decodeURI(initialRoute)}`),
       ).toBeInTheDocument();
+      expect(appHistory.getSnapshot().location.pathname).toBe(initialRoute);
     },
   );
 
