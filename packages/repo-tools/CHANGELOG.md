@@ -1,5 +1,13 @@
 # @backstage/repo-tools
 
+## 0.19.3-next.2
+
+### Patch Changes
+
+- 11437a9: The `type-deps` command now fails with a clear error when no packages with built type declarations are found, instead of silently passing. Make sure to build all packages before running it.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.3
+
 ## 0.19.3-next.1
 
 ### Patch Changes

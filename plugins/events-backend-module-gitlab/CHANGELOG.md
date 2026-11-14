@@ -1,5 +1,11 @@
 # @backstage/plugin-events-backend-module-gitlab
 
+## 0.4.0-next.3
+
+### Minor Changes
+
+- 70fd46d: **BREAKING** Webhook events modules now require a webhook secret by default. Requests to the `/api/events/http/github`, `/api/events/http/gitlab`, and `/api/events/http/azureDevOps` endpoints are rejected with HTTP 403 when no webhook secret is configured, instead of being accepted without validation. To continue accepting unauthenticated events, for example in development environments, set the module's new `dangerouslyAllowUnauthenticatedEvents` option to `true`. In addition, the `createGitlabTokenValidator` function from `@backstage/plugin-events-backend-module-gitlab` now requires a `logger` argument.
+
 ## 0.3.18-next.2
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.10.2-next.2
+
+### Patch Changes
+
+- 1368ad3: Added a `github:repo:rulesets:create` action that creates a ruleset in a GitHub repository. Rules and bypass actors are written in the same format as the GitHub REST API, so any rule type that GitHub supports can be used in templates.
+- Updated dependencies
+  - @backstage/integration@2.2.0-next.1
+  - @backstage/plugin-scaffolder-node@1.0.0-next.3
+
 ## 0.10.2-next.1
 
 ### Patch Changes

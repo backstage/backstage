@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 2.2.0-next.1
+
+### Minor Changes
+
+- 2b201b6: Added a `ClientCertificate` credential kind for the Azure DevOps integration. Configure `clientId`, `tenantId` and either `clientCertificate` (PEM including the private key) or `clientCertificatePath` to authenticate an App Registration with a certificate instead of a client secret.
+
 ## 2.1.4-next.0
 
 ### Patch Changes

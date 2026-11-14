@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.8.11-next.3
+
+### Patch Changes
+
+- d586214: GitLab discovery entity provider: catalog locations and refresh keys resulting from push events are now derived from the project record fetched from the GitLab API, instead of fields of the event payload. Committed file paths that do not resolve within the project itself are ignored.
+- Updated dependencies
+  - @backstage/integration@2.2.0-next.1
+  - @backstage/backend-defaults@0.19.0-next.3
+
+## 0.8.11-next.2
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 0.8.10-next.2
 
 ### Patch Changes

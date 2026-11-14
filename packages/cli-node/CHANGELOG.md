@@ -1,5 +1,11 @@
 # @backstage/cli-node
 
+## 0.3.6-next.3
+
+### Patch Changes
+
+- 27b7aaa: Support loading remote frontend features whose default export is a `FrontendFeatureLoader` and include that feature type in generated package metadata.
+
 ## 0.3.6-next.2
 
 ### Patch Changes
