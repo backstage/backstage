@@ -90,7 +90,7 @@ export type ConfigError = {
  *
  * @alpha
  */
-export interface TaskApiTasksResponse {
+export type TaskApiTasksResponse = {
   taskId: string;
   pluginId: string;
   scope: 'global' | 'local';
@@ -121,7 +121,7 @@ export interface TaskApiTasksResponse {
         status: 'running';
       }
     | null;
-}
+};
 
 /** @alpha */
 export type ScheduledTasks = {
