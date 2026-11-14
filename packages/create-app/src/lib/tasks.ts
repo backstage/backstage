@@ -98,7 +98,11 @@ export async function templatingTask(
   for (const file of files) {
     const filePath = relativePath(templateDir, file);
 
-    const destinationFile = resolvePath(destinationDir, filePath);
+    const destinationFilePath = filePath
+      .split(/[\\/]/)
+      .map(segment => (segment === 'dot-github' ? '.github' : segment))
+      .join('/');
+    const destinationFile = resolvePath(destinationDir, destinationFilePath);
     await fs.ensureDir(dirname(destinationFile));
 
     if (file.endsWith('.hbs')) {
