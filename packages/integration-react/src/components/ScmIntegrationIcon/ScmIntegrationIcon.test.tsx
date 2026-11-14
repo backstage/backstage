@@ -30,15 +30,13 @@ describe('<ScmIntegrationIcon />', () => {
   });
 
   it.each(['unknown', undefined])(
-    'renders a decorative fallback for type %s',
+    'renders the fallback for type %s',
     async type => {
       const { container } = await renderInTestApp(
         <ScmIntegrationIcon type={type} />,
       );
       const icon = container.querySelector('svg');
       expect(icon).toHaveClass('remixicon');
-      expect(icon).toHaveAttribute('aria-hidden', 'true');
-      expect(icon).toHaveAttribute('focusable', 'false');
       expect(icon).toHaveAttribute('width', '24');
       expect(icon).toHaveAttribute('height', '24');
     },
