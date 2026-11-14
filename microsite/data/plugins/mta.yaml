@@ -1,0 +1,11 @@
+---
+title: Migration Toolkit for Applications
+author: Red Hat
+authorUrl: https://redhat.com
+category: App Delivery
+description: Integrates the Migration Toolkit for Applications (MTA) into Backstage to help assess and modernize applications.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/mta/README.md
+iconUrl: /img/logo-gradient-on-dark.svg
+npmPackageName: '@backstage-community/backstage-plugin-mta-frontend'
+addedDate: '2026-11-06'
+status: active

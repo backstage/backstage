@@ -1,0 +1,11 @@
+---
+title: AWS Config Catalog Module (Community)
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Discovery
+description: Catalog module that ingests AWS Config resource data as entities in the Backstage software catalog.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/catalog/plugins/catalog-backend-module-aws-config/README.md
+iconUrl: /img/logo-gradient-on-dark.svg
+npmPackageName: '@backstage-community/plugin-catalog-backend-module-aws-config'
+addedDate: '2026-11-06'
+status: active
