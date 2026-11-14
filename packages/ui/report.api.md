@@ -43,6 +43,8 @@ import type { MenuTriggerProps as MenuTriggerProps_2 } from 'react-aria-componen
 import type { ModalOverlayProps } from 'react-aria-components';
 import type { NumberFieldProps as NumberFieldProps_2 } from 'react-aria-components';
 import { PopoverProps as PopoverProps_2 } from 'react-aria-components';
+import { PreviewTrigger } from 'react-aria-components';
+import { PreviewTriggerProps } from 'react-aria-components';
 import type { RadioGroupProps as RadioGroupProps_2 } from 'react-aria-components';
 import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import type { ReactElement } from 'react';
@@ -3142,6 +3144,10 @@ export type PopoverOwnProps = {
 export interface PopoverProps
   extends Omit<PopoverProps_2, 'children' | 'className'>,
     PopoverOwnProps {}
+
+export { PreviewTrigger };
+
+export { PreviewTriggerProps };
 
 // @public
 export type ProviderBg = 'neutral' | 'danger' | 'warning' | 'success';

@@ -778,7 +778,6 @@ export default {
             'tutorials/react18-migration',
             'tutorials/package-role-migration',
             'tutorials/yarn-migration',
-            'tutorials/migrate-to-mui5',
             'tutorials/auth-service-migration',
             'tutorials/jsx-transform-migration',
           ],

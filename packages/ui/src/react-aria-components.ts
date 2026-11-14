@@ -23,3 +23,13 @@ export type { Key } from 'react-aria-components';
 
 /** @public */
 export { Focusable } from 'react-aria-components';
+
+/**
+ * Displays an interactive popover on hover, keyboard focus, or long press.
+ * Use with {@link Popover}; `delay` and `closeDelay` control its opening and closing delays.
+ *
+ * @public
+ */
+export { PreviewTrigger } from 'react-aria-components';
+/** @public */
+export type { PreviewTriggerProps } from 'react-aria-components';

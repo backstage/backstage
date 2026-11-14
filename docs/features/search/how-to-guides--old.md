@@ -125,7 +125,7 @@ how highlighted terms look you can follow Backstage's guide on how to
 [Customizing Your App's UI](https://backstage.io/docs/conf/user-interface)
 to create an override with your preferred styling.
 
-For example, using the new MUI V4+V5 unified theming method, the following will result
+For example, using the unified theming method, the following will result
 in highlighted words to be bold & underlined:
 
 ```typescript jsx title=packages/app/src/theme/theme.ts
@@ -142,7 +142,7 @@ export const myLightTheme: UnifiedTheme = createUnifiedTheme({
   }),
   defaultPageTheme: 'home',
   components: {
-    /** @ts-ignore This is temporarily necessary until MUI V5 transition is completed. */
+    /** @ts-ignore The legacy search component override is not included in the theme types. */
     BackstageHighlightedSearchResultText: {
       styleOverrides: {
         highlight: {
