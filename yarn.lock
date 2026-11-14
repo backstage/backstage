@@ -3028,11 +3028,9 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
-    "@types/use-sync-external-store": "npm:^1.7.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.6"
-    use-sync-external-store: "npm:^1.7.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -3061,12 +3059,10 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
-    "@types/use-sync-external-store": "npm:^1.7.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router: "npm:^7.18.3"
     react-router-dom: "npm:^7.18.3"
-    use-sync-external-store: "npm:^1.7.0"
   peerDependencies:
     "@types/react": ^18.0.0
     react: ^18.0.0
@@ -3097,10 +3093,8 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
-    "@types/use-sync-external-store": "npm:^1.7.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    use-sync-external-store: "npm:^1.7.0"
   peerDependencies:
     "@tanstack/history": ^1.131.2
     "@tanstack/react-router": 1.131.2
@@ -3135,12 +3129,10 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
-    "@types/use-sync-external-store": "npm:^1.7.0"
     lodash: "npm:^4.17.21"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
-    use-sync-external-store: "npm:^1.7.0"
     zod: "npm:^4.0.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
@@ -3269,12 +3261,10 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
-    "@types/use-sync-external-store": "npm:^1.7.0"
     history: "npm:^5.3.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
-    use-sync-external-store: "npm:^1.7.0"
     zod: "npm:^4.0.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
@@ -3308,7 +3298,6 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@types/jest": "npm:*"
     "@types/react": "npm:^18.0.0"
-    "@types/use-sync-external-store": "npm:^1.7.0"
     "@types/zen-observable": "npm:^0.8.0"
     i18next: "npm:^22.4.15"
     lodash: "npm:^4.17.21"
@@ -3317,7 +3306,6 @@ __metadata:
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
-    use-sync-external-store: "npm:^1.7.0"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   peerDependencies:
@@ -3652,7 +3640,6 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
-    "@types/use-sync-external-store": "npm:^1.7.0"
     i18next: "npm:^22.4.15"
     lodash: "npm:^4.17.21"
     motion: "npm:^12.0.0"
@@ -3664,7 +3651,6 @@ __metadata:
     react-router-dom: "npm:^6.30.2"
     react-stately: "npm:~3.51.0"
     react-use: "npm:^17.2.4"
-    use-sync-external-store: "npm:^1.7.0"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^4.0.0"
   peerDependencies:
@@ -5008,7 +4994,6 @@ __metadata:
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/pluralize": "npm:^0.0.33"
     "@types/react": "npm:^18.0.0"
-    "@types/use-sync-external-store": "npm:^1.0.0"
     classnames: "npm:^2.3.1"
     csv-stringify: "npm:^5.6.5"
     dataloader: "npm:^2.0.0"
@@ -5020,7 +5005,6 @@ __metadata:
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
     swr: "npm:^2.2.5"
-    use-sync-external-store: "npm:^1.4.0"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^4.0.0"
   peerDependencies:
@@ -7589,7 +7573,6 @@ __metadata:
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
     "@types/react-dom": "npm:^18.0.0"
-    "@types/use-sync-external-store": "npm:^1.0.0"
     clsx: "npm:^2.1.1"
     eslint-plugin-storybook: "npm:^10.4.0"
     glob: "npm:^14.0.0"
@@ -7602,7 +7585,6 @@ __metadata:
     react-router-dom: "npm:^6.30.2"
     react-stately: "npm:~3.51.0"
     storybook: "npm:^10.4.0"
-    use-sync-external-store: "npm:^1.4.0"
   peerDependencies:
     "@types/react": ^18.0.0
     react: ^18.0.0
@@ -9970,10 +9952,8 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
-    "@types/use-sync-external-store": "npm:^1.7.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
-    use-sync-external-store: "npm:^1.7.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -20202,7 +20182,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/use-sync-external-store@npm:^1.0.0, @types/use-sync-external-store@npm:^1.7.0":
+"@types/use-sync-external-store@npm:^1.7.0":
   version: 1.7.0
   resolution: "@types/use-sync-external-store@npm:1.7.0"
   checksum: 10/0085883064c1526c5e06a5ec4d259d88a9e15a615888eb22fb496285e6bbdc4077fdc47acd6f17c3f2f7803d3911faefbd317f34ed38de5a5867a2488e7c80e5
