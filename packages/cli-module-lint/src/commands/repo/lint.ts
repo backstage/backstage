@@ -122,13 +122,16 @@ export default async ({ args, info }: CliCommandContext) => {
   if (useSuccessCache) {
     // The cache keys depend on the lockfile, so without one there is no cache
     const packageManager = await detectPackageManager();
+    let lockfile: PackageManagerLockfile | undefined;
     try {
-      const lockfile = await packageManager.loadLockfile();
-      cacheContext = { entries: await cache.read(), lockfile };
+      lockfile = await packageManager.loadLockfile();
     } catch (error) {
       console.warn(
         `Failed to read ${packageManager.lockfileName()}, linting without the success cache, ${error}`,
       );
+    }
+    if (lockfile) {
+      cacheContext = { entries: await cache.read(), lockfile };
     }
   }
 
