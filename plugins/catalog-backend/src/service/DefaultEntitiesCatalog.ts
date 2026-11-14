@@ -58,6 +58,11 @@ import {
 import { entityFilterToFilterPredicate } from './request/entityFilterToFilterPredicate';
 import { processRawEntitiesResult } from './response';
 
+/**
+ * The largest limit at which a page is matched as one that can stop early,
+ * see `request/longInLists.ts`.
+ */
+const SMALL_PAGE_LIMIT = 100;
 const DEFAULT_LIMIT = 200;
 
 function parsePagination(input?: EntityPagination): EntityPagination {
@@ -361,6 +366,9 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           targetQuery: query,
           onEntityIdField: 'final_entities.entity_id',
           knex: this.database,
+          // The refs already pick the rows, so matching long lists as whole
+          // sets would only add work
+          matchLongInListsPerRow: true,
         });
       }
 
@@ -419,6 +427,10 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           targetQuery: q,
           onEntityIdField: 'final_entities.entity_id',
           knex: this.database,
+          // A small page can stop early, so long lists that are not direct
+          // conditions are cheaper to probe per row there. The count has no
+          // limit and reads every match, so it is never a small page.
+          smallPage: !options?.asSet && limit <= SMALL_PAGE_LIMIT,
         };
         if (options?.asSet && this.useSetFilter(filter)) {
           applySetEntityFilterToQuery(filterOptions);
@@ -426,11 +438,20 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
           applyEntityFilterToQuery(filterOptions);
         }
       };
-      if (cursor.filter) {
-        applyFilter(entityFilterToFilterPredicate(cursor.filter));
-      }
-      if (cursor.query) {
-        applyFilter(cursor.query);
+      // Cursors of permissioned requests carry the permission filter and the
+      // request filter separately. They are applied as one filter, the same
+      // way the first page combines them, since how a long `$in` list is
+      // matched depends on its siblings (see `request/longInLists.ts`).
+      const cursorFilters = [
+        ...(cursor.filter
+          ? [entityFilterToFilterPredicate(cursor.filter)]
+          : []),
+        ...(cursor.query ? [cursor.query] : []),
+      ];
+      if (cursorFilters.length === 1) {
+        applyFilter(cursorFilters[0]);
+      } else if (cursorFilters.length > 1) {
+        applyFilter({ $all: cursorFilters });
       }
 
       if (normalizedFullTextFilterTerm) {

@@ -22,7 +22,11 @@ import {
 } from '@material-ui/core/styles';
 import { ReactNode } from 'react';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link ItemCardGrid} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type ItemCardGridClassKey = 'root';
 
 const styles = (theme: Theme) =>
@@ -37,7 +41,11 @@ const styles = (theme: Theme) =>
 
 const useStyles = makeStyles(styles, { name: 'BackstageItemCardGrid' });
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link ItemCardGrid} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
   /**
    * The Card items of the grid.
@@ -60,6 +68,8 @@ export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
  * minimum size of the cells to fit the content better.
  *
  * @public
+ * @deprecated Use `Grid.Root` from `@backstage/ui` or CSS grid instead. Configure
+ * responsive columns, gaps, and equal row heights to suit your cards.
  */
 export function ItemCardGrid(props: ItemCardGridProps) {
   const { children, ...otherProps } = props;

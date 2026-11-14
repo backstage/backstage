@@ -39,6 +39,13 @@ export interface Config {
         clientId?: string;
         /** @visibility secret */
         clientSecret?: string;
+        /**
+         * PEM-encoded client certificate including its private key.
+         * @visibility secret
+         */
+        clientCertificate?: string;
+        /** Path to a PEM-encoded client certificate file including its private key. */
+        clientCertificatePath?: string;
         tenantId?: string;
         /** @visibility secret */
         personalAccessToken?: string;

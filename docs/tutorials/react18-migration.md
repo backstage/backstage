@@ -10,7 +10,8 @@ This guide has been updated to include steps for removing support for React 16, 
 
 :::
 
-The Backstage core libraries and plugins are compatible with all versions of React from v17 to v18. This means that you can migrate projects at your own pace. We do however encourage you to do so sooner rather than later, both to keep up with the evolving ecosystem, but also because React 18 brings performance improvements, in particular in tests.
+Starting with Backstage 1.57, most frontend packages require React 18. For details,
+including the old frontend system, see the [frontend system migration notes](../frontend-system/architecture/60-migrations.md#157).
 
 ## Migration
 

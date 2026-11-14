@@ -27,6 +27,7 @@ import { coreComponentsTranslationRef } from '../../translation';
  * Properties for {@link AlertDisplay}
  *
  * @public
+ * @deprecated Legacy alert display props. See {@link AlertDisplay} for migration guidance.
  */
 export type AlertDisplayProps = {
   anchorOrigin?: {
@@ -40,6 +41,10 @@ export type AlertDisplayProps = {
  * Displays alerts from {@link @backstage/core-plugin-api#AlertApi}
  *
  * @public
+ * @deprecated Legacy alert display, superseded for new frontend development.
+ * The new frontend system app already supplies an alert/toast display through
+ * its `app-root-element:app/alert-display` extension. Rely on that display rather
+ * than mounting another one. There is no replacement component to import.
  * @remarks
  *
  * Shown as SnackBar at the center top of the page by default. Configurable with props.

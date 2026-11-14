@@ -33,6 +33,26 @@ import { z } from 'zod/v3';
 import { JsonObject, JsonPrimitive } from '@backstage/types';
 import { get, toPath } from 'lodash';
 
+/**
+ * Matches action ID segments belonging to the source code hosting
+ * integrations whose identifiers are accepted as either numbers or the
+ * equivalent numeric strings.
+ *
+ * When adding a scaffolder backend module that registers actions for another
+ * integration, decide whether its identifiers have this property and extend
+ * this pattern and `INTEGRATION_IDENTIFIER_PROPERTIES` accordingly. Modules
+ * that are not accounted for are caught by the classification test in
+ * `rules.test.ts`.
+ */
+export const INTEGRATION_ACTION_SEGMENT_PATTERN =
+  /^(?:gitlab|github|bitbucket(?:Cloud|Server)?)$/u;
+const INTEGRATION_IDENTIFIER_PROPERTIES: readonly string[] = [
+  'owner',
+  'repoName',
+  'projectId',
+  'repoUrl',
+];
+
 export const createTemplatePermissionRule = makeCreatePermissionRule<
   TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
   {},
@@ -76,23 +96,28 @@ export const hasActionId = createActionPermissionRule({
 
 export const hasBooleanProperty = buildHasProperty({
   name: 'HAS_BOOLEAN_PROPERTY',
+  valueKind: 'boolean',
   valueSchema: z.boolean(),
 });
 export const hasNumberProperty = buildHasProperty({
   name: 'HAS_NUMBER_PROPERTY',
+  valueKind: 'number',
   valueSchema: z.number(),
 });
 export const hasStringProperty = buildHasProperty({
   name: 'HAS_STRING_PROPERTY',
+  valueKind: 'string',
   valueSchema: z.string(),
 });
 
 function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
   name,
+  valueKind,
   valueSchema,
   validateProperty = true,
 }: {
   name: string;
+  valueKind: 'boolean' | 'number' | 'string';
   valueSchema: Schema;
   validateProperty?: boolean;
 }) {
@@ -109,7 +134,33 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
         .describe(`Value of the given property to match on`),
     }) as unknown as z.ZodType<{ key: string; value?: z.infer<Schema> }>,
     apply: (resource, { key, value }) => {
-      const foundValue = get(resource.input, key);
+      let foundValue = get(resource.input, key);
+      const property = toPath(key).join('.');
+      const actionSegments = resource.action.split(':');
+      const integration = actionSegments.find(segment =>
+        INTEGRATION_ACTION_SEGMENT_PATTERN.test(segment),
+      );
+      const isIntegrationProperty =
+        integration !== undefined &&
+        (INTEGRATION_IDENTIFIER_PROPERTIES.includes(property) ||
+          (actionSegments.includes('group') && property === 'path'));
+
+      // Some integration identifiers, such as GitLab project and group IDs,
+      // are accepted as either numbers or the equivalent numeric strings, and
+      // the integration treats the two forms as the same entity. Normalize
+      // the input value to the rule's type for those properties so that
+      // policies match regardless of which form the input uses.
+      if (isIntegrationProperty) {
+        if (
+          valueKind === 'number' &&
+          typeof foundValue === 'string' &&
+          /^\d+$/u.test(foundValue)
+        ) {
+          foundValue = Number(foundValue);
+        } else if (valueKind === 'string' && typeof foundValue === 'number') {
+          foundValue = String(foundValue);
+        }
+      }
 
       if (validateProperty && !valueSchema.safeParse(foundValue).success) {
         return false;
@@ -117,19 +168,13 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
       if (value !== undefined) {
         if (valueSchema.safeParse(value).success) {
           if (typeof value === 'string' && typeof foundValue === 'string') {
-            const property = toPath(key).join('.');
-            const actionSegments = resource.action.split(':');
-            const integration = actionSegments.find(segment =>
-              /^(?:gitlab|github|bitbucket(?:Cloud|Server)?)$/u.test(segment),
-            );
-
-            if (
-              integration &&
-              (['owner', 'repoName', 'projectId', 'repoUrl'].includes(
-                property,
-              ) ||
-                (actionSegments.includes('group') && property === 'path'))
-            ) {
+            if (isIntegrationProperty) {
+              if (/^\d+$/u.test(value) && /^\d+$/u.test(foundValue)) {
+                // Digit-only identifiers may carry leading zeros; the
+                // integration resolves them to the same entity as the
+                // unpadded form.
+                return Number(value) === Number(foundValue);
+              }
               return value.toLowerCase() === foundValue.toLowerCase();
             }
           }
