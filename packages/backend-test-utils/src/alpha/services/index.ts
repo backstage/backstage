@@ -18,6 +18,7 @@ export { actionsRegistryServiceMock } from './ActionsRegistryServiceMock';
 export { MockActionsRegistry } from './MockActionsRegistry';
 export { actionsServiceMock } from './ActionsServiceMock';
 export { metricsServiceMock } from './MetricsServiceMock';
+export { telemetryRegistryServiceMock } from './TelemetryRegistryServiceMock';
 export {
   tracingServiceMock,
   type TracingServiceMock,

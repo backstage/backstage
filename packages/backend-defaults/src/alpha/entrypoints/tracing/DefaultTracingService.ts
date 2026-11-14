@@ -38,6 +38,7 @@ import {
   TracingServiceSpanKind,
   TracingServiceSpanOptions,
   TracingServiceSpanStatus,
+  TelemetryRegistryService,
 } from '@backstage/backend-plugin-api/alpha';
 
 /**
@@ -52,6 +53,10 @@ export interface DefaultTracingServiceOptions {
   pluginId: string;
   captureEndUser: boolean;
   httpAuth: HttpAuthService;
+  /**
+   * The registry that started spans are recorded in.
+   */
+  telemetryRegistry?: Pick<TelemetryRegistryService, 'registerSpan'>;
 }
 
 // `TracingServiceContext` is an opaque handle for an OTel `Context`. Internally
@@ -86,6 +91,10 @@ export class DefaultTracingService implements TracingService {
   private readonly pluginId: string;
   private readonly captureEndUser: boolean;
   private readonly httpAuth: HttpAuthService;
+  private readonly telemetryRegistry?: Pick<
+    TelemetryRegistryService,
+    'registerSpan'
+  >;
 
   readonly context: TracingServiceContextAPI = {
     active: () => fromOtelContext(otelContext.active()),
@@ -120,6 +129,7 @@ export class DefaultTracingService implements TracingService {
     this.pluginId = opts.pluginId;
     this.captureEndUser = opts.captureEndUser;
     this.httpAuth = opts.httpAuth;
+    this.telemetryRegistry = opts.telemetryRegistry;
   }
 
   static create(opts: DefaultTracingServiceOptions): TracingService {
@@ -149,6 +159,12 @@ export class DefaultTracingService implements TracingService {
       typeof optionsOrFn === 'function'
         ? [{}, optionsOrFn]
         : [optionsOrFn, maybeFn!];
+
+    this.telemetryRegistry?.registerSpan({
+      pluginId: this.pluginId,
+      name,
+      kind: options.kind ?? 'internal',
+    });
 
     let credentials = options.credentials;
     if (!credentials && options.request) {

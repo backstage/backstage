@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { tracingServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  telemetryRegistryServiceRef,
+  tracingServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
 import {
   coreServices,
   createServiceFactory,
@@ -32,8 +35,9 @@ export const tracingServiceFactory = createServiceFactory({
     config: coreServices.rootConfig,
     pluginMetadata: coreServices.pluginMetadata,
     httpAuth: coreServices.httpAuth,
+    telemetryRegistry: telemetryRegistryServiceRef,
   },
-  factory: ({ config, pluginMetadata, httpAuth }) => {
+  factory: ({ config, pluginMetadata, httpAuth, telemetryRegistry }) => {
     const pluginId = pluginMetadata.getId();
 
     const tracerConfig = config.getOptionalConfig(
@@ -54,6 +58,7 @@ export const tracingServiceFactory = createServiceFactory({
       pluginId,
       captureEndUser,
       httpAuth,
+      telemetryRegistry,
     });
   },
 });

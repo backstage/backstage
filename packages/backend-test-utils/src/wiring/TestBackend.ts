@@ -45,6 +45,7 @@ import {
   actionsRegistryServiceMock,
   actionsServiceMock,
   metricsServiceMock,
+  telemetryRegistryServiceMock,
   tracingServiceMock,
 } from '../alpha/services';
 
@@ -97,6 +98,7 @@ export const defaultServiceFactories = [
   actionsRegistryServiceMock.factory(),
   actionsServiceMock.factory(),
   metricsServiceMock.factory(),
+  telemetryRegistryServiceMock.factory(),
   tracingServiceMock.factory(),
 ];
 

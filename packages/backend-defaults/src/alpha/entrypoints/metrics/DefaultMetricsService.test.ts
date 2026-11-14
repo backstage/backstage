@@ -114,4 +114,52 @@ describe('DefaultMetricsService', () => {
       expect(gauge.addCallback).toBeDefined();
     });
   });
+
+  describe('telemetry registry', () => {
+    it('records each created instrument in the registry', () => {
+      const telemetryRegistry = {
+        registerMetric: jest.fn(),
+        registerSpan: jest.fn(),
+        listMetrics: jest.fn(),
+        listSpans: jest.fn(),
+      };
+      const service = DefaultMetricsService.create({
+        name: 'test',
+        pluginId: 'my-plugin',
+        telemetryRegistry,
+      });
+
+      service.createCounter('c', { description: 'A counter', unit: '{req}' });
+      service.createUpDownCounter('udc');
+      service.createHistogram('h', { unit: 'ms' });
+      service.createGauge('g');
+      service.createObservableCounter('oc');
+      service.createObservableUpDownCounter('oudc');
+      service.createObservableGauge('og');
+
+      expect(telemetryRegistry.registerMetric.mock.calls).toEqual([
+        [
+          {
+            pluginId: 'my-plugin',
+            name: 'c',
+            type: 'counter',
+            description: 'A counter',
+            unit: '{req}',
+          },
+        ],
+        [{ pluginId: 'my-plugin', name: 'udc', type: 'upDownCounter' }],
+        [{ pluginId: 'my-plugin', name: 'h', type: 'histogram', unit: 'ms' }],
+        [{ pluginId: 'my-plugin', name: 'g', type: 'gauge' }],
+        [{ pluginId: 'my-plugin', name: 'oc', type: 'observableCounter' }],
+        [
+          {
+            pluginId: 'my-plugin',
+            name: 'oudc',
+            type: 'observableUpDownCounter',
+          },
+        ],
+        [{ pluginId: 'my-plugin', name: 'og', type: 'observableGauge' }],
+      ]);
+    });
+  });
 });

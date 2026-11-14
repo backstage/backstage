@@ -18,6 +18,7 @@ import {
   ServiceFactoryTester,
 } from '@backstage/backend-test-utils';
 import { metricsServiceFactory } from './metricsServiceFactory';
+import { telemetryRegistryServiceFactory } from '../telemetryRegistry';
 import { DefaultMetricsService } from './DefaultMetricsService';
 
 describe('metricsServiceFactory', () => {
@@ -34,6 +35,7 @@ describe('metricsServiceFactory', () => {
   const defaultServices = [
     mockServices.rootConfig.factory(),
     metricsServiceFactory,
+    telemetryRegistryServiceFactory,
   ];
 
   it('should use backstage-plugin-{pluginId} as meter name when no config is set', async () => {
@@ -41,11 +43,13 @@ describe('metricsServiceFactory', () => {
       dependencies: defaultServices,
     }).getSubject('my-plugin');
 
-    expect(createSpy).toHaveBeenCalledWith({
-      name: 'backstage-plugin-my-plugin',
-      version: undefined,
-      schemaUrl: undefined,
-    });
+    expect(createSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'backstage-plugin-my-plugin',
+        version: undefined,
+        schemaUrl: undefined,
+      }),
+    );
   });
 
   it('should use custom name from config', async () => {
@@ -67,14 +71,17 @@ describe('metricsServiceFactory', () => {
           },
         }),
         metricsServiceFactory,
+        telemetryRegistryServiceFactory,
       ],
     }).getSubject('my-plugin');
 
-    expect(createSpy).toHaveBeenCalledWith({
-      name: 'custom-metrics-name',
-      version: undefined,
-      schemaUrl: undefined,
-    });
+    expect(createSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'custom-metrics-name',
+        version: undefined,
+        schemaUrl: undefined,
+      }),
+    );
   });
 
   it('should accept version and schemaUrl from config', async () => {
@@ -98,14 +105,17 @@ describe('metricsServiceFactory', () => {
           },
         }),
         metricsServiceFactory,
+        telemetryRegistryServiceFactory,
       ],
     }).getSubject('my-plugin');
 
-    expect(createSpy).toHaveBeenCalledWith({
-      name: 'my-plugin-metrics',
-      version: '1.2.3',
-      schemaUrl: 'https://example.com/schema',
-    });
+    expect(createSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'my-plugin-metrics',
+        version: '1.2.3',
+        schemaUrl: 'https://example.com/schema',
+      }),
+    );
   });
 
   it('should implement the full MetricsService interface', async () => {
@@ -113,11 +123,13 @@ describe('metricsServiceFactory', () => {
       dependencies: defaultServices,
     }).getSubject('test-plugin');
 
-    expect(createSpy).toHaveBeenCalledWith({
-      name: 'backstage-plugin-test-plugin',
-      version: undefined,
-      schemaUrl: undefined,
-    });
+    expect(createSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'backstage-plugin-test-plugin',
+        version: undefined,
+        schemaUrl: undefined,
+      }),
+    );
 
     expect(subject.createCounter).toBeDefined();
     expect(subject.createUpDownCounter).toBeDefined();

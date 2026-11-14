@@ -11,6 +11,8 @@ The Tracing Service provides a unified interface for emitting application-level 
 This service is currently in **alpha** and is imported from `@backstage/backend-plugin-api/alpha`. The API may change in future releases.
 :::
 
+Each span name you start through this service is also recorded in the [Telemetry Registry Service](./telemetry-registry.md), so tools can list the telemetry your backend produces.
+
 ## Setting up OpenTelemetry
 
 The Tracing Service does **not** configure the OpenTelemetry SDK itself. You are responsible for initializing the OpenTelemetry Node SDK — including exporters, samplers, and resource attributes — before starting the Backstage backend. Follow the [tutorial](../../tutorials/setup-opentelemetry.md) for more information.

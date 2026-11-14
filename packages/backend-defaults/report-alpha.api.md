@@ -8,6 +8,7 @@ import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 import { ConnectionsService } from '@backstage/connections';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { TelemetryRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { TracingService } from '@backstage/backend-plugin-api/alpha';
 
 // @public (undocumented)
@@ -35,6 +36,13 @@ export const connectionsServiceFactory: ServiceFactory<
 export const metricsServiceFactory: ServiceFactory<
   MetricsService,
   'plugin',
+  'singleton'
+>;
+
+// @alpha
+export const telemetryRegistryServiceFactory: ServiceFactory<
+  TelemetryRegistryService,
+  'root',
   'singleton'
 >;
 
