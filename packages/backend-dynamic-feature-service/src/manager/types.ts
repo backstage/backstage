@@ -15,8 +15,7 @@
  */
 
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { PackagePlatform, PackageRole } from '@backstage/cli-node';
-import { ScannedPluginPackage } from '../scanner';
+import { PackagePlatform, PackageRole, ScannedPluginPackage } from '../scanner';
 
 /**
  * @public

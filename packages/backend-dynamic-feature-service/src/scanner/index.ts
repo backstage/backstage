@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export type { ScannedPluginManifest, ScannedPluginPackage } from './types';
+export type {
+  BackstagePackageJson,
+  PackagePlatform,
+  PackageRole,
+  ScannedPluginManifest,
+  ScannedPluginPackage,
+} from './types';

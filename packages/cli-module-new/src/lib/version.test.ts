@@ -15,7 +15,11 @@
  */
 
 import { packageVersions, createPackageVersionProvider } from './version';
-import { Lockfile } from '@backstage/cli-node';
+import { YarnLockfile } from '@backstage/cli-node';
+import type {
+  LockfileEntry,
+  PackageManagerLockfile,
+} from '@backstage/cli-node/alpha';
 import corePluginApiPkg from '@backstage/core-plugin-api/package.json';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import fs from 'node:fs';
@@ -85,7 +89,7 @@ describe('createPackageVersionProvider', () => {
     });
 
     const lockfilePath = mockDir.resolve('yarn.lock');
-    const lockfile = await Lockfile.load(lockfilePath);
+    const lockfile = await YarnLockfile.load(lockfilePath);
     const provider = createPackageVersionProvider(lockfile);
 
     expect(provider('a', '0.1.5')).toBe('^0.1.0');
@@ -145,7 +149,7 @@ describe('createPackageVersionProvider', () => {
 `,
     });
 
-    const lockfile = await Lockfile.load(mockDir.resolve('yarn.lock'));
+    const lockfile = await YarnLockfile.load(mockDir.resolve('yarn.lock'));
     const provider = createPackageVersionProvider(lockfile);
 
     // Newer majors are not picked up
@@ -171,6 +175,85 @@ describe('createPackageVersionProvider', () => {
     expect(provider('f', '17.2.4')).toBe('^17.2.4');
   });
 
+  it('should widen the exact ranges of transitive packages, which pnpm lists under their version', async () => {
+    const entries: Record<string, LockfileEntry[]> = {
+      '@backstage/errors': [
+        { range: '1.0.0', version: '1.0.0', transitive: true },
+      ],
+      express: [
+        { range: '4.21.2', version: '4.21.2', transitive: true },
+        { range: '^4.17.1', version: '4.21.2' },
+      ],
+      zod: [{ range: '3.25.76', version: '3.25.76', transitive: true }],
+      '@material-ui/lab': [
+        {
+          range: '4.0.0-alpha.61',
+          version: '4.0.0-alpha.61',
+          transitive: true,
+        },
+      ],
+      '@backstage/plugin-catalog-node': [
+        {
+          range: packageVersions['@backstage/plugin-catalog-node'],
+          version: packageVersions['@backstage/plugin-catalog-node'],
+          transitive: true,
+        },
+      ],
+      // A version that a package.json pins on purpose
+      react: [{ range: '18.2.0', version: '18.2.0' }],
+    };
+    const lockfile = {
+      get: (name: string) => entries[name],
+    } as unknown as PackageManagerLockfile;
+
+    // The range keeps the installed version, rather than the one of the CLI
+    const provider = createPackageVersionProvider(lockfile);
+    expect(provider('@backstage/errors', '1.0.0')).toBe('^1.0.0');
+    expect(provider('express', '4.17.1')).toBe('^4.17.1');
+    expect(provider('zod', '3.25.76')).toBe('^3.25.76');
+    expect(provider('zod', '3.20.0')).toBe('^3.25.76');
+    // A prerelease hint stays pinned, while the version of the CLI is widened
+    // even when it is a prerelease, like it is without a lockfile entry
+    expect(provider('@material-ui/lab', '4.0.0-alpha.61')).toBe(
+      '4.0.0-alpha.61',
+    );
+    expect(provider('@backstage/plugin-catalog-node')).toBe(
+      `^${packageVersions['@backstage/plugin-catalog-node']}`,
+    );
+    // An exact range that a package.json declares stays exact
+    expect(provider('react', '18.2.0')).toBe('18.2.0');
+  });
+
+  it('should use catalog: for packages in the default catalog', async () => {
+    mockDir.setContent({
+      'yarn.lock': `${HEADER}
+"@internal/library@workspace:packages/internal":
+  version "0.0.0-use.local"
+
+"react@^18.0.0":
+  version "18.0.0"
+`,
+    });
+
+    const lockfile = await YarnLockfile.load(mockDir.resolve('yarn.lock'));
+    const provider = createPackageVersionProvider(lockfile, {
+      defaultCatalog: {
+        '@backstage/core-plugin-api': '^1.0.0',
+        '@internal/library': '^1.0.0',
+        react: '^18.0.0',
+      },
+    });
+
+    expect(provider('@backstage/core-plugin-api')).toBe('catalog:');
+    expect(provider('react', '18.0.0')).toBe('catalog:');
+    // Workspace packages are still linked, and other packages get ranges
+    expect(provider('@internal/library')).toBe('workspace:^');
+    expect(provider('@backstage/frontend-dev-utils')).toBe(
+      `^${packageVersions['@backstage/frontend-dev-utils']}`,
+    );
+    expect(provider('unknown-package')).toBeUndefined();
+  });
+
   describe('with backstage protocol options', () => {
     it('should return backstage:^ for @backstage packages when preferBackstageProtocol is true', async () => {
       mockDir.setContent({
@@ -181,7 +264,7 @@ describe('createPackageVersionProvider', () => {
       });
 
       const lockfilePath = mockDir.resolve('yarn.lock');
-      const lockfile = await Lockfile.load(lockfilePath);
+      const lockfile = await YarnLockfile.load(lockfilePath);
       const provider = createPackageVersionProvider(lockfile, {
         preferBackstageProtocol: true,
       });
@@ -205,7 +288,7 @@ describe('createPackageVersionProvider', () => {
       });
 
       const lockfilePath = mockDir.resolve('yarn.lock');
-      const lockfile = await Lockfile.load(lockfilePath);
+      const lockfile = await YarnLockfile.load(lockfilePath);
       const provider = createPackageVersionProvider(lockfile, {
         preferBackstageProtocol: true,
       });
@@ -230,7 +313,7 @@ describe('createPackageVersionProvider', () => {
       });
 
       const lockfilePath = mockDir.resolve('yarn.lock');
-      const lockfile = await Lockfile.load(lockfilePath);
+      const lockfile = await YarnLockfile.load(lockfilePath);
       const provider = createPackageVersionProvider(lockfile, {
         preferBackstageProtocol: true,
       });
@@ -251,7 +334,7 @@ describe('createPackageVersionProvider', () => {
       });
 
       const lockfilePath = mockDir.resolve('yarn.lock');
-      const lockfile = await Lockfile.load(lockfilePath);
+      const lockfile = await YarnLockfile.load(lockfilePath);
       const provider = createPackageVersionProvider(lockfile, {
         preferBackstageProtocol: false,
       });
@@ -270,7 +353,7 @@ describe('createPackageVersionProvider', () => {
       });
 
       const lockfilePath = mockDir.resolve('yarn.lock');
-      const lockfile = await Lockfile.load(lockfilePath);
+      const lockfile = await YarnLockfile.load(lockfilePath);
       const provider = createPackageVersionProvider(lockfile);
 
       expect(provider('@backstage/core-plugin-api')).toBe('*');
