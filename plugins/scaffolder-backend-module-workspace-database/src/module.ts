@@ -22,10 +22,7 @@ import {
 import { scaffolderWorkspaceProviderExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import { DatabaseWorkspaceProvider } from './provider';
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-scaffolder-backend-module-workspace-database',
-  'migrations',
-);
+const migrationsDir = resolvePackagePath(import.meta.url, 'migrations');
 const migrationsTable = 'scaffolder_workspace_database_migrations';
 
 /**

@@ -24,10 +24,7 @@ import { Knex } from 'knex';
 import pLimit from 'p-limit';
 import { UserSettingsStore, type UserSetting } from './UserSettingsStore';
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-user-settings-backend',
-  'migrations',
-);
+const migrationsDir = resolvePackagePath(import.meta.url, 'migrations');
 
 const dbLimit = pLimit(10);
 

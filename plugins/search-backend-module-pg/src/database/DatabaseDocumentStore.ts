@@ -27,10 +27,7 @@ import {
 } from './types';
 import { queryPostgresMajorVersion } from './util';
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-search-backend-module-pg',
-  'migrations',
-);
+const migrationsDir = resolvePackagePath(import.meta.url, 'migrations');
 
 function quoteHeadlineOption(value: string | undefined): string {
   return `"${String(value).replace(/"/g, '""')}"`;

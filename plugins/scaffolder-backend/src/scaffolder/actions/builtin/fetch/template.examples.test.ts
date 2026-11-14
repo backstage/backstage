@@ -43,7 +43,7 @@ type FetchTemplateInput = ReturnType<
 
 const aBinaryFile = fs.readFileSync(
   resolvePackagePath(
-    '@backstage/plugin-scaffolder-backend',
+    import.meta.url,
     'fixtures/test-nested-template/public/react-logo192.png',
   ),
 );
