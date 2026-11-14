@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import type { LockfileDiff } from '@backstage/cli-node';
+
 /**
- * An entry for a single package in a {@link Lockfile}.
+ * An entry for a single package in a {@link PackageManagerLockfile}.
  *
- * @public
+ * @alpha
  */
 export type LockfileEntry = {
   range: string;
@@ -25,32 +27,11 @@ export type LockfileEntry = {
 };
 
 /**
- * An entry for a single difference between two {@link Lockfile}s.
- *
- * @public
- */
-export type LockfileDiffEntry = {
-  name: string;
-  range: string;
-};
-
-/**
- * Represents the difference between two {@link Lockfile}s.
- *
- * @public
- */
-export type LockfileDiff = {
-  added: LockfileDiffEntry[];
-  changed: LockfileDiffEntry[];
-  removed: LockfileDiffEntry[];
-};
-
-/**
  * Represents the lockfile for a package manager.
  *
- * @public
+ * @alpha
  */
-export interface Lockfile {
+export interface PackageManagerLockfile {
   /** Get the entries for a single package in the lockfile */
   get(name: string): LockfileEntry[] | undefined;
 
@@ -67,8 +48,12 @@ export interface Lockfile {
   /**
    * Diff with another lockfile, returning entries that have been
    * added, changed, and removed compared to the other lockfile.
+   *
+   * @remarks
+   *
+   * Both lockfiles must come from the same package manager.
    */
-  diff(otherLockfile: Lockfile): LockfileDiff;
+  diff(otherLockfile: PackageManagerLockfile): LockfileDiff;
 
   /**
    * Generates a sha1 hex hash of the dependency graph for a package.
