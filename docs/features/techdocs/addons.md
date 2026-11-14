@@ -96,7 +96,7 @@ discover available Addons, we've compiled a list of them here:
 | [`techDocsTextSizeAddonModule`](https://backstage.io/api/stable/variables/_backstage_plugin-techdocs-module-addons-contrib.plugins_techdocs-module-addons-contrib_src_alpha.techDocsTextSizeAddonModule.html)                         | `@backstage/plugin-techdocs-module-addons-contrib/alpha` | This TechDocs addon allows users to customize text size on documentation pages, they can select how much they want to increase or decrease the font size via slider or buttons. The default value for font size is 100% and this setting is kept in the browser's local storage whenever it is changed.                                                                                                                           |
 | [`techDocsLightBoxAddonModule`](https://backstage.io/api/stable/variables/_backstage_plugin-techdocs-module-addons-contrib.plugins_techdocs-module-addons-contrib_src_alpha.techDocsLightBoxAddonModule.html)                         | `@backstage/plugin-techdocs-module-addons-contrib/alpha` | This TechDocs addon allows users to open images in a light-box on documentation pages, they can navigate between images if there are several on one page. The image size of the light-box image is the same as the image size on the document page. When clicking on the zoom icon it zooms the image to fit in the screen (similar to `background-size: contain`). Images inside links are ignored to avoid blocking navigation. |
 
-Got an Addon to contribute? Feel free to add a row above!
+Got an Addon to contribute? Make sure to add it to the [Plugin Directory](https://backstage.io/plugins)!
 
 ## Creating an Addon
 
