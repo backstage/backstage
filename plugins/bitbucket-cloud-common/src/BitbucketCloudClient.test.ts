@@ -17,7 +17,10 @@
 import { BitbucketCloudIntegrationConfig } from '@backstage/integration';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { BitbucketCloudClient } from './BitbucketCloudClient';
+import {
+  BitbucketCloudApiError,
+  BitbucketCloudClient,
+} from './BitbucketCloudClient';
 import { Models } from './models';
 
 const server = setupServer();
@@ -240,10 +243,129 @@ describe('BitbucketCloudClient', () => {
     );
 
     const pages = client.searchWorkspaceCode('ws', { search_term: 'x' });
+    const error = await pages.next().catch((caught: unknown) => caught);
 
-    await expect(pages.next()).rejects.toThrow(
+    expect(error).toBeInstanceOf(BitbucketCloudApiError);
+    expect(error).toMatchObject({
+      name: 'BitbucketCloudApiError',
+      status: 403,
+    });
+    expect((error as Error).message).toContain(
       'Unexpected response for POST https://api.bitbucket.org/2.0/workspaces/ws/codesearch. Expected 200 but got 403',
     );
+  });
+
+  it('repositorySourceFileExists reads file metadata and treats 404 as missing', async () => {
+    const urls: string[] = [];
+    server.use(
+      http.get(
+        'https://api.bitbucket.org/2.0/repositories/ws/repo/src/main/catalog-info.yaml',
+        ({ request }) => {
+          urls.push(request.url);
+          if (
+            request.headers.get('authorization') !==
+            'Basic dGVzdC11c2VyOnRlc3QtcHc='
+          ) {
+            return new HttpResponse(null, { status: 401 });
+          }
+          return HttpResponse.json({
+            type: 'commit_file',
+            path: 'catalog-info.yaml',
+          });
+        },
+      ),
+      http.get(
+        'https://api.bitbucket.org/2.0/repositories/ws/repo/src/main/missing.yaml',
+        () => new HttpResponse(null, { status: 404 }),
+      ),
+      http.get(
+        'https://api.bitbucket.org/2.0/repositories/ws/repo/src/main/services',
+        () =>
+          HttpResponse.json({
+            type: 'commit_directory',
+            path: 'services',
+          }),
+      ),
+    );
+
+    await expect(
+      client.repositorySourceFileExists(
+        'ws',
+        'repo',
+        'main',
+        'catalog-info.yaml',
+      ),
+    ).resolves.toBe(true);
+    await expect(
+      client.repositorySourceFileExists('ws', 'repo', 'main', 'missing.yaml'),
+    ).resolves.toBe(false);
+    await expect(
+      client.repositorySourceFileExists('ws', 'repo', 'main', 'services'),
+    ).resolves.toBe(false);
+
+    expect(urls).toEqual([
+      'https://api.bitbucket.org/2.0/repositories/ws/repo/src/main/catalog-info.yaml?format=meta',
+    ]);
+  });
+
+  it('listRepositorySource pages a directory and stops on a missing path', async () => {
+    const urls: string[] = [];
+    server.use(
+      http.get(
+        'https://api.bitbucket.org/2.0/repositories/ws/repo/src/main/services/',
+        ({ request }) => {
+          urls.push(request.url);
+          const url = new URL(request.url);
+          if (url.searchParams.get('page') === '2') {
+            return HttpResponse.json({
+              values: [{ path: 'services/main.go', type: 'commit_file' }],
+            });
+          }
+          return HttpResponse.json({
+            values: [
+              { path: 'services/catalog-info.yaml', type: 'commit_file' },
+              { path: 'services/cmd', type: 'commit_directory' },
+            ],
+            next: 'https://api.bitbucket.org/2.0/repositories/ws/repo/src/main/services/?page=2',
+          });
+        },
+      ),
+      http.get(
+        'https://api.bitbucket.org/2.0/repositories/ws/repo/src/main/missing/',
+        () => new HttpResponse(null, { status: 404 }),
+      ),
+    );
+
+    const entries = [];
+    for await (const entry of client.listRepositorySource(
+      'ws',
+      'repo',
+      'main',
+      'services',
+    )) {
+      entries.push(entry);
+    }
+
+    expect(entries).toEqual([
+      { path: 'services/catalog-info.yaml', type: 'commit_file' },
+      { path: 'services/cmd', type: 'commit_directory' },
+      { path: 'services/main.go', type: 'commit_file' },
+    ]);
+    expect(urls).toEqual([
+      'https://api.bitbucket.org/2.0/repositories/ws/repo/src/main/services/?pagelen=100',
+      'https://api.bitbucket.org/2.0/repositories/ws/repo/src/main/services/?page=2',
+    ]);
+
+    const missing = [];
+    for await (const entry of client.listRepositorySource(
+      'ws',
+      'repo',
+      'main',
+      'missing',
+    )) {
+      missing.push(entry);
+    }
+    expect(missing).toEqual([]);
   });
 
   it('listRepositoriesByWorkspace', async () => {

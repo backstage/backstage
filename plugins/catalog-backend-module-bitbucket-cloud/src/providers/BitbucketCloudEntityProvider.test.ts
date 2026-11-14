@@ -200,10 +200,18 @@ describe('BitbucketCloudEntityProvider', () => {
     slug: string,
     projectKey: string,
     mainbranch?: string,
+    commitHash?: string,
   ) => ({
     slug,
     project: { key: projectKey },
-    ...(mainbranch ? { mainbranch: { name: mainbranch } } : {}),
+    ...(mainbranch
+      ? {
+          mainbranch: {
+            name: mainbranch,
+            ...(commitHash ? { target: { hash: commitHash } } : {}),
+          },
+        }
+      : {}),
     links: { html: { href: `https://bitbucket.org/test-ws/${slug}` } },
   });
 
@@ -225,13 +233,16 @@ describe('BitbucketCloudEntityProvider', () => {
     search: (body: any) => object[];
   }) => {
     const repositoryQueries: (string | null)[] = [];
+    const repositoryFields: (string | null)[] = [];
     const searchBodies: any[] = [];
     server.use(
       http.get(
         'https://api.bitbucket.org/2.0/repositories/test-ws',
         ({ request }) => {
-          const q = new URL(request.url).searchParams.get('q');
+          const url = new URL(request.url);
+          const q = url.searchParams.get('q');
           repositoryQueries.push(q);
+          repositoryFields.push(url.searchParams.get('fields'));
           return HttpResponse.json({ values: options.repositories(q) });
         },
       ),
@@ -249,7 +260,7 @@ describe('BitbucketCloudEntityProvider', () => {
         },
       ),
     );
-    return { repositoryQueries, searchBodies };
+    return { repositoryQueries, repositoryFields, searchBodies };
   };
 
   afterEach(() => {
@@ -933,5 +944,691 @@ describe('BitbucketCloudEntityProvider', () => {
 
     expect(catalog.refreshEntity).toHaveBeenCalledTimes(0);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+  });
+
+  const rejectCodeSearch = (status: number, bodies?: unknown[]) => {
+    server.use(
+      http.post(
+        'https://api.bitbucket.org/2.0/workspaces/test-ws/codesearch',
+        async ({ request }) => {
+          bodies?.push(await request.json());
+          return new HttpResponse(null, { status });
+        },
+      ),
+    );
+  };
+
+  // Keys are repository source paths. `true` is a file. An array is the
+  // names of the entries directly inside that directory. `''` is the root.
+  const sourceTree = (files: Record<string, true | string[]>) => {
+    const requested: string[] = [];
+    server.use(
+      http.get(
+        ({ request }) => {
+          const url = new URL(request.url);
+          return (
+            url.origin === 'https://api.bitbucket.org' &&
+            /\/2\.0\/repositories\/test-ws\/[^/]+\/src\//.test(url.pathname)
+          );
+        },
+        ({ request }) => {
+          const url = new URL(request.url);
+          requested.push(`${url.pathname}${url.search}`);
+          const match = decodeURIComponent(url.pathname).match(
+            /^\/2\.0\/repositories\/test-ws\/([^/]+)\/src\/([^/]+)\/(.*)$/,
+          );
+          if (!match) {
+            return new HttpResponse(null, { status: 404 });
+          }
+          const repo = match[1];
+          const path = match[3].replace(/\/$/, '');
+          const repoPath = `${repo}:${path}`;
+          const described = files[repoPath] ?? files[path];
+          if (url.searchParams.get('format') === 'meta') {
+            return described === true
+              ? HttpResponse.json({ type: 'commit_file', path })
+              : new HttpResponse(null, { status: 404 });
+          }
+          if (!Array.isArray(described)) {
+            return new HttpResponse(null, { status: 404 });
+          }
+          return HttpResponse.json({
+            values: described.map(entry => {
+              const child = path ? `${path}/${entry}` : entry;
+              const kind = files[`${repo}:${child}`] ?? files[child];
+              return {
+                path: child,
+                type: kind === true ? 'commit_file' : 'commit_directory',
+              };
+            }),
+          });
+        },
+      ),
+    );
+    return requested;
+  };
+
+  it.each([403, 404, 410])(
+    'discovers an exact catalog path from the source API when code search answers %s',
+    async status => {
+      const config = new ConfigReader({
+        catalog: {
+          providers: {
+            bitbucketCloud: {
+              workspace: 'test-ws',
+              catalogPath: '/catalog-info.yaml',
+              filters: {
+                projectKey: 'test-.*',
+                repoSlug: 'svc-.*',
+              },
+            },
+          },
+        },
+      });
+      const provider = BitbucketCloudEntityProvider.fromConfig(config, {
+        auth: mockServices.auth(),
+        catalog: catalogServiceMock(),
+        events: DefaultEventsService.create({ logger }),
+        logger,
+        schedule,
+      })[0];
+      const searchBodies: unknown[] = [];
+      const { repositoryFields } = mockBitbucket({
+        repositories: () => [
+          repository(
+            'svc-a',
+            'test-apis',
+            'main',
+            '1111111111111111111111111111111111111111',
+          ),
+          // excluded by the project key filter
+          repository('svc-b', 'other', 'main'),
+          // excluded by the repo slug filter
+          repository('readme', 'test-apis', 'main'),
+          repository('svc-c', 'test-other'),
+          repository(
+            'svc-d',
+            'test-apis',
+            'release/1.0',
+            '5b6c39df3196eeeb8a36684beb9a3df854a0b5f3',
+          ),
+        ],
+        search: () => [],
+      });
+      rejectCodeSearch(status, searchBodies);
+      const sourceRequests = sourceTree({
+        'svc-a:catalog-info.yaml': true,
+        'svc-d:catalog-info.yaml': true,
+      });
+
+      await provider.connect(entityProviderConnection);
+      await (schedule.getTasks()[0].fn as () => Promise<void>)();
+
+      expect(repositoryFields).toEqual([
+        'next,values.slug,values.project.key,values.mainbranch.name,values.mainbranch.target.hash,values.links.html.href',
+      ]);
+      expect(searchBodies).toEqual([
+        {
+          query: {
+            search_term: 'catalog-info.yaml',
+            filters: {
+              and: [
+                { attribute: 'path', eq: 'catalog-info.yaml' },
+                { attribute: 'project', eq: 'test-apis' },
+              ],
+            },
+          },
+          config: { max_results: 100 },
+        },
+      ]);
+      expect(sourceRequests).toEqual([
+        '/2.0/repositories/test-ws/svc-a/src/1111111111111111111111111111111111111111/catalog-info.yaml?format=meta',
+        '/2.0/repositories/test-ws/svc-c/src/master/catalog-info.yaml?format=meta',
+        '/2.0/repositories/test-ws/svc-d/src/5b6c39df3196eeeb8a36684beb9a3df854a0b5f3/catalog-info.yaml?format=meta',
+      ]);
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+        type: 'full',
+        entities: [
+          {
+            entity: createLocationEntity(
+              'https://bitbucket.org/test-ws/svc-a',
+              'main',
+              'catalog-info.yaml',
+            ),
+            locationKey: 'bitbucketCloud-provider:default',
+          },
+          {
+            entity: createLocationEntity(
+              'https://bitbucket.org/test-ws/svc-d',
+              'release/1.0',
+              'catalog-info.yaml',
+            ),
+            locationKey: 'bitbucketCloud-provider:default',
+          },
+        ],
+      });
+    },
+  );
+
+  it('walks the source tree for a wildcard catalog path when code search is rejected', async () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          bitbucketCloud: {
+            workspace: 'test-ws',
+            catalogPath: '/services/*/catalog-info.yaml',
+          },
+        },
+      },
+    });
+    const provider = BitbucketCloudEntityProvider.fromConfig(config, {
+      auth: mockServices.auth(),
+      catalog: catalogServiceMock(),
+      events: DefaultEventsService.create({ logger }),
+      logger,
+      schedule,
+    })[0];
+    mockBitbucket({
+      repositories: () => [repository('repo', 'PROJ', 'main')],
+      search: () => [],
+    });
+    rejectCodeSearch(403);
+    sourceTree({
+      '': ['catalog-info.yaml', 'services', 'docs'],
+      'catalog-info.yaml': true,
+      services: ['catalog-info.yaml', 'x', 'notes.txt'],
+      'services/catalog-info.yaml': true,
+      'services/x': ['catalog-info.yaml', 'y'],
+      'services/x/catalog-info.yaml': true,
+      'services/x/y': ['catalog-info.yaml'],
+      'services/x/y/catalog-info.yaml': true,
+      'services/notes.txt': true,
+      docs: ['catalog-info.yaml'],
+      'docs/catalog-info.yaml': true,
+    });
+
+    await provider.connect(entityProviderConnection);
+    await (schedule.getTasks()[0].fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: [
+        'services/x/catalog-info.yaml',
+        'services/x/y/catalog-info.yaml',
+      ].map(path => ({
+        entity: createLocationEntity(
+          'https://bitbucket.org/test-ws/repo',
+          'main',
+          path,
+        ),
+        locationKey: 'bitbucketCloud-provider:default',
+      })),
+    });
+  });
+
+  const sourceListing = (directory: string) =>
+    `/2.0/repositories/test-ws/repo/src/main/${
+      directory ? `${directory}/` : ''
+    }?pagelen=100`;
+
+  const locationTargets = (paths: string[]) =>
+    paths.map(path => ({
+      entity: createLocationEntity(
+        'https://bitbucket.org/test-ws/repo',
+        'main',
+        path,
+      ),
+      locationKey: 'bitbucketCloud-provider:default',
+    }));
+
+  const refreshFromSource = async (
+    catalogPath: string,
+    files: Record<string, true | string[]>,
+  ) => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          bitbucketCloud: {
+            workspace: 'test-ws',
+            catalogPath,
+          },
+        },
+      },
+    });
+    const provider = BitbucketCloudEntityProvider.fromConfig(config, {
+      auth: mockServices.auth(),
+      catalog: catalogServiceMock(),
+      events: DefaultEventsService.create({ logger }),
+      logger,
+      schedule,
+    })[0];
+    mockBitbucket({
+      repositories: () => [repository('repo', 'PROJ', 'main')],
+      search: () => [],
+    });
+    rejectCodeSearch(403);
+    const sourceRequests = sourceTree(files);
+    await provider.connect(entityProviderConnection);
+    await (schedule.getTasks()[0].fn as () => Promise<void>)();
+    return sourceRequests;
+  };
+
+  // `''` is the repository root. A wildcard in the first segment has no
+  // literal directory prefix, so the walk still starts there.
+  const sourceWalkCases: {
+    catalogPath: string;
+    files: Record<string, true | string[]>;
+    requests: string[];
+    paths: string[];
+  }[] = [
+    {
+      catalogPath: '/services/*/catalog-info.yaml',
+      files: {
+        '': ['services', 'docs', 'vendor'],
+        services: ['billing', 'catalog-info.yaml'],
+        'services/billing': ['catalog-info.yaml', 'extra'],
+        'services/billing/catalog-info.yaml': true,
+        'services/billing/extra': ['catalog-info.yaml'],
+        'services/billing/extra/catalog-info.yaml': true,
+        'services/catalog-info.yaml': true,
+        docs: ['catalog-info.yaml'],
+        'docs/catalog-info.yaml': true,
+        vendor: ['lib'],
+        'vendor/lib': [],
+      },
+      requests: ['services', 'services/billing', 'services/billing/extra'],
+      paths: [
+        'services/billing/catalog-info.yaml',
+        'services/billing/extra/catalog-info.yaml',
+      ],
+    },
+    {
+      catalogPath: '/services/team-*/catalog-info.yaml',
+      files: {
+        '': ['services', 'docs', 'vendor'],
+        services: ['team-a', 'other'],
+        'services/team-a': ['catalog-info.yaml'],
+        'services/team-a/catalog-info.yaml': true,
+        'services/other': ['catalog-info.yaml'],
+        'services/other/catalog-info.yaml': true,
+        docs: ['team-a'],
+        'docs/team-a': ['catalog-info.yaml'],
+        'docs/team-a/catalog-info.yaml': true,
+        vendor: ['pkg'],
+        'vendor/pkg': [],
+      },
+      requests: ['services', 'services/other', 'services/team-a'],
+      paths: ['services/team-a/catalog-info.yaml'],
+    },
+    {
+      catalogPath: '/services/team-?/catalog-info.yaml',
+      files: {
+        '': ['services', 'docs'],
+        services: ['team-a', 'team-ab'],
+        'services/team-a': ['catalog-info.yaml'],
+        'services/team-a/catalog-info.yaml': true,
+        'services/team-ab': ['catalog-info.yaml'],
+        'services/team-ab/catalog-info.yaml': true,
+        docs: ['team-a'],
+        'docs/team-a': ['catalog-info.yaml'],
+        'docs/team-a/catalog-info.yaml': true,
+      },
+      requests: ['services', 'services/team-ab', 'services/team-a'],
+      paths: ['services/team-a/catalog-info.yaml'],
+    },
+    {
+      catalogPath: '/a/b/c/*.yaml',
+      files: {
+        '': ['a', 'docs', 'vendor'],
+        a: ['b'],
+        'a/b': ['c'],
+        'a/b/c': ['component.yaml', 'notes.txt'],
+        'a/b/c/component.yaml': true,
+        'a/b/c/notes.txt': true,
+        docs: ['component.yaml'],
+        'docs/component.yaml': true,
+        vendor: ['lib'],
+        'vendor/lib': [],
+      },
+      requests: ['a/b/c'],
+      paths: ['a/b/c/component.yaml'],
+    },
+    {
+      catalogPath: 'catalog-info.yaml',
+      files: {
+        '': ['catalog-info.yaml', 'services'],
+        'catalog-info.yaml': true,
+        services: ['catalog-info.yaml'],
+        'services/catalog-info.yaml': true,
+      },
+      requests: ['', 'services'],
+      paths: ['catalog-info.yaml', 'services/catalog-info.yaml'],
+    },
+    {
+      catalogPath: '*/catalog-info.yaml',
+      files: {
+        '': ['catalog-info.yaml', 'services'],
+        'catalog-info.yaml': true,
+        services: ['catalog-info.yaml'],
+        'services/catalog-info.yaml': true,
+      },
+      requests: ['', 'services'],
+      paths: ['services/catalog-info.yaml'],
+    },
+    {
+      catalogPath: '/catalog-*.yaml',
+      files: {
+        '': ['catalog-app.yaml', 'services', 'docs'],
+        'catalog-app.yaml': true,
+        services: ['catalog-app.yaml'],
+        'services/catalog-app.yaml': true,
+        docs: ['readme.md'],
+        'docs/readme.md': true,
+      },
+      requests: ['', 'docs', 'services'],
+      paths: ['catalog-app.yaml'],
+    },
+    {
+      catalogPath: '/*/catalog-info.yaml',
+      files: {
+        '': ['catalog-info.yaml', 'services', 'docs'],
+        'catalog-info.yaml': true,
+        services: ['catalog-info.yaml'],
+        'services/catalog-info.yaml': true,
+        docs: ['catalog-info.yaml'],
+        'docs/catalog-info.yaml': true,
+      },
+      requests: ['', 'docs', 'services'],
+      paths: ['docs/catalog-info.yaml', 'services/catalog-info.yaml'],
+    },
+    {
+      // A wildcard inside the first segment can match a sibling such as
+      // `foobar/`, so the walk cannot start at the directory `foo`.
+      catalogPath: '/foo*/catalog-info.yaml',
+      files: {
+        '': ['foo', 'foobar', 'docs'],
+        foo: ['catalog-info.yaml'],
+        'foo/catalog-info.yaml': true,
+        foobar: ['catalog-info.yaml'],
+        'foobar/catalog-info.yaml': true,
+        docs: ['catalog-info.yaml'],
+        'docs/catalog-info.yaml': true,
+      },
+      requests: ['', 'docs', 'foobar', 'foo'],
+      paths: ['foobar/catalog-info.yaml', 'foo/catalog-info.yaml'],
+    },
+    {
+      catalogPath: '/services/*/catalog-info.yaml',
+      files: {
+        '': ['docs', 'vendor'],
+        docs: ['catalog-info.yaml'],
+        'docs/catalog-info.yaml': true,
+        vendor: ['lib'],
+        'vendor/lib': [],
+      },
+      requests: ['services'],
+      paths: [],
+    },
+    {
+      // `services` is a file. The listing uses a trailing slash, so the
+      // source API answers 404 and unrelated directories stay unlisted.
+      catalogPath: '/services/*/catalog-info.yaml',
+      files: {
+        '': ['services', 'docs', 'vendor'],
+        services: true,
+        docs: ['catalog-info.yaml'],
+        'docs/catalog-info.yaml': true,
+        vendor: ['lib'],
+        'vendor/lib': [],
+      },
+      requests: ['services'],
+      paths: [],
+    },
+    {
+      catalogPath: '/services//*/catalog-info.yaml',
+      files: {
+        '': ['services', 'docs'],
+        services: ['billing'],
+        'services/billing': ['catalog-info.yaml'],
+        'services/billing/catalog-info.yaml': true,
+        docs: ['catalog-info.yaml'],
+        'docs/catalog-info.yaml': true,
+      },
+      requests: ['services', 'services/billing'],
+      paths: [],
+    },
+    {
+      // A trailing slash is an empty segment and does not extend the prefix.
+      catalogPath: '/services/*/',
+      files: {
+        '': ['services', 'docs'],
+        services: ['billing'],
+        'services/billing': ['catalog-info.yaml'],
+        'services/billing/catalog-info.yaml': true,
+        docs: ['catalog-info.yaml'],
+        'docs/catalog-info.yaml': true,
+      },
+      requests: ['services', 'services/billing'],
+      paths: [],
+    },
+  ];
+
+  it.each(sourceWalkCases)(
+    'walks $catalogPath from its literal directory prefix when code search is rejected',
+    async ({ catalogPath, files, requests, paths }) => {
+      const sourceRequests = await refreshFromSource(catalogPath, files);
+
+      expect(sourceRequests).toEqual(requests.map(sourceListing));
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+        type: 'full',
+        entities: locationTargets(paths),
+      });
+    },
+  );
+
+  it('visits a duplicated source directory once and emits each location once', async () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          bitbucketCloud: {
+            workspace: 'test-ws',
+            catalogPath: 'catalog-info.yaml',
+          },
+        },
+      },
+    });
+    const provider = BitbucketCloudEntityProvider.fromConfig(config, {
+      auth: mockServices.auth(),
+      catalog: catalogServiceMock(),
+      events: DefaultEventsService.create({ logger }),
+      logger,
+      schedule,
+    })[0];
+    mockBitbucket({
+      repositories: () => [repository('repo', 'PROJ', 'main')],
+      search: () => [],
+    });
+    rejectCodeSearch(403);
+    const requested: string[] = [];
+    server.use(
+      http.get(
+        ({ request }) => {
+          const url = new URL(request.url);
+          return (
+            url.origin === 'https://api.bitbucket.org' &&
+            /\/2\.0\/repositories\/test-ws\/repo\/src\//.test(url.pathname)
+          );
+        },
+        ({ request }) => {
+          const url = new URL(request.url);
+          requested.push(`${url.pathname}${url.search}`);
+          const path = decodeURIComponent(url.pathname)
+            .replace(/^\/2\.0\/repositories\/test-ws\/repo\/src\/[^/]+\//, '')
+            .replace(/\/$/, '');
+          if (path === '' && url.searchParams.get('page') === '2') {
+            return HttpResponse.json({
+              values: [
+                { path: 'services', type: 'commit_directory' },
+                { path: 'docs/catalog-info.yaml', type: 'commit_file' },
+                { path: 'other/catalog-info.yaml', type: 'commit_file' },
+              ],
+            });
+          }
+          if (path === '') {
+            return HttpResponse.json({
+              values: [
+                { path: 'services', type: 'commit_directory' },
+                { path: 'docs/catalog-info.yaml', type: 'commit_file' },
+              ],
+              next: 'https://api.bitbucket.org/2.0/repositories/test-ws/repo/src/main/?page=2',
+            });
+          }
+          if (path === 'services') {
+            return HttpResponse.json({
+              values: [
+                {
+                  path: 'services/catalog-info.yaml',
+                  type: 'commit_file',
+                },
+              ],
+            });
+          }
+          return new HttpResponse(null, { status: 404 });
+        },
+      ),
+    );
+
+    await provider.connect(entityProviderConnection);
+    await (schedule.getTasks()[0].fn as () => Promise<void>)();
+
+    expect(requested).toEqual([
+      '/2.0/repositories/test-ws/repo/src/main/?pagelen=100',
+      '/2.0/repositories/test-ws/repo/src/main/?page=2',
+      '/2.0/repositories/test-ws/repo/src/main/services/?pagelen=100',
+    ]);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: locationTargets([
+        'docs/catalog-info.yaml',
+        'other/catalog-info.yaml',
+        'services/catalog-info.yaml',
+      ]),
+    });
+  });
+
+  it('does not replace the catalog when code search fails for another reason', async () => {
+    const provider = BitbucketCloudEntityProvider.fromConfig(simpleConfig, {
+      auth: mockServices.auth(),
+      catalog: catalogServiceMock(),
+      events: DefaultEventsService.create({ logger }),
+      logger,
+      schedule,
+    })[0];
+    mockBitbucket({
+      repositories: () => [repository('svc-a', 'test-apis', 'main')],
+      search: () => [],
+    });
+    rejectCodeSearch(502);
+
+    await provider.connect(entityProviderConnection);
+    await (schedule.getTasks()[0].fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+  });
+
+  it('refreshes a repository from the source API on repo:push when code search is rejected', async () => {
+    const keptModule = createLocationEntity(
+      'https://bitbucket.org/test-ws/test-repo',
+      'main',
+      'kept-module/catalog-custom.yaml',
+    );
+    const removedModule = createLocationEntity(
+      'https://bitbucket.org/test-ws/test-repo',
+      'main',
+      'removed-module/catalog-custom.yaml',
+    );
+    const addedModule = createLocationEntity(
+      'https://bitbucket.org/test-ws/test-repo',
+      'main',
+      'added-module/catalog-custom.yaml',
+    );
+    const events = DefaultEventsService.create({ logger });
+    const catalog = catalogServiceMock.mock({
+      getEntities: async (request: {
+        filter: Record<string, string>;
+      }): Promise<{ items: Entity[] }> => {
+        if (
+          request.filter['metadata.annotations.bitbucket.org/repo-url'] !==
+          'https://bitbucket.org/test-ws/test-repo'
+        ) {
+          return { items: [] };
+        }
+        return { items: [keptModule, removedModule] };
+      },
+    });
+    const provider = BitbucketCloudEntityProvider.fromConfig(defaultConfig, {
+      auth: mockServices.auth(),
+      catalog,
+      events,
+      logger,
+      schedule,
+    })[0];
+    const searchBodies: unknown[] = [];
+    const { repositoryQueries } = mockBitbucket({
+      repositories: q =>
+        q === 'slug="test-repo"'
+          ? [repository('test-repo', 'test-project', 'main')]
+          : [],
+      search: () => [],
+    });
+    rejectCodeSearch(403, searchBodies);
+    sourceTree({
+      '': ['kept-module', 'removed-module', 'added-module'],
+      'kept-module': ['catalog-custom.yaml'],
+      'kept-module/catalog-custom.yaml': true,
+      'removed-module': ['other.yaml'],
+      'removed-module/other.yaml': true,
+      'added-module': ['catalog-custom.yaml'],
+      'added-module/catalog-custom.yaml': true,
+    });
+
+    await provider.connect(entityProviderConnection);
+    await events.publish(repoPushEventParams);
+
+    expect(repositoryQueries).toEqual(['slug="test-repo"']);
+    expect(searchBodies).toEqual([
+      {
+        query: {
+          search_term: 'catalog-custom.yaml',
+          filters: {
+            and: [
+              { attribute: 'path', eq: 'catalog-custom.yaml' },
+              { attribute: 'repository', eq: 'test-repo' },
+            ],
+          },
+        },
+        config: { max_results: 100 },
+      },
+    ]);
+    expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
+      keys: [
+        'url:https://bitbucket.org/test-ws/test-repo/src/main/kept-module/catalog-custom.yaml',
+      ],
+    });
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'delta',
+      added: [
+        {
+          entity: addedModule,
+          locationKey: 'bitbucketCloud-provider:myProvider',
+        },
+      ],
+      removed: [
+        {
+          entity: removedModule,
+          locationKey: 'bitbucketCloud-provider:myProvider',
+        },
+      ],
+    });
   });
 });
