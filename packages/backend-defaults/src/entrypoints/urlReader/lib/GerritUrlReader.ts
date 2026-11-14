@@ -280,8 +280,8 @@ export class GerritUrlReader implements UrlReaderService {
     const { path, basePath } = parseGitilesUrlRef(this.integration.config, url);
 
     const treeUrl = `${basePath}/?format=JSON&recursive`.replace(
-      this.integration.config.gitilesBaseUrl,
-      getGitilesAuthenticationUrl(this.integration.config),
+      new URL(this.integration.config.gitilesBaseUrl).href,
+      new URL(getGitilesAuthenticationUrl(this.integration.config)).href,
     );
 
     const treeResponse = await fetch(treeUrl, {
