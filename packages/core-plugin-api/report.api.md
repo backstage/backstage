@@ -44,7 +44,6 @@ import { fetchApiRef } from '@backstage/frontend-plugin-api';
 import { githubAuthApiRef } from '@backstage/frontend-plugin-api';
 import { gitlabAuthApiRef } from '@backstage/frontend-plugin-api';
 import { googleAuthApiRef } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/frontend-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
@@ -76,7 +75,6 @@ import { TypesToApiRefs } from '@backstage/frontend-plugin-api';
 import { useApi } from '@backstage/frontend-plugin-api';
 import { useApiHolder } from '@backstage/frontend-plugin-api';
 import { vmwareCloudAuthApiRef } from '@backstage/frontend-plugin-api';
-import { withApis } from '@backstage/frontend-plugin-api';
 
 export { AlertApi };
 
@@ -405,7 +403,10 @@ export { gitlabAuthApiRef };
 
 export { googleAuthApiRef };
 
-export { IconComponent };
+// @public
+export type IconComponent = ComponentType<{
+  fontSize?: 'medium' | 'large' | 'small' | 'inherit';
+}>;
 
 export { IdentityApi };
 
@@ -581,5 +582,13 @@ export function useRouteRefParams<Params extends AnyParams>(
 
 export { vmwareCloudAuthApiRef };
 
-export { withApis };
+// @public @deprecated
+export function withApis<T extends {}>(
+  apis: TypesToApiRefs<T>,
+): <TProps extends T>(
+  WrappedComponent: ComponentType<TProps>,
+) => {
+  (props: PropsWithChildren<Omit<TProps, keyof T>>): JSX_2.Element;
+  displayName: string;
+};
 ```

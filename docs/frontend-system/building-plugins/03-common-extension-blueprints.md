@@ -21,17 +21,19 @@ Page extensions provide content for a particular route in the app. By default pa
 
 To enable sub-pages on a page, you can either omit the `loader` param to use the built-in default implementation that renders sub-pages as tabs, or provide a custom `loader` that explicitly handles the sub-page inputs.
 
+Existing pages retain implicit React Router v6 matches. To migrate a page or select another routing library, render its adapter inside the page's lazily loaded component — see [Choose a router for a page](10-page-routers.md).
+
 ### SubPage - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.SubPageBlueprint.html)
 
 Sub-page extensions create tabbed content within a parent page. They are attached to a page extension's `pages` input and rendered as tabs in the page header. Each sub-page has a `path` (relative to the parent page), a `title` for the tab, and an optional `icon`. Content is lazy-loaded via a `loader` function.
+
+A sub-page declares its own router adapter in its lazily loaded component, which scopes the adapter to that sub-page. Sibling tabs may pick different libraries, or none.
 
 ### PluginHeaderAction - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.PluginHeaderActionBlueprint.html)
 
 Plugin header action extensions provide plugin-scoped actions that appear in the page header. They are automatically scoped to the plugin that provides them and will appear in the header of all pages belonging to that plugin. Actions are lazy-loaded via a `loader` function that returns a React element.
 
-## Extension blueprints in `@backstage/frontend-plugin-api/alpha`
-
-### Plugin Wrapper - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.packages-frontend-plugin-api_src_alpha.PluginWrapperBlueprint.html)
+### Plugin Wrapper - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.PluginWrapperBlueprint.html)
 
 Plugin wrappers allow you to install components that will wrap all elements rendered as part of a plugin. This can be useful if you need to add a global provider, for example for a query client. The provided wrapper will be rendered as separate elements for each wrapped plugin element, so be sure to use a central store like a [Utility API](../utility-apis/01-index.md) if you want to share state between wrapper instances.
 
@@ -61,11 +63,11 @@ Translation extension provide custom translation messages for the app. They can 
 
 Nav content extensions allow you to replace the entire navbar with your own component. They are always attached to the app nav extension.
 
-Your custom component receives a `navItems` prop—a collection with `take(id)` and `rest()` methods for placing specific items in custom positions. Nav items are auto-discovered from page extensions, and metadata (title, icon) comes from page config, nav item extensions, or plugin defaults. Use `navItems.take('page:home')` to take a specific item by extension ID, and `navItems.rest()` to get all remaining items. The deprecated `items` prop (a flat list) remains supported for backward compatibility.
+Your custom component receives a `navItems` prop—a collection with `take(id)` and `rest()` methods for placing specific items in custom positions. Nav items are auto-discovered from page extensions, and metadata (title, icon) comes from page config, nav item extensions, or plugin defaults. Use `navItems.take('page:home')` to take a specific item by extension ID, and `navItems.rest()` to get all remaining items.
 
-### Router - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.RouterBlueprint.html)
+### AppRootWrapper - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.AppRootWrapperBlueprint.html)
 
-Router extensions allow you to replace the router component used by the app. They are always attached to the app root extension.
+App root wrapper extensions install React components that wrap the entire app root. Use them for global providers, such as a query client, that every plugin in the app needs. They are the replacement for providers that used to be bundled into a custom root router component.
 
 ## Extension blueprints in `@backstage/plugin-catalog-react/alpha`
 
@@ -80,6 +82,8 @@ Avoid using `convertLegacyEntityCardExtension` from `@backstage/core-compat-api`
 ### EntityContent - [Example](https://github.com/backstage/backstage/blob/cd71065a02bed740011daee96a865108a785dff6/plugins/kubernetes/src/alpha/entityContents.tsx#L22-L34)
 
 Creates entity content to be displayed on the entity pages of the catalog plugin. Exported as `EntityContentBlueprint`.
+
+Entity content is page content, not a page, so it never declares a [page router](10-page-routers.md) adapter of its own. It already renders inside the adapter the entity page declared, one route match deeper. A second adapter here re-scopes to the entity page's mount and drops the tab's match. The same holds for `EntityCardBlueprint`.
 
 Supports optional params such as `group` and `icon` to:
 

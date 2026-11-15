@@ -33,10 +33,6 @@ export interface Config {
           signIn?: {
             resolvers: Array<
               | {
-                  resolver: 'usernameMatchingUserEntityName';
-                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
-                }
-              | {
                   resolver: 'emailLocalPartMatchingUserEntityName';
                   allowedDomains?: string[];
                   dangerouslyAllowSignInWithoutUserInCatalog?: boolean;

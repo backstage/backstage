@@ -159,6 +159,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     alwaysUseDefaultNamespace?: boolean;
     pageSizes?: Partial<GithubPageSizes>;
     excludeSuspendedUsers?: boolean;
+    fetchEmailForGithubApps?: boolean;
     cache?: CacheService;
     experimental_checkForSuspendedUsersWithRest?: boolean;
   });
@@ -179,6 +180,7 @@ export interface GithubMultiOrgEntityProviderOptions {
   events?: EventsService;
   excludeSuspendedUsers?: boolean;
   experimental_checkForSuspendedUsersWithRest?: boolean;
+  fetchEmailForGithubApps?: boolean;
   githubCredentialsProvider?: GithubCredentialsProvider;
   githubUrl: string;
   id: string;
@@ -242,6 +244,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
     teamTransformer?: TeamTransformer;
     pageSizes?: Partial<GithubPageSizes>;
     excludeSuspendedUsers?: boolean;
+    fetchEmailForGithubApps?: boolean;
     cache?: CacheService;
     experimental_checkForSuspendedUsersWithRest?: boolean;
   });
@@ -264,6 +267,7 @@ export interface GithubOrgEntityProviderOptions {
   events?: EventsService;
   excludeSuspendedUsers?: boolean;
   experimental_checkForSuspendedUsersWithRest?: boolean;
+  fetchEmailForGithubApps?: boolean;
   githubCredentialsProvider?: GithubCredentialsProvider;
   id: string;
   logger: LoggerService;

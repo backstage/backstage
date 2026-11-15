@@ -466,6 +466,13 @@ and hoisting of Jest mocks. The Backstage CLI also only targets up to date and
 modern browsers, so we actually want to keep the transpilation process as
 lightweight as possible, and leave most syntax intact.
 
+Package builds, app bundles, and the backend development server compile code
+for ES2024, which Node.js 22 and later support. The `lib` setting in
+`@backstage/cli/config/tsconfig.json` also allows code to use ES2024 built-in
+APIs like `Object.groupBy` and `Promise.withResolvers`. Since Backstage doesn't
+include polyfills, frontend code that uses these APIs needs at least Chrome or
+Edge 119, Firefox 121, or Safari 17.4.
+
 Apart from these requirements, the deciding factor for which transpiler to use
 is their speed. The build process keeps the integration with the transpilers
 lightweight, without additional plugins or such. This enables us to switch out
@@ -531,12 +538,12 @@ of all supported file extensions:
 
 ## ECMAScript Modules
 
-The Backstage tooling supports [ECMAScript modules (ESM)](https://nodejs.org/docs/latest-v22.x/api/esm.html) in Node.js packages. This includes support for all the script module file extensions listed above during local development, in built packages, in tests, and during type checking. [Dynamic imports](https://nodejs.org/docs/latest-v22.x/api/esm.html#import-expressions) can be used to load ESM-only packages from CommonJS and vice versa. There are however a couple of limitations to be aware of:
+The Backstage tooling supports [ECMAScript modules (ESM)](https://nodejs.org/docs/latest-v24.x/api/esm.html) in Node.js packages. This includes support for all the script module file extensions listed above during local development, in built packages, in tests, and during type checking. [Dynamic imports](https://nodejs.org/docs/latest-v24.x/api/esm.html#import-expressions) can be used to load ESM-only packages from CommonJS and vice versa. There are however a couple of limitations to be aware of:
 
 - To enable support for native ESM in tests, you need to run the tests with the `--experimental-vm-modules` flag enabled, typically via `NODE_OPTIONS='--experimental-vm-modules'`.
 - Declaring a package as `"type": "module"` in `package.json` is supported, but in tests it will cause all local transitive dependencies to also be treated as ESM, regardless of whether they declare `"type": "module"` or not.
 - When running tests with coverage enabled the default `babel` coverage provider can mess with the hoisting of named exports. This can be worked around by using the `v8` provider instead by setting `"coverageProvider": "v8"` in the Jest configuration, although note that the `v8` provider is a fair bit slower than the `babel` one.
-- Node.js has an [ESM interoperability layer with CommonJS](https://nodejs.org/docs/latest-v22.x/api/esm.html#interoperability-with-commonjs) that allows for imports from ESM to identify named exports in CommonJS packages. This interoperability layer is **only** enabled when importing packages with a `.cts` or `.cjs` extension. This is because the interoperability layer is not fully compatible with the NPM ecosystem, and would break package if it was enabled for `.js` files.
+- Node.js has an [ESM interoperability layer with CommonJS](https://nodejs.org/docs/latest-v24.x/api/esm.html#interoperability-with-commonjs) that allows for imports from ESM to identify named exports in CommonJS packages. This interoperability layer is **only** enabled when importing packages with a `.cts` or `.cjs` extension. This is because the interoperability layer is not fully compatible with the NPM ecosystem, and would break package if it was enabled for `.js` files.
 - Dynamic imports of CommonJS packages will vary in shape depending on the runtime, i.e. test vs local development, etc. It is therefore recommended to avoid dynamic imports of CommonJS packages and instead use `require`, or to use the explicit CommonJS extensions as mentioned above. If you do need to dynamically import CommonJS packages, avoid using `default` exports, as the shape of them vary across different environments and you would otherwise need to manually unwrap the import based on the shape of the module object.
 
 ## Jest Configuration

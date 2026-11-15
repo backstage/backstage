@@ -25,6 +25,8 @@ import { Theme } from '@material-ui/core/styles';
  * Properties for {@link CreateButton}
  *
  * @public
+ * @deprecated Use the replacement described in {@link CreateButton} instead.
+ * BUI components use their own props and styling contracts.
  */
 export type CreateButtonProps = {
   title: string;
@@ -34,6 +36,9 @@ export type CreateButtonProps = {
  * Responsive Button giving consistent UX for creation of different things
  *
  * @public
+ * @deprecated Use `ButtonLink` from `@backstage/ui` with an `href` instead.
+ * Compose responsive icon-only and text presentations if needed, preserving
+ * an accessible label, and omit the link when there is no destination.
  */
 export function CreateButton(props: CreateButtonProps) {
   const { title, to } = props;

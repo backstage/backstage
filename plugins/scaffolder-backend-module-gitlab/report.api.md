@@ -98,9 +98,14 @@ export const createGitlabProjectAccessTokenAction: (options: {
     accessLevel?: number | undefined;
     scopes?: string[] | undefined;
     expiresAt?: string | undefined;
+    variableKey?: string | undefined;
+    variableProtected?: boolean | undefined;
+    maskedAndHidden?: boolean | undefined;
+    environmentScope?: string | undefined;
   },
   {
-    access_token: string;
+    access_token?: string | undefined;
+    variableKey?: string | undefined;
   },
   'v2'
 >;
@@ -117,10 +122,15 @@ export const createGitlabProjectDeployTokenAction: (options: {
     scopes: string[];
     token?: string | undefined;
     username?: string | undefined;
+    variableKey?: string | undefined;
+    variableProtected?: boolean | undefined;
+    maskedAndHidden?: boolean | undefined;
+    environmentScope?: string | undefined;
   },
   {
-    deploy_token: string;
     user: string;
+    deploy_token?: string | undefined;
+    variableKey?: string | undefined;
   },
   'v2'
 >;

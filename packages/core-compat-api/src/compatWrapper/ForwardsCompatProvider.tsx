@@ -26,7 +26,6 @@ import {
   SwappableComponentsApi,
   ErrorDisplayProps,
   NotFoundErrorPageProps,
-  ProgressProps,
   ExternalRouteRef,
   IconComponent,
   IconElement,
@@ -53,7 +52,7 @@ import { type RouteResolver } from '../../../core-plugin-api/src/routing/useRout
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 
 class CompatComponentsApi implements SwappableComponentsApi {
-  readonly #Progress: ComponentType<ProgressProps>;
+  readonly #Progress: ComponentType<{}>;
   readonly #NotFoundErrorPage: ComponentType<NotFoundErrorPageProps>;
   readonly #ErrorBoundaryFallback: ComponentType<ErrorDisplayProps>;
 
@@ -115,6 +114,11 @@ class CompatIconsApi implements IconsApi {
 }
 
 class CompatRouteResolutionApi implements RouteResolutionApi {
+  resolvePath(): ReturnType<RouteResolutionApi['resolvePath']> {
+    // The old frontend system has no app-node route tree.
+    return { matches: [] };
+  }
+
   readonly #routeResolver: RouteResolver;
 
   constructor(routeResolver: RouteResolver) {
@@ -147,7 +151,8 @@ class ForwardsCompatApis implements ApiHolder {
   get<T>(ref: ApiRef<any>): T | undefined {
     if (ref.id === swappableComponentsApiRef.id) {
       return this.#componentsApi as T;
-    } else if (ref.id === iconsApiRef.id) {
+    } else if (ref.id === iconsApiRef.id || ref.id === 'core.icons') {
+      // Older plugins still request the original icons API ID.
       return this.#iconsApi as T;
     } else if (ref.id === routeResolutionApiRef.id) {
       return this.#routeResolutionApi as T;

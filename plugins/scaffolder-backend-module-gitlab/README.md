@@ -4,6 +4,13 @@ Welcome to the Gitlab Module for Scaffolder.
 
 Here you can find all Gitlab related features to improve your scaffolder:
 
+For `publish:gitlab:merge-request` and `gitlab:repo:push`, `commitAction: auto`
+checks files individually if the repository file listing fails, except for a 404
+response. Individual checks skip unchanged files, update changed files, and create
+missing files; other errors stop the action before committing. A 404 listing
+response continues to treat all files as new, including when pushing to a new
+branch.
+
 ## Getting started
 
 ## From your Backstage root directory
@@ -96,31 +103,20 @@ spec:
         name: ${{ parameters.name }}-secret
         username: ${{ parameters.name }}-secret
         scopes: ['read_registry']
+        variableKey: BACKSTAGE_DEPLOY_TOKEN
+        variableProtected: true
 
     - id: gitlab-access-token
       name: Gitlab Project Access Token
       action: gitlab:projectAccessToken:create
       input:
         repoUrl: ${{ parameters.repoUrl }}
-        projectId: "${{ steps['publish-manifest'].output.projectId }}"
-        name: ${{ parameters.name }}-access-token
+        projectId: "${{ steps['publish'].output.projectId }}"
+        name: backstage-access-token
         accessLevel: 40
         scopes: ['read_repository', 'write_repository']
-
-    - id: gitlab-project-variable
-      name: Gitlab Project Variable
-      action: gitlab:projectVariable:create
-      input:
-        repoUrl: ${{ parameters.repoUrl }}
-        projectId: "${{ steps['publish'].output.projectId }}"
-        key: 'VARIABLE_NAME'
-        value: "${{ steps['gitlab-access-token'].output.access_token }}"
-        variableType: 'env_var'
-        masked: true
-        maskedAndHidden: false
-        variableProtected: false
-        raw: false
-        environmentScope: '*'
+        variableKey: BACKSTAGE_ACCESS_TOKEN
+        variableProtected: true
 
     - id: register
       name: Register

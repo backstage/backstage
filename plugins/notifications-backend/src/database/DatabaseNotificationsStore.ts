@@ -521,7 +521,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
             })),
           )
           .onConflict(['broadcast_id', 'user'])
-          .merge(['read', 'saved']);
+          .merge({ read, saved });
       } else {
         // SQLite does not support upsert so fall back to this (mostly for tests and local dev)
         for (const b of broadcasts) {

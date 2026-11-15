@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { ReactElement } from 'react';
 
 export type EntityLayoutRoute = {
   path: string;
   title: string;
+  titleTranslation?: TranslationRefTuple<undefined>;
   group?: string;
   icon?: string | ReactElement;
   children: JSX.Element;

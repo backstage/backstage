@@ -370,6 +370,69 @@ and have a source and target that have to be an
 have to make any changes to the catalog backend in order to accept new relation
 types.
 
+### Relations to custom kinds with catalog model layers
+
+When a catalog model source is registered, the catalog uses model-based
+processing for built-in kinds. The model emits an inverse relation only when a
+relation pair declares the source kind, target kind, and relation type. For
+example, the default model declares `dependsOn` and `dependencyOf` between
+Components and Resources, but does not include custom target kinds.
+
+If a Component or Resource depends on a custom `Technology` entity and the
+catalog should expose the inverse `dependencyOf` relation, add a relation pair
+to a catalog model layer and register that layer as a model source:
+
+```ts
+const technologyRelations = createCatalogModelLayer({
+  layerId: 'example.com/technology-relations',
+  builder: model => {
+    model.addRelationPair({
+      fromKind: ['Component', 'Resource'],
+      toKind: 'Technology',
+      description: 'A component or resource depends on a technology.',
+      forward: { type: 'dependsOn', title: 'depends on' },
+      reverse: { type: 'dependencyOf', title: 'dependency of' },
+    });
+    model.addRelationPair({
+      fromKind: 'Technology',
+      toKind: ['Component', 'Resource'],
+      description: 'A technology depends on a component or resource.',
+      forward: { type: 'dependsOn', title: 'depends on' },
+      reverse: { type: 'dependencyOf', title: 'dependency of' },
+    });
+  },
+});
+```
+
+Each relation pair describes the direction in which one kind depends on another,
+along with its inverse:
+
+- The first pair declares that a Component or Resource can depend on a
+  Technology (`dependsOn`), which automatically establishes that the Technology
+  is a dependency of the Component or Resource (`dependencyOf`).
+- The second pair declares the reverse dependency direction: a Technology can
+  depend on a Component or Resource (`dependsOn`), establishing that the
+  Component or Resource is a dependency of the Technology (`dependencyOf`).
+
+Declare each direction in which kinds can depend on each other so the catalog
+knows how to emit inverse relations when processing either side. If
+dependencies can exist in both directions between these kinds, you can
+alternatively cover them with a single relation pair that lists all applicable
+kinds on both `fromKind` and `toKind` (for example,
+`['Component', 'Resource', 'Technology']`), similar to how the built-in
+`dependsOn` relation pair is declared.
+
+Register the layer with `provideStaticCatalogModel({ layers: [...] })` or
+through the catalog model extension point. The custom kind can continue to be
+validated and processed by its existing catalog processor; it does not need to
+be declared as a model kind solely for the relation pair.
+
+Relation pairs do not override a relation field's `allowedKinds`. If a field
+restricts its targets, custom kinds must be permitted by that field definition
+before either direction of the relation is emitted. Without a model source,
+the legacy built-in processor continues to emit inverse relations for these
+custom targets.
+
 At the time of writing this, we do not have any namespacing/prefixing scheme for
 relation types. The type is also not validated to contain only some particular
 set of characters. Until rules for this are settled, you should stick to using

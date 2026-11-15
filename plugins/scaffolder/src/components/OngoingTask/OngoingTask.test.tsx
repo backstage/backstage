@@ -20,7 +20,10 @@ import {
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
-import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import {
+  useTaskEventStream,
+  scaffolderApiRef,
+} from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent, waitFor, within } from '@testing-library/react';
 import {
   PermissionApi,
@@ -38,7 +41,7 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('@backstage/plugin-scaffolder-react', () => ({
   ...jest.requireActual('@backstage/plugin-scaffolder-react'),
-  useTaskEventStream: () => ({
+  useTaskEventStream: jest.fn(() => ({
     cancelled: false,
     loading: true,
     stepLogs: {},
@@ -53,10 +56,11 @@ jest.mock('@backstage/plugin-scaffolder-react', () => ({
         },
       },
     },
-  }),
+  })),
 }));
 
 describe('OngoingTask', () => {
+  const initialTaskStream = jest.mocked(useTaskEventStream)('my-task');
   const mockScaffolderApi = {
     cancelTask: jest.fn(),
     getTask: jest.fn().mockImplementation(async () => {}),
@@ -70,6 +74,7 @@ describe('OngoingTask', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    jest.mocked(useTaskEventStream).mockReturnValue(initialTaskStream);
   });
 
   const render = (permissionApi?: PermissionApi) => {
@@ -89,6 +94,84 @@ describe('OngoingTask', () => {
       { mountedRoutes: { '/': rootRouteRef } },
     );
   };
+
+  it.each(['completed', 'failed', 'cancelled'] as const)(
+    'keeps controls available after %s',
+    async status => {
+      const stream = jest.mocked(useTaskEventStream);
+      const initial = stream('my-task');
+      stream.mockReturnValue({
+        ...initial,
+        loading: false,
+        completed: status !== 'cancelled',
+        cancelled: status === 'cancelled',
+        error: status === 'failed' ? new Error('Failed') : undefined,
+      });
+      const rendered = await render();
+      expect(rendered.getByTestId('cancel-button')).toBeDisabled();
+      expect(rendered.getByTestId('start-over-button')).toBeEnabled();
+      expect(
+        await rendered.findByRole('button', { name: /Logs/ }),
+      ).toBeVisible();
+      stream.mockReturnValue(initial);
+    },
+  );
+
+  it('keeps create permission checks on completed tasks', async () => {
+    const stream = jest.mocked(useTaskEventStream);
+    const initial = stream('my-task');
+    stream.mockReturnValue({ ...initial, loading: false, completed: true });
+    const rendered = await render(
+      mockApis.permission({
+        authorize: request =>
+          request.permission.name === 'scaffolder.task.create'
+            ? AuthorizeResult.DENY
+            : AuthorizeResult.ALLOW,
+      }),
+    );
+    expect(rendered.getByTestId('start-over-button')).toBeDisabled();
+    expect(rendered.getByTestId('cancel-button')).toBeDisabled();
+    stream.mockReturnValue(initial);
+  });
+
+  it('keeps retry disabled when create permission is denied after completion', async () => {
+    jest.mocked(useTaskEventStream).mockReturnValue({
+      ...initialTaskStream,
+      loading: false,
+      completed: true,
+      task: {
+        ...initialTaskStream.task!,
+        spec: {
+          ...initialTaskStream.task!.spec,
+          EXPERIMENTAL_recovery: { EXPERIMENTAL_strategy: 'startOver' },
+        },
+      },
+    });
+    const rendered = await render(
+      mockApis.permission({
+        authorize: request =>
+          request.permission.name === 'scaffolder.task.create'
+            ? AuthorizeResult.DENY
+            : AuthorizeResult.ALLOW,
+      }),
+    );
+    expect(rendered.getByTestId('retry-button')).toBeDisabled();
+    expect(mockScaffolderApi.cancelTask).not.toHaveBeenCalled();
+  });
+
+  it('preserves a manually hidden button bar when completion arrives', async () => {
+    const stream = jest.mocked(useTaskEventStream);
+    const initial = stream('my-task');
+    const rendered = await render();
+    fireEvent.click(rendered.getByTestId('menu-button'));
+    fireEvent.click(await rendered.findByText('Hide Button Bar'));
+    expect(rendered.queryByTestId('cancel-button')).not.toBeInTheDocument();
+    stream.mockReturnValue({ ...initial, loading: false, completed: true });
+    // Toggle logs to cause the task page to read the updated event stream.
+    fireEvent.click(rendered.getByTestId('menu-button'));
+    fireEvent.click(await rendered.findByText('Show Logs'));
+    expect(rendered.queryByTestId('cancel-button')).not.toBeInTheDocument();
+  });
 
   it('should render title', async () => {
     const rendered = await render();

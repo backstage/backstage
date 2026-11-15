@@ -19,7 +19,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [22.x, 24.x]
+        node-version: [24.x, 26.x]
 
     name: E2E Windows ${{ matrix.node-version }}
     steps:

@@ -24,6 +24,7 @@ import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TableItem } from '@backstage/ui';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 
 // @alpha
 export const CatalogFilterBlueprint: ExtensionBlueprint<{
@@ -222,11 +223,11 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
       >;
   inputs: {};
   config: {
-    filter: FilterPredicate | undefined;
+    filter: string | FilterPredicate | undefined;
     type: 'content' | 'info' | undefined;
   };
   configInput: {
-    filter?: FilterPredicate | undefined;
+    filter?: string | FilterPredicate | undefined;
     type?: 'content' | 'info' | undefined;
   };
   dataRefs: {
@@ -284,7 +285,7 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     defaultPath?: [Error: `Use the 'path' param instead`];
     path: string;
     defaultTitle?: [Error: `Use the 'title' param instead`];
-    title: string;
+    title: string | TranslationRefTuple<undefined>;
     defaultGroup?: [Error: `Use the 'group' param instead`];
     group?: keyof typeof defaultEntityContentGroups | (string & {});
     icon?: string | ReactElement;
@@ -302,6 +303,13 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
         }
       >
     | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
+        TranslationRefTuple<undefined>,
+        'core.titleTranslation',
+        {
+          optional: true;
+        }
+      >
     | ExtensionDataRef<
         (entity: Entity) => boolean,
         'catalog.entity-filter-function',
@@ -335,14 +343,14 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
   config: {
     path: string | undefined;
     title: string | undefined;
-    filter: FilterPredicate | undefined;
+    filter: string | FilterPredicate | undefined;
     group: string | false | undefined;
     icon: string | undefined;
   };
   configInput: {
     path?: string | undefined;
     title?: string | undefined;
-    filter?: FilterPredicate | undefined;
+    filter?: string | FilterPredicate | undefined;
     group?: string | false | undefined;
     icon?: string | undefined;
   };
@@ -350,6 +358,11 @@ export const EntityContentBlueprint: ExtensionBlueprint<{
     title: ConfigurableExtensionDataRef<
       string,
       'catalog.entity-content-title',
+      {}
+    >;
+    titleTranslation: ConfigurableExtensionDataRef<
+      TranslationRefTuple<undefined>,
+      'core.titleTranslation',
       {}
     >;
     filterFunction: ConfigurableExtensionDataRef<
@@ -416,11 +429,11 @@ export const EntityContentLayoutBlueprint: ExtensionBlueprint<{
   inputs: {};
   config: {
     type: string | undefined;
-    filter: FilterPredicate | undefined;
+    filter: string | FilterPredicate | undefined;
   };
   configInput: {
     type?: string | undefined;
-    filter?: FilterPredicate | undefined;
+    filter?: string | FilterPredicate | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<

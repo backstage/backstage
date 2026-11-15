@@ -1,5 +1,62 @@
 # @backstage/backend-plugin-api
 
+## 1.12.0-next.1
+
+### Minor Changes
+
+- a5337d0: The `coreServices` export is now a frozen plain object instead of a TypeScript namespace, and its type is described by the new `CoreServices` interface. Usage is unchanged, and every service reference keeps its existing type. The object can no longer be modified at runtime.
+- 250e4c3: Add WebSocket upgrade routes to the HTTP router services. Routes require token authentication by default. The `unauthenticated` override leaves authentication to the handler. Cookie authentication is not supported. Browser clients can pass bearer tokens through the WebSocket protocol header.
+
+  ```ts
+  httpRouter.addWebSocketHandler({
+    path: '/events',
+    handler({ request, socket, head }) {
+      webSocketServer.handleUpgrade(request, socket, head, connection => {
+        webSocketServer.emit('connection', connection, request);
+      });
+    },
+  });
+  ```
+
+  **BREAKING PRODUCERS**: Custom implementations of `HttpRouterService` and `RootHttpRouterService` must implement `addWebSocketHandler`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/plugin-auth-node@0.7.8-next.2
+  - @backstage/plugin-permission-node@0.11.6-next.1
+  - @backstage/cli-common@0.3.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/connections@0.4.2-next.0
+  - @backstage/plugin-permission-common@0.9.13-next.0
+
+## 1.11.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/plugin-permission-node@0.11.6-next.0
+
+## 1.11.0
+
+### Minor Changes
+
+- e956084: **BREAKING PRODUCERS**: Added an instance ID to the root instance metadata service. Custom implementations and mocks must now provide a globally unique ID that remains stable for the lifetime of the running backend instance.
+- f6054ac: Added experimental `declareConnection` and `connectionsServiceRef` exports to `@backstage/backend-plugin-api/alpha`. Plugins and modules can declare connection dependencies and request the connections service without importing private packages.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/connections@0.4.1
+  - @backstage/plugin-auth-node@0.7.7
+  - @backstage/cli-common@0.3.2
+  - @backstage/plugin-permission-common@0.9.12
+  - @backstage/plugin-permission-node@0.11.5
+
 ## 1.11.0-next.2
 
 ### Minor Changes

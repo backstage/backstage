@@ -1,5 +1,36 @@
 # @backstage/core-components
 
+## 0.18.16-next.1
+
+### Patch Changes
+
+- cac9654: `MarkdownContent` now loads `react-markdown` and its `remark` and `rehype` plugins the first time it renders, instead of with the app. This keeps them out of the app's startup bundle. Markdown appears once the renderer has loaded, so tests that look for rendered markdown right after a synchronous `render` may need to use `findBy*` queries instead.
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+
+## 0.18.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.0
+
+## 0.18.15
+
+### Patch Changes
+
+- e415488: Stop clearing the selected provider from `localStorage` when a sign-in loader is cancelled. Only clear it when the loader actually fails. Memoize `getSignInProviders` so it does not recreate the providers object on every render.
+- 76ac6ed: Updated dependency `js-yaml` to `^5.0.0`.
+- e859c29: Added `defaultCloseDelayMs` option to `SubmenuOptions` to configure a delay before a submenu closes.
+- Updated dependencies
+  - @backstage/ui@0.19.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/core-plugin-api@1.12.11
+
 ## 0.18.15-next.3
 
 ### Patch Changes

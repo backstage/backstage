@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { renderHook } from '@testing-library/react';
+import { render, renderHook, screen } from '@testing-library/react';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import { createApiRef } from './ApiRef';
-import { useApi } from './useApi';
+import { useApi, withApis } from './useApi';
 
 describe('useApi', () => {
   const context = createVersionedContextForTesting('api-context');
@@ -36,5 +36,34 @@ describe('useApi', () => {
     const value = renderedHook.result.current;
     expect(value).toBe('my-api-impl');
     expect(get).toHaveBeenCalledWith(apiRef);
+  });
+});
+
+describe('withApis', () => {
+  const context = createVersionedContextForTesting('api-context');
+
+  afterEach(() => {
+    context.reset();
+  });
+
+  it('injects APIs and forwards other props through the shared API context', () => {
+    const messageRef = createApiRef<() => string>({ id: 'message' });
+    const get = jest.fn(() => () => 'hello');
+    context.set({ 1: { get } });
+    const apis = Object.assign(Object.create(null), { message: messageRef });
+    const Component = withApis<{ message: () => string }>(apis)(
+      ({ message, suffix }: { message: () => string; suffix: string }) => (
+        <p>
+          {message()}
+          {suffix}
+        </p>
+      ),
+    );
+
+    render(<Component suffix="!" />);
+
+    expect(screen.getByText('hello!')).toBeInTheDocument();
+    expect(get).toHaveBeenCalledWith(messageRef);
+    expect(Component.displayName).toBe('withApis(Component)');
   });
 });

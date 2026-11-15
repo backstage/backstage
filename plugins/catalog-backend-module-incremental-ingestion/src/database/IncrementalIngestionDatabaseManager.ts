@@ -603,7 +603,12 @@ export class IncrementalIngestionDatabaseManager {
       return;
     }
 
-    const refs = entities.map(e => stringifyEntityRef(e.entity));
+    // An upsert can't touch the same row twice, so repeated refs must be
+    // collapsed. Only the ref is stored here, so which copy remains is
+    // irrelevant.
+    const refs = Array.from(
+      new Set(entities.map(e => stringifyEntityRef(e.entity))),
+    );
 
     await this.client.transaction(async tx => {
       await tx('ingestion_mark_entities')

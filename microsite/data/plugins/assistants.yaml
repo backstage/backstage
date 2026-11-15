@@ -1,0 +1,10 @@
+title: AI Assistants
+description: AI assistants for your developer portal. Answers come from your catalog and docs; Backstage actions run as the user. Create and manage assistants in-app.
+author: Andrew Holder
+authorUrl: https://github.com/drewswiredin
+category: Development
+documentation: https://github.com/drewswiredin/backstage-assistants#readme
+npmPackageName: '@drewswiredin/backstage-plugin-assistants'
+iconUrl: /img/assistants-logo.png
+addedDate: '2026-10-14'
+status: active

@@ -15,12 +15,32 @@
  */
 
 import {
-  AnalyticsImplementation,
+  AnalyticsEvent,
   TypesToApiRefs,
   createExtensionBlueprint,
   createExtensionBlueprintParams,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
+
+/**
+ * Analytics implementations are used to track user behavior in a Backstage
+ * instance.
+ *
+ * @remarks
+ *
+ * To instrument your App or Plugin, retrieve an analytics tracker using the
+ * {@link @backstage/frontend-plugin-api#useAnalytics} hook. This returns a tracker
+ * with relevant methods for instrumentation.
+ *
+ * @public
+ */
+export type AnalyticsImplementation = {
+  /**
+   * Primary event handler responsible for compiling and forwarding events to
+   * an analytics system.
+   */
+  captureEvent(event: AnalyticsEvent): void;
+};
 
 /** @public */
 export type AnalyticsImplementationFactory<

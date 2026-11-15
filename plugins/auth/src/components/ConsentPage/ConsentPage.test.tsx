@@ -103,14 +103,14 @@ describe('ConsentPage', () => {
 
   it('does not show metadata host details for non-URL client IDs', async () => {
     mockLoadedSession({
-      clientId: 'dcr-client-id',
-      clientName: 'Registered Client',
+      clientId: 'invalid-client-id',
+      clientName: 'Unknown Client',
       redirectUri: 'cursor://callback',
     });
 
     await renderConsentPage();
 
-    expect(await screen.findByText('Registered Client')).toBeInTheDocument();
+    expect(await screen.findByText('Unknown Client')).toBeInTheDocument();
     expect(screen.queryByText('Client metadata host')).not.toBeInTheDocument();
     expect(screen.queryByText('Client metadata URL')).not.toBeInTheDocument();
     expect(screen.getByText('Callback URL')).toBeInTheDocument();

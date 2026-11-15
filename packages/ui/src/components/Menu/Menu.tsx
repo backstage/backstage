@@ -33,10 +33,7 @@ import {
   Virtualizer,
   ListLayout,
 } from 'react-aria-components';
-import {
-  useDefinition,
-  type UseDefinitionResult,
-} from '../../hooks/useDefinition';
+import { useDefinition } from '../../hooks/useDefinition';
 import {
   MenuDefinition,
   MenuListBoxDefinition,
@@ -69,10 +66,7 @@ import { isInternalLink } from '../../utils/linkUtils';
 import { getNodeText } from '../../analytics/getNodeText';
 import { Box } from '../Box';
 import { BgReset } from '../../hooks/useBg';
-import {
-  getReactAriaAnchorProps,
-  type AnchorNavigation,
-} from '../../navigation/useNavigation';
+import { BUIRoutingProvider } from '../../navigation/BUIRoutingProvider';
 
 // The height will be used for virtualized menus. It should match the size set in CSS for each menu item.
 const rowHeight = 32;
@@ -106,12 +100,14 @@ export const Menu = (props: MenuProps<object>) => {
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const menuContent = (
-    <RAMenu
-      className={classes.content}
-      renderEmptyState={() => <MenuEmptyState />}
-      style={{ width: newMaxWidth, maxHeight, ...style }}
-      {...restProps}
-    />
+    <BUIRoutingProvider>
+      <RAMenu
+        className={classes.content}
+        renderEmptyState={() => <MenuEmptyState />}
+        style={{ width: newMaxWidth, maxHeight, ...style }}
+        {...restProps}
+      />
+    </BUIRoutingProvider>
   );
 
   return (
@@ -151,12 +147,14 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const listBoxContent = (
-    <RAListBox
-      className={classes.content}
-      selectionMode={selectionMode}
-      style={{ width: newMaxWidth, maxHeight, ...style }}
-      {...restProps}
-    />
+    <BUIRoutingProvider>
+      <RAListBox
+        className={classes.content}
+        selectionMode={selectionMode}
+        style={{ width: newMaxWidth, maxHeight, ...style }}
+        {...restProps}
+      />
+    </BUIRoutingProvider>
   );
 
   return (
@@ -200,12 +198,14 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const menuContent = (
-    <RAMenu
-      className={classes.content}
-      renderEmptyState={() => <MenuEmptyState />}
-      style={{ width: newMaxWidth, maxHeight, ...style }}
-      {...restProps}
-    />
+    <BUIRoutingProvider>
+      <RAMenu
+        className={classes.content}
+        renderEmptyState={() => <MenuEmptyState />}
+        style={{ width: newMaxWidth, maxHeight, ...style }}
+        {...restProps}
+      />
+    </BUIRoutingProvider>
   );
 
   return (
@@ -266,13 +266,15 @@ export const MenuAutocompleteListbox = (
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
 
   const listBoxContent = (
-    <RAListBox
-      className={classes.content}
-      renderEmptyState={() => <MenuEmptyState />}
-      selectionMode={selectionMode}
-      style={{ width: newMaxWidth, maxHeight, ...style }}
-      {...restProps}
-    />
+    <BUIRoutingProvider>
+      <RAListBox
+        className={classes.content}
+        renderEmptyState={() => <MenuEmptyState />}
+        selectionMode={selectionMode}
+        style={{ width: newMaxWidth, maxHeight, ...style }}
+        {...restProps}
+      />
+    </BUIRoutingProvider>
   );
 
   return (
@@ -311,15 +313,9 @@ export const MenuAutocompleteListbox = (
   );
 };
 
-type MenuItemViewProps = {
-  definitionResult: UseDefinitionResult<
-    typeof MenuItemDefinition,
-    MenuItemProps
-  >;
-  navigation: AnchorNavigation;
-};
-
-const MenuItemView = ({ definitionResult, navigation }: MenuItemViewProps) => {
+/** @public */
+export const MenuItem = (props: MenuItemProps) => {
+  const definitionResult = useDefinition(MenuItemDefinition, props);
   const { ownProps, restProps, dataAttributes, analytics } = definitionResult;
   const { classes, iconStart, children } = ownProps;
   const { href } = ownProps;
@@ -327,18 +323,14 @@ const MenuItemView = ({ definitionResult, navigation }: MenuItemViewProps) => {
   const isExternal = href && !isInternalLink(href);
   const target = restProps.target ?? (isExternal ? '_blank' : undefined);
   const rel = restProps.rel ?? (isExternal ? 'noopener noreferrer' : undefined);
-  const navigationProps = getReactAriaAnchorProps(navigation, {
-    href,
-    routerOptions: restProps.routerOptions,
-  });
 
   return (
     <RAMenuItem
       className={classes.root}
       {...dataAttributes}
       textValue={typeof children === 'string' ? children : undefined}
-      {...restProps}
-      {...navigationProps}
+      {...(restProps as React.ComponentProps<typeof RAMenuItem>)}
+      href={href}
       target={target}
       rel={rel}
       onAction={() => {
@@ -364,44 +356,16 @@ const MenuItemView = ({ definitionResult, navigation }: MenuItemViewProps) => {
 };
 
 /** @public */
-export const MenuItem = (props: MenuItemProps) => {
-  const definitionResult = useDefinition(MenuItemDefinition, props);
-  const Navigation = definitionResult.navigation;
-
-  return (
-    <Navigation
-      props={{
-        ...definitionResult.restProps,
-        href: definitionResult.ownProps.href,
-      }}
-      view={MenuItemView}
-      viewProps={{ definitionResult }}
-    />
-  );
-};
-
-type MenuListBoxItemViewProps = {
-  definitionResult: UseDefinitionResult<
-    typeof MenuListBoxItemDefinition,
-    MenuListBoxItemProps
-  >;
-  navigation: AnchorNavigation;
-};
-
-const MenuListBoxItemView = ({
-  definitionResult,
-  navigation,
-}: MenuListBoxItemViewProps) => {
+export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
+  const definitionResult = useDefinition(MenuListBoxItemDefinition, props);
   const { ownProps, restProps } = definitionResult;
   const { classes, children } = ownProps;
-  const navigationProps = getReactAriaAnchorProps(navigation, restProps);
 
   return (
     <RAListBoxItem
       textValue={typeof children === 'string' ? children : undefined}
       className={classes.root}
-      {...restProps}
-      {...navigationProps}
+      {...(restProps as React.ComponentProps<typeof RAListBoxItem>)}
     >
       <div className={classes.itemContent}>
         <div className={classes.check}>
@@ -410,20 +374,6 @@ const MenuListBoxItemView = ({
         {children}
       </div>
     </RAListBoxItem>
-  );
-};
-
-/** @public */
-export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
-  const definitionResult = useDefinition(MenuListBoxItemDefinition, props);
-  const Navigation = definitionResult.navigation;
-
-  return (
-    <Navigation
-      props={definitionResult.restProps}
-      view={MenuListBoxItemView}
-      viewProps={{ definitionResult }}
-    />
   );
 };
 

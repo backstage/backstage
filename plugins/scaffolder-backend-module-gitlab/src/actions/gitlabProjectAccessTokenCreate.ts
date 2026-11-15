@@ -16,7 +16,7 @@
 
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { AccessTokenScopes, Gitlab } from '@gitbeaker/rest';
+import { AccessTokenScopes, Gitlab, VariableType } from '@gitbeaker/rest';
 import { DateTime } from 'luxon';
 import { getToken } from '../util';
 import { examples } from './gitlabProjectAccessTokenCreate.examples';
@@ -79,12 +79,52 @@ export const createGitlabProjectAccessTokenAction = (options: {
                 'Expiration date of the access token in ISO format (YYYY-MM-DD). If Empty, it will set to the maximum of 365 days.',
             })
             .optional(),
+        variableKey: z =>
+          z
+            .string({
+              description:
+                'GitLab CI/CD variable name in which to store the generated token. When set, the raw token is not exposed in outputs.',
+            })
+            .regex(/^[A-Za-z0-9_]{1,255}$/)
+            .optional(),
+        variableProtected: z =>
+          z
+            .boolean({
+              description: 'Whether the CI/CD variable should be protected',
+            })
+            .default(false)
+            .optional(),
+        maskedAndHidden: z =>
+          z
+            .boolean({
+              description:
+                'Whether the CI/CD variable should be masked and hidden',
+            })
+            .default(false)
+            .optional(),
+        environmentScope: z =>
+          z
+            .string({
+              description: 'The environment scope of the CI/CD variable',
+            })
+            .default('*')
+            .optional(),
       },
       output: {
         access_token: z =>
-          z.string({
-            description: 'Access Token',
-          }),
+          z
+            .string({
+              description:
+                'Deprecated. The raw access token. Omitted when variableKey is provided.',
+            })
+            .optional(),
+        variableKey: z =>
+          z
+            .string({
+              description:
+                'Name of the GitLab CI/CD variable containing the token',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {
@@ -95,6 +135,10 @@ export const createGitlabProjectAccessTokenAction = (options: {
         accessLevel = 40,
         scopes = ['read_repository'],
         expiresAt,
+        variableKey,
+        variableProtected = false,
+        maskedAndHidden = false,
+        environmentScope = '*',
       } = ctx.input;
 
       const { token, integrationConfig } = getToken(
@@ -117,18 +161,63 @@ export const createGitlabProjectAccessTokenAction = (options: {
         });
       }
 
+      const createAccessToken = () =>
+        api.ProjectAccessTokens.create(
+          projectId,
+          name,
+          scopes as AccessTokenScopes[],
+          expiresAt || DateTime.now().plus({ days: 365 }).toISODate()!,
+          {
+            accessLevel,
+          },
+        );
+
+      if (variableKey) {
+        await ctx.checkpoint({
+          key: `project.access.token.variable.${projectId}.${name}.${variableKey}.${environmentScope}`,
+          fn: async () => {
+            const response = await createAccessToken();
+
+            try {
+              await api.ProjectVariables.create(
+                projectId,
+                variableKey,
+                response.token,
+                {
+                  variableType: 'env_var' as VariableType,
+                  protected: variableProtected,
+                  masked: true,
+                  masked_and_hidden: maskedAndHidden,
+                  raw: true,
+                  environmentScope,
+                },
+              );
+            } catch (error) {
+              try {
+                await api.ProjectAccessTokens.revoke(projectId, response.id);
+              } catch (cleanupError) {
+                ctx.logger.error(
+                  `Failed to revoke project access token ${response.id}`,
+                );
+              }
+
+              throw error;
+            }
+          },
+        });
+
+        ctx.output('variableKey', variableKey);
+        return;
+      }
+
+      ctx.logger.warn(
+        'The access_token output is deprecated because it persists the token in task state. Provide variableKey to store the token securely in GitLab.',
+      );
+
       const projectAccessToken = await ctx.checkpoint({
         key: `project.access.token.${projectId}.${name}`,
         fn: async () => {
-          const response = await api.ProjectAccessTokens.create(
-            projectId,
-            name,
-            scopes as AccessTokenScopes[],
-            expiresAt || DateTime.now().plus({ days: 365 }).toISODate()!,
-            {
-              accessLevel,
-            },
-          );
+          const response = await createAccessToken();
           return response.token;
         },
       });

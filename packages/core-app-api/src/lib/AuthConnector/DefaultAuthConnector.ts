@@ -21,6 +21,7 @@ import {
   OAuthRequester,
 } from '@backstage/core-plugin-api';
 import { openLoginPopup } from '../loginPopup';
+import { AuthConnectionError } from './errors';
 import {
   AuthConnector,
   AuthConnectorCreateSessionOptions,
@@ -143,20 +144,36 @@ export class DefaultAuthConnector<AuthSession>
   async refreshSession(
     options?: AuthConnectorRefreshSessionOptions,
   ): Promise<any> {
-    const res = await fetch(
-      await this.buildUrl('/refresh', {
-        optional: true,
-        ...(options && { scope: this.joinScopesFunc(options.scopes) }),
-      }),
-      {
+    const url = await this.buildUrl('/refresh', {
+      optional: true,
+      ...(options && { scope: this.joinScopesFunc(options.scopes) }),
+    });
+    const refresh = () =>
+      fetch(url, {
         headers: {
           'x-requested-with': 'XMLHttpRequest',
         },
         credentials: 'include',
-      },
-    ).catch(error => {
-      throw new Error(`Auth refresh request failed, ${error}`);
-    });
+      }).catch(error => {
+        // Preserve transient network failures so session managers can retry
+        // instead of prompting for an interactive login.
+        throw new AuthConnectionError(
+          `Auth refresh request failed, ${error}`,
+          error,
+        );
+      });
+
+    // Tabs share the refresh token cookie. Wait for any ongoing refresh to
+    // receive its response (and updated cookie) before sending another request.
+    // Scopes and environment are excluded because they share the same cookie.
+    const { origin, pathname } = new URL(url);
+    const locks = window.navigator.locks;
+    const res = locks
+      ? await locks.request(
+          `backstage-auth-refresh:${origin}${pathname}`,
+          refresh,
+        )
+      : await refresh();
 
     if (!res.ok) {
       const error: any = new Error(

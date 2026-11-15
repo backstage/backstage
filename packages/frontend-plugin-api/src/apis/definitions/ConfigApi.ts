@@ -28,6 +28,7 @@ export type ConfigApi = Config;
  * The {@link ApiRef} of {@link ConfigApi}.
  *
  * @public
+ * @deprecated Use {@link coreApis.config} instead.
  */
 export const configApiRef = createApiRef<ConfigApi>().with({
   id: 'core.config',

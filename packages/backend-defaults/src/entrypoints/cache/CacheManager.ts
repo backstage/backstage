@@ -97,7 +97,7 @@ export class CacheManager {
 
     if (config.has('backend.cache.useRedisSets')) {
       logger?.warn(
-        "The 'backend.cache.useRedisSets' configuration key is deprecated and no longer has any effect. The underlying '@keyv/redis' and '@keyv/valkey' libraries no longer support redis sets.",
+        "The 'backend.cache.useRedisSets' configuration key is deprecated and no longer has any effect. The redis store no longer uses redis sets, and the valkey store always runs without them.",
       );
     }
 
@@ -441,7 +441,16 @@ export class CacheManager {
         );
       }
       if (!stores[pluginId]) {
-        const valkeyOptions = this.storeOptions?.client;
+        // Without redis sets the adapter prefixes every key with the namespace
+        // that Keyv hands it, which is what keeps plugins apart. In this mode
+        // the adapter's clear() runs KEYS on `namespace:<ns>*`, with no trailing
+        // separator, so it can also match plugins whose ID starts with the same
+        // text, and it is not cluster aware. CacheService has no clear(), so
+        // nothing depends on it today. Do not start relying on it.
+        const valkeyOptions = {
+          ...this.storeOptions?.client,
+          useRedisSets: false,
+        };
         if (this.storeOptions?.cluster) {
           // Create an iovalkey Cluster instance, which is the type that @keyv/valkey expects
           const cluster = new Cluster(

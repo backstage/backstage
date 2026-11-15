@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-techdocs-backend-module-zensical
+  title: '@backstage/plugin-techdocs-backend-module-zensical'
+  description: A module for the TechDocs backend that adds Zensical as a documentation engine
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: techdocs-maintainers

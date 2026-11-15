@@ -5,8 +5,12 @@
   "extends": "@docusaurus/tsconfig",
   "compilerOptions": {
     "allowJs": true,
-    "baseUrl": ".",
-    "ignoreDeprecations": "6.0",
+    // Unset the deprecated baseUrl from @docusaurus/tsconfig 3.x and resolve
+    // @site/* relative to this file instead
+    "baseUrl": null,
+    "paths": {
+      "@site/*": ["./*"]
+    },
     "strict": true,
     "types": [
       "@docusaurus/module-type-aliases",

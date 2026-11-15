@@ -34,6 +34,7 @@ import {
   ScaffolderTaskStatusBlueprint,
   FormFieldBlueprint,
   formFieldsApiRef,
+  ScaffolderTemplateFilterBlueprint,
   scaffolderTemplateOutputsComponentRef,
   scaffolderTemplateOutputTemplateRefsRef,
 } from '@backstage/plugin-scaffolder-react/alpha';
@@ -63,6 +64,12 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
 
 export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
   name: 'templates',
+  inputs: {
+    templateFilter: createExtensionInput(
+      [ScaffolderTemplateFilterBlueprint.dataRefs.useTemplateFilter],
+      { singleton: true, optional: true },
+    ),
+  },
   configSchema: {
     enableBackstageUi: z.boolean().optional().default(false),
     groups: z
@@ -75,7 +82,7 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
       .optional(),
     templateFilter: createZodV4FilterPredicateSchema().optional(),
   },
-  factory(originalFactory, { apis, config }) {
+  factory(originalFactory, { apis, config, inputs }) {
     const formFieldsApi = apis.get(formFieldsApiRef);
 
     const groups: TemplateGroupFilter[] | undefined = config.groups?.map(
@@ -88,6 +95,9 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
       config.templateFilter === undefined
         ? undefined
         : filterPredicateToFilterFunction(config.templateFilter);
+    const useTemplateFilter = inputs.templateFilter?.get(
+      ScaffolderTemplateFilterBlueprint.dataRefs.useTemplateFilter,
+    );
 
     return originalFactory({
       path: 'templates',
@@ -100,6 +110,7 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
             formFields={formFields}
             groups={groups}
             templateFilter={templateFilter}
+            useTemplateFilter={useTemplateFilter}
             formProps={{
               EXPERIMENTAL_theme: config.enableBackstageUi ? 'bui' : 'mui',
             }}

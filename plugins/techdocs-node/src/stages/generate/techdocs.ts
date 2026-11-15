@@ -142,6 +142,7 @@ export class TechdocsGenerator implements GeneratorBase {
         ...(this.options.dangerouslyAllowAdditionalPlugins ?? []),
         ...defaultPlugins,
       ],
+      this.options.dangerouslyAllowAdditionalExtensions,
     );
 
     if (parsedLocationAnnotation) {
@@ -254,6 +255,7 @@ export class TechdocsGenerator implements GeneratorBase {
     await createOrUpdateMetadata(
       path.join(outputDir, 'techdocs_metadata.json'),
       childLogger,
+      'mkdocs',
     );
 
     // Add etag of the prepared tree to techdocs_metadata.json
@@ -306,6 +308,9 @@ export function readGeneratorConfig(
     ),
     dangerouslyAllowAdditionalPlugins: config.getOptionalStringArray(
       'techdocs.generator.mkdocs.dangerouslyAllowAdditionalPlugins',
+    ),
+    dangerouslyAllowAdditionalExtensions: config.getOptionalStringArray(
+      'techdocs.generator.mkdocs.dangerouslyAllowAdditionalExtensions',
     ),
     disableExternalFonts: config.getOptionalBoolean(
       'techdocs.generator.mkdocs.disableExternalFonts',

@@ -22,7 +22,7 @@ import {
   RootConfigService,
   RootLoggerService,
 } from '@backstage/backend-plugin-api';
-import { BackstagePackageJson } from '@backstage/cli-node';
+import type { BackstagePackageJson } from '@backstage/cli-node';
 import { isError } from '@backstage/errors';
 
 const DETECTED_PACKAGE_ROLES = [

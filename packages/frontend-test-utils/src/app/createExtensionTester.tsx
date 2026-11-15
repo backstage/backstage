@@ -15,6 +15,7 @@
  */
 
 import {
+  useRouteResolution,
   AppNode,
   AppTree,
   Extension,
@@ -22,7 +23,11 @@ import {
   ExtensionDefinition,
   ExtensionDefinitionParameters,
   coreExtensionData,
+  appHistoryApiRef,
+  useApiHolder,
 } from '@backstage/frontend-plugin-api';
+import type { AppError } from '@backstage/frontend-app-api';
+import { ReactNode, useMemo } from 'react';
 import { Config, ConfigReader } from '@backstage/config';
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -38,7 +43,41 @@ import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/read
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createErrorCollector } from '../../../frontend-app-api/src/wiring/createErrorCollector';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
+import { TestRouteResolver } from '../internal/TestRouteResolver';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  extractRouteInfoFromAppNode,
+  MATCH_ALL_ROUTE,
+} from '../../../frontend-app-api/src/routing/extractRouteInfoFromAppNode';
 import { resolveTestApiEntries, TestApiPairs } from '../apis/TestApiProvider';
+import { throwOnAppErrors } from './throwOnAppErrors';
+
+function ExtensionTestRoutes(props: { node: AppNode; children: ReactNode }) {
+  const history = useApiHolder().get(appHistoryApiRef);
+  const routePattern = useRouteResolution().matches.at(-1)?.routePattern ?? '/';
+  const routeObjects = useMemo(() => {
+    const { routeObjects: routes } = extractRouteInfoFromAppNode(
+      props.node,
+      <T,>(ref: T) => ref,
+    );
+    // The subject sits at the caller's mount, regardless of its production
+    // path. Keep the original nodes so child boundaries see their real ancestry.
+    return routes.map(route => ({
+      ...route,
+      path: routePattern,
+      children: route.children?.includes(MATCH_ALL_ROUTE)
+        ? route.children
+        : [...(route.children ?? []), MATCH_ALL_ROUTE],
+    }));
+  }, [props.node, routePattern]);
+  return history ? (
+    <TestRouteResolver routeObjects={routeObjects}>
+      {props.children}
+    </TestRouteResolver>
+  ) : (
+    <>{props.children}</>
+  );
+}
 
 /**
  * Represents a snapshot of an extension in the app tree.
@@ -102,15 +141,17 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
     options?: {
       config?: T['configInput'];
       apis?: readonly [...TestApiPairs<TApiPairs>];
+      isExpectedError?: (error: AppError) => boolean;
     },
   ): ExtensionTester<NonNullable<T['output']>> {
-    const tester = new ExtensionTester(options?.apis);
+    const tester = new ExtensionTester(options?.apis, options?.isExpectedError);
     tester.add(subject, options as T['configInput'] & {});
     return tester;
   }
 
   #tree?: AppTree;
   #apis?: readonly any[];
+  #isExpectedError?: (error: AppError) => boolean;
 
   readonly #extensions = new Array<{
     id: string;
@@ -119,8 +160,12 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
     config?: JsonValue;
   }>();
 
-  private constructor(apis?: readonly any[]) {
+  private constructor(
+    apis?: readonly any[],
+    isExpectedError?: (error: AppError) => boolean,
+  ) {
     this.#apis = apis;
+    this.#isExpectedError = isExpectedError;
   }
 
   add<T extends ExtensionDefinitionParameters>(
@@ -192,6 +237,11 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
     return new ExtensionQuery(node);
   }
 
+  /**
+   * Returns the subject's element. For a routable subject, uses the app's route
+   * matching to select attached sub-pages when rendered with `renderInTestApp`.
+   * The subject uses the supplied `mountPath`, or the app root when omitted.
+   */
   reactElement(): JSX.Element {
     const tree = this.#resolveTree();
 
@@ -205,7 +255,12 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
       );
     }
 
-    return element;
+    return tree.root.instance?.getData(coreExtensionData.routePath) !==
+      undefined ? (
+      <ExtensionTestRoutes node={tree.root}>{element}</ExtensionTestRoutes>
+    ) : (
+      element
+    );
   }
 
   /**
@@ -285,14 +340,10 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
 
     instantiateAppNodeTree(tree.root, apiHolder, collector);
 
-    const errors = collector.collectErrors();
-    if (errors) {
-      throw new Error(
-        `Failed to resolve the extension tree: ${errors
-          .map(e => e.message)
-          .join(', ')}`,
-      );
-    }
+    throwOnAppErrors(collector.collectErrors(), {
+      description: 'Failed to resolve the extension tree',
+      isExpectedError: this.#isExpectedError,
+    });
 
     this.#tree = tree;
 
@@ -345,6 +396,11 @@ export function createExtensionTester<
   options?: {
     config?: T['configInput'];
     apis?: readonly [...TestApiPairs<TApiPairs>];
+    /**
+     * Decides whether an error reported while resolving the extension tree is
+     * expected. By default every error fails the test.
+     */
+    isExpectedError?: (error: AppError) => boolean;
   },
 ): ExtensionTester<NonNullable<T['output']>> {
   return ExtensionTester.forSubject(subject, options);

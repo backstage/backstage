@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../../testUtils/TestRouter';
 import { fireEvent, render, screen } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { BUIProvider } from '../../../provider/BUIProvider';
 import { Cell } from './Cell';
 import { Table } from './Table';
@@ -32,7 +33,7 @@ function LocationStatus() {
 
 function RouterFixture({ children }: PropsWithChildren) {
   return (
-    <MemoryRouter
+    <TestRouter
       basename="/app"
       initialEntries={['/app/catalog/entity/docs']}
       future={routerFuture}
@@ -43,7 +44,7 @@ function RouterFixture({ children }: PropsWithChildren) {
         </Routes>
         <LocationStatus />
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   );
 }
 

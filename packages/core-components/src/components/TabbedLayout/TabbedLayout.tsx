@@ -72,6 +72,12 @@ export function createSubRoutesFromChildren(
  * TabbedLayout is a compound component, which allows you to define a layout for
  * pages using a sub-navigation mechanism.
  *
+ * @deprecated Legacy routed tabs, superseded for new frontend development. Use
+ * `PageBlueprint` and `SubPageBlueprint` from `@backstage/frontend-plugin-api`
+ * for framework-managed page navigation. For standalone layouts, compose `Tabs`,
+ * `TabList`, `Tab`, and `TabPanel` from `@backstage/ui` with explicit routing and
+ * route content rendering.
+ *
  * @remarks
  * Consists of two parts: TabbedLayout and TabbedLayout.Route
  *
@@ -88,6 +94,17 @@ export function TabbedLayout(props: PropsWithChildren<{}>) {
   const routes = createSubRoutesFromChildren(props.children);
 
   return <RoutedTabs routes={routes} />;
+}
+
+// Declare the member explicitly so its deprecation survives declaration emit.
+export declare namespace TabbedLayout {
+  /**
+   * @deprecated Legacy route declaration. Use `SubPageBlueprint` from
+   * `@backstage/frontend-plugin-api` for framework-managed sub-pages, or explicit
+   * routing with tabs from `@backstage/ui` for standalone layouts.
+   */
+  // eslint-disable-next-line no-var, @typescript-eslint/no-shadow
+  var Route: (props: SubRoute) => null;
 }
 
 TabbedLayout.Route = Route;
