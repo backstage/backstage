@@ -113,7 +113,8 @@ describe('DefaultTechDocsCollatorFactory', () => {
 
       worker.use(
         http.get(
-          'http://test-backend/static/docs/default/component/test-entity-with-docs/search/search_index.json',
+          // The kind is lowercase unless legacy path casing is enabled
+          'http://test-backend/static/docs/default/:kind/test-entity-with-docs/search/search_index.json',
           () => HttpResponse.json(mockSearchDocIndex),
         ),
       );
@@ -133,6 +134,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
     it('should create documents for each tech docs search index', async () => {
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
+      expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
       const entity = expectedEntities[0];
       documents.forEach((document, idx) => {
         expect(document).toMatchObject({
@@ -266,6 +268,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
       it('should create documents for each tech docs search index', async () => {
         const pipeline = TestPipeline.fromCollator(collator);
         const { documents } = await pipeline.execute();
+        expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
         const entity = expectedEntities[0];
         documents.forEach((document, idx) => {
           expect(document).toMatchObject({
@@ -303,6 +306,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
 
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
+      expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
       const entity = expectedEntities[0];
       documents.forEach((document, idx) => {
         expect(document).toMatchObject({
@@ -340,6 +344,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
 
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
+      expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
       const entity = expectedEntities[0];
       documents.forEach((document, idx) => {
         expect(document).toMatchObject({
