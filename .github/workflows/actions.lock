@@ -45,7 +45,7 @@ workflows:
         - 'actions/setup-node@v7'
         - 'actions/upload-artifact@v7'
         - 'backstage/actions@v0.7.13'
-        - 'crate-ci/typos@v1'
+        - 'crate-ci/typos@v1.52.2'
         - 'step-security/harden-runner@v2'
     '.github/workflows/cron.yml':
         - 'actions/create-github-app-token@v3'
@@ -329,9 +329,9 @@ dependencies:
         commit: 'sha1-5d18868345f53a8f61258ad393396c7e169100fd'
         owner_id: 24584319
         repo_id: 213995974
-    'crate-ci/typos@v1':
-        ref: 'v1'
-        commit: 'sha1-53821664afd79bb88fcdd22fdc2f49d8d3f6cac9'
+    'crate-ci/typos@v1.52.2':
+        ref: 'v1.52.2'
+        commit: 'sha1-276087d9a4f06398b3e04825487805e2d7375888'
         owner_id: 36412122
         repo_id: 181782286
     'creyd/prettier_action@v4.6':
