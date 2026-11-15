@@ -45,7 +45,7 @@ workflows:
         - 'actions/setup-node@v7'
         - 'actions/upload-artifact@v7'
         - 'backstage/actions@v0.7.13'
-        - 'crate-ci/typos@v1'
+        - 'crate-ci/typos@v1.52.2'
         - 'step-security/harden-runner@v2'
     '.github/workflows/cron.yml':
         - 'actions/create-github-app-token@v3'
@@ -85,11 +85,11 @@ workflows:
         - 'actions/upload-artifact@v7'
         - 'github/gh-aw-actions@v1.2.2'
     '.github/workflows/issue.yaml':
-        - 'actions/checkout@v7.0.1'
+        - 'actions/checkout@v7'
         - 'github/issue-labeler@v3.5'
         - 'redhat-plumbers-in-action/advanced-issue-labeler@v3.0.0'
-        - 'stefanbuck/github-issue-parser@v3.2.5'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'stefanbuck/github-issue-parser@v3'
+        - 'step-security/harden-runner@v2'
     '.github/workflows/mui-migration-tracker.yml':
         - 'actions/checkout@v7'
         - 'actions/github-script@v9'
@@ -267,11 +267,6 @@ dependencies:
         commit: 'sha1-3d3c42e5aac5ba805825da76410c181273ba90b1'
         owner_id: 44036562
         repo_id: 197814629
-    'actions/checkout@v7.0.1':
-        ref: 'v7.0.1'
-        commit: 'sha1-3d3c42e5aac5ba805825da76410c181273ba90b1'
-        owner_id: 44036562
-        repo_id: 197814629
     'actions/create-github-app-token@v3':
         ref: 'v3'
         commit: 'sha1-64ab729a6294000f5aa4a4bc0b73d1f32bc45510'
@@ -334,9 +329,9 @@ dependencies:
         commit: 'sha1-5d18868345f53a8f61258ad393396c7e169100fd'
         owner_id: 24584319
         repo_id: 213995974
-    'crate-ci/typos@v1':
-        ref: 'v1'
-        commit: 'sha1-53821664afd79bb88fcdd22fdc2f49d8d3f6cac9'
+    'crate-ci/typos@v1.52.2':
+        ref: 'v1.52.2'
+        commit: 'sha1-276087d9a4f06398b3e04825487805e2d7375888'
         owner_id: 36412122
         repo_id: 181782286
     'creyd/prettier_action@v4.6':
@@ -419,18 +414,13 @@ dependencies:
         commit: 'sha1-11b673cfb4b0dc0d860a1323caa199d54950dcce'
         owner_id: 12959162
         repo_id: 208654109
-    'stefanbuck/github-issue-parser@v3.2.5':
-        ref: 'v3.2.5'
+    'stefanbuck/github-issue-parser@v3':
+        ref: 'v3'
         commit: 'sha1-cb6e97157cbf851e3a393ff8d57c93a484cc323f'
         owner_id: 1393946
         repo_id: 355696790
     'step-security/harden-runner@v2':
         ref: 'v2'
         commit: 'sha1-1d88384fd173af6ecb012dfd0264a306b711241a'
-        owner_id: 88700172
-        repo_id: 422287306
-    'step-security/harden-runner@v2.22.1':
-        ref: 'v2.22.1'
-        commit: 'sha1-ccd8616d44fd3846e67624a50d5aad6d37bf2d25'
         owner_id: 88700172
         repo_id: 422287306

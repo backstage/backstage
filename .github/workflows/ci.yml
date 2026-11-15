@@ -197,7 +197,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: check for typos
-        uses: crate-ci/typos@v1
+        uses: crate-ci/typos@v1.52.2
         with:
           config: typos.toml
 
