@@ -131,7 +131,14 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
         emit(processingResult.entity(location, user));
       }
     } finally {
-      await client.unbind();
+      try {
+        await client.unbind();
+      } catch (error) {
+        this.logger.warn(
+          `Failed to unbind LDAP client after reading "${location.target}"`,
+          error,
+        );
+      }
     }
 
     return true;
