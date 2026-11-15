@@ -1601,4 +1601,74 @@ describe('readLdapOrg', () => {
       expect.any(Object),
     );
   });
+
+  it('waits for groups to finish before rejecting when users fail', async () => {
+    const userSearch = createDeferred<SearchResult>();
+    const groupSearch = createDeferred<SearchResult>();
+    userSearch.catch(() => undefined);
+    groupSearch.catch(() => undefined);
+    userClient.search.mockReturnValue(userSearch);
+    groupClient.search.mockReturnValue(groupSearch);
+
+    const userError = new Error('user search failed');
+    const readPromise = readLdapOrg(
+      userClient,
+      [userConfig()],
+      [groupConfig()],
+      undefined,
+      { groupClient, logger },
+    );
+
+    const onSettled = jest.fn();
+    const tracked = readPromise.then(onSettled, onSettled);
+
+    await Promise.resolve();
+    expect(userClient.search).toHaveBeenCalled();
+    expect(groupClient.search).toHaveBeenCalled();
+
+    userSearch.reject(userError);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(onSettled).not.toHaveBeenCalled();
+
+    groupSearch.resolve(searchResult([groupEntry()]));
+    await expect(readPromise).rejects.toBe(userError);
+    await tracked;
+    expect(onSettled).toHaveBeenCalled();
+  });
+
+  it('waits for users to finish before rejecting when groups fail', async () => {
+    const userSearch = createDeferred<SearchResult>();
+    const groupSearch = createDeferred<SearchResult>();
+    userSearch.catch(() => undefined);
+    groupSearch.catch(() => undefined);
+    userClient.search.mockReturnValue(userSearch);
+    groupClient.search.mockReturnValue(groupSearch);
+
+    const groupError = new Error('group search failed');
+    const readPromise = readLdapOrg(
+      userClient,
+      [userConfig()],
+      [groupConfig()],
+      undefined,
+      { groupClient, logger },
+    );
+
+    const onSettled = jest.fn();
+    const tracked = readPromise.then(onSettled, onSettled);
+
+    await Promise.resolve();
+    expect(userClient.search).toHaveBeenCalled();
+    expect(groupClient.search).toHaveBeenCalled();
+
+    groupSearch.reject(groupError);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(onSettled).not.toHaveBeenCalled();
+
+    userSearch.resolve(searchResult([userEntry()]));
+    await expect(readPromise).rejects.toBe(groupError);
+    await tracked;
+    expect(onSettled).toHaveBeenCalled();
+  });
 });
