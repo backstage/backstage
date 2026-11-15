@@ -135,17 +135,25 @@ describe('EntityHeaderBui', () => {
   });
 
   it('keeps a useful owner fallback while catalog owner resolution is pending', async () => {
-    const ownerResponse = createDeferred<{ items: Entity[] }>();
-    await renderHeader({
-      entity: componentEntity,
-      catalogApi: catalogApiMock.mock({
-        getEntitiesByRefs: jest.fn(() => ownerResponse.promise),
-      }),
+    const catalogApi = catalogApiMock({
+      entities: [componentEntity, ownerEntity, systemEntity],
     });
+    // Hold back the owner lookup until the deferred resolves, while letting
+    // unrelated lookups such as the hierarchy links answer normally
+    const getEntitiesByRefs = catalogApi.getEntitiesByRefs.bind(catalogApi);
+    const ownerResponse = createDeferred<void>();
+    jest
+      .spyOn(catalogApi, 'getEntitiesByRefs')
+      .mockImplementation(query =>
+        query.entityRefs.includes('group:default/team-a')
+          ? ownerResponse.promise.then(() => getEntitiesByRefs(query))
+          : getEntitiesByRefs(query),
+      );
+    await renderHeader({ entity: componentEntity, catalogApi });
 
     expect(await screen.findByText('team-a')).toBeInTheDocument();
     await act(async () => {
-      ownerResponse.resolve({ items: [ownerEntity] });
+      ownerResponse.resolve();
     });
     expect(await screen.findByText('Team A')).toBeInTheDocument();
   });
