@@ -28017,14 +28017,14 @@ __metadata:
   linkType: hard
 
 "express-rate-limit@npm:^8.2.1, express-rate-limit@npm:^8.2.2":
-  version: 8.7.3
-  resolution: "express-rate-limit@npm:8.7.3"
+  version: 8.7.4
+  resolution: "express-rate-limit@npm:8.7.4"
   dependencies:
     debug: "npm:^4.4.3"
     ip-address: "npm:^10.2.0"
   peerDependencies:
     express: ">= 4.11"
-  checksum: 10/a92c767dfa5fb86bb68cf789d0c789c429c8fc273d27218e9fff498049cdc7138b7d07fa29ac9185dc8f50fe320dfa51bbe461d9c5b8e9cf823e783b5787c3aa
+  checksum: 10/82b20bddaa5dd1860d44f75ce15209e56a44be7568f3f79fc059b5c35ff888ba79d278642f0f9de78fa09f10505163712e7072ee210363c8d656157728774ab7
   languageName: node
   linkType: hard
 
