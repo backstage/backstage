@@ -35,6 +35,7 @@ export type RootLoggerConfig = {
   level?: string;
   meta?: JsonObject;
   overrides?: WinstonLoggerLevelOverride[];
+  redactAllowlist?: string[];
 };
 
 export const winstonLevels = winstonConfig.npm.levels;

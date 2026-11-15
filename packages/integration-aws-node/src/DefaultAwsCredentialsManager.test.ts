@@ -637,6 +637,46 @@ describe('DefaultAwsCredentialsManager', () => {
       await provider.getCredentialProvider({ accountId: '111111111111' });
       expect(fromTokenFile).not.toHaveBeenCalled();
     });
+
+    it('reports the ARN of the assumed role, only for credentials that assume a role', async () => {
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+
+      const byAccount = async (accountId: string) =>
+        (await provider.getCredentialProvider({ accountId })).roleArn;
+
+      expect(await byAccount('111111111111')).toEqual(
+        'arn:aws:iam::111111111111:role/hello',
+      );
+      expect(await byAccount('222222222222')).toEqual(
+        'arn:aws-other:iam::222222222222:role/hi',
+      );
+      expect(await byAccount('333333333333')).toBeUndefined();
+      expect(await byAccount('444444444444')).toBeUndefined();
+      expect(await byAccount('555555555555')).toBeUndefined();
+      // Accounts without an entry of their own use the account defaults
+      expect(await byAccount('999999999999')).toEqual(
+        'arn:aws:iam::999999999999:role/backstage-role',
+      );
+      expect((await provider.getCredentialProvider()).roleArn).toBeUndefined();
+
+      const wifProvider = DefaultAwsCredentialsManager.fromConfig(
+        new ConfigReader({
+          aws: {
+            accounts: [
+              {
+                accountId: '111111111111',
+                roleName: 'PortalRole',
+                webIdentityTokenFile: '/var/run/aws/token',
+              },
+            ],
+          },
+        }),
+      );
+      expect(
+        (await wifProvider.getCredentialProvider({ accountId: '111111111111' }))
+          .roleArn,
+      ).toEqual('arn:aws:iam::111111111111:role/PortalRole');
+    });
   });
 
   describe('experimentalFromConnections', () => {
@@ -701,6 +741,7 @@ describe('DefaultAwsCredentialsManager', () => {
         accountId: '111111111111',
       });
       expect(assumed.accountId).toEqual('111111111111');
+      expect(assumed.roleArn).toEqual('arn:aws:iam::111111111111:role/hello');
       expect(await assumed.sdkCredentialProvider()).toEqual({
         accessKeyId: 'ACCESS_KEY_ID_1',
         secretAccessKey: 'SECRET_ACCESS_KEY_1',
@@ -721,6 +762,7 @@ describe('DefaultAwsCredentialsManager', () => {
         arn: 'arn:aws:iam::333333333333:role/some-role',
       });
       expect(byArn.accountId).toEqual('333333333333');
+      expect(byArn.roleArn).toBeUndefined();
       expect(await byArn.sdkCredentialProvider()).toEqual({
         accessKeyId: 'my-access-key',
         secretAccessKey: 'my-secret-access-key',
@@ -750,6 +792,9 @@ describe('DefaultAwsCredentialsManager', () => {
         accountId: '999999999999',
       });
       expect(provider.accountId).toEqual('999999999999');
+      expect(provider.roleArn).toEqual(
+        'arn:aws:iam::999999999999:role/backstage-role',
+      );
       expect(await provider.sdkCredentialProvider()).toEqual({
         accessKeyId: 'ACCESS_KEY_ID_9',
         secretAccessKey: 'SECRET_ACCESS_KEY_9',

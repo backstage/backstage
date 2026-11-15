@@ -28,11 +28,17 @@ function joinIds(ids: Iterable<string>): string {
   return [...ids].map(id => `'${id}'`).join(', ');
 }
 
+function moduleKey(pluginId: string, moduleId: string): string {
+  return `${pluginId}\0${moduleId}`;
+}
+
 export function createInitializationResultCollector(options: {
   pluginIds: string[];
   logger?: RootLoggerService;
   allowBootFailurePredicate: AllowBootFailurePredicate;
 }): {
+  onPluginInitBegin(pluginId: string): void;
+  onPluginModuleInitBegin(pluginId: string, moduleId: string): void;
   onPluginResult(pluginId: string, error?: Error): void;
   onPluginModuleResult(pluginId: string, moduleId: string, error?: Error): void;
   amendPluginModuleResult(
@@ -54,6 +60,8 @@ export function createInitializationResultCollector(options: {
   const moduleResultsByPlugin: Map<string, ModuleStartupResult[]> = new Map(
     Array.from(starting).map(pluginId => [pluginId, []]),
   );
+  const pluginInitBeginAt = new Map<string, Date>();
+  const moduleInitBeginAt = new Map<string, Date>();
 
   logger?.info(`Plugin initialization started: ${joinIds(starting)}`);
 
@@ -85,6 +93,12 @@ export function createInitializationResultCollector(options: {
   timeout = setTimeout(onTimeout, interval);
 
   return {
+    onPluginInitBegin(pluginId: string) {
+      pluginInitBeginAt.set(pluginId, new Date());
+    },
+    onPluginModuleInitBegin(pluginId: string, moduleId: string) {
+      moduleInitBeginAt.set(moduleKey(pluginId, moduleId), new Date());
+    },
     onPluginResult(pluginId: string, error?: Error) {
       starting.delete(pluginId);
       started.add(pluginId);
@@ -100,6 +114,7 @@ export function createInitializationResultCollector(options: {
         pluginResults.push({
           pluginId,
           resultAt: new Date(),
+          beginAt: pluginInitBeginAt.get(pluginId),
           modules,
         });
       } else {
@@ -107,6 +122,7 @@ export function createInitializationResultCollector(options: {
         pluginResults.push({
           pluginId,
           resultAt: new Date(),
+          beginAt: pluginInitBeginAt.get(pluginId),
           modules,
           failure: {
             error,
@@ -140,12 +156,17 @@ export function createInitializationResultCollector(options: {
       }
 
       if (!error) {
-        moduleResults.push({ moduleId, resultAt: new Date() });
+        moduleResults.push({
+          moduleId,
+          resultAt: new Date(),
+          beginAt: moduleInitBeginAt.get(moduleKey(pluginId, moduleId)),
+        });
       } else {
         const allowed = options.allowBootFailurePredicate(pluginId, moduleId);
         moduleResults.push({
           moduleId,
           resultAt: new Date(),
+          beginAt: moduleInitBeginAt.get(moduleKey(pluginId, moduleId)),
           failure: { error, allowed },
         });
         if (allowed) {

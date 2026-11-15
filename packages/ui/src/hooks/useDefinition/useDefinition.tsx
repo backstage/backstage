@@ -21,7 +21,7 @@ import { useBgProvider, useBgConsumer, BgProvider } from '../useBg';
 import { resolveDefinitionProps, processUtilityProps } from './helpers';
 import { useAnalytics } from '../../analytics/useAnalytics';
 import { noopTracker } from '../../analytics/useAnalytics';
-import { useDefinitionNavigation } from './useDefinitionNavigation';
+import { sanitizeHref } from '../../utils/linkUtils';
 import type {
   ComponentConfig,
   UseDefinitionOptions,
@@ -39,19 +39,16 @@ export function useDefinition<
 ): UseDefinitionResult<D, P> {
   const { breakpoint } = useBreakpoint();
 
+  const rawHref = props.href;
+  const href = sanitizeHref(rawHref);
+  const safeProps = href === rawHref ? props : ({ ...props, href } as P);
+
   // Resolve all props centrally — applies responsive values and defaults
   const { ownPropsResolved, restProps } = resolveDefinitionProps(
     definition,
-    props,
+    safeProps,
     breakpoint,
   );
-
-  let navigation;
-  if (definition.navigation) {
-    // Component definitions are module constants, so this hook condition is
-    // stable for the lifetime of the component.
-    navigation = useDefinitionNavigation(definition.navigation);
-  }
 
   const dataAttributes: Record<string, string | undefined> = {};
 
@@ -140,6 +137,5 @@ export function useDefinition<
     dataAttributes,
     utilityStyle,
     ...(definition.analytics ? { analytics } : {}),
-    ...(definition.navigation ? { navigation } : {}),
   } as unknown as UseDefinitionResult<D, P>;
 }

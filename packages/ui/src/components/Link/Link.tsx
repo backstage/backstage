@@ -14,59 +14,37 @@
  * limitations under the License.
  */
 
-import { forwardRef, useRef } from 'react';
-import { mergeProps, useFocusRing, useLink } from 'react-aria';
+import { forwardRef } from 'react';
+import { mergeProps, useFocusRing, useLink, useObjectRef } from 'react-aria';
 import type { LinkProps } from './types';
 import {
   useDefinition,
   type UseDefinitionResult,
 } from '../../hooks/useDefinition';
-import { useResolvedHref } from '../../hooks/useResolvedHref';
 import { LinkDefinition } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';
-import {
-  handleRouterLinkClick,
-  type AnchorNavigation,
-} from '../../navigation/useNavigation';
+import { BUIRoutingProvider } from '../../navigation/BUIRoutingProvider';
 
 type LinkViewProps = {
   definitionResult: UseDefinitionResult<typeof LinkDefinition, LinkProps>;
-  navigation: AnchorNavigation;
   forwardedRef: React.ForwardedRef<HTMLAnchorElement>;
 };
 
-function LinkView({
-  definitionResult,
-  navigation,
-  forwardedRef,
-}: LinkViewProps) {
+function LinkView({ definitionResult, forwardedRef }: LinkViewProps) {
   const { ownProps, restProps, dataAttributes, analytics } = definitionResult;
   const { classes, title, children } = ownProps;
 
-  const internalRef = useRef<HTMLAnchorElement>(null);
-  const linkRef = (forwardedRef ||
-    internalRef) as React.RefObject<HTMLAnchorElement>;
+  const linkRef = useObjectRef(forwardedRef);
 
-  let resolvedLinkProps = restProps;
-  if (navigation.type === 'router') {
-    resolvedLinkProps = {
-      ...restProps,
-      href: navigation.ariaHref,
-      routerOptions: navigation.routerOptions,
-    };
-  } else if (navigation.type === 'native') {
-    resolvedLinkProps = {
-      ...restProps,
-      href: navigation.ariaHref,
-    };
-  }
   // React Aria Components' Link filters out the native title attribute.
   // Render the anchor explicitly so truncated links retain their browser tooltip.
-  const { linkProps } = useLink(resolvedLinkProps, linkRef);
+  // RouterConfig belongs to applications. The host provider accepts BUI's
+  // router-neutral options, so only the React Aria boundary needs this cast.
+  const { linkProps } = useLink(
+    restProps as Parameters<typeof useLink>[0],
+    linkRef,
+  );
   const { isFocusVisible, focusProps } = useFocusRing();
-  const fallbackHref = useResolvedHref(restProps.href);
-  const resolvedHref =
-    navigation.type === 'native' ? navigation.browserHref : fallbackHref;
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     linkProps.onClick?.(e);
@@ -77,10 +55,9 @@ function LinkView({
     analytics.captureEvent('click', text, {
       attributes: { to: String(restProps.href ?? '') },
     });
-    handleRouterLinkClick(e, navigation);
   };
 
-  const { href: _href, ...interactionProps } = mergeProps(
+  const interactionProps = mergeProps(
     linkProps,
     focusProps,
   ) as React.AnchorHTMLAttributes<HTMLAnchorElement>;
@@ -90,9 +67,10 @@ function LinkView({
     ...anchorProps
   } = restProps;
   const commonProps = {
-    ...interactionProps,
-    ...dataAttributes,
     ...(anchorProps as React.AnchorHTMLAttributes<HTMLAnchorElement>),
+    ...interactionProps,
+    href: interactionProps.href ?? (restProps.href === '' ? '' : undefined),
+    ...dataAttributes,
     ref: linkRef,
     title,
     className: classes.root,
@@ -101,17 +79,7 @@ function LinkView({
     children,
   };
 
-  if (navigation.type === 'router') {
-    return (
-      <navigation.Link
-        {...commonProps}
-        {...navigation.routerLinkOptions}
-        to={navigation.to}
-      />
-    );
-  }
-
-  return <a {...commonProps} href={resolvedHref} />;
+  return <a {...commonProps} />;
 }
 
 /**
@@ -121,14 +89,11 @@ function LinkView({
  */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   const definitionResult = useDefinition(LinkDefinition, props);
-  const Navigation = definitionResult.navigation;
 
   return (
-    <Navigation
-      props={definitionResult.restProps}
-      view={LinkView}
-      viewProps={{ definitionResult, forwardedRef: ref }}
-    />
+    <BUIRoutingProvider>
+      <LinkView definitionResult={definitionResult} forwardedRef={ref} />
+    </BUIRoutingProvider>
   );
 });
 

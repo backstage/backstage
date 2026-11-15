@@ -69,7 +69,7 @@ describe('pinnipedAuthenticator', () => {
   const clusterScopedIdToken = 'dummy-token';
 
   beforeAll(async () => {
-    const keyPair = await generateKeyPair('ES256');
+    const keyPair = await generateKeyPair('ES256', { extractable: true });
     const privateKey = await exportJWK(keyPair.privateKey);
     publicKey = await exportJWK(keyPair.publicKey);
     publicKey.alg = privateKey.alg = 'ES256';

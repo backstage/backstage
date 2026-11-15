@@ -23,6 +23,10 @@ import { DateTime } from 'luxon';
 const mockGitlabClient = {
   ProjectAccessTokens: {
     create: jest.fn(),
+    revoke: jest.fn(),
+  },
+  ProjectVariables: {
+    create: jest.fn(),
   },
 };
 
@@ -69,6 +73,7 @@ describe('gitlab:projectAccessToken:create examples', () => {
       token: 'gitlab-token',
       username: 'gitlab-user',
     });
+    mockContext.logger.warn = jest.fn();
 
     await action.handler({
       ...mockContext,
@@ -91,6 +96,9 @@ describe('gitlab:projectAccessToken:create examples', () => {
     expect(mockContext.output).toHaveBeenCalledWith(
       'access_token',
       'gitlab-token',
+    );
+    expect(mockContext.logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('access_token output is deprecated'),
     );
   });
 
@@ -214,6 +222,155 @@ describe('gitlab:projectAccessToken:create examples', () => {
     expect(mockContext.output).toHaveBeenCalledWith(
       'access_token',
       'gitlab-token',
+    );
+  });
+
+  it('should create a token and store it as a CI/CD variable when variableKey is provided', async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      id: 1,
+      token: 'secret-token',
+    });
+    mockGitlabClient.ProjectVariables.create.mockResolvedValue({});
+    mockContext.logger.warn = jest.fn();
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        projectId: '987',
+        variableKey: 'MY_TOKEN',
+      },
+    });
+
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '987',
+      'tokenname',
+      ['read_repository'],
+      DateTime.now().plus({ days: 365 }).toISODate()!,
+      {
+        accessLevel: 40,
+      },
+    );
+
+    expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
+      '987',
+      'MY_TOKEN',
+      'secret-token',
+      {
+        variableType: 'env_var',
+        protected: false,
+        masked: true,
+        masked_and_hidden: false,
+        raw: true,
+        environmentScope: '*',
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith('variableKey', 'MY_TOKEN');
+    expect(mockContext.output).not.toHaveBeenCalledWith(
+      'access_token',
+      expect.anything(),
+    );
+    expect(mockContext.logger.warn).not.toHaveBeenCalled();
+  });
+
+  it('should create a token and store it as a CI/CD variable with custom options', async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      id: 1,
+      token: 'secret-token',
+    });
+    mockGitlabClient.ProjectVariables.create.mockResolvedValue({});
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        projectId: '987',
+        name: 'backstage-token',
+        variableKey: 'BACKSTAGE_ACCESS_TOKEN',
+        variableProtected: true,
+        maskedAndHidden: true,
+        environmentScope: 'production',
+      },
+    });
+
+    expect(mockGitlabClient.ProjectVariables.create).toHaveBeenCalledWith(
+      '987',
+      'BACKSTAGE_ACCESS_TOKEN',
+      'secret-token',
+      {
+        variableType: 'env_var',
+        protected: true,
+        masked: true,
+        masked_and_hidden: true,
+        raw: true,
+        environmentScope: 'production',
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'variableKey',
+      'BACKSTAGE_ACCESS_TOKEN',
+    );
+    expect(mockContext.output).not.toHaveBeenCalledWith(
+      'access_token',
+      expect.anything(),
+    );
+  });
+
+  it('should revoke the access token when variable creation fails', async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      id: 42,
+      token: 'secret-token',
+    });
+    mockGitlabClient.ProjectVariables.create.mockRejectedValue(
+      new Error('variable creation failed'),
+    );
+    mockGitlabClient.ProjectAccessTokens.revoke.mockResolvedValue({});
+
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          repoUrl: 'gitlab.com?repo=repo&owner=owner',
+          projectId: '987',
+          variableKey: 'MY_TOKEN',
+        },
+      }),
+    ).rejects.toThrow('variable creation failed');
+
+    expect(mockGitlabClient.ProjectAccessTokens.revoke).toHaveBeenCalledWith(
+      '987',
+      42,
+    );
+  });
+
+  it('should propagate the original error when revoke fails during cleanup', async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      id: 42,
+      token: 'secret-token',
+    });
+    mockGitlabClient.ProjectVariables.create.mockRejectedValue(
+      new Error('variable creation failed'),
+    );
+    mockGitlabClient.ProjectAccessTokens.revoke.mockRejectedValue(
+      new Error('revoke failed'),
+    );
+    mockContext.logger.error = jest.fn();
+
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          repoUrl: 'gitlab.com?repo=repo&owner=owner',
+          projectId: '987',
+          variableKey: 'MY_TOKEN',
+        },
+      }),
+    ).rejects.toThrow('variable creation failed');
+
+    expect(mockContext.logger.error).toHaveBeenCalledWith(
+      expect.stringContaining('Failed to revoke project access token 42'),
     );
   });
 });

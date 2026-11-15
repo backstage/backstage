@@ -111,8 +111,9 @@ export class UnprocessedEntitiesModule {
 
   private async pending(owner?: string): Promise<HydratedRefreshState[]> {
     const res = (
-      await this.database('refresh_state.*')
-        .from('refresh_state')
+      await this.database('refresh_state')
+        // Only candidate columns; final_entities shares some column names.
+        .select('refresh_state.*')
         .leftJoin(
           'final_entities',
           'final_entities.entity_id',
@@ -129,8 +130,9 @@ export class UnprocessedEntitiesModule {
 
   private async failed(owner?: string): Promise<HydratedRefreshState[]> {
     const res = (
-      await this.database('refresh_state.*')
-        .from('refresh_state')
+      await this.database('refresh_state')
+        // Only candidate columns; final_entities shares some column names.
+        .select('refresh_state.*')
         .rightJoin(
           'final_entities',
           'final_entities.entity_id',

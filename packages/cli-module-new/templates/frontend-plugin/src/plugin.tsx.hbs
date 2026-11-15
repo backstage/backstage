@@ -18,6 +18,7 @@ export const page = PageBlueprint.make({
 
 export const {{ pluginVar }} = createFrontendPlugin({
   pluginId: '{{pluginId}}',
+  info: { packageJson: () => import('../package.json') },
   extensions: [page],
   routes: {
     root: rootRouteRef,

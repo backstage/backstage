@@ -252,10 +252,21 @@ export async function startTestBackend<TExtensionPoints extends any[]>(
       health: coreServices.rootHealth,
     },
     async factory({ config, lifecycle, rootLogger, health }) {
-      const router = DefaultRootHttpRouter.create();
       const logger = rootLogger.child({ service: 'rootHttpRouter' });
 
       const app = express();
+
+      server = await createHttpServer(
+        app,
+        { listen: { host: '', port: 0 } },
+        { logger },
+      );
+
+      const router = DefaultRootHttpRouter.create({
+        server,
+        lifecycle,
+        logger,
+      });
 
       const middleware = MiddlewareFactory.create({ config, logger });
       const healthRouter = createHealthRouter({ config, health });
@@ -264,12 +275,6 @@ export async function startTestBackend<TExtensionPoints extends any[]>(
       app.use(router.handler());
       app.use(middleware.notFound());
       app.use(middleware.error());
-
-      server = await createHttpServer(
-        app,
-        { listen: { host: '', port: 0 } },
-        { logger },
-      );
 
       lifecycle.addShutdownHook(() => server.stop(), { logger });
 

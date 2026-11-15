@@ -8,4 +8,5 @@ documentation: https://github.com/microcks/microcks-backstage-provider
 iconUrl: https://raw.githubusercontent.com/microcks/.github/refs/heads/main/assets/microcks-logo-blue.png
 npmPackageName: '@microcks/microcks-backstage-provider'
 addedDate: '2023-04-06'
-status: active
+status: inactive
+staleSince: '2026-11-04'

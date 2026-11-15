@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { createRef, type JSX, type PropsWithChildren } from 'react';
 import * as ProviderReactAria from 'react-aria';
 import * as ProviderReactAriaComponents from 'react-aria-components';
 import type { TagRenderProps } from 'react-aria-components';
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { BUIProvider } from '../../provider/BUIProvider';
 import { Tag, TagGroup } from './TagGroup';
 
@@ -37,7 +38,7 @@ function RouterFixture({
   captureEvent,
 }: PropsWithChildren<{ captureEvent?: jest.Mock }>) {
   return (
-    <MemoryRouter
+    <TestRouter
       basename="/app"
       initialEntries={['/app/catalog/entity/docs']}
       future={routerFuture}
@@ -50,7 +51,7 @@ function RouterFixture({
         </Routes>
         <LocationStatus />
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   );
 }
 
@@ -378,7 +379,7 @@ describe('Tag navigation', () => {
     expect(IsolatedReactAriaComponents).not.toBe(ProviderReactAriaComponents);
 
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog/entity/docs']}
         future={routerFuture}
@@ -398,7 +399,7 @@ describe('Tag navigation', () => {
           </Routes>
         </BUIProvider>
         <LocationStatus />
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     const tag = screen.getByRole('row', { name: 'Destination' });

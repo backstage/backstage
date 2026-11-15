@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { MetricsServiceGauge } from '@backstage/backend-plugin-api/alpha';
 import { IterationEngine, IterationEngineOptions } from '../types';
@@ -25,6 +26,8 @@ import { stringifyError, toError } from '@backstage/errors';
 import { EventParams } from '@backstage/plugin-events-node';
 import { HumanDuration } from '@backstage/types';
 
+const REPEATED_REFS_WARNING_INTERVAL_MS = 10 * 60 * 1000;
+
 export class IncrementalIngestionEngine implements IterationEngine {
   private readonly restLength: Duration;
   private readonly burstLength: Duration;
@@ -33,6 +36,14 @@ export class IncrementalIngestionEngine implements IterationEngine {
   private readonly lastCompleted: MetricsServiceGauge;
 
   private manager: IncrementalIngestionDatabaseManager;
+
+  // Repeated refs seen since the last warning; see withUniqueRefs
+  private repeatedRefs = {
+    count: 0,
+    batches: 0,
+    examples: new Set<string>(),
+    lastWarnedAt: undefined as number | undefined,
+  };
 
   constructor(private options: IterationEngineOptions) {
     this.manager = options.manager;
@@ -267,7 +278,7 @@ export class IncrementalIngestionEngine implements IterationEngine {
   async mark({
     id,
     sequence,
-    entities = [],
+    entities: providedEntities = [],
     done,
     cursor,
   }: {
@@ -277,6 +288,8 @@ export class IncrementalIngestionEngine implements IterationEngine {
     done: boolean;
     cursor?: unknown;
   }) {
+    const entities = this.withUniqueRefs(providedEntities, `Ingestion '${id}'`);
+
     this.options.logger.debug(
       `incremental-engine: Ingestion '${id}': MARK ${
         entities.length
@@ -388,14 +401,22 @@ export class IncrementalIngestionEngine implements IterationEngine {
       return;
     }
 
-    const result = await provider.eventHandler.onEvent(params);
+    const eventResult = await provider.eventHandler.onEvent(params);
 
-    if (result.type === 'ignored') {
+    if (eventResult.type === 'ignored') {
       logger.debug(
         `incremental-engine: ${providerName} ignored event from topic '${topic}'`,
       );
       return;
     }
+
+    const result = {
+      ...eventResult,
+      added: this.withUniqueRefs(
+        eventResult.added,
+        `${providerName} event from '${topic}'`,
+      ),
+    };
 
     if (result.added.length > 0) {
       const ingestionRecord = await this.manager.getCurrentIngestionRecord(
@@ -431,6 +452,78 @@ export class IncrementalIngestionEngine implements IterationEngine {
     logger.debug(
       `incremental-engine: ${providerName} processed delta from '${topic}' event`,
     );
+  }
+
+  /**
+   * Keeps only the last candidate for each entity ref.
+   *
+   * Emitting the same entity ref more than once in a single batch is not
+   * supported, and providers should avoid it. Rather than failing the whole
+   * batch, we warn and let the last candidate win, which matches what
+   * applying the candidates in order would have done.
+   *
+   * A provider that does this tends to do it in every run, and bursts can
+   * process many batches per minute, so the warning is throttled and
+   * summarizes everything seen since the previous one. Each affected batch
+   * is logged at debug level.
+   */
+  private withUniqueRefs(
+    entities: DeferredEntity[],
+    context: string,
+  ): DeferredEntity[] {
+    const byRef = new Map<string, DeferredEntity>();
+    const repeated = new Set<string>();
+    for (const deferred of entities) {
+      const ref = stringifyEntityRef(deferred.entity);
+      if (byRef.has(ref)) {
+        repeated.add(ref);
+        // Move the ref to the position of its last occurrence
+        byRef.delete(ref);
+      }
+      byRef.set(ref, deferred);
+    }
+
+    if (repeated.size === 0) {
+      return entities;
+    }
+
+    this.options.logger.debug(
+      `incremental-engine: ${context}: ${repeated.size} entity refs were emitted more than once in the same batch`,
+    );
+
+    const state = this.repeatedRefs;
+    state.count += repeated.size;
+    state.batches += 1;
+    for (const ref of repeated) {
+      if (state.examples.size >= 5) {
+        break;
+      }
+      state.examples.add(ref);
+    }
+
+    const now = Date.now();
+    if (
+      state.lastWarnedAt === undefined ||
+      now - state.lastWarnedAt >= REPEATED_REFS_WARNING_INTERVAL_MS
+    ) {
+      this.options.logger.warn(
+        `incremental-engine: ${this.options.provider.getProviderName()} emitted ${
+          state.count
+        } entity refs more than once ` +
+          `within the same batch, in ${state.batches} batches since the last warning; keeping the last candidate for each. ` +
+          `Providers should emit each entity ref at most once per batch. Examples: ${Array.from(
+            state.examples,
+          ).join(', ')}`,
+      );
+      this.repeatedRefs = {
+        count: 0,
+        batches: 0,
+        examples: new Set(),
+        lastWarnedAt: now,
+      };
+    }
+
+    return Array.from(byRef.values());
   }
 
   supportsEventTopics(): string[] {

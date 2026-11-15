@@ -14,31 +14,14 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core/styles';
 import IlloSvgUrl from './illo.svg';
-
-const useStyles = makeStyles(theme => ({
-  illo: {
-    maxWidth: '60%',
-    top: 100,
-    right: 20,
-    position: 'absolute',
-    [theme.breakpoints.down('xs')]: {
-      maxWidth: '96%',
-      position: 'relative',
-      top: 'unset',
-      right: 'unset',
-      margin: theme.spacing(10, 'auto', 4),
-    },
-  },
-}));
+import styles from './Illo.module.css';
 
 export function Illo() {
-  const classes = useStyles();
   return (
     <img
       src={IlloSvgUrl}
-      className={classes.illo}
+      className={styles.illo}
       alt="Illustration on entity not found page"
     />
   );

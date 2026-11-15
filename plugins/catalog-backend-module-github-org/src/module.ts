@@ -128,6 +128,7 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
                 definitions.length === 1 && definition.orgs?.length === 1,
               pageSizes: definition.pageSizes,
               excludeSuspendedUsers: definition.excludeSuspendedUsers,
+              fetchEmailForGithubApps: definition.fetchEmailForGithubApps,
               cache,
               experimental_checkForSuspendedUsersWithRest:
                 definition.experimental_checkForSuspendedUsersWithRest,
@@ -152,6 +153,7 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
   excludeSuspendedUsers?: boolean;
   experimental_checkForSuspendedUsersWithRest?: boolean;
   useVerifiedEmails?: boolean;
+  fetchEmailForGithubApps?: boolean;
 }> {
   const baseKey = 'catalog.providers.githubOrg';
   const baseConfig = rootConfig.getOptional(baseKey);
@@ -186,5 +188,7 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
       false,
     useVerifiedEmails:
       c.getOptionalBoolean('defaultUserTransformer.useVerifiedEmails') ?? false,
+    fetchEmailForGithubApps:
+      c.getOptionalBoolean('fetchEmailForGithubApps') ?? false,
   }));
 }

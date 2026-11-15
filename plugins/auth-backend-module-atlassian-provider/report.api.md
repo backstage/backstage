@@ -5,27 +5,14 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { OAuthAuthenticator } from '@backstage/plugin-auth-node';
-import { OAuthAuthenticatorResult } from '@backstage/plugin-auth-node';
 import { PassportOAuthAuthenticatorHelper } from '@backstage/plugin-auth-node';
 import { PassportProfile } from '@backstage/plugin-auth-node';
-import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
 // @public (undocumented)
 export const atlassianAuthenticator: OAuthAuthenticator<
   PassportOAuthAuthenticatorHelper,
   PassportProfile
 >;
-
-// @public
-export namespace atlassianSignInResolvers {
-  const usernameMatchingUserEntityName: SignInResolverFactory<
-    OAuthAuthenticatorResult<PassportProfile>,
-    | {
-        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
-      }
-    | undefined
-  >;
-}
 
 // @public (undocumented)
 const authModuleAtlassianProvider: BackendFeature;

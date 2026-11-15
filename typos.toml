@@ -22,6 +22,7 @@ ALLO = "ALLO"           # prefix of ALLOWs in AuthorizedSearchEngine.ts comment
 VALIDAT = "VALIDAT"     # prefix of VALIDATEs in catalog-backend migration comment
 styl = "styl"           # Stylus stylesheet file extension in jest.js regex pattern
 Entitie = "Entitie"             # camelCase fragment of starredEntitie$ (RxJS observable naming convention in StarredEntitiesApi)
+unparseable = "unparseable"     # correct variant used in catalog rule matching comments
 
 # Deprecated names kept for backward compatibility.
 # Remove each entry when the corresponding deprecated symbol is removed.

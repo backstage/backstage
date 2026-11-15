@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { z } from 'zod/v3';
+import { z } from 'zod';
 
 /**
  * Make a declaration about the properties of a certain kind.

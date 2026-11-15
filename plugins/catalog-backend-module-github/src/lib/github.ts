@@ -201,6 +201,7 @@ export async function getOrganizationUsers(
   pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
   excludeSuspendedUsers: boolean = false,
   restClient?: Octokit,
+  fetchEmailForGithubApps: boolean = false,
 ): Promise<{ users: Entity[] }> {
   const useRestForSuspension = excludeSuspendedUsers && !!restClient;
   const suspendedAtField =
@@ -247,7 +248,7 @@ export async function getOrganizationUsers(
     transformer: userTransformer,
     variables: {
       org,
-      email: tokenType === 'token',
+      email: tokenType === 'token' || fetchEmailForGithubApps,
       organizationMembersPageSize: pageSizes.organizationMembers,
     },
     filter: useRestForSuspension

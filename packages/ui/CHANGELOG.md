@@ -1,5 +1,45 @@
 # @backstage/ui
 
+## 0.20.0-next.0
+
+### Minor Changes
+
+- f4d8adf: **BREAKING**: Backstage UI now uses explicit routing integration and React Aria's native link behavior: standalone apps that relied on automatic React Router integration must supply `BUIProvider` with a `useNavigation` hook, React Router is no longer a peer dependency, and `routerOptions` now supports only the router-neutral `replace` and `state` fields. **BREAKING**: Link targets using `javascript:`, `data:`, or `vbscript:` become inert `about:blank` links with a console warning. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps and the [BUI routing migration guide](https://backstage.io/docs/frontend-system/building-plugins/page-routers#migrate-backstage-ui-routing) for integration requirements.
+
+  Affected components: BUIProvider, ButtonLink, Card, Combobox, Header, Link, List, Menu, PluginHeader, SearchAutocomplete, Select, Table, Tabs, TagGroup
+
+### Patch Changes
+
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- 065d1e3: Fixed `useTable` in complete mode showing an empty page labelled "NaN - NaN of N" when `paginationOptions` switched from `type: 'none'` to paged pagination after mount.
+
+  **Affected components:** `useTable`
+
+## 0.19.0
+
+### Minor Changes
+
+- 4e7a710: Updated React Aria dependencies to React Aria Components 1.22.0, React Aria 3.53.0, and React Stately 3.51.0. Existing Checkbox, Radio, and Switch implementations are retained.
+
+  **Migration:**
+
+  `MenuSection` no longer accepts `disabledKeys`. Move `disabledKeys` to `Menu` or set `isDisabled` on the affected `MenuItem` components.
+
+  Programmatic clicks on Checkbox and Switch labels no longer toggle their selection. Target the input when activating these controls programmatically, and use a full pointer interaction when simulating label clicks in tests.
+
+  **Affected components:** Checkbox, Menu, Switch
+
+### Patch Changes
+
+- 46659eb: The `--bui-bg-app` token now follows the page's `color-scheme` until a theme mode is set. While the app loads, the page background then matches a dark theme instead of showing as light. Browsers without `light-dark()` support keep the light value until the theme mode is set, as before.
+- 6c9ed14: Fixed `Combobox` keyboard selection while filtering. With `search`, or with `items` and no `search`, the arrow keys now move through the matching options only, and Enter selects the highlighted one. Screen readers also announce the number of matching options. As with a `Combobox` without `search`, opening the list with the button or on focus shows every option until the user types. With `search.filter`, Escape and blur now restore the label of the selected option even when the filter excludes it. In that case, the number of options announced to screen readers still counts the hidden selected option.
+
+  **Affected components:** Combobox
+
+- b313f2d: Added a `theme` CSS cascade layer between `components` and `utilities`. BUI leaves it empty: put your app's brand overrides in `@layer theme` to win over component styles without raising specificity, while utility props still take precedence. Existing styles are unaffected.
+
+  If your app already declares its own layer named `theme`, its rules now sit below BUI's utility classes instead of above them.
+
 ## 0.19.0-next.0
 
 ### Minor Changes

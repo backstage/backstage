@@ -20,10 +20,9 @@ import {
   iconsApiRef,
 } from '@backstage/frontend-plugin-api';
 import { IconBundleBlueprint } from '@backstage/plugin-app-react';
+import { DefaultIconsApi } from '../apis/DefaultIconsApi';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { DefaultIconsApi } from '../../../../packages/frontend-app-api/src/apis/implementations/IconsApi';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { icons as defaultIcons } from '../../../../packages/app-defaults/src/defaults';
+import { icons as defaultIcons } from '../../../../packages/app-defaults/src/defaults/icons';
 
 /**
  * Contains the shareable icons installed into the app.

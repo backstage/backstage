@@ -85,7 +85,7 @@ export class Generators implements GeneratorBuilder {
     options: {
       logger: LoggerService;
       containerRunner?: TechDocsContainerRunner;
-      customGenerator?: TechdocsGenerator;
+      customGenerator?: GeneratorBase;
     },
   ): Promise<GeneratorBuilder>;
   get(entity: Entity): GeneratorBase;
@@ -268,6 +268,10 @@ export type RemoteProtocol = 'url' | 'dir';
 export type SupportedGeneratorKey = 'techdocs' | string;
 
 // @public
+export const TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY =
+  'backstage.io/techdocs-engine';
+
+// @public
 export interface TechdocsBuildsExtensionPoint {
   // (undocumented)
   setBuildLogTransport(transport: winston.transport): void;
@@ -323,7 +327,9 @@ export class TechdocsGenerator implements GeneratorBase {
 // @public
 export interface TechdocsGeneratorExtensionPoint {
   // (undocumented)
-  setTechdocsGenerator(generator: TechdocsGenerator): void;
+  registerGenerator(key: SupportedGeneratorKey, generator: GeneratorBase): void;
+  // (undocumented)
+  setTechdocsGenerator(generator: GeneratorBase): void;
 }
 
 // @public

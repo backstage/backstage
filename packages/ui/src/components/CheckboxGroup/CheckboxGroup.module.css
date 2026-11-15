@@ -1,4 +1,4 @@
-@layer tokens, base, components, utilities;
+@layer tokens, base, components, theme, utilities;
 
 @layer components {
   .bui-CheckboxGroup {

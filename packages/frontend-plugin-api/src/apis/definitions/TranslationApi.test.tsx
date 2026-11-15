@@ -30,10 +30,22 @@ describe('TranslationFunction', () => {
       thingCount_one: '{{count}} thing';
       thingCount_other: '{{count}} things';
       foo: 'foo';
+      plainCount: '{{count}} things';
+      widened_one: string;
+      widened_other: string;
     }>;
     expect(f).toBeDefined();
 
     expectType<string>(f('foo'));
+    f('foo', { interpolation: { escapeValue: true } });
+    f('plainCount', { count: 1 });
+    // @ts-expect-error Count interpolation requires a value even without plural variants.
+    f('plainCount');
+    f('widened', { count: 1 });
+    // @ts-expect-error Widened plural values still require the known count.
+    f('widened');
+    // @ts-expect-error A known count must remain numeric.
+    f('widened', { count: '1' });
     // @ts-expect-error
     f('foo', { count: 1 });
 
@@ -260,20 +272,29 @@ describe('TranslationFunction', () => {
     });
   });
 
-  it('should limit nesting depth', () => {
+  it('follows deeply nested messages and stops at cycles', () => {
     const f = (() => {}) as unknown as TranslationFunction<{
       a: '$t(b) {{a}}';
       b: '$t(c) {{b}}';
       c: '$t(d) {{c}}';
       d: '$t(e) {{d}}';
       e: '$t(f) {{e}}';
+      f: '$t(b) {{f}}';
     }>;
     expect(f).toBeDefined();
 
+    f('a', { replace: { a: '', b: '', c: '', d: '', e: '', f: '' } });
+    f('b', { replace: { b: '', c: '', d: '', e: '', f: '' } });
+    expectType<JSX.Element>(
+      f('a', { replace: { a: '', b: '', c: '', d: '', e: '', f: <span /> } }),
+    );
+    // @ts-expect-error Deeply nested interpolation values are required too.
     f('a', { replace: { a: '', b: '', c: '', d: '' } });
-    // @ts-expect-error
-    f('a', { a: '', b: '', c: '' });
-    // @ts-expect-error
+    // @ts-expect-error Even the last message before the cycle contributes values.
     f('a', { replace: { a: '', b: '', c: '', d: '', e: '' } });
+    f('a', {
+      // @ts-expect-error The cycle does not introduce unrelated values.
+      replace: { a: '', b: '', c: '', d: '', e: '', f: '', unknown: '' },
+    });
   });
 });

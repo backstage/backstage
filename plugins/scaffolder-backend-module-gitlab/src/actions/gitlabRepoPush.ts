@@ -141,7 +141,7 @@ export const createGitlabRepoPushAction = (options: {
         gitignore: true,
       });
 
-      let remoteFiles: RepositoryTreeSchema[] = [];
+      let remoteFiles: RepositoryTreeSchema[] | undefined = [];
       if ((ctx.input.commitAction ?? 'auto') === 'auto') {
         try {
           remoteFiles = await api.Repositories.allRepositoryTrees(repoID, {
@@ -157,6 +157,9 @@ export const createGitlabRepoPushAction = (options: {
               e,
             )}`,
           );
+          if (e.cause?.response?.status !== 404) {
+            remoteFiles = undefined;
+          }
         }
       }
 

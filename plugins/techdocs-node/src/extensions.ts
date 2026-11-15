@@ -16,11 +16,12 @@
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { DocsBuildStrategy } from './techdocsTypes';
 import {
+  GeneratorBase,
   PreparerBase,
   PublisherBase,
   PublisherType,
   RemoteProtocol,
-  TechdocsGenerator,
+  SupportedGeneratorKey,
 } from './stages';
 import * as winston from 'winston';
 import { PublisherSettings } from './stages/publish/types';
@@ -46,12 +47,20 @@ export const techdocsBuildsExtensionPoint =
   });
 
 /**
- * Extension point type for configuring a custom TechDocs generator
+ * Extension point type for configuring TechDocs generators.
+ *
+ * Use `registerGenerator` to add an engine-specific generator from a backend
+ * module (e.g. `plugin-techdocs-backend-module-zensical`). The key corresponds
+ * to the `backstage.io/techdocs-engine` entity annotation value.
+ *
+ * `setTechdocsGenerator` is kept for backwards compatibility — it replaces the
+ * default MkDocs generator.
  *
  * @public
  */
 export interface TechdocsGeneratorExtensionPoint {
-  setTechdocsGenerator(generator: TechdocsGenerator): void;
+  setTechdocsGenerator(generator: GeneratorBase): void;
+  registerGenerator(key: SupportedGeneratorKey, generator: GeneratorBase): void;
 }
 
 /**

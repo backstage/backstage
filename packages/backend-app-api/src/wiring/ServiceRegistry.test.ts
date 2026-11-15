@@ -124,14 +124,15 @@ describe('ServiceRegistry', () => {
   });
 
   it('should not be possible for root scoped services to depend on plugin scoped services', async () => {
-    // @ts-expect-error
-    const factory = createServiceFactory({
+    const options = {
       service: ref2,
       deps: { pluginDep: ref1 },
       async factory() {
         return { x: 2 };
       },
-    });
+    };
+    // @ts-expect-error
+    const factory = createServiceFactory(options);
     const registry = ServiceRegistry.create([factory, sf1]);
     await expect(registry.get(ref2, 'catalog')).rejects.toThrow(
       "Failed to instantiate 'root' scoped service '2' because it depends on 'plugin' scoped service '1'.",

@@ -47,8 +47,11 @@ export function collectRouteIds(
       continue;
     }
 
+    const pluginId =
+      feature.pluginId ?? OpaqueFrontendPlugin.toInternal(feature).id;
+
     for (const [name, ref] of Object.entries(feature.routes)) {
-      const refId = `${feature.id}.${name}`;
+      const refId = `${pluginId}.${name}`;
       if (routesById.has(refId)) {
         collector.report({
           code: 'ROUTE_DUPLICATE',
@@ -68,7 +71,7 @@ export function collectRouteIds(
       }
     }
     for (const [name, ref] of Object.entries(feature.externalRoutes)) {
-      const refId = `${feature.id}.${name}`;
+      const refId = `${pluginId}.${name}`;
       if (externalRoutesById.has(refId)) {
         collector.report({
           code: 'ROUTE_DUPLICATE',

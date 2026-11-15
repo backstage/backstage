@@ -1,5 +1,40 @@
 # @backstage/cli-module-migrate
 
+## 0.2.3-next.2
+
+### Patch Changes
+
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.2
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/cli-common@0.3.3-next.0
+
+## 0.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.1
+  - @backstage/release-manifests@0.0.16-next.0
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.6-next.0
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/errors@1.3.2
+  - @backstage/release-manifests@0.0.15
+  - @backstage/cli-common@0.3.2
+
 ## 0.2.2-next.1
 
 ### Patch Changes

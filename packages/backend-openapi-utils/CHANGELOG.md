@@ -1,5 +1,30 @@
 # @backstage/backend-openapi-utils
 
+## 0.7.4-next.1
+
+### Patch Changes
+
+- 5695308: Fixed response validation so that an empty response body for a JSON response now reports that the body is required but missing, instead of failing with a JSON parse error when the response schema declares required properties.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+
+## 0.7.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
+## 0.7.3
+
+### Patch Changes
+
+- 812225c: Fixed the OpenAPI validation test server wrapper to support `supertest` 7.3 by returning a standard server address for the validation proxy.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/errors@1.3.2
+
 ## 0.7.3-next.2
 
 ### Patch Changes

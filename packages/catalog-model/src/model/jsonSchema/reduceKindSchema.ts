@@ -15,7 +15,7 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { z } from 'zod/v3';
+import { z } from 'zod';
 import { CatalogModelKindRootSchema } from './validateKindRootSchemaSemantics';
 
 /**

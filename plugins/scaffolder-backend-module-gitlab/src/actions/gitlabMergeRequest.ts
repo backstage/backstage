@@ -294,7 +294,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
         targetBranch = defaultBranch;
       }
 
-      let remoteFiles: RepositoryTreeSchema[] = [];
+      let remoteFiles: RepositoryTreeSchema[] | undefined = [];
       if ((ctx.input.commitAction ?? 'auto') === 'auto') {
         try {
           remoteFiles = await api.Repositories.allRepositoryTrees(repoID, {
@@ -310,6 +310,9 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
               e,
             )}`,
           );
+          if (e.cause?.response?.status !== 404) {
+            remoteFiles = undefined;
+          }
         }
       }
       const actions: CommitAction[] =

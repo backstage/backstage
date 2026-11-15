@@ -93,6 +93,13 @@ export interface ModuleStartupResult {
   resultAt: Date;
 
   /**
+   * The time that the module's init function was invoked, i.e. after its
+   * dependencies had been resolved. This is not defined if the module failed
+   * before reaching initialization.
+   */
+  beginAt?: Date;
+
+  /**
    * The ID of the module.
    */
   moduleId: string;
@@ -121,6 +128,14 @@ export interface PluginStartupResult {
    * The time the plugin startup was completed.
    */
   resultAt: Date;
+
+  /**
+   * The time that the plugin's init function was invoked, i.e. after its
+   * dependencies had been resolved. This is not defined if the plugin failed
+   * before reaching initialization, or if no init function was registered.
+   */
+  beginAt?: Date;
+
   /**
    * If the startup failed, this contains information about the failure.
    */

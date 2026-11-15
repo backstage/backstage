@@ -240,6 +240,14 @@ For example, to return entities by their name:
 Each parameter can be followed by `asc` for ascending lexicographical order or
 `desc` for descending (reverse) lexicographical order.
 
+> **Note:** Although `orderField` can be supplied multiple times, the
+> `/entities/by-query` endpoint currently applies only the **first** one; any
+> additional `orderField` values are ignored (the backend logs a warning).
+> Multi-field ordering is tracked in
+> [backstage#17560](https://github.com/backstage/backstage/issues/17560). If you
+> need multi-field ordering today, use the legacy `GET /entities` endpoint, which
+> honors multiple `order` parameters.
+
 #### Pagination
 
 You may pass the `cursor` query parameters to perform cursor based pagination

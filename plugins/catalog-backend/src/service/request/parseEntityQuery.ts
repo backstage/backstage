@@ -47,18 +47,6 @@ function parseTotalItems(value: unknown): TotalItemsMode | undefined {
 
 const filterPredicateSchema = createZodV3FilterPredicateSchema(z);
 
-function isSupportedFilterPredicateRoot(
-  value: FilterPredicate | undefined,
-): boolean {
-  if (value === undefined) {
-    return true;
-  }
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    return false;
-  }
-  return true;
-}
-
 function parseOrderFields(
   orderField: Array<{ field: string; order: string }> | undefined,
 ): EntityOrder[] | undefined {
@@ -110,9 +98,6 @@ export function parseEntityQuery(
     const result = filterPredicateSchema.safeParse(request.query);
     if (!result.success) {
       throw new InputError(`Invalid query: ${fromZodError(result.error)}`);
-    }
-    if (!isSupportedFilterPredicateRoot(result.data)) {
-      throw new InputError('Query must be an object');
     }
     query = result.data;
   }

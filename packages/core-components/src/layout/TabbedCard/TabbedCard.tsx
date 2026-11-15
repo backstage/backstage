@@ -33,6 +33,10 @@ import {
 import { BottomLink, BottomLinkProps } from '../BottomLink';
 import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
 
+/**
+ * @deprecated Use the replacement described in {@link TabbedCard} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type TabbedCardClassKey = 'root' | 'indicator';
 
 const useTabsStyles = makeStyles(
@@ -49,7 +53,11 @@ const useTabsStyles = makeStyles(
   { name: 'BackstageTabbedCard' },
 );
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link TabbedCard} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type BoldHeaderClassKey = 'root' | 'title' | 'subheader';
 
 const BoldHeader = withStyles(
@@ -72,6 +80,13 @@ type Props = {
   deepLink?: BottomLinkProps;
 };
 
+/**
+ * @deprecated Compose `Card`, `CardHeader`, `CardBody`, `Tabs`, `TabList`,
+ * `Tab`, and `TabPanel` from `@backstage/ui` instead. Adapt selection to
+ * tab keys and `onSelectionChange`, and use `CardFooter` with a link for
+ * `deepLink`. Keep an error boundary around the content if you rely on this
+ * component's error handling; BUI Card and Tabs do not provide it.
+ */
 export function TabbedCard(props: PropsWithChildren<Props>) {
   const {
     slackChannel,
@@ -129,7 +144,11 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
   );
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link CardTab} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type CardTabClassKey = 'root' | 'selected';
 
 const useCardTabStyles = makeStyles(
@@ -162,6 +181,9 @@ type CardTabProps = TabProps & {
  *
  * @public
  *
+ * @deprecated Use `Tab` and `TabPanel` from `@backstage/ui` within a BUI
+ * `Tabs` and `TabList` composition. Give matching tabs and panels the same
+ * `id` and move tab content into `TabPanel`.
  */
 export function CardTab(props: PropsWithChildren<CardTabProps>) {
   const { children, ...restProps } = props;
