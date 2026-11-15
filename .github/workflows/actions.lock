@@ -89,7 +89,7 @@ workflows:
         - 'github/issue-labeler@v3.5'
         - 'redhat-plumbers-in-action/advanced-issue-labeler@v3.0.0'
         - 'stefanbuck/github-issue-parser@v3.2.5'
-        - 'step-security/harden-runner@v2.22.1'
+        - 'step-security/harden-runner@v2.22.4'
     '.github/workflows/mui-migration-tracker.yml':
         - 'actions/checkout@v7'
         - 'actions/github-script@v9'
@@ -429,8 +429,8 @@ dependencies:
         commit: 'sha1-1d88384fd173af6ecb012dfd0264a306b711241a'
         owner_id: 88700172
         repo_id: 422287306
-    'step-security/harden-runner@v2.22.1':
-        ref: 'v2.22.1'
-        commit: 'sha1-ccd8616d44fd3846e67624a50d5aad6d37bf2d25'
+    'step-security/harden-runner@v2.22.4':
+        ref: 'v2.22.4'
+        commit: 'sha1-1d88384fd173af6ecb012dfd0264a306b711241a'
         owner_id: 88700172
         repo_id: 422287306

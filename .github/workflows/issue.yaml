@@ -16,7 +16,7 @@ jobs:
     if: github.repository == 'backstage/backstage'
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@v2.22.1
+        uses: step-security/harden-runner@v2.22.4
         with:
           egress-policy: audit
 
