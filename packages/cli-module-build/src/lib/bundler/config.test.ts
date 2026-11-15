@@ -114,6 +114,15 @@ describe('createConfig', () => {
     expect(webpackConfig).not.toHaveProperty('lazyCompilation');
     expect(webpackConfig.experiments).toEqual({ lazyCompilation: true });
     expect(webpackConfig.module?.parser).toBeUndefined();
+
+    // A remote's lazy compilation requests would go to the host app
+    const remoteConfig = await createConfig(
+      paths,
+      createOptions({
+        moduleFederationRemote: { name: 'remote', sharedDependencies: {} },
+      }),
+    );
+    expect(remoteConfig.lazyCompilation).toBe(false);
   });
 
   // Rspack picks the browserslist environment by NODE_ENV, which package

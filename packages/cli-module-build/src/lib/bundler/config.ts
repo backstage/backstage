@@ -324,7 +324,9 @@ export async function createConfig(
   const lazyCompilation = yn(process.env.EXPERIMENTAL_LAZY_COMPILATION);
   const lazyCompilationConfig = webpack
     ? ({ experiments: { lazyCompilation } } as Configuration)
-    : { lazyCompilation };
+    : // Rspack's client sends its requests to the page's origin, which for a
+      // module federation remote is the host app, so remotes don't use it.
+      { lazyCompilation: lazyCompilation && !moduleFederationRemote };
 
   // Rspack targets the app's browserslist config when there is one, and picks
   // its environment by NODE_ENV, which can change during the process, for
