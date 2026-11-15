@@ -53,7 +53,20 @@ export async function command(opts: OptionValues) {
     if (opts.server) {
       promises.push(generateServer(options, opts.serverAdditionalProperties));
     }
-    await Promise.all(promises);
+    // Let all generators finish before failing, so none is cut off mid-run.
+    const results = await Promise.allSettled(promises);
+    const failures = results.filter(
+      (result): result is PromiseRejectedResult => result.status === 'rejected',
+    );
+    if (failures.length === 1) {
+      throw failures[0].reason;
+    } else if (failures.length > 1) {
+      throw new Error(
+        failures
+          .map(failure => String(failure.reason?.message ?? failure.reason))
+          .join('\n'),
+      );
+    }
   };
 
   if (opts.watch) {

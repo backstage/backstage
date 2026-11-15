@@ -15,6 +15,7 @@
  */
 
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import { ForwardedError } from '@backstage/errors';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { resolve } from 'node:path';
@@ -140,7 +141,7 @@ export async function command(
     );
   } catch (err) {
     if (err.name === 'AbortError') {
-      console.debug('Server generation aborted.');
+      console.debug('Client generation aborted.');
       return;
     }
     if (isWatch) {
@@ -148,9 +149,8 @@ export async function command(
       console.group();
       console.log(chalk.red(err.message));
       console.groupEnd();
-    } else {
-      console.log(chalk.red(`Client generation failed.`));
-      console.log(chalk.red(err.message));
+      return;
     }
+    throw new ForwardedError('OpenAPI client generation failed', err);
   }
 }
