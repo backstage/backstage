@@ -118,6 +118,41 @@ it('loads a real NFS swap after masking and detaches values from submission stat
   ).toBe('Development');
 });
 
+it('preserves undefined properties in detached schema and fallback values', async () => {
+  let captured: ReviewStateContentProps | undefined;
+  const replacement = (props: ReviewStateContentProps) => {
+    captured = props;
+    return <div>Detached review</div>;
+  };
+  const module = createFrontendModule({
+    pluginId: 'app',
+    extensions: [
+      SwappableComponentBlueprint.make({
+        name: 'detached-review',
+        params: defineParams =>
+          defineParams({
+            component: ReviewStateContent,
+            loader: () => replacement,
+          }),
+      }),
+    ],
+  });
+  const value = [{ owner: 'alice', optional: undefined }];
+  renderInTestApp(
+    <ReviewState schemas={[schema]} formState={{ list: value, other: value }} />,
+    { features: [module] },
+  );
+  expect(await screen.findByText('Detached review')).toBeInTheDocument();
+  for (const path of ['/list', '/other']) {
+    const copy = captured?.items.find(item => item.path === path)
+      ?.displayValue as typeof value;
+    expect(copy).toStrictEqual(value);
+    expect(copy).not.toBe(value);
+    expect(copy[0]).not.toBe(value[0]);
+    expect(copy[0]).toHaveProperty('optional', undefined);
+  }
+});
+
 it('distinguishes literal separators from nested field paths', async () => {
   let captured: ReviewStateContentProps | undefined;
   const replacement = (props: ReviewStateContentProps) => {

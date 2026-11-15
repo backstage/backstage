@@ -16,6 +16,7 @@
 import { ReviewStateContent, ReviewItem } from './ReviewStateContent';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { Draft07 as JSONSchema } from 'json-schema-library';
+import { cloneDeep } from 'lodash';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 import {
   isJsonObject,
@@ -63,10 +64,7 @@ function processSchema(
     path: `/${key}`,
     label: name,
     // Detach objects and arrays from the state used by submission.
-    displayValue:
-      displayValue === undefined
-        ? undefined
-        : JSON.parse(JSON.stringify(displayValue)),
+    displayValue: cloneDeep(displayValue),
     presentation: masked ? 'masked' : 'value',
     fieldType: masked ? undefined : definitionInSchema?.['ui:field'],
   });
@@ -135,10 +133,7 @@ export const ReviewState = (props: ReviewStateProps) => {
             {
               path: `/${escapePointerSegment(key)}`,
               label: formatKey(key),
-              displayValue:
-                value === undefined
-                  ? undefined
-                  : JSON.parse(JSON.stringify(value)),
+              displayValue: cloneDeep(value),
               presentation: 'value' as const,
             },
           ];
