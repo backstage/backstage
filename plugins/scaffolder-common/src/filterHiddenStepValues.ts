@@ -244,23 +244,20 @@ export function resolveParameterSteps(
   // only once an earlier step is hidden, rather than once for every step.
   let filtered = values;
   let anyHidden = false;
-  let stale = false;
   for (const step of steps) {
     const condition = step.when;
     let visible = true;
     if (typeof condition === 'string' || typeof condition === 'boolean') {
-      if (stale) {
+      if (anyHidden) {
         filtered = filterHiddenStepValues(values, resolved);
-        stale = false;
       }
       visible = evaluateCondition(condition, filtered);
     }
     resolved.push({ schema: step.schema, visible });
     anyHidden = anyHidden || !visible;
-    stale = anyHidden;
   }
   return {
     visible: resolved.map(step => step.visible),
-    values: stale ? filterHiddenStepValues(values, resolved) : filtered,
+    values: anyHidden ? filterHiddenStepValues(values, resolved) : filtered,
   };
 }

@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-react': patch
+'@backstage/plugin-scaffolder-react': minor
 ---
 
 The review step now masks a field whenever any parameter step marks it as a password or secret, or sets a review mask for it. This includes steps hidden by a `when` condition, and no longer depends on which step declares the field first.
