@@ -24,6 +24,7 @@ import { exec } from '../../../../../lib/exec';
 import {
   OLD_SCHEMA_PATH,
   OPENAPI_IGNORE_FILES,
+  OPENAPI_NORMALIZER_RULES,
   OUTPUT_PATH,
   TS_SCHEMA_PATH,
 } from '../../../../../lib/openapi/constants';
@@ -125,6 +126,7 @@ async function generate(
       ),
       '--generator-key',
       generatorKey,
+      `--openapi-normalizer=${OPENAPI_NORMALIZER_RULES.join(',')}`,
       additionalProperties
         ? `--additional-properties=${additionalProperties}`
         : '',

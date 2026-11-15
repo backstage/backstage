@@ -24,6 +24,12 @@ export const OLD_SCHEMA_PATH = `src/schema/openapi.generated.ts`;
 
 export const TS_SCHEMA_PATH = `${OUTPUT_PATH}/router.ts`;
 
+/**
+ * Tags are only supported on a best-effort basis. Putting every operation under
+ * a single tag avoids duplicate imports when a model is used across tags.
+ */
+export const OPENAPI_NORMALIZER_RULES = ['SET_TAGS_FOR_ALL_OPERATIONS=default'];
+
 export const OPENAPI_IGNORE_FILES = [
   // Get rid of the default files.
   '*.md',
