@@ -309,12 +309,16 @@ describe('OpenTelemetryContent', () => {
     bare.unmount();
 
     renderContent(
-      '/devtools/opentelemetry/traces?q=refresh&plugin=catalog&sort=name&order=desc',
+      '/devtools/opentelemetry/traces/?q=refresh&plugin=catalog&sort=name&order=desc',
     );
     expect(await screen.findByText('catalog.refresh')).toBeInTheDocument();
     expect(rowNames()).toEqual(['catalog.refresh']);
     expect(
       screen.getByRole('searchbox', { name: 'Search traces' }),
     ).toHaveValue('refresh');
+    expect(screen.getByRole('tab', { name: 'Traces' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
   });
 });

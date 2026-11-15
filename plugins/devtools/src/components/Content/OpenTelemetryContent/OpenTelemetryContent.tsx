@@ -285,7 +285,12 @@ export const OpenTelemetryContent = () => {
       <Tabs>
         <TabList aria-label="OpenTelemetry signals">
           {SIGNALS.map(signal => (
-            <Tab key={signal} id={signal} href={paths[signal]}>
+            <Tab
+              key={signal}
+              id={signal}
+              href={paths[signal]}
+              matchStrategy="prefix"
+            >
               {SIGNAL_TITLES[signal]}
             </Tab>
           ))}
