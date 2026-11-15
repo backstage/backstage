@@ -322,33 +322,41 @@ export async function readLdapOrg(
   // with all relations etc filled in.
 
   const groupClient = options.groupClient ?? client;
-  const [usersResult, groupsResult] =
-    groupClient === client
-      ? [
-          await readLdapUsers(client, userConfig, vendorConfig, {
-            transformer: options?.userTransformer,
-          }),
-          await readLdapGroups(groupClient, groupConfig, vendorConfig, {
-            transformer: options?.groupTransformer,
-          }),
-        ]
-      : await (async () => {
-          const [usersRead, groupsRead] = await Promise.allSettled([
-            readLdapUsers(client, userConfig, vendorConfig, {
-              transformer: options?.userTransformer,
-            }),
-            readLdapGroups(groupClient, groupConfig, vendorConfig, {
-              transformer: options?.groupTransformer,
-            }),
-          ]);
-          if (usersRead.status === 'rejected') {
-            throw usersRead.reason;
-          }
-          if (groupsRead.status === 'rejected') {
-            throw groupsRead.reason;
-          }
-          return [usersRead.value, groupsRead.value] as const;
-        })();
+
+  let usersResult: Awaited<ReturnType<typeof readLdapUsers>>;
+  let groupsResult: Awaited<ReturnType<typeof readLdapGroups>>;
+  if (groupClient === client) {
+    usersResult = await readLdapUsers(client, userConfig, vendorConfig, {
+      transformer: options?.userTransformer,
+    });
+    groupsResult = await readLdapGroups(
+      groupClient,
+      groupConfig,
+      vendorConfig,
+      {
+        transformer: options?.groupTransformer,
+      },
+    );
+  } else {
+    // Wait for both readers to finish before throwing so the caller can unbind
+    // without interrupting the other search.
+    const [usersRead, groupsRead] = await Promise.allSettled([
+      readLdapUsers(client, userConfig, vendorConfig, {
+        transformer: options?.userTransformer,
+      }),
+      readLdapGroups(groupClient, groupConfig, vendorConfig, {
+        transformer: options?.groupTransformer,
+      }),
+    ]);
+    if (usersRead.status === 'rejected') {
+      throw usersRead.reason;
+    }
+    if (groupsRead.status === 'rejected') {
+      throw groupsRead.reason;
+    }
+    usersResult = usersRead.value;
+    groupsResult = groupsRead.value;
+  }
 
   const { users, userMemberOf } = usersResult;
   const { groups, groupMemberOf, groupMember } = groupsResult;
