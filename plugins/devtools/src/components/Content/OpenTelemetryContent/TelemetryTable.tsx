@@ -178,20 +178,20 @@ export function TelemetryTable<T extends TelemetryRow>(
 
   return (
     <Flex direction="column" gap="4">
-      <Flex gap="4" align="end">
+      <Flex gap="4" align="end" style={{ flexWrap: 'wrap' }}>
         <SearchField
           aria-label={`Search ${noun}`}
           placeholder={`Search ${noun}`}
           value={search.value}
           onChange={search.onChange}
-          style={{ flex: '0 0 300px' }}
+          style={{ flex: '0 1 300px', minWidth: 0 }}
         />
         <Select
           aria-label={`Filter ${noun} by plugin`}
           options={pluginOptions}
           value={filter.value ?? ALL_PLUGINS}
           onChange={key => filter.onChange(String(key ?? ALL_PLUGINS))}
-          style={{ flex: '0 0 180px' }}
+          style={{ flex: '0 1 180px', minWidth: 0 }}
         />
       </Flex>
       <Table
