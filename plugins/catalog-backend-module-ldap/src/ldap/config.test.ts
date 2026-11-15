@@ -563,7 +563,7 @@ describe('readLdapConfig', () => {
     );
   });
 
-  it('does not re-add member when an explicit attributes list omits it', () => {
+  it('still requests member when an explicit attributes list omits it', () => {
     const config = {
       catalog: {
         providers: {
@@ -572,16 +572,6 @@ describe('readLdapConfig', () => {
               target: 'target',
               users: {
                 dn: 'udn',
-                options: {
-                  attributes: [
-                    'uid',
-                    'cn',
-                    'mail',
-                    'memberOf',
-                    'entryDN',
-                    'entryUUID',
-                  ],
-                },
               },
               groups: {
                 dn: 'gdn',
@@ -602,9 +592,50 @@ describe('readLdapConfig', () => {
     };
     const actual = readProviderConfigs(new ConfigReader(config));
 
-    expect(actual[0].groups[0].options.attributes).not.toEqual(
+    expect(actual[0].groups[0].options.attributes).toEqual(
       expect.arrayContaining(['member']),
     );
     expect(actual[0].groups[0].map.members).toBe('member');
+  });
+
+  it('does not request membership attributes when map.members and map.memberOf are null', () => {
+    const config = {
+      catalog: {
+        providers: {
+          ldapOrg: {
+            default: {
+              target: 'target',
+              users: {
+                dn: 'udn',
+                map: {
+                  memberOf: null,
+                },
+              },
+              groups: {
+                dn: 'gdn',
+                map: {
+                  members: null,
+                  memberOf: null,
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+    const actual = readProviderConfigs(new ConfigReader(config));
+
+    expect(actual[0].users[0].map.memberOf).toBeNull();
+    expect(actual[0].users[0].options.attributes).not.toEqual(
+      expect.arrayContaining(['memberOf']),
+    );
+    expect(actual[0].groups[0].map.members).toBeNull();
+    expect(actual[0].groups[0].map.memberOf).toBeNull();
+    expect(actual[0].groups[0].options.attributes).not.toEqual(
+      expect.arrayContaining(['member']),
+    );
+    expect(actual[0].groups[0].options.attributes).not.toEqual(
+      expect.arrayContaining(['memberOf']),
+    );
   });
 });

@@ -197,8 +197,8 @@ const DEFAULT_USER_SEARCH_ATTRIBUTES = [
   'uid',
   'cn',
   'mail',
-  'memberOf',
 ];
+// `memberOf` is added via map.memberOf when that mapping is enabled (default).
 
 const DEFAULT_GROUP_SEARCH_ATTRIBUTES = [
   'dn',
@@ -211,9 +211,9 @@ const DEFAULT_GROUP_SEARCH_ATTRIBUTES = [
   'cn',
   'description',
   'groupType',
-  'memberOf',
 ];
 // `member` is added via map.members when that mapping is enabled (default).
+// `memberOf` is added via map.memberOf when that mapping is enabled (default).
 
 const defaultUserConfig: RecursivePartial<UserConfig> = {
   options: {
@@ -250,58 +250,20 @@ function replaceArraysIfPresent(_into: any, from: any) {
   return Array.isArray(from) ? from : undefined;
 }
 
-function membershipAttributeNames(
-  map: UserConfig['map'] | GroupConfig['map'],
-): Set<string> {
-  const names = new Set<string>();
-  if (typeof map.memberOf === 'string' && map.memberOf.length > 0) {
-    names.add(map.memberOf);
-  }
-  if (
-    'members' in map &&
-    typeof map.members === 'string' &&
-    map.members.length > 0
-  ) {
-    names.add(map.members);
-  }
-  return names;
-}
-
 /**
  * Builds the LDAP attribute list for a search.
  *
  * Mapped fields and vendor DN/UUID names are merged in automatically so custom
- * `map.*` overrides keep working. When the caller supplies an explicit
- * attributes list (without `*`/`+`), membership attributes that were left out
- * of that list are not re-added.
+ * `map.*` overrides keep working. Null `map.members` / `map.memberOf` are not
+ * requested.
  */
 function withEffectiveSearchAttributes<T extends UserConfig | GroupConfig>(
   config: T,
   vendor: VendorConfig | undefined,
   baseAttributes: string[],
-  explicitAttributes?: string[],
 ): T {
-  const startingAttributes = explicitAttributes ?? baseAttributes;
-  const hasWildcard =
-    startingAttributes.includes('*') || startingAttributes.includes('+');
-  const membershipAttrs = membershipAttributeNames(config.map);
-
   const mappedAttributes = Object.values(config.map).filter(
-    (value): value is string => {
-      if (typeof value !== 'string' || value.length === 0) {
-        return false;
-      }
-      // Do not re-add membership attrs the caller left out of an explicit list.
-      if (
-        explicitAttributes &&
-        !hasWildcard &&
-        membershipAttrs.has(value) &&
-        !explicitAttributes.includes(value)
-      ) {
-        return false;
-      }
-      return true;
-    },
+    (value): value is string => typeof value === 'string' && value.length > 0,
   );
 
   const attributes = [
@@ -330,15 +292,8 @@ function mergeWithEffectiveSearchAttributes<T extends UserConfig | GroupConfig>(
   vendor: VendorConfig | undefined,
   baseAttributes: string[],
 ): T {
-  const attributes = (config?.options as SearchOptions | undefined)?.attributes;
-  const explicitAttributes = Array.isArray(attributes) ? attributes : undefined;
   const merged = mergeWith({}, defaults, config, replaceArraysIfPresent) as T;
-  return withEffectiveSearchAttributes(
-    merged,
-    vendor,
-    baseAttributes,
-    explicitAttributes,
-  );
+  return withEffectiveSearchAttributes(merged, vendor, baseAttributes);
 }
 
 function freeze<T>(data: T): T {
@@ -435,6 +390,23 @@ function readSetConfig(
   return c.get();
 }
 
+function readOptionalStringOrNull(
+  c: Config,
+  key: string,
+): string | null | undefined {
+  const value = c.getOptional(key);
+  if (value === null) {
+    return null;
+  }
+  // ConfigReader treats YAML `null` as unset in getOptional/getOptionalString.
+  const raw = (c as { data?: { [name: string]: JsonValue | undefined } })
+    .data?.[key];
+  if (raw === null) {
+    return null;
+  }
+  return c.getOptionalString(key);
+}
+
 function readUserMapConfig(c: Config | undefined): Partial<UserConfig['map']> {
   if (!c) {
     return {};
@@ -447,7 +419,7 @@ function readUserMapConfig(c: Config | undefined): Partial<UserConfig['map']> {
     displayName: c.getOptionalString('displayName'),
     email: c.getOptionalString('email'),
     picture: c.getOptionalString('picture'),
-    memberOf: c.getOptionalString('memberOf'),
+    memberOf: readOptionalStringOrNull(c, 'memberOf'),
   };
 }
 
@@ -466,8 +438,8 @@ function readGroupMapConfig(
     displayName: c.getOptionalString('displayName'),
     email: c.getOptionalString('email'),
     picture: c.getOptionalString('picture'),
-    memberOf: c.getOptionalString('memberOf'),
-    members: c.getOptionalString('members'),
+    memberOf: readOptionalStringOrNull(c, 'memberOf'),
+    members: readOptionalStringOrNull(c, 'members'),
   };
 }
 

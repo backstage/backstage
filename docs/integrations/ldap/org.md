@@ -171,9 +171,12 @@ options:
   # to filter out disabled users.
   filter: (uid=*)
   # The attribute selectors for each item, as passed to the LDAP server.
-  # By default only attributes needed for entity mapping are requested. Custom
-  # `map.*` overrides are included automatically. Set `attributes: ['*', '+']`
-  # to load all attributes if your transformers need additional LDAP fields.
+  # By default only attributes needed for entity mapping are requested. Mapped
+  # membership (`map.memberOf` / `map.members`) is requested automatically and
+  # is not part of this base list. Set those mappings to `null` to skip that
+  # side of the relation tree and not request those attributes. Custom `map.*`
+  # overrides are included automatically. Set `attributes: ['*', '+']` to load
+  # all attributes if your transformers need additional LDAP fields.
   attributes:
     - dn
     - entryDN
@@ -184,7 +187,6 @@ options:
     - uid
     - cn
     - mail
-    - memberOf
   # This field is either 'false' to disable paging when reading from the
   # server, or an object on the form '{ pageSize: 100, pagePause: true }' that
   # specifies the details of how the paging shall work.
@@ -236,7 +238,8 @@ map:
   # the spec.profile.picture field of the entity.
   picture: <nothing, left out>
   # The name of the attribute that shall be used for the values of
-  # the spec.memberOf field of the entity.
+  # the spec.memberOf field of the entity. May be `null` to disable
+  # that side of the relation tree.
   memberOf: memberOf
 ```
 
@@ -266,10 +269,12 @@ options:
   # to filter out disabled groups.
   filter: (&(objectClass=some-group-class)(!(groupType=email)))
   # The attribute selectors for each item, as passed to the LDAP server.
-  # By default only attributes needed for entity mapping are requested. Custom
-  # `map.*` overrides are included automatically. Set `attributes: ['*', '+']`
-  # to load all attributes if your transformers need additional LDAP fields.
-  # Group member comes from map.members, not this list.
+  # By default only attributes needed for entity mapping are requested. Mapped
+  # membership (`map.memberOf` / `map.members`) is requested automatically and
+  # is not part of this base list. Set those mappings to `null` to skip that
+  # side of the relation tree and not request those attributes. Custom `map.*`
+  # overrides are included automatically. Set `attributes: ['*', '+']` to load
+  # all attributes if your transformers need additional LDAP fields.
   attributes:
     - dn
     - entryDN
@@ -281,7 +286,6 @@ options:
     - cn
     - description
     - groupType
-    - memberOf
   # This field is either 'false' to disable paging when reading from the
   # server, or an object on the form '{ pageSize: 100, pagePause: true }' that
   # specifies the details of how the paging shall work.
@@ -340,10 +344,12 @@ map:
   # the spec.profile.picture field of the entity.
   picture: <nothing, left out>
   # The name of the attribute that shall be used for the values of
-  # the spec.parent field of the entity.
+  # the spec.parent field of the entity. May be `null` to disable
+  # that side of the relation tree.
   memberOf: memberOf
   # The name of the attribute that shall be used for the values of
-  # the spec.children field of the entity.
+  # the spec.children field of the entity. May be `null` to disable
+  # that side of the relation tree.
   members: member
 ```
 
