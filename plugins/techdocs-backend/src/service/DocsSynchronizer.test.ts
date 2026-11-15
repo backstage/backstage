@@ -34,7 +34,8 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 jest.mock('../DocsBuilder');
-jest.useFakeTimers();
+// msw 3 answers requests through process.nextTick, so leave that real
+jest.useFakeTimers({ doNotFake: ['nextTick'] });
 
 const MockedDocsBuilder = DocsBuilder as jest.MockedClass<typeof DocsBuilder>;
 
@@ -264,14 +265,6 @@ describe('DocsSynchronizer', () => {
   });
 
   describe('doCacheSync', () => {
-    // msw 3 needs real timers to answer requests
-    beforeEach(() => {
-      jest.useRealTimers();
-    });
-    afterEach(() => {
-      jest.useFakeTimers();
-    });
-
     const entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
