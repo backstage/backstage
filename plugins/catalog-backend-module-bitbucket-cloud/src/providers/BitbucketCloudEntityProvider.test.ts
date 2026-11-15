@@ -29,7 +29,11 @@ import {
   EntityProviderConnection,
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
-import { Events } from '@backstage/plugin-bitbucket-cloud-common';
+import {
+  BitbucketCloudApiError,
+  BitbucketCloudClient,
+  Events,
+} from '@backstage/plugin-bitbucket-cloud-common';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
@@ -1629,6 +1633,481 @@ describe('BitbucketCloudEntityProvider', () => {
           locationKey: 'bitbucketCloud-provider:myProvider',
         },
       ],
+    });
+  });
+
+  it.each([403, 404, 410])(
+    'falls back when code search rejects with a duck-typed BitbucketCloudApiError status %s',
+    async status => {
+      const provider = BitbucketCloudEntityProvider.fromConfig(simpleConfig, {
+        auth: mockServices.auth(),
+        catalog: catalogServiceMock(),
+        events: DefaultEventsService.create({ logger }),
+        logger,
+        schedule,
+      })[0];
+      mockBitbucket({
+        repositories: () => [repository('svc-a', 'test-apis', 'main')],
+        search: () => [],
+      });
+      sourceTree({ 'svc-a:catalog-info.yaml': true });
+      // Another copy of the package fails `instanceof` but keeps the name and status.
+      const error = Object.assign(new Error('Workspace code search failed'), {
+        name: 'BitbucketCloudApiError',
+        status,
+      });
+      expect(error).not.toBeInstanceOf(BitbucketCloudApiError);
+      expect(error).toMatchObject({
+        name: 'BitbucketCloudApiError',
+        status,
+      });
+      const search = jest
+        .spyOn(BitbucketCloudClient.prototype, 'searchWorkspaceCode')
+        .mockImplementation(async function* searchWorkspaceCode() {
+          throw error;
+        });
+
+      try {
+        await provider.connect(entityProviderConnection);
+        await provider.refresh(logger);
+
+        expect(search).toHaveBeenCalledTimes(1);
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+          type: 'full',
+          entities: [
+            {
+              entity: createLocationEntity(
+                'https://bitbucket.org/test-ws/svc-a',
+                'main',
+                'catalog-info.yaml',
+              ),
+              locationKey: 'bitbucketCloud-provider:default',
+            },
+          ],
+        });
+      } finally {
+        search.mockRestore();
+      }
+    },
+  );
+
+  it('remembers a rejected code search, warns once, and retries after the cooldown', async () => {
+    const rootLogger = mockServices.logger.mock();
+    const providerLogger = mockServices.logger.mock();
+    rootLogger.child.mockReturnValue(providerLogger);
+    const events = DefaultEventsService.create({ logger: rootLogger });
+    const provider = BitbucketCloudEntityProvider.fromConfig(simpleConfig, {
+      auth: mockServices.auth(),
+      catalog: catalogServiceMock(),
+      events,
+      logger: rootLogger,
+      schedule,
+    })[0];
+    mockBitbucket({
+      repositories: () => [repository('svc-a', 'test-apis', 'main')],
+      search: () => [],
+    });
+    sourceTree({ 'svc-a:catalog-info.yaml': true });
+
+    let codeSearchAvailable = false;
+    let searchCalls = 0;
+    server.use(
+      http.post(
+        'https://api.bitbucket.org/2.0/workspaces/test-ws/codesearch',
+        () => {
+          searchCalls += 1;
+          if (!codeSearchAvailable) {
+            return new HttpResponse(null, { status: 403 });
+          }
+          return HttpResponse.json({
+            id: 'request-id',
+            repositories: [],
+            matched_files: [matchedFile('svc-a', 'catalog-info.yaml')],
+            pagination: { has_more: false },
+          });
+        },
+      ),
+    );
+
+    const unavailable =
+      'Workspace code search answered 403; falling back to the source API. Use an API token with the read:workspace:bitbucket scope for faster discovery.';
+    let now = 1_700_000_000_000;
+    const nowSpy = jest.spyOn(Date, 'now').mockImplementation(() => now);
+    const hour = 60 * 60 * 1000;
+
+    try {
+      await provider.connect(entityProviderConnection);
+      await provider.refresh(providerLogger);
+      await provider.refresh(providerLogger);
+      await events.publish(repoPushEventParams);
+      await events.publish(repoUpdatedEventParams);
+
+      expect(searchCalls).toBe(1);
+      expect(providerLogger.warn).toHaveBeenCalledTimes(1);
+      expect(providerLogger.warn).toHaveBeenCalledWith(unavailable);
+      expect(providerLogger.debug).not.toHaveBeenCalled();
+
+      now += hour - 1;
+      await provider.refresh(providerLogger);
+      expect(searchCalls).toBe(1);
+
+      now += 1;
+      await provider.refresh(providerLogger);
+      expect(searchCalls).toBe(2);
+      expect(providerLogger.warn).toHaveBeenCalledTimes(1);
+      expect(providerLogger.debug).toHaveBeenCalledTimes(1);
+      expect(providerLogger.debug).toHaveBeenCalledWith(unavailable);
+
+      codeSearchAvailable = true;
+      now += hour;
+      await provider.refresh(providerLogger);
+      expect(searchCalls).toBe(3);
+      expect(providerLogger.warn).toHaveBeenCalledTimes(1);
+
+      now += 1;
+      await provider.refresh(providerLogger);
+      expect(searchCalls).toBe(4);
+
+      codeSearchAvailable = false;
+      await provider.refresh(providerLogger);
+      expect(searchCalls).toBe(5);
+      expect(providerLogger.warn).toHaveBeenCalledTimes(2);
+      expect(providerLogger.debug).toHaveBeenCalledTimes(1);
+    } finally {
+      nowSpy.mockRestore();
+    }
+  });
+
+  it.each<[number, string]>([
+    [
+      403,
+      'Workspace code search answered 403; falling back to the source API. Use an API token with the read:workspace:bitbucket scope for faster discovery.',
+    ],
+    [
+      404,
+      'Workspace code search answered 404; falling back to the source API.',
+    ],
+    [
+      410,
+      'Workspace code search answered 410; falling back to the source API.',
+    ],
+  ])(
+    'names the workspace scope in the fallback warning only for status %s',
+    async (status, message) => {
+      const rootLogger = mockServices.logger.mock();
+      const providerLogger = mockServices.logger.mock();
+      rootLogger.child.mockReturnValue(providerLogger);
+      const provider = BitbucketCloudEntityProvider.fromConfig(simpleConfig, {
+        auth: mockServices.auth(),
+        catalog: catalogServiceMock(),
+        events: DefaultEventsService.create({ logger: rootLogger }),
+        logger: rootLogger,
+        schedule,
+      })[0];
+      mockBitbucket({
+        repositories: () => [repository('svc-a', 'test-apis', 'main')],
+        search: () => [],
+      });
+      rejectCodeSearch(status);
+      sourceTree({ 'svc-a:catalog-info.yaml': true });
+
+      await provider.connect(entityProviderConnection);
+      await provider.refresh(providerLogger);
+
+      expect(providerLogger.warn).toHaveBeenCalledTimes(1);
+      expect(providerLogger.warn).toHaveBeenCalledWith(message);
+      expect(
+        String(providerLogger.warn.mock.calls[0][0]).includes(
+          'read:workspace:bitbucket',
+        ),
+      ).toBe(status === 403);
+    },
+  );
+
+  it('reads five repositories from the source API at a time and keeps their order', async () => {
+    const slugs = Array.from({ length: 8 }, (_, index) => `repo-${index}`);
+    const provider = BitbucketCloudEntityProvider.fromConfig(simpleConfig, {
+      auth: mockServices.auth(),
+      catalog: catalogServiceMock(),
+      events: DefaultEventsService.create({ logger }),
+      logger,
+      schedule,
+    })[0];
+    mockBitbucket({
+      repositories: () => slugs.map(slug => repository(slug, 'PROJ', 'main')),
+      search: () => [],
+    });
+    rejectCodeSearch(403);
+
+    let inFlight = 0;
+    let maxInFlight = 0;
+    const started: string[] = [];
+    let openGate = () => {};
+    const gate = new Promise<void>(resolve => {
+      openGate = resolve;
+    });
+    server.use(
+      http.get(
+        ({ request }) => new URL(request.url).pathname.includes('/src/'),
+        async ({ request }) => {
+          const slug = new URL(request.url).pathname.split('/')[4];
+          started.push(slug);
+          inFlight += 1;
+          maxInFlight = Math.max(maxInFlight, inFlight);
+          await gate;
+          const index = Number(slug.slice('repo-'.length));
+          await new Promise(resolve => setTimeout(resolve, (8 - index) * 5));
+          inFlight -= 1;
+          return HttpResponse.json({
+            type: 'commit_file',
+            path: 'catalog-info.yaml',
+          });
+        },
+      ),
+    );
+
+    const refreshPromise = (async () => {
+      await provider.connect(entityProviderConnection);
+      await provider.refresh(logger);
+    })();
+    let startedAtCap: string[] = [];
+    let inFlightAtCap = 0;
+    try {
+      const deadline = Date.now() + 1000;
+      while (started.length < 5 && Date.now() < deadline) {
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
+      startedAtCap = [...started];
+      inFlightAtCap = maxInFlight;
+    } finally {
+      openGate();
+    }
+    await refreshPromise;
+
+    expect(inFlightAtCap).toBe(5);
+    expect(maxInFlight).toBeLessThanOrEqual(5);
+    expect(startedAtCap).toEqual(slugs.slice(0, 5));
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: slugs.map(slug => ({
+        entity: createLocationEntity(
+          `https://bitbucket.org/test-ws/${slug}`,
+          'main',
+          'catalog-info.yaml',
+        ),
+        locationKey: 'bitbucketCloud-provider:default',
+      })),
+    });
+  });
+
+  it('does not claim repositories past the in-flight window after a source read fails', async () => {
+    const slugs = Array.from({ length: 10 }, (_, index) => `repo-${index + 1}`);
+    const provider = BitbucketCloudEntityProvider.fromConfig(simpleConfig, {
+      auth: mockServices.auth(),
+      catalog: catalogServiceMock(),
+      events: DefaultEventsService.create({ logger }),
+      logger,
+      schedule,
+    })[0];
+    mockBitbucket({
+      repositories: () => slugs.map(slug => repository(slug, 'PROJ', 'main')),
+      search: () => [],
+    });
+    rejectCodeSearch(403);
+
+    const requested: string[] = [];
+    const initialWindow = new Set(slugs.slice(0, 5));
+    let finished = 0;
+    let releaseInFlight = () => {};
+    const hold = new Promise<void>(resolve => {
+      releaseInFlight = resolve;
+    });
+    server.use(
+      http.get(
+        ({ request }) => new URL(request.url).pathname.includes('/src/'),
+        async ({ request }) => {
+          const slug = new URL(request.url).pathname.split('/')[4];
+          requested.push(slug);
+          // Repository #2 fails while the other four reads in the window are
+          // still open, so a worker that keeps pulling would request repo-6.
+          if (slug === 'repo-2') {
+            return new HttpResponse(null, { status: 429 });
+          }
+          if (!initialWindow.has(slug)) {
+            return HttpResponse.json({
+              type: 'commit_file',
+              path: 'catalog-info.yaml',
+            });
+          }
+          await hold;
+          finished += 1;
+          return HttpResponse.json({
+            type: 'commit_file',
+            path: 'catalog-info.yaml',
+          });
+        },
+      ),
+    );
+
+    const outcome = provider
+      .connect(entityProviderConnection)
+      .then(() => provider.refresh(logger))
+      .then(
+        () => ({ failed: false as const }),
+        (error: unknown) => ({ failed: true as const, error }),
+      );
+
+    try {
+      const started = Date.now() + 1000;
+      while (requested.length < 5 && Date.now() < started) {
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
+    } finally {
+      releaseInFlight();
+    }
+
+    const drained = Date.now() + 1000;
+    while (finished < 4 && Date.now() < drained) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    expect(requested).toEqual(slugs.slice(0, 5));
+    await expect(outcome).resolves.toMatchObject({
+      failed: true,
+      error: { name: 'BitbucketCloudApiError', status: 429 },
+    });
+    expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+  });
+
+  it('resolves a slash branch to its commit hash before reading the source API', async () => {
+    const hash = 'abcdefabcdefabcdefabcdefabcdefabcdefabcd';
+    const provider = BitbucketCloudEntityProvider.fromConfig(simpleConfig, {
+      auth: mockServices.auth(),
+      catalog: catalogServiceMock(),
+      events: DefaultEventsService.create({ logger }),
+      logger,
+      schedule,
+    })[0];
+    mockBitbucket({
+      repositories: () => [repository('svc-a', 'PROJ', 'release/x')],
+      search: () => [],
+    });
+    rejectCodeSearch(403);
+    const urls: string[] = [];
+    server.use(
+      http.get(
+        ({ request }) =>
+          new URL(request.url).pathname.includes('/refs/branches'),
+        ({ request }) => {
+          urls.push(request.url);
+          return HttpResponse.json({
+            values: [
+              {
+                type: 'branch',
+                name: 'release',
+                target: { hash: '0000000000000000000000000000000000000000' },
+              },
+              {
+                type: 'branch',
+                name: 'release/x',
+                target: { hash },
+              },
+            ],
+          });
+        },
+      ),
+      http.get(
+        ({ request }) => new URL(request.url).pathname.includes('/src/'),
+        ({ request }) => {
+          urls.push(request.url);
+          return HttpResponse.json({
+            type: 'commit_file',
+            path: 'catalog-info.yaml',
+          });
+        },
+      ),
+    );
+
+    await provider.connect(entityProviderConnection);
+    await provider.refresh(logger);
+
+    expect(urls).toHaveLength(2);
+    const branchUrl = new URL(urls[0]);
+    expect(branchUrl.pathname).toBe(
+      '/2.0/repositories/test-ws/svc-a/refs/branches',
+    );
+    expect(branchUrl.searchParams.get('q')).toBe('name="release/x"');
+    expect(branchUrl.searchParams.get('fields')).toBe(
+      'next,values.name,values.target.hash',
+    );
+    expect(urls[1]).toBe(
+      `https://api.bitbucket.org/2.0/repositories/test-ws/svc-a/src/${hash}/catalog-info.yaml?format=meta`,
+    );
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: [
+        {
+          entity: createLocationEntity(
+            'https://bitbucket.org/test-ws/svc-a',
+            'release/x',
+            'catalog-info.yaml',
+          ),
+          locationKey: 'bitbucketCloud-provider:default',
+        },
+      ],
+    });
+  });
+
+  it('skips a slash branch when the branch lookup has no commit hash', async () => {
+    const provider = BitbucketCloudEntityProvider.fromConfig(simpleConfig, {
+      auth: mockServices.auth(),
+      catalog: catalogServiceMock(),
+      events: DefaultEventsService.create({ logger }),
+      logger,
+      schedule,
+    })[0];
+    mockBitbucket({
+      repositories: () => [repository('svc-a', 'PROJ', 'release/x')],
+      search: () => [],
+    });
+    rejectCodeSearch(403);
+    const sourceUrls: string[] = [];
+    server.use(
+      http.get(
+        ({ request }) =>
+          new URL(request.url).pathname.includes('/refs/branches'),
+        () =>
+          HttpResponse.json({
+            values: [
+              {
+                type: 'branch',
+                name: 'release',
+                target: { hash: '0000000000000000000000000000000000000000' },
+              },
+              { type: 'branch', name: 'release/x' },
+            ],
+          }),
+      ),
+      http.get(
+        ({ request }) => new URL(request.url).pathname.includes('/src/'),
+        ({ request }) => {
+          sourceUrls.push(request.url);
+          return HttpResponse.json({
+            type: 'commit_file',
+            path: 'catalog-info.yaml',
+          });
+        },
+      ),
+    );
+
+    await provider.connect(entityProviderConnection);
+    await provider.refresh(logger);
+
+    expect(sourceUrls).toEqual([]);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: [],
     });
   });
 });

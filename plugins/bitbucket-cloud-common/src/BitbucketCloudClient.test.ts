@@ -368,6 +368,71 @@ describe('BitbucketCloudClient', () => {
     expect(missing).toEqual([]);
   });
 
+  it('encodes the commit as one source path segment', async () => {
+    const urls: string[] = [];
+    server.use(
+      http.get(
+        () => true,
+        ({ request }) => {
+          const url = new URL(request.url);
+          urls.push(`${url.pathname}${url.search}`);
+          return new HttpResponse(null, { status: 404 });
+        },
+      ),
+    );
+
+    await expect(
+      client.repositorySourceFileExists(
+        'ws',
+        'repo',
+        'release/x',
+        'catalog-info.yaml',
+      ),
+    ).resolves.toBe(false);
+    await expect(
+      client.repositorySourceFileExists(
+        'ws',
+        'repo',
+        'feature/a b#c',
+        'catalog-info.yaml',
+      ),
+    ).resolves.toBe(false);
+
+    expect(urls).toEqual([
+      '/2.0/repositories/ws/repo/src/release%2Fx/catalog-info.yaml?format=meta',
+      '/2.0/repositories/ws/repo/src/feature%2Fa%20b%23c/catalog-info.yaml?format=meta',
+    ]);
+  });
+
+  it('rejects an empty commit and dot segments', async () => {
+    const urls: string[] = [];
+    server.use(
+      http.get(
+        () => true,
+        ({ request }) => {
+          urls.push(request.url);
+          return new HttpResponse(null, { status: 404 });
+        },
+      ),
+    );
+
+    await expect(
+      client.repositorySourceFileExists('ws', 'repo', '', 'catalog-info.yaml'),
+    ).rejects.toThrow(/commit or branch/);
+    await expect(
+      client.repositorySourceFileExists('ws', 'repo', '.', 'catalog-info.yaml'),
+    ).rejects.toThrow(/commit or branch/);
+    await expect(
+      client.repositorySourceFileExists(
+        'ws',
+        'repo',
+        '..',
+        'catalog-info.yaml',
+      ),
+    ).rejects.toThrow(/commit or branch/);
+    expect(urls).toEqual([]);
+  });
+
   it('listRepositoriesByWorkspace', async () => {
     server.use(
       http.get('https://api.bitbucket.org/2.0/repositories/ws', () => {

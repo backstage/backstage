@@ -27,7 +27,6 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import {
-  BitbucketCloudApiError,
   BitbucketCloudClient,
   CodeSearch,
   Events,
@@ -51,6 +50,8 @@ import { randomUUID } from 'node:crypto';
 const DEFAULT_BRANCH = 'master';
 const TOPIC_REPO_PUSH = 'bitbucketCloud.repo:push';
 const TOPIC_REPO_UPDATED = 'bitbucketCloud.repo:updated';
+const CODE_SEARCH_RETRY_INTERVAL_MS = 60 * 60 * 1000;
+const SOURCE_REPOSITORY_CONCURRENCY = 5;
 
 /** @public */
 export const ANNOTATION_BITBUCKET_CLOUD_REPO_URL = 'bitbucket.org/repo-url';
@@ -78,6 +79,8 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
   private readonly scheduleFn: () => Promise<void>;
 
   private connection?: EntityProviderConnection;
+  private codeSearchUnavailableUntil = 0;
+  private codeSearchUnavailableWarned = false;
 
   static fromConfig(
     config: Config,
@@ -370,19 +373,43 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       repository => this.matchesFilters(repository),
     );
 
+    // A rejected workspace search stays rejected for the cooldown. Scheduled
+    // refreshes and repo:push / repo:updated events skip the failing request.
+    if (Date.now() < this.codeSearchUnavailableUntil) {
+      return this.findCatalogFilesBySource(repositories);
+    }
+
     try {
-      return await this.findCatalogFilesByCodeSearch(repositories, repoSlug);
+      const targets = await this.findCatalogFilesByCodeSearch(
+        repositories,
+        repoSlug,
+      );
+      this.codeSearchUnavailableUntil = 0;
+      this.codeSearchUnavailableWarned = false;
+      return targets;
     } catch (error) {
       // Code search answers 403 for credentials that do not identify a user
       // (the OAuth consumer from bitbucket.org/site/oauth2, app passwords,
-      // and API keys), 404 when the feature is disabled, and 410 when the
-      // endpoint is gone. Those credentials can still read source files.
+      // API keys, and an API token without read:workspace:bitbucket), 404
+      // when the feature is disabled, and 410 when the endpoint is gone.
+      // Those credentials can still read source files.
       if (!isUnavailableCodeSearch(error)) {
         throw error;
       }
-      this.logger.warn(
-        `Workspace code search answered ${error.status}. Discovering catalog files with the source API instead`,
-      );
+      this.codeSearchUnavailableUntil =
+        Date.now() + CODE_SEARCH_RETRY_INTERVAL_MS;
+      // 403 is a credential or missing-scope rejection. 404 and 410 mean code
+      // search is disabled or removed, and adding a scope does not enable it.
+      const message =
+        error.status === 403
+          ? 'Workspace code search answered 403; falling back to the source API. Use an API token with the read:workspace:bitbucket scope for faster discovery.'
+          : `Workspace code search answered ${error.status}; falling back to the source API.`;
+      if (this.codeSearchUnavailableWarned) {
+        this.logger.debug(message);
+      } else {
+        this.logger.warn(message);
+        this.codeSearchUnavailableWarned = true;
+      }
       return this.findCatalogFilesBySource(repositories);
     }
   }
@@ -429,43 +456,83 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     const exactFile = BitbucketCloudEntityProvider.toExactSourcePath(
       this.config.catalogPath,
     );
-    const targets: IngestionTarget[] = [];
+    const located = await mapWithConcurrency(
+      repositories,
+      SOURCE_REPOSITORY_CONCURRENCY,
+      repository =>
+        this.catalogTargetsInRepository(repository, pattern, exactFile),
+    );
+    return located.flat();
+  }
 
-    for (const repository of repositories) {
-      const slug = repository.slug;
-      const repoUrl = repository.links?.html?.href;
-      if (!slug || !repoUrl) {
-        continue;
-      }
-      const commit =
-        repository.mainbranch?.target?.hash ??
-        repository.mainbranch?.name ??
-        DEFAULT_BRANCH;
-      let paths: string[];
-      if (!exactFile) {
-        paths = await this.matchingSourcePaths(slug, commit, pattern);
-      } else if (
-        await this.client.repositorySourceFileExists(
-          this.config.workspace,
-          slug,
-          commit,
-          exactFile,
-        )
-      ) {
-        paths = [exactFile];
-      } else {
-        paths = [];
-      }
-
-      for (const path of paths) {
-        targets.push({
-          fileUrl: BitbucketCloudEntityProvider.toUrl(repository, path),
-          repoUrl,
-        });
-      }
+  private async catalogTargetsInRepository(
+    repository: Models.Repository,
+    pattern: RegExp,
+    exactFile: string | undefined,
+  ): Promise<IngestionTarget[]> {
+    const slug = repository.slug;
+    const repoUrl = repository.links?.html?.href;
+    if (!slug || !repoUrl) {
+      return [];
+    }
+    const commit = await this.resolveSourceCommit(repository, slug);
+    if (!commit) {
+      return [];
+    }
+    let paths: string[];
+    if (!exactFile) {
+      paths = await this.matchingSourcePaths(slug, commit, pattern);
+    } else if (
+      await this.client.repositorySourceFileExists(
+        this.config.workspace,
+        slug,
+        commit,
+        exactFile,
+      )
+    ) {
+      paths = [exactFile];
+    } else {
+      paths = [];
     }
 
-    return targets;
+    return paths.map(path => ({
+      fileUrl: BitbucketCloudEntityProvider.toUrl(repository, path),
+      repoUrl,
+    }));
+  }
+
+  /**
+   * Commit to pass to `/src/{commit}`.
+   *
+   * A repository list that already has `mainbranch.target.hash` uses that
+   * hash. A branch name without `/` is itself a single path segment. A name
+   * such as `release/x` is not: the source API would read the branch
+   * `release` and the path `x/...`. Look the hash up from the branch list,
+   * and skip the repository when that lookup has no hash.
+   */
+  private async resolveSourceCommit(
+    repository: Models.Repository,
+    slug: string,
+  ): Promise<string | undefined> {
+    const hash = repository.mainbranch?.target?.hash;
+    if (hash) {
+      return hash;
+    }
+    const branch = repository.mainbranch?.name ?? DEFAULT_BRANCH;
+    if (!branch.includes('/')) {
+      return branch;
+    }
+
+    const q = `name="${branch}"`;
+    const fields = 'next,values.name,values.target.hash';
+    for await (const listed of this.client
+      .listBranchesByRepository(slug, this.config.workspace, { q, fields })
+      .iterateResults()) {
+      if (listed.name === branch) {
+        return listed.target?.hash;
+      }
+    }
+    return undefined;
   }
 
   private async matchingSourcePaths(
@@ -483,7 +550,6 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
     while (pending.length > 0) {
       const directory = pending.pop()!;
-      // Set.add returns the set, so it is not a "newly inserted" check.
       if (seen.has(directory)) {
         continue;
       }
@@ -733,11 +799,43 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
   }
 }
 
-function isUnavailableCodeSearch(
-  error: unknown,
-): error is BitbucketCloudApiError {
+function isUnavailableCodeSearch(error: unknown): error is { status: number } {
+  if (typeof error !== 'object' || error === null) {
+    return false;
+  }
+  const name = (error as { name?: unknown }).name;
+  const status = (error as { status?: unknown }).status;
   return (
-    error instanceof BitbucketCloudApiError &&
-    (error.status === 403 || error.status === 404 || error.status === 410)
+    name === 'BitbucketCloudApiError' &&
+    typeof status === 'number' &&
+    (status === 403 || status === 404 || status === 410)
   );
+}
+
+async function mapWithConcurrency<T, R>(
+  items: readonly T[],
+  concurrency: number,
+  mapper: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let nextIndex = 0;
+  // A rejected read, such as 429 or 500, must not claim repositories that
+  // have not started. Reads already in flight finish, then the error propagates.
+  let failed = false;
+  const workers = Math.min(concurrency, items.length);
+  await Promise.all(
+    Array.from({ length: workers }, async () => {
+      while (!failed && nextIndex < items.length) {
+        const index = nextIndex;
+        nextIndex += 1;
+        try {
+          results[index] = await mapper(items[index]);
+        } catch (error) {
+          failed = true;
+          throw error;
+        }
+      }
+    }),
+  );
+  return results;
 }

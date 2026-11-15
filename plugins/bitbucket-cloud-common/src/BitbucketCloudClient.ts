@@ -44,8 +44,9 @@ export interface BitbucketCloudSourceEntry {
  * Error for a Bitbucket Cloud response other than the expected success.
  *
  * `status` is the HTTP status. Workspace code search answers `403` when the
- * credential does not identify a user, `404` when code search is not enabled,
- * and the removed code search API answers `410`.
+ * credential does not identify a user or an API token is missing
+ * `read:workspace:bitbucket`, `404` when code search is not enabled, and the
+ * removed code search API answers `410`.
  *
  * @public
  */
@@ -115,6 +116,8 @@ export class BitbucketCloudClient {
    * `read:repository:bitbucket` and `read:workspace:bitbucket`.
    * Bitbucket Cloud rejects app passwords, legacy OAuth consumers, and API
    * keys for this endpoint with {@link BitbucketCloudApiError} status `403`.
+   * An API token without `read:workspace:bitbucket` is rejected with the same
+   * status. Adding that scope makes workspace code search available again.
    *
    * @param workspace - The workspace slug or UUID.
    * @param query - The search term and the optional filters.
@@ -159,7 +162,9 @@ export class BitbucketCloudClient {
    *
    * @param workspace - The workspace slug or UUID.
    * @param repoSlug - The repository slug.
-   * @param commit - A branch name, tag, or commit hash.
+   * @param commit - A branch name, tag, or commit hash. This is one path
+   * segment. A branch name that contains `/` has to be that branch's commit
+   * hash, because the source API reads only the first segment as the commit.
    * @param filePath - The file path from the repository root.
    */
   async repositorySourceFileExists(
@@ -192,7 +197,9 @@ export class BitbucketCloudClient {
    *
    * @param workspace - The workspace slug or UUID.
    * @param repoSlug - The repository slug.
-   * @param commit - A branch name, tag, or commit hash.
+   * @param commit - A branch name, tag, or commit hash. This is one path
+   * segment. A branch name that contains `/` has to be that branch's commit
+   * hash, because the source API reads only the first segment as the commit.
    * @param directoryPath - The directory path from the repository root.
    */
   async *listRepositorySource(
@@ -317,6 +324,15 @@ export class BitbucketCloudClient {
     path: string,
     options?: RequestOptions,
   ): URL {
+    // `{commit}` is one path segment. Splitting `release/x` would select the
+    // branch `release` and the path `x/...`, and `%2F` does not fix that.
+    // Callers resolve a branch that contains `/` to its commit hash.
+    // `.` and `..` would escape the `/src/{commit}` segment.
+    if (!commit || commit === '.' || commit === '..') {
+      throw new Error(
+        `Invalid Bitbucket Cloud commit or branch name '${commit}'`,
+      );
+    }
     const encodedPath = path ? `/${encodeRepositoryPath(path)}` : '';
     return this.createUrl(
       `/repositories/${encodeURIComponent(workspace)}/${encodeURIComponent(
