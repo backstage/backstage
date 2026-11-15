@@ -278,6 +278,27 @@ describe('AzureUrlReader', () => {
         /Azure DevOps rejected the provided credentials.*check that it has not expired\./,
       );
       await expect(serverError).rejects.not.toThrow(/global token/);
+
+      // The archive download also rejects the credentials, after commits succeed
+      worker.use(
+        http.get(
+          'https://dev.azure.com/org/project/_apis/git/repositories/repo/commits',
+          () => HttpResponse.json({ value: [{ commitId: '123abc' }] }),
+        ),
+        http.get(
+          'https://dev.azure.com/org/project/_apis/git/repositories/repo/items',
+          () =>
+            new HttpResponse('<html>Sign in</html>', {
+              status: 203,
+              headers: { 'Content-Type': 'text/html' },
+            }),
+        ),
+      );
+      await expect(
+        reader.readTree('https://dev.azure.com/org/project/_git/repo'),
+      ).rejects.toThrow(
+        /Failed to read tree from .*, Azure DevOps rejected the provided credentials/,
+      );
     });
   });
 
