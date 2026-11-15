@@ -175,7 +175,9 @@ describe('DefaultEventsService', () => {
       let blockingController: ReadableStreamDefaultController;
       const blockingStream = new ReadableStream({
         start(controller) {
-          // msw 3 only sends the response headers once the body has data
+          // TODO(freben): msw 3 only sends the response headers once the body has
+          // data, so this empty chunk makes the 202 arrive right away. Remove it
+          // once msw sends headers for streamed bodies up front again.
           controller.enqueue(new Uint8Array(0));
           blockingController = controller;
         },
@@ -198,6 +200,9 @@ describe('DefaultEventsService', () => {
               return new HttpResponse(
                 new ReadableStream({
                   start(controller) {
+                    // TODO(freben): msw 3 only sends the response headers once the body has
+                    // data, so this empty chunk makes the 202 arrive right away. Remove it
+                    // once msw sends headers for streamed bodies up front again.
                     controller.enqueue(new Uint8Array(0));
                     setTimeout(() => controller.close(), 100);
                   },
@@ -264,7 +269,9 @@ describe('DefaultEventsService', () => {
       let blockingController: ReadableStreamDefaultController;
       const blockingStream = new ReadableStream({
         start(controller) {
-          // msw 3 only sends the response headers once the body has data
+          // TODO(freben): msw 3 only sends the response headers once the body has
+          // data, so this empty chunk makes the 202 arrive right away. Remove it
+          // once msw sends headers for streamed bodies up front again.
           controller.enqueue(new Uint8Array(0));
           blockingController = controller;
         },
@@ -287,6 +294,9 @@ describe('DefaultEventsService', () => {
               return new HttpResponse(
                 new ReadableStream({
                   start(controller) {
+                    // TODO(freben): msw 3 only sends the response headers once the body has
+                    // data, so this empty chunk makes the 202 arrive right away. Remove it
+                    // once msw sends headers for streamed bodies up front again.
                     controller.enqueue(new Uint8Array(0));
                     setTimeout(() => controller.close(), 100);
                   },
