@@ -128,6 +128,52 @@ describe('ReviewState', () => {
       screen.getByRole('row', { name: 'Connection > Password ******' }),
     ).toBeInTheDocument();
     expect(screen.queryByText('hunter2')).not.toBeInTheDocument();
+
+    // Objects shown as a whole still mask nested secrets from other steps
+    const collapsedStep: ParsedTemplateSchema = {
+      ...openStep,
+      mergedSchema: {
+        type: 'object',
+        properties: {
+          connection: {
+            type: 'object',
+            additionalProperties: true,
+            'ui:backstage': { review: { explode: false } },
+          },
+        },
+      },
+    };
+    rerender(
+      <ReviewState
+        formState={formState}
+        schemas={[collapsedStep]}
+        maskSchemas={[collapsedStep, secretStep]}
+      />,
+    );
+
+    expect(screen.queryByText('hunter2')).not.toBeInTheDocument();
+    expect(screen.getByText('example.com')).toBeInTheDocument();
+
+    // Values with no visible schema still apply masks from other steps
+    rerender(
+      <ReviewState
+        formState={{ ...formState, token: 'TOKEN_SECRET' }}
+        schemas={[]}
+        maskSchemas={[
+          secretStep,
+          {
+            mergedSchema: {
+              type: 'object',
+              properties: { token: { type: 'string', 'ui:field': 'Secret' } },
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.queryByText('hunter2')).not.toBeInTheDocument();
+    expect(screen.queryByText('TOKEN_SECRET')).not.toBeInTheDocument();
+    expect(screen.getByText('example.com')).toBeInTheDocument();
   });
 
   it('should hide from review if show is not set', async () => {

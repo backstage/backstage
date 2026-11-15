@@ -37,15 +37,17 @@ export type ReviewStateProps = {
    * if any of these steps marks it as a password or secret, or sets a review
    * mask for it. Defaults to `schemas`.
    */
-  maskSchemas?: ParsedTemplateSchema[];
+  maskSchemas?: Pick<ParsedTemplateSchema, 'mergedSchema'>[];
 };
+
+type MaskSchema = Pick<ParsedTemplateSchema, 'mergedSchema'>;
 
 type ReviewOverride = [string, JsonValue | undefined][] | undefined;
 
 function getReviewOverride(
   name: string,
   definition: JsonSchema | undefined,
-  includeHidden: boolean,
+  allowOmit: boolean,
 ): ReviewOverride {
   if (!definition) {
     return undefined;
@@ -54,7 +56,7 @@ function getReviewOverride(
   if (reviewOptions?.mask) {
     return [[name, reviewOptions.mask]];
   }
-  if (includeHidden && reviewOptions?.show === false) {
+  if (allowOmit && reviewOptions?.show === false) {
     return [];
   }
   if (
@@ -66,12 +68,59 @@ function getReviewOverride(
   return undefined;
 }
 
+function findMask(
+  key: string,
+  formState: JsonObject,
+  maskSchemas: MaskSchema[],
+): JsonValue | undefined {
+  for (const maskSchema of maskSchemas) {
+    const override = getReviewOverride(
+      '',
+      new JSONSchema(maskSchema.mergedSchema).getSchema({
+        pointer: `#/${key}`,
+        data: formState,
+      }),
+      false,
+    );
+    if (override?.length) {
+      return override[0][1];
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Masks nested values of an object that is shown as a whole, so that fields
+ * marked as a password or secret by any step are not displayed.
+ */
+function maskNested(
+  key: string,
+  value: JsonValue | undefined,
+  formState: JsonObject,
+  maskSchemas: MaskSchema[],
+): JsonValue | undefined {
+  if (!isJsonObject(value)) {
+    return value;
+  }
+  return Object.fromEntries(
+    Object.entries(value).map(([nestedKey, nestedValue]) => {
+      const path = `${key}/${nestedKey}`;
+      return [
+        nestedKey,
+        findMask(path, formState, maskSchemas) ??
+          maskNested(path, nestedValue, formState, maskSchemas) ??
+          null,
+      ];
+    }),
+  );
+}
+
 function processSchema(
   key: string,
   value: JsonValue | undefined,
   schema: ParsedTemplateSchema,
   formState: JsonObject,
-  maskSchemas: ParsedTemplateSchema[],
+  maskSchemas: MaskSchema[],
 ): [string, JsonValue | undefined][] {
   const parsedSchema = new JSONSchema(schema.mergedSchema);
   const definitionInSchema = parsedSchema.getSchema({
@@ -132,7 +181,7 @@ function processSchema(
     }
   }
 
-  return [[name, value]];
+  return [[name, maskNested(key, value, formState, maskSchemas)]];
 }
 
 /**
@@ -148,7 +197,13 @@ export const ReviewState = (props: ReviewStateProps) => {
         const schema = findSchemaForKey(key, props.schemas, schemaFormState);
         return schema
           ? processSchema(key, value, schema, schemaFormState, maskSchemas)
-          : [[formatKey(key), value]];
+          : [
+              [
+                formatKey(key),
+                findMask(key, schemaFormState, maskSchemas) ??
+                  maskNested(key, value, schemaFormState, maskSchemas),
+              ],
+            ];
       })
       .filter(prop => prop.length > 0),
   );
