@@ -324,46 +324,20 @@ function withEffectiveSearchAttributes<T extends UserConfig | GroupConfig>(
   };
 }
 
-function mergeWithEffectiveUserSearchAttributes(
-  defaults: RecursivePartial<UserConfig>,
-  config: RecursivePartial<UserConfig> | undefined,
+function mergeWithEffectiveSearchAttributes<T extends UserConfig | GroupConfig>(
+  defaults: RecursivePartial<T>,
+  config: RecursivePartial<T> | undefined,
   vendor: VendorConfig | undefined,
-): UserConfig {
+  baseAttributes: string[],
+): T {
   const explicitAttributes = Array.isArray(config?.options?.attributes)
     ? config.options.attributes
     : undefined;
-  const merged = mergeWith(
-    {},
-    defaults,
-    config,
-    replaceArraysIfPresent,
-  ) as UserConfig;
+  const merged = mergeWith({}, defaults, config, replaceArraysIfPresent) as T;
   return withEffectiveSearchAttributes(
     merged,
     vendor,
-    DEFAULT_USER_SEARCH_ATTRIBUTES,
-    explicitAttributes,
-  );
-}
-
-function mergeWithEffectiveGroupSearchAttributes(
-  defaults: RecursivePartial<GroupConfig>,
-  config: RecursivePartial<GroupConfig> | undefined,
-  vendor: VendorConfig | undefined,
-): GroupConfig {
-  const explicitAttributes = Array.isArray(config?.options?.attributes)
-    ? config.options.attributes
-    : undefined;
-  const merged = mergeWith(
-    {},
-    defaults,
-    config,
-    replaceArraysIfPresent,
-  ) as GroupConfig;
-  return withEffectiveSearchAttributes(
-    merged,
-    vendor,
-    DEFAULT_GROUP_SEARCH_ATTRIBUTES,
+    baseAttributes,
     explicitAttributes,
   );
 }
@@ -562,10 +536,20 @@ export function readLdapLegacyConfig(config: Config): LdapProviderConfig[] {
       tls: readTlsConfig(c.getOptionalConfig('tls')),
       bind: readBindConfig(c.getOptionalConfig('bind')),
       users: readUserConfig(c.getConfig('users')).map(it =>
-        mergeWithEffectiveUserSearchAttributes(defaultUserConfig, it, vendor),
+        mergeWithEffectiveSearchAttributes(
+          defaultUserConfig,
+          it,
+          vendor,
+          DEFAULT_USER_SEARCH_ATTRIBUTES,
+        ),
       ),
       groups: readGroupConfig(c.getConfig('groups')).map(it =>
-        mergeWithEffectiveGroupSearchAttributes(defaultGroupConfig, it, vendor),
+        mergeWithEffectiveSearchAttributes(
+          defaultGroupConfig,
+          it,
+          vendor,
+          DEFAULT_GROUP_SEARCH_ATTRIBUTES,
+        ),
       ),
       disableParallelReads: c.getOptionalBoolean('disableParallelReads'),
       vendor,
@@ -610,14 +594,24 @@ export function readProviderConfigs(config: Config): LdapProviderConfig[] {
           ? c.getOptionalConfigArray('users')
           : c.getOptionalConfig('users'),
       ).map(it =>
-        mergeWithEffectiveUserSearchAttributes(defaultUserConfig, it, vendor),
+        mergeWithEffectiveSearchAttributes(
+          defaultUserConfig,
+          it,
+          vendor,
+          DEFAULT_USER_SEARCH_ATTRIBUTES,
+        ),
       ),
       groups: readGroupConfig(
         isGroupList
           ? c.getOptionalConfigArray('groups')
           : c.getOptionalConfig('groups'),
       ).map(it =>
-        mergeWithEffectiveGroupSearchAttributes(defaultGroupConfig, it, vendor),
+        mergeWithEffectiveSearchAttributes(
+          defaultGroupConfig,
+          it,
+          vendor,
+          DEFAULT_GROUP_SEARCH_ATTRIBUTES,
+        ),
       ),
       schedule,
       disableParallelReads: c.getOptionalBoolean('disableParallelReads'),
