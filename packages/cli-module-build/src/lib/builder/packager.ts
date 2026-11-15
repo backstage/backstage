@@ -73,24 +73,6 @@ export function formatErrorMessage(error: any) {
   return msg;
 }
 
-// Package builds load PostCSS configs with postcss-load-config, which sets
-// NODE_ENV to "development" when it isn't set. Restore it afterwards, as app
-// builds later in the same process pick their browserslist targets by
-// NODE_ENV.
-async function withNodeEnvRestored(fn: () => Promise<void>) {
-  const env = process.env as { NODE_ENV?: string };
-  const nodeEnv = env.NODE_ENV;
-  try {
-    await fn();
-  } finally {
-    if (nodeEnv === undefined) {
-      delete env.NODE_ENV;
-    } else {
-      env.NODE_ENV = nodeEnv;
-    }
-  }
-}
-
 async function rollupBuild(config: RollupOptions) {
   try {
     const bundle = await rollup(config);
@@ -128,9 +110,9 @@ export const buildPackage = async (options: BuildOptions) => {
   const targetDir = options.targetDir ?? targetPaths.dir;
   await fs.remove(resolvePath(targetDir, 'dist'));
 
-  await withNodeEnvRestored(async () => {
-    await Promise.all(rollupConfigs.map(rollupBuild));
-  });
+  const buildTasks = rollupConfigs.map(rollupBuild);
+
+  await Promise.all(buildTasks);
 };
 
 export const buildPackages = async (options: BuildOptions[]) => {
@@ -145,11 +127,9 @@ export const buildPackages = async (options: BuildOptions[]) => {
 
   const buildTasks = rollupConfigs.flat().map(opts => () => rollupBuild(opts));
 
-  await withNodeEnvRestored(async () => {
-    await runConcurrentTasks({
-      items: buildTasks,
-      worker: async task => task(),
-    });
+  await runConcurrentTasks({
+    items: buildTasks,
+    worker: async task => task(),
   });
 };
 

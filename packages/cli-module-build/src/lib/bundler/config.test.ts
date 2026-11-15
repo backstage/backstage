@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import webpack from 'webpack';
 import { createConfig } from './config';
@@ -49,13 +50,19 @@ function createOptions(
 }
 
 describe('createConfig', () => {
-  const lazyCompilation = process.env.EXPERIMENTAL_LAZY_COMPILATION;
+  const env = {
+    EXPERIMENTAL_LAZY_COMPILATION: process.env.EXPERIMENTAL_LAZY_COMPILATION,
+    BROWSERSLIST_ENV: process.env.BROWSERSLIST_ENV,
+  };
+  const mockDir = createMockDirectory();
 
   afterEach(() => {
-    if (lazyCompilation === undefined) {
-      delete process.env.EXPERIMENTAL_LAZY_COMPILATION;
-    } else {
-      process.env.EXPERIMENTAL_LAZY_COMPILATION = lazyCompilation;
+    for (const [name, value] of Object.entries(env)) {
+      if (value === undefined) {
+        delete process.env[name];
+      } else {
+        process.env[name] = value;
+      }
     }
   });
 
@@ -107,5 +114,35 @@ describe('createConfig', () => {
     expect(webpackConfig).not.toHaveProperty('lazyCompilation');
     expect(webpackConfig.experiments).toEqual({ lazyCompilation: true });
     expect(webpackConfig.module?.parser).toBeUndefined();
+  });
+
+  // Rspack picks the browserslist environment by NODE_ENV, which package
+  // builds in the same process can change, unless the target names it.
+  it('names the browserslist environment for production builds', async () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        browserslist: { production: ['chrome 100'] },
+      }),
+    });
+    const appPaths = { ...paths, targetPath: mockDir.path };
+    delete process.env.BROWSERSLIST_ENV;
+
+    expect((await createConfig(appPaths, createOptions())).target).toBe(
+      'browserslist:production',
+    );
+    expect(
+      (await createConfig(appPaths, createOptions({ isDev: true }))).target,
+    ).toBeUndefined();
+    expect(
+      (await createConfig(appPaths, createOptions({ webpack }))).target,
+    ).toBeUndefined();
+
+    process.env.BROWSERSLIST_ENV = 'modern';
+    expect((await createConfig(appPaths, createOptions())).target).toBe(
+      'browserslist:modern',
+    );
+
+    // Without a browserslist config, Rspack targets `web`
+    expect((await createConfig(paths, createOptions())).target).toBeUndefined();
   });
 });

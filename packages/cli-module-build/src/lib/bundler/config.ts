@@ -20,6 +20,7 @@ import { rspack, Configuration } from '@rspack/core';
 
 import { BundlingPaths } from './paths';
 import { Config } from '@backstage/config';
+import browserslist from 'browserslist';
 import ESLintRspackPlugin from 'eslint-rspack-plugin';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -325,6 +326,20 @@ export async function createConfig(
     ? ({ experiments: { lazyCompilation } } as Configuration)
     : { lazyCompilation };
 
+  // Rspack targets the app's browserslist config when there is one, and picks
+  // its environment by NODE_ENV, which can change during the process, for
+  // example when postcss-load-config sets it in package builds. Name the
+  // environment for production builds, so they always minify JavaScript and
+  // CSS for the same browsers.
+  const browserslistTarget =
+    !isDev && !webpack && browserslist.findConfig(paths.targetPath)
+      ? {
+          target: `browserslist:${
+            process.env.BROWSERSLIST_ENV || 'production'
+          }` as const,
+        }
+      : {};
+
   return {
     mode,
     ...(isDev
@@ -341,6 +356,7 @@ export async function createConfig(
     },
     devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
+    ...browserslistTarget,
     entry: [
       /* eslint-disable-next-line no-restricted-syntax */
       findOwnPaths(__dirname).resolve('config/webpack-public-path'),

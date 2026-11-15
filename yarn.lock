@@ -2173,6 +2173,7 @@ __metadata:
     "@types/npm-packlist": "npm:^3.0.0"
     "@types/shell-quote": "npm:^1.7.5"
     bfj: "npm:^9.0.2"
+    browserslist: "npm:^4.28.1"
     buffer: "npm:^6.0.3"
     chalk: "npm:^4.0.0"
     chokidar: "npm:^3.3.1"

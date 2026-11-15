@@ -60,6 +60,7 @@
     "@swc/core": "^1.15.6",
     "@swc/helpers": "^0.5.23",
     "bfj": "^9.0.2",
+    "browserslist": "^4.28.1",
     "buffer": "^6.0.3",
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
