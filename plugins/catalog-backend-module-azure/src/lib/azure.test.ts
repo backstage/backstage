@@ -17,7 +17,13 @@
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { codeSearch, CodeSearchResponse } from './azure';
+import {
+  codeSearch,
+  CodeSearchResponse,
+  fileExists,
+  GitRepositoryListResponse,
+  listRepositories,
+} from './azure';
 import {
   DefaultAzureDevOpsCredentialsProvider,
   ScmIntegrations,
@@ -491,5 +497,176 @@ describe('azure', () => {
         '',
       );
     }
+  });
+
+  describe('listRepositories', () => {
+    const response: GitRepositoryListResponse = {
+      count: 2,
+      value: [
+        {
+          id: 'b1a4f3f4-9d36-4bb8-a0be-2bd36a3a6bd5',
+          name: 'backstage',
+          defaultBranch: 'refs/heads/main',
+          project: { name: 'Engineering Platform' },
+        },
+        {
+          id: '2c1f4f42-3cb2-4b7e-9d0a-4a0b0e1d7c55',
+          name: 'backstage-fork',
+          defaultBranch: 'refs/heads/main',
+          isFork: true,
+          project: { name: 'Engineering Platform' },
+        },
+      ],
+    };
+
+    it('lists the repositories of a project or of the whole organization', async () => {
+      const requestedUrls: string[] = [];
+      server.use(
+        http.get('https://dev.azure.com/shopify/*', ({ request }) => {
+          requestedUrls.push(request.url);
+          expect(request.headers.get('Authorization')).toBe('Basic OkFCQw==');
+          return HttpResponse.json(response);
+        }),
+        http.get('https://shopify.visualstudio.com/*', ({ request }) => {
+          requestedUrls.push(request.url);
+          return HttpResponse.json(response);
+        }),
+      );
+
+      const cloud = createFixture('dev.azure.com', 'ABC');
+      const legacy = createFixture('shopify.visualstudio.com', 'ABC');
+
+      await expect(
+        listRepositories(
+          cloud.credentialsProvider,
+          cloud.azureConfig,
+          'shopify',
+          'Engineering Platform',
+        ),
+      ).resolves.toEqual(response.value);
+      await expect(
+        listRepositories(
+          cloud.credentialsProvider,
+          cloud.azureConfig,
+          'shopify',
+        ),
+      ).resolves.toEqual(response.value);
+      await expect(
+        listRepositories(
+          legacy.credentialsProvider,
+          legacy.azureConfig,
+          'shopify',
+          'engineering',
+        ),
+      ).resolves.toEqual(response.value);
+
+      expect(requestedUrls).toEqual([
+        'https://dev.azure.com/shopify/Engineering%20Platform/_apis/git/repositories?api-version=6.0',
+        'https://dev.azure.com/shopify/_apis/git/repositories?api-version=6.0',
+        'https://shopify.visualstudio.com/engineering/_apis/git/repositories?api-version=6.0',
+      ]);
+    });
+
+    it('throws when the repositories cannot be listed', async () => {
+      server.use(
+        http.get(
+          'https://dev.azure.com/shopify/engineering/_apis/git/repositories',
+          () => new HttpResponse(null, { status: 401 }),
+        ),
+      );
+
+      const { credentialsProvider, azureConfig } = createFixture(
+        'dev.azure.com',
+        'ABC',
+      );
+
+      await expect(
+        listRepositories(
+          credentialsProvider,
+          azureConfig,
+          'shopify',
+          'engineering',
+        ),
+      ).rejects.toThrow(
+        'Azure DevOps repository listing failed with response status 401',
+      );
+    });
+  });
+
+  describe('fileExists', () => {
+    const itemsUrl =
+      'https://dev.azure.com/shopify/Engineering%20Platform/_apis/git/repositories/b1a4f3f4-9d36-4bb8-a0be-2bd36a3a6bd5/items';
+
+    it('checks the file on the default branch or on the given branch', async () => {
+      const requestedUrls: string[] = [];
+      server.use(
+        http.get('https://dev.azure.com/shopify/*', ({ request }) => {
+          requestedUrls.push(request.url);
+          expect(request.headers.get('Authorization')).toBe('Basic OkFCQw==');
+          const params = new URL(request.url).searchParams;
+          const branch = params.get('versionDescriptor.version');
+          if (
+            params.get('path') === '/catalog-info.yaml' &&
+            (branch === null || branch === 'main')
+          ) {
+            return HttpResponse.json({ gitObjectType: 'blob' });
+          }
+          return new HttpResponse(null, { status: 404 });
+        }),
+      );
+
+      const { credentialsProvider, azureConfig } = createFixture(
+        'dev.azure.com',
+        'ABC',
+      );
+      const exists = (path: string, branch?: string) =>
+        fileExists(
+          credentialsProvider,
+          azureConfig,
+          'shopify',
+          'Engineering Platform',
+          'b1a4f3f4-9d36-4bb8-a0be-2bd36a3a6bd5',
+          path,
+          branch,
+        );
+
+      await expect(exists('/catalog-info.yaml')).resolves.toBe(true);
+      await expect(exists('/catalog-info.yaml', 'main')).resolves.toBe(true);
+      await expect(exists('/missing.yaml')).resolves.toBe(false);
+      await expect(exists('/catalog-info.yaml', 'missing')).resolves.toBe(
+        false,
+      );
+
+      expect(requestedUrls).toEqual([
+        `${itemsUrl}?path=%2Fcatalog-info.yaml&%24format=json&api-version=6.0`,
+        `${itemsUrl}?path=%2Fcatalog-info.yaml&%24format=json&api-version=6.0&versionDescriptor.version=main&versionDescriptor.versionType=branch`,
+        `${itemsUrl}?path=%2Fmissing.yaml&%24format=json&api-version=6.0`,
+        `${itemsUrl}?path=%2Fcatalog-info.yaml&%24format=json&api-version=6.0&versionDescriptor.version=missing&versionDescriptor.versionType=branch`,
+      ]);
+    });
+
+    it('throws on unexpected responses', async () => {
+      server.use(
+        http.get(itemsUrl, () => new HttpResponse(null, { status: 500 })),
+      );
+
+      const { credentialsProvider, azureConfig } = createFixture(
+        'dev.azure.com',
+        'ABC',
+      );
+
+      await expect(
+        fileExists(
+          credentialsProvider,
+          azureConfig,
+          'shopify',
+          'Engineering Platform',
+          'b1a4f3f4-9d36-4bb8-a0be-2bd36a3a6bd5',
+          '/catalog-info.yaml',
+        ),
+      ).rejects.toThrow(
+        'Azure DevOps file lookup failed with response status 500',
+      );
+    });
   });
 });

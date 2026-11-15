@@ -16,9 +16,21 @@
 
 import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { AzureDevOpsConfig, AzureBlobStorageConfig } from './types';
+import {
+  AzureDevOpsConfig,
+  AzureBlobStorageConfig,
+  AzureDevOpsDiscoveryMethod,
+} from './types';
 
 const DEFAULT_PROVIDER_ID = 'default';
+const DISCOVERY_METHODS: AzureDevOpsDiscoveryMethod[] = [
+  'codeSearch',
+  'listing',
+];
+
+function isDiscoveryMethod(value: string): value is AzureDevOpsDiscoveryMethod {
+  return (DISCOVERY_METHODS as string[]).includes(value);
+}
 
 export function readAzureDevOpsConfigs(config: Config): AzureDevOpsConfig[] {
   const configs: AzureDevOpsConfig[] = [];
@@ -45,6 +57,23 @@ function readAzureDevOpsConfig(id: string, config: Config): AzureDevOpsConfig {
   const repository = config.getOptionalString('repository') || '*';
   const branch = config.getOptionalString('branch');
   const path = config.getOptionalString('path') || '/catalog-info.yaml';
+  const discoveryMethod =
+    config.getOptionalString('discoveryMethod') ?? 'codeSearch';
+  const skipForkedRepos = config.getOptionalBoolean('skipForkedRepos') ?? false;
+
+  if (!isDiscoveryMethod(discoveryMethod)) {
+    throw new Error(
+      `Invalid discoveryMethod '${discoveryMethod}' for Azure DevOps provider '${id}', must be one of ${DISCOVERY_METHODS.join(
+        ', ',
+      )}`,
+    );
+  }
+
+  if (discoveryMethod === 'listing' && /[*?]/.test(path)) {
+    throw new Error(
+      `Invalid path '${path}' for Azure DevOps provider '${id}', wildcards are not supported by the 'listing' discovery method`,
+    );
+  }
 
   const schedule = config.has('schedule')
     ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
@@ -60,6 +89,8 @@ function readAzureDevOpsConfig(id: string, config: Config): AzureDevOpsConfig {
     repository,
     branch,
     path,
+    discoveryMethod,
+    skipForkedRepos,
     schedule,
   };
 }
