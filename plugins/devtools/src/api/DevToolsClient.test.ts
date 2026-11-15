@@ -46,4 +46,20 @@ describe('DevToolsClient', () => {
       { method: 'POST' },
     );
   });
+
+  it('should fetch OpenTelemetry metrics and spans from the devtools backend', async () => {
+    const metrics = { metrics: [{ pluginId: 'a', name: 'm', type: 'gauge' }] };
+    const spans = { spans: [] };
+    mockFetch
+      .mockResolvedValueOnce({ ok: true, json: async () => metrics })
+      .mockResolvedValueOnce({ ok: true, json: async () => spans });
+
+    await expect(client.getOpenTelemetryMetrics()).resolves.toEqual(metrics);
+    await expect(client.getOpenTelemetrySpans()).resolves.toEqual(spans);
+
+    expect(mockFetch.mock.calls).toEqual([
+      [`${mockBaseUrl}/devtools/opentelemetry/metrics`],
+      [`${mockBaseUrl}/devtools/opentelemetry/spans`],
+    ]);
+  });
 });

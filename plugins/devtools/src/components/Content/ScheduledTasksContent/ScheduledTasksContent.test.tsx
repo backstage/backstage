@@ -61,6 +61,8 @@ describe('ScheduledTasksContent', () => {
     getConfig: jest.fn(),
     getExternalDependencies: jest.fn(),
     getInfo: jest.fn(),
+    getOpenTelemetryMetrics: jest.fn(),
+    getOpenTelemetrySpans: jest.fn(),
   };
 
   const mockToastApi = {
