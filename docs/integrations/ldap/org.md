@@ -269,6 +269,7 @@ options:
   # By default only attributes needed for entity mapping are requested. Custom
   # `map.*` overrides are included automatically. Set `attributes: ['*', '+']`
   # to load all attributes if your transformers need additional LDAP fields.
+  # Group member comes from map.members, not this list.
   attributes:
     - dn
     - entryDN
@@ -281,7 +282,6 @@ options:
     - description
     - groupType
     - memberOf
-    - member
   # This field is either 'false' to disable paging when reading from the
   # server, or an object on the form '{ pageSize: 100, pagePause: true }' that
   # specifies the details of how the paging shall work.
