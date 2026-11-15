@@ -279,8 +279,11 @@ export class LdapOrgEntityProvider implements EntityProvider {
     const logger = options?.logger ?? this.options.logger;
     const { markReadComplete } = trackProgress(logger);
 
-    // Create clients lazily for each refresh. By default, separate clients let
-    // user and group searches run in parallel (ldapts is not safe to share).
+    // Create clients lazily for each refresh. ldapts can multiplex searches on
+    // one connection by message ID, but OpenLDAP stores paged-results state on
+    // the connection, so two concurrent paged searches
+    // on the same bind can clobber each other. Separate clients keep those
+    // searches isolated while still running in parallel.
     const [userClient, groupClient] = await createClients(
       this.options.logger,
       this.options.provider,
