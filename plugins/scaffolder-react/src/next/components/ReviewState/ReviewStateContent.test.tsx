@@ -139,7 +139,10 @@ it('preserves undefined properties in detached schema and fallback values', asyn
   });
   const value = [{ owner: 'alice', optional: undefined }];
   renderInTestApp(
-    <ReviewState schemas={[schema]} formState={{ list: value, other: value }} />,
+    <ReviewState
+      schemas={[schema]}
+      formState={{ list: value, other: value }}
+    />,
     { features: [module] },
   );
   expect(await screen.findByText('Detached review')).toBeInTheDocument();
