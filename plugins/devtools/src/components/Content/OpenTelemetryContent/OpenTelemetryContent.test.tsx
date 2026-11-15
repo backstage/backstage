@@ -249,6 +249,30 @@ describe('OpenTelemetryContent', () => {
     expect(rowNames()).toEqual(['busy', 'medium', 'quiet']);
   });
 
+  it('pages forward with the default sort and with a sort from the URL', async () => {
+    mockDevToolsApi.getOpenTelemetryMetrics.mockResolvedValue({
+      metrics: Array.from({ length: 25 }, (_, i) => ({
+        pluginId: 'p',
+        name: `metric.${String(i).padStart(2, '0')}`,
+        type: 'counter' as const,
+      })),
+    });
+    mockDevToolsApi.getOpenTelemetrySpans.mockResolvedValue({ spans: [] });
+
+    const first = renderContent();
+    await screen.findByText('metric.00');
+    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+    expect(await screen.findByText('metric.20')).toBeInTheDocument();
+    expect(screen.queryByText('metric.00')).not.toBeInTheDocument();
+    first.unmount();
+
+    renderContent('/devtools/opentelemetry/metrics?sort=name&order=desc');
+    await screen.findByText('metric.24');
+    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+    expect(await screen.findByText('metric.04')).toBeInTheDocument();
+    expect(screen.queryByText('metric.24')).not.toBeInTheDocument();
+  });
+
   it('redirects the bare path to metrics and restores state from the URL', async () => {
     mockDevToolsApi.getOpenTelemetryMetrics.mockResolvedValue({ metrics: [] });
     mockDevToolsApi.getOpenTelemetrySpans.mockResolvedValue({

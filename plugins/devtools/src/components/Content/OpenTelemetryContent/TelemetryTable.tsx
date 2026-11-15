@@ -93,14 +93,17 @@ export function TelemetryTable<T extends TelemetryRow>(
     .filter(column => column.isSortable)
     .map(column => column.id);
   const sortParam = params.get('sort');
-  const sort: SortDescriptor =
-    sortParam && sortableColumns.includes(sortParam)
-      ? {
-          column: sortParam,
-          direction:
-            params.get('order') === 'desc' ? 'descending' : 'ascending',
-        }
-      : defaultSort;
+  const hasSortParam = !!sortParam && sortableColumns.includes(sortParam);
+  const sortColumn = hasSortParam ? sortParam : String(defaultSort.column);
+  const urlDirection =
+    params.get('order') === 'desc' ? 'descending' : 'ascending';
+  const sortDirection = hasSortParam ? urlDirection : defaultSort.direction;
+  // The table resets to the first page whenever the sort object changes, so
+  // keep the same object for as long as the column and direction stay put.
+  const sort: SortDescriptor = useMemo(
+    () => ({ column: sortColumn, direction: sortDirection }),
+    [sortColumn, sortDirection],
+  );
 
   const handleSortChange = (next: SortDescriptor) => {
     const column = String(next.column);

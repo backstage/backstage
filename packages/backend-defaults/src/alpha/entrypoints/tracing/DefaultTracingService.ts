@@ -160,12 +160,6 @@ export class DefaultTracingService implements TracingService {
         ? [{}, optionsOrFn]
         : [optionsOrFn, maybeFn!];
 
-    this.telemetryRegistry?.registerSpan({
-      pluginId: this.pluginId,
-      name,
-      kind: options.kind ?? 'internal',
-    });
-
     let credentials = options.credentials;
     if (!credentials && options.request) {
       credentials = await this.httpAuth.credentials(options.request);
@@ -177,6 +171,13 @@ export class DefaultTracingService implements TracingService {
       ...options.attributes,
       ...principalAttributes,
     };
+
+    // Only count spans that actually start, after credentials resolve.
+    this.telemetryRegistry?.registerSpan({
+      pluginId: this.pluginId,
+      name,
+      kind: options.kind ?? 'internal',
+    });
 
     return this.tracer.startActiveSpan(
       name,

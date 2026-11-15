@@ -94,6 +94,25 @@ describe('DefaultTracingService', () => {
       }),
     ).rejects.toThrow('boom');
 
+    const httpAuth = mockServices.httpAuth();
+    jest
+      .spyOn(httpAuth, 'credentials')
+      .mockRejectedValue(new Error('bad token'));
+    const unauthenticated = DefaultTracingService.create({
+      name: 'backstage-plugin-test',
+      pluginId: 'my-plugin',
+      captureEndUser: false,
+      httpAuth,
+      telemetryRegistry: telemetryRegistry as any,
+    });
+    await expect(
+      unauthenticated.startActiveSpan(
+        'never-started',
+        { request: { headers: {} } as any },
+        () => {},
+      ),
+    ).rejects.toThrow('bad token');
+
     expect(telemetryRegistry.registerSpan.mock.calls).toEqual([
       [{ pluginId: 'my-plugin', name: 'first', kind: 'internal' }],
       [{ pluginId: 'my-plugin', name: 'second', kind: 'client' }],

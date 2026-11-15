@@ -31,6 +31,7 @@ import {
   Tabs,
   Text,
   type ColumnConfig,
+  type SortDescriptor,
 } from '@backstage/ui';
 import {
   OpenTelemetryMetric,
@@ -165,6 +166,16 @@ const RegistryNote = (props: { signal: keyof typeof REGISTRY_NOTES }) => {
   );
 };
 
+const METRICS_DEFAULT_SORT: SortDescriptor = {
+  column: 'name',
+  direction: 'ascending',
+};
+
+const TRACES_DEFAULT_SORT: SortDescriptor = {
+  column: 'count',
+  direction: 'descending',
+};
+
 function MetricsPanel() {
   const api = useApi(devToolsApiRef);
   const { value, error } = useAsync(() => api.getOpenTelemetryMetrics(), [api]);
@@ -178,7 +189,7 @@ function MetricsPanel() {
       rows={rows}
       error={error}
       columnConfig={metricColumns}
-      defaultSort={{ column: 'name', direction: 'ascending' }}
+      defaultSort={METRICS_DEFAULT_SORT}
       sortValue={(row, column) => {
         switch (column) {
           case 'type':
@@ -211,7 +222,7 @@ function TracesPanel() {
     <TelemetryTable
       noun="traces"
       searchText={row => [row.kind]}
-      defaultSort={{ column: 'count', direction: 'descending' }}
+      defaultSort={TRACES_DEFAULT_SORT}
       descendingFirst={['count', 'lastSeen']}
       sortValue={(row, column) => {
         switch (column) {
