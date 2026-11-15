@@ -3108,7 +3108,15 @@ describe.each(databases.eachSupportedId())(
         // Collects the form of the long list in each page's main query
         const sqls: string[] = [];
         const onQuery = (q: { sql: string }) => sqls.push(q.sql);
+        // Whether each page's list query sorts its matches after matching,
+        // by ordering on an expression rather than the sort field itself
+        const sortsAfter: boolean[] = [];
         const forms = () => {
+          for (const sql of sqls.filter(q => q.includes('order by'))) {
+            sortsAfter.push(
+              sql.includes(`order by ("filtered"."value" || '')`),
+            );
+          }
           const result = sqls
             .filter(sql => sql.includes('final_entities'))
             .map(sql => {
@@ -3153,6 +3161,42 @@ describe.each(databases.eachSupportedId())(
           expect(pageForms.flat()).not.toContain('join');
           expect(pageForms.flat().includes('in')).toBe(
             databaseId.startsWith('POSTGRES'),
+          );
+          // The list is a direct condition, so on PostgreSQL every page sorts
+          // its matches instead of walking the index of the sort field
+          expect(sortsAfter).toHaveLength(2);
+          expect(sortsAfter).toEqual(
+            Array(2).fill(databaseId.startsWith('POSTGRES')),
+          );
+
+          // The same holds in descending order and when fetching backwards,
+          // where the order is inverted in the query and the rows reversed
+          sortsAfter.length = 0;
+          const first = await catalog.queryEntities({
+            filter: { 'relations.partOf': 'system:default/s' },
+            orderFields: [{ field: 'metadata.name', order: 'desc' }],
+            limit: 2,
+            credentials: mockCredentials.none(),
+          });
+          const second = await catalog.queryEntities({
+            cursor: first.pageInfo.nextCursor!,
+            limit: 2,
+            credentials: mockCredentials.none(),
+          });
+          const back = await catalog.queryEntities({
+            cursor: second.pageInfo.prevCursor!,
+            limit: 2,
+            credentials: mockCredentials.none(),
+          });
+          forms();
+          expect(
+            [first, second, back].map(r =>
+              entitiesResponseToObjects(r.items).map(e => e!.metadata.name),
+            ),
+          ).toEqual([['d', 'c'], ['a'], ['d', 'c']]);
+          expect(second.pageInfo.nextCursor).toBeUndefined();
+          expect(sortsAfter).toEqual(
+            Array(3).fill(databaseId.startsWith('POSTGRES')),
           );
         } finally {
           knex.removeListener('query', onQuery);

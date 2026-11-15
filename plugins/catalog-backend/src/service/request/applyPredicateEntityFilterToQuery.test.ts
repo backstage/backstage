@@ -16,7 +16,11 @@
 
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyEntityFilterToQuery } from './applyEntityFilterToQuery';
-import { INDIRECT_IN_MIN_VALUES, IN_SUBQUERY_MIN_VALUES } from './longInLists';
+import {
+  INDIRECT_IN_MIN_VALUES,
+  IN_SUBQUERY_MIN_VALUES,
+  sortsAfterMatching,
+} from './longInLists';
 import {
   DbFinalEntitiesRow,
   DbRefreshStateRow,
@@ -169,6 +173,24 @@ describe('PostgreSQL query generation', () => {
       ),
     ).toBe('in');
     expect(form(compile({ 'metadata.name': 'a', ...owned }).sql)).toBe('in');
+
+    // Sorted queries sort the matches after matching only when a direct
+    // condition is a set, not for sets inside an $any or a $not
+    for (const smallPage of [false, true]) {
+      expect(sortsAfterMatching(owned, { smallPage })).toBe(true);
+      expect(
+        sortsAfterMatching(
+          { $all: [{ kind: 'component' }, owned] },
+          { smallPage },
+        ),
+      ).toBe(true);
+      expect(
+        sortsAfterMatching(groups(IN_SUBQUERY_MIN_VALUES - 1), { smallPage }),
+      ).toBe(false);
+      expect(
+        sortsAfterMatching({ $any: [ownedLong, absent] }, { smallPage }),
+      ).toBe(false);
+    }
 
     // A list inside an $any or a $not is probed per row below the higher
     // threshold, and on small pages

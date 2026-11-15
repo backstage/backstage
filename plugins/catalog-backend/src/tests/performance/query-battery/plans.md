@@ -4355,3 +4355,105 @@ Planning:
 Planning Time: 3.957 ms
 Execution Time: 5.510 ms
 ```
+
+## Sorting after matching (2026-11-13)
+
+Plans of this change and of master on the beta read replica described in
+`baseline.md`, for the owned entities page of any kind with 174 claims.
+Claim lists are shown as `:claims`. The exact JSON plans for both are in
+`plans.json` under keys starting with `sorted`.
+
+## sorted owned page, any kind, 174 claims (this change)
+
+```text
+Limit  (cost=118147.28..118203.72 rows=21 width=1125) (actual time=503.322..510.458 rows=21.00 loops=1)
+  Buffers: shared hit=778564
+  ->  Nested Loop  (cost=118147.28..559085.20 rows=164072 width=1125) (actual time=503.321..510.454 rows=21.00 loops=1)
+        Buffers: shared hit=778564
+        ->  Gather Merge  (cost=118146.86..133360.06 rows=130623 width=110) (actual time=503.275..510.175 rows=21.00 loops=1)
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=778480
+              ->  Sort  (cost=117146.84..117282.90 rows=54426 width=110) (actual time=490.782..490.800 rows=247.67 loops=3)
+                    Sort Key: (((search.value)::text || ''::text)), search.entity_id
+                    Sort Method: quicksort  Memory: 10526kB
+                    Buffers: shared hit=778480
+                    Worker 0:  Sort Method: quicksort  Memory: 9986kB
+                    Worker 1:  Sort Method: quicksort  Memory: 10001kB
+                    ->  Hash Join  (cost=19736.26..112865.68 rows=54426 width=110) (actual time=225.945..423.311 rows=45481.67 loops=3)
+                          Hash Cond: ((search.entity_id)::text = (search_flt.entity_id)::text)
+                          Buffers: shared hit=778464
+                          ->  Parallel Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..92117.73 rows=385670 width=73) (actual time=0.064..105.802 rows=253504.00 loops=3)
+                                Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+                                Heap Fetches: 39051
+                                Index Searches: 1
+                                Buffers: shared hit=383461
+                          ->  Hash  (cost=18040.80..18040.80 rows=135582 width=37) (actual time=223.657..223.659 rows=136445.00 loops=3)
+                                Buckets: 262144  Batches: 1  Memory Usage: 11243kB
+                                Buffers: shared hit=395003
+                                ->  HashAggregate  (cost=16684.98..18040.80 rows=135582 width=37) (actual time=150.134..181.781 rows=136445.00 loops=3)
+                                      Group Key: search_flt.entity_id
+                                      Batches: 1  Memory Usage: 12313kB
+                                      Buffers: shared hit=395003
+                                      Worker 0:  Batches: 1  Memory Usage: 12313kB
+                                      Worker 1:  Batches: 1  Memory Usage: 12313kB
+                                      ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..16320.78 rows=145680 width=37) (actual time=0.937..92.268 rows=136449.00 loops=3)
+                                            Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (:claims::text[])) AND (entity_id IS NOT NULL) AND (entity_id IS NOT NULL))
+                                            Heap Fetches: 17430
+                                            Index Searches: 468
+                                            Buffers: shared hit=395003
+        ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..3.26 rows=1 width=1057) (actual time=0.012..0.012 rows=1.00 loops=21)
+              Index Cond: ((entity_id)::text = (search.entity_id)::text)
+              Filter: (final_entity IS NOT NULL)
+              Index Searches: 21
+              Buffers: shared hit=84
+Planning:
+  Buffers: shared hit=20
+Planning Time: 2.063 ms
+Execution Time: 511.319 ms
+```
+
+## sorted owned page, any kind, 174 claims (master)
+
+```text
+Limit  (cost=17686.11..117893.91 rows=21 width=1093) (actual time=80201.033..80878.967 rows=21.00 loops=1)
+  Buffers: shared hit=421404
+  ->  Gather Merge  (cost=17686.11..782936432.78 rows=164072 width=1093) (actual time=80201.031..80878.961 rows=21.00 loops=1)
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=421404
+        ->  Nested Loop  (cost=16686.09..782916494.77 rows=68363 width=1093) (actual time=4675.130..34878.505 rows=14.67 loops=3)
+              Join Filter: ((final_entities.entity_id)::text = (search_flt.entity_id)::text)
+              Rows Removed by Join Filter: 255813617
+              Buffers: shared hit=421404
+              ->  Nested Loop  (cost=1.11..1347878.37 rows=384295 width=1130) (actual time=0.139..96.882 rows=1881.00 loops=3)
+                    Buffers: shared hit=26401
+                    ->  Parallel Index Only Scan using search_key_value_entity_idx on search  (cost=0.69..92117.73 rows=385670 width=73) (actual time=0.077..19.809 rows=1881.00 loops=3)
+                          Index Cond: ((key = 'metadata.name'::text) AND (value IS NOT NULL))
+                          Heap Fetches: 237
+                          Index Searches: 1
+                          Buffers: shared hit=3827
+                    ->  Index Scan using final_entities_pkey on final_entities  (cost=0.42..3.26 rows=1 width=1057) (actual time=0.034..0.034 rows=1.00 loops=5643)
+                          Index Cond: ((entity_id)::text = (search.entity_id)::text)
+                          Filter: (final_entity IS NOT NULL)
+                          Index Searches: 5643
+                          Buffers: shared hit=22574
+              ->  Materialize  (cost=16684.98..18718.71 rows=135582 width=37) (actual time=0.086..6.419 rows=135998.74 loops=5643)
+                    Storage: Memory  Maximum Storage: 10576kB
+                    Buffers: shared hit=395003
+                    ->  HashAggregate  (cost=16684.98..18040.80 rows=135582 width=37) (actual time=160.513..192.963 rows=136445.00 loops=3)
+                          Group Key: search_flt.entity_id
+                          Batches: 1  Memory Usage: 12313kB
+                          Buffers: shared hit=395003
+                          Worker 0:  Batches: 1  Memory Usage: 12313kB
+                          Worker 1:  Batches: 1  Memory Usage: 12313kB
+                          ->  Index Only Scan using search_key_value_entity_idx on search search_flt  (cost=0.69..16320.78 rows=145680 width=37) (actual time=0.941..98.828 rows=136449.00 loops=3)
+                                Index Cond: ((key = 'relations.ownedby'::text) AND (value = ANY (:claims::text[])) AND (entity_id IS NOT NULL) AND (entity_id IS NOT NULL))
+                                Heap Fetches: 17430
+                                Index Searches: 468
+                                Buffers: shared hit=395003
+Planning:
+  Buffers: shared hit=20
+Planning Time: 2.208 ms
+Execution Time: 80882.884 ms
+```
