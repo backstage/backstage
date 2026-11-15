@@ -21,6 +21,7 @@ import {
   SearchField,
   Select,
   Table,
+  Text,
   type ColumnConfig,
   type SortDescriptor,
   type TableItem,
@@ -196,7 +197,13 @@ export function TelemetryTable<T extends TelemetryRow>(
       </Flex>
       <Table
         columnConfig={columnConfig}
-        emptyState={emptyState}
+        emptyState={
+          rows?.length ? (
+            <Text>No {noun} match your search or filter.</Text>
+          ) : (
+            emptyState
+          )
+        }
         {...tableProps}
       />
     </Flex>

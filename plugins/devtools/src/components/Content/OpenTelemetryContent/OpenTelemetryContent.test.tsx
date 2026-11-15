@@ -157,6 +157,19 @@ describe('OpenTelemetryContent', () => {
     ).toBeInTheDocument();
     expect(screen.queryByText('scaffolder.task.count')).not.toBeInTheDocument();
 
+    fireEvent.change(
+      screen.getByRole('searchbox', { name: 'Search metrics' }),
+      {
+        target: { value: 'no-such-metric' },
+      },
+    );
+    expect(
+      await screen.findByText('No metrics match your search or filter.'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('No metrics have been registered yet.'),
+    ).not.toBeInTheDocument();
+
     fireEvent.click(screen.getByRole('tab', { name: 'Traces' }));
     expect(await screen.findByText('catalog.refresh')).toBeInTheDocument();
     expect(currentLocation(result)).toBe('/devtools/opentelemetry/traces');
@@ -170,6 +183,16 @@ describe('OpenTelemetryContent', () => {
       screen.queryByRole('link', { name: 'Metrics Service' }),
     ).not.toBeInTheDocument();
     expect(screen.getByText('42')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Search traces' }), {
+      target: { value: 'no-such-span' },
+    });
+    expect(
+      await screen.findByText('No traces match your search or filter.'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('No spans have been recorded yet.'),
+    ).not.toBeInTheDocument();
 
     expect(
       screen.queryByRole('tab', { name: 'Logging' }),
