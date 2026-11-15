@@ -138,17 +138,16 @@ describe('EntityHeaderBui', () => {
     const catalogApi = catalogApiMock({
       entities: [componentEntity, ownerEntity, systemEntity],
     });
-    // Hold back the owner lookup until the deferred resolves, while letting
-    // unrelated lookups such as the hierarchy links answer normally
-    const getEntitiesByRefs = catalogApi.getEntitiesByRefs.bind(catalogApi);
+    // Hold back all lookups, but answer each one by its refs, so that no
+    // lookup can receive another one's entities however they are batched
     const ownerResponse = createDeferred<void>();
+    const getEntitiesByRefs = catalogApi.getEntitiesByRefs.bind(catalogApi);
     jest
       .spyOn(catalogApi, 'getEntitiesByRefs')
-      .mockImplementation(query =>
-        query.entityRefs.includes('group:default/team-a')
-          ? ownerResponse.promise.then(() => getEntitiesByRefs(query))
-          : getEntitiesByRefs(query),
-      );
+      .mockImplementation(async query => {
+        await ownerResponse.promise;
+        return getEntitiesByRefs(query);
+      });
     await renderHeader({ entity: componentEntity, catalogApi });
 
     expect(await screen.findByText('team-a')).toBeInTheDocument();
@@ -156,6 +155,9 @@ describe('EntityHeaderBui', () => {
       ownerResponse.resolve();
     });
     expect(await screen.findByText('Team A')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('link', { name: 'Artist Engagement Portal' }),
+    ).toBeInTheDocument();
   });
 
   it('renders a route-ref title while the entity is loading', async () => {

@@ -48,33 +48,21 @@ describe('readAzureIntegrationConfig', () => {
     const serializedSchema = fullSchema.serialize() as {
       schemas: { value: { properties?: { integrations?: object } } }[];
     };
-    const integrationSchemas = serializedSchema.schemas.filter(
-      s => s.value?.properties?.integrations,
-    );
     const schema = await loadConfigSchema({
       serialized: {
         ...serializedSchema, // only include schemas that apply to integrations
-        schemas: integrationSchemas,
+        schemas: serializedSchema.schemas.filter(
+          s => s.value?.properties?.integrations,
+        ),
       },
     });
     const processed = schema.process(
       [{ data: { integrations: { azure: [data] } }, context: 'app' }],
       { visibility: ['frontend'] },
     );
-    const azure = (processed[0].data as any).integrations?.azure?.[0];
-    if (!azure) {
-      // This has occasionally failed on CI with an opaque TypeError, so
-      // surface enough context to tell which part of the pipeline broke
-      throw new Error(
-        `Frontend visibility filtering dropped the integrations config; ` +
-          `collected ${serializedSchema.schemas.length} schemas of which ` +
-          `${integrationSchemas.length} declare integrations, ` +
-          `integrations schema: ${JSON.stringify(
-            integrationSchemas.map(s => s.value.properties?.integrations),
-          )}`,
-      );
-    }
-    return new ConfigReader(azure);
+    // Shows what visibility filtering kept, should it drop the config again
+    expect(processed[0].data).toHaveProperty('integrations.azure.0');
+    return new ConfigReader((processed[0].data as any).integrations.azure[0]);
   }
 
   it('reads all values when using a personal access token credential', () => {
