@@ -200,9 +200,7 @@ function processSchema(
   }
 
   if (Array.isArray(value) || isJsonObject(value)) {
-    return [
-      [name, maskNestedValue(key, value, ownStep, steps, formState)],
-    ];
+    return [[name, maskNestedValue(key, value, ownStep, steps, formState)]];
   }
 
   return [[name, value]];
@@ -234,12 +232,7 @@ export const ReviewState = (props: ReviewStateProps) => {
           };
           return processSchema(key, value, ownStep, steps, schemaFormState);
         }
-        const override = findOverride(
-          key,
-          undefined,
-          steps,
-          schemaFormState,
-        );
+        const override = findOverride(key, undefined, steps, schemaFormState);
         if (override?.kind === 'mask') {
           return [[formatKey(key), override.value]];
         }
@@ -248,13 +241,7 @@ export const ReviewState = (props: ReviewStateProps) => {
             formatKey(key),
             value === undefined
               ? value
-              : maskNestedValue(
-                  key,
-                  value,
-                  undefined,
-                  steps,
-                  schemaFormState,
-                ),
+              : maskNestedValue(key, value, undefined, steps, schemaFormState),
           ],
         ];
       })
