@@ -22,7 +22,6 @@ import { Config } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
 import { SearchOptions } from 'ldapts';
 import mergeWith from 'lodash/mergeWith';
-import cloneDeep from 'lodash/cloneDeep';
 import { trimEnd } from 'lodash';
 import { RecursivePartial } from './util';
 
@@ -460,7 +459,7 @@ function readSetConfig(
   if (!c) {
     return undefined;
   }
-  return cloneDeep(c.get());
+  return c.get();
 }
 
 function readUserMapConfig(c: Config | undefined): Partial<UserConfig['map']> {
