@@ -94,7 +94,7 @@ describe('DocsSynchronizer', () => {
 
     worker.use(
       http.get(
-        'http://backstage.local/api/techdocs/static/docs/default/component/test/techdocs_metadata.json',
+        'http://backstage.local/api/techdocs/static/docs/default/:kind/test/techdocs_metadata.json',
         () => HttpResponse.json({ build_timestamp: 123 }),
       ),
     );
@@ -264,6 +264,14 @@ describe('DocsSynchronizer', () => {
   });
 
   describe('doCacheSync', () => {
+    // msw 3 needs real timers to answer requests
+    beforeEach(() => {
+      jest.useRealTimers();
+    });
+    afterEach(() => {
+      jest.useFakeTimers();
+    });
+
     const entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',

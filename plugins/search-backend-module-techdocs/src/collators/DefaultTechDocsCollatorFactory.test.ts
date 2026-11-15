@@ -113,7 +113,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
 
       worker.use(
         http.get(
-          'http://test-backend/static/docs/default/Component/test-entity-with-docs/search/search_index.json',
+          'http://test-backend/static/docs/default/component/test-entity-with-docs/search/search_index.json',
           () => HttpResponse.json(mockSearchDocIndex),
         ),
       );
@@ -217,7 +217,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
       collator = await factory.getCollator();
       worker.use(
         http.get(
-          'http://test-backend/static/docs/default/Component/:name/search/search_index.json',
+          'http://test-backend/static/docs/default/component/:name/search/search_index.json',
           () => HttpResponse.json(mockSearchDocIndex),
         ),
       );

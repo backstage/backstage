@@ -133,6 +133,18 @@ describe('helpers', () => {
   it('rejects tokens issued for a different application audience', async () => {
     jest.useFakeTimers({
       now: 1600000004000,
+      doNotFake: [
+        'nextTick',
+        'setImmediate',
+        'clearImmediate',
+        'setTimeout',
+        'clearTimeout',
+        'setInterval',
+        'clearInterval',
+        'queueMicrotask',
+        'hrtime',
+        'performance',
+      ],
     });
 
     const helper = AuthHelper.fromConfig(
@@ -155,6 +167,18 @@ describe('helpers', () => {
   it('rejects tokens without an application audience', async () => {
     jest.useFakeTimers({
       now: 1600000004000,
+      doNotFake: [
+        'nextTick',
+        'setImmediate',
+        'clearImmediate',
+        'setTimeout',
+        'clearTimeout',
+        'setInterval',
+        'clearInterval',
+        'queueMicrotask',
+        'hrtime',
+        'performance',
+      ],
     });
 
     const helper = AuthHelper.fromConfig(
@@ -177,6 +201,18 @@ describe('helpers', () => {
   it('works for regular tokens, through header auth', async () => {
     jest.useFakeTimers({
       now: 1600000004000,
+      doNotFake: [
+        'nextTick',
+        'setImmediate',
+        'clearImmediate',
+        'setTimeout',
+        'clearTimeout',
+        'setInterval',
+        'clearInterval',
+        'queueMicrotask',
+        'hrtime',
+        'performance',
+      ],
     });
 
     const helper = AuthHelper.fromConfig(
@@ -223,6 +259,18 @@ describe('helpers', () => {
   it('works for regular tokens, through cookie auth', async () => {
     jest.useFakeTimers({
       now: 1600000004000,
+      doNotFake: [
+        'nextTick',
+        'setImmediate',
+        'clearImmediate',
+        'setTimeout',
+        'clearTimeout',
+        'setInterval',
+        'clearInterval',
+        'queueMicrotask',
+        'hrtime',
+        'performance',
+      ],
     });
 
     const helper = AuthHelper.fromConfig(
@@ -264,6 +312,18 @@ describe('helpers', () => {
   it('works for service tokens, through header auth', async () => {
     jest.useFakeTimers({
       now: 1600000004000,
+      doNotFake: [
+        'nextTick',
+        'setImmediate',
+        'clearImmediate',
+        'setTimeout',
+        'clearTimeout',
+        'setInterval',
+        'clearInterval',
+        'queueMicrotask',
+        'hrtime',
+        'performance',
+      ],
     });
 
     const helper = AuthHelper.fromConfig(
@@ -307,6 +367,18 @@ describe('helpers', () => {
   it('works for regular tokens, through jwtHeaderName header', async () => {
     jest.useFakeTimers({
       now: 1600000004000,
+      doNotFake: [
+        'nextTick',
+        'setImmediate',
+        'clearImmediate',
+        'setTimeout',
+        'clearTimeout',
+        'setInterval',
+        'clearInterval',
+        'queueMicrotask',
+        'hrtime',
+        'performance',
+      ],
     });
 
     const helper = AuthHelper.fromConfig(
@@ -354,6 +426,18 @@ describe('helpers', () => {
   it('works for regular tokens, through authorizationCookieName cookie name', async () => {
     jest.useFakeTimers({
       now: 1600000004000,
+      doNotFake: [
+        'nextTick',
+        'setImmediate',
+        'clearImmediate',
+        'setTimeout',
+        'clearTimeout',
+        'setInterval',
+        'clearInterval',
+        'queueMicrotask',
+        'hrtime',
+        'performance',
+      ],
     });
 
     const helper = AuthHelper.fromConfig(

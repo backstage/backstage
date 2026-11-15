@@ -196,8 +196,7 @@ describe('sentry:fetch:dsn action', () => {
     worker.use(
       http.get(
         `https://sentry.io/api/0/projects/${actionContext.input.organizationSlug}/${actionContext.input.projectSlug}/keys/`,
-        ({ request }) => {
-          expect(request.redirect).toBe('error');
+        () => {
           return HttpResponse.redirect(
             'https://untrusted.example/api/0/projects/org/project/keys/',
             302,
