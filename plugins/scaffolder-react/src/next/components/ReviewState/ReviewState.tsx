@@ -99,19 +99,28 @@ function maskNested(
   formState: JsonObject,
   maskSchemas: MaskSchema[],
 ): JsonValue | undefined {
+  const maskEntry = (
+    nestedKey: string | number,
+    nestedValue: JsonValue | undefined,
+  ) => {
+    const path = `${key}/${nestedKey}`;
+    return (
+      findMask(path, formState, maskSchemas) ??
+      maskNested(path, nestedValue, formState, maskSchemas) ??
+      null
+    );
+  };
+  if (Array.isArray(value)) {
+    return value.map((item, index) => maskEntry(index, item));
+  }
   if (!isJsonObject(value)) {
     return value;
   }
   return Object.fromEntries(
-    Object.entries(value).map(([nestedKey, nestedValue]) => {
-      const path = `${key}/${nestedKey}`;
-      return [
-        nestedKey,
-        findMask(path, formState, maskSchemas) ??
-          maskNested(path, nestedValue, formState, maskSchemas) ??
-          null,
-      ];
-    }),
+    Object.entries(value).map(([nestedKey, nestedValue]) => [
+      nestedKey,
+      maskEntry(nestedKey, nestedValue),
+    ]),
   );
 }
 

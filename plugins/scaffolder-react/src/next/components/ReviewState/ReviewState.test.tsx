@@ -174,6 +174,39 @@ describe('ReviewState', () => {
     expect(screen.queryByText('hunter2')).not.toBeInTheDocument();
     expect(screen.queryByText('TOKEN_SECRET')).not.toBeInTheDocument();
     expect(screen.getByText('example.com')).toBeInTheDocument();
+
+    // Array items still mask secrets from other steps
+    rerender(
+      <ReviewState
+        formState={{
+          connections: [
+            { host: 'array.example.com', password: 'ARRAY_SECRET' },
+          ],
+        }}
+        schemas={[]}
+        maskSchemas={[
+          {
+            mergedSchema: {
+              type: 'object',
+              properties: {
+                connections: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      password: { type: 'string', 'ui:widget': 'password' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.queryByText('ARRAY_SECRET')).not.toBeInTheDocument();
+    expect(screen.getByText(/array\.example\.com/)).toBeInTheDocument();
   });
 
   it('should hide from review if show is not set', async () => {
