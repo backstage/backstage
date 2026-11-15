@@ -50,9 +50,9 @@ At startup, the catalog backend reads all registered model sources and compiles 
 - A model-driven processor replaces the built-in kinds processor (`BuiltinKindsEntityProcessor`).
 - The catalog validates each entity against the JSON Schema of the kind that matches its `kind`, `apiVersion`, and `spec.type`.
 - The catalog generates relations from the relation fields declared on the kind. It emits an inverse relation only when a relation pair declares the source kind, target kind, and relation type.
-- Your other processors still handle kinds that the model doesn't declare.
+- Other installed processors keep running alongside the model-driven processor. They still handle kinds that the model doesn't declare, and they can also validate and emit relations for kinds that the model does declare. For example, the scaffolder's entity processor keeps processing `Template` entities. Your model customizations don't override what those processors do.
 
-The catalog always includes the default model, so you only provide the layers you add on top of it.
+`provideStaticCatalogModel` and `CatalogModelSources.static` always add the default model, so with them you only provide the layers you add on top of it. If you write a model source that doesn't use these helpers, it must include `defaultCatalogEntityModel` itself, or you must register another source that does. Otherwise the catalog no longer recognizes the built-in kinds.
 
 :::note
 
@@ -138,6 +138,16 @@ export const widgetModelLayer = createCatalogModelLayer({
         },
       ],
     });
+
+    // The default ownership pair doesn't cover Widget, so declare one
+    // to have the owner get the inverse ownerOf relation.
+    model.addRelationPair({
+      fromKind: 'Widget',
+      toKind: ['Group', 'User'],
+      description: 'A widget is owned by a group or user.',
+      forward: { type: 'ownedBy', title: 'owned by' },
+      reverse: { type: 'ownerOf', title: 'owner of' },
+    });
   },
 });
 ```
@@ -145,8 +155,14 @@ export const widgetModelLayer = createCatalogModelLayer({
 In this example:
 
 - The kind's `group` and the version `name` together form the `apiVersion`. You can pass an array of names, such as `['v1alpha1', 'v1beta1']`, to apply the same definition to several versions.
-- The JSON Schema describes the entity _excluding_ `apiVersion`, `kind`, and `metadata`, which the catalog generates for you. The root `type` must be `object` or omitted.
-- Each relation field reads an entity reference, or a list of them, from the `selector.path` of the entity and emits the given `relation`. Use `defaultKind` and `defaultNamespace` to fill in shorthand references, and `allowedKinds` to restrict which kinds the reference may point to.
+- The JSON Schema describes the entity _excluding_ `apiVersion`, `kind`, and `metadata`. The catalog generates the schemas for those three fields; you still write their values in each entity.
+- The kind schema has these restrictions, and the backend fails at startup if a schema breaks them:
+  - The root `type` must be `object` or omitted.
+  - The root must have a `properties` object, and it must not declare `apiVersion`, `kind`, or `metadata`.
+  - The root, and each schema directly under the root `properties`, must not use `allOf`, `anyOf`, `oneOf`, `if`, `then`, `else`, `not`, or `$ref`.
+- Each relation field reads an entity reference, or a list of them, from the `selector.path` of the entity and emits the given `relation`. Use `defaultKind` and `defaultNamespace` to fill in shorthand references.
+- `allowedKinds` limits which target kinds produce a relation. It doesn't validate the reference or reject the entity: if a reference points to a kind that isn't listed, the catalog silently skips that relation.
+- The `addRelationPair` call makes the catalog emit the inverse `ownerOf` relation on the owner. Without it, the catalog only emits `ownedBy`. See [Relations to custom kinds](#relations-to-custom-kinds).
 
 An entity of this kind looks like this:
 
@@ -159,6 +175,16 @@ spec:
   owner: team-a
   size: 3
 ```
+
+Registering a layer doesn't change the catalog's ingestion rules. By default, entities read from registered locations can only have the kinds `Component`, `API`, and `Location`, so the catalog rejects this `Widget`. Allow the new kind in `catalog.rules`:
+
+```yaml title="app-config.yaml"
+catalog:
+  rules:
+    - allow: [Component, API, Location, Widget]
+```
+
+An explicit `catalog.rules` list replaces the defaults, so include every kind you still want to allow. For more details, see [Catalog rules](configuration.md#catalog-rules).
 
 ### Variants per spec type
 
@@ -237,7 +263,9 @@ createCatalogModelLayer({
 
 ### Composing layers
 
-A layer can include other layers with `import`. The default model works this way: it imports one layer per built-in kind. Layers are deduplicated by `layerId`, so importing the same layer from several places is safe.
+A layer can include other layers with `import`. The default model works this way: it imports one layer per built-in kind.
+
+`import` copies the declarations of the imported layer into the layer that imports it. The imported layer's `layerId` isn't kept, so the catalog can't deduplicate it. Import each layer only once, and don't also register a layer that another registered layer imports. Otherwise its kinds are declared twice and the backend fails at startup. Deduplication by `layerId` only applies to the layers you register directly; registering the same layer twice is safe.
 
 ```ts
 export const myOrganizationModel = createCatalogModelLayer({
@@ -261,7 +289,7 @@ The builder can also update and remove parts of the model, including the built-i
 | `updateAnnotation`, `updateLabel`, `updateTag` | Change the description, title, or schema of metadata   |
 | `removeAnnotation`, `removeLabel`, `removeTag` | Remove metadata from the model                         |
 
-For example, to require that every `Component` of the `v1alpha1` version has a `spec.system`, replace its schema:
+`updateKind` deep-merges the schema you pass into the existing one. Objects are merged key by key, but arrays such as `required` replace the inherited array. For example, to require that every `Component` of the `v1alpha1` version has a `spec.system`, repeat the fields that are already required:
 
 ```ts
 createCatalogModelLayer({
@@ -272,7 +300,19 @@ createCatalogModelLayer({
       versions: [
         {
           name: 'v1alpha1',
-          schema: { jsonSchema: myStricterComponentSchema },
+          schema: {
+            jsonSchema: {
+              properties: {
+                spec: {
+                  // Arrays replace the inherited value, so list every required field
+                  required: ['type', 'lifecycle', 'owner', 'system'],
+                  properties: {
+                    system: { type: 'string', minLength: 1 },
+                  },
+                },
+              },
+            },
+          },
         },
       ],
     });
@@ -329,7 +369,7 @@ export const catalogModuleWidgetModel = createBackendModule({
 
 Plugins that ship a kind should use this pattern, so adopters can install support with one `backend.add(...)` call. Several modules can each add a model source, and the catalog combines them.
 
-A model source is an object with a `read` method that returns an async generator of layers. The catalog reads only the first value from each source, at startup.
+A model source is an object with a `read` method that returns an async generator. Each value it yields is an object with a `data` array of `{ layer }` entries, for example `{ data: [{ layer: widgetModelLayer }] }`. The catalog reads only the first value from each source, at startup. `CatalogModelSources.static` creates a source in this shape for you.
 
 ## Where model layers are used
 
