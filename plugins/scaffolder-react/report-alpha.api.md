@@ -237,6 +237,7 @@ export type ReviewStateProps = {
   schemas: ParsedTemplateSchema[];
   formState: JsonObject;
   schemaFormState?: JsonObject;
+  maskSchemas?: Pick<ParsedTemplateSchema, 'mergedSchema'>[];
 };
 
 // @alpha

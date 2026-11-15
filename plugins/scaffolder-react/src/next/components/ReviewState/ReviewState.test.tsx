@@ -15,7 +15,7 @@
  */
 
 import { ReviewState } from './ReviewState';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 
 describe('ReviewState', () => {
@@ -62,6 +62,151 @@ describe('ReviewState', () => {
     );
 
     expect(getByRole('row', { name: 'Name ******' })).toBeInTheDocument();
+  });
+
+  it('should mask fields that any step marks as secret', () => {
+    const formState = {
+      connection: { host: 'example.com', password: 'hunter2' },
+    };
+
+    const openStep: ParsedTemplateSchema = {
+      mergedSchema: {
+        type: 'object',
+        properties: {
+          connection: {
+            type: 'object',
+            properties: { host: { type: 'string' } },
+            additionalProperties: true,
+          },
+        },
+      },
+      schema: {},
+      title: 'open',
+      uiSchema: {},
+      description: 'open',
+    };
+    const secretStep: ParsedTemplateSchema = {
+      mergedSchema: {
+        type: 'object',
+        properties: {
+          connection: {
+            type: 'object',
+            properties: {
+              password: { type: 'string', 'ui:widget': 'password' },
+            },
+          },
+        },
+      },
+      schema: {},
+      title: 'secret',
+      uiSchema: {},
+      description: 'secret',
+    };
+
+    const { rerender } = render(
+      <ReviewState
+        formState={formState}
+        schemas={[openStep]}
+        maskSchemas={[openStep, secretStep]}
+      />,
+    );
+
+    expect(
+      screen.getByRole('row', { name: 'Connection > Password ******' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('row', { name: 'Connection > Host example.com' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('hunter2')).not.toBeInTheDocument();
+
+    // The first step declaring the field no longer decides the mask
+    rerender(
+      <ReviewState formState={formState} schemas={[openStep, secretStep]} />,
+    );
+
+    expect(
+      screen.getByRole('row', { name: 'Connection > Password ******' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('hunter2')).not.toBeInTheDocument();
+
+    // Objects shown as a whole still mask nested secrets from other steps
+    const collapsedStep: ParsedTemplateSchema = {
+      ...openStep,
+      mergedSchema: {
+        type: 'object',
+        properties: {
+          connection: {
+            type: 'object',
+            additionalProperties: true,
+            'ui:backstage': { review: { explode: false } },
+          },
+        },
+      },
+    };
+    rerender(
+      <ReviewState
+        formState={formState}
+        schemas={[collapsedStep]}
+        maskSchemas={[collapsedStep, secretStep]}
+      />,
+    );
+
+    expect(screen.queryByText('hunter2')).not.toBeInTheDocument();
+    expect(screen.getByText('example.com')).toBeInTheDocument();
+
+    // Values with no visible schema still apply masks from other steps
+    rerender(
+      <ReviewState
+        formState={{ ...formState, token: 'TOKEN_SECRET' }}
+        schemas={[]}
+        maskSchemas={[
+          secretStep,
+          {
+            mergedSchema: {
+              type: 'object',
+              properties: { token: { type: 'string', 'ui:field': 'Secret' } },
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.queryByText('hunter2')).not.toBeInTheDocument();
+    expect(screen.queryByText('TOKEN_SECRET')).not.toBeInTheDocument();
+    expect(screen.getByText('example.com')).toBeInTheDocument();
+
+    // Array items still mask secrets from other steps
+    rerender(
+      <ReviewState
+        formState={{
+          connections: [
+            { host: 'array.example.com', password: 'ARRAY_SECRET' },
+          ],
+        }}
+        schemas={[]}
+        maskSchemas={[
+          {
+            mergedSchema: {
+              type: 'object',
+              properties: {
+                connections: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      password: { type: 'string', 'ui:widget': 'password' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.queryByText('ARRAY_SECRET')).not.toBeInTheDocument();
+    expect(screen.getByText(/array\.example\.com/)).toBeInTheDocument();
   });
 
   it('should hide from review if show is not set', async () => {

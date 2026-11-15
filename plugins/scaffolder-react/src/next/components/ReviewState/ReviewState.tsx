@@ -15,7 +15,7 @@
  */
 import { StructuredMetadataTable } from '@backstage/core-components';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { Draft07 as JSONSchema } from 'json-schema-library';
+import { Draft07 as JSONSchema, JsonSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 import { isJsonObject, formatKey, findSchemaForKey } from './util';
 
@@ -32,13 +32,104 @@ export type ReviewStateProps = {
    * values removed. Defaults to `formState`.
    */
   schemaFormState?: JsonObject;
+  /**
+   * All parameter steps, including hidden ones. A field is masked on review
+   * if any of these steps marks it as a password or secret, or sets a review
+   * mask for it. Defaults to `schemas`.
+   */
+  maskSchemas?: Pick<ParsedTemplateSchema, 'mergedSchema'>[];
 };
+
+type MaskSchema = Pick<ParsedTemplateSchema, 'mergedSchema'>;
+
+type ReviewOverride = [string, JsonValue | undefined][] | undefined;
+
+function getReviewOverride(
+  name: string,
+  definition: JsonSchema | undefined,
+  allowOmit: boolean,
+): ReviewOverride {
+  if (!definition) {
+    return undefined;
+  }
+  const reviewOptions = definition['ui:backstage']?.review;
+  if (reviewOptions?.mask) {
+    return [[name, reviewOptions.mask]];
+  }
+  if (allowOmit && reviewOptions?.show === false) {
+    return [];
+  }
+  if (
+    definition['ui:widget'] === 'password' ||
+    definition['ui:field']?.toLowerCase() === 'secret'
+  ) {
+    return [[name, '******']];
+  }
+  return undefined;
+}
+
+function findMask(
+  key: string,
+  formState: JsonObject,
+  maskSchemas: MaskSchema[],
+): JsonValue | undefined {
+  for (const maskSchema of maskSchemas) {
+    const override = getReviewOverride(
+      '',
+      new JSONSchema(maskSchema.mergedSchema).getSchema({
+        pointer: `#/${key}`,
+        data: formState,
+      }),
+      false,
+    );
+    if (override?.length) {
+      return override[0][1];
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Masks nested values of an object that is shown as a whole, so that fields
+ * marked as a password or secret by any step are not displayed.
+ */
+function maskNested(
+  key: string,
+  value: JsonValue | undefined,
+  formState: JsonObject,
+  maskSchemas: MaskSchema[],
+): JsonValue | undefined {
+  const maskEntry = (
+    nestedKey: string | number,
+    nestedValue: JsonValue | undefined,
+  ) => {
+    const path = `${key}/${nestedKey}`;
+    return (
+      findMask(path, formState, maskSchemas) ??
+      maskNested(path, nestedValue, formState, maskSchemas) ??
+      null
+    );
+  };
+  if (Array.isArray(value)) {
+    return value.map((item, index) => maskEntry(index, item));
+  }
+  if (!isJsonObject(value)) {
+    return value;
+  }
+  return Object.fromEntries(
+    Object.entries(value).map(([nestedKey, nestedValue]) => [
+      nestedKey,
+      maskEntry(nestedKey, nestedValue),
+    ]),
+  );
+}
 
 function processSchema(
   key: string,
   value: JsonValue | undefined,
   schema: ParsedTemplateSchema,
   formState: JsonObject,
+  maskSchemas: MaskSchema[],
 ): [string, JsonValue | undefined][] {
   const parsedSchema = new JSONSchema(schema.mergedSchema);
   const definitionInSchema = parsedSchema.getSchema({
@@ -51,23 +142,28 @@ function processSchema(
     definitionInSchema?.title ??
     formatKey(key);
 
+  const override =
+    getReviewOverride(name, definitionInSchema, true) ??
+    maskSchemas
+      .filter(other => other !== schema)
+      .map(other =>
+        getReviewOverride(
+          name,
+          new JSONSchema(other.mergedSchema).getSchema({
+            pointer: `#/${key}`,
+            data: formState,
+          }),
+          // Only masks apply across steps, another step can't hide a field.
+          false,
+        ),
+      )
+      .find(result => result !== undefined);
+  if (override) {
+    return override;
+  }
+
   if (definitionInSchema) {
     const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
-    if (backstageReviewOptions) {
-      if (backstageReviewOptions.mask) {
-        return [[name, backstageReviewOptions.mask]];
-      }
-      if (backstageReviewOptions.show === false) {
-        return [];
-      }
-    }
-
-    if (
-      definitionInSchema['ui:widget'] === 'password' ||
-      definitionInSchema['ui:field']?.toLowerCase() === 'secret'
-    ) {
-      return [[name, '******']];
-    }
 
     if (definitionInSchema.enum && definitionInSchema.enumNames) {
       return [
@@ -83,12 +179,18 @@ function processSchema(
     if (backstageReviewOptions?.explode !== false && isJsonObject(value)) {
       // Recurse nested objects
       return Object.entries(value).flatMap(([nestedKey, nestedValue]) =>
-        processSchema(`${key}/${nestedKey}`, nestedValue, schema, formState),
+        processSchema(
+          `${key}/${nestedKey}`,
+          nestedValue,
+          schema,
+          formState,
+          maskSchemas,
+        ),
       );
     }
   }
 
-  return [[name, value]];
+  return [[name, maskNested(key, value, formState, maskSchemas)]];
 }
 
 /**
@@ -97,13 +199,20 @@ function processSchema(
  */
 export const ReviewState = (props: ReviewStateProps) => {
   const schemaFormState = props.schemaFormState ?? props.formState;
+  const maskSchemas = props.maskSchemas ?? props.schemas;
   const reviewData = Object.fromEntries(
     Object.entries(props.formState)
       .flatMap(([key, value]) => {
         const schema = findSchemaForKey(key, props.schemas, schemaFormState);
         return schema
-          ? processSchema(key, value, schema, schemaFormState)
-          : [[formatKey(key), value]];
+          ? processSchema(key, value, schema, schemaFormState, maskSchemas)
+          : [
+              [
+                formatKey(key),
+                findMask(key, schemaFormState, maskSchemas) ??
+                  maskNested(key, value, schemaFormState, maskSchemas),
+              ],
+            ];
       })
       .filter(prop => prop.length > 0),
   );
