@@ -52,7 +52,7 @@ describe('createStreamableRouter', () => {
       }),
     );
 
-    return { app, httpAuth, mcpService, connectionEvent, record };
+    return { app, httpAuth, logger, mcpService, connectionEvent, record };
   };
 
   it.each([
@@ -62,6 +62,7 @@ describe('createStreamableRouter', () => {
       status: 401,
       code: -32001,
       message: 'Unauthorized',
+      logLevel: 'warn' as const,
     },
     {
       name: 'NotAllowedError',
@@ -69,6 +70,7 @@ describe('createStreamableRouter', () => {
       status: 403,
       code: -32002,
       message: 'Forbidden',
+      logLevel: 'warn' as const,
     },
     {
       name: 'Error',
@@ -76,11 +78,13 @@ describe('createStreamableRouter', () => {
       status: 500,
       code: -32603,
       message: 'Internal server error',
+      logLevel: 'error' as const,
     },
   ])(
     'responds with $status and JSON-RPC code $code when credentials fail with $name',
-    async ({ name, error, status, code, message }) => {
-      const { app, httpAuth, mcpService, connectionEvent, record } = setup();
+    async ({ name, error, status, code, message, logLevel }) => {
+      const { app, httpAuth, logger, mcpService, connectionEvent, record } =
+        setup();
       httpAuth.credentials.mockRejectedValue(error);
 
       const response = await request(app)
@@ -94,6 +98,10 @@ describe('createStreamableRouter', () => {
         id: null,
       });
       expect(mcpService.getServer).not.toHaveBeenCalled();
+      expect(logger[logLevel]).toHaveBeenCalledWith(error.message);
+      expect(
+        logger[logLevel === 'warn' ? 'error' : 'warn'],
+      ).not.toHaveBeenCalled();
       expect(connectionEvent.fail).toHaveBeenCalledWith({ error });
       expect(connectionEvent.success).not.toHaveBeenCalled();
       expect(record).toHaveBeenCalledWith(expect.any(Number), {

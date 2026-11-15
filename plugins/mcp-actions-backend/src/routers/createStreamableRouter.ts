@@ -119,10 +119,14 @@ export const createStreamableRouter = ({
       const err = toError(error);
       const errorType = err.name;
 
-      logger.error(err.message);
+      const { status, code, message } = toJsonRpcError(err);
+      if (status >= 500) {
+        logger.error(error.message);
+      } else {
+        logger.warn(error.message);
+      }
 
       if (!res.headersSent) {
-        const { status, code, message } = toJsonRpcError(err);
         res.status(status).json({
           jsonrpc: '2.0',
           error: {
