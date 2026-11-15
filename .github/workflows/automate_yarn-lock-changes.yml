@@ -12,12 +12,12 @@ jobs:
       pull-requests: write
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
         with:
           # Fetch the commit that's merged into the base rather than the target ref.
           ref: 'refs/pull/${{ github.event.pull_request.number }}/merge'

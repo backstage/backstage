@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 
@@ -49,7 +49,7 @@ jobs:
           echo "$ACTOR" > ./context/actor
           echo "$ACTION" > ./context/action
 
-      - uses: actions/upload-artifact@v7.0.2
+      - uses: actions/upload-artifact@v7
         with:
           name: pr-context
           path: context/

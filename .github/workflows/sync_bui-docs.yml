@@ -12,15 +12,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
 
       - name: Use Node.js 24.x
-        uses: actions/setup-node@v7.1.0
+        uses: actions/setup-node@v7
         with:
           node-version: 24.22.1
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -31,7 +31,7 @@ jobs:
           cache-prefix: ${{ runner.os }}-v24.x
 
       - name: Checkout backstage/docs-ui
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
         with:
           repository: backstage/docs-ui
           path: bui-external-docs

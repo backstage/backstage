@@ -19,20 +19,20 @@ jobs:
       count: ${{ steps.batch.outputs.count }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 
       - name: Generate app token
         id: token
-        uses: actions/create-github-app-token@v3.3.0
+        uses: actions/create-github-app-token@v3
         with:
           client-id: ${{ vars.BACKSTAGE_GOALIE_CLIENT_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
 
       - name: Determine PR batch
         id: batch
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           github-token: ${{ steps.token.outputs.token }}
           script: |
@@ -119,7 +119,7 @@ jobs:
       max-parallel: 1
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 

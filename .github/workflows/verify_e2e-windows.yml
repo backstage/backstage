@@ -38,7 +38,7 @@ jobs:
     name: E2E Windows ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 
@@ -49,7 +49,7 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.eol lf
 
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -59,18 +59,18 @@ jobs:
           git config --global user.name 'GitHub e2e user'
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v7.1.0
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version == '26.x' && '26.13.0' || '24.22.1' }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: setup python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: '3.10'
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v3.0.0
+        uses: microsoft/setup-msbuild@v3
 
       - name: Setup gyp env
         run: |
@@ -84,7 +84,7 @@ jobs:
           npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
 
       - name: setup chrome
-        uses: browser-actions/setup-chrome@v2.2.0
+        uses: browser-actions/setup-chrome@v2
         with:
           chrome-version: latest
 

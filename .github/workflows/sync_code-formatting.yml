@@ -10,18 +10,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
         with:
           # Fetch changes to previous commit - required for 'only_changed' in Prettier action
           fetch-depth: 0
           filter: blob:none
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v7.1.0
+        uses: actions/setup-node@v7
         with:
           node-version: 24.22.1
           registry-url: https://registry.npmjs.org/ # Needed for auth

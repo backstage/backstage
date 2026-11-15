@@ -15,12 +15,12 @@ jobs:
     if: github.actor == 'dependabot[bot]' && github.repository == 'backstage/backstage'
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 
       - name: Approve yarn.lock-only PRs
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           script: |
@@ -43,7 +43,7 @@ jobs:
             });
 
       - name: Checkout
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
         with:
           fetch-depth: 2
           ref: ${{ github.head_ref }}
@@ -64,7 +64,7 @@ jobs:
           git config --global user.name 'Github changeset workflow'
       - name: Setup Node
         if: steps.verify.outputs.is_dependabot == 'true'
-        uses: actions/setup-node@v7.1.0
+        uses: actions/setup-node@v7
         with:
           node-version: 24.22.1
       - name: Dedupe lockfiles
@@ -89,7 +89,7 @@ jobs:
       - name: Generate changeset
         if: steps.verify.outputs.is_dependabot == 'true'
         id: changeset
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const { promises: fs } = require('fs');

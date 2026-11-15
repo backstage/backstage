@@ -12,13 +12,13 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 
       - name: Generate dependency merger token
         id: dependency-merger-token
-        uses: actions/create-github-app-token@v3.3.0
+        uses: actions/create-github-app-token@v3
         with:
           client-id: ${{ vars.BACKSTAGE_DEPENDENCY_MERGER_CLIENT_ID }}
           private-key: ${{ secrets.BACKSTAGE_DEPENDENCY_MERGER_PRIVATE_KEY }}

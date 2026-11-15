@@ -15,7 +15,7 @@ jobs:
     if: github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
     steps:
       - name: Add a welcome comment
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

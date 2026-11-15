@@ -14,11 +14,11 @@ jobs:
     if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
         with:
           # Fetch the commit that's merged into the base rather than the target ref
           # This will let us diff only the contents of the PR, without fetching more history
@@ -28,7 +28,7 @@ jobs:
         run: git fetch --depth 1 origin "$GITHUB_BASE_REF"
 
       - name: setup-node
-        uses: actions/setup-node@v7.1.0
+        uses: actions/setup-node@v7
         with:
           node-version: 24.22.1
           registry-url: https://registry.npmjs.org/
@@ -53,7 +53,7 @@ jobs:
           cat "$GITHUB_EVENT_PATH" > event.json
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: preview-spec
           path: |

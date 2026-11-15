@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 
-      - uses: actions/labeler@v7.0.0
+      - uses: actions/labeler@v7
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
           sync-labels: true

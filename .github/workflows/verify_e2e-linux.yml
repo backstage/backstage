@@ -48,7 +48,7 @@ jobs:
     name: E2E Linux ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 
@@ -61,13 +61,13 @@ jobs:
           mkdir -p ./context
           echo "$PR_NUMBER" > ./context/pr-number
 
-      - uses: actions/upload-artifact@v7.0.2
+      - uses: actions/upload-artifact@v7
         if: matrix.node-version == '24.x' && github.event_name == 'pull_request'
         with:
           name: pr-context
           path: context/
 
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -77,7 +77,7 @@ jobs:
           git config --global user.name 'GitHub e2e user'
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v7.1.0
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version == '26.x' && '26.13.0' || '24.22.1' }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
