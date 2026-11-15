@@ -16,6 +16,7 @@
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { JsonObject } from '@backstage/types';
 import { DevToolsBackendApi } from '../api';
 import { createDevToolsActions } from '.';
 
@@ -61,7 +62,7 @@ function setup(options?: { deny?: boolean; plugins?: string[] }) {
       : mockServices.permissions(),
     actionsRegistry,
   });
-  return (id: string, input: object = {}) =>
+  return (id: string, input: JsonObject = {}) =>
     actionsRegistry.invoke({
       id: `test:${id}`,
       input,
@@ -83,9 +84,11 @@ describe('createDevToolsActions', () => {
     await expect(invoke('get-config', { path: 'app.title' })).resolves.toEqual({
       output: { config: 'Test' },
     });
-    await expect(invoke('get-config', { path: 'app.missing' })).rejects.toThrow(
-      'No configuration found at path "app.missing"',
-    );
+    for (const path of ['app.missing', 'app.constructor', 'app.__proto__']) {
+      await expect(invoke('get-config', { path })).rejects.toThrow(
+        `No configuration found at path "${path}"`,
+      );
+    }
   });
 
   it('returns info', async () => {

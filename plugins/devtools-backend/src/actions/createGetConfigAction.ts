@@ -19,7 +19,6 @@ import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import { devToolsConfigReadPermission } from '@backstage/plugin-devtools-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { JsonValue } from '@backstage/types';
-import get from 'lodash/get';
 import { DevToolsBackendApi } from '../api';
 
 export const createGetConfigAction = ({
@@ -87,7 +86,13 @@ Requires the "devtools.config.read" permission.`,
         return { output: { config, error } };
       }
 
-      const value: JsonValue | undefined = get(config, input.path.split('.'));
+      let value: JsonValue | undefined = config;
+      for (const key of input.path.split('.')) {
+        value =
+          value && typeof value === 'object' && Object.hasOwn(value, key)
+            ? (value as Record<string, JsonValue>)[key]
+            : undefined;
+      }
       if (value === undefined) {
         throw new NotFoundError(
           `No configuration found at path "${input.path}"`,
