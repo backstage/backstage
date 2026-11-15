@@ -330,9 +330,8 @@ function mergeWithEffectiveSearchAttributes<T extends UserConfig | GroupConfig>(
   vendor: VendorConfig | undefined,
   baseAttributes: string[],
 ): T {
-  const explicitAttributes = Array.isArray(config?.options?.attributes)
-    ? config.options.attributes
-    : undefined;
+  const attributes = (config?.options as SearchOptions | undefined)?.attributes;
+  const explicitAttributes = Array.isArray(attributes) ? attributes : undefined;
   const merged = mergeWith({}, defaults, config, replaceArraysIfPresent) as T;
   return withEffectiveSearchAttributes(
     merged,
