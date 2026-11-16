@@ -375,7 +375,7 @@ A model source is an object with a `read` method that returns an async generator
 
 The following parts of Backstage use model layers:
 
-- **Built-in kinds.** `defaultCatalogEntityModel` in `@backstage/catalog-model` declares `Component`, `API`, `Resource`, `System`, `Domain`, `Group`, `User`, and `Location`, together with the well-known relations and annotations.
+- **Built-in kinds.** `defaultCatalogEntityModel` in `@backstage/catalog-model/alpha` declares `Component`, `API`, `Resource`, `System`, `Domain`, `Group`, `User`, and `Location`, together with the well-known relations and annotations.
 - **AI resources.** The [`@backstage/plugin-catalog-backend-module-ai-model`](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-ai-model) module adds the `AiResource` kind, with the `skill`, `rule`, `plugin`, and `marketplace` spec types. It also adds the `mcp-server` type to the `API` kind. Install it with:
 
   ```ts title="packages/backend/src/index.ts"
