@@ -34,7 +34,7 @@ import { GetRemotes } from './Api.types';
  *
  * @public
  */
-export class DefaultApiIsomorphicClient {
+export class BackstageDynamicFeaturesClient {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
 

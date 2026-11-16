@@ -66,7 +66,7 @@ import {
  *
  * @public
  */
-export class DefaultApiIsomorphicClient {
+export class CatalogClient {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
 

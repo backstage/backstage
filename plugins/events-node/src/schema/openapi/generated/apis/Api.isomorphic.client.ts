@@ -34,7 +34,7 @@ import { GetSubscriptionEvents, PostEvent, PutSubscription } from './Api.types';
  *
  * @public
  */
-export class DefaultApiIsomorphicClient {
+export class EventsClient {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
 

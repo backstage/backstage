@@ -20,7 +20,7 @@
 
 import { AuthApi } from '../types/auth';
 import { pluginId } from '../pluginId';
-import { DefaultApiIsomorphicClient } from './Api.isomorphic.client';
+import { EventsClient } from './Api.isomorphic.client';
 import { BackendRequestOptions, TypedResponse } from './Api.types';
 import { GetSubscriptionEvents200Response } from '../models/GetSubscriptionEvents200Response.model';
 import { GetSubscriptionEvents, PostEvent, PutSubscription } from './Api.types';
@@ -32,9 +32,9 @@ import { GetSubscriptionEvents, PostEvent, PutSubscription } from './Api.types';
  *
  * @public
  */
-export class DefaultApiBackendClient {
+export class EventsBackendClient {
   private readonly auth: AuthApi;
-  private readonly client: DefaultApiIsomorphicClient;
+  private readonly client: EventsClient;
 
   constructor(options: {
     discovery: { getBaseUrl(pluginId: string): Promise<string> };
@@ -42,14 +42,14 @@ export class DefaultApiBackendClient {
     fetchApi?: { fetch: typeof fetch };
   }) {
     this.auth = options.auth;
-    this.client = new DefaultApiIsomorphicClient({
+    this.client = new EventsClient({
       discoveryApi: options.discovery,
       fetchApi: options.fetchApi || { fetch },
     });
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getSubscriptionEvents}
+   * {@inheritDoc EventsClient.getSubscriptionEvents}
    */
   public async getSubscriptionEvents(
     // @ts-ignore
@@ -65,7 +65,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.postEvent}
+   * {@inheritDoc EventsClient.postEvent}
    */
   public async postEvent(
     // @ts-ignore
@@ -81,7 +81,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.putSubscription}
+   * {@inheritDoc EventsClient.putSubscription}
    */
   public async putSubscription(
     // @ts-ignore

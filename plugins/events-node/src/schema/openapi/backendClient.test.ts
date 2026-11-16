@@ -15,16 +15,16 @@
  */
 
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
-import { DefaultApiBackendClient } from './generated';
+import { EventsBackendClient } from './generated';
 
-describe('DefaultApiBackendClient', () => {
+describe('EventsBackendClient', () => {
   const request = { body: { event: { topic: 'topic', payload: {} } } };
 
   it('resolves the base url with discovery and authenticates with a plugin request token for the given credentials', async () => {
     const fetch = jest.fn(async () => new Response(null, { status: 201 }));
     const auth = mockServices.auth();
     const getPluginRequestToken = jest.spyOn(auth, 'getPluginRequestToken');
-    const client = new DefaultApiBackendClient({
+    const client = new EventsBackendClient({
       discovery: mockServices.discovery(),
       auth,
       fetchApi: { fetch },

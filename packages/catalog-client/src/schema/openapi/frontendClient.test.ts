@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { DefaultApiFrontendClient } from './generated';
+import { CatalogFrontendClient } from './generated';
 
-describe('DefaultApiFrontendClient', () => {
+describe('CatalogFrontendClient', () => {
   it('sends requests to plugin:// urls and only authenticates with an explicit token', async () => {
     const fetch = jest.fn(async () => new Response('{}'));
-    const client = new DefaultApiFrontendClient({ fetchApi: { fetch } });
+    const client = new CatalogFrontendClient({ fetchApi: { fetch } });
     const request = {
       path: { kind: 'component', namespace: 'default', name: 'a' },
     };

@@ -20,7 +20,7 @@
 
 import { AuthApi } from '../types/auth';
 import { pluginId } from '../pluginId';
-import { DefaultApiIsomorphicClient } from './Api.isomorphic.client';
+import { CatalogClient } from './Api.isomorphic.client';
 import { BackendRequestOptions, TypedResponse } from './Api.types';
 import { EntitiesBatchResponse } from '../models/EntitiesBatchResponse.model';
 import { EntitiesQueryResponse } from '../models/EntitiesQueryResponse.model';
@@ -64,9 +64,9 @@ import {
  *
  * @public
  */
-export class DefaultApiBackendClient {
+export class CatalogBackendClient {
   private readonly auth: AuthApi;
-  private readonly client: DefaultApiIsomorphicClient;
+  private readonly client: CatalogClient;
 
   constructor(options: {
     discovery: { getBaseUrl(pluginId: string): Promise<string> };
@@ -74,14 +74,14 @@ export class DefaultApiBackendClient {
     fetchApi?: { fetch: typeof fetch };
   }) {
     this.auth = options.auth;
-    this.client = new DefaultApiIsomorphicClient({
+    this.client = new CatalogClient({
       discoveryApi: options.discovery,
       fetchApi: options.fetchApi || { fetch },
     });
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.deleteEntityByUid}
+   * {@inheritDoc CatalogClient.deleteEntityByUid}
    */
   public async deleteEntityByUid(
     // @ts-ignore
@@ -97,7 +97,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getEntities}
+   * {@inheritDoc CatalogClient.getEntities}
    */
   public async getEntities(
     // @ts-ignore
@@ -113,7 +113,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getEntitiesByQuery}
+   * {@inheritDoc CatalogClient.getEntitiesByQuery}
    */
   public async getEntitiesByQuery(
     // @ts-ignore
@@ -129,7 +129,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getEntitiesByRefs}
+   * {@inheritDoc CatalogClient.getEntitiesByRefs}
    */
   public async getEntitiesByRefs(
     // @ts-ignore
@@ -145,7 +145,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getEntityAncestryByName}
+   * {@inheritDoc CatalogClient.getEntityAncestryByName}
    */
   public async getEntityAncestryByName(
     // @ts-ignore
@@ -161,7 +161,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getEntityByName}
+   * {@inheritDoc CatalogClient.getEntityByName}
    */
   public async getEntityByName(
     // @ts-ignore
@@ -177,7 +177,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getEntityByUid}
+   * {@inheritDoc CatalogClient.getEntityByUid}
    */
   public async getEntityByUid(
     // @ts-ignore
@@ -193,7 +193,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getEntityFacets}
+   * {@inheritDoc CatalogClient.getEntityFacets}
    */
   public async getEntityFacets(
     // @ts-ignore
@@ -209,7 +209,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.queryEntitiesByPredicate}
+   * {@inheritDoc CatalogClient.queryEntitiesByPredicate}
    */
   public async queryEntitiesByPredicate(
     // @ts-ignore
@@ -225,7 +225,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.queryEntityFacetsByPredicate}
+   * {@inheritDoc CatalogClient.queryEntityFacetsByPredicate}
    */
   public async queryEntityFacetsByPredicate(
     // @ts-ignore
@@ -241,7 +241,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.refreshEntity}
+   * {@inheritDoc CatalogClient.refreshEntity}
    */
   public async refreshEntity(
     // @ts-ignore
@@ -257,7 +257,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.validateEntity}
+   * {@inheritDoc CatalogClient.validateEntity}
    */
   public async validateEntity(
     // @ts-ignore
@@ -273,7 +273,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.analyzeLocation}
+   * {@inheritDoc CatalogClient.analyzeLocation}
    */
   public async analyzeLocation(
     // @ts-ignore
@@ -289,7 +289,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.createLocation}
+   * {@inheritDoc CatalogClient.createLocation}
    */
   public async createLocation(
     // @ts-ignore
@@ -305,7 +305,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.deleteLocation}
+   * {@inheritDoc CatalogClient.deleteLocation}
    */
   public async deleteLocation(
     // @ts-ignore
@@ -321,7 +321,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getLocation}
+   * {@inheritDoc CatalogClient.getLocation}
    */
   public async getLocation(
     // @ts-ignore
@@ -337,7 +337,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getLocationByEntity}
+   * {@inheritDoc CatalogClient.getLocationByEntity}
    */
   public async getLocationByEntity(
     // @ts-ignore
@@ -353,7 +353,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getLocations}
+   * {@inheritDoc CatalogClient.getLocations}
    */
   public async getLocations(
     // @ts-ignore
@@ -369,7 +369,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getLocationsByQuery}
+   * {@inheritDoc CatalogClient.getLocationsByQuery}
    */
   public async getLocationsByQuery(
     // @ts-ignore
@@ -385,7 +385,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.updateLocation}
+   * {@inheritDoc CatalogClient.updateLocation}
    */
   public async updateLocation(
     // @ts-ignore

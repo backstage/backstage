@@ -20,7 +20,7 @@
 
 import { AuthApi } from '../types/auth';
 import { pluginId } from '../pluginId';
-import { DefaultApiIsomorphicClient } from './Api.isomorphic.client';
+import { ScaffolderClient } from './Api.isomorphic.client';
 import { BackendRequestOptions, TypedResponse } from './Api.types';
 import { Action } from '../models/Action.model';
 import { ListActions } from './Api.types';
@@ -52,9 +52,9 @@ import { ListTemplatingExtensions } from './Api.types';
  *
  * @public
  */
-export class DefaultApiBackendClient {
+export class ScaffolderBackendClient {
   private readonly auth: AuthApi;
-  private readonly client: DefaultApiIsomorphicClient;
+  private readonly client: ScaffolderClient;
 
   constructor(options: {
     discovery: { getBaseUrl(pluginId: string): Promise<string> };
@@ -62,14 +62,14 @@ export class DefaultApiBackendClient {
     fetchApi?: { fetch: typeof fetch };
   }) {
     this.auth = options.auth;
-    this.client = new DefaultApiIsomorphicClient({
+    this.client = new ScaffolderClient({
       discoveryApi: options.discovery,
       fetchApi: options.fetchApi || { fetch },
     });
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.listActions}
+   * {@inheritDoc ScaffolderClient.listActions}
    */
   public async listActions(
     // @ts-ignore
@@ -85,7 +85,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.autocomplete}
+   * {@inheritDoc ScaffolderClient.autocomplete}
    */
   public async autocomplete(
     // @ts-ignore
@@ -101,7 +101,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.cancelTask}
+   * {@inheritDoc ScaffolderClient.cancelTask}
    */
   public async cancelTask(
     // @ts-ignore
@@ -117,7 +117,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getTask}
+   * {@inheritDoc ScaffolderClient.getTask}
    */
   public async getTask(
     // @ts-ignore
@@ -133,7 +133,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.listTasks}
+   * {@inheritDoc ScaffolderClient.listTasks}
    */
   public async listTasks(
     // @ts-ignore
@@ -149,7 +149,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.retry}
+   * {@inheritDoc ScaffolderClient.retry}
    */
   public async retry(
     // @ts-ignore
@@ -165,7 +165,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.scaffold}
+   * {@inheritDoc ScaffolderClient.scaffold}
    */
   public async scaffold(
     // @ts-ignore
@@ -181,7 +181,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.streamLogsPolling}
+   * {@inheritDoc ScaffolderClient.streamLogsPolling}
    */
   public async streamLogsPolling(
     // @ts-ignore
@@ -197,7 +197,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.dryRun}
+   * {@inheritDoc ScaffolderClient.dryRun}
    */
   public async dryRun(
     // @ts-ignore
@@ -213,7 +213,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getTemplateParameterSchema}
+   * {@inheritDoc ScaffolderClient.getTemplateParameterSchema}
    */
   public async getTemplateParameterSchema(
     // @ts-ignore
@@ -229,7 +229,7 @@ export class DefaultApiBackendClient {
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.listTemplatingExtensions}
+   * {@inheritDoc ScaffolderClient.listTemplatingExtensions}
    */
   public async listTemplatingExtensions(
     // @ts-ignore

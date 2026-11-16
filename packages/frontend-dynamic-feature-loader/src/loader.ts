@@ -20,7 +20,7 @@ import {
   ModuleFederation,
 } from '@module-federation/enhanced/runtime';
 import { Module } from '@module-federation/sdk';
-import { DefaultApiIsomorphicClient, Remote } from './schema/openapi';
+import { BackstageDynamicFeaturesClient, Remote } from './schema/openapi';
 import {
   FrontendFeature,
   FrontendFeatureLoader,
@@ -76,7 +76,7 @@ export function dynamicFrontendFeaturesLoader(
         config.getOptionalString('app.packageName') ?? 'app';
       let frontendPluginRemotes: Array<Remote>;
       try {
-        const apiClient = new DefaultApiIsomorphicClient({
+        const apiClient = new BackstageDynamicFeaturesClient({
           discoveryApi: {
             getBaseUrl: async rootPath => `${backendBaseUrl}/${rootPath}`,
           },

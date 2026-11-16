@@ -28,7 +28,7 @@ import {
   EventsService,
   EventsServiceSubscribeOptions,
 } from './EventsService';
-import { DefaultApiBackendClient } from '../schema/openapi/generated';
+import { EventsBackendClient } from '../schema/openapi/generated';
 import { ResponseError } from '@backstage/errors';
 
 const POLL_BACKOFF_START_MS = 1_000;
@@ -120,7 +120,7 @@ class PluginEventsService implements EventsService {
   private readonly localBus: LocalEventBus;
   private readonly logger: LoggerService;
   private readonly mode: EventBusMode;
-  private client?: DefaultApiBackendClient;
+  private client?: EventsBackendClient;
   private readonly auth?: AuthService;
 
   constructor(
@@ -128,7 +128,7 @@ class PluginEventsService implements EventsService {
     localBus: LocalEventBus,
     logger: LoggerService,
     mode: EventBusMode,
-    client?: DefaultApiBackendClient,
+    client?: EventsBackendClient,
     auth?: AuthService,
   ) {
     this.pluginId = pluginId;
@@ -462,7 +462,7 @@ export class DefaultEventsService implements EventsService {
   ): EventsService {
     const client =
       options && this.mode !== 'never'
-        ? new DefaultApiBackendClient({
+        ? new EventsBackendClient({
             discovery: options.discovery,
             auth: options.auth,
             fetchApi: { fetch }, // use native node fetch

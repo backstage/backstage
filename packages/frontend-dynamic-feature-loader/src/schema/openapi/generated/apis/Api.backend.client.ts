@@ -20,7 +20,7 @@
 
 import { AuthApi } from '../types/auth';
 import { pluginId } from '../pluginId';
-import { DefaultApiIsomorphicClient } from './Api.isomorphic.client';
+import { BackstageDynamicFeaturesClient } from './Api.isomorphic.client';
 import { BackendRequestOptions, TypedResponse } from './Api.types';
 import { Remote } from '../models/Remote.model';
 import { GetRemotes } from './Api.types';
@@ -32,9 +32,9 @@ import { GetRemotes } from './Api.types';
  *
  * @public
  */
-export class DefaultApiBackendClient {
+export class BackstageDynamicFeaturesBackendClient {
   private readonly auth: AuthApi;
-  private readonly client: DefaultApiIsomorphicClient;
+  private readonly client: BackstageDynamicFeaturesClient;
 
   constructor(options: {
     discovery: { getBaseUrl(pluginId: string): Promise<string> };
@@ -42,14 +42,14 @@ export class DefaultApiBackendClient {
     fetchApi?: { fetch: typeof fetch };
   }) {
     this.auth = options.auth;
-    this.client = new DefaultApiIsomorphicClient({
+    this.client = new BackstageDynamicFeaturesClient({
       discoveryApi: options.discovery,
       fetchApi: options.fetchApi || { fetch },
     });
   }
 
   /**
-   * {@inheritDoc DefaultApiIsomorphicClient.getRemotes}
+   * {@inheritDoc BackstageDynamicFeaturesClient.getRemotes}
    */
   public async getRemotes(
     // @ts-ignore

@@ -54,7 +54,7 @@ import { ListTemplatingExtensions } from './Api.types';
  *
  * @public
  */
-export class DefaultApiIsomorphicClient {
+export class ScaffolderClient {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
 

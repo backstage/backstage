@@ -1,5 +1,5 @@
 {{>licenseInfo}}
-import { DefaultApiIsomorphicClient } from './Api.isomorphic.client';
+import { {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client } from './Api.isomorphic.client';
 import { RequestOptions, TypedResponse } from './Api.types';
 {{#apiInfo}}
 {{#apis}}
@@ -16,13 +16,13 @@ import { {{#operations}}{{#operation}}{{#lambda.pascalcase}}{{nickname}}{{/lambd
  *
  * @public
  */
-export class DefaultApiFrontendClient {
-    private readonly client: DefaultApiIsomorphicClient;
+export class {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}FrontendClient {
+    private readonly client: {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client;
 
     constructor(options: {
         fetchApi: { fetch: typeof fetch };
     }) {
-        this.client = new DefaultApiIsomorphicClient({
+        this.client = new {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client({
             discoveryApi: {
                 getBaseUrl: async (pluginId: string) => `plugin://${pluginId}`,
             },
@@ -35,7 +35,7 @@ export class DefaultApiFrontendClient {
 
     {{#operation}}
     /**
-     * {@inheritDoc DefaultApiIsomorphicClient.{{nickname}}}
+     * {@inheritDoc {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client.{{nickname}}}
      */
     public async {{nickname}}(
         // @ts-ignore

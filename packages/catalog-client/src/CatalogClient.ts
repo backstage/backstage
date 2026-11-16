@@ -54,7 +54,7 @@ import {
   cursorContainsQuery,
 } from './utils';
 import {
-  DefaultApiIsomorphicClient,
+  CatalogClient as GeneratedCatalogClient,
   GetEntitiesByQuery,
   GetLocationsByQueryRequest,
   QueryEntitiesByPredicateRequest,
@@ -76,13 +76,13 @@ import {
  * @public
  */
 export class CatalogClient implements CatalogApi {
-  private readonly apiClient: DefaultApiIsomorphicClient;
+  private readonly apiClient: GeneratedCatalogClient;
 
   constructor(options: {
     discoveryApi: { getBaseUrl(pluginId: string): Promise<string> };
     fetchApi?: { fetch: typeof fetch };
   }) {
-    this.apiClient = new DefaultApiIsomorphicClient(options);
+    this.apiClient = new GeneratedCatalogClient(options);
   }
 
   /**

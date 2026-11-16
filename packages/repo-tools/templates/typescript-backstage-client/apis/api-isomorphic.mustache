@@ -20,7 +20,7 @@ import { {{#operations}}{{#operation}}{{#lambda.pascalcase}}{{nickname}}{{/lambd
  *
  * @public
  */
-export class DefaultApiIsomorphicClient {
+export class {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client {
     private readonly discoveryApi: DiscoveryApi;
     private readonly fetchApi: FetchApi;
 
