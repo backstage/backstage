@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-ai-gateway-react
+  title: '@backstage/plugin-ai-gateway-react'
+  description: Web library for the ai-gateway plugin
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: maintainers

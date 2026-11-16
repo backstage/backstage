@@ -19,3 +19,16 @@ export { actionsServiceFactory } from './entrypoints/actions';
 export { metricsServiceFactory } from './entrypoints/metrics';
 export { tracingServiceFactory } from './entrypoints/tracing';
 export { connectionsServiceFactory } from './entrypoints/connections/connectionsServiceFactory';
+export {
+  aiModelsServiceFactory,
+  aiProviderFactoriesServiceRef,
+} from './entrypoints/aiModels';
+export type {
+  AIEmbeddingModelFactory,
+  AILanguageModelFactory,
+  AIProvider,
+  AIProviderFactory,
+  AIProviderFactoryOptions,
+  AIProviderHealthCheckResult,
+  AIProviderMetadata,
+} from './entrypoints/aiModels';

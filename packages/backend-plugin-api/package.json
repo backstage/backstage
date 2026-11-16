@@ -53,6 +53,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@ai-sdk/provider": "^3.0.19",
     "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/connections": "workspace:^",
