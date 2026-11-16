@@ -17,9 +17,9 @@
 import type {
   DialogApi,
   DialogApiDialog,
-  IconComponent,
   IconsApi,
 } from '@backstage/frontend-plugin-api';
+import type { IconComponent } from '@backstage/core-plugin-api';
 import { createApiRef } from '@backstage/frontend-plugin-api';
 
 export interface LegacyDialogApi extends DialogApi {
