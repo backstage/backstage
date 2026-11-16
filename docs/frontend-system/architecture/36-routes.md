@@ -771,7 +771,7 @@ For the steps to attach one, see [Choose a router for a page](../building-plugin
 
 ### Testing
 
-`renderInTestApp` and `renderTestApp` from `@backstage/frontend-test-utils` drive an in-memory `AppHistoryApi` and hand it back as `appHistory`, which is what you navigate and assert against. See [Testing](../building-plugins/02-testing.md#navigation-and-app-history) for the details.
+`renderInTestApp` and `renderTestApp` from `@backstage/frontend-test-utils` drive an in-memory `AppHistoryApi` and expose it through `apis.get(appHistoryApiRef)` on the render result for navigation and location assertions. See [Testing](../building-plugins/02-testing.md#navigation-and-app-history) for the details.
 
 ### Limits of the model
 

@@ -17,6 +17,7 @@
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
+  appHistoryApiRef,
   PageBlueprint,
   SubPageBlueprint,
   createFrontendPlugin,
@@ -634,7 +635,7 @@ describe('AppRoutes', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [catalogPage],
       // App-relative path; harness stores it under /backstage on the memory backend.
       initialRouteEntries: ['/catalog/entities'],
@@ -643,6 +644,7 @@ describe('AppRoutes', () => {
         backend: { baseUrl: 'http://localhost:7007' },
       },
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('catalog-page')).toBeInTheDocument();

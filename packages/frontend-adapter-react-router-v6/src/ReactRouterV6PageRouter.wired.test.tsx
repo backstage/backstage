@@ -18,6 +18,7 @@ import { useState } from 'react';
 import { act, screen } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
+  appHistoryApiRef,
   PageBlueprint,
   SubPageBlueprint,
   createExtension,
@@ -136,6 +137,7 @@ describe('ReactRouterV6PageRouter wired path', () => {
           extensions: [parent, child],
           initialRouteEntries: [initialPath],
         });
+        const appHistory = rendered.apis.get(appHistoryApiRef)!;
         expect(
           await screen.findByRole('link', { name: 'Parent' }),
         ).toHaveAttribute('href', parentHref);
@@ -153,7 +155,7 @@ describe('ReactRouterV6PageRouter wired path', () => {
         await act(async () =>
           screen.getByRole('button', { name: 'Count 0' }).click(),
         );
-        await act(async () => rendered.appHistory.navigate(nextPath));
+        await act(async () => appHistory.navigate(nextPath));
         expect(
           screen.getByRole('button', { name: 'Count 1' }),
         ).toBeInTheDocument();
@@ -164,7 +166,7 @@ describe('ReactRouterV6PageRouter wired path', () => {
         expect(
           screen.getByText(`Parent param: ${nextParam}`),
         ).toBeInTheDocument();
-        await act(async () => rendered.appHistory.navigate(initialPath));
+        await act(async () => appHistory.navigate(initialPath));
         expect(
           screen.getByRole('button', { name: 'Count 1' }),
         ).toBeInTheDocument();
@@ -201,10 +203,11 @@ describe('ReactRouterV6PageRouter wired path', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [settingsPage],
       initialRouteEntries: ['/opaque-v6'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     expect(await screen.findByTestId('opaque-index')).toHaveTextContent(
       'Index',
@@ -258,10 +261,11 @@ describe('ReactRouterV6PageRouter wired path', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [entityPage],
       initialRouteEntries: ['/e/a'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     expect(await screen.findByTestId('counting-page')).toBeInTheDocument();
     expect(screen.getByTestId('name')).toHaveTextContent('a');
@@ -361,10 +365,11 @@ describe('ReactRouterV6PageRouter wired path', () => {
         ),
       },
     });
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [standalone, parent, child],
       initialRouteEntries: ['/catalog/list'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
     expect(await screen.findByRole('link', { name: 'Parent' })).toHaveAttribute(
       'href',
       '/',

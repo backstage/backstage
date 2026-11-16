@@ -31,6 +31,8 @@ import {
   useRouteRefParams,
   identityApiRef,
   useApi,
+  useApiHolder,
+  type ApiHolder,
   coreApis,
   ApiBlueprint,
   createFrontendModule,
@@ -200,11 +202,13 @@ describe('renderInTestApp', () => {
   });
 
   it.each(['component', 'extensions'])(
-    'uses isolated fake defaults with explicit overrides for %s rendering',
+    'exposes the app APIs with isolated defaults and explicit overrides for %s rendering',
     async mode => {
       let toast: ReturnType<typeof mockApis.toast>;
       let storage: StorageApi;
+      let apiHolder: ApiHolder;
       function Probe() {
+        apiHolder = useApiHolder();
         toast = useApi(coreApis.toast) as ReturnType<typeof mockApis.toast>;
         storage = useApi(coreApis.storage);
         const analytics = useAnalytics();
@@ -241,7 +245,12 @@ describe('renderInTestApp', () => {
       }
 
       const first = renderProbe();
+      expect(first.apis.get(coreApis.appLifecycle)?.isFinalized()).toBe(true);
+      const firstToast = first.apis.get(coreApis.toast);
       fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+      expect(first.apis).toBe(apiHolder!);
+      expect(firstToast).toBe(toast!);
+      expect(first.apis.get(coreApis.storage)).toBe(storage!);
       expect(toast!.getToasts()).toEqual([{ title: 'Saved' }]);
       expect(screen.queryByText('Saved')).not.toBeInTheDocument();
       await storage!.set('saved', true);
@@ -250,6 +259,9 @@ describe('renderInTestApp', () => {
 
       const second = renderProbe();
       await screen.findByRole('button', { name: 'Save' });
+      expect(second.apis).toBe(apiHolder!);
+      expect(second.apis.get(coreApis.toast)).toBe(toast!);
+      expect(second.apis.get(coreApis.toast)).not.toBe(firstToast);
       expect(toast!.getToasts()).toEqual([]);
       expect(storage!.snapshot('saved').value).toBeUndefined();
       second.unmount();
@@ -277,6 +289,8 @@ describe('renderInTestApp', () => {
       });
       const third = renderProbe([], [feature]);
       fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+      expect(third.apis).toBe(apiHolder!);
+      expect(third.apis.get(coreApis.toast)).toBe(featureToast);
       expect(toast!).toBe(featureToast);
       expect(featureToast.post).toHaveBeenCalledTimes(1);
       expect(captureEvent).toHaveBeenCalledWith(
@@ -285,8 +299,10 @@ describe('renderInTestApp', () => {
       third.unmount();
 
       const override = mockApis.toast.mock();
-      renderProbe([override], [feature]);
+      const fourth = renderProbe([override], [feature]);
+      expect(fourth.apis.get(coreApis.toast)).toBe(override);
       fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+      expect(fourth.apis).toBe(apiHolder!);
       expect(toast!).toBe(override);
       expect(override.post).toHaveBeenCalledWith({ title: 'Saved' });
       expect(featureToast.post).toHaveBeenCalledTimes(1);
@@ -336,9 +352,10 @@ describe('renderInTestApp', () => {
   });
 
   it('should support setting different locations in the history stack', async () => {
-    const { appHistory } = renderInTestApp(<PathProbe />, {
+    const { apis } = renderInTestApp(<PathProbe />, {
       initialRouteEntries: ['/second-page'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     expect(screen.getByText('Path: /second-page')).toBeInTheDocument();
     expect(appHistory.getSnapshot().location.pathname).toBe('/second-page');
@@ -486,7 +503,7 @@ describe('renderInTestApp', () => {
               ],
             });
       expect(await screen.findByText('Custom history')).toBeInTheDocument();
-      expect(result.appHistory).toBe(history);
+      expect(result.apis.get(appHistoryApiRef)).toBe(history);
     },
   );
 
@@ -503,9 +520,10 @@ describe('renderInTestApp', () => {
       );
     };
 
-    const { appHistory } = renderInTestApp(<LocationProbe />, {
+    const { apis } = renderInTestApp(<LocationProbe />, {
       initialRouteEntries: ['/start'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     expect(screen.getByText('Path: /start')).toBeInTheDocument();
 
@@ -528,13 +546,14 @@ describe('renderInTestApp', () => {
       </div>
     );
 
-    const { appHistory } = renderInTestApp(<LocationProbe />, {
+    const { apis } = renderInTestApp(<LocationProbe />, {
       initialRouteEntries: ['/start'],
       config: {
         app: { baseUrl: 'http://localhost:3000/backstage' },
         backend: { baseUrl: 'http://localhost:7007' },
       },
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     expect(screen.getByText('Path: /start')).toBeInTheDocument();
     expect(screen.getByTestId('probe')).toHaveAttribute(
@@ -624,9 +643,10 @@ describe('renderInTestApp', () => {
           </div>
         );
       }
-      const { appHistory } = renderInTestApp(<Probe />, {
+      const { apis } = renderInTestApp(<Probe />, {
         initialRouteEntries: ['/catalog/foo'],
       });
+      const appHistory = apis.get(appHistoryApiRef)!;
       expect(await screen.findByText('Root router: true')).toBeInTheDocument();
       expect(screen.getByText('Location: /catalog/foo')).toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'Next' })).toHaveAttribute(
@@ -722,10 +742,11 @@ describe('renderInTestApp', () => {
     });
   });
 
-  it('should expose an appHistory on the render result that drives the app', async () => {
-    const { appHistory } = renderInTestApp(<PathProbe />, {
+  it('should expose the app history through the API holder to drive the app', async () => {
+    const { apis } = renderInTestApp(<PathProbe />, {
       initialRouteEntries: ['/start'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     expect(appHistory.getSnapshot().location.pathname).toBe('/start');
     expect(appHistory.createHref('/catalog?q=1')).toBe('/catalog?q=1');

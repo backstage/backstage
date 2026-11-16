@@ -18,6 +18,7 @@ import type { ReactNode } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
+  appHistoryApiRef,
   PageBlueprint,
   coreExtensionData,
   createExtension,
@@ -126,11 +127,12 @@ describe('React Router v6 nested inside React Router v6', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [entityPage, plainPage, chromeProbe(<V6Probe id="chrome" />)],
       initialRouteEntries: ['/e/alpha'],
       config: CONFIG_WITH_BASENAME,
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('page')).toBeInTheDocument();
@@ -222,11 +224,12 @@ describe('React Router v6 nested inside React Router v6', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [doublyWrappedPage],
       initialRouteEntries: ['/e/alpha'],
       config: CONFIG_WITH_BASENAME,
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('inner')).toBeInTheDocument();

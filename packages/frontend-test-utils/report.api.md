@@ -9,6 +9,7 @@ import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
+import type { ApiHolder } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { AppError } from '@backstage/frontend-app-api';
 import { AppHistoryApi } from '@backstage/frontend-plugin-api';
@@ -494,7 +495,7 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
 
 // @public
 export type TestAppRenderResult = RenderResult & {
-  appHistory: AppHistoryApi;
+  apis: ApiHolder;
 };
 
 export { withLogCollector };

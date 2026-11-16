@@ -87,7 +87,7 @@ const appHistory = ApiBlueprint.make({
 
 The factory must be available during app initialization. An `if` predicate on the factory's extension, or on the attachment path leading to it, is rejected with an error, because predicate context is evaluated after the app history is selected. Remove the predicate and decide inside the factory which implementation to return.
 
-In tests, replace a root `MemoryRouter` with `renderInTestApp` or `renderTestApp` from `@backstage/frontend-test-utils`, and navigate through the `appHistory` they return.
+In tests, replace a root `MemoryRouter` with `renderInTestApp` or `renderTestApp` from `@backstage/frontend-test-utils`, and navigate through `apis.get(appHistoryApiRef)` on the render result.
 
 ### Page-scoped routing with adapters
 
@@ -154,17 +154,19 @@ Uncaught errors thrown while page content renders now use the app's error displa
 
 ### Testing navigation
 
-`renderInTestApp` from `@backstage/frontend-test-utils` accepts a `router` option for rendering page adapters, and both `renderInTestApp` and `renderTestApp` return an `appHistory` that you use for navigation and location assertions:
+`renderInTestApp` from `@backstage/frontend-test-utils` accepts a `router` option for rendering page adapters, and both `renderInTestApp` and `renderTestApp` return an API holder that provides access to `AppHistoryApi` for navigation and location assertions:
 
 ```tsx
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import { screen } from '@testing-library/react';
 
 it('renders the tools page and navigates', async () => {
-  const { appHistory } = renderTestApp({
+  const { apis } = renderTestApp({
     extensions: [toolsPage],
     initialRouteEntries: ['/tools'],
   });
+  const appHistory = apis.get(appHistoryApiRef)!;
 
   expect(await screen.findByText('Tools')).toBeInTheDocument();
 
