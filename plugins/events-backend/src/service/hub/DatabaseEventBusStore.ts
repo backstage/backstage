@@ -68,10 +68,7 @@ function creatorId(
   return `service=${credentials.principal.subject}`;
 }
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-events-backend',
-  'migrations',
-);
+const migrationsDir = resolvePackagePath(import.meta.url, 'migrations');
 
 interface InternalDbClient {
   acquireRawConnection(): Promise<InternalDbConnection>;
