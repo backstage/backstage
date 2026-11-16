@@ -32,15 +32,17 @@ import {
   type ReactRouterAdapterBindings,
 } from '@internal/frontend';
 import {
-  appHistoryApiRef,
-  NavigationProvider,
+  useRouteResolution,
   useApi,
   useApiHolder,
-  useRouteResolution,
-  type AppHistoryApi,
   type AppNode,
-  type Navigation,
+  appHistoryApiRef,
+  type AppHistoryApi,
 } from '@backstage/frontend-plugin-api';
+import {
+  RoutingProvider,
+  type RoutingIntegration,
+} from '@backstage/frontend-plugin-api/routing';
 
 const LegacyExtensionRouterContext = createContext<AppNode | undefined>(
   undefined,
@@ -66,7 +68,7 @@ function warnImplicitRouting(history: AppHistoryApi, node: AppNode) {
 }
 
 /** Called by each navigation consumer, inside its own React Router route context. */
-function useLegacyNavigation(): Navigation {
+function useLegacyNavigation(): RoutingIntegration {
   const history = useApi(appHistoryApiRef);
   const node = useContext(LegacyExtensionRouterContext)!;
   // Framework-supported targets do not consume implicit routing. Native router
@@ -143,9 +145,9 @@ export function LegacyExtensionRouter(props: {
   return (
     <LegacyExtensionRouterContext.Provider value={node}>
       <router.Router mounts={mounts}>
-        <NavigationProvider useNavigation={useLegacyNavigation}>
+        <RoutingProvider useRoutingIntegration={useLegacyNavigation}>
           {children}
-        </NavigationProvider>
+        </RoutingProvider>
       </router.Router>
     </LegacyExtensionRouterContext.Provider>
   );

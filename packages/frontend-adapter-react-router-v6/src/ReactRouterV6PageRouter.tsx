@@ -16,13 +16,15 @@
 
 import { useContext, useMemo, type ReactNode } from 'react';
 import {
-  appHistoryApiRef,
-  NavigationProvider,
-  type Navigation,
   useApi,
   useApiHolder,
+  appHistoryApiRef,
   useRouteResolution,
 } from '@backstage/frontend-plugin-api';
+import {
+  RoutingProvider,
+  type RoutingIntegration,
+} from '@backstage/frontend-plugin-api/routing';
 import {
   createAppHistoryRouter,
   resolveAppPath,
@@ -53,7 +55,7 @@ const v6Bindings: ReactRouterAdapterBindings = {
 };
 
 /** Called by each navigation consumer, inside its own React Router route context. */
-function useAdapterNavigation(): Navigation {
+function useAdapterNavigation(): RoutingIntegration {
   const history = useApi(appHistoryApiRef);
   const location = useLocation();
   const navigate = useNavigate();
@@ -163,9 +165,9 @@ export function ReactRouterV6PageRouter(props: { children?: ReactNode }) {
 
   return (
     <scopedRouter.Router mounts={mounts}>
-      <NavigationProvider useNavigation={useAdapterNavigation}>
+      <RoutingProvider useRoutingIntegration={useAdapterNavigation}>
         {children}
-      </NavigationProvider>
+      </RoutingProvider>
     </scopedRouter.Router>
   );
 }

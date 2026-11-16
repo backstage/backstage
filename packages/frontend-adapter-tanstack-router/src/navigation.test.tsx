@@ -21,10 +21,10 @@ import {
   createRouteRef,
   PageBlueprint,
   useRouteRef,
-  useNavigation,
   useAppNavigate,
   RouterLink,
 } from '@backstage/frontend-plugin-api';
+import { useRoutingIntegration } from '@backstage/frontend-plugin-api/routing';
 
 import {
   Outlet,
@@ -39,7 +39,7 @@ it('binds neutral anchors and collection navigation to nested routes', async () 
   const otherRef = createRouteRef();
   function Controls() {
     const other = useRouteRef(otherRef)!();
-    const navigation = useNavigation();
+    const navigation = useRoutingIntegration();
     const strictNavigate = useAppNavigate();
     const activate = () =>
       navigation.navigate('../sibling', { state: { source: 'collection' } });

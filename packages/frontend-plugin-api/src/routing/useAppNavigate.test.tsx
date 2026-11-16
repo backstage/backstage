@@ -29,11 +29,7 @@ import {
   type AppHistorySnapshot,
 } from './AppHistoryApi';
 import type { AppLocation } from './AppLocation';
-import {
-  TestApiProvider,
-  createMockAppHistory,
-  mockApis,
-} from '@backstage/frontend-test-utils';
+import { TestApiProvider, mockApis } from '@backstage/frontend-test-utils';
 import { useAppNode } from '../components/AppNodeProvider';
 import type { AppNode } from '../apis/definitions/AppTreeApi';
 import { useAppHref } from './useAppHref';
@@ -132,7 +128,7 @@ describe('useOptionalAppNavigate', () => {
 describe('useAppNavigate', () => {
   it('uses app-absolute paths and the latest location for query and hash targets', () => {
     const node = {} as AppNode;
-    const appHistory = createMockAppHistory({
+    const appHistory = mockApis.appHistory({
       basename: '/app',
       initialLocation: '/app/tools/admin',
     });
@@ -203,7 +199,7 @@ describe('useAppNavigate', () => {
   });
 
   it('rejects relative paths without an app node too', () => {
-    const appHistory = createMockAppHistory({
+    const appHistory = mockApis.appHistory({
       initialLocation: '/tools/admin',
     });
     const { result } = renderHook(() => useAppNavigate(), {

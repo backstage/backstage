@@ -18,12 +18,7 @@ import { matchPath } from '@internal/frontend';
 import { type AppNode } from '@backstage/frontend-plugin-api';
 import { PropsWithChildren } from 'react';
 import { act, render, renderHook, screen } from '@testing-library/react';
-import {
-  mockApis,
-  TestApiProvider,
-  createMockAppHistory,
-  type MockAppHistory,
-} from '@backstage/frontend-test-utils';
+import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import type { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
 import { appHistoryApiRef } from './AppHistoryApi';
 import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
@@ -65,7 +60,7 @@ const subPageMount: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'> = {
 
 /** Supplies fixed routing ancestry and app history for isolated hook tests. */
 function createWrapper(options: {
-  appHistory: MockAppHistory;
+  appHistory: ReturnType<typeof mockApis.appHistory>;
   mounts?: Pick<RouteResolutionMatch, 'basePath' | 'routePattern'>[];
 }) {
   const { appHistory, mounts = [] } = options;
@@ -127,7 +122,7 @@ describe('useRouteRefParams', () => {
   });
 
   it('should resolve the params of a page with no React Router context present', () => {
-    const appHistory = createMockAppHistory({
+    const appHistory = mockApis.appHistory({
       initialLocation: '/catalog/default/component/foo',
     });
     const wrapper = createWrapper({ appHistory, mounts: [pageMount] });
@@ -144,7 +139,7 @@ describe('useRouteRefParams', () => {
 
     // A splat page keeps its base while the location goes deeper, so the
     // params have to be read from the location rather than from the base.
-    const docsHistory = createMockAppHistory({
+    const docsHistory = mockApis.appHistory({
       initialLocation: '/docs/default/component/foo/sub/page',
     });
     expect(
@@ -167,7 +162,7 @@ describe('useRouteRefParams', () => {
   });
 
   it('should resolve the params of a sub-page from the mount chain', () => {
-    const appHistory = createMockAppHistory({
+    const appHistory = mockApis.appHistory({
       initialLocation: '/catalog/default/component/foo/ci-cd',
     });
     const wrapper = createWrapper({
@@ -210,7 +205,7 @@ describe('useRouteRefParams', () => {
     // A page that routes below itself publishes only its own mount, so the
     // sub-route's own params are found by matching the pattern the sub-route
     // ref describes — its parent's, with its path appended.
-    const appHistory = createMockAppHistory({
+    const appHistory = mockApis.appHistory({
       initialLocation: '/catalog/default/component/foo/ci-cd',
     });
     const wrapper = createWrapper({ appHistory, mounts: [pageMount] });
@@ -227,7 +222,7 @@ describe('useRouteRefParams', () => {
   });
 
   it('should follow the app history and answer with no params outside a page', () => {
-    const appHistory = createMockAppHistory({
+    const appHistory = mockApis.appHistory({
       initialLocation: '/catalog/default/component/foo',
     });
 
@@ -269,7 +264,7 @@ describe('useRouteRefParams', () => {
     // dropping the key would silently change `'id' in params`, `Object.keys`
     // and object spreads for every published plugin that calls it.
     const optionalRouteRef = createRouteRef({ params: ['id'] });
-    const appHistory = createMockAppHistory({ initialLocation: '/foo' });
+    const appHistory = mockApis.appHistory({ initialLocation: '/foo' });
     const { result } = renderHook(() => useRouteRefParams(optionalRouteRef), {
       wrapper: createWrapper({
         appHistory,
@@ -306,7 +301,7 @@ describe('useRouteRefParams', () => {
       );
     };
 
-    const appHistory = createMockAppHistory({ initialLocation: '/foo/bar' });
+    const appHistory = mockApis.appHistory({ initialLocation: '/foo/bar' });
     const Wrapper = createWrapper({
       appHistory,
       mounts: [{ basePath: '/foo/bar', routePattern: '/:a/:b' }],

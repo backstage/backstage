@@ -15,18 +15,14 @@
  */
 
 import { matchPath } from '@internal/frontend';
-import { type AppNode } from '@backstage/frontend-plugin-api';
-import type { ReactNode } from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import {
-  mockApis,
-  TestApiProvider,
-  createMockAppHistory,
-} from '@backstage/frontend-test-utils';
 import {
   useRouteResolution,
+  type AppNode,
   appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
+import type { ReactNode } from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import { useRouter } from '@tanstack/react-router';
 import {
   TanStackPageRouter,
@@ -117,7 +113,7 @@ function renderWithContext(
         apis={[
           [
             appHistoryApiRef,
-            createMockAppHistory({ initialLocation: '/old/alpha' }),
+            mockApis.appHistory({ initialLocation: '/old/alpha' }),
           ],
         ]}
       >

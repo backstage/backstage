@@ -29,16 +29,15 @@ import {
   Button,
 } from '@backstage/ui';
 import {
-  appHistoryApiRef,
-  NavigationProvider,
-  useNavigation,
   useAppLocation,
   useAppNavigate,
+  appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
-  createMockAppHistory,
-  TestApiProvider,
-} from '@backstage/frontend-test-utils';
+  RoutingProvider,
+  useRoutingIntegration,
+} from '@backstage/frontend-plugin-api/routing';
+import { TestApiProvider, mockApis } from '@backstage/frontend-test-utils';
 import { Link as AriaLink } from 'react-aria-components';
 import {
   Link,
@@ -115,7 +114,7 @@ function FrameworkConsumer() {
 }
 
 it('preserves the frozen V2 contract through nested providers overriding V3', async () => {
-  const history = createMockAppHistory({
+  const history = mockApis.appHistory({
     basename: '/app',
     initialLocation: '/app/catalog/items/42/deep?q=1#hash',
   });
@@ -123,22 +122,22 @@ it('preserves the frozen V2 contract through nested providers overriding V3', as
     <TestApiProvider apis={[[appHistoryApiRef, history]]}>
       <RootHistoryRouter history={history}>
         <LegacyBUIProvider>
-          <BUIProvider useNavigation={useNavigation}>
+          <BUIProvider useNavigation={useRoutingIntegration}>
             <Routes>
               <Route path="catalog">
                 <Route
                   path="items/:id/*"
                   element={
-                    <BUIProvider useNavigation={useNavigation}>
-                      <NavigationProvider
-                        useNavigation={() => ({
+                    <BUIProvider useNavigation={useRoutingIntegration}>
+                      <RoutingProvider
+                        useRoutingIntegration={() => ({
                           createHref: () => '/unrelated',
                           navigate: () => {},
                           pathname: '/unrelated',
                         })}
                       >
                         <LegacyConsumer />
-                      </NavigationProvider>
+                      </RoutingProvider>
                       <FrameworkConsumer />
                       <WorkaroundNavLink to="details">
                         Legacy sidebar

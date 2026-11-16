@@ -26,14 +26,3 @@ export interface AppLocation {
   /** User-visible navigation state for this location. */
   readonly state: unknown;
 }
-
-/**
- * Options for app navigation.
- *
- * @public
- */
-export interface AppNavigateOptions {
-  replace?: boolean;
-  /** User-visible navigation state (exposed on {@link AppLocation.state}). */
-  state?: unknown;
-}

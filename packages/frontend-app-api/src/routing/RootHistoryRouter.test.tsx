@@ -16,7 +16,7 @@
 
 import { act, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { createMockAppHistory } from '@backstage/frontend-test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import {
   Link,
   useLocation,
@@ -66,7 +66,7 @@ function ChromeProbe() {
 
 describe('RootHistoryRouter', () => {
   it('should publish the app history location, follow it, and supply a neutral route context', () => {
-    const history = createMockAppHistory({
+    const history = mockApis.appHistory({
       initialLocation: '/catalog/entity/foo?q=test#section',
     });
 
@@ -101,7 +101,7 @@ describe('RootHistoryRouter', () => {
     const pushSpy = jest.spyOn(window.history, 'pushState');
     const replaceSpy = jest.spyOn(window.history, 'replaceState');
     const goSpy = jest.spyOn(window.history, 'go');
-    const history = createMockAppHistory({
+    const history = mockApis.appHistory({
       initialLocation: '/catalog',
       basename: '/backstage',
     });

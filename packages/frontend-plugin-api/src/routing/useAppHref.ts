@@ -34,7 +34,7 @@ import {
  * Resolves an app-absolute path to a browser-ready href (including the app's
  * deploy basename), the react-aria-style counterpart to {@link useAppNavigate}.
  *
- * Falls back to React Router when no {@link appHistoryApiRef} is registered
+ * Falls back to React Router when no {@link coreApis.appHistory} is registered
  * (old frontend system).
  *
  * Paths must start with `/` and are relative to the app root, excluding the

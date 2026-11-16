@@ -17,7 +17,8 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderTestApp } from '@backstage/frontend-test-utils';
-import { PageBlueprint, useNavigation } from '@backstage/frontend-plugin-api';
+import { PageBlueprint } from '@backstage/frontend-plugin-api';
+import { useRoutingIntegration } from '@backstage/frontend-plugin-api/routing';
 import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { Routes, Route, Outlet } from 'react-router-dom';
 import {
@@ -28,7 +29,7 @@ import {
 } from 'react-aria-components';
 
 function Controls() {
-  const navigation = useNavigation();
+  const navigation = useRoutingIntegration();
   return (
     <RouterProvider
       useHref={navigation.createHref}

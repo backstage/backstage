@@ -15,18 +15,14 @@
  */
 
 import { matchPath } from '@internal/frontend';
-import { type AppNode } from '@backstage/frontend-plugin-api';
-import type { ReactNode } from 'react';
-import { render, screen } from '@testing-library/react';
-import {
-  mockApis,
-  TestApiProvider,
-  createMockAppHistory,
-} from '@backstage/frontend-test-utils';
 import {
   useRouteResolution,
+  type AppNode,
   appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
+import type { ReactNode } from 'react';
+import { render, screen } from '@testing-library/react';
+import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
   MemoryRouter,
   Route,
@@ -135,7 +131,7 @@ function renderUnderLegacyRouter(
   }
   if (options.appHistory) {
     tree = (
-      <TestApiProvider apis={[[appHistoryApiRef, createMockAppHistory()]]}>
+      <TestApiProvider apis={[[appHistoryApiRef, mockApis.appHistory()]]}>
         {tree}
       </TestApiProvider>
     );
@@ -200,7 +196,7 @@ describe('ReactRouterV7PageRouter outside a page', () => {
         apis={[
           [
             appHistoryApiRef,
-            createMockAppHistory({ initialLocation: '/old/alpha/deep' }),
+            mockApis.appHistory({ initialLocation: '/old/alpha/deep' }),
           ],
           mockApis.routeResolution.mock({
             resolvePath: ({ pathname }) => ({
