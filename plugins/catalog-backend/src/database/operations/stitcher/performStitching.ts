@@ -424,26 +424,23 @@ async function hasValidTicket(
 }
 
 /**
- * Verifies that a write took effect. On PostgreSQL, also rechecks ownership
- * using this statement's fresh Read Committed snapshot: the write's snapshot
- * may predate a reclaim that committed while it was running. A successful
- * write holds the final-row lock until commit, so a successor cannot publish
- * past us after this check. Do not lock the queue, which would introduce a
- * publication/deletion lock inversion.
+ * Verifies that a write took effect, and returns the slot ID of the written
+ * row. On PostgreSQL, also rechecks ownership using this statement's fresh
+ * Read Committed snapshot: the write's snapshot may predate a reclaim that
+ * committed while it was running. A successful write holds the final-row lock
+ * until commit, so a successor cannot publish past us after this check. Do not
+ * lock the queue, which would introduce a publication/deletion lock inversion.
  */
 async function ensureStillOwned(options: {
   tx: Knex.Transaction;
   entityRef: string;
-  slotId: string;
   hash: string;
   stitchTicket: string;
   stitchLeaseExpiresAt: StitchLeaseExpiresAt;
-}): Promise<void> {
-  const { tx, entityRef, slotId, hash, stitchTicket, stitchLeaseExpiresAt } =
-    options;
+}): Promise<string> {
+  const { tx, entityRef, hash, stitchTicket, stitchLeaseExpiresAt } = options;
   const isPostgres = tx.client.config.client === 'pg';
   const written = await tx<DbFinalEntitiesRow>('final_entities')
-    .where('entity_id', slotId)
     .where('entity_ref', entityRef)
     .where('hash', hash)
     .modify(qb => {
@@ -457,12 +454,13 @@ async function ensureStillOwned(options: {
         );
       }
     })
-    .select(tx.raw('1'))
+    .select('entity_id')
     .first();
   if (!written) {
     // Returning normally would commit any stale write already made.
     throw new StitchPublicationSupersededError();
   }
+  return written.entity_id;
 }
 
 async function writeEntity(options: {
@@ -531,22 +529,24 @@ async function writeEntity(options: {
   await upsert;
 
   // Another stitcher may have created the slot after our read. Its ID wins.
-  const row = await tx<DbFinalEntitiesRow>('final_entities')
-    .where('entity_ref', entityRef)
-    .select('entity_id')
-    .first();
-  if (!row) {
-    throw new StitchPublicationSupersededError();
+  // Elsewhere than MySQL, the ownership check also reads it back.
+  let slotId: string;
+  if (isMySQL) {
+    const row = await tx<DbFinalEntitiesRow>('final_entities')
+      .where('entity_ref', entityRef)
+      .select('entity_id')
+      .first();
+    if (!row) {
+      throw new StitchPublicationSupersededError();
+    }
+    slotId = row.entity_id;
+  } else {
+    slotId = await ensureStillOwned(options);
   }
-  const slotId = row.entity_id;
   const searchEntries =
     slotId === options.slotId
       ? options.searchEntries
       : options.searchEntries.map(e => ({ ...e, entity_id: slotId }));
-
-  if (!isMySQL) {
-    await ensureStillOwned({ ...options, slotId });
-  }
 
   await syncSearchRows(tx, slotId, searchEntries);
 
