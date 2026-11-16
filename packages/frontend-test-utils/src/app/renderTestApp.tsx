@@ -212,5 +212,5 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
     app.tree.root.instance!.getData(coreExtensionData.reactElement),
   );
 
-  return Object.assign(result, { appHistory });
+  return Object.assign(result, { appHistory, apis: app.apis });
 }

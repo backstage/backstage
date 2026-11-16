@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
+import type { ApiHolder, AppHistoryApi } from '@backstage/frontend-plugin-api';
 import type { RenderResult } from '@testing-library/react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createMemoryHistoryBackend } from '../../../frontend-app-api/src/routing/HistoryBackend';
@@ -31,6 +31,11 @@ import type { JsonObject } from '@backstage/types';
  * @public
  */
 export type TestAppRenderResult = RenderResult & {
+  /**
+   * The app's Utility API holder, providing the same API instances used by
+   * components in the app, including API overrides.
+   */
+  apis: ApiHolder;
   /**
    * The app history backed by in-memory history. Use this to drive and assert
    * on navigation in tests.

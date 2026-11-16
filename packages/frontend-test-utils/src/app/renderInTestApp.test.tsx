@@ -32,6 +32,8 @@ import {
   useRouteRefParams,
   identityApiRef,
   useApi,
+  useApiHolder,
+  type ApiHolder,
   coreApis,
   ApiBlueprint,
   createFrontendModule,
@@ -200,11 +202,13 @@ describe('renderInTestApp', () => {
   });
 
   it.each(['component', 'extensions'])(
-    'uses isolated fake defaults with explicit overrides for %s rendering',
+    'exposes the app APIs with isolated defaults and explicit overrides for %s rendering',
     async mode => {
       let toast: ReturnType<typeof mockApis.toast>;
       let storage: StorageApi;
+      let apiHolder: ApiHolder;
       function Probe() {
+        apiHolder = useApiHolder();
         toast = useApi(coreApis.toast) as ReturnType<typeof mockApis.toast>;
         storage = useApi(coreApis.storage);
         const analytics = useAnalytics();
@@ -241,7 +245,13 @@ describe('renderInTestApp', () => {
       }
 
       const first = renderProbe();
+      expect(first.apis.get(coreApis.appLifecycle)?.isFinalized()).toBe(true);
+      expect(first.apis.get(appHistoryApiRef)).toBe(first.appHistory);
+      const firstToast = first.apis.get(coreApis.toast);
       fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+      expect(first.apis).toBe(apiHolder!);
+      expect(firstToast).toBe(toast!);
+      expect(first.apis.get(coreApis.storage)).toBe(storage!);
       expect(toast!.getToasts()).toEqual([{ title: 'Saved' }]);
       expect(screen.queryByText('Saved')).not.toBeInTheDocument();
       await storage!.set('saved', true);
@@ -250,6 +260,9 @@ describe('renderInTestApp', () => {
 
       const second = renderProbe();
       await screen.findByRole('button', { name: 'Save' });
+      expect(second.apis).toBe(apiHolder!);
+      expect(second.apis.get(coreApis.toast)).toBe(toast!);
+      expect(second.apis.get(coreApis.toast)).not.toBe(firstToast);
       expect(toast!.getToasts()).toEqual([]);
       expect(storage!.snapshot('saved').value).toBeUndefined();
       second.unmount();
@@ -277,6 +290,8 @@ describe('renderInTestApp', () => {
       });
       const third = renderProbe([], [feature]);
       fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+      expect(third.apis).toBe(apiHolder!);
+      expect(third.apis.get(coreApis.toast)).toBe(featureToast);
       expect(toast!).toBe(featureToast);
       expect(featureToast.post).toHaveBeenCalledTimes(1);
       expect(captureEvent).toHaveBeenCalledWith(
@@ -285,8 +300,10 @@ describe('renderInTestApp', () => {
       third.unmount();
 
       const override = mockApis.toast.mock();
-      renderProbe([override], [feature]);
+      const fourth = renderProbe([override], [feature]);
+      expect(fourth.apis.get(coreApis.toast)).toBe(override);
       fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+      expect(fourth.apis).toBe(apiHolder!);
       expect(toast!).toBe(override);
       expect(override.post).toHaveBeenCalledWith({ title: 'Saved' });
       expect(featureToast.post).toHaveBeenCalledTimes(1);

@@ -74,6 +74,24 @@ describe('MyEntitiesList', () => {
 
 This approach provides the API overrides at the app level, which is useful when testing components that depend on APIs deep in the component tree.
 
+Both `renderInTestApp` and `renderTestApp` return an `apis` holder alongside the React Testing Library render utilities. Use `apis.get(apiRef)` to access the same API instances used by components in the app, including APIs registered by features and explicit overrides:
+
+```tsx
+import { fireEvent, screen } from '@testing-library/react';
+import { coreApis } from '@backstage/frontend-plugin-api';
+import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { MyComponent } from './MyComponent';
+
+const { apis } = renderInTestApp(<MyComponent />);
+const storage = apis.get(coreApis.storage)!;
+
+fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+
+expect(storage.snapshot('saved').value).toBe(true);
+```
+
+API access is available as soon as the render helper returns. Components may still render asynchronously; use React Testing Library queries such as `screen.findByRole` to wait for UI updates before asserting their effects on an API.
+
 The `TestApiProvider` component is also available for standalone rendering scenarios where you're not using `renderInTestApp` or other test utilities. Context providers like `EntityProvider` from `@backstage/plugin-catalog-react` can also be used to provide a mocked entity context to the component.
 
 ## Testing extensions
