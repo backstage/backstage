@@ -100,30 +100,30 @@ All columns are nullable, so existing rows are not rewritten or backfilled. Exis
 
 PostgreSQL sequences cannot provide commit order. A transaction can draw 101 and commit while the transaction holding 100 is still open, and a consumer that has seen 101 then skips 100 when it commits. Instead, the generation comes from updating the counter row. That row lock is held until commit, so generations become visible in allocation order.
 
-To keep that serialized window short, the stitcher allocates **last**:
+To keep that serialized window short, the generation is allocated **last**:
 
 1. Write the final body and synchronize the search rows, taking all other locks first.
-2. In one statement, increment the counter and stamp the already-locked final row.
-3. Commit immediately. Stitch queue settlement happens in a separate transaction afterwards.
+2. Increment the counter and stamp the already-locked final row.
+3. Commit. Stitch queue settlement happens in a separate transaction afterwards.
+
+On PostgreSQL, steps 2 and 3 are one: a deferred constraint trigger allocates inside `COMMIT`, after all other work in the transaction, with no client round trip while the counter is held. PostgreSQL makes a transaction visible before it releases its locks, so a later allocation cannot become visible first.
 
 ```sql
-WITH allocated AS (
-  UPDATE catalog_generation_counter
-  SET generation = generation + 1
-  WHERE id = 1
-  RETURNING generation
-)
-UPDATE final_entities
-SET generation = allocated.generation
-FROM allocated
-WHERE entity_id = :entityId;
+CREATE CONSTRAINT TRIGGER final_entities_assign_generation_at_commit
+  AFTER INSERT OR UPDATE OF final_entity ON final_entities
+  DEFERRABLE INITIALLY DEFERRED
+  FOR EACH ROW EXECUTE FUNCTION final_entities_assign_generation_at_commit();
 ```
 
-A changed publication therefore writes the final row twice, once for the body and once for the generation. That is deliberate. Search rows reference `final_entities`, so a new entity's final row has to exist before its search rows can be written. Allocating in the body write instead would hold the counter lock while search is synchronized, which measured about twice as slow.
+The function increments the counter and writes the returned value to `NEW.entity_id`'s row. It fires only on body writes, so its own generation update does not fire it again. MySQL and SQLite allocate in application code as the last statements before commit.
 
-Unchanged stitches (same hash) and rolled-back attempts do not allocate. A future batched publication may give several rows one shared generation.
+A changed publication therefore writes the final row twice, once for the body and once for the generation. That is deliberate. Search rows reference `final_entities`, so a new entity's final row has to exist before its search rows can be written. Allocating in the body write instead would hold the counter lock while search is synchronized, which measured far slower.
 
-In a local benchmark with a 0.6 ms database round trip, per-entity publication tops out at roughly 900 changed entities per second. Batching about 25 entities per transaction under one generation reached around 3,000 per second. That batching is the planned escape hatch for bursts such as mass re-ingestion, and steady-state behavior does not need it.
+The trigger replaced an earlier plan to allocate with a writable CTE sent from the stitcher. On a staging catalog of about 767,000 entities, the counter holder under that plan spent about a quarter of its time idle in transaction, waiting for the round trip back from the stitcher before `COMMIT`. Forced re-stitches measured about 330 entities per second without allocation, 320 with the trigger, and 250 to 285 with the CTE. Allocation adds about 10 to 20% WAL per publication.
+
+Unchanged stitches (same hash) and rolled-back attempts do not allocate. A future batched publication takes the counter lock once per transaction. Because constraint triggers are per-row, the rows get consecutive generations on PostgreSQL rather than one shared value; consumers must accept either.
+
+Per-entity publication still has a ceiling, because each commit holds the counter through its WAL flush. With the earlier CTE allocation, a local benchmark with a 0.6 ms database round trip topped out at roughly 900 changed entities per second. Batching about 25 entities per transaction under one generation reached around 3,000 per second. That batching is the planned escape hatch for bursts such as mass re-ingestion, and steady-state behavior does not need it.
 
 ### Tombstones
 
@@ -202,7 +202,7 @@ Consumers must follow this contract:
 
 ## Release Plan
 
-Steps 1 and 2 are additive and internal. They need no fence and ship as ordinary migrations. Old workers that publish without a generation during a rolling deploy are acceptable, because nothing promises completeness yet.
+Steps 1 and 2 are additive and internal. They need no fence and ship as ordinary migrations. On PostgreSQL the trigger also assigns generations to writes from older instances during a rolling deploy. On MySQL and SQLite an older instance can overwrite a body and keep a stale generation. That is acceptable, because nothing promises completeness yet.
 
 Steps 3 and 4 change who owns the lifetime of a final row. An old stitcher assumes the final row ID equals the candidate ID, and it drops work when the candidate is missing. So the cascade must not be removed while old workers are still running. The plan is:
 
@@ -214,7 +214,7 @@ The public change endpoint is added only after step 4. Its API surface will foll
 ## Dependencies
 
 - [#35867](https://github.com/backstage/backstage/pull/35867) and [#35976](https://github.com/backstage/backstage/pull/35976): atomic, fenced stitching (merged).
-- [#36025](https://github.com/backstage/backstage/pull/36025): step 2, generations.
+- [#36025](https://github.com/backstage/backstage/pull/36025): step 2, generations (merged).
 - The proposed [Catalog History and Events BEP](https://github.com/backstage/backstage/pull/30146) is complementary. A history table could be filled by a trigger on `final_entities` that ignores updates which only change the generation.
 
 ## Alternatives
