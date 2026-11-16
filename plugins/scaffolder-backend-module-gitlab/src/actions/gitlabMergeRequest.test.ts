@@ -1813,5 +1813,30 @@ describe('createGitLabMergeRequest', () => {
 
       expect(mockGitlabClient.MergeRequests.merge).not.toHaveBeenCalled();
     });
+
+    it('passes squash to MergeRequests.create and enables autoMerge when both squash and autoMerge are true', async () => {
+      const ctx = createMockActionContext({
+        input: { ...baseInput, squash: true, autoMerge: true },
+        workspacePath,
+      });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Auto-merge MR',
+        {
+          description: 'Will auto-merge',
+          removeSourceBranch: false,
+          squash: true,
+        },
+      );
+      expect(mockGitlabClient.MergeRequests.merge).toHaveBeenCalledWith(
+        'owner/repo',
+        4,
+        { autoMerge: true },
+      );
+    });
   });
 });

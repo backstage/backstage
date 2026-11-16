@@ -167,7 +167,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
             .boolean()
             .optional()
             .describe(
-              'Squash commits when the merge request is merged. If omitted, the squash setting of the GitLab project is respected',
+              'Squash commits when the merge request is merged. If omitted, the squash setting of the GitLab project is respected. Leave unset if the project requires or disallows squashing.',
             ),
         assignee: z =>
           z
