@@ -558,4 +558,61 @@ describe('Mcp Backend', () => {
         .expect(200);
     });
   });
+
+  describe('DNS rebinding protection', () => {
+    it('should reject requests from unknown origins on the default and named servers', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockPluginWithActions,
+          metricsServiceMock.mock().factory,
+          tracingServiceMock.mock().factory,
+          mockServices.rootConfig.factory({
+            data: {
+              app: { baseUrl: 'http://localhost:3000' },
+              backend: { actions: { pluginSources: ['local'] } },
+              mcpActions: {
+                servers: {
+                  greetings: {
+                    name: 'Greetings Server',
+                    filter: { include: [{ id: 'local:*' }] },
+                  },
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      const initialize = {
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'initialize',
+        params: {
+          protocolVersion: '2025-11-25',
+          capabilities: {},
+          clientInfo: { name: 'test client', version: '1.0' },
+        },
+      };
+
+      for (const path of [
+        '/api/mcp-actions/v1',
+        '/api/mcp-actions/v1/greetings',
+      ]) {
+        const rejected = await request(server)
+          .post(path)
+          .set('Accept', 'application/json, text/event-stream')
+          .set('Origin', 'http://evil.example.com')
+          .send(initialize);
+        expect(rejected.status).toBe(403);
+
+        const accepted = await request(server)
+          .post(path)
+          .set('Accept', 'application/json, text/event-stream')
+          .set('Origin', 'http://localhost:3000')
+          .send(initialize);
+        expect(accepted.status).toBe(200);
+      }
+    });
+  });
 });

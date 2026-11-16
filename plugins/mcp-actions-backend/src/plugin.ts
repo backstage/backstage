@@ -21,6 +21,7 @@ import { json } from 'express';
 import Router from 'express-promise-router';
 import { McpService } from './services/McpService';
 import { createStreamableRouter } from './routers/createStreamableRouter';
+import { createDnsRebindingProtection } from './routers/createDnsRebindingProtection';
 import {
   actionsRegistryServiceRef,
   actionsServiceRef,
@@ -83,6 +84,7 @@ export const mcpPlugin = createBackendPlugin({
         });
 
         const router = Router();
+        router.use(createDnsRebindingProtection(config));
         router.use(json());
 
         if (serverConfigs && serverConfigs.size > 0) {
