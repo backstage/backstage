@@ -17,7 +17,6 @@
 import { appHistoryApiRef } from '../../routing/AppHistoryApi';
 import { analyticsApiRef } from './AnalyticsApi';
 import { appLanguageApiRef } from './AppLanguageApi';
-import { appLifecycleApiRef } from './AppLifecycleApi';
 import { appThemeApiRef } from './AppThemeApi';
 import { appTreeApiRef } from './AppTreeApi';
 import { configApiRef } from './ConfigApi';
@@ -28,21 +27,18 @@ import { featureFlagsApiRef } from './FeatureFlagsApi';
 import { fetchApiRef } from './FetchApi';
 import { iconsApiRef } from './IconsApi';
 import { identityApiRef } from './IdentityApi';
-import { oauthRequestApiRef } from './OAuthRequestApi';
-import { pluginHeaderActionsApiRef } from './PluginHeaderActionsApi';
-import { pluginWrapperApiRef } from './PluginWrapperApi';
 import { routeResolutionApiRef } from './RouteResolutionApi';
 import { storageApiRef } from './StorageApi';
-import { swappableComponentsApiRef } from './SwappableComponentsApi';
 import { toastApiRef } from './ToastApi';
 import { translationApiRef } from './TranslationApi';
 
 /**
- * References to the core Utility APIs provided by the frontend system.
+ * References to the core Utility APIs intended for use by plugins.
  *
  * @remarks
  *
  * Use these refs with `useApi` or when declaring API factory dependencies.
+ * Framework infrastructure APIs are available in {@link internalCoreApis}.
  * Provider-specific authentication APIs are exported separately.
  *
  * @public
@@ -64,13 +60,6 @@ export namespace coreApis {
    * @public
    */
   export const appLanguage: typeof appLanguageApiRef = appLanguageApiRef;
-
-  /**
-   * The API reference for {@link AppLifecycleApi}.
-   *
-   * @public
-   */
-  export const appLifecycle: typeof appLifecycleApiRef = appLifecycleApiRef;
 
   /**
    * The API reference for {@link AppThemeApi}.
@@ -143,28 +132,6 @@ export namespace coreApis {
   export const identity: typeof identityApiRef = identityApiRef;
 
   /**
-   * The API reference for {@link OAuthRequestApi}.
-   *
-   * @public
-   */
-  export const oauthRequest: typeof oauthRequestApiRef = oauthRequestApiRef;
-
-  /**
-   * The API reference for {@link PluginHeaderActionsApi}.
-   *
-   * @public
-   */
-  export const pluginHeaderActions: typeof pluginHeaderActionsApiRef =
-    pluginHeaderActionsApiRef;
-
-  /**
-   * The API reference for {@link PluginWrapperApi}.
-   *
-   * @public
-   */
-  export const pluginWrapper: typeof pluginWrapperApiRef = pluginWrapperApiRef;
-
-  /**
    * The API reference for {@link RouteResolutionApi}.
    *
    * @public
@@ -178,14 +145,6 @@ export namespace coreApis {
    * @public
    */
   export const storage: typeof storageApiRef = storageApiRef;
-
-  /**
-   * The API reference for {@link SwappableComponentsApi}.
-   *
-   * @public
-   */
-  export const swappableComponents: typeof swappableComponentsApiRef =
-    swappableComponentsApiRef;
 
   /**
    * The API reference for {@link ToastApi}.

@@ -125,7 +125,7 @@ export type OAuthRequestApi = {
  * The {@link ApiRef} of {@link OAuthRequestApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.oauthRequest} instead.
+ * @deprecated Use {@link internalCoreApis.oauthRequest} instead.
  */
 export const oauthRequestApiRef = createApiRef<OAuthRequestApi>().with({
   id: 'core.oauthrequest',

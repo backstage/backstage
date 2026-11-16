@@ -14,16 +14,26 @@ APIs provided by the frontend system. For example, use `coreApis.config` to read
 configuration, `coreApis.identity` to access the signed-in user's identity, and
 `coreApis.toast` to display notifications.
 
+Framework infrastructure APIs are exported separately in `internalCoreApis`:
+`appLifecycle`, `oauthRequest`, `pluginHeaderActions`, `pluginWrapper`, and
+`swappableComponents`. These support app initialization, authentication
+coordination, and rendering infrastructure. Plugins normally use higher-level
+abstractions such as `PluginWrapperBlueprint`, `PluginHeaderActionBlueprint`,
+and `createSwappableComponent`. Both namespaces are public exports;
+`internalCoreApis` identifies the intended audience rather than a different
+stability level.
+
 The individual core refs exported by `@backstage/frontend-plugin-api`, such as
-`configApiRef`, are deprecated. Replace them with the matching `coreApis` member.
-Both forms refer to the same API ref, so existing factories and implementations
-continue to work together during migration. Imports from the old frontend
+`configApiRef`, are deprecated. Replace them with the matching `coreApis` or
+`internalCoreApis` member. Both forms refer to the same API ref, so existing
+factories and implementations continue to work together during migration. Imports from the old frontend
 system's `@backstage/core-plugin-api` package are unaffected.
 
 Provider-specific authentication refs, such as `githubAuthApiRef`, remain
 separate exports and are not deprecated. The provider-independent OAuth request
-coordinator is available as `coreApis.oauthRequest`. The deprecated Alert API is
-not included in `coreApis`; use `coreApis.toast` for notifications.
+coordinator is available as `internalCoreApis.oauthRequest`. The deprecated
+Alert API is not included in either namespace; use `coreApis.toast` for
+notifications.
 
 ## Via React hooks
 

@@ -16,6 +16,7 @@
 
 import {
   coreApis,
+  internalCoreApis,
   type AppNode,
   createRouteRef,
   FeatureFlagState,
@@ -97,10 +98,11 @@ describe('mockApis', () => {
   });
 
   it('provides a registered jest mock for every core API', () => {
-    for (const name of Object.keys(coreApis) as (keyof typeof coreApis)[]) {
+    const refs = { ...coreApis, ...internalCoreApis };
+    for (const name of Object.keys(refs) as (keyof typeof refs)[]) {
       const mock = mockApis[name].mock();
       const factory = getMockApiFactory(mock)!;
-      expect(factory.api).toBe(coreApis[name]);
+      expect(factory.api).toBe(refs[name]);
       expect(factory.deps).toEqual({});
       expect(factory.factory({})).toBe(mock);
       if (name === 'appHistory') {
@@ -191,9 +193,9 @@ describe('mockApis', () => {
       mockApis.pluginHeaderActions().getPluginHeaderActions('test'),
     ).toEqual([]);
     for (const [api, ref] of [
-      [lifecycle, coreApis.appLifecycle],
+      [lifecycle, internalCoreApis.appLifecycle],
       [icons, coreApis.icons],
-      [actions, coreApis.pluginHeaderActions],
+      [actions, internalCoreApis.pluginHeaderActions],
     ]) {
       expect(getMockApiFactory(api)?.api).toBe(ref);
     }
@@ -242,7 +244,7 @@ describe('mockApis', () => {
     pending[0].reject();
     await expect(rejected).rejects.toThrow();
     subscription.unsubscribe();
-    expect(getMockApiFactory(oauth)?.api).toBe(coreApis.oauthRequest);
+    expect(getMockApiFactory(oauth)?.api).toBe(internalCoreApis.oauthRequest);
   });
 
   it('supports typed overrides including generic methods', async () => {

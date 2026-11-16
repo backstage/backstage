@@ -16,6 +16,7 @@
 
 import {
   coreApis,
+  internalCoreApis,
   type RouteRef,
   type SubRouteRef,
   type ExternalRouteRef,
@@ -109,7 +110,8 @@ function createObservableState<T>(initialValue: T) {
 
 /**
  * Mock implementations of the core utility APIs, to be used in tests.
- * Each {@link @backstage/frontend-plugin-api#coreApis} member has a matching
+ * Each member of {@link @backstage/frontend-plugin-api#coreApis} and
+ * {@link @backstage/frontend-plugin-api#internalCoreApis} has a matching
  * `.mock()` helper. Some APIs also provide functional fake instances.
  *
  * @public
@@ -574,7 +576,7 @@ export namespace mockApis {
     return attachMockApiFactory<
       AppLifecycleApi,
       AppLifecycleApi & { setFinalized(finalized: boolean): void }
-    >(coreApis.appLifecycle, {
+    >(internalCoreApis.appLifecycle, {
       isFinalized: () => finalized,
       subscribe(listener: () => void) {
         listeners.add(listener);
@@ -603,7 +605,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(coreApis.appLifecycle, () => ({
+    export const mock = createApiMock(internalCoreApis.appLifecycle, () => ({
       isFinalized: jest.fn(),
       subscribe: jest.fn(),
     }));
@@ -727,7 +729,7 @@ export namespace mockApis {
    */
   export function oauthRequest(): MockWithApiFactory<OAuthRequestApi> {
     return attachMockApiFactory(
-      coreApis.oauthRequest,
+      internalCoreApis.oauthRequest,
       new OAuthRequestManager(),
     );
   }
@@ -744,7 +746,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(coreApis.oauthRequest, () => ({
+    export const mock = createApiMock(internalCoreApis.oauthRequest, () => ({
       createAuthRequester: jest.fn(),
       authRequest$: jest.fn(),
     }));
@@ -760,7 +762,7 @@ export namespace mockApis {
   }): MockWithApiFactory<PluginHeaderActionsApi> {
     const actions = new Map(Object.entries(options?.actions ?? {}));
     return attachMockApiFactory<PluginHeaderActionsApi>(
-      coreApis.pluginHeaderActions,
+      internalCoreApis.pluginHeaderActions,
       {
         getPluginHeaderActions: pluginId => [...(actions.get(pluginId) ?? [])],
       },
@@ -779,9 +781,12 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(coreApis.pluginHeaderActions, () => ({
-      getPluginHeaderActions: jest.fn(),
-    }));
+    export const mock = createApiMock(
+      internalCoreApis.pluginHeaderActions,
+      () => ({
+        getPluginHeaderActions: jest.fn(),
+      }),
+    );
   }
 
   /**
@@ -796,7 +801,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(coreApis.pluginWrapper, () => ({
+    export const mock = createApiMock(internalCoreApis.pluginWrapper, () => ({
       getRootWrapper: jest.fn(),
       getPluginWrapper: jest.fn(),
     }));
@@ -978,9 +983,12 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(coreApis.swappableComponents, () => ({
-      getComponent: jest.fn(),
-    }));
+    export const mock = createApiMock(
+      internalCoreApis.swappableComponents,
+      () => ({
+        getComponent: jest.fn(),
+      }),
+    );
   }
 
   /**

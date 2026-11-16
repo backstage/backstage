@@ -15,15 +15,15 @@
  */
 
 import * as apis from '../../index';
-import { coreApis } from './coreApis';
 
-describe('coreApis', () => {
+const { coreApis, internalCoreApis } = apis;
+
+describe('core API namespaces', () => {
   it('preserves core API ref identity and metadata', () => {
     const refs = {
       appHistory: apis.appHistoryApiRef,
       analytics: apis.analyticsApiRef,
       appLanguage: apis.appLanguageApiRef,
-      appLifecycle: apis.appLifecycleApiRef,
       appTheme: apis.appThemeApiRef,
       appTree: apis.appTreeApiRef,
       config: apis.configApiRef,
@@ -34,12 +34,8 @@ describe('coreApis', () => {
       fetch: apis.fetchApiRef,
       icons: apis.iconsApiRef,
       identity: apis.identityApiRef,
-      oauthRequest: apis.oauthRequestApiRef,
-      pluginHeaderActions: apis.pluginHeaderActionsApiRef,
-      pluginWrapper: apis.pluginWrapperApiRef,
       routeResolution: apis.routeResolutionApiRef,
       storage: apis.storageApiRef,
-      swappableComponents: apis.swappableComponentsApiRef,
       toast: apis.toastApiRef,
       translation: apis.translationApiRef,
     };
@@ -51,6 +47,25 @@ describe('coreApis', () => {
     }
   });
 
+  it('separates framework APIs while preserving ref identity and metadata', () => {
+    const refs = {
+      appLifecycle: apis.appLifecycleApiRef,
+      oauthRequest: apis.oauthRequestApiRef,
+      pluginHeaderActions: apis.pluginHeaderActionsApiRef,
+      pluginWrapper: apis.pluginWrapperApiRef,
+      swappableComponents: apis.swappableComponentsApiRef,
+    };
+
+    expect(Object.keys(internalCoreApis).sort()).toEqual(
+      Object.keys(refs).sort(),
+    );
+    for (const name of Object.keys(refs) as (keyof typeof refs)[]) {
+      expect(internalCoreApis[name]).toBe(refs[name]);
+      expect(internalCoreApis[name].id).toBe(refs[name].id);
+      expect(coreApis).not.toHaveProperty(name);
+    }
+  });
+
   it('excludes provider-specific authentication APIs', () => {
     const providerRefs = Object.entries(apis as Record<string, unknown>).filter(
       ([name]) => name.endsWith('AuthApiRef'),
@@ -58,8 +73,9 @@ describe('coreApis', () => {
     expect(providerRefs.length).toBeGreaterThan(0);
     for (const [, ref] of providerRefs) {
       expect(Object.values(coreApis)).not.toContain(ref);
+      expect(Object.values(internalCoreApis)).not.toContain(ref);
     }
-    expect(coreApis.oauthRequest).toBe(apis.oauthRequestApiRef);
+    expect(internalCoreApis.oauthRequest).toBe(apis.oauthRequestApiRef);
     expect(coreApis.identity).toBe(apis.identityApiRef);
   });
 });
