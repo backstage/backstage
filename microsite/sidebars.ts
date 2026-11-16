@@ -326,6 +326,7 @@ export default {
             'features/software-catalog/catalog-customization',
             'features/software-catalog/entity-presentation',
             'features/software-catalog/audit-events',
+            'features/software-catalog/org',
             {
               type: 'category',
               label: 'API',
