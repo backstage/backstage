@@ -1,0 +1,30 @@
+@layer components {
+  .pluginSelect {
+    min-width: 240px;
+  }
+
+  .errorIcon {
+    flex-shrink: 0;
+    color: var(--bui-fg-danger);
+  }
+
+  .spinner {
+    animation: devtools-scheduled-task-spin 1s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spinner {
+      animation: none;
+    }
+  }
+
+  @keyframes devtools-scheduled-task-spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
