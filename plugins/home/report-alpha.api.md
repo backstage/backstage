@@ -63,12 +63,16 @@ const _default: OverridableFrontendPlugin<
       params: HomePageWidgetBlueprintParams;
     }>;
     'home-page-widget:home/random-joke': OverridableExtensionDefinition<{
-      kind: 'home-page-widget';
-      name: 'random-joke';
-      config: {};
-      configInput: {};
+      config: {
+        baseUrl: string | undefined;
+      };
+      configInput: {
+        baseUrl?: string | undefined;
+      };
       output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
       inputs: {};
+      kind: 'home-page-widget';
+      name: 'random-joke';
       params: HomePageWidgetBlueprintParams;
     }>;
     'home-page-widget:home/recently-visited': OverridableExtensionDefinition<{

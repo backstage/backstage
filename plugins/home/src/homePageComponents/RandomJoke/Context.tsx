@@ -19,12 +19,14 @@ import {
   useCallback,
   useEffect,
   useContext,
+  useRef,
   createContext,
 } from 'react';
+import { randomFallbackJoke } from './fallbackJokes';
 
 export type JokeType = 'any' | 'programming';
 
-type Joke = {
+export type Joke = {
   setup: string;
   punchline: string;
 };
@@ -32,29 +34,50 @@ type Joke = {
 type RandomJokeContextValue = {
   loading: boolean;
   joke: Joke;
+  /** True when the joke shown is a built-in fallback because the API request failed. */
+  failed: boolean;
   type: JokeType;
   rerollJoke: Function;
   handleChangeType: Function;
 };
 
+export const DEFAULT_BASE_URL = 'https://api.app-jokes.workers.dev';
+
+const REQUEST_TIMEOUT_MS = 10_000;
+
 const Context = createContext<RandomJokeContextValue | undefined>(undefined);
 
-const getNewJoke = (type: string): Promise<Joke> =>
-  fetch(
-    `https://official-joke-api.appspot.com/jokes${
+const isJoke = (value: unknown): value is Joke =>
+  typeof (value as Joke)?.setup === 'string' &&
+  typeof (value as Joke)?.punchline === 'string';
+
+const getNewJoke = async (baseUrl: string, type: string): Promise<Joke> => {
+  const res = await fetch(
+    `${baseUrl.replace(/\/+$/, '')}/jokes${
       type !== 'any' ? `/${type}` : ''
     }/random`,
-  )
-    .then(res => res.json())
-    .then(data => (Array.isArray(data) ? data[0] : data));
+    { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) },
+  );
+  if (!res.ok) {
+    throw new Error(`Joke API responded with ${res.status}`);
+  }
+  const data = await res.json();
+  const joke = Array.isArray(data) ? data[0] : data;
+  if (!isJoke(joke)) {
+    throw new Error('Joke API returned no joke');
+  }
+  return joke;
+};
 
 export const ContextProvider = (props: {
   children: JSX.Element;
   defaultCategory?: JokeType;
+  baseUrl?: string;
 }) => {
-  const { children, defaultCategory } = props;
+  const { children, defaultCategory, baseUrl = DEFAULT_BASE_URL } = props;
 
   const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
   const [joke, setJoke] = useState<Joke>({
     setup: '',
     punchline: '',
@@ -62,19 +85,31 @@ export const ContextProvider = (props: {
   const [type, setType] = useState<JokeType>(
     defaultCategory || ('programming' as JokeType),
   );
+  const latestRequest = useRef(0);
 
   const rerollJoke = useCallback(() => {
+    // Rerolls and category changes can overlap; only the newest request may update the card.
+    const request = ++latestRequest.current;
     setLoading(true);
-    getNewJoke(type).then(newJoke => setJoke(newJoke));
-  }, [type]);
+    getNewJoke(baseUrl, type).then(
+      newJoke => {
+        if (request !== latestRequest.current) return;
+        setJoke(newJoke);
+        setFailed(false);
+        setLoading(false);
+      },
+      () => {
+        if (request !== latestRequest.current) return;
+        setJoke(randomFallbackJoke());
+        setFailed(true);
+        setLoading(false);
+      },
+    );
+  }, [baseUrl, type]);
 
   const handleChangeType = (newType: JokeType) => {
     setType(newType);
   };
-
-  useEffect(() => {
-    setLoading(false);
-  }, [joke]);
 
   useEffect(() => {
     rerollJoke();
@@ -83,6 +118,7 @@ export const ContextProvider = (props: {
   const value: RandomJokeContextValue = {
     loading,
     joke,
+    failed,
     type,
     rerollJoke,
     handleChangeType,

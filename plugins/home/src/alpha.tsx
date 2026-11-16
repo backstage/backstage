@@ -196,37 +196,44 @@ const homePageStarredEntitiesWidget = HomePageWidgetBlueprint.make({
   },
 });
 
-const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
+const homePageRandomJokeWidget = HomePageWidgetBlueprint.makeWithOverrides({
   name: 'random-joke',
-  params: {
-    name: 'HomePageRandomJoke',
-    title: 'Random Joke',
-    description: 'Shows a random programming joke',
-    components: () =>
-      import('./homePageComponents/RandomJoke').then(m => ({
-        Content: m.Content,
-        Settings: m.Settings,
-        Actions: m.Actions,
-        ContextProvider: m.ContextProvider,
-      })),
-    layout: {
-      height: { minRows: 4 },
-      width: { minColumns: 3 },
-    },
-    settings: {
-      schema: {
-        title: 'Random Joke settings',
-        type: 'object',
-        properties: {
-          defaultCategory: {
-            title: 'Category',
-            type: 'string',
-            enum: ['any', 'programming', 'dad'],
-            default: 'any',
+  configSchema: {
+    baseUrl: z.string().optional(),
+  },
+  *factory(originalFactory, { config }) {
+    yield* originalFactory({
+      name: 'HomePageRandomJoke',
+      title: 'Random Joke',
+      description: 'Shows a random programming joke',
+      components: () =>
+        import('./homePageComponents/RandomJoke').then(m => ({
+          Content: m.Content,
+          Settings: m.Settings,
+          Actions: m.Actions,
+          ContextProvider: (props: Parameters<typeof m.ContextProvider>[0]) => (
+            <m.ContextProvider {...props} baseUrl={config.baseUrl} />
+          ),
+        })),
+      layout: {
+        height: { minRows: 4 },
+        width: { minColumns: 3 },
+      },
+      settings: {
+        schema: {
+          title: 'Random Joke settings',
+          type: 'object',
+          properties: {
+            defaultCategory: {
+              title: 'Category',
+              type: 'string',
+              enum: ['any', 'programming', 'dad'],
+              default: 'any',
+            },
           },
         },
       },
-    },
+    });
   },
 });
 

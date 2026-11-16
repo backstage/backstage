@@ -143,10 +143,11 @@ export const HomepageCompositionRoot: (props: {
   children?: ReactNode;
 }) => JSX_2.Element;
 
-// @public (undocumented)
+// @public
 export const HomePageRandomJoke: (
   props: CardExtensionProps_2<{
     defaultCategory?: 'any' | 'programming';
+    baseUrl?: string;
   }>,
 ) => JSX_2.Element;
 
