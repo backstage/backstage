@@ -83,7 +83,6 @@ export class CatalogClient {
    * @param uid -
    */
   public async deleteEntityByUid(
-    // @ts-ignore
     request: DeleteEntityByUid,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -117,7 +116,6 @@ export class CatalogClient {
    * @param order -
    */
   public async getEntities(
-    // @ts-ignore
     request: GetEntities,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<Entity>>> {
@@ -154,7 +152,6 @@ export class CatalogClient {
    * @param fullTextFilterFields - A comma separated list of fields to sort returned results by.
    */
   public async getEntitiesByQuery(
-    // @ts-ignore
     request: GetEntitiesByQuery,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
@@ -184,7 +181,6 @@ export class CatalogClient {
    * @param getEntitiesByRefsRequest -
    */
   public async getEntitiesByRefs(
-    // @ts-ignore
     request: GetEntitiesByRefs,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntitiesBatchResponse>> {
@@ -216,7 +212,6 @@ export class CatalogClient {
    * @param name -
    */
   public async getEntityAncestryByName(
-    // @ts-ignore
     request: GetEntityAncestryByName,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntityAncestryResponse>> {
@@ -249,7 +244,6 @@ export class CatalogClient {
    * @param name -
    */
   public async getEntityByName(
-    // @ts-ignore
     request: GetEntityByName,
     options?: RequestOptions,
   ): Promise<TypedResponse<Entity>> {
@@ -280,7 +274,6 @@ export class CatalogClient {
    * @param uid -
    */
   public async getEntityByUid(
-    // @ts-ignore
     request: GetEntityByUid,
     options?: RequestOptions,
   ): Promise<TypedResponse<Entity>> {
@@ -310,7 +303,6 @@ export class CatalogClient {
    * @param filter - You can pass in one or more filter sets that get matched against each entity. Each filter set is a number of conditions that all have to match for the condition to be true (conditions effectively have an AND between them). At least one filter set has to be true for the entity to be part of the result set (filter sets effectively have an OR between them).  Example:  &#x60;&#x60;&#x60;text /entities/by-query?filter&#x3D;kind&#x3D;user,metadata.namespace&#x3D;default&amp;filter&#x3D;kind&#x3D;group,spec.type    Return entities that match      Filter set 1:       Condition 1: kind &#x3D; user                   AND       Condition 2: metadata.namespace &#x3D; default      OR      Filter set 2:       Condition 1: kind &#x3D; group                   AND       Condition 2: spec.type exists &#x60;&#x60;&#x60;  Each condition is either on the form &#x60;&lt;key&gt;&#x60;, or on the form &#x60;&lt;key&gt;&#x3D;&lt;value&gt;&#x60;. The first form asserts on the existence of a certain key (with any value), and the second asserts that the key exists and has a certain value. All checks are always case _insensitive_.  In all cases, the key is a simplified JSON path in a given piece of entity data. Each part of the path is a key of an object, and the traversal also descends through arrays. There are two special forms:  - Array items that are simple value types (such as strings) match on a key-value   pair where the key is the item as a string, and the value is the string &#x60;true&#x60; - Relations can be matched on a &#x60;relations.&lt;type&gt;&#x3D;&lt;targetRef&gt;&#x60; form  Let\&#39;s look at a simplified example to illustrate the concept:  &#x60;&#x60;&#x60;json {   \&quot;a\&quot;: {     \&quot;b\&quot;: [\&quot;c\&quot;, { \&quot;d\&quot;: 1 }],     \&quot;e\&quot;: 7   } } &#x60;&#x60;&#x60;  This would match any one of the following conditions:  - &#x60;a&#x60; - &#x60;a.b&#x60; - &#x60;a.b.c&#x60; - &#x60;a.b.c&#x3D;true&#x60; - &#x60;a.b.d&#x60; - &#x60;a.b.d&#x3D;1&#x60; - &#x60;a.e&#x60; - &#x60;a.e&#x3D;7&#x60;  Some more real world usable examples:  - Return all orphaned entities:    &#x60;/entities/by-query?filter&#x3D;metadata.annotations.backstage.io/orphan&#x3D;true&#x60;  - Return all users and groups:    &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user&amp;filter&#x3D;kind&#x3D;group&#x60;  - Return all service components:    &#x60;/entities/by-query?filter&#x3D;kind&#x3D;component,spec.type&#x3D;service&#x60;  - Return all entities with the &#x60;java&#x60; tag:    &#x60;/entities/by-query?filter&#x3D;metadata.tags.java&#x60;  - Return all users who are members of the &#x60;ops&#x60; group (note that the full   [reference](references.md) of the group is used):    &#x60;/entities/by-query?filter&#x3D;kind&#x3D;user,relations.memberof&#x3D;group:default/ops&#x60;
    */
   public async getEntityFacets(
-    // @ts-ignore
     request: GetEntityFacets,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntityFacetsResponse>> {
@@ -339,7 +331,6 @@ export class CatalogClient {
    * @param queryEntitiesByPredicateRequest -
    */
   public async queryEntitiesByPredicate(
-    // @ts-ignore
     request: QueryEntitiesByPredicate,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
@@ -367,7 +358,6 @@ export class CatalogClient {
    * @param queryEntityFacetsByPredicateRequest -
    */
   public async queryEntityFacetsByPredicate(
-    // @ts-ignore
     request: QueryEntityFacetsByPredicate,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntityFacetsResponse>> {
@@ -395,7 +385,6 @@ export class CatalogClient {
    * @param refreshEntityRequest -
    */
   public async refreshEntity(
-    // @ts-ignore
     request: RefreshEntity,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -423,7 +412,6 @@ export class CatalogClient {
    * @param validateEntityRequest -
    */
   public async validateEntity(
-    // @ts-ignore
     request: ValidateEntity,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -451,7 +439,6 @@ export class CatalogClient {
    * @param analyzeLocationRequest -
    */
   public async analyzeLocation(
-    // @ts-ignore
     request: AnalyzeLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<AnalyzeLocationResponse>> {
@@ -481,7 +468,6 @@ export class CatalogClient {
    * @param onConflict - Behavior when the location already exists. \&#39;reject\&#39; (default) returns a 409 error, \&#39;refresh\&#39; triggers a refresh of the existing location entity and returns 201.
    */
   public async createLocation(
-    // @ts-ignore
     request: CreateLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<CreateLocation201Response>> {
@@ -511,7 +497,6 @@ export class CatalogClient {
    * @param id -
    */
   public async deleteLocation(
-    // @ts-ignore
     request: DeleteLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -540,7 +525,6 @@ export class CatalogClient {
    * @param id -
    */
   public async getLocation(
-    // @ts-ignore
     request: GetLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<Location>> {
@@ -571,7 +555,6 @@ export class CatalogClient {
    * @param name -
    */
   public async getLocationByEntity(
-    // @ts-ignore
     request: GetLocationByEntity,
     options?: RequestOptions,
   ): Promise<TypedResponse<Location>> {
@@ -601,8 +584,7 @@ export class CatalogClient {
    * Get all locations
    */
   public async getLocations(
-    // @ts-ignore
-    request: GetLocations,
+    _request: GetLocations,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<GetLocations200ResponseInner>>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -628,7 +610,6 @@ export class CatalogClient {
    * @param getLocationsByQueryRequest -
    */
   public async getLocationsByQuery(
-    // @ts-ignore
     request: GetLocationsByQuery,
     options?: RequestOptions,
   ): Promise<TypedResponse<LocationsQueryResponse>> {
@@ -657,7 +638,6 @@ export class CatalogClient {
    * @param locationInput -
    */
   public async updateLocation(
-    // @ts-ignore
     request: UpdateLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<Location>> {

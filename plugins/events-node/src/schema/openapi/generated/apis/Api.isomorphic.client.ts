@@ -51,7 +51,6 @@ export class EventsClient {
    * @param subscriptionId -
    */
   public async getSubscriptionEvents(
-    // @ts-ignore
     request: GetSubscriptionEvents,
     options?: RequestOptions,
   ): Promise<TypedResponse<void | GetSubscriptionEvents200Response>> {
@@ -80,7 +79,6 @@ export class EventsClient {
    * @param postEventRequest -
    */
   public async postEvent(
-    // @ts-ignore
     request: PostEvent,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -109,7 +107,6 @@ export class EventsClient {
    * @param putSubscriptionRequest -
    */
   public async putSubscription(
-    // @ts-ignore
     request: PutSubscription,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {

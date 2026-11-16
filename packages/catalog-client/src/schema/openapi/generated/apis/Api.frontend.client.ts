@@ -78,7 +78,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.deleteEntityByUid}
    */
   public async deleteEntityByUid(
-    // @ts-ignore
     request: DeleteEntityByUid,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -89,7 +88,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.getEntities}
    */
   public async getEntities(
-    // @ts-ignore
     request: GetEntities,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<Entity>>> {
@@ -100,7 +98,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.getEntitiesByQuery}
    */
   public async getEntitiesByQuery(
-    // @ts-ignore
     request: GetEntitiesByQuery,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
@@ -111,7 +108,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.getEntitiesByRefs}
    */
   public async getEntitiesByRefs(
-    // @ts-ignore
     request: GetEntitiesByRefs,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntitiesBatchResponse>> {
@@ -122,7 +118,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.getEntityAncestryByName}
    */
   public async getEntityAncestryByName(
-    // @ts-ignore
     request: GetEntityAncestryByName,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntityAncestryResponse>> {
@@ -133,7 +128,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.getEntityByName}
    */
   public async getEntityByName(
-    // @ts-ignore
     request: GetEntityByName,
     options?: RequestOptions,
   ): Promise<TypedResponse<Entity>> {
@@ -144,7 +138,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.getEntityByUid}
    */
   public async getEntityByUid(
-    // @ts-ignore
     request: GetEntityByUid,
     options?: RequestOptions,
   ): Promise<TypedResponse<Entity>> {
@@ -155,7 +148,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.getEntityFacets}
    */
   public async getEntityFacets(
-    // @ts-ignore
     request: GetEntityFacets,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntityFacetsResponse>> {
@@ -166,7 +158,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.queryEntitiesByPredicate}
    */
   public async queryEntitiesByPredicate(
-    // @ts-ignore
     request: QueryEntitiesByPredicate,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
@@ -177,7 +168,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.queryEntityFacetsByPredicate}
    */
   public async queryEntityFacetsByPredicate(
-    // @ts-ignore
     request: QueryEntityFacetsByPredicate,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntityFacetsResponse>> {
@@ -188,7 +178,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.refreshEntity}
    */
   public async refreshEntity(
-    // @ts-ignore
     request: RefreshEntity,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -199,7 +188,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.validateEntity}
    */
   public async validateEntity(
-    // @ts-ignore
     request: ValidateEntity,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -210,7 +198,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.analyzeLocation}
    */
   public async analyzeLocation(
-    // @ts-ignore
     request: AnalyzeLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<AnalyzeLocationResponse>> {
@@ -221,7 +208,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.createLocation}
    */
   public async createLocation(
-    // @ts-ignore
     request: CreateLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<CreateLocation201Response>> {
@@ -232,7 +218,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.deleteLocation}
    */
   public async deleteLocation(
-    // @ts-ignore
     request: DeleteLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -243,7 +228,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.getLocation}
    */
   public async getLocation(
-    // @ts-ignore
     request: GetLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<Location>> {
@@ -254,7 +238,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.getLocationByEntity}
    */
   public async getLocationByEntity(
-    // @ts-ignore
     request: GetLocationByEntity,
     options?: RequestOptions,
   ): Promise<TypedResponse<Location>> {
@@ -265,7 +248,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.getLocations}
    */
   public async getLocations(
-    // @ts-ignore
     request: GetLocations,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<GetLocations200ResponseInner>>> {
@@ -276,7 +258,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.getLocationsByQuery}
    */
   public async getLocationsByQuery(
-    // @ts-ignore
     request: GetLocationsByQuery,
     options?: RequestOptions,
   ): Promise<TypedResponse<LocationsQueryResponse>> {
@@ -287,7 +268,6 @@ export class CatalogFrontendClient {
    * {@inheritDoc CatalogClient.updateLocation}
    */
   public async updateLocation(
-    // @ts-ignore
     request: UpdateLocation,
     options?: RequestOptions,
   ): Promise<TypedResponse<Location>> {

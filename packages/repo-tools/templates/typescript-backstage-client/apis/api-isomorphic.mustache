@@ -38,8 +38,7 @@ export class {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client {
     {{#operation}}
 {{>apis/operationDocs}}
     public async {{nickname}}(
-        // @ts-ignore
-        request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
+        {{^allParams}}_{{/allParams}}request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
         options?: RequestOptions
     ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
         const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);

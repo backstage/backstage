@@ -70,8 +70,7 @@ export class ScaffolderClient {
    * Returns a list of all installed actions.
    */
   public async listActions(
-    // @ts-ignore
-    request: ListActions,
+    _request: ListActions,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<Action>>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -99,7 +98,6 @@ export class ScaffolderClient {
    * @param autocompleteRequest -
    */
   public async autocomplete(
-    // @ts-ignore
     request: Autocomplete,
     options?: RequestOptions,
   ): Promise<TypedResponse<Autocomplete200Response>> {
@@ -130,7 +128,6 @@ export class ScaffolderClient {
    * @param taskId -
    */
   public async cancelTask(
-    // @ts-ignore
     request: CancelTask,
     options?: RequestOptions,
   ): Promise<TypedResponse<CancelTask200Response>> {
@@ -159,7 +156,6 @@ export class ScaffolderClient {
    * @param taskId -
    */
   public async getTask(
-    // @ts-ignore
     request: GetTask,
     options?: RequestOptions,
   ): Promise<TypedResponse<SerializedTask>> {
@@ -192,7 +188,6 @@ export class ScaffolderClient {
    * @param status - Status
    */
   public async listTasks(
-    // @ts-ignore
     request: ListTasks,
     options?: RequestOptions,
   ): Promise<TypedResponse<ListTasksResponse>> {
@@ -222,7 +217,6 @@ export class ScaffolderClient {
    * @param retryRequest -
    */
   public async retry(
-    // @ts-ignore
     request: Retry,
     options?: RequestOptions,
   ): Promise<TypedResponse<Scaffold201Response>> {
@@ -252,7 +246,6 @@ export class ScaffolderClient {
    * @param scaffolderScaffoldOptions -
    */
   public async scaffold(
-    // @ts-ignore
     request: Scaffold,
     options?: RequestOptions,
   ): Promise<TypedResponse<Scaffold201Response>> {
@@ -281,7 +274,6 @@ export class ScaffolderClient {
    * @param after - Offset event ID to stream events after.
    */
   public async streamLogsPolling(
-    // @ts-ignore
     request: StreamLogsPolling,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<SerializedTaskEvent>>> {
@@ -311,7 +303,6 @@ export class ScaffolderClient {
    * @param dryRunRequest -
    */
   public async dryRun(
-    // @ts-ignore
     request: DryRun,
     options?: RequestOptions,
   ): Promise<TypedResponse<DryRun200Response>> {
@@ -341,7 +332,6 @@ export class ScaffolderClient {
    * @param name -
    */
   public async getTemplateParameterSchema(
-    // @ts-ignore
     request: GetTemplateParameterSchema,
     options?: RequestOptions,
   ): Promise<TypedResponse<TemplateParameterSchema>> {
@@ -371,8 +361,7 @@ export class ScaffolderClient {
    * Returns a structure describing the available templating extensions.
    */
   public async listTemplatingExtensions(
-    // @ts-ignore
-    request: ListTemplatingExtensions,
+    _request: ListTemplatingExtensions,
     options?: RequestOptions,
   ): Promise<TypedResponse<ListTemplatingExtensionsResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);

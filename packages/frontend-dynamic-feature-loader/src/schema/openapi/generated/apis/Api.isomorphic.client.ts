@@ -50,8 +50,7 @@ export class BackstageDynamicFeaturesClient {
    * Get the Module Federation remote definitions.
    */
   public async getRemotes(
-    // @ts-ignore
-    request: GetRemotes,
+    _request: GetRemotes,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<Remote>>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);

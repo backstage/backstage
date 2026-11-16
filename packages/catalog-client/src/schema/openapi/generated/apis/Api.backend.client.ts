@@ -84,7 +84,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.deleteEntityByUid}
    */
   public async deleteEntityByUid(
-    // @ts-ignore
     request: DeleteEntityByUid,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -100,7 +99,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.getEntities}
    */
   public async getEntities(
-    // @ts-ignore
     request: GetEntities,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<Array<Entity>>> {
@@ -116,7 +114,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.getEntitiesByQuery}
    */
   public async getEntitiesByQuery(
-    // @ts-ignore
     request: GetEntitiesByQuery,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
@@ -132,7 +129,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.getEntitiesByRefs}
    */
   public async getEntitiesByRefs(
-    // @ts-ignore
     request: GetEntitiesByRefs,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<EntitiesBatchResponse>> {
@@ -148,7 +144,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.getEntityAncestryByName}
    */
   public async getEntityAncestryByName(
-    // @ts-ignore
     request: GetEntityAncestryByName,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<EntityAncestryResponse>> {
@@ -164,7 +159,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.getEntityByName}
    */
   public async getEntityByName(
-    // @ts-ignore
     request: GetEntityByName,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<Entity>> {
@@ -180,7 +174,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.getEntityByUid}
    */
   public async getEntityByUid(
-    // @ts-ignore
     request: GetEntityByUid,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<Entity>> {
@@ -196,7 +189,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.getEntityFacets}
    */
   public async getEntityFacets(
-    // @ts-ignore
     request: GetEntityFacets,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<EntityFacetsResponse>> {
@@ -212,7 +204,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.queryEntitiesByPredicate}
    */
   public async queryEntitiesByPredicate(
-    // @ts-ignore
     request: QueryEntitiesByPredicate,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
@@ -228,7 +219,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.queryEntityFacetsByPredicate}
    */
   public async queryEntityFacetsByPredicate(
-    // @ts-ignore
     request: QueryEntityFacetsByPredicate,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<EntityFacetsResponse>> {
@@ -244,7 +234,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.refreshEntity}
    */
   public async refreshEntity(
-    // @ts-ignore
     request: RefreshEntity,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -260,7 +249,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.validateEntity}
    */
   public async validateEntity(
-    // @ts-ignore
     request: ValidateEntity,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -276,7 +264,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.analyzeLocation}
    */
   public async analyzeLocation(
-    // @ts-ignore
     request: AnalyzeLocation,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<AnalyzeLocationResponse>> {
@@ -292,7 +279,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.createLocation}
    */
   public async createLocation(
-    // @ts-ignore
     request: CreateLocation,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<CreateLocation201Response>> {
@@ -308,7 +294,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.deleteLocation}
    */
   public async deleteLocation(
-    // @ts-ignore
     request: DeleteLocation,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -324,7 +309,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.getLocation}
    */
   public async getLocation(
-    // @ts-ignore
     request: GetLocation,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<Location>> {
@@ -340,7 +324,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.getLocationByEntity}
    */
   public async getLocationByEntity(
-    // @ts-ignore
     request: GetLocationByEntity,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<Location>> {
@@ -356,7 +339,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.getLocations}
    */
   public async getLocations(
-    // @ts-ignore
     request: GetLocations,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<Array<GetLocations200ResponseInner>>> {
@@ -372,7 +354,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.getLocationsByQuery}
    */
   public async getLocationsByQuery(
-    // @ts-ignore
     request: GetLocationsByQuery,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<LocationsQueryResponse>> {
@@ -388,7 +369,6 @@ export class CatalogBackendClient {
    * {@inheritDoc CatalogClient.updateLocation}
    */
   public async updateLocation(
-    // @ts-ignore
     request: UpdateLocation,
     options: BackendRequestOptions,
   ): Promise<TypedResponse<Location>> {

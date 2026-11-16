@@ -46,7 +46,6 @@ export class EventsFrontendClient {
    * {@inheritDoc EventsClient.getSubscriptionEvents}
    */
   public async getSubscriptionEvents(
-    // @ts-ignore
     request: GetSubscriptionEvents,
     options?: RequestOptions,
   ): Promise<TypedResponse<void | GetSubscriptionEvents200Response>> {
@@ -57,7 +56,6 @@ export class EventsFrontendClient {
    * {@inheritDoc EventsClient.postEvent}
    */
   public async postEvent(
-    // @ts-ignore
     request: PostEvent,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
@@ -68,7 +66,6 @@ export class EventsFrontendClient {
    * {@inheritDoc EventsClient.putSubscription}
    */
   public async putSubscription(
-    // @ts-ignore
     request: PutSubscription,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {

@@ -66,7 +66,6 @@ export class ScaffolderFrontendClient {
    * {@inheritDoc ScaffolderClient.listActions}
    */
   public async listActions(
-    // @ts-ignore
     request: ListActions,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<Action>>> {
@@ -77,7 +76,6 @@ export class ScaffolderFrontendClient {
    * {@inheritDoc ScaffolderClient.autocomplete}
    */
   public async autocomplete(
-    // @ts-ignore
     request: Autocomplete,
     options?: RequestOptions,
   ): Promise<TypedResponse<Autocomplete200Response>> {
@@ -88,7 +86,6 @@ export class ScaffolderFrontendClient {
    * {@inheritDoc ScaffolderClient.cancelTask}
    */
   public async cancelTask(
-    // @ts-ignore
     request: CancelTask,
     options?: RequestOptions,
   ): Promise<TypedResponse<CancelTask200Response>> {
@@ -99,7 +96,6 @@ export class ScaffolderFrontendClient {
    * {@inheritDoc ScaffolderClient.getTask}
    */
   public async getTask(
-    // @ts-ignore
     request: GetTask,
     options?: RequestOptions,
   ): Promise<TypedResponse<SerializedTask>> {
@@ -110,7 +106,6 @@ export class ScaffolderFrontendClient {
    * {@inheritDoc ScaffolderClient.listTasks}
    */
   public async listTasks(
-    // @ts-ignore
     request: ListTasks,
     options?: RequestOptions,
   ): Promise<TypedResponse<ListTasksResponse>> {
@@ -121,7 +116,6 @@ export class ScaffolderFrontendClient {
    * {@inheritDoc ScaffolderClient.retry}
    */
   public async retry(
-    // @ts-ignore
     request: Retry,
     options?: RequestOptions,
   ): Promise<TypedResponse<Scaffold201Response>> {
@@ -132,7 +126,6 @@ export class ScaffolderFrontendClient {
    * {@inheritDoc ScaffolderClient.scaffold}
    */
   public async scaffold(
-    // @ts-ignore
     request: Scaffold,
     options?: RequestOptions,
   ): Promise<TypedResponse<Scaffold201Response>> {
@@ -143,7 +136,6 @@ export class ScaffolderFrontendClient {
    * {@inheritDoc ScaffolderClient.streamLogsPolling}
    */
   public async streamLogsPolling(
-    // @ts-ignore
     request: StreamLogsPolling,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<SerializedTaskEvent>>> {
@@ -154,7 +146,6 @@ export class ScaffolderFrontendClient {
    * {@inheritDoc ScaffolderClient.dryRun}
    */
   public async dryRun(
-    // @ts-ignore
     request: DryRun,
     options?: RequestOptions,
   ): Promise<TypedResponse<DryRun200Response>> {
@@ -165,7 +156,6 @@ export class ScaffolderFrontendClient {
    * {@inheritDoc ScaffolderClient.getTemplateParameterSchema}
    */
   public async getTemplateParameterSchema(
-    // @ts-ignore
     request: GetTemplateParameterSchema,
     options?: RequestOptions,
   ): Promise<TypedResponse<TemplateParameterSchema>> {
@@ -176,7 +166,6 @@ export class ScaffolderFrontendClient {
    * {@inheritDoc ScaffolderClient.listTemplatingExtensions}
    */
   public async listTemplatingExtensions(
-    // @ts-ignore
     request: ListTemplatingExtensions,
     options?: RequestOptions,
   ): Promise<TypedResponse<ListTemplatingExtensionsResponse>> {

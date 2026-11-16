@@ -46,7 +46,6 @@ export class BackstageDynamicFeaturesFrontendClient {
    * {@inheritDoc BackstageDynamicFeaturesClient.getRemotes}
    */
   public async getRemotes(
-    // @ts-ignore
     request: GetRemotes,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<Remote>>> {

@@ -38,7 +38,6 @@ export class {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}FrontendClie
      * {@inheritDoc {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client.{{nickname}}}
      */
     public async {{nickname}}(
-        // @ts-ignore
         request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
         options?: RequestOptions
     ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
