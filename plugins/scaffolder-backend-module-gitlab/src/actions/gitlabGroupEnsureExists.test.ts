@@ -25,6 +25,9 @@ const mockGitlabClient = {
     show: jest.fn(),
     create: jest.fn(),
   },
+  Namespaces: {
+    show: jest.fn(),
+  },
 };
 
 jest.mock('@gitbeaker/rest', () => ({
@@ -43,6 +46,9 @@ jest.mock('../util', () => ({
 describe('gitlab:group:ensureExists', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGitlabClient.Namespaces.show.mockRejectedValue({
+      cause: { response: { status: 404 } },
+    });
   });
 
   const config = mockServices.rootConfig({
@@ -231,6 +237,28 @@ describe('gitlab:group:ensureExists', () => {
     expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 42);
+  });
+
+  it('should reuse a user namespace instead of creating a group', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+
+    mockGitlabClient.Namespaces.show.mockResolvedValueOnce({
+      id: 7,
+      kind: 'user',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        path: ['johan'],
+      },
+    });
+
+    expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 7);
   });
 
   it('should not call API on dryRun', async () => {

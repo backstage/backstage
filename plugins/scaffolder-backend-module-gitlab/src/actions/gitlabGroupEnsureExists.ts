@@ -114,6 +114,14 @@ export const createGitlabGroupEnsureExistsAction = (options: {
             throw error;
           }
         }
+        if (!subGroup && i === 0) {
+          const userNamespaceId = await findUserNamespaceId(api, fullPath);
+          if (userNamespaceId !== undefined) {
+            parentId = userNamespaceId;
+            currentPath = fullPath;
+            continue;
+          }
+        }
         if (!subGroup) {
           ctx.logger.info(`creating missing group ${fullPath}`);
 
@@ -139,6 +147,24 @@ export const createGitlabGroupEnsureExistsAction = (options: {
     },
   });
 };
+
+async function findUserNamespaceId(
+  api: ReturnType<typeof getClient>,
+  path: string,
+): Promise<number | undefined> {
+  try {
+    const namespace = (await api.Namespaces.show(path)) as {
+      id: number;
+      kind: string;
+    };
+    return namespace.kind === 'user' ? namespace.id : undefined;
+  } catch (error: any) {
+    if (error.cause?.response?.status === 404) {
+      return undefined;
+    }
+    throw error;
+  }
+}
 
 type PathPart = { name: string; slug: string };
 type PathItem = string | PathPart;
