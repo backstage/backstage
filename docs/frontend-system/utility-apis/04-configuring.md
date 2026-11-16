@@ -83,46 +83,11 @@ For example, `plugin://catalog/entities?filter=kind=component` resolves the
 Discovery must happen for each request, before authentication middleware checks
 whether the resolved URL is allowed to receive credentials.
 
-Use `createFetchApi` from `@backstage/plugin-app` when constructing a replacement
-with custom middleware. It always installs protocol resolution before your
-middleware, including when the middleware list is empty. For example, the factory
-for an overriding Fetch API extension can be defined as follows:
+When constructing a replacement with `createFetchApi` and `FetchMiddlewares`
+from `@backstage/core-app-api`, include `FetchMiddlewares.resolvePluginProtocol`
+before `FetchMiddlewares.injectIdentityAuth` and other middleware that checks
+request URLs. Protocol resolution is not installed automatically by this helper,
+including when supplying a custom middleware list.
 
-```ts
-import { ApiBlueprint, coreApis } from '@backstage/frontend-plugin-api';
-import { createFetchApi, FetchMiddlewares } from '@backstage/plugin-app';
-
-const fetchExtension = ApiBlueprint.make({
-  name: 'fetch',
-  params: defineParams =>
-    defineParams({
-      api: coreApis.fetch,
-      deps: {
-        discoveryApi: coreApis.discovery,
-        identityApi: coreApis.identity,
-        configApi: coreApis.config,
-      },
-      factory: ({ discoveryApi, identityApi, configApi }) =>
-        createFetchApi({
-          discoveryApi,
-          middleware: [
-            FetchMiddlewares.injectIdentityAuth({
-              identityApi,
-              config: configApi,
-            }),
-          ],
-        }),
-    }),
-});
-```
-
-Add the extension to an app module with `pluginId: 'app'`, as described above.
-Middleware executes in the supplied order, after protocol resolution. Authentication
-middleware is supplied separately; the helper does not add it automatically.
-Do not add `FetchMiddlewares.resolvePluginProtocol` as well. If your base implementation
-or middleware already handles `plugin://` URLs, explicitly set
-`resolvePluginProtocol: false` to disable the helper's resolution.
-
-Custom Fetch API implementations must also honor this contract. The low-level
-`createFetchApi` from `@backstage/core-app-api`, used by the old frontend system,
-does not install protocol resolution automatically.
+Custom implementations must also honor this contract. They can resolve the
+protocol themselves or use the protocol resolution middleware.

@@ -8,17 +8,12 @@ import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { AppTheme } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
-import { Config } from '@backstage/config';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { DiscoveryApi } from '@backstage/frontend-plugin-api';
-import { DiscoveryApi as DiscoveryApi_2 } from '@backstage/core-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { FetchApi } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IconElement } from '@backstage/frontend-plugin-api';
-import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { NavContentComponent } from '@backstage/plugin-app-react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -1137,37 +1132,6 @@ const appPlugin: OverridableFrontendPlugin<
   }
 >;
 export default appPlugin;
-
-// @public
-export function createFetchApi(options: {
-  discoveryApi: DiscoveryApi;
-  baseImplementation?: typeof fetch;
-  middleware?: FetchMiddleware | FetchMiddleware[];
-  resolvePluginProtocol?: boolean;
-}): FetchApi;
-
-// @public
-export interface FetchMiddleware {
-  apply(next: typeof fetch): typeof fetch;
-}
-
-// @public
-export class FetchMiddlewares {
-  static clarifyFailures(): FetchMiddleware;
-  static injectIdentityAuth(options: {
-    identityApi: IdentityApi;
-    config?: Config;
-    urlPrefixAllowlist?: string[];
-    allowUrl?: (url: string) => boolean;
-    header?: {
-      name: string;
-      value: (backstageToken: string) => string;
-    };
-  }): FetchMiddleware;
-  static resolvePluginProtocol(options: {
-    discoveryApi: DiscoveryApi_2;
-  }): FetchMiddleware;
-}
 
 // (No @packageDocumentation comment for this package)
 ```
