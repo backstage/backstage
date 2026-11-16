@@ -52,7 +52,10 @@ import {
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import { EventsService } from '@backstage/plugin-events-node';
-import { createConditionTransformer } from '@backstage/plugin-permission-node';
+import {
+  createConditionAuthorizer,
+  createConditionTransformer,
+} from '@backstage/plugin-permission-node';
 import { durationToMilliseconds } from '@backstage/types';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
@@ -88,6 +91,9 @@ import {
 import { ConfigLocationEntityProvider } from '../providers/ConfigLocationEntityProvider';
 import { DefaultLocationStore } from '../providers/DefaultLocationStore';
 import { DefaultStitcher } from '../stitching/DefaultStitcher';
+import { EntityChangeListener } from './changes/EntityChangeListener';
+import { EntityChangesService } from './changes/EntityChangesService';
+import { cleanUpEntityChangeSubscriptions } from '../database/operations/changes/subscriptions';
 import { defaultEntityDataParser } from '../util/parse';
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
 import { AuthorizedLocationAnalyzer } from './AuthorizedLocationAnalyzer';
@@ -404,10 +410,16 @@ export class CatalogBuilder {
       await applyDatabaseMigrations(dbClient);
     }
 
+    const entityChangeListener = new EntityChangeListener({
+      knex: dbClient,
+      logger,
+    });
+
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: dbClient,
       logger,
       metrics,
+      onPublished: () => entityChangeListener.notify(),
     });
 
     const processingDatabase = new DefaultProcessingDatabase({
@@ -443,15 +455,22 @@ export class CatalogBuilder {
       allowedLocationTypes: this.allowedLocationType,
     });
 
+    const entityPermissionRuleset = permissionsRegistry.getPermissionRuleset(
+      catalogEntityPermissionResourceRef,
+    );
     const entitiesCatalog = new AuthorizedEntitiesCatalog(
       unauthorizedEntitiesCatalog,
       permissions,
-      createConditionTransformer(
-        permissionsRegistry.getPermissionRuleset(
-          catalogEntityPermissionResourceRef,
-        ),
-      ),
+      createConditionTransformer(entityPermissionRuleset),
     );
+
+    const entityChanges = new EntityChangesService({
+      knex: dbClient,
+      permissions,
+      transformConditions: createConditionTransformer(entityPermissionRuleset),
+      authorizeConditions: createConditionAuthorizer(entityPermissionRuleset),
+      listener: entityChangeListener,
+    });
 
     const getResources = async (resourceRefs: string[]) => {
       const { items } = await unauthorizedEntitiesCatalog.entitiesBatch({
@@ -547,6 +566,7 @@ export class CatalogBuilder {
       httpAuth,
       permissionsService: permissions,
       auditor,
+      entityChanges,
     });
 
     await connectEntityProviders(providerDatabase, enabledProviderEntries);
@@ -566,10 +586,21 @@ export class CatalogBuilder {
           }
           await processingEngine.start();
           await stitcher.start();
+          await scheduler.scheduleTask({
+            id: 'catalog-entity-change-subscriptions-cleanup',
+            frequency: { minutes: 10 },
+            timeout: { minutes: 5 },
+            initialDelay: { minutes: 1 },
+            fn: () =>
+              cleanUpEntityChangeSubscriptions(dbClient, {
+                retentionAfterInactive: { days: 30 },
+              }),
+          });
         },
         async stop() {
           await processingEngine.stop();
           await stitcher.stop();
+          entityChangeListener.stop();
         },
       },
       router,
