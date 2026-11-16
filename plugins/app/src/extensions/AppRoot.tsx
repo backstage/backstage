@@ -25,10 +25,10 @@ import {
   createExtensionInput,
   routeResolutionApiRef,
   pluginWrapperApiRef,
-  appHistoryApiRef,
   useAnalytics,
-  useNavigation,
+  appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
+import { useRoutingIntegration } from '@backstage/frontend-plugin-api/routing';
 import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
 import {
   AppRootWrapperBlueprint,
@@ -299,7 +299,10 @@ export function AppRouter(props: AppRouterProps) {
   return (
     <RootHistoryRouter history={appHistory}>
       <LegacyBUIProvider>
-        <BUIProvider useAnalytics={useAnalytics} useNavigation={useNavigation}>
+        <BUIProvider
+          useAnalytics={useAnalytics}
+          useNavigation={useRoutingIntegration}
+        >
           <BreadcrumbsRegistryProvider>
             <AppRootElements elements={extraElements} />
             <RouteTracker routeObjects={routeObjects} />

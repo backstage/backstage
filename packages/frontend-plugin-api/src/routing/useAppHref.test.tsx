@@ -25,11 +25,7 @@ import {
   Routes,
   useHref as useRouterHref,
 } from 'react-router-dom';
-import {
-  TestApiProvider,
-  mockApis,
-  createMockAppHistory,
-} from '@backstage/frontend-test-utils';
+import { TestApiProvider, mockApis } from '@backstage/frontend-test-utils';
 import type { RouteResolutionMatch } from '@backstage/frontend-plugin-api';
 import { appHistoryApiRef } from './AppHistoryApi';
 import { useAppHref } from './useAppHref';
@@ -43,7 +39,7 @@ jest.mock('../components/AppNodeProvider', () => {
 });
 
 describe('useAppHref', () => {
-  const appHistory = createMockAppHistory({ basename: '/backstage' });
+  const appHistory = mockApis.appHistory({ basename: '/backstage' });
 
   const targets = [
     '/catalog',
@@ -358,7 +354,7 @@ describe('the framework authority', () => {
   it.each(trees)(
     'renders hrefs like React Router ($name)',
     ({ url, basename, pageMount, parentMount, wrapper: Tree }) => {
-      const appHistory = createMockAppHistory({
+      const appHistory = mockApis.appHistory({
         initialLocation: url,
         basename,
       });
@@ -413,7 +409,7 @@ describe('the framework authority', () => {
   };
 
   it('resolves a target against the page it is written in, chrome and content alike', () => {
-    const appHistory = createMockAppHistory({
+    const appHistory = mockApis.appHistory({
       initialLocation: PAGE_URL,
       basename: '/backstage',
     });
@@ -521,7 +517,7 @@ describe('the seam between the two', () => {
   it.each(trees)(
     'renders the same href through a link as through the hook ($name)',
     ({ url, basename, pageMount, parentMount, wrapper: Tree }) => {
-      const appHistory = createMockAppHistory({
+      const appHistory = mockApis.appHistory({
         initialLocation: url,
         basename,
       });
@@ -630,7 +626,7 @@ describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
     // an app deployed under `/backstage`, with no React Router anywhere — the
     // shape a `RouterBlueprint` passthrough or a `createSpecializedApp` without
     // `@backstage/plugin-app` leaves behind.
-    const appHistory = createMockAppHistory({
+    const appHistory = mockApis.appHistory({
       initialLocation: '/backstage/catalog/foo',
       basename: '/backstage',
     });

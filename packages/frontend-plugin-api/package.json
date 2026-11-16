@@ -16,6 +16,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
+    "./routing": "./src/routingIntegration.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -24,6 +25,9 @@
     "*": {
       "package.json": [
         "package.json"
+      ],
+      "routing": [
+        "src/routingIntegration.ts"
       ]
     }
   },

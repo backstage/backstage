@@ -16,19 +16,19 @@
 
 import { act, screen } from '@testing-library/react';
 import {
-  createMockAppHistory,
   renderInTestApp,
   renderTestApp,
   TestApiProvider,
+  mockApis,
 } from '@backstage/frontend-test-utils';
 import {
-  AppHistoryApi,
-  appHistoryApiRef,
   useApi,
   createExtension,
   createExtensionInput,
   coreExtensionData,
   ExtensionBoundary,
+  AppHistoryApi,
+  appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
 import { StrictMode, useState } from 'react';
 import {
@@ -300,7 +300,7 @@ describe('createTanStackPageRouter', () => {
     expect(committedDestroy).toHaveBeenCalledTimes(1);
   });
   it('keeps TanStack back availability consistent with a custom host without entry facts', async () => {
-    const inner = createMockAppHistory({ initialLocation: '/tools' });
+    const inner = mockApis.appHistory({ initialLocation: '/tools' });
     let source = inner.getSnapshot();
     let snapshot = { location: source.location };
     const appHistory: AppHistoryApi = {

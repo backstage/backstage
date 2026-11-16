@@ -15,18 +15,13 @@
  */
 
 import { matchPath } from '@internal/frontend';
-import { type AppNode } from '@backstage/frontend-plugin-api';
+import { type AppNode, appHistoryApiRef } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { testPageRouter } from '../../frontend-test-utils/src/__testUtils__/testPageRouter';
 import { useContext, useState } from 'react';
 import { act, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import {
-  mockApis,
-  createMockAppHistory,
-  TestApiProvider,
-} from '@backstage/frontend-test-utils';
-import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 
 import {
   Link,
@@ -176,7 +171,7 @@ describe(`React Router v7 route context matches a real router tree`, () => {
     const expected = readContextProbe();
     real.unmount();
 
-    const appHistory = createMockAppHistory({ initialLocation: url });
+    const appHistory = mockApis.appHistory({ initialLocation: url });
     render(
       <TestApiProvider
         apis={[
@@ -207,7 +202,7 @@ describe(`React Router v7 route context matches a real router tree`, () => {
   });
 
   it('should follow app history and fall back to a neutral context off the page', () => {
-    const appHistory = createMockAppHistory({
+    const appHistory = mockApis.appHistory({
       initialLocation: `${BASE_PATH}/overview`,
     });
     render(

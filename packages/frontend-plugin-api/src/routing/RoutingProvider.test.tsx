@@ -16,21 +16,18 @@
 
 import { act, renderHook } from '@testing-library/react';
 import { createContext, useContext } from 'react';
-import {
-  createMockAppHistory,
-  TestApiProvider,
-} from '@backstage/frontend-test-utils';
-import { appHistoryApiRef } from './AppHistoryApi';
-import { NavigationProvider, useNavigation } from './NavigationProvider';
+import { TestApiProvider, mockApis } from '@backstage/frontend-test-utils';
+import { RoutingProvider, useRoutingIntegration } from '../routingIntegration';
+import { appHistoryApiRef } from '../index';
 import { useAppNavigate } from './useAppNavigate';
 import { useAppHref } from './useAppHref';
 
 it('defaults to framework navigation and keeps authored targets separate from browser hrefs', () => {
-  const history = createMockAppHistory({
+  const history = mockApis.appHistory({
     basename: '/base',
     initialLocation: '/base/catalog/items?view=old#top',
   });
-  const { result } = renderHook(() => useNavigation(), {
+  const { result } = renderHook(() => useRoutingIntegration(), {
     wrapper: ({ children }) => (
       <TestApiProvider apis={[[appHistoryApiRef, history]]}>
         {children}
@@ -73,7 +70,7 @@ it('defaults to framework navigation and keeps authored targets separate from br
 
 it('calls the supplied hook at the consumer and leaves strict framework hooks unchanged', () => {
   const Scope = createContext('/provider');
-  const history = createMockAppHistory({
+  const history = mockApis.appHistory({
     basename: '/base',
     initialLocation: '/base/framework',
   });
@@ -88,16 +85,16 @@ it('calls the supplied hook at the consumer and leaves strict framework hooks un
   }
   const { result } = renderHook(
     () => ({
-      navigation: useNavigation(),
+      navigation: useRoutingIntegration(),
       strictHref: useAppHref(''),
       strictNavigate: useAppNavigate(),
     }),
     {
       wrapper: ({ children }) => (
         <TestApiProvider apis={[[appHistoryApiRef, history]]}>
-          <NavigationProvider useNavigation={useScopedNavigation}>
+          <RoutingProvider useRoutingIntegration={useScopedNavigation}>
             <Scope.Provider value="/consumer">{children}</Scope.Provider>
-          </NavigationProvider>
+          </RoutingProvider>
         </TestApiProvider>
       ),
     },

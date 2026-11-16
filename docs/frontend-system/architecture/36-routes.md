@@ -578,7 +578,7 @@ deployment basename. Both methods replace executable URL schemes with
 Empty, query-only, and hash-only targets keep the current pathname. An empty
 target clears query and hash. Path-relative
 targets such as `details`, `.` and `../edit` are rejected by framework navigation,
-including explicit framework hooks. `RouterLink` and `useNavigation` instead
+including explicit framework hooks. `RouterLink` and `useRoutingIntegration` instead
 follow the nearest adapter when relative navigation is needed.
 The adapter supplies its library's relative-path semantics to BUI controls too.
 
@@ -779,14 +779,14 @@ For the steps to attach one, see [Choose a router for a page](../building-plugin
 
 The app root still projects React Router v6 context, because third-party chrome written for the new frontend system may read it. Legacy core-components also retain their React Router dependency.
 
-Routing adapters supply a component-library-neutral `NavigationProvider`. Its
+Routing adapters supply a component-library-neutral `RoutingProvider`. Its
 hook runs at each consumer's route scope and returns href creation, navigation,
 and the current browser pathname. Generated hrefs and pathname include the
 deployment basename; navigation accepts the original authored target. Outside
 explicit or implicit page adapters, the default uses app history with strict framework semantics.
 
 Backstage UI receives a `useNavigation` hook through `BUIProvider`. The app binds
-that hook to the public `useNavigation` contract. Other component libraries can
+that hook to the public `useRoutingIntegration` contract. Other component libraries can
 consume the same contract without BUI dependencies or duplicated resolution.
 The separate frozen V2 BUI integration retains React Router behavior for older
 consumers and is preserved through nested providers.
