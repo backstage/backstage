@@ -22,7 +22,6 @@ import { AppTheme } from '@backstage/frontend-plugin-api';
 import { AppThemeApi } from '@backstage/frontend-plugin-api';
 import { AppTreeApi } from '@backstage/frontend-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { DialogApi } from '@backstage/frontend-plugin-api';
@@ -484,9 +483,6 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   config?: JsonObject;
   features?: FrontendFeature[];
   mountPath?: string;
-  router?: ComponentType<{
-    children?: ReactNode;
-  }>;
   renderAs?: 'page' | 'chrome';
   initialRouteEntries?: string[];
   apis?: readonly [...TestApiPairs<TApiPairs>];

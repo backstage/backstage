@@ -334,10 +334,11 @@ initial snapshot; read it explicitly.
 
 ## Routing library context in tests
 
-`renderInTestApp` renders the element as a **page**. Registered page mounts
-receive the same implicit React Router v6 compatibility as production. Test
-parameters, relative links and nested content before and after adding an explicit
-adapter. Development warnings identify consumers of the implicit fallback.
+`renderInTestApp` renders the element as a **page** at `mountPath`, defaulting
+to the app root. Matching and navigation use the framework routing APIs.
+The helper does not install a page router adapter; wrap the element explicitly
+when its content needs one. The production app root still supplies its React
+Router v6 compatibility context for shared UI.
 
 There are three answers, and which one is right depends on what the component
 actually needs.
@@ -355,18 +356,22 @@ const { name } = useRouteRefParams(detailsRouteRef);
 ```
 
 **Mirror the page's adapter** when the content genuinely routes with its
-library. Pass the same component the page renders in its `loader`, together
-with the `mountPath` the page is registered at:
+library. Wrap the element in the same component the page renders in its
+`loader`, and set `mountPath` to the pattern the page is registered at:
 
 ```tsx
 import { renderInTestApp } from '@backstage/frontend-test-utils';
 import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 
-await renderInTestApp(<EntityHeader />, {
-  router: ReactRouterV6PageRouter,
-  mountPath: '/catalog/:namespace/:kind/:name',
-  initialRouteEntries: ['/catalog/default/component/my-entity'],
-});
+renderInTestApp(
+  <ReactRouterV6PageRouter>
+    <EntityHeader />
+  </ReactRouterV6PageRouter>,
+  {
+    mountPath: '/catalog/:namespace/:kind/:name',
+    initialRouteEntries: ['/catalog/default/component/my-entity'],
+  },
+);
 ```
 
 Without `mountPath` the element is treated as a page mounted at the app root.
@@ -374,8 +379,8 @@ With an adapter, library-relative targets and BUI links resolve against the
 pattern as they would in a real app. Framework navigation requires app-absolute
 paths. `useRouteRefParams` binds the parameters the pattern names.
 
-A component that wraps _itself_ in an adapter, which is what a plugin shipping
-for both frontend systems does, needs no `router` option here. It also needs no
+A component that wraps _itself_ in an adapter needs no additional wrapper in
+the test. It also needs no
 app around it in a plain `render()` test: an adapter with no page mount or no
 app history renders its children untouched.
 
@@ -390,11 +395,7 @@ await renderInTestApp(<MySidebarItem />, {
 });
 ```
 
-`renderAs: 'chrome'` is a different question, not a milder `router`. Do not
-reach for `router` to give chrome a context: that is a page adapter, and it
-would hand chrome a page-scoped route context that no chrome has in a real app.
-`mountPath` does not apply to chrome either, since chrome is not mounted at a
-route.
+`mountPath` does not apply to chrome, since chrome is not mounted at a route.
 
 ### Verify the page's routing behavior
 
@@ -405,8 +406,8 @@ content after navigation. These observations can detect a missing adapter;
 a test that only asserts that the page rendered cannot establish that routing
 works.
 
-For isolated content tests, `renderInTestApp` can supply the adapter through
-its `router` option. Keep at least one test of the production page declaration
+For isolated content tests, wrap the element passed to `renderInTestApp` in
+its page adapter. Keep at least one test of the production page declaration
 when that declaration is responsible for installing the adapter.
 
 Check shared dependencies as well as direct routing-library imports. A
