@@ -109,12 +109,14 @@ The migration preserves an existing valid index and repairs an invalid one left
 by an interrupted build. Reruns do not reset the generation counter. Reversing
 the migration discards this bookkeeping, not entity or search contents.
 
-This does not expose a change-feed API or track deletions. On PostgreSQL,
+This does not expose a change-feed API. Deleted entities are kept as internal
+tombstones, so their deletion also gets a generation. On PostgreSQL,
 generations are assigned by a database trigger, so writes from older instances
 during a rolling upgrade are tracked too. On SQLite and MySQL, older instances
 can overwrite content while retaining a previously assigned generation. A
-non-null generation is therefore not proof of complete change tracking. Any future feed needs an explicit rollout activation boundary
-and initial synchronization strategy.
+non-null generation is therefore not proof of complete change tracking. Any
+future feed needs an explicit rollout activation boundary and initial
+synchronization strategy.
 
 ## Development
 
