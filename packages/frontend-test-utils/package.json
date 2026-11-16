@@ -58,8 +58,7 @@
     "@types/zen-observable": "^0.8.0",
     "msw": "^3.0.4",
     "react": "^18.0.2",
-    "react-dom": "^18.0.2",
-    "react-router-dom": "^6.30.2"
+    "react-dom": "^18.0.2"
   },
   "peerDependencies": {
     "@testing-library/dom": "^10.0.0",
@@ -67,8 +66,7 @@
     "@types/jest": "*",
     "@types/react": "^18.0.0",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-router-dom": "^6.30.2"
+    "react-dom": "^18.0.0"
   },
   "peerDependenciesMeta": {
     "@types/jest": {

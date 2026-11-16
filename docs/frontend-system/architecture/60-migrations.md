@@ -154,7 +154,7 @@ Uncaught errors thrown while page content renders now use the app's error displa
 
 ### Testing navigation
 
-`renderInTestApp` from `@backstage/frontend-test-utils` accepts a `router` option for rendering page adapters, and both `renderInTestApp` and `renderTestApp` return an `appHistory` that you use for navigation and location assertions:
+`renderInTestApp` from `@backstage/frontend-test-utils` matches `mountPath` through framework routing. Wrap the element in its page adapter when it needs routing-library context. Both `renderInTestApp` and `renderTestApp` return an `appHistory` that you use for navigation and location assertions:
 
 ```tsx
 import { renderTestApp } from '@backstage/frontend-test-utils';

@@ -134,8 +134,7 @@ const testAppPlugin = createTestAppPlugin();
  * with in-memory history, the same seam as production, and is returned as
  * `appHistory`.
  *
- * There is no `router` option here, and no need for one: the extensions are
- * routed by the app itself, so each page declares the adapter it wants exactly
+ * The extensions are routed by the app itself, so each page declares its adapter
  * as it does in production. The app's root React Router v6 projection is also
  * present. `renderInTestApp` supplies the page around a bare element.
  *
