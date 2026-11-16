@@ -74,3 +74,55 @@ export default createApp({
 In this example the overriding extension is kept minimal, but just like any other extension it can also have `deps`, configurability, and inputs. Check out [the Creating section](./02-creating.md) for more details about that.
 
 When you create a replacement extension, in general you may want to mimic its extension config schema or input shapes where applicable. This makes it an easier thing to slot in to an app, since it'll be responding to extensibility the same way as the original one did.
+
+### Replacing the Fetch API
+
+The `coreApis.fetch` contract requires support for `plugin://<pluginId>/<path>` URLs.
+For example, `plugin://catalog/entities?filter=kind=component` resolves the
+`catalog` base URL through `coreApis.discovery`, then appends the path and query.
+Discovery must happen for each request, before authentication middleware checks
+whether the resolved URL is allowed to receive credentials.
+
+Use `createFetchApi` from `@backstage/plugin-app` when constructing a replacement
+with custom middleware. It always installs protocol resolution before your
+middleware, including when the middleware list is empty. For example, the factory
+for an overriding Fetch API extension can be defined as follows:
+
+```ts
+import { ApiBlueprint, coreApis } from '@backstage/frontend-plugin-api';
+import { createFetchApi, FetchMiddlewares } from '@backstage/plugin-app';
+
+const fetchExtension = ApiBlueprint.make({
+  name: 'fetch',
+  params: defineParams =>
+    defineParams({
+      api: coreApis.fetch,
+      deps: {
+        discoveryApi: coreApis.discovery,
+        identityApi: coreApis.identity,
+        configApi: coreApis.config,
+      },
+      factory: ({ discoveryApi, identityApi, configApi }) =>
+        createFetchApi({
+          discoveryApi,
+          middleware: [
+            FetchMiddlewares.injectIdentityAuth({
+              identityApi,
+              config: configApi,
+            }),
+          ],
+        }),
+    }),
+});
+```
+
+Add the extension to an app module with `pluginId: 'app'`, as described above.
+Middleware executes in the supplied order, after protocol resolution. Authentication
+middleware is supplied separately; the helper does not add it automatically.
+Do not add `FetchMiddlewares.resolvePluginProtocol` as well. If your base implementation
+or middleware already handles `plugin://` URLs, explicitly set
+`resolvePluginProtocol: false` to disable the helper's resolution.
+
+Custom Fetch API implementations must also honor this contract. The low-level
+`createFetchApi` from `@backstage/core-app-api`, used by the old frontend system,
+does not install protocol resolution automatically.

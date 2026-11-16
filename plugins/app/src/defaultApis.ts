@@ -32,12 +32,12 @@ import {
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
-  createFetchApi,
   FetchMiddlewares,
   VMwareCloudAuth,
   OpenShiftAuth,
 } from '../../../packages/core-app-api/src/apis/implementations';
 import { ToastApiForwarder, toastApiForwarderRef } from './apis';
+import { createFetchApi } from './apis/createFetchApi';
 
 import {
   alertApiRef,
@@ -180,10 +180,8 @@ export const apis = [
         },
         factory: ({ configApi, identityApi, discoveryApi }) => {
           return createFetchApi({
+            discoveryApi,
             middleware: [
-              FetchMiddlewares.resolvePluginProtocol({
-                discoveryApi,
-              }),
               FetchMiddlewares.injectIdentityAuth({
                 identityApi,
                 config: configApi,

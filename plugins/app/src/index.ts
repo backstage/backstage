@@ -15,3 +15,9 @@
  */
 
 export { appPlugin as default } from './plugin';
+
+export { createFetchApi } from './apis/createFetchApi';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+export { FetchMiddlewares } from '../../../packages/core-app-api/src/apis/implementations';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+export type { FetchMiddleware } from '../../../packages/core-app-api/src/apis/implementations';
