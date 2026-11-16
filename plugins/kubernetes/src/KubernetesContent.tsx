@@ -15,9 +15,8 @@
  */
 
 import { ReactNode } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import { Entity } from '@backstage/catalog-model';
+import { Flex, Grid, Text } from '@backstage/ui';
 import {
   ErrorPanel,
   ErrorReporting,
@@ -69,64 +68,45 @@ export const KubernetesContent = ({
 
         {/* errors retrieved from the kubernetes clusters */}
         {clustersWithErrors.length > 0 && (
-          <Grid container spacing={3} direction="column">
-            <Grid item>
-              <ErrorPanel
-                entityName={entity.metadata.name}
-                clustersWithErrors={clustersWithErrors}
-              />
-            </Grid>
-          </Grid>
+          <Flex direction="column" mb="3">
+            <ErrorPanel
+              entityName={entity.metadata.name}
+              clustersWithErrors={clustersWithErrors}
+            />
+          </Flex>
         )}
 
         {/* other errors */}
         {error !== undefined && (
-          <Grid container spacing={3} direction="column">
-            <Grid item>
-              <ErrorPanel
-                entityName={entity.metadata.name}
-                errorMessage={error}
-              />
-            </Grid>
-          </Grid>
+          <ErrorPanel entityName={entity.metadata.name} errorMessage={error} />
         )}
 
         {kubernetesObjects && (
-          <Grid container spacing={3} direction="column">
-            <Grid item>
-              <ErrorReporting
-                detectedErrors={detectedErrors}
-                clusters={clusters}
-              />
-            </Grid>
-            <Grid item>
-              <Typography variant="h3">
-                {t('kubernetesContentPage.title')}
-              </Typography>
-            </Grid>
-            <Grid item container>
-              {kubernetesObjects?.items.length <= 0 && (
-                <Grid
-                  container
-                  justifyContent="space-around"
-                  direction="row"
-                  alignItems="center"
-                  spacing={2}
-                >
-                  <Grid item xs={8}>
-                    <EmptyState
-                      missing="data"
-                      title={t('kubernetesContentPage.emptyState.title')}
-                      description={t(
-                        'kubernetesContentPage.emptyState.description',
-                        { entityName: entity.metadata.name },
-                      )}
-                    />
-                  </Grid>
-                </Grid>
-              )}
-              {kubernetesObjects?.items.length > 0 &&
-                kubernetesObjects?.items.map((item, i) => {
+          <Flex direction="column" gap="6">
+            <ErrorReporting
+              detectedErrors={detectedErrors}
+              clusters={clusters}
+            />
+            <Text as="h3" variant="title-medium" weight="bold">
+              {t('kubernetesContentPage.title')}
+            </Text>
+            {kubernetesObjects?.items.length <= 0 && (
+              <Grid.Root columns="12">
+                <Grid.Item colStart="3" colSpan="8">
+                  <EmptyState
+                    missing="data"
+                    title={t('kubernetesContentPage.emptyState.title')}
+                    description={t(
+                      'kubernetesContentPage.emptyState.description',
+                      { entityName: entity.metadata.name },
+                    )}
+                  />
+                </Grid.Item>
+              </Grid.Root>
+            )}
+            {kubernetesObjects?.items.length > 0 && (
+              <Flex direction="column" gap="4">
+                {kubernetesObjects?.items.map((item, i) => {
                   const podsWithErrors = new Set<string>(
                     detectedErrors
                       .get(item.cluster.name)
@@ -135,16 +115,16 @@ export const KubernetesContent = ({
                   );
 
                   return (
-                    <Grid item key={i} xs={12}>
-                      <Cluster
-                        clusterObjects={item}
-                        podsWithErrors={podsWithErrors}
-                      />
-                    </Grid>
+                    <Cluster
+                      key={i}
+                      clusterObjects={item}
+                      podsWithErrors={podsWithErrors}
+                    />
                   );
                 })}
-            </Grid>
-          </Grid>
+              </Flex>
+            )}
+          </Flex>
         )}
       </DetectedErrorsContext.Provider>
     </RequireKubernetesPermissions>
