@@ -238,6 +238,26 @@ describe('ScheduledTasksContent', () => {
       'plugin-c',
     );
     expect(input).toHaveValue('plugin-c');
+
+    // Blur commits typed text, and an empty value is reverted instead
+    fireEvent.change(input, { target: { value: 'plugin-a' } });
+    act(() => input.blur());
+
+    expect(
+      await screen.findByText('Scheduled Tasks (plugin-a)'),
+    ).toBeInTheDocument();
+    expect(mockDevToolsApi.getScheduledTasksByPlugin).toHaveBeenLastCalledWith(
+      'plugin-a',
+    );
+
+    act(() => input.focus());
+    fireEvent.change(input, { target: { value: '  ' } });
+    act(() => input.blur());
+
+    expect(input).toHaveValue('plugin-a');
+    expect(mockDevToolsApi.getScheduledTasksByPlugin).not.toHaveBeenCalledWith(
+      '',
+    );
   });
 
   it('a 403 shows the real error message', async () => {

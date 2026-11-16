@@ -101,8 +101,13 @@ export const ScheduledTasksContent = () => {
   };
 
   const handleCommitChange = () => {
-    if (inputValue !== selectedPlugin) {
-      setSelectedPlugin(inputValue);
+    const pluginId = inputValue.trim();
+    if (!pluginId) {
+      setInputValue(selectedPlugin);
+      return;
+    }
+    if (pluginId !== selectedPlugin) {
+      setSelectedPlugin(pluginId);
     }
   };
 
