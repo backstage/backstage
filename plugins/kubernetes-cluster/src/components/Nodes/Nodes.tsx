@@ -22,19 +22,9 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import type { INode } from 'kubernetes-models/v1';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import { Flex, Text } from '@backstage/ui';
 import { useKubernetesClusterError } from '../KubernetesClusterErrorContext/KubernetesClusterErrorContext';
 import { KubernetesDrawer } from '@backstage/plugin-kubernetes-react';
-
-const useStyles = makeStyles(theme => ({
-  empty: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    justifyContent: 'center',
-  },
-}));
 
 const defaultColumns: TableColumn<INode>[] = [
   {
@@ -47,16 +37,20 @@ const defaultColumns: TableColumn<INode>[] = [
           kubernetesObject={node}
           label={node.metadata?.name ?? 'unknown-node'}
         >
-          <Grid container>
-            <Grid item xs={12}>
-              <Typography variant="h5">Node Info</Typography>
+          <Flex direction="column" gap="4">
+            <div>
+              <Text as="h5" variant="title-small" weight="bold">
+                Node Info
+              </Text>
               <StructuredMetadataTable
                 metadata={node.status?.nodeInfo ?? {}}
                 options={{ nestedValuesAsYaml: true }}
               />
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h5">Addresses</Typography>
+            </div>
+            <div>
+              <Text as="h5" variant="title-small" weight="bold">
+                Addresses
+              </Text>
               <StructuredMetadataTable
                 metadata={
                   node.status?.addresses?.reduce((accum, next) => {
@@ -66,9 +60,11 @@ const defaultColumns: TableColumn<INode>[] = [
                 }
                 options={{ nestedValuesAsYaml: true }}
               />
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h5">Taints</Typography>
+            </div>
+            <div>
+              <Text as="h5" variant="title-small" weight="bold">
+                Taints
+              </Text>
               <StructuredMetadataTable
                 metadata={
                   node.spec?.taints?.reduce((accum, next) => {
@@ -78,8 +74,8 @@ const defaultColumns: TableColumn<INode>[] = [
                 }
                 options={{ nestedValuesAsYaml: true }}
               />
-            </Grid>
-          </Grid>
+            </div>
+          </Flex>
         </KubernetesDrawer>
       );
     },
@@ -121,7 +117,6 @@ const defaultColumns: TableColumn<INode>[] = [
 ];
 
 export const Nodes = () => {
-  const classes = useStyles();
   const { entity } = useEntity();
   const { value, error, loading } = useNodes({
     clusterName: entity.metadata.name,
@@ -141,9 +136,9 @@ export const Nodes = () => {
       isLoading={!value && loading}
       data={value?.items ?? []}
       emptyContent={
-        <div className={classes.empty}>
+        <Flex justify="center" p="4">
           {error !== undefined ? 'Error loading nodes' : 'No nodes found'}
-        </div>
+        </Flex>
       }
       columns={defaultColumns}
     />

@@ -19,15 +19,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { Table, TableColumn } from '@backstage/core-components';
 import type { IAPIGroup } from '@kubernetes-models/apimachinery/apis/meta/v1';
 import { useKubernetesClusterError } from '../KubernetesClusterErrorContext/KubernetesClusterErrorContext';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles(theme => ({
-  empty: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    justifyContent: 'center',
-  },
-}));
+import { Flex } from '@backstage/ui';
 
 const defaultColumns: TableColumn<IAPIGroup>[] = [
   {
@@ -47,7 +39,6 @@ const defaultColumns: TableColumn<IAPIGroup>[] = [
 ];
 
 export const ApiResources = () => {
-  const classes = useStyles();
   const { entity } = useEntity();
   const { setError } = useKubernetesClusterError();
   const setErrorCallback = useCallback(setError, [setError]);
@@ -68,11 +59,11 @@ export const ApiResources = () => {
       isLoading={!value && loading}
       data={value?.groups ?? []}
       emptyContent={
-        <div className={classes.empty}>
+        <Flex justify="center" p="4">
           {error !== undefined
             ? 'Error loading API Resources'
             : 'No API Resources found'}
-        </div>
+        </Flex>
       }
       columns={defaultColumns}
     />
