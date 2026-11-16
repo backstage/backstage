@@ -11,19 +11,19 @@
 <li><a href="../modules/_backstage_frontend-test-utils.html">@backstage/frontend-test-utils</a></li>
 <li><a href="" aria-current="page">TestAppRenderResult</a></li></ul>
 <h1>Type Alias TestAppRenderResult</h1></div>
-<div class="tsd-signature"><span class="tsd-kind-type-alias">TestAppRenderResult</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RenderResult</span> <span class="tsd-signature-symbol">&amp;</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">appHistory</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/_backstage_frontend-plugin-api.index.AppHistoryApi.html" class="tsd-signature-type tsd-kind-interface">AppHistoryApi</a> <span class="tsd-signature-symbol">}</span></div>
+<div class="tsd-signature"><span class="tsd-kind-type-alias">TestAppRenderResult</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RenderResult</span> <span class="tsd-signature-symbol">&amp;</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">apis</span><span class="tsd-signature-symbol">:</span> <a href="_backstage_core-plugin-api.index.ApiHolder.html" class="tsd-signature-type tsd-kind-type-alias">ApiHolder</a> <span class="tsd-signature-symbol">}</span></div>
 <div class="tsd-comment tsd-typography"><p>Result of <a href="../functions/_backstage_frontend-test-utils.renderInTestApp.html" class="tsd-kind-function">renderInTestApp</a> / <a href="../functions/_backstage_frontend-test-utils.renderTestApp.html" class="tsd-kind-function">renderTestApp</a>.</p>
 </div>
 <div class="tsd-type-declaration">
 <h4>Type Declaration</h4>
 <ul class="tsd-parameters">
 <li class="tsd-parameter">
-<h5><span class="tsd-kind-property">appHistory</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_backstage_frontend-plugin-api.index.AppHistoryApi.html" class="tsd-signature-type tsd-kind-interface">AppHistoryApi</a></h5>
-<div class="tsd-comment tsd-typography"><p>The app history backed by in-memory history. Use this to drive and assert
-on navigation in tests.</p>
+<h5><span class="tsd-kind-property">apis</span><span class="tsd-signature-symbol">: </span><a href="_backstage_core-plugin-api.index.ApiHolder.html" class="tsd-signature-type tsd-kind-type-alias">ApiHolder</a></h5>
+<div class="tsd-comment tsd-typography"><p>The app's Utility API holder, providing the same API instances used by
+components in the app, including API overrides.</p>
 </div></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/b11701807af95948bf1d023259ab71e7d020a803/packages/frontend-test-utils/src/app/createTestNavigation.tsx#L33">packages/frontend-test-utils/src/app/createTestNavigation.tsx:33</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/703a6901b1e63ec56f16209f9ec1c14e809d37d4/packages/frontend-test-utils/src/app/createTestNavigation.tsx#L33">packages/frontend-test-utils/src/app/createTestNavigation.tsx:33</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

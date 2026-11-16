@@ -18,8 +18,8 @@
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Renders the given element in a test app, for use in unit tests.</p>
 <p>Navigation is owned by a @backstage/frontend-plugin-api#AppHistoryApi
-with in-memory history, the same seam as production, and is returned as
-<code>appHistory</code>.</p>
+with in-memory history, the same seam as production. Access it through
+<code>apis.get(appHistoryApiRef)</code> on the render result.</p>
 <p>The element renders under the app's root React Router v6 projection, as in
 production. Use <code>router</code> for the page's explicit adapter. Framework routing
 hooks work without a page adapter. App-wide elements such as sidebars can
@@ -36,7 +36,7 @@ use <code>renderAs: 'chrome'</code> to render on the app root's elements input.<
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="../types/_backstage_frontend-test-utils.TestAppOptions.html" class="tsd-signature-type tsd-kind-type-alias">TestAppOptions</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#renderintestapptapipairs">TApiPairs</a><span class="tsd-signature-symbol">&gt;</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="../types/_backstage_frontend-test-utils.TestAppRenderResult.html" class="tsd-signature-type tsd-kind-type-alias">TestAppRenderResult</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/b11701807af95948bf1d023259ab71e7d020a803/packages/frontend-test-utils/src/app/renderInTestApp.tsx#L226">packages/frontend-test-utils/src/app/renderInTestApp.tsx:226</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/703a6901b1e63ec56f16209f9ec1c14e809d37d4/packages/frontend-test-utils/src/app/renderInTestApp.tsx#L226">packages/frontend-test-utils/src/app/renderInTestApp.tsx:226</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
