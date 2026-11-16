@@ -797,8 +797,8 @@ describe('OidcService', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
