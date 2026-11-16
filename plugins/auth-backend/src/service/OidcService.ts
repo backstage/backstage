@@ -364,9 +364,9 @@ export class OidcService {
 
     const client = await this.resolveClient({ clientId, redirectUri });
 
-    if (client.requiresPkce && !codeChallenge) {
+    if (!codeChallenge) {
       throw new InputError(
-        'PKCE is required for public clients. Provide a code_challenge parameter.',
+        'PKCE is required for all clients. Provide a code_challenge parameter.',
       );
     }
 
@@ -443,7 +443,6 @@ export class OidcService {
   }): Promise<{
     clientName: string;
     redirectUris: string[];
-    requiresPkce: boolean;
   }> {
     const staticClient = this.staticClients.get(opts.clientId);
     if (staticClient) {
@@ -456,7 +455,6 @@ export class OidcService {
       return {
         clientName: staticClient.clientName,
         redirectUris: staticClient.redirectUris,
-        requiresPkce: !staticClient.clientSecret,
       };
     }
 
@@ -505,7 +503,7 @@ export class OidcService {
       }
     }
 
-    return { ...cimdClient, requiresPkce: true };
+    return cimdClient;
   }
 
   private async getValidPendingSession(sessionId: string) {
@@ -666,20 +664,19 @@ export class OidcService {
       throw new AuthenticationError('No user associated with authorization');
     }
 
-    if (session.codeChallenge) {
-      if (!codeVerifier) {
-        throw new AuthenticationError('Code verifier required for PKCE');
-      }
+    if (!codeVerifier) {
+      throw new AuthenticationError('Code verifier required for PKCE');
+    }
 
-      if (
-        !this.verifyPkce({
-          codeChallenge: session.codeChallenge,
-          codeVerifier,
-          method: session.codeChallengeMethod,
-        })
-      ) {
-        throw new AuthenticationError('Invalid code verifier');
-      }
+    if (
+      !session.codeChallenge ||
+      !this.verifyPkce({
+        codeChallenge: session.codeChallenge,
+        codeVerifier,
+        method: session.codeChallengeMethod,
+      })
+    ) {
+      throw new AuthenticationError('Invalid code verifier');
     }
 
     if (!clientId) {

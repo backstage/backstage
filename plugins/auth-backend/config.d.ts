@@ -155,7 +155,7 @@ export interface Config {
      * Pre-registered OAuth clients that can act on behalf of signed-in users
      * through the auth backend's OIDC provider.
      *
-     * Clients without a `clientSecret` are public clients and must use PKCE.
+     * All clients must use PKCE, including clients with a `clientSecret`.
      */
     staticClients?: Array<{
       /**

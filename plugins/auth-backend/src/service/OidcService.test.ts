@@ -1714,7 +1714,7 @@ describe('OidcService', () => {
               redirectUri: 'http://localhost:8080/callback',
               responseType: 'code',
             }),
-          ).rejects.toThrow('PKCE is required for public clients');
+          ).rejects.toThrow('PKCE is required for all clients');
         });
       });
 
@@ -1883,6 +1883,12 @@ describe('OidcService', () => {
         },
       };
 
+      const codeVerifier = 'static-client-code-verifier-for-pkce';
+      const codeChallenge = crypto
+        .createHash('sha256')
+        .update(codeVerifier)
+        .digest('base64url');
+
       async function createCode(
         service: OidcService,
         clientId: string,
@@ -1893,6 +1899,8 @@ describe('OidcService', () => {
           redirectUri,
           responseType: 'code',
           scope: 'openid',
+          codeChallenge,
+          codeChallengeMethod: 'S256',
           ...extra,
         });
         const { redirectUrl } = await service.approveAuthorizationSession({
@@ -1958,37 +1966,43 @@ describe('OidcService', () => {
             redirectUri,
             grantType: 'authorization_code',
             authenticatedClientId: 'confidential-client',
+            codeVerifier,
           }),
         ).resolves.toEqual(expect.objectContaining({ accessToken: 'token' }));
       });
 
-      it('should require PKCE for public static clients', async () => {
-        const { service } = await createOidcService({
-          databaseId,
-          config: staticClientsConfig,
-        });
+      it.each(['public-client', 'confidential-client'])(
+        'should require PKCE for static client %s',
+        async clientId => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: staticClientsConfig,
+          });
 
-        await expect(
-          service.createAuthorizationSession({
-            clientId: 'public-client',
+          await expect(
+            service.createAuthorizationSession({
+              clientId,
+              redirectUri,
+              responseType: 'code',
+            }),
+          ).rejects.toThrow('PKCE is required for all clients');
+
+          const authSession = await service.createAuthorizationSession({
+            clientId,
             redirectUri,
             responseType: 'code',
-          }),
-        ).rejects.toThrow('PKCE is required for public clients');
+            codeChallenge: 'challenge',
+            codeChallengeMethod: 'plain',
+          });
+          expect(authSession.clientName).toBe(
+            clientId === 'public-client' ? clientId : 'Confidential Client',
+          );
 
-        const authSession = await service.createAuthorizationSession({
-          clientId: 'public-client',
-          redirectUri,
-          responseType: 'code',
-          codeChallenge: 'challenge',
-          codeChallengeMethod: 'plain',
-        });
-        expect(authSession.clientName).toBe('public-client');
-
-        await expect(
-          service.verifyRevocationClient({ clientId: 'public-client' }),
-        ).resolves.toBe(true);
-      });
+          await expect(
+            service.verifyRevocationClient({ clientId: 'public-client' }),
+          ).resolves.toBe(true);
+        },
+      );
     });
   });
 
