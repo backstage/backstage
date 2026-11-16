@@ -1226,9 +1226,129 @@ describe('OidcService', () => {
             service.verifyRevocationClient({ clientId: cimdClientId }),
           ).resolves.toBe(false);
         });
+
+        it('should match client ID paths case-sensitively', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                clientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: [
+                    'https://example.com/oauth-metadata.json',
+                  ],
+                },
+              },
+            },
+          });
+
+          await expect(
+            service.verifyRevocationClient(
+              'https://example.com/oauth-metadata.json',
+            ),
+          ).resolves.toBe(true);
+
+          for (const clientId of [
+            'https://example.com/OAuth-Metadata.json',
+            'https://example.com/OAUTH-METADATA.json',
+          ]) {
+            await expect(
+              service.verifyRevocationClient(clientId),
+            ).resolves.toBe(false);
+          }
+        });
       });
 
       describe('createAuthorizationSession with CIMD', () => {
+it('should match redirect URI paths case-sensitively', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                clientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: ['*'],
+                  allowedRedirectUriPatterns: [
+                    'https://app.example.com/oauth/callback',
+                  ],
+                },
+              },
+            },
+          });
+          mockFetchCimdMetadata.mockResolvedValue({
+            ...cimdMetadata,
+            redirectUris: [
+              'https://app.example.com/oauth/callback',
+              'https://app.example.com/OAUTH/callback',
+              'https://app.example.com/OAuth/Callback',
+            ],
+          });
+          const params = {
+            clientId: cimdClientId,
+            responseType: 'code',
+            ...pkceParams,
+          };
+
+          await expect(
+            service.createAuthorizationSession({
+              ...params,
+              redirectUri: 'https://app.example.com/oauth/callback',
+            }),
+          ).resolves.toMatchObject({ clientName: cimdMetadata.clientName });
+
+          for (const redirectUri of [
+            'https://app.example.com/OAUTH/callback',
+            'https://app.example.com/OAuth/Callback',
+          ]) {
+            await expect(
+              service.createAuthorizationSession({ ...params, redirectUri }),
+            ).rejects.toThrow('Invalid redirect_uri');
+          }
+        });
+
+        it('should match the literal text of wildcard path patterns case-sensitively', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                clientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: ['*'],
+                  allowedRedirectUriPatterns: [
+                    'https://app.example.com/oauth/*',
+                  ],
+                },
+              },
+            },
+          });
+          mockFetchCimdMetadata.mockResolvedValue({
+            ...cimdMetadata,
+            redirectUris: [
+              'https://app.example.com/oauth/callback',
+              'https://app.example.com/OAUTH/callback',
+            ],
+          });
+          const params = {
+            clientId: cimdClientId,
+            responseType: 'code',
+            ...pkceParams,
+          };
+
+          await expect(
+            service.createAuthorizationSession({
+              ...params,
+              redirectUri: 'https://app.example.com/oauth/callback',
+            }),
+          ).resolves.toMatchObject({ clientName: cimdMetadata.clientName });
+
+          await expect(
+            service.createAuthorizationSession({
+              ...params,
+              redirectUri: 'https://app.example.com/OAUTH/callback',
+            }),
+          ).rejects.toThrow('Invalid redirect_uri');
+        });
+
         it('should accept ChatGPT Codex client IDs with default CIMD patterns', async () => {
           const codexClientId =
             'https://chatgpt.com/oauth/codex/backstage/client.json';
