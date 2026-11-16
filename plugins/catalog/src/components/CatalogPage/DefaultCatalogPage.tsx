@@ -27,6 +27,8 @@ import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { ButtonLink, Container, Header } from '@backstage/ui';
 import { RiAddLine } from '@remixicon/react';
 import {
+  CatalogExportButton,
+  CatalogExportSettings,
   CatalogFilterLayout,
   DefaultFilters,
   EntityListPagination,
@@ -45,8 +47,6 @@ import {
 } from '../CatalogTable/types';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
-import { CatalogExportButton } from '../CatalogExportButton/CatalogExportButton';
-import type { CatalogExportSettings } from '../CatalogExportButton';
 import Box from '@material-ui/core/Box';
 import styles from './DefaultCatalogPage.module.css';
 

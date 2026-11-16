@@ -17,7 +17,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { RiDownloadLine } from '@remixicon/react';
 import { useApiHolder } from '@backstage/core-plugin-api';
 import { useTranslationRef, toastApiRef } from '@backstage/frontend-plugin-api';
-import { catalogTranslationRef } from '../../alpha/translation';
+import { catalogReactTranslationRef } from '../../translation';
 import {
   Button,
   ButtonIcon,
@@ -108,19 +108,37 @@ const DEFAULT_EXPORT_COLUMNS = [
 ];
 
 /**
+ * Props for {@link CatalogExportButton}.
+ *
+ * @public
+ */
+export interface CatalogExportButtonProps {
+  /**
+   * Optional export configuration settings including columns, custom exporters, and callbacks.
+   */
+  settings?: CatalogExportSettings;
+  /**
+   * When true, renders a compact icon-only button instead of a labeled button.
+   * Defaults to false.
+   */
+  iconOnly?: boolean;
+}
+
+/**
  * A button that opens a dialog to export the current catalog selection.
  *
- * @param settings - Optional export configuration settings including columns, custom exporters, and callbacks
+ * @remarks
+ *
+ * Must be rendered within an `EntityListProvider`, since the export uses the
+ * currently active entity filters.
+ *
  * @public
  */
 export const CatalogExportButton = ({
   settings,
   iconOnly = false,
-}: {
-  settings?: CatalogExportSettings;
-  iconOnly?: boolean;
-}) => {
-  const { t } = useTranslationRef(catalogTranslationRef);
+}: CatalogExportButtonProps) => {
+  const { t } = useTranslationRef(catalogReactTranslationRef);
   const { exportStream, loading, error } = useStreamingExport();
   const [open, setOpen] = useState(false);
   const exporters = settings?.exporters;

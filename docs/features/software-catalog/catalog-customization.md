@@ -67,8 +67,10 @@ For advanced export customization like custom export formats, create a frontend 
 ```tsx title="src/catalogExportExtension.tsx"
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { CatalogExportConfigBlueprint } from '@backstage/plugin-catalog/alpha';
-import type { CatalogExporter } from '@backstage/plugin-catalog';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  type CatalogExporter,
+} from '@backstage/plugin-catalog-react';
 
 // Define custom export formats using streaming async generators
 const yamlExporter: CatalogExporter = ({ apis, columns, streamRequest }) => {
@@ -133,6 +135,28 @@ The `CatalogExportConfigBlueprint` supports the following properties:
 - **`columns`** - Custom columns to include in the export. Each column specifies an entity field path (`entityFilterKey`) and an optional display `title`. If not provided, defaults to Name, Type, Owner, and Description
 - **`onSuccess`** - Callback function invoked on successful export
 - **`onError`** - Callback function invoked if export fails, receives `{ error: Error }`
+
+#### Using the export button in a custom catalog page
+
+If you replace the catalog index page with your own, you can still add the export button by rendering `CatalogExportButton` from `@backstage/plugin-catalog-react`. It must be placed inside an `EntityListProvider`, since it exports the entities that match the currently selected filters. It accepts the same export settings through its `settings` prop:
+
+```tsx
+import {
+  CatalogExportButton,
+  EntityListProvider,
+} from '@backstage/plugin-catalog-react';
+
+<EntityListProvider>
+  <CatalogExportButton
+    settings={{
+      exporters: { yaml: { exporter: yamlExporter, label: 'YAML' } },
+    }}
+  />
+  {/* ... filters and table */}
+</EntityListProvider>;
+```
+
+The button's texts can be translated through the `catalogExportButton.*` keys of `catalogReactTranslationRef`.
 
 ### Catalog filters
 

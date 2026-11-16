@@ -6,6 +6,10 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
+import type { CatalogExporter as CatalogExporter_2 } from '@backstage/plugin-catalog-react';
+import type { CatalogExporterConfig as CatalogExporterConfig_2 } from '@backstage/plugin-catalog-react';
+import { CatalogExportSettings as CatalogExportSettings_2 } from '@backstage/plugin-catalog-react';
+import type { CatalogExportSettingsColumn as CatalogExportSettingsColumn_2 } from '@backstage/plugin-catalog-react';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -34,7 +38,6 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
 import { StarredEntitiesApi } from '@backstage/plugin-catalog-react';
 import { StorageApi } from '@backstage/core-plugin-api';
-import type { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
@@ -81,37 +84,17 @@ export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 // @public (undocumented)
 export const CatalogEntityPage: () => JSX.Element;
 
-// @public
-export type CatalogExporter = (options: {
-  apis: ApiHolder;
-  columns: CatalogExportSettingsColumn[];
-  streamRequest?: StreamEntitiesRequest;
-}) => {
-  generator: AsyncGenerator<string, void, unknown>;
-  contentType: string;
-};
+// @public @deprecated (undocumented)
+export type CatalogExporter = CatalogExporter_2;
 
-// @public
-export interface CatalogExporterConfig {
-  exporter: CatalogExporter;
-  label?: string;
-}
+// @public @deprecated (undocumented)
+export type CatalogExporterConfig = CatalogExporterConfig_2;
 
-// @public
-export interface CatalogExportSettings {
-  columns?: CatalogExportSettingsColumn[];
-  disableBuiltinExporters?: boolean;
-  enabled?: boolean;
-  exporters?: Record<string, CatalogExporterConfig>;
-  onError?: (options: { error: Error }) => void;
-  onSuccess?: () => void;
-}
+// @public @deprecated (undocumented)
+export type CatalogExportSettings = CatalogExportSettings_2;
 
-// @public
-export interface CatalogExportSettingsColumn {
-  entityFilterKey: string;
-  title?: string;
-}
+// @public @deprecated (undocumented)
+export type CatalogExportSettingsColumn = CatalogExportSettingsColumn_2;
 
 // @public (undocumented)
 export const CatalogIndexPage: (props: DefaultCatalogPageProps) => JSX.Element;
@@ -255,14 +238,27 @@ export type CatalogTableToolbarClassKey = 'root' | 'text';
 export const catalogTranslationRef: TranslationRef<
   'catalog',
   {
+    readonly 'catalogExportButton.errorMessage': 'Failed to export catalog: {{errorMessage}}';
+    readonly 'catalogExportButton.cancelButtonTitle': 'Cancel';
+    readonly 'catalogExportButton.triggerButtonTitle': 'Export selection';
+    readonly 'catalogExportButton.dialogTitle': 'Export catalog selection';
+    readonly 'catalogExportButton.formatLabel': 'Format';
+    readonly 'catalogExportButton.columnsLabel': 'Columns';
+    readonly 'catalogExportButton.confirmButtonTitle': 'Confirm';
+    readonly 'catalogExportButton.exportingButtonTitle': 'Exporting…';
+    readonly 'catalogExportButton.successMessage': 'Catalog exported successfully';
     readonly 'deleteEntity.description': 'This entity is not referenced by any location and is therefore not receiving updates.';
     readonly 'deleteEntity.cancelButtonTitle': 'Cancel';
     readonly 'deleteEntity.deleteButtonTitle': 'Delete';
     readonly 'deleteEntity.dialogTitle': 'Are you sure you want to delete this entity?';
     readonly 'deleteEntity.actionButtonTitle': 'Delete entity';
+    readonly 'indexPage.title': '{{orgName}} Catalog';
+    readonly 'indexPage.createButtonTitle': 'Create';
+    readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
+    readonly 'entityPage.notFoundMessage': 'There is no {{kind}} with the requested {{link}}.';
+    readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
     readonly 'aboutCard.unknown': 'unknown';
     readonly 'aboutCard.title': 'About';
-    readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'aboutCard.refreshButtonTitle': 'Schedule entity refresh';
     readonly 'aboutCard.editButtonTitle': 'Edit Metadata';
     readonly 'aboutCard.editButtonAriaLabel': 'Edit';
@@ -270,6 +266,7 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.refreshScheduledMessage': 'Refresh scheduled';
     readonly 'aboutCard.refreshButtonAriaLabel': 'Refresh';
     readonly 'aboutCard.launchTemplate': 'Launch Template';
+    readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'aboutCard.viewSource': 'View Source';
     readonly 'aboutCard.descriptionField.value': 'No description';
     readonly 'aboutCard.descriptionField.label': 'Description';
@@ -287,15 +284,10 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.tagsField.value': 'No Tags';
     readonly 'aboutCard.tagsField.label': 'Tags';
     readonly 'aboutCard.targetsField.label': 'Targets';
-    readonly 'indexPage.title': '{{orgName}} Catalog';
-    readonly 'indexPage.createButtonTitle': 'Create';
-    readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
-    readonly 'entityPage.notFoundMessage': 'There is no {{kind}} with the requested {{link}}.';
-    readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
     readonly 'searchResultItem.type': 'Type';
     readonly 'searchResultItem.kind': 'Kind';
-    readonly 'searchResultItem.owner': 'Owner';
     readonly 'searchResultItem.lifecycle': 'Lifecycle';
+    readonly 'searchResultItem.owner': 'Owner';
     readonly 'catalogTable.allFilters': 'All';
     readonly 'catalogTable.warningPanelTitle': 'Could not fetch catalog entities.';
     readonly 'catalogTable.viewActionTitle': 'View';
@@ -315,32 +307,23 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityContextMenu.unregisterMenuTitle': 'Unregister entity';
     readonly 'entityContextMenu.moreButtonAriaLabel': 'More actions';
     readonly 'entityLabelsCard.title': 'Labels';
-    readonly 'entityLabelsCard.readMoreButtonTitle': 'Read more';
     readonly 'entityLabelsCard.columnKeyLabel': 'Label';
     readonly 'entityLabelsCard.columnValueLabel': 'Value';
     readonly 'entityLabelsCard.emptyDescription': 'No labels defined for this entity. You can add labels to your entity YAML as shown in the highlighted example below:';
-    readonly 'entityLabels.ownerLabel': 'Owner';
+    readonly 'entityLabelsCard.readMoreButtonTitle': 'Read more';
     readonly 'entityLabels.warningPanelTitle': 'Entity not found';
+    readonly 'entityLabels.ownerLabel': 'Owner';
     readonly 'entityLabels.lifecycleLabel': 'Lifecycle';
     readonly 'entityLabels.systemLabel': 'System';
     readonly 'entityLabels.domainLabel': 'Domain';
     readonly 'entityLabels.partOfLabel': 'Part of';
     readonly 'entityLinksCard.title': 'Links';
-    readonly 'entityLinksCard.readMoreButtonTitle': 'Read more';
     readonly 'entityLinksCard.emptyDescription': 'No links defined for this entity. You can add links to your entity YAML as shown in the highlighted example below:';
+    readonly 'entityLinksCard.readMoreButtonTitle': 'Read more';
     readonly 'entityNotFound.title': 'Entity was not found';
     readonly 'entityNotFound.description': 'Want to help us build this? Check out our Getting Started documentation.';
     readonly 'entityNotFound.docButtonTitle': 'DOCS';
     readonly 'entityTabs.tabsAriaLabel': 'Tabs';
-    readonly 'catalogExportButton.errorMessage': 'Failed to export catalog: {{errorMessage}}';
-    readonly 'catalogExportButton.cancelButtonTitle': 'Cancel';
-    readonly 'catalogExportButton.dialogTitle': 'Export catalog selection';
-    readonly 'catalogExportButton.triggerButtonTitle': 'Export selection';
-    readonly 'catalogExportButton.formatLabel': 'Format';
-    readonly 'catalogExportButton.columnsLabel': 'Columns';
-    readonly 'catalogExportButton.confirmButtonTitle': 'Confirm';
-    readonly 'catalogExportButton.exportingButtonTitle': 'Exporting…';
-    readonly 'catalogExportButton.successMessage': 'Catalog exported successfully';
     readonly entityProcessingErrorsDescription: 'The error below originates from';
     readonly entityRelationWarningDescription: "This entity has relations to other entities, which can't be found in the catalog.\n Entities not found are: ";
     readonly 'hasComponentsCard.title': 'Has components';
@@ -374,7 +357,7 @@ export interface DefaultCatalogPageProps {
   // (undocumented)
   emptyContent?: ReactNode;
   // (undocumented)
-  exportSettings?: CatalogExportSettings;
+  exportSettings?: CatalogExportSettings_2;
   // (undocumented)
   filters?: ReactNode;
   // (undocumented)

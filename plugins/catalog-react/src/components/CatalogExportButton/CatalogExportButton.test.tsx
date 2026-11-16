@@ -17,10 +17,8 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CatalogExportButton } from './CatalogExportButton';
 import { useStreamingExport } from './file-download';
-import {
-  catalogApiRef,
-  EntityListProvider,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '../../api';
+import { EntityListProvider } from '../../hooks';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
 

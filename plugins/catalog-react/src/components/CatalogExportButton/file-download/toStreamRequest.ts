@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  DefaultEntityFilters,
-  EntityTextFilter,
-  EntityOrderFilter,
-} from '@backstage/plugin-catalog-react';
+import type { DefaultEntityFilters } from '../../../hooks';
+import { EntityTextFilter, EntityOrderFilter } from '../../../filters';
 import type {
   StreamEntitiesRequest,
   EntityOrderQuery,

@@ -15,7 +15,8 @@
  */
 import { useState, useCallback } from 'react';
 import { useApiHolder, type ApiHolder } from '@backstage/core-plugin-api';
-import { catalogApiRef, useEntityList } from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '../../../api';
+import { useEntityList } from '../../../hooks';
 import { streamDownload, createStreamFromAsyncGenerator } from './downloadFile';
 import {
   serializeEntitiesToCsv,
