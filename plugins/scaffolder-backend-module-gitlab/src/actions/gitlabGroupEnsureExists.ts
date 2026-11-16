@@ -17,7 +17,11 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { GroupSchema, CreateGroupOptions } from '@gitbeaker/rest';
+import {
+  GroupSchema,
+  CreateGroupOptions,
+  NamespaceSchema,
+} from '@gitbeaker/rest';
 import { getClient, parseRepoUrl } from '../util';
 import { examples } from './gitlabGroupEnsureExists.examples';
 
@@ -117,10 +121,9 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         }
         if (!subGroup && i === 0) {
           try {
-            const namespace = (await api.Namespaces.show(slug)) as unknown as {
-              id: number;
-              kind?: string;
-            };
+            const namespace = (await api.Namespaces.show(
+              slug,
+            )) as unknown as NamespaceSchema;
             if (namespace && namespace.kind === 'user') {
               if (pathParts.length > 1) {
                 throw new InputError(

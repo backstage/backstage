@@ -367,4 +367,54 @@ describe('gitlab:group:ensureExists', () => {
     );
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 99);
   });
+
+  it('should rethrow error when Namespaces.show rejects with a non-404 error', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockRejectedValueOnce(
+      new Error('Internal Server Error'),
+    );
+
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          repoUrl: 'gitlab.com?repo=my-project&owner=owner',
+          path: ['broken-group'],
+        },
+      }),
+    ).rejects.toThrow('Internal Server Error');
+
+    expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+  });
+
+  it('should fall through to group creation when namespace has kind group', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockResolvedValueOnce({
+      id: 55,
+      kind: 'group',
+    });
+    mockGitlabClient.Groups.create.mockResolvedValueOnce({
+      id: 55,
+      full_path: 'hidden-group',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=my-project&owner=owner',
+        path: ['hidden-group'],
+      },
+    });
+
+    expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith(
+      'hidden-group',
+      'hidden-group',
+      {},
+    );
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 55);
+  });
 });
