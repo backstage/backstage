@@ -242,7 +242,7 @@ auth:
   staticClients:
     - clientId: my-integration
       clientName: My Integration
-      # Optional. Without a secret the client is public and must use PKCE.
+      # Optional. Clients with a secret must also authenticate at the token endpoint.
       clientSecret: ${MY_INTEGRATION_CLIENT_SECRET}
       # Redirect URIs must match exactly, wildcards are not supported.
       redirectUris:
@@ -250,6 +250,8 @@ auth:
 ```
 
 The client ID must be unique and must not be a URL. When configuring the client, use `<backend-url>/api/auth/v1/authorize` as the authorization URL and `<backend-url>/api/auth/v1/token` as the token URL. Prefer CIMD for clients that support it, and use pre-registered clients for those that don't.
+
+All static clients must use PKCE, including clients with a secret. Configure the client to send a fresh PKCE challenge with each authorization request and the matching verifier when exchanging the code. Use the `S256` challenge method.
 
 Static clients use the same scopes as CIMD clients: `openid`, and `offline_access` when refresh tokens are enabled.
 

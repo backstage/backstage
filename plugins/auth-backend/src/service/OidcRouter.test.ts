@@ -268,6 +268,11 @@ describe('OidcRouter', () => {
   describe.each(databases.eachSupportedId())('%p', databaseId => {
     it('should decode form-encoded Basic client credentials', async () => {
       const clientId = 'integration +/=';
+      const codeVerifier = 'static-client-code-verifier-for-pkce';
+      const codeChallenge = crypto
+        .createHash('sha256')
+        .update(codeVerifier)
+        .digest('base64url');
       const clientSecret = 'secret +/:=%';
       const redirectUri = 'https://integration.example.com/callback';
       const { router, mocks } = await createRouterWithOfflineAccess(
@@ -284,6 +289,8 @@ describe('OidcRouter', () => {
         clientId,
         redirectUri,
         responseType: 'code',
+        codeChallenge,
+        codeChallengeMethod: 'S256',
       });
       const { redirectUrl } = await mocks.service.approveAuthorizationSession({
         sessionId: session.id,
@@ -294,20 +301,41 @@ describe('OidcRouter', () => {
       const basic = Buffer.from(
         `${encode(clientId)}:${encode(clientSecret)}`,
       ).toString('base64');
-      const response = await request(express().use(router.getRouter()))
-        .post('/v1/token')
-        .set('Authorization', `Basic ${basic}`)
-        .send({
-          grant_type: 'authorization_code',
-          code: new URL(redirectUrl).searchParams.get('code'),
-          redirect_uri: redirectUri,
-        });
+      const app = express().use(router.getRouter());
+      const exchange = (verifier?: string) =>
+        request(app)
+          .post('/v1/token')
+          .set('Authorization', `Basic ${basic}`)
+          .send({
+            grant_type: 'authorization_code',
+            code: new URL(redirectUrl).searchParams.get('code'),
+            redirect_uri: redirectUri,
+            code_verifier: verifier,
+          });
+      expect((await exchange()).status).toBe(400);
+      expect((await exchange('wrong-verifier')).status).toBe(400);
+      await mocks.oidc.updateAuthorizationSession({
+        id: session.id,
+        codeChallenge: '',
+      });
+      expect((await exchange(codeVerifier)).status).toBe(400);
+      expect(mocks.tokenIssuer.issueToken).not.toHaveBeenCalled();
+      await mocks.oidc.updateAuthorizationSession({
+        id: session.id,
+        codeChallenge,
+      });
+      const response = await exchange(codeVerifier);
       expect(response.status).toBe(200);
       expect(response.body.access_token).toBe('access-token');
     });
 
     it('should reject outstanding codes and refresh tokens after removing a configured client', async () => {
       const clientId = 'removed-client';
+      const codeVerifier = 'static-client-code-verifier-for-pkce';
+      const codeChallenge = crypto
+        .createHash('sha256')
+        .update(codeVerifier)
+        .digest('base64url');
       const clientSecret = 'client-secret';
       const redirectUri = 'https://integration.example.com/callback';
       const { router, mocks } = await createRouterWithOfflineAccess(
@@ -326,6 +354,8 @@ describe('OidcRouter', () => {
           clientId,
           redirectUri,
           responseType: 'code',
+          codeChallenge,
+          codeChallengeMethod: 'S256',
           scope: 'openid offline_access',
         });
         const { redirectUrl } = await mocks.service.approveAuthorizationSession(
@@ -341,6 +371,7 @@ describe('OidcRouter', () => {
         grant_type: 'authorization_code',
         code: codes[0],
         redirect_uri: redirectUri,
+        code_verifier: codeVerifier,
         client_id: clientId,
         client_secret: clientSecret,
       });
