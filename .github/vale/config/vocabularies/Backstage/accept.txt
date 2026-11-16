@@ -150,6 +150,7 @@ dyno
 ecco
 elasticsearch
 Entra
+enum
 enums
 env
 Env
@@ -384,6 +385,7 @@ plantuml
 Platformize
 pluggable
 Pluggable
+pnpm
 Podman
 polyfills
 posix
@@ -450,6 +452,7 @@ Rspack
 rst
 rsync
 ruleset
+rulesets
 runbook
 sam
 sandbox
