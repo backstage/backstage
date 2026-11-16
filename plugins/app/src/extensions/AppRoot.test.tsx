@@ -17,6 +17,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
+  appHistoryApiRef,
   PageBlueprint,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
@@ -173,11 +174,12 @@ describe('AppRoot', () => {
         ),
       },
     });
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [page],
       initialRouteEntries: ['/catalog/foo'],
       config: BASENAME_CONFIG,
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
     for (const [label, , destination] of targets) {
       act(() => appHistory.navigate('/catalog/foo'));
       const link = await screen.findByRole('link', { name: label });

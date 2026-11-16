@@ -55,3 +55,4 @@ export {
   type AppRouteSwitchProps,
   type AppRouteRedirect,
 } from './AppRouteSwitch';
+export { useRouteMatches } from './useRouteMatches';

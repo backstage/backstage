@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { matchPath } from '@internal/frontend';
+import { matchPath, useRouteMatches } from '@internal/frontend';
 import {
-  useRouteResolution,
+  ExtensionBoundary,
   type AppNode,
   appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
+
 import type { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
@@ -32,18 +33,9 @@ import {
 } from 'react-router-dom';
 import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
 
-const mockRouteNode = {} as AppNode;
-
-// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
-jest.mock('../../frontend-plugin-api/src/components/AppNodeProvider', () => {
-  const actual = jest.requireActual(
-    '../../frontend-plugin-api/src/components/AppNodeProvider',
-  );
-  return {
-    ...actual,
-    useAppNode: () => actual.useAppNode() ?? mockRouteNode,
-  };
-});
+const mockRouteNode = {
+  spec: { id: 'test', plugin: { pluginId: 'test' } },
+} as AppNode;
 
 /**
  * The adapter rendered where there is no page: the old frontend system, and
@@ -74,7 +66,7 @@ jest.mock('../../frontend-plugin-api/src/components/AppNodeProvider', () => {
 function LegacyProbe(props: { id: string }) {
   const params = useParams();
   const resolved = useResolvedPath('edit');
-  const mount = useRouteResolution().matches.at(-1);
+  const mount = useRouteMatches().at(-1);
   return (
     <span data-testid={props.id}>
       {JSON.stringify({
@@ -136,7 +128,9 @@ function renderUnderLegacyRouter(
       </TestApiProvider>
     );
   }
-  return render(tree);
+  return render(
+    <ExtensionBoundary node={mockRouteNode}>{tree}</ExtensionBoundary>,
+  );
 }
 
 describe('ReactRouterV6PageRouter outside a page', () => {
@@ -190,31 +184,34 @@ describe('ReactRouterV6PageRouter outside a page', () => {
     // The other side of the same switch: passing through when something is
     // missing must not turn into passing through when nothing is.
     render(
-      <TestApiProvider
-        apis={[
-          [
-            appHistoryApiRef,
-            mockApis.appHistory({ initialLocation: '/old/alpha/deep' }),
-          ],
-          mockApis.routeResolution.mock({
-            resolvePath: ({ pathname }) => ({
-              matches: [
-                {
-                  params: matchPath('/old/:id', pathname, false)?.params ?? {},
-                  contributesPath: true,
-                  basePath: '/old/alpha',
-                  routePattern: '/old/:id',
-                  node: mockRouteNode,
-                },
-              ],
+      <ExtensionBoundary node={mockRouteNode}>
+        <TestApiProvider
+          apis={[
+            [
+              appHistoryApiRef,
+              mockApis.appHistory({ initialLocation: '/old/alpha/deep' }),
+            ],
+            mockApis.routeResolution.mock({
+              resolvePath: ({ pathname }) => ({
+                matches: [
+                  {
+                    params:
+                      matchPath('/old/:id', pathname, false)?.params ?? {},
+                    contributesPath: true,
+                    basePath: '/old/alpha',
+                    routePattern: '/old/:id',
+                    node: mockRouteNode,
+                  },
+                ],
+              }),
             }),
-          }),
-        ]}
-      >
-        <ReactRouterV6PageRouter>
-          <LegacyProbe id="scoped" />
-        </ReactRouterV6PageRouter>
-      </TestApiProvider>,
+          ]}
+        >
+          <ReactRouterV6PageRouter>
+            <LegacyProbe id="scoped" />
+          </ReactRouterV6PageRouter>
+        </TestApiProvider>
+      </ExtensionBoundary>,
     );
 
     expect(readProbe('scoped')).toMatchObject({

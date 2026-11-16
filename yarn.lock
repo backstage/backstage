@@ -3014,6 +3014,7 @@ __metadata:
   resolution: "@backstage/frontend-adapter-react-router-v6@workspace:packages/frontend-adapter-react-router-v6"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/filter-predicates": "workspace:^"
     "@backstage/frontend-adapter-tanstack-router": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
@@ -3047,6 +3048,7 @@ __metadata:
   resolution: "@backstage/frontend-adapter-react-router-v7@workspace:packages/frontend-adapter-react-router-v7"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/filter-predicates": "workspace:^"
     "@backstage/frontend-adapter-react-router-v6": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
@@ -3080,6 +3082,7 @@ __metadata:
   resolution: "@backstage/frontend-adapter-tanstack-router@workspace:packages/frontend-adapter-tanstack-router"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/filter-predicates": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
@@ -3285,6 +3288,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/filter-predicates": "workspace:^"
     "@backstage/frontend-app-api": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
@@ -3615,6 +3619,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/filter-predicates": "workspace:^"
     "@backstage/frontend-adapter-react-router-v6": "workspace:^"
     "@backstage/frontend-defaults": "workspace:^"
@@ -9944,6 +9949,7 @@ __metadata:
   resolution: "@internal/frontend@workspace:packages/frontend-internal"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/filter-predicates": "workspace:^"
     "@backstage/frontend-app-api": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"

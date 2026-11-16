@@ -46,6 +46,11 @@ const mockFetchCimdMetadata =
     typeof CimdClient.fetchCimdMetadata
   >;
 
+const TEST_CODE_CHALLENGE = crypto
+  .createHash('sha256')
+  .update('test-code-verifier')
+  .digest('base64url');
+
 jest.setTimeout(60_000);
 
 describe('OidcService', () => {
@@ -172,7 +177,7 @@ describe('OidcService', () => {
         claims_supported: ['sub', 'ent'],
         grant_types_supported: ['authorization_code'],
         authorization_endpoint: 'http://mock-base-url/v1/authorize',
-        code_challenge_methods_supported: ['S256', 'plain'],
+        code_challenge_methods_supported: ['S256'],
       });
     });
   });
@@ -313,8 +318,8 @@ describe('OidcService', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
@@ -335,8 +340,8 @@ describe('OidcService', () => {
 
         await expect(
           service.createAuthorizationSession({
-            codeChallenge: 'test-code-verifier',
-            codeChallengeMethod: 'plain',
+            codeChallenge: TEST_CODE_CHALLENGE,
+            codeChallengeMethod: 'S256',
             clientId: 'invalid-client',
             redirectUri: 'http://localhost:8080/callback',
             responseType: 'code',
@@ -354,8 +359,8 @@ describe('OidcService', () => {
 
         await expect(
           service.createAuthorizationSession({
-            codeChallenge: 'test-code-verifier',
-            codeChallengeMethod: 'plain',
+            codeChallenge: TEST_CODE_CHALLENGE,
+            codeChallengeMethod: 'S256',
             clientId: client.clientId,
             redirectUri: 'https://invalid.com/callback',
             responseType: 'code',
@@ -373,8 +378,8 @@ describe('OidcService', () => {
 
         await expect(
           service.createAuthorizationSession({
-            codeChallenge: 'test-code-verifier',
-            codeChallengeMethod: 'plain',
+            codeChallenge: TEST_CODE_CHALLENGE,
+            codeChallengeMethod: 'S256',
             clientId: client.clientId,
             redirectUri: 'http://localhost:8080/callback',
             responseType: 'token',
@@ -401,24 +406,27 @@ describe('OidcService', () => {
         expect(authSession.id).toBeDefined();
       });
 
-      it('should throw error for invalid PKCE method', async () => {
-        const { service } = await createOidcService({ databaseId });
+      it.each(['plain', 'invalid', undefined])(
+        'should reject PKCE method %s',
+        async codeChallengeMethod => {
+          const { service } = await createOidcService({ databaseId });
 
-        const client = createCimdClient({
-          clientName: 'Test Client',
-          redirectUris: ['http://localhost:8080/callback'],
-        });
+          const client = createCimdClient({
+            clientName: 'Test Client',
+            redirectUris: ['http://localhost:8080/callback'],
+          });
 
-        await expect(
-          service.createAuthorizationSession({
-            clientId: client.clientId,
-            redirectUri: 'http://localhost:8080/callback',
-            responseType: 'code',
-            codeChallenge: 'test-challenge',
-            codeChallengeMethod: 'invalid',
-          }),
-        ).rejects.toThrow('Invalid code_challenge_method');
-      });
+          await expect(
+            service.createAuthorizationSession({
+              clientId: client.clientId,
+              redirectUri: 'http://localhost:8080/callback',
+              responseType: 'code',
+              codeChallenge: 'test-challenge',
+              codeChallengeMethod,
+            }),
+          ).rejects.toThrow('Invalid code_challenge_method');
+        },
+      );
     });
 
     describe('approveAuthorizationSession', () => {
@@ -431,8 +439,8 @@ describe('OidcService', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
@@ -469,8 +477,8 @@ describe('OidcService', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
@@ -498,8 +506,8 @@ describe('OidcService', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
@@ -529,8 +537,8 @@ describe('OidcService', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
@@ -564,8 +572,8 @@ describe('OidcService', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
@@ -592,8 +600,8 @@ describe('OidcService', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
@@ -622,8 +630,8 @@ describe('OidcService', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
@@ -661,8 +669,8 @@ describe('OidcService', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
@@ -690,8 +698,8 @@ describe('OidcService', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
@@ -723,8 +731,8 @@ describe('OidcService', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
@@ -789,8 +797,8 @@ describe('OidcService', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
@@ -932,8 +940,8 @@ describe('OidcService', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'http://localhost:8080/callback',
           responseType: 'code',
@@ -1039,26 +1047,26 @@ describe('OidcService', () => {
 
           // CIMD clients are public clients and do not need a secret
           await expect(
-            service.verifyRevocationClient(cimdClientId),
+            service.verifyRevocationClient({ clientId: cimdClientId }),
           ).resolves.toBe(true);
 
           // CIMD clients outside the allowed patterns are rejected
           await expect(
-            service.verifyRevocationClient(
-              'https://evil.example.net/oauth-metadata.json',
-            ),
+            service.verifyRevocationClient({
+              clientId: 'https://evil.example.net/oauth-metadata.json',
+            }),
           ).resolves.toBe(false);
 
           // Client IDs that match the full URL string but not the hostname
           // component are rejected
           await expect(
-            service.verifyRevocationClient(
-              'https://other.com/.example.com/client.json',
-            ),
+            service.verifyRevocationClient({
+              clientId: 'https://other.com/.example.com/client.json',
+            }),
           ).resolves.toBe(false);
 
           await expect(
-            service.verifyRevocationClient('legacy-client-id'),
+            service.verifyRevocationClient({ clientId: 'legacy-client-id' }),
           ).resolves.toBe(false);
         });
 
@@ -1073,7 +1081,7 @@ describe('OidcService', () => {
           });
 
           await expect(
-            service.verifyRevocationClient(cimdClientId),
+            service.verifyRevocationClient({ clientId: cimdClientId }),
           ).resolves.toBe(false);
         });
       });
@@ -1714,7 +1722,7 @@ describe('OidcService', () => {
               redirectUri: 'http://localhost:8080/callback',
               responseType: 'code',
             }),
-          ).rejects.toThrow('PKCE is required for public clients');
+          ).rejects.toThrow('PKCE is required for all clients');
         });
       });
 
@@ -1865,6 +1873,181 @@ describe('OidcService', () => {
           expect(tokenResult.accessToken).toBe(mockToken);
         });
       });
+    });
+
+    describe('static clients', () => {
+      const redirectUri = 'https://integration.example.com/callback';
+      const staticClientsConfig = {
+        auth: {
+          staticClients: [
+            {
+              clientId: 'confidential-client',
+              clientName: 'Confidential Client',
+              clientSecret: 'super-secret',
+              redirectUris: [redirectUri],
+            },
+            { clientId: 'public-client', redirectUris: [redirectUri] },
+          ],
+        },
+      };
+
+      const codeVerifier = 'static-client-code-verifier-for-pkce';
+      const codeChallenge = crypto
+        .createHash('sha256')
+        .update(codeVerifier)
+        .digest('base64url');
+
+      async function createCode(
+        service: OidcService,
+        clientId: string,
+        extra: { codeChallenge?: string; codeChallengeMethod?: string } = {},
+      ) {
+        const authSession = await service.createAuthorizationSession({
+          clientId,
+          redirectUri,
+          responseType: 'code',
+          scope: 'openid',
+          codeChallenge,
+          codeChallengeMethod: 'S256',
+          ...extra,
+        });
+        const { redirectUrl } = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+        return new URL(redirectUrl).searchParams.get('code')!;
+      }
+
+      it('should authorize and authenticate confidential static clients', async () => {
+        const { service, mocks } = await createOidcService({
+          databaseId,
+          config: staticClientsConfig,
+        });
+        mocks.tokenIssuer.issueToken.mockResolvedValue({ token: 'token' });
+
+        const config = service.getConfiguration();
+        expect(config.token_endpoint_auth_methods_supported).toEqual([
+          'client_secret_basic',
+          'client_secret_post',
+          'none',
+        ]);
+        expect(config.revocation_endpoint).toBe(
+          'http://mock-base-url/v1/revoke',
+        );
+
+        await expect(
+          service.createAuthorizationSession({
+            clientId: 'confidential-client',
+            redirectUri: 'https://integration.example.com/other',
+            responseType: 'code',
+          }),
+        ).rejects.toThrow('Invalid redirect_uri');
+
+        await expect(
+          service.verifyClientCredentials({
+            clientId: 'confidential-client',
+            clientSecret: 'wrong',
+          }),
+        ).resolves.toBe(false);
+        await expect(
+          service.verifyClientCredentials({
+            clientId: 'confidential-client',
+            clientSecret: 'super-secret',
+          }),
+        ).resolves.toBe(true);
+        await expect(
+          service.verifyRevocationClient({ clientId: 'confidential-client' }),
+        ).resolves.toBe(false);
+
+        const unauthenticatedCode = await createCode(
+          service,
+          'confidential-client',
+        );
+        await expect(
+          service.exchangeCodeForToken({
+            code: unauthenticatedCode,
+            redirectUri,
+            grantType: 'authorization_code',
+          }),
+        ).rejects.toThrow('Client authentication required');
+
+        const code = await createCode(service, 'confidential-client');
+        await expect(
+          service.exchangeCodeForToken({
+            code,
+            redirectUri,
+            grantType: 'authorization_code',
+            authenticatedClientId: 'confidential-client',
+            codeVerifier,
+          }),
+        ).resolves.toEqual(expect.objectContaining({ accessToken: 'token' }));
+      });
+
+      it.each(['public-client', 'confidential-client'])(
+        'should require PKCE for static client %s',
+        async clientId => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: staticClientsConfig,
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId,
+              redirectUri,
+              responseType: 'code',
+            }),
+          ).rejects.toThrow('PKCE is required for all clients');
+
+          const authSession = await service.createAuthorizationSession({
+            clientId,
+            redirectUri,
+            responseType: 'code',
+            codeChallenge: 'challenge',
+            codeChallengeMethod: 'S256',
+          });
+          expect(authSession.clientName).toBe(
+            clientId === 'public-client' ? clientId : 'Confidential Client',
+          );
+
+          await expect(
+            service.verifyRevocationClient({ clientId: 'public-client' }),
+          ).resolves.toBe(true);
+        },
+      );
+    });
+  });
+
+  describe('static client validation', () => {
+    it.each([
+      [
+        [
+          {
+            clientId: 'https://example.com/client.json',
+            redirectUris: ['a:b'],
+          },
+        ],
+        'client IDs must not be URLs',
+      ],
+      [
+        [
+          { clientId: 'dup', redirectUris: ['https://example.com/cb'] },
+          { clientId: 'dup', redirectUris: ['https://example.com/cb'] },
+        ],
+        "Duplicate client ID 'dup'",
+      ],
+      [
+        [{ clientId: 'empty', redirectUris: [] }],
+        'must have at least one redirect URI',
+      ],
+      [
+        [{ clientId: 'invalid', redirectUris: ['/relative'] }],
+        "Invalid redirect URI '/relative'",
+      ],
+    ])('should reject invalid config %#', async (clients, message) => {
+      await expect(
+        createOidcService({ config: { auth: { staticClients: clients } } }),
+      ).rejects.toThrow(message);
     });
   });
 });

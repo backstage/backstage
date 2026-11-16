@@ -18,6 +18,7 @@ import type { ComponentType, PropsWithChildren } from 'react';
 import { act, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import {
+  appHistoryApiRef,
   PageBlueprint,
   SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
@@ -84,7 +85,8 @@ export function testPageRouter(adapter: {
 
   describe(`${adapter.name} page adapter conformance`, () => {
     it('should route sub-pages, redirect the page root to the first tab, and keep deeper paths inside the sub-page', async () => {
-      const { appHistory } = renderPage('/things/alpha/overview');
+      const { apis } = renderPage('/things/alpha/overview');
+      const appHistory = apis.get(appHistoryApiRef)!;
 
       expect(await screen.findByTestId('sub-page')).toHaveTextContent(
         'overview',
@@ -119,7 +121,8 @@ export function testPageRouter(adapter: {
     });
 
     it('should not accumulate the mount prefix across a change of concrete prefix', async () => {
-      const { appHistory } = renderPage('/things/alpha/overview');
+      const { apis } = renderPage('/things/alpha/overview');
+      const appHistory = apis.get(appHistoryApiRef)!;
 
       expect(await screen.findByTestId('sub-page')).toHaveTextContent(
         'overview',
@@ -158,7 +161,8 @@ export function testPageRouter(adapter: {
       // along that path costs the page its state just as surely as the adapter
       // rebuilding its own router does. A harness that renders the adapter alone
       // is stable by construction and so cannot see any of that.
-      const { appHistory } = renderPage('/things/alpha/overview');
+      const { apis } = renderPage('/things/alpha/overview');
+      const appHistory = apis.get(appHistoryApiRef)!;
 
       expect(await screen.findByTestId('sub-page')).toHaveTextContent(
         'overview',
@@ -189,7 +193,8 @@ export function testPageRouter(adapter: {
     });
 
     it('should carry query and hash into the page and out through in-page hrefs', async () => {
-      const { appHistory } = renderPage('/things/alpha/overview?q=1#frag');
+      const { apis } = renderPage('/things/alpha/overview?q=1#frag');
+      const appHistory = apis.get(appHistoryApiRef)!;
 
       expect(await screen.findByTestId('sub-page')).toHaveTextContent(
         'overview',
@@ -204,7 +209,8 @@ export function testPageRouter(adapter: {
     });
 
     it('should hand the page over cleanly when the app navigates off it and back', async () => {
-      const { appHistory } = renderPage('/things/alpha/overview');
+      const { apis } = renderPage('/things/alpha/overview');
+      const appHistory = apis.get(appHistoryApiRef)!;
 
       expect(await screen.findByTestId('sub-page')).toHaveTextContent(
         'overview',

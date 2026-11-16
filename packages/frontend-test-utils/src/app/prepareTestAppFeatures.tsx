@@ -51,7 +51,6 @@ export function prepareTestAppFeatures(options: {
   /** Where synthetic mounted-route extensions attach. */
   mountedRouteAttachTo: { id: string; input: string };
 }): {
-  appHistory: AppHistoryApi;
   features: FrontendFeature[];
   apiFactoryOverrides: ReturnType<typeof createApiFactory>[];
   externalBindings: Map<ExternalRouteRef, RouteRef>;
@@ -136,5 +135,5 @@ export function prepareTestAppFeatures(options: {
     createApiFactory(appHistoryApiRef, appHistory),
   ];
 
-  return { appHistory, features, apiFactoryOverrides, externalBindings };
+  return { features, apiFactoryOverrides, externalBindings };
 }

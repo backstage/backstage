@@ -17,7 +17,7 @@
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
-  useRouteResolution,
+  appHistoryApiRef,
   PageBlueprint,
   SubPageBlueprint,
   createFrontendPlugin,
@@ -30,6 +30,7 @@ import {
   useRouteRefParams,
   useAppHref,
 } from '@backstage/frontend-plugin-api';
+import { useRouteMatches } from '@internal/frontend';
 import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
@@ -550,7 +551,7 @@ describe('AppRoutes', () => {
         path: '/catalog/:namespace/:kind/:name',
         loader: async () => {
           const MountProbe = () => {
-            const mount = useRouteResolution().matches.at(-1);
+            const mount = useRouteMatches().at(-1);
             return (
               <div data-testid="catalog-entity-page">
                 Catalog Entity Page
@@ -584,7 +585,7 @@ describe('AppRoutes', () => {
         path: '/catalog',
         loader: async () => {
           const MountProbe = () => {
-            const mount = useRouteResolution().matches.at(-1);
+            const mount = useRouteMatches().at(-1);
             return (
               <div data-testid="catalog-page">
                 Catalog Page
@@ -610,7 +611,7 @@ describe('AppRoutes', () => {
 
   it('should resolve pages correctly when the app is served under a basename', async () => {
     const CatalogWithLinks = () => {
-      const mount = useRouteResolution().matches.at(-1);
+      const mount = useRouteMatches().at(-1);
       return (
         <div data-testid="catalog-page">
           Catalog Page
@@ -634,7 +635,7 @@ describe('AppRoutes', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [catalogPage],
       // App-relative path; harness stores it under /backstage on the memory backend.
       initialRouteEntries: ['/catalog/entities'],
@@ -643,6 +644,7 @@ describe('AppRoutes', () => {
         backend: { baseUrl: 'http://localhost:7007' },
       },
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('catalog-page')).toBeInTheDocument();

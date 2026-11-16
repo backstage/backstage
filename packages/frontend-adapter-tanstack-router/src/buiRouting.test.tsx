@@ -18,6 +18,7 @@ import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
+  appHistoryApiRef,
   createRouteRef,
   PageBlueprint,
   useRouteRef,
@@ -114,7 +115,7 @@ it('uses the consuming library route for BUI links and preserves app-absolute ro
       loader: async () => <div>Other page</div>,
     },
   });
-  const { appHistory } = renderTestApp({
+  const { apis } = renderTestApp({
     extensions: [page, other],
     initialRouteEntries: ['/tools/alpha/section/item'],
     config: {
@@ -122,6 +123,7 @@ it('uses the consuming library route for BUI links and preserves app-absolute ro
       backend: { baseUrl: 'http://localhost:7007' },
     },
   });
+  const appHistory = apis.get(appHistoryApiRef)!;
   expect(
     await screen.findByRole('link', { name: 'BUI relative' }),
   ).toHaveAttribute('href', '/base/tools/alpha/section/sibling');

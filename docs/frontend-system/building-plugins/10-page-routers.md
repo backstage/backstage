@@ -476,17 +476,19 @@ native browser navigation.
 
 ## Verify it works
 
-Render the page in a test app and navigate through the returned `appHistory`:
+Render the page in a test app and navigate through `apis.get(appHistoryApiRef)`:
 
 ```tsx title="plugins/tools/src/alpha.test.tsx"
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import { screen } from '@testing-library/react';
 
 it('renders the tools page under a TanStack router', async () => {
-  const { appHistory } = renderTestApp({
+  const { apis } = renderTestApp({
     extensions: [toolsPage],
     initialRouteEntries: ['/tools'],
   });
+  const appHistory = apis.get(appHistoryApiRef)!;
 
   expect(await screen.findByText('Tools')).toBeInTheDocument();
 
@@ -504,9 +506,8 @@ directly.
 ## Support for other libraries
 
 The three adapters above are the supported ones, and they are maintained in the
-Backstage repository. Adapters are not a plugin-side extension point: adapters obtain their mount through the public `useRouteResolution` API,
-but adding a supported library remains a contribution to Backstage rather
-than a plugin-side extension point.
+Backstage repository. Adding support for another routing library is a
+contribution to Backstage rather than a plugin-side extension point.
 
 If your plugin needs a library that is not covered here, open an issue. The
 existing adapters are small, and their source in `packages/frontend-adapter-react-router-v6`,

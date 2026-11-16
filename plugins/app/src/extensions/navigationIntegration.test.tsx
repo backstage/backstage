@@ -17,7 +17,10 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderTestApp } from '@backstage/frontend-test-utils';
-import { PageBlueprint } from '@backstage/frontend-plugin-api';
+import {
+  appHistoryApiRef,
+  PageBlueprint,
+} from '@backstage/frontend-plugin-api';
 import { useRoutingIntegration } from '@backstage/frontend-plugin-api/routing';
 import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { Routes, Route, Outlet } from 'react-router-dom';
@@ -47,7 +50,7 @@ function Controls() {
 
 it('integrates React Aria anchors and non-anchor collection items using only the public contract', async () => {
   const user = userEvent.setup();
-  const { appHistory } = renderTestApp({
+  const { apis } = renderTestApp({
     initialRouteEntries: ['/tools/section/item'],
     config: {
       app: { baseUrl: 'https://example.com/base' },
@@ -79,6 +82,7 @@ it('integrates React Aria anchors and non-anchor collection items using only the
       }),
     ],
   });
+  const appHistory = apis.get(appHistoryApiRef)!;
   expect(
     await screen.findByRole('link', { name: 'Relative anchor' }),
   ).toHaveAttribute('href', '/base/tools/section/sibling');

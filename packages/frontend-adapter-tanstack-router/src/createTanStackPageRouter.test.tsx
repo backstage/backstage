@@ -75,7 +75,7 @@ describe('createTanStackPageRouter', () => {
       const PageRouter = custom
         ? createTanStackPageRouter({ createRouter: routerFactory })
         : TanStackPageRouter;
-      const { appHistory } = renderInTestApp(
+      const { apis } = renderInTestApp(
         <PageRouter>
           <Probe />
         </PageRouter>,
@@ -84,6 +84,7 @@ describe('createTanStackPageRouter', () => {
           initialRouteEntries: ['/foo/foo/details'],
         },
       );
+      const appHistory = apis.get(appHistoryApiRef)!;
       expect(
         await screen.findByText('Path: /foo/foo/details'),
       ).toBeInTheDocument();
@@ -146,10 +147,11 @@ describe('createTanStackPageRouter', () => {
         ];
       },
     });
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [parent, child],
       initialRouteEntries: ['/catalog/edit'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
     expect(await screen.findByText('Edit child')).toBeInTheDocument();
     expect(
       await screen.findByText('Scoped path: /catalog/edit'),

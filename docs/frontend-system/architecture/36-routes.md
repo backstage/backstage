@@ -757,9 +757,7 @@ their routing scope through `RouteResolutionApi.resolvePath`, using the current
 app node and an app-relative pathname. The app compiles the routing tree and
 indexes node ancestry once, then shares matching results across consumers.
 Concrete mount paths and route patterns do not need a separate React context
-or adapter props. The `useRouteResolution` hook reads the current node from
-the existing extension boundary and resolves its ancestry at the current app
-location.
+or adapter props.
 
 Calling `resolvePath({ pathname })` returns the selected branch, ordered from
 outermost to innermost. Supplying `node` limits the result to that node and its
@@ -773,7 +771,7 @@ For the steps to attach one, see [Choose a router for a page](../building-plugin
 
 ### Testing
 
-`renderInTestApp` and `renderTestApp` from `@backstage/frontend-test-utils` drive an in-memory `AppHistoryApi` and hand it back as `appHistory`, which is what you navigate and assert against. See [Testing](../building-plugins/02-testing.md#navigation-and-app-history) for the details.
+`renderInTestApp` and `renderTestApp` from `@backstage/frontend-test-utils` drive an in-memory `AppHistoryApi` and expose it through `apis.get(appHistoryApiRef)` on the render result for navigation and location assertions. See [Testing](../building-plugins/02-testing.md#navigation-and-app-history) for the details.
 
 ### Limits of the model
 

@@ -15,7 +15,11 @@
  */
 
 import { matchPath } from '@internal/frontend';
-import { type AppNode, appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import {
+  ExtensionBoundary,
+  type AppNode,
+  appHistoryApiRef,
+} from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { testPageRouter } from '../../frontend-test-utils/src/__testUtils__/testPageRouter';
 import { useContext, useState } from 'react';
@@ -36,18 +40,9 @@ import {
 } from 'react-router-dom';
 import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
 
-const mockRouteNode = {} as AppNode;
-
-// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
-jest.mock('../../frontend-plugin-api/src/components/AppNodeProvider', () => {
-  const actual = jest.requireActual(
-    '../../frontend-plugin-api/src/components/AppNodeProvider',
-  );
-  return {
-    ...actual,
-    useAppNode: () => actual.useAppNode() ?? mockRouteNode,
-  };
-});
+const mockRouteNode = {
+  spec: { id: 'test', plugin: { pluginId: 'test' } },
+} as AppNode;
 
 /**
  * Page router adapter conformance.
@@ -174,29 +169,31 @@ describe(`React Router v6 route context matches a real router tree`, () => {
 
     const appHistory = mockApis.appHistory({ initialLocation: url });
     render(
-      <TestApiProvider
-        apis={[
-          [appHistoryApiRef, appHistory],
-          mockApis.routeResolution.mock({
-            resolvePath: ({ pathname }) => ({
-              matches: [
-                {
-                  params:
-                    matchPath(ROUTE_PATTERN, pathname, false)?.params ?? {},
-                  contributesPath: true,
-                  basePath: BASE_PATH,
-                  routePattern: ROUTE_PATTERN,
-                  node: mockRouteNode,
-                },
-              ],
+      <ExtensionBoundary node={mockRouteNode}>
+        <TestApiProvider
+          apis={[
+            [appHistoryApiRef, appHistory],
+            mockApis.routeResolution.mock({
+              resolvePath: ({ pathname }) => ({
+                matches: [
+                  {
+                    params:
+                      matchPath(ROUTE_PATTERN, pathname, false)?.params ?? {},
+                    contributesPath: true,
+                    basePath: BASE_PATH,
+                    routePattern: ROUTE_PATTERN,
+                    node: mockRouteNode,
+                  },
+                ],
+              }),
             }),
-          }),
-        ]}
-      >
-        <ReactRouterV6PageRouter>
-          <ContextProbe />
-        </ReactRouterV6PageRouter>
-      </TestApiProvider>,
+          ]}
+        >
+          <ReactRouterV6PageRouter>
+            <ContextProbe />
+          </ReactRouterV6PageRouter>
+        </TestApiProvider>
+      </ExtensionBoundary>,
     );
 
     expect(readContextProbe()).toEqual(expected);
@@ -207,29 +204,31 @@ describe(`React Router v6 route context matches a real router tree`, () => {
       initialLocation: `${BASE_PATH}/overview`,
     });
     render(
-      <TestApiProvider
-        apis={[
-          [appHistoryApiRef, appHistory],
-          mockApis.routeResolution.mock({
-            resolvePath: ({ pathname }) => ({
-              matches: [
-                {
-                  params:
-                    matchPath(ROUTE_PATTERN, pathname, false)?.params ?? {},
-                  contributesPath: true,
-                  basePath: BASE_PATH,
-                  routePattern: ROUTE_PATTERN,
-                  node: mockRouteNode,
-                },
-              ],
+      <ExtensionBoundary node={mockRouteNode}>
+        <TestApiProvider
+          apis={[
+            [appHistoryApiRef, appHistory],
+            mockApis.routeResolution.mock({
+              resolvePath: ({ pathname }) => ({
+                matches: [
+                  {
+                    params:
+                      matchPath(ROUTE_PATTERN, pathname, false)?.params ?? {},
+                    contributesPath: true,
+                    basePath: BASE_PATH,
+                    routePattern: ROUTE_PATTERN,
+                    node: mockRouteNode,
+                  },
+                ],
+              }),
             }),
-          }),
-        ]}
-      >
-        <ReactRouterV6PageRouter>
-          <ContextProbe />
-        </ReactRouterV6PageRouter>
-      </TestApiProvider>,
+          ]}
+        >
+          <ReactRouterV6PageRouter>
+            <ContextProbe />
+          </ReactRouterV6PageRouter>
+        </TestApiProvider>
+      </ExtensionBoundary>,
     );
 
     expect(screen.getByTestId('params')).toHaveTextContent('"name":"foo"');
