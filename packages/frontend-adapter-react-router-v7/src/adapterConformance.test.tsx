@@ -15,7 +15,10 @@
  */
 
 import { matchPath } from '@internal/frontend';
-import { type AppNode } from '@backstage/frontend-plugin-api';
+import {
+  ExtensionBoundary,
+  type AppNode,
+} from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { testPageRouter } from '../../frontend-test-utils/src/__testUtils__/testPageRouter';
 import { useContext, useState } from 'react';
@@ -41,11 +44,9 @@ import {
 } from 'react-router';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
 
-// Exercise the real internal extension context in this isolated adapter test.
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppNodeProvider } from '../../frontend-plugin-api/src/components/AppNodeProvider';
-
-const mockRouteNode = {} as AppNode;
+const mockRouteNode = {
+  spec: { id: 'test', plugin: { pluginId: 'test' } },
+} as AppNode;
 
 /**
  * Page router adapter conformance.
@@ -171,7 +172,7 @@ describe(`React Router v7 route context matches a real router tree`, () => {
 
     const appHistory = createMockAppHistory({ initialLocation: url });
     render(
-      <AppNodeProvider node={mockRouteNode}>
+      <ExtensionBoundary node={mockRouteNode}>
         <TestApiProvider
           apis={[
             [appHistoryApiRef, appHistory],
@@ -195,7 +196,7 @@ describe(`React Router v7 route context matches a real router tree`, () => {
             <ContextProbe />
           </ReactRouterV7PageRouter>
         </TestApiProvider>
-      </AppNodeProvider>,
+      </ExtensionBoundary>,
     );
 
     expect(readContextProbe()).toEqual(expected);
@@ -206,7 +207,7 @@ describe(`React Router v7 route context matches a real router tree`, () => {
       initialLocation: `${BASE_PATH}/overview`,
     });
     render(
-      <AppNodeProvider node={mockRouteNode}>
+      <ExtensionBoundary node={mockRouteNode}>
         <TestApiProvider
           apis={[
             [appHistoryApiRef, appHistory],
@@ -230,7 +231,7 @@ describe(`React Router v7 route context matches a real router tree`, () => {
             <ContextProbe />
           </ReactRouterV7PageRouter>
         </TestApiProvider>
-      </AppNodeProvider>,
+      </ExtensionBoundary>,
     );
 
     expect(screen.getByTestId('params')).toHaveTextContent('"name":"foo"');

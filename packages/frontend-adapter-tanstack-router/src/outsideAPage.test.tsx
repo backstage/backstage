@@ -15,7 +15,10 @@
  */
 
 import { matchPath, useRouteMatches } from '@internal/frontend';
-import { type AppNode } from '@backstage/frontend-plugin-api';
+import {
+  ExtensionBoundary,
+  type AppNode,
+} from '@backstage/frontend-plugin-api';
 import type { ReactNode } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import {
@@ -31,11 +34,9 @@ import {
   createTanStackPageRouter,
 } from './TanStackPageRouter';
 
-// Exercise the real internal extension context in this isolated adapter test.
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppNodeProvider } from '../../frontend-plugin-api/src/components/AppNodeProvider';
-
-const mockRouteNode = {} as AppNode;
+const mockRouteNode = {
+  spec: { id: 'test', plugin: { pluginId: 'test' } },
+} as AppNode;
 
 /**
  * The adapter rendered where there is no page: the old frontend system, and
@@ -116,7 +117,9 @@ function renderWithContext(
       </TestApiProvider>
     );
   }
-  return render(<AppNodeProvider node={mockRouteNode}>{tree}</AppNodeProvider>);
+  return render(
+    <ExtensionBoundary node={mockRouteNode}>{tree}</ExtensionBoundary>,
+  );
 }
 
 describe('TanStackPageRouter outside a page', () => {

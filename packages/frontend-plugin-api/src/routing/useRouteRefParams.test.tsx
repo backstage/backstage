@@ -15,7 +15,10 @@
  */
 
 import { matchPath } from '@internal/frontend';
-import { type AppNode } from '@backstage/frontend-plugin-api';
+import {
+  ExtensionBoundary,
+  type AppNode,
+} from '@backstage/frontend-plugin-api';
 import { PropsWithChildren } from 'react';
 import { act, render, renderHook, screen } from '@testing-library/react';
 import {
@@ -31,9 +34,9 @@ import { useRouteRefParams } from './useRouteRefParams';
 import { createRouteRef } from './RouteRef';
 import { createSubRouteRef } from './SubRouteRef';
 
-import { AppNodeProvider } from '../components/AppNodeProvider';
-
-const mockRouteNode = {} as AppNode;
+const mockRouteNode = {
+  spec: { id: 'test', plugin: { pluginId: 'test' } },
+} as AppNode;
 
 /*
  * Nothing in this file renders a React Router provider, deliberately: the
@@ -67,7 +70,7 @@ function createWrapper(options: {
   const { appHistory, mounts = [] } = options;
   return function Wrapper({ children }: PropsWithChildren<{}>) {
     return (
-      <AppNodeProvider node={mockRouteNode}>
+      <ExtensionBoundary node={mockRouteNode}>
         <TestApiProvider
           apis={[
             [appHistoryApiRef, appHistory],
@@ -87,7 +90,7 @@ function createWrapper(options: {
         >
           {children}
         </TestApiProvider>
-      </AppNodeProvider>
+      </ExtensionBoundary>
     );
   };
 }
@@ -109,7 +112,7 @@ describe('useRouteRefParams', () => {
       );
     };
     render(
-      <AppNodeProvider node={mockRouteNode}>
+      <ExtensionBoundary node={mockRouteNode}>
         <TestApiProvider apis={[]}>
           <MemoryRouter initialEntries={['/catalog/default/component/a%2Fb']}>
             <Routes>
@@ -120,7 +123,7 @@ describe('useRouteRefParams', () => {
             </Routes>
           </MemoryRouter>
         </TestApiProvider>
-      </AppNodeProvider>,
+      </ExtensionBoundary>,
     );
     expect(screen.getByText('default/component/a/b')).toBeInTheDocument();
     act(() => screen.getByRole('button', { name: 'Next' }).click());

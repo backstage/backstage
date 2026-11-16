@@ -15,7 +15,10 @@
  */
 
 import { matchPath, useRouteMatches } from '@internal/frontend';
-import { type AppNode } from '@backstage/frontend-plugin-api';
+import {
+  ExtensionBoundary,
+  type AppNode,
+} from '@backstage/frontend-plugin-api';
 import type { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import {
@@ -34,11 +37,9 @@ import {
 } from 'react-router-dom';
 import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
 
-// Exercise the real internal extension context in this isolated adapter test.
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppNodeProvider } from '../../frontend-plugin-api/src/components/AppNodeProvider';
-
-const mockRouteNode = {} as AppNode;
+const mockRouteNode = {
+  spec: { id: 'test', plugin: { pluginId: 'test' } },
+} as AppNode;
 
 /**
  * The adapter rendered where there is no page: the old frontend system, and
@@ -131,7 +132,9 @@ function renderUnderLegacyRouter(
       </TestApiProvider>
     );
   }
-  return render(<AppNodeProvider node={mockRouteNode}>{tree}</AppNodeProvider>);
+  return render(
+    <ExtensionBoundary node={mockRouteNode}>{tree}</ExtensionBoundary>,
+  );
 }
 
 describe('ReactRouterV6PageRouter outside a page', () => {
@@ -185,7 +188,7 @@ describe('ReactRouterV6PageRouter outside a page', () => {
     // The other side of the same switch: passing through when something is
     // missing must not turn into passing through when nothing is.
     render(
-      <AppNodeProvider node={mockRouteNode}>
+      <ExtensionBoundary node={mockRouteNode}>
         <TestApiProvider
           apis={[
             [
@@ -212,7 +215,7 @@ describe('ReactRouterV6PageRouter outside a page', () => {
             <LegacyProbe id="scoped" />
           </ReactRouterV6PageRouter>
         </TestApiProvider>
-      </AppNodeProvider>,
+      </ExtensionBoundary>,
     );
 
     expect(readProbe('scoped')).toMatchObject({
