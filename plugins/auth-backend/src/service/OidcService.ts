@@ -31,6 +31,7 @@ import { OidcDatabase } from '../database/OidcDatabase';
 import { DateTime } from 'luxon';
 import matcher from 'matcher';
 import { OfflineAccessService } from './OfflineAccessService';
+import { OidcError } from './OidcError';
 import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
 import { readBackstageTokenExpiration } from './readTokenExpiration';
 
@@ -260,6 +261,9 @@ export class OidcService {
   public getConfiguration() {
     const cimdEnabled = this.isCimdEnabled();
     const staticClientsEnabled = this.hasStaticClients();
+    const confidentialClientsEnabled = [...this.staticClients.values()].some(
+      client => !!client.clientSecret,
+    );
     const publicClientsEnabled =
       cimdEnabled ||
       [...this.staticClients.values()].some(client => !client.clientSecret);
@@ -288,7 +292,7 @@ export class OidcService {
         ...(this.offlineAccess ? ['offline_access'] : []),
       ],
       token_endpoint_auth_methods_supported: [
-        ...(staticClientsEnabled
+        ...(confidentialClientsEnabled
           ? ['client_secret_basic', 'client_secret_post']
           : []),
         ...(publicClientsEnabled ? ['none'] : []),
@@ -644,10 +648,14 @@ export class OidcService {
     const requiresClientAuthentication = this.requiresClientAuthentication(
       session.clientId,
     );
-    if (
-      (authenticatedClientId && authenticatedClientId !== session.clientId) ||
-      (!authenticatedClientId && requiresClientAuthentication)
-    ) {
+    if (!authenticatedClientId && requiresClientAuthentication) {
+      throw new OidcError(
+        'invalid_client',
+        'Client authentication required',
+        401,
+      );
+    }
+    if (authenticatedClientId && authenticatedClientId !== session.clientId) {
       throw new AuthenticationError(
         'Authorization code was not issued to this client',
       );

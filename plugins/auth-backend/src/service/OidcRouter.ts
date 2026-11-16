@@ -95,7 +95,7 @@ function parseClientCredentials(opts: {
         const clientSecret = decodeURIComponent(
           decoded.slice(idx + 1).replace(/\+/g, ' '),
         );
-        if (clientId && clientSecret) {
+        if (clientId) {
           return { clientId, clientSecret };
         }
       }
@@ -105,38 +105,6 @@ function parseClientCredentials(opts: {
   }
 
   return { clientId: bodyClientId, clientSecret: bodyClientSecret };
-}
-
-async function authenticateClient(opts: {
-  req: { headers: { authorization?: string } };
-  oidc: OidcService;
-  bodyClientId?: string;
-  bodyClientSecret?: string;
-}): Promise<Required<OidcClientCredentials>> {
-  const { req, oidc, bodyClientId, bodyClientSecret } = opts;
-  const { clientId, clientSecret } = parseClientCredentials({
-    req,
-    bodyClientId,
-    bodyClientSecret,
-  });
-
-  if (!clientId || !clientSecret) {
-    throw new OidcError(
-      'invalid_client',
-      'Client authentication required',
-      401,
-    );
-  }
-
-  const isValidClient = await oidc.verifyClientCredentials({
-    clientId,
-    clientSecret,
-  });
-  if (!isValidClient) {
-    throw new OidcError('invalid_client', 'Invalid client credentials', 401);
-  }
-
-  return { clientId, clientSecret };
 }
 
 export class OidcRouter {
@@ -416,20 +384,36 @@ export class OidcRouter {
         } = validateRequest(tokenRequestBodySchema, req.body);
 
         try {
-          // Authenticate if credentials are provided via Basic auth or body
-          const hasCredentials =
-            req.headers.authorization?.match(/^Basic[ ]+([^\s]+)$/i) ||
-            (bodyClientId && bodyClientSecret);
-
+          const { clientId, clientSecret } = parseClientCredentials({
+            req,
+            bodyClientId,
+            bodyClientSecret,
+          });
           let authenticatedClientId: string | undefined;
-          if (hasCredentials) {
-            const { clientId: authedId } = await authenticateClient({
-              req,
-              oidc: this.oidc,
-              bodyClientId,
-              bodyClientSecret,
-            });
-            authenticatedClientId = authedId;
+          if (clientSecret) {
+            if (
+              !clientId ||
+              !(await this.oidc.verifyClientCredentials({
+                clientId,
+                clientSecret,
+              }))
+            ) {
+              throw new OidcError(
+                'invalid_client',
+                'Invalid client credentials',
+                401,
+              );
+            }
+            authenticatedClientId = clientId;
+          } else if (
+            req.headers.authorization?.match(/^Basic[ ]+/i) &&
+            !clientId
+          ) {
+            throw new OidcError(
+              'invalid_client',
+              'Invalid client credentials',
+              401,
+            );
           }
 
           // Handle authorization_code grant type
@@ -443,7 +427,7 @@ export class OidcRouter {
             }
 
             const result = await this.oidc.exchangeCodeForToken({
-              clientId: bodyClientId,
+              clientId: authenticatedClientId ?? clientId,
               code,
               redirectUri,
               codeVerifier,
@@ -475,7 +459,7 @@ export class OidcRouter {
 
             const result = await this.oidc.refreshAccessToken({
               refreshToken,
-              clientId: authenticatedClientId ?? bodyClientId,
+              clientId: authenticatedClientId ?? clientId,
               authenticatedClientId,
             });
 

@@ -33,6 +33,7 @@ import {
   verifyRefreshToken,
 } from '../lib/refreshToken';
 import { TokenIssuer } from '../identity/types';
+import { OidcError } from './OidcError';
 
 /**
  * Service for managing offline access (refresh tokens)
@@ -241,7 +242,11 @@ export class OfflineAccessService {
       session.oidcClientId &&
       isClientAuthenticationRequired?.(session.oidcClientId)
     ) {
-      throw new AuthenticationError('Client authentication required');
+      throw new OidcError(
+        'invalid_client',
+        'Client authentication required',
+        401,
+      );
     }
 
     // Verify the caller actually holds a valid token, not just the session ID
