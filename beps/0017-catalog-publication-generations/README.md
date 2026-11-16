@@ -137,6 +137,8 @@ When the stitcher finds that a published ref has no candidate left, it does the 
 - deletes the ref's search rows
 - assigns a generation
 
+The change feed also moves the old body into `last_final_entity` in the same transaction, so that permission conditions can still be evaluated for the deletion; revival clears it. That body is kept until a later retention janitor clears it, so a deleted entity's last content stays in the catalog database even though it disappears from every API. `final_entity IS NULL` remains the only presence test.
+
 Stitching a ref that is already tombstoned does nothing. A ref that was never published gets no tombstone.
 
 Existing read paths must treat a tombstone as absent. That includes entity lists, lookups by name and by refs, facets and counts. Step 3 includes auditing those queries.
