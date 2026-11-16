@@ -21,9 +21,9 @@ import {
   type Navigation,
   useApi,
   useApiHolder,
-  useRouteMatches,
 } from '@backstage/frontend-plugin-api';
 import {
+  useRouteMatches,
   createAppHistoryRouter,
   resolveAppPath,
   createPath,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { matchPath } from '@internal/frontend';
+import { matchPath, useRouteMatches } from '@internal/frontend';
 import { type AppNode } from '@backstage/frontend-plugin-api';
 import type { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
@@ -23,10 +23,8 @@ import {
   TestApiProvider,
   createMockAppHistory,
 } from '@backstage/frontend-test-utils';
-import {
-  useRouteMatches,
-  appHistoryApiRef,
-} from '@backstage/frontend-plugin-api';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+
 import {
   MemoryRouter,
   Route,
@@ -36,18 +34,11 @@ import {
 } from 'react-router-dom';
 import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
 
-const mockRouteNode = {} as AppNode;
+// Exercise the real internal extension context in this isolated adapter test.
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppNodeProvider } from '../../frontend-plugin-api/src/components/AppNodeProvider';
 
-// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
-jest.mock('../../frontend-plugin-api/src/components/AppNodeProvider', () => {
-  const actual = jest.requireActual(
-    '../../frontend-plugin-api/src/components/AppNodeProvider',
-  );
-  return {
-    ...actual,
-    useAppNode: () => actual.useAppNode() ?? mockRouteNode,
-  };
-});
+const mockRouteNode = {} as AppNode;
 
 /**
  * The adapter rendered where there is no page: the old frontend system, and
@@ -140,7 +131,7 @@ function renderUnderLegacyRouter(
       </TestApiProvider>
     );
   }
-  return render(tree);
+  return render(<AppNodeProvider node={mockRouteNode}>{tree}</AppNodeProvider>);
 }
 
 describe('ReactRouterV6PageRouter outside a page', () => {
@@ -194,31 +185,34 @@ describe('ReactRouterV6PageRouter outside a page', () => {
     // The other side of the same switch: passing through when something is
     // missing must not turn into passing through when nothing is.
     render(
-      <TestApiProvider
-        apis={[
-          [
-            appHistoryApiRef,
-            createMockAppHistory({ initialLocation: '/old/alpha/deep' }),
-          ],
-          mockApis.routeResolution.mock({
-            resolvePath: ({ pathname }) => ({
-              matches: [
-                {
-                  params: matchPath('/old/:id', pathname, false)?.params ?? {},
-                  contributesPath: true,
-                  basePath: '/old/alpha',
-                  routePattern: '/old/:id',
-                  node: mockRouteNode,
-                },
-              ],
+      <AppNodeProvider node={mockRouteNode}>
+        <TestApiProvider
+          apis={[
+            [
+              appHistoryApiRef,
+              createMockAppHistory({ initialLocation: '/old/alpha/deep' }),
+            ],
+            mockApis.routeResolution.mock({
+              resolvePath: ({ pathname }) => ({
+                matches: [
+                  {
+                    params:
+                      matchPath('/old/:id', pathname, false)?.params ?? {},
+                    contributesPath: true,
+                    basePath: '/old/alpha',
+                    routePattern: '/old/:id',
+                    node: mockRouteNode,
+                  },
+                ],
+              }),
             }),
-          }),
-        ]}
-      >
-        <ReactRouterV6PageRouter>
-          <LegacyProbe id="scoped" />
-        </ReactRouterV6PageRouter>
-      </TestApiProvider>,
+          ]}
+        >
+          <ReactRouterV6PageRouter>
+            <LegacyProbe id="scoped" />
+          </ReactRouterV6PageRouter>
+        </TestApiProvider>
+      </AppNodeProvider>,
     );
 
     expect(readProbe('scoped')).toMatchObject({

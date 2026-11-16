@@ -29,9 +29,12 @@ import {
   type Navigation,
   useApi,
   useApiHolder,
-  useRouteMatches,
 } from '@backstage/frontend-plugin-api';
-import { isExternalTarget, sanitizeHref } from '@internal/frontend';
+import {
+  useRouteMatches,
+  isExternalTarget,
+  sanitizeHref,
+} from '@internal/frontend';
 import type { RouterHistory } from '@tanstack/history';
 import {
   Outlet,

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import {
-  useRouteMatches,
   NotFoundErrorPage as SwappableNotFoundErrorPage,
   Progress as SwappableProgress,
   ErrorDisplay as SwappableErrorDisplay,
   PageLayout as SwappablePageLayout,
   type PageLayoutProps,
 } from '@backstage/frontend-plugin-api';
+import { useRouteMatches, normalizeBasePath } from '@internal/frontend';
 import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import {
   ErrorPage,
@@ -31,7 +31,7 @@ import {
   BreadcrumbEntry,
   useBreadcrumbEntries,
 } from '@backstage/frontend-plugin-api';
-import { normalizeBasePath } from '@internal/frontend';
+
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 import { useMemo } from 'react';

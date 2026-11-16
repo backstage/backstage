@@ -2570,9 +2570,6 @@ export function useBreadcrumbEntries(): {
 export function useNavigation(): Navigation;
 
 // @public
-export function useRouteMatches(): readonly RouteResolutionMatch[];
-
-// @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(
   routeRef:
     | RouteRef<TParams>

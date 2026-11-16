@@ -23,8 +23,8 @@ import {
   joinRoutePath,
   matchPath,
   useAppHistoryLocation,
+  useRouteMatches,
 } from '@internal/frontend';
-import { useRouteMatches } from './useRouteMatches';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';

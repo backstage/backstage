@@ -31,13 +31,9 @@ import { useRouteRefParams } from './useRouteRefParams';
 import { createRouteRef } from './RouteRef';
 import { createSubRouteRef } from './SubRouteRef';
 
-const mockRouteNode = {} as AppNode;
+import { AppNodeProvider } from '../components/AppNodeProvider';
 
-// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
-jest.mock('../components/AppNodeProvider', () => {
-  const actual = jest.requireActual('../components/AppNodeProvider');
-  return { ...actual, useAppNode: () => actual.useAppNode() ?? mockRouteNode };
-});
+const mockRouteNode = {} as AppNode;
 
 /*
  * Nothing in this file renders a React Router provider, deliberately: the
@@ -71,24 +67,27 @@ function createWrapper(options: {
   const { appHistory, mounts = [] } = options;
   return function Wrapper({ children }: PropsWithChildren<{}>) {
     return (
-      <TestApiProvider
-        apis={[
-          [appHistoryApiRef, appHistory],
-          mockApis.routeResolution.mock({
-            resolvePath: ({ pathname }) => ({
-              matches: mounts.map(mount => ({
-                params:
-                  matchPath(mount.routePattern, pathname, false)?.params ?? {},
-                contributesPath: true,
-                ...mount,
-                node: mockRouteNode,
-              })),
+      <AppNodeProvider node={mockRouteNode}>
+        <TestApiProvider
+          apis={[
+            [appHistoryApiRef, appHistory],
+            mockApis.routeResolution.mock({
+              resolvePath: ({ pathname }) => ({
+                matches: mounts.map(mount => ({
+                  params:
+                    matchPath(mount.routePattern, pathname, false)?.params ??
+                    {},
+                  contributesPath: true,
+                  ...mount,
+                  node: mockRouteNode,
+                })),
+              }),
             }),
-          }),
-        ]}
-      >
-        {children}
-      </TestApiProvider>
+          ]}
+        >
+          {children}
+        </TestApiProvider>
+      </AppNodeProvider>
     );
   };
 }
@@ -110,16 +109,18 @@ describe('useRouteRefParams', () => {
       );
     };
     render(
-      <TestApiProvider apis={[]}>
-        <MemoryRouter initialEntries={['/catalog/default/component/a%2Fb']}>
-          <Routes>
-            <Route
-              path="/catalog/:namespace/:kind/:name"
-              element={<Content />}
-            />
-          </Routes>
-        </MemoryRouter>
-      </TestApiProvider>,
+      <AppNodeProvider node={mockRouteNode}>
+        <TestApiProvider apis={[]}>
+          <MemoryRouter initialEntries={['/catalog/default/component/a%2Fb']}>
+            <Routes>
+              <Route
+                path="/catalog/:namespace/:kind/:name"
+                element={<Content />}
+              />
+            </Routes>
+          </MemoryRouter>
+        </TestApiProvider>
+      </AppNodeProvider>,
     );
     expect(screen.getByText('default/component/a/b')).toBeInTheDocument();
     act(() => screen.getByRole('button', { name: 'Next' }).click());

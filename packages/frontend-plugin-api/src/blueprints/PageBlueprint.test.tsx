@@ -30,7 +30,7 @@ import {
 import { createTranslationRef } from '../translation';
 import { act, screen, waitFor } from '@testing-library/react';
 import { ReactNode, useEffect } from 'react';
-import { useRouteMatches } from '../routing/useRouteMatches';
+import { useRouteMatches } from '@internal/frontend';
 import { useAppNode } from '../components/AppNodeProvider';
 import { pluginWrapperApiRef } from '../apis/definitions/PluginWrapperApi';
 import { analyticsApiRef } from '../apis/definitions/AnalyticsApi';

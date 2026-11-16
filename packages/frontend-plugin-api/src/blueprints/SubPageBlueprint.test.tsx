@@ -26,7 +26,7 @@ import {
 import { useAppHref } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
 import { SubPageBlueprint } from './SubPageBlueprint';
-import { useRouteMatches } from '../routing/useRouteMatches';
+import { useRouteMatches } from '@internal/frontend';
 import { ReactNode, createContext, useContext, useState } from 'react';
 
 const RouterStack = createContext<readonly string[]>([]);

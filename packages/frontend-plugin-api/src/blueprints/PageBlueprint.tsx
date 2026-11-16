@@ -23,8 +23,8 @@ import {
   joinRoutePath,
   useAppHistoryLocation,
   useTranslatedTitles,
+  useRouteMatches,
 } from '@internal/frontend';
-import { useRouteMatches } from '../routing/useRouteMatches';
 import {
   coreExtensionData,
   createExtensionBlueprint,
