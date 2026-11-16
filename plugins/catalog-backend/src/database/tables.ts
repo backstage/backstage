@@ -149,6 +149,24 @@ export type DbFinalEntitiesRow = {
 };
 
 /**
+ * Represents the entity_change_subscriptions table.
+ */
+export type DbEntityChangeSubscriptionsRow = {
+  subscription_id: string;
+  /** The principal that created the subscription, and may use it. */
+  owner: string;
+  created_at: string | number | Date;
+  active_at: string | number | Date;
+  state: 'idle' | 'waiting';
+  ack_id: string | null;
+  ack_timeout_at: string | number | Date | null;
+  last_sent_generation: string | number;
+  last_acknowledged_generation: string | number;
+  /** JSON array of scope entries, or null for everything. */
+  scope: string | null;
+};
+
+/**
  * Represents the stitch_queue table.
  *
  * @remarks

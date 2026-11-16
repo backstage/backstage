@@ -18,6 +18,24 @@
 
 - `catalog_generation_counter_pkey` (`id`) unique primary
 
+## Table `entity_change_subscriptions`
+
+| Column                         | Type                       | Nullable | Max Length | Default             |
+| ------------------------------ | -------------------------- | -------- | ---------- | ------------------- |
+| `ack_id`                       | `character varying`        | true     | 255        | -                   |
+| `ack_timeout_at`               | `timestamp with time zone` | true     | -          | -                   |
+| `active_at`                    | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
+| `created_at`                   | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
+| `last_acknowledged_generation` | `bigint`                   | false    | -          | -                   |
+| `last_sent_generation`         | `bigint`                   | false    | -          | -                   |
+| `scope`                        | `text`                     | true     | -          | -                   |
+| `state`                        | `character varying`        | false    | 255        | -                   |
+| `subscription_id`              | `character varying`        | false    | 255        | -                   |
+
+### Indices
+
+- `entity_change_subscriptions_pkey` (`subscription_id`) unique primary
+
 ## Table `final_entities`
 
 | Column            | Type                       | Nullable | Max Length | Default |

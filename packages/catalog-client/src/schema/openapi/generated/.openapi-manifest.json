@@ -3,12 +3,12 @@
   "kind": "client",
   "spec": {
     "path": "../../../../../../plugins/catalog-backend/src/schema/openapi.yaml",
-    "sha256": "9677e5aa82d080ba4433480db913d1b0f3eb12dd1fc2e03146e67cdeba720d02"
+    "sha256": "f7e14ea34862ec4e12a6d5ac7d4de52ac3cd74d5e73b1c9d7944e2a7065b55fe"
   },
   "generator": {
     "openapiGenerator": "7.18.0",
     "templateSha256": "967b3b2ecb864084a2f33f757853c3ee4e2b66624955bfec33248b645540967b"
   },
   "additionalProperties": null,
-  "filesSha256": "73768dab7b57e247a89f01f9372238f38a394cd0ba2e6571a70f2bee165df8b9"
+  "filesSha256": "e4989996fc9f0d1f160c773b1ca9a89b82e02b76a0d94d75a6896eaeb4eb0a6b"
 }

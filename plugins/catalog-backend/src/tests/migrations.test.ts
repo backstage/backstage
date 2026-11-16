@@ -1814,6 +1814,38 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     expect(await hasAutovacuumOptions()).toBe(false);
   });
 
+  it('20261031000000_entity_change_subscriptions.js', async () => {
+    const knex = await databases.init(databaseId);
+    await migrateUntilBefore(
+      knex,
+      '20261031000000_entity_change_subscriptions.js',
+    );
+
+    await migrateUpOnce(knex);
+    await knex('entity_change_subscriptions').insert({
+      subscription_id: 's',
+      owner: 'user:default/me',
+      state: 'idle',
+      last_sent_generation: '9007199254740993',
+      last_acknowledged_generation: '9007199254740993',
+      scope: '[{"kind":"user"}]',
+    });
+    // Positions are 64-bit integers, beyond what a JavaScript number can hold
+    const [subscription] = await knex('entity_change_subscriptions').select({
+      position: knex.raw(
+        `CAST(last_acknowledged_generation AS ${
+          databaseId.startsWith('MYSQL') ? 'CHAR' : 'TEXT'
+        })`,
+      ),
+    });
+    expect(subscription.position).toBe('9007199254740993');
+
+    await migrateDownOnce(knex);
+    expect(await knex.schema.hasTable('entity_change_subscriptions')).toBe(
+      false,
+    );
+  });
+
   it('20261007000000_stitch_failure_count.js', async () => {
     const knex = await databases.init(databaseId);
     await migrateUntilBefore(knex, '20261007000000_stitch_failure_count.js');
