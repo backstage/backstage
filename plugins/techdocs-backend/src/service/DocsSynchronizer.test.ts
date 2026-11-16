@@ -95,7 +95,7 @@ describe('DocsSynchronizer', () => {
 
     worker.use(
       http.get(
-        'http://backstage.local/api/techdocs/static/docs/default/:kind/test/techdocs_metadata.json',
+        'http://backstage.local/api/techdocs/static/docs/default/component/test/techdocs_metadata.json',
         () => HttpResponse.json({ build_timestamp: 123 }),
       ),
     );
@@ -350,6 +350,14 @@ describe('DocsSynchronizer', () => {
         scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
         cache,
       });
+
+      // The legacy config keeps the raw kind casing in the triplet paths
+      worker.use(
+        http.get(
+          'http://backstage.local/api/techdocs/static/docs/default/Component/test/techdocs_metadata.json',
+          () => HttpResponse.json({ build_timestamp: 123 }),
+        ),
+      );
 
       await docsSynchronizerWithLegacy.doCacheSync({
         responseHandler: mockResponseHandler,
