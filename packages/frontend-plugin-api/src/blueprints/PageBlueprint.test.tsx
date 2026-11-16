@@ -705,7 +705,7 @@ describe('PageBlueprint', () => {
   it('should redirect to the first subpage on the parent index route, and leave a page without sub-pages alone', async () => {
     const parentPage = PageBlueprint.make({
       params: {
-        path: '/mixed',
+        path: '/mixed/:id',
         title: 'Mixed',
       },
     });
@@ -732,14 +732,21 @@ describe('PageBlueprint', () => {
 
     const { appHistory } = renderTestApp({
       extensions: [parentPage, inputSubPage, plainPage],
-      initialRouteEntries: ['/mixed?tab=1#here'],
+      initialRouteEntries: ['/before', '/mixed/value?tab=1#here'],
     });
 
     expect(await screen.findByTestId('input-page')).toBeInTheDocument();
     // The URL says which tab is showing, and the query and fragment survive.
-    expect(appHistory.getSnapshot().location.pathname).toBe('/mixed/input');
+    expect(appHistory.getSnapshot().location.pathname).toBe(
+      '/mixed/value/input',
+    );
     expect(appHistory.getSnapshot().location.search).toBe('?tab=1');
     expect(appHistory.getSnapshot().location.hash).toBe('#here');
+
+    await act(async () => {
+      appHistory.navigate(-1);
+    });
+    expect(appHistory.getSnapshot().location.pathname).toBe('/before');
 
     await act(async () => {
       appHistory.navigate('/plain');

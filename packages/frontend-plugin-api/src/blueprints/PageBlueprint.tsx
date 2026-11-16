@@ -23,7 +23,6 @@ import {
   joinRoutePath,
   useAppHistoryLocation,
   useTranslatedTitles,
-  useRouteMatches,
 } from '@internal/frontend';
 import {
   coreExtensionData,
@@ -37,11 +36,13 @@ import type { AppNode } from '../apis';
 import {
   routeResolutionApiRef,
   RouteResolutionApi,
+  type RouteResolutionMatch,
 } from '../apis/definitions/RouteResolutionApi';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
 
 import { optionalStringSchema } from '../schema/optionalStringSchema';
-import { appHistoryApiRef } from '../routing/AppHistoryApi';
+import { appHistoryApiRef, type AppHistoryApi } from '../routing/AppHistoryApi';
+import type { AppLocation } from '../routing/AppLocation';
 
 /**
  * One sub-page of a page, as the page itself sees it: a tab to show in the
@@ -82,15 +83,13 @@ function resolveTitleLink(
 /** Parent-owned selection from the same matched branch as the app route. */
 function PageContent(props: {
   subPages?: readonly PageSubPage[];
+  pageMount?: RouteResolutionMatch;
+  matches?: readonly RouteResolutionMatch[];
+  history?: AppHistoryApi;
+  location?: AppLocation;
   children?: ReactNode;
 }) {
-  const { subPages, children } = props;
-  const pageMount = useRouteMatches().at(-1);
-  const history = useApiHolder().get(appHistoryApiRef);
-  const location = useAppHistoryLocation(history);
-  const routes = useApiHolder().get(routeResolutionApiRef);
-  const matches =
-    location && routes?.resolvePath({ pathname: location.pathname }).matches;
+  const { subPages, pageMount, matches, history, location, children } = props;
   const selectedMatch = matches?.find(match =>
     subPages?.some(page => page.node === match.node),
   );
@@ -168,6 +167,9 @@ function PluginPageShell(props: {
     routeResolutionApi
       .resolvePath({ pathname: location.pathname, node })
       .matches.at(-1);
+  const matches =
+    location &&
+    routeResolutionApi.resolvePath({ pathname: location.pathname }).matches;
   const tabs =
     mount &&
     translatedSubPages?.map(({ path, label, icon: tabIcon }) => ({
@@ -192,7 +194,15 @@ function PluginPageShell(props: {
       headerActions={headerActions}
     >
       <ExtensionBoundary node={node}>
-        <PageContent subPages={translatedSubPages}>{children}</PageContent>
+        <PageContent
+          subPages={translatedSubPages}
+          pageMount={mount}
+          matches={matches}
+          history={history}
+          location={location}
+        >
+          {children}
+        </PageContent>
       </ExtensionBoundary>
     </PageLayout>
   );
