@@ -385,6 +385,50 @@ describe('HistoryBackend', () => {
       unsubscribe();
     });
 
+    it('should not notify for replaceState calls made outside the app with the Navigation API', () => {
+      const navigation = new EventTarget() as EventTarget & {
+        currentEntry: { key: string; index: number };
+        canGoBack: boolean;
+      };
+      navigation.currentEntry = { key: 'native-key', index: 3 };
+      navigation.canGoBack = true;
+      Object.defineProperty(window, 'navigation', {
+        configurable: true,
+        value: navigation,
+      });
+      window.history.replaceState(null, '', '/docs?filters%5Buser%5D=owned');
+      const history = createWindowHistoryBackend();
+      const listener = jest.fn();
+      const unsubscribe = history.listen(listener);
+
+      // Plugins such as the catalog entity list sync their filters to the URL
+      // by calling replaceState directly, relying on the router not observing
+      // it. Browsers with the Navigation API still fire currententrychange.
+      const fireReplace = (url: string) => {
+        window.history.replaceState(null, '', url);
+        navigation.dispatchEvent(
+          Object.assign(new Event('currententrychange'), {
+            navigationType: 'replace',
+          }),
+        );
+      };
+      fireReplace('/docs?filters%5Buser%5D=all');
+      fireReplace('/docs?filters%5Buser%5D=owned');
+
+      expect(listener).not.toHaveBeenCalled();
+
+      // Traversals reported through the Navigation API are still observed.
+      navigation.currentEntry = { key: 'previous-key', index: 2 };
+      navigation.dispatchEvent(
+        Object.assign(new Event('currententrychange'), {
+          navigationType: 'traverse',
+        }),
+      );
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect(listener).toHaveBeenLastCalledWith('POP');
+      unsubscribe();
+    });
+
     it('should omit unknown coordinates for native hash navigation and restore them on back', async () => {
       window.history.replaceState(null, '', '/page');
       const history = createWindowHistoryBackend();

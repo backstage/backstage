@@ -341,6 +341,25 @@ export function createWindowHistoryBackend(): HistoryBackend {
           return;
         }
         const href = window.location.href;
+        const navigationType = (
+          event as Event & {
+            navigationType?: 'push' | 'replace' | 'traverse' | 'reload';
+          }
+        ).navigationType;
+        // The Navigation API reports every replaceState call, including ones
+        // made outside the app, such as plugins syncing filters to the URL.
+        // Without the Navigation API those calls fire no event, so ignore
+        // them here too and only keep reporting hash changes, which do fire
+        // `hashchange`. Reporting them caused update loops between such
+        // plugins and the router.
+        if (
+          hasNavigationApi &&
+          navigationType === 'replace' &&
+          new URL(href).hash === new URL(lastHref).hash
+        ) {
+          updateChangeBaseline();
+          return;
+        }
         const key = readEntry().key;
         if (!hasNavigationApi && !isStoredState(window.history.state)) {
           window.history.replaceState(
@@ -360,9 +379,6 @@ export function createWindowHistoryBackend(): HistoryBackend {
         lastHref = href;
         lastState = state;
         lastKey = key;
-        const navigationType = (
-          event as Event & { navigationType?: 'push' | 'replace' }
-        ).navigationType;
         let action: HistoryAction = 'POP';
         if (navigationType === 'push') {
           action = 'PUSH';
