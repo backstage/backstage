@@ -15,7 +15,7 @@
  */
 
 import {
-  useRouteContext,
+  useRouteMatches,
   AppNode,
   AppTree,
   Extension,
@@ -54,7 +54,7 @@ import { throwOnAppErrors } from './throwOnAppErrors';
 
 function ExtensionTestRoutes(props: { node: AppNode; children: ReactNode }) {
   const history = useApiHolder().get(appHistoryApiRef);
-  const routePattern = useRouteContext().matches.at(-1)?.routePattern ?? '/';
+  const routePattern = useRouteMatches().at(-1)?.routePattern ?? '/';
   const routeObjects = useMemo(() => {
     const { routeObjects: routes } = extractRouteInfoFromAppNode(
       props.node,

@@ -23,12 +23,10 @@ import {
 import { appHistoryApiRef } from './AppHistoryApi';
 import { useAppHistoryLocation } from '@internal/frontend';
 
-const EMPTY_RESULT: { matches: readonly RouteResolutionMatch[] } = {
-  matches: [],
-};
+const EMPTY_MATCHES: readonly RouteResolutionMatch[] = [];
 
 /**
- * Resolves the current app node's routing ancestry against the app location.
+ * Returns the current app node's routing ancestry matched against the app location.
  *
  * Matches are ordered from outermost to innermost. Extensions without a path
  * inherit their ancestors' scope. Returns no matches outside an extension
@@ -39,14 +37,12 @@ const EMPTY_RESULT: { matches: readonly RouteResolutionMatch[] } = {
  *
  * @public
  */
-export function useRouteContext(): {
-  matches: readonly RouteResolutionMatch[];
-} {
+export function useRouteMatches(): readonly RouteResolutionMatch[] {
   const node = useAppNode();
   const apis = useApiHolder();
   const location = useAppHistoryLocation(apis.get(appHistoryApiRef));
   const routes = apis.get(routeResolutionApiRef);
   return node && routes
-    ? routes.resolvePath({ pathname: location?.pathname ?? '/', node })
-    : EMPTY_RESULT;
+    ? routes.resolvePath({ pathname: location?.pathname ?? '/', node }).matches
+    : EMPTY_MATCHES;
 }

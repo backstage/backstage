@@ -24,7 +24,7 @@ import {
 import { act, screen, fireEvent } from '@testing-library/react';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
-  useRouteContext,
+  useRouteMatches,
   useAnalytics,
   createRouteRef,
   createExternalRouteRef,
@@ -588,7 +588,7 @@ describe('renderInTestApp', () => {
       'hosts a deeper location when mounted at the app root with %s',
       async mountPath => {
         function Content() {
-          const mount = useRouteContext().matches.at(-1);
+          const mount = useRouteMatches().at(-1);
           return (
             <>
               <span>Mount: {mount?.basePath ?? 'none'}</span>

@@ -24,7 +24,7 @@ import {
   useAppHistoryLocation,
   useTranslatedTitles,
 } from '@internal/frontend';
-import { useRouteContext } from '../routing/useRouteContext';
+import { useRouteMatches } from '../routing/useRouteMatches';
 import {
   coreExtensionData,
   createExtensionBlueprint,
@@ -85,7 +85,7 @@ function PageContent(props: {
   children?: ReactNode;
 }) {
   const { subPages, children } = props;
-  const pageMount = useRouteContext().matches.at(-1);
+  const pageMount = useRouteMatches().at(-1);
   const history = useApiHolder().get(appHistoryApiRef);
   const location = useAppHistoryLocation(history);
   const routes = useApiHolder().get(routeResolutionApiRef);

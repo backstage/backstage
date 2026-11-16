@@ -24,7 +24,7 @@ import {
   createMockAppHistory,
 } from '@backstage/frontend-test-utils';
 import {
-  useRouteContext,
+  useRouteMatches,
   appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -78,7 +78,7 @@ jest.mock('../../frontend-plugin-api/src/components/AppNodeProvider', () => {
 function LegacyProbe(props: { id: string }) {
   const params = useParams();
   const resolved = useResolvedPath('edit');
-  const mount = useRouteContext().matches.at(-1);
+  const mount = useRouteMatches().at(-1);
   return (
     <span data-testid={props.id}>
       {JSON.stringify({

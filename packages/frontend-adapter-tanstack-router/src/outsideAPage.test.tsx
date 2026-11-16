@@ -24,7 +24,7 @@ import {
   createMockAppHistory,
 } from '@backstage/frontend-test-utils';
 import {
-  useRouteContext,
+  useRouteMatches,
   appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
 import { useRouter } from '@tanstack/react-router';
@@ -71,7 +71,7 @@ function TanStackProbe() {
   // back `undefined` rather than throwing, so the absence has to be read from
   // the return value.
   const hasTanStackRouter = Boolean(useRouter({ warn: false }));
-  const mount = useRouteContext().matches.at(-1);
+  const mount = useRouteMatches().at(-1);
   return (
     <span data-testid="probe">
       {JSON.stringify({ hasTanStackRouter, mount: mount ?? null })}
