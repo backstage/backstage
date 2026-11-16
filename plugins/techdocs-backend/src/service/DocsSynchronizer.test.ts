@@ -34,7 +34,8 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 jest.mock('../DocsBuilder');
-jest.useFakeTimers();
+// msw 3 answers requests through process.nextTick, so leave that real
+jest.useFakeTimers({ doNotFake: ['nextTick'] });
 
 const MockedDocsBuilder = DocsBuilder as jest.MockedClass<typeof DocsBuilder>;
 
@@ -349,6 +350,14 @@ describe('DocsSynchronizer', () => {
         scmIntegrations: ScmIntegrations.fromConfig(new ConfigReader({})),
         cache,
       });
+
+      // The legacy config keeps the raw kind casing in the triplet paths
+      worker.use(
+        http.get(
+          'http://backstage.local/api/techdocs/static/docs/default/Component/test/techdocs_metadata.json',
+          () => HttpResponse.json({ build_timestamp: 123 }),
+        ),
+      );
 
       await docsSynchronizerWithLegacy.doCacheSync({
         responseHandler: mockResponseHandler,

@@ -57,6 +57,7 @@ import type { Request } from 'express';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { AnonymousStrategy } from '../auth';
+import { generate } from 'selfsigned';
 
 const middleware = MiddlewareFactory.create({
   logger: mockServices.logger.mock(),
@@ -70,6 +71,14 @@ const mockCertDir = createMockDirectory({
 });
 
 describe('KubernetesProxy', () => {
+  // msw 3 hands the agent options to a real TLS socket, which needs a
+  // parseable client certificate and key
+  let clientCert: { cert: string; key: string };
+  beforeAll(async () => {
+    const pems = await generate();
+    clientCert = { cert: pems.cert, key: pems.private };
+  });
+
   let proxy: KubernetesProxy;
   let authStrategy: jest.Mocked<AuthenticationStrategy>;
   let auditor: ReturnType<typeof mockServices.auditor.mock>;
@@ -1477,8 +1486,8 @@ describe('KubernetesProxy', () => {
         },
       ]);
 
-      const myCert = 'MOCKCert';
-      const myKey = 'MOCKKey';
+      const myCert = clientCert.cert;
+      const myKey = clientCert.key;
 
       authStrategy.getCredential.mockResolvedValue({
         type: 'x509 client certificate',
@@ -1568,7 +1577,7 @@ describe('KubernetesProxy', () => {
         new Promise<void>(resolve => expressServer.close(() => resolve())),
       ]);
 
-      worker.listen({ onUnhandledRequest: 'error' });
+      worker.listen({ onUnhandledFrame: 'error' });
     });
 
     it('should proxy websocket connections', async () => {

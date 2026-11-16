@@ -26,6 +26,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { KubernetesConnection } from './KubernetesConnection';
+import { generate } from 'selfsigned';
 
 const mockCertDir = createMockDirectory({
   content: {
@@ -65,6 +66,14 @@ const POD_METRICS_FIXTURE = [
 ];
 
 describe('KubernetesFetcher', () => {
+  // msw 3 hands the agent options to a real TLS socket, which needs a
+  // parseable client certificate and key
+  let clientCert: { cert: string; key: string };
+  beforeAll(async () => {
+    const pems = await generate();
+    clientCert = { cert: pems.cert, key: pems.private };
+  });
+
   const worker = setupServer();
   registerMswTestHooks(worker);
 
@@ -897,8 +906,8 @@ describe('KubernetesFetcher', () => {
           ),
         );
 
-        const myCert = 'MOCKCert';
-        const myKey = 'MOCKKey';
+        const myCert = clientCert.cert;
+        const myKey = clientCert.key;
 
         const result = sut.fetchObjectsForService({
           serviceId: 'some-service',
@@ -980,8 +989,8 @@ describe('KubernetesFetcher', () => {
           ),
         );
 
-        const myCert = 'MOCKCert';
-        const myKey = 'MOCKKey';
+        const myCert = clientCert.cert;
+        const myKey = clientCert.key;
 
         const result = sut.fetchPodMetricsByNamespaces(
           {

@@ -113,7 +113,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
 
       worker.use(
         http.get(
-          'http://test-backend/static/docs/default/Component/test-entity-with-docs/search/search_index.json',
+          'http://test-backend/static/docs/default/component/test-entity-with-docs/search/search_index.json',
           () => HttpResponse.json(mockSearchDocIndex),
         ),
       );
@@ -133,6 +133,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
     it('should create documents for each tech docs search index', async () => {
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
+      expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
       const entity = expectedEntities[0];
       documents.forEach((document, idx) => {
         expect(document).toMatchObject({
@@ -217,7 +218,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
       collator = await factory.getCollator();
       worker.use(
         http.get(
-          'http://test-backend/static/docs/default/Component/:name/search/search_index.json',
+          'http://test-backend/static/docs/default/component/:name/search/search_index.json',
           () => HttpResponse.json(mockSearchDocIndex),
         ),
       );
@@ -261,11 +262,19 @@ describe('DefaultTechDocsCollatorFactory', () => {
           options,
         );
         collator = await factory.getCollator();
+
+        worker.use(
+          http.get(
+            'http://test-backend/static/docs/default/Component/test-entity-with-docs/search/search_index.json',
+            () => HttpResponse.json(mockSearchDocIndex),
+          ),
+        );
       });
 
       it('should create documents for each tech docs search index', async () => {
         const pipeline = TestPipeline.fromCollator(collator);
         const { documents } = await pipeline.execute();
+        expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
         const entity = expectedEntities[0];
         documents.forEach((document, idx) => {
           expect(document).toMatchObject({
@@ -303,6 +312,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
 
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
+      expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
       const entity = expectedEntities[0];
       documents.forEach((document, idx) => {
         expect(document).toMatchObject({
@@ -340,6 +350,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
 
       const pipeline = TestPipeline.fromCollator(collator);
       const { documents } = await pipeline.execute();
+      expect(documents).toHaveLength(mockSearchDocIndex.docs.length);
       const entity = expectedEntities[0];
       documents.forEach((document, idx) => {
         expect(document).toMatchObject({
