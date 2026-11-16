@@ -625,16 +625,16 @@ const app = createApp({
 
 #### `icons`
 
-Icons are now installed as extensions, using the `IconBundleBlueprint` to make new instances which can be added to the app.
+Icons are now installed as extensions, using the `IconBundleBlueprint` to make new instances which can be added to the app. Pass icon elements rather than components, and set `fontSize="inherit"` for Material UI icons.
 
-```ts
+```tsx
 import { IconBundleBlueprint } from '@backstage/plugin-app-react';
 
 const exampleIconBundle = IconBundleBlueprint.make({
   name: 'example-bundle',
   params: {
     icons: {
-      user: MyOwnUserIcon,
+      user: <MyOwnUserIcon fontSize="inherit" />,
     },
   },
 });

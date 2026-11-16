@@ -15,18 +15,20 @@
  */
 
 import { IconElement } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/core-plugin-api';
 import {
   createExtensionBlueprint,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 
 const iconsDataRef = createExtensionDataRef<{
-  [key in string]: IconComponent | IconElement;
+  [key in string]: IconElement;
 }>().with({ id: 'core.icons' });
 
 /**
  * Creates an extension that adds icon bundles to your app. This blueprint is limited to use by the app plugin.
+ *
+ * Icon values must be elements, for example `<MyIcon />`. For Material UI icons,
+ * pass `<MyIcon fontSize="inherit" />`.
  *
  * @public
  */
@@ -34,9 +36,9 @@ export const IconBundleBlueprint = createExtensionBlueprint({
   kind: 'icon-bundle',
   attachTo: { id: 'api:app/icons', input: 'icons' },
   output: [iconsDataRef],
-  factory: (params: {
-    icons: { [key in string]: IconComponent | IconElement };
-  }) => [iconsDataRef(params.icons)],
+  factory: (params: { icons: { [key in string]: IconElement } }) => [
+    iconsDataRef(params.icons),
+  ],
   dataRefs: {
     icons: iconsDataRef,
   },
