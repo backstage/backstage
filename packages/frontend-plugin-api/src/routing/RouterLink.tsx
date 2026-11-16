@@ -16,10 +16,12 @@
 
 import { AnchorHTMLAttributes, forwardRef } from 'react';
 import { isExternalTarget } from '@internal/frontend';
-import { useHasNavigationProvider, useNavigation } from './NavigationProvider';
+import {
+  useHasNavigationProvider,
+  useRoutingIntegration,
+} from './RoutingProvider';
 import { appHistoryApiRef } from './AppHistoryApi';
 import { useApiHolder } from '../apis/system';
-import type { AppNavigateOptions } from './AppLocation';
 
 /**
  * Props for {@link RouterLink}.
@@ -27,8 +29,11 @@ import type { AppNavigateOptions } from './AppLocation';
  * @public
  */
 export interface RouterLinkProps
-  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>,
-    AppNavigateOptions {
+  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
+  /** Replace the current history entry instead of pushing a new one. */
+  replace?: boolean;
+  /** User-visible state associated with the destination. */
+  state?: unknown;
   /** Authored target; relative paths use the nearest routing adapter. */
   href: string;
 }
@@ -50,7 +55,7 @@ export interface RouterLinkProps
 export const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>(
   function RouterLinkComponent(props, ref) {
     const { href: to, replace, state, onClick, children, ...rest } = props;
-    const { createHref, navigate } = useNavigation();
+    const { createHref, navigate } = useRoutingIntegration();
     const hasNavigationProvider = useHasNavigationProvider();
     const appHistory = useApiHolder().get(appHistoryApiRef);
     const href = createHref(to);

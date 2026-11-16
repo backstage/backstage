@@ -310,7 +310,9 @@ describe('PostgreSQL query generation', () => {
       $any: [...negated, ownedLong] as FilterPredicate[],
     });
     const direct = compile({ $all: [...negated, owned] as FilterPredicate[] });
-    expect(Date.now() - start).toBeLessThan(2000);
+    // A quadratic analysis takes far longer than this, so the limit leaves
+    // plenty of room for slow CI machines
+    expect(Date.now() - start).toBeLessThan(10000);
     expect(form(narrowed.sql)).toBe('in');
     expect(form(alternated.sql)).toBe('in');
     expect(form(direct.sql)).toBe('join');

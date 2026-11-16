@@ -16,12 +16,15 @@
 
 import {
   coreApis,
-  appHistoryApiRef,
+  type RouteRef,
+  type SubRouteRef,
+  type ExternalRouteRef,
+  type AnyRouteRefParams,
+  type RouteResolutionMatch,
   routeResolutionApiRef,
   type AnalyticsApi,
   type AnalyticsEvent,
-  type AppHistoryApi,
-  type AppNavigateOptions,
+  type AppNavigate,
   type RouteResolutionApi,
   type ConfigApi,
   type DiscoveryApi,
@@ -44,6 +47,8 @@ import {
   type PluginHeaderActionsApi,
   type ToastApi,
   type ToastApiMessage,
+  appHistoryApiRef,
+  type AppHistoryApi,
 } from '@backstage/frontend-plugin-api';
 import {
   alertApiRef,
@@ -76,16 +81,8 @@ import {
   type MockWithApiFactory,
 } from './MockWithApiFactory';
 import { createApiMock, type ApiMock } from './createApiMock';
-import {
-  createMockAppHistory,
-  type MockAppHistory,
-  type MockAppHistoryOptions,
-} from './createMockAppHistory';
-import {
-  createMockRouteResolutionApi,
-  type MockRouteResolutionApi,
-  type MockRouteResolutionApiOptions,
-} from './createMockRouteResolutionApi';
+import { createMockAppHistory } from './createMockAppHistory';
+import { createMockRouteResolutionApi } from './createMockRouteResolutionApi';
 
 function createObservableState<T>(initialValue: T) {
   let value = initialValue;
@@ -810,12 +807,42 @@ export namespace mockApis {
    *
    * @public
    */
-  export function appHistory(
-    options?: MockAppHistoryOptions,
-  ): MockAppHistory & MockWithApiFactory<AppHistoryApi> {
+  export function appHistory(options?: {
+    /**
+     * Initial location for the mock app history's snapshot.
+     * Defaults to `'/'`.
+     *
+     * Stands in for the browser URL, so a `basename` is stripped from it just as
+     * the real app history strips it from `window.location` — every location the
+     * API then hands out is app-relative.
+     */
+    initialLocation?: string;
+    /**
+     * Optional jest mock (or function) invoked by `navigate`. Location
+     * emission still happens before this is called.
+     */
+    navigate?: jest.Mock | AppHistoryApi['navigate'];
+    /**
+     * App deploy basename prefixed onto `createHref` results, mirroring the
+     * real `AppHistoryApi` implementation — including leaving targets that are
+     * not app-relative alone, and stripping the prefix back off
+     * `initialLocation`.
+     *
+     * `navigate` targets and snapshot locations are app-relative on both
+     * sides of the basename, exactly as in production: the real implementation
+     * prepends the basename on the way into the History API and strips it on the
+     * way back out, so a round trip through it is invisible.
+     */
+    basename?: string;
+  }): AppHistoryApi & {
+    /** Recorded navigation calls, in order. */
+    navigateCalls: Array<{
+      to: string | number;
+      options?: Parameters<AppNavigate>[1];
+    }>;
+  } & MockWithApiFactory<AppHistoryApi> {
     const instance = createMockAppHistory(options);
-    return attachMockApiFactory(appHistoryApiRef, instance) as MockAppHistory &
-      MockWithApiFactory<AppHistoryApi>;
+    return attachMockApiFactory(appHistoryApiRef, instance);
   }
 
   /**
@@ -835,7 +862,7 @@ export namespace mockApis {
       const navigateMock = jest.fn(
         (
           ...args:
-            | [path: string, options?: AppNavigateOptions]
+            | [path: string, options?: Parameters<AppNavigate>[1]]
             | [delta: number]
         ) => {
           if (typeof args[0] === 'number') {
@@ -865,14 +892,57 @@ export namespace mockApis {
    *
    * @public
    */
-  export function routeResolution(
-    options?: MockRouteResolutionApiOptions,
-  ): MockRouteResolutionApi & MockWithApiFactory<RouteResolutionApi> {
+  export function routeResolution(options?: {
+    /**
+     * Map of route refs to absolute path templates. Path params use the
+     * `:param` form (e.g. `'/catalog/:namespace/:kind/:name'`). When a mapped
+     * route is resolved, params are substituted into the template.
+     *
+     * String values without `:` segments are returned as-is for parameter-less
+     * refs.
+     */
+    routes?:
+      | ReadonlyMap<
+          | RouteRef<AnyRouteRefParams>
+          | SubRouteRef<AnyRouteRefParams>
+          | ExternalRouteRef<AnyRouteRefParams>,
+          string
+        >
+      | ReadonlyArray<
+          [
+            (
+              | RouteRef<AnyRouteRefParams>
+              | SubRouteRef<AnyRouteRefParams>
+              | ExternalRouteRef<AnyRouteRefParams>
+            ),
+            string,
+          ]
+        >;
+    /**
+     * Optional full `resolve` implementation. When set, it takes precedence
+     * over `routes`.
+     */
+    resolve?: RouteResolutionApi['resolve'];
+    /**
+     * Fixed matches or a custom path-matching implementation. Defaults to no
+     * matches. Fixed matches ignore the requested pathname and node, defaulting
+     * `routePattern` to `basePath`, `params` to `{}`, and `contributesPath` to
+     * `true`. Callbacks return complete matches without applying these defaults.
+     */
+    resolvePath?:
+      | {
+          matches: ReadonlyArray<
+            Pick<RouteResolutionMatch, 'node' | 'basePath'> &
+              Partial<Omit<RouteResolutionMatch, 'node' | 'basePath'>>
+          >;
+        }
+      | RouteResolutionApi['resolvePath'];
+  }): RouteResolutionApi & {
+    resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
+    resolvePath: jest.MockedFunction<RouteResolutionApi['resolvePath']>;
+  } & MockWithApiFactory<RouteResolutionApi> {
     const instance = createMockRouteResolutionApi(options);
-    return attachMockApiFactory(
-      routeResolutionApiRef,
-      instance,
-    ) as MockRouteResolutionApi & MockWithApiFactory<RouteResolutionApi>;
+    return attachMockApiFactory(routeResolutionApiRef, instance);
   }
 
   /**

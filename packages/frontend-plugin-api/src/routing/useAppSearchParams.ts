@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useMemo, useRef, useState } from 'react';
-import type { AppNavigateOptions } from './AppLocation';
+import type { AppNavigate } from './useAppNavigate';
 import { useAppLocation } from './useAppLocation';
 import { useAppNavigate } from './useAppNavigate';
 
@@ -31,7 +31,7 @@ export type SetAppSearchParams = (
   next?:
     | AppSearchParamsInit
     | ((previous: URLSearchParams) => AppSearchParamsInit),
-  options?: AppNavigateOptions,
+  options?: Parameters<AppNavigate>[1],
 ) => void;
 
 function createSearchParams(init: AppSearchParamsInit = ''): URLSearchParams {

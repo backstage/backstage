@@ -172,8 +172,7 @@ export type AppHistoryAction = 'PUSH' | 'REPLACE' | 'POP';
 export interface AppHistoryApi {
   createHref(to: string): string;
   getSnapshot(): AppHistorySnapshot;
-  navigate(path: string, options?: AppNavigateOptions): void;
-  navigate(delta: number): void;
+  navigate: AppNavigate;
   subscribe(listener: () => void): () => void;
 }
 
@@ -241,10 +240,15 @@ export interface AppLocation {
 }
 
 // @public
-export interface AppNavigateOptions {
-  // (undocumented)
-  replace?: boolean;
-  state?: unknown;
+export interface AppNavigate {
+  (delta: number): void;
+  (
+    path: string,
+    options?: {
+      replace?: boolean;
+      state?: unknown;
+    },
+  ): void;
 }
 
 // @public
@@ -1608,25 +1612,6 @@ export const microsoftAuthApiRef: ApiRef_2<
   readonly $$type: '@backstage/ApiRef';
 };
 
-// @public
-export interface Navigation {
-  createHref(target: string): string;
-  navigate(target: string, options?: AppNavigateOptions): void;
-  pathname: string;
-}
-
-// @public
-export function NavigationProvider(
-  input: NavigationProviderProps,
-): JSX_3.Element;
-
-// @public (undocumented)
-export interface NavigationProviderProps {
-  // (undocumented)
-  children: ReactNode;
-  useNavigation: () => Navigation;
-}
-
 // @public (undocumented)
 export const NotFoundErrorPage: {
   (props: NotFoundErrorPageProps): JSX.Element | null;
@@ -2151,9 +2136,10 @@ export const RouterLink: ForwardRefExoticComponent<
 
 // @public
 export interface RouterLinkProps
-  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>,
-    AppNavigateOptions {
+  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
   href: string;
+  replace?: boolean;
+  state?: unknown;
 }
 
 // @public
@@ -2185,7 +2171,7 @@ export type SetAppSearchParams = (
   next?:
     | AppSearchParamsInit
     | ((previous: URLSearchParams) => AppSearchParamsInit),
-  options?: AppNavigateOptions,
+  options?: Parameters<AppNavigate>[1],
 ) => void;
 
 export { StandardSchemaV1 };
@@ -2536,7 +2522,7 @@ export function useAppHref(to: string): string;
 export function useAppLocation(): AppLocation;
 
 // @public
-export function useAppNavigate(): AppHistoryApi['navigate'];
+export function useAppNavigate(): AppNavigate;
 
 // @public
 export function useAppNode(): AppNode | undefined;
@@ -2550,9 +2536,6 @@ export function useAppSearchParams(
 export function useBreadcrumbEntries(): {
   items: BreadcrumbEntryData[];
 };
-
-// @public
-export function useNavigation(): Navigation;
 
 // @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(

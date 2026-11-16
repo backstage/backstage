@@ -174,7 +174,7 @@ it('renders the tools page and navigates', async () => {
 });
 ```
 
-For tests that need memory history or fixed route-reference paths outside a test app, use `createMockAppHistory`, `createMockRouteResolutionApi`, `mockApis.appHistory()`, and `mockApis.routeResolution()`. Mocks reject path-relative destinations, matching production history, so use app-absolute paths or route-ref destinations. See [navigation and app history](../building-plugins/02-testing.md#navigation-and-app-history) for more examples.
+For tests that need memory history or fixed route-reference paths outside a test app, use `mockApis.appHistory()` and `mockApis.routeResolution()`. Mocks reject path-relative destinations, matching production history, so use app-absolute paths or route-ref destinations. See [navigation and app history](../building-plugins/02-testing.md#navigation-and-app-history) for more examples.
 
 ### React 17 support removed
 
