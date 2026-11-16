@@ -368,8 +368,11 @@ export function createAppNodeInstance(options: {
     options.onMissingApi === undefined
       ? apis
       : {
-          get<TApiRef extends AnyApiRef>(apiRef: TApiRef) {
-            const api = apis.get(apiRef);
+          get<TApiRef extends AnyApiRef, TAsync extends boolean = false>(
+            apiRef: TApiRef,
+            lookupOptions?: { async?: TAsync },
+          ) {
+            const api = apis.get(apiRef, lookupOptions);
             if (api === undefined) {
               options.onMissingApi?.({
                 node,

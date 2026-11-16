@@ -23,7 +23,6 @@ import {
   useEffect,
   useState,
   useSyncExternalStore,
-  type ReactNode,
 } from 'react';
 import { act, screen, fireEvent } from '@testing-library/react';
 import { withLogCollector } from '@backstage/test-utils';

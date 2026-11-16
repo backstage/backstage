@@ -16,6 +16,6 @@
 
 export * from './ApiHolder';
 export * from './OpaqueApiRef';
-export * from './ResolvedApiPromise';
+export * from './ApiPromise';
 export * from './createTranslatedMessagesSource';
 export * from './useTranslatedTitles';

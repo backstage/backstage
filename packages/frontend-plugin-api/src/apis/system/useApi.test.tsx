@@ -17,7 +17,11 @@
 import { act, render, renderHook, screen } from '@testing-library/react';
 import { Component, PropsWithChildren, StrictMode, Suspense } from 'react';
 import { withLogCollector } from '@backstage/test-utils';
-import { createVersionedContextForTesting } from '@backstage/version-bridge';
+import {
+  createVersionedContext,
+  createVersionedContextForTesting,
+  createVersionedValueMap,
+} from '@backstage/version-bridge';
 import { createApiRef } from './ApiRef';
 import { useApi, useApiHolder } from './useApi';
 import { createApiFactory } from './helpers';
@@ -28,6 +32,8 @@ import {
 } from '../../../../frontend-app-api/src/wiring/FrontendApiRegistry';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ApiRegistry as LegacyApiRegistry } from '../../../../core-app-api/src/apis/system/ApiRegistry';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ApiAggregator as LegacyApiAggregator } from '../../../../core-app-api/src/apis/system/ApiAggregator';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ApiResolver as LegacyApiResolver } from '../../../../core-app-api/src/apis/system/ApiResolver';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -211,21 +217,29 @@ describe('useApi', () => {
         createApiFactory({ api: factoryRef, deps: {}, factory }),
       );
       const resolver = new FrontendApiResolver({ primaryRegistry: registry });
+      const get = jest.spyOn(resolver, 'get');
       context.set({ 1: resolver });
       function Consumer() {
         return <div>{useApi(apiRef).value}</div>;
       }
-      render(
+      const rendered = render(
         <Suspense fallback="Loading">
           <Consumer />
         </Suspense>,
       );
-      const isSynchronous = consumerMode === 'sync' && factoryMode === 'sync';
+      const isSynchronous = factoryMode === 'sync';
       expect(screen.queryByText('Loaded API') !== null).toBe(isSynchronous);
       expect(screen.queryByText('Loading') !== null).toBe(!isSynchronous);
       expect(await screen.findByText('Loaded API')).toBeInTheDocument();
       expect(factory).toHaveBeenCalledTimes(1);
       expect(apiRef.loading).toBe(consumerMode);
+      expect(get).toHaveBeenCalledWith(apiRef, { async: true });
+      rendered.unmount();
+
+      // Nested legacy providers still forward the lookup to the native holder.
+      context.set({ 1: new LegacyApiAggregator(resolver) });
+      render(<Consumer />);
+      expect(screen.getByText('Loaded API')).toBeInTheDocument();
     },
   );
 
@@ -277,7 +291,7 @@ describe('useApi', () => {
           </Suspense>
         </TestErrorBoundary>,
       );
-      expect(screen.getByRole('alert')).toHaveTextContent(
+      expect(await screen.findByRole('alert')).toHaveTextContent(
         "API 'parent' requests it through dependency 'child'",
       );
       expect(screen.queryByText('Loading')).not.toBeInTheDocument();
@@ -383,6 +397,52 @@ describe('useApi', () => {
     );
   });
 
+  it('should surface synchronous legacy failures through providers retried before their first commit', () => {
+    const ApiContext = createVersionedContext<{ 1: LegacyApiAggregator }>(
+      'api-context',
+    );
+    const ref = createApiRef<string>().with({ id: 'failed-legacy' });
+    const factory = jest.fn(() => {
+      throw new Error('Legacy initialization failed');
+    });
+    const factories = new LegacyApiFactoryRegistry();
+    factories.register(
+      'default',
+      createApiFactory({ api: ref, deps: {}, factory }),
+    );
+    const resolver = new LegacyApiResolver(factories);
+    function Consumer() {
+      return <div>{useApi(ref)}</div>;
+    }
+    function Providers() {
+      const holder = new LegacyApiAggregator(
+        new LegacyApiRegistry(new Map()),
+        resolver,
+      );
+      return (
+        <ApiContext.Provider value={createVersionedValueMap({ 1: holder })}>
+          <Consumer />
+        </ApiContext.Provider>
+      );
+    }
+    withLogCollector(['error'], () => {
+      render(
+        <StrictMode>
+          <TestErrorBoundary>
+            <Suspense fallback="Loading">
+              <Providers />
+            </Suspense>
+          </TestErrorBoundary>
+        </StrictMode>,
+      );
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'Legacy initialization failed',
+      );
+      expect(screen.queryByText('Loading')).not.toBeInTheDocument();
+      expect(factory).toHaveBeenCalled();
+    });
+  });
+
   it('should resolve routes', () => {
     const get = jest.fn(() => 'my-api-impl');
     context.set({ 1: { get } });
@@ -392,6 +452,6 @@ describe('useApi', () => {
 
     const value = renderedHook.result.current;
     expect(value).toBe('my-api-impl');
-    expect(get).toHaveBeenCalledWith(apiRef);
+    expect(get).toHaveBeenCalledWith({ ...apiRef, loading: 'async' });
   });
 });

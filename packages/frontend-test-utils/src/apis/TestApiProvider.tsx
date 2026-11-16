@@ -65,11 +65,16 @@ export function resolveTestApiEntries<const TApiPairs extends any[]>(
   }
 
   const promises = new Map<string, Promise<unknown>>();
-  function get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
+  function get<
+    TApi = unknown,
+    TApiRef extends AnyApiRef = ApiRef<TApi>,
+    TAsync extends boolean = false,
+  >(
     ref: TApiRef,
-  ): ApiLookupResult<TApiRef>;
-  function get(ref: AnyApiRef): unknown {
-    if (ref.loading !== 'async' || !apiMap.has(ref.id)) {
+    options?: { async?: TAsync },
+  ): ApiLookupResult<TApiRef, TAsync>;
+  function get(ref: AnyApiRef, options?: { async?: boolean }): unknown {
+    if ((!options?.async && ref.loading !== 'async') || !apiMap.has(ref.id)) {
       return apiMap.get(ref.id);
     }
     if (!promises.has(ref.id)) {

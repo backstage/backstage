@@ -241,18 +241,22 @@ describe('FrontendApiResolver', () => {
     const resolver = new FrontendApiResolver({ primaryRegistry: registry });
     const wrapped = resolver.get(asyncRef);
     expect(await wrapped).toBe(resolver.get(sync));
+    expect(resolver.get(sync, { async: false })).toBe(resolver.get(sync));
     expect(resolver.get(asyncRef)).toBe(wrapped);
     expect(factory).toHaveBeenCalledTimes(1);
 
     registry.set(createApiFactory({ api: asyncRef, deps: {}, factory }));
     resolver.invalidate([sync.id]);
     expect(() => resolver.get(sync)).toThrow(
-      'Update the package exporting this API ref',
+      'Await apis.get(ref, { async: true })',
     );
     const migrated = resolver.get(asyncRef);
     await expect(migrated).resolves.toEqual({ value: 'instance' });
     expect(resolver.get(asyncRef)).toBe(migrated);
     expect(() => resolver.get(sync)).toThrow('requested synchronously');
+    expect(() => resolver.get(sync, { async: false })).toThrow(
+      'requested synchronously',
+    );
     expect(factory).toHaveBeenCalledTimes(2);
 
     const parent = createApiRef<string>().with({ id: 'parent' });
@@ -344,6 +348,37 @@ describe('FrontendApiResolver', () => {
     expect(resolver.get(asyncRef)).toBeUndefined();
     expect(resolver.isMaterialized(asyncRef.id)).toBe(false);
   });
+
+  it.each(['sync', 'async'] as const)(
+    'should allow explicit async access to a %s factory through an older ref',
+    async loading => {
+      const oldRef = createApiRef<{ value: string }>().with({ id: 'migrated' });
+      const factoryRef = createApiRef<{ value: string }>().with({
+        id: oldRef.id,
+        loading,
+      });
+      const implementation = { value: 'shared' };
+      const factory = jest.fn(() => implementation);
+      const registry = new FrontendApiRegistry();
+      registry.register(
+        createApiFactory({ api: factoryRef, deps: {}, factory }),
+      );
+      const resolver = new FrontendApiResolver({ primaryRegistry: registry });
+      const promise = resolver.get(oldRef, { async: true });
+      expect(promise).toBeInstanceOf(Promise);
+      expect(resolver.get(oldRef, { async: true })).toBe(promise);
+      expect(resolver.get({ ...oldRef, loading: 'async' })).toBe(promise);
+      await expect(promise).resolves.toBe(implementation);
+      expect(factory).toHaveBeenCalledTimes(1);
+      expect(oldRef.loading).toBeUndefined();
+      const missing = createApiRef<string>().with({ id: 'missing' });
+      expect(resolver.get(missing, { async: true })).toBeUndefined();
+      resolver.invalidate([oldRef.id]);
+      expect(resolver.get(oldRef, { async: true })).not.toBe(promise);
+      await resolver.get(oldRef, { async: true });
+      expect(factory).toHaveBeenCalledTimes(2);
+    },
+  );
 
   it('should cache falsy API values', () => {
     const falseApiRef = createApiRef<boolean>({ id: 'test.false' });

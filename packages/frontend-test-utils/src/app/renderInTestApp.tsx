@@ -202,7 +202,9 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
             ]}
           >
             <TestAppPage node={node}>
-              <ExtensionBoundary node={node}>{suspendedElement}</ExtensionBoundary>
+              <ExtensionBoundary node={node}>
+                {suspendedElement}
+              </ExtensionBoundary>
             </TestAppPage>
           </TestRouteResolver>
         );

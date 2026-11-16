@@ -19,9 +19,10 @@ import { useVersionedContext } from '@backstage/version-bridge';
 import { NotImplementedError } from '@backstage/errors';
 import {
   apiHolderSupportsAsync,
-  resolvedApiPromise,
-  type ResolvedApiPromise,
+  apiPromiseState,
+  type ApiPromise,
   createApiPromise,
+  createRejectedApiPromise,
 } from '@internal/frontend';
 
 const emptyApiHolder: ApiHolder = Object.freeze({ get: () => undefined });
@@ -48,11 +49,16 @@ function adaptApiHolder(holder: ApiHolderV1): ApiHolder {
     | { kind: 'error'; promise: Promise<unknown> }
   >();
 
-  function get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
+  function get<
+    TApi = unknown,
+    TApiRef extends AnyApiRef = ApiRef<TApi>,
+    TAsync extends boolean = false,
+  >(
     ref: TApiRef,
-  ): ApiLookupResult<TApiRef>;
-  function get(ref: AnyApiRef): unknown {
-    if (ref.loading !== 'async') {
+    options?: { async?: TAsync },
+  ): ApiLookupResult<TApiRef, TAsync>;
+  function get(ref: AnyApiRef, options?: { async?: boolean }): unknown {
+    if (!options?.async && ref.loading !== 'async') {
       return holder.get(ref);
     }
     const existing = promises.get(ref.id);
@@ -61,7 +67,10 @@ function adaptApiHolder(holder: ApiHolderV1): ApiHolder {
       return existing.promise;
     }
     try {
-      const value = holder.get(ref);
+      // Legacy aggregators forward refs but do not forward lookup options.
+      const value = holder.get(
+        ref.loading === 'async' ? ref : { ...ref, loading: 'async' },
+      );
       if (value === undefined) {
         promises.delete(ref.id);
         return undefined;
@@ -78,7 +87,7 @@ function adaptApiHolder(holder: ApiHolderV1): ApiHolder {
       promises.set(ref.id, { kind: 'value', value, promise });
       return promise;
     } catch (error) {
-      const promise = Promise.reject(error);
+      const promise = createRejectedApiPromise(error);
       promises.set(ref.id, { kind: 'error', promise });
       return promise;
     }
@@ -131,34 +140,16 @@ export function useApiHolder(): ApiHolder {
 export function useApi<T>(apiRef: AnyApiRef<T>): T {
   const apiHolder = useApiHolder();
 
-  let api: T | Promise<T> | undefined;
-  try {
-    api = apiHolder.get(apiRef);
-  } catch (error) {
-    // Only retry the requested API; synchronous factory dependencies need migration.
-    if (
-      error instanceof Error &&
-      error.name === 'AsyncApiAccessError' &&
-      'apiRefId' in error &&
-      error.apiRefId === apiRef.id &&
-      apiRef.loading !== 'async'
-    ) {
-      api = apiHolder.get({ ...apiRef, loading: 'async' });
-    } else {
-      throw error;
-    }
-  }
+  let api: unknown = apiHolder.get(apiRef, { async: true });
   // Handle promises even when the consumer has an older synchronous ref.
   if (api && typeof (api as Promise<unknown>).then === 'function') {
-    const promise = api as ResolvedApiPromise<T>;
+    const promise = api as ApiPromise<T>;
     let state = apiPromiseStates.get(promise);
     if (!state) {
-      const resolved = promise[resolvedApiPromise];
-      state = resolved
-        ? { status: 'fulfilled', value: resolved.value }
-        : { status: 'pending' };
+      const settled = promise[apiPromiseState];
+      state = settled ?? { status: 'pending' };
       apiPromiseStates.set(promise, state);
-      if (!resolved) {
+      if (!settled) {
         promise.then(
           value =>
             apiPromiseStates.set(promise, { status: 'fulfilled', value }),
@@ -172,7 +163,7 @@ export function useApi<T>(apiRef: AnyApiRef<T>): T {
     if (state.status === 'rejected') {
       throw state.error;
     }
-    api = state.value as T | undefined;
+    api = state.value;
   }
   if (api === undefined) {
     throw new NotImplementedError(`No implementation available for ${apiRef}`);

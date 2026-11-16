@@ -16,20 +16,33 @@
 
 // This package is inlined, so the marker must work across separate copies.
 /** @internal */
-export const resolvedApiPromise = Symbol.for('@backstage/resolved-api-promise');
+export const apiPromiseState = Symbol.for('@backstage/api-promise-state');
 
 /** @internal */
-export type ResolvedApiPromise<T> = Promise<T> & {
-  readonly [resolvedApiPromise]?: { readonly value: T };
+export type ApiPromise<T> = Promise<T> & {
+  readonly [apiPromiseState]?:
+    | { readonly status: 'fulfilled'; readonly value: T }
+    | { readonly status: 'rejected'; readonly error: unknown };
 };
 
 /** @internal */
-export function createApiPromise(value: unknown): ResolvedApiPromise<unknown> {
+export function createApiPromise(value: unknown): ApiPromise<unknown> {
   const promise = Promise.resolve(value);
   if (!value || typeof (value as Promise<unknown>).then !== 'function') {
-    Object.defineProperty(promise, resolvedApiPromise, {
-      value: { value },
+    Object.defineProperty(promise, apiPromiseState, {
+      value: { status: 'fulfilled', value },
     });
   }
+  return promise;
+}
+
+/** @internal */
+export function createRejectedApiPromise(error: unknown): ApiPromise<never> {
+  const promise = Promise.reject(error);
+  Object.defineProperty(promise, apiPromiseState, {
+    value: { status: 'rejected', error },
+  });
+  // A render may throw the known error before attaching a rejection handler.
+  promise.catch(() => {});
   return promise;
 }

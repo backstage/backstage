@@ -50,11 +50,17 @@ export type AnyApiRef<T = unknown> = ApiRef<T, string, 'sync' | 'async'>;
  *
  * Refs without a loading member are synchronous. Refs that retain their loading
  * mode preserve the corresponding result type, including through generic helpers.
+ * Setting the second parameter to true selects asynchronous access for any ref.
  *
  * @public
  */
-export type ApiLookupResult<TApiRef extends AnyApiRef = AnyApiRef> =
-  | (TApiRef extends { readonly loading?: infer TLoading }
+export type ApiLookupResult<
+  TApiRef extends AnyApiRef = AnyApiRef,
+  TAsync extends boolean = false,
+> =
+  | (TAsync extends true
+      ? Promise<TApiRef['T']>
+      : TApiRef extends { readonly loading?: infer TLoading }
       ? 'async' extends TLoading
         ? 'sync' extends TLoading
           ? TApiRef['T'] | Promise<TApiRef['T']>
@@ -82,13 +88,21 @@ export type TypesToApiRefs<T, TLoading extends 'sync' | 'async' = 'sync'> = {
  * Missing APIs return `undefined` immediately. Present async-capable APIs return
  * a promise, even for synchronous implementations. Holders must return the same
  * promise for repeated lookups so `useApi` can resume after suspension.
+ * Pass `{ async: true }` to request asynchronous access regardless of the ref's
+ * loading mode. This also allows older synchronous refs to access async factories.
+ * Omitting the option or setting it to false preserves the ref's access mode.
  *
  * @public
  */
 export type ApiHolder = {
-  get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
+  get<
+    TApi = unknown,
+    TApiRef extends AnyApiRef = ApiRef<TApi>,
+    TAsync extends boolean = false,
+  >(
     api: TApiRef,
-  ): ApiLookupResult<TApiRef>;
+    options?: { async?: TAsync },
+  ): ApiLookupResult<TApiRef, TAsync>;
 };
 
 /**

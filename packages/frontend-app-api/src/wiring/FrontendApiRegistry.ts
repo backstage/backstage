@@ -23,7 +23,11 @@ import {
   ApiRef,
 } from '@backstage/frontend-plugin-api';
 
-import { apiHolderSupportsAsync, createApiPromise } from '@internal/frontend';
+import {
+  apiHolderSupportsAsync,
+  createApiPromise,
+  createRejectedApiPromise,
+} from '@internal/frontend';
 
 export class FrontendApiRegistry {
   private readonly factories = new Map<string, AnyApiFactory>();
@@ -98,10 +102,18 @@ export class FrontendApiResolver implements ApiHolder {
     this.fallbackApis = options.fallbackApis;
   }
 
-  get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
+  get<
+    TApi = unknown,
+    TApiRef extends AnyApiRef = ApiRef<TApi>,
+    TAsync extends boolean = false,
+  >(
     ref: TApiRef,
-  ): ApiLookupResult<TApiRef> {
-    return this.load(ref) as ApiLookupResult<TApiRef>;
+    options?: { async?: TAsync },
+  ): ApiLookupResult<TApiRef, TAsync> {
+    return this.load(ref, [], options?.async) as ApiLookupResult<
+      TApiRef,
+      TAsync
+    >;
   }
 
   isMaterialized(apiRefId: string) {
@@ -124,10 +136,12 @@ export class FrontendApiResolver implements ApiHolder {
   private load<T>(
     ref: AnyApiRef<T>,
     loading: { apiId: string; dependencyName: string }[] = [],
+    forceAsync = false,
   ): T | Promise<T> | undefined {
+    const isAsyncAccess = forceAsync || ref.loading === 'async';
     const factory =
       this.primaryRegistry?.get(ref) ?? this.secondaryRegistry?.get(ref);
-    if (ref.loading !== 'async' && factory?.api.loading === 'async') {
+    if (!isAsyncAccess && factory?.api.loading === 'async') {
       const consumer = loading[loading.length - 1];
       throw Object.assign(
         new Error(
@@ -140,7 +154,7 @@ export class FrontendApiResolver implements ApiHolder {
                   .map(entry => `${entry.apiId}[${entry.dependencyName}]`)
                   .join(' -> ')} -> ${ref.id}.` +
                 ` Set loading: 'async' on the ref for '${consumer.apiId}' and update its factory as needed.`
-              : ` Update the package exporting this API ref, then await apis.get(ref) or use useApi(ref) during rendering.`
+              : ` Await apis.get(ref, { async: true }) or use useApi(ref) during rendering. Alternatively, update the package exporting this API ref to an async-capable version.`
           }`,
         ),
         { name: 'AsyncApiAccessError', apiRefId: ref.id },
@@ -149,7 +163,7 @@ export class FrontendApiResolver implements ApiHolder {
     if (loading.some(entry => entry.apiId === ref.id)) {
       throw new Error(`Circular dependency of api factory for ${ref}`);
     }
-    if (ref.loading === 'async' && this.asyncApis.has(ref.id)) {
+    if (isAsyncAccess && this.asyncApis.has(ref.id)) {
       return this.asyncApis.get(ref.id) as Promise<T>;
     }
     try {
@@ -158,8 +172,10 @@ export class FrontendApiResolver implements ApiHolder {
         api = this.apis.get(ref.id);
       } else {
         if (!factory) {
-          const fallback = this.fallbackApis?.get(ref);
-          if (ref.loading !== 'async' || fallback === undefined) {
+          const fallback = this.fallbackApis?.get(ref, {
+            async: isAsyncAccess,
+          });
+          if (!isAsyncAccess || fallback === undefined) {
             return fallback;
           }
           const promise = createApiPromise(fallback) as Promise<T>;
@@ -184,8 +200,9 @@ export class FrontendApiResolver implements ApiHolder {
               );
             }
             const dep = this.load(
-              isAsyncFactory ? { ...depRef, loading: 'async' } : depRef,
+              depRef,
               [...loading, { apiId: factory.api.id, dependencyName: name }],
+              isAsyncFactory,
             );
             if (dep === undefined) {
               throw new Error(
@@ -230,17 +247,17 @@ export class FrontendApiResolver implements ApiHolder {
         }
         this.apis.set(ref.id, api);
       }
-      if (ref.loading === 'async') {
-        const promise = Promise.resolve(api) as Promise<T>;
+      if (isAsyncAccess) {
+        const promise = createApiPromise(api) as Promise<T>;
         this.asyncApis.set(ref.id, promise);
         return promise;
       }
       return api as T;
     } catch (error) {
-      if (ref.loading !== 'async') {
+      if (!isAsyncAccess) {
         throw error;
       }
-      const promise = Promise.reject<T>(error);
+      const promise = createRejectedApiPromise(error);
       this.asyncApis.set(ref.id, promise);
       return promise;
     }

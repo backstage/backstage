@@ -9,7 +9,9 @@ async-capable APIs. `useApi` suspends while these APIs initialize.
 
 **BREAKING PRODUCERS**: Custom `ApiHolder` implementations must support async-capable
 refs by returning a stable promise for a present API and `undefined` immediately
-for a missing API. Synchronous refs continue returning instances directly.
+for a missing API. They must also support the optional `{ async: true }` lookup
+option, which requests a stable promise regardless of the ref's loading mode.
+Synchronous refs continue returning instances directly when this option is omitted.
 
 `ApiRef<T>` remains synchronous by default. Its optional third type parameter
 records the loading mode, while the second parameter remains the ref ID. Use
@@ -31,6 +33,10 @@ so test render helpers and components share the same holder instance.
 
 `useApi` also supports older synchronous refs when their registered implementation
 has migrated to async loading. Existing synchronous factories remain compatible
-with async-capable refs. Direct synchronous lookups and synchronous factory
+with async-capable refs. Callers can also await `apis.get(ref, { async: true })` using
+an older synchronous ref. Ready synchronous implementations remain immediately
+available through `useApi`, without suspending. Synchronous initialization errors
+also reach error boundaries immediately, including through nested legacy providers.
+Direct synchronous lookups and synchronous factory
 dependencies that require an async implementation report actionable migration
 errors.

@@ -88,6 +88,24 @@ immediately. Initialization failures reject the promise and are cached for
 subsequent lookups. Synchronous refs continue returning instances or
 `undefined` directly.
 
+To request asynchronous access independently of the ref's loading mode, pass
+`{ async: true }`:
+
+```ts
+const workApi = await apis.get(workApiRef, { async: true });
+```
+
+A present API then returns a stable promise, even when the ref is synchronous.
+This allows callers using older refs to access implementations that have migrated
+to asynchronous loading. Missing APIs still return `undefined` immediately.
+Omitting the option or passing `{ async: false }` keeps the ref's default access
+mode; it does not force an async-capable ref to become synchronous.
+
+`useApi` requests asynchronous access internally. Ready synchronous implementations
+and mocks remain available during the initial render without suspending.
+Applications must use a framework version at least as new as their installed
+features to provide this lookup contract.
+
 When rendering under a legacy API context, `useApiHolder` from the new frontend
 system adapts synchronous implementations to the same async lookup contract.
 Factory construction in legacy apps remains synchronous.
@@ -112,8 +130,10 @@ accepts either loading mode, so lookup results for that type include both direct
 values and promises. Awaiting the result handles either mode. The deprecated
 `AnyApiRef<T>` alias also continues to accept both modes.
 
-Custom API holders must preserve promise identity across repeated lookups of
-an async-capable ref.
+Custom API holders must support `{ async: true }` for synchronous and async-capable
+refs, and preserve promise identity across repeated async lookups. The option
+selects access for that caller; the registered factory's ref still determines
+how the implementation and its dependencies are constructed.
 
 ### Migrating existing refs
 
@@ -131,8 +151,9 @@ factory determines whether its construction and dependencies can be asynchronous
 
 A direct synchronous `apis.get()` call cannot wait for an async implementation,
 even if that implementation has already loaded. It throws an error explaining
-which API requires async access. Update the package exporting the ref, then await
-`apis.get(ref)`, or use `useApi(ref)` during rendering. If a synchronous factory
+which API requires async access. Await `apis.get(ref, { async: true })`, or use
+`useApi(ref)` during rendering. Updating to an async-capable version of the ref
+also makes `await apis.get(ref)` work without the option. If a synchronous factory
 depends on a migrated async API, its error identifies the consuming API and the
 dependency path. Mark the consuming API's ref `loading: 'async'` and update its
 factory as needed. An async factory resolves dependencies asynchronously even
