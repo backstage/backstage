@@ -172,7 +172,13 @@ CREATE TRIGGER refresh_state_stitch_enqueue
 
 The trigger only **detects** deletions. It does not decide anything: it does not allocate a generation or touch `final_entities`. It requests a stitch with the same contract as application code: a new ticket, a reset failure count, and an unchanged `next_stitch_at` when a row already exists. The stitcher then publishes the tombstone, and that publication gets the generation. Until the stitch commits, the old body and its search rows stay visible together.
 
-Existing relation-peer restitching and orphan policies are unchanged. This proposal only adds the trigger on PostgreSQL. How MySQL and SQLite capture deletions is still open, and until it is settled they must not claim a completeness they lack.
+MySQL and SQLite only have row-level triggers, so they get an `AFTER DELETE ... FOR EACH ROW` trigger with the same enqueue contract. That costs more for wide deletions but behaves the same. MySQL does not fire triggers for foreign key actions, but nothing cascades into `refresh_state`, so every candidate deletion is a direct one.
+
+Existing relation-peer restitching and orphan policies are unchanged.
+
+Without the foreign key, publication has to take the lock that the foreign key used to take implicitly. Its first statement takes a key share lock on the candidate row (`FOR KEY SHARE` on PostgreSQL, a shared lock on MySQL; SQLite has a single writer), held until commit. If the candidate is already gone, the publication abandons. Otherwise deleting the candidate waits for the publication to commit, and the deletion's stitch request then sees the committed body and tombstones it. Without that lock, a publication that stalled past its lease could commit a live body after the deletion's stitch had already found nothing to tombstone and settled. The lock order is candidate, then final row, then generation counter. A key share lock does not block updates to the candidate's other columns, so processing is not slowed down on PostgreSQL.
+
+A tombstone publication has no candidate to lock. A re-created candidate replaces the stitch ticket when it asks to be stitched, and the ticket guard and ownership recheck stop a tombstone from overwriting it.
 
 ### Consuming changes
 
