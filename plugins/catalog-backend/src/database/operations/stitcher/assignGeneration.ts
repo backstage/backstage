@@ -20,8 +20,9 @@ import { Knex } from 'knex';
  * Assigns a commit-ordered publication generation on MySQL and SQLite,
  * retaining the counter's row lock until the caller commits. Call only after
  * taking all other write locks, and commit promptly afterward. Rollback also
- * rolls back allocation. PostgreSQL allocates in a deferred trigger instead;
- * see the final_entity_generation_trigger migration.
+ * rolls back allocation. PostgreSQL instead allocates inside COMMIT, in the
+ * final_entities_assign_generation_at_commit trigger installed by the
+ * 20261013000000_final_entity_generations migration.
  * The returned decimal string avoids losing bigint precision in JavaScript.
  */
 export async function assignGeneration(
