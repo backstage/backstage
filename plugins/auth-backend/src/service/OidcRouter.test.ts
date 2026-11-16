@@ -55,6 +55,11 @@ const mockFetchCimdMetadata =
     typeof CimdClient.fetchCimdMetadata
   >;
 
+const TEST_CODE_CHALLENGE = crypto
+  .createHash('sha256')
+  .update('test-code-verifier')
+  .digest('base64url');
+
 jest.setTimeout(60_000);
 
 describe('OidcRouter', () => {
@@ -316,7 +321,14 @@ describe('OidcRouter', () => {
       expect((await exchange('wrong-verifier')).status).toBe(400);
       await mocks.oidc.updateAuthorizationSession({
         id: session.id,
+        codeChallenge: codeVerifier,
+        codeChallengeMethod: 'plain',
+      });
+      expect((await exchange(codeVerifier)).status).toBe(400);
+      await mocks.oidc.updateAuthorizationSession({
+        id: session.id,
         codeChallenge: '',
+        codeChallengeMethod: 'S256',
       });
       expect((await exchange(codeVerifier)).status).toBe(400);
       expect(mocks.tokenIssuer.issueToken).not.toHaveBeenCalled();
@@ -596,8 +608,8 @@ describe('OidcRouter', () => {
             client_id: client.clientId,
             redirect_uri: 'https://example.com/callback',
             response_type: 'code',
-            code_challenge: 'test-code-verifier',
-            code_challenge_method: 'plain',
+            code_challenge: TEST_CODE_CHALLENGE,
+            code_challenge_method: 'S256',
             scope: 'openid',
             state: 'test-state',
           })
@@ -623,8 +635,8 @@ describe('OidcRouter', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -680,8 +692,8 @@ describe('OidcRouter', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -742,8 +754,8 @@ describe('OidcRouter', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -818,8 +830,8 @@ describe('OidcRouter', () => {
         });
 
         const authSession = await service.createAuthorizationSession({
-          codeChallenge: 'test-code-verifier',
-          codeChallengeMethod: 'plain',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
           clientId: client.clientId,
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -921,8 +933,11 @@ describe('OidcRouter', () => {
             clientId: client.clientId,
             redirectUri: tokenRequest.redirect_uri,
             responseType: 'code',
-            codeChallenge: tokenRequest.code_verifier,
-            codeChallengeMethod: 'plain',
+            codeChallenge: crypto
+              .createHash('sha256')
+              .update(tokenRequest.code_verifier)
+              .digest('base64url'),
+            codeChallengeMethod: 'S256',
           });
           const { redirectUrl: legacyRedirectUrl } =
             await service.approveAuthorizationSession({
@@ -973,7 +988,10 @@ describe('OidcRouter', () => {
 
         const codeVerifier =
           'test-code-verifier-123456789012345678901234567890123456789012345';
-        const codeChallenge = codeVerifier;
+        const codeChallenge = crypto
+          .createHash('sha256')
+          .update(codeVerifier)
+          .digest('base64url');
 
         const authSession = await service.createAuthorizationSession({
           clientId: client.clientId,
@@ -982,7 +1000,7 @@ describe('OidcRouter', () => {
           scope: 'openid',
           state: 'test-state',
           codeChallenge,
-          codeChallengeMethod: 'plain',
+          codeChallengeMethod: 'S256',
         });
 
         const { server } = await startTestBackend({
@@ -1210,8 +1228,8 @@ describe('OidcRouter', () => {
       });
 
       const authSession = await service.createAuthorizationSession({
-        codeChallenge: 'test-code-verifier',
-        codeChallengeMethod: 'plain',
+        codeChallenge: TEST_CODE_CHALLENGE,
+        codeChallengeMethod: 'S256',
         clientId: client.clientId,
         redirectUri: 'https://example.com/callback',
         responseType: 'code',

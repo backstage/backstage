@@ -299,7 +299,7 @@ export class OidcService {
         ...(this.offlineAccess ? ['refresh_token'] : []),
       ],
       authorization_endpoint: `${this.baseUrl}/v1/authorize`,
-      code_challenge_methods_supported: ['S256', 'plain'],
+      code_challenge_methods_supported: ['S256'],
       ...((cimdEnabled || staticClientsEnabled) && {
         revocation_endpoint: `${this.baseUrl}/v1/revoke`,
       }),
@@ -370,10 +370,7 @@ export class OidcService {
       );
     }
 
-    if (
-      codeChallenge &&
-      (!codeChallengeMethod || !['S256', 'plain'].includes(codeChallengeMethod))
-    ) {
+    if (codeChallengeMethod !== 'S256') {
       throw new InputError('Invalid code_challenge_method');
     }
 
@@ -836,10 +833,6 @@ export class OidcService {
     codeVerifier: string;
     method?: string;
   }): boolean {
-    if (!opts.method || opts.method === 'plain') {
-      return opts.codeChallenge === opts.codeVerifier;
-    }
-
     if (opts.method === 'S256') {
       const hash = crypto
         .createHash('sha256')
