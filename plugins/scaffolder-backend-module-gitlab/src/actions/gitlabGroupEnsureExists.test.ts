@@ -25,6 +25,9 @@ const mockGitlabClient = {
     show: jest.fn(),
     create: jest.fn(),
   },
+  Namespaces: {
+    show: jest.fn(),
+  },
 };
 
 jest.mock('@gitbeaker/rest', () => ({
@@ -290,5 +293,78 @@ describe('gitlab:group:ensureExists', () => {
         token: 'mysecrettoken',
       }),
     );
+  });
+
+  it('should reuse an existing user namespace when owner is a user and path has no further segments', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockResolvedValueOnce({
+      id: 42,
+      kind: 'user',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=my-project&owner=my-username',
+        path: ['my-username'],
+      },
+    });
+
+    expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 42);
+  });
+
+  it('should throw InputError when attempting to create a subgroup under a user namespace', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockResolvedValueOnce({
+      id: 42,
+      kind: 'user',
+    });
+
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          repoUrl: 'gitlab.com?repo=my-project&owner=my-username',
+          path: ['my-username', 'subgroup'],
+        },
+      }),
+    ).rejects.toThrow(
+      "Cannot create subgroups under user namespace 'my-username'",
+    );
+
+    expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+  });
+
+  it('should create group when namespace does not exist (404)', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Groups.create.mockResolvedValueOnce({
+      id: 99,
+      full_path: 'new-group',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=my-project&owner=owner',
+        path: ['new-group'],
+      },
+    });
+
+    expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith(
+      'new-group',
+      'new-group',
+      {},
+    );
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 99);
   });
 });

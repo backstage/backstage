@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { GroupSchema, CreateGroupOptions } from '@gitbeaker/rest';
@@ -110,8 +111,33 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         } catch (error: any) {
           // 404 means the group doesn't exist - we'll create it below
           // Any other error should be thrown
-          if (error.cause?.response?.status !== 404) {
+          if (error.cause?.response?.status !== 404 && error.status !== 404) {
             throw error;
+          }
+        }
+        if (!subGroup && i === 0) {
+          try {
+            const namespace = (await api.Namespaces.show(slug)) as unknown as {
+              id: number;
+              kind?: string;
+            };
+            if (namespace && namespace.kind === 'user') {
+              if (pathParts.length > 1) {
+                throw new InputError(
+                  `Cannot create subgroups under user namespace '${slug}'`,
+                );
+              }
+              parentId = namespace.id;
+              currentPath = slug;
+              continue;
+            }
+          } catch (error: any) {
+            if (error instanceof InputError) {
+              throw error;
+            }
+            if (error.cause?.response?.status !== 404 && error.status !== 404) {
+              throw error;
+            }
           }
         }
         if (!subGroup) {
