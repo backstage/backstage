@@ -138,7 +138,7 @@ The `CatalogExportConfigBlueprint` supports the following properties:
 
 #### Using the export button in a custom catalog page
 
-If you replace the catalog index page with your own, you can still add the export button by rendering `CatalogExportButton` from `@backstage/plugin-catalog-react`. It must be placed inside an `EntityListProvider`, since it exports the entities that match the currently selected filters. It accepts the same export settings through its `settings` prop:
+If you replace the catalog index page with your own, you can still add the export button by rendering `CatalogExportButton` from `@backstage/plugin-catalog-react`. It must be placed inside an `EntityListProvider`, since it exports the entities that match the currently selected filters. It accepts the same export settings through its `settings` prop, except `enabled`, which only applies to the default page:
 
 ```tsx
 import {

@@ -56,8 +56,8 @@ export interface CatalogExporterConfig {
  */
 export interface CatalogExportSettings {
   /**
-   * When true, displays the export button in the catalog interface.
-   * Defaults to false if not specified.
+   * When true, the catalog index page displays the export button.
+   * Defaults to false if not specified. Not used by `CatalogExportButton` itself.
    */
   enabled?: boolean;
 

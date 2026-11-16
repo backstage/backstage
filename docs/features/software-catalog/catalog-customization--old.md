@@ -214,7 +214,7 @@ Here's an example combining all customization options:
 
 ### Using the export button in a custom catalog page
 
-If you build a [fully custom catalog index page](#advanced-customization), you can add the export button by rendering `CatalogExportButton` from `@backstage/plugin-catalog-react` inside the `EntityListProvider`. It accepts the same options as `exportSettings` through its `settings` prop:
+If you build a [fully custom catalog index page](#advanced-customization), you can add the export button by rendering `CatalogExportButton` from `@backstage/plugin-catalog-react` inside the `EntityListProvider`. It accepts the same options as `exportSettings` through its `settings` prop, except `enabled`, which only applies to the default page:
 
 ```tsx title="packages/app/src/components/catalog/CustomCatalogIndex.tsx"
 import {
