@@ -1098,12 +1098,6 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
 }
 
 // @public (undocumented)
-export type ExtensionAttachTo = {
-  id: string;
-  input: string;
-};
-
-// @public (undocumented)
 export interface ExtensionBlueprint<
   T extends ExtensionBlueprintParameters = ExtensionBlueprintParameters,
 > {
