@@ -91,7 +91,11 @@ export interface AppHistoryApi {
   /**
    * Reads the current immutable history snapshot without writing history.
    *
-   * Returns the same object until history changes. Each committed navigation
+   * Returns the same object until navigation is published. Reads do not
+   * discover browser history writes that have not been reported to subscribers,
+   * including silent URL synchronization by plugins.
+   *
+   * Each committed navigation
    * publishes a new snapshot, even when its URL and state are unchanged.
    * The nested location retains its identity while its fields are unchanged.
    *

@@ -262,10 +262,10 @@ describe('HistoryBackend', () => {
       const unsubscribeFirst = history.listen(first);
       const unsubscribeSecond = history.listen(second);
 
-      // Owned writes advance every listener's baseline. The corresponding
-      // browser event must not report the write as an external navigation.
+      // Owned writes advance every listener's baseline, so an unchanged
+      // hashchange notification is ignored by both listeners.
       history.push('/owned');
-      window.dispatchEvent(new PopStateEvent('popstate'));
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
       expect(first).not.toHaveBeenCalled();
       expect(second).not.toHaveBeenCalled();
 
@@ -279,7 +279,7 @@ describe('HistoryBackend', () => {
       expect(second).toHaveBeenCalledTimes(1);
 
       history.replace('/owned-replacement');
-      window.dispatchEvent(new PopStateEvent('popstate'));
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
       expect(second).toHaveBeenCalledTimes(1);
 
       unsubscribeSecond();
@@ -304,6 +304,21 @@ describe('HistoryBackend', () => {
       history.replace('/replaced', { state: { user: true } });
       expect(history.getEntry()).toEqual(pushed);
       expect(history.getLocation().state).toEqual({ user: true });
+    });
+
+    it('does not inherit coordinates after a silent raw write', () => {
+      const history = createWindowHistoryBackend();
+      history.push('/owned');
+      window.history.pushState({ external: true }, '', '/outside');
+      history.push('/after-outside');
+      expect(history.getEntry()).toMatchObject({ canGoBack: true });
+      expect(history.getEntry().index).toBeUndefined();
+      expect(history.getEntry().length).toBeUndefined();
+
+      window.history.replaceState({ external: true }, '', '/replaced-outside');
+      history.replace('/after-replace');
+      expect(history.getEntry().index).toBeUndefined();
+      expect(history.getEntry().length).toBeUndefined();
     });
 
     it('should seed a valid local index when an older browser stack is ambiguous', () => {
@@ -383,6 +398,77 @@ describe('HistoryBackend', () => {
 
       expect(listener).toHaveBeenCalledTimes(1);
       unsubscribe();
+    });
+
+    it('should not notify for replaceState calls made outside the app with the Navigation API', () => {
+      const navigation = new EventTarget() as EventTarget & {
+        currentEntry: { key: string; index: number };
+        canGoBack: boolean;
+      };
+      navigation.currentEntry = { key: 'native-key', index: 3 };
+      navigation.canGoBack = true;
+      Object.defineProperty(window, 'navigation', {
+        configurable: true,
+        value: navigation,
+      });
+      window.history.replaceState(null, '', '/docs?filters%5Buser%5D=owned');
+      const history = createWindowHistoryBackend();
+      const listener = jest.fn();
+      const unsubscribe = history.listen(listener);
+
+      // Plugins such as the catalog entity list sync their filters to the URL
+      // by calling replaceState directly, relying on the router not observing
+      // it. Browsers with the Navigation API still fire currententrychange.
+      const fireReplace = (url: string) => {
+        window.history.replaceState(null, '', url);
+        navigation.dispatchEvent(
+          Object.assign(new Event('currententrychange'), {
+            navigationType: 'replace',
+          }),
+        );
+      };
+      fireReplace('/docs?filters%5Buser%5D=all');
+      fireReplace('/docs?filters%5Buser%5D=owned');
+
+      expect(listener).not.toHaveBeenCalled();
+
+      // Traversals reported through the Navigation API are still observed.
+      navigation.currentEntry = { key: 'previous-key', index: 2 };
+      navigation.dispatchEvent(
+        Object.assign(new Event('currententrychange'), {
+          navigationType: 'traverse',
+        }),
+      );
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect(listener).toHaveBeenLastCalledWith('POP');
+      unsubscribe();
+    });
+
+    it("does not publish a later popstate listener's query synchronization through hashchange", async () => {
+      window.history.replaceState(null, '', '/page');
+      const history = createWindowHistoryBackend();
+      const locations: string[] = [];
+      const unsubscribe = history.listen(() => {
+        const location = history.getLocation();
+        locations.push(
+          `${location.pathname}${location.search}${location.hash}`,
+        );
+      });
+      const syncQuery = () =>
+        window.history.replaceState(null, '', '/page?local=yes#section');
+      window.addEventListener('popstate', syncQuery);
+      try {
+        const hashChanged = new Promise(resolve =>
+          window.addEventListener('hashchange', resolve, { once: true }),
+        );
+        window.location.hash = '#section';
+        await hashChanged;
+        expect(locations).toEqual(['/page#section']);
+        expect(window.location.search).toBe('?local=yes');
+      } finally {
+        window.removeEventListener('popstate', syncQuery);
+        unsubscribe();
+      }
     });
 
     it('should omit unknown coordinates for native hash navigation and restore them on back', async () => {
