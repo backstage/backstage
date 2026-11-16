@@ -19,6 +19,10 @@
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Resolve a path relative to the root of a package directory.
 Additional path arguments are resolved relative to the package dir.</p>
+<p>The first argument can be a package name or a file URL string such as
+<code>import.meta.url</code>. For a file URL, the package root is the nearest ancestor
+directory containing a <code>package.json</code> file, starting from the module's
+directory. This lets a package resolve its own assets without using its name.</p>
 <p>This is particularly useful when you want to access assets shipped with
 your backend plugin package. When doing so, do not forget to include the assets
 in your published package by adding them to <code>files</code> in your <code>package.json</code>.</p>
@@ -28,9 +32,15 @@ in your published package by adding them to <code>files</code> in your <code>pac
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">name</span>: <span class="tsd-signature-type">string</span></span></li>
 <li><span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">paths</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example">Example<a href="#example" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-3">const</span><span class="hl-2"> </span><span class="hl-5">migrationsDir</span><span class="hl-2"> = </span><span class="hl-1">resolvePackagePath</span><span class="hl-2">(</span><span class="hl-8">import</span><span class="hl-2">.</span><span class="hl-6">meta</span><span class="hl-2">.</span><span class="hl-6">url</span><span class="hl-2">, </span><span class="hl-4">&#39;migrations&#39;</span><span class="hl-2">);</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/c32f675be77c48485b3be219950c3f12f04dbb72/packages/backend-plugin-api/src/paths.ts#L37">packages/backend-plugin-api/src/paths.ts:37</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/552f31344ccb03192aea48960b388a4731f92319/packages/backend-plugin-api/src/paths.ts#L49">packages/backend-plugin-api/src/paths.ts:49</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
