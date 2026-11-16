@@ -73,14 +73,14 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
           SELECT t.tgdeferrable, t.tginitdeferred, p.proconfig
           FROM pg_trigger t JOIN pg_proc p ON p.oid = t.tgfoid
           WHERE t.tgrelid = 'final_entities'::regclass
-            AND t.tgname = 'catalog_assign_generation_at_commit'
+            AND t.tgname = 'final_entities_assign_generation_at_commit'
         `);
         return rows;
       };
       const functions = async () =>
         (
           await knex.raw(
-            "SELECT count(*)::int AS n FROM pg_proc WHERE proname = 'catalog_assign_generation_at_commit'",
+            "SELECT count(*)::int AS n FROM pg_proc WHERE proname = 'final_entities_assign_generation_at_commit'",
           )
         ).rows[0].n;
       await migrateUpOnce(knex);

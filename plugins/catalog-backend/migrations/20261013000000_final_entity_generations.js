@@ -17,7 +17,8 @@
 // @ts-check
 
 const indexName = 'final_entities_generation_idx';
-const triggerName = 'catalog_assign_generation_at_commit';
+// Named after its table, leaving room for the same pattern on other tables.
+const triggerName = 'final_entities_assign_generation_at_commit';
 
 /** @param {import('knex').Knex} knex */
 const isPg = knex => knex.client.config.client === 'pg';
