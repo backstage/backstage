@@ -102,4 +102,24 @@ describe('getEntityDocsRoute', () => {
 
     expect(url).toBe('/docs/example-1/component/my-component-1/feature-1/');
   });
+
+  it('falls back to the entity own docs route for a malformed techdocs-entity value', () => {
+    const url = getEntityDocsRoute(
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'feature-1',
+          namespace: 'example-1',
+          annotations: {
+            [TECHDOCS_EXTERNAL_ANNOTATION]: 'my-component',
+          },
+        },
+      },
+      getRoute,
+      config,
+    );
+
+    expect(url).toBe('/docs/example-1/component/feature-1');
+  });
 });

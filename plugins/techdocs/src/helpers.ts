@@ -44,9 +44,8 @@ export function getEntityDocsRoute(
   }>,
   config: Config,
 ): string {
-  return (
-    buildTechDocsURL(entity, entityRef =>
-      getRouteToReaderPageFor(toLowercaseEntityRefMaybe(entityRef, config)),
-    ) ?? ''
-  );
+  // buildTechDocsURL only returns undefined when routeFunc is missing; ours is required.
+  return buildTechDocsURL(entity, entityRef =>
+    getRouteToReaderPageFor(toLowercaseEntityRefMaybe(entityRef, config)),
+  )!;
 }
