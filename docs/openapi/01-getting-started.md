@@ -90,19 +90,19 @@ export async function createRouter(
 
 From your current backend plugin directory, run `yarn backstage-repo-tools package schema openapi generate --client-package <plugin-client-directory>`. `<plugin-client-directory>` is a new directory and npm package that you should create. The general pattern is to add a new entry point to your plugin's common package, `plugins/<plugin-name>-common/client`. You should add this command to your `package.json` for future use.
 
-The generated client will have a directory `src/schema/openapi/generated` that exports the `DefaultApiFrontendClient`, `DefaultApiBackendClient` and `DefaultApiIsomorphicClient` classes and all generated types. See [the client generation docs](./generate-client.md#choosing-a-client) for which one to use. You can use the client like so,
+The generated client will have a directory `src/schema/openapi/generated` that exports the `<PluginId>FrontendClient`, `<PluginId>BackendClient` and `<PluginId>Client` classes, named after your plugin ID (for example `CatalogFrontendClient`, `CatalogBackendClient` and `CatalogClient`), and all generated types. See [the client generation docs](./generate-client.md#choosing-a-client) for which one to use. You can use the client like so,
 
 ```diff
-+ import { DefaultApiIsomorphicClient } from '../schema/openapi/generated';
++ import { CatalogClient as GeneratedCatalogClient } from '../schema/openapi/generated';
 
 export class CatalogClient implements CatalogApi {
-+ private readonly apiClient: DefaultApiIsomorphicClient;
++ private readonly apiClient: GeneratedCatalogClient;
 
   constructor(options: {
     discoveryApi: { getBaseUrl(pluginId: string): Promise<string> };
     fetchApi?: { fetch: typeof fetch };
   }) {
-+    this.apiClient = new DefaultApiIsomorphicClient(options);
++    this.apiClient = new GeneratedCatalogClient(options);
   }
   ...
 ```
