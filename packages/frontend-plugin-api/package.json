@@ -23,11 +23,11 @@
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
-      "package.json": [
-        "package.json"
-      ],
       "routing": [
         "src/routingIntegration.ts"
+      ],
+      "package.json": [
+        "package.json"
       ]
     }
   },
