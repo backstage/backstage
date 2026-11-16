@@ -21,8 +21,7 @@ utilities as <code>@testing-library/react</code> <code>render</code> function.</
 <p>Navigation is owned by a @backstage/frontend-plugin-api#AppHistoryApi
 with in-memory history, the same seam as production. Access it through
 <code>apis.get(appHistoryApiRef)</code> on the render result.</p>
-<p>There is no <code>router</code> option here, and no need for one: the extensions are
-routed by the app itself, so each page declares the adapter it wants exactly
+<p>The extensions are routed by the app itself, so each page declares its adapter
 as it does in production. The app's root React Router v6 projection is also
 present. <code>renderInTestApp</code> supplies the page around a bare element.</p>
 </div>
@@ -36,7 +35,7 @@ present. <code>renderInTestApp</code> supplies the page around a bare element.</
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="../types/_backstage_frontend-test-utils.RenderTestAppOptions.html" class="tsd-signature-type tsd-kind-type-alias">RenderTestAppOptions</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#rendertestapptapipairs">TApiPairs</a><span class="tsd-signature-symbol">&gt;</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="../types/_backstage_frontend-test-utils.TestAppRenderResult.html" class="tsd-signature-type tsd-kind-type-alias">TestAppRenderResult</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/703a6901b1e63ec56f16209f9ec1c14e809d37d4/packages/frontend-test-utils/src/app/renderTestApp.tsx#L144">packages/frontend-test-utils/src/app/renderTestApp.tsx:144</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/598b3342f3a74bbe6535debbb4e25096f20b9d89/packages/frontend-test-utils/src/app/renderTestApp.tsx#L143">packages/frontend-test-utils/src/app/renderTestApp.tsx:143</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
