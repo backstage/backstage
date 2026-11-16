@@ -1098,12 +1098,6 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
 }
 
 // @public (undocumented)
-export type ExtensionAttachTo = {
-  id: string;
-  input: string;
-};
-
-// @public (undocumented)
 export interface ExtensionBlueprint<
   T extends ExtensionBlueprintParameters = ExtensionBlueprintParameters,
 > {
@@ -2549,11 +2543,6 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 export function useRouteRefParams<Params extends AnyRouteRefParams>(
   routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params;
-
-// @public
-export function useRouteResolution(): {
-  matches: readonly RouteResolutionMatch[];
-};
 
 // @public (undocumented)
 export const useTranslationRef: <TMessages extends { [key in string]: string }>(

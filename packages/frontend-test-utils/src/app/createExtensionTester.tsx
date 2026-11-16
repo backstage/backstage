@@ -15,7 +15,6 @@
  */
 
 import {
-  useRouteResolution,
   AppNode,
   AppTree,
   Extension,
@@ -26,6 +25,7 @@ import {
   appHistoryApiRef,
   useApiHolder,
 } from '@backstage/frontend-plugin-api';
+import { useRouteMatches, OpaqueExtensionDefinition } from '@internal/frontend';
 import type { AppError } from '@backstage/frontend-app-api';
 import { ReactNode, useMemo } from 'react';
 import { Config, ConfigReader } from '@backstage/config';
@@ -42,7 +42,7 @@ import { instantiateAppNodeTree } from '../../../frontend-app-api/src/tree/insta
 import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/readAppExtensionsConfig';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createErrorCollector } from '../../../frontend-app-api/src/wiring/createErrorCollector';
-import { OpaqueExtensionDefinition } from '@internal/frontend';
+
 import { TestRouteResolver } from '../internal/TestRouteResolver';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
@@ -54,7 +54,7 @@ import { throwOnAppErrors } from './throwOnAppErrors';
 
 function ExtensionTestRoutes(props: { node: AppNode; children: ReactNode }) {
   const history = useApiHolder().get(appHistoryApiRef);
-  const routePattern = useRouteResolution().matches.at(-1)?.routePattern ?? '/';
+  const routePattern = useRouteMatches().at(-1)?.routePattern ?? '/';
   const routeObjects = useMemo(() => {
     const { routeObjects: routes } = extractRouteInfoFromAppNode(
       props.node,

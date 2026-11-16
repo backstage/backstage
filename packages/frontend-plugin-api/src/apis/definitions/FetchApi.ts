@@ -20,11 +20,19 @@ import { createApiRef } from '../system';
  * A wrapper for the fetch API, that has additional behaviors such as the
  * ability to automatically inject auth information where necessary.
  *
+ * @remarks
+ *
+ * Implementations must support `plugin://<pluginId>/<path>` URLs by resolving
+ * the plugin's base URL through {@link DiscoveryApi.getBaseUrl} for each request.
+ * The path, query, and fragment are appended to that base URL. Resolution must
+ * happen before URL-based authentication checks so that credentials are only
+ * sent to allowed backend URLs. Regular HTTP(S) URLs must also be supported.
+ *
  * @public
  */
 export type FetchApi = {
   /**
-   * The `fetch` implementation.
+   * The `fetch` implementation, including support for `plugin://` URLs.
    */
   fetch: typeof fetch;
 };

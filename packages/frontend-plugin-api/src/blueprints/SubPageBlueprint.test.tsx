@@ -27,7 +27,7 @@ import {
 import { useAppHref } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
 import { SubPageBlueprint } from './SubPageBlueprint';
-import { useRouteResolution } from '../routing/useRouteResolution';
+import { useRouteMatches } from '@internal/frontend';
 import { ReactNode, createContext, useContext, useState } from 'react';
 
 const RouterStack = createContext<readonly string[]>([]);
@@ -44,7 +44,7 @@ const RouterStack = createContext<readonly string[]>([]);
 function createRouter(name: string) {
   return function Router(props: { children?: ReactNode }) {
     const stack = useContext(RouterStack);
-    const mount = useRouteResolution().matches.at(-1);
+    const mount = useRouteMatches().at(-1);
     const [state, setState] = useState(0);
     return (
       <RouterStack.Provider value={[...stack, name]}>
@@ -79,7 +79,7 @@ describe('SubPageBlueprint', () => {
         title: 'Info',
         loader: async () => {
           const Probe = () => {
-            const mount = useRouteResolution().matches.at(-1);
+            const mount = useRouteMatches().at(-1);
             return (
               <div data-testid="info-page">
                 <div data-testid="mount-base">{mount?.basePath}</div>
@@ -98,7 +98,7 @@ describe('SubPageBlueprint', () => {
         title: 'Config',
         loader: async () => {
           const Probe = () => {
-            const mount = useRouteResolution().matches.at(-1);
+            const mount = useRouteMatches().at(-1);
             return (
               <div data-testid="config-page">
                 <div data-testid="mount-base">{mount?.basePath}</div>
@@ -153,7 +153,7 @@ describe('SubPageBlueprint', () => {
         loader: async () => {
           const Probe = () => {
             const location = useLocation();
-            const mount = useRouteResolution().matches.at(-1);
+            const mount = useRouteMatches().at(-1);
             return (
               <div data-testid="general-page">
                 <div data-testid="pathname">{location.pathname}</div>
@@ -193,7 +193,7 @@ describe('SubPageBlueprint', () => {
           {useContext(RouterStack).join('>')}
         </span>
         <span data-testid="content-mount">
-          {useRouteResolution().matches.at(-1)?.basePath}
+          {useRouteMatches().at(-1)?.basePath}
         </span>
       </div>
     );
@@ -308,7 +308,7 @@ describe('SubPageBlueprint', () => {
           {useContext(RouterStack).join('>')}
         </span>
         <span data-testid="content-mount">
-          {useRouteResolution().matches.at(-1)?.basePath}
+          {useRouteMatches().at(-1)?.basePath}
         </span>
       </div>
     );
@@ -384,7 +384,7 @@ describe('SubPageBlueprint', () => {
         loader: async () => {
           const Templates = () => {
             const location = useLocation();
-            const mount = useRouteResolution().matches.at(-1);
+            const mount = useRouteMatches().at(-1);
             return (
               <div data-testid="templates-page">
                 <div data-testid="pathname">{location.pathname}</div>
@@ -456,7 +456,7 @@ describe('SubPageBlueprint', () => {
     // Read from a location one level below the sub-page's own base, which is
     // the only place the base can be told apart from the current pathname.
     const Probe = () => {
-      const mount = useRouteResolution().matches.at(-1);
+      const mount = useRouteMatches().at(-1);
       return (
         <div data-testid="intro-page">
           <div data-testid="mount-base">{mount?.basePath}</div>
