@@ -30,7 +30,7 @@ import {
 } from '@internal/frontend';
 import { FilterPredicate } from '@backstage/filter-predicates';
 
-/** @public */
+/** @ignore */
 export type ExtensionAttachTo = { id: string; input: string };
 
 /** @public */
