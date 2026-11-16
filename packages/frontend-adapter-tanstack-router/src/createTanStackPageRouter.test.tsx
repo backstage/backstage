@@ -16,10 +16,10 @@
 
 import { act, screen } from '@testing-library/react';
 import {
+  mockApis,
   renderInTestApp,
   renderTestApp,
   TestApiProvider,
-  mockApis,
 } from '@backstage/frontend-test-utils';
 import {
   useApi,

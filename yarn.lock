@@ -7568,6 +7568,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/core-components": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@braintree/sanitize-url": "npm:^7.1.2"
     "@internationalized/date": "npm:^3.12.0"

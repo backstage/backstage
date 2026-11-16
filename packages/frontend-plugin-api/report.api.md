@@ -176,7 +176,7 @@ export interface AppHistoryApi {
   subscribe(listener: () => void): () => void;
 }
 
-// @public
+// @public @deprecated
 export const appHistoryApiRef: ApiRef_2<AppHistoryApi, 'core.app-history'> & {
   readonly $$type: '@backstage/ApiRef';
 };
@@ -916,14 +916,14 @@ export interface CreateFrontendPluginOptions<
 }
 
 // @public
-export function createRouteRef<TParamKey extends string = never>(config?: {
-  readonly params?: TParamKey[];
+export function createRouteRef<TParamKeys extends string = never>(config?: {
+  readonly params?: TParamKeys[];
   aliasFor?: string;
 }): RouteRef<
-  [TParamKey] extends [never]
+  [TParamKeys] extends [never]
     ? undefined
     : {
-        [param in TParamKey]: string;
+        [param in TParamKeys]: string;
       }
 >;
 
@@ -1399,9 +1399,7 @@ export interface ExtensionInput<
 export interface ExternalRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > {
-  // (undocumented)
   readonly $$type: '@backstage/ExternalRouteRef';
-  // (undocumented)
   readonly T: TParams;
 }
 
@@ -2083,15 +2081,12 @@ export type RouteFunc<TParams extends AnyRouteRefParams> = (
 export interface RouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > {
-  // (undocumented)
   readonly $$type: '@backstage/RouteRef';
-  // (undocumented)
   readonly T: TParams;
 }
 
-// @public (undocumented)
+// @public
 export interface RouteResolutionApi {
-  // (undocumented)
   resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:
       | RouteRef<TParams>
@@ -2250,11 +2245,8 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
 export interface SubRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > {
-  // (undocumented)
   readonly $$type: '@backstage/SubRouteRef';
-  // (undocumented)
   readonly path: string;
-  // (undocumented)
   readonly T: TParams;
 }
 
@@ -2540,9 +2532,9 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 ): RouteFunc<TParams> | undefined;
 
 // @public
-export function useRouteRefParams<Params extends AnyRouteRefParams>(
-  routeRef: RouteRef<Params> | SubRouteRef<Params>,
-): Params;
+export function useRouteRefParams<TParams extends AnyRouteRefParams>(
+  routeRef: RouteRef<TParams> | SubRouteRef<TParams>,
+): TParams;
 
 // @public (undocumented)
 export const useTranslationRef: <TMessages extends { [key in string]: string }>(

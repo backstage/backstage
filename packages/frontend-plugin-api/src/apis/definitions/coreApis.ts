@@ -48,7 +48,11 @@ import { translationApiRef } from './TranslationApi';
  * @public
  */
 export namespace coreApis {
-  /** Shared app navigation history. */
+  /**
+   * The API reference for {@link AppHistoryApi}.
+   *
+   * @public
+   */
   export const appHistory: typeof appHistoryApiRef = appHistoryApiRef;
 
   /**

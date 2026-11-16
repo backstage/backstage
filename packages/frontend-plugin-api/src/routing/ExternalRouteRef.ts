@@ -30,7 +30,9 @@ import { AnyRouteRefParams } from './types';
 export interface ExternalRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > {
+  /** Marker for an opaque route reference. */
   readonly $$type: '@backstage/ExternalRouteRef';
+  /** The route parameters that the bound path must supply. */
   readonly T: TParams;
 }
 

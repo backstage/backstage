@@ -138,6 +138,7 @@ export interface AppHistoryApi {
  * The `ApiRef` of {@link AppHistoryApi}.
  *
  * @public
+ * @deprecated Use {@link coreApis.appHistory} instead.
  */
 export const appHistoryApiRef = createApiRef<AppHistoryApi>().with({
   id: 'core.app-history',
