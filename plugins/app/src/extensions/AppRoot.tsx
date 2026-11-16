@@ -29,7 +29,7 @@ import {
   useAnalytics,
   useNavigation,
 } from '@backstage/frontend-plugin-api';
-import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
+import { PageRegistryProvider } from './PageRegistryProvider';
 import {
   AppRootWrapperBlueprint,
   SignInPageBlueprint,
@@ -300,7 +300,7 @@ export function AppRouter(props: AppRouterProps) {
     <RootHistoryRouter history={appHistory}>
       <LegacyBUIProvider>
         <BUIProvider useAnalytics={useAnalytics} useNavigation={useNavigation}>
-          <BreadcrumbsRegistryProvider>
+          <PageRegistryProvider>
             <AppRootElements elements={extraElements} />
             <RouteTracker routeObjects={routeObjects} />
             {SignInPageComponent ? (
@@ -313,7 +313,7 @@ export function AppRouter(props: AppRouterProps) {
             ) : (
               children
             )}
-          </BreadcrumbsRegistryProvider>
+          </PageRegistryProvider>
         </BUIProvider>
       </LegacyBUIProvider>
     </RootHistoryRouter>

@@ -15,6 +15,7 @@
  */
 export { App } from './App';
 export { AppLanguageApi } from './AppLanguageApi';
+export { DocumentTitleApi } from './DocumentTitleApi';
 export { AppLayout } from './AppLayout';
 export { AppNav } from './AppNav';
 export { AppRoot } from './AppRoot';

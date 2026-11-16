@@ -23,6 +23,7 @@ import { appTreeApiRef } from './AppTreeApi';
 import { configApiRef } from './ConfigApi';
 import { dialogApiRef } from './DialogApi';
 import { discoveryApiRef } from './DiscoveryApi';
+import { documentTitleApiRef } from './DocumentTitleApi';
 import { errorApiRef } from './ErrorApi';
 import { featureFlagsApiRef } from './FeatureFlagsApi';
 import { fetchApiRef } from './FetchApi';
@@ -106,6 +107,13 @@ export namespace coreApis {
    * @public
    */
   export const discovery: typeof discoveryApiRef = discoveryApiRef;
+
+  /**
+   * The API reference for {@link DocumentTitleApi}.
+   *
+   * @public
+   */
+  export const documentTitle: typeof documentTitleApiRef = documentTitleApiRef;
 
   /**
    * The API reference for {@link ErrorApi}.

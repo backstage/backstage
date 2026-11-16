@@ -382,6 +382,29 @@ const appPlugin: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
+    'api:app/document-title': OverridableExtensionDefinition<{
+      config: {
+        template: string;
+        separator: string;
+        order: 'innermost-first' | 'outermost-first';
+      };
+      configInput: {
+        template?: string | undefined;
+        separator?: string | undefined;
+        order?: 'innermost-first' | 'outermost-first' | undefined;
+      };
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      kind: 'api';
+      name: 'document-title';
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
     'api:app/error': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'error';

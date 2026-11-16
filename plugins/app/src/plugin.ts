@@ -18,6 +18,7 @@ import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import {
   App,
   AppLanguageApi,
+  DocumentTitleApi,
   AppLayout,
   AppNav,
   AppRoot,
@@ -51,6 +52,7 @@ export const appPlugin = createFrontendPlugin({
     ...apis,
     App,
     AppLanguageApi,
+    DocumentTitleApi,
     AppLayout,
     AppNav,
     AppRoot,

@@ -65,6 +65,12 @@ jest.mock('react-router-dom', () => {
   };
 });
 
+const mockUsePageTitle = jest.fn();
+jest.mock('@backstage/frontend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/frontend-plugin-api'),
+  usePageTitle: (title: string | undefined) => mockUsePageTitle(title),
+}));
+
 const getEntityMetadata = jest.fn();
 const getTechDocsMetadata = jest.fn();
 
@@ -203,7 +209,7 @@ describe('<TechDocsReaderHeader withSearch={false} />', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should set document title based on URL path segments', async () => {
+  it('should set the page title based on URL path segments', async () => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
 
@@ -216,8 +222,8 @@ describe('<TechDocsReaderHeader withSearch={false} />', () => {
     );
 
     await waitFor(() => {
-      expect(document.title).toEqual(
-        'Test Entity | Foo | Bar | Baz | Backstage',
+      expect(mockUsePageTitle).toHaveBeenLastCalledWith(
+        'Test Entity | Foo | Bar | Baz',
       );
     });
   });

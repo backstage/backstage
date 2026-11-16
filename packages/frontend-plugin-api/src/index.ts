@@ -30,6 +30,7 @@ export * from './schema';
 export * from './apis/system';
 export * from './translation';
 export * from './breadcrumbs';
+export { usePageTitle } from './pageTitle';
 export * from './wiring';
 
 export type { NotFoundErrorPageProps, ErrorDisplayProps } from './types';

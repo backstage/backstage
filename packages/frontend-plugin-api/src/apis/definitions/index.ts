@@ -39,6 +39,7 @@ export * from './AppThemeApi';
 export * from './SwappableComponentsApi';
 export * from './ConfigApi';
 export * from './DiscoveryApi';
+export * from './DocumentTitleApi';
 export * from './ErrorApi';
 export * from './FeatureFlagsApi';
 export * from './FetchApi';

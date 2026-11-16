@@ -29,6 +29,7 @@ describe('coreApis', () => {
       config: apis.configApiRef,
       dialog: apis.dialogApiRef,
       discovery: apis.discoveryApiRef,
+      documentTitle: apis.documentTitleApiRef,
       error: apis.errorApiRef,
       featureFlags: apis.featureFlagsApiRef,
       fetch: apis.fetchApiRef,

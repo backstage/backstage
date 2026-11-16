@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Helmet from 'react-helmet';
+import { usePageTitle } from '@backstage/frontend-plugin-api';
 import { Header, ButtonLink } from '@backstage/ui';
 import { RiCodeLine } from '@remixicon/react';
 import { TechDocsAddonLocations as locations } from '@backstage/plugin-techdocs-react';
@@ -30,20 +30,19 @@ export const TechDocsReaderHeader = (props: TechDocsReaderHeaderProps) => {
   const {
     title,
     entityRef,
-    tabTitle,
+    pageTitle,
     hidden,
     showSourceLink,
     sourceLink,
     addons,
   } = useTechDocsReaderHeaderData();
 
+  usePageTitle(pageTitle);
+
   if (hidden) return null;
 
   return (
     <>
-      <Helmet titleTemplate="%s">
-        <title>{tabTitle}</title>
-      </Helmet>
       <Header
         title={title || ''}
         customActions={
