@@ -22,6 +22,7 @@ import {
 } from '@backstage/frontend-test-utils';
 import { AppRouteSwitch } from './AppRouteSwitch';
 import {
+  appHistoryApiRef,
   PageBlueprint,
   coreExtensionData,
   createExtension,
@@ -129,7 +130,7 @@ describe('AppRouteSwitch', () => {
   ])(
     'ranks pages together with redirects from %s',
     async (from, expectedPage, expectedPath) => {
-      const { appHistory } = renderTestApp({
+      const { apis } = renderTestApp({
         extensions: [
           PageBlueprint.make({
             name: 'special',
@@ -153,6 +154,7 @@ describe('AppRouteSwitch', () => {
           },
         },
       });
+      const appHistory = apis.get(appHistoryApiRef)!;
       expect(await screen.findByText(expectedPage)).toBeInTheDocument();
       expect(appHistory.getSnapshot().location.pathname).toBe(expectedPath);
     },
@@ -252,10 +254,11 @@ describe('AppRouteSwitch', () => {
   );
 
   it('preserves page state while route parameters and plugin paths change', async () => {
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [entityPage],
       initialRouteEntries: ['/catalog/first'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
     expect(await screen.findByText('Entity first')).toBeInTheDocument();
     act(() => screen.getByRole('button', { name: 'Count 0' }).click());
     await act(async () => appHistory.navigate('/catalog/first/details'));
@@ -268,7 +271,7 @@ describe('AppRouteSwitch', () => {
   it('recovers from a page crash at another mount or another page', async () => {
     const error = jest.spyOn(console, 'error').mockImplementation(() => {});
     try {
-      const { appHistory } = renderTestApp({
+      const { apis } = renderTestApp({
         features: [
           createFrontendPlugin({
             pluginId: 'test',
@@ -277,6 +280,7 @@ describe('AppRouteSwitch', () => {
         ],
         initialRouteEntries: ['/catalog/broken'],
       });
+      const appHistory = apis.get(appHistoryApiRef)!;
       expect(
         await screen.findByText('Entity page crashed'),
       ).toBeInTheDocument();
@@ -306,10 +310,11 @@ describe('AppRouteSwitch', () => {
   });
 
   it('renders the not-found fallback for an explicitly empty route table', async () => {
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [],
       initialRouteEntries: ['/nothing-here'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
     expect(await screen.findByText(/PAGE NOT FOUND/i)).toBeInTheDocument();
     await act(async () => appHistory.navigate('/also-nothing'));
     expect(await screen.findByText(/PAGE NOT FOUND/i)).toBeInTheDocument();
@@ -337,7 +342,7 @@ describe('AppRouteSwitch', () => {
       ],
     });
     try {
-      const { appHistory } = renderTestApp({
+      const { apis } = renderTestApp({
         features: [
           createFrontendModule({
             pluginId: 'app',
@@ -347,6 +352,7 @@ describe('AppRouteSwitch', () => {
         extensions: [entityPage, otherPage],
         initialRouteEntries: ['/unknown'],
       });
+      const appHistory = apis.get(appHistoryApiRef)!;
       expect(await screen.findByText('Not-found page crashed')).toBeVisible();
       // The crash belongs to the app's own chrome, not to any plugin page:
       // the ancestor extension boundary of the app plugin catches it, where

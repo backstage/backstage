@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import { createRouteRef } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
 import { SubPageBlueprint } from './SubPageBlueprint';
@@ -565,10 +566,11 @@ describe('PageBlueprint', () => {
           }),
         );
       }
-      const { appHistory } = renderInTestApp(tester.reactElement(), {
+      const { apis } = renderInTestApp(tester.reactElement(), {
         mountPath,
         initialRouteEntries: [`${basePath}/second`],
       });
+      const appHistory = apis.get(appHistoryApiRef)!;
       expect(
         await screen.findByText(`second at ${basePath}/second`),
       ).toBeInTheDocument();
@@ -682,10 +684,11 @@ describe('PageBlueprint', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [parentPage, overviewSubPage, settingsSubPage],
       initialRouteEntries: ['/kept/overview'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     expect(await screen.findByTestId('overview')).toBeInTheDocument();
     const tabList = screen.getByRole('tablist');
@@ -730,10 +733,11 @@ describe('PageBlueprint', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [parentPage, inputSubPage, plainPage],
       initialRouteEntries: ['/mixed?tab=1#here'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     expect(await screen.findByTestId('input-page')).toBeInTheDocument();
     // The URL says which tab is showing, and the query and fragment survive.

@@ -36,11 +36,6 @@ export type TestAppRenderResult = RenderResult & {
    * components in the app, including API overrides.
    */
   apis: ApiHolder;
-  /**
-   * The app history backed by in-memory history. Use this to drive and assert
-   * on navigation in tests.
-   */
-  appHistory: AppHistoryApi;
 };
 
 /**

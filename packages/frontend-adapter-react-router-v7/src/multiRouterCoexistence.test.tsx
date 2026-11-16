@@ -153,10 +153,11 @@ describe('multi-router coexistence', () => {
       ],
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       features: [catalogPlugin, settingsPlugin],
       initialRouteEntries: ['/catalog-pudding'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('catalog-page')).toBeInTheDocument();
@@ -347,10 +348,11 @@ describe('multi-router coexistence', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [homePage, visualizerPage, treeSubPage, graphSubPage],
       initialRouteEntries: ['/home-pudding'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('home-page')).toBeInTheDocument();
@@ -466,10 +468,11 @@ describe('multi-router coexistence', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [nestedPage],
       initialRouteEntries: ['/nested/alpha'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('nested-probe')).toBeInTheDocument();
@@ -542,10 +545,11 @@ describe('multi-router coexistence', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [nestedPage],
       initialRouteEntries: ['/nested-reverse/alpha'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('nested-probe')).toBeInTheDocument();
@@ -701,7 +705,8 @@ describe('multi-router coexistence', () => {
       // matter what the projection did.
       expect(reactRouterV6.useResolvedPath).not.toBe(useResolvedPath);
 
-      const { appHistory } = renderCatalogMajors('/catalog-majors/overview');
+      const { apis } = renderCatalogMajors('/catalog-majors/overview');
+      const appHistory = apis.get(appHistoryApiRef)!;
 
       await waitFor(() => {
         expect(screen.getByTestId('v7-probe')).toBeInTheDocument();

@@ -18,6 +18,7 @@ import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
+  appHistoryApiRef,
   createRouteRef,
   PageBlueprint,
   useRouteRef,
@@ -112,7 +113,7 @@ it('binds neutral anchors and collection navigation to nested routes', async () 
       loader: async () => <div>Other page</div>,
     },
   });
-  const { appHistory } = renderTestApp({
+  const { apis } = renderTestApp({
     extensions: [page, other],
     initialRouteEntries: ['/tools/alpha/section/item'],
     config: {
@@ -120,6 +121,7 @@ it('binds neutral anchors and collection navigation to nested routes', async () 
       backend: { baseUrl: 'http://localhost:7007' },
     },
   });
+  const appHistory = apis.get(appHistoryApiRef)!;
   expect(
     await screen.findByRole('link', { name: 'Relative anchor' }),
   ).toHaveAttribute('href', '/base/tools/alpha/section/sibling');
@@ -198,13 +200,14 @@ it('reconciles same-origin absolute links with exactly one deployment basename',
       ),
     },
   });
-  const { appHistory } = renderTestApp({
+  const { apis } = renderTestApp({
     extensions: [page],
     config: {
       app: { baseUrl: `${window.location.origin}/base` },
       backend: { baseUrl: 'http://localhost:7007' },
     },
   });
+  const appHistory = apis.get(appHistoryApiRef)!;
   expect(
     await screen.findByRole('link', { name: 'Same origin' }),
   ).toHaveAttribute('href', `${window.location.origin}/base/catalog?q=1#item`);

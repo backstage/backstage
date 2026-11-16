@@ -293,21 +293,23 @@ describe('MyComponent', () => {
 
 ## Navigation and app history
 
-`renderInTestApp` and `renderTestApp` set up an in-memory app history and return
-it as `appHistory` on the render result. Use it to move the test app between
+`renderInTestApp` and `renderTestApp` set up an in-memory app history, available
+through `apis.get(appHistoryApiRef)` on the render result. Use it to move the test app between
 locations and to assert on where it ended up:
 
 ```tsx
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import { act, screen } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import { toolsPage } from './alpha';
 
 describe('Tools page', () => {
   it('should show the details view when navigating to it', async () => {
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [toolsPage],
       initialRouteEntries: ['/tools'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     expect(await screen.findByText('All tools')).toBeInTheDocument();
 

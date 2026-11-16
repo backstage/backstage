@@ -514,7 +514,6 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
 // @public
 export type TestAppRenderResult = RenderResult & {
   apis: ApiHolder;
-  appHistory: AppHistoryApi;
 };
 
 export { withLogCollector };

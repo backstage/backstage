@@ -25,6 +25,7 @@ import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-route
 import { Route, Routes, useParams } from 'react-router-dom';
 import { renderInTestApp, renderTestApp } from '@backstage/frontend-test-utils';
 import {
+  appHistoryApiRef,
   BreadcrumbEntry,
   PageBlueprint,
   PageLayout,
@@ -140,7 +141,7 @@ describe('PageLayout', () => {
       ],
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       features: [myPlugin],
       initialRouteEntries: ['/my-plugin/example/tasks'],
       config: {
@@ -148,6 +149,7 @@ describe('PageLayout', () => {
         backend: { baseUrl: 'http://localhost:7007' },
       },
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     const overview = await screen.findByRole('tab', { name: 'Overview' });
     expect(overview).toHaveAttribute(
@@ -191,7 +193,7 @@ describe('PageLayout', () => {
       ['Query', '?redirect=https://example.com/docs'],
       ['Fragment', '#details'],
     ];
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [
         PageBlueprint.make({
           params: {
@@ -218,6 +220,7 @@ describe('PageLayout', () => {
         backend: { baseUrl: 'http://localhost:7007' },
       },
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     await screen.findByRole('tab', { name: 'Query' });
     const breadcrumbs = screen.getByRole('navigation', { name: 'Breadcrumbs' });

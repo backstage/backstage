@@ -18,6 +18,7 @@ import { useEffect, useRef, useState, type ReactElement } from 'react';
 import { act, fireEvent, screen } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
+  appHistoryApiRef,
   AppRootElementBlueprint,
   PageLayout,
   RouterLink,
@@ -90,7 +91,7 @@ function OldTab({ name }: { name: string }) {
 it.each(['', '/backstage'])(
   'scopes an old page shell and its independently emitted children with basename "%s"',
   async basename => {
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       config: { app: { baseUrl: `http://localhost${basename}` } },
       initialRouteEntries: ['/legacy/otters?keep=1#anchor'],
       extensions: [
@@ -112,6 +113,7 @@ it.each(['', '/backstage'])(
         ),
       ],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
     expect(
       await screen.findByRole('heading', { name: 'overview for otters' }),
     ).toBeVisible();
@@ -221,7 +223,7 @@ it('keeps root compatibility and native descendant scope through empty-path moun
       ),
     ],
   });
-  const { appHistory } = renderTestApp({
+  const { apis } = renderTestApp({
     config: { app: { baseUrl: 'http://localhost/backstage' } },
     initialRouteEntries: ['/child/alpha/settings'],
     extensions: [
@@ -233,6 +235,7 @@ it('keeps root compatibility and native descendant scope through empty-path moun
       }),
     ],
   });
+  const appHistory = apis.get(appHistoryApiRef)!;
   expect(
     await screen.findByRole('heading', { name: 'Settings for alpha' }),
   ).toBeVisible();
@@ -277,7 +280,7 @@ function RefPage() {
 }
 
 it('scopes an emitted routeRef and resolves its parameters', async () => {
-  const { appHistory } = renderTestApp({
+  const { apis } = renderTestApp({
     config: { app: { baseUrl: 'http://localhost/backstage' } },
     initialRouteEntries: ['/refs/otters'],
     extensions: [
@@ -297,6 +300,7 @@ it('scopes an emitted routeRef and resolves its parameters', async () => {
       }),
     ],
   });
+  const appHistory = apis.get(appHistoryApiRef)!;
   expect(
     await screen.findByRole('heading', { name: 'Ref page for otters' }),
   ).toBeVisible();
@@ -316,7 +320,7 @@ it('scopes an emitted routeRef and resolves its parameters', async () => {
 });
 
 it('mounts routes whose react element is omitted or null without routing errors', async () => {
-  const { appHistory } = renderTestApp({
+  const { apis } = renderTestApp({
     initialRouteEntries: ['/ghosts/otters/ghost'],
     extensions: [
       createExtension({
@@ -379,6 +383,7 @@ it('mounts routes whose react element is omitted or null without routing errors'
       }),
     ],
   });
+  const appHistory = apis.get(appHistoryApiRef)!;
   // The omitted-element route mounts and matches, rendering no content.
   await act(async () => {});
   expect(screen.queryByText('Ghost index')).not.toBeInTheDocument();
@@ -449,10 +454,11 @@ describe('direct history navigation teardown', () => {
 
   it('completes navigation that unmounts the page navigating away', async () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [leavingPage('leave'), landingPage],
       initialRouteEntries: ['/leave/alpha'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
     expect(
       await screen.findByRole('heading', { name: 'Leaving alpha' }),
     ).toBeVisible();
@@ -526,10 +532,11 @@ describe('direct history navigation teardown', () => {
         coreExtensionData.reactElement(<h1>After cleanup</h1>),
       ],
     });
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [retainingPage, landingPage, afterCleanupPage],
       initialRouteEntries: ['/retain'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
     expect(
       await screen.findByRole('heading', { name: 'Retaining' }),
     ).toBeVisible();

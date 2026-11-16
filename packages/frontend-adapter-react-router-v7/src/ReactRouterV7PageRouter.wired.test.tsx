@@ -18,6 +18,7 @@ import { useState } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
+  appHistoryApiRef,
   PageBlueprint,
   SubPageBlueprint,
   createExtension,
@@ -136,6 +137,7 @@ describe('ReactRouterV7PageRouter wired path', () => {
           extensions: [parent, child],
           initialRouteEntries: [initialPath],
         });
+        const appHistory = rendered.apis.get(appHistoryApiRef)!;
         expect(
           await screen.findByRole('link', { name: 'Parent' }),
         ).toHaveAttribute('href', parentHref);
@@ -153,7 +155,7 @@ describe('ReactRouterV7PageRouter wired path', () => {
         await act(async () =>
           screen.getByRole('button', { name: 'Count 0' }).click(),
         );
-        await act(async () => rendered.appHistory.navigate(nextPath));
+        await act(async () => appHistory.navigate(nextPath));
         expect(
           screen.getByRole('button', { name: 'Count 1' }),
         ).toBeInTheDocument();
@@ -166,7 +168,7 @@ describe('ReactRouterV7PageRouter wired path', () => {
             `Parent param: ${parentHasAdapter ? nextParam : 'none'}`,
           ),
         ).toBeInTheDocument();
-        await act(async () => rendered.appHistory.navigate(initialPath));
+        await act(async () => appHistory.navigate(initialPath));
         expect(
           screen.getByRole('button', { name: 'Count 1' }),
         ).toBeInTheDocument();
@@ -204,10 +206,11 @@ describe('ReactRouterV7PageRouter wired path', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [settingsPage],
       initialRouteEntries: ['/settings-v7'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('settings-page')).toBeInTheDocument();
@@ -384,10 +387,11 @@ describe('ReactRouterV7PageRouter wired path', () => {
         ),
       },
     });
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [standalone, parent, child],
       initialRouteEntries: ['/catalog/list'],
     });
+    const appHistory = apis.get(appHistoryApiRef)!;
     expect(await screen.findByRole('link', { name: 'Parent' })).toHaveAttribute(
       'href',
       '/',

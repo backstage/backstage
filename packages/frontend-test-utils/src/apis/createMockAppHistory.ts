@@ -80,7 +80,8 @@ export interface MockAppHistory extends AppHistoryApi {
  * synchronous location subscriptions, stable snapshots, href resolution, and
  * numeric traversal. External navigation is recorded without changing the
  * location or leaving the test page. Prefer `renderInTestApp` / `renderTestApp`
- * (and the returned `appHistory`) for navigation across a full test app.
+ * and `apis.get(appHistoryApiRef)` on the render result for navigation across
+ * a full test app.
  *
  * Also available as `mockApis.appHistory()`. Pair with
  * {@link createMockRouteResolutionApi} for `useRouteRef` tests.

@@ -17,6 +17,7 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
+  appHistoryApiRef,
   PageBlueprint,
   SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
@@ -270,7 +271,8 @@ describe('duplicate path segment guard', () => {
     });
 
     it('should not accumulate the prefix across sub-page and off-page navigation', async () => {
-      const { appHistory } = renderCatalog('/catalog/overview');
+      const { apis } = renderCatalog('/catalog/overview');
+      const appHistory = apis.get(appHistoryApiRef)!;
       await waitFor(() =>
         expect(screen.getByTestId('library')).toBeInTheDocument(),
       );
@@ -390,7 +392,8 @@ describe('duplicate path segment guard', () => {
     });
 
     it('should keep the prefix applied once across a change of concrete mount', async () => {
-      const { appHistory } = renderEntity(`${MOUNT}/overview`);
+      const { apis } = renderEntity(`${MOUNT}/overview`);
+      const appHistory = apis.get(appHistoryApiRef)!;
       await waitFor(() =>
         expect(screen.getByTestId('library')).toBeInTheDocument(),
       );
