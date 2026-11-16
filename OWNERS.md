@@ -331,7 +331,8 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 
 ## Emeritus Project Area Maintainers
 
-| Maintainer    | Organization   | GitHub                                          | Discord             |
-| ------------- | -------------- | ----------------------------------------------- | ------------------- |
-| Paul Cowan    | frontendrescue | [dagda1](https://github.com/dagda1)             | `dagda1`            |
-| Jamie Klassen | VMware         | [jamieklassen](https://github.com/jamieklassen) | `jamieklassen#3047` |
+| Maintainer     | Organization   | GitHub                                          | Discord             |
+| -------------- | -------------- | ----------------------------------------------- | ------------------- |
+| Bethany Griggs | Red Hat        | [BethGriggs](https://github.com/BethGriggs)     | `bethgriggs`        |
+| Jamie Klassen  | VMware         | [jamieklassen](https://github.com/jamieklassen) | `jamieklassen#3047` |
+| Paul Cowan     | frontendrescue | [dagda1](https://github.com/dagda1)             | `dagda1`            |
