@@ -79,7 +79,7 @@ export interface HistoryBackend {
 export function createWindowHistoryBackend(): HistoryBackend {
   const STATE_KEY = '__backstage_app_history_v1';
   type StoredState = {
-    [STATE_KEY]: HistoryEntryMetadata;
+    [STATE_KEY]: HistoryEntryMetadata & { writeKey?: string };
     userState: unknown;
   };
   type NavigationLike = EventTarget & {
@@ -145,6 +145,8 @@ export function createWindowHistoryBackend(): HistoryBackend {
       index: entry.index,
       length: entry.length,
       canGoBack: entry.canGoBack,
+      // Replacements preserve the entry key but supersede an earlier event.
+      writeKey: createKey(),
     },
     userState,
   });
@@ -272,16 +274,13 @@ export function createWindowHistoryBackend(): HistoryBackend {
             url,
           );
         } else {
+          // A silent raw write may have replaced the entry's metadata since
+          // the last committed app navigation.
+          const entry = readEntry();
           fallbackEntry = {
             key: createKey(),
-            index:
-              fallbackEntry.index === undefined
-                ? undefined
-                : fallbackEntry.index + 1,
-            length:
-              fallbackEntry.index === undefined
-                ? undefined
-                : fallbackEntry.index + 2,
+            index: entry.index === undefined ? undefined : entry.index + 1,
+            length: entry.index === undefined ? undefined : entry.index + 2,
             canGoBack: true,
           };
           window.history.pushState(
@@ -330,6 +329,7 @@ export function createWindowHistoryBackend(): HistoryBackend {
       let lastHref = window.location.href;
       let lastState = window.history.state;
       let lastKey = readEntry().key;
+      let pendingHashHref: string | undefined;
       const updateChangeBaseline = () => {
         lastHref = window.location.href;
         lastState = window.history.state;
@@ -340,25 +340,62 @@ export function createWindowHistoryBackend(): HistoryBackend {
         if (writing) {
           return;
         }
-        const href = window.location.href;
-        const navigationType = (
-          event as Event & {
-            navigationType?: 'push' | 'replace' | 'traverse' | 'reload';
+        // An earlier browser listener may have already redirected through this
+        // backend. Do not overwrite that published navigation with a stale POP.
+        if (
+          event.type === 'popstate' &&
+          Object.is(window.history.state, lastState) &&
+          isStoredState(lastState)
+        ) {
+          const lastWriteKey = lastState[STATE_KEY].writeKey;
+          const eventState = (event as PopStateEvent).state;
+          const eventWriteKey = isStoredState(eventState)
+            ? eventState[STATE_KEY].writeKey
+            : undefined;
+          if (lastWriteKey && lastWriteKey !== eventWriteKey) {
+            return;
           }
-        ).navigationType;
-        // The Navigation API reports every replaceState call, including ones
-        // made outside the app, such as plugins syncing filters to the URL.
-        // Without the Navigation API those calls fire no event, so ignore
-        // them here too and only keep reporting hash changes, which do fire
-        // `hashchange`. Reporting them caused update loops between such
-        // plugins and the router.
+        }
+        // A later popstate listener may silently replace query parameters.
+        // Identify the paired hash event by its original URL, not the live URL.
+        if (event.type === 'hashchange') {
+          const { newURL } = event as HashChangeEvent;
+          const followsPopstate = newURL === pendingHashHref;
+          pendingHashHref = undefined;
+          // A redirect can supersede the traversal before this backend sees its
+          // popstate. Its old hash notification must not publish the new URL.
+          if (followsPopstate || (newURL && newURL !== window.location.href)) {
+            return;
+          }
+        }
+        const href = window.location.href;
+        if (event.type === 'popstate') {
+          pendingHashHref = href;
+        }
+        const { navigationType, from } = event as Event & {
+          navigationType?: 'push' | 'replace' | 'traverse' | 'reload';
+          from?: { key: string };
+        };
         if (
           hasNavigationApi &&
-          navigationType === 'replace' &&
-          new URL(href).hash === new URL(lastHref).hash
+          navigationType === 'traverse' &&
+          from &&
+          from.key !== lastKey
         ) {
-          updateChangeBaseline();
           return;
+        }
+        // Plugins may persist query parameters without navigating. Keep those
+        // writes silent, while observing third-party page and hash navigation.
+        if (hasNavigationApi && navigationType === 'replace') {
+          const currentUrl = new URL(href);
+          const previousUrl = new URL(lastHref);
+          if (
+            currentUrl.pathname === previousUrl.pathname &&
+            currentUrl.hash === previousUrl.hash
+          ) {
+            updateChangeBaseline();
+            return;
+          }
         }
         const key = readEntry().key;
         if (!hasNavigationApi && !isStoredState(window.history.state)) {
@@ -370,6 +407,8 @@ export function createWindowHistoryBackend(): HistoryBackend {
         }
         const state = window.history.state;
         if (
+          event.type !== 'popstate' &&
+          navigationType !== 'traverse' &&
           href === lastHref &&
           Object.is(state, lastState) &&
           key === lastKey

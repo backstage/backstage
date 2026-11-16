@@ -84,8 +84,8 @@ export class AppHistory implements AppHistoryApi {
     });
   }
 
-  /** Reads live backend state while retaining unchanged snapshot references. */
-  readonly getSnapshot = (): AppHistorySnapshot => this.refresh();
+  /** Reads the last committed navigation without observing raw history writes. */
+  readonly getSnapshot = (): AppHistorySnapshot => this.current;
 
   readonly subscribe = (listener: HistoryListener): (() => void) => {
     // Each subscription owns a handler, even when callbacks are shared.
@@ -95,32 +95,6 @@ export class AppHistory implements AppHistoryApi {
       this.subscribers.delete(handler);
     };
   };
-
-  private refresh(action?: AppHistoryAction): AppHistorySnapshot {
-    const next = this.readLocation();
-    const { key, index, length } = this.history.getEntry();
-    const { location, entry } = this.current;
-    const locationChanged =
-      location.pathname !== next.pathname ||
-      location.search !== next.search ||
-      location.hash !== next.hash ||
-      !Object.is(location.state, next.state);
-    const entryChanged = entry?.key !== key || entry?.index !== index;
-    if (
-      action ||
-      locationChanged ||
-      entryChanged ||
-      this.current.length !== length
-    ) {
-      this.current = {
-        location: locationChanged ? next : location,
-        entry: entryChanged ? { key, index } : entry,
-        length,
-        action,
-      };
-    }
-    return this.current;
-  }
 
   /**
    * Navigate to an app-root-relative path or a browser-owned URL.
@@ -214,7 +188,21 @@ export class AppHistory implements AppHistoryApi {
   }
 
   private emit(action: AppHistoryAction): void {
-    this.refresh(action);
+    const next = this.readLocation();
+    const { key, index, length } = this.history.getEntry();
+    const { location, entry } = this.current;
+    const locationChanged =
+      location.pathname !== next.pathname ||
+      location.search !== next.search ||
+      location.hash !== next.hash ||
+      !Object.is(location.state, next.state);
+    const entryChanged = entry?.key !== key || entry?.index !== index;
+    this.current = {
+      location: locationChanged ? next : location,
+      entry: entryChanged ? { key, index } : entry,
+      length,
+      action,
+    };
     this.notificationDepth += 1;
     try {
       const handlers = [...this.subscribers];

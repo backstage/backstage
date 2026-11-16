@@ -262,10 +262,10 @@ describe('HistoryBackend', () => {
       const unsubscribeFirst = history.listen(first);
       const unsubscribeSecond = history.listen(second);
 
-      // Owned writes advance every listener's baseline. The corresponding
-      // browser event must not report the write as an external navigation.
+      // Owned writes advance every listener's baseline, so an unchanged
+      // hashchange notification is ignored by both listeners.
       history.push('/owned');
-      window.dispatchEvent(new PopStateEvent('popstate'));
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
       expect(first).not.toHaveBeenCalled();
       expect(second).not.toHaveBeenCalled();
 
@@ -279,7 +279,7 @@ describe('HistoryBackend', () => {
       expect(second).toHaveBeenCalledTimes(1);
 
       history.replace('/owned-replacement');
-      window.dispatchEvent(new PopStateEvent('popstate'));
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
       expect(second).toHaveBeenCalledTimes(1);
 
       unsubscribeSecond();
@@ -304,6 +304,21 @@ describe('HistoryBackend', () => {
       history.replace('/replaced', { state: { user: true } });
       expect(history.getEntry()).toEqual(pushed);
       expect(history.getLocation().state).toEqual({ user: true });
+    });
+
+    it('does not inherit coordinates after a silent raw write', () => {
+      const history = createWindowHistoryBackend();
+      history.push('/owned');
+      window.history.pushState({ external: true }, '', '/outside');
+      history.push('/after-outside');
+      expect(history.getEntry()).toMatchObject({ canGoBack: true });
+      expect(history.getEntry().index).toBeUndefined();
+      expect(history.getEntry().length).toBeUndefined();
+
+      window.history.replaceState({ external: true }, '', '/replaced-outside');
+      history.replace('/after-replace');
+      expect(history.getEntry().index).toBeUndefined();
+      expect(history.getEntry().length).toBeUndefined();
     });
 
     it('should seed a valid local index when an older browser stack is ambiguous', () => {
@@ -427,6 +442,33 @@ describe('HistoryBackend', () => {
       expect(listener).toHaveBeenCalledTimes(1);
       expect(listener).toHaveBeenLastCalledWith('POP');
       unsubscribe();
+    });
+
+    it("does not publish a later popstate listener's query synchronization through hashchange", async () => {
+      window.history.replaceState(null, '', '/page');
+      const history = createWindowHistoryBackend();
+      const locations: string[] = [];
+      const unsubscribe = history.listen(() => {
+        const location = history.getLocation();
+        locations.push(
+          `${location.pathname}${location.search}${location.hash}`,
+        );
+      });
+      const syncQuery = () =>
+        window.history.replaceState(null, '', '/page?local=yes#section');
+      window.addEventListener('popstate', syncQuery);
+      try {
+        const hashChanged = new Promise(resolve =>
+          window.addEventListener('hashchange', resolve, { once: true }),
+        );
+        window.location.hash = '#section';
+        await hashChanged;
+        expect(locations).toEqual(['/page#section']);
+        expect(window.location.search).toBe('?local=yes');
+      } finally {
+        window.removeEventListener('popstate', syncQuery);
+        unsubscribe();
+      }
     });
 
     it('should omit unknown coordinates for native hash navigation and restore them on back', async () => {

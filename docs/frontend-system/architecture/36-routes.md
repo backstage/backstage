@@ -518,7 +518,7 @@ optional history `action`, `entry` (an opaque key and optional index), and
 need not include the browser's entire session history. Unknown metadata is
 omitted rather than replaced with guessed values.
 
-Snapshots are immutable and cached until history changes. Every committed
+Snapshots are immutable and cached until navigation is published. Every committed
 navigation publishes a new snapshot, including pushes or replacements at the
 same URL; the nested location retains its identity while its fields are
 unchanged. A push creates a new entry key, replacement preserves it, and
@@ -529,6 +529,15 @@ The store functions have stable identities and can be passed directly to
 returns the snapshot's location. The hook observes history changes, including
 metadata-only updates, while the returned location retains its identity when
 its fields are unchanged.
+
+Reading a snapshot or rendering a component again does not publish browser history writes. The
+default history keeps direct `replaceState` calls silent when the pathname and
+hash are unchanged, allowing plugins to persist query parameters without
+navigation. In browsers with the Navigation API, third-party `pushState` calls
+and replacements that change the pathname or hash are observed. Without that
+API, raw history writes are not reported until browser traversal or native hash
+navigation occurs. Navigation through `AppHistoryApi` and the routing adapters
+is always observed, including query-only replacements.
 
 Subscribers may navigate synchronously, for example to redirect to another page.
 The default history rejects excessively deep synchronous navigation chains with

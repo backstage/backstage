@@ -97,6 +97,165 @@ describe('RootHistoryRouter', () => {
     expect(screen.getByTestId('hash')).toBeEmptyDOMElement();
   });
 
+  it.each([false, true])(
+    'keeps silent URL writes out of rerenders (Navigation API: %s)',
+    hasNavigationApi => {
+      const originalUrl = window.location.href;
+      const navigation = Object.assign(new EventTarget(), {
+        currentEntry: { key: 'initial', index: 0 },
+      });
+      if (hasNavigationApi) {
+        Object.defineProperty(window, 'navigation', {
+          configurable: true,
+          value: navigation,
+        });
+      }
+      window.history.replaceState(null, '', '/catalog?filter=owned');
+      const history = createAppHistory();
+      const view = render(
+        <RootHistoryRouter history={history}>
+          <ChromeProbe />
+        </RootHistoryRouter>,
+      );
+      try {
+        const snapshot = history.getSnapshot();
+        window.history.replaceState(null, '', '/catalog?filter=all');
+        act(() =>
+          navigation.dispatchEvent(
+            Object.assign(new Event('currententrychange'), {
+              navigationType: 'replace',
+            }),
+          ),
+        );
+        view.rerender(
+          <RootHistoryRouter history={history}>
+            <ChromeProbe />
+          </RootHistoryRouter>,
+        );
+        expect(window.location.search).toBe('?filter=all');
+        expect(screen.getByTestId('search')).toHaveTextContent('?filter=owned');
+        expect(history.getSnapshot()).toBe(snapshot);
+
+        act(() =>
+          history.navigate('/catalog?filter=starred', { replace: true }),
+        );
+        expect(screen.getByTestId('search')).toHaveTextContent(
+          '?filter=starred',
+        );
+        expect(history.getSnapshot()).not.toBe(snapshot);
+      } finally {
+        view.unmount();
+        history.dispose();
+        delete (window as unknown as { navigation?: unknown }).navigation;
+        window.history.replaceState(null, '', originalUrl);
+      }
+    },
+  );
+
+  it('follows context-free pushes and page or hash replacements', () => {
+    const originalUrl = window.location.href;
+    const originalNavigation = Object.getOwnPropertyDescriptor(
+      window,
+      'navigation',
+    );
+    window.history.replaceState(null, '', '/docs/first?filter=owned');
+    const navigation = Object.assign(new EventTarget(), {
+      currentEntry: { key: 'initial', index: 0 },
+    });
+    Object.defineProperty(window, 'navigation', {
+      configurable: true,
+      value: navigation,
+    });
+    const history = createAppHistory();
+    const pushState = window.history.pushState.bind(window.history);
+    const replaceState = window.history.replaceState.bind(window.history);
+    const pushSpy = jest
+      .spyOn(window.history, 'pushState')
+      .mockImplementation((state, title, url) => {
+        pushState(state, title, url);
+        navigation.currentEntry = { key: 'pushed', index: 1 };
+        navigation.dispatchEvent(
+          Object.assign(new Event('currententrychange'), {
+            navigationType: 'push',
+          }),
+        );
+      });
+    const replaceSpy = jest
+      .spyOn(window.history, 'replaceState')
+      .mockImplementation((state, title, url) => {
+        replaceState(state, title, url);
+        navigation.dispatchEvent(
+          Object.assign(new Event('currententrychange'), {
+            navigationType: 'replace',
+          }),
+        );
+      });
+    const notifications = jest.fn();
+    history.subscribe(notifications);
+    const view = render(
+      <RootHistoryRouter history={history}>
+        <ChromeProbe />
+      </RootHistoryRouter>,
+    );
+    try {
+      // An add-on outside React can navigate using only the browser History API.
+      act(() => window.history.pushState(null, '', '/docs/second'));
+      expect(screen.getByTestId('pathname')).toHaveTextContent('/docs/second');
+      expect(history.getSnapshot().action).toBe('PUSH');
+      expect(history.getSnapshot().entry).toEqual({ key: 'pushed', index: 1 });
+
+      act(() =>
+        window.history.replaceState(null, '', '/docs/third?filter=all'),
+      );
+      expect(screen.getByTestId('pathname')).toHaveTextContent('/docs/third');
+      expect(screen.getByTestId('search')).toHaveTextContent('?filter=all');
+      expect(history.getSnapshot().action).toBe('REPLACE');
+      const snapshot = history.getSnapshot();
+
+      act(() =>
+        window.history.replaceState(null, '', '/docs/third?filter=owned'),
+      );
+      view.rerender(
+        <RootHistoryRouter history={history}>
+          <ChromeProbe />
+        </RootHistoryRouter>,
+      );
+      expect(history.getSnapshot()).toBe(snapshot);
+      expect(screen.getByTestId('search')).toHaveTextContent('?filter=all');
+      expect(notifications).toHaveBeenCalledTimes(2);
+
+      act(() =>
+        window.history.replaceState(
+          null,
+          '',
+          '/docs/third?filter=owned#section',
+        ),
+      );
+      expect(screen.getByTestId('hash')).toHaveTextContent('#section');
+      expect(screen.getByTestId('search')).toHaveTextContent('?filter=owned');
+      expect(history.getSnapshot().action).toBe('REPLACE');
+
+      act(() =>
+        history.navigate('/docs/third?filter=framework', { replace: true }),
+      );
+      expect(screen.getByTestId('search')).toHaveTextContent(
+        '?filter=framework',
+      );
+      expect(notifications).toHaveBeenCalledTimes(4);
+    } finally {
+      view.unmount();
+      history.dispose();
+      pushSpy.mockRestore();
+      replaceSpy.mockRestore();
+      if (originalNavigation) {
+        Object.defineProperty(window, 'navigation', originalNavigation);
+      } else {
+        delete (window as unknown as { navigation?: unknown }).navigation;
+      }
+      window.history.replaceState(null, '', originalUrl);
+    }
+  });
+
   it('should delegate navigation and hrefs to the app history without touching window.history', () => {
     const pushSpy = jest.spyOn(window.history, 'pushState');
     const replaceSpy = jest.spyOn(window.history, 'replaceState');
