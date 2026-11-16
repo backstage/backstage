@@ -459,6 +459,7 @@ scaffolded
 scaffolder
 Scaffolder
 scalprum
+Schemathesis
 SCM
 SCMs
 scrollable
