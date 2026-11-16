@@ -37,34 +37,84 @@ type InstallationTokenData = {
   repositories?: String[];
 };
 
+// Minimum time between on-demand token refreshes triggered by a missing
+// repository in a cached "selected" allowlist. Prevents repeated refreshes for
+// inaccessible repos while letting newly created repos work immediately.
+const REPO_ACCESS_REFRESH_THROTTLE_SECONDS = 60;
+
 class Cache {
   private readonly tokenCache = new Map<string, InstallationTokenData>();
+  private readonly repoRefreshAttempts = new Map<string, DateTime>();
 
   async getOrCreateToken(
     owner: string,
     repo: string | undefined,
     supplier: () => Promise<InstallationTokenData>,
   ): Promise<{ accessToken: string }> {
-    let existingInstallationData = this.tokenCache.get(owner);
-
-    if (
-      !existingInstallationData ||
-      this.isExpired(existingInstallationData.expiresAt)
-    ) {
-      existingInstallationData = await supplier();
-      // Allow 10 minutes grace to account for clock skew
-      existingInstallationData.expiresAt =
-        existingInstallationData.expiresAt.minus({ minutes: 10 });
-      this.tokenCache.set(owner, existingInstallationData);
-    }
+    const cached = this.tokenCache.get(owner);
+    const servedFromCache = Boolean(
+      cached && !this.isExpired(cached.expiresAt),
+    );
+    let existingInstallationData =
+      cached && !this.isExpired(cached.expiresAt)
+        ? cached
+        : await this.fetchAndCache(owner, supplier);
 
     if (!this.appliesToRepo(existingInstallationData, repo)) {
-      throw new Error(
-        `The Backstage GitHub application used in the ${owner} organization does not have access to a repository with the name ${repo}`,
-      );
+      if (servedFromCache && repo && this.canRefreshForRepo(owner, repo)) {
+        this.recordRepoRefreshAttempt(owner, repo);
+        existingInstallationData = await this.fetchAndCache(owner, supplier);
+      }
+
+      if (!this.appliesToRepo(existingInstallationData, repo)) {
+        throw new Error(
+          `The Backstage GitHub application used in the ${owner} organization does not have access to a repository with the name ${repo}`,
+        );
+      }
     }
 
     return { accessToken: existingInstallationData.token };
+  }
+
+  private async fetchAndCache(
+    owner: string,
+    supplier: () => Promise<InstallationTokenData>,
+  ): Promise<InstallationTokenData> {
+    const data = await supplier();
+    // Allow 10 minutes grace to account for clock skew
+    data.expiresAt = data.expiresAt.minus({ minutes: 10 });
+    this.tokenCache.set(owner, data);
+    return data;
+  }
+
+  private repoRefreshKey(owner: string, repo: string): string {
+    return `${owner.toLowerCase()}/${repo.toLowerCase()}`;
+  }
+
+  private canRefreshForRepo(owner: string, repo: string): boolean {
+    const lastAttempt = this.repoRefreshAttempts.get(
+      this.repoRefreshKey(owner, repo),
+    );
+    if (!lastAttempt) {
+      return true;
+    }
+    const age = DateTime.local().diff(lastAttempt).as('seconds');
+    return age >= REPO_ACCESS_REFRESH_THROTTLE_SECONDS;
+  }
+
+  private recordRepoRefreshAttempt(owner: string, repo: string): void {
+    const now = DateTime.local();
+    if (this.repoRefreshAttempts.size >= 1000) {
+      for (const [key, timestamp] of this.repoRefreshAttempts) {
+        if (
+          now.diff(timestamp).as('seconds') >=
+          REPO_ACCESS_REFRESH_THROTTLE_SECONDS
+        ) {
+          this.repoRefreshAttempts.delete(key);
+        }
+      }
+    }
+    this.repoRefreshAttempts.set(this.repoRefreshKey(owner, repo), now);
   }
 
   private isExpired = (date: DateTime) => DateTime.local() > date;

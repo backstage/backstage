@@ -168,7 +168,6 @@ export function createPublishGithubAction(options: {
         token: providedToken,
         host,
         owner,
-        repo,
       });
       const client = new Octokit({
         ...octokitOptions,

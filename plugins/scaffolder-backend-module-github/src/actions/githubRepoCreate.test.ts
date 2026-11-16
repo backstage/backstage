@@ -954,4 +954,37 @@ describe('github:repo:create', () => {
       });
     },
   );
+
+  it('requests organization-level credentials so creation works with selected-repository GitHub Apps', async () => {
+    const getCredentials = jest.fn(async ({ url }: { url: string }) => {
+      if (url === 'https://github.com/owner/repo') {
+        throw new Error(
+          'The Backstage GitHub application used in the owner organization does not have access to a repository with the name repo',
+        );
+      }
+      return { token: 'app-token', type: 'app' as const };
+    });
+
+    const appAction = createGithubRepoCreateAction({
+      integrations,
+      githubCredentialsProvider: { getCredentials },
+    });
+
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+    mockOctokit.rest.teams.getByName.mockResolvedValue({
+      data: { name: 'blam', id: 42 },
+    });
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({
+      data: { clone_url: 'https://github.com/owner/repo.git' },
+    });
+
+    await appAction.handler(mockContext);
+
+    expect(getCredentials).toHaveBeenCalledWith({
+      url: 'https://github.com/owner',
+    });
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalled();
+  });
 });
