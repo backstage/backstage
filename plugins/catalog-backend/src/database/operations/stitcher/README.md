@@ -1,8 +1,8 @@
 # Publication generations
 
 This is internal publication bookkeeping, not a change-feed API. Existing rows
-remain null until a changed publication; deletions and old-instance writes are
-untracked. See [upgrade guidance](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/README.md#upgrading-large-installations).
+remain null until a changed publication; deletions are untracked, as are
+old-instance writes on SQLite and MySQL. See [upgrade guidance](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/README.md#upgrading-large-installations).
 
 The existing hash check skips unchanged output in ordinary operation. Overlapping
 attempts may still publish identical content with distinct generations. Consumers
@@ -21,10 +21,15 @@ the final row. Updating a final row twice in one transaction can recheck its FK
 even without changing the key. The early parent lock prevents an inversion with
 cascading deletion, which locks refresh state before final entities.
 
-Write and validate the final entity, then synchronize search. With publication
-locks held, PostgreSQL increments the counter in a writable CTE and assigns its
-returned generation to the final entity in the same statement, then commits
-promptly. SQLite and MySQL use separate counter and assignment statements. Never acquire queue or unrelated entity locks after the counter lock.
+Write and validate the final entity, then synchronize search. On PostgreSQL, a
+deferred constraint trigger on `final_entities` then allocates the generation
+inside `COMMIT`: it runs after all other work in the transaction, so the counter
+lock is taken last and held only for the commit itself, with no round trip to
+the client. PostgreSQL makes a transaction visible before releasing its locks,
+so a later allocation cannot commit first. The trigger fires only when the
+entity body is written, including by older instances during a rolling upgrade.
+SQLite and MySQL allocate in application code as the last statements before
+commit. Never acquire queue or unrelated entity locks after the counter lock.
 Claim settlement stays after commit. Publication requires a root connection;
 releasing a nested `SAVEPOINT` would retain the counter lock into queue settlement.
 

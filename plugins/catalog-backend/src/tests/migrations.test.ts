@@ -62,6 +62,41 @@ it('runs the refresh state maintenance migration without a transaction wrapper',
 
 describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
   if (databaseId.startsWith('POSTGRES')) {
+    it('installs and removes the commit-time generation trigger', async () => {
+      const knex = await databases.init(databaseId);
+      await migrateUntilBefore(
+        knex,
+        '20261013000000_final_entity_generations.js',
+      );
+      const readTrigger = async () => {
+        const { rows } = await knex.raw(`
+          SELECT t.tgdeferrable, t.tginitdeferred, p.proconfig
+          FROM pg_trigger t JOIN pg_proc p ON p.oid = t.tgfoid
+          WHERE t.tgrelid = 'final_entities'::regclass
+            AND t.tgname = 'catalog_assign_generation_at_commit'
+        `);
+        return rows;
+      };
+      const functions = async () =>
+        (
+          await knex.raw(
+            "SELECT count(*)::int AS n FROM pg_proc WHERE proname = 'catalog_assign_generation_at_commit'",
+          )
+        ).rows[0].n;
+      await migrateUpOnce(knex);
+      const [trigger] = await readTrigger();
+      expect(trigger).toMatchObject({
+        tgdeferrable: true,
+        tginitdeferred: true,
+      });
+      expect(trigger.proconfig).toEqual([
+        expect.stringMatching(/^search_path=/),
+      ]);
+      await migrateDownOnce(knex);
+      expect(await readTrigger()).toEqual([]);
+      expect(await functions()).toBe(0);
+    });
+
     it('preserves a prebuilt generation index and repairs an interrupted build', async () => {
       const knex = await databases.init(databaseId);
       await knex.migrate.latest({ directory: migrationsDir });
@@ -105,9 +140,11 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
           entity_ref: `k:ns/${id}`,
           hash: 'h',
           final_entity: '{}',
-          generation: 5,
         })),
       );
+      // Writing only the generation does not fire the allocation trigger,
+      // so both rows keep the same value.
+      await knex('final_entities').update({ generation: 5 });
       // Failed concurrent uniqueness validation leaves a real invalid index.
       await expect(
         knex.raw(

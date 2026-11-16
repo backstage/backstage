@@ -17,6 +17,7 @@
 // @ts-check
 
 const indexName = 'final_entities_generation_idx';
+const triggerName = 'catalog_assign_generation_at_commit';
 
 /** @param {import('knex').Knex} knex */
 const isPg = knex => knex.client.config.client === 'pg';
@@ -48,6 +49,10 @@ exports.up = async function up(knex) {
       .insert({ id: 1, generation: 0 })
       .onConflict('id')
       .ignore();
+
+    if (isPg(knex)) {
+      await createPostgresGenerationTrigger(tx);
+    }
   });
 
   if (isPg(knex)) {
@@ -69,6 +74,13 @@ exports.up = async function up(knex) {
 /** @param {import('knex').Knex} knex */
 exports.down = async function down(knex) {
   if (isPg(knex)) {
+    await knex.transaction(async tx => {
+      await tx.raw("SET LOCAL lock_timeout = '5s'");
+      await tx.raw('DROP TRIGGER IF EXISTS ?? ON final_entities', [
+        triggerName,
+      ]);
+      await tx.raw('DROP FUNCTION IF EXISTS ??()', [triggerName]);
+    });
     await knex.raw('DROP INDEX CONCURRENTLY IF EXISTS ??', [indexName]);
   } else if (await hasSecondaryIndex(knex)) {
     await knex.schema.alterTable('final_entities', table =>
@@ -101,6 +113,48 @@ async function hasSecondaryIndex(knex) {
       .where({ table_name: 'final_entities', index_name: indexName })
       .first(),
   );
+}
+
+/**
+ * On PostgreSQL, a deferred constraint trigger allocates each publication's
+ * generation inside COMMIT, after all other work in the transaction. The
+ * counter row lock is therefore taken last and held only for the commit
+ * itself, with no client round trip. PostgreSQL makes a transaction visible
+ * before releasing its locks, so a later allocation cannot commit first.
+ *
+ * The trigger fires only when the entity body is written, so its own
+ * generation update does not fire it again. The search path is pinned so
+ * unqualified names resolve to this plugin's schema in any writing session.
+ * Other databases allocate in application code.
+ *
+ * @param {import('knex').Knex.Transaction} tx
+ */
+async function createPostgresGenerationTrigger(tx) {
+  await tx.raw(`
+    CREATE OR REPLACE FUNCTION ${triggerName}() RETURNS trigger
+    LANGUAGE plpgsql
+    SET search_path FROM CURRENT
+    AS $$
+    DECLARE allocated bigint;
+    BEGIN
+      UPDATE catalog_generation_counter SET generation = generation + 1
+      WHERE id = 1 RETURNING generation INTO allocated;
+      IF allocated IS NULL THEN
+        RAISE EXCEPTION 'Catalog publication generation counter is missing';
+      END IF;
+      UPDATE final_entities SET generation = allocated
+      WHERE entity_id = NEW.entity_id;
+      RETURN NULL;
+    END
+    $$`);
+  // CREATE TRIGGER briefly blocks writes; the transaction's lock_timeout
+  // bounds the wait.
+  await tx.raw('DROP TRIGGER IF EXISTS ?? ON final_entities', [triggerName]);
+  await tx.raw(`
+    CREATE CONSTRAINT TRIGGER ${triggerName}
+      AFTER INSERT OR UPDATE OF final_entity ON final_entities
+      DEFERRABLE INITIALLY DEFERRED
+      FOR EACH ROW EXECUTE FUNCTION ${triggerName}()`);
 }
 
 /** @param {import('knex').Knex} knex */

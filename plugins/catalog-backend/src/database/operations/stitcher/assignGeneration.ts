@@ -17,9 +17,11 @@
 import { Knex } from 'knex';
 
 /**
- * Assigns a commit-ordered publication generation, retaining the counter's
- * row lock until the caller commits. Call only after taking all other write
- * locks, and commit promptly afterward. Rollback also rolls back allocation.
+ * Assigns a commit-ordered publication generation on MySQL and SQLite,
+ * retaining the counter's row lock until the caller commits. Call only after
+ * taking all other write locks, and commit promptly afterward. Rollback also
+ * rolls back allocation. PostgreSQL allocates in a deferred trigger instead;
+ * see the final_entity_generation_trigger migration.
  * The returned decimal string avoids losing bigint precision in JavaScript.
  */
 export async function assignGeneration(
@@ -27,47 +29,10 @@ export async function assignGeneration(
   entityId: string,
 ): Promise<string> {
   if (tx.client.config.client === 'pg') {
-    return assignGenerationPostgres(tx, entityId);
-  }
-
-  return assignGenerationMysqlAndSqlite(tx, entityId);
-}
-
-async function assignGenerationPostgres(
-  tx: Knex.Transaction,
-  entityId: string,
-): Promise<string> {
-  // The caller already owns this final row. Allocate and assign in one
-  // statement to avoid a round trip while holding the global counter lock.
-  const { rows } = await tx.raw(
-    `WITH allocated_generation AS (
-       UPDATE catalog_generation_counter
-       SET generation = generation + 1
-       WHERE id = 1
-       RETURNING generation
-     )
-     UPDATE final_entities
-     SET generation = allocated_generation.generation
-     FROM allocated_generation
-     WHERE entity_id = ?
-     RETURNING final_entities.generation::text AS generation`,
-    [entityId],
-  );
-  const generation = rows[0]?.generation;
-
-  if (typeof generation !== 'string' || !/^\d+$/.test(generation)) {
     throw new Error(
-      'Catalog publication generation or final entity is missing or invalid',
+      'PostgreSQL allocates publication generations in a commit-time trigger',
     );
   }
-
-  return generation;
-}
-
-async function assignGenerationMysqlAndSqlite(
-  tx: Knex.Transaction,
-  entityId: string,
-): Promise<string> {
   const castType = tx.client.config.client.includes('mysql') ? 'CHAR' : 'TEXT';
 
   await tx('catalog_generation_counter')

@@ -143,10 +143,7 @@ it.each(databases.eachSupportedId())(
     let entity: Entity;
     const generationQueries: string[] = [];
     const trackGeneration = (query: { sql: string }) => {
-      if (
-        query.sql.includes('catalog_generation_counter') &&
-        query.sql.includes('final_entities')
-      ) {
+      if (query.sql.includes('catalog_generation_counter')) {
         generationQueries.push(query.sql);
       }
     };
@@ -232,11 +229,11 @@ it.each(databases.eachSupportedId())(
     expect(last_updated_at).not.toBeNull();
     const firstHash = entities[0].hash;
     knex.removeListener('query', trackGeneration);
-    expect(
-      generationQueries.map(query =>
-        /^WITH allocated_generation AS/.test(query),
-      ),
-    ).toEqual(databaseId.startsWith('POSTGRES') ? [true] : []);
+    // PostgreSQL allocates in its commit-time trigger, so the application
+    // never touches the counter there; elsewhere it updates and reads it.
+    expect(generationQueries).toHaveLength(
+      databaseId.startsWith('POSTGRES') ? 0 : 2,
+    );
     expect(String((await knex('final_entities').first()).generation)).toBe('1');
 
     const search = await knex<DbSearchRow>('search');

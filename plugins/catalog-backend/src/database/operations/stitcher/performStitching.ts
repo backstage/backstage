@@ -233,10 +233,11 @@ export async function performStitching(options: {
       () =>
         knex.transaction(async tx => {
           if (isPostgres) {
-            // A second UPDATE of a row changed in this transaction can recheck
-            // its FK even when entity_id is unchanged. Take the parent key
-            // lock before the final-row lock, matching cascading deletion's
-            // order, rather than waiting on refresh state after allocation.
+            // The commit-time generation trigger updates this row a second
+            // time, which can recheck its FK even when entity_id is unchanged.
+            // Take the parent key lock before the final-row lock, matching
+            // cascading deletion's order, rather than waiting on refresh state
+            // while holding the counter lock during COMMIT.
             const origin = await tx('refresh_state')
               .where('entity_id', entityId)
               .select('entity_id')
@@ -324,9 +325,13 @@ export async function performStitching(options: {
 
           await syncSearchRows(tx, entityId, searchEntries);
 
-          // All publication locks are already held. Do not acquire queue or
-          // other entity locks after this global counter lock; settle later.
-          await assignGeneration(tx, entityId);
+          // On PostgreSQL a deferred trigger allocates the generation during
+          // COMMIT. Elsewhere, allocate last: all publication locks are already
+          // held. Do not acquire queue or other entity locks after this global
+          // counter lock; settle later.
+          if (!isPostgres) {
+            await assignGeneration(tx, entityId);
+          }
 
           return 'changed' as const;
         }),
