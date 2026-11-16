@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { appHistoryApiRef } from '../../routing/AppHistoryApi';
+import {
+  appHistoryApiRef,
+  type AppHistoryApi,
+} from '../../routing/AppHistoryApi';
+import type { ApiRef } from '../system/types';
 import { analyticsApiRef } from './AnalyticsApi';
 import { appLanguageApiRef } from './AppLanguageApi';
 import { appLifecycleApiRef } from './AppLifecycleApi';
@@ -53,7 +57,7 @@ export namespace coreApis {
    *
    * @public
    */
-  export const appHistory: typeof appHistoryApiRef = appHistoryApiRef;
+  export const appHistory: ApiRef<AppHistoryApi> = appHistoryApiRef;
 
   /**
    * The API reference for {@link AnalyticsApi}.

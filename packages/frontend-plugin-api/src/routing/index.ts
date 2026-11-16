@@ -31,7 +31,6 @@ export type {
   AppHistoryEntry,
   AppHistorySnapshot,
 } from './AppHistoryApi';
-export { appHistoryApiRef } from './AppHistoryApi';
 export { useAppNavigate } from './useAppNavigate';
 export { useAppHref } from './useAppHref';
 

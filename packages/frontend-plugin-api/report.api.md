@@ -176,11 +176,6 @@ export interface AppHistoryApi {
   subscribe(listener: () => void): () => void;
 }
 
-// @public @deprecated
-export const appHistoryApiRef: ApiRef_2<AppHistoryApi, 'core.app-history'> & {
-  readonly $$type: '@backstage/ApiRef';
-};
-
 // @public
 export interface AppHistoryEntry {
   readonly index?: number;
@@ -466,7 +461,7 @@ export interface ConfigurableExtensionDataRef<
 
 // @public
 export namespace coreApis {
-  const appHistory: typeof appHistoryApiRef;
+  const appHistory: ApiRef<AppHistoryApi>;
   const analytics: typeof analyticsApiRef;
   const appLanguage: typeof appLanguageApiRef;
   const appLifecycle: typeof appLifecycleApiRef;

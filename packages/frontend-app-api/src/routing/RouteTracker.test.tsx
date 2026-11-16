@@ -27,8 +27,8 @@ import {
   analyticsApiRef,
   AppNode,
   useAnalytics,
-  appHistoryApiRef,
   type AppHistoryApi,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
 
@@ -93,7 +93,7 @@ describe('RouteTracker', () => {
         <TestApiProvider
           apis={[
             [analyticsApiRef, mockedAnalytics],
-            [appHistoryApiRef, appHistory],
+            [coreApis.appHistory, appHistory],
           ]}
         >
           <RouteTracker routeObjects={routeObjects} />
@@ -131,7 +131,7 @@ describe('RouteTracker', () => {
         apis={[
           [analyticsApiRef, mockedAnalytics],
           [
-            appHistoryApiRef,
+            coreApis.appHistory,
             mockApis.appHistory({ initialLocation: '/path/foo/bar' }),
           ],
         ]}

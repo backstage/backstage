@@ -18,13 +18,13 @@ import { useState } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
-  appHistoryApiRef,
   PageBlueprint,
   SubPageBlueprint,
   createExtension,
   createExtensionInput,
   coreExtensionData,
   ExtensionBoundary,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { Link, useLocation, useParams } from 'react-router';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
@@ -137,7 +137,7 @@ describe('ReactRouterV7PageRouter wired path', () => {
           extensions: [parent, child],
           initialRouteEntries: [initialPath],
         });
-        const appHistory = rendered.apis.get(appHistoryApiRef)!;
+        const appHistory = rendered.apis.get(coreApis.appHistory)!;
         expect(
           await screen.findByRole('link', { name: 'Parent' }),
         ).toHaveAttribute('href', parentHref);
@@ -210,7 +210,7 @@ describe('ReactRouterV7PageRouter wired path', () => {
       extensions: [settingsPage],
       initialRouteEntries: ['/settings-v7'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('settings-page')).toBeInTheDocument();
@@ -391,7 +391,7 @@ describe('ReactRouterV7PageRouter wired path', () => {
       extensions: [standalone, parent, child],
       initialRouteEntries: ['/catalog/list'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
     expect(await screen.findByRole('link', { name: 'Parent' })).toHaveAttribute(
       'href',
       '/',

@@ -18,10 +18,10 @@ import type { ReactNode } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
-  appHistoryApiRef,
   PageBlueprint,
   coreExtensionData,
   createExtension,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import {
   Link,
@@ -132,7 +132,7 @@ describe('React Router v6 nested inside React Router v6', () => {
       initialRouteEntries: ['/e/alpha'],
       config: CONFIG_WITH_BASENAME,
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('page')).toBeInTheDocument();
@@ -229,7 +229,7 @@ describe('React Router v6 nested inside React Router v6', () => {
       initialRouteEntries: ['/e/alpha'],
       config: CONFIG_WITH_BASENAME,
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('inner')).toBeInTheDocument();

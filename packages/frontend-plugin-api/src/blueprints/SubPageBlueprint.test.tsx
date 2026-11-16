@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { coreApis } from '@backstage/frontend-plugin-api';
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
@@ -225,7 +225,7 @@ describe('SubPageBlueprint', () => {
       extensions: [page, treeSubPage, plainSubPage],
       initialRouteEntries: ['/scoped/tree'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     expect(await screen.findByTestId('tree-page')).toBeInTheDocument();
     expect(screen.getByTestId('router-stack').textContent).toBe('tree');
@@ -345,7 +345,7 @@ describe('SubPageBlueprint', () => {
       extensions: [page, firstSubPage, secondSubPage],
       initialRouteEntries: ['/switch/first'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     expect(await screen.findByTestId('first-page')).toBeInTheDocument();
     expect(screen.getByTestId('router-stack').textContent).toBe('first');
@@ -416,7 +416,7 @@ describe('SubPageBlueprint', () => {
       extensions: [parentPage, templatesSubPage, tasksSubPage],
       initialRouteEntries: ['/create/templates'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('templates-page')).toBeInTheDocument();

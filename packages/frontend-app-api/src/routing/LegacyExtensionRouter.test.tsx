@@ -18,7 +18,6 @@ import { useEffect, useRef, useState, type ReactElement } from 'react';
 import { act, fireEvent, screen } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
-  appHistoryApiRef,
   AppRootElementBlueprint,
   PageLayout,
   RouterLink,
@@ -28,6 +27,7 @@ import {
   createRouteRef,
   useRouteRef,
   useRouteRefParams,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { useRoutingIntegration } from '@backstage/frontend-plugin-api/routing';
 import { Link, Navigate, Route, Routes, useParams } from 'react-router-dom';
@@ -113,7 +113,7 @@ it.each(['', '/backstage'])(
         ),
       ],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
     expect(
       await screen.findByRole('heading', { name: 'overview for otters' }),
     ).toBeVisible();
@@ -235,7 +235,7 @@ it('keeps root compatibility and native descendant scope through empty-path moun
       }),
     ],
   });
-  const appHistory = apis.get(appHistoryApiRef)!;
+  const appHistory = apis.get(coreApis.appHistory)!;
   expect(
     await screen.findByRole('heading', { name: 'Settings for alpha' }),
   ).toBeVisible();
@@ -300,7 +300,7 @@ it('scopes an emitted routeRef and resolves its parameters', async () => {
       }),
     ],
   });
-  const appHistory = apis.get(appHistoryApiRef)!;
+  const appHistory = apis.get(coreApis.appHistory)!;
   expect(
     await screen.findByRole('heading', { name: 'Ref page for otters' }),
   ).toBeVisible();
@@ -383,7 +383,7 @@ it('mounts routes whose react element is omitted or null without routing errors'
       }),
     ],
   });
-  const appHistory = apis.get(appHistoryApiRef)!;
+  const appHistory = apis.get(coreApis.appHistory)!;
   // The omitted-element route mounts and matches, rendering no content.
   await act(async () => {});
   expect(screen.queryByText('Ghost index')).not.toBeInTheDocument();
@@ -458,7 +458,7 @@ describe('direct history navigation teardown', () => {
       extensions: [leavingPage('leave'), landingPage],
       initialRouteEntries: ['/leave/alpha'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
     expect(
       await screen.findByRole('heading', { name: 'Leaving alpha' }),
     ).toBeVisible();
@@ -536,7 +536,7 @@ describe('direct history navigation teardown', () => {
       extensions: [retainingPage, landingPage, afterCleanupPage],
       initialRouteEntries: ['/retain'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
     expect(
       await screen.findByRole('heading', { name: 'Retaining' }),
     ).toBeVisible();

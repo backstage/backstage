@@ -19,7 +19,7 @@ import {
   useAppLocation,
   useAppHref,
   type AppNode,
-  appHistoryApiRef,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import { act, render, screen } from '@testing-library/react';
@@ -53,7 +53,7 @@ describe('RouterLink composition', () => {
   const wrapper = ({ children }: { children: React.ReactNode }) => (
     <TestApiProvider
       apis={[
-        [appHistoryApiRef, history],
+        [coreApis.appHistory, history],
         mockApis.routeResolution({
           resolvePath: { matches: [{ node: mockNode, basePath: '/tools' }] },
         }),

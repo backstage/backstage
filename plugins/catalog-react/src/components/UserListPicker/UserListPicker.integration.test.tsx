@@ -15,7 +15,7 @@
  */
 
 import { fireEvent, screen } from '@testing-library/react';
-import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { coreApis } from '@backstage/frontend-plugin-api';
 import { mockApis, renderInTestApp } from '@backstage/frontend-test-utils';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -81,7 +81,7 @@ it.each([false, true])(
       </EntityListProvider>,
       {
         apis: [
-          [appHistoryApiRef, history],
+          [coreApis.appHistory, history],
           [
             catalogApiRef,
             catalogApiMock({

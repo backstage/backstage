@@ -31,7 +31,7 @@ import {
 import {
   useAppLocation,
   useAppNavigate,
-  appHistoryApiRef,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import {
   RoutingProvider,
@@ -119,7 +119,7 @@ it('preserves the frozen V2 contract through nested providers overriding V3', as
     initialLocation: '/app/catalog/items/42/deep?q=1#hash',
   });
   render(
-    <TestApiProvider apis={[[appHistoryApiRef, history]]}>
+    <TestApiProvider apis={[[coreApis.appHistory, history]]}>
       <RootHistoryRouter history={history}>
         <LegacyBUIProvider>
           <BUIProvider useNavigation={useRoutingIntegration}>

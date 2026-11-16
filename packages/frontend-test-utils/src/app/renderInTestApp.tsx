@@ -15,34 +15,26 @@
  */
 
 import { useSyncExternalStore, type ReactNode } from 'react';
-import {
-  type AppError,
-  prepareSpecializedApp,
-} from '@backstage/frontend-app-api';
+import { prepareSpecializedApp } from '@backstage/frontend-app-api';
 import type { RenderTestAppOptions } from './renderTestApp';
 import { render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import {
   createExtension,
   ExtensionBoundary,
   ExtensionDefinition,
   coreExtensionData,
-  RouteRef,
-  FrontendFeature,
-  ExternalRouteRef,
   identityApiRef,
   useApi,
-  appHistoryApiRef,
   routeResolutionApiRef,
   type AppNode,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { createTestAppPlugin } from './testAppPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/prepareSpecializedApp';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../frontend-app-api/src/routing/getBasePath';
-import { TestApiPairs } from '../apis/TestApiProvider';
 import { throwOnAppErrors } from './throwOnAppErrors';
 import {
   createTestNavigation,
@@ -74,11 +66,11 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> =
      * The element is treated as a page mounted at this pattern, so targets
      * written relative to the page — a tab href, a `..` climb — resolve against
      * it rather than against the app root, as they would in a real app, and
-     * `useRouteRefParams` binds the params the pattern names.
+     * `useParams` binds the params the pattern names.
      *
      * This publishes a framework page mount. Wrap the element in its page's
      * adapter when it uses a routing library, or read framework params through
-     * `useRouteRefParams`. Defaults to the app root.
+     * `useParams`. Defaults to the app root.
      *
      * Should be used together with `initialRouteEntries` to set a concrete
      * URL that matches the pattern.
@@ -131,7 +123,7 @@ function TestAppPage({
   node: AppNode;
   children: ReactNode;
 }) {
-  const history = useApi(appHistoryApiRef);
+  const history = useApi(coreApis.appHistory);
   const routes = useApi(routeResolutionApiRef);
   const { location } = useSyncExternalStore(
     history.subscribe,
@@ -147,7 +139,7 @@ function TestAppPage({
  *
  * Navigation is owned by a {@link @backstage/frontend-plugin-api#AppHistoryApi}
  * with in-memory history, the same seam as production. Access it through
- * `apis.get(appHistoryApiRef)` on the render result.
+ * `apis.get(coreApis.appHistory)` on the render result.
  *
  * The element renders under the app's root React Router v6 projection, as in
  * production. Wrap the element in its page's adapter when it needs routing-library

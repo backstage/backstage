@@ -17,9 +17,9 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
-  appHistoryApiRef,
   PageBlueprint,
   createFrontendModule,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { SignInPageBlueprint } from '@backstage/plugin-app-react';
 import { createApp } from '@backstage/frontend-defaults';
@@ -179,7 +179,7 @@ describe('AppRoot', () => {
       initialRouteEntries: ['/catalog/foo'],
       config: BASENAME_CONFIG,
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
     for (const [label, , destination] of targets) {
       act(() => appHistory.navigate('/catalog/foo'));
       const link = await screen.findByRole('link', { name: label });

@@ -36,8 +36,8 @@ import {
   useApi,
   useApiHolder,
   type AppNode,
-  appHistoryApiRef,
   type AppHistoryApi,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 
 import {
@@ -70,7 +70,7 @@ function warnImplicitRouting(history: AppHistoryApi, node: AppNode) {
 
 /** Called by each navigation consumer, inside its own React Router route context. */
 function useLegacyNavigation(): RoutingIntegration {
-  const history = useApi(appHistoryApiRef);
+  const history = useApi(coreApis.appHistory);
   const node = useContext(LegacyExtensionRouterContext)!;
   // Framework-supported targets do not consume implicit routing. Native router
   // hooks still observe these contexts and report their own compatibility use.
@@ -123,7 +123,7 @@ export function LegacyExtensionRouter(props: {
 }) {
   const { node, children } = props;
   const parentNode = useContext(LegacyExtensionRouterContext);
-  const history = useApiHolder().get(appHistoryApiRef);
+  const history = useApiHolder().get(coreApis.appHistory);
   const mounts = useRouteMatches();
   const routePattern = mounts.at(-1)?.routePattern;
   const ownsMount = mounts.some(match => match.node === node);

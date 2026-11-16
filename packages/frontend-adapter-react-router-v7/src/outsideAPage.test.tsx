@@ -18,7 +18,7 @@ import { matchPath, useRouteMatches } from '@internal/frontend';
 import {
   ExtensionBoundary,
   type AppNode,
-  appHistoryApiRef,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 
 import type { ReactNode } from 'react';
@@ -123,7 +123,7 @@ function renderUnderLegacyRouter(
   }
   if (options.appHistory) {
     tree = (
-      <TestApiProvider apis={[[appHistoryApiRef, mockApis.appHistory()]]}>
+      <TestApiProvider apis={[[coreApis.appHistory, mockApis.appHistory()]]}>
         {tree}
       </TestApiProvider>
     );
@@ -190,7 +190,7 @@ describe('ReactRouterV7PageRouter outside a page', () => {
         <TestApiProvider
           apis={[
             [
-              appHistoryApiRef,
+              coreApis.appHistory,
               mockApis.appHistory({ initialLocation: '/old/alpha/deep' }),
             ],
             mockApis.routeResolution.mock({
