@@ -15,8 +15,9 @@
  */
 import { renderInTestApp } from '@backstage/test-utils';
 import { JsonObject, JsonValue } from '@backstage/types';
-import type { RJSFValidationError } from '@rjsf/utils';
+import type { FieldValidation, RJSFValidationError } from '@rjsf/utils';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { useEffect } from 'react';
 
 import { FieldExtensionComponentProps } from '../../../extensions';
@@ -26,6 +27,1377 @@ import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 
 describe('Stepper', () => {
+  it('includes each visible step title and position in its accessible name', async () => {
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Example form',
+            steps: [
+              { title: 'General information', schema: { properties: {} } },
+              {
+                title: 'Optional settings',
+                when: '${{ parameters.optional }}',
+                schema: { properties: {} },
+              },
+              { title: 'Additional information', schema: { properties: {} } },
+            ],
+          }}
+          initialState={{ optional: false }}
+          extensions={[]}
+          onCreate={jest.fn()}
+        />
+      </SecretsContextProvider>,
+    );
+    expect(
+      screen.getByRole('button', { name: 'General information, Step 1' }),
+    ).toHaveTextContent('General information');
+    expect(
+      screen.getByRole('button', { name: 'Additional information, Step 2' }),
+    ).toHaveTextContent('Additional information');
+    expect(screen.queryByText('Optional settings')).not.toBeInTheDocument();
+  });
+
+  it.each(['manual', 'automatic'] as const)(
+    'does not reuse a successful completion after a failed %s retry',
+    async retry => {
+      let rejected = false;
+      const validate = jest.fn(
+        async (_value: unknown, errors: FieldValidation) => {
+          if (rejected) errors.addError('Remote check failed');
+        },
+      );
+      const onCreate = jest.fn();
+      const Name = ({ formData }: FieldExtensionComponentProps<string>) => (
+        <input aria-label="Name" value={formData ?? ''} readOnly />
+      );
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Failed retry',
+              steps: [
+                {
+                  title: 'Name',
+                  schema: {
+                    properties: {
+                      name: { type: 'string', 'ui:field': 'Name' },
+                    },
+                  },
+                },
+                {
+                  title: 'Later',
+                  schema: { properties: { note: { type: 'string' } } },
+                },
+              ],
+            }}
+            initialState={{ name: 'approved', note: 'unchanged' }}
+            extensions={[
+              { name: 'Name', component: Name, validation: validate },
+            ]}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>,
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      await screen.findByRole('textbox', { name: 'note' });
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      await screen.findByRole('button', { name: 'Create' });
+      rejected = true;
+      if (retry === 'manual') {
+        fireEvent.click(screen.getByRole('button', { name: 'Name, Step 1' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      } else {
+        fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+        fireEvent.change(await screen.findByRole('textbox', { name: 'note' }), {
+          target: { value: 'updated' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      }
+      expect(
+        await screen.findAllByText('Remote check failed'),
+      ).not.toHaveLength(0);
+      expect(validate).toHaveBeenCalledTimes(2);
+      fireEvent.click(screen.getByRole('button', { name: 'Later, Step 2' }));
+      // Returning to the old inputs must not restore the old API-backed success.
+      fireEvent.change(await screen.findByRole('textbox', { name: 'note' }), {
+        target: { value: 'unchanged' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      expect(
+        await screen.findAllByText('Remote check failed'),
+      ).not.toHaveLength(0);
+      expect(validate).toHaveBeenCalledTimes(3);
+      expect(
+        screen.queryByRole('button', { name: 'Create' }),
+      ).not.toBeInTheDocument();
+      expect(onCreate).not.toHaveBeenCalled();
+      rejected = false;
+      fireEvent.click(screen.getByRole('button', { name: 'Later, Step 2' }));
+      await screen.findByRole('textbox', { name: 'note' });
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      // A successful retry proceeds directly; another Name-page visit is unnecessary.
+      fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+      await waitFor(() =>
+        expect(onCreate).toHaveBeenCalledWith({
+          name: 'approved',
+          note: 'unchanged',
+        }),
+      );
+      expect(validate).toHaveBeenCalledTimes(4);
+    },
+  );
+
+  it.each(['not', 'enum'] as const)(
+    'checks full cross-page %s constraints even when projected inputs are unchanged',
+    async keyword => {
+      const allowed = { answer: 'valid', mode: 'allowed' };
+      const constraints = {
+        not: {
+          not: {
+            properties: { mode: { const: 'blocked' } },
+            required: ['mode'],
+          },
+        },
+        enum: { enum: [allowed] },
+      };
+      const onCreate = jest.fn();
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Cross-page constraints',
+              steps: [
+                {
+                  title: 'Answer',
+                  schema: {
+                    type: 'object',
+                    properties: { answer: { type: 'string' } },
+                    ...constraints[keyword],
+                  },
+                },
+                {
+                  title: 'Mode',
+                  schema: { properties: { mode: { type: 'string' } } },
+                },
+              ],
+            }}
+            initialState={allowed}
+            extensions={[]}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>,
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      fireEvent.change(await screen.findByRole('textbox', { name: 'mode' }), {
+        target: { value: 'blocked' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      expect(
+        await screen.findByRole('textbox', { name: 'answer' }),
+      ).toHaveValue('valid');
+      expect(
+        await screen.findAllByText(
+          keyword === 'not' ? /must NOT be valid/i : /allowed values/i,
+        ),
+      ).not.toHaveLength(0);
+      expect(
+        screen.queryByRole('button', { name: 'Create' }),
+      ).not.toBeInTheDocument();
+      expect(onCreate).not.toHaveBeenCalled();
+      fireEvent.click(screen.getByRole('button', { name: 'Mode, Step 2' }));
+      fireEvent.change(await screen.findByRole('textbox', { name: 'mode' }), {
+        target: { value: 'allowed' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+      await waitFor(() => expect(onCreate).toHaveBeenCalledWith(allowed));
+    },
+  );
+
+  async function renderSynchronizedField(staleFailure = false) {
+    const user = userEvent.setup();
+    const onCreate = jest.fn();
+    let finishFirst!: () => void;
+    let finishSecond!: () => void;
+    const first = new Promise<void>(resolve => {
+      finishFirst = resolve;
+    });
+    const second = new Promise<void>(resolve => {
+      finishSecond = resolve;
+    });
+    const validate = jest
+      .fn()
+      .mockImplementationOnce(async (_value, errors) => {
+        await first;
+        if (staleFailure) errors.addError('Stale failure');
+      })
+      .mockImplementationOnce(async () => {
+        await second;
+      });
+    const Sync = ({
+      formData,
+      onChange,
+    }: FieldExtensionComponentProps<string>) => (
+      <>
+        <input
+          aria-label="Synchronized value"
+          value={formData ?? ''}
+          onChange={event => onChange(event.target.value)}
+        />
+        <button type="button" onClick={() => onChange(formData)}>
+          Synchronize
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            onChange('temporary');
+            onChange(formData);
+          }}
+        >
+          Edit and restore
+        </button>
+      </>
+    );
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Synchronization',
+            steps: [
+              {
+                title: 'Value',
+                schema: {
+                  properties: { value: { type: 'string', 'ui:field': 'Sync' } },
+                },
+              },
+            ],
+          }}
+          initialState={{ value: 'original' }}
+          extensions={[{ name: 'Sync', component: Sync, validation: validate }]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+    await user.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('progressbar');
+    return {
+      user,
+      onCreate,
+      validate,
+      first,
+      second,
+      finishFirst,
+      finishSecond,
+    };
+  }
+
+  it('continues validation after a synchronization with no effective change', async () => {
+    const { user, onCreate, validate, first, finishFirst } =
+      await renderSynchronizedField();
+    await user.click(screen.getByRole('button', { name: 'Synchronize' }));
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(validate).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      finishFirst();
+      await first;
+    });
+    await user.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({ value: 'original' }),
+    );
+    expect(validate).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the last value when a field edits and restores it in the same event', async () => {
+    const { user, onCreate, first, second, finishFirst, finishSecond } =
+      await renderSynchronizedField();
+    await user.click(screen.getByRole('button', { name: 'Edit and restore' }));
+    expect(
+      screen.getByRole('textbox', { name: 'Synchronized value' }),
+    ).toHaveValue('original');
+    expect(
+      await screen.findByText(/form changed during validation/),
+    ).toBeInTheDocument();
+    await act(async () => {
+      finishFirst();
+      await first;
+    });
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Review' }));
+    await act(async () => {
+      finishSecond();
+      await second;
+    });
+    await user.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({ value: 'original' }),
+    );
+  });
+
+  it('preserves edits and ignores a late result while a newer validation runs', async () => {
+    const {
+      user,
+      onCreate,
+      validate,
+      first,
+      second,
+      finishFirst,
+      finishSecond,
+    } = await renderSynchronizedField(true);
+    await user.type(
+      screen.getByRole('textbox', { name: 'Synchronized value' }),
+      '-edited',
+    );
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+    expect(
+      await screen.findByText(/form changed during validation/),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Review' })).toBeEnabled();
+    await user.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('progressbar');
+    await act(async () => {
+      finishFirst();
+      await first;
+    });
+    expect(screen.queryByText('Stale failure')).not.toBeInTheDocument();
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', { name: 'Synchronized value' }),
+    ).toHaveValue('original-edited');
+    await act(async () => {
+      finishSecond();
+      await second;
+    });
+    await user.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({ value: 'original-edited' }),
+    );
+    expect(validate).toHaveBeenCalledTimes(2);
+  });
+
+  it('detects a mutated nested value emitted by a shared field during validation', async () => {
+    let finish!: () => void;
+    const pending = new Promise<void>(resolve => {
+      finish = resolve;
+    });
+    const validate = jest
+      .fn(async () => {})
+      .mockImplementationOnce(async () => {
+        await pending;
+      });
+    const onCreate = jest.fn();
+    const Shared = ({
+      formData,
+      onChange,
+    }: FieldExtensionComponentProps<{ name: string }>) => (
+      <button
+        type="button"
+        onClick={() => {
+          formData!.name = 'edited';
+          onChange(formData);
+        }}
+      >
+        Edit shared object
+      </button>
+    );
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Shared object',
+            steps: [
+              {
+                title: 'Shared data',
+                schema: {
+                  properties: {
+                    request: { type: 'object', 'ui:field': 'Shared' },
+                  },
+                },
+              },
+            ],
+          }}
+          initialState={{ request: { name: 'original' } }}
+          extensions={[
+            { name: 'Shared', component: Shared, validation: validate },
+          ]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('progressbar');
+    fireEvent.click(screen.getByRole('button', { name: 'Edit shared object' }));
+    expect(
+      await screen.findByText(/form changed during validation/),
+    ).toBeInTheDocument();
+    await act(async () => {
+      finish();
+      await pending;
+    });
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({
+        request: { name: 'edited' },
+      }),
+    );
+    expect(validate).toHaveBeenCalledTimes(2);
+  });
+
+  it('interrupts validation when the manifest reveals a page and still requires its visit', async () => {
+    let finish!: () => void;
+    const pending = new Promise<void>(resolve => {
+      finish = resolve;
+    });
+    const validate = jest
+      .fn()
+      .mockImplementationOnce(async (_value, errors) => {
+        await pending;
+        errors.addError('Old manifest failure');
+      });
+    const onCreate = jest.fn();
+    const Current = ({ formData }: FieldExtensionComponentProps<string>) => (
+      <input aria-label="Current value" value={formData ?? ''} readOnly />
+    );
+    const manifest: TemplateParameterSchema = {
+      title: 'Revealed page',
+      steps: [
+        {
+          title: 'Earlier',
+          when: false,
+          schema: {
+            required: ['earlier'],
+            properties: { earlier: { type: 'string' } },
+          },
+        },
+        {
+          title: 'Current',
+          schema: {
+            properties: { current: { type: 'string', 'ui:field': 'Current' } },
+          },
+        },
+      ],
+    };
+    const extensions = [
+      { name: 'Current', component: Current, validation: validate },
+    ];
+    const renderStepper = (definition: TemplateParameterSchema) => (
+      <SecretsContextProvider>
+        <Stepper
+          manifest={definition}
+          initialState={{ earlier: 'prefilled', current: 'value' }}
+          extensions={extensions}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>
+    );
+    const { rerender } = await renderInTestApp(renderStepper(manifest));
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('progressbar');
+    rerender(
+      renderStepper({
+        ...manifest,
+        steps: [{ ...manifest.steps[0], when: true }, manifest.steps[1]],
+      }),
+    );
+    expect(
+      await screen.findByText(/form changed during validation/),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Review' })).toBeEnabled();
+    await act(async () => {
+      finish();
+      await pending;
+    });
+    expect(screen.queryByText('Old manifest failure')).not.toBeInTheDocument();
+    expect(onCreate).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    expect(await screen.findByRole('textbox', { name: 'earlier' })).toHaveValue(
+      'prefilled',
+    );
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({
+        earlier: 'prefilled',
+        current: 'value',
+      }),
+    );
+    expect(validate).toHaveBeenCalledTimes(2);
+  });
+
+  it('checks several cross-page validators without a navigation cycle', async () => {
+    const onCreate = jest.fn();
+    const validate = jest.fn(
+      async (
+        _value: unknown,
+        errors: FieldValidation,
+        context: { formData: JsonObject },
+      ) => {
+        if (context.formData.context !== 'approved')
+          errors.addError('Fix the context');
+      },
+    );
+    const Field = ({ formData }: FieldExtensionComponentProps<string>) => (
+      <input aria-label="Validated value" value={formData ?? ''} readOnly />
+    );
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Cross-page checks',
+            steps: [
+              {
+                title: 'First',
+                schema: {
+                  properties: {
+                    first: { type: 'string', 'ui:field': 'Checked' },
+                  },
+                },
+              },
+              {
+                title: 'Second',
+                schema: {
+                  properties: {
+                    second: { type: 'string', 'ui:field': 'Checked' },
+                  },
+                },
+              },
+              {
+                title: 'Context',
+                schema: {
+                  properties: {
+                    context: { type: 'string' },
+                    note: { type: 'string' },
+                  },
+                },
+              },
+            ],
+          }}
+          initialState={{ first: 'one', second: 'two', context: 'approved' }}
+          extensions={[
+            { name: 'Checked', component: Field, validation: validate },
+          ]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    await screen.findByRole('button', { name: 'Back' });
+    await waitFor(() => expect(validate).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.change(await screen.findByRole('textbox', { name: 'note' }), {
+      target: { value: 'changed' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('button', { name: 'Create' });
+    expect(validate).toHaveBeenCalledTimes(4);
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    fireEvent.change(await screen.findByRole('textbox', { name: 'context' }), {
+      target: { value: 'blocked' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    expect(await screen.findAllByText('Fix the context')).not.toHaveLength(0);
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+    expect(onCreate).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Context, Step 3' }));
+    fireEvent.change(await screen.findByRole('textbox', { name: 'context' }), {
+      target: { value: 'approved' },
+    });
+    fireEvent.change(screen.getByRole('textbox', { name: 'note' }), {
+      target: { value: 'fixed' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({
+        first: 'one',
+        second: 'two',
+        context: 'approved',
+        note: 'fixed',
+      }),
+    );
+    expect(validate).toHaveBeenCalledTimes(7);
+  });
+
+  it.each(['{Enter}', ' '])(
+    'recovers from failed context validation using %s to reach a later page',
+    async key => {
+      const user = userEvent.setup();
+      const onCreate = jest.fn();
+      const validate = jest.fn(
+        async (
+          _value: unknown,
+          errors: FieldValidation,
+          context: { formData: JsonObject },
+        ) => {
+          if (context.formData.context !== 'approved')
+            errors.addError('Context is not approved');
+        },
+      );
+      const Custom = ({ formData }: FieldExtensionComponentProps<string>) => (
+        <input aria-label="Name" value={formData ?? ''} readOnly />
+      );
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Context validation',
+              steps: [
+                {
+                  title: 'Name',
+                  schema: {
+                    properties: {
+                      name: { type: 'string', 'ui:field': 'Custom' },
+                    },
+                  },
+                },
+                {
+                  title: 'Context',
+                  schema: { properties: { context: { type: 'string' } } },
+                },
+              ],
+            }}
+            initialState={{ name: 'existing', context: 'approved' }}
+            extensions={[
+              { name: 'Custom', component: Custom, validation: validate },
+            ]}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>,
+      );
+      // Pages that have not been visited are still reached through validation.
+      expect(
+        screen.getByRole('button', { name: 'Context, Step 2' }),
+      ).toBeDisabled();
+      fireEvent.click(screen.getByLabelText('Context, Step 2'));
+      expect(screen.getByRole('textbox', { name: 'Name' })).toBeInTheDocument();
+      expect(
+        screen.queryByRole('textbox', { name: 'context' }),
+      ).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      fireEvent.change(
+        await screen.findByRole('textbox', { name: 'context' }),
+        {
+          target: { value: 'blocked' },
+        },
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      await screen.findByRole('textbox', { name: 'Name' });
+      expect(
+        await screen.findAllByText('Context is not approved'),
+      ).not.toHaveLength(0);
+      expect(validate).toHaveBeenCalledTimes(2);
+      expect(onCreate).not.toHaveBeenCalled();
+      await user.tab();
+      const contextButton = screen.getByRole('button', {
+        name: 'Context, Step 2',
+      });
+      expect(contextButton).toHaveFocus();
+      await user.keyboard(key);
+      const context = await screen.findByRole('textbox', { name: 'context' });
+      expect(context).toHaveValue('blocked');
+      expect(
+        screen.queryByText('Context is not approved'),
+      ).not.toBeInTheDocument();
+      // Automatic checking still blocks review until the later input is fixed.
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      await screen.findByRole('textbox', { name: 'Name' });
+      expect(
+        screen.queryByRole('button', { name: 'Create' }),
+      ).not.toBeInTheDocument();
+      act(() =>
+        screen.getByRole('button', { name: 'Context, Step 2' }).focus(),
+      );
+      await user.keyboard(key);
+      fireEvent.change(
+        await screen.findByRole('textbox', { name: 'context' }),
+        {
+          target: { value: 'approved' },
+        },
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      // Successful context validation does not require another Name-page visit.
+      fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+      await waitFor(() =>
+        expect(onCreate).toHaveBeenCalledWith({
+          name: 'existing',
+          context: 'approved',
+        }),
+      );
+      // A later failure supersedes the old success, even after restoring its context.
+      expect(validate).toHaveBeenCalledTimes(4);
+    },
+  );
+
+  it.each(['if.required', 'allOf', '$ref'] as const)(
+    'revalidates constraints changed through %s by a later page',
+    async composition => {
+      const onCreate = jest.fn();
+      const condition = {
+        if:
+          composition === 'if.required'
+            ? { required: ['mode'] }
+            : { properties: { mode: { const: 'strict' } }, required: ['mode'] },
+        then: {
+          properties: { answer: { minLength: 8 } },
+          required: ['answer'],
+        },
+      };
+      const compositions = {
+        'if.required': condition,
+        allOf: { allOf: [condition] },
+        $ref: {
+          definitions: { conditional: condition },
+          $ref: '#/definitions/conditional',
+        },
+      };
+      const composed = compositions[composition];
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Conditional constraints',
+              steps: [
+                {
+                  title: 'Answer',
+                  schema: {
+                    type: 'object',
+                    properties: { answer: { type: 'string' } },
+                    ...composed,
+                  },
+                },
+                {
+                  title: 'Mode',
+                  schema: { properties: { mode: { type: 'string' } } },
+                },
+              ],
+            }}
+            initialState={{
+              answer: 'short',
+              ...(composition === 'if.required' ? {} : { mode: 'relaxed' }),
+            }}
+            extensions={[]}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>,
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      fireEvent.change(await screen.findByRole('textbox', { name: 'mode' }), {
+        target: { value: 'strict' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      const answer = await screen.findByRole('textbox', { name: /answer/ });
+      expect(answer).toHaveValue('short');
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      expect(
+        await screen.findAllByText(/fewer than 8 characters/),
+      ).not.toHaveLength(0);
+      expect(onCreate).not.toHaveBeenCalled();
+      fireEvent.change(answer, { target: { value: 'long enough' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      // The intervening page is already valid; recovery goes straight to review.
+      fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+      await waitFor(() =>
+        expect(onCreate).toHaveBeenCalledWith({
+          answer: 'long enough',
+          mode: 'strict',
+        }),
+      );
+    },
+  );
+
+  it.each(['insert', 'reorder', 'schema'])(
+    'revalidates steps after a manifest %s while review is open',
+    async change => {
+      const onCreate = jest.fn();
+      const validateFirst = jest.fn();
+      const manifest: TemplateParameterSchema = {
+        title: 'Changing definitions',
+        steps: [
+          {
+            title: 'First',
+            schema: {
+              properties: { shared: { type: 'string', 'ui:field': 'Shared' } },
+            },
+          },
+          {
+            title: 'Last',
+            schema: { properties: { last: { type: 'string' } } },
+          },
+        ],
+      };
+      const Shared = ({
+        formData,
+        onChange,
+      }: FieldExtensionComponentProps<string>) => (
+        <input
+          aria-label="Shared"
+          value={formData ?? ''}
+          onChange={event => onChange(event.target.value)}
+        />
+      );
+      const renderStepper = (current: TemplateParameterSchema) => (
+        <SecretsContextProvider>
+          <Stepper
+            manifest={current}
+            initialState={{ shared: 'approved' }}
+            extensions={[
+              { name: 'Shared', component: Shared, validation: validateFirst },
+            ]}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>
+      );
+      const { rerender } = await renderInTestApp(renderStepper(manifest));
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      await screen.findByRole('textbox', { name: 'last' });
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      await screen.findByRole('button', { name: 'Create' });
+      validateFirst.mockClear();
+      const required = {
+        title: 'Required',
+        schema: {
+          required: ['newValue'],
+          properties: { newValue: { type: 'string' } },
+        },
+      };
+      const replacements: Record<string, TemplateParameterSchema['steps']> = {
+        insert: [required, ...manifest.steps],
+        reorder: [manifest.steps[1], manifest.steps[0]],
+        schema: [
+          {
+            ...manifest.steps[0],
+            schema: { ...manifest.steps[0].schema, ...required.schema },
+          },
+          manifest.steps[1],
+        ],
+      };
+      rerender(renderStepper({ ...manifest, steps: replacements[change] }));
+      if (screen.queryByRole('button', { name: 'Create' })) {
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+      }
+      if (
+        change === 'insert' &&
+        screen.queryByRole('textbox', { name: 'last' })
+      ) {
+        fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      }
+      if (change === 'reorder') {
+        fireEvent.click(await screen.findByRole('button', { name: 'Next' }));
+        await screen.findByRole('textbox', { name: 'Shared' });
+        fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+        await screen.findByRole('button', { name: 'Create' });
+      } else {
+        const input = await screen.findByRole('textbox', { name: 'newValue' });
+        fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+        await screen.findByRole('textbox', { name: 'newValue' });
+        fireEvent.change(input, { target: { value: 'configured' } });
+      }
+      expect(validateFirst).toHaveBeenCalledTimes(change === 'reorder' ? 1 : 0);
+      expect(onCreate).not.toHaveBeenCalled();
+    },
+  );
+
+  it('revalidates custom fields after shared inputs or other form context changes', async () => {
+    const onCreate = jest.fn();
+    const validateShared = jest.fn(
+      async (value: unknown, errors: FieldValidation) => {
+        if (value !== 'approved')
+          errors.addError('Shared value must be approved');
+      },
+    );
+    const Shared = ({
+      formData,
+      onChange,
+    }: FieldExtensionComponentProps<string>) => (
+      <input
+        aria-label="Shared"
+        value={formData ?? ''}
+        onChange={event => onChange(event.target.value)}
+      />
+    );
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Shared inputs',
+            steps: [
+              {
+                title: 'Validate shared',
+                schema: {
+                  properties: {
+                    shared: { type: 'string', 'ui:field': 'Shared' },
+                  },
+                },
+              },
+              {
+                title: 'Edit shared',
+                schema: {
+                  properties: {
+                    shared: { type: 'string' },
+                    unrelated: { type: 'string' },
+                  },
+                },
+              },
+            ],
+          }}
+          initialState={{ shared: 'approved' }}
+          extensions={[
+            { name: 'Shared', component: Shared, validation: validateShared },
+          ]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.change(
+      await screen.findByRole('textbox', { name: 'unrelated' }),
+      { target: { value: 'other' } },
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    // A context-only change is checked without sending the user back.
+    await screen.findByRole('button', { name: 'Create' });
+    expect(validateShared).toHaveBeenCalledTimes(2);
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    fireEvent.change(await screen.findByRole('textbox', { name: 'shared' }), {
+      target: { value: 'invalid' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    await screen.findByRole('textbox', { name: 'Shared' });
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+    expect(
+      await screen.findAllByText('Shared value must be approved'),
+    ).not.toHaveLength(0);
+    expect(onCreate).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByRole('textbox', { name: 'Shared' }), {
+      target: { value: 'approved' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({
+        shared: 'approved',
+        unrelated: 'other',
+      }),
+    );
+  });
+
+  it.each([false, true])(
+    'discards pending validation after visibility changes (stale error: %s)',
+    async staleError => {
+      let finishValidation: () => void;
+      const pendingValidation = new Promise<void>(resolve => {
+        finishValidation = resolve;
+      });
+      const validateCurrent = jest
+        .fn(async (_value: unknown, _errors: FieldValidation) => {})
+        .mockImplementationOnce(
+          async (_value: unknown, errors: FieldValidation) => {
+            await pendingValidation;
+            if (staleError) errors.addError('Outdated validation error');
+          },
+        );
+      const validateEarlier = jest.fn(
+        async (value: unknown, errors: FieldValidation) => {
+          if (value !== 'approved') errors.addError('Enter approved value');
+        },
+      );
+      const ToggleField = ({
+        formData,
+        onChange,
+      }: FieldExtensionComponentProps<boolean>) => (
+        <input
+          aria-label="Show earlier"
+          type="checkbox"
+          checked={formData ?? false}
+          onChange={event => onChange(event.target.checked)}
+        />
+      );
+      const onCreate = jest.fn();
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={{
+              title: 'Pending validation',
+              steps: [
+                {
+                  title: 'Earlier',
+                  when: '${{ parameters.enabled }}',
+                  schema: {
+                    required: ['earlier'],
+                    properties: {
+                      earlier: { type: 'string', 'ui:field': 'Earlier' },
+                    },
+                  },
+                },
+                {
+                  title: 'Current',
+                  schema: {
+                    properties: {
+                      enabled: { type: 'boolean', 'ui:field': 'Toggle' },
+                      note: { type: 'string' },
+                    },
+                  },
+                },
+              ],
+            }}
+            extensions={[
+              {
+                name: 'Earlier',
+                component: ({
+                  formData,
+                  onChange,
+                }: FieldExtensionComponentProps<string>) => (
+                  <input
+                    aria-label="Earlier value"
+                    value={formData ?? ''}
+                    onChange={event => onChange(event.target.value)}
+                  />
+                ),
+                validation: validateEarlier,
+              },
+              {
+                name: 'Toggle',
+                component: ToggleField,
+                validation: validateCurrent,
+              },
+            ]}
+            initialState={{
+              enabled: true,
+              earlier: 'approved',
+              note: 'original',
+            }}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>,
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      const toggle = await screen.findByRole('checkbox', {
+        name: 'Show earlier',
+      });
+      expect(validateEarlier).toHaveBeenCalledTimes(1);
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      await waitFor(() => expect(validateCurrent).toHaveBeenCalledTimes(1));
+      fireEvent.click(toggle);
+      fireEvent.click(toggle);
+      fireEvent.change(screen.getByRole('textbox', { name: 'note' }), {
+        target: { value: 'edited while validating' },
+      });
+      await act(async () => {
+        finishValidation!();
+        await pendingValidation;
+      });
+      expect(
+        screen.getByRole('checkbox', { name: 'Show earlier' }),
+      ).toBeChecked();
+      expect(screen.getByRole('textbox', { name: 'note' })).toHaveValue(
+        'edited while validating',
+      );
+      expect(
+        screen.queryByText('Outdated validation error'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'Create' }),
+      ).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      const earlier = await screen.findByRole('textbox', {
+        name: 'Earlier value',
+      });
+      fireEvent.change(earlier, { target: { value: 'invalid' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      expect(
+        await screen.findAllByText(/Enter approved value/),
+      ).not.toHaveLength(0);
+      expect(onCreate).not.toHaveBeenCalled();
+      fireEvent.change(earlier, { target: { value: 'approved' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+      await waitFor(() =>
+        expect(onCreate).toHaveBeenCalledWith({
+          enabled: true,
+          earlier: 'approved',
+          note: 'edited while validating',
+        }),
+      );
+    },
+  );
+
+  it.each([false, true])(
+    'validates a newly revealed earlier step before review (previously validated: %s)',
+    async previouslyValidated => {
+      const onCreate = jest.fn();
+      const validateEarlier = jest.fn(
+        async (value: unknown, errors: FieldValidation) => {
+          if (value !== 'approved') {
+            errors.addError('Enter approved value');
+          }
+        },
+      );
+      const EarlierField = ({
+        formData,
+        onChange,
+      }: FieldExtensionComponentProps<string>) => (
+        <input
+          aria-label="Earlier value"
+          value={formData ?? ''}
+          onChange={event => onChange(event.target.value || undefined)}
+        />
+      );
+      const manifest: TemplateParameterSchema = {
+        title: 'Required earlier step',
+        steps: [
+          {
+            title: 'Earlier',
+            when: '${{ parameters.enabled }}',
+            schema: {
+              required: ['earlier'],
+              properties: {
+                earlier: { type: 'string', 'ui:field': 'Earlier' },
+              },
+            },
+          },
+          {
+            title: 'Current',
+            schema: { properties: { enabled: { type: 'boolean' } } },
+          },
+        ],
+      };
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={manifest}
+            extensions={[
+              {
+                name: 'Earlier',
+                component: EarlierField,
+                validation: validateEarlier,
+              },
+            ]}
+            initialState={{
+              enabled: previouslyValidated,
+              ...(previouslyValidated ? { earlier: 'approved' } : {}),
+            }}
+            onCreate={onCreate}
+          />
+        </SecretsContextProvider>,
+      );
+      if (previouslyValidated) {
+        fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+        fireEvent.click(
+          await screen.findByRole('checkbox', { name: 'enabled' }),
+        );
+      }
+      validateEarlier.mockClear();
+      fireEvent.click(screen.getByRole('checkbox', { name: 'enabled' }));
+      expect(
+        screen.queryByRole('textbox', { name: 'Earlier value' }),
+      ).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+      const earlier = await screen.findByRole('textbox', {
+        name: 'Earlier value',
+      });
+      expect(
+        screen.queryByRole('button', { name: 'Create' }),
+      ).not.toBeInTheDocument();
+      fireEvent.change(earlier, { target: { value: 'temporary' } });
+      fireEvent.change(earlier, { target: { value: '' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      expect(
+        await screen.findAllByText(/required property 'earlier'/),
+      ).not.toHaveLength(0);
+      expect(validateEarlier).not.toHaveBeenCalled();
+      expect(onCreate).not.toHaveBeenCalled();
+      fireEvent.change(earlier, { target: { value: 'invalid' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      expect(
+        await screen.findAllByText(/Enter approved value/),
+      ).not.toHaveLength(0);
+      expect(validateEarlier).toHaveBeenCalled();
+      expect(
+        screen.queryByRole('button', { name: 'Create' }),
+      ).not.toBeInTheDocument();
+      fireEvent.change(earlier, { target: { value: 'approved' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+      await waitFor(() =>
+        expect(onCreate).toHaveBeenCalledWith({
+          enabled: true,
+          earlier: 'approved',
+        }),
+      );
+    },
+  );
+
+  it.each([false, true])(
+    'keeps the displayed cursor when an earlier step is revealed (self hiding: %s)',
+    async selfHiding => {
+      const manifest: TemplateParameterSchema = {
+        title: 'Cursor',
+        steps: [
+          {
+            title: 'Earlier',
+            when: '${{ parameters.enabled }}',
+            schema: {
+              properties: selfHiding
+                ? { enabled: { type: 'boolean' } }
+                : { earlier: { type: 'string' } },
+            },
+          },
+          {
+            title: 'Current',
+            schema: { properties: { enabled: { type: 'boolean' } } },
+          },
+        ],
+      };
+      await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper
+            manifest={manifest}
+            extensions={[]}
+            initialState={{ enabled: selfHiding }}
+            onCreate={jest.fn()}
+          />
+        </SecretsContextProvider>,
+      );
+      if (selfHiding) {
+        fireEvent.click(screen.getByRole('checkbox', { name: 'enabled' }));
+      }
+      expect(
+        screen.getByRole('button', { name: 'Review' }),
+      ).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('checkbox', { name: 'enabled' }));
+      expect(
+        screen.getByRole('button', { name: 'Review' }),
+      ).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+      expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument();
+    },
+  );
+
+  it('visits a pending earlier step when the current step hides itself', async () => {
+    const onCreate = jest.fn();
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Mutually exclusive steps',
+            steps: [
+              {
+                title: 'Earlier',
+                when: '${{ parameters.enabled }}',
+                schema: {
+                  required: ['earlier'],
+                  properties: {
+                    earlier: { type: 'string' },
+                    enabled: { type: 'boolean', 'ui:widget': 'hidden' },
+                  },
+                },
+              },
+              {
+                title: 'Current',
+                when: '${{ not parameters.enabled }}',
+                schema: {
+                  properties: { enabled: { type: 'boolean' } },
+                },
+              },
+            ],
+          }}
+          initialState={{ enabled: false }}
+          extensions={[]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+    fireEvent.click(screen.getByRole('checkbox', { name: 'enabled' }));
+    const earlier = await screen.findByRole('textbox', { name: /earlier/ });
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+    expect(onCreate).not.toHaveBeenCalled();
+    fireEvent.change(earlier, { target: { value: 'configured' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({
+        enabled: true,
+        earlier: 'configured',
+      }),
+    );
+  });
+
+  it('stays on review after the last step hides itself', async () => {
+    const onCreate = jest.fn();
+    const manifest: TemplateParameterSchema = {
+      title: 'Review cursor',
+      steps: [
+        {
+          title: 'Optional',
+          when: '${{ parameters.enabled }}',
+          schema: {
+            properties: { enabled: { type: 'boolean' } },
+          },
+        },
+      ],
+    };
+    const { rerender } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={manifest}
+          initialState={{ enabled: true }}
+          extensions={[]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+    fireEvent.click(screen.getByRole('checkbox', { name: 'enabled' }));
+    expect(
+      await screen.findByRole('button', { name: 'Create' }),
+    ).toBeInTheDocument();
+    const revealedManifest = {
+      ...manifest,
+      steps: [
+        {
+          title: 'Optional',
+          schema: { properties: { enabled: { type: 'boolean' } } },
+        },
+      ],
+    };
+    rerender(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={revealedManifest}
+          extensions={[]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+    expect(
+      await screen.findByRole('checkbox', { name: 'enabled' }),
+    ).toBeInTheDocument();
+    expect(onCreate).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(onCreate).toHaveBeenCalledWith({ enabled: false }),
+    );
+  });
+
   it('should render the step titles for each step of the manifest', async () => {
     const manifest: TemplateParameterSchema = {
       steps: [
@@ -160,7 +1532,7 @@ describe('Stepper', () => {
     });
 
     await act(async () => {
-      fireEvent.click(getByLabelText('Step 1'));
+      fireEvent.click(getByLabelText('Step 1, Step 1'));
     });
 
     expect(getByRole('textbox', { name: 'name' })).toHaveValue(
@@ -319,6 +1691,14 @@ describe('Stepper', () => {
       fireEvent.click(getByRole('button', { name: 'Review' }));
     });
 
+    // The changed shared input is checked automatically before review.
+    expect(
+      await screen.findByRole('button', { name: 'Create' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('textbox', { name: 'Foo - 1' }),
+    ).not.toBeInTheDocument();
+    expect(onCreate).not.toHaveBeenCalled();
     await act(async () => {
       fireEvent.click(getByRole('button', { name: 'Create' }));
     });

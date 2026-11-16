@@ -83,7 +83,7 @@ describe('<Workflow />', () => {
       title: 'React JSON Schema Form Test',
     });
 
-    const { getByRole, getAllByRole, getByText } = await renderInTestApp(
+    const { getByRole, getByText } = await renderInTestApp(
       <ApiProvider apis={apis}>
         <Workflow
           title="Different title than template"
@@ -141,7 +141,7 @@ describe('<Workflow />', () => {
     ).toBeDefined();
 
     await act(async () => {
-      fireEvent.click(getAllByRole('button')[1] as HTMLButtonElement);
+      fireEvent.click(getByRole('button', { name: 'Make' }));
     });
 
     expect(onCreate).toHaveBeenCalledWith({
