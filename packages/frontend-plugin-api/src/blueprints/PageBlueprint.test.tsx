@@ -30,7 +30,7 @@ import {
 import { createTranslationRef } from '../translation';
 import { act, screen, waitFor } from '@testing-library/react';
 import { ReactNode, useEffect } from 'react';
-import { useRouteResolution } from '../routing/useRouteResolution';
+import { useRouteMatches } from '@internal/frontend';
 import { useAppNode } from '../components/AppNodeProvider';
 import { pluginWrapperApiRef } from '../apis/definitions/PluginWrapperApi';
 import { analyticsApiRef } from '../apis/definitions/AnalyticsApi';
@@ -489,7 +489,7 @@ describe('PageBlueprint', () => {
     const SubPageRouter = ({ children }: { children?: ReactNode }) => (
       <div
         data-testid="sub-page-router"
-        data-mount={useRouteResolution().matches.at(-1)?.basePath}
+        data-mount={useRouteMatches().at(-1)?.basePath}
       >
         {children}
       </div>
@@ -497,7 +497,7 @@ describe('PageBlueprint', () => {
     const FirstSubPage = () => (
       <div
         data-testid="first-page"
-        data-mount={useRouteResolution().matches.at(-1)?.basePath}
+        data-mount={useRouteMatches().at(-1)?.basePath}
       />
     );
     const parentPage = PageBlueprint.make({
@@ -544,7 +544,7 @@ describe('PageBlueprint', () => {
     async ({ mountPath, basePath }) => {
       const Child = ({ name }: { name: string }) => (
         <p>
-          {name} at {useRouteResolution().matches.at(-1)?.basePath}
+          {name} at {useRouteMatches().at(-1)?.basePath}
         </p>
       );
       const parent = PageBlueprint.make({
@@ -705,7 +705,7 @@ describe('PageBlueprint', () => {
   it('should redirect to the first subpage on the parent index route, and leave a page without sub-pages alone', async () => {
     const parentPage = PageBlueprint.make({
       params: {
-        path: '/mixed',
+        path: '/mixed/:id',
         title: 'Mixed',
       },
     });
@@ -732,14 +732,21 @@ describe('PageBlueprint', () => {
 
     const { appHistory } = renderTestApp({
       extensions: [parentPage, inputSubPage, plainPage],
-      initialRouteEntries: ['/mixed?tab=1#here'],
+      initialRouteEntries: ['/before', '/mixed/value?tab=1#here'],
     });
 
     expect(await screen.findByTestId('input-page')).toBeInTheDocument();
     // The URL says which tab is showing, and the query and fragment survive.
-    expect(appHistory.getSnapshot().location.pathname).toBe('/mixed/input');
+    expect(appHistory.getSnapshot().location.pathname).toBe(
+      '/mixed/value/input',
+    );
     expect(appHistory.getSnapshot().location.search).toBe('?tab=1');
     expect(appHistory.getSnapshot().location.hash).toBe('#here');
+
+    await act(async () => {
+      appHistory.navigate(-1);
+    });
+    expect(appHistory.getSnapshot().location.pathname).toBe('/before');
 
     await act(async () => {
       appHistory.navigate('/plain');
