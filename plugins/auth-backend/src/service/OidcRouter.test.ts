@@ -220,12 +220,13 @@ describe('OidcRouter', () => {
       },
     });
 
+    const mockLogger = mockServices.logger.mock();
     const mockLifecycle = mockServices.lifecycle.mock();
 
     const offlineAccess = await OfflineAccessService.create({
       config: mockConfig,
       database: { getClient: async () => knex },
-      logger: mockServices.logger.mock(),
+      logger: mockLogger,
       lifecycle: mockLifecycle,
       catalog: mockCatalog,
       auth: mockAuth,
@@ -238,7 +239,7 @@ describe('OidcRouter', () => {
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
       config: mockConfig,
-      logger: mockServices.logger.mock(),
+      logger: mockLogger,
       offlineAccess,
     });
 
@@ -247,7 +248,7 @@ describe('OidcRouter', () => {
       tokenIssuer: mockTokenIssuer,
       baseUrl: 'http://localhost:7000',
       appUrl: 'http://localhost:3000',
-      logger: mockServices.logger.mock(),
+      logger: mockLogger,
       userInfo: userInfoDatabase,
       oidc: oidcDatabase,
       httpAuth: mockHttpAuth,
@@ -266,6 +267,7 @@ describe('OidcRouter', () => {
         tokenIssuer: mockTokenIssuer,
         catalog: mockCatalog,
         offlineAccess,
+        logger: mockLogger,
       },
     };
   }
@@ -317,6 +319,37 @@ describe('OidcRouter', () => {
             redirect_uri: redirectUri,
             code_verifier: verifier,
           });
+      const tokenRequest = {
+        grant_type: 'authorization_code',
+        code: new URL(redirectUrl).searchParams.get('code'),
+        redirect_uri: redirectUri,
+        code_verifier: codeVerifier,
+      };
+      for (const credentials of [
+        {},
+        { client_id: clientId },
+        { client_id: clientId, client_secret: 'wrong-secret' },
+      ]) {
+        const rejected = await request(app)
+          .post('/v1/token')
+          .send({ ...tokenRequest, ...credentials });
+        expect(rejected.status).toBe(401);
+        expect(rejected.body.error).toBe('invalid_client');
+      }
+      for (const secret of ['', 'wrong-secret']) {
+        const rejected = await request(app)
+          .post('/v1/token')
+          .set(
+            'Authorization',
+            `Basic ${Buffer.from(
+              `${encode(clientId)}:${encode(secret)}`,
+            ).toString('base64')}`,
+          )
+          .send(tokenRequest);
+        expect(rejected.status).toBe(401);
+        expect(rejected.body.error).toBe('invalid_client');
+        expect(rejected.header['www-authenticate']).toBe('Basic realm="auth"');
+      }
       expect((await exchange()).status).toBe(400);
       expect((await exchange('wrong-verifier')).status).toBe(400);
       await mocks.oidc.updateAuthorizationSession({
@@ -339,7 +372,73 @@ describe('OidcRouter', () => {
       const response = await exchange(codeVerifier);
       expect(response.status).toBe(200);
       expect(response.body.access_token).toBe('access-token');
+      expect(mocks.logger.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Authorization-code exchange without client_id',
+        ),
+      );
     });
+
+    it.each(['static', 'CIMD'])(
+      'should accept an empty Basic secret for a public %s client',
+      async kind => {
+        const redirectUri = 'https://example.com/callback';
+        const cimdClient = createCimdClient({
+          clientName: 'Public Client',
+          redirectUris: [redirectUri],
+        });
+        const clientId =
+          kind === 'CIMD' ? cimdClient.clientId : 'public-client';
+        const { router, mocks } = await createRouter(databaseId, {
+          staticClients: [
+            { clientId: 'public-client', redirectUris: [redirectUri] },
+          ],
+          clientIdMetadataDocuments: {
+            enabled: true,
+            allowedClientIdPatterns: ['https://example.com/*'],
+            allowedRedirectUriPatterns: ['*'],
+          },
+        });
+        expect(
+          mocks.service.getConfiguration()
+            .token_endpoint_auth_methods_supported,
+        ).toEqual(['none']);
+        mocks.tokenIssuer.issueToken.mockResolvedValue({
+          token: 'public-access-token',
+        });
+        const session = await mocks.service.createAuthorizationSession({
+          clientId,
+          redirectUri,
+          responseType: 'code',
+          codeChallenge: TEST_CODE_CHALLENGE,
+          codeChallengeMethod: 'S256',
+        });
+        const { redirectUrl } = await mocks.service.approveAuthorizationSession(
+          { sessionId: session.id, userEntityRef: MOCK_USER_ENTITY_REF },
+        );
+        const response = await request(express().use(router.getRouter()))
+          .post('/v1/token')
+          .set(
+            'Authorization',
+            `Basic ${Buffer.from(`${encodeURIComponent(clientId)}:`).toString(
+              'base64',
+            )}`,
+          )
+          .send({
+            grant_type: 'authorization_code',
+            code: new URL(redirectUrl).searchParams.get('code'),
+            redirect_uri: redirectUri,
+            code_verifier: 'test-code-verifier',
+          });
+        expect(response.status).toBe(200);
+        expect(response.body.access_token).toBe('public-access-token');
+        expect(mocks.logger.warn).not.toHaveBeenCalledWith(
+          expect.stringContaining(
+            'Authorization-code exchange without client_id',
+          ),
+        );
+      },
+    );
 
     it('should reject outstanding codes and refresh tokens after removing a configured client', async () => {
       const clientId = 'removed-client';
@@ -395,14 +494,14 @@ describe('OidcRouter', () => {
       };
       expect(
         (await request(app).post('/v1/token').send(refreshRequest)).status,
-      ).toBe(400);
+      ).toBe(401);
       expect(
         (
           await request(app)
             .post('/v1/token')
             .send({ ...refreshRequest, client_id: clientId })
         ).status,
-      ).toBe(400);
+      ).toBe(401);
       const authenticatedRefresh = await request(app)
         .post('/v1/token')
         .send({

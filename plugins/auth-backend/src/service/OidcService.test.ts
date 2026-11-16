@@ -1926,7 +1926,11 @@ describe('OidcService', () => {
         mocks.tokenIssuer.issueToken.mockResolvedValue({ token: 'token' });
 
         const config = service.getConfiguration();
-        expect(config.token_endpoint_auth_methods_supported).toContain('none');
+        expect(config.token_endpoint_auth_methods_supported).toEqual([
+          'client_secret_basic',
+          'client_secret_post',
+          'none',
+        ]);
         expect(config.revocation_endpoint).toBe(
           'http://mock-base-url/v1/revoke',
         );
@@ -1965,7 +1969,7 @@ describe('OidcService', () => {
             redirectUri,
             grantType: 'authorization_code',
           }),
-        ).rejects.toThrow('Authorization code was not issued to this client');
+        ).rejects.toThrow('Client authentication required');
 
         const code = await createCode(service, 'confidential-client');
         await expect(

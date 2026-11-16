@@ -257,6 +257,8 @@ Static clients use the same scopes as CIMD clients: `openid`, and `offline_acces
 
 Removing a client from `auth.staticClients` and restarting the backend prevents its outstanding authorization codes and refresh tokens from being exchanged. Clients using HTTP Basic authentication must form-encode the client ID and secret before constructing the Basic credentials.
 
+Confidential clients must authenticate for both code exchange and refresh token requests. Missing or incorrect credentials return HTTP 401 with `invalid_client`. Public clients can identify themselves using HTTP Basic with an empty secret. This does not authenticate a confidential client.
+
 #### Migrating from Dynamic Client Registration
 
 Backstage previously supported experimental Dynamic Client Registration (DCR).
