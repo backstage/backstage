@@ -72,7 +72,8 @@ function createUrlPatternMatcher(pattern: string): (url: URL) => boolean {
     url.protocol === patternUrl.protocol &&
     matcher.isMatch(url.hostname, hostnamePattern) &&
     (hasWildcardPort || url.port === patternUrl.port) &&
-    matcher.isMatch(url.pathname, pathPattern);
+    // URL paths are case-sensitive, unlike schemes and hosts (RFC 3986)
+    matcher.isMatch(url.pathname, pathPattern, { caseSensitive: true });
 }
 
 function validateRedirectUri(
