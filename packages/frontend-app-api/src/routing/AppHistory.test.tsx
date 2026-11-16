@@ -258,25 +258,38 @@ describe('AppHistory', () => {
     }
   });
 
-  it('reads stable snapshots after external writes without writing browser history', () => {
-    window.history.replaceState({ external: true }, '', '/external');
-    const push = jest.spyOn(window.history, 'pushState');
-    const replace = jest.spyOn(window.history, 'replaceState');
-    try {
-      const snapshot = history.getSnapshot();
-      expect(snapshot.location).toMatchObject({
-        pathname: '/external',
-        state: { external: true },
+  it.each([false, true])(
+    'keeps query synchronization silent across snapshot reads (Navigation API: %s)',
+    hasNavigationApi => {
+      history.dispose();
+      window.history.replaceState(null, '', '/catalog?user=owned');
+      const navigation = Object.assign(new EventTarget(), {
+        currentEntry: { key: 'initial', index: 0 },
       });
+      if (hasNavigationApi) {
+        Object.defineProperty(window, 'navigation', {
+          configurable: true,
+          value: navigation,
+        });
+      }
+      history = createAppHistory();
+      const snapshot = history.getSnapshot();
+      const listener = jest.fn();
+      history.subscribe(listener);
+      window.history.replaceState({ local: true }, '', '/catalog?user=all');
+      navigation.dispatchEvent(
+        Object.assign(new Event('currententrychange'), {
+          navigationType: 'replace',
+        }),
+      );
       expect(history.getSnapshot()).toBe(snapshot);
-      expect(snapshot.action).toBeUndefined();
-      expect(push).not.toHaveBeenCalled();
-      expect(replace).not.toHaveBeenCalled();
-    } finally {
-      push.mockRestore();
-      replace.mockRestore();
-    }
-  });
+      expect(listener).not.toHaveBeenCalled();
+      history.navigate('/catalog?user=starred', { replace: true });
+      expect(history.getSnapshot()).not.toBe(snapshot);
+      expect(history.getSnapshot().location.search).toBe('?user=starred');
+      expect(listener).toHaveBeenCalledTimes(1);
+    },
+  );
 
   describe('with memory history backend', () => {
     let memoryHistory: AppHistory;
@@ -439,6 +452,145 @@ describe('AppHistory', () => {
 
     expect(locations).toContain('/other/page');
   });
+
+  it('commits Back to the last published entry after a silent raw push', async () => {
+    const before = history.getSnapshot();
+    const listener = jest.fn();
+    history.subscribe(listener);
+    window.history.pushState(null, '', '/silent');
+    expect(history.getSnapshot()).toBe(before);
+    expect(listener).not.toHaveBeenCalled();
+    const popped = new Promise(resolve =>
+      window.addEventListener('popstate', resolve, { once: true }),
+    );
+    history.navigate(-1);
+    await popped;
+    const after = history.getSnapshot();
+    expect(after).not.toBe(before);
+    expect(after.action).toBe('POP');
+    expect(after.location).toBe(before.location);
+    expect(after.entry).toBe(before.entry);
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    { hasNavigationApi: false, replace: true, syncQuery: false },
+    { hasNavigationApi: false, replace: false, syncQuery: false },
+    { hasNavigationApi: true, replace: true, syncQuery: false },
+    { hasNavigationApi: true, replace: false, syncQuery: false },
+    { hasNavigationApi: false, replace: true, syncQuery: true },
+    { hasNavigationApi: false, replace: false, syncQuery: true },
+  ])(
+    'preserves an earlier listener redirect (Navigation API: $hasNavigationApi, replace: $replace, query sync: $syncQuery)',
+    async ({ hasNavigationApi, replace, syncQuery }) => {
+      history.dispose();
+      window.history.replaceState(null, '', syncQuery ? '/a#first' : '/a');
+      const navigation = Object.assign(new EventTarget(), {
+        currentEntry: { key: 'a', index: 0 },
+      });
+      if (hasNavigationApi) {
+        Object.defineProperty(window, 'navigation', {
+          configurable: true,
+          value: navigation,
+        });
+      }
+      const redirect = (event: Event) => {
+        if (
+          hasNavigationApi &&
+          (event as Event & { navigationType?: string }).navigationType !==
+            'traverse'
+        ) {
+          return;
+        }
+        history.navigate('/redirect', { replace, state: { redirected: true } });
+      };
+      const target = hasNavigationApi ? navigation : window;
+      const eventType = hasNavigationApi ? 'currententrychange' : 'popstate';
+      target.addEventListener(eventType, redirect);
+      history = createAppHistory();
+      let nextKey = 0;
+      const pushState = window.history.pushState.bind(window.history);
+      const replaceState = window.history.replaceState.bind(window.history);
+      const pushSpy = jest
+        .spyOn(window.history, 'pushState')
+        .mockImplementation((state, title, url) => {
+          const from = navigation.currentEntry;
+          pushState(state, title, url);
+          navigation.currentEntry = {
+            key: `pushed-${nextKey++}`,
+            index: from.index + 1,
+          };
+          navigation.dispatchEvent(
+            Object.assign(new Event('currententrychange'), {
+              navigationType: 'push',
+              from,
+            }),
+          );
+        });
+      const replaceSpy = jest
+        .spyOn(window.history, 'replaceState')
+        .mockImplementation((state, title, url) => {
+          const from = navigation.currentEntry;
+          replaceState(state, title, url);
+          navigation.dispatchEvent(
+            Object.assign(new Event('currententrychange'), {
+              navigationType: 'replace',
+              from,
+            }),
+          );
+        });
+      const publishNativeTraversal = () => {
+        const from = navigation.currentEntry;
+        navigation.currentEntry = { key: 'a', index: 0 };
+        navigation.dispatchEvent(
+          Object.assign(new Event('currententrychange'), {
+            navigationType: 'traverse',
+            from,
+          }),
+        );
+      };
+      if (hasNavigationApi) {
+        window.addEventListener('popstate', publishNativeTraversal);
+      }
+      const synchronizeQuery = () =>
+        window.history.replaceState(null, '', '/redirect?sync=1');
+      if (syncQuery) {
+        window.addEventListener('popstate', synchronizeQuery);
+      }
+      try {
+        history.navigate(syncQuery ? '/b#second' : '/b');
+        const seen: AppHistorySnapshot[] = [];
+        history.subscribe(() => seen.push(history.getSnapshot()));
+        const popped = new Promise(resolve =>
+          window.addEventListener(
+            syncQuery ? 'hashchange' : 'popstate',
+            resolve,
+            { once: true },
+          ),
+        );
+        history.navigate(-1);
+        await popped;
+        expect(seen.map(snapshot => snapshot.action)).toEqual([
+          replace ? 'REPLACE' : 'PUSH',
+        ]);
+        expect(history.getSnapshot()).toBe(seen[0]);
+        expect(history.getSnapshot().location).toEqual({
+          pathname: '/redirect',
+          search: '',
+          hash: '',
+          state: { redirected: true },
+        });
+        expect(history.getSnapshot().entry?.index).toBe(replace ? 0 : 1);
+        expect(window.location.search).toBe(syncQuery ? '?sync=1' : '');
+      } finally {
+        target.removeEventListener(eventType, redirect);
+        window.removeEventListener('popstate', synchronizeQuery);
+        window.removeEventListener('popstate', publishNativeTraversal);
+        pushSpy.mockRestore();
+        replaceSpy.mockRestore();
+      }
+    },
+  );
 
   it('should emit hash changes when Navigation API is unavailable', () => {
     const locations: string[] = [];
@@ -707,7 +859,7 @@ describe('AppHistory', () => {
     });
 
     it('should keep a target with no pathname of its own at the current location', () => {
-      window.history.replaceState(null, '', '/catalog/foo/docs?a=1');
+      history.navigate('/catalog/foo/docs?a=1');
 
       expect(history.createHref('#section')).toBe('/catalog/foo/docs#section');
       expect(history.createHref('?tab=readme')).toBe(
@@ -762,7 +914,9 @@ describe('AppHistory', () => {
     });
 
     it('should not strip a path that only shares a basename prefix', () => {
+      bnHistory.dispose();
       window.history.replaceState(null, '', '/backstage-extra/page');
+      bnHistory = createAppHistory({ basename: '/backstage' });
       const locations: string[] = [];
       bnHistory.subscribe(() =>
         locations.push(bnHistory.getSnapshot().location.pathname),
