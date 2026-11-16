@@ -4,7 +4,6 @@
 
 ```ts
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { ApiRef } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { createScaffolderFieldExtension as createScaffolderFieldExtension_2 } from '@backstage/plugin-scaffolder-react';
@@ -539,7 +538,12 @@ export type RouterProps = {
 export type ScaffolderApi = ScaffolderApi_2;
 
 // @public @deprecated (undocumented)
-export const scaffolderApiRef: ApiRef<ScaffolderApi_2> & {
+export const scaffolderApiRef: {
+  readonly $$type?: '@backstage/ApiRef';
+  readonly id: string;
+  readonly T: ScaffolderApi_2;
+  readonly loading?: 'sync' | undefined;
+} & {
   readonly $$type: '@backstage/ApiRef';
 };
 

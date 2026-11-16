@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { devToolsApiRef } from '../api';
+import { devToolsApiRef } from '../api/DevToolsApi';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
 import { ConfigInfo } from '@backstage/plugin-devtools-common';

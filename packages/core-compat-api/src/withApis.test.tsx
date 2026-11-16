@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/frontend-plugin-api';
+import {
+  ApiBlueprint,
+  ApiRef,
+  createApiFactory,
+  createApiRef,
+  TypesToApiRefs,
+  useApi,
+  useApiHolder,
+} from '@backstage/frontend-plugin-api';
+import {
+  ApiRef as CoreApiRef,
+  createApiRef as createCoreApiRef,
+} from '@backstage/core-plugin-api';
 import {
   TestApiProvider,
   withLogCollector,
@@ -39,6 +51,76 @@ describe('withApis', () => {
 
     expect(screen.getByText('message: hello')).toBeInTheDocument();
     expect(MyComponent.displayName).toBe('withApis(Component)');
+  });
+
+  it('should accept refs from previous declarations and core-plugin-api', () => {
+    // Keep the previous declaration independent of the current compatibility alias.
+    type PreviousApiRef<T, TId extends string = string> = {
+      readonly $$type?: '@backstage/ApiRef';
+      readonly id: TId;
+      readonly T: T;
+    };
+
+    const coreRef = createCoreApiRef<MyApi>({ id: 'compat-api' });
+    const previousRef: PreviousApiRef<MyApi> = coreRef;
+    const currentRef = createApiRef<MyApi>().with({ id: 'compat-api' });
+    const syncFromPrevious: ApiRef<MyApi, string, 'sync'> = previousRef;
+    const coreFromCurrent: CoreApiRef<MyApi> = currentRef;
+    const previousFromCurrent: PreviousApiRef<MyApi> = currentRef;
+    const defaultFromPrevious: ApiRef<MyApi> = previousRef;
+    expect(syncFromPrevious).toBe(coreRef);
+    expect(coreFromCurrent).toBe(currentRef);
+    expect(previousFromCurrent).toBe(currentRef);
+    expect(defaultFromPrevious).toBe(coreRef);
+    // @ts-expect-error Compatibility must retain the API implementation type.
+    const wrongApi: ApiRef<number, string, 'sync'> = previousRef;
+    expect(wrongApi).toBe(coreRef);
+
+    const refs: TypesToApiRefs<{ getMessage: MyApi }, 'sync'> = {
+      getMessage: previousRef,
+    };
+    const factory = createApiFactory({
+      api: previousRef,
+      deps: { message: coreRef },
+      factory: ({ message }) => message,
+    });
+    expect(
+      ApiBlueprint.make({
+        params: defineParams => defineParams(factory),
+      }),
+    ).toBeDefined();
+
+    function Consumer({ getMessage }: { getMessage: MyApi }) {
+      const holder = useApiHolder();
+      const previousApi: MyApi | undefined = holder.get(previousRef);
+      const coreApi: MyApi | undefined = holder.get(coreRef);
+      const currentApi: MyApi | undefined = holder.get(currentRef);
+      const hookApi: MyApi = useApi(previousRef);
+      return (
+        <p>
+          {[
+            getMessage(),
+            previousApi?.(),
+            coreApi?.(),
+            currentApi?.(),
+            hookApi(),
+          ].join(', ')}
+        </p>
+      );
+    }
+    const CompatibleComponent = withApis(refs)(Consumer);
+    render(
+      <TestApiProvider
+        apis={[[factory.api, factory.factory({ message: () => 'compatible' })]]}
+      >
+        <CompatibleComponent />
+      </TestApiProvider>,
+    );
+    expect(
+      screen.getByText(
+        'compatible, compatible, compatible, compatible, compatible',
+      ),
+    ).toBeInTheDocument();
   });
 
   it('should ignore properties from the prototype', () => {

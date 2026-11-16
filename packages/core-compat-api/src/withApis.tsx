@@ -24,7 +24,7 @@ import { NotImplementedError } from '@backstage/errors';
  * @param apis - APIs for the context.
  * @public
  */
-export function withApis<T extends {}>(apis: TypesToApiRefs<T>) {
+export function withApis<T extends {}>(apis: TypesToApiRefs<T, 'sync'>) {
   return function withApisWrapper<TProps extends T>(
     WrappedComponent: ComponentType<TProps>,
   ) {

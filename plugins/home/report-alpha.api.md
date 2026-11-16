@@ -32,15 +32,22 @@ const _default: OverridableFrontendPlugin<
       name: 'visits';
       config: {};
       configInput: {};
-      output: ExtensionDataRef<ApiFactory, 'core.api.factory', {}>;
+      output: ExtensionDataRef<
+        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
+        'core.api.factory',
+        {}
+      >;
       inputs: {};
       params: <
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+      ) => ExtensionBlueprintParams<
+        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>
+      >;
     }>;
     'app-root-element:home/visit-listener': OverridableExtensionDefinition<{
       kind: 'app-root-element';

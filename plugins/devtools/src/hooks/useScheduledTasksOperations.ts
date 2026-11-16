@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useState, useCallback } from 'react';
-import { devToolsApiRef } from '../api';
+import { devToolsApiRef } from '../api/DevToolsApi';
 import { useApi } from '@backstage/core-plugin-api';
 
 export const useScheduledTasksOperations = () => {

@@ -1,0 +1,17 @@
+import type { FetchApi } from '@backstage/frontend-plugin-api';
+import type { TodoApi, TodoItem } from './TodoApi';
+
+export class TodoClient implements TodoApi {
+  constructor(private readonly fetchApi: FetchApi) {}
+
+  async getTodos(): Promise<TodoItem[]> {
+    const response = await this.fetchApi.fetch('plugin://{{pluginId}}/todos');
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch todos: ${response.status} ${response.statusText}`,
+      );
+    }
+    const data = await response.json();
+    return data.items;
+  }
+}

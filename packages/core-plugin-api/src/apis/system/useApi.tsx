@@ -15,12 +15,9 @@
  */
 
 import { ComponentType, PropsWithChildren } from 'react';
-import {
-  TypesToApiRefs,
-  useApi,
-  useApiHolder,
-} from '@backstage/frontend-plugin-api';
+import { useApi, useApiHolder } from '@backstage/frontend-plugin-api';
 import { NotImplementedError } from '@backstage/errors';
+import type { TypesToApiRefs } from './types';
 
 export { useApiHolder, useApi };
 

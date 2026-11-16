@@ -15,9 +15,13 @@
  */
 
 import { devToolsPlugin } from './plugin';
+import { devToolsApiRef } from './api/DevToolsApi';
 
 describe('devtools', () => {
   it('should export plugin', () => {
     expect(devToolsPlugin).toBeDefined();
+    const [factory] = Array.from(devToolsPlugin.getApis());
+    expect(factory.api.id).toBe(devToolsApiRef.id);
+    expect(factory.api.loading).not.toBe('async');
   });
 });

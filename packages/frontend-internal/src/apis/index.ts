@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export * from './ApiHolder';
 export * from './OpaqueApiRef';
+export * from './ResolvedApiPromise';
 export * from './createTranslatedMessagesSource';
 export * from './useTranslatedTitles';

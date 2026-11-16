@@ -1,0 +1,17 @@
+import { createApiRef } from '@backstage/frontend-plugin-api';
+
+export type TodoItem = {
+  title: string;
+  id: string;
+  createdBy: string;
+  createdAt: string;
+};
+
+export interface TodoApi {
+  getTodos(): Promise<TodoItem[]>;
+}
+
+export const todoApiRef = createApiRef<TodoApi>().with({
+  id: 'plugin.{{pluginId}}.todos',
+  loading: 'async',
+});

@@ -2,4 +2,11 @@
 '@backstage/frontend-plugin-api': patch
 ---
 
-Deprecated `AnyApiRef` and `AnyApiFactory`. Use `ApiRef` and `ApiFactory` without type arguments instead; their new defaults match the existing aliases. The deprecated aliases remain available for compatibility.
+Added defaults for the API type parameters of `ApiRef` and `ApiFactory`, allowing
+them to be used without type arguments. These forms use synchronous loading.
+
+Deprecated `AnyApiRef` and `AnyApiFactory`. Use
+`ApiRef<unknown, string, 'sync' | 'async'>` or
+`ApiFactory<unknown, unknown, Record<string, unknown>, 'sync' | 'async'>` to accept
+both loading modes. The deprecated aliases remain available for compatibility
+and continue to accept both modes.

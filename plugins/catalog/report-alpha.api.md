@@ -297,45 +297,66 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ExtensionDataRef<ApiFactory, 'core.api.factory', {}>;
+      output: ExtensionDataRef<
+        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
+        'core.api.factory',
+        {}
+      >;
       inputs: {};
       params: <
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+      ) => ExtensionBlueprintParams<
+        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>
+      >;
     }>;
     'api:catalog/entity-presentation': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'entity-presentation';
       config: {};
       configInput: {};
-      output: ExtensionDataRef<ApiFactory, 'core.api.factory', {}>;
+      output: ExtensionDataRef<
+        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
+        'core.api.factory',
+        {}
+      >;
       inputs: {};
       params: <
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+      ) => ExtensionBlueprintParams<
+        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>
+      >;
     }>;
     'api:catalog/starred-entities': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'starred-entities';
       config: {};
       configInput: {};
-      output: ExtensionDataRef<ApiFactory, 'core.api.factory', {}>;
+      output: ExtensionDataRef<
+        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
+        'core.api.factory',
+        {}
+      >;
       inputs: {};
       params: <
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+      ) => ExtensionBlueprintParams<
+        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>
+      >;
     }>;
     'catalog-filter:catalog/kind': OverridableExtensionDefinition<{
       config: {

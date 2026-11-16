@@ -15,48 +15,95 @@
  */
 
 /**
- * API reference. Defaults to a reference to any API when no type argument is provided.
+ * API reference. Set `loading: 'async'` when creating a ref to allow asynchronous
+ * factories and dependencies. Ref types and creation default to synchronous loading.
+ * Async refs require their loading marker; synchronous and older refs may omit it.
+ * The API type defaults to unknown when no type argument is provided.
  *
  * @public
  */
-export type ApiRef<T = unknown, TId extends string = string> = {
+export type ApiRef<
+  T = unknown,
+  TId extends string = string,
+  TLoading extends 'sync' | 'async' = 'sync',
+> = {
   readonly $$type?: '@backstage/ApiRef';
   readonly id: TId;
   readonly T: T;
-};
+  /** How implementations are loaded. Defaults to synchronous loading. */
+  readonly loading?: TLoading;
+} & ('sync' extends NoInfer<TLoading>
+  ? {}
+  : { readonly loading: NoInfer<TLoading> });
 
 /**
  * Catch-all {@link ApiRef} type.
  *
- * @deprecated Use {@link ApiRef} without type arguments instead.
+ * @deprecated Use `ApiRef<T, string, 'sync' | 'async'>` instead.
  *
  * @public
  */
-export type AnyApiRef = ApiRef<unknown>;
+export type AnyApiRef<T = unknown> = ApiRef<T, string, 'sync' | 'async'>;
+
+/**
+ * Result of looking up an API through an {@link ApiHolder}.
+ *
+ * Refs without a loading member are synchronous. Refs that retain their loading
+ * mode preserve the corresponding result type, including through generic helpers.
+ *
+ * @public
+ */
+export type ApiLookupResult<TApiRef extends AnyApiRef = AnyApiRef> =
+  | (TApiRef extends { readonly loading?: infer TLoading }
+      ? 'async' extends TLoading
+        ? 'sync' extends TLoading
+          ? TApiRef['T'] | Promise<TApiRef['T']>
+          : Promise<TApiRef['T']>
+        : TApiRef['T']
+      : TApiRef['T'])
+  | undefined;
 
 /**
  * Wraps a type with API properties into a type holding their respective {@link ApiRef}s.
+ * Dependencies are synchronous by default; use the second type parameter to
+ * allow async-capable refs.
  *
  * @public
  */
-export type TypesToApiRefs<T> = { [key in keyof T]: ApiRef<T[key]> };
+export type TypesToApiRefs<T, TLoading extends 'sync' | 'async' = 'sync'> = {
+  [key in keyof T]: ApiRef<T[key], string, TLoading>;
+};
 
 /**
  * Provides lookup of APIs through their {@link ApiRef}s.
  *
+ * @remarks
+ *
+ * Missing APIs return `undefined` immediately. Present async-capable APIs return
+ * a promise, even for synchronous implementations. Holders must return the same
+ * promise for repeated lookups so `useApi` can resume after suspension.
+ *
  * @public
  */
 export type ApiHolder = {
-  get<T>(api: ApiRef<T>): T | undefined;
+  get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
+    api: TApiRef,
+  ): ApiLookupResult<TApiRef>;
 };
 
 /**
- * Describes type returning API implementations.
+ * Describes a factory returning API implementations.
+ *
+ * Async-capable refs allow promises and async dependencies. All dependencies
+ * are resolved before the factory is called. Synchronous refs only allow
+ * synchronous factories and dependencies. Factory types default to synchronous
+ * loading; specify the fourth type parameter to accept both modes.
  *
  * @remarks
  *
- * Without type arguments, accepts factories for any API and dependencies.
- * When only the API type is provided, the implementation defaults to that API type.
+ * Without type arguments, accepts synchronous factories for any API and synchronous
+ * dependencies. When only the API type is provided, the implementation defaults
+ * to that API type.
  *
  * @public
  */
@@ -64,21 +111,28 @@ export type ApiFactory<
   Api = unknown,
   Impl extends Api = Api,
   Deps extends { [name in string]: unknown } = { [name in string]: unknown },
+  TLoading extends 'sync' | 'async' = 'sync',
 > = {
-  api: ApiRef<Api>;
-  deps: TypesToApiRefs<Deps>;
-  factory(deps: Deps): Impl;
+  api: ApiRef<Api, string, TLoading>;
+  deps: TypesToApiRefs<
+    Deps,
+    NoInfer<TLoading> extends 'sync' ? 'sync' : 'sync' | 'async'
+  >;
+  factory(
+    deps: Deps,
+  ): NoInfer<TLoading> extends 'sync' ? Impl : Impl | Promise<Impl>;
 };
 
 /**
  * Catch-all {@link ApiFactory} type.
  *
- * @deprecated Use {@link ApiFactory} without type arguments instead.
+ * @deprecated Use {@link ApiFactory} with an explicit loading mode instead.
  *
  * @public
  */
 export type AnyApiFactory = ApiFactory<
   unknown,
   unknown,
-  { [key in string]: unknown }
+  { [key in string]: unknown },
+  'sync' | 'async'
 >;

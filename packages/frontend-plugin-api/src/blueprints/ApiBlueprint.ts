@@ -18,7 +18,9 @@ import { ApiFactory } from '../apis/system';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 import { createExtensionBlueprintParams } from '../wiring/createExtensionBlueprint';
 
-const factoryDataRef = createExtensionDataRef<ApiFactory>().with({
+const factoryDataRef = createExtensionDataRef<
+  ApiFactory<unknown, unknown, Record<string, unknown>, 'sync' | 'async'>
+>().with({
   id: 'core.api.factory',
 });
 
@@ -38,9 +40,10 @@ export const ApiBlueprint = createExtensionBlueprint({
     TApi,
     TImpl extends TApi,
     TDeps extends { [name in string]: unknown },
+    TLoading extends 'sync' | 'async' = 'sync',
   >(
-    params: ApiFactory<TApi, TImpl, TDeps>,
-  ) => createExtensionBlueprintParams(params as ApiFactory),
+    params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+  ) => createExtensionBlueprintParams(params as typeof factoryDataRef.T),
   *factory(params) {
     yield factoryDataRef(params);
   },

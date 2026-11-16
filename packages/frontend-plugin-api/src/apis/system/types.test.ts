@@ -23,8 +23,18 @@ describe('utility API type defaults', () => {
     const ref = createApiRef<string>().with({ id: 'test.string' });
     const broad: ApiRef = ref;
     const legacy: AnyApiRef = broad;
-    const compatible: ApiRef = legacy;
+    const compatible: ApiRef<unknown, string, 'sync' | 'async'> = legacy;
     expect(compatible).toBe(ref);
+
+    const asyncRef = createApiRef<string>().with({
+      id: 'test.async',
+      loading: 'async',
+    });
+    const legacyAsync: AnyApiRef = asyncRef;
+    expect(legacyAsync).toBe(asyncRef);
+    // @ts-expect-error The default loading mode remains synchronous.
+    const syncOnly: ApiRef = asyncRef;
+    expect(syncOnly).toBe(asyncRef);
 
     // @ts-expect-error The broad API type is unknown, not any.
     const value: string = broad.T;
@@ -39,7 +49,7 @@ describe('utility API type defaults', () => {
     expect(wrongId).toBe(ref);
   });
 
-  it('should accept typed factories without losing inference or constraints', () => {
+  it('should accept typed factories without losing inference or constraints', async () => {
     const api = createApiRef<{ value: string }>().with({ id: 'test.value' });
     const dependency = createApiRef<number>().with({ id: 'test.number' });
     const factory = createApiFactory({
@@ -57,7 +67,12 @@ describe('utility API type defaults', () => {
 
     const broad: ApiFactory = factory;
     const legacy: AnyApiFactory = broad;
-    const compatible: ApiFactory = legacy;
+    const compatible: ApiFactory<
+      unknown,
+      unknown,
+      { [name: string]: unknown },
+      'sync' | 'async'
+    > = legacy;
     expect(compatible).toBe(factory);
     const broadDependency: ApiRef = broad.deps.number;
     expect(broadDependency).toBe(dependency);
@@ -86,5 +101,20 @@ describe('utility API type defaults', () => {
       factory: () => 1,
     };
     expect(wrongImpl.api).toBe(api);
+
+    const asyncRef = createApiRef<{ value: string }>().with({
+      id: 'test.async',
+      loading: 'async',
+    });
+    const asyncFactory = createApiFactory({
+      api: asyncRef,
+      deps: {},
+      factory: async () => ({ value: 'async' }),
+    });
+    const legacyAsync: AnyApiFactory = asyncFactory;
+    await expect(legacyAsync.factory({})).resolves.toEqual({ value: 'async' });
+    // @ts-expect-error Factory defaults remain synchronous.
+    const syncOnly: ApiFactory = asyncFactory;
+    expect(syncOnly).toBe(asyncFactory);
   });
 });

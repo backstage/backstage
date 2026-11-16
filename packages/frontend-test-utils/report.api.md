@@ -7,10 +7,10 @@ import { AlertApi } from '@backstage/core-plugin-api';
 import { AlertMessage } from '@backstage/core-plugin-api';
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
+import { AnyApiRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import type { ApiHolder } from '@backstage/frontend-plugin-api';
-import { ApiRef } from '@backstage/frontend-plugin-api';
 import { AppError } from '@backstage/frontend-app-api';
 import { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import { AppLanguageApi } from '@backstage/frontend-plugin-api';
@@ -65,7 +65,7 @@ import { withLogCollector } from '@backstage/test-utils';
 
 // @public
 export type ApiMock<TApi> = {
-  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
+  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}, 'sync' | 'async'>;
 } & {
   [Key in keyof TApi]: TApi[Key] extends (...args: infer Args) => infer Return
     ? TApi[Key] & jest.MockInstance<Return, Args>
@@ -74,15 +74,15 @@ export type ApiMock<TApi> = {
 
 // @public
 export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
-  apiRef: ApiRef<TApi>,
+  apiRef: AnyApiRef<TApi>,
   implementation: TImpl,
 ): TImpl & {
-  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
+  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}, 'sync' | 'async'>;
 };
 
 // @public
 export function createApiMock<TApi>(
-  apiRef: ApiRef<TApi>,
+  apiRef: AnyApiRef<TApi>,
   mockFactory: () => jest.Mocked<TApi>,
 ): (partialImpl?: Partial<TApi>) => ApiMock<TApi>;
 
@@ -425,7 +425,7 @@ export interface MockFetchApiOptions {
 
 // @public
 export type MockWithApiFactory<TApi> = TApi & {
-  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
+  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}, 'sync' | 'async'>;
 };
 
 export { registerMswTestHooks };
@@ -456,7 +456,10 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
 
 // @public
 export type TestApiPair<TApi> =
-  | readonly [ApiRef<TApi>, TApi extends infer TImpl ? Partial<TImpl> : never]
+  | readonly [
+      AnyApiRef<TApi>,
+      TApi extends infer TImpl ? Partial<TImpl> : never,
+    ]
   | MockWithApiFactory<NoInfer<TApi>>;
 
 // @public

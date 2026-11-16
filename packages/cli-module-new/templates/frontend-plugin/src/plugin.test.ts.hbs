@@ -1,7 +1,7 @@
-import { {{ pluginVar }} } from './plugin';
+import plugin from '.';
 
 describe('{{pluginId}}', () => {
   it('should export plugin', () => {
-    expect({{ pluginVar }}).toBeDefined();
+    expect(plugin).toBeDefined();
   });
 });
