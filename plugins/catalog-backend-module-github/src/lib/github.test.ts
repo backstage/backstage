@@ -23,8 +23,6 @@ import { graphql as graphqlOctokit } from '@octokit/graphql';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { http, HttpResponse } from 'msw';
 import { graphql as mswGraphql } from 'msw/graphql';
-
-const graphqlMsw = mswGraphql.link('https://api.github.com/graphql');
 import { setupServer } from 'msw/node';
 import { TeamTransformer, UserTransformer } from './defaultTransformers';
 import {
@@ -49,6 +47,8 @@ import {
 import { Octokit } from '@octokit/core';
 import { throttling } from '@octokit/plugin-throttling';
 import { retry } from '@octokit/plugin-retry';
+
+const graphqlMsw = mswGraphql.link('https://api.github.com/graphql');
 
 // Note: We do NOT mock @octokit/core globally because createRestClient
 // needs a real Octokit.plugin. The createGraphqlClient tests use a local
