@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
+import type { AppLocation, AppNavigate } from '@backstage/frontend-plugin-api';
 import type {
   AppHistoryApi,
   AppHistoryAction,
   AppHistorySnapshot,
-  AppLocation,
-  AppNavigateOptions,
 } from '@backstage/frontend-plugin-api';
 import { resolveAppTarget, isExternalTarget } from '@internal/frontend';
 import {
@@ -125,9 +124,9 @@ export class AppHistory implements AppHistoryApi {
   /**
    * Navigate to an app-root-relative path or a browser-owned URL.
    */
-  navigate(to: string, options?: AppNavigateOptions): void;
+  navigate(to: string, options?: Parameters<AppNavigate>[1]): void;
   navigate(delta: number): void;
-  navigate(to: string | number, options?: AppNavigateOptions): void {
+  navigate(to: string | number, options?: Parameters<AppNavigate>[1]): void {
     if (this.notificationDepth >= MAX_NESTED_NAVIGATIONS) {
       throw new Error(
         `App history exceeded ${MAX_NESTED_NAVIGATIONS} synchronous nested navigations. A history subscriber may be causing a navigation loop.`,

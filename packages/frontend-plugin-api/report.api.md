@@ -84,11 +84,6 @@ export type AnalyticsEventAttributes = {
 };
 
 // @public
-export type AnalyticsImplementation = {
-  captureEvent(event: AnalyticsEvent): void;
-};
-
-// @public
 export type AnalyticsTracker = {
   captureEvent: (
     action: string,
@@ -100,7 +95,7 @@ export type AnalyticsTracker = {
   ) => void;
 };
 
-// @public
+// @public @deprecated
 export type AnyApiFactory = ApiFactory<
   unknown,
   unknown,
@@ -109,7 +104,7 @@ export type AnyApiFactory = ApiFactory<
   }
 >;
 
-// @public
+// @public @deprecated
 export type AnyApiRef = ApiRef<unknown>;
 
 // @public
@@ -128,25 +123,23 @@ export const ApiBlueprint: ExtensionBlueprint_2<{
     TDeps extends { [name in string]: unknown },
   >(
     params: ApiFactory<TApi, TImpl, TDeps>,
-  ) => ExtensionBlueprintParams_2<AnyApiFactory>;
-  output: ExtensionDataRef_2<AnyApiFactory, 'core.api.factory', {}>;
+  ) => ExtensionBlueprintParams_2<ApiFactory>;
+  output: ExtensionDataRef_2<ApiFactory, 'core.api.factory', {}>;
   inputs: {};
   config: {};
   configInput: {};
   dataRefs: {
-    factory: ConfigurableExtensionDataRef_2<
-      AnyApiFactory,
-      'core.api.factory',
-      {}
-    >;
+    factory: ConfigurableExtensionDataRef_2<ApiFactory, 'core.api.factory', {}>;
   };
 }>;
 
 // @public
 export type ApiFactory<
-  Api,
-  Impl extends Api,
+  Api = unknown,
+  Impl extends Api = Api,
   Deps extends {
+    [name in string]: unknown;
+  } = {
     [name in string]: unknown;
   },
 > = {
@@ -161,7 +154,7 @@ export type ApiHolder = {
 };
 
 // @public
-export type ApiRef<T, TId extends string = string> = {
+export type ApiRef<T = unknown, TId extends string = string> = {
   readonly $$type?: '@backstage/ApiRef';
   readonly id: TId;
   readonly T: T;
@@ -179,8 +172,7 @@ export type AppHistoryAction = 'PUSH' | 'REPLACE' | 'POP';
 export interface AppHistoryApi {
   createHref(to: string): string;
   getSnapshot(): AppHistorySnapshot;
-  navigate(path: string, options?: AppNavigateOptions): void;
-  navigate(delta: number): void;
+  navigate: AppNavigate;
   subscribe(listener: () => void): () => void;
 }
 
@@ -248,10 +240,15 @@ export interface AppLocation {
 }
 
 // @public
-export interface AppNavigateOptions {
-  // (undocumented)
-  replace?: boolean;
-  state?: unknown;
+export interface AppNavigate {
+  (delta: number): void;
+  (
+    path: string,
+    options?: {
+      replace?: boolean;
+      state?: unknown;
+    },
+  ): void;
 }
 
 // @public
@@ -372,7 +369,11 @@ export const atlassianAuthApiRef: ApiRef_2<
 export type AuthProviderInfo = {
   id: string;
   title: string;
-  icon: IconComponent | IconElement;
+  icon:
+    | IconElement
+    | ComponentType<{
+        fontSize?: 'medium' | 'large' | 'small' | 'inherit';
+      }>;
   message?: string;
 };
 
@@ -1474,11 +1475,7 @@ export const fetchApiRef: ApiRef_2<FetchApi, 'core.fetch'> & {
 };
 
 // @public (undocumented)
-export type FrontendFeature =
-  | (Omit<FrontendPlugin, 'pluginId'> & {
-      pluginId?: string;
-    })
-  | FrontendModule;
+export type FrontendFeature = FrontendPlugin | FrontendModule;
 
 // @public (undocumented)
 export interface FrontendFeatureLoader {
@@ -1573,11 +1570,6 @@ export const googleAuthApiRef: ApiRef_2<
   readonly $$type: '@backstage/ApiRef';
 };
 
-// @public @deprecated
-export type IconComponent = ComponentType<{
-  fontSize?: 'medium' | 'large' | 'small' | 'inherit';
-}>;
-
 // @public
 export type IconElement = JSX_2.Element | null;
 
@@ -1619,25 +1611,6 @@ export const microsoftAuthApiRef: ApiRef_2<
 > & {
   readonly $$type: '@backstage/ApiRef';
 };
-
-// @public
-export interface Navigation {
-  createHref(target: string): string;
-  navigate(target: string, options?: AppNavigateOptions): void;
-  pathname: string;
-}
-
-// @public
-export function NavigationProvider(
-  input: NavigationProviderProps,
-): JSX_3.Element;
-
-// @public (undocumented)
-export interface NavigationProviderProps {
-  // (undocumented)
-  children: ReactNode;
-  useNavigation: () => Navigation;
-}
 
 // @public (undocumented)
 export const NotFoundErrorPage: {
@@ -2103,12 +2076,9 @@ export type ProfileInfoApi = {
 
 // @public (undocumented)
 export const Progress: {
-  (props: ProgressProps): JSX.Element | null;
-  ref: SwappableComponentRef_2<ProgressProps, ProgressProps>;
+  (props: {}): JSX.Element | null;
+  ref: SwappableComponentRef_2<{}, {}>;
 };
-
-// @public (undocumented)
-export type ProgressProps = {};
 
 // @public
 export type RouteFunc<TParams extends AnyRouteRefParams> = (
@@ -2166,9 +2136,10 @@ export const RouterLink: ForwardRefExoticComponent<
 
 // @public
 export interface RouterLinkProps
-  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>,
-    AppNavigateOptions {
+  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
   href: string;
+  replace?: boolean;
+  state?: unknown;
 }
 
 // @public
@@ -2200,7 +2171,7 @@ export type SetAppSearchParams = (
   next?:
     | AppSearchParamsInit
     | ((previous: URLSearchParams) => AppSearchParamsInit),
-  options?: AppNavigateOptions,
+  options?: Parameters<AppNavigate>[1],
 ) => void;
 
 export { StandardSchemaV1 };
@@ -2551,7 +2522,7 @@ export function useAppHref(to: string): string;
 export function useAppLocation(): AppLocation;
 
 // @public
-export function useAppNavigate(): AppHistoryApi['navigate'];
+export function useAppNavigate(): AppNavigate;
 
 // @public
 export function useAppNode(): AppNode | undefined;
@@ -2565,9 +2536,6 @@ export function useAppSearchParams(
 export function useBreadcrumbEntries(): {
   items: BreadcrumbEntryData[];
 };
-
-// @public
-export function useNavigation(): Navigation;
 
 // @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(

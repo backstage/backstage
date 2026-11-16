@@ -14,58 +14,38 @@
  * limitations under the License.
  */
 
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box, ButtonLink, Flex, Text } from '@backstage/ui';
 import { Illo } from './Illo';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-
-const useStyles = makeStyles(theme => ({
-  container: {
-    paddingTop: theme.spacing(24),
-    paddingLeft: theme.spacing(8),
-    [theme.breakpoints.down('xs')]: {
-      padding: theme.spacing(2),
-    },
-  },
-  title: {
-    paddingBottom: theme.spacing(2),
-    [theme.breakpoints.down('xs')]: {
-      fontSize: 32,
-    },
-  },
-  body: {
-    paddingBottom: theme.spacing(6),
-    [theme.breakpoints.down('xs')]: {
-      paddingBottom: theme.spacing(5),
-    },
-  },
-}));
+import styles from './EntityNotFound.module.css';
 
 export function EntityNotFound() {
-  const classes = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
-    <Grid container spacing={0} className={classes.container}>
+    <Flex gap="0" className={styles.container}>
       <Illo />
-      <Grid item xs={12} sm={6}>
-        <Typography variant="h2" className={classes.title}>
+      <Box className={styles.content}>
+        <Text
+          as="h2"
+          variant="title-large"
+          weight="bold"
+          className={styles.title}
+        >
           {t('entityNotFound.title')}
-        </Typography>
-        <Typography variant="body1" className={classes.body}>
+        </Text>
+        <Text as="p" variant="body-large" className={styles.body}>
           {t('entityNotFound.description')}
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
+        </Text>
+        <ButtonLink
+          variant="primary"
+          size="medium"
           href="https://backstage.io/docs"
         >
           {t('entityNotFound.docButtonTitle')}
-        </Button>
-      </Grid>
-    </Grid>
+        </ButtonLink>
+      </Box>
+    </Flex>
   );
 }

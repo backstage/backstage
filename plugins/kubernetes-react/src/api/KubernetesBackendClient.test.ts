@@ -476,7 +476,7 @@ describe('KubernetesBackendClient', () => {
     });
 
     it('fetches again after TTL expires', async () => {
-      jest.useFakeTimers();
+      jest.useFakeTimers({ doNotFake: ['nextTick'] });
       try {
         const cachingClient = new KubernetesBackendClient({
           discoveryApi: UrlPatternDiscovery.compile(

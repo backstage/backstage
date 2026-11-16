@@ -87,7 +87,14 @@ export function convertLegacyAppOptions(
     extensions.push(
       IconBundleBlueprint.make({
         name: 'app-options',
-        params: { icons },
+        params: {
+          icons: Object.fromEntries(
+            Object.entries(icons).map(([key, Icon]) => [
+              key,
+              <Icon fontSize="inherit" />,
+            ]),
+          ),
+        },
       }),
     );
   }

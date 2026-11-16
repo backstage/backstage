@@ -60,6 +60,8 @@ describe('readAzureIntegrationConfig', () => {
       [{ data: { integrations: { azure: [data] } }, context: 'app' }],
       { visibility: ['frontend'] },
     );
+    // Shows what visibility filtering kept, should it drop the config again
+    expect(processed[0].data).toHaveProperty('integrations.azure.0');
     return new ConfigReader((processed[0].data as any).integrations.azure[0]);
   }
 

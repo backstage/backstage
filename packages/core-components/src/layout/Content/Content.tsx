@@ -18,7 +18,11 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { PropsWithChildren } from 'react';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link Content} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type BackstageContentClassKey = 'root' | 'stretch' | 'noPadding';
 
 const useStyles = makeStyles(
@@ -58,8 +62,10 @@ type Props = {
  *
  * @public
  *
+ * @deprecated Use `Container` and `Box` from `@backstage/ui` instead. Configure
+ * padding and flex layout as needed; when retaining `Page`, preserve its
+ * `pageContent` grid placement in your layout.
  */
-
 export function Content(props: PropsWithChildren<Props>) {
   const { className, stretch, noPadding, children, ...restProps } = props;
 

@@ -52,7 +52,7 @@
     "express-promise-router": "^4.1.1",
     "express-session": "^1.17.3",
     "jose": "^6.1.0",
-    "msw": "^2.0.0",
+    "msw": "^3.0.4",
     "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"

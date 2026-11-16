@@ -644,6 +644,11 @@ describe('actionsServiceFactory', () => {
         // disable the msw server for this test.
         server.close();
       });
+      // Restart it so that the outer hooks can close it again, which msw 3
+      // rejects for a server that is already closed
+      afterAll(() => {
+        server.listen();
+      });
 
       const features = [
         actionsServiceFactory,

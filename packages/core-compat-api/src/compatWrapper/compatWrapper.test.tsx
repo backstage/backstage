@@ -21,7 +21,6 @@ import {
   iconsApiRef,
   createApiRef,
   IconsApi,
-  IconComponent,
   useRouteRef as useNewRouteRef,
   createRouteRef as createNewRouteRef,
   useApi,
@@ -36,6 +35,7 @@ import {
 import { screen } from '@testing-library/react';
 import { compatWrapper } from './compatWrapper';
 import {
+  IconComponent,
   useApp,
   useRouteRef as useOldRouteRef,
   createRouteRef as createOldRouteRef,

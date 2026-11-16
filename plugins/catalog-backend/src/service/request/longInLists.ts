@@ -269,6 +269,8 @@ export type LongInList = {
   keyAnyCase: string;
   value: FilterPredicateValue;
   form: LongInForm;
+  /** Whether the list is reached from the root through `$all` only */
+  direct: boolean;
 };
 
 /**
@@ -278,6 +280,28 @@ export type LongInList = {
  */
 export function hashedProbeMinValues(options: { smallPage: boolean }): number {
   return options.smallPage ? IN_SUBQUERY_MIN_VALUES : INDIRECT_IN_MIN_VALUES;
+}
+
+/**
+ * Whether a sorted query of the filter should sort its matches rather than
+ * walk the sort index, because a list that is a direct condition of the
+ * filter is matched as a set of entity IDs.
+ *
+ * With a limit, PostgreSQL may walk the index of the sort field and join each
+ * row against such a set, expecting to fill the page early. It costs that
+ * plan as if the matches were spread evenly in sort order. When they are not,
+ * for example when the entities that a set of claims owns cluster in a range
+ * of names, the walk reads many rows and checks each one against the whole
+ * set: an owned entities page took 47 s that way with 174 claims. Ordering by
+ * an expression that the index cannot provide makes PostgreSQL build the set
+ * first and sort only the matches, which costs about the same as that plan
+ * did when PostgreSQL chose it by itself (0.5 s for the same page).
+ */
+export function sortsAfterMatching(
+  filter: FilterPredicate,
+  options: { smallPage: boolean },
+): boolean {
+  return findLongInLists(filter, options).some(list => list.direct);
 }
 
 /**
@@ -365,6 +389,7 @@ export function findLongInLists(
           keyAnyCase,
           value: value as FilterPredicateValue,
           form,
+          direct: context.direct,
         });
       }
     }

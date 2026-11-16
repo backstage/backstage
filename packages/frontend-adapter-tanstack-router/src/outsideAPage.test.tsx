@@ -18,16 +18,12 @@ import { matchPath, useRouteMatches } from '@internal/frontend';
 import {
   ExtensionBoundary,
   type AppNode,
+  appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
+
 import type { ReactNode } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import {
-  mockApis,
-  TestApiProvider,
-  createMockAppHistory,
-} from '@backstage/frontend-test-utils';
-import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
-
+import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import { useRouter } from '@tanstack/react-router';
 import {
   TanStackPageRouter,
@@ -109,7 +105,7 @@ function renderWithContext(
         apis={[
           [
             appHistoryApiRef,
-            createMockAppHistory({ initialLocation: '/old/alpha' }),
+            mockApis.appHistory({ initialLocation: '/old/alpha' }),
           ],
         ]}
       >

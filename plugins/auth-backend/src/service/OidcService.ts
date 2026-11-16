@@ -32,6 +32,7 @@ import { DateTime } from 'luxon';
 import matcher from 'matcher';
 import { OfflineAccessService } from './OfflineAccessService';
 import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
+import { readBackstageTokenExpiration } from './readTokenExpiration';
 
 const WILDCARD_PORT = /:\*(?=\/|$)/;
 const EXPLICIT_PROTOCOL = /^[a-z][a-z0-9+.-]*:/i;
@@ -140,6 +141,7 @@ export class OidcService {
   private readonly config: RootConfigService;
   private readonly logger: LoggerService;
   private readonly offlineAccess?: OfflineAccessService;
+  private readonly tokenExpirationSeconds: number;
 
   private constructor(
     auth: AuthService,
@@ -159,6 +161,7 @@ export class OidcService {
     this.config = config;
     this.logger = logger;
     this.offlineAccess = offlineAccess;
+    this.tokenExpirationSeconds = readBackstageTokenExpiration(config);
   }
 
   static create(options: {
@@ -586,7 +589,7 @@ export class OidcService {
     return {
       accessToken: token,
       tokenType: 'Bearer',
-      expiresIn: 3600,
+      expiresIn: this.tokenExpirationSeconds,
       idToken: token,
       scope: session.scope || 'openid',
       refreshToken,
@@ -616,7 +619,7 @@ export class OidcService {
     return {
       accessToken,
       tokenType: 'Bearer',
-      expiresIn: 3600,
+      expiresIn: this.tokenExpirationSeconds,
       refreshToken,
     };
   }

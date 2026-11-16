@@ -15,17 +15,13 @@
  */
 
 import {
-  appHistoryApiRef,
   RouterLink,
   useAppLocation,
   useAppHref,
   type AppNode,
+  appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
-import {
-  createMockAppHistory,
-  mockApis,
-  TestApiProvider,
-} from '@backstage/frontend-test-utils';
+import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef } from 'react';
@@ -50,7 +46,7 @@ jest.mock(
 );
 
 describe('RouterLink composition', () => {
-  const history = createMockAppHistory({
+  const history = mockApis.appHistory({
     basename: '/app',
     initialLocation: '/app/tools',
   });
