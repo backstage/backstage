@@ -30,8 +30,6 @@ export type ScmIntegrationIconProps = {
 
 /**
  * An icon that represents a certain SCM integration.
- * Uses the app's registered system icon for the integration type, or a generic
- * code icon when no matching icon is registered.
  *
  * @public
  */
