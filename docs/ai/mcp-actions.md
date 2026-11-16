@@ -251,7 +251,7 @@ auth:
 
 The client ID must be unique and must not be a URL. When configuring the client, use `<backend-url>/api/auth/v1/authorize` as the authorization URL and `<backend-url>/api/auth/v1/token` as the token URL. Prefer CIMD for clients that support it, and use pre-registered clients for those that don't.
 
-All static clients must use PKCE, including clients with a secret. Configure the client to send a fresh PKCE challenge with each authorization request and the matching verifier when exchanging the code. Use the `S256` challenge method.
+All static clients must use PKCE, including clients with a secret. Configure the client to send a fresh PKCE challenge with each authorization request and the matching verifier when exchanging the code. The `S256` challenge method is required for all clients, including CIMD clients. The `plain` method is not supported.
 
 Static clients use the same scopes as CIMD clients: `openid`, and `offline_access` when refresh tokens are enabled.
 
