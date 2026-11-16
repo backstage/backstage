@@ -15,7 +15,6 @@
  */
 
 import { ApiEntity } from '@backstage/catalog-model';
-import Typography from '@material-ui/core/Typography';
 import { apiDocsConfigRef } from '../../config';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -28,9 +27,5 @@ export const ApiTypeTitle = (props: { apiEntity: ApiEntity }) => {
   const definition = config.getApiDefinitionWidget(apiEntity);
   const type = definition ? definition.title : apiEntity.spec.type;
 
-  return (
-    <Typography component="span" variant="inherit">
-      {type}
-    </Typography>
-  );
+  return <>{type}</>;
 };

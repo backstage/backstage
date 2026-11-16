@@ -22,7 +22,7 @@ import {
 import { CardTab, TabbedCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
-import Alert from '@material-ui/lab/Alert';
+import { Alert } from '@backstage/ui';
 import { apiDocsConfigRef } from '../../config';
 import { apiDocsTranslationRef } from '../../translation';
 import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
@@ -36,7 +36,14 @@ export const ApiDefinitionCard = () => {
   const { primaryTitle } = useEntityPresentation(entity);
 
   if (!entity) {
-    return <Alert severity="error">{t('apiDefinitionCard.error.title')}</Alert>;
+    return (
+      <Alert
+        status="danger"
+        icon
+        title={t('apiDefinitionCard.error.title')}
+        role="alert"
+      />
+    );
   }
 
   const definitionWidget = getApiDefinitionWidget(entity);
