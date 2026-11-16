@@ -16,10 +16,7 @@
 
 import { useState } from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import {
-  createMockAppHistory,
-  renderTestApp,
-} from '@backstage/frontend-test-utils';
+import { renderTestApp, mockApis } from '@backstage/frontend-test-utils';
 import { AppRouteSwitch } from './AppRouteSwitch';
 import {
   appHistoryApiRef,
@@ -108,7 +105,7 @@ describe('AppRouteSwitch', () => {
   ])(
     'preserves redirect templates from %s matching %s to %s',
     (initialLocation, from, to, expected) => {
-      const history = createMockAppHistory({ initialLocation });
+      const history = mockApis.appHistory({ initialLocation });
       render(
         <AppRouteSwitch
           history={history}
@@ -163,7 +160,7 @@ describe('AppRouteSwitch', () => {
   it.each([false, true])(
     'ranks specific redirects before general ones (specific first: %s)',
     specificFirst => {
-      const history = createMockAppHistory({ initialLocation: '/old/special' });
+      const history = mockApis.appHistory({ initialLocation: '/old/special' });
       const general = { from: '/old', to: '/general' };
       const specific = { from: '/old/special', to: '/specific' };
       render(
@@ -189,7 +186,7 @@ describe('AppRouteSwitch', () => {
   ])(
     'uses React Router ranking and stable ties for %s with %j',
     (initialLocation, patterns, expected) => {
-      const history = createMockAppHistory({ initialLocation });
+      const history = mockApis.appHistory({ initialLocation });
       render(
         <AppRouteSwitch
           history={history}
@@ -234,7 +231,7 @@ describe('AppRouteSwitch', () => {
   ])(
     'substitutes redirect parameters in path, query, and fragment from %s',
     (initialLocation, to, pathname, search, hash) => {
-      const history = createMockAppHistory({ initialLocation });
+      const history = mockApis.appHistory({ initialLocation });
       render(
         <AppRouteSwitch
           history={history}

@@ -16,7 +16,7 @@
 
 import { useContext, type ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
-import { createMockAppHistory } from '@backstage/frontend-test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import {
   MemoryRouter,
   NavigationType,
@@ -51,7 +51,7 @@ const V6_EXTRAS = { future: { v7_relativeSplatPath: false } };
 function routerAt(initialLocation: string, routePattern?: string) {
   return createAppHistoryRouter(
     v6Bindings,
-    createMockAppHistory({ initialLocation }),
+    mockApis.appHistory({ initialLocation }),
     { routePattern, navigationContextExtras: V6_EXTRAS },
   );
 }
@@ -113,7 +113,7 @@ describe('createAppHistoryRouter', () => {
       [`/backstage${slashes}`, '/backstage'],
       [`/a${slashes}b`, `/a${slashes}b`],
     ]) {
-      const history = createMockAppHistory({ initialLocation: '/' });
+      const history = mockApis.appHistory({ initialLocation: '/' });
       jest.spyOn(history, 'createHref').mockReturnValue(href);
       const { Router } = createAppHistoryRouter(v6Bindings, history);
       let basename: string | undefined;

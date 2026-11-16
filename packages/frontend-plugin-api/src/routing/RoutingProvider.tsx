@@ -22,33 +22,40 @@ import {
 } from '@backstage/version-bridge';
 import { useAppCreateHref } from './useAppHref';
 import { useOptionalAppNavigate } from './useAppNavigate';
-import type { AppNavigateOptions } from './AppLocation';
+import type { AppNavigate } from '@backstage/frontend-plugin-api';
 
 /**
- * Navigation bound to the consuming component's routing scope.
+ * Navigation contract for routing and component-library integrations, bound to
+ * the consuming component's routing scope.
+ *
+ * This is stable public API with the same compatibility guarantees as the
+ * main entry point. Most plugins should use the main entry point's navigation
+ * hooks and UI components instead.
  * @public
  */
-export interface Navigation {
+export interface RoutingIntegration {
   /** Converts an authored target to a browser-ready href, including the deployment basename. */
   createHref(target: string): string;
   /** Navigates to an authored target, never a generated browser href. */
-  navigate(target: string, options?: AppNavigateOptions): void;
+  navigate(target: string, options?: Parameters<AppNavigate>[1]): void;
   /** Current browser pathname, including the deployment basename, without query or hash. */
   pathname: string;
 }
 
-type NavigationContextVersions = { 1: { useNavigation: () => Navigation } };
+type NavigationContextVersions = {
+  1: { useNavigation: () => RoutingIntegration };
+};
 const NavigationContext =
   createVersionedContext<NavigationContextVersions>('app-navigation');
 
 /** @public */
-export interface NavigationProviderProps {
+export interface RoutingProviderProps {
   /**
    * Hook invoked at each consumer, not at the provider. It may read nested
    * routing-library contexts at that consumer's position. Keep its identity
    * stable and its hook order consistent for the lifetime of the provider.
    */
-  useNavigation: () => Navigation;
+  useRoutingIntegration: () => RoutingIntegration;
   children: ReactNode;
 }
 
@@ -57,10 +64,10 @@ export interface NavigationProviderProps {
  * or the strict framework hooks. Routing adapters supply this provider.
  * @public
  */
-export function NavigationProvider({
-  useNavigation: useProvidedNavigation,
+export function RoutingProvider({
+  useRoutingIntegration: useProvidedNavigation,
   children,
-}: NavigationProviderProps) {
+}: RoutingProviderProps) {
   const value = useMemo(
     () =>
       createVersionedValueMap({ 1: { useNavigation: useProvidedNavigation } }),
@@ -73,7 +80,7 @@ export function NavigationProvider({
   );
 }
 
-function useFrameworkNavigation(): Navigation {
+function useFrameworkNavigation(): RoutingIntegration {
   const createHref = useAppCreateHref();
   const navigate = useOptionalAppNavigate();
   return {
@@ -103,7 +110,7 @@ function useFrameworkNavigation(): Navigation {
  * The useAppHref and useAppNavigate hooks remain strict inside adapters.
  * @public
  */
-export function useNavigation(): Navigation {
+export function useRoutingIntegration(): RoutingIntegration {
   const useScopedNavigation =
     useVersionedContext<NavigationContextVersions>('app-navigation')?.atVersion(
       1,

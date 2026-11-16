@@ -15,7 +15,7 @@ import { AppError } from '@backstage/frontend-app-api';
 import { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import { AppLanguageApi } from '@backstage/frontend-plugin-api';
 import { AppLifecycleApi } from '@backstage/frontend-plugin-api';
-import { AppNavigateOptions } from '@backstage/frontend-plugin-api';
+import { AppNavigate } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { AppTheme } from '@backstage/frontend-plugin-api';
@@ -100,16 +100,6 @@ export function createExtensionTester<
   },
 ): ExtensionTester<NonNullable<T['output']>>;
 
-// @public
-export function createMockAppHistory(
-  options?: MockAppHistoryOptions,
-): MockAppHistory;
-
-// @public
-export function createMockRouteResolutionApi(
-  options?: MockRouteResolutionApiOptions,
-): MockRouteResolutionApi;
-
 // @public (undocumented)
 export class ExtensionQuery<UOutput extends ExtensionDataRef> {
   constructor(node: AppNode);
@@ -187,9 +177,16 @@ export namespace mockApis {
         partialImpl?: Partial<AnalyticsApi> | undefined,
       ) => ApiMock<AnalyticsApi>;
   }
-  export function appHistory(
-    options?: MockAppHistoryOptions,
-  ): MockAppHistory & MockWithApiFactory<AppHistoryApi>;
+  export function appHistory(options?: {
+    initialLocation?: string;
+    navigate?: jest.Mock | AppHistoryApi['navigate'];
+    basename?: string;
+  }): AppHistoryApi & {
+    navigateCalls: Array<{
+      to: string | number;
+      options?: Parameters<AppNavigate>[1];
+    }>;
+  } & MockWithApiFactory<AppHistoryApi>;
   export namespace appHistory {
     const // (undocumented)
       mock: (
@@ -343,9 +340,37 @@ export namespace mockApis {
       partialImpl?: Partial<PluginWrapperApi> | undefined,
     ) => ApiMock<PluginWrapperApi>;
   }
-  export function routeResolution(
-    options?: MockRouteResolutionApiOptions,
-  ): MockRouteResolutionApi & MockWithApiFactory<RouteResolutionApi>;
+  export function routeResolution(options?: {
+    routes?:
+      | ReadonlyMap<
+          | RouteRef<AnyRouteRefParams>
+          | SubRouteRef<AnyRouteRefParams>
+          | ExternalRouteRef<AnyRouteRefParams>,
+          string
+        >
+      | ReadonlyArray<
+          [
+            (
+              | RouteRef<AnyRouteRefParams>
+              | SubRouteRef<AnyRouteRefParams>
+              | ExternalRouteRef<AnyRouteRefParams>
+            ),
+            string,
+          ]
+        >;
+    resolve?: RouteResolutionApi['resolve'];
+    resolvePath?:
+      | {
+          matches: ReadonlyArray<
+            Pick<RouteResolutionMatch, 'node' | 'basePath'> &
+              Partial<Omit<RouteResolutionMatch, 'node' | 'basePath'>>
+          >;
+        }
+      | RouteResolutionApi['resolvePath'];
+  }): RouteResolutionApi & {
+    resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
+    resolvePath: jest.MockedFunction<RouteResolutionApi['resolvePath']>;
+  } & MockWithApiFactory<RouteResolutionApi>;
   export namespace routeResolution {
     const mock: (
       partialImpl?: Partial<RouteResolutionApi> | undefined,
@@ -382,21 +407,6 @@ export namespace mockApis {
 }
 
 // @public
-export interface MockAppHistory extends AppHistoryApi {
-  navigateCalls: Array<{
-    to: string | number;
-    options?: AppNavigateOptions;
-  }>;
-}
-
-// @public
-export interface MockAppHistoryOptions {
-  basename?: string;
-  initialLocation?: string;
-  navigate?: jest.Mock | AppHistoryApi['navigate'];
-}
-
-// @public
 export interface MockFetchApiOptions {
   baseImplementation?: undefined | 'none' | typeof fetch;
   injectIdentityAuth?:
@@ -413,34 +423,6 @@ export interface MockFetchApiOptions {
         discoveryApi: Pick<DiscoveryApi_2, 'getBaseUrl'>;
       };
 }
-
-// @public
-export interface MockRouteResolutionApi extends RouteResolutionApi {
-  resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
-  resolvePath: jest.MockedFunction<RouteResolutionApi['resolvePath']>;
-}
-
-// @public
-export interface MockRouteResolutionApiOptions {
-  resolve?: RouteResolutionApi['resolve'];
-  resolvePath?:
-    | {
-        matches: ReadonlyArray<
-          Pick<RouteResolutionMatch, 'node' | 'basePath'> &
-            Partial<Omit<RouteResolutionMatch, 'node' | 'basePath'>>
-        >;
-      }
-    | RouteResolutionApi['resolvePath'];
-  routes?:
-    | ReadonlyMap<MockRouteResolutionRouteRef, string>
-    | ReadonlyArray<[MockRouteResolutionRouteRef, string]>;
-}
-
-// @public
-export type MockRouteResolutionRouteRef =
-  | RouteRef<AnyRouteRefParams>
-  | SubRouteRef<AnyRouteRefParams>
-  | ExternalRouteRef<AnyRouteRefParams>;
 
 // @public
 export type MockWithApiFactory<TApi> = TApi & {

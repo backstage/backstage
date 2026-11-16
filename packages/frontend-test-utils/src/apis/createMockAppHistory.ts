@@ -14,88 +14,17 @@
  * limitations under the License.
  */
 
-import {
-  type AppHistoryApi,
-  type AppNavigateOptions,
-} from '@backstage/frontend-plugin-api';
+import { type AppNavigate } from '@backstage/frontend-plugin-api';
+import type { mockApis } from './mockApis';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createAppHistory } from '../../../frontend-app-api/src/routing/AppHistory';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createMemoryHistoryBackend } from '../../../frontend-app-api/src/routing/HistoryBackend';
 
-/**
- * Options for {@link createMockAppHistory}.
- *
- * @public
- */
-export interface MockAppHistoryOptions {
-  /**
-   * Initial location for the mock app history's snapshot.
-   * Defaults to `'/'`.
-   *
-   * Stands in for the browser URL, so a `basename` is stripped from it just as
-   * the real app history strips it from `window.location` — every location the
-   * API then hands out is app-relative.
-   */
-  initialLocation?: string;
-  /**
-   * Optional jest mock (or function) invoked by `navigate`. Location
-   * emission still happens before this is called.
-   */
-  navigate?: jest.Mock | AppHistoryApi['navigate'];
-  /**
-   * App deploy basename prefixed onto `createHref` results, mirroring the
-   * real `AppHistoryApi` implementation — including leaving targets that are
-   * not app-relative alone, and stripping the prefix back off
-   * {@link MockAppHistoryOptions.initialLocation}.
-   *
-   * `navigate` targets and snapshot locations are app-relative on both
-   * sides of the basename, exactly as in production: the real implementation
-   * prepends the basename on the way into the History API and strips it on the
-   * way back out, so a round trip through it is invisible.
-   */
-  basename?: string;
-}
-
-/**
- * A mock {@link @backstage/frontend-plugin-api#AppHistoryApi} for unit tests
- * that need framework navigate without a full test app.
- *
- * @public
- */
-export interface MockAppHistory extends AppHistoryApi {
-  /**
-   * Recorded `navigate` calls, in order.
-   */
-  navigateCalls: Array<{
-    to: string | number;
-    options?: AppNavigateOptions;
-  }>;
-}
-
-/**
- * Creates a mock {@link @backstage/frontend-plugin-api#AppHistoryApi}.
- *
- * Uses the production app history with an in-memory backend, including its
- * synchronous location subscriptions, stable snapshots, href resolution, and
- * numeric traversal. External navigation is recorded without changing the
- * location or leaving the test page. Prefer `renderInTestApp` / `renderTestApp`
- * and `apis.get(appHistoryApiRef)` on the render result for navigation across
- * a full test app.
- *
- * Also available as `mockApis.appHistory()`. Pair with
- * {@link createMockRouteResolutionApi} for `useRouteRef` tests.
- *
- * @public
- * @example
- * ```ts
- * const navigate = jest.fn();
- * const appHistory = createMockAppHistory({ navigate });
- * ```
- */
+/** Creates the memory-backed implementation used by mockApis.appHistory. @internal */
 export function createMockAppHistory(
-  options: MockAppHistoryOptions = {},
-): MockAppHistory {
+  options: NonNullable<Parameters<typeof mockApis.appHistory>[0]> = {},
+) {
   const {
     initialLocation = '/',
     navigate: navigateImpl,
@@ -106,12 +35,15 @@ export function createMockAppHistory(
     history: createMemoryHistoryBackend({ initialEntries: [initialLocation] }),
     basename,
   });
-  const navigateCalls: MockAppHistory['navigateCalls'] = [];
+  const navigateCalls: Array<{
+    to: string | number;
+    options?: Parameters<AppNavigate>[1];
+  }> = [];
   const navigate = instance.navigate.bind(instance);
 
   return Object.assign(instance, {
     navigateCalls,
-    navigate(to: string | number, navOptions?: AppNavigateOptions) {
+    navigate(to: string | number, navOptions?: Parameters<AppNavigate>[1]) {
       if (typeof to === 'number') {
         navigateCalls.push({ to });
         navigate(to);

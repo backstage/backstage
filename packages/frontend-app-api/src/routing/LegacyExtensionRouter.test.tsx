@@ -26,10 +26,10 @@ import {
   createExtension,
   createExtensionInput,
   createRouteRef,
-  useNavigation,
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/frontend-plugin-api';
+import { useRoutingIntegration } from '@backstage/frontend-plugin-api/routing';
 import { Link, Navigate, Route, Routes, useParams } from 'react-router-dom';
 
 // Preserve the shape of pre-scoped-routing PageBlueprint: the header and
@@ -429,7 +429,7 @@ describe('direct history navigation teardown', () => {
   }
 
   function LeavingPage() {
-    const navigation = useNavigation();
+    const navigation = useRoutingIntegration();
     const { entity } = useParams();
     return (
       <>
@@ -493,7 +493,7 @@ describe('direct history navigation teardown', () => {
   it('applies a navigation callback retained past its page unmount', async () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     function RetainingPage() {
-      const navigation = useNavigation();
+      const navigation = useRoutingIntegration();
       const navigationRef = useRef(navigation);
       navigationRef.current = navigation;
       useEffect(

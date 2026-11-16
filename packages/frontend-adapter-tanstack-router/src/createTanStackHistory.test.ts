@@ -15,17 +15,16 @@
  */
 
 import { createTanStackHistory } from './createTanStackHistory';
+import type { AppLocation, AppNavigate } from '@backstage/frontend-plugin-api';
 import type {
   AppHistoryApi,
   AppHistorySnapshot,
-  AppLocation,
-  AppNavigateOptions,
 } from '@backstage/frontend-plugin-api';
-import { createMockAppHistory as createFrameworkMockAppHistory } from '@backstage/frontend-test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 
 /** Ordinary adapter tests use the production memory history. */
 function createMockAppHistory(initialLocation = '/') {
-  const appHistory = createFrameworkMockAppHistory({ initialLocation });
+  const appHistory = mockApis.appHistory({ initialLocation });
   return {
     appHistory,
     navigateCalls: appHistory.navigateCalls,
@@ -35,7 +34,7 @@ function createMockAppHistory(initialLocation = '/') {
 
 /** A custom host with location snapshots and delayed change notifications. */
 function deferNotifications(
-  inner: ReturnType<typeof createFrameworkMockAppHistory>,
+  inner: ReturnType<typeof mockApis.appHistory>,
 ): AppHistoryApi {
   let source = inner.getSnapshot();
   let snapshot: AppHistorySnapshot = { location: source.location };
@@ -100,7 +99,7 @@ function createHostOwnedAppHistory(options: { withMetadata: boolean }): {
 
 describe('createTanStackHistory', () => {
   it('uses independently available snapshot metadata without inventing entry positions', () => {
-    const inner = createFrameworkMockAppHistory({ initialLocation: '/tools' });
+    const inner = mockApis.appHistory({ initialLocation: '/tools' });
     let source: AppHistorySnapshot | undefined;
     let snapshot: AppHistorySnapshot;
     let includeIndex = false;
@@ -335,7 +334,7 @@ describe('createTanStackHistory', () => {
   });
 
   it('should traverse through AppHistoryApi with stable keys and truthful actions', () => {
-    const appHistory = createFrameworkMockAppHistory();
+    const appHistory = mockApis.appHistory();
     const historyGoSpy = jest.spyOn(window.history, 'go');
     const history = createTanStackHistory(appHistory);
     const actions: unknown[] = [];
@@ -410,13 +409,13 @@ describe('createTanStackHistory', () => {
   });
 
   it('treats delayed custom-host notifications as uncorrelated locations', async () => {
-    const inner = createFrameworkMockAppHistory({ initialLocation: '/tools' });
+    const inner = mockApis.appHistory({ initialLocation: '/tools' });
     inner.navigate('/tools/one');
     inner.navigate('/tools/two');
     const appHistory: AppHistoryApi = {
       getSnapshot: deferNotifications(inner).getSnapshot,
       subscribe: inner.subscribe,
-      navigate(to: string | number, options?: AppNavigateOptions) {
+      navigate(to: string | number, options?: Parameters<AppNavigate>[1]) {
         void Promise.resolve().then(() => {
           if (typeof to === 'number') {
             inner.navigate(to);
@@ -450,7 +449,7 @@ describe('createTanStackHistory', () => {
   });
 
   it('notifies when a custom host changes its snapshot before its delayed emission', async () => {
-    const inner = createFrameworkMockAppHistory({ initialLocation: '/tools' });
+    const inner = mockApis.appHistory({ initialLocation: '/tools' });
     inner.navigate('/tools/one');
     inner.navigate('/tools/two');
     const appHistory = deferNotifications(inner);
@@ -521,7 +520,7 @@ describe('createTanStackHistory', () => {
   });
 
   it('suppresses delayed write echoes without changing native reentrant notifications', async () => {
-    const inner = createFrameworkMockAppHistory({ initialLocation: '/tools' });
+    const inner = mockApis.appHistory({ initialLocation: '/tools' });
     const history = createTanStackHistory(deferNotifications(inner));
     const first: string[] = [];
     const second: string[] = [];
@@ -607,7 +606,7 @@ describe('createTanStackHistory', () => {
           notify = undefined;
         };
       },
-      navigate(to: string | number, options?: AppNavigateOptions) {
+      navigate(to: string | number, options?: Parameters<AppNavigate>[1]) {
         if (options?.replace && to === entries[index].pathname) {
           return;
         }

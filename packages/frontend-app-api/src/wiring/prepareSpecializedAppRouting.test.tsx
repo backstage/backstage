@@ -16,15 +16,15 @@
 
 import {
   ApiBlueprint,
-  appHistoryApiRef,
   coreExtensionData,
   createApiFactory,
   createExtension,
   createFrontendPlugin,
   featureFlagsApiRef,
+  appHistoryApiRef,
   type AppHistoryApi,
 } from '@backstage/frontend-plugin-api';
-import { createMockAppHistory } from '@backstage/frontend-test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import {
   prepareSpecializedApp,
   type CreateSpecializedAppInternalOptions,
@@ -141,7 +141,7 @@ describe('prepareSpecializedApp', () => {
     });
 
     it('should leave an overridden app history API untouched', () => {
-      const appHistory = createMockAppHistory();
+      const appHistory = mockApis.appHistory();
       let dispose: (() => void) | undefined;
       const preparedApp = prepareSpecializedApp({
         features: [makeAppPlugin()],
@@ -164,7 +164,7 @@ describe('prepareSpecializedApp', () => {
     });
 
     it('should let an ApiBlueprint-supplied app history replace the default', () => {
-      const appHistory = createMockAppHistory();
+      const appHistory = mockApis.appHistory();
       let dispose: (() => void) | undefined;
       const preparedApp = prepareSpecializedApp({
         features: [makeAppPlugin([makeAppHistoryApi(appHistory)])],
@@ -189,8 +189,8 @@ describe('prepareSpecializedApp', () => {
     });
 
     it('should still let a static factory override an ApiBlueprint-supplied app history', () => {
-      const appHistory = createMockAppHistory();
-      const overrideHistory = createMockAppHistory();
+      const appHistory = mockApis.appHistory();
+      const overrideHistory = mockApis.appHistory();
       const preparedApp = prepareSpecializedApp({
         features: [makeAppPlugin([makeAppHistoryApi(appHistory)])],
         __internal: {
@@ -208,7 +208,7 @@ describe('prepareSpecializedApp', () => {
     });
 
     it('should fail loudly when a predicate-gated extension supplies the app history', () => {
-      const appHistory = createMockAppHistory();
+      const appHistory = mockApis.appHistory();
       const featureFlagsApi = {
         isActive: (name: string) => name === 'test-flag',
         registerFlag: () => {},
@@ -263,7 +263,7 @@ describe('prepareSpecializedApp', () => {
     });
 
     it('should let an app history from a reused session replace the default', () => {
-      const appHistory = createMockAppHistory();
+      const appHistory = mockApis.appHistory();
       let dispose: (() => void) | undefined;
       const preparedApp = prepareSpecializedApp({
         features: [makeAppPlugin()],
