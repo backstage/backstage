@@ -254,8 +254,7 @@ function replaceArraysIfPresent(_into: any, from: any) {
  * Builds the LDAP attribute list for a search.
  *
  * Mapped fields and vendor DN/UUID names are merged in automatically so custom
- * `map.*` overrides keep working. Null `map.members` / `map.memberOf` are not
- * requested.
+ * `map.*` overrides keep working when no explicit attribute list is supplied.
  */
 function withEffectiveSearchAttributes<T extends UserConfig | GroupConfig>(
   config: T,
@@ -292,7 +291,13 @@ function mergeWithEffectiveSearchAttributes<T extends UserConfig | GroupConfig>(
   vendor: VendorConfig | undefined,
   baseAttributes: string[],
 ): T {
+  const hasExplicitAttributes = Array.isArray(
+    (config?.options as SearchOptions | undefined)?.attributes,
+  );
   const merged = mergeWith({}, defaults, config, replaceArraysIfPresent) as T;
+  if (hasExplicitAttributes) {
+    return merged;
+  }
   return withEffectiveSearchAttributes(merged, vendor, baseAttributes);
 }
 
@@ -390,23 +395,6 @@ function readSetConfig(
   return c.get();
 }
 
-function readOptionalStringOrNull(
-  c: Config,
-  key: string,
-): string | null | undefined {
-  const value = c.getOptional(key);
-  if (value === null) {
-    return null;
-  }
-  // ConfigReader treats YAML `null` as unset in getOptional/getOptionalString.
-  const raw = (c as { data?: { [name: string]: JsonValue | undefined } })
-    .data?.[key];
-  if (raw === null) {
-    return null;
-  }
-  return c.getOptionalString(key);
-}
-
 function readUserMapConfig(c: Config | undefined): Partial<UserConfig['map']> {
   if (!c) {
     return {};
@@ -419,7 +407,7 @@ function readUserMapConfig(c: Config | undefined): Partial<UserConfig['map']> {
     displayName: c.getOptionalString('displayName'),
     email: c.getOptionalString('email'),
     picture: c.getOptionalString('picture'),
-    memberOf: readOptionalStringOrNull(c, 'memberOf'),
+    memberOf: c.getOptionalString('memberOf'),
   };
 }
 
@@ -438,8 +426,8 @@ function readGroupMapConfig(
     displayName: c.getOptionalString('displayName'),
     email: c.getOptionalString('email'),
     picture: c.getOptionalString('picture'),
-    memberOf: readOptionalStringOrNull(c, 'memberOf'),
-    members: readOptionalStringOrNull(c, 'members'),
+    memberOf: c.getOptionalString('memberOf'),
+    members: c.getOptionalString('members'),
   };
 }
 

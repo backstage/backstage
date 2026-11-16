@@ -171,12 +171,10 @@ options:
   # to filter out disabled users.
   filter: (uid=*)
   # The attribute selectors for each item, as passed to the LDAP server.
-  # By default only attributes needed for entity mapping are requested. Mapped
-  # membership (`map.memberOf` / `map.members`) is requested automatically and
-  # is not part of this base list. Set those mappings to `null` to skip that
-  # side of the relation tree and not request those attributes. Custom `map.*`
-  # overrides are included automatically. Set `attributes: ['*', '+']` to load
-  # all attributes if your transformers need additional LDAP fields.
+  # By default, the base list below is extended with attributes from `map.*`
+  # and the configured vendor. If you set `attributes` explicitly, the list is
+  # used as-is. Include all attributes needed by mappings and transformers, or
+  # set `attributes: ['*', '+']` to load all attributes.
   attributes:
     - dn
     - entryDN
@@ -238,8 +236,7 @@ map:
   # the spec.profile.picture field of the entity.
   picture: <nothing, left out>
   # The name of the attribute that shall be used for the values of
-  # the spec.memberOf field of the entity. May be `null` to disable
-  # that side of the relation tree.
+  # the spec.memberOf field of the entity.
   memberOf: memberOf
 ```
 
@@ -269,12 +266,10 @@ options:
   # to filter out disabled groups.
   filter: (&(objectClass=some-group-class)(!(groupType=email)))
   # The attribute selectors for each item, as passed to the LDAP server.
-  # By default only attributes needed for entity mapping are requested. Mapped
-  # membership (`map.memberOf` / `map.members`) is requested automatically and
-  # is not part of this base list. Set those mappings to `null` to skip that
-  # side of the relation tree and not request those attributes. Custom `map.*`
-  # overrides are included automatically. Set `attributes: ['*', '+']` to load
-  # all attributes if your transformers need additional LDAP fields.
+  # By default, the base list below is extended with attributes from `map.*`
+  # and the configured vendor. If you set `attributes` explicitly, the list is
+  # used as-is. Include all attributes needed by mappings and transformers, or
+  # set `attributes: ['*', '+']` to load all attributes.
   attributes:
     - dn
     - entryDN
@@ -344,12 +339,10 @@ map:
   # the spec.profile.picture field of the entity.
   picture: <nothing, left out>
   # The name of the attribute that shall be used for the values of
-  # the spec.parent field of the entity. May be `null` to disable
-  # that side of the relation tree.
+  # the spec.parent field of the entity.
   memberOf: memberOf
   # The name of the attribute that shall be used for the values of
-  # the spec.children field of the entity. May be `null` to disable
-  # that side of the relation tree.
+  # the spec.children field of the entity.
   members: member
 ```
 

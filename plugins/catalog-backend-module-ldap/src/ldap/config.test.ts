@@ -289,7 +289,7 @@ describe('readLdapConfig', () => {
             dn: 'udn',
             options: {
               scope: 'base',
-              attributes: ['*', 'u', 'v', 'c', 'm', 'd', 'p'],
+              attributes: ['*'],
               filter: 'f',
               paged: true,
               timeLimit: 42,
@@ -314,7 +314,7 @@ describe('readLdapConfig', () => {
             dn: 'gdn',
             options: {
               scope: 'base',
-              attributes: ['*', 'u', 'v', 'd', 'c', 't', 'm', 'n', 'p'],
+              attributes: ['*'],
               filter: 'f',
               paged: {
                 pageSize: 7,
@@ -563,26 +563,34 @@ describe('readLdapConfig', () => {
     );
   });
 
-  it('still requests member when an explicit attributes list omits it', () => {
+  it('preserves an explicit attributes list regardless of mappings', () => {
+    const attributes = [
+      'cn',
+      'description',
+      'groupType',
+      'entryDN',
+      'entryUUID',
+    ];
     const config = {
       catalog: {
         providers: {
           ldapOrg: {
             default: {
               target: 'target',
+              vendor: {
+                dnAttributeName: 'customDN',
+                uuidAttributeName: 'customUUID',
+              },
               users: {
                 dn: 'udn',
               },
               groups: {
                 dn: 'gdn',
                 options: {
-                  attributes: [
-                    'cn',
-                    'description',
-                    'groupType',
-                    'entryDN',
-                    'entryUUID',
-                  ],
+                  attributes,
+                },
+                map: {
+                  picture: 'thumbnailPhoto',
                 },
               },
             },
@@ -592,50 +600,8 @@ describe('readLdapConfig', () => {
     };
     const actual = readProviderConfigs(new ConfigReader(config));
 
-    expect(actual[0].groups[0].options.attributes).toEqual(
-      expect.arrayContaining(['member']),
-    );
+    expect(actual[0].groups[0].options.attributes).toEqual(attributes);
     expect(actual[0].groups[0].map.members).toBe('member');
-  });
-
-  it('does not request membership attributes when map.members and map.memberOf are null', () => {
-    const config = {
-      catalog: {
-        providers: {
-          ldapOrg: {
-            default: {
-              target: 'target',
-              users: {
-                dn: 'udn',
-                map: {
-                  memberOf: null,
-                },
-              },
-              groups: {
-                dn: 'gdn',
-                map: {
-                  members: null,
-                  memberOf: null,
-                },
-              },
-            },
-          },
-        },
-      },
-    };
-    const actual = readProviderConfigs(new ConfigReader(config));
-
-    expect(actual[0].users[0].map.memberOf).toBeNull();
-    expect(actual[0].users[0].options.attributes).not.toEqual(
-      expect.arrayContaining(['memberOf']),
-    );
-    expect(actual[0].groups[0].map.members).toBeNull();
-    expect(actual[0].groups[0].map.memberOf).toBeNull();
-    expect(actual[0].groups[0].options.attributes).not.toEqual(
-      expect.arrayContaining(['member']),
-    );
-    expect(actual[0].groups[0].options.attributes).not.toEqual(
-      expect.arrayContaining(['memberOf']),
-    );
+    expect(actual[0].groups[0].map.picture).toBe('thumbnailPhoto');
   });
 });
