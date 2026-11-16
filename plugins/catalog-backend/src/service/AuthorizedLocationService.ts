@@ -128,14 +128,22 @@ export class AuthorizedLocationService implements LocationService {
     location: LocationInput,
     options: { credentials: BackstageCredentials },
   ): Promise<Location> {
-    const authorizationResponse = (
-      await this.permissionApi.authorize(
-        [{ permission: catalogLocationCreatePermission }],
-        { credentials: options.credentials },
-      )
-    )[0];
+    // Updating the target of a location replaces the location entity and the
+    // entities that it holds, so it requires the same permissions as the
+    // equivalent delete and create operations.
+    const authorizationResponse = await this.permissionApi.authorize(
+      [
+        { permission: catalogLocationCreatePermission },
+        { permission: catalogLocationDeletePermission },
+      ],
+      { credentials: options.credentials },
+    );
 
-    if (authorizationResponse.result === AuthorizeResult.DENY) {
+    if (
+      authorizationResponse.some(
+        response => response.result !== AuthorizeResult.ALLOW,
+      )
+    ) {
       throw new NotAllowedError();
     }
 
