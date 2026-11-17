@@ -246,6 +246,7 @@ export function assertDestination(
   while (hasEncoding) {
     for (const text of [decoded, decoded.replaceAll('/', '')]) {
       assertNoKnownFormats(text, field);
+      // Percent-decoding can introduce the whitespace required by Bearer.
       if (GENERIC_VALUE_SHAPES[0].test(text)) {
         throw new Error(
           `Invalid ${field}: value is secret-shaped; redact it before recording a journal event`,

@@ -95,7 +95,9 @@ export type AttemptDecision = Readonly<{
    * Destination of the attempt: origin and an approved route path only.
    * Dynamic path values are stored as the first 16 hexadecimal characters of
    * their unsalted SHA-256 digest; equal values correlate across events, but
-   * predictable values can be guessed. Known credential formats are rejected.
+   * predictable values can be guessed. Path values are structurally redacted;
+   * host secrecy instead relies on the trusted producer binding the host to
+   * its configuration, since hosts are checked only for known credential formats.
    * Query strings, fragments and userinfo are never included; absent for local
    * rejections that never resolved a destination.
    */
