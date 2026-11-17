@@ -37,7 +37,6 @@ import { pluginWrapperApiRef } from '../apis/definitions/PluginWrapperApi';
 import { analyticsApiRef } from '../apis/definitions/AnalyticsApi';
 import { withLogCollector } from '@backstage/test-utils';
 import { useAnalytics } from '../analytics';
-import { Route, Routes } from 'react-router-dom';
 
 describe('PageBlueprint', () => {
   const mockRouteRef = createRouteRef();
@@ -788,14 +787,10 @@ describe('PageBlueprint', () => {
     });
     const tester = createExtensionTester(parentPage).add(subPage);
 
-    const { findByTestId } = renderInTestApp(
-      <Routes>
-        <Route path="/parent/*" element={tester.reactElement()} />
-      </Routes>,
-      {
-        initialRouteEntries: ['/parent/sub-page'],
-      },
-    );
+    const { findByTestId } = renderInTestApp(tester.reactElement(), {
+      mountPath: '/parent',
+      initialRouteEntries: ['/parent/sub-page'],
+    });
 
     await findByTestId('sub-page-content');
 
