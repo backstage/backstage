@@ -257,39 +257,111 @@ const ROW_COLUMNS = [
 /** How often one session is re-evaluated when its authority record changes. */
 const REVALIDATION_ATTEMPTS = 3;
 
+/** The decision made inside one admission bracket. */
+type SessionStep =
+  | Readonly<{ kind: 'decided'; outcome: RecoveryOutcome }>
+  | Readonly<{ kind: 'superseded-before-admission' }>
+  | Readonly<{ kind: 'superseded-at-write' }>
+  | Readonly<{ kind: 'failed'; error: unknown }>;
+
 /**
- * The revocable handle a resume runs under.
+ * What an admission ended as. Exactly one disposition is recorded.
+ *
+ * @internal
+ */
+export type AdmissionDisposition =
+  /** The resume succeeded and keeps the still-live fence. */
+  | Readonly<{ kind: 'handed-off' }>
+  /**
+   * The admission was revoked: its listeners were notified, its cleanup ran and
+   * its fence was released conditionally on owner and token.
+   */
+  | Readonly<{ kind: 'revoked'; reason: LeaseInvalidationReason }>
+  /**
+   * The resume asked to keep the fence, but the fence was no longer held when
+   * the admission was finalized, so it was revoked instead.
+   */
+  | Readonly<{ kind: 'fence-lost' }>;
+
+/** The single place recovery asks an admission to end. */
+type Finalization =
+  | Readonly<{ kind: 'hand-off' }>
+  | Readonly<{ kind: 'revoke'; reason: LeaseInvalidationReason }>;
+
+/**
+ * The one lifetime and finalization boundary of a recovery admission.
  *
  * @remarks
  *
- * Revocation is one-way and idempotent: the keepalive stops, listeners are
- * notified, registrations are cleaned up in order, and the fence is released
+ * One object owns the whole bracket from lease acquisition to final
+ * disposition. Scattering invalidation across code paths is what previously
+ * produced both missed exits and finalization ordering gaps, so the boundary
+ * holds every responsibility in one place:
+ *
+ * - **Unique identity.** Each admission acquires the namespace with its own
+ *   owner (`recovery:<plugin>:<uuid>`), so no admission can ever renew or
+ *   release a fence it does not uniquely own. Competing passes — including two
+ *   concurrent `recover()` calls on one instance — arbitrate through the row
+ *   lease exactly like competing replicas: one acquires, the other skips.
+ * - **Exception safety.** The owner of this object calls {@link dispose} on
+ *   every exit path, including a thrown resolver, a failed outcome write and
+ *   cancellation, so no path can leave work running or a fence held.
+ * - **Fence-aware ordering.** A hand-off re-validates the fence *after* the
+ *   outcome write, and a fence that was lost or invalidated while a write was
+ *   waiting is revoked instead of handed off, so nothing is finalized as
+ *   recovered on stale authority.
+ * - **One transition.** {@link dispose} records exactly one disposition and is
+ *   idempotent; later calls return the recorded one.
+ * - **Keepalive stop.** The renewal timer is stopped by the same transition.
+ *
+ * Revocation itself is one-way: the keepalive stops, listeners are notified,
+ * registrations are cleaned up in order, and the fence is released
  * conditionally on owner and token, so it can never affect a successor's lease.
  * Cleanup failures never resurrect the admission or mask the persisted status;
  * the lease expires on its own if the release itself fails.
  */
-class ResumeAdmission implements RecoveryAdmission {
+export class AdmissionLifetime implements RecoveryAdmission {
   readonly fence: Fence;
   readonly #leases: NamespaceLease;
   readonly #listeners: ((reason: LeaseInvalidationReason) => void)[] = [];
   readonly #cleanups: (() => void | Promise<void>)[] = [];
   #keepalive?: LeaseKeepalive;
-  #handedOff = false;
   #invalidated = false;
-  #invalidating?: Promise<void>;
+  #revoking?: Promise<void>;
+  #disposed?: Promise<AdmissionDisposition>;
 
-  constructor(leases: NamespaceLease, fence: Fence) {
+  private constructor(leases: NamespaceLease, fence: Fence) {
     this.#leases = leases;
     this.fence = fence;
   }
 
-  get invalidated(): boolean {
-    return this.#invalidated;
+  /**
+   * Acquires the namespace lease and starts the admission bracket, or returns
+   * `undefined` when a live lease is already held.
+   */
+  static async open(options: {
+    readonly leases: NamespaceLease;
+    readonly namespace: Namespace;
+    readonly ownerPrefix: string;
+    readonly keepaliveMs: number;
+  }): Promise<AdmissionLifetime | undefined> {
+    const { leases, namespace, ownerPrefix, keepaliveMs } = options;
+    const owner = `${ownerPrefix}:${randomUUID()}`;
+    const fence = await leases.acquire(namespace, owner);
+    if (fence === undefined) return undefined;
+
+    const lifetime = new AdmissionLifetime(leases, fence);
+    // The keepalive runs through the same boundary, so a lost fence and a
+    // superseded admission both end in the single disposition transition.
+    lifetime.#keepalive = startLeaseKeepalive(leases, fence, {
+      intervalMs: keepaliveMs,
+      onInvalidated: reason => void lifetime.#revoke(reason),
+    });
+    return lifetime;
   }
 
-  attach(keepalive: LeaseKeepalive): void {
-    this.#keepalive = keepalive;
-    if (this.#invalidated) void keepalive.stop();
+  get invalidated(): boolean {
+    return this.#invalidated;
   }
 
   onInvalidated(listener: (reason: LeaseInvalidationReason) => void): void {
@@ -302,22 +374,54 @@ class ResumeAdmission implements RecoveryAdmission {
 
   registerCleanup(cleanup: () => void | Promise<void>): void {
     if (this.#invalidated) {
-      void this.#runCleanup(cleanup);
+      void runCleanup(cleanup);
       return;
     }
     this.#cleanups.push(cleanup);
   }
 
-  async handOff(): Promise<void> {
-    this.#handedOff = true;
-    await this.#keepalive?.stop();
+  /**
+   * Ends the admission exactly once.
+   *
+   * @remarks
+   *
+   * `hand-off` is only honoured while the fence is still held: it renews the
+   * lease as the final authority check, and revokes instead if that fails or the
+   * admission was already invalidated. Every other request revokes.
+   */
+  async dispose(finalization: Finalization): Promise<AdmissionDisposition> {
+    if (this.#disposed !== undefined) return this.#disposed;
+    this.#disposed = (async () => {
+      if (finalization.kind === 'revoke') {
+        await this.#revoke(finalization.reason);
+        return { kind: 'revoked', reason: finalization.reason } as const;
+      }
+      await this.#keepalive?.stop();
+      this.#keepalive = undefined;
+      if (this.#invalidated) {
+        return { kind: 'revoked', reason: 'authority-superseded' } as const;
+      }
+      let held = false;
+      try {
+        held = await this.#leases.renew(this.fence);
+      } catch {
+        held = false;
+      }
+      if (!held) {
+        await this.#revoke('authority-superseded');
+        return { kind: 'fence-lost' } as const;
+      }
+      return { kind: 'handed-off' } as const;
+    })();
+    return this.#disposed;
   }
 
-  invalidate(reason: LeaseInvalidationReason): Promise<void> {
-    if (this.#invalidating !== undefined) return this.#invalidating;
+  async #revoke(reason: LeaseInvalidationReason): Promise<void> {
+    if (this.#revoking !== undefined) return this.#revoking;
     this.#invalidated = true;
-    this.#invalidating = (async () => {
+    this.#revoking = (async () => {
       await this.#keepalive?.stop();
+      this.#keepalive = undefined;
       for (const listener of this.#listeners.splice(0)) {
         try {
           listener(reason);
@@ -326,25 +430,23 @@ class ResumeAdmission implements RecoveryAdmission {
         }
       }
       for (const cleanup of this.#cleanups.splice(0)) {
-        await this.#runCleanup(cleanup);
+        await runCleanup(cleanup);
       }
-      if (!this.#handedOff) {
-        try {
-          await this.#leases.release(this.fence);
-        } catch {
-          /* The lease expires on its own; never mask the persisted status. */
-        }
+      try {
+        await this.#leases.release(this.fence);
+      } catch {
+        /* The lease expires on its own; never mask the persisted status. */
       }
     })();
-    return this.#invalidating;
+    return this.#revoking;
   }
+}
 
-  async #runCleanup(cleanup: () => void | Promise<void>): Promise<void> {
-    try {
-      await cleanup();
-    } catch {
-      /* Cleanup failures never restore an invalidated admission. */
-    }
+async function runCleanup(cleanup: () => void | Promise<void>): Promise<void> {
+  try {
+    await cleanup();
+  } catch {
+    /* Cleanup failures never restore an invalidated admission. */
   }
 }
 
@@ -352,14 +454,12 @@ class StartupRecovery implements AiRecovery {
   readonly #options: AiRecoveryOptions;
   readonly #pageSize: number;
   readonly #resolvers = new Map<string, Map<string, RecoveryResolver>>();
-  readonly #admissionOwner: string;
   readonly #admissionKeepaliveMs: number;
   #sealed = false;
 
   constructor(options: AiRecoveryOptions) {
     this.#options = options;
     this.#pageSize = options.pageSize ?? DEFAULT_PAGE_SIZE;
-    this.#admissionOwner = `recovery:${options.pluginId}:${randomUUID()}`;
     this.#admissionKeepaliveMs = options.admissionKeepaliveMs ?? 20_000;
   }
 
@@ -604,10 +704,11 @@ class StartupRecovery implements AiRecovery {
         };
       }
       const revision = String(row.revision);
+
       const precheck = this.#precheck(namespace, row);
       if (precheck !== undefined) {
-        const persisted = await this.#persist(namespace, revision, precheck);
-        if (persisted) return precheck;
+        // No admission is open on this path, so nothing needs finalizing.
+        if (await this.#persist(namespace, revision, precheck)) return precheck;
         continue;
       }
 
@@ -615,168 +716,269 @@ class StartupRecovery implements AiRecovery {
         .get(namespace.pluginId)!
         .get(row.definition_version)!;
 
-      // The resume runs under a lease recovery acquires and can revoke, so an
-      // invalidated admission can never leave work running or a lease held.
-      const fence = await this.#options.leases.acquire(
+      const lifetime = await AdmissionLifetime.open({
+        leases: this.#options.leases,
         namespace,
-        this.#admissionOwner,
-      );
-      if (fence === undefined) {
+        ownerPrefix: `recovery:${this.#options.pluginId}`,
+        keepaliveMs: this.#admissionKeepaliveMs,
+      });
+      if (lifetime === undefined) {
         return {
           namespace,
           status: row.status,
           detail: 'Skipped: another replica holds the session lease',
         };
       }
-      const admission = new ResumeAdmission(this.#options.leases, fence);
-      admission.attach(
-        startLeaseKeepalive(this.#options.leases, fence, {
-          intervalMs: this.#admissionKeepaliveMs,
-          onInvalidated: reason => void admission.invalidate(reason),
-        }),
+
+      const outcome = await this.#resumeSession(
+        namespace,
+        row,
+        revision,
+        resolver,
+        lifetime,
       );
+      if (outcome !== undefined) return outcome;
+      // Superseded before the resume was admitted: decide again.
+    }
 
-      let credentials: BackstageCredentials;
-      try {
-        credentials = await this.#options.getOwnServiceCredentials();
-        const principal = credentials?.principal as
-          | { type?: string }
-          | undefined;
-        if (principal?.type !== 'service') {
-          throw new Error(
-            'the plugin credential source did not return service credentials',
-          );
-        }
-      } catch (error) {
-        const blocked: RecoveryOutcome = {
-          namespace,
-          status: 'blocked-credentials',
-          detail: `Fresh service credentials for the '${
-            namespace.pluginId
-          }' plugin could not be obtained: ${describe(error)}`,
-        };
-        const persisted = await this.#persist(namespace, revision, blocked);
-        if (persisted) {
-          await admission.invalidate('session-closed');
-          return blocked;
-        }
-        await admission.invalidate('authority-superseded');
-        continue;
-      }
+    return this.#persistedOutcome(
+      namespace,
+      'The session authority record kept changing during recovery',
+    );
+  }
 
-      const admitted = await this.#readRow(namespace);
-      await this.#options.admissionSnapshotGate?.(namespace);
+  /**
+   * Runs one resume inside an admission and ends it exactly once.
+   *
+   * @remarks
+   *
+   * This function never returns or throws before {@link AdmissionLifetime.dispose}
+   * has run, so a thrown resolver, a failed outcome write or an unexpected read
+   * error can never leave the resumed work running or the fence held. The
+   * disposition is the only thing the persisted status depends on: a resume that
+   * is not handed off never reports or keeps `recovered`.
+   *
+   * Returns the outcome to report, or `undefined` when the authority record was
+   * superseded before admission and the session must be decided again.
+   */
+  async #resumeSession(
+    namespace: Namespace,
+    row: RecoveryRow,
+    revision: string,
+    resolver: RecoveryResolver,
+    lifetime: AdmissionLifetime,
+  ): Promise<RecoveryOutcome | undefined> {
+    let step: SessionStep;
+    try {
+      step = await this.#runSession(
+        namespace,
+        row,
+        revision,
+        resolver,
+        lifetime,
+      );
+    } catch (error) {
+      step = { kind: 'failed', error };
+    }
 
-      // GUARANTEE BOUNDARY (lead ruling, Wave 1 rework cycle 2): this
-      // admission snapshot is the linearization point for LOCAL recovery work.
-      // Local execution is deliberately not linearized against a concurrent
-      // authority change: the resolver writes this same recovery row, so
-      // holding its lock across the resume would deadlock. The guarantee is
-      // therefore two-layer — (1) local admission is snapshot-linearized here,
-      // and (2) no external effect can occur under stale authority because
-      // provider dispatch is separately hard-gated per attempt by the dispatch
-      // guard's authority and credential-generation recheck. This mirrors the
-      // accepted bounded-overlap ruling on external fence sends. A lost outcome
-      // compare-and-swap below is not merely reported: it revokes the
-      // admission, closes what the resume opened and releases the fence.
-      if (
-        admitted === undefined ||
-        String(admitted.revision) !== revision ||
-        !sameAuthority(row, admitted)
-      ) {
-        // Nothing was opened yet; free the session for the next decision.
-        await admission.invalidate('authority-superseded');
-        continue;
-      }
-
-      let outcome: RecoveryOutcome;
-      let resumed = false;
-      try {
-        const resolution = await resolver.resume({
-          namespace,
-          origin: {
-            kind: 'service',
-            pluginId: row.origin_service_plugin_id!,
+    // Exactly one finalization, on every path. `recovered` is the only outcome
+    // that asks to keep the fence; everything else — including a superseded
+    // resume, a failed outcome write and a thrown error — revokes the admission.
+    const superseded =
+      step.kind === 'superseded-before-admission' ||
+      step.kind === 'superseded-at-write';
+    const disposition = await lifetime.dispose(
+      !superseded &&
+        step.kind === 'decided' &&
+        step.outcome.status === 'recovered'
+        ? { kind: 'hand-off' }
+        : {
+            kind: 'revoke',
+            reason: superseded ? 'authority-superseded' : 'session-closed',
           },
-          definitionVersion: row.definition_version,
-          credentials,
-          admission,
-        });
-        switch (resolution.kind) {
-          case 'resumed':
-            resumed = true;
-            outcome = { namespace, status: 'recovered' };
-            break;
-          case 'blocked-definition':
-            outcome = {
-              namespace,
-              status: 'blocked-definition',
-              detail: resolution.reason,
-            };
-            break;
-          case 'failed':
-            outcome = {
-              namespace,
-              status: 'failed',
-              detail: resolution.reason,
-            };
-            break;
-          default:
-            outcome = {
-              namespace,
-              status: 'failed',
-              detail: `The '${namespace.pluginId}' plugin resolver returned an unknown resolution`,
-            };
-        }
-      } catch (error) {
-        outcome = { namespace, status: 'failed', detail: describe(error) };
-      }
+    );
 
-      // A resume whose fence was invalidated while it ran (takeover, expiry or
-      // a failed renewal) must never be reported as recovered: the lease it
-      // opened work under is already lost.
-      if (resumed && admission.invalidated) {
-        resumed = false;
-        outcome = {
-          namespace,
-          status: 'failed',
-          detail: 'The session lease was lost while the resume ran',
-        };
-      }
+    if (step.kind === 'failed') throw step.error;
+    if (step.kind === 'superseded-before-admission') return undefined;
+    if (step.kind === 'superseded-at-write') {
+      return this.#persistedOutcome(
+        namespace,
+        'The session authority record changed while the resume ran',
+      );
+    }
 
-      if (await this.#persist(namespace, revision, outcome)) {
-        if (resumed) {
-          // The resumed work keeps the fence and becomes responsible for
-          // renewing it; recovery only stops its own keepalive.
-          await admission.handOff();
-        } else {
-          // Nothing resumed: close anything opened and free the session.
-          await admission.invalidate('session-closed');
-        }
-        return outcome;
-      }
+    // A persist that landed after the fence was lost or the admission was
+    // invalidated must not resurrect `recovered`, whatever the ordering was.
+    if (
+      step.outcome.status === 'recovered' &&
+      disposition.kind !== 'handed-off'
+    ) {
+      return this.#downgradeRecovered(namespace);
+    }
 
-      // Superseded while the resume ran. The persisted record wins, and the
-      // admission is actively torn down rather than merely reported.
-      await admission.invalidate('authority-superseded');
+    if (disposition.kind === 'handed-off') {
+      // A newer authority record may still have landed after our write; the
+      // freshest persisted state decides what is reported.
       const current = await this.#readRow(namespace);
-      if (current !== undefined) {
+      if (current !== undefined && current.status !== 'recovered') {
         return {
           namespace,
           status: current.status,
           detail: current.detail ?? undefined,
         };
       }
-      continue;
     }
 
-    const stale = await this.#readRow(namespace);
+    return step.outcome;
+  }
+
+  /**
+   * The work inside one admission bracket, from credentials to outcome write.
+   *
+   * @remarks
+   *
+   * Every path here returns a {@link SessionStep} decision; the caller owns the
+   * single finalization. That is deliberate: only one place in this module can
+   * end an admission, so no new branch can forget to.
+   */
+  async #runSession(
+    namespace: Namespace,
+    row: RecoveryRow,
+    revision: string,
+    resolver: RecoveryResolver,
+    lifetime: AdmissionLifetime,
+  ): Promise<SessionStep> {
+    let credentials: BackstageCredentials;
+    try {
+      credentials = await this.#options.getOwnServiceCredentials();
+      const principal = credentials?.principal as { type?: string } | undefined;
+      if (principal?.type !== 'service') {
+        throw new Error(
+          'the plugin credential source did not return service credentials',
+        );
+      }
+    } catch (error) {
+      const blocked: RecoveryOutcome = {
+        namespace,
+        status: 'blocked-credentials',
+        detail: `Fresh service credentials for the '${
+          namespace.pluginId
+        }' plugin could not be obtained: ${describe(error)}`,
+      };
+      if (await this.#persist(namespace, revision, blocked)) {
+        return { kind: 'decided', outcome: blocked };
+      }
+      return { kind: 'superseded-before-admission' };
+    }
+
+    const admitted = await this.#readRow(namespace);
+    await this.#options.admissionSnapshotGate?.(namespace);
+
+    // GUARANTEE BOUNDARY (lead ruling, Wave 1 rework cycle 2): this admission
+    // snapshot is the linearization point for LOCAL recovery work. Local
+    // execution is deliberately not linearized against a concurrent authority
+    // change: the resolver writes this same recovery row, so holding its lock
+    // across the resume would deadlock. The guarantee is therefore two-layer —
+    // (1) local admission is snapshot-linearized here, and (2) no external
+    // effect can occur under stale authority because provider dispatch is
+    // separately hard-gated per attempt by the dispatch guard's authority and
+    // credential-generation recheck. This mirrors the accepted bounded-overlap
+    // ruling on external fence sends.
+    if (
+      admitted === undefined ||
+      String(admitted.revision) !== revision ||
+      !sameAuthority(row, admitted)
+    ) {
+      return { kind: 'superseded-before-admission' };
+    }
+
+    let outcome: RecoveryOutcome;
+    try {
+      const resolution = await resolver.resume({
+        namespace,
+        origin: {
+          kind: 'service',
+          pluginId: row.origin_service_plugin_id!,
+        },
+        definitionVersion: row.definition_version,
+        credentials,
+        admission: lifetime,
+      });
+      switch (resolution.kind) {
+        case 'resumed':
+          outcome = { namespace, status: 'recovered' };
+          break;
+        case 'blocked-definition':
+          outcome = {
+            namespace,
+            status: 'blocked-definition',
+            detail: resolution.reason,
+          };
+          break;
+        case 'failed':
+          outcome = { namespace, status: 'failed', detail: resolution.reason };
+          break;
+        default:
+          outcome = {
+            namespace,
+            status: 'failed',
+            detail: `The '${namespace.pluginId}' plugin resolver returned an unknown resolution`,
+          };
+      }
+    } catch (error) {
+      outcome = { namespace, status: 'failed', detail: describe(error) };
+    }
+
+    // A resume whose fence was invalidated while it ran (takeover, expiry or a
+    // failed renewal) must never be recorded as recovered: the lease it opened
+    // work under is already lost.
+    if (outcome.status === 'recovered' && lifetime.invalidated) {
+      outcome = {
+        namespace,
+        status: 'failed',
+        detail: 'The session lease was lost while the resume ran',
+      };
+    }
+
+    if (!(await this.#persist(namespace, revision, outcome))) {
+      return { kind: 'superseded-at-write' };
+    }
+    return { kind: 'decided', outcome };
+  }
+
+  /** Rewrites a 'recovered' outcome whose fence was lost after it committed. */
+  async #downgradeRecovered(namespace: Namespace): Promise<RecoveryOutcome> {
+    const detail = 'The session lease was lost while the outcome was recorded';
+    const current = await this.#readRow(namespace);
+    if (current === undefined) {
+      return { namespace, status: 'failed', detail };
+    }
+    if (current.status !== 'recovered') {
+      return {
+        namespace,
+        status: current.status,
+        detail: current.detail ?? detail,
+      };
+    }
+    const failed: RecoveryOutcome = { namespace, status: 'failed', detail };
+    if (await this.#persist(namespace, String(current.revision), failed)) {
+      return failed;
+    }
+    return this.#persistedOutcome(namespace, detail);
+  }
+
+  async #persistedOutcome(
+    namespace: Namespace,
+    fallbackDetail: string,
+  ): Promise<RecoveryOutcome> {
+    const current = await this.#readRow(namespace);
+    if (current === undefined) {
+      return { namespace, status: 'failed', detail: fallbackDetail };
+    }
     return {
       namespace,
-      status: stale?.status ?? 'failed',
-      detail:
-        stale?.detail ??
-        'The session authority record kept changing during recovery',
+      status: current.status,
+      detail: current.detail ?? fallbackDetail,
     };
   }
 

@@ -14,6 +14,32 @@
  * limitations under the License.
  */
 
+/*
+ * Await × failure × cleanup matrix.
+ *
+ * This table is the specification of the single admission lifetime boundary
+ * (`AdmissionLifetime` in ./recovery.ts). Every cell is the boundary handling
+ * that interleaving, and is covered by the test named in the last column.
+ *
+ * | # | Await point / event | Failure mode | Required boundary behaviour (finalization) | Test |
+ * |---|---------------------|--------------|-------------------------------------------|------|
+ * | 1 | initial authority read | DB error | before the bracket: no admission open, error propagates | N/A: nothing to finalize |
+ * | 2 | precheck outcome write | DB error | before the bracket: no admission open, error propagates | N/A: nothing to finalize |
+ * | 3 | lease acquisition (`open`) | DB error / no row acquired | acquire is one conditional statement: nothing is held | N/A: by construction |
+ * | 4 | lease acquisition (`open`) | live lease elsewhere | no credentials, no resolver, no write; report persisted status + skip | `skips a session whose lease another replica holds` |
+ * | 5 | credentials | throws / not a service principal | persist blocked-credentials, then revoke (`session-closed`) | `blocks service work when fresh credentials are not service credentials` |
+ * | 6 | admission snapshot | superseded before admission | revoke (`authority-superseded`), persist nothing, decide again | `does not admit a resume decided from a superseded origin record` |
+ * | 7 | resolver | throws | persist failed, revoke (`session-closed`) | `records a resolver failure and an unknown resolution visibly` |
+ * | 8 | resolver | declines (blocked/failed) | persist outcome, revoke (`session-closed`), fence released | `releases the lease of a resume that declined the session` |
+ * | 9 | resolver | fence lost while it runs | persist failed (never recovered), revoke | `never reports a resume as recovered after its fence was lost mid-flight` |
+ * | 10 | outcome write | DB error | revoke on the way out, then rethrow | `finalizes the admission when recording the outcome fails` |
+ * | 11 | outcome write | CAS loss (superseded mid-resume) | revoke (`authority-superseded`), report the persisted status | `revokes a resume admitted from a snapshot superseded right after it was read`, `never overwrites a dispatch-unknown marker recorded while a resume was running` |
+ * | 12 | outcome write → hand-off | fence lost while the CAS waits | dispose revokes (`fence-lost`), `recovered` is rewritten to failed | `re-validates the fence after the outcome write, so a CAS that lands after fence loss is not recovered` |
+ * | 13 | hand-off | success | keepalive stops, fence stays live, resume keeps it | `resumes service-origin work under fresh same-plugin service credentials` |
+ * | 14 | concurrent `recover()` on one instance | second pass competes | unique per-admission owner: second pass skips, winner's fence untouched | `gives every concurrent pass its own admission so a loser cannot release the winner` |
+ * | 15 | post-hand-off fresh read | newer record landed | report the persisted status instead of `recovered` | N/A: same fresh-read code path as #12, no deterministic post-write seam |
+ */
+
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -126,6 +152,7 @@ async function fixture(
 }
 
 /** Acquires the lease row so recovery enumeration sees the namespace. */
+
 async function persist(
   state: Fixture,
   key: Namespace,
@@ -189,6 +216,50 @@ function gateCredentials(state: Fixture) {
     return release.promise;
   });
   return { requested: requested.promise, release };
+}
+
+/** Makes the outcome write for `recovered` fail, as a real database error. */
+async function failRecoveredOutcomeWrites(
+  state: Fixture,
+  engine: 'sqlite' | 'pg',
+) {
+  if (engine === 'sqlite') {
+    await state.db.raw(
+      `CREATE TRIGGER ai_recovery_fail BEFORE UPDATE ON ai_recovery_sessions
+       WHEN NEW.status = 'recovered'
+       BEGIN SELECT RAISE(ABORT, 'simulated outcome write failure'); END`,
+    );
+    return;
+  }
+  await state.db.raw(
+    `CREATE FUNCTION ai_recovery_fail() RETURNS trigger AS $$
+     BEGIN RAISE EXCEPTION 'simulated outcome write failure'; END;
+     $$ LANGUAGE plpgsql`,
+  );
+  await state.db.raw(
+    `CREATE TRIGGER ai_recovery_fail BEFORE UPDATE ON ai_recovery_sessions
+     FOR EACH ROW WHEN (NEW.status = 'recovered')
+     EXECUTE FUNCTION ai_recovery_fail()`,
+  );
+}
+
+async function waitForLockWait(
+  db: Knex,
+  table: string,
+  timeoutMs = 5_000,
+): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const { rows } = await db.raw(
+      `select count(*)::int as waiting from pg_stat_activity
+       where wait_event_type = 'Lock' and query ilike ?
+         and pid <> pg_backend_pid()`,
+      [`%${table}%`],
+    );
+    if (rows[0].waiting > 0) return;
+    await new Promise(resolve => setTimeout(resolve, 20));
+  }
+  throw new Error('Timed out waiting for the outcome write to block');
 }
 
 const engines: [string, 'sqlite' | 'pg'][] = [['sqlite', 'sqlite']];
@@ -350,6 +421,8 @@ describe.each(engines)('%s startup recovery', (_name, engine) => {
 
     expect(report.outcomes[0].status).toBe('blocked-credentials');
     expect(resume).not.toHaveBeenCalled();
+    // The admission was finalized: the fence is free for the next replica.
+    expect(await current.lease.acquire(namespace, 'replica-b')).toBeDefined();
   });
 
   it('blocks service work when its own credentials cannot be obtained', async () => {
@@ -411,6 +484,7 @@ describe.each(engines)('%s startup recovery', (_name, engine) => {
       status: 'failed',
       detail: 'registry reconstruction failed',
     });
+    expect(await current.lease.acquire(namespace, 'replica-b')).toBeDefined();
 
     const second = await fixture(engine);
     try {
@@ -807,4 +881,141 @@ describe.each(engines)('%s startup recovery', (_name, engine) => {
     const raw = await current.db('ai_recovery_sessions').first();
     expect(raw.status).toBe('failed');
   });
+
+  it('gives every concurrent pass its own admission so a loser cannot release the winner', async () => {
+    const resumeStarted = deferred();
+    const resumeRelease = deferred();
+    let winner: { owner: string; token: string } | undefined;
+    current.recovery.registerResolver(
+      resolver({
+        resume: async (input: RecoveryResumeInput) => {
+          winner = {
+            owner: input.admission.fence.owner,
+            token: input.admission.fence.token,
+          };
+          resumeStarted.resolve();
+          await resumeRelease.promise;
+          return { kind: 'resumed' as const };
+        },
+      }),
+    );
+    current.recovery.completeStartup();
+    await persist(current, namespace, { kind: 'service', pluginId });
+
+    const first = current.recovery.recover();
+    await resumeStarted.promise;
+
+    // A second pass on the SAME instance while the first holds the lease.
+    const second = await current.recovery.recover();
+    expect(second.outcomes[0]).toEqual({
+      namespace,
+      status: 'pending',
+      detail: 'Skipped: another replica holds the session lease',
+    });
+
+    resumeRelease.resolve();
+    const firstReport = await first;
+    expect(firstReport.outcomes[0].status).toBe('recovered');
+
+    // The winner's admission was not invalidated and its fence is still live,
+    // because the loser never shared or released it.
+    expect(winner!.owner).toContain('recovery:consumer:');
+    expect(
+      await current.lease.renew({
+        namespace,
+        owner: winner!.owner,
+        token: winner!.token,
+      }),
+    ).toBe(true);
+    const raw = await current.db('ai_recovery_sessions').first();
+    expect(raw.status).toBe('recovered');
+  });
+
+  it('finalizes the admission when recording the outcome fails', async () => {
+    let cleanedUp = false;
+    let invalidatedWith: LeaseInvalidationReason | undefined;
+    current.recovery.registerResolver(
+      resolver({
+        resume: async (input: RecoveryResumeInput) => {
+          input.admission.onInvalidated(reason => {
+            invalidatedWith = reason;
+          });
+          input.admission.registerCleanup(async () => {
+            cleanedUp = true;
+          });
+          return { kind: 'resumed' as const };
+        },
+      }),
+    );
+    current.recovery.completeStartup();
+    await persist(current, namespace, { kind: 'service', pluginId });
+    await failRecoveredOutcomeWrites(current, engine);
+
+    await expect(current.recovery.recover()).rejects.toThrow(
+      'simulated outcome write failure',
+    );
+
+    // The boundary finalized on the error path: cleanup ran, the resume was
+    // told to stop, and the fence was released for the next replica.
+    expect(cleanedUp).toBe(true);
+    expect(invalidatedWith).toBe('session-closed');
+    expect(await current.lease.acquire(namespace, 'replica-b')).toBeDefined();
+    const raw = await current.db('ai_recovery_sessions').first();
+    expect(raw.status).toBe('pending');
+  });
 });
+
+if (pgUrl) {
+  it('re-validates the fence after the outcome write, so a CAS that lands after fence loss is not recovered', async () => {
+    const state = await fixture('pg', { admissionKeepaliveMs: 10 });
+    const invalidated = deferred<LeaseInvalidationReason>();
+    const cleanup = deferred();
+    try {
+      state.recovery.registerResolver(
+        resolver({
+          resume: async (input: RecoveryResumeInput) => {
+            input.admission.onInvalidated(reason =>
+              invalidated.resolve(reason),
+            );
+            input.admission.registerCleanup(async () => cleanup.resolve());
+            return { kind: 'resumed' as const };
+          },
+        }),
+      );
+      state.recovery.completeStartup();
+      await persist(state, namespace, { kind: 'service', pluginId });
+
+      // Hold the recovery row so the outcome write waits behind the lock.
+      const blocker = await state.db.transaction();
+      await blocker('ai_recovery_sessions')
+        .where({ plugin_id: pluginId, session_id: namespace.sessionId })
+        .forUpdate()
+        .select('session_id')
+        .first();
+
+      const pass = state.recovery.recover();
+      await waitForLockWait(state.db, 'ai_recovery_sessions');
+
+      // The fence is lost while the outcome CAS is still waiting, and the
+      // keepalive notices before the write lands.
+      state.clock.advance(60_001);
+      await expect(invalidated.promise).resolves.toBe('renewal-rejected');
+      await expect(cleanup.promise).resolves.toBeUndefined();
+
+      await blocker.rollback();
+      const report = await pass;
+
+      // The write landed after invalidation, so the freshest state decides:
+      // never 'recovered', and the persisted row says so too.
+      expect(report.outcomes[0].status).toBe('failed');
+      expect(report.outcomes[0].detail).toContain(
+        'lease was lost while the outcome was recorded',
+      );
+      const raw = await state.db('ai_recovery_sessions').first();
+      expect(raw.status).toBe('failed');
+      expect(await state.lease.acquire(namespace, 'replica-b')).toBeDefined();
+    } finally {
+      await state.cleanup();
+    }
+  }, 20_000);
+}
