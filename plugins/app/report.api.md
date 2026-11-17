@@ -214,9 +214,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/analytics': OverridableExtensionDefinition<{
@@ -243,9 +242,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/app-language': OverridableExtensionDefinition<{
@@ -265,9 +263,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/app-theme': OverridableExtensionDefinition<{
@@ -290,9 +287,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/atlassian-auth': OverridableExtensionDefinition<{
@@ -306,9 +302,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/bitbucket-auth': OverridableExtensionDefinition<{
@@ -322,9 +317,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/bitbucket-server-auth': OverridableExtensionDefinition<{
@@ -338,9 +332,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/components': OverridableExtensionDefinition<{
@@ -354,9 +347,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/dialog': OverridableExtensionDefinition<{
@@ -370,9 +362,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/discovery': OverridableExtensionDefinition<{
@@ -386,9 +377,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/error': OverridableExtensionDefinition<{
@@ -402,9 +392,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/feature-flags': OverridableExtensionDefinition<{
@@ -418,9 +407,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/fetch': OverridableExtensionDefinition<{
@@ -434,9 +422,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/github-auth': OverridableExtensionDefinition<{
@@ -450,9 +437,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/gitlab-auth': OverridableExtensionDefinition<{
@@ -466,9 +452,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/google-auth': OverridableExtensionDefinition<{
@@ -482,9 +467,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/icons': OverridableExtensionDefinition<{
@@ -513,9 +497,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/legacy-dialog': OverridableExtensionDefinition<{
@@ -529,9 +512,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/legacy-icons': OverridableExtensionDefinition<{
@@ -545,9 +527,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/microsoft-auth': OverridableExtensionDefinition<{
@@ -561,9 +542,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/oauth-request': OverridableExtensionDefinition<{
@@ -577,9 +557,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/okta-auth': OverridableExtensionDefinition<{
@@ -593,9 +572,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/onelogin-auth': OverridableExtensionDefinition<{
@@ -609,9 +587,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/openshift-auth': OverridableExtensionDefinition<{
@@ -625,9 +602,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/permission': OverridableExtensionDefinition<{
@@ -641,9 +617,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/plugin-header-actions': OverridableExtensionDefinition<{
@@ -666,9 +641,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/plugin-wrapper': OverridableExtensionDefinition<{
@@ -695,9 +669,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/scm-auth': OverridableExtensionDefinition<{
@@ -711,9 +684,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/scm-integrations': OverridableExtensionDefinition<{
@@ -727,9 +699,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/storage': OverridableExtensionDefinition<{
@@ -743,9 +714,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/swappable-components': OverridableExtensionDefinition<{
@@ -777,9 +747,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/toast': OverridableExtensionDefinition<{
@@ -793,9 +762,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/toast-forwarder': OverridableExtensionDefinition<{
@@ -809,9 +777,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/translations': OverridableExtensionDefinition<{
@@ -845,9 +812,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:app/vmware-cloud-auth': OverridableExtensionDefinition<{
@@ -861,9 +827,8 @@ const appPlugin: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'app-root-element:app/alert-display': OverridableExtensionDefinition<{

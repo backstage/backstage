@@ -1,25 +1,9 @@
 import {
   createFrontendPlugin,
   PageBlueprint,
-  ApiBlueprint,
-  coreApis,
 } from '@backstage/frontend-plugin-api';
 
 import { rootRouteRef } from './routes';
-import { todoApiRef } from './api/TodoApi';
-
-const todoApi = ApiBlueprint.make({
-  name: 'todos',
-  params: defineParams =>
-    defineParams({
-      api: todoApiRef,
-      deps: { fetchApi: coreApis.fetch },
-      factory: async ({ fetchApi }) => {
-        const { TodoClient } = await import('./api/TodoClient');
-        return new TodoClient(fetchApi);
-      },
-    }),
-});
 
 export const page = PageBlueprint.make({
   params: {
@@ -35,7 +19,7 @@ export const page = PageBlueprint.make({
 export const {{ pluginVar }} = createFrontendPlugin({
   pluginId: '{{pluginId}}',
   info: { packageJson: () => import('../package.json') },
-  extensions: [todoApi, page],
+  extensions: [page],
   routes: {
     root: rootRouteRef,
   }

@@ -5,6 +5,7 @@
 ```ts
 import { Action as Action_2 } from '@backstage/plugin-scaffolder-common';
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { CustomValidator } from '@rjsf/utils';
 import { ElementType } from 'react';
@@ -210,12 +211,7 @@ export type ReviewStepProps = {
 export type ScaffolderApi = ScaffolderApi_2;
 
 // @public (undocumented)
-export const scaffolderApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: string;
-  readonly T: ScaffolderApi_2;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const scaffolderApiRef: ApiRef<ScaffolderApi_2> & {
   readonly $$type: '@backstage/ApiRef';
 };
 

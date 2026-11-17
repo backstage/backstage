@@ -76,9 +76,10 @@ function HrefProbe(props: { to: string }) {
 
 describe('renderInTestApp', () => {
   it('should render lazy APIs with a plugin named test in both test helpers', async () => {
-    const apiRef = createApiRef<{ getString(key: string): string }>().with({
+    const apiRef = createApiRef<
+      Promise<{ getString(key: string): string }>
+    >().with({
       id: 'plugin.test.client',
-      loading: 'async',
     });
     const load = jest.fn(async () => {
       const { ConfigReader } = await import('@backstage/config');
@@ -181,9 +182,8 @@ describe('renderInTestApp', () => {
         );
       }
     }
-    const apiRef = createApiRef<string>().with({
+    const apiRef = createApiRef<Promise<string>>().with({
       id: 'plugin.test.rejected',
-      loading: 'async',
     });
     let reject!: (error: Error) => void;
     const promise = new Promise<string>((_, r) => {

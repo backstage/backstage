@@ -65,78 +65,48 @@ const MyComponent = () => {
 };
 ```
 
-### Async-capable APIs
+### Promise-valued APIs
 
-For refs declared with `loading: 'async'`, `useApi` still returns the API instance.
-It suspends while the implementation is loading and throws if initialization
-fails. Extension boundaries, including those used by `PageBlueprint`, provide
-Suspense and error handling. Components rendered outside those boundaries need
-their own React `Suspense` and error boundaries.
+For a ref declared as `ApiRef<Promise<WorkApi>>`, `useApi` returns `WorkApi`.
+It suspends while the promise is pending and throws its rejection reason if
+initialization fails. Extension boundaries, including those used by
+`PageBlueprint`, provide Suspense and error boundaries. When rendering outside
+those boundaries, provide your own:
 
-Outside rendering, await the result of `apis.get()`:
-
-```ts
-const workApi = await apis.get(workApiRef);
-if (workApi) {
-  await workApi.doWork();
-}
+```tsx
+<Suspense fallback={<Loading />}>
+  <WorkComponent />
+</Suspense>
 ```
 
-Present async-capable APIs always return a promise from `get()`, even when their
-implementation is synchronous or already loaded. Missing APIs return `undefined`
-immediately. Initialization failures reject the promise and are cached for
-subsequent lookups. Synchronous refs continue returning instances or
-`undefined` directly.
+Use an error boundary to handle rejected initialization. The framework caches
+the promise returned by an API factory, so a failed initialization is not retried
+on each render. A custom holder must likewise retain the same promise between
+lookups; creating a fresh promise on every lookup can cause repeated suspension.
 
-Plugins that support the old frontend system must keep their APIs synchronous,
-including plugins that support both systems. Legacy conversion helpers do not
-add async API support. An app can still include other converted legacy plugins.
-
-`get()` infers its result from the ref's type, so generic helpers can preserve
-the loading mode without branching:
+Direct holder lookups keep the declared API value:
 
 ```ts
-import type { ApiRef, ApiHolder } from '@backstage/frontend-plugin-api';
-
-function lookup<TApiRef extends ApiRef<unknown, string, 'sync' | 'async'>>(
-  apis: ApiHolder,
-  ref: TApiRef,
-) {
-  return apis.get(ref);
+const workPromise = apis.get(workApiRef); // Promise<WorkApi> | undefined
+if (workPromise === undefined) {
+  throw new Error('Work API is not available');
 }
+const workApi = await workPromise;
 ```
 
-Refs without a `loading` member in their type are treated as synchronous.
-`ApiRef<T>` also describes a synchronous ref. `ApiRef<T, string, 'sync' | 'async'>`
-accepts either loading mode, so lookup results for that type include both direct
-values and promises. Awaiting the result handles either mode.
+Factory dependencies also receive the promise unchanged. They must await it
+where they need the resolved API. An API with asynchronous methods can still be
+a synchronous value; only a promise-valued API causes `useApi` to suspend.
 
-Custom API holders must preserve promise identity across repeated lookups of an
-async-capable ref. `useApiHolder` returns the context holder directly; async API
-resolution is provided by the frontend system.
+The hook's return type is `Awaited<T>`, so promises and objects with a callable
+`then` property are recursively unwrapped. Synchronous API values are returned directly. The legacy `useApi`
+hook from `@backstage/core-plugin-api` returns the declared value, including
+promises, without unwrapping or suspending.
 
-### Updating refs that become async
-
-A plugin must drop support for the old frontend system before changing its API
-refs to async loading. Changing a ref from synchronous to asynchronous loading
-changes its contract. For refs shared through a library or another public
-surface, this requires a breaking release. Plugin-internal refs follow the
-breaking-producers exception.
-See [changing loading mode](./02-creating.md#changing-loading-mode) for the exact
-export boundaries and release requirements.
-
-Update every consumer and factory, including overrides and dependency refs, to
-use the new async-capable ref. Direct lookups must await `apis.get(ref)`.
-Components can keep using `useApi(ref)` with the updated ref, but may now suspend
-and need a Suspense boundary. A synchronous factory that depends on the API must
-also become async-capable before it can use the updated dependency ref.
-
-A synchronous implementation can still be used by an async-capable factory, as
-long as that factory registers the updated ref. A ref and registered factory
-with conflicting loading modes cause an error that identifies the API and asks
-you to use matching versions of the ref. Dependency errors also include the path
-to the conflicting ref. This applies to `useApi` as well as direct lookups;
-older synchronous refs are not automatically upgraded.
+Changing an existing ref to a promise changes its contract. See
+[changing an API to a promise](./02-creating.md#changing-an-api-to-a-promise) for
+consumer, factory, and release requirements. In tests, supply promise-valued
+mocks as promises and use asynchronous queries to await the rendered content.
 
 ## Via dependencies
 

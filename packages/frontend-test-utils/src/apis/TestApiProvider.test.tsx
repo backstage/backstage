@@ -20,8 +20,8 @@ import {
   useApiHolder,
 } from '@backstage/frontend-plugin-api';
 import { StrictMode, Suspense } from 'react';
-import { TestApiProvider, resolveTestApiEntries } from './TestApiProvider';
-import { createApiMock } from './createApiMock';
+import { attachMockApiFactory } from './MockWithApiFactory';
+import { TestApiProvider } from './TestApiProvider';
 import { mockApis } from './mockApis';
 import { render, screen } from '@testing-library/react';
 
@@ -33,94 +33,43 @@ const yApiRef = createApiRef<string>({
 });
 
 describe('TestApiProvider', () => {
-  it('should read inline async mocks synchronously under an outer Suspense boundary', () => {
-    for (const implementation of [{ value: 'Mock API' }, 'Mock API']) {
-      const apiRef = createApiRef<typeof implementation>().with({
-        id: 'async',
-        loading: 'async',
-      });
-      const promises: unknown[] = [];
-      const Consumer = () => {
-        promises.push(useApiHolder().get(apiRef));
-        const api = useApi(apiRef);
-        return <div>{typeof api === 'string' ? api : api.value}</div>;
-      };
-      const Provider = () => {
-        return (
-          <TestApiProvider
-            apis={[
-              [
-                apiRef,
-                typeof implementation === 'string'
-                  ? implementation
-                  : { ...implementation },
-              ],
-            ]}
-          >
-            <Consumer />
-          </TestApiProvider>
-        );
-      };
-      const rendered = render(
-        <StrictMode>
-          <Suspense fallback="Loading API">
-            <Provider />
-          </Suspense>
-        </StrictMode>,
-      );
-      expect(screen.getByText('Mock API')).toBeInTheDocument();
-      expect(screen.queryByText('Loading API')).not.toBeInTheDocument();
-      expect(promises.every(promise => promise instanceof Promise)).toBe(true);
-      expect(new Set(promises).size).toBe(1);
-      rendered.unmount();
-    }
-  });
-
-  it('should fall back to parent async APIs and keep lookup promises stable', async () => {
-    const apiRef = createApiRef<{ value: string }>().with({
-      id: 'async',
-      loading: 'async',
+  it('should preserve promise-valued tuple and embedded mocks through nested providers', async () => {
+    const ref = createApiRef<Promise<{ value: string }>>().with({
+      id: 'test.promise',
     });
-    expect(resolveTestApiEntries([]).get(apiRef)).toBeUndefined();
-    const promises: (Promise<{ value: string }> | undefined)[] = [];
+    const promise = Promise.resolve({ value: 'Tuple API' });
+    const observed: unknown[] = [];
     function Consumer() {
-      const apis = useApiHolder();
-      promises.push(apis.get(apiRef));
-      return <div>{useApi(apiRef).value}</div>;
+      observed.push(useApiHolder().get(ref));
+      return <div>{useApi(ref).value}</div>;
     }
     const rendered = render(
-      <TestApiProvider apis={[[apiRef, { value: 'Parent API' }]]}>
-        <TestApiProvider apis={[]}>
-          <Suspense fallback="Loading API">
-            <Consumer />
-          </Suspense>
-        </TestApiProvider>
-      </TestApiProvider>,
+      <StrictMode>
+        <Suspense fallback="Loading API">
+          <TestApiProvider apis={[[ref, promise]]}>
+            <TestApiProvider apis={[]}>
+              <Consumer />
+            </TestApiProvider>
+          </TestApiProvider>
+        </Suspense>
+      </StrictMode>,
     );
-    expect(await screen.findByText('Parent API')).toBeInTheDocument();
-    expect(promises).not.toContain(undefined);
-    expect(new Set(promises).size).toBe(1);
+    expect(await screen.findByText('Tuple API')).toBeInTheDocument();
+    expect(observed.every(value => value === promise)).toBe(true);
+    rendered.unmount();
 
-    rendered.rerender(
-      <TestApiProvider apis={[[apiRef, { value: 'Parent API' }]]}>
-        <TestApiProvider apis={[[apiRef, { value: 'Child API' }]]}>
-          <Suspense fallback="Loading API">
-            <Consumer />
-          </Suspense>
-        </TestApiProvider>
-      </TestApiProvider>,
-    );
-    expect(await screen.findByText('Child API')).toBeInTheDocument();
-
-    const mock = createApiMock(apiRef, () => ({ value: 'Mock API' }))();
-    rendered.rerender(
+    const embeddedPromise = Promise.resolve({ value: 'Embedded API' });
+    const mock = attachMockApiFactory(ref, embeddedPromise);
+    observed.length = 0;
+    render(
       <TestApiProvider apis={[mock]}>
         <Suspense fallback="Loading API">
           <Consumer />
         </Suspense>
       </TestApiProvider>,
     );
-    expect(await screen.findByText('Mock API')).toBeInTheDocument();
+    expect(await screen.findByText('Embedded API')).toBeInTheDocument();
+    expect(observed.every(value => value === embeddedPromise)).toBe(true);
   });
 
   it('should provide tuple APIs and check types', () => {

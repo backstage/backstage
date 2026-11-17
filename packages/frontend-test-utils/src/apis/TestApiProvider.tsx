@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import { ReactNode, useMemo } from 'react';
-import {
-  ApiHolder,
-  ApiLookupResult,
-  ApiRef,
-} from '@backstage/frontend-plugin-api';
+import { ReactNode } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ApiProvider } from '../../../core-app-api/src/apis/system';
+import { ApiHolder, ApiRef } from '@backstage/frontend-plugin-api';
 import {
   getMockApiFactory,
   type MockWithApiFactory,
@@ -32,10 +28,7 @@ import {
  * @public
  */
 export type TestApiPair<TApi> =
-  | readonly [
-      ApiRef<TApi, string, 'sync' | 'async'>,
-      TApi extends infer TImpl ? Partial<TImpl> : never,
-    ]
+  | readonly [ApiRef<TApi>, TApi extends infer TImpl ? Partial<TImpl> : never]
   | MockWithApiFactory<NoInfer<TApi>>;
 
 /**
@@ -57,35 +50,14 @@ export function resolveTestApiEntries<const TApiPairs extends any[]>(
     if (mockFactory) {
       apiMap.set(mockFactory.api.id, mockFactory.factory({}));
     } else {
-      const [apiRef, impl] = entry as readonly [
-        ApiRef<any, string, 'sync' | 'async'>,
-        any,
-      ];
+      const [apiRef, impl] = entry as readonly [ApiRef<any>, any];
       apiMap.set(apiRef.id, impl);
     }
   }
 
-  const promises = new Map<string, Promise<unknown>>();
-  function get<
-    TApi = unknown,
-    TApiRef extends ApiRef<unknown, string, 'sync' | 'async'> = ApiRef<TApi>,
-  >(ref: TApiRef): ApiLookupResult<TApiRef>;
-  function get(ref: ApiRef<unknown, string, 'sync' | 'async'>): unknown {
-    if (ref.loading !== 'async' || !apiMap.has(ref.id)) {
-      return apiMap.get(ref.id);
-    }
-    if (!promises.has(ref.id)) {
-      // Ready mocks must not suspend a provider whose first render is retried.
-      const value = apiMap.get(ref.id);
-      const promise = Promise.resolve(value);
-      if (!value || typeof (value as Promise<unknown>).then !== 'function') {
-        Object.assign(promise, { status: 'fulfilled', value });
-      }
-      promises.set(ref.id, promise);
-    }
-    return promises.get(ref.id);
-  }
-  return { get };
+  return {
+    get: <T,>(ref: ApiRef<T>) => apiMap.get(ref.id) as T | undefined,
+  };
 }
 
 /**
@@ -146,6 +118,10 @@ export type TestApiProviderProps<TApiPairs extends any[]> = {
 export function TestApiProvider<const TApiPairs extends any[]>(
   props: TestApiProviderProps<TApiPairs>,
 ): JSX.Element {
-  const apis = useMemo(() => resolveTestApiEntries(props.apis), [props.apis]);
-  return <ApiProvider apis={apis} children={props.children} />;
+  return (
+    <ApiProvider
+      apis={resolveTestApiEntries(props.apis)}
+      children={props.children}
+    />
+  );
 }

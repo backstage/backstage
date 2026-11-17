@@ -6,8 +6,11 @@
 import { AlertApi } from '@backstage/frontend-plugin-api';
 import { alertApiRef } from '@backstage/frontend-plugin-api';
 import { AlertMessage } from '@backstage/frontend-plugin-api';
-import type { ApiFactory as ApiFactory_2 } from '@backstage/frontend-plugin-api';
-import type { ApiRef as ApiRef_2 } from '@backstage/frontend-plugin-api';
+import { AnyApiFactory } from '@backstage/frontend-plugin-api';
+import { AnyApiRef } from '@backstage/frontend-plugin-api';
+import { ApiFactory } from '@backstage/frontend-plugin-api';
+import { ApiHolder } from '@backstage/frontend-plugin-api';
+import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ApiRefConfig } from '@backstage/frontend-plugin-api';
 import { AppTheme } from '@backstage/frontend-plugin-api';
 import { AppThemeApi } from '@backstage/frontend-plugin-api';
@@ -68,7 +71,7 @@ import { SessionState } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/frontend-plugin-api';
 import { storageApiRef } from '@backstage/frontend-plugin-api';
 import { StorageValueSnapshot } from '@backstage/frontend-plugin-api';
-import { useApi } from '@backstage/frontend-plugin-api';
+import { TypesToApiRefs } from '@backstage/frontend-plugin-api';
 import { useApiHolder } from '@backstage/frontend-plugin-api';
 import { vmwareCloudAuthApiRef } from '@backstage/frontend-plugin-api';
 
@@ -123,17 +126,9 @@ export type AnalyticsTracker = {
   ) => void;
 };
 
-// @public
-export type AnyApiFactory = ApiFactory<
-  unknown,
-  unknown,
-  {
-    [key: string]: unknown;
-  }
->;
+export { AnyApiFactory };
 
-// @public
-export type AnyApiRef = ApiRef<unknown>;
+export { AnyApiRef };
 
 // @public
 export type AnyExternalRoutes = {
@@ -155,22 +150,11 @@ export type AnyRoutes = {
   [name: string]: RouteRef | SubRouteRef;
 };
 
-// @public
-export type ApiFactory<
-  Api,
-  Impl extends Api,
-  Deps extends {
-    [name: string]: unknown;
-  },
-> = ApiFactory_2<Api, Impl, Deps, 'sync'>;
+export { ApiFactory };
 
-// @public
-export type ApiHolder = {
-  get<T>(api: ApiRef<T>): T | undefined;
-};
+export { ApiHolder };
 
-// @public
-export type ApiRef<T, TId extends string = string> = ApiRef_2<T, TId>;
+export { ApiRef };
 
 export { ApiRefConfig };
 
@@ -561,15 +545,13 @@ export type SubRouteRef<Params extends AnyParams = any> = {
   readonly T: Params;
 };
 
-// @public
-export type TypesToApiRefs<T> = {
-  [key in keyof T]: ApiRef<T[key]>;
-};
+export { TypesToApiRefs };
 
 // @public
 export function useAnalytics(): AnalyticsTracker;
 
-export { useApi };
+// @public
+export function useApi<T>(apiRef: ApiRef<T>): T;
 
 export { useApiHolder };
 

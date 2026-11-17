@@ -60,10 +60,7 @@ export function prepareTestAppFeatures(options: {
     if (mockFactory) {
       return mockFactory;
     }
-    const [apiRef, implementation] = entry as readonly [
-      ApiRef<any, string, 'sync' | 'async'>,
-      any,
-    ];
+    const [apiRef, implementation] = entry as readonly [ApiRef<any>, any];
     return createApiFactory(apiRef, implementation);
   });
   const historyOverride = callerApiFactories.find(

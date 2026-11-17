@@ -53,9 +53,8 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:techdocs/addons': OverridableExtensionDefinition<{
@@ -82,9 +81,8 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:techdocs/storage': OverridableExtensionDefinition<{
@@ -98,9 +96,8 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'empty-state:techdocs/entity-content': OverridableExtensionDefinition<{

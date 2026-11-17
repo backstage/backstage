@@ -27,14 +27,9 @@ export type ApiRefConfig = {
   id: string;
 };
 
-type ApiRefBuilderConfig<
-  TId extends string,
-  TLoading extends 'sync' | 'async' = 'sync',
-> = {
+type ApiRefBuilderConfig<TId extends string> = {
   id: TId;
   pluginId?: string;
-  /** Allows synchronous or asynchronous factories for this API. */
-  loading?: TLoading;
 };
 
 function validateId(id: string): void {
@@ -46,26 +41,17 @@ function validateId(id: string): void {
   }
 }
 
-function makeApiRef<
-  T,
-  TId extends string,
-  TLoading extends 'sync' | 'async' = 'sync',
->(
-  config: ApiRefBuilderConfig<TId, TLoading>,
-): ApiRef<T, TId, TLoading> & {
-  readonly $$type: '@backstage/ApiRef';
-} {
+function makeApiRef<T, TId extends string>(
+  config: ApiRefBuilderConfig<TId>,
+): ApiRef<T, TId> & { readonly $$type: '@backstage/ApiRef' } {
   return OpaqueApiRef.createInstance('v1', {
     id: config.id,
     ...(config.pluginId ? { pluginId: config.pluginId } : {}),
-    ...(config.loading ? { loading: config.loading } : {}),
     T: null as unknown as T,
     toString() {
       return `apiRef{${config.id}}`;
     },
-  }) as ApiRef<T, TId, TLoading> & {
-    readonly $$type: '@backstage/ApiRef';
-  };
+  }) as ApiRef<T, TId> & { readonly $$type: '@backstage/ApiRef' };
 }
 
 /**
@@ -75,8 +61,8 @@ function makeApiRef<
  *
  * The `id` is a stable identifier for the API implementation. Each period-separated
  * component follows the plugin ID format, for example `plugin.example-2.todos`.
- * The frontend system infers the owning plugin for an API from the `id`. When
- * using the builder form, you can instead provide a `pluginId` explicitly. The
+ * The frontend system infers the owning plugin for an API from the `id`. When using the
+ * builder form, you can instead provide a `pluginId` explicitly. The
  * recommended pattern is `plugin.<plugin-id>.*` (for example,
  * `plugin.catalog.entity-presentation`). This ensures that other plugins can't
  * mistakenly override your API implementation.
@@ -104,9 +90,9 @@ function makeApiRef<
  * @deprecated Use `createApiRef<T>().with(...)` instead.
  * @public
  */
-export function createApiRef<T>(config: ApiRefConfig): ApiRef<T> & {
-  readonly $$type: '@backstage/ApiRef';
-};
+export function createApiRef<T>(
+  config: ApiRefConfig,
+): ApiRef<T> & { readonly $$type: '@backstage/ApiRef' };
 /**
  * Creates a reference to an API.
  *
@@ -119,33 +105,17 @@ export function createApiRef<T>(config: ApiRefConfig): ApiRef<T> & {
  */
 export function createApiRef<T>(): {
   with<const TId extends string>(
-    config: ApiRefConfig & { id: TId; pluginId?: string; loading?: 'sync' },
+    config: ApiRefConfig & { id: TId; pluginId?: string },
   ): ApiRef<T, TId> & {
-    readonly $$type: '@backstage/ApiRef';
-  };
-  with<const TId extends string, const TLoading extends 'sync' | 'async'>(
-    config: ApiRefConfig & { id: TId; pluginId?: string; loading: TLoading },
-  ): ApiRef<T, TId, TLoading> & {
     readonly $$type: '@backstage/ApiRef';
   };
 };
 export function createApiRef<T>(config?: ApiRefConfig):
-  | (ApiRef<T> & {
-      readonly $$type: '@backstage/ApiRef';
-    })
+  | (ApiRef<T> & { readonly $$type: '@backstage/ApiRef' })
   | {
       with<const TId extends string>(
-        config: ApiRefConfig & { id: TId; pluginId?: string; loading?: 'sync' },
+        config: ApiRefConfig & { id: TId; pluginId?: string },
       ): ApiRef<T, TId> & {
-        readonly $$type: '@backstage/ApiRef';
-      };
-      with<const TId extends string, const TLoading extends 'sync' | 'async'>(
-        config: ApiRefConfig & {
-          id: TId;
-          pluginId?: string;
-          loading: TLoading;
-        },
-      ): ApiRef<T, TId, TLoading> & {
         readonly $$type: '@backstage/ApiRef';
       };
     } {
@@ -154,16 +124,11 @@ export function createApiRef<T>(config?: ApiRefConfig):
     return makeApiRef<T, string>(config);
   }
   return {
-    with<
-      const TId extends string,
-      const TLoading extends 'sync' | 'async' = 'sync',
-    >(
-      withConfig: ApiRefBuilderConfig<TId, TLoading>,
-    ): ApiRef<T, TId, TLoading> & {
-      readonly $$type: '@backstage/ApiRef';
-    } {
+    with<const TId extends string>(
+      withConfig: ApiRefConfig & { id: TId; pluginId?: string },
+    ): ApiRef<T, TId> & { readonly $$type: '@backstage/ApiRef' } {
       validateId(withConfig.id);
-      return makeApiRef<T, TId, TLoading>(withConfig);
+      return makeApiRef<T, TId>(withConfig);
     },
   };
 }

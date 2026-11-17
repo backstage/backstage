@@ -18,7 +18,7 @@ import type { ApiRef } from '@backstage/frontend-plugin-api';
 import { OpaqueType } from '@internal/opaque';
 
 export const OpaqueApiRef = OpaqueType.create<{
-  public: ApiRef<unknown, string, 'sync' | 'async'> & {
+  public: ApiRef<unknown> & {
     readonly $$type: '@backstage/ApiRef';
   };
   versions: {

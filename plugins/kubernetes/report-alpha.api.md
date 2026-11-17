@@ -38,9 +38,8 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:kubernetes/auth-providers': OverridableExtensionDefinition<{
@@ -54,9 +53,8 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:kubernetes/cluster-link-formatter': OverridableExtensionDefinition<{
@@ -70,9 +68,8 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:kubernetes/proxy': OverridableExtensionDefinition<{
@@ -86,9 +83,8 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'entity-content:kubernetes/kubernetes': OverridableExtensionDefinition<{

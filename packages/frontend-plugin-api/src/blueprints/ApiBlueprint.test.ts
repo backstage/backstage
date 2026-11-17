@@ -17,43 +17,37 @@
 import { createExtensionInput } from '../wiring';
 import { z } from 'zod/v4';
 import { ApiBlueprint } from './ApiBlueprint';
-import { createApiRef } from '../apis/system';
+import { createApiFactory, createApiRef } from '../apis/system';
 
 describe('ApiBlueprint', () => {
-  it('should type async factories and their resolved dependencies', () => {
-    const sync = createApiRef<{ value: string }>().with({ id: 'sync' });
-    const asyncRef = createApiRef<{ value: string }>().with({
-      id: 'async',
-      loading: 'async',
+  it('should retain promise values in factory and dependency types', async () => {
+    const dependency = createApiRef<Promise<{ value: string }>>().with({
+      id: 'test.dependency',
+    });
+    const api = createApiRef<Promise<string>>().with({ id: 'test.api' });
+    const factory = createApiFactory({
+      api,
+      deps: { dependency },
+      factory: async deps => {
+        const promise: Promise<{ value: string }> = deps.dependency;
+        return (await promise).value;
+      },
     });
     expect(
-      ApiBlueprint.make({
-        params: defineParams =>
-          defineParams({
-            api: asyncRef,
-            deps: { sync, asyncRef },
-            factory: async deps => ({
-              value: deps.sync.value + deps.asyncRef.value,
-            }),
-          }),
-      }),
+      ApiBlueprint.make({ params: defineParams => defineParams(factory) }),
     ).toBeDefined();
-    ApiBlueprint.make({
-      params: defineParams =>
-        defineParams({
-          api: sync,
-          deps: {},
-          // @ts-expect-error Async factories require an opted-in ref.
-          factory: async () => ({ value: 'invalid' }),
-        }),
+    const result: Promise<string> = factory.factory({
+      dependency: Promise.resolve({ value: 'API' }),
     });
+    await expect(result).resolves.toBe('API');
+
     ApiBlueprint.make({
       params: defineParams =>
         defineParams({
-          api: sync,
-          // @ts-expect-error Async dependencies require an opted-in dependent ref.
-          deps: { asyncRef },
-          factory: () => ({ value: 'invalid' }),
+          api: createApiRef<string>().with({ id: 'test.direct' }),
+          deps: {},
+          // @ts-expect-error A promise-returning factory needs a promise-valued API ref.
+          factory: async () => 'API',
         }),
     });
   });

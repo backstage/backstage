@@ -47,12 +47,11 @@ import { AppNodeProvider } from '../../../frontend-plugin-api/src/components/App
 import { LegacyExtensionRouter } from '../routing/LegacyExtensionRouter';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createConfigSchema } from '../../../frontend-plugin-api/src/schema/createPortableSchema';
-import { withLogCollector } from '@backstage/test-utils';
-import { FrontendApiResolver } from '../wiring/FrontendApiRegistry';
+import { TestApiRegistry, withLogCollector } from '@backstage/test-utils';
 import { createErrorCollector } from '../wiring/createErrorCollector';
 import { z } from 'zod/v4';
 
-const testApis = new FrontendApiResolver({});
+const testApis = TestApiRegistry.from();
 const testDataRef = createExtensionDataRef<string>().with({ id: 'test' });
 const otherDataRef = createExtensionDataRef<number>().with({ id: 'other' });
 const inputMirrorDataRef = createExtensionDataRef<unknown>().with({

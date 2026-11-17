@@ -21,12 +21,12 @@ import { NotImplementedError } from '@backstage/errors';
 const emptyApiHolder: ApiHolder = Object.freeze({ get: () => undefined });
 
 type ApiPromiseState =
-  | { status: 'pending' }
+  | { status: 'pending'; promise: Promise<unknown> }
   | { status: 'fulfilled'; value: unknown }
   | { status: 'rejected'; error: unknown };
 
 // Keep state outside React so retries before the initial mount share it.
-const apiPromiseStates = new WeakMap<Promise<unknown>, ApiPromiseState>();
+const apiPromiseStates = new WeakMap<object, ApiPromiseState>();
 
 /**
  * React hook for retrieving {@link ApiHolder}, an API catalog.
@@ -49,48 +49,45 @@ export function useApiHolder(): ApiHolder {
 /**
  * React hook for retrieving APIs.
  *
- * Suspends while an async-capable API is being initialized, and throws if its
- * factory fails. Synchronous refs require synchronous implementations.
- * Render async API consumers inside a Suspense boundary.
+ * Promise-valued APIs are unwrapped. The hook suspends while the promise is
+ * pending and throws its rejection reason if it fails. Render consumers of
+ * promise-valued APIs inside a Suspense boundary.
+ *
+ * Direct holder lookups and factory dependencies retain the declared API value.
  *
  * @param apiRef - Reference of the API to use.
  * @public
  */
-export function useApi<T>(apiRef: ApiRef<T, string, 'sync' | 'async'>): T {
+export function useApi<T>(apiRef: ApiRef<T>): Awaited<T> {
   const apiHolder = useApiHolder();
+  const api: unknown = apiHolder.get(apiRef);
+  if (api === undefined) {
+    throw new NotImplementedError(`No implementation available for ${apiRef}`);
+  }
 
-  let api: unknown = apiHolder.get(apiRef);
-  if (api && typeof (api as Promise<unknown>).then === 'function') {
-    // Test providers can mark already-ready values without a suspension step.
-    const promise = api as Promise<T> & {
-      readonly status?: string;
-      readonly value?: T;
-    };
-    let state = apiPromiseStates.get(promise);
+  if (
+    api !== null &&
+    (typeof api === 'object' || typeof api === 'function') &&
+    'then' in api &&
+    typeof api.then === 'function'
+  ) {
+    let state = apiPromiseStates.get(api);
     if (!state) {
-      const resolved = promise.status === 'fulfilled';
-      state = resolved
-        ? { status: 'fulfilled', value: promise.value }
-        : { status: 'pending' };
-      apiPromiseStates.set(promise, state);
-      if (!resolved) {
-        promise.then(
-          value =>
-            apiPromiseStates.set(promise, { status: 'fulfilled', value }),
-          error => apiPromiseStates.set(promise, { status: 'rejected', error }),
-        );
-      }
+      const promise = Promise.resolve(api);
+      state = { status: 'pending', promise };
+      apiPromiseStates.set(api, state);
+      promise.then(
+        value => apiPromiseStates.set(api, { status: 'fulfilled', value }),
+        error => apiPromiseStates.set(api, { status: 'rejected', error }),
+      );
     }
     if (state.status === 'pending') {
-      throw promise;
+      throw state.promise;
     }
     if (state.status === 'rejected') {
       throw state.error;
     }
-    api = state.value;
+    return state.value as Awaited<T>;
   }
-  if (api === undefined) {
-    throw new NotImplementedError(`No implementation available for ${apiRef}`);
-  }
-  return api as T;
+  return api as Awaited<T>;
 }

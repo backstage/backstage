@@ -59,11 +59,9 @@ export type MockWithApiFactory<TApi> = TApi & {
  * ```
  */
 export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
-  apiRef: ApiRef<TApi, string, 'sync' | 'async'>,
+  apiRef: ApiRef<TApi>,
   implementation: TImpl,
-): TImpl & {
-  [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
-} {
+): TImpl & { [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}> } {
   const marked = implementation as TImpl & {
     [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
   };

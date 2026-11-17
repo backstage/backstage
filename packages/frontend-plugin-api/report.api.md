@@ -5,6 +5,7 @@
 ```ts
 import { AnchorHTMLAttributes } from 'react';
 import { AnyRouteRefParams as AnyRouteRefParams_2 } from '@backstage/frontend-plugin-api';
+import { ApiRef as ApiRef_2 } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import type { Config } from '@backstage/config';
 import { ConfigurableExtensionDataRef as ConfigurableExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
@@ -33,12 +34,7 @@ export type AlertApi = {
 };
 
 // @public @deprecated
-export const alertApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.alert';
-  readonly T: AlertApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const alertApiRef: ApiRef_2<AlertApi, 'core.alert'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -55,12 +51,7 @@ export type AnalyticsApi = {
 };
 
 // @public @deprecated
-export const analyticsApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.analytics';
-  readonly T: AnalyticsApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const analyticsApiRef: ApiRef_2<AnalyticsApi, 'core.analytics'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -105,10 +96,16 @@ export type AnalyticsTracker = {
 };
 
 // @public @deprecated
-export type AnyApiFactory = ApiFactory;
+export type AnyApiFactory = ApiFactory<
+  unknown,
+  unknown,
+  {
+    [key in string]: unknown;
+  }
+>;
 
 // @public @deprecated
-export type AnyApiRef<T = unknown> = ApiRef<T, string, 'sync' | 'async'>;
+export type AnyApiRef = ApiRef<unknown>;
 
 // @public
 export type AnyRouteRefParams =
@@ -124,9 +121,8 @@ export const ApiBlueprint: ExtensionBlueprint_2<{
     TApi,
     TImpl extends TApi,
     TDeps extends { [name in string]: unknown },
-    TLoading extends 'sync' | 'async' = 'sync',
   >(
-    params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+    params: ApiFactory<TApi, TImpl, TDeps>,
   ) => ExtensionBlueprintParams_2<ApiFactory>;
   output: ExtensionDataRef_2<ApiFactory, 'core.api.factory', {}>;
   inputs: {};
@@ -146,62 +142,23 @@ export type ApiFactory<
   } = {
     [name in string]: unknown;
   },
-  TLoading extends 'sync' | 'async' = 'sync' | 'async',
 > = {
-  api: ApiRef<Api, string, TLoading>;
-  deps: TypesToApiRefs<
-    Deps,
-    NoInfer<TLoading> extends 'sync' ? 'sync' : 'sync' | 'async'
-  >;
-  factory(
-    deps: Deps,
-  ): NoInfer<TLoading> extends 'sync' ? Impl : Impl | Promise<Impl>;
+  api: ApiRef<Api>;
+  deps: TypesToApiRefs<Deps>;
+  factory(deps: Deps): Impl;
 };
 
 // @public
 export type ApiHolder = {
-  get<
-    TApi = unknown,
-    TApiRef extends ApiRef<unknown, string, 'sync' | 'async'> = ApiRef<TApi>,
-  >(
-    api: TApiRef,
-  ): ApiLookupResult<TApiRef>;
+  get<T>(api: ApiRef<T>): T | undefined;
 };
 
 // @public
-export type ApiLookupResult<
-  TApiRef extends ApiRef<unknown, string, 'sync' | 'async'> = ApiRef<
-    unknown,
-    string,
-    'sync' | 'async'
-  >,
-> =
-  | (TApiRef extends {
-      readonly loading?: infer TLoading;
-    }
-      ? 'async' extends TLoading
-        ? 'sync' extends TLoading
-          ? TApiRef['T'] | Promise<TApiRef['T']>
-          : Promise<TApiRef['T']>
-        : TApiRef['T']
-      : TApiRef['T'])
-  | undefined;
-
-// @public
-export type ApiRef<
-  T = unknown,
-  TId extends string = string,
-  TLoading extends 'sync' | 'async' = 'sync',
-> = {
+export type ApiRef<T = unknown, TId extends string = string> = {
   readonly $$type?: '@backstage/ApiRef';
   readonly id: TId;
   readonly T: T;
-  readonly loading?: TLoading;
-} & ('sync' extends NoInfer<TLoading>
-  ? {}
-  : {
-      readonly loading: NoInfer<TLoading>;
-    });
+};
 
 // @public
 export type ApiRefConfig = {
@@ -248,12 +205,7 @@ export type AppLanguageApi = {
 };
 
 // @public @deprecated (undocumented)
-export const appLanguageApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.applanguage';
-  readonly T: AppLanguageApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const appLanguageApiRef: ApiRef_2<AppLanguageApi, 'core.applanguage'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -264,12 +216,10 @@ export interface AppLifecycleApi {
 }
 
 // @public @deprecated
-export const appLifecycleApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.app-lifecycle';
-  readonly T: AppLifecycleApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const appLifecycleApiRef: ApiRef_2<
+  AppLifecycleApi,
+  'core.app-lifecycle'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -376,12 +326,7 @@ export type AppThemeApi = {
 };
 
 // @public @deprecated
-export const appThemeApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.apptheme';
-  readonly T: AppThemeApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const appThemeApiRef: ApiRef_2<AppThemeApi, 'core.apptheme'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -403,22 +348,15 @@ export interface AppTreeApi {
 }
 
 // @public @deprecated
-export const appTreeApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.app-tree';
-  readonly T: AppTreeApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const appTreeApiRef: ApiRef_2<AppTreeApi, 'core.app-tree'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
 // @public
-export const atlassianAuthApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.auth.atlassian';
-  readonly T: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const atlassianAuthApiRef: ApiRef_2<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi,
+  'core.auth.atlassian'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -462,22 +400,18 @@ export type BackstageUserIdentity = {
 };
 
 // @public
-export const bitbucketAuthApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.auth.bitbucket';
-  readonly T: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const bitbucketAuthApiRef: ApiRef_2<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi,
+  'core.auth.bitbucket'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
 // @public
-export const bitbucketServerAuthApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.auth.bitbucket-server';
-  readonly T: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const bitbucketServerAuthApiRef: ApiRef_2<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi,
+  'core.auth.bitbucket-server'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -501,12 +435,7 @@ export interface BreadcrumbEntryData {
 export type ConfigApi = Config;
 
 // @public @deprecated
-export const configApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.config';
-  readonly T: Config;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const configApiRef: ApiRef_2<Config, 'core.config'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -584,20 +513,13 @@ export function createApiFactory<
   Deps extends {
     [name in string]: unknown;
   },
-  TLoading extends 'sync' | 'async' = 'sync',
->(
-  factory: ApiFactory<Api, Impl, Deps, TLoading>,
-): ApiFactory<Api, Impl, Deps, TLoading>;
+>(factory: ApiFactory<Api, Impl, Deps>): ApiFactory<Api, Impl, Deps>;
 
 // @public
-export function createApiFactory<
-  Api,
-  Impl extends Api,
-  TLoading extends 'sync' | 'async' = 'sync',
->(
-  api: ApiRef<Api, string, TLoading>,
+export function createApiFactory<Api, Impl extends Api>(
+  api: ApiRef<Api>,
   instance: Impl,
-): ApiFactory<Api, Impl, {}, TLoading>;
+): ApiFactory<Api, Impl, {}>;
 
 // @public @deprecated
 export function createApiRef<T>(config: ApiRefConfig): ApiRef<T> & {
@@ -610,18 +532,8 @@ export function createApiRef<T>(): {
     config: ApiRefConfig & {
       id: TId;
       pluginId?: string;
-      loading?: 'sync';
     },
   ): ApiRef<T, TId> & {
-    readonly $$type: '@backstage/ApiRef';
-  };
-  with<const TId extends string, const TLoading extends 'sync' | 'async'>(
-    config: ApiRefConfig & {
-      id: TId;
-      pluginId?: string;
-      loading: TLoading;
-    },
-  ): ApiRef<T, TId, TLoading> & {
     readonly $$type: '@backstage/ApiRef';
   };
 };
@@ -1112,12 +1024,7 @@ export interface DialogApiDialog<TResult = void> {
 }
 
 // @public @deprecated
-export const dialogApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.dialog.v2';
-  readonly T: DialogApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const dialogApiRef: ApiRef_2<DialogApi, 'core.dialog.v2'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1127,12 +1034,7 @@ export type DiscoveryApi = {
 };
 
 // @public @deprecated
-export const discoveryApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.discovery';
-  readonly T: DiscoveryApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const discoveryApiRef: ApiRef_2<DiscoveryApi, 'core.discovery'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1158,12 +1060,7 @@ export type ErrorApiErrorContext = {
 };
 
 // @public @deprecated
-export const errorApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.error';
-  readonly T: ErrorApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const errorApiRef: ApiRef_2<ErrorApi, 'core.error'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1522,12 +1419,10 @@ export interface FeatureFlagsApi {
 }
 
 // @public @deprecated
-export const featureFlagsApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.featureflags';
-  readonly T: FeatureFlagsApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const featureFlagsApiRef: ApiRef_2<
+  FeatureFlagsApi,
+  'core.featureflags'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1561,12 +1456,7 @@ export type FetchApi = {
 };
 
 // @public @deprecated
-export const fetchApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.fetch';
-  readonly T: FetchApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const fetchApiRef: ApiRef_2<FetchApi, 'core.fetch'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1635,40 +1525,34 @@ export type FrontendPluginInfoOptions = {
 };
 
 // @public
-export const githubAuthApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.auth.github';
-  readonly T: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const githubAuthApiRef: ApiRef_2<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi,
+  'core.auth.github'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
 // @public
-export const gitlabAuthApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.auth.gitlab';
-  readonly T: OAuthApi &
+export const gitlabAuthApiRef: ApiRef_2<
+  OAuthApi &
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+    SessionApi,
+  'core.auth.gitlab'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
 // @public
-export const googleAuthApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.auth.google';
-  readonly T: OAuthApi &
+export const googleAuthApiRef: ApiRef_2<
+  OAuthApi &
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+    SessionApi,
+  'core.auth.google'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1683,12 +1567,7 @@ export interface IconsApi {
 }
 
 // @public @deprecated
-export const iconsApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.icons.v2';
-  readonly T: IconsApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const iconsApiRef: ApiRef_2<IconsApi, 'core.icons.v2'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1703,12 +1582,7 @@ export type IdentityApi = {
 };
 
 // @public @deprecated
-export const identityApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.identity';
-  readonly T: IdentityApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const identityApiRef: ApiRef_2<IdentityApi, 'core.identity'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1722,16 +1596,14 @@ export interface InternalCoreApis {
 }
 
 // @public
-export const microsoftAuthApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.auth.microsoft';
-  readonly T: OAuthApi &
+export const microsoftAuthApiRef: ApiRef_2<
+  OAuthApi &
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+    SessionApi,
+  'core.auth.microsoft'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1763,12 +1635,10 @@ export type OAuthRequestApi = {
 };
 
 // @public @deprecated
-export const oauthRequestApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.oauthrequest';
-  readonly T: OAuthRequestApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const oauthRequestApiRef: ApiRef_2<
+  OAuthRequestApi,
+  'core.oauthrequest'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1787,30 +1657,26 @@ export type OAuthRequesterOptions<TOAuthResponse> = {
 export type OAuthScope = string | string[];
 
 // @public
-export const oktaAuthApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.auth.okta';
-  readonly T: OAuthApi &
+export const oktaAuthApiRef: ApiRef_2<
+  OAuthApi &
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+    SessionApi,
+  'core.auth.okta'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
 // @public
-export const oneloginAuthApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.auth.onelogin';
-  readonly T: OAuthApi &
+export const oneloginAuthApiRef: ApiRef_2<
+  OAuthApi &
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+    SessionApi,
+  'core.auth.onelogin'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -1820,12 +1686,10 @@ export type OpenIdConnectApi = {
 };
 
 // @public
-export const openshiftAuthApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.auth.openshift';
-  readonly T: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const openshiftAuthApiRef: ApiRef_2<
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi,
+  'core.auth.openshift'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2124,12 +1988,10 @@ export type PluginHeaderActionsApi = {
 };
 
 // @public @deprecated
-export const pluginHeaderActionsApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.plugin-header-actions';
-  readonly T: PluginHeaderActionsApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const pluginHeaderActionsApiRef: ApiRef_2<
+  PluginHeaderActionsApi,
+  'core.plugin-header-actions'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2146,12 +2008,10 @@ export type PluginWrapperApi = {
 };
 
 // @public @deprecated
-export const pluginWrapperApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.plugin-wrapper';
-  readonly T: PluginWrapperApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const pluginWrapperApiRef: ApiRef_2<
+  PluginWrapperApi,
+  'core.plugin-wrapper'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2245,12 +2105,10 @@ export interface RouteResolutionApi {
 }
 
 // @public @deprecated
-export const routeResolutionApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.route-resolution';
-  readonly T: RouteResolutionApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const routeResolutionApiRef: ApiRef_2<
+  RouteResolutionApi,
+  'core.route-resolution'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2322,12 +2180,7 @@ export interface StorageApi {
 }
 
 // @public @deprecated
-export const storageApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.storage';
-  readonly T: StorageApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const storageApiRef: ApiRef_2<StorageApi, 'core.storage'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2423,12 +2276,10 @@ export interface SwappableComponentsApi {
 }
 
 // @public @deprecated
-export const swappableComponentsApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.swappable-components';
-  readonly T: SwappableComponentsApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const swappableComponentsApiRef: ApiRef_2<
+  SwappableComponentsApi,
+  'core.swappable-components'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2479,12 +2330,7 @@ export type TranslationApi = {
 };
 
 // @public @deprecated (undocumented)
-export const translationApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.translation';
-  readonly T: TranslationApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const translationApiRef: ApiRef_2<TranslationApi, 'core.translation'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
@@ -2645,15 +2491,15 @@ export type TranslationSnapshot<
 };
 
 // @public
-export type TypesToApiRefs<T, TLoading extends 'sync' | 'async' = 'sync'> = {
-  [key in keyof T]: ApiRef<T[key], string, TLoading>;
+export type TypesToApiRefs<T> = {
+  [key in keyof T]: ApiRef<T[key]>;
 };
 
 // @public
 export function useAnalytics(): AnalyticsTracker;
 
 // @public
-export function useApi<T>(apiRef: ApiRef<T, string, 'sync' | 'async'>): T;
+export function useApi<T>(apiRef: ApiRef<T>): Awaited<T>;
 
 // @public
 export function useApiHolder(): ApiHolder;
@@ -2701,16 +2547,14 @@ export const useTranslationRef: <TMessages extends { [key in string]: string }>(
 };
 
 // @public
-export const vmwareCloudAuthApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: 'core.auth.vmware-cloud';
-  readonly T: OAuthApi &
+export const vmwareCloudAuthApiRef: ApiRef_2<
+  OAuthApi &
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
-    SessionApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+    SessionApi,
+  'core.auth.vmware-cloud'
+> & {
   readonly $$type: '@backstage/ApiRef';
 };
 ```

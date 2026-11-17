@@ -17,7 +17,7 @@
 import { ConfigReader } from '@backstage/config';
 import { isError } from '@backstage/errors';
 import {
-  ApiFactory,
+  AnyApiFactory,
   ApiHolder,
   AppTree,
   ConfigApi,
@@ -256,7 +256,7 @@ export type PreparedSpecializedApp = {
 export interface CreateSpecializedAppInternalOptions
   extends PrepareSpecializedAppOptions {
   __internal?: {
-    apiFactoryOverrides?: ApiFactory[];
+    apiFactoryOverrides?: AnyApiFactory[];
 
     /**
      * Called once during preparation with a callback that releases the browser

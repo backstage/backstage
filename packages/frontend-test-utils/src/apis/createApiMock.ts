@@ -63,7 +63,7 @@ export type ApiMock<TApi> = {
  * ```
  */
 export function createApiMock<TApi>(
-  apiRef: ApiRef<TApi, string, 'sync' | 'async'>,
+  apiRef: ApiRef<TApi>,
   mockFactory: () => jest.Mocked<TApi>,
 ): (partialImpl?: Partial<TApi>) => ApiMock<TApi> {
   return partialImpl => {

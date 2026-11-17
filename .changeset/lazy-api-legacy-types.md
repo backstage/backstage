@@ -1,7 +1,7 @@
 ---
-'@backstage/core-compat-api': patch
 '@backstage/core-plugin-api': patch
 ---
 
-Kept legacy utility API types and `withApis` dependencies synchronous when using
-newer frontend API reference declarations that support async loading.
+Preserved the legacy `useApi` hook's direct-value behavior when the frontend
+system's hook unwraps promise-valued APIs. The legacy hook continues returning
+promises unchanged.

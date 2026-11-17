@@ -1,15 +1,15 @@
 ---
-'@backstage/frontend-plugin-api': patch
-'@backstage/frontend-app-api': patch
+'@backstage/frontend-plugin-api': minor
 ---
 
-Added lazy utility API factories. Refs opt in with `loading: 'async'`, and `useApi`
-suspends while their implementations initialize. Plugins that support the old
-frontend system must keep their APIs synchronous.
+**BREAKING**: `useApi` now unwraps promise-valued APIs, suspending while pending
+and throwing rejection reasons to an error boundary. Its return type is
+`Awaited<T>`. Existing consumers that intentionally used the promise returned by
+`useApi` must use a direct holder lookup instead.
 
-**BREAKING PRODUCERS**: Custom `ApiHolder` implementations must return a stable
-promise for a present async-capable API and `undefined` immediately for a missing
-API.
+Declare lazy implementations with `ApiRef<Promise<MyApi>>`. API holders,
+factories, and dependencies keep their existing contracts and pass the declared
+value through unchanged.
 
 See the [Utility API documentation](https://backstage.io/docs/frontend-system/utility-apis/creating/#lazy-api-implementations)
-for configuration, loading-mode contracts, and migration requirements.
+for lazy implementations, Suspense boundaries, and migration requirements.

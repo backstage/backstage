@@ -25,9 +25,6 @@ const factoryDataRef = createExtensionDataRef<ApiFactory>().with({
 /**
  * Creates utility API extensions.
  *
- * Async factories cannot be used by plugins that support the old frontend
- * system, including plugins that support both systems.
- *
  * @public
  */
 export const ApiBlueprint = createExtensionBlueprint({
@@ -41,10 +38,9 @@ export const ApiBlueprint = createExtensionBlueprint({
     TApi,
     TImpl extends TApi,
     TDeps extends { [name in string]: unknown },
-    TLoading extends 'sync' | 'async' = 'sync',
   >(
-    params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
-  ) => createExtensionBlueprintParams(params as typeof factoryDataRef.T),
+    params: ApiFactory<TApi, TImpl, TDeps>,
+  ) => createExtensionBlueprintParams(params as ApiFactory),
   *factory(params) {
     yield factoryDataRef(params);
   },

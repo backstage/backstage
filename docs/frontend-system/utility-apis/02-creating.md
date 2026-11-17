@@ -91,49 +91,20 @@ The extension ID of the work API will be the kind `api:` followed by the plugin 
 
 ## Lazy API implementations
 
-API refs are synchronous by default. To allow an implementation to load
-asynchronously, opt in when creating the ref:
+To load an API implementation asynchronously, declare its value as a promise:
 
 ```ts
-export const workApiRef = createApiRef<WorkApi>().with({
+export const workApiRef = createApiRef<Promise<WorkApi>>().with({
   id: 'plugin.example.work',
-  loading: 'async',
 });
 ```
 
-Plugins that support the old frontend system must keep their APIs synchronous,
-including plugins that support both systems. The old system's plugin
-registrations, API dependencies, and holder lookups reject async refs at compile
-time. Legacy conversion helpers preserve synchronous registrations and do not
-adapt API loading modes. An app can still include other converted legacy plugins
-alongside plugins that use async APIs.
+The promise is the API value. Factories, direct holder lookups, and dependencies
+all retain that declared type. The `useApi` hook from
+`@backstage/frontend-plugin-api` unwraps it and suspends until it resolves.
 
-Prefer lazy implementations for APIs that are internal to a plugin. Shared APIs
-can also use lazy implementations to reduce the initial bundle size, but their
-consumers must handle asynchronous API resolution.
-
-The ref retains this loading mode in its type. Omitting `loading` when creating
-a ref infers `'sync'`, and `ApiRef<WorkApi>` describes a synchronous ref. The
-second type parameter is the ref ID, and the third is the loading mode. For
-example, `ApiRef<WorkApi, 'plugin.example.work', 'async'>` describes an async ref
-with that ID. Use `ApiRef<WorkApi, string, 'sync' | 'async'>` when a type needs to
-accept either loading mode.
-
-The `ApiFactory` type accepts both synchronous and asynchronous factories by
-default. `ApiFactory<WorkApi>` therefore describes a factory returning `WorkApi`
-or `Promise<WorkApi>`. To restrict an annotation to synchronous factories, use
-`ApiFactory<WorkApi, WorkApi, WorkDeps, 'sync'>`. Factory creation through
-`createApiFactory` and `ApiBlueprint` still infers the loading mode from the ref,
-so synchronous refs retain their factory and dependency checks. The old frontend
-system's factory types remain explicitly synchronous.
-
-`ApiHolder.get()` preserves the ref's loading mode in its return type, including
-when the ref passes through a generic helper. Preserve the inferred type when
-exporting refs so consumers retain that distinction.
-
-Factories for refs with `loading: 'async'` can return either
-an implementation or a promise. For example, use a dynamic import to defer
-loading the implementation until the API is first requested:
+For example, use a dynamic import to defer loading an implementation until the
+API is first requested:
 
 ```ts
 import { ApiBlueprint, coreApis } from '@backstage/frontend-plugin-api';
@@ -154,42 +125,36 @@ const workApi = ApiBlueprint.make({
 ```
 
 Keep the implementation out of static imports in the plugin entry point so it
-can be loaded separately. The framework creates one implementation per app
-and resolves all dependencies before calling the factory. Independent async
-dependencies are resolved in parallel.
+can be loaded separately. The framework calls the factory on demand and caches
+its return value, including the promise. Repeated lookups share that promise and
+its resolved implementation or rejection.
 
-An async-capable API can depend on both synchronous and async-capable APIs. A
-synchronous API can only depend on synchronous APIs, even if its own factory
-is synchronous. Factories, including overrides, must use refs with the same loading
-mode as their consumers. An async-capable factory may still return a synchronous
-implementation; its ref and lookup result remain asynchronous.
+A factory that depends on this API receives `Promise<WorkApi>`. It can await the
+promise when it needs the implementation, or retain the promise for later use.
+The framework does not await factory dependencies. If the dependent factory also
+returns a promise, declare its API value as a promise too. Use `Promise.all` when
+you want to await several dependencies together.
 
-### Changing loading mode
+### Changing an API to a promise
 
-A plugin must drop support for the old frontend system before changing its refs
-to async loading. Changing an existing ref from synchronous to asynchronous
-loading is a breaking contract change. Its consumers and factories must update
-together; the framework does not adapt older synchronous refs to an async
-implementation.
+Changing `ApiRef<WorkApi>` to `ApiRef<Promise<WorkApi>>` changes its public
+contract. Direct lookups and factory dependencies now receive a promise, and
+`useApi` consumers may suspend. Update consumers and custom factories together;
+an override for the promise-valued API must also return a promise.
 
-The release impact depends on where the ref is exported:
+For refs exported from a library package or another public surface outside the
+owning plugin package, this requires a breaking release. Refs that are not
+exported, or are exported only by the owning plugin package, follow the
+breaking-producers exception when the plugin updates its own consumers and
+default implementation together.
 
-- **Plugin-internal API:** The ref is not exported, or exported only from the owning
-  frontend plugin package. Update the plugin's own consumers and default factory
-  together. The change follows the
-  [breaking-producers policy](../../overview/versioning-policy.md#changes-that-are-not-considered-breaking),
-  so it can ship without a breaking plugin release. Mark it
-  `**BREAKING PRODUCERS**:` in the changeset and explain how custom factories and
-  overrides need to update.
-- **Shared API:** The ref is exported from a library package, such as a plugin's
-  `-react` package, or through any other public surface outside the owning plugin
-  package. Changing it to async loading affects consumers and requires a breaking
-  release, even if the plugin's own components use `useApi`.
+The `useApi` hook from `@backstage/core-plugin-api` keeps the old frontend
+system's behavior and returns promise-valued APIs directly. Automatic unwrapping
+is specific to the hook from `@backstage/frontend-plugin-api`; holders and legacy
+conversion helpers continue passing API values through unchanged.
 
-Keep the ref's inferred type when exporting it. Factories and consumers must
-import compatible versions of the ref. See
-[consuming async-capable APIs](./03-consuming.md#async-capable-apis) for the changes
-needed at call sites.
+See [consuming promise-valued APIs](./03-consuming.md#promise-valued-apis) for
+Suspense and error handling.
 
 ## Adding configurability
 

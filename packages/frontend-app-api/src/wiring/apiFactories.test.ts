@@ -20,7 +20,6 @@ import {
   featureFlagsApiRef,
   createApiRef,
   type FeatureFlagsApi,
-  type AnyApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
   registerFeatureFlagDeclarationsInHolder,
@@ -72,7 +71,7 @@ describe('registerFeatureFlagDeclarationsInHolder', () => {
 
       registerFeatureFlagDeclarationsInHolder(
         {
-          get: (ref: AnyApiRef) =>
+          get: ref =>
             (ref.id === featureFlagsApiRef.id
               ? featureFlagsApi
               : undefined) as any,
@@ -114,7 +113,7 @@ describe('registerFeatureFlagDeclarationsInHolder', () => {
 
     registerFeatureFlagDeclarationsInHolder(
       {
-        get: (ref: AnyApiRef) =>
+        get: ref =>
           (ref.id === featureFlagsApiRef.id
             ? featureFlagsApi
             : undefined) as any,
@@ -162,7 +161,7 @@ describe('registerFeatureFlagDeclarationsInHolder', () => {
 
     registerFeatureFlagDeclarationsInHolder(
       {
-        get: (ref: AnyApiRef) =>
+        get: ref =>
           (ref.id === featureFlagsApiRef.id
             ? featureFlagsApi
             : undefined) as any,
@@ -204,7 +203,7 @@ describe('registerFeatureFlagDeclarationsInHolder', () => {
 
     registerFeatureFlagDeclarationsInHolder(
       {
-        get: (ref: AnyApiRef) =>
+        get: ref =>
           (ref.id === featureFlagsApiRef.id
             ? featureFlagsApi
             : undefined) as any,

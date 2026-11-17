@@ -64,7 +64,7 @@ describe('withApis', () => {
     const coreRef = createCoreApiRef<MyApi>({ id: 'compat-api' });
     const previousRef: PreviousApiRef<MyApi> = coreRef;
     const currentRef = createApiRef<MyApi>().with({ id: 'compat-api' });
-    const syncFromPrevious: ApiRef<MyApi, string, 'sync'> = previousRef;
+    const syncFromPrevious: ApiRef<MyApi> = previousRef;
     const coreFromCurrent: CoreApiRef<MyApi> = currentRef;
     const previousFromCurrent: PreviousApiRef<MyApi> = currentRef;
     const defaultFromPrevious: ApiRef<MyApi> = previousRef;
@@ -73,10 +73,10 @@ describe('withApis', () => {
     expect(previousFromCurrent).toBe(currentRef);
     expect(defaultFromPrevious).toBe(coreRef);
     // @ts-expect-error Compatibility must retain the API implementation type.
-    const wrongApi: ApiRef<number, string, 'sync'> = previousRef;
+    const wrongApi: ApiRef<number> = previousRef;
     expect(wrongApi).toBe(coreRef);
 
-    const refs: TypesToApiRefs<{ getMessage: MyApi }, 'sync'> = {
+    const refs: TypesToApiRefs<{ getMessage: MyApi }> = {
       getMessage: previousRef,
     };
     const factory = createApiFactory({

@@ -33,8 +33,7 @@ export class ScmAuth implements ScmAuthApi {
         BackstageIdentityApi &
         SessionApi;
       bitbucket: OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi;
-    },
-    'sync'
+    }
   >;
   static forAuthApi(
     authApi: OAuthApi,

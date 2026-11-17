@@ -5,6 +5,7 @@
 ```ts
 import { AnyApiRef } from '@backstage/core-plugin-api';
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { ApiRef } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { CustomFieldValidator } from '@backstage/plugin-scaffolder-react';
@@ -203,12 +204,7 @@ export type FormFieldExtensionData<
 };
 
 // @alpha (undocumented)
-export const formFieldsApiRef: {
-  readonly $$type?: '@backstage/ApiRef';
-  readonly id: string;
-  readonly T: ScaffolderFormFieldsApi;
-  readonly loading?: 'sync' | undefined;
-} & {
+export const formFieldsApiRef: ApiRef<ScaffolderFormFieldsApi> & {
   readonly $$type: '@backstage/ApiRef';
 };
 

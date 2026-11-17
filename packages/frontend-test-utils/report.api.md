@@ -74,7 +74,7 @@ export type ApiMock<TApi> = {
 
 // @public
 export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
-  apiRef: ApiRef<TApi, string, 'sync' | 'async'>,
+  apiRef: ApiRef<TApi>,
   implementation: TImpl,
 ): TImpl & {
   [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}>;
@@ -82,7 +82,7 @@ export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
 
 // @public
 export function createApiMock<TApi>(
-  apiRef: ApiRef<TApi, string, 'sync' | 'async'>,
+  apiRef: ApiRef<TApi>,
   mockFactory: () => jest.Mocked<TApi>,
 ): (partialImpl?: Partial<TApi>) => ApiMock<TApi>;
 
@@ -456,10 +456,7 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
 
 // @public
 export type TestApiPair<TApi> =
-  | readonly [
-      ApiRef<TApi, string, 'sync' | 'async'>,
-      TApi extends infer TImpl ? Partial<TImpl> : never,
-    ]
+  | readonly [ApiRef<TApi>, TApi extends infer TImpl ? Partial<TImpl> : never]
   | MockWithApiFactory<NoInfer<TApi>>;
 
 // @public

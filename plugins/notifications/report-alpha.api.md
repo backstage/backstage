@@ -38,9 +38,8 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
-        TLoading extends 'sync' | 'async' = 'sync',
       >(
-        params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
+        params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'home-page-widget:notifications/unread-notifications': OverridableExtensionDefinition<{

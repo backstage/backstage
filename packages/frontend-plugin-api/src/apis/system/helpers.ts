@@ -30,10 +30,7 @@ export function createApiFactory<
   Api,
   Impl extends Api,
   Deps extends { [name in string]: unknown },
-  TLoading extends 'sync' | 'async' = 'sync',
->(
-  factory: ApiFactory<Api, Impl, Deps, TLoading>,
-): ApiFactory<Api, Impl, Deps, TLoading>;
+>(factory: ApiFactory<Api, Impl, Deps>): ApiFactory<Api, Impl, Deps>;
 /**
  * Used to infer types for a standalone {@link ApiFactory} that isn't immediately passed
  * to another function.
@@ -42,14 +39,10 @@ export function createApiFactory<
  * @param instance - Implementation of the API to use.
  * @public
  */
-export function createApiFactory<
-  Api,
-  Impl extends Api,
-  TLoading extends 'sync' | 'async' = 'sync',
->(
-  api: ApiRef<Api, string, TLoading>,
+export function createApiFactory<Api, Impl extends Api>(
+  api: ApiRef<Api>,
   instance: Impl,
-): ApiFactory<Api, Impl, {}, TLoading>;
+): ApiFactory<Api, Impl, {}>;
 /**
  * Used to infer types for a standalone {@link ApiFactory} that isn't immediately passed
  * to another function.
@@ -66,26 +59,15 @@ export function createApiFactory<
   Api,
   Impl extends Api,
   Deps extends { [name in string]: unknown },
-  TLoading extends 'sync' | 'async' = 'sync',
 >(
-  factory:
-    | ApiFactory<Api, Impl, Deps, TLoading>
-    | ApiRef<Api, string, TLoading>,
+  factory: ApiFactory<Api, Impl, Deps> | ApiRef<Api>,
   instance?: Impl,
-): ApiFactory<Api, Impl, Deps, TLoading> {
+): ApiFactory<Api, Impl, Deps> {
   if ('id' in factory) {
     return {
       api: factory,
-      deps: {} as TypesToApiRefs<
-        Deps,
-        NoInfer<TLoading> extends 'sync' ? 'sync' : 'sync' | 'async'
-      >,
-      factory: (() => instance!) as ApiFactory<
-        Api,
-        Impl,
-        Deps,
-        TLoading
-      >['factory'],
+      deps: {} as TypesToApiRefs<Deps>,
+      factory: () => instance!,
     };
   }
   return factory;

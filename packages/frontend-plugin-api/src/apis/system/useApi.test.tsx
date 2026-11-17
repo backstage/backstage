@@ -20,12 +20,6 @@ import { withLogCollector } from '@backstage/test-utils';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import { createApiRef } from './ApiRef';
 import { useApi, useApiHolder } from './useApi';
-import { createApiFactory } from './helpers';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import {
-  FrontendApiRegistry,
-  FrontendApiResolver,
-} from '../../../../frontend-app-api/src/wiring/FrontendApiRegistry';
 
 class TestErrorBoundary extends Component<
   PropsWithChildren,
@@ -49,62 +43,29 @@ class TestErrorBoundary extends Component<
 describe('useApiHolder', () => {
   const context = createVersionedContextForTesting('api-context');
 
-  afterEach(() => {
-    context.reset();
-  });
+  afterEach(() => context.reset());
 
-  it('should return a stable holder that forwards context lookups', () => {
-    const holder = { get: jest.fn() };
+  it('should forward context lookups without unwrapping promise values', () => {
+    const promise = Promise.resolve({ value: 'API' });
+    const holder = { get: jest.fn(() => promise) };
     context.set({ 1: holder });
-
-    const renderedHook = renderHook(() => useApiHolder());
-    const apiHolder = renderedHook.result.current;
-    expect(apiHolder).toBe(holder);
-    const ref = createApiRef<string>().with({ id: 'x' });
-    expect(apiHolder.get(ref)).toBeUndefined();
-    expect(holder.get).toHaveBeenCalledWith(ref);
-    renderedHook.rerender();
-    expect(renderedHook.result.current).toBe(apiHolder);
-  });
-
-  it('should preserve native promise identity and invalidation', async () => {
-    const ref = createApiRef<{ value: string }>().with({
-      id: 'native',
-      loading: 'async',
+    const ref = createApiRef<Promise<{ value: string }>>().with({
+      id: 'test.api',
     });
-    const registry = new FrontendApiRegistry();
-    registry.register(
-      createApiFactory({
-        api: ref,
-        deps: {},
-        factory: () => ({ value: 'native instance' }),
-      }),
-    );
-    const resolver = new FrontendApiResolver({ primaryRegistry: registry });
-    context.set({ 1: resolver });
-    const holder = renderHook(() => useApiHolder()).result.current;
-    expect(holder).toBe(resolver);
-    const promise = resolver.get(ref);
-    expect(holder.get(ref)).toBe(promise);
-    await expect(promise).resolves.toEqual({ value: 'native instance' });
-    resolver.invalidate([ref.id]);
-    const replacement = resolver.get(ref);
-    expect(holder.get(ref)).toBe(replacement);
-    expect(replacement).not.toBe(promise);
-    await expect(replacement).resolves.toEqual({ value: 'native instance' });
+    const rendered = renderHook(() => useApiHolder());
+    expect(rendered.result.current).toBe(holder);
+    const value: Promise<{ value: string }> | undefined =
+      rendered.result.current.get(ref);
+    expect(value).toBe(promise);
+    expect(holder.get).toHaveBeenCalledWith(ref);
+    rendered.rerender();
+    expect(rendered.result.current).toBe(holder);
   });
 
-  it('should return an empty API holder when there is no context', () => {
-    const renderedHook = renderHook(() => useApiHolder());
-
-    const holder = renderedHook.result.current;
+  it('should return an empty holder when there is no context', () => {
+    const holder = renderHook(() => useApiHolder()).result.current;
     expect(
-      holder.get(createApiRef<string>().with({ id: 'x' })),
-    ).toBeUndefined();
-    expect(
-      holder.get(
-        createApiRef<string>().with({ id: 'async', loading: 'async' }),
-      ),
+      holder.get(createApiRef<string>().with({ id: 'test.api' })),
     ).toBeUndefined();
   });
 });
@@ -112,161 +73,37 @@ describe('useApiHolder', () => {
 describe('useApi', () => {
   const context = createVersionedContextForTesting('api-context');
 
-  afterEach(() => {
-    context.reset();
-  });
+  afterEach(() => context.reset());
 
-  it.each(['sync', 'async'] as const)(
-    'should consume a %s API using its declared loading mode',
-    async loading => {
-      const apiRef = createApiRef<{ value: string }>().with({
-        id: 'example',
-        loading,
-      });
-      const factory = jest.fn(() => ({ value: 'Loaded API' }));
-      const registry = new FrontendApiRegistry();
-      registry.register(createApiFactory({ api: apiRef, deps: {}, factory }));
-      const resolver = new FrontendApiResolver({ primaryRegistry: registry });
-      const get = jest.spyOn(resolver, 'get');
-      context.set({ 1: resolver });
-      function Consumer() {
-        return <div>{useApi(apiRef).value}</div>;
-      }
-      render(
-        <Suspense fallback="Loading">
-          <Consumer />
-        </Suspense>,
-      );
-      expect(screen.queryByText('Loaded API') !== null).toBe(
-        loading === 'sync',
-      );
-      expect(screen.queryByText('Loading') !== null).toBe(loading === 'async');
-      expect(await screen.findByText('Loaded API')).toBeInTheDocument();
-      expect(factory).toHaveBeenCalledTimes(1);
-      expect(get).toHaveBeenCalledWith(apiRef);
-    },
-  );
-
-  it.each([
-    ['sync', 'async'],
-    ['async', 'sync'],
-  ] as const)(
-    'should reject a %s ref backed by a %s factory without suspending',
-    (consumerMode, factoryMode) => {
-      const apiRef = createApiRef<string>().with({
-        id: 'changed',
-        loading: consumerMode,
-      });
-      const factoryRef = createApiRef<string>().with({
-        id: apiRef.id,
-        loading: factoryMode,
-      });
-      const factory = jest.fn(() => 'implementation');
-      const registry = new FrontendApiRegistry();
-      registry.register(
-        createApiFactory({ api: factoryRef, deps: {}, factory }),
-      );
-      context.set({
-        1: new FrontendApiResolver({ primaryRegistry: registry }),
-      });
-      function Consumer() {
-        return <div>{useApi(apiRef)}</div>;
-      }
-      withLogCollector(['error'], () => {
-        render(
-          <TestErrorBoundary>
-            <Suspense fallback="Loading">
-              <Consumer />
-            </Suspense>
-          </TestErrorBoundary>,
-        );
-        expect(screen.getByRole('alert')).toHaveTextContent(
-          "Conflicting loading mode for API 'changed'",
-        );
-        expect(screen.getByRole('alert')).toHaveTextContent(
-          'matching versions of the API ref',
-        );
-        expect(screen.queryByText('Loading')).not.toBeInTheDocument();
-        expect(factory).not.toHaveBeenCalled();
-      });
-    },
-  );
-
-  it('should expose async factory failures and stale dependency refs', async () => {
-    const oldRef = createApiRef<string>().with({ id: 'migrated' });
-    const newRef = createApiRef<string>().with({
-      id: 'migrated',
-      loading: 'async',
-    });
-    const factory = jest.fn(() => {
-      throw new Error('Failed migrated API');
-    });
-    const registry = new FrontendApiRegistry();
-    registry.register(createApiFactory({ api: newRef, deps: {}, factory }));
-    const resolver = new FrontendApiResolver({ primaryRegistry: registry });
-    context.set({ 1: resolver });
-    function Consumer() {
-      return <div>{useApi(newRef)}</div>;
-    }
-    await withLogCollector(['error'], async () => {
-      const rendered = render(
-        <TestErrorBoundary>
-          <Suspense fallback="Loading">
-            <Consumer />
-          </Suspense>
-        </TestErrorBoundary>,
-      );
-      expect(await screen.findByRole('alert')).toHaveTextContent(
-        'Failed migrated API',
-      );
-      expect(factory).toHaveBeenCalledTimes(1);
+  it('should return synchronous API values immediately, including falsy values', () => {
+    for (const value of ['API', false, 0, '', null]) {
+      const get = jest.fn(() => value);
+      context.set({ 1: { get } });
+      const ref = createApiRef<typeof value>().with({ id: 'test.api' });
+      const rendered = renderHook(() => useApi(ref));
+      expect(rendered.result.current).toBe(value);
+      expect(get).toHaveBeenCalledWith(ref);
       rendered.unmount();
-      const parent = createApiRef<string>().with({ id: 'parent' });
-      registry.register(
-        createApiFactory({
-          api: parent,
-          deps: { child: oldRef },
-          factory: ({ child }) => child,
-        }),
-      );
-      function ParentConsumer() {
-        return <div>{useApi(parent)}</div>;
-      }
-      const get = jest.spyOn(resolver, 'get');
-      render(
-        <TestErrorBoundary>
-          <Suspense fallback="Loading">
-            <ParentConsumer />
-          </Suspense>
-        </TestErrorBoundary>,
-      );
-      expect(await screen.findByRole('alert')).toHaveTextContent(
-        'Dependency path: parent[child] -> migrated',
-      );
-      expect(screen.queryByText('Loading')).not.toBeInTheDocument();
-      expect(get.mock.calls.every(([ref]) => ref.loading !== 'async')).toBe(
-        true,
-      );
-    });
+    }
   });
 
-  it('should suspend shared consumers and reuse settled values across render retries', async () => {
-    const apiRef = createApiRef<{ value: string }>().with({
-      id: 'async',
-      loading: 'async',
+  it('should suspend shared consumers and reuse settled values across retries', async () => {
+    const ref = createApiRef<Promise<{ value: string }>>().with({
+      id: 'test.api',
     });
-    let resolve: (api: { value: string }) => void;
+    let resolve!: (api: { value: string }) => void;
     const promise = new Promise<{ value: string }>(r => {
       resolve = r;
     });
     const get = jest.fn(() => promise);
     context.set({ 1: { get } });
     function Consumer() {
-      return <div>{useApi(apiRef).value}</div>;
+      const api: { value: string } = useApi(ref);
+      return <div>{api.value}</div>;
     }
     const element = (
       <StrictMode>
-        <Suspense fallback={<div>Loading API</div>}>
+        <Suspense fallback="Loading API">
           <Consumer />
           <Consumer />
         </Suspense>
@@ -275,74 +112,106 @@ describe('useApi', () => {
     const rendered = render(element);
     expect(screen.getByText('Loading API')).toBeInTheDocument();
     await act(async () => {
-      resolve!({ value: 'Loaded API' });
+      resolve({ value: 'Loaded API' });
       await promise;
     });
     expect(await screen.findAllByText('Loaded API')).toHaveLength(2);
     rendered.rerender(element);
     expect(screen.queryByText('Loading API')).not.toBeInTheDocument();
     expect(screen.getAllByText('Loaded API')).toHaveLength(2);
+    expect(get).toHaveBeenCalledWith(ref);
   });
 
-  it('should propagate rejected and missing async APIs to error boundaries', async () => {
-    const apiRef = createApiRef<string>().with({
-      id: 'async',
-      loading: 'async',
-    });
-    let reject: (error: Error) => void;
+  it('should normalize thenables once and recursively unwrap their values', async () => {
+    let calls = 0;
+    const thenable = {
+      then(resolve: (value: Promise<{ value: string }>) => void) {
+        calls++;
+        resolve(Promise.resolve({ value: 'Thenable API' }));
+      },
+    };
+    const ref = createApiRef<typeof thenable>().with({ id: 'test.thenable' });
+    context.set({ 1: { get: () => thenable } });
+    function Consumer() {
+      const api: { value: string } = useApi(ref);
+      return <div>{api.value}</div>;
+    }
+    render(
+      <Suspense fallback="Loading API">
+        <Consumer />
+        <Consumer />
+      </Suspense>,
+    );
+    expect(await screen.findAllByText('Thenable API')).toHaveLength(2);
+    expect(calls).toBe(1);
+  });
+
+  it('should preserve fulfilled values, including undefined and other falsy values', async () => {
+    for (const value of [undefined, null, false, 0, '']) {
+      const ref = createApiRef<Promise<typeof value>>().with({
+        id: 'test.value',
+      });
+      const promise = Promise.resolve(value);
+      context.set({ 1: { get: () => promise } });
+      const Consumer = () => {
+        const api = useApi(ref);
+        return (
+          <div>
+            {typeof api}:{String(api)}
+          </div>
+        );
+      };
+      const rendered = render(
+        <Suspense fallback="Loading API">
+          <Consumer />
+        </Suspense>,
+      );
+      expect(
+        await screen.findByText(`${typeof value}:${String(value)}`),
+      ).toBeInTheDocument();
+      rendered.unmount();
+    }
+  });
+
+  it('should propagate rejections and report missing APIs without suspending', async () => {
+    const ref = createApiRef<Promise<string>>().with({ id: 'test.api' });
+    let reject!: (error: Error) => void;
     const promise = new Promise<string>((_, r) => {
       reject = r;
     });
     context.set({ 1: { get: () => promise } });
     function Consumer() {
-      return <div>{useApi(apiRef)}</div>;
+      return <div>{useApi(ref)}</div>;
     }
     await withLogCollector(['error'], async () => {
       const rendered = render(
         <TestErrorBoundary>
-          <Suspense fallback="Loading">
+          <Suspense fallback="Loading API">
             <Consumer />
           </Suspense>
         </TestErrorBoundary>,
       );
+      expect(screen.getByText('Loading API')).toBeInTheDocument();
       await act(async () => {
-        reject!(new Error('API chunk failed'));
+        reject(new Error('API initialization failed'));
         await promise.catch(() => {});
       });
       expect(await screen.findByRole('alert')).toHaveTextContent(
-        'API chunk failed',
+        'API initialization failed',
       );
       rendered.unmount();
       context.set({ 1: { get: () => undefined } });
       render(
         <TestErrorBoundary>
-          <Suspense fallback="Loading">
+          <Suspense fallback="Loading API">
             <Consumer />
           </Suspense>
         </TestErrorBoundary>,
       );
-      expect(screen.queryByText('Loading')).not.toBeInTheDocument();
+      expect(screen.queryByText('Loading API')).not.toBeInTheDocument();
       expect(screen.getByRole('alert')).toHaveTextContent(
         'No implementation available',
       );
     });
-  });
-
-  it('should accept falsy synchronous API implementations', () => {
-    context.set({ 1: { get: () => false } });
-    const apiRef = createApiRef<boolean>().with({ id: 'false' });
-    expect(renderHook(() => useApi(apiRef)).result.current).toBe(false);
-  });
-
-  it('should resolve routes', () => {
-    const get = jest.fn(() => 'my-api-impl');
-    context.set({ 1: { get } });
-
-    const apiRef = createApiRef<string>().with({ id: 'x' });
-    const renderedHook = renderHook(() => useApi(apiRef));
-
-    const value = renderedHook.result.current;
-    expect(value).toBe('my-api-impl');
-    expect(get).toHaveBeenCalledWith(apiRef);
   });
 });
