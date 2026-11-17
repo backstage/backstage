@@ -235,10 +235,12 @@ class KnexAttemptJournal implements AttemptJournal {
       );
     }
 
+    // ORDER BY and cursor comparisons target the underlying numeric column:
+    // the TEXT cast alias would otherwise sort (and page) lexicographically.
     const rows: EventRow[] = await this.#selectEvents(this.#db)
       .where(ns(parsed))
-      .where('id', '>', parsed.cursor ?? 0)
-      .orderBy('id', 'asc')
+      .where('ai_journal_events.id', '>', parsed.cursor ?? 0)
+      .orderByRaw('ai_journal_events.id ASC')
       .limit(parsed.limit + 1);
     const hasMore = rows.length > parsed.limit;
     if (hasMore) rows.pop();
@@ -341,7 +343,11 @@ class KnexAttemptJournal implements AttemptJournal {
   async #mirrorEvent(id: string): Promise<void> {
     if (!this.#mirror) return;
     try {
-      const row = await this.#db(JOURNAL_EVENTS_TABLE).where({ id }).first();
+      // The same lossless TEXT-cast projection as reads: a mirrored event
+      // must never round a 64-bit ID through a JavaScript number.
+      const row = await this.#selectEvents(this.#db)
+        .where('ai_journal_events.id', id)
+        .first();
       if (row) await this.#mirror.mirror(rowToView(row, undefined));
     } catch {
       // Best effort by contract: a mirror failure never erases or fails a

@@ -597,6 +597,202 @@ for (const dialect of ['sqlite', 'pg'] as const) {
       }
     });
 
+    it('accepts real plugin and external service principals end to end', async () => {
+      const f = await fixture(dialect);
+      try {
+        // A plugin principal appends under its native subject form and can
+        // read its own journal back: the actor grammar and the principal
+        // derived from read credentials are the same canonical form.
+        await f.journal.recordDecisionAndIntent(
+          fence,
+          freshDecision({ actor: 'plugin:catalog' }),
+        );
+        const pluginPage = await f.journal.read(credentials('plugin:catalog'), {
+          pluginId: namespace.pluginId,
+          sessionId: namespace.sessionId,
+        });
+        const pluginDecision = pluginPage.items.find(
+          item => item.kind === 'decision',
+        ) as Extract<AuditEventView, { kind: 'decision' }>;
+        expect(pluginDecision.actor).toBe('plugin:catalog');
+
+        await f.journal.recordRecovery(fence, {
+          actor: 'external:billing-api',
+          kind: 'needs-reauth',
+        });
+        const externalPage = await f.journal
+          .read(credentials('external:billing-api'), {
+            pluginId: namespace.pluginId,
+            sessionId: namespace.sessionId,
+          })
+          .catch(error => error as Error);
+        // The external principal's actor form is accepted at the boundary,
+        // but it is not this session's owner: ownership still denies.
+        expect(externalPage).toBeInstanceOf(AuditAccessDeniedError);
+        const ownerPage = await f.journal.read(credentials('plugin:catalog'), {
+          pluginId: namespace.pluginId,
+          sessionId: namespace.sessionId,
+        });
+        expect(
+          ownerPage.items.some(
+            item =>
+              item.kind === 'recovery' && item.actor === 'external:billing-api',
+          ),
+        ).toBe(true);
+
+        // Cross-principal reads still deny, and malformed principals
+        // (double-colon service spellings, free text) still reject at the
+        // boundary.
+        await expect(
+          f.journal.read(credentials('plugin:other'), {
+            pluginId: namespace.pluginId,
+            sessionId: namespace.sessionId,
+          }),
+        ).rejects.toThrow(AuditAccessDeniedError);
+        await expect(
+          f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision({ actor: 'service:plugin:catalog' }),
+          ),
+        ).rejects.toThrow('Invalid actor');
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('accepts structured multi-segment destinations and rejects hidden tokens', async () => {
+      const f = await fixture(dialect);
+      try {
+        // Realistic routed destinations are structured components, not one
+        // entropy run.
+        await f.journal.recordDecisionAndIntent(
+          fence,
+          freshDecision({
+            operation: 'models.stream',
+            destination:
+              'https://my-resource.openai.azure.com/openai/deployments/production-chat/chat/completions',
+          }),
+        );
+        await f.journal.recordDecisionAndIntent(
+          fence,
+          freshDecision({
+            operation: 'models.stream',
+            destination:
+              'https://us-central1-aiplatform.googleapis.com/v1/projects/my-project/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent',
+          }),
+        );
+        expect(await f.db('ai_journal_events').select('id')).toHaveLength(2);
+
+        // A token-valued path segment still fails closed, encoded or not.
+        const token = 'ghp_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1';
+        await expect(
+          f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision({
+              destination: `https://api.example.com/v1/${token}/completions`,
+            }),
+          ),
+        ).rejects.toThrow('secret-shaped');
+        await expect(
+          f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision({
+              destination: `https://api.example.com/v1/users%2F${token}`,
+            }),
+          ),
+        ).rejects.toThrow('secret-shaped');
+        expect(await f.db('ai_journal_events').select('id')).toHaveLength(2);
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('rejects label-prefixed credential values in every field class', async () => {
+      const f = await fixture(dialect);
+      try {
+        const pat = 'ghp_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1';
+        for (const prefixed of [`x${pat}`, `_${pat}`]) {
+          await expect(
+            f.journal.recordDecisionAndIntent(fence, {
+              ...freshDecision(),
+              reason: `provider rejected ${prefixed}`,
+            }),
+          ).rejects.toThrow('secret-shaped');
+          await expect(
+            f.journal.recordDecisionAndIntent(
+              fence,
+              freshDecision({ actor: `service:${prefixed}` }),
+            ),
+          ).rejects.toThrow('secret-shaped');
+          await expect(
+            f.journal.recordDecisionAndIntent(
+              fence,
+              freshDecision({
+                destination: `https://api.example.com/${prefixed}`,
+              }),
+            ),
+          ).rejects.toThrow('secret-shaped');
+          await expect(
+            f.journal.recordRecovery(fence, {
+              actor: 'user:default/alice',
+              kind: 'other',
+              detail: `rotation failed for ${prefixed}`,
+            }),
+          ).rejects.toThrow('secret-shaped');
+        }
+        expect(await f.db('ai_journal_events').select('id')).toEqual([]);
+
+        // Benign structured identifiers that merely contain short
+        // key-like fragments still pass.
+        await f.journal.recordDecisionAndIntent(
+          fence,
+          freshDecision({
+            taskId: 'task-01HZX4T8Z9WK2Q3V8Z9WK2Q3V8',
+            reason: 'task-management-module-planning completed',
+          }),
+        );
+        expect(await f.db('ai_journal_events').select('id')).toHaveLength(1);
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('mirrors 64-bit IDs exactly above 2^53 (SQLite)', async () => {
+      const f = await fixture('sqlite');
+      const mirrored: AuditEventView[] = [];
+      const journal = createAttemptJournal({
+        db: f.db,
+        authorizer: { authorizeAuditRead: async () => true },
+        mirror: {
+          mirror: async event => {
+            mirrored.push(event);
+          },
+        },
+      });
+      try {
+        await journal.recordDecisionAndIntent(fence, freshDecision());
+        await f
+          .db('sqlite_sequence')
+          .where({ name: 'ai_journal_events' })
+          .update({ seq: 9007199254740992 });
+        const high = await journal.recordDecisionAndIntent(
+          fence,
+          freshDecision(),
+        );
+        expect(high).toBe('9007199254740993');
+        await journal.recordOutcome(fence, high, { status: 'completed' });
+        const highDecision = mirrored.find(
+          event => event.kind === 'decision' && event.id === high,
+        );
+        const highOutcome = mirrored.find(event => event.kind === 'outcome');
+        expect(highDecision).toBeDefined();
+        expect(highOutcome?.attemptId).toBe(high);
+        expect(mirrored.every(event => /^\d+$/.test(event.id))).toBe(true);
+      } finally {
+        await f.cleanup();
+      }
+    });
+
     it('enforces outcome integrity rules', async () => {
       const f = await fixture(dialect);
       try {
@@ -686,10 +882,10 @@ for (const dialect of ['sqlite', 'pg'] as const) {
       }
     });
 
-    it('paginates events oldest first', async () => {
+    it('paginates events in numeric ID order across decimal widths', async () => {
       const f = await fixture(dialect);
       try {
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < 15; i++) {
           await f.journal.recordDecisionAndIntent(
             fence,
             freshDecision({ attempt: i + 1 }),
@@ -709,10 +905,11 @@ for (const dialect of ['sqlite', 'pg'] as const) {
           cursor = page.nextCursor;
           if (!cursor) break;
         }
-        expect(seen).toHaveLength(7);
+        // Numeric, not lexicographic: 1..15, never 1,10,11,...,2,...
         expect(seen.map(id => Number(id))).toEqual(
-          [...seen.map(id => Number(id))].sort((a, b) => a - b),
+          [...Array(15).keys()].map(i => i + 1),
         );
+        expect(new Set(seen).size).toBe(15);
         await expect(
           f.journal.read(credentials('user:default/alice'), {
             pluginId: namespace.pluginId,

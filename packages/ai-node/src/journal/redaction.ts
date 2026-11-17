@@ -50,12 +50,18 @@ const OPERATIONS: ReadonlySet<string> = new Set([
  */
 const SECRET_VALUE_SHAPED = [
   /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
-  /\b(?:sk-(?:ant-)?[A-Za-z0-9_-]{20,}|rk-[A-Za-z0-9_-]{20,}|pk-[A-Za-z0-9_-]{20,})/,
-  /\bgh[pousr]_[A-Za-z0-9]{20,}/,
-  /\bxox[baprs]-[A-Za-z0-9-]{10,}/,
-  /\bAKIA[0-9A-Z]{16}\b/,
-  /\bAIza[0-9A-Za-z_-]{30,}/,
-  /\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{5,}/,
+  // Strongly identifiable formats match wherever they occur, including
+  // directly adjoining label characters: a prefixed or embedded credential
+  // value must not survive by hiding behind a word boundary.
+  /gh[pousr]_[A-Za-z0-9]{20,}/,
+  /xox[baprs]-[A-Za-z0-9-]{10,}/,
+  /AKIA[0-9A-Z]{16}/,
+  /AIza[0-9A-Za-z_-]{30,}/,
+  /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{5,}/,
+  // The sk-/rk-/pk- prefixes are too short to match unguarded (they occur
+  // inside ordinary hyphenated words like "task-"), so they are rejected
+  // only when not directly preceded by a letter.
+  /(?<![A-Za-z])(?:sk-(?:ant-|proj-)?|rk-|pk-)[A-Za-z0-9_-]{20,}/,
   /\bbearer\s+[A-Za-z0-9._~+/=-]{6,}/i,
   /\b(?:api[_-]?key|apikey|token|secret|password|passwd|credential|access[_-]?token|refresh[_-]?token|authorization)\s*[=:]\s*\S{8,}/i,
   /[A-Za-z0-9+/=_-]{48,}/,
@@ -101,16 +107,25 @@ export function assertRedactedText(
 }
 
 /**
- * Validates the redacted actor: a canonical principal entity reference
- * (`user:<namespace>/<name>` or `service:<subject>`), never free text and
- * never a token. Credential value shapes embedded anywhere in the reference
- * fail closed.
+ * The one canonical actor/owner grammar shared by appended actors, stored
+ * session owners, and the principal derived from read credentials: user
+ * entity refs (`user:<namespace>/<name>`) and Backstage service principal
+ * subjects (`plugin:<id>`, `external:<subject>`, and the equivalent
+ * `service:<id>` spelling).
+ */
+const PRINCIPAL_REF =
+  /^(?:user:[A-Za-z0-9_.\-]+(?:\/[A-Za-z0-9_.\-]+)?|(?:plugin|external|service):[A-Za-z0-9_.\-]+)$/;
+
+/**
+ * Validates the redacted actor: a canonical principal reference, never
+ * free text and never a token. Credential value shapes embedded anywhere in
+ * the reference fail closed.
  */
 export function assertPrincipalRef(value: unknown): string {
   const text = assertRedactedText(value, 'actor', { required: true })!;
-  if (!/^(user|service):([A-Za-z0-9_.\-]+\/)?[A-Za-z0-9_.\-]+$/.test(text)) {
+  if (!PRINCIPAL_REF.test(text)) {
     throw new Error(
-      'Invalid actor: expected a canonical principal entity reference such as "user:default/alice" or "service:plugin-id", never a raw token',
+      'Invalid actor: expected a canonical principal reference: a user entity ref such as "user:default/alice", or a service principal subject such as "plugin:catalog" or "external:billing-api"; never a raw token',
     );
   }
   return text;
@@ -187,15 +202,23 @@ export function assertDestination(
     );
   }
   // The path is part of the audit record, so a credential value hidden in a
-  // path segment is rejected just like one in free text. Benign words such
-  // as `/v1/oauth/token` pass.
+  // path segment is rejected just like one in free text. Detection is
+  // per-structured-component (host, then each decoded path segment): normal
+  // multi-segment routes such as Azure or Vertex paths are not one long
+  // entropy run, while a token-valued segment still fails closed.
   let decodedPath: string;
   try {
     decodedPath = decodeURIComponent(url.pathname);
   } catch {
     throw new Error(`Invalid ${field}: path is not valid percent-encoding`);
   }
-  assertNoSecretShapes(`${url.host}${decodedPath}`, field);
+  const components = [
+    url.host,
+    ...decodedPath.split('/').filter(segment => segment.length > 0),
+  ];
+  for (const component of components) {
+    assertNoSecretShapes(component, field);
+  }
   return `${url.origin}${url.pathname}`;
 }
 
