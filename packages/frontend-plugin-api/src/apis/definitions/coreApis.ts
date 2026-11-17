@@ -18,28 +18,68 @@ import {
   appHistoryApiRef,
   type AppHistoryApi,
 } from '../../routing/AppHistoryApi';
+import type { PluginWrapperBlueprint } from '../../blueprints/PluginWrapperBlueprint';
+import type { PluginHeaderActionBlueprint } from '../../blueprints/PluginHeaderActionBlueprint';
+import type { createSwappableComponent } from '../../components/createSwappableComponent';
 import type { ApiRef } from '../system/types';
-import { analyticsApiRef } from './AnalyticsApi';
-import { appLanguageApiRef } from './AppLanguageApi';
-import { appLifecycleApiRef } from './AppLifecycleApi';
-import { appThemeApiRef } from './AppThemeApi';
-import { appTreeApiRef } from './AppTreeApi';
-import { configApiRef } from './ConfigApi';
-import { dialogApiRef } from './DialogApi';
-import { discoveryApiRef } from './DiscoveryApi';
-import { errorApiRef } from './ErrorApi';
-import { featureFlagsApiRef } from './FeatureFlagsApi';
-import { fetchApiRef } from './FetchApi';
-import { iconsApiRef } from './IconsApi';
-import { identityApiRef } from './IdentityApi';
-import { oauthRequestApiRef } from './OAuthRequestApi';
-import { pluginHeaderActionsApiRef } from './PluginHeaderActionsApi';
-import { pluginWrapperApiRef } from './PluginWrapperApi';
-import { routeResolutionApiRef } from './RouteResolutionApi';
-import { storageApiRef } from './StorageApi';
-import { swappableComponentsApiRef } from './SwappableComponentsApi';
-import { toastApiRef } from './ToastApi';
-import { translationApiRef } from './TranslationApi';
+import { analyticsApiRef, type AnalyticsApi } from './AnalyticsApi';
+import { appLanguageApiRef, type AppLanguageApi } from './AppLanguageApi';
+import { appLifecycleApiRef, type AppLifecycleApi } from './AppLifecycleApi';
+import { appThemeApiRef, type AppThemeApi } from './AppThemeApi';
+import { appTreeApiRef, type AppTreeApi } from './AppTreeApi';
+import { configApiRef, type ConfigApi } from './ConfigApi';
+import { dialogApiRef, type DialogApi } from './DialogApi';
+import { discoveryApiRef, type DiscoveryApi } from './DiscoveryApi';
+import { errorApiRef, type ErrorApi } from './ErrorApi';
+import { featureFlagsApiRef, type FeatureFlagsApi } from './FeatureFlagsApi';
+import { fetchApiRef, type FetchApi } from './FetchApi';
+import { iconsApiRef, type IconsApi } from './IconsApi';
+import { identityApiRef, type IdentityApi } from './IdentityApi';
+import { oauthRequestApiRef, type OAuthRequestApi } from './OAuthRequestApi';
+import {
+  pluginHeaderActionsApiRef,
+  type PluginHeaderActionsApi,
+} from './PluginHeaderActionsApi';
+import { pluginWrapperApiRef, type PluginWrapperApi } from './PluginWrapperApi';
+import {
+  routeResolutionApiRef,
+  type RouteResolutionApi,
+} from './RouteResolutionApi';
+import { storageApiRef, type StorageApi } from './StorageApi';
+import {
+  swappableComponentsApiRef,
+  type SwappableComponentsApi,
+} from './SwappableComponentsApi';
+import { toastApiRef, type ToastApi } from './ToastApi';
+import { translationApiRef, type TranslationApi } from './TranslationApi';
+
+// Keep documentation-only imports in declarations so editor links can resolve.
+export type {
+  PluginWrapperBlueprint,
+  PluginHeaderActionBlueprint,
+  createSwappableComponent,
+  AnalyticsApi,
+  AppLanguageApi,
+  AppLifecycleApi,
+  AppThemeApi,
+  AppTreeApi,
+  ConfigApi,
+  DialogApi,
+  DiscoveryApi,
+  ErrorApi,
+  FeatureFlagsApi,
+  FetchApi,
+  IconsApi,
+  IdentityApi,
+  OAuthRequestApi,
+  PluginHeaderActionsApi,
+  PluginWrapperApi,
+  RouteResolutionApi,
+  StorageApi,
+  SwappableComponentsApi,
+  ToastApi,
+  TranslationApi,
+};
 
 // Keep member documentation explicit: editor hovers do not expand @inheritDoc.
 
@@ -62,7 +102,7 @@ export interface CoreApis {
    * @remarks
    *
    * To define a concrete Analytics Implementation, use
-   * {@link @backstage/plugin-app-react#AnalyticsImplementationBlueprint}.
+   * {@link https://github.com/backstage/backstage/blob/master/plugins/app-react/src/blueprints/AnalyticsImplementationBlueprint.ts | AnalyticsImplementationBlueprint}.
    *
    * @public
    */

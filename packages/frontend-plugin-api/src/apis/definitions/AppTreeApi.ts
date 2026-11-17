@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import { FrontendPlugin, Extension, ExtensionDataRef } from '../../wiring';
 import { ExtensionAttachTo } from '../../wiring/resolveExtensionDefinition';
 import { FilterPredicate } from '@backstage/filter-predicates';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * The specification for this {@link AppNode} in the {@link AppTree}.

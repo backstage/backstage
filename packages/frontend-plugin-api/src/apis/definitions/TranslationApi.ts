@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import { Expand, ExpandRecursive, Observable } from '@backstage/types';
 import { TranslationRef } from '../../translation';
 import { JSX } from 'react';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * Base translation options.

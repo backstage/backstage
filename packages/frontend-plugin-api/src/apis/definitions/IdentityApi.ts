@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import { BackstageUserIdentity, ProfileInfo } from './auth';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * The Identity API used to identify and get information about the signed in user.

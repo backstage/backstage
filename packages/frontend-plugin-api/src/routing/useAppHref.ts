@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from '../apis/definitions/coreApis';
 import {
   APP_ROOT_PATH,
   isExternalTarget,
@@ -29,6 +30,9 @@ import {
   useRouterContext,
   stripLegacyBasename,
 } from './reactRouterContext';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * Resolves an app-absolute path to a browser-ready href (including the app's

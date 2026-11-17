@@ -16,7 +16,11 @@
 /* We want to maintain the same information as an enum, so we disable the redeclaration warning */
 /* eslint-disable @typescript-eslint/no-redeclare */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * Feature flag descriptor.

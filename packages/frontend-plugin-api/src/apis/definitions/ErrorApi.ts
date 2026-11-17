@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import { Observable } from '@backstage/types';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * Mirrors the JavaScript Error class, for the purpose of

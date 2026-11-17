@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import { JsonValue, Observable } from '@backstage/types';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * A snapshot in time of the current known value of a storage key.

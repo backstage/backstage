@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import { AnalyticsContextValue } from '../../analytics/types';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * Represents an event worth tracking in an analytics system that could inform

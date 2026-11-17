@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * A handle for an open dialog that can be used to interact with it.

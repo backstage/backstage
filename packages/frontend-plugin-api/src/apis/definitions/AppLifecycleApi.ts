@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+import type { InternalCoreApis } from './coreApis';
 import { createApiRef } from '../system';
+
+// Retain documentation link targets in declarations.
+export type { InternalCoreApis };
 
 /**
  * Provides information about the lifecycle of the app.

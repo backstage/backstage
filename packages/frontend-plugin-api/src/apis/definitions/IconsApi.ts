@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import { IconElement } from '../../icons';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * API for accessing app icons.

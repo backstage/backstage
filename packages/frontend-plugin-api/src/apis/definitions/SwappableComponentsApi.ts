@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import type { InternalCoreApis } from './coreApis';
 import { SwappableComponentRef } from '../../components';
 import { createApiRef } from '../system';
+
+// Retain documentation link targets in declarations.
+export type { InternalCoreApis };
 
 /**
  * API for looking up components based on component refs.

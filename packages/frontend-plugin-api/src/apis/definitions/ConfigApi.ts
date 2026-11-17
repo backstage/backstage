@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import type { Config } from '@backstage/config';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * The Config API is used to provide a mechanism to access the

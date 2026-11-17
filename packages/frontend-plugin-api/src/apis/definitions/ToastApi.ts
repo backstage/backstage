@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef, ApiRef } from '../system';
 import { ReactNode } from 'react';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * Link item for toast notifications.

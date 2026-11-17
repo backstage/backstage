@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import {
   AnyRouteRefParams,
@@ -22,6 +23,9 @@ import {
   ExternalRouteRef,
 } from '../../routing';
 import type { AppNode } from './AppTreeApi';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * TS magic for handling route parameters.
