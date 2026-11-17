@@ -676,6 +676,28 @@ function pushWorkerError(
 }
 
 let runtime = new GoogleWorkerRuntime();
+// Module-level close coordination: every close call (graceful or emergency)
+// registers here. The shared runtime is replaced only after the LAST
+// overlapping close call completes, so a stream can never land on a fresh
+// runtime while an earlier close of the old one is still draining.
+let activeCloses = 0;
+
+async function coordinatedClose(
+  run: (instance: GoogleWorkerRuntime) => Promise<void>,
+): Promise<void> {
+  const closing = runtime;
+  activeCloses += 1;
+  try {
+    await run(closing);
+  } finally {
+    activeCloses -= 1;
+    if (activeCloses === 0 && runtime === closing) {
+      // No close call is still in flight: publish the replacement. Until
+      // this point, new work hits the closed instance and is refused.
+      runtime = new GoogleWorkerRuntime();
+    }
+  }
+}
 
 /**
  * Runs one pinned Google adapter stream inside the isolated worker and
@@ -695,29 +717,25 @@ export function runGoogleStream(
 
 /**
  * Gracefully stops the shared Google worker: in-flight streams are aborted
- * and settle with unknown remote outcomes. A later stream starts a fresh
- * worker.
+ * and settle with unknown remote outcomes. While any overlapping close is
+ * still running, new streams are refused; once the last one finishes, a
+ * later stream starts a fresh worker.
  *
  * @internal
  */
 export async function closeGoogleWorker(): Promise<void> {
-  const closing = runtime;
-  await closing.close();
-  // The closed runtime is terminal: it refuses new streams forever. Replace
-  // the shared runtime so later callers get a fresh worker instead.
-  if (runtime === closing) {
-    runtime = new GoogleWorkerRuntime();
-  }
+  await coordinatedClose(closing => closing.close());
 }
 
 /**
  * Terminates the shared Google worker immediately, rehearsing worker loss:
- * in-flight streams fail without claiming their remote outcomes.
+ * in-flight streams fail without claiming their remote outcomes. A later
+ * stream starts a fresh worker once every overlapping close has finished.
  *
  * @internal
  */
 export async function terminateGoogleWorker(): Promise<void> {
-  await runtime.terminate();
+  await coordinatedClose(closing => closing.terminate());
 }
 
 /** Liveness and enforcement-boundary probe for the shared worker. */

@@ -390,6 +390,245 @@ it('settles the facade on close while an authority recheck is held', async () =>
   expect(afterRelease).not.toBe('timeout');
 });
 
+/*
+ * Close-caller combination matrix (shutdown coordination, cycle 3).
+ *
+ * The invariant under test: after ANY close call returns, no stream started
+ * before or during any overlapping close can still send or complete; new
+ * work is refused from the first close's start until the replacement
+ * runtime is published after the LAST close call finishes.
+ *
+ * Rows — overlapping close callers:
+ *   1. single graceful
+ *   2. single terminate
+ *   3. graceful + terminate
+ *   4. terminate + graceful
+ *   5. terminate + terminate
+ *   6. graceful + graceful, the second started inside the first's drain
+ *      window (close during another close's drain — the cycle-3 bug)
+ *   7. N-way: graceful + three terminates
+ *   8. close during worker startup (the respawn race)
+ *
+ * Columns — new-work phases:
+ *   BEFORE      a stream in flight when the first close starts never sends
+ *               or completes after any close returns (lifecycle suites and
+ *               the cell-8 race probe below).
+ *   DURING      a stream started while any close is running is refused
+ *               before dispatch: no send, bounded settle.
+ *   AFTER-FIRST once the first of several overlapping closes returns but
+ *               the last is still draining, work is still refused — the
+ *               replacement must not be published early.
+ *   AFTER-ALL   once every close call has returned, new work is served by
+ *               a fresh worker.
+ */
+const closeCallerCombos: Array<{ name: string; start: () => Promise<void>[] }> =
+  [
+    { name: 'single graceful', start: () => [closeGoogleWorker()] },
+    { name: 'single terminate', start: () => [terminateGoogleWorker()] },
+    {
+      name: 'graceful + terminate',
+      start: () => [closeGoogleWorker(), terminateGoogleWorker()],
+    },
+    {
+      name: 'terminate + graceful',
+      start: () => [terminateGoogleWorker(), closeGoogleWorker()],
+    },
+    {
+      name: 'terminate + terminate',
+      start: () => [terminateGoogleWorker(), terminateGoogleWorker()],
+    },
+    {
+      name: 'N-way: graceful + three terminates',
+      start: () => [
+        closeGoogleWorker(),
+        terminateGoogleWorker(),
+        terminateGoogleWorker(),
+        terminateGoogleWorker(),
+      ],
+    },
+  ];
+
+describe.each(closeCallerCombos)('close matrix: %s', ({ start }) => {
+  it('refuses new work while the closes run and serves it after they finish', async () => {
+    let sends = 0;
+    const transport = (async () => {
+      sends += 1;
+      return new Response(sseBody(), {
+        headers: { 'content-type': 'text/event-stream' },
+      });
+    }) as typeof fetch;
+    const f = setup(
+      'https://generativelanguage.googleapis.com/v1beta',
+      transport,
+    );
+    expect(
+      (await f.facade.completeSimple(f.model, context(), { maxRetries: 0 }))
+        .stopReason,
+    ).toBe('stop');
+    const closes = start();
+    // DURING: posted synchronously while the close callers are in flight.
+    const during = await f.facade.completeSimple(f.model, context(), {
+      maxRetries: 0,
+    });
+    expect(during.errorMessage).toContain('shutting down');
+    await Promise.all(closes);
+    // AFTER-ALL: the replacement is published; new work succeeds.
+    const after = await f.facade.completeSimple(f.model, context(), {
+      maxRetries: 0,
+    });
+    expect(after.stopReason).toBe('stop');
+    expect(sends).toBe(2);
+  });
+});
+
+it('keeps refusing work until every overlapping graceful close has finished (cycle-3 reproduction)', async () => {
+  let sends = 0;
+  let started!: () => void;
+  const entered = new Promise<void>(resolve => {
+    started = resolve;
+  });
+  const transport = (async () => {
+    sends += 1;
+    if (sends === 1) {
+      return new Response(sseBody(), {
+        headers: { 'content-type': 'text/event-stream' },
+      });
+    }
+    started();
+    return new Response(new ReadableStream({ start() {} }), {
+      headers: { 'content-type': 'text/event-stream' },
+    });
+  }) as typeof fetch;
+  const f = setup(
+    'https://generativelanguage.googleapis.com/v1beta',
+    transport,
+  );
+  await f.facade.completeSimple(f.model, context(), { maxRetries: 0 });
+  const first = closeGoogleWorker();
+  // The second close starts inside the first close's drain window.
+  await new Promise(resolve => setTimeout(resolve, 70));
+  const second = closeGoogleWorker();
+  await first;
+  let secondDone = false;
+  void second.then(() => {
+    secondDone = true;
+  });
+  // AFTER-FIRST: the first close has returned, the second is still
+  // draining. A new stream must be refused — the runtime replacement is
+  // not published while any close call is still in flight.
+  const pending = f.facade.completeSimple(f.model, context(), {
+    maxRetries: 0,
+  });
+  const firstEvent = await Promise.race([
+    entered.then(() => 'sent'),
+    pending.then(() => 'refused'),
+  ]);
+  const secondDoneAtRefusal = secondDone;
+  expect(firstEvent).toBe('refused');
+  expect(secondDoneAtRefusal).toBe(false);
+  await second;
+  const result = await pending;
+  expect(result.errorMessage).toContain('shutting down');
+  expect(sends).toBe(1);
+  // AFTER-ALL: the replacement is published; new work succeeds on a
+  // fresh fixture so the dangling response above stays unconsumed.
+  let afterSends = 0;
+  const afterTransport = (async () => {
+    afterSends += 1;
+    return new Response(sseBody(), {
+      headers: { 'content-type': 'text/event-stream' },
+    });
+  }) as typeof fetch;
+  const f2 = setup(
+    'https://generativelanguage.googleapis.com/v1beta',
+    afterTransport,
+  );
+  const after = await f2.facade.completeSimple(f2.model, context(), {
+    maxRetries: 0,
+  });
+  expect(after.stopReason).toBe('stop');
+  expect(afterSends).toBe(1);
+});
+
+it('keeps refusing work between a finished terminate and a still-draining graceful close', async () => {
+  let sends = 0;
+  const transport = (async () => {
+    sends += 1;
+    return new Response(sseBody(), {
+      headers: { 'content-type': 'text/event-stream' },
+    });
+  }) as typeof fetch;
+  const f = setup(
+    'https://generativelanguage.googleapis.com/v1beta',
+    transport,
+  );
+  expect(
+    (await f.facade.completeSimple(f.model, context(), { maxRetries: 0 }))
+      .stopReason,
+  ).toBe('stop');
+  const graceful = closeGoogleWorker();
+  const term = terminateGoogleWorker();
+  await term;
+  // AFTER-FIRST: the immediate close has returned, the graceful one is
+  // still draining — work is still refused.
+  const during = await f.facade.completeSimple(f.model, context(), {
+    maxRetries: 0,
+  });
+  expect(during.errorMessage).toContain('shutting down');
+  await graceful;
+  const after = await f.facade.completeSimple(f.model, context(), {
+    maxRetries: 0,
+  });
+  expect(after.stopReason).toBe('stop');
+  expect(sends).toBe(2);
+});
+
+it('never sends after close when a close overtakes worker startup', async () => {
+  let sends = 0;
+  let sendAfterClose = false;
+  let closeReturned = false;
+  const transport = (async () => {
+    sends += 1;
+    if (closeReturned) sendAfterClose = true;
+    return new Response(sseBody(), {
+      headers: { 'content-type': 'text/event-stream' },
+    });
+  }) as typeof fetch;
+  const f = setup(
+    'https://generativelanguage.googleapis.com/v1beta',
+    transport,
+  );
+  // Kill the worker so the probed stream must respawn it, then race the
+  // respawn against a close.
+  await terminateGoogleWorker();
+  const pending = f.facade.completeSimple(f.model, context(), {
+    maxRetries: 0,
+  });
+  const close = closeGoogleWorker().then(() => {
+    closeReturned = true;
+  });
+  const race = <T>(promise: Promise<T>, ms = 2500) =>
+    Promise.race([
+      promise,
+      new Promise<'timeout'>(resolve =>
+        setTimeout(() => resolve('timeout'), ms),
+      ),
+    ]);
+  const result = await race(pending);
+  await close;
+  // The stream settles bounded either way, and no send happens after the
+  // close returns: it is either refused before dispatch or it completed
+  // entirely before the close began.
+  expect(result).not.toBe('timeout');
+  expect(sendAfterClose).toBe(false);
+  expect(sends).toBeLessThanOrEqual(1);
+  // AFTER-ALL: the replacement is published; new work succeeds.
+  const after = await f.facade.completeSimple(f.model, context(), {
+    maxRetries: 0,
+  });
+  expect(after.stopReason).toBe('stop');
+});
+
 it('does not dispatch a stream once immediate shutdown completes', async () => {
   const transport = jest.fn(
     async () =>
