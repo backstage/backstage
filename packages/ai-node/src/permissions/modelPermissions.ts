@@ -20,6 +20,7 @@ import type {
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 
+/** A provider and model ID pair identifying one canonical model. @alpha */
 export type ModelPair = Readonly<{ provider: string; modelId: string }>;
 
 type BasicPermission = Extract<
@@ -31,6 +32,8 @@ type BasicPermission = Extract<
  * Permission names encode each nonempty, well-formed Unicode segment with
  * encodeURIComponent and additionally encode literal dots as %2E. Case and
  * Unicode normalization are preserved. Names are exact, not wildcards.
+ *
+ * @alpha
  */
 export function modelPermissionName({ provider, modelId }: ModelPair): string {
   function segment(value: string): string {

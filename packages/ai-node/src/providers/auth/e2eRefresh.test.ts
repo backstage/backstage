@@ -304,13 +304,7 @@ describe.each(engines)(
       await f.cleanup();
     });
 
-    async function managed(
-      options: {
-        expires?: number;
-        hooks?: (input: { scope: { kind: string } }) => Promise<void>;
-        slow?: number;
-      } = {},
-    ) {
+    async function managed() {
       const configured = configureAiInstallation({
         source: {
           root: new ConfigReader({
@@ -344,7 +338,7 @@ describe.each(engines)(
           type: 'oauth',
           refresh: OLD_REFRESH,
           access: OLD_ACCESS,
-          expires: options.expires ?? Date.now() + 5_000,
+          expires: Date.now() + 5_000,
         }));
 
       const journal = createAttemptJournal({
@@ -365,13 +359,6 @@ describe.each(engines)(
         clientIds: { openai: 'client-id' },
       });
       const hook: CredentialRefreshHook = async input => {
-        if (options.slow !== undefined) {
-          await new Promise(resolve => setTimeout(resolve, options.slow));
-        }
-        if (options.hooks !== undefined) {
-          await options.hooks(input as never);
-          return;
-        }
         await authOperations.refresh({
           context: {
             actor: input.actor,

@@ -15,4 +15,10 @@ Routes require Backstage user bearer credentials and the `ai.session.use` permis
 
 Live output follows the submission; durable outcome observation requires the audit-read entitlement. A disconnected client stops receiving SSE; the admitted submission continues and settles. Reconnection without audit permission and selective cancellation of an already placed submission are not supported. Journal outcomes are session-scoped and cannot yet be attributed to individual submissions.
 
-The backend's managed service and database are plugin-scoped. Other consuming plugins use their own instances; installation configuration supplies the same organization credentials and model catalog to each, but encrypted personal credentials are stored separately per plugin. Cross-plugin credential and journal hosting is not available.
+The backend's managed service and database are plugin-scoped. Other
+consuming plugins use their own instances; installation configuration
+supplies the same organization credentials and model catalog to each, but
+user-scope encrypted personal credentials are stored per plugin instance —
+a user's personal credentials saved through this backend are not shared
+with another plugin's instance. Cross-plugin credential and journal hosting
+is not available.

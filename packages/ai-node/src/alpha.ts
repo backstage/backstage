@@ -64,3 +64,5 @@ export type {
 } from './journal/types';
 export { modelPermissionName } from './permissions/modelPermissions';
 export type { ModelPair } from './permissions/modelPermissions';
+export type { AiCredentialStores, CredentialScope } from './credentials/types';
+export type { RecoveryEvent } from './journal/types';

@@ -33,11 +33,17 @@ import {
 import { generateExamples } from './aiGenerate.examples';
 import { transformExamples } from './aiTransform.examples';
 
-/** Options shared by every AI-backed scaffolder action. */
+/**
+ * Options shared by every AI-backed scaffolder action.
+ *
+ * @public
+ */
 export interface AiActionOptions {
+  /** The managed AI service the actions run through. */
   ai: AiService;
   /** The root configuration, read at the scaffolder plugin's AI path. */
   config: Config;
+  /** Authorizes the submitting user for the configured model. */
   permissions: PermissionsService;
 }
 

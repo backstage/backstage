@@ -38,6 +38,47 @@ type PendingAttempt = {
   settled: boolean;
 };
 
+/**
+ * Awaits a permission recheck, but settles immediately as `false` if the
+ * request's abort signal fires while the check is in flight: an aborted
+ * operation must not queue behind a stalled host-side check. The signal is
+ * the request's combined one, so both the operation controller and any
+ * caller-supplied abort win the race. The check's eventual result is
+ * discarded once the race is lost — it grants nothing post-abort, and the
+ * revocation latch already covers re-entry.
+ */
+function raceRecheckAbort(
+  recheck: Promise<boolean>,
+  signal: AbortSignal,
+): Promise<boolean> {
+  if (signal.aborted) {
+    void recheck.catch(() => undefined);
+    return Promise.resolve(false);
+  }
+  return new Promise<boolean>((resolve, reject) => {
+    let settled = false;
+    const settle = (run: () => void) => {
+      if (settled) return;
+      settled = true;
+      run();
+    };
+    const onAbort = () => settle(() => resolve(false));
+    signal.addEventListener('abort', onAbort, { once: true });
+    recheck.then(
+      value =>
+        settle(() => {
+          signal.removeEventListener('abort', onAbort);
+          resolve(value);
+        }),
+      error =>
+        settle(() => {
+          signal.removeEventListener('abort', onAbort);
+          reject(error);
+        }),
+    );
+  });
+}
+
 export function createModelOperationGuard(options: {
   /** Captured real transport, never the guarded fetch itself. */
   transport: typeof fetch;
@@ -229,7 +270,10 @@ export function createModelOperationGuard(options: {
                 );
               }
               if (
-                !(await options.recheck(operation)) ||
+                !(await raceRecheckAbort(
+                  options.recheck(operation),
+                  request.signal,
+                )) ||
                 request.signal.aborted ||
                 blocked ||
                 finished

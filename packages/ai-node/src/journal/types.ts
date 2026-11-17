@@ -158,7 +158,7 @@ export type RecoveryEvent = Readonly<{
 }>;
 
 /**
- * One redacted journal event as returned by {@link AttemptJournal.read}.
+ * One redacted journal event as returned by the journal's read API.
  *
  * @remarks
  *

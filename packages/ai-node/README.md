@@ -91,7 +91,11 @@ per-plugin section: each consuming plugin still chooses its own path.
 Provider credentials and the canonical model catalog are **installation**
 scoped, not plugin scoped. The default `aiServiceRef` factory reads them at
 the `ai` path (exported as `AI_INSTALLATION_CONFIG_PATH`); a host that wires
-the integration itself can pass any path to `configureAiInstallation`.
+the integration itself can pass any path to `configureAiInstallation`. The
+one exception is encrypted personal credentials: each plugin's service
+instance keeps its own encrypted personal store, so a user's personal
+credentials saved through one plugin are not shared with another plugin's
+instance. Cross-plugin credential hosting is not available.
 
 ```yaml
 ai:
@@ -111,6 +115,11 @@ ai:
           refresh: ...
           access: ...
           expires: 1234
+    # Trusted OAuth token routes per provider for guarded auth operations.
+    # Providers without an entry cannot refresh OAuth credentials; the
+    # supported auth providers are Anthropic and OpenAI token endpoints.
+    tokenEndpoints:
+      anthropic: https://platform.claude.com/v1/oauth/token
   models:
     - provider: openai
       modelId: gpt-5
@@ -144,6 +153,18 @@ journaled, actionable denial, never a fallback.
   the credential kind (`api_key`, `oauth`, a future kind) and its fields are
   interpreted by the credential stores and provider modules that consume
   them, so configuration never encodes provider semantics.
+- **`tokenEndpoints`** lists, per provider, the trusted OAuth token routes
+  guarded auth operations may use for credential refresh — absolute
+  `https` URLs on the provider's own origin ending in the reserved
+  `/oauth/token` or `/v1/oauth/token` route. A provider without an entry
+  cannot refresh OAuth credentials; the supported auth providers are
+  Anthropic (`/v1/oauth/token`, matching its module's reserved route) and
+  OpenAI token endpoints. Declaring an endpoint alone does not enable
+  refresh: the guarded refresh machinery is internal to the package, and
+  the wiring that would invoke it before dispatch is not exposed by the
+  public or alpha API yet. In the shipped configuration an expired OAuth
+  credential therefore fails closed with an actionable denial; publicly
+  configurable pre-dispatch refresh is future work.
 - **`precedence`** selects which credential scope wins when both a personal and
   an installation credential exist for a provider. The default `user-first`
   prefers the caller's own provider account; `org-first` pins the installation
