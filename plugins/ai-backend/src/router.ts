@@ -95,7 +95,18 @@ export function createRouter(options: {
     const actor = await credentials(req);
     const cursor =
       typeof req.query.cursor === 'string' ? req.query.cursor : undefined;
-    res.json(await options.support.listSessions(actor, { cursor }));
+    const rawLimit = req.query.limit;
+    if (
+      rawLimit !== undefined &&
+      (typeof rawLimit !== 'string' ||
+        !/^[0-9]+$/.test(rawLimit) ||
+        Number(rawLimit) < 1)
+    ) {
+      throw new InputError('Invalid session page limit');
+    }
+    const limit =
+      rawLimit === undefined ? undefined : Math.min(Number(rawLimit), 500);
+    res.json(await options.support.listSessions(actor, { cursor, limit }));
   });
   router.post('/v1/sessions', async (req, res) => {
     const actor = await credentials(req);
@@ -173,9 +184,17 @@ export function createRouter(options: {
   );
   router.get('/v1/sessions/:sessionId/audit', async (req, res) => {
     const actor = await credentials(req);
+    const cursor = req.query.cursor;
+    if (
+      cursor !== undefined &&
+      (typeof cursor !== 'string' ||
+        !/^(0|[1-9][0-9]*)$/.test(cursor) ||
+        cursor.length > 19 ||
+        (cursor.length === 19 && cursor > '9223372036854775807'))
+    ) {
+      throw new InputError('Invalid audit cursor');
+    }
     try {
-      const cursor =
-        typeof req.query.cursor === 'string' ? req.query.cursor : undefined;
       res.json(
         await options.support.readAudit(actor, req.params.sessionId, {
           cursor,

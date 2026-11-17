@@ -407,6 +407,50 @@ describe.each<[string, string | undefined]>([
         .get('/api/ai/v1/sessions')
         .auth(alice, { type: 'bearer' });
       expect(own.body.items).toContain(sessionId);
+      for (let i = 0; i < 2; i += 1) {
+        const additional = await request(backend.server)
+          .post('/api/ai/v1/sessions')
+          .auth(alice, { type: 'bearer' })
+          .send({ model: { provider: 'openai', modelId: 'example' } });
+        expect(additional.status).toBe(201);
+      }
+      const firstPage = await request(backend.server)
+        .get('/api/ai/v1/sessions?limit=1')
+        .auth(alice, { type: 'bearer' });
+      expect(firstPage.status).toBe(200);
+      expect(firstPage.body.items).toHaveLength(1);
+      expect(firstPage.body.nextCursor).toBe(firstPage.body.items[0]);
+      const nextPage = await request(backend.server)
+        .get('/api/ai/v1/sessions')
+        .query({ limit: 1, cursor: firstPage.body.nextCursor })
+        .auth(alice, { type: 'bearer' });
+      expect(nextPage.body.items).toHaveLength(1);
+      expect(nextPage.body.items[0]).not.toBe(firstPage.body.items[0]);
+      const clamped = await request(backend.server)
+        .get('/api/ai/v1/sessions?limit=501')
+        .auth(alice, { type: 'bearer' });
+      expect(clamped.status).toBe(200);
+      expect(clamped.body.items).toHaveLength(3);
+      for (const limit of ['0', '-1', 'abc', '1.5', '']) {
+        const invalid = await request(backend.server)
+          .get('/api/ai/v1/sessions')
+          .query({ limit })
+          .auth(alice, { type: 'bearer' });
+        expect(invalid.status).toBe(400);
+      }
+      const detail = await request(backend.server)
+        .get(`/api/ai/v1/sessions/${sessionId}`)
+        .auth(alice, { type: 'bearer' });
+      expect(detail.status).toBe(200);
+      expect(detail.body).toEqual({ sessionId });
+      const missing = await request(backend.server)
+        .get('/api/ai/v1/sessions/not-an-existing-session')
+        .auth(alice, { type: 'bearer' });
+      expect(missing.status).toBe(404);
+      const repeatedLimit = await request(backend.server)
+        .get('/api/ai/v1/sessions?limit=1&limit=2')
+        .auth(alice, { type: 'bearer' });
+      expect(repeatedLimit.status).toBe(400);
       const foreign = await request(backend.server)
         .get(`/api/ai/v1/sessions/${sessionId}`)
         .auth(bob, { type: 'bearer' });
@@ -415,6 +459,31 @@ describe.each<[string, string | undefined]>([
         .get(`/api/ai/v1/sessions/${sessionId}/audit`)
         .auth(bob, { type: 'bearer' });
       expect(audit.status).toBe(403);
+      const invalidCursor = await request(backend.server)
+        .get(`/api/ai/v1/sessions/${sessionId}/audit?cursor=invalid`)
+        .auth(alice, { type: 'bearer' });
+      expect(invalidCursor.status).toBe(400);
+      for (const cursor of ['', '-1', '01', '9223372036854775808']) {
+        const invalid = await request(backend.server)
+          .get(`/api/ai/v1/sessions/${sessionId}/audit`)
+          .query({ cursor })
+          .auth(alice, { type: 'bearer' });
+        expect(invalid.status).toBe(400);
+      }
+      const repeatedCursor = await request(backend.server)
+        .get(`/api/ai/v1/sessions/${sessionId}/audit?cursor=0&cursor=1`)
+        .auth(alice, { type: 'bearer' });
+      expect(repeatedCursor.status).toBe(400);
+      const validCursor = await request(backend.server)
+        .get(`/api/ai/v1/sessions/${sessionId}/audit?cursor=0`)
+        .auth(alice, { type: 'bearer' });
+      expect(validCursor.status).toBe(200);
+      const maxCursor = await request(backend.server)
+        .get(
+          `/api/ai/v1/sessions/${sessionId}/audit?cursor=9223372036854775807`,
+        )
+        .auth(alice, { type: 'bearer' });
+      expect(maxCursor.status).toBe(200);
       const rejected = await request(backend.server)
         .post(
           `/api/ai/v1/sessions/${sessionId}/conversations/${created.body.conversationId}/messages`,

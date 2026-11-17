@@ -5,13 +5,13 @@ The AI backend exposes managed AI sessions under `/api/ai/v1`. Add `@backstage/p
 Routes require Backstage user bearer credentials and the `ai.session.use` permission. This plugin does not enable cookie authentication. Model discovery returns only models allowed by their `ai.model.<provider>.<model>.use` permissions; each model segment is URI-encoded, with literal dots encoded as `%2E`. Dispatch checks that permission again. Audit reads require both session ownership and `ai.audit.read`.
 
 - `GET /models` lists permitted models.
-- `GET /sessions` lists the caller's sessions; pass the returned `nextCursor` as `cursor` to continue.
+- `GET /sessions` lists the caller's sessions; pass the returned `nextCursor` as `cursor` to continue. The optional `limit` is a positive integer and is capped at 500.
 - `POST /sessions` accepts `{ "model": { "provider": "...", "modelId": "..." } }` and returns a session and root conversation ID.
-- `GET /sessions/:sessionId` checks an existing session.
+- `GET /sessions/:sessionId` returns `{ "sessionId": "..." }` for an owned session and returns 404 if it is unknown or owned by someone else. No additional session metadata is available.
 - `POST /sessions/:sessionId/conversations` accepts the same model object and creates a conversation.
 - `GET /sessions/:sessionId/conversations/:conversationId` returns up to 100 recent text entries. `hasMore` indicates additional history; pagination of conversation history is not yet supported.
 - `POST /sessions/:sessionId/conversations/:conversationId/messages` accepts `{ "content": "..." }` and returns an SSE stream. `partial` events contain text snapshots, `answer` contains the final answer, and `settled` reports the submission status, not an individual provider attempt outcome.
-- `GET /sessions/:sessionId/audit` returns a session-scoped journal page. Pass `nextCursor` as `cursor` to continue.
+- `GET /sessions/:sessionId/audit` returns a session-scoped journal page. Pass `nextCursor` as `cursor` to continue; malformed cursors return 400.
 
 Live output follows the submission; durable outcome observation requires the audit-read entitlement. A disconnected client stops receiving SSE; the admitted submission continues and settles. Reconnection without audit permission and selective cancellation of an already placed submission are not supported. Journal outcomes are session-scoped and cannot yet be attributed to individual submissions.
 
