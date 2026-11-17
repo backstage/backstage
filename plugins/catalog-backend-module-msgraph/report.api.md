@@ -247,6 +247,8 @@ export type MicrosoftGraphProviderConfig = {
   tenantId: string;
   clientId?: string;
   clientSecret?: string;
+  clientCertificate?: string;
+  clientCertificatePath?: string;
   userFilter?: string;
   userSelect?: string[];
   userExpand?: string;

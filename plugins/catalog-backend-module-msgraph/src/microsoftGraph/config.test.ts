@@ -102,6 +102,76 @@ describe('readMicrosoftGraphConfig', () => {
     };
     expect(() => readMicrosoftGraphConfig(new ConfigReader(config))).toThrow();
   });
+  it('reads a client certificate', () => {
+    const config = {
+      providers: [
+        {
+          target: 'target',
+          tenantId: 'tenantId',
+          clientId: 'clientId',
+          clientCertificate: 'pem',
+        },
+      ],
+    };
+    const [actual] = readMicrosoftGraphConfig(new ConfigReader(config));
+    expect(actual).toEqual(
+      expect.objectContaining({
+        clientId: 'clientId',
+        clientCertificate: 'pem',
+      }),
+    );
+    expect(actual.clientSecret).toBeUndefined();
+  });
+
+  it('reads a client certificate path', () => {
+    const config = {
+      providers: [
+        {
+          target: 'target',
+          tenantId: 'tenantId',
+          clientId: 'clientId',
+          clientCertificatePath: '/path/to/cert.pem',
+        },
+      ],
+    };
+    const [actual] = readMicrosoftGraphConfig(new ConfigReader(config));
+    expect(actual).toEqual(
+      expect.objectContaining({
+        clientId: 'clientId',
+        clientCertificatePath: '/path/to/cert.pem',
+      }),
+    );
+  });
+
+  it('should fail if more than one client credential is set', () => {
+    const config = {
+      providers: [
+        {
+          tenantId: 'tenantId',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+          clientCertificate: 'pem',
+        },
+      ],
+    };
+    expect(() => readMicrosoftGraphConfig(new ConfigReader(config))).toThrow(
+      'Only one of clientSecret, clientCertificate or clientCertificatePath can be specified',
+    );
+  });
+
+  it('should fail if clientCertificate is set without clientId', () => {
+    const config = {
+      providers: [
+        {
+          tenantId: 'tenantId',
+          clientCertificate: 'pem',
+        },
+      ],
+    };
+    expect(() => readMicrosoftGraphConfig(new ConfigReader(config))).toThrow(
+      'clientId must be provided when clientCertificate is defined.',
+    );
+  });
 });
 
 describe('readProviderConfigs', () => {
@@ -284,5 +354,109 @@ describe('readProviderConfigs', () => {
       },
     };
     expect(() => readProviderConfigs(new ConfigReader(config))).toThrow();
+  });
+  it('reads a client certificate', () => {
+    const config = {
+      catalog: {
+        providers: {
+          microsoftGraphOrg: {
+            customProviderId: {
+              tenantId: 'tenantId',
+              clientId: 'clientId',
+              clientCertificate: 'pem',
+            },
+          },
+        },
+      },
+    };
+    const [actual] = readProviderConfigs(new ConfigReader(config));
+    expect(actual).toEqual(
+      expect.objectContaining({
+        id: 'customProviderId',
+        clientId: 'clientId',
+        clientCertificate: 'pem',
+      }),
+    );
+    expect(actual.clientSecret).toBeUndefined();
+  });
+
+  it('reads a client certificate path in the single provider variant', () => {
+    const config = {
+      catalog: {
+        providers: {
+          microsoftGraphOrg: {
+            tenantId: 'tenantId',
+            clientId: 'clientId',
+            clientCertificatePath: '/path/to/cert.pem',
+          },
+        },
+      },
+    };
+    const [actual] = readProviderConfigs(new ConfigReader(config));
+    expect(actual).toEqual(
+      expect.objectContaining({
+        id: 'default',
+        clientId: 'clientId',
+        clientCertificatePath: '/path/to/cert.pem',
+      }),
+    );
+  });
+
+  it('should fail if both clientCertificate and clientCertificatePath are set', () => {
+    const config = {
+      catalog: {
+        providers: {
+          microsoftGraphOrg: {
+            customProviderId: {
+              tenantId: 'tenantId',
+              clientId: 'clientId',
+              clientCertificate: 'pem',
+              clientCertificatePath: '/path/to/cert.pem',
+            },
+          },
+        },
+      },
+    };
+    expect(() => readProviderConfigs(new ConfigReader(config))).toThrow(
+      'Only one of clientSecret, clientCertificate or clientCertificatePath can be specified, got clientCertificate, clientCertificatePath.',
+    );
+  });
+
+  it('should fail if both clientSecret and clientCertificatePath are set', () => {
+    const config = {
+      catalog: {
+        providers: {
+          microsoftGraphOrg: {
+            customProviderId: {
+              tenantId: 'tenantId',
+              clientId: 'clientId',
+              clientSecret: 'clientSecret',
+              clientCertificatePath: '/path/to/cert.pem',
+            },
+          },
+        },
+      },
+    };
+    expect(() => readProviderConfigs(new ConfigReader(config))).toThrow(
+      'Only one of clientSecret, clientCertificate or clientCertificatePath can be specified',
+    );
+  });
+
+  it('should fail if clientCertificatePath is set without clientId', () => {
+    const config = {
+      catalog: {
+        providers: {
+          microsoftGraphOrg: {
+            customProviderId: {
+              tenantId: 'tenantId',
+              clientCertificatePath: '/path/to/cert.pem',
+            },
+          },
+        },
+      },
+    };
+    expect(() => readProviderConfigs(new ConfigReader(config))).toThrow(
+      'clientId must be provided when clientCertificatePath is defined.',
+    );
   });
 });

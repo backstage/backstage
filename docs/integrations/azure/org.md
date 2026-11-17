@@ -110,7 +110,17 @@ microsoftGraphOrg:
     clientSecret: REDACTED
 ```
 
-To authenticate with a certificate rather than a client secret, you can set the `AZURE_TENANT_ID`, `AZURE_CLIENT_ID` and `AZURE_CLIENT_CERTIFICATE_PATH` environments
+To authenticate with a certificate rather than a client secret, you can set the `AZURE_TENANT_ID`, `AZURE_CLIENT_ID` and `AZURE_CLIENT_CERTIFICATE_PATH` environments, or specify the certificate in configuration. Provide the PEM-encoded certificate including its private key, either inline via `clientCertificate` or as a file via `clientCertificatePath`:
+
+```yaml
+microsoftGraphOrg:
+  default:
+    ##...
+    clientId: 9ef1aac6-b454-4e69-9cf5-7199df049281
+    clientCertificatePath: /path/to/cert.pem # or clientCertificate: ${AZURE_CLIENT_CERTIFICATE}
+```
+
+Only one of `clientSecret`, `clientCertificate` and `clientCertificatePath` can be set, and `clientId` is required with any of them.
 
 ### Managed Identity
 

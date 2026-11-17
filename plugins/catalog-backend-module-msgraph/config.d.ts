@@ -53,6 +53,18 @@ export interface Config {
            * @visibility secret
            */
           clientSecret?: string;
+          /**
+           * PEM-encoded client certificate, including its private key, to use for
+           * authenticating requests instead of a client secret.
+           *
+           * @visibility secret
+           */
+          clientCertificate?: string;
+          /**
+           * Path to a PEM-encoded client certificate file, including its private
+           * key, to use for authenticating requests instead of a client secret.
+           */
+          clientCertificatePath?: string;
 
           // TODO: Consider not making these config options and pass them in the
           // constructor instead. They are probably not environment specific, so
@@ -139,6 +151,18 @@ export interface Config {
              * @visibility secret
              */
             clientSecret?: string;
+            /**
+             * PEM-encoded client certificate, including its private key, to use for
+             * authenticating requests instead of a client secret.
+             *
+             * @visibility secret
+             */
+            clientCertificate?: string;
+            /**
+             * Path to a PEM-encoded client certificate file, including its private
+             * key, to use for authenticating requests instead of a client secret.
+             */
+            clientCertificatePath?: string;
 
             /**
              * By default, the Microsoft Graph API only provides the basic feature set
@@ -273,7 +297,19 @@ export interface Config {
                *
                * @visibility secret
                */
-              clientSecret: string;
+              clientSecret?: string;
+              /**
+               * PEM-encoded client certificate, including its private key, to use for
+               * authenticating requests instead of a client secret.
+               *
+               * @visibility secret
+               */
+              clientCertificate?: string;
+              /**
+               * Path to a PEM-encoded client certificate file, including its private
+               * key, to use for authenticating requests instead of a client secret.
+               */
+              clientCertificatePath?: string;
 
               /**
                * By default, the Microsoft Graph API only provides the basic feature set
