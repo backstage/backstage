@@ -27,6 +27,7 @@ import {
   type RecoveryResolver,
   type RecoveryResumeInput,
 } from './recovery';
+import type { LeaseInvalidationReason } from './types';
 import { createManualClock, createMemoryNamespaceLease } from './testing';
 import type { MemoryNamespaceLease } from './testing';
 import type { NamespaceLease } from './types';
@@ -63,6 +64,8 @@ type Fixture = {
 type FixtureOptions = {
   pageSize?: number;
   credentials?: () => Promise<BackstageCredentials>;
+  admissionSnapshotGate?: (namespace: Namespace) => void | Promise<void>;
+  admissionKeepaliveMs?: number;
 };
 
 async function fixture(
@@ -109,6 +112,8 @@ async function fixture(
     leases: lease as NamespaceLease,
     getOwnServiceCredentials,
     pageSize: options.pageSize,
+    admissionSnapshotGate: options.admissionSnapshotGate,
+    admissionKeepaliveMs: options.admissionKeepaliveMs,
   });
   return {
     db,
@@ -129,7 +134,8 @@ async function persist(
     | { kind: 'service'; pluginId: string },
   definitionVersion = 'v1',
 ) {
-  await state.lease.acquire(key, 'replica-a');
+  const fence = await state.lease.acquire(key, 'replica-a');
+  if (fence !== undefined) await state.lease.release(fence);
   await state.recovery.recordSession({
     namespace: key,
     origin,
@@ -632,5 +638,173 @@ describe.each(engines)('%s startup recovery', (_name, engine) => {
     expect(report.outcomes[0].status).toBe('blocked-definition');
     expect(report.outcomes[0].detail).toContain("definition version 'v2'");
     expect(resume).not.toHaveBeenCalled();
+  });
+
+  it('skips a session whose lease another replica holds', async () => {
+    const resume = jest.fn(async (_input: RecoveryResumeInput) => ({
+      kind: 'resumed' as const,
+    }));
+    current.recovery.registerResolver(resolver({ resume }));
+    current.recovery.completeStartup();
+    await current.lease.acquire(namespace, 'replica-a');
+    await current.recovery.recordSession({
+      namespace,
+      origin: { kind: 'service', pluginId },
+      definitionVersion: 'v1',
+    });
+
+    const report = await current.recovery.recover();
+
+    expect(report.outcomes[0]).toEqual({
+      namespace,
+      status: 'pending',
+      detail: 'Skipped: another replica holds the session lease',
+    });
+    expect(resume).not.toHaveBeenCalled();
+    expect(current.getOwnServiceCredentials).not.toHaveBeenCalled();
+  });
+
+  it('revokes a resume admitted from a snapshot superseded right after it was read', async () => {
+    const snapshotRead = deferred();
+    const snapshotReleased = deferred();
+    const resumeStarted = deferred();
+    const resumeRelease = deferred();
+    const invalidations: LeaseInvalidationReason[] = [];
+    let harnessClosed = false;
+    let acquiredFence: { owner: string; token: string } | undefined;
+
+    await current.cleanup();
+    current = await fixture(engine, {
+      admissionSnapshotGate: async () => {
+        snapshotRead.resolve();
+        await snapshotReleased.promise;
+      },
+    });
+    current.recovery.registerResolver(
+      resolver({
+        resume: async (input: RecoveryResumeInput) => {
+          // The resume opens work under the lease recovery acquired for it.
+          acquiredFence = {
+            owner: input.admission.fence.owner,
+            token: input.admission.fence.token,
+          };
+          input.admission.onInvalidated(reason => {
+            invalidations.push(reason);
+          });
+          input.admission.registerCleanup(async () => {
+            harnessClosed = true;
+          });
+          resumeStarted.resolve();
+          await resumeRelease.promise;
+          return { kind: 'resumed' as const };
+        },
+      }),
+    );
+    current.recovery.completeStartup();
+    await persist(current, namespace, { kind: 'service', pluginId });
+
+    const pass = current.recovery.recover();
+    // The admission snapshot was read; its delivery is paused here.
+    await snapshotRead.promise;
+
+    // Meanwhile another connection supersedes the authority record: user
+    // origin plus an unknown dispatch outcome, on a newer revision.
+    await current.recovery.markDispatchUnknown(namespace);
+    await current
+      .db('ai_recovery_sessions')
+      .where({ plugin_id: pluginId, session_id: namespace.sessionId })
+      .update({
+        origin_kind: 'user',
+        origin_user_id: 'user:default/alice',
+        origin_service_plugin_id: null,
+        revision: current.db.raw('revision + 1'),
+      });
+
+    // Deliver the saved snapshot: the stale admission is taken and the resume
+    // runs with service credentials under a lease it now holds.
+    snapshotReleased.resolve();
+    await resumeStarted.promise;
+    expect(acquiredFence).toBeDefined();
+
+    resumeRelease.resolve();
+    const report = await pass;
+
+    // The persisted record wins, and the superseded resume is torn down.
+    expect(report.outcomes[0].status).toBe('unknown-dispatch-outcome');
+    expect(invalidations).toEqual(['authority-superseded']);
+    expect(harnessClosed).toBe(true);
+
+    const raw = await current.db('ai_recovery_sessions').first();
+    expect(raw.status).toBe('unknown-dispatch-outcome');
+    expect(Boolean(raw.dispatch_unknown)).toBe(true);
+    expect(raw.origin_kind).toBe('user');
+
+    // The fence the invalidated resume held is released, conditionally, so a
+    // successor takes over with the next token instead of blocking forever.
+    const takeover = await current.lease.acquire(namespace, 'replica-b');
+    expect(takeover).toBeDefined();
+    expect(Number(takeover!.token)).toBe(Number(acquiredFence!.token) + 1);
+
+    // And the next pass never resumes under the superseded authority.
+    const again = await current.recovery.recover();
+    expect(again.outcomes[0].status).toBe('unknown-dispatch-outcome');
+    expect(invalidations).toEqual(['authority-superseded']);
+  }, 20_000);
+
+  it('releases the lease of a resume that declined the session', async () => {
+    let closed = false;
+    current.recovery.registerResolver(
+      resolver({
+        resume: async (input: RecoveryResumeInput) => {
+          input.admission.registerCleanup(async () => {
+            closed = true;
+          });
+          return {
+            kind: 'blocked-definition' as const,
+            reason: 'the stored definitions no longer load',
+          };
+        },
+      }),
+    );
+    current.recovery.completeStartup();
+    await persist(current, namespace, { kind: 'service', pluginId });
+
+    const report = await current.recovery.recover();
+
+    expect(report.outcomes[0].status).toBe('blocked-definition');
+    expect(closed).toBe(true);
+    // persist() acquired token 1, recovery acquired and released token 2.
+    expect(await current.lease.acquire(namespace, 'replica-b')).toEqual({
+      namespace,
+      owner: 'replica-b',
+      token: '3',
+    });
+  });
+
+  it('never reports a resume as recovered after its fence was lost mid-flight', async () => {
+    await current.cleanup();
+    current = await fixture(engine, { admissionKeepaliveMs: 10 });
+    const invalidated = deferred<LeaseInvalidationReason>();
+    current.recovery.registerResolver(
+      resolver({
+        resume: async (input: RecoveryResumeInput) => {
+          input.admission.onInvalidated(reason => invalidated.resolve(reason));
+          // A successor takes the lease while the resume is still working.
+          current.clock.advance(60_001);
+          await current.lease.acquire(namespace, 'replica-b');
+          await invalidated.promise;
+          return { kind: 'resumed' as const };
+        },
+      }),
+    );
+    current.recovery.completeStartup();
+    await persist(current, namespace, { kind: 'service', pluginId });
+
+    const report = await current.recovery.recover();
+
+    expect(report.outcomes[0].status).toBe('failed');
+    expect(report.outcomes[0].detail).toContain('lease was lost');
+    const raw = await current.db('ai_recovery_sessions').first();
+    expect(raw.status).toBe('failed');
   });
 });

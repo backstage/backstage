@@ -46,6 +46,7 @@ export {
   type RecoveryOutcome,
   type RecoveryReport,
   type RecoveryResolution,
+  type RecoveryAdmission,
   type RecoveryResolver,
   type RecoveryResumeInput,
   type RecoveryStatus,

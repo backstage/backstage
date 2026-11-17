@@ -63,7 +63,13 @@ export interface NamespaceLease {
 }
 
 /** Why a local fence stopped being trusted. */
-export type LeaseInvalidationReason = 'renewal-rejected' | 'renewal-error';
+export type LeaseInvalidationReason =
+  | 'renewal-rejected'
+  | 'renewal-error'
+  /** Recovery found the authority record superseded while the resume ran. */
+  | 'authority-superseded'
+  /** The resume declined to take the session; anything opened is closed. */
+  | 'session-closed';
 
 /**
  * A running keepalive for one fence.

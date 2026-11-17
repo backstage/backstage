@@ -16,8 +16,14 @@
 
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Knex } from 'knex';
-import type { Namespace } from '../contracts';
-import type { NamespaceLease } from './types';
+import { randomUUID } from 'node:crypto';
+import type { Fence, Namespace } from '../contracts';
+import { startLeaseKeepalive } from './keepalive';
+import type {
+  LeaseInvalidationReason,
+  LeaseKeepalive,
+  NamespaceLease,
+} from './types';
 
 const TABLE = 'ai_recovery_sessions';
 const DEFAULT_PAGE_SIZE = 100;
@@ -81,6 +87,40 @@ export interface RecoveryResumeInput {
    * this recovery pass. Never a stored token and never a user identity.
    */
   readonly credentials: BackstageCredentials;
+  /**
+   * The exclusive lease recovery acquired for this resume, plus the channel
+   * that tells the resumed work to stop.
+   *
+   * @remarks
+   *
+   * The resumed work must open its harness and storage under
+   * `admission.fence`, register an abort/close callback through
+   * `admission.onInvalidated` or `admission.registerCleanup`, and take over
+   * renewal of the fence on success. If the authority record was superseded
+   * while this resume ran, recovery releases the fence conditionally and fires
+   * that channel, so nothing keeps running under authority it no longer has.
+   */
+  readonly admission: RecoveryAdmission;
+}
+
+/**
+ * What a resume opened, and the channel that revokes it.
+ *
+ * @internal
+ */
+export interface RecoveryAdmission {
+  /** The lease held by this resume; already acquired when it is handed over. */
+  readonly fence: Fence;
+  /** Whether this admission has been revoked. */
+  readonly invalidated: boolean;
+  /** Registers an abort/close listener, fired at most once on revocation. */
+  onInvalidated(listener: (reason: LeaseInvalidationReason) => void): void;
+  /**
+   * Registers cleanup that runs on revocation, in registration order, before
+   * the fence is released. Use it for work that must be closed rather than
+   * merely signalled.
+   */
+  registerCleanup(cleanup: () => void | Promise<void>): void;
 }
 
 /**
@@ -140,6 +180,21 @@ export interface AiRecoveryOptions {
   readonly getOwnServiceCredentials: () => Promise<BackstageCredentials>;
   /** Enumeration page size. Default 100. */
   readonly pageSize?: number;
+  /** Renewal cadence for the leases recovery acquires. Default 20 seconds. */
+  readonly admissionKeepaliveMs?: number;
+  /**
+   * Internal test seam: awaited after the authoritative admission snapshot has
+   * been read and before it is used to admit a resume.
+   *
+   * @remarks
+   *
+   * Production wiring must omit it. It exists so the delivery of an admission
+   * snapshot can be paused deterministically, which reproduces the race where
+   * the authority record changes between the snapshot and its use.
+   */
+  readonly admissionSnapshotGate?: (
+    namespace: Namespace,
+  ) => void | Promise<void>;
 }
 
 /** Startup recovery of persisted managed sessions. */
@@ -202,15 +257,110 @@ const ROW_COLUMNS = [
 /** How often one session is re-evaluated when its authority record changes. */
 const REVALIDATION_ATTEMPTS = 3;
 
+/**
+ * The revocable handle a resume runs under.
+ *
+ * @remarks
+ *
+ * Revocation is one-way and idempotent: the keepalive stops, listeners are
+ * notified, registrations are cleaned up in order, and the fence is released
+ * conditionally on owner and token, so it can never affect a successor's lease.
+ * Cleanup failures never resurrect the admission or mask the persisted status;
+ * the lease expires on its own if the release itself fails.
+ */
+class ResumeAdmission implements RecoveryAdmission {
+  readonly fence: Fence;
+  readonly #leases: NamespaceLease;
+  readonly #listeners: ((reason: LeaseInvalidationReason) => void)[] = [];
+  readonly #cleanups: (() => void | Promise<void>)[] = [];
+  #keepalive?: LeaseKeepalive;
+  #handedOff = false;
+  #invalidated = false;
+  #invalidating?: Promise<void>;
+
+  constructor(leases: NamespaceLease, fence: Fence) {
+    this.#leases = leases;
+    this.fence = fence;
+  }
+
+  get invalidated(): boolean {
+    return this.#invalidated;
+  }
+
+  attach(keepalive: LeaseKeepalive): void {
+    this.#keepalive = keepalive;
+    if (this.#invalidated) void keepalive.stop();
+  }
+
+  onInvalidated(listener: (reason: LeaseInvalidationReason) => void): void {
+    if (this.#invalidated) {
+      queueMicrotask(() => listener('authority-superseded'));
+      return;
+    }
+    this.#listeners.push(listener);
+  }
+
+  registerCleanup(cleanup: () => void | Promise<void>): void {
+    if (this.#invalidated) {
+      void this.#runCleanup(cleanup);
+      return;
+    }
+    this.#cleanups.push(cleanup);
+  }
+
+  async handOff(): Promise<void> {
+    this.#handedOff = true;
+    await this.#keepalive?.stop();
+  }
+
+  invalidate(reason: LeaseInvalidationReason): Promise<void> {
+    if (this.#invalidating !== undefined) return this.#invalidating;
+    this.#invalidated = true;
+    this.#invalidating = (async () => {
+      await this.#keepalive?.stop();
+      for (const listener of this.#listeners.splice(0)) {
+        try {
+          listener(reason);
+        } catch {
+          /* A failing listener must not keep the admission alive. */
+        }
+      }
+      for (const cleanup of this.#cleanups.splice(0)) {
+        await this.#runCleanup(cleanup);
+      }
+      if (!this.#handedOff) {
+        try {
+          await this.#leases.release(this.fence);
+        } catch {
+          /* The lease expires on its own; never mask the persisted status. */
+        }
+      }
+    })();
+    return this.#invalidating;
+  }
+
+  async #runCleanup(cleanup: () => void | Promise<void>): Promise<void> {
+    try {
+      await cleanup();
+    } catch {
+      /* Cleanup failures never restore an invalidated admission. */
+    }
+  }
+}
+
 class StartupRecovery implements AiRecovery {
   readonly #options: AiRecoveryOptions;
   readonly #pageSize: number;
   readonly #resolvers = new Map<string, Map<string, RecoveryResolver>>();
+  readonly #admissionOwner: string;
+  readonly #admissionKeepaliveMs: number;
   #sealed = false;
 
   constructor(options: AiRecoveryOptions) {
     this.#options = options;
     this.#pageSize = options.pageSize ?? DEFAULT_PAGE_SIZE;
+    this.#admissionOwner = `recovery:${options.pluginId}:${randomUUID()}`;
+    this.#admissionKeepaliveMs = options.admissionKeepaliveMs ?? 20_000;
   }
 
   registerResolver(resolver: RecoveryResolver): void {
@@ -465,6 +615,27 @@ class StartupRecovery implements AiRecovery {
         .get(namespace.pluginId)!
         .get(row.definition_version)!;
 
+      // The resume runs under a lease recovery acquires and can revoke, so an
+      // invalidated admission can never leave work running or a lease held.
+      const fence = await this.#options.leases.acquire(
+        namespace,
+        this.#admissionOwner,
+      );
+      if (fence === undefined) {
+        return {
+          namespace,
+          status: row.status,
+          detail: 'Skipped: another replica holds the session lease',
+        };
+      }
+      const admission = new ResumeAdmission(this.#options.leases, fence);
+      admission.attach(
+        startLeaseKeepalive(this.#options.leases, fence, {
+          intervalMs: this.#admissionKeepaliveMs,
+          onInvalidated: reason => void admission.invalidate(reason),
+        }),
+      );
+
       let credentials: BackstageCredentials;
       try {
         credentials = await this.#options.getOwnServiceCredentials();
@@ -484,23 +655,42 @@ class StartupRecovery implements AiRecovery {
             namespace.pluginId
           }' plugin could not be obtained: ${describe(error)}`,
         };
-        if (await this.#persist(namespace, revision, blocked)) return blocked;
+        const persisted = await this.#persist(namespace, revision, blocked);
+        if (persisted) {
+          await admission.invalidate('session-closed');
+          return blocked;
+        }
+        await admission.invalidate('authority-superseded');
         continue;
       }
 
-      // Admission: the authority the resume is authorized under must be the
-      // one still recorded after the credential work, and nothing newer may
-      // have claimed this generation.
       const admitted = await this.#readRow(namespace);
+      await this.#options.admissionSnapshotGate?.(namespace);
+
+      // GUARANTEE BOUNDARY (lead ruling, Wave 1 rework cycle 2): this
+      // admission snapshot is the linearization point for LOCAL recovery work.
+      // Local execution is deliberately not linearized against a concurrent
+      // authority change: the resolver writes this same recovery row, so
+      // holding its lock across the resume would deadlock. The guarantee is
+      // therefore two-layer — (1) local admission is snapshot-linearized here,
+      // and (2) no external effect can occur under stale authority because
+      // provider dispatch is separately hard-gated per attempt by the dispatch
+      // guard's authority and credential-generation recheck. This mirrors the
+      // accepted bounded-overlap ruling on external fence sends. A lost outcome
+      // compare-and-swap below is not merely reported: it revokes the
+      // admission, closes what the resume opened and releases the fence.
       if (
         admitted === undefined ||
         String(admitted.revision) !== revision ||
         !sameAuthority(row, admitted)
       ) {
+        // Nothing was opened yet; free the session for the next decision.
+        await admission.invalidate('authority-superseded');
         continue;
       }
 
       let outcome: RecoveryOutcome;
+      let resumed = false;
       try {
         const resolution = await resolver.resume({
           namespace,
@@ -510,9 +700,11 @@ class StartupRecovery implements AiRecovery {
           },
           definitionVersion: row.definition_version,
           credentials,
+          admission,
         });
         switch (resolution.kind) {
           case 'resumed':
+            resumed = true;
             outcome = { namespace, status: 'recovered' };
             break;
           case 'blocked-definition':
@@ -540,10 +732,33 @@ class StartupRecovery implements AiRecovery {
         outcome = { namespace, status: 'failed', detail: describe(error) };
       }
 
-      if (await this.#persist(namespace, revision, outcome)) return outcome;
+      // A resume whose fence was invalidated while it ran (takeover, expiry or
+      // a failed renewal) must never be reported as recovered: the lease it
+      // opened work under is already lost.
+      if (resumed && admission.invalidated) {
+        resumed = false;
+        outcome = {
+          namespace,
+          status: 'failed',
+          detail: 'The session lease was lost while the resume ran',
+        };
+      }
 
-      // A newer uncertainty or authority record landed while the resume ran.
-      // It wins: report what is actually persisted instead of overwriting it.
+      if (await this.#persist(namespace, revision, outcome)) {
+        if (resumed) {
+          // The resumed work keeps the fence and becomes responsible for
+          // renewing it; recovery only stops its own keepalive.
+          await admission.handOff();
+        } else {
+          // Nothing resumed: close anything opened and free the session.
+          await admission.invalidate('session-closed');
+        }
+        return outcome;
+      }
+
+      // Superseded while the resume ran. The persisted record wins, and the
+      // admission is actively torn down rather than merely reported.
+      await admission.invalidate('authority-superseded');
       const current = await this.#readRow(namespace);
       if (current !== undefined) {
         return {
