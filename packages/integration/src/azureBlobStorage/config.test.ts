@@ -130,7 +130,21 @@ describe('readAzureBlobStorageIntegrationConfig', () => {
     });
 
     expect(() => readAzureBlobStorageIntegrationConfig(config)).toThrow(
-      `invalid azureBlobStorage integration config, endpoints cannot contain path, got 'https://blob.core.windows.net/path'`,
+      `invalid azureBlobStorage integration config, endpoint path can only be the account name, got 'https://blob.core.windows.net/path'`,
+    );
+  });
+
+  it('allows the account name as the endpoint path, as used by Azurite', () => {
+    const config = buildConfig({
+      endpoint: 'http://127.0.0.1:10000/devstoreaccount1',
+      accountName: 'devstoreaccount1',
+    });
+
+    expect(readAzureBlobStorageIntegrationConfig(config)).toEqual(
+      expect.objectContaining({
+        host: '127.0.0.1:10000',
+        endpoint: 'http://127.0.0.1:10000/devstoreaccount1',
+      }),
     );
   });
 
