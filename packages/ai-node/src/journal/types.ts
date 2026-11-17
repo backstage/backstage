@@ -1,4 +1,3 @@
-// T5 frozen contract 7b48834580; vendored for compilation, superseded by the identical file at integration.
 /*
  * Copyright 2026 The Backstage Authors
  *
@@ -92,17 +91,6 @@ export type AttemptDecision = Readonly<{
   readonly model?: string;
   /** Operation name and classification, e.g. `models.stream` or `auth.token`. */
   readonly operation: string;
-  /**
-   * Destination of the attempt: origin and an approved route path only.
-   * Dynamic path values are stored as the first 16 hexadecimal characters of
-   * their unsalted SHA-256 digest; equal values correlate across events, but
-   * predictable values can be guessed. Path values are structurally redacted;
-   * host secrecy instead relies on the trusted producer binding the host to
-   * its configuration, since hosts are checked only for known credential formats.
-   * Query strings, fragments and userinfo are never included; absent for local
-   * rejections that never resolved a destination.
-   */
-  readonly destination?: string;
   /** Attempt ordinal within the call; monotonically increasing per call. */
   readonly attempt: number;
   /** The permission decision for this attempt. */
@@ -182,7 +170,6 @@ export type AuditEventView = Readonly<
       readonly provider?: string;
       readonly model?: string;
       readonly operation: string;
-      readonly destination?: string;
       readonly attempt: number;
       readonly decision: 'allow' | 'deny';
       readonly reason?: string;
