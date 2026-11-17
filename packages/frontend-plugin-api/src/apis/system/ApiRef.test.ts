@@ -86,13 +86,15 @@ describe('ApiRef', () => {
 
     const promise = Promise.resolve({ value: 'loaded' });
     const holder: ApiHolder = {
-      get: ((ref: AnyApiRef) =>
+      get: ((ref: ApiRefType<unknown, string, 'sync' | 'async'>) =>
         ref.loading === 'async'
           ? promise
           : { value: 'sync' }) as ApiHolder['get'],
     };
 
-    function lookup<TApiRef extends AnyApiRef>(ref: TApiRef) {
+    function lookup<
+      TApiRef extends ApiRefType<unknown, string, 'sync' | 'async'>,
+    >(ref: TApiRef) {
       return holder.get(ref);
     }
 

@@ -15,18 +15,23 @@
  */
 
 import {
-  AnyApiFactory,
-  AnyApiRef,
   ApiFactory,
   ApiHolder,
   ApiLookupResult,
   ApiRef,
 } from '@backstage/frontend-plugin-api';
 
-export class FrontendApiRegistry {
-  private readonly factories = new Map<string, AnyApiFactory>();
+type RegisteredApiFactory = ApiFactory<
+  unknown,
+  unknown,
+  Record<string, unknown>,
+  'sync' | 'async'
+>;
 
-  register(factory: AnyApiFactory) {
+export class FrontendApiRegistry {
+  private readonly factories = new Map<string, RegisteredApiFactory>();
+
+  register(factory: RegisteredApiFactory) {
     if (this.factories.has(factory.api.id)) {
       return false;
     }
@@ -35,24 +40,24 @@ export class FrontendApiRegistry {
     return true;
   }
 
-  registerAll(factories: AnyApiFactory[]) {
+  registerAll(factories: RegisteredApiFactory[]) {
     for (const factory of factories) {
       this.register(factory);
     }
   }
 
-  set(factory: AnyApiFactory) {
+  set(factory: RegisteredApiFactory) {
     this.factories.set(factory.api.id, factory);
   }
 
-  setAll(factories: Iterable<AnyApiFactory>) {
+  setAll(factories: Iterable<RegisteredApiFactory>) {
     for (const factory of factories) {
       this.set(factory);
     }
   }
 
   get<T>(
-    api: AnyApiRef<T>,
+    api: ApiRef<T, string, 'sync' | 'async'>,
   ):
     | ApiFactory<T, T, { [name: string]: unknown }, 'sync' | 'async'>
     | undefined {
@@ -70,7 +75,7 @@ export class FrontendApiRegistry {
   }
 
   getAllApis() {
-    const refs = new Set<AnyApiRef>();
+    const refs = new Set<ApiRef<unknown, string, 'sync' | 'async'>>();
     for (const factory of this.factories.values()) {
       refs.add(factory.api);
     }
@@ -94,9 +99,10 @@ export class FrontendApiResolver implements ApiHolder {
     this.fallbackApis = options.fallbackApis;
   }
 
-  get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
-    ref: TApiRef,
-  ): ApiLookupResult<TApiRef> {
+  get<
+    TApi = unknown,
+    TApiRef extends ApiRef<unknown, string, 'sync' | 'async'> = ApiRef<TApi>,
+  >(ref: TApiRef): ApiLookupResult<TApiRef> {
     return this.load(ref) as ApiLookupResult<TApiRef>;
   }
 
@@ -115,7 +121,7 @@ export class FrontendApiResolver implements ApiHolder {
   }
 
   private load<T>(
-    ref: AnyApiRef<T>,
+    ref: ApiRef<T, string, 'sync' | 'async'>,
     loading: { apiId: string; dependencyName: string }[] = [],
   ): T | Promise<T> | undefined {
     const factory =

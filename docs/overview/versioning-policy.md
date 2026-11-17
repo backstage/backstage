@@ -137,20 +137,6 @@ of the interface.
 Changes that fall under the above rule, must be marked with
 `**BREAKING PRODUCERS**:` in the changelog.
 
-Async Utility APIs are supported only in plugins that exclusively support the
-new frontend system. Plugins that also support the old system must keep their
-APIs synchronous, including their converted legacy entry points.
-
-Changing a frontend Utility API ref from synchronous to asynchronous loading is
-a breaking contract change. For a plugin-internal API, whose ref is not exported or
-exported only from the owning frontend plugin package, this falls under the
-breaking-producers rule above. The plugin must update its own consumers and
-default factory together, and document the impact on custom factories and
-overrides. If the ref is exported from a library package or any other public
-surface outside the owning plugin package, the change affects consumers and
-requires a breaking release. See
-[changing Utility API loading mode](../frontend-system/utility-apis/02-creating.md#changing-loading-mode).
-
 For any case of dependency injection, it is not considered a breaking change to
 add a dependency on a Utility API or Backend Service that is provided by the
 framework. This includes any dependency that is provided by the

@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import { AnyApiRef, ApiHolder } from './types';
+import { ApiRef, ApiHolder } from './types';
 import { useVersionedContext } from '@backstage/version-bridge';
 import { NotImplementedError } from '@backstage/errors';
-import {
-  resolvedApiPromise,
-  type ResolvedApiPromise,
-} from '@internal/frontend';
 
 const emptyApiHolder: ApiHolder = Object.freeze({ get: () => undefined });
 
@@ -60,17 +56,21 @@ export function useApiHolder(): ApiHolder {
  * @param apiRef - Reference of the API to use.
  * @public
  */
-export function useApi<T>(apiRef: AnyApiRef<T>): T {
+export function useApi<T>(apiRef: ApiRef<T, string, 'sync' | 'async'>): T {
   const apiHolder = useApiHolder();
 
   let api: unknown = apiHolder.get(apiRef);
   if (api && typeof (api as Promise<unknown>).then === 'function') {
-    const promise = api as ResolvedApiPromise<T>;
+    // Test providers can mark already-ready values without a suspension step.
+    const promise = api as Promise<T> & {
+      readonly status?: string;
+      readonly value?: T;
+    };
     let state = apiPromiseStates.get(promise);
     if (!state) {
-      const resolved = promise[resolvedApiPromise];
+      const resolved = promise.status === 'fulfilled';
       state = resolved
-        ? { status: 'fulfilled', value: resolved.value }
+        ? { status: 'fulfilled', value: promise.value }
         : { status: 'pending' };
       apiPromiseStates.set(promise, state);
       if (!resolved) {

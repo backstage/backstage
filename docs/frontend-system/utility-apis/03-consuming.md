@@ -67,11 +67,6 @@ const MyComponent = () => {
 
 ### Async-capable APIs
 
-Async utility APIs are supported only in plugins that exclusively support the
-new frontend system. The host app must use that system, but it may still include
-other converted legacy plugins. Legacy conversion helpers preserve synchronous
-API registrations.
-
 For refs declared with `loading: 'async'`, `useApi` still returns the API instance.
 It suspends while the implementation is loading and throws if initialization
 fails. Extension boundaries, including those used by `PageBlueprint`, provide
@@ -93,6 +88,10 @@ immediately. Initialization failures reject the promise and are cached for
 subsequent lookups. Synchronous refs continue returning instances or
 `undefined` directly.
 
+Plugins that support the old frontend system must keep their APIs synchronous,
+including plugins that support both systems. Legacy conversion helpers do not
+add async API support. An app can still include other converted legacy plugins.
+
 `get()` infers its result from the ref's type, so generic helpers can preserve
 the loading mode without branching:
 
@@ -110,20 +109,19 @@ function lookup<TApiRef extends ApiRef<unknown, string, 'sync' | 'async'>>(
 Refs without a `loading` member in their type are treated as synchronous.
 `ApiRef<T>` also describes a synchronous ref. `ApiRef<T, string, 'sync' | 'async'>`
 accepts either loading mode, so lookup results for that type include both direct
-values and promises. Awaiting the result handles either mode. The deprecated
-`AnyApiRef<T>` alias also continues to accept both modes.
+values and promises. Awaiting the result handles either mode.
 
 Custom API holders must preserve promise identity across repeated lookups of an
 async-capable ref. `useApiHolder` returns the context holder directly; async API
-resolution is provided by the new frontend system.
+resolution is provided by the frontend system.
 
 ### Updating refs that become async
 
-A plugin must exclusively support the new frontend system before changing its
-API refs to async loading. Changing a ref from synchronous to asynchronous
-loading changes its contract.
-For refs shared through a library or another public surface, this requires a
-breaking release. Plugin-internal refs follow the breaking-producers exception.
+A plugin must drop support for the old frontend system before changing its API
+refs to async loading. Changing a ref from synchronous to asynchronous loading
+changes its contract. For refs shared through a library or another public
+surface, this requires a breaking release. Plugin-internal refs follow the
+breaking-producers exception.
 See [changing loading mode](./02-creating.md#changing-loading-mode) for the exact
 export boundaries and release requirements.
 

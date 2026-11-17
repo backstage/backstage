@@ -177,13 +177,22 @@ export type ApiFactory<
 
 // @public
 export type ApiHolder = {
-  get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
+  get<
+    TApi = unknown,
+    TApiRef extends ApiRef<unknown, string, 'sync' | 'async'> = ApiRef<TApi>,
+  >(
     api: TApiRef,
   ): ApiLookupResult<TApiRef>;
 };
 
 // @public
-export type ApiLookupResult<TApiRef extends AnyApiRef = AnyApiRef> =
+export type ApiLookupResult<
+  TApiRef extends ApiRef<unknown, string, 'sync' | 'async'> = ApiRef<
+    unknown,
+    string,
+    'sync' | 'async'
+  >,
+> =
   | (TApiRef extends {
       readonly loading?: infer TLoading;
     }
@@ -2655,7 +2664,7 @@ export type TypesToApiRefs<T, TLoading extends 'sync' | 'async' = 'sync'> = {
 export function useAnalytics(): AnalyticsTracker;
 
 // @public
-export function useApi<T>(apiRef: AnyApiRef<T>): T;
+export function useApi<T>(apiRef: ApiRef<T, string, 'sync' | 'async'>): T;
 
 // @public
 export function useApiHolder(): ApiHolder;

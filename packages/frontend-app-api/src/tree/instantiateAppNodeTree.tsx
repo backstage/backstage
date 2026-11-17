@@ -15,7 +15,7 @@
  */
 
 import {
-  AnyApiRef,
+  ApiRef,
   coreExtensionData,
   ApiHolder,
   ExtensionDataContainer,
@@ -368,7 +368,9 @@ export function createAppNodeInstance(options: {
     options.onMissingApi === undefined
       ? apis
       : {
-          get<TApiRef extends AnyApiRef>(apiRef: TApiRef) {
+          get<TApiRef extends ApiRef<unknown, string, 'sync' | 'async'>>(
+            apiRef: TApiRef,
+          ) {
             const api = apis.get(apiRef);
             if (api === undefined) {
               options.onMissingApi?.({

@@ -15,8 +15,8 @@
  */
 
 import {
-  type AnyApiFactory,
-  type AnyApiRef,
+  type ApiFactory,
+  type ApiRef,
   createApiRef,
   createApiFactory,
 } from '@backstage/frontend-plugin-api';
@@ -41,7 +41,9 @@ describe('FrontendApiResolver', () => {
     const resolver = new FrontendApiResolver({ primaryRegistry: registry });
     expect(factory).not.toHaveBeenCalled();
 
-    function lookup<TApiRef extends AnyApiRef>(ref: TApiRef) {
+    function lookup<TApiRef extends ApiRef<unknown, string, 'sync' | 'async'>>(
+      ref: TApiRef,
+    ) {
       return resolver.get(ref);
     }
     const result: Promise<{ value: string }> | undefined = lookup(api);
@@ -344,7 +346,7 @@ describe('FrontendApiResolver', () => {
       api: falseApiRef,
       deps: {},
       factory: falseFactoryFn,
-    } as AnyApiFactory);
+    } as ApiFactory);
 
     const resolver = new FrontendApiResolver({ primaryRegistry: registry });
 
@@ -366,12 +368,12 @@ describe('FrontendApiResolver', () => {
       api: falseApiRef,
       deps: {},
       factory: falseFactoryFn,
-    } as AnyApiFactory);
+    } as ApiFactory);
     registry.register({
       api: dependentApiRef,
       deps: { falseDependency: falseApiRef },
       factory: dependentFactoryFn,
-    } as AnyApiFactory);
+    } as ApiFactory);
 
     const resolver = new FrontendApiResolver({ primaryRegistry: registry });
 

@@ -15,12 +15,10 @@
  */
 
 import { ReactNode, useMemo } from 'react';
-import { createApiPromise } from '@internal/frontend';
 import {
   ApiHolder,
   ApiLookupResult,
   ApiRef,
-  AnyApiRef,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ApiProvider } from '../../../core-app-api/src/apis/system';
@@ -35,7 +33,7 @@ import {
  */
 export type TestApiPair<TApi> =
   | readonly [
-      AnyApiRef<TApi>,
+      ApiRef<TApi, string, 'sync' | 'async'>,
       TApi extends infer TImpl ? Partial<TImpl> : never,
     ]
   | MockWithApiFactory<NoInfer<TApi>>;
@@ -59,22 +57,31 @@ export function resolveTestApiEntries<const TApiPairs extends any[]>(
     if (mockFactory) {
       apiMap.set(mockFactory.api.id, mockFactory.factory({}));
     } else {
-      const [apiRef, impl] = entry as readonly [AnyApiRef<any>, any];
+      const [apiRef, impl] = entry as readonly [
+        ApiRef<any, string, 'sync' | 'async'>,
+        any,
+      ];
       apiMap.set(apiRef.id, impl);
     }
   }
 
   const promises = new Map<string, Promise<unknown>>();
-  function get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
-    ref: TApiRef,
-  ): ApiLookupResult<TApiRef>;
-  function get(ref: AnyApiRef): unknown {
+  function get<
+    TApi = unknown,
+    TApiRef extends ApiRef<unknown, string, 'sync' | 'async'> = ApiRef<TApi>,
+  >(ref: TApiRef): ApiLookupResult<TApiRef>;
+  function get(ref: ApiRef<unknown, string, 'sync' | 'async'>): unknown {
     if (ref.loading !== 'async' || !apiMap.has(ref.id)) {
       return apiMap.get(ref.id);
     }
     if (!promises.has(ref.id)) {
       // Ready mocks must not suspend a provider whose first render is retried.
-      promises.set(ref.id, createApiPromise(apiMap.get(ref.id)));
+      const value = apiMap.get(ref.id);
+      const promise = Promise.resolve(value);
+      if (!value || typeof (value as Promise<unknown>).then !== 'function') {
+        Object.assign(promise, { status: 'fulfilled', value });
+      }
+      promises.set(ref.id, promise);
     }
     return promises.get(ref.id);
   }

@@ -91,17 +91,8 @@ The extension ID of the work API will be the kind `api:` followed by the plugin 
 
 ## Lazy API implementations
 
-Async utility APIs are supported only in plugins that exclusively support the
-new frontend system. Plugins that retain an old frontend system entry point must
-keep their API refs and factories synchronous, including APIs shared by both
-entry points. Legacy conversion helpers preserve synchronous registrations and
-do not adapt API loading modes.
-
-The host app must use the new frontend system, but it can still include other
-plugins through legacy conversion helpers.
-
-API refs are synchronous by default. In a plugin that only supports the new
-frontend system, opt in to asynchronous loading when creating the ref:
+API refs are synchronous by default. To allow an implementation to load
+asynchronously, opt in when creating the ref:
 
 ```ts
 export const workApiRef = createApiRef<WorkApi>().with({
@@ -109,6 +100,11 @@ export const workApiRef = createApiRef<WorkApi>().with({
   loading: 'async',
 });
 ```
+
+Plugins that support the old frontend system must keep their APIs synchronous,
+including plugins that support both systems. Legacy conversion helpers preserve
+synchronous registrations and do not adapt API loading modes. An app can still
+include other converted legacy plugins alongside plugins that use async APIs.
 
 Prefer lazy implementations for APIs that are internal to a plugin. Shared APIs
 can also use lazy implementations to reduce the initial bundle size, but their
@@ -160,11 +156,11 @@ implementation; its ref and lookup result remain asynchronous.
 
 ### Changing loading mode
 
-Only consider changing a ref to async loading once its plugin exclusively
-supports the new frontend system. Changing an existing ref from synchronous to
-asynchronous loading is a breaking contract change. Its consumers and factories
-must update together; the framework does not adapt older synchronous refs to an
-async implementation.
+A plugin must drop support for the old frontend system before changing its refs
+to async loading. Changing an existing ref from synchronous to asynchronous
+loading is a breaking contract change. Its consumers and factories must update
+together; the framework does not adapt older synchronous refs to an async
+implementation.
 
 The release impact depends on where the ref is exported:
 

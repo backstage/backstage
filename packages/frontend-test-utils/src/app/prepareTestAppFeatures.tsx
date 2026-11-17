@@ -23,7 +23,7 @@ import {
   createFrontendPlugin,
   createRouteRef,
   coreExtensionData,
-  type AnyApiRef,
+  type ApiRef,
   type AppHistoryApi,
   type ExtensionDefinition,
   type ExternalRouteRef,
@@ -60,7 +60,10 @@ export function prepareTestAppFeatures(options: {
     if (mockFactory) {
       return mockFactory;
     }
-    const [apiRef, implementation] = entry as readonly [AnyApiRef<any>, any];
+    const [apiRef, implementation] = entry as readonly [
+      ApiRef<any, string, 'sync' | 'async'>,
+      any,
+    ];
     return createApiFactory(apiRef, implementation);
   });
   const historyOverride = callerApiFactories.find(

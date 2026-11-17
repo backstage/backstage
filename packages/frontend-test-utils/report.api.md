@@ -7,10 +7,10 @@ import { AlertApi } from '@backstage/core-plugin-api';
 import { AlertMessage } from '@backstage/core-plugin-api';
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
-import { AnyApiRef } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import type { ApiHolder } from '@backstage/frontend-plugin-api';
+import { ApiRef } from '@backstage/frontend-plugin-api';
 import { AppError } from '@backstage/frontend-app-api';
 import { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import { AppLanguageApi } from '@backstage/frontend-plugin-api';
@@ -74,7 +74,7 @@ export type ApiMock<TApi> = {
 
 // @public
 export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
-  apiRef: AnyApiRef<TApi>,
+  apiRef: ApiRef<TApi, string, 'sync' | 'async'>,
   implementation: TImpl,
 ): TImpl & {
   [mockApiFactorySymbol]: ApiFactory<TApi, TApi, {}, 'sync' | 'async'>;
@@ -82,7 +82,7 @@ export function attachMockApiFactory<TApi, TImpl extends TApi = TApi>(
 
 // @public
 export function createApiMock<TApi>(
-  apiRef: AnyApiRef<TApi>,
+  apiRef: ApiRef<TApi, string, 'sync' | 'async'>,
   mockFactory: () => jest.Mocked<TApi>,
 ): (partialImpl?: Partial<TApi>) => ApiMock<TApi>;
 
@@ -457,7 +457,7 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
 // @public
 export type TestApiPair<TApi> =
   | readonly [
-      AnyApiRef<TApi>,
+      ApiRef<TApi, string, 'sync' | 'async'>,
       TApi extends infer TImpl ? Partial<TImpl> : never,
     ]
   | MockWithApiFactory<NoInfer<TApi>>;

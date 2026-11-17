@@ -19,8 +19,8 @@
  * factories and dependencies. Ref types and creation default to synchronous loading.
  * Async refs require their loading marker; synchronous and older refs may omit it.
  * The API type defaults to unknown when no type argument is provided.
- * Async refs are supported only in plugins that exclusively support the new
- * frontend system. Plugins that also support the old system keep synchronous refs.
+ * Plugins that support the old frontend system must keep synchronous refs,
+ * including plugins that support both systems.
  * Changing the loading mode is a breaking contract change. For plugin-internal
  * refs (not exported or exported only by the plugin package), it follows the
  * breaking-producers policy. Refs exported through a library or another public
@@ -59,7 +59,13 @@ export type AnyApiRef<T = unknown> = ApiRef<T, string, 'sync' | 'async'>;
  *
  * @public
  */
-export type ApiLookupResult<TApiRef extends AnyApiRef = AnyApiRef> =
+export type ApiLookupResult<
+  TApiRef extends ApiRef<unknown, string, 'sync' | 'async'> = ApiRef<
+    unknown,
+    string,
+    'sync' | 'async'
+  >,
+> =
   | (TApiRef extends { readonly loading?: infer TLoading }
       ? 'async' extends TLoading
         ? 'sync' extends TLoading
@@ -92,7 +98,10 @@ export type TypesToApiRefs<T, TLoading extends 'sync' | 'async' = 'sync'> = {
  * @public
  */
 export type ApiHolder = {
-  get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
+  get<
+    TApi = unknown,
+    TApiRef extends ApiRef<unknown, string, 'sync' | 'async'> = ApiRef<TApi>,
+  >(
     api: TApiRef,
   ): ApiLookupResult<TApiRef>;
 };
@@ -100,8 +109,8 @@ export type ApiHolder = {
 /**
  * Describes a factory returning API implementations.
  *
- * Async factories are supported only in plugins that exclusively support the
- * new frontend system. Legacy registration and conversion remain synchronous.
+ * Async factories cannot be used by plugins that support the old frontend
+ * system, including plugins that support both systems.
  *
  * Async-capable refs allow promises and async dependencies. All dependencies
  * are resolved before the factory is called. Synchronous refs only allow

@@ -27,8 +27,8 @@ const factoryDataRef = createExtensionDataRef<
 /**
  * Creates utility API extensions.
  *
- * Async factories are supported only in plugins that exclusively support the
- * new frontend system.
+ * Async factories cannot be used by plugins that support the old frontend
+ * system, including plugins that support both systems.
  *
  * @public
  */
