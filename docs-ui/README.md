@@ -25,7 +25,7 @@ yarn sync:changelog
 This script:
 
 - Parses `packages/ui/CHANGELOG.md` for new versions
-- Extracts entries tagged with "Affected components: ..."
+- Extracts entries tagged with "Affected components: ...", where `BuiTokens` lists an entry on the Tokens page
 - Updates `src/utils/changelog.ts` with new entries
 - Handles both component-specific and general package changes
 
