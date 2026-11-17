@@ -407,6 +407,23 @@ describe('non-chat provider modules', () => {
           },
         ],
       });
+      // Malformed base64 is denied before send: wrong length and padding.
+      for (const malformed of ['A', 'A=', 'AA=', '']) {
+        await f.probe({
+          ...validBody,
+          messages: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'image_url',
+                  image_url: { url: `data:image/png;base64,${malformed}` },
+                },
+              ],
+            },
+          ],
+        });
+      }
       await f.probe({ ...validBody, stream: true });
       await f.probe({ ...validBody, modalities: ['video'] });
       await f.probe({
@@ -428,7 +445,7 @@ describe('non-chat provider modules', () => {
       const wrong = new URL(f.op.destination);
       wrong.pathname = '/v1/elsewhere';
       await f.probe(validBody, wrong);
-      expect(f.events).toEqual(Array(9).fill('deny:1'));
+      expect(f.events).toEqual(Array(13).fill('deny:1'));
       expect(f.transport).not.toHaveBeenCalled();
     } finally {
       server.close();

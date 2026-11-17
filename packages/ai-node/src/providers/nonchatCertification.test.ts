@@ -332,6 +332,42 @@ if (process.env.AI_PROVIDER_CERT_WORKER === '1') {
       await assertCrashUnknownOnce(id, dialect);
     }
   };
+  it('accepts the real pinned catalog base URLs for every certified module', async () => {
+    // Route templates must match the real catalog bases, not only the
+    // localhost substitutions used for transport control: a template or
+    // catalog drift makes the durable journal reject the allow intent.
+    const store = await createStore(pgUrl ? 'pg' : 'sqlite');
+    try {
+      await store.db('ai_namespace_leases').insert({
+        plugin_id: namespace.pluginId,
+        session_id: namespace.sessionId,
+        owner_id: fence.owner,
+        token: fence.token,
+        expires_at: store.expiresAt,
+      });
+      const realJournal = journal(store.db);
+      for (const id of Object.keys(certified) as Id[]) {
+        const model = certified[id].model();
+        const module = providers.get(id)!;
+        const op: TrustedOperation = {
+          ...operation(id, 'https://provider.example'),
+          destination: module.destination(model, undefined),
+        };
+        const send = jest.fn(async () => new Response('{}'));
+        const guard = createModelOperationGuard({
+          providers,
+          journal: realJournal,
+          recheck: async () => true,
+          transport: send as unknown as typeof fetch,
+        }).bind(op);
+        await guard.fetch(request(op));
+        expect(send).toHaveBeenCalledTimes(1);
+      }
+    } finally {
+      await store.cleanup();
+    }
+  });
+
   for (const id of Object.keys(certified) as Id[]) {
     registerProviderCertification({
       name: id,

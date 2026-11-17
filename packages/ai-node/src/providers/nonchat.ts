@@ -71,7 +71,12 @@ export const typesafeSystemOne: AiProviderModule = {
   id: 'typesafe-system-one',
   adapter: nonChatAdapter(systemOne.classify),
   certifiedOperations: ['classify'],
-  destinationTemplates: [[{ literal: '/v1/systemone' }]],
+  // The native TypeSafe base and OpenRouter's /api/v1 base both serve the
+  // protocol; both route shapes are approved.
+  destinationTemplates: [
+    [{ literal: '/v1/systemone' }],
+    [{ literal: '/api/v1/systemone' }],
+  ],
   destination: model => `${base(model.baseUrl)}/systemone`,
   validateEnvelope: (operation, request) =>
     validateHttpEnvelope({ endpoint: '/systemone' }, operation, request),
@@ -91,7 +96,15 @@ export const openaiDecisions: AiProviderModule = {
     validateHttpEnvelope({ endpoint: '/decisions' }, operation, request),
 };
 
-const DATA_URL = /^data:[^;,]+;base64,[A-Za-z0-9+/]*={0,2}$/;
+/** Strict base64: non-empty, correct length and padding, valid alphabet. */
+const BASE64 =
+  /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+
+function isWellFormedImageReference(url: string): boolean {
+  const match = /^data:[^;,]+;base64,([A-Za-z0-9+/=]*)$/.exec(url);
+  if (!match) return false;
+  return match[1].length > 0 && BASE64.test(match[1]);
+}
 
 /**
  * Structural inspection for image-bearing chat-completions requests: the
@@ -138,7 +151,7 @@ function inspectImageRequestPayload(payload: unknown): void {
           typeof reference === 'string'
             ? reference
             : (reference as { url?: unknown } | undefined)?.url;
-        if (typeof url !== 'string' || !DATA_URL.test(url)) {
+        if (typeof url !== 'string' || !isWellFormedImageReference(url)) {
           throw new Error('Uninspectable image reference');
         }
       } else {
@@ -159,20 +172,35 @@ function inspectImageRequestPayload(payload: unknown): void {
 }
 
 /**
- * Image generation over OpenRouter's chat-completions endpoint. Every
- * `generateImages` dispatch replays the full input history to the provider,
- * image blocks included: a session holding N image attachments pays O(N)
- * upload bytes per dispatch and O(history) cumulative replay cost. Hosts
- * must bound image-bearing histories (attachment count and bytes) before
- * enabling image attachments in higher layers — this module bounds a single
- * request at the shared 16 MiB envelope cap and journals outcomes only,
- * never image data.
+ * Image generation over OpenRouter's chat-completions endpoint.
+ *
+ * Resource limits — two distinct costs; only the first is bounded here:
+ *
+ * - Request cost: each dispatch sends the input it is given, image blocks
+ *   included, to the provider. A single request is bounded at the shared
+ *   16 MiB envelope cap. The input context is whatever the caller passes;
+ *   this module does not assume it represents the session history.
+ *
+ * - Stored-history cost: if higher layers persist image-bearing records,
+ *   the durable store's snapshot reconstruction loads and rebuilds the
+ *   entire persisted commit history in memory on every read and write
+ *   (O(history) per access), so the request cap does NOT bound total
+ *   stored image bytes or replay memory — those grow with the history.
+ *
+ * Hosts must therefore bound total persisted image bytes and history
+ * length before enabling image attachments in higher layers (coordinate
+ * with the codemode resource-limits caveat). The attempt journal records
+ * outcomes only — image data is never journaled.
  */
 export const openrouterImages: AiProviderModule = {
   id: 'openrouter-images',
   adapter: nonChatAdapter(images.generateImages),
   certifiedOperations: ['generateImages'],
-  destinationTemplates: [[{ literal: '/v1/chat/completions' }]],
+  // The default OpenRouter base uses /api/v1; /v1 covers custom gateways.
+  destinationTemplates: [
+    [{ literal: '/v1/chat/completions' }],
+    [{ literal: '/api/v1/chat/completions' }],
+  ],
   destination: model => `${base(model.baseUrl)}/chat/completions`,
   validateEnvelope: (operation, request) =>
     validateHttpEnvelope(
