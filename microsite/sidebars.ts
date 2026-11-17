@@ -68,6 +68,7 @@ export default {
         'deployment/scaling',
         'deployment/docker',
         'deployment/k8s',
+        'deployment/operating',
       ]),
       sidebarElementWithIndex({ label: 'Using Backstage' }, [
         'getting-started/logging-in',
