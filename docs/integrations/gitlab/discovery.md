@@ -242,6 +242,7 @@ catalog:
         branch: main # Optional. Used to discover on a specific branch
         fallbackBranch: master # Optional. Fallback to be used if there is no default branch configured at the Gitlab repository. It is only used, if `branch` is undefined. Uses `master` as default
         skipForkedRepos: false # Optional. If the project is a fork, skip repository
+        skipReposMarkedForDeletion: false # Optional. Skip projects marked for deletion. Defaults to `false`
         includeArchivedRepos: false # Optional. If project is archived, include repository
         group: example-group # Optional (unless useSearch is true). Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned
         groupPattern: # Optional. Filters for groups based on a list of RegEx. Default, no filters.
@@ -257,6 +258,14 @@ catalog:
           # supports ISO duration, "human duration" as used in code
           timeout: { minutes: 3 }
 ```
+
+Set `skipReposMarkedForDeletion` to `true` to exclude projects with a non-empty
+`marked_for_deletion_on` value from discovery. This field is only available with
+GitLab Premium or Ultimate, so the option has no effect on GitLab Free. The option
+defaults to `false`.
+
+Enabling this option disables the `simple=true` API optimization because the
+reduced project response does not include `marked_for_deletion_on`.
 
 ## Alternative processor
 
@@ -309,5 +318,9 @@ catalog:
 If you don't want create location object if file with component definition do not exists in project, you can set the `skipReposWithoutExactFileMatch` option. That can reduce count of request to gitlab with 404 status code.
 
 If you don't want to create location object if the project is a fork, you can set the `skipForkedRepos` option.
+
+To skip projects marked for deletion, pass `skipReposMarkedForDeletion: true` in
+the options to `GitLabDiscoveryProcessor.fromConfig`. As with the discovery
+provider, this option defaults to `false` and requires GitLab Premium or Ultimate.
 
 If you want to create location object if the project is archived, you can set the `includeArchivedRepos` option.
