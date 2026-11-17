@@ -183,6 +183,8 @@ class GoogleWorkerRuntime {
       await this.#starting.catch(() => undefined);
     }
     const worker = this.#worker;
+    let phaseError: unknown;
+    let phaseThrew = false;
     try {
       if (worker && mode === 'graceful') {
         for (const job of this.#jobs) {
@@ -194,27 +196,45 @@ class GoogleWorkerRuntime {
         }
         await new Promise(resolve => setTimeout(resolve, 100));
       }
-    } finally {
-      // Exception safety: everything below runs even when a step above (or
-      // the termination itself) throws. The runtime is detached and its
-      // generation bumped synchronously, the worker termination failure is
-      // allowed to propagate to the close caller, and every job is failed
-      // BEFORE that — no job may remain pending on a dead runtime, and no
-      // in-flight host fetch may outlive the close.
-      this.#worker = undefined;
-      this.#starting = undefined;
-      this.#generation = generation + 1;
+    } catch (error) {
+      phaseThrew = true;
+      phaseError = error;
+    }
+    // Exception safety: the steps below are sequenced explicitly with their
+    // failures captured, so no thrown error can skip a later step. The
+    // runtime is detached and its generation bumped synchronously; a failed
+    // termination still fails every job; a throwing settlement still fails
+    // the remaining jobs. Errors re-throw in the historical order:
+    // settlement first, then termination, then the graceful phase.
+    this.#worker = undefined;
+    this.#starting = undefined;
+    this.#generation = generation + 1;
+    let terminateError: unknown;
+    let terminateThrew = false;
+    if (worker) {
       try {
-        if (worker) await worker.terminate();
-      } finally {
-        // Whatever the abort window did not settle is failed now: no stream
-        // may remain pending, and every in-flight host fetch is aborted so
-        // the guard records its outcome instead of hanging.
-        for (const job of [...this.#jobs]) {
-          this.#failJob(job, 'Google worker shut down');
-        }
+        await worker.terminate();
+      } catch (error) {
+        terminateThrew = true;
+        terminateError = error;
       }
     }
+    // Whatever the abort window did not settle is failed now: no stream may
+    // remain pending, and every in-flight host fetch is aborted so the
+    // guard records its outcome instead of hanging. Each job is failed
+    // independently: a throwing settlement (for example a notification push
+    // that rejects) must not prevent the remaining jobs from failing.
+    let settlementError: unknown;
+    for (const job of [...this.#jobs]) {
+      try {
+        this.#failJob(job, 'Google worker shut down');
+      } catch (error) {
+        settlementError ??= error;
+      }
+    }
+    if (settlementError !== undefined) throw settlementError;
+    if (terminateThrew) throw terminateError;
+    if (phaseThrew) throw phaseError;
   }
 
   #failJob(job: HostJob, message: string): void {

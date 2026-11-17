@@ -647,8 +647,10 @@ it('never sends after close when a close overtakes worker startup', async () => 
  *      double failure: in each, every job is failed (with fetch aborts)
  *      before the rejection propagates, the counter still decrements, and
  *      the replacement is published only after that cleanup.
- *   S6 fail-jobs loop — synchronous and guarded; runs in a finally around
- *      S5 so a termination failure cannot skip it.
+ *   S6 fail-jobs loop — synchronous and per-job try/catch guarded; runs in
+ *      a finally around S5 so a termination failure cannot skip it, and one
+ *      job's throwing settlement cannot prevent the remaining jobs from
+ *      failing (the first settlement error is re-thrown after the loop).
  *   S7 counter decrement + terminal flag — finally blocks on every path.
  *   S8 runtime publication — coordinatedClose finally, ordered after S6.
  *
@@ -901,6 +903,119 @@ it('overlapping failed closes still settle jobs and keep the counter correct', a
   } finally {
     Worker.prototype.postMessage = oldPost;
     Worker.prototype.terminate = oldTerminate;
+  }
+});
+
+it('a throwing stream settlement does not prevent cleanup of other jobs', async () => {
+  const oldPost = Worker.prototype.postMessage;
+  const oldTerminate = Worker.prototype.terminate;
+  let firstWorker: Worker | undefined;
+  let entered!: () => void;
+  let release!: () => void;
+  const started = new Promise<void>(resolve => {
+    entered = resolve;
+  });
+  const held = new Promise<void>(resolve => {
+    release = resolve;
+  });
+  let sends = 0;
+  const transport = (async () => {
+    sends += 1;
+    return new Response(sseBody(), {
+      headers: { 'content-type': 'text/event-stream' },
+    });
+  }) as typeof fetch;
+  const bounded = <T>(promise: Promise<T>, ms = 2500) =>
+    Promise.race([
+      promise,
+      new Promise<'timeout'>(resolve =>
+        setTimeout(() => resolve('timeout'), ms),
+      ),
+    ]);
+  Worker.prototype.postMessage = function patchedPost(
+    this: Worker,
+    ...args: unknown[]
+  ) {
+    // Capturing the live worker requires aliasing `this` once.
+    // eslint-disable-next-line consistent-this
+    const target = this;
+    if (!firstWorker) firstWorker = target;
+    return (oldPost as (...a: unknown[]) => void).apply(target, args);
+  } as unknown as typeof Worker.prototype.postMessage;
+  try {
+    const f = setup(
+      'https://generativelanguage.googleapis.com/v1beta',
+      transport,
+    );
+    const guarded = f.guard.bind(f.op);
+    // Two jobs share one held payload callback: both are pre-send when the
+    // close begins.
+    let calls = 0;
+    const callback = async () => {
+      calls += 1;
+      if (calls === 2) entered();
+      await held;
+    };
+    const options = {
+      apiKey: 'key',
+      fetch: guarded.fetch,
+      onPayload: callback,
+    };
+    const a = runGoogleStream(
+      'google-generative-ai',
+      f.model,
+      context(),
+      options,
+      true,
+    );
+    const b = runGoogleStream(
+      'google-generative-ai',
+      f.model,
+      context(),
+      options,
+      true,
+    );
+    const aResult = a.result();
+    const bResult = b.result();
+    expect(await bounded(started)).not.toBe('timeout');
+    const worker = firstWorker;
+    if (!worker) throw new Error('worker missing');
+    // The first job's settlement notification throws, and the termination
+    // is rejected: both failures at once.
+    const oldPush = a.push.bind(a);
+    a.push = (() => {
+      throw new Error('injected settlement failure');
+    }) as typeof a.push;
+    Worker.prototype.terminate = function (this: Worker) {
+      if (this === worker) {
+        return Promise.reject(new Error('injected termination failure'));
+      }
+      return oldTerminate.call(this);
+    } as unknown as typeof Worker.prototype.terminate;
+    let error = '';
+    try {
+      await terminateGoogleWorker();
+    } catch (e) {
+      error = (e as Error).message;
+    }
+    a.push = oldPush;
+    Worker.prototype.terminate = oldTerminate;
+    // BOTH jobs settle bounded at close time despite the throwing
+    // settlement: the loop continued past the first job.
+    const before = await bounded(bResult, 300);
+    release();
+    const after = await bounded(bResult);
+    await oldTerminate.call(worker);
+    await bounded(aResult);
+    expect(error).toContain('injected settlement failure');
+    expect(before).not.toBe('timeout');
+    expect(after).toBe(before);
+    // The callback releases change nothing: neither job ever sent.
+    expect(sends).toBe(0);
+  } finally {
+    Worker.prototype.postMessage = oldPost;
+    Worker.prototype.terminate = oldTerminate;
+    release();
   }
 });
 
