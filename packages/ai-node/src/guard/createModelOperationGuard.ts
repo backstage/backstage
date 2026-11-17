@@ -226,6 +226,8 @@ export function createModelOperationGuard(options: {
               }
               if (expired()) {
                 kind = 'auth.token';
+                // Refresh was never attempted; the model URL is not an auth destination.
+                destination = undefined;
                 throw new Error(
                   'credential expired; re-authentication required',
                 );
@@ -240,6 +242,7 @@ export function createModelOperationGuard(options: {
               }
               if (expired()) {
                 kind = 'auth.token';
+                destination = undefined;
                 throw new Error(
                   'credential expired; re-authentication required',
                 );

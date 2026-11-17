@@ -17,7 +17,7 @@
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import knex, { type Knex } from 'knex';
@@ -25,6 +25,7 @@ import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { AuditAccessDeniedError, AuditSessionNotFoundError } from './errors';
 import type { AttemptJournal, AuditEventView } from './types';
 import { createAttemptJournal } from './knex';
+import { pruneAiJournal } from './retention';
 import type { AttemptDecision } from './types';
 
 const storageMigration = require('../../migrations/1000_storage');
@@ -441,6 +442,8 @@ for (const dialect of ['sqlite', 'pg'] as const) {
         for (const bad of [
           'https://api.openai.com/v1?api_key=abc',
           'https://api.openai.com/v1#fragment',
+          'https://api.openai.com/v1/responses?',
+          'https://api.openai.com/v1/responses#',
           'https://user:pass@api.openai.com/v1',
           'file:///etc/passwd',
           'not a url',
@@ -453,6 +456,61 @@ for (const dialect of ['sqlite', 'pg'] as const) {
           ).rejects.toThrow('destination');
         }
         expect(await f.db('ai_journal_events').select('id')).toHaveLength(1);
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('accepts only certified static model and auth paths', async () => {
+      const f = await fixture(dialect);
+      try {
+        const destinations = [
+          'https://api.openai.com/v1/responses',
+          'https://my-resource.openai.azure.com/openai/v1/responses',
+          'https://api.openai.com/v1/chat/completions',
+          'https://api.anthropic.com/v1/messages',
+          'https://chatgpt.com/backend-api/codex/responses',
+          'https://MiXeD.Example.com:443/v1/responses',
+          'http://localhost:1234/v1/responses',
+          'http://127.0.0.1:1234/v1/responses',
+          'http://[::1]:1234/v1/responses',
+        ];
+        for (const destination of destinations) {
+          await f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision({ destination }),
+          );
+        }
+        for (const operation of ['auth.token', 'auth.token-exchange']) {
+          for (const path of ['/oauth/token', '/v1/oauth/token']) {
+            await f.journal.recordDecisionAndIntent(
+              fence,
+              freshDecision({
+                operation,
+                destination: `https://auth.example.com${path}`,
+              }),
+            );
+          }
+        }
+        const rows = await f.db('ai_journal_events').select('destination');
+        expect(rows.map(row => row.destination)).toEqual([
+          ...destinations,
+          'https://auth.example.com/oauth/token',
+          'https://auth.example.com/v1/oauth/token',
+          'https://auth.example.com/oauth/token',
+          'https://auth.example.com/v1/oauth/token',
+        ]);
+        for (const [operation, destination] of [
+          ['models.stream', 'https://auth.example.com/oauth/token'],
+          ['auth.token', 'https://api.example.com/v1/responses'],
+        ]) {
+          await expect(
+            f.journal.recordDecisionAndIntent(
+              fence,
+              freshDecision({ operation, destination }),
+            ),
+          ).rejects.toThrow('no approved route template');
+        }
       } finally {
         await f.cleanup();
       }
@@ -509,6 +567,423 @@ for (const dialect of ['sqlite', 'pg'] as const) {
           ),
         ).rejects.toThrow('Invalid operation');
         expect(await f.db('ai_journal_events')).toHaveLength(2);
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('rejects embedded known credential values in every field class', async () => {
+      const f = await fixture(dialect);
+      try {
+        const token = 'ghp_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1';
+        const jwt =
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+        const awsKey = 'AKIAIOSFODNN7EXAMPLE';
+        // Free text: embedded, not start-anchored.
+        await expect(
+          f.journal.recordDecisionAndIntent(fence, {
+            ...freshDecision(),
+            reason: `provider rejected ${token}`,
+          }),
+        ).rejects.toThrow('secret-shaped');
+        await expect(
+          f.journal.recordDecisionAndIntent(fence, {
+            ...freshDecision(),
+            model: `gpt-${jwt}`,
+          }),
+        ).rejects.toThrow('secret-shaped');
+        // Actor is a structured principal reference, never free text.
+        await expect(
+          f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision({ actor: `service:${awsKey}` }),
+          ),
+        ).rejects.toThrow('secret-shaped');
+        // Destination path segments are checked after decoding.
+        await expect(
+          f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision({ destination: `https://api.example.com/${token}` }),
+          ),
+        ).rejects.toThrow('secret-shaped');
+        await expect(
+          f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision({
+              destination: `https://api.example.com/users%2F${jwt}`,
+            }),
+          ),
+        ).rejects.toThrow('secret-shaped');
+        // Recovery and outcome details too.
+        await expect(
+          f.journal.recordRecovery(fence, {
+            actor: 'user:default/alice',
+            kind: 'other',
+            detail: `rotation failed for ${token}`,
+          }),
+        ).rejects.toThrow('secret-shaped');
+        const id = await f.journal.recordDecisionAndIntent(
+          fence,
+          freshDecision(),
+        );
+        await expect(
+          f.journal.recordOutcome(fence, id, {
+            status: 'failed',
+            detail: `upstream said ${awsKey}`,
+          }),
+        ).rejects.toThrow('secret-shaped');
+        expect(await f.db('ai_journal_events').select('id')).toHaveLength(1);
+        // Benign security words and paths still pass.
+        await f.journal.recordDecisionAndIntent(
+          fence,
+          freshDecision({
+            operation: 'auth.token',
+            destination: 'https://auth.example.com/oauth/token',
+            reason: 'credential expired; re-authentication required',
+          }),
+        );
+        expect(await f.db('ai_journal_events').select('id')).toHaveLength(2);
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('accepts real plugin and external service principals end to end', async () => {
+      const f = await fixture(dialect);
+      try {
+        // Authenticated subjects are opaque strings: each native principal
+        // form — including JWKS issuer subjects whose `sub` contains
+        // colons and slashes — appends under its exact normalized form and
+        // reads its own journal back, because the reader principal is
+        // derived by the same normalization.
+        const actors = [
+          'plugin:catalog',
+          'external:billing-api',
+          'external:issuer:billing-api',
+          'external:repo:org/repo:ref:refs/heads/main',
+          'user:default/alice',
+        ];
+        for (const [index, actor] of actors.entries()) {
+          const sessionId = `session-${index}`;
+          const actorFence = {
+            namespace: { pluginId: namespace.pluginId, sessionId },
+            owner: fence.owner,
+            token: fence.token,
+          };
+          await f.db('ai_namespace_leases').insert({
+            plugin_id: namespace.pluginId,
+            session_id: sessionId,
+            owner_id: fence.owner,
+            token: fence.token,
+            expires_at: leaseTime(f.db, dialect, 60),
+          });
+          await f.journal.recordDecisionAndIntent(
+            actorFence,
+            freshDecision({ actor }),
+          );
+          const ownPage = await f.journal.read(credentials(actor), {
+            pluginId: namespace.pluginId,
+            sessionId,
+          });
+          const ownDecision = ownPage.items.find(
+            item => item.kind === 'decision',
+          ) as Extract<AuditEventView, { kind: 'decision' }>;
+          expect(ownDecision.actor).toBe(actor);
+
+          // Cross-principal reads of the same session deny.
+          const other = actors[(index + 1) % actors.length];
+          await expect(
+            f.journal.read(credentials(other), {
+              pluginId: namespace.pluginId,
+              sessionId,
+            }),
+          ).rejects.toThrow(AuditAccessDeniedError);
+        }
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('uses the same principal validation for appends and resolver-backed reads', async () => {
+      const f = await fixture(dialect);
+      try {
+        const query = { ...namespace };
+        for (const [subject, valid] of [
+          ['', false],
+          ['x'.repeat(513), false],
+          ['user:default/alice\n', false],
+          [' user:default/alice', false],
+          ['user:default/alice ', false],
+          ['https://issuer.example.net/alice', true],
+          ['x.'.repeat(256), true],
+        ] as const) {
+          for (const type of ['user', 'service'] as const) {
+            const reader = {
+              $$type: '@backstage/BackstageCredentials',
+              principal:
+                type === 'user'
+                  ? { type, userEntityRef: subject }
+                  : { type, subject },
+            } as BackstageCredentials;
+            const journal = createAttemptJournal({
+              db: f.db,
+              authorizer: { authorizeAuditRead: async () => true },
+              ownershipResolver: async () => subject,
+            });
+            const appended = await journal
+              .recordDecisionAndIntent(fence, freshDecision({ actor: subject }))
+              .then(
+                () => true,
+                error => {
+                  if (!String(error.message).includes('Invalid actor'))
+                    throw error;
+                  return false;
+                },
+              );
+            const allowed = await journal.read(reader, query).then(
+              () => true,
+              error => {
+                if (!(error instanceof AuditAccessDeniedError)) throw error;
+                return false;
+              },
+            );
+            expect({ appended, allowed }).toEqual({
+              appended: valid,
+              allowed: valid,
+            });
+          }
+        }
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('hashes dynamic route values in raw rows, reads and mirrors', async () => {
+      const f = await fixture(dialect);
+      const mirrored: AuditEventView[] = [];
+      const journal = createAttemptJournal({
+        db: f.db,
+        authorizer: { authorizeAuditRead: async () => true },
+        mirror: {
+          mirror: async event => {
+            mirrored.push(event);
+          },
+        },
+      });
+      try {
+        const values = [
+          'GPT4o-PROD-20261117',
+          'ngCCU70RuJyRwtoMhMN4WFAqkVN2tKyYwWTeUh/MXvXnvBCFPtCSMVK5sWzmGqUl',
+          '36e30f114e4a7f293a5b4dafe72b7765/bc5e5ce0ea555121d1e4a31e40ccc853',
+          'MFRGGZDFMZTWQ2LKNNWG23TPOIXXIYLM/MFRGGZDFMZTWQ2LKNNWG23TPOIXXIYLM',
+          'bcdefghijklmnopqrstuvwxyzabcdefg/hijklmnopqrstuvwxyzabcdefghijklm',
+        ];
+        const expected: string[] = [];
+        for (const value of values) {
+          for (const encoded of [
+            value,
+            value.replaceAll('/', '%2F'),
+            value.replaceAll('/', '%252F'),
+          ]) {
+            const digest = createHash('sha256')
+              .update(value)
+              .digest('hex')
+              .slice(0, 16);
+            expected.push(
+              `https://my-resource.openai.azure.com/openai/deployments/{deployment=${digest}}/responses`,
+            );
+            await journal.recordDecisionAndIntent(
+              fence,
+              freshDecision({
+                destination: `https://my-resource.openai.azure.com/openai/deployments/${encoded}/responses`,
+              }),
+            );
+          }
+        }
+        const rows = await f
+          .db('ai_journal_events')
+          .orderBy('id')
+          .select('destination');
+        const page = await journal.read(
+          credentials('user:default/alice'),
+          namespace,
+        );
+        expect(rows.map(row => row.destination)).toEqual(expected);
+        expect(
+          page.items.map(item => item.kind === 'decision' && item.destination),
+        ).toEqual(expected);
+        expect(
+          mirrored.map(item => item.kind === 'decision' && item.destination),
+        ).toEqual(expected);
+        const dump = JSON.stringify({ rows, page, mirrored });
+        for (const value of values) expect(dump).not.toContain(value);
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('rejects unapproved routes and known credentials before hashing', async () => {
+      const f = await fixture(dialect);
+      try {
+        await expect(
+          f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision({
+              destination:
+                'https://my-resource.openai.azure.com/openai/deployments/GPT4o-PROD-20261117/chat/completions',
+            }),
+          ),
+        ).rejects.toThrow('no approved route template');
+        for (const destination of [
+          'https://example.com/v1/projects/my-project',
+          'http://example.com/v1/responses',
+        ]) {
+          await expect(
+            f.journal.recordDecisionAndIntent(
+              fence,
+              freshDecision({ destination }),
+            ),
+          ).rejects.toThrow('destination');
+        }
+        const tokens = [
+          'ghp_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
+          'xoxb-12345678901234567890',
+          'AKIAIOSFODNN7EXAMPLE',
+          'AIza012345678901234567890123456789',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+          '-----BEGIN RSA PRIVATE KEY-----',
+          'Bearer abcdef123456789',
+        ];
+        for (const token of tokens) {
+          const encoded = encodeURIComponent(token);
+          // Splitting known patterns at a slash must not hide them.
+          const at = token.startsWith('Bearer')
+            ? token.length - 8
+            : Math.floor(token.length / 2);
+          for (const value of [
+            encoded,
+            ...['/', '%2F', '%252F'].map(
+              separator =>
+                `${encodeURIComponent(
+                  token.slice(0, at),
+                )}${separator}${encodeURIComponent(token.slice(at))}`,
+            ),
+          ]) {
+            await expect(
+              f.journal.recordDecisionAndIntent(
+                fence,
+                freshDecision({
+                  destination: `https://example.com/openai/deployments/${value}/responses`,
+                }),
+              ),
+            ).rejects.toThrow('secret-shaped');
+          }
+        }
+        await expect(
+          f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision({
+              destination:
+                'https://ghp_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1.example.com/v1/responses',
+            }),
+          ),
+        ).rejects.toThrow('secret-shaped');
+        await expect(
+          f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision({
+              operation: 'auth.token',
+              destination: 'https://example.com/not-a-token-route',
+            }),
+          ),
+        ).rejects.toThrow('no approved route template');
+        expect(await f.db('ai_journal_events').select('id')).toEqual([]);
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('rejects label-prefixed credential values in every field class', async () => {
+      const f = await fixture(dialect);
+      try {
+        const pat = 'ghp_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1';
+        for (const prefixed of [`x${pat}`, `_${pat}`]) {
+          await expect(
+            f.journal.recordDecisionAndIntent(fence, {
+              ...freshDecision(),
+              reason: `provider rejected ${prefixed}`,
+            }),
+          ).rejects.toThrow('secret-shaped');
+          await expect(
+            f.journal.recordDecisionAndIntent(
+              fence,
+              freshDecision({ actor: `service:${prefixed}` }),
+            ),
+          ).rejects.toThrow('secret-shaped');
+          await expect(
+            f.journal.recordDecisionAndIntent(
+              fence,
+              freshDecision({
+                destination: `https://api.example.com/${prefixed}`,
+              }),
+            ),
+          ).rejects.toThrow('secret-shaped');
+          await expect(
+            f.journal.recordRecovery(fence, {
+              actor: 'user:default/alice',
+              kind: 'other',
+              detail: `rotation failed for ${prefixed}`,
+            }),
+          ).rejects.toThrow('secret-shaped');
+        }
+        expect(await f.db('ai_journal_events').select('id')).toEqual([]);
+
+        // Benign structured identifiers that merely contain short
+        // key-like fragments still pass.
+        await f.journal.recordDecisionAndIntent(
+          fence,
+          freshDecision({
+            taskId: 'task-01HZX4T8Z9WK2Q3V8Z9WK2Q3V8',
+            reason: 'task-management-module-planning completed',
+          }),
+        );
+        expect(await f.db('ai_journal_events').select('id')).toHaveLength(1);
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('mirrors 64-bit IDs exactly above 2^53 (SQLite)', async () => {
+      const f = await fixture('sqlite');
+      const mirrored: AuditEventView[] = [];
+      const journal = createAttemptJournal({
+        db: f.db,
+        authorizer: { authorizeAuditRead: async () => true },
+        mirror: {
+          mirror: async event => {
+            mirrored.push(event);
+          },
+        },
+      });
+      try {
+        await journal.recordDecisionAndIntent(fence, freshDecision());
+        await f
+          .db('sqlite_sequence')
+          .where({ name: 'ai_journal_events' })
+          .update({ seq: 9007199254740992 });
+        const high = await journal.recordDecisionAndIntent(
+          fence,
+          freshDecision(),
+        );
+        expect(high).toBe('9007199254740993');
+        await journal.recordOutcome(fence, high, { status: 'completed' });
+        const highDecision = mirrored.find(
+          event => event.kind === 'decision' && event.id === high,
+        );
+        const highOutcome = mirrored.find(event => event.kind === 'outcome');
+        expect(highDecision).toBeDefined();
+        expect(highOutcome?.attemptId).toBe(high);
+        expect(mirrored.every(event => /^\d+$/.test(event.id))).toBe(true);
       } finally {
         await f.cleanup();
       }
@@ -603,10 +1078,10 @@ for (const dialect of ['sqlite', 'pg'] as const) {
       }
     });
 
-    it('paginates events oldest first', async () => {
+    it('paginates events in numeric ID order across decimal widths', async () => {
       const f = await fixture(dialect);
       try {
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < 15; i++) {
           await f.journal.recordDecisionAndIntent(
             fence,
             freshDecision({ attempt: i + 1 }),
@@ -626,10 +1101,11 @@ for (const dialect of ['sqlite', 'pg'] as const) {
           cursor = page.nextCursor;
           if (!cursor) break;
         }
-        expect(seen).toHaveLength(7);
+        // Numeric, not lexicographic: 1..15, never 1,10,11,...,2,...
         expect(seen.map(id => Number(id))).toEqual(
-          [...seen.map(id => Number(id))].sort((a, b) => a - b),
+          [...Array(15).keys()].map(i => i + 1),
         );
+        expect(new Set(seen).size).toBe(15);
         await expect(
           f.journal.read(credentials('user:default/alice'), {
             pluginId: namespace.pluginId,
@@ -644,6 +1120,136 @@ for (const dialect of ['sqlite', 'pg'] as const) {
             limit: 0,
           }),
         ).rejects.toThrow('limit');
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    if (dialect === 'pg') {
+      // Only meaningful on PostgreSQL, whose separate-statement clock makes
+      // the expiry-after-lock-wait window observable.
+      // eslint-disable-next-line jest/no-conditional-expect
+      it('rejects an append whose lease expired while it waited for the row lock', async () => {
+        // Same owner and token throughout: only the database clock expires.
+        // The append locks the lease row first and reads the clock in a
+        // separate statement after acquiring the lock, so expiry during the
+        // wait must still reject. A transaction-start clock would pass the
+        // check here and fail this test.
+        const f = await fixture('pg');
+        try {
+          await f
+            .db('ai_namespace_leases')
+            .where(key)
+            .update({
+              expires_at: f.db.raw(
+                "statement_timestamp() + interval '1 second'",
+              ),
+            });
+          const holder = await f.db.transaction();
+          await holder('ai_namespace_leases').where(key).forUpdate().first();
+          const attempt = f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision(),
+          );
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          await holder.commit();
+          // eslint-disable-next-line jest/no-conditional-expect
+          await expect(attempt).rejects.toThrow('fence');
+          // eslint-disable-next-line jest/no-conditional-expect
+          expect(await f.db('ai_journal_events').select('id')).toEqual([]);
+        } finally {
+          await f.cleanup();
+        }
+      });
+    }
+
+    it('keeps 64-bit IDs exact above 2^53 (SQLite)', async () => {
+      const f = await fixture('sqlite');
+      try {
+        const low = await f.journal.recordDecisionAndIntent(
+          fence,
+          freshDecision(),
+        );
+        await f
+          .db('sqlite_sequence')
+          .where({ name: 'ai_journal_events' })
+          .update({ seq: 9007199254740992 });
+        const high = await f.journal.recordDecisionAndIntent(
+          fence,
+          freshDecision(),
+        );
+        expect(high).toBe('9007199254740993');
+        // The outcome lookup must find the exact high decision row.
+        await f.journal.recordOutcome(fence, high, { status: 'completed' });
+        // Keyset pagination returns exact IDs in order.
+        const seen: string[] = [];
+        let cursor: string | undefined;
+        for (;;) {
+          const page = await f.journal.read(credentials('user:default/alice'), {
+            pluginId: namespace.pluginId,
+            sessionId: namespace.sessionId,
+            limit: 1,
+            cursor,
+          });
+          seen.push(...page.items.map(item => item.id));
+          cursor = page.nextCursor;
+          if (!cursor) break;
+        }
+        expect(seen).toHaveLength(3);
+        expect(seen[0]).toBe(low);
+        expect(seen[1]).toBe(high);
+        const outcome = await f
+          .db('ai_journal_events')
+          .where({ kind: 'outcome' })
+          .first(f.db.raw('CAST(attempt_id AS TEXT) AS attempt_id'));
+        expect(outcome.attempt_id).toBe(high);
+        // Retention targets the exact high-ID attempt: age it in SQL text
+        // form and prune.
+        await f
+          .db('ai_journal_events')
+          .whereRaw('id = 9007199254740993')
+          .update({ created_at: '2000-01-01T00:00:00.000Z' });
+        const result = await pruneAiJournal(f.db, {
+          retentionMs: 60_000,
+        });
+        expect(result.prunedEvents).toBe(2); // high decision + its outcome
+        const remaining = await f
+          .db('ai_journal_events')
+          .select(f.db.raw('CAST(id AS TEXT) AS id'));
+        expect(remaining.map(row => row.id)).toEqual([low]);
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('reads timestamps as UTC regardless of host timezone', async () => {
+      const f = await fixture(dialect);
+      try {
+        await f.journal.recordDecisionAndIntent(fence, freshDecision());
+        const raw = await f.db('ai_journal_events').first('created_at');
+        const expected = new Date(
+          typeof raw.created_at === 'string' &&
+          !/[zZ]|[+-]\d{2}:?\d{2}$/.test(raw.created_at)
+            ? `${raw.created_at.replace(' ', 'T')}Z`
+            : (raw.created_at as string | number | Date),
+        ).toISOString();
+        const previous = process.env.TZ;
+        try {
+          for (const zone of ['America/Los_Angeles', 'Asia/Tokyo', 'UTC']) {
+            process.env.TZ = zone;
+            const page = await f.journal.read(
+              credentials('user:default/alice'),
+              {
+                pluginId: namespace.pluginId,
+                sessionId: namespace.sessionId,
+              },
+            );
+            expect(page.items[0].recordedAt).toBe(expected);
+          }
+        } finally {
+          if (previous === undefined) delete process.env.TZ;
+          else process.env.TZ = previous;
+        }
       } finally {
         await f.cleanup();
       }

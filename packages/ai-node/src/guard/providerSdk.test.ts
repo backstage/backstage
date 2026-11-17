@@ -166,7 +166,7 @@ describe.each([
             completions: '/v1',
             azure: '/openai/v1',
             anthropic: '',
-            codex: '',
+            codex: '/backend-api',
           }[provider]
         }`,
         ...(provider === 'completions'
@@ -198,7 +198,7 @@ describe.each([
           {
             openai: '/v1/responses',
             anthropic: '/v1/messages',
-            codex: '/codex/responses',
+            codex: '/backend-api/codex/responses',
             completions: '/v1/chat/completions',
             azure: '/openai/v1/responses?api-version=v1',
           }[provider]

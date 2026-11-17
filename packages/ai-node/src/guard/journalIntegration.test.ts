@@ -17,13 +17,22 @@
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { createServer } from 'node:http';
 import knex, { type Knex } from 'knex';
 import { mockCredentials } from '@backstage/backend-test-utils';
 import { openaiProvider } from '@earendil-works/pi-ai/providers/openai';
+import { anthropicProvider } from '@earendil-works/pi-ai/providers/anthropic';
+import { openaiCodexProvider } from '@earendil-works/pi-ai/providers/openai-codex';
+import { azureProvider } from '@earendil-works/pi-ai/providers/azure';
+import { normalizeContext } from '@earendil-works/pi-ai/utils/transcript';
+import { streamSimple as openaiStream } from '@earendil-works/pi-ai/api/openai-responses';
+import { streamSimple as completionsStream } from '@earendil-works/pi-ai/api/openai-completions';
+import { streamSimple as anthropicStream } from '@earendil-works/pi-ai/api/anthropic-messages';
+import { streamSimple as codexStream } from '@earendil-works/pi-ai/api/openai-codex-responses';
+import { streamSimple as azureStream } from '@earendil-works/pi-ai/api/azure-openai-responses';
 import { createAttemptJournal } from '../journal/knex';
 import { createModelOperationGuard } from './createModelOperationGuard';
 import {
@@ -153,6 +162,156 @@ if (worker) {
     'sqlite',
     ...(pgUrl ? ['pg' as const] : []),
   ] as const) {
+    it(`journals real SDK requests on the approved provider routes (${dialect})`, async () => {
+      const f = await fixture(dialect);
+      const paths: string[] = [];
+      const server = createServer((req, res) => {
+        paths.push(req.url ?? '');
+        req.resume();
+        res.writeHead(400, { 'content-type': 'application/json' });
+        res.end(
+          JSON.stringify({
+            type: 'error',
+            error: { type: 'invalid_request_error', message: 'test rejection' },
+          }),
+        );
+      });
+      server.listen(0, '127.0.0.1');
+      await once(server, 'listening');
+      try {
+        const address = server.address();
+        if (!address || typeof address === 'string')
+          throw new Error('No test port');
+        const base = `http://127.0.0.1:${address.port}`;
+        const j = journal(f.db);
+        const cases = [
+          {
+            model: {
+              ...openaiProvider().getModels()[0],
+              baseUrl: `${base}/v1`,
+            },
+            stream: openaiStream,
+            path: '/v1/responses',
+          },
+          {
+            model: {
+              ...openaiProvider().getModels()[0],
+              api: 'openai-completions' as const,
+              baseUrl: `${base}/v1`,
+            },
+            stream: completionsStream,
+            path: '/v1/chat/completions',
+          },
+          {
+            model: { ...anthropicProvider().getModels()[0], baseUrl: base },
+            stream: anthropicStream,
+            path: '/v1/messages',
+          },
+          {
+            model: {
+              ...openaiCodexProvider().getModels()[0],
+              baseUrl: `${base}/backend-api`,
+            },
+            stream: codexStream,
+            path: '/backend-api/codex/responses',
+          },
+          {
+            model: {
+              ...azureProvider().getModels()[0],
+              baseUrl: `${base}/openai/v1`,
+            },
+            stream: azureStream,
+            path: '/openai/v1/responses?api-version=v1',
+          },
+        ];
+        for (const c of cases) {
+          const op: TrustedOperation = {
+            ...operation(`${base}${c.path}`),
+            provider: c.model.provider,
+            modelId: c.model.id,
+            resolvedModel: c.model.id,
+            api: c.model.api as TrustedOperation['api'],
+            operation: 'streamSimple',
+          };
+          const guard = createModelOperationGuard({
+            journal: j,
+            transport: globalThis.fetch,
+            recheck: async () => true,
+          }).bind(op);
+          const apiKey =
+            c.model.api === 'openai-codex-responses'
+              ? `x.${Buffer.from(
+                  JSON.stringify({
+                    'https://api.openai.com/auth': {
+                      chatgpt_account_id: 'account',
+                    },
+                  }),
+                ).toString('base64url')}.x`
+              : 'test-key';
+          const result = await c
+            .stream(c.model as never, normalizeContext({ messages: [] }), {
+              apiKey,
+              transport: 'sse',
+              fetch: guard.fetch,
+              maxRetries: 0,
+            })
+            .result();
+          expect(result.stopReason).toBe('error');
+          await guard.finish('failed');
+        }
+        const page = await j.read(credentials, namespace);
+        const decisions = page.items.filter(event => event.kind === 'decision');
+        expect(decisions.map(event => event.destination)).toEqual(
+          cases.map(c => `${base}${c.path.split('?')[0]}`),
+        );
+        expect(decisions.map(event => event.outcomeStatus)).toEqual(
+          cases.map(() => 'failed'),
+        );
+        expect(paths.map(path => path.split('?')[0])).toEqual(
+          cases.map(c => c.path.split('?')[0]),
+        );
+        expect(JSON.stringify(page)).not.toContain('test-key');
+      } finally {
+        server.close();
+        await once(server, 'close');
+        await f.cleanup();
+      }
+    });
+
+    it(`stores the Azure deployment destination as a digest (${dialect})`, async () => {
+      const f = await fixture(dialect);
+      try {
+        const j = journal(f.db);
+        const name = 'private-deployment';
+        const destination = `https://provider.example/openai/deployments/${name}/responses?api-version=v1`;
+        const op = {
+          ...operation(destination),
+          api: 'azure-openai-responses' as const,
+        };
+        const guard = createModelOperationGuard({
+          journal: j,
+          recheck: async () => true,
+          transport: (async () =>
+            new Response('rejected', { status: 400 })) as typeof fetch,
+        }).bind(op);
+        await (await request(guard, destination)).text();
+        const page = await j.read(credentials, namespace);
+        const digest = createHash('sha256')
+          .update(name)
+          .digest('hex')
+          .slice(0, 16);
+        expect(page.items[0]).toMatchObject({
+          kind: 'decision',
+          destination: `https://provider.example/openai/deployments/{deployment=${digest}}/responses`,
+          outcomeStatus: 'failed',
+        });
+        expect(JSON.stringify(page)).not.toContain(name);
+        expect(JSON.stringify(page)).not.toContain('api-version');
+      } finally {
+        await f.cleanup();
+      }
+    });
+
     it(`persists revocation and expired-credential denials without secrets (${dialect})`, async () => {
       const f = await fixture(dialect);
       try {
@@ -203,8 +362,36 @@ if (worker) {
           decision: 'deny',
           operation: 'auth.token',
           reason: 'credential expired; re-authentication required',
+          destination: undefined,
         });
         expect(JSON.stringify(page)).not.toContain('{"model":"gpt"}');
+        const clock = jest.spyOn(Date, 'now').mockReturnValue(100);
+        try {
+          const expiresDuringCheck = createModelOperationGuard({
+            journal: j,
+            recheck: async () => {
+              clock.mockReturnValue(102);
+              return true;
+            },
+            transport: transport as unknown as typeof fetch,
+          }).bind({
+            ...operation(destination),
+            providerCredentialExpiresAt: 101,
+          });
+          await expect(
+            request(expiresDuringCheck, destination),
+          ).rejects.toThrow('credential expired');
+          const updated = await j.read(credentials, namespace);
+          expect(updated.items.at(-1)).toMatchObject({
+            operation: 'auth.token',
+            decision: 'deny',
+            destination: undefined,
+            reason: 'credential expired; re-authentication required',
+          });
+          expect(transport).toHaveBeenCalledTimes(1);
+        } finally {
+          clock.mockRestore();
+        }
       } finally {
         await f.cleanup();
       }
