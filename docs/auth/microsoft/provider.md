@@ -40,6 +40,14 @@ If you're using an existing app registration, and backstage already has a client
 If not, go to the **Certificates & Secrets** page, then the **Client secrets** tab and create a new client secret.
 Make a note of this value as you'll need it in the next section.
 
+### Using a client certificate instead of a client secret
+
+If your organization doesn't allow client secrets, Backstage can authenticate to Microsoft Entra ID with a
+[certificate credential](https://learn.microsoft.com/en-us/entra/identity-platform/certificate-credentials) instead.
+Go to the **Certificates & Secrets** page, then the **Certificates** tab, and upload the public certificate (`.cer`, `.pem` or `.crt`).
+Backstage needs the certificate together with its RSA private key in PEM format, without a passphrase.
+It signs a client assertion with the private key whenever it exchanges an authorization code or refreshes a token.
+
 ## Outbound Network Access
 
 If your environment has restrictions on outgoing access (e.g. through
@@ -76,7 +84,8 @@ auth:
 The Microsoft provider is a structure with three mandatory configuration keys:
 
 - `clientId`: Application (client) ID, found on App Registration > Overview
-- `clientSecret`: Secret, found on App Registration > Certificates & secrets
+- `clientSecret`: Secret, found on App Registration > Certificates & secrets.
+  Alternatively, set `clientCertificate` or `clientCertificatePath` instead, see below.
 - `tenantId`: Directory (tenant) ID, found on App Registration > Overview
 - `domainHint` (optional): Typically the same as `tenantId`.
   Leave blank if your app registration is multi tenant.
@@ -85,6 +94,18 @@ The Microsoft provider is a structure with three mandatory configuration keys:
 - `additionalScopes` (optional): List of scopes for the App Registration, to be requested in addition to the required ones.
 - `skipUserProfile` (optional): If true, skips loading the user profile even if the `User.Read` scope is present. This also disables the separate Microsoft Graph call that is otherwise made to fetch the profile when acquiring tokens for non-Graph resources (for example the Azure Management API). This is a performance optimization and can be used with resolvers that only needs the email address in `spec.profile.email` obtained when the `email` OAuth2 scope is present.
 - `sessionDuration` (optional): Lifespan of the user session.
+
+To authenticate with a client certificate, replace `clientSecret` with exactly one of `clientCertificate` (the PEM-encoded certificate including its private key) or `clientCertificatePath` (the path to a file containing it):
+
+```yaml
+auth:
+  providers:
+    microsoft:
+      development:
+        clientId: ${AZURE_CLIENT_ID}
+        clientCertificatePath: /path/to/cert.pem # or clientCertificate: ${AZURE_CLIENT_CERTIFICATE}
+        tenantId: ${AZURE_TENANT_ID}
+```
 
 ### Resolvers
 

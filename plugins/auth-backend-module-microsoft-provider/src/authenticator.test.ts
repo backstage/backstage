@@ -25,8 +25,14 @@ import {
   PassportOAuthAuthenticatorHelper,
 } from '@backstage/plugin-auth-node';
 import express from 'express';
+import { decodeProtectedHeader, jwtVerify } from 'jose';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
+import { createHash, X509Certificate } from 'node:crypto';
+import { mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { generate } from 'selfsigned';
 import { FakeMicrosoftAPI } from './__testUtils__/fake';
 import { microsoftAuthenticator } from './authenticator';
 
@@ -360,6 +366,207 @@ describe('microsoftAuthenticator', () => {
       expect(refreshResponse.session.accessToken).toBe(
         microsoftApi.generateAccessToken(scope),
       );
+    });
+  });
+  describe('client credential configuration', () => {
+    let pem: string;
+    beforeAll(async () => {
+      const pems = await generate([{ name: 'commonName', value: 'test' }], {
+        keySize: 2048,
+      });
+      pem = `${pems.cert}\n${pems.private}`;
+    });
+
+    const initialize = (credential: Record<string, string>) =>
+      microsoftAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          tenantId: 'tenantId',
+          clientId: 'clientId',
+          ...credential,
+        }),
+      });
+
+    it('rejects config without a client credential', () => {
+      expect(() => initialize({})).toThrow(
+        'The Microsoft auth provider requires exactly one of clientSecret, clientCertificate or clientCertificatePath to be configured',
+      );
+    });
+
+    it('rejects config with more than one client credential', () => {
+      expect(() =>
+        initialize({ clientSecret: 'clientSecret', clientCertificate: pem }),
+      ).toThrow(/requires exactly one of/);
+      expect(() =>
+        initialize({
+          clientCertificate: pem,
+          clientCertificatePath: '/path/to/cert.pem',
+        }),
+      ).toThrow(/requires exactly one of/);
+    });
+
+    it('rejects a client certificate without a private key', () => {
+      expect(() =>
+        initialize({
+          clientCertificate: pem.replace(/-----BEGIN PRIVATE KEY[\s\S]*/, ''),
+        }),
+      ).toThrow(/does not contain an unencrypted PEM-encoded private key/);
+    });
+
+    it('rejects a client certificate without a certificate', () => {
+      expect(() =>
+        initialize({
+          clientCertificate: pem.replace(
+            /-----BEGIN CERTIFICATE[\s\S]*?-----END CERTIFICATE-----/,
+            '',
+          ),
+        }),
+      ).toThrow(/does not contain a PEM-encoded certificate/);
+    });
+
+    it('rejects a private key that does not match the certificate', async () => {
+      const other = await generate([{ name: 'commonName', value: 'other' }], {
+        keySize: 2048,
+      });
+      expect(() =>
+        initialize({
+          clientCertificate: `${
+            pem.match(
+              /-----BEGIN CERTIFICATE[\s\S]*?-----END CERTIFICATE-----/,
+            )![0]
+          }\n${other.private}`,
+        }),
+      ).toThrow(/does not match the certificate/);
+    });
+
+    it('reads the client certificate from a file', () => {
+      const dir = mkdtempSync(join(tmpdir(), 'microsoft-auth-'));
+      const path = join(dir, 'cert.pem');
+      writeFileSync(path, pem);
+      expect(() => initialize({ clientCertificatePath: path })).not.toThrow();
+    });
+  });
+
+  describe('with a client certificate', () => {
+    const tokenUrl =
+      'https://login.microsoftonline.com/tenantId/oauth2/v2.0/token';
+    let pem: string;
+    let certificate: X509Certificate;
+    let tokenRequests: URLSearchParams[];
+
+    beforeAll(async () => {
+      const pems = await generate([{ name: 'commonName', value: 'test' }], {
+        keySize: 2048,
+      });
+      pem = `${pems.private}\n${pems.cert}`;
+      certificate = new X509Certificate(pems.cert);
+    });
+
+    beforeEach(() => {
+      tokenRequests = [];
+      server.use(
+        http.post(tokenUrl, async ({ request }) => {
+          const formData = new URLSearchParams(await request.text());
+          tokenRequests.push(formData);
+          return HttpResponse.json({
+            ...microsoftApi.token(formData),
+            token_type: 'Bearer',
+            expires_in: 123,
+            ext_expires_in: 123,
+          });
+        }),
+      );
+      implementation = microsoftAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          tenantId: 'tenantId',
+          clientId: 'clientId',
+          clientCertificate: pem,
+        }),
+      });
+    });
+
+    async function expectClientAssertion(formData: URLSearchParams) {
+      expect(formData.has('client_secret')).toBe(false);
+      expect(formData.get('client_id')).toBe('clientId');
+      expect(formData.get('client_assertion_type')).toBe(
+        'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
+      );
+
+      const assertion = formData.get('client_assertion')!;
+      expect(decodeProtectedHeader(assertion)).toEqual({
+        alg: 'PS256',
+        typ: 'JWT',
+        'x5t#S256': createHash('sha256')
+          .update(certificate.raw)
+          .digest('base64url'),
+      });
+
+      const { payload } = await jwtVerify(assertion, certificate.publicKey, {
+        algorithms: ['PS256'],
+        issuer: 'clientId',
+        subject: 'clientId',
+        audience: tokenUrl,
+      });
+      expect(payload.jti).toEqual(expect.any(String));
+      expect(payload.nbf).toEqual(payload.iat);
+      expect(payload.exp! - payload.iat!).toBe(600);
+    }
+
+    it('sends a client assertion when exchanging the authorization code', async () => {
+      const authenticateResponse = await microsoftAuthenticator.authenticate(
+        {
+          req: {
+            method: 'GET',
+            url: 'test',
+            query: { code: microsoftApi.generateAuthCode(scope), state },
+            session: {},
+            cookies: { 'microsoft-nonce': oauthState.nonce },
+          } as unknown as express.Request,
+        },
+        implementation,
+      );
+
+      expect(authenticateResponse.fullProfile.displayName).toBe('Conrad');
+      expect(tokenRequests).toHaveLength(1);
+      expect(tokenRequests[0].get('grant_type')).toBe('authorization_code');
+      await expectClientAssertion(tokenRequests[0]);
+    });
+
+    it('sends a client assertion when refreshing a token', async () => {
+      const refreshResponse = await microsoftAuthenticator.refresh(
+        {
+          scope,
+          refreshToken: microsoftApi.generateRefreshToken(scope),
+          req: {} as unknown as express.Request,
+        },
+        implementation,
+      );
+
+      expect(refreshResponse.fullProfile.displayName).toBe('Conrad');
+      expect(tokenRequests).toHaveLength(1);
+      expect(tokenRequests[0].get('grant_type')).toBe('refresh_token');
+      await expectClientAssertion(tokenRequests[0]);
+    });
+
+    it('signs a new client assertion for every token request', async () => {
+      const refresh = () =>
+        microsoftAuthenticator.refresh(
+          {
+            scope,
+            refreshToken: microsoftApi.generateRefreshToken(scope),
+            req: {} as unknown as express.Request,
+          },
+          implementation,
+        );
+      await refresh();
+      await refresh();
+
+      expect(tokenRequests).toHaveLength(2);
+      const [first, second] = tokenRequests.map(
+        r => r.get('client_assertion')!,
+      );
+      expect(first).not.toBe(second);
     });
   });
 });
