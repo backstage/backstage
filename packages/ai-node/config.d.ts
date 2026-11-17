@@ -25,54 +25,17 @@
  * pass any other path to `configureAiInstallation`. Both sections are
  * optional and fail closed: without `ai.credentials` no credential stores
  * are wired, and without `ai.models` no model resolves — a missing entry is
- * a journaled, actionable denial, never a fallback.
+ * a journaled, actionable denial, never a fallback. The runtime validation
+ * in `@backstage/ai-node` enforces exact scope keys, duplicate-free model
+ * lists, certified adapter identifiers, and reserved token routes; this
+ * schema mirrors that contract without loosening it.
  *
- * ```yaml
- * ai:
- *   credentials:
- *     # Standard base64 of exactly 32 raw bytes, kept in an app-config secret.
- *     encryptionKey: ${AI_CREDENTIAL_ENCRYPTION_KEY}
- *     # `user-first` (default) or `org-first`.
- *     precedence: user-first
- *     scopes:
- *       org:
- *         anthropic:
- *           type: api_key
- *           key: ${ANTHROPIC_API_KEY}
- *       service:catalog-indexer:
- *         openai:
- *           type: oauth
- *           refresh: ...
- *           access: ...
- *           expires: 1234
- *   models:
- *     - provider: openai
- *       modelId: gpt-5
- *       # Adapter identifier of a provider module; the guard certifies it.
- *       api: openai-responses
- *       baseUrl: https://api.openai.com/v1
- *       contextWindow: 400000
- *       maxTokens: 128000
- *       name: GPT-5 # optional, defaults to modelId
- *       reasoning: true # optional, defaults to false
- *       input: [text, image] # optional, defaults to [text]
- *       cost: { input: 1.25, output: 10, cacheRead: 0.125 } # unset rates are 0
- * ```
- *
- * `encryptionKey` is required whenever `ai.credentials` exists. `scopes`
- * accepts exactly `org` and `service:<id>`; user scopes are rejected because
- * personal credentials live in the encrypted store written by the login
- * flow, and the installation stores are read-only. Credential entries are
- * opaque: the credential kind and its fields are interpreted by the
- * credential stores and provider modules that consume them. `precedence`
- * selects which scope wins when both a personal and an installation
- * credential exist; absence falls through to the next scope while a failed
- * read fails closed. `models` is the canonical catalog: the only models this
- * installation may dispatch, with `contextWindow` and `maxTokens` required
- * because the engine derives sizing and compaction from them. Unknown
- * fields, duplicate models, unusable adapter identifiers, non-http(s)
- * destinations and malformed scope keys all reject at startup with the exact
- * configuration path and corrective guidance.
+ * `ai.credentials.tokenEndpoints` lists, per provider, the absolute `https`
+ * URL of the OAuth token route guarded auth operations may use for
+ * credential refresh (`/oauth/token` or `/v1/oauth/token` on the provider's
+ * own origin). Providers without an entry cannot refresh OAuth credentials;
+ * the currently supported auth providers are Anthropic and OpenAI token
+ * endpoints.
  *
  * Each consuming plugin additionally chooses its own agent configuration
  * path and passes the root config plus that path to `openHarness` — there is
@@ -90,4 +53,91 @@
  *
  * `mode: service` requires `model.provider` and `model.modelId`.
  */
-export interface Config {}
+/**
+ * A credential entry's value: any JSON-persistable structure, including
+ * nested objects such as an api_key credential's `env` map.
+ *
+ * @visibility secret
+ */
+export type CredentialValue =
+  | string
+  | number
+  | boolean
+  | null
+  | CredentialValue[]
+  | { [field: string]: CredentialValue };
+
+export interface Config {
+  ai?: {
+    credentials?: {
+      /**
+       * Standard base64 of exactly 32 raw bytes; the authenticated-encryption
+       * key for the encrypted personal credential store. Supply it through an
+       * app-config environment variable, never committed to the file.
+       *
+       * @visibility secret
+       */
+      encryptionKey: string;
+      /**
+       * Which credential scope wins when both a personal and an installation
+       * credential exist for a provider. Defaults to `user-first`.
+       */
+      precedence?: 'user-first' | 'org-first';
+      /**
+       * Installation-owned provider credentials by scope. Scope keys are
+       * exactly `org` or `service:<id>`; user scopes are rejected because
+       * personal credentials live in the encrypted store written by the
+       * login flow. The credential entries are opaque: their kind and fields
+       * are interpreted by the credential stores and provider modules that
+       * consume them, and their values are credential material.
+       */
+      scopes?: {
+        [scopeId: string]: {
+          [providerId: string]: {
+            /**
+             * One opaque credential entry; values are secrets.
+             *
+             * @visibility secret
+             */
+            [field: string]: CredentialValue;
+          };
+        };
+      };
+      /**
+       * Trusted OAuth token routes per provider for guarded auth operations,
+       * as absolute `https` URLs on the provider's origin ending in the
+       * reserved `/oauth/token` or `/v1/oauth/token` route. Providers
+       * without an entry cannot refresh OAuth credentials; the supported
+       * auth providers are Anthropic and OpenAI token endpoints.
+       */
+      tokenEndpoints?: {
+        [providerId: string]: string;
+      };
+    };
+    /**
+     * The canonical model catalog: the only models this installation may
+     * dispatch. `contextWindow` and `maxTokens` are required in tokens; the
+     * engine derives sizing and compaction from them and never invents a
+     * value.
+     */
+    models?: Array<{
+      provider: string;
+      modelId: string;
+      /** Certified adapter identifier of a registered provider module. */
+      api: string;
+      baseUrl: string;
+      contextWindow: number;
+      maxTokens: number;
+      /** Display name; defaults to `modelId`. */
+      name?: string;
+      reasoning?: boolean;
+      input?: string[];
+      cost?: {
+        input?: number;
+        output?: number;
+        cacheRead?: number;
+        cacheWrite?: number;
+      };
+    }>;
+  };
+}
