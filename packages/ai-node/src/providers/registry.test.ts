@@ -116,6 +116,50 @@ describe('provider registration', () => {
     expect(conflicting.canonicalPath(path)).toBeUndefined();
   });
 
+  it('reserves static OAuth paths for journal-owned auth operations', () => {
+    for (const template of [
+      [{ literal: '/oauth/token' }],
+      [{ literal: '/v1/oauth/token' }],
+      [{ literal: '/v1/' }, { literal: 'oauth/token' }],
+      [{ literal: '/oauth/authorize' }],
+      [{ literal: '/v1/oauth-custom' }],
+    ]) {
+      expect(() =>
+        createProviderRegistry([
+          { ...openaiResponses, destinationTemplates: [template] },
+        ]),
+      ).toThrow('reserved authentication route');
+    }
+    const registry = createProviderRegistry([openaiResponses]);
+    expect(
+      assertDestination(
+        'https://auth.example/v1/oauth/token',
+        'auth.token',
+        'destination',
+        registry,
+      ),
+    ).toBe('https://auth.example/v1/oauth/token');
+    expect(() =>
+      assertDestination(
+        'https://auth.example/v1/oauth/token',
+        'models.stream',
+        'destination',
+        registry,
+      ),
+    ).toThrow('no approved route');
+    expect(() =>
+      createProviderRegistry([
+        {
+          ...openaiResponses,
+          destinationTemplates: [
+            [{ literal: '/v1/authorize' }],
+            [{ literal: '/oauth/' }, { digest: 'name' }],
+          ],
+        },
+      ]),
+    ).not.toThrow();
+  });
+
   it('fails registration for ambiguous or cleartext dynamic declarations', () => {
     for (const template of [
       [],

@@ -81,7 +81,18 @@ export function createProviderRegistry(
     }
     const destinationTemplates = module.destinationTemplates.map(
       (template: DestinationTemplate) => {
-        templates.push(compileDestinationTemplate(template));
+        const match = compileDestinationTemplate(template);
+        if (template.every(part => 'literal' in part)) {
+          const path = template
+            .map(part => ('literal' in part ? part.literal : ''))
+            .join('');
+          if (path.startsWith('/oauth') || path.startsWith('/v1/oauth')) {
+            throw new Error(
+              'Invalid destination template: reserved authentication route',
+            );
+          }
+        }
+        templates.push(match);
         return Object.freeze(template.map(part => Object.freeze({ ...part })));
       },
     );

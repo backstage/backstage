@@ -22,8 +22,9 @@ import type { AiProviderRegistry } from './registry';
 
 /**
  * Run the guard certification tests for one provider and one operation kind.
- * Supply fresh requests (including an otherwise-valid substituted-model
- * request) and a real child-process crash check backed by a durable journal.
+ * Supply fresh requests (including otherwise-valid requests with a substituted
+ * model or a disallowed query) and a real child-process crash check backed by
+ * a durable journal.
  * This suite tests guard/registration boundaries, not arbitrary code that
  * bypasses the guard. Provider-specific SDK integration tests are also needed.
  *
@@ -36,7 +37,11 @@ export function registerProviderCertification(options: {
   operation: ModelOperation;
   providers: AiProviderRegistry;
   createOperation(): TrustedOperation;
-  request(operation: TrustedOperation, substituteModel?: boolean): Request;
+  request(
+    operation: TrustedOperation,
+    substituteModel?: boolean,
+    substituteQuery?: boolean,
+  ): Request;
   assertCrashUnknown(): Promise<void>;
 }): void {
   function fixture() {
@@ -102,7 +107,7 @@ export function registerProviderCertification(options: {
       expect(f.transport).toHaveBeenCalledTimes(1);
       expect(f.op.controller.signal.aborted).toBe(true);
     });
-    it('denies substituted model and destination before sending', async () => {
+    it('denies substituted model, query and destination before sending', async () => {
       const f = fixture();
       await expect(f.request(true)).rejects.toThrow();
       expect(f.events).toEqual(['deny:1']);
@@ -116,6 +121,12 @@ export function registerProviderCertification(options: {
       ).rejects.toThrow();
       expect(other.events).toEqual(['deny:1']);
       expect(other.transport).not.toHaveBeenCalled();
+      const query = fixture();
+      await expect(
+        query.guard.fetch(options.request(query.op, false, true)),
+      ).rejects.toThrow();
+      expect(query.events).toEqual(['deny:1']);
+      expect(query.transport).not.toHaveBeenCalled();
     });
     it('denies unregistered providers and uncertified operations', async () => {
       for (const change of [

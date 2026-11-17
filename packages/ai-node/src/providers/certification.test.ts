@@ -92,9 +92,14 @@ function operation(id: Id, origin: string): TrustedOperation {
     controller: new AbortController(),
   };
 }
-function request(op: TrustedOperation, substitute = false): Request {
+function request(
+  op: TrustedOperation,
+  substitute = false,
+  substituteQuery = false,
+): Request {
   const url = new URL(op.destination);
   if (op.api === 'anthropic-messages') url.searchParams.set('beta', 'true');
+  if (substituteQuery) url.searchParams.set('unexpected', 'true');
   return new Request(url, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },

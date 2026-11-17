@@ -68,6 +68,10 @@ export type ProviderAdapter =
  * access the network directly. Register only code trusted as your own plugin.
  * The managed guard enforces authorization, journaling and send ordering for
  * calls that use its guarded transport; it does not constrain arbitrary code.
+ * The guard does not validate payload model identity or query strings. Each
+ * module's envelope validator must enforce both; run the substitution checks
+ * in `registerProviderCertification` before certifying its operations. An
+ * uncertified module is only as strict as its own validator.
  *
  * Operation names are not restricted to chat: future classifier and image
  * modules can declare their own certified operations without editing the
