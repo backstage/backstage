@@ -86,6 +86,55 @@ describe('runAiMigrations', () => {
     expect(await db.schema.hasTable(AI_MIGRATIONS_TABLE)).toBe(false);
   });
 
+  it('fails actionably when skipping with an empty ledger', async () => {
+    const db = await databases.init('SQLITE_3');
+    const directory = makeMigrationsDir();
+    const logger = mockServices.logger.mock();
+
+    // An empty ledger is not a complete schema: run once against a directory
+    // with no migrations, then require a migration the ledger does not know.
+    const emptyDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ai-node-empty-'));
+    await runAiMigrations({
+      database: { getClient: async () => db },
+      logger,
+      directory: emptyDir,
+    });
+    expect(await db.schema.hasTable(AI_MIGRATIONS_TABLE)).toBe(true);
+
+    await expect(
+      runAiMigrations({
+        database: { getClient: async () => db, migrations: { skip: true } },
+        logger,
+        directory,
+      }),
+    ).rejects.toThrow(/not up to date.*1001_create_ai_things.js/s);
+  });
+
+  it('fails actionably when skipping with an outdated ledger', async () => {
+    const db = await databases.init('SQLITE_3');
+    const directory = makeMigrationsDir();
+    const logger = mockServices.logger.mock();
+
+    await runAiMigrations({
+      database: { getClient: async () => db },
+      logger,
+      directory,
+    });
+    fs.writeFileSync(
+      path.join(directory, '1002_create_ai_other.js'),
+      'exports.up = async knex => { await knex.schema.createTable("ai_other", t => { t.increments("id"); }); };\n' +
+        'exports.down = async knex => { await knex.schema.dropTableIfExists("ai_other"); };\n',
+    );
+
+    await expect(
+      runAiMigrations({
+        database: { getClient: async () => db, migrations: { skip: true } },
+        logger,
+        directory,
+      }),
+    ).rejects.toThrow(/not up to date.*1002_create_ai_other.js/s);
+  });
+
   it('honors skip once the schema exists', async () => {
     const db = await databases.init('SQLITE_3');
     const directory = makeMigrationsDir();
@@ -95,8 +144,8 @@ describe('runAiMigrations', () => {
       logger: mockServices.logger.mock(),
       directory,
     });
-    fs.rmSync(path.join(directory, '1001_create_ai_things.js'));
 
+    // Up to date: skipping succeeds without touching the schema.
     await runAiMigrations({
       database: { getClient: async () => db, migrations: { skip: true } },
       logger: mockServices.logger.mock(),

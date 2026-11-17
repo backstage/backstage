@@ -37,7 +37,8 @@
   },
   "files": [
     "dist",
-    "config.d.ts"
+    "config.d.ts",
+    "migrations"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -46,6 +47,9 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "test": "backstage-cli package test"
+  },
+  "jest": {
+    "resolver": "<rootDir>/../jestResolver.js"
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
@@ -62,8 +66,5 @@
     "jest": "^30.5.0",
     "pg": "^8.11.3"
   },
-  "configSchema": "config.d.ts",
-  "jest": {
-    "resolver": "<rootDir>/../jestResolver.js"
-  }
+  "configSchema": "config.d.ts"
 }

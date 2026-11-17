@@ -101,10 +101,12 @@ and are validated separately (Wave 1).
 
 The AI service shares the consuming plugin's database but keeps its
 migrations in a separate ledger table, `ai_database_migrations`, and honors
-`database.migrations.skip`. When skipping is enabled but the AI schema has
-not been created, migration fails with an actionable error rather than
-migrating implicitly. The shared `migrations` directory is discovered as a
-whole, by name range, and filenames are never enumerated in code.
+`database.migrations.skip`. When skipping is enabled, every required
+migration must already be recorded in the ledger: a missing ledger or
+pending migrations fail with an actionable error rather than migrating
+implicitly. The shared `migrations` directory is discovered as a whole, by
+name range, ships in the published package, and filenames are never
+enumerated in code.
 
 ## Tests and the ESM-only Pi dependency stack
 

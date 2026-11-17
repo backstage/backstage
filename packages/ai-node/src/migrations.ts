@@ -59,9 +59,10 @@ const defaultMigrationsDir = resolvePackagePath(import.meta.url, 'migrations');
  *
  * Discovers the whole shared migrations directory by name and records applied
  * migrations in the {@link AI_MIGRATIONS_TABLE} ledger. Honors
- * `database.migrations.skip`: when skipping is enabled but the AI schema has
- * not been created (the ledger table is absent), this fails with an
- * actionable error rather than migrating implicitly.
+ * `database.migrations.skip`: when skipping is enabled, every required
+ * migration must already be recorded in the ledger — a missing ledger or
+ * pending migrations fail with an actionable error rather than migrating
+ * implicitly.
  *
  * @alpha
  */
@@ -73,10 +74,25 @@ export async function runAiMigrations(
   const db = await database.getClient();
 
   if (database.migrations?.skip) {
-    const applied = await db.schema.hasTable(AI_MIGRATIONS_TABLE);
-    if (!applied) {
+    if (!(await db.schema.hasTable(AI_MIGRATIONS_TABLE))) {
       throw new Error(
         `The AI service database schema has not been created, but 'database.migrations.skip' is enabled for this plugin, so migrations are not run implicitly. Create the schema by running once without 'database.migrations.skip' (or apply the AI service migrations out-of-band), then keep skipping enabled`,
+      );
+    }
+    // A ledger table alone does not prove the schema: verify that every
+    // required migration is recorded as applied, so an empty or outdated
+    // ledger under skip fails instead of reporting a missing schema.
+    const [, pending] = await db.migrate.list({
+      directory,
+      tableName: AI_MIGRATIONS_TABLE,
+    });
+    if (pending.length > 0) {
+      const names = pending
+        .map((migration: { file: string }) => migration.file)
+        .sort()
+        .join(', ');
+      throw new Error(
+        `The AI service database schema is not up to date, but 'database.migrations.skip' is enabled for this plugin, so migrations are not run implicitly. Missing migrations: ${names}. Create the schema by running once without 'database.migrations.skip' (or apply the AI service migrations out-of-band), then keep skipping enabled`,
       );
     }
     logger.info('AI database migrations are skipped by configuration');

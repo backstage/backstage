@@ -53,12 +53,30 @@ export interface NativeHarnessHandle {
   readonly context: Context;
 }
 
-/** Input to {@link AiServiceIntegration.openNativeHarness}. */
-export interface OpenNativeHarnessInput {
+/**
+ * Per-acquisition authority for one `openHarness` call, supplied with the
+ * original caller credentials.
+ *
+ * @remarks
+ *
+ * The original `BackstageCredentials` — not the derived owner string — are
+ * the authority for an acquisition, so the Wave 1 integration can enforce
+ * the original caller's restrictions and bind (renewed) user credentials.
+ * Credentials are never persisted by the managed service; the owner string
+ * is session bookkeeping, not authority.
+ *
+ * @internal
+ */
+export interface AcquisitionBinding {
   readonly namespace: Namespace;
   readonly owner: string;
+  readonly credentials: BackstageCredentials;
   readonly registry: RegistryReader;
   readonly registryVersion: string;
+}
+
+/** Input to {@link AiServiceIntegration.openNativeHarness}. */
+export interface OpenNativeHarnessInput extends AcquisitionBinding {
   /**
    * Installed by the service so that configuration initializes new
    * conversations only; see the package README. The integration must pass it
@@ -97,6 +115,14 @@ export interface AiServiceIntegration {
     readonly namespace: Namespace;
     readonly owner: string;
   }): Promise<{ readonly owner: string }>;
+
+  /**
+   * Binds per-acquisition authority for every acquisition, including reuse
+   * of an already live namespace: the Wave 1 integration authorizes with the
+   * original caller credentials and their restrictions here. A rejection
+   * blocks the acquisition. Must never persist the credentials.
+   */
+  bindAcquisition(binding: AcquisitionBinding): Promise<void>;
 
   /**
    * Acquires the namespace lease and opens the process-local native harness
@@ -203,79 +229,160 @@ function conversationCreatedHook(
 }
 
 /**
+ * Release state shared by a managed handle's facade and every view it
+ * returns; checked at operation invocation, not at property lookup.
+ */
+type MediationState = { released: boolean };
+
+/**
+ * Receiver for members inherited from `Object.prototype`, so reflection on a
+ * mediated view (for example `valueOf`) can never return the raw native
+ * object.
+ */
+const SAFE_RECEIVER: object = Object.freeze({});
+
+function findOwner(
+  object: object,
+  property: string | symbol,
+): object | undefined {
+  for (
+    let current: object | null = object;
+    current !== null;
+    current = Object.getPrototypeOf(current)
+  ) {
+    if (Object.prototype.hasOwnProperty.call(current, property)) {
+      return current;
+    }
+  }
+  return undefined;
+}
+
+function isThenable(value: unknown): value is PromiseLike<unknown> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as PromiseLike<unknown>).then === 'function'
+  );
+}
+
+/**
+ * Whether a returned value carries native operations and must be mediated:
+ * a class instance, as opposed to plain data (primitives, plain objects,
+ * arrays, dates).
+ */
+function isOperationBearing(value: unknown): value is object {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+  if (Array.isArray(value) || value instanceof Date) {
+    return false;
+  }
+  const prototype = Object.getPrototypeOf(value);
+  return prototype !== Object.prototype && prototype !== null;
+}
+
+/**
+ * Creates a mediated view of a native object for one managed handle.
+ *
+ * @remarks
+ *
+ * The raw native object is never the proxy target and is never returned:
+ * members inherited from `Object.prototype` resolve against a safe receiver,
+ * so reflection (`valueOf`, `constructor`) cannot recover it. Validity is
+ * checked when an operation is invoked, not when its property is looked up,
+ * so a method captured before release still rejects afterwards. Results that
+ * carry native operations (conversations, submissions, watches) are mediated
+ * with the same state.
+ */
+function createMediatedView<T extends object>(
+  native: T,
+  state: MediationState,
+  options: { blockClose: boolean },
+): T {
+  return new Proxy({} as T, {
+    get(_target, property) {
+      if (options.blockClose && property === 'close') {
+        return () =>
+          Promise.reject(
+            new Error(
+              "close() is not part of the managed harness view; use release() on the managed handle instead. Closing is owned by the managed service's lifecycle",
+            ),
+          );
+      }
+      const owner = findOwner(native, property);
+      if (owner === undefined) {
+        return undefined;
+      }
+      const receiver = owner === Object.prototype ? SAFE_RECEIVER : native;
+      const value = Reflect.get(receiver, property, receiver);
+      if (typeof value !== 'function') {
+        return value;
+      }
+      const raw = value.bind(receiver);
+      return (...args: unknown[]) => {
+        if (state.released) {
+          return Promise.reject(
+            new Error(
+              'This managed harness handle has been released and can no longer be used. Open the harness again to continue working with the session; releasing never cancels admitted durable work',
+            ),
+          );
+        }
+        const result = raw(...args);
+        if (isThenable(result)) {
+          return result.then(mediated => mediateResult(mediated, state));
+        }
+        return mediateResult(result, state);
+      };
+    },
+  }) as T;
+}
+
+function mediateResult<T>(value: T, state: MediationState): T {
+  if (isOperationBearing(value)) {
+    return createMediatedView(value, state, { blockClose: false }) as T;
+  }
+  return value;
+}
+
+/**
  * Wraps a native harness in the mediated view exposed on managed handles.
  *
  * @remarks
  *
  * This is a real per-handle facade, not the raw harness cast to
- * `Omit<Harness, 'close'>`: `close` is replaced with a rejection, every
- * access is checked against the handle's release state, and methods on a
- * released handle reject.
+ * `Omit<Harness, 'close'>`: `close` is replaced with a rejection, operation
+ * validity is checked at invocation time, returned operation-bearing objects
+ * are mediated, and the raw harness is unreachable through the view.
  */
 function createManagedNativeHarness(
-  target: Harness,
-  isReleased: () => boolean,
+  native: Harness,
+  state: MediationState,
 ): ManagedNativeHarness {
-  const closeRejected = () =>
-    Promise.reject(
-      new Error(
-        "close() is not part of the managed harness view; use release() on the managed handle instead. Closing is owned by the managed service's lifecycle",
-      ),
-    );
-  const releasedRejected = () =>
-    Promise.reject(
-      new Error(
-        'This managed harness handle has been released and can no longer be used. Open the harness again to continue working with the session; releasing never cancels admitted durable work',
-      ),
-    );
-  const releasedThrown = new Error(
-    'This managed harness handle has been released and can no longer be used. Open the harness again to continue working with the session',
-  );
-
-  return new Proxy(target, {
-    get(native, property) {
-      if (property === 'close') {
-        return closeRejected;
-      }
-      const value = Reflect.get(native, property, native);
-      if (typeof value !== 'function') {
-        if (isReleased()) {
-          throw releasedThrown;
-        }
-        return value;
-      }
-      if (isReleased()) {
-        return releasedRejected;
-      }
-      return value.bind(native);
-    },
-  }) as ManagedNativeHarness;
+  return createMediatedView(native, state, { blockClose: true });
 }
 
 /** A reference-counted acquisition of a process-local shared harness. */
 class ManagedHarnessHandle implements ManagedHarness {
   readonly harness: ManagedNativeHarness;
   readonly context: Context;
+  /** Bound so the documented destructured `release()` usage works. */
+  readonly release: () => Promise<void>;
   readonly #service: DefaultAiService;
   readonly #live: LiveNamespace;
-  #released = false;
+  readonly #state: MediationState = { released: false };
 
   constructor(service: DefaultAiService, live: LiveNamespace) {
     this.#service = service;
     this.#live = live;
     this.context = live.handle.context;
-    this.harness = createManagedNativeHarness(
-      live.handle.harness,
-      () => this.#released,
-    );
-  }
-
-  async release(): Promise<void> {
-    if (this.#released) {
-      return;
-    }
-    this.#released = true;
-    await this.#service.releaseReference(this.#live, this);
+    this.harness = createManagedNativeHarness(live.handle.harness, this.#state);
+    this.release = async () => {
+      if (this.#state.released) {
+        return;
+      }
+      this.#state.released = true;
+      await this.#service.releaseReference(this.#live, this);
+    };
   }
 }
 
@@ -285,10 +392,10 @@ class ManagedHarnessHandle implements ManagedHarness {
  * @remarks
  *
  * Wave 0 scaffold: it owns session ownership checks, single-flight namespace
- * acquisition, reference counting, release semantics, the mediated harness
- * view, configuration initialization of new conversations, and registry
- * version identity. The storage, lease, and guard integration is Wave 1 and
- * fails closed here.
+ * acquisition with per-acquisition authority binding, reference counting,
+ * release semantics, the mediated harness view, configuration initialization
+ * of new conversations, registry version identity, and shutdown-safe opens.
+ * The storage, lease, and guard integration is Wave 1 and fails closed here.
  *
  * @internal
  */
@@ -314,11 +421,7 @@ export class DefaultAiService implements AiService {
   async openHarness(options: OpenHarnessOptions): Promise<ManagedHarness> {
     const pluginId = this.#deps.pluginMetadata.getId();
 
-    if (this.#closed) {
-      throw new Error(
-        `The AI service of the '${pluginId}' plugin is shut down and no longer accepts opens`,
-      );
-    }
+    this.assertNotClosed(pluginId, options.sessionId);
 
     if (this.#integration === undefined) {
       throw new Error(
@@ -365,16 +468,23 @@ export class DefaultAiService implements AiService {
 
     const parsedConfig = parseAiServiceConfig(options.config, pluginId);
     const owner = this.ownerKeyOf(options.credentials);
-    const namespace: Namespace = {
-      pluginId,
-      sessionId: options.sessionId,
+    const binding: AcquisitionBinding = {
+      namespace: { pluginId, sessionId: options.sessionId },
+      owner,
+      credentials: options.credentials,
+      registry: options.registry,
+      registryVersion: options.registryVersion,
     };
-    const key = namespaceKey(namespace);
+    const key = namespaceKey(binding.namespace);
     const configKey = configKeyOf(options.config, parsedConfig);
 
     return this.exclusive(key, async () => {
+      // Re-check inside the queue: a shutdown may have started while this
+      // acquisition waited for the namespace.
+      this.assertNotClosed(pluginId, options.sessionId);
+
       const ownership = await this.#integration!.ensureSessionOwnership({
-        namespace,
+        namespace: binding.namespace,
         owner,
       });
       if (ownership.owner !== owner) {
@@ -382,6 +492,7 @@ export class DefaultAiService implements AiService {
           `Access denied: the AI session '${options.sessionId}' of the '${pluginId}' plugin is owned by '${ownership.owner}' and cannot be opened by '${owner}'. Session ownership is fixed when the session is created`,
         );
       }
+      this.assertNotClosed(pluginId, options.sessionId);
 
       const live = this.#live.get(key);
       if (live !== undefined) {
@@ -395,20 +506,34 @@ export class DefaultAiService implements AiService {
             `The AI session '${options.sessionId}' of the '${pluginId}' plugin is open with a different configuration at '${options.config.path}'. Incompatible config identity under a live handle is rejected rather than silently replaced; release the existing handles first or keep the configuration stable`,
           );
         }
+        await this.#integration!.bindAcquisition(binding);
+        this.assertNotClosed(pluginId, options.sessionId);
         const handle = new ManagedHarnessHandle(this, live);
         live.references.add(handle);
         return handle;
       }
 
+      await this.#integration!.bindAcquisition(binding);
+      this.assertNotClosed(pluginId, options.sessionId);
+
       const nativeHandle = await this.#integration!.openNativeHarness({
-        namespace,
-        owner,
-        registry: options.registry,
-        registryVersion: options.registryVersion,
+        ...binding,
         conversationCreated: conversationCreatedHook(parsedConfig),
       });
+      if (this.#closed) {
+        // Shutdown won the race: do not publish the handle, and clean up the
+        // resources this acquisition just created.
+        try {
+          await this.#integration!.releaseNativeHarness(nativeHandle);
+        } catch (error) {
+          this.#deps.logger.warn(
+            `Failed to clean up an AI harness for the '${pluginId}' plugin after shutdown: ${error}`,
+          );
+        }
+        this.assertNotClosed(pluginId, options.sessionId);
+      }
       const newLive: LiveNamespace = {
-        namespace,
+        namespace: binding.namespace,
         handle: nativeHandle,
         registryVersion: options.registryVersion,
         configKey,
@@ -419,6 +544,14 @@ export class DefaultAiService implements AiService {
       this.#live.set(key, newLive);
       return handle;
     });
+  }
+
+  private assertNotClosed(pluginId: string, sessionId: string): void {
+    if (this.#closed) {
+      throw new Error(
+        `The AI service of the '${pluginId}' plugin is shut down and no longer accepts opens; the AI session '${sessionId}' was not opened`,
+      );
+    }
   }
 
   private ownerKeyOf(credentials: BackstageCredentials): string {

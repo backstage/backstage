@@ -37,12 +37,25 @@ import {
 } from '@earendil-works/pi-durable';
 import {
   DefaultAiService,
+  type AcquisitionBinding,
   type AiServiceIntegration,
   type DefaultAiServiceDeps,
   type NativeHarnessHandle,
   type OpenNativeHarnessInput,
 } from './DefaultAiService';
 import type { ConfigAtPath } from './contracts';
+
+/** NONPRODUCTION TEST STAND-IN for a native conversation handle. */
+class StandInConversation {
+  constructor(readonly id: number, private readonly harness: StandInHarness) {}
+
+  async configure(
+    change: Parameters<typeof configure>[2],
+    _context?: unknown,
+  ): Promise<void> {
+    await configure(this.harness.tx(), this.id as ConversationId, change);
+  }
+}
 
 /**
  * NONPRODUCTION TEST STAND-IN for a native Pi harness.
@@ -77,25 +90,25 @@ class StandInHarness {
   async root(
     _context: unknown,
     options?: { agent?: Parameters<typeof configure>[2] },
-  ): Promise<{ id: number }> {
+  ): Promise<StandInConversation> {
     this.rootCalls += 1;
     const rootId = 1 as ConversationId;
     if (this.rootExists) {
       // Persisted conversations are never reconfigured on open.
-      return { id: rootId };
+      return new StandInConversation(rootId, this);
     }
     this.rootExists = true;
     await this.create(rootId, {}, options);
-    return { id: rootId };
+    return new StandInConversation(rootId, this);
   }
 
   async createConversation(
     options: { agent?: Parameters<typeof configure>[2] },
     _context: unknown,
-  ): Promise<{ id: number }> {
+  ): Promise<StandInConversation> {
     const id = (this.agents.size + 2) as ConversationId;
     await this.create(id, {}, options);
-    return { id };
+    return new StandInConversation(id, this);
   }
 
   private async create(
@@ -145,6 +158,7 @@ class StandInIntegration implements AiServiceIntegration {
   readonly sessions = new Map<string, string>();
   readonly handles: StandInHarness[] = [];
   readonly released: StandInHarness[] = [];
+  readonly bindings: AcquisitionBinding[] = [];
   lastOpenInput: OpenNativeHarnessInput | undefined;
 
   #sessionKey(namespace: { pluginId: string; sessionId: string }): string {
@@ -163,6 +177,10 @@ class StandInIntegration implements AiServiceIntegration {
       return { owner: input.owner };
     }
     return { owner: existing };
+  }
+
+  async bindAcquisition(binding: AcquisitionBinding): Promise<void> {
+    this.bindings.push(binding);
   }
 
   async openNativeHarness(
@@ -184,7 +202,9 @@ class StandInIntegration implements AiServiceIntegration {
   }
 }
 
-function makeDeps(): DefaultAiServiceDeps {
+function makeDeps(captured?: {
+  shutdownHook?: () => Promise<void>;
+}): DefaultAiServiceDeps {
   return {
     database: {} as DatabaseService,
     auth: {
@@ -196,7 +216,13 @@ function makeDeps(): DefaultAiServiceDeps {
     permissions: {} as PermissionsService,
     logger: mockServices.logger.mock(),
     auditor: {} as AuditorService,
-    lifecycle: { addShutdownHook: jest.fn() } as unknown as LifecycleService,
+    lifecycle: {
+      addShutdownHook: (hook: () => Promise<void>) => {
+        if (captured) {
+          captured.shutdownHook = hook;
+        }
+      },
+    } as unknown as LifecycleService,
     pluginMetadata: { getId: () => 'test-plugin' } as PluginMetadataService,
   };
 }
@@ -531,6 +557,248 @@ describe('DefaultAiService', () => {
     });
 
     await second.release();
+  });
+
+  it('never exposes the raw harness through the mediated view', async () => {
+    const integration = new StandInIntegration();
+    const service = DefaultAiService.create({
+      deps: makeDeps(),
+      integration,
+    });
+    const handle = await service.openHarness({
+      sessionId: 's1',
+      config: SERVICE_MODE_CONFIG,
+      credentials: USER_A,
+      registry: makeRegistry(),
+      registryVersion: 'v1',
+    });
+    const raw = integration.handles[0];
+    const view = handle.harness as unknown as Record<string, unknown>;
+
+    // Reflection must not recover the raw harness, whose close() would
+    // bypass the managed lifecycle.
+    expect(view.valueOf()).not.toBe(raw);
+    expect(view.valueOf()).not.toBe(raw as unknown as object);
+    expect(view.constructor).not.toBe(raw.constructor);
+
+    // A method captured before release still rejects at invocation time.
+    const capturedRoot = view.root as (
+      context: unknown,
+    ) => Promise<StandInConversation>;
+    await handle.release();
+    await expect(capturedRoot(handle.context)).rejects.toThrow(/released/s);
+  });
+
+  it('mediates operation-bearing results and gates them on release', async () => {
+    const integration = new StandInIntegration();
+    const service = DefaultAiService.create({
+      deps: makeDeps(),
+      integration,
+    });
+    const handle = await service.openHarness({
+      sessionId: 's1',
+      config: SERVICE_MODE_CONFIG,
+      credentials: USER_A,
+      registry: makeRegistry(),
+      registryVersion: 'v1',
+    });
+
+    const conversation = await handle.harness.root(handle.context);
+    await conversation.configure(
+      { instructions: 'inspect the catalog' },
+      handle.context,
+    );
+    expect(integration.handles[0].agentOf(conversation.id)).toEqual({
+      model: { provider: 'acme', modelId: 'acme-large' },
+      thinkingLevel: 'high',
+      instructions: 'inspect the catalog',
+    });
+
+    // The returned conversation is a mediated view of the same acquisition:
+    // after release its operations reject too.
+    await handle.release();
+    await expect(
+      conversation.configure({ instructions: 'more' }, handle.context),
+    ).rejects.toThrow(/released/s);
+  });
+
+  it('keeps other acquisitions live when one handle is released', async () => {
+    const integration = new StandInIntegration();
+    const service = DefaultAiService.create({
+      deps: makeDeps(),
+      integration,
+    });
+    const options = {
+      sessionId: 's1',
+      config: SERVICE_MODE_CONFIG,
+      credentials: USER_A,
+      registry: makeRegistry(),
+      registryVersion: 'v1',
+    };
+    const first = await service.openHarness(options);
+    const second = await service.openHarness(options);
+
+    await first.release();
+    await expect(first.harness.root(first.context)).rejects.toThrow(
+      /released/s,
+    );
+
+    const conversation = await second.harness.root(second.context);
+    await conversation.configure(
+      { instructions: 'still live' },
+      second.context,
+    );
+    expect(integration.released).toHaveLength(0);
+
+    await second.release();
+    expect(integration.released).toHaveLength(1);
+  });
+
+  it('binds per-acquisition authority with the original credentials on every path', async () => {
+    const integration = new StandInIntegration();
+    const service = DefaultAiService.create({
+      deps: makeDeps(),
+      integration,
+    });
+    const options = {
+      sessionId: 's1',
+      config: SERVICE_MODE_CONFIG,
+      registry: makeRegistry(),
+      registryVersion: 'v1',
+    };
+
+    // Same service subject, distinct credentials with different restrictions:
+    // both reach the integration seam as the original objects.
+    const credentialsA = mockCredentials.service('external:shared-service');
+    const credentialsB = mockCredentials.service('external:shared-service');
+    const first = await service.openHarness({
+      ...options,
+      credentials: credentialsA,
+    });
+    const second = await service.openHarness({
+      ...options,
+      credentials: credentialsB,
+    });
+
+    expect(integration.bindings).toHaveLength(2);
+    expect(integration.bindings[0].credentials).toBe(credentialsA);
+    expect(integration.bindings[1].credentials).toBe(credentialsB);
+    expect(integration.bindings[1].owner).toBe(integration.bindings[0].owner);
+    expect(integration.lastOpenInput?.credentials).toBe(credentialsA);
+
+    await first.release();
+    await second.release();
+  });
+
+  it('blocks the acquisition when authority binding rejects', async () => {
+    const integration = new StandInIntegration();
+    integration.bindAcquisition = async () => {
+      throw new Error('denied by policy');
+    };
+    const service = DefaultAiService.create({
+      deps: makeDeps(),
+      integration,
+    });
+    await expect(
+      service.openHarness({
+        sessionId: 's1',
+        config: SERVICE_MODE_CONFIG,
+        credentials: USER_A,
+        registry: makeRegistry(),
+        registryVersion: 'v1',
+      }),
+    ).rejects.toThrow('denied by policy');
+    expect(integration.handles).toHaveLength(0);
+  });
+
+  it('rejects opens that lose a race with shutdown and cleans up', async () => {
+    const integration = new StandInIntegration();
+    const captured: { shutdownHook?: () => Promise<void> } = {};
+    const service = DefaultAiService.create({
+      deps: makeDeps(captured),
+      integration,
+    });
+    const options = {
+      sessionId: 's1',
+      config: SERVICE_MODE_CONFIG,
+      credentials: USER_A,
+      registry: makeRegistry(),
+      registryVersion: 'v1',
+    };
+
+    let resolveOpen: ((handle: NativeHarnessHandle) => void) | undefined;
+    integration.openNativeHarness = async input => {
+      integration.lastOpenInput = input;
+      return new Promise(resolve => {
+        resolveOpen = resolve;
+      });
+    };
+
+    const inFlight = service.openHarness(options);
+    const queued = service.openHarness(options);
+    // Attach handlers to both before unblocking, so neither rejection is
+    // ever unhandled.
+    const rejections = [inFlight, queued].map(pending =>
+      pending.then(
+        () => {
+          throw new Error('expected the open to reject');
+        },
+        error => error,
+      ),
+    );
+
+    // Let the in-flight acquisition progress until it blocks inside
+    // openNativeHarness, so the shutdown races a real pending open.
+    await new Promise<void>(resolve => {
+      const poll = () => {
+        if (resolveOpen !== undefined) {
+          resolve();
+        } else {
+          setImmediate(poll);
+        }
+      };
+      poll();
+    });
+
+    await captured.shutdownHook!();
+
+    resolveOpen!({
+      harness: new StandInHarness(undefined) as unknown as Harness,
+      context: BACKGROUND_CONTEXT,
+    });
+
+    const [inFlightError, queuedError] = await Promise.all(rejections);
+    expect((inFlightError as Error).message).toMatch(/shut down/s);
+    expect((queuedError as Error).message).toMatch(/shut down/s);
+    // The harness opened by the losing race is cleaned up, not published.
+    expect(integration.released).toHaveLength(1);
+    await expect(service.openHarness(options)).rejects.toThrow(/shut down/s);
+  });
+
+  it('supports the documented destructured release usage', async () => {
+    const integration = new StandInIntegration();
+    const service = DefaultAiService.create({
+      deps: makeDeps(),
+      integration,
+    });
+
+    const { harness, context, release } = await service.openHarness({
+      sessionId: 's1',
+      config: SERVICE_MODE_CONFIG,
+      credentials: USER_A,
+      registry: makeRegistry(),
+      registryVersion: 'v1',
+    });
+    try {
+      const conversation = await harness.root(context);
+      expect(conversation.id).toBe(1);
+    } finally {
+      await release();
+    }
+
+    // Still idempotent when destructured.
+    await release();
+    expect(integration.released).toHaveLength(1);
   });
 
   it('keeps fork copies and task-owned conversations untouched', async () => {
