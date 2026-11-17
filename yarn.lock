@@ -1811,7 +1811,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/ai-node@workspace:packages/ai-node":
+"@backstage/ai-node@workspace:^, @backstage/ai-node@workspace:packages/ai-node":
   version: 0.0.0-use.local
   resolution: "@backstage/ai-node@workspace:packages/ai-node"
   dependencies:
@@ -3535,6 +3535,30 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-ai-backend@workspace:plugins/ai-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-ai-backend@workspace:plugins/ai-backend"
+  dependencies:
+    "@backstage/ai-node": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@earendil-works/pi-durable": "npm:1.5.2"
+    "@types/express": "npm:^4.17.6"
+    "@types/supertest": "npm:^2.0.8"
+    better-sqlite3: "npm:^12.0.0"
+    express: "npm:^4.22.0"
+    express-promise-router: "npm:^4.1.1"
+    jest: "npm:^30.5.0"
+    knex: "npm:^3.0.0"
+    pg: "npm:^8.11.3"
+    supertest: "npm:^7.0.0"
   languageName: unknown
   linkType: soft
 
@@ -6238,6 +6262,27 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@types/http-proxy-middleware": "npm:^1.0.0"
     http-proxy-middleware: "npm:^2.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-scaffolder-backend-module-ai@workspace:plugins/scaffolder-backend-module-ai":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-ai@workspace:plugins/scaffolder-backend-module-ai"
+  dependencies:
+    "@backstage/ai-node": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
+    "@earendil-works/pi-durable": "npm:1.5.2"
+    better-sqlite3: "npm:^12.0.0"
+    jest: "npm:^30.5.0"
+    knex: "npm:^3.0.0"
+    pg: "npm:^8.11.3"
+    yaml: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
 
