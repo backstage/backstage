@@ -47,12 +47,12 @@ export interface JournalPruneResult {
  *
  * @remarks
  *
- * Settled attempts (a denial, or a send intent with a settled outcome) and
- * non-evidentiary recovery events older than the retention window are pruned.
- * Uncertain evidence is never deleted: a send intent with no outcome, or with
- * an explicitly recorded `unknown` outcome, and `unknown-dispatch` recovery
- * events are retained and documented once in a durable uncertainty record.
- * Uncertainty records themselves are never deleted.
+ * Resolved attempts (an intent with an outcome, or a denial) and recovery
+ * events older than the retention window are pruned. Unresolved send intents
+ * are never deleted: once one is older than the window, a durable uncertainty
+ * record is written once, documenting that the attempt's remote outcome can
+ * never be established, and the intent itself is retained. Uncertainty
+ * records are never deleted.
  *
  * This is a maintenance operation, not a fenced append: it runs from host
  * scheduling and deletes only events whose attempt is settled or whose
@@ -69,77 +69,63 @@ export async function pruneAiJournal(
     throw new Error('Invalid retentionMs: expected a positive integer');
   }
   const cutoff = new Date(now.getTime() - options.retentionMs);
-  const sqlite = db.client.config.client === 'better-sqlite3';
 
   return db.transaction(async trx => {
-    // A settling outcome is one that establishes the remote result. An
-    // explicitly recorded `unknown` outcome does not settle anything: it is
-    // durable uncertainty, treated exactly like a missing outcome.
-    const settlingOutcomes = trx(JOURNAL_EVENTS_TABLE)
-      .where({ kind: 'outcome' })
-      .whereNot('status', 'unknown')
-      .select('attempt_id');
-
-    const olderThanCutoff = (column: string) =>
-      sqlite
-        ? trx.raw('julianday(??) < julianday(?)', [
-            column,
-            cutoff.toISOString(),
-          ])
-        : trx.raw('?? < ?', [column, cutoff]);
-
-    // Uncertain send intents past the window: no outcome, or only an unknown
-    // outcome. Never deleted; documented once.
-    const uncertain: Array<{ id: string }> = await trx(JOURNAL_EVENTS_TABLE)
+    // An allow-decision is unresolved when no outcome row references it.
+    const unresolved: Array<{ id: string | number }> = await trx(
+      JOURNAL_EVENTS_TABLE,
+    )
       .where({ kind: 'decision', decision: 'allow' })
-      .whereRaw(olderThanCutoff('created_at'))
-      .whereNotIn('id', settlingOutcomes)
-      .select(trx.raw('CAST(id AS TEXT) AS id'));
-
+      .where('created_at', '<', cutoff)
+      .whereNotIn(
+        'id',
+        trx(JOURNAL_EVENTS_TABLE)
+          .where({ kind: 'outcome' })
+          .select('attempt_id'),
+      )
+      .select('id');
     let uncertainty = 0;
-    for (const row of uncertain) {
-      const existing = await trx(JOURNAL_UNCERTAINTY_TABLE)
-        .where({ attempt_id: row.id })
-        .first('attempt_id');
-      if (existing) continue;
-      await trx(JOURNAL_UNCERTAINTY_TABLE).insert({
-        attempt_id: row.id,
-        note: 'Send intent has no settled outcome past the retention window; the remote outcome is permanently unknown',
-        recorded_at: sqlite
-          ? trx.raw("strftime('%Y-%m-%dT%H:%M:%fZ', 'now')")
-          : trx.fn.now(),
-      });
-      uncertainty += 1;
+    for (const row of unresolved) {
+      const written = await trx(JOURNAL_UNCERTAINTY_TABLE)
+        .insert({
+          attempt_id: String(row.id),
+          note: 'Send intent has no recorded outcome past the retention window; the remote outcome is permanently unknown',
+        })
+        .onConflict(['attempt_id'])
+        .ignore();
+      uncertainty += written ?? 0;
     }
 
-    // Prune only settled attempts: denials, and allows with a settled
-    // outcome. An attempt is settled as a whole, so its outcome row goes
-    // with it. Explicit unknown outcomes and their intents are retained.
-    const settled: Array<{ id: string }> = await trx(JOURNAL_EVENTS_TABLE)
+    // Prune only settled attempts: denials, and allows with an outcome. An
+    // attempt is settled as a whole, so the outcome row goes with it.
+    const settled: Array<{ id: string | number }> = await trx(
+      JOURNAL_EVENTS_TABLE,
+    )
       .where({ kind: 'decision' })
-      .whereRaw(olderThanCutoff('created_at'))
+      .where('created_at', '<', cutoff)
       .where(builder =>
-        builder.where('decision', 'deny').orWhereIn('id', settlingOutcomes),
+        builder
+          .where('decision', 'deny')
+          .orWhereIn(
+            'id',
+            trx(JOURNAL_EVENTS_TABLE)
+              .where({ kind: 'outcome' })
+              .select('attempt_id'),
+          ),
       )
-      .select(trx.raw('CAST(id AS TEXT) AS id'));
-
+      .select('id');
     let pruned = 0;
     if (settled.length > 0) {
-      const ids = settled.map(row => row.id);
+      const ids = settled.map(row => String(row.id));
       pruned += await trx(JOURNAL_EVENTS_TABLE)
         .where({ kind: 'outcome' })
         .whereIn('attempt_id', ids)
         .del();
       pruned += await trx(JOURNAL_EVENTS_TABLE).whereIn('id', ids).del();
     }
-
-    // Recovery events are prunable by age, except unknown-dispatch events,
-    // which are the durable evidence that an attempt's remote outcome can
-    // never be established.
     pruned += await trx(JOURNAL_EVENTS_TABLE)
       .where({ kind: 'recovery' })
-      .whereRaw(olderThanCutoff('created_at'))
-      .whereNot('recovery_kind', 'unknown-dispatch')
+      .where('created_at', '<', cutoff)
       .del();
 
     return { prunedEvents: pruned, uncertaintyRecords: uncertainty };

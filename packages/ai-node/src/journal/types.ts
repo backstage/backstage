@@ -91,6 +91,12 @@ export type AttemptDecision = Readonly<{
   readonly model?: string;
   /** Operation name and classification, e.g. `models.stream` or `auth.token`. */
   readonly operation: string;
+  /**
+   * Canonical destination of the attempt: origin + path only. Query strings,
+   * fragments and userinfo are never included; absent for local rejections
+   * that never resolved a destination.
+   */
+  readonly destination?: string;
   /** Attempt ordinal within the call; monotonically increasing per call. */
   readonly attempt: number;
   /** The permission decision for this attempt. */
@@ -170,6 +176,7 @@ export type AuditEventView = Readonly<
       readonly provider?: string;
       readonly model?: string;
       readonly operation: string;
+      readonly destination?: string;
       readonly attempt: number;
       readonly decision: 'allow' | 'deny';
       readonly reason?: string;
