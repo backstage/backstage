@@ -5173,6 +5173,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/plugin-devtools-common": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/ui": "workspace:^"
@@ -5186,10 +5187,12 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     lodash: "npm:^4.17.21"
     react: "npm:^18.0.2"
+    react-aria-components: "npm:~1.22.0"
     react-dom: "npm:^18.0.2"
     react-json-view: "npm:^1.21.3"
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
+    swr: "npm:^2.0.0"
   peerDependencies:
     "@types/react": ^18.0.0
     react: ^18.0.0

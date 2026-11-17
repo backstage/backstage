@@ -23,6 +23,8 @@ import { act, screen, fireEvent, waitFor } from '@testing-library/react';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { SWRConfig } from 'swr';
 import { devToolsApiRef, DevToolsApi } from '../../../api';
 import {
   ScheduledTasks,
@@ -77,17 +79,23 @@ describe('ScheduledTasksContent', () => {
     },
   });
 
-  const renderComponent = async () => {
+  const renderComponent = async (
+    authorize:
+      | typeof AuthorizeResult.ALLOW
+      | typeof AuthorizeResult.DENY = AuthorizeResult.ALLOW,
+  ) => {
     return renderInTestApp(
       <TestApiProvider
         apis={[
           [configApiRef, configApi],
           [toastApiRef, mockToastApi],
           [devToolsApiRef, mockDevToolsApi],
-          [permissionApiRef, mockApis.permission()],
+          [permissionApiRef, mockApis.permission({ authorize })],
         ]}
       >
-        <ScheduledTasksContent />
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <ScheduledTasksContent />
+        </SWRConfig>
       </TestApiProvider>,
     );
   };
@@ -258,6 +266,94 @@ describe('ScheduledTasksContent', () => {
     expect(mockDevToolsApi.getScheduledTasksByPlugin).not.toHaveBeenCalledWith(
       '',
     );
+  });
+
+  it('exposes the permission indicator without a nonfunctional button', async () => {
+    mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValue({
+      scheduledTasks: [mockTaskA],
+    });
+    await renderComponent(AuthorizeResult.DENY);
+
+    const indicator = await screen.findByRole('img', {
+      name: 'You are not allowed to perform this action',
+    });
+    expect(indicator).toHaveAttribute('tabindex', '0');
+    expect(
+      screen.queryByRole('button', { name: 'Trigger' }),
+    ).not.toBeInTheDocument();
+    act(() => indicator.focus());
+    expect(indicator).toHaveFocus();
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(
+      'You are not allowed to perform this action',
+    );
+  });
+
+  it('updates a persistent status when an empty plugin result loads', async () => {
+    let resolveTasks: (value: ScheduledTasks) => void = () => {};
+    mockDevToolsApi.getScheduledTasksByPlugin.mockReturnValueOnce(
+      new Promise(resolve => {
+        resolveTasks = resolve;
+      }),
+    );
+    await renderComponent();
+
+    const status = screen.getByRole('status');
+    expect(status).toBeEmptyDOMElement();
+    resolveTasks({ scheduledTasks: [] });
+    expect(
+      await screen.findByText('No scheduled tasks found for plugin-a.', {
+        selector: '[role="status"]',
+      }),
+    ).toBe(status);
+    expect(screen.getByRole('status')).toBe(status);
+
+    mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValueOnce({
+      scheduledTasks: [mockTaskB],
+    });
+    fireEvent.click(screen.getByRole('button', { name: /show suggestions/i }));
+    fireEvent.click(await screen.findByRole('option', { name: 'plugin-b' }));
+    expect(await screen.findByText('task-b')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toBe(status);
+    expect(status).toBeEmptyDOMElement();
+
+    mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValueOnce({
+      scheduledTasks: [],
+    });
+    fireEvent.click(screen.getByRole('button', { name: /show suggestions/i }));
+    fireEvent.click(await screen.findByRole('option', { name: 'plugin-a' }));
+    expect(
+      await screen.findByText('No scheduled tasks found for plugin-a.', {
+        selector: '[role="status"]',
+      }),
+    ).toBe(status);
+
+    mockDevToolsApi.getScheduledTasksByPlugin.mockRejectedValueOnce(
+      new Error('Unable to load tasks'),
+    );
+    const input = screen.getByRole('combobox', { name: /select plugin/i });
+    fireEvent.change(input, { target: { value: 'plugin-c' } });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+    expect(await screen.findByText('Unable to load tasks')).toBeInTheDocument();
+    expect(status).toBeEmptyDOMElement();
+  });
+
+  it('distinguishes an empty search from an empty plugin response', async () => {
+    mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValue({
+      scheduledTasks: [mockTaskA],
+    });
+    await renderComponent();
+    expect(await screen.findByText('task-a')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole('textbox', { name: /search/i }), {
+      target: { value: 'no-matching-task' },
+    });
+    expect(
+      await screen.findByText('No records to display'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('status')).toBeEmptyDOMElement();
+    expect(
+      screen.queryByText('No scheduled tasks found for plugin-a.'),
+    ).not.toBeInTheDocument();
   });
 
   it('a 403 shows the real error message', async () => {
