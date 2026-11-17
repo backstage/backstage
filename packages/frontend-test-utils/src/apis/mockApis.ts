@@ -70,7 +70,7 @@ import { MockFeatureFlagsApi } from './FeatureFlagsApi';
 import { MockAnalyticsApi } from './AnalyticsApi';
 import { MockConfigApi } from './ConfigApi';
 import { MockErrorApi } from './ErrorApi';
-import { MockFetchApi, MockFetchApiOptions } from './FetchApi';
+import { MockFetchApi } from './FetchApi';
 import { MockStorageApi } from './StorageApi';
 import { MockPermissionApi } from './PermissionApi';
 import { MockTranslationApi } from './TranslationApi';
@@ -489,9 +489,61 @@ export namespace mockApis {
    *
    * @public
    */
-  export function fetch(
-    options?: MockFetchApiOptions,
-  ): MockWithApiFactory<FetchApi> {
+  export function fetch(options?: {
+    /**
+     * Define the underlying base `fetch` implementation.
+     *
+     * @defaultValue undefined
+     * @remarks
+     *
+     * Leaving out this parameter or passing `undefined`, makes the API use the
+     * global `fetch` implementation to make real network requests.
+     *
+     * `'none'` swallows all calls and makes no requests at all.
+     *
+     * You can also pass in any `fetch` compatible callback, such as a
+     * `jest.fn()`, if you want to use a custom implementation or to just track
+     * and assert on calls.
+     */
+    baseImplementation?: undefined | 'none' | typeof globalThis.fetch;
+
+    /**
+     * Add translation from `plugin://` URLs to concrete http(s) URLs, basically
+     * simulating what
+     * {@link @backstage/core-app-api#FetchMiddlewares.resolvePluginProtocol}
+     * does.
+     *
+     * @defaultValue undefined
+     * @remarks
+     *
+     * Leaving out this parameter or passing `undefined`, disables plugin protocol
+     * translation.
+     *
+     * To enable the feature, pass in a discovery API which is then used to
+     * resolve the URLs.
+     */
+    resolvePluginProtocol?:
+      | undefined
+      | { discoveryApi: Pick<DiscoveryApi, 'getBaseUrl'> };
+
+    /**
+     * Add token based Authorization headers to requests, basically simulating
+     * what {@link @backstage/core-app-api#FetchMiddlewares.injectIdentityAuth}
+     * does.
+     *
+     * @defaultValue undefined
+     * @remarks
+     *
+     * Leaving out this parameter or passing `undefined`, disables auth injection.
+     *
+     * To enable the feature, pass in either a static token or an identity API
+     * which is queried on each request for a token.
+     */
+    injectIdentityAuth?:
+      | undefined
+      | { token: string }
+      | { identityApi: Pick<IdentityApi, 'getCredentials'> };
+  }): MockWithApiFactory<FetchApi> {
     const instance = new MockFetchApi(options);
     return attachMockApiFactory(coreApis.fetch, instance);
   }

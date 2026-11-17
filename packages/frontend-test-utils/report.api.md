@@ -26,7 +26,6 @@ import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { DialogApi } from '@backstage/frontend-plugin-api';
 import { DiscoveryApi } from '@backstage/frontend-plugin-api';
-import { DiscoveryApi as DiscoveryApi_2 } from '@backstage/core-plugin-api';
 import { ErrorApi } from '@backstage/frontend-plugin-api';
 import { ErrorApiError } from '@backstage/frontend-plugin-api';
 import { ErrorApiErrorContext } from '@backstage/frontend-plugin-api';
@@ -42,7 +41,6 @@ import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { IconsApi } from '@backstage/frontend-plugin-api';
 import { IdentityApi } from '@backstage/frontend-plugin-api';
-import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { OAuthRequestApi } from '@backstage/frontend-plugin-api';
@@ -277,9 +275,22 @@ export namespace mockApis {
       partialImpl?: Partial<FeatureFlagsApi> | undefined,
     ) => ApiMock<FeatureFlagsApi>;
   }
-  export function fetch(
-    options?: MockFetchApiOptions,
-  ): MockWithApiFactory<FetchApi>;
+  export function fetch(options?: {
+    baseImplementation?: undefined | 'none' | typeof globalThis.fetch;
+    resolvePluginProtocol?:
+      | undefined
+      | {
+          discoveryApi: Pick<DiscoveryApi, 'getBaseUrl'>;
+        };
+    injectIdentityAuth?:
+      | undefined
+      | {
+          token: string;
+        }
+      | {
+          identityApi: Pick<IdentityApi, 'getCredentials'>;
+        };
+  }): MockWithApiFactory<FetchApi>;
   export namespace fetch {
     const // (undocumented)
       mock: (partialImpl?: Partial<FetchApi> | undefined) => ApiMock<FetchApi>;
@@ -403,24 +414,6 @@ export namespace mockApis {
       partialImpl?: Partial<TranslationApi> | undefined,
     ) => ApiMock<TranslationApi>;
   }
-}
-
-// @public
-export interface MockFetchApiOptions {
-  baseImplementation?: undefined | 'none' | typeof fetch;
-  injectIdentityAuth?:
-    | undefined
-    | {
-        token: string;
-      }
-    | {
-        identityApi: Pick<IdentityApi_2, 'getCredentials'>;
-      };
-  resolvePluginProtocol?:
-    | undefined
-    | {
-        discoveryApi: Pick<DiscoveryApi_2, 'getBaseUrl'>;
-      };
 }
 
 // @public
