@@ -123,21 +123,9 @@ export const HomePageCompanyLogo = homePlugin.provide(
   }),
 );
 
-/**
- * A card that shows a random joke.
- *
- * @remarks
- * Jokes come from `https://api.app-jokes.workers.dev` by default. Set `baseUrl`
- * to use another host that serves the same API; a trailing slash is allowed. If
- * the request fails, the card shows a built-in joke instead.
- *
- * @public
- */
+/** @public */
 export const HomePageRandomJoke = homePlugin.provide(
-  createCardExtension<{
-    defaultCategory?: 'any' | 'programming';
-    baseUrl?: string;
-  }>({
+  createCardExtension<{ defaultCategory?: 'any' | 'programming' }>({
     name: 'HomePageRandomJoke',
     title: 'Random Joke',
     components: () => import('./homePageComponents/RandomJoke'),
@@ -154,7 +142,7 @@ export const HomePageRandomJoke = homePlugin.provide(
           defaultCategory: {
             title: 'Category',
             type: 'string',
-            enum: ['any', 'programming', 'dad'],
+            enum: ['any', 'programming'],
             default: 'any',
           },
         },

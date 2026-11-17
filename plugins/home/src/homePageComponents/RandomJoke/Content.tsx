@@ -18,9 +18,7 @@ import Typography from '@material-ui/core/Typography';
 import { useRandomJoke } from './Context';
 
 export const Content = () => {
-  const { joke, loading } = useRandomJoke();
-
-  if (loading) return <Typography paragraph>Loading...</Typography>;
+  const { joke } = useRandomJoke();
 
   return (
     <div>

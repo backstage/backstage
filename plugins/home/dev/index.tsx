@@ -161,7 +161,7 @@ const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
           defaultCategory: {
             title: 'Category',
             type: 'string',
-            enum: ['any', 'programming', 'dad'],
+            enum: ['any', 'programming'],
             default: 'any',
           },
         },

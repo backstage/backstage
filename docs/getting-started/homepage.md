@@ -100,7 +100,7 @@ These widgets come from `@backstage/plugin-home`:
 | World Clocks     | `home-page-widget:home/world-clock`      | Displays clocks for configured time zones.                         |
 | Most Visited     | `home-page-widget:home/most-visited`     | Shows your most frequently visited pages. Requires visit tracking. |
 | Recently Visited | `home-page-widget:home/recently-visited` | Shows pages you have recently visited. Requires visit tracking.    |
-| Random Joke      | `home-page-widget:home/random-joke`      | Shows a random joke from a configurable joke API.                  |
+| Random Joke      | `home-page-widget:home/random-joke`      | Shows a random programming joke.                                   |
 
 ### Search plugin widget
 
@@ -184,21 +184,6 @@ app:
             - label: TYO
               timeZone: Asia/Tokyo
 ```
-
-### Random Joke
-
-The Random Joke widget gets its jokes from `https://api.app-jokes.workers.dev`.
-To use another host that serves the same API, set `baseUrl`:
-
-```yaml title="app-config.yaml"
-app:
-  extensions:
-    - home-page-widget:home/random-joke:
-        config:
-          baseUrl: https://jokes.example.com
-```
-
-If the request fails, the widget shows a built-in joke instead.
 
 ### Featured Templates
 
