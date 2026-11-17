@@ -852,6 +852,143 @@ describe('observability seam', () => {
     ).toBe(true);
   });
 
+  it('reports every local denial boundary as one failure', async () => {
+    const { db, cleanup } = await memoryDb();
+    const metrics = createMetricsSubscriber();
+    const credentialsMigration = require('../../migrations/2000_credentials');
+    const {
+      createCredentialStores,
+    } = require('../credentials/createCredentialStores');
+    const { createAuthOperations } = require('../providers/auth/operations');
+    const { createAuthOperationGuard } = require('../providers/auth/guard');
+    const modules = require('../providers/auth/modules');
+    const {
+      createGuardedModelOperations,
+    } = require('../guard/modelOperations');
+    const { builtinProviderRegistry } = require('../providers/builtins');
+    try {
+      await credentialsMigration.up(db);
+      const lease = await createKnexNamespaceLease({ db });
+      const held = (await lease.acquire(fence_namespace, 'owner'))!;
+      const journal = createAttemptJournal({
+        db,
+        authorizer: { authorizeAuditRead: async () => true },
+        events: metrics,
+      });
+      const context = {
+        actor: 'user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        provenance: {
+          origin: 'verified',
+          conversationId: 'plugin/session',
+          taskId: 'plugin/session',
+          callId: 'plugin/session#auth-missing',
+        },
+        fence: held,
+        definitionVersion: 'v1',
+        configVersion: 'v1',
+      };
+      const operations = createAuthOperations({
+        guard: createAuthOperationGuard({
+          transport: (async () => new Response('{}', { status: 200 })) as never,
+          recheck: async () => true,
+          journal,
+          events: metrics,
+          modules: modules.builtinAuthModuleRegistry,
+        }),
+        journal,
+        stores: createCredentialStores({
+          db,
+          encryptionKey: new Uint8Array(32).fill(4),
+          configCredentials: new Map(),
+        }),
+        events: metrics,
+        modules: modules.builtinAuthModuleRegistry,
+        tokenEndpoints: { anthropic: 'https://token.example/v1/oauth/token' },
+        clientIds: { anthropic: 'client-id' },
+      });
+
+      // 1. Local auth denial: no stored credential.
+      await expect(
+        operations.refresh({
+          context,
+          providerId: 'anthropic',
+          scope: { kind: 'user', id: 'user:default/alice' },
+        }),
+      ).rejects.toThrow(/re-authentication required/);
+
+      let snapshot = metrics.snapshot();
+      expect(snapshot.failures).toBe(1);
+      expect(snapshot.journalDecisions.deny).toBe(1);
+      expect(
+        snapshot.counters.find(series => series.labels.kind === 'denial'),
+      ).toMatchObject({
+        count: 1,
+        labels: { operation: 'auth.token', provider: 'anthropic' },
+      });
+
+      // 2. Model policy denial: the binding has no provider credentials.
+      const requests = createGuardedModelOperations({
+        guard: createModelOperationGuard({
+          journal,
+          recheck: async () => true,
+          transport: (async () => new Response('ok')) as never,
+        }),
+        journal,
+        events: metrics,
+        providers: builtinProviderRegistry,
+        resolve: () => ({
+          operation: {
+            ...context,
+            provenance: {
+              ...context.provenance,
+              callId: 'plugin/session#no-credentials',
+            },
+            provider: 'openai',
+            modelId: 'gpt-review',
+            resolvedModel: 'gpt-review',
+            operation: 'completeSimple',
+            api: 'openai-responses',
+            destination: 'https://provider.example/v1/responses',
+            credentialScope: { kind: 'org' },
+            credentialGeneration: 'gen-1',
+            controller: new AbortController(),
+          },
+          authority: { kind: 'apiKey' },
+        }),
+      });
+      const { openaiProvider } = require('@earendil-works/pi-ai');
+      const model = {
+        ...(openaiProvider ? openaiProvider().getModels()[0] : {}),
+        id: 'gpt-review',
+        name: 'gpt-review',
+        provider: 'openai',
+        api: 'openai-responses',
+        baseUrl: 'https://provider.example/v1',
+        contextWindow: 400_000,
+        maxTokens: 128_000,
+        input: ['text'],
+        reasoning: false,
+        cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+      };
+      // The policy rejection settles as an error result, not a throw; what
+      // matters is that the denial was journaled and observed exactly once.
+      await requests.completeSimple(
+        model as never,
+        {
+          messages: [{ role: 'user', content: 'hello' }],
+        } as never,
+      );
+
+      snapshot = metrics.snapshot();
+      // Two logical denials: one auth, one model policy. Each counted once.
+      expect(snapshot.failures).toBe(2);
+      expect(snapshot.journalDecisions.deny).toBe(2);
+    } finally {
+      await cleanup();
+    }
+  }, 20000);
+
   it('counts one logical denial and only real lease releases', async () => {
     const { db, cleanup } = await memoryDb();
     const metrics = createMetricsSubscriber();

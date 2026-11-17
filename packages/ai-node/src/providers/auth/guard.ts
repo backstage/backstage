@@ -64,11 +64,24 @@ export async function recordAuthDenial(
   operation: TrustedAuthOperation,
   reason: string,
   attempt = 1,
+  events?: AiEventEmitter,
 ): Promise<void> {
   await journal.recordDecisionAndIntent(
     operation.fence,
     authDecision(operation, attempt, 'deny', undefined, reason),
   );
+  // Same discipline as the guard's own deny(): one failure per logical
+  // denial, emitted only once the journal row is durable.
+  emitSafe(events, {
+    kind: 'denial',
+    at: Date.now(),
+    pluginId: operation.fence.namespace.pluginId,
+    sessionId: operation.fence.namespace.sessionId,
+    provider: operation.provider,
+    operation: operation.operation,
+    reason,
+    attempt,
+  });
 }
 
 function authDecision(

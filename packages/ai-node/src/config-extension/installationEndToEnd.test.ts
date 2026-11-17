@@ -41,6 +41,7 @@ import type { AiCredentialStores, CredentialScope } from '../credentials/types';
 import { createAiServiceIntegration } from '../integration';
 import { runAiMigrations } from '../migrations';
 import { configureAiInstallation } from './configureAiInstallation';
+import { createMetricsSubscriber } from '../observability/metrics';
 
 const pgUrl = process.env.AI_TEST_POSTGRES_URL;
 
@@ -403,6 +404,7 @@ describe.each(engines)('%s installation config end to end', (_engine, make) => {
   it('still fails closed when the model is not in the configured catalog', async () => {
     const f = await make(pgUrl);
     const probe = await probeServer();
+    const metrics = createMetricsSubscriber();
     try {
       const configured = configureAiInstallation({
         source: {
@@ -419,6 +421,7 @@ describe.each(engines)('%s installation config end to end', (_engine, make) => {
       });
       const integration = await createAiServiceIntegration({
         deps: f.deps,
+        events: metrics,
         ...configured,
       });
       const service = DefaultAiService.create({ deps: f.deps, integration });
@@ -442,6 +445,19 @@ describe.each(engines)('%s installation config end to end', (_engine, make) => {
       });
       await conversation.abort(handle.context);
       expect(probe.requests).toHaveLength(0);
+
+      // The unresolved-model denial is one logical failure, visible through
+      // the production composition root, and counted once with its journal row.
+      await waitFor(async () => metrics.snapshot().failures > 0);
+      const snapshot = metrics.snapshot();
+      expect(snapshot.failures).toBe(1);
+      expect(snapshot.journalDecisions.deny).toBeGreaterThanOrEqual(1);
+      expect(
+        snapshot.counters.find(series => series.labels.kind === 'denial'),
+      ).toMatchObject({
+        count: 1,
+        labels: { operation: 'models.streamSimple', provider: 'openai' },
+      });
     } finally {
       await probe.close();
       await f.close();

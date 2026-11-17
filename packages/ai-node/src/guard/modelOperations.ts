@@ -26,6 +26,8 @@ import {
 } from '@earendil-works/pi-ai';
 import { builtinProviderRegistry } from '../providers/builtins';
 import type { AiProviderRegistry } from '../providers/registry';
+import { emitSafe } from '../observability/types';
+import type { AiEventEmitter } from '../observability/types';
 import type { AttemptJournal } from '../journal/types';
 import { assertRedactedText } from '../journal/redaction';
 import type {
@@ -98,6 +100,8 @@ export function createGuardedModelOperations(options: {
     model: AnyModel,
     operation: ModelOperation,
   ): GuardedModelBinding | Promise<GuardedModelBinding>;
+  /** Observability sink for local policy denials; no-op when absent. */
+  events?: AiEventEmitter;
 }): ModelRequests {
   const providers = options.providers ?? builtinProviderRegistry;
   class PolicyRejection extends Error {}
@@ -110,6 +114,20 @@ export function createGuardedModelOperations(options: {
     const op = binding.operation;
     op.controller.abort();
     if (!options.journal) throw new Error('Attempt journal is not bound');
+    // Same discipline as the guard: the denial observation follows the durable
+    // journal row, carries the internal reason and never caller text.
+    const observe = () =>
+      emitSafe(options.events, {
+        kind: 'denial',
+        at: Date.now(),
+        pluginId: op.fence.namespace.pluginId,
+        sessionId: op.fence.namespace.sessionId,
+        provider: op.provider,
+        modelId: op.modelId,
+        operation,
+        reason,
+        attempt: 1,
+      });
     await options.journal.recordDecisionAndIntent(op.fence, {
       actor: op.actor,
       conversationId: op.provenance.conversationId,
@@ -124,6 +142,7 @@ export function createGuardedModelOperations(options: {
       decision: 'deny',
       reason,
     });
+    observe();
     throw new PolicyRejection(reason);
   };
   const matches = (
