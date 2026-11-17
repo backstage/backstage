@@ -139,7 +139,12 @@ export const ScheduledTasksContent = () => {
       render: (rowData: TaskApiTasksResponse) => (
         <Flex align="center" gap="2">
           {rowData.taskState?.lastRunError && (
-            <RiErrorWarningFill size={20} className={styles.errorIcon} />
+            <RiErrorWarningFill
+              size={20}
+              className={styles.errorIcon}
+              aria-label="Last run failed"
+              role="img"
+            />
           )}
           <Text variant="body-medium">{rowData.taskId}</Text>
         </Flex>
