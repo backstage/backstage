@@ -283,41 +283,55 @@ describe('parseAiInstallationConfig', () => {
     ).toThrow(/provider ID/);
   });
 
-  it('accepts only reserved, secret-free token endpoints', () => {
+  it('accepts only reserved, secret-free token endpoints keyed by provider', () => {
     const parsed = parse({
       ai: {
         credentials: credentialsSection({
-          tokenEndpoints: [
-            'https://api.anthropic.com/v1/oauth/token',
-            'https://auth.openai.com/oauth/token',
-          ],
+          tokenEndpoints: {
+            anthropic: 'https://api.anthropic.com/v1/oauth/token',
+            openai: 'https://auth.openai.com/oauth/token',
+            'openai-azure': 'https://azure.example/oauth/token',
+          },
         }),
       },
     });
-    expect(parsed.credentials!.tokenEndpoints).toEqual([
-      'https://api.anthropic.com/v1/oauth/token',
-      'https://auth.openai.com/oauth/token',
-    ]);
+    // Two providers may share a token route: the map is keyed by provider.
+    expect(parsed.credentials!.tokenEndpoints).toEqual({
+      anthropic: 'https://api.anthropic.com/v1/oauth/token',
+      openai: 'https://auth.openai.com/oauth/token',
+      'openai-azure': 'https://azure.example/oauth/token',
+    });
 
     // Omitted means no guarded auth operations.
     expect(
       parse({ ai: { credentials: credentialsSection() } }).credentials!
         .tokenEndpoints,
-    ).toEqual([]);
+    ).toEqual({});
 
     const invalid: Array<[unknown, RegExp]> = [
-      [[], /at least one endpoint/],
-      [['https://api.anthropic.com/oauth/token?tenant=1'], /without query/],
-      [['https://api.anthropic.com/authorize'], /reserved token route/],
-      [['http://api.anthropic.com/v1/oauth/token'], /absolute https/],
-      [['ftp://api.anthropic.com/oauth/token'], /absolute https/],
-      [['https://user:pass@api.anthropic.com/oauth/token'], /without query/],
+      [{}, /at least one provider endpoint/],
       [
-        [
-          'https://api.anthropic.com/v1/oauth/token',
-          'https://api.anthropic.com/v1/oauth/token',
-        ],
-        /configured more than once/,
+        { anthropic: 'https://api.anthropic.com/oauth/token?tenant=1' },
+        /without query/,
+      ],
+      [
+        { anthropic: 'https://api.anthropic.com/authorize' },
+        /reserved token route/,
+      ],
+      [
+        { anthropic: 'http://api.anthropic.com/v1/oauth/token' },
+        /absolute https/,
+      ],
+      [
+        { anthropic: 'https://user:pass@api.anthropic.com/oauth/token' },
+        /without query/,
+      ],
+      [
+        {
+          anthropic: 'https://api.anthropic.com/v1/oauth/token',
+          other: 'https://api.anthropic.com/v1/oauth/token',
+        },
+        /more than one provider/,
       ],
     ];
     for (const [tokenEndpoints, expected] of invalid) {

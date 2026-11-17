@@ -30,9 +30,13 @@ import type {
 } from '../../credentials/types';
 import { createAttemptJournal } from '../../journal/knex';
 import type { AttemptJournal } from '../../journal/types';
-import { createAuthOperationGuard } from './guard';
+import { createAuthOperationGuard, type AuthModuleLookup } from './guard';
 import { AuthTokenRejection } from './guard';
-import { builtinAuthModuleRegistry } from './modules';
+import {
+  builtinAuthModuleRegistry,
+  createAuthModuleRegistry,
+  openaiAuthModule,
+} from './modules';
 import {
   AuthOperationError,
   createAuthOperations,
@@ -72,7 +76,9 @@ type TokenServer = {
   close(): Promise<void>;
 };
 
-async function tokenServer(): Promise<TokenServer> {
+async function tokenServer(
+  tokenPath = '/v1/oauth/token',
+): Promise<TokenServer> {
   const requests: TokenServer['requests'] = [];
   let response = {
     status: 200,
@@ -99,7 +105,7 @@ async function tokenServer(): Promise<TokenServer> {
   await once(server, 'listening');
   const port = (server.address() as { port: number }).port;
   return {
-    endpoint: `http://127.0.0.1:${port}/v1/oauth/token`,
+    endpoint: `http://127.0.0.1:${port}${tokenPath}`,
     requests,
     respondWith(status, body) {
       response = { status, body };
@@ -123,7 +129,10 @@ type Fixture = {
 async function fixture(
   dialect: 'sqlite' | 'pg',
   endpoint: string,
-  options: { tokenEndpoints?: readonly string[] } = {},
+  options: {
+    tokenEndpoints?: Readonly<Record<string, string>>;
+    modules?: AuthModuleLookup;
+  } = {},
 ): Promise<Fixture> {
   let db: Knex;
   let cleanup: () => Promise<void>;
@@ -178,15 +187,19 @@ async function fixture(
       transport: fetch,
       recheck: async () => true,
       journal,
-      modules: builtinAuthModuleRegistry,
+      modules: options.modules ?? builtinAuthModuleRegistry,
     });
     const operations = createAuthOperations({
       guard,
       journal,
       stores,
-      modules: builtinAuthModuleRegistry,
-      tokenEndpoints: options.tokenEndpoints ?? [endpoint],
-      clientIds: { anthropic: 'client-id' },
+      modules: options.modules ?? builtinAuthModuleRegistry,
+      tokenEndpoints: options.tokenEndpoints ?? { anthropic: endpoint },
+      clientIds: {
+        anthropic: 'client-id',
+        openai: 'client-id',
+        'openai-secondary': 'client-id',
+      },
     });
     const context: AuthOperationContext = {
       actor: 'user:default/alice',
@@ -230,11 +243,23 @@ async function journalRows(db: Knex) {
     .orderBy('id');
 }
 
-const engines: [string, (endpoint: string) => Promise<Fixture>][] = [
-  ['sqlite', endpoint => fixture('sqlite', endpoint)],
+const engines: [
+  string,
+  (
+    endpoint: string,
+    options?: {
+      tokenEndpoints?: Readonly<Record<string, string>>;
+      modules?: AuthModuleLookup;
+    },
+  ) => Promise<Fixture>,
+][] = [
+  ['sqlite', (endpoint, options) => fixture('sqlite', endpoint, options ?? {})],
 ];
 if (pgUrl) {
-  engines.push(['postgres', endpoint => fixture('pg', endpoint)]);
+  engines.push([
+    'postgres',
+    (endpoint, options) => fixture('pg', endpoint, options ?? {}),
+  ]);
 } else {
   it.skip('PostgreSQL auth operation tests require AI_TEST_POSTGRES_URL', () => {});
 }
@@ -437,6 +462,73 @@ describe.each(engines)('%s auth operations', (_engine, make) => {
     }
   }, 20000);
 
+  it('refreshes two providers that share a token route independently', async () => {
+    const first = await tokenServer('/oauth/token');
+    server = first;
+    const second = await tokenServer('/oauth/token');
+    const modules = createAuthModuleRegistry([
+      openaiAuthModule,
+      { ...openaiAuthModule, id: 'openai-secondary' },
+    ]);
+    try {
+      const configured = await make(first.endpoint, {
+        modules,
+        tokenEndpoints: {
+          openai: first.endpoint,
+          'openai-secondary': second.endpoint,
+        },
+      });
+      for (const [providerId, marker] of [
+        ['openai', OLD_REFRESH],
+        ['openai-secondary', `${OLD_REFRESH}-secondary`],
+      ] as const) {
+        await configured.stores
+          .forScope(scope)
+          .modify(providerId, async () => ({
+            type: 'oauth',
+            refresh: marker,
+            access: `${marker}-access`,
+            expires: Date.now() - 1_000,
+          }));
+      }
+
+      await expect(
+        configured.operations.refresh({
+          context: configured.context,
+          scope,
+          providerId: 'openai',
+        }),
+      ).resolves.toMatchObject({ status: 'refreshed' });
+      await expect(
+        configured.operations.refresh({
+          context: configured.context,
+          scope,
+          providerId: 'openai-secondary',
+        }),
+      ).resolves.toMatchObject({ status: 'refreshed' });
+
+      // Each provider used its own endpoint, never a route-derived guess.
+      expect(first.requests).toHaveLength(1);
+      expect(second.requests).toHaveLength(1);
+      expect(first.requests[0].body).toContain(OLD_REFRESH);
+      expect(first.requests[0].body).not.toContain(`${OLD_REFRESH}-secondary`);
+      expect(second.requests[0].body).toContain(`${OLD_REFRESH}-secondary`);
+
+      const rows = await journalRows(configured.db);
+      expect(
+        rows
+          .filter(row => row.kind === 'decision')
+          .map(row => `${row.provider}:${row.destination}`),
+      ).toEqual([
+        `openai:${first.endpoint}`,
+        `openai-secondary:${second.endpoint}`,
+      ]);
+      await configured.cleanup();
+    } finally {
+      await second.close();
+    }
+  }, 20000);
+
   it('exchanges a login code into the personal store', async () => {
     const f = await setup();
     try {
@@ -515,18 +607,20 @@ describe('auth operation construction', () => {
       journal: {} as AttemptJournal,
       stores: {} as AiCredentialStores,
       modules: builtinAuthModuleRegistry,
-      clientIds: { anthropic: 'client-id' },
+      clientIds: {
+        anthropic: 'client-id',
+        openai: 'client-id',
+        'openai-secondary': 'client-id',
+      },
     };
-    for (const tokenEndpoints of [
-      [],
-      ['https://token.example/oauth/token?tenant=1'],
-      ['https://token.example/authorize'],
-      ['ftp://token.example/oauth/token'],
-      [
-        'https://token.example/oauth/token',
-        'https://token.example/oauth/token',
-      ],
-    ]) {
+    const invalidEndpoints: Array<Readonly<Record<string, string>>> = [
+      {},
+      { openai: 'https://token.example/oauth/token?tenant=1' },
+      { openai: 'https://token.example/authorize' },
+      { openai: 'ftp://token.example/oauth/token' },
+      { openai: '' },
+    ];
+    for (const tokenEndpoints of invalidEndpoints) {
       expect(() => createAuthOperations({ ...common, tokenEndpoints })).toThrow(
         AuthOperationError,
       );
@@ -534,7 +628,7 @@ describe('auth operation construction', () => {
     expect(() =>
       createAuthOperations({
         ...common,
-        tokenEndpoints: ['https://token.example/oauth/token'],
+        tokenEndpoints: { openai: 'https://token.example/oauth/token' },
       }),
     ).not.toThrow();
   });

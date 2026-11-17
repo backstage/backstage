@@ -68,7 +68,7 @@ export function configureAiInstallation(
     return {
       models: parsed.models,
       credentialPrecedence: 'user-first',
-      credentialTokenEndpoints: [],
+      credentialTokenEndpoints: {},
     };
   }
 

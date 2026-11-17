@@ -152,10 +152,11 @@ export interface AuthOperationsOptions {
   stores: AiCredentialStores;
   modules: AuthModuleLookup;
   /**
-   * Host-configured trusted token endpoints. Each must be an absolute
-   * `https` (or local test `http`) URL on a reserved token route.
+   * Host-configured trusted token endpoints keyed by provider ID. Each must be
+   * an absolute `https` (or local test `http`) URL on a reserved token route.
+   * Keying by provider lets several providers share a token route.
    */
-  tokenEndpoints: readonly string[];
+  tokenEndpoints: Readonly<Record<string, string>>;
   /** Public OAuth client IDs per provider ID. Never a client secret. */
   clientIds: Readonly<Record<string, string>>;
   /** Refresh credentials expiring within this window. Default one minute. */
@@ -231,28 +232,26 @@ export function createAuthOperations(
   const now = options.now ?? Date.now;
   const refreshWindowMs = options.refreshWindowMs ?? DEFAULT_REFRESH_WINDOW_MS;
 
-  if (
-    !Array.isArray(options.tokenEndpoints) ||
-    options.tokenEndpoints.length === 0
-  ) {
+  const entries = Object.entries(options.tokenEndpoints ?? {});
+  if (entries.length === 0) {
     throw new AuthOperationError(
       'misconfigured',
       'Auth operations require at least one trusted token endpoint from configuration',
     );
   }
   const endpoints = new Map<string, string>();
-  for (const raw of options.tokenEndpoints) {
+  for (const [providerId, raw] of entries) {
+    if (typeof providerId !== 'string' || providerId.length === 0) {
+      throw new AuthOperationError(
+        'misconfigured',
+        'Trusted token endpoints must be keyed by provider ID',
+      );
+    }
     const canonical = endpointKey(raw);
     if (canonical === undefined) {
       throw new AuthOperationError(
         'misconfigured',
         'Trusted token endpoints must be absolute https URLs on /oauth/token or /v1/oauth/token without query, fragment or userinfo',
-      );
-    }
-    if (endpoints.has(canonical)) {
-      throw new AuthOperationError(
-        'misconfigured',
-        'Trusted token endpoints must be unique',
       );
     }
     const path = new URL(canonical).pathname;
@@ -262,7 +261,7 @@ export function createAuthOperations(
         'Trusted token endpoints must use the reserved /oauth/token or /v1/oauth/token route',
       );
     }
-    endpoints.set(canonical, canonical);
+    endpoints.set(providerId, canonical);
   }
   const trusted = Object.freeze([...endpoints.values()]);
 
@@ -277,16 +276,20 @@ export function createAuthOperations(
     return module;
   };
   const endpointFor = (module: AiAuthModule): string => {
-    const matches = trusted.filter(
-      value => new URL(value).pathname === module.tokenPath,
-    );
-    if (matches.length !== 1) {
+    const endpoint = endpoints.get(module.id);
+    if (endpoint === undefined) {
       throw new AuthOperationError(
         'misconfigured',
-        `Configuration must declare exactly one trusted token endpoint on '${module.tokenPath}' for provider '${module.id}'`,
+        `Configuration must declare a trusted token endpoint for provider '${module.id}'`,
       );
     }
-    return matches[0];
+    if (new URL(endpoint).pathname !== module.tokenPath) {
+      throw new AuthOperationError(
+        'misconfigured',
+        `The configured token endpoint for provider '${module.id}' must use the module's reserved route '${module.tokenPath}'`,
+      );
+    }
+    return endpoint;
   };
   const clientIdFor = (providerId: string, override?: string): string => {
     const clientId = override ?? options.clientIds[providerId];

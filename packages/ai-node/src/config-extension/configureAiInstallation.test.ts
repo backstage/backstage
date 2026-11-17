@@ -52,7 +52,7 @@ describe('configureAiInstallation', () => {
     expect(configured).toEqual({
       models: [],
       credentialPrecedence: 'user-first',
-      credentialTokenEndpoints: [],
+      credentialTokenEndpoints: {},
     });
   });
 
