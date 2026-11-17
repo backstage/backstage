@@ -466,6 +466,7 @@ for (const dialect of ['sqlite', 'pg'] as const) {
       try {
         const destinations = [
           'https://api.openai.com/v1/responses',
+          'https://my-resource.openai.azure.com/openai/v1/responses',
           'https://api.openai.com/v1/chat/completions',
           'https://api.anthropic.com/v1/messages',
           'https://chatgpt.com/backend-api/codex/responses',
