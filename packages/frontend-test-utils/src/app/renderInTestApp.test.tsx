@@ -227,6 +227,56 @@ describe('renderInTestApp', () => {
     },
   );
 
+  it.each(['component', 'extensions'])(
+    'preserves test extensions when a plugin with ID "test" is supplied for %s rendering',
+    mode => {
+      const routeRef = createRouteRef();
+      function Probe() {
+        const link = useRouteRef(routeRef);
+        return <a href={link?.()}>Mounted route</a>;
+      }
+      const features = [
+        createFrontendPlugin({
+          pluginId: 'test',
+          extensions: [
+            createExtension({
+              name: 'plugin-content',
+              attachTo: { id: 'app/root', input: 'elements' },
+              output: [coreExtensionData.reactElement],
+              factory: () => [
+                coreExtensionData.reactElement(<div>Plugin content</div>),
+              ],
+            }),
+          ],
+        }),
+      ];
+      const mountedRoutes = { '/mounted': routeRef };
+
+      if (mode === 'component') {
+        renderInTestApp(<Probe />, { features, mountedRoutes });
+      } else {
+        renderTestApp({
+          features,
+          mountedRoutes,
+          initialRouteEntries: ['/mounted'],
+          extensions: [
+            createExtension({
+              name: 'probe',
+              attachTo: { id: 'app/root', input: 'elements' },
+              output: [coreExtensionData.reactElement],
+              factory: () => [coreExtensionData.reactElement(<Probe />)],
+            }),
+          ],
+        });
+      }
+
+      expect(
+        screen.getByRole('link', { name: 'Mounted route' }),
+      ).toHaveAttribute('href', '/mounted');
+      expect(screen.getByText('Plugin content')).toBeInTheDocument();
+    },
+  );
+
   it('should render the given component in a page', async () => {
     const IndexPage = () => <div>Index Page</div>;
     renderInTestApp(<IndexPage />);

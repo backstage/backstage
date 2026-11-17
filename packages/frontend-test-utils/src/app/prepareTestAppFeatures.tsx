@@ -118,7 +118,8 @@ export function prepareTestAppFeatures(options: {
         }),
       ],
     }),
-    createFrontendPlugin({
+    createFrontendPlugin({ pluginId: 'test' }),
+    createFrontendModule({
       pluginId: 'test',
       extensions,
     }),

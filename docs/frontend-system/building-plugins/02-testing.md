@@ -9,6 +9,10 @@ description: Testing plugins in the frontend system
 
 Utilities for testing frontend features and components are available in `@backstage/frontend-test-utils`.
 
+Both `renderInTestApp` and `renderTestApp` accept plugins and modules through the
+`features` option. A plugin with ID `test` can be included without replacing the
+component, extensions, or mounted routes supplied to the rendering helper.
+
 ## Testing React components
 
 A component can be used for more than one extension, and it should be tested independently of an extension environment.
