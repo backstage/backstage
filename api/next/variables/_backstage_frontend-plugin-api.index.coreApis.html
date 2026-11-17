@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>oauthRequest | Backstage</title><meta name="description" content="Documentation for Backstage"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>coreApis | Backstage</title><meta name="description" content="Documentation for Backstage"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
 <div class="tsd-toolbar-contents container"><a href="../index.html" class="title">Backstage</a>
 <div id="tsd-toolbar-links"><a href="https://backstage.io/docs">Docs</a><a href="https://github.com/backstage/backstage">GitHub</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
 <ul role="listbox" id="tsd-search-results"></ul>
@@ -10,15 +10,19 @@
 <ul class="tsd-breadcrumb" aria-label="Breadcrumb">
 <li><a href="../modules/_backstage_frontend-plugin-api.html">@backstage/frontend-plugin-api</a></li>
 <li><a href="../modules/_backstage_frontend-plugin-api.index.html">index</a></li>
-<li><a href="../modules/_backstage_frontend-plugin-api.index.coreApis.html">coreApis</a></li>
-<li><a href="../modules/_backstage_frontend-plugin-api.index.coreApis.internal.html">internal</a></li>
-<li><a href="" aria-current="page">oauthRequest</a></li></ul>
-<h1>Variable oauthRequest<code class="tsd-tag">Const</code></h1></div>
-<div class="tsd-signature"><span class="tsd-kind-variable">oauthRequest</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-keyword">typeof</span> <a href="_backstage_frontend-plugin-api.index.oauthRequestApiRef.html" class="tsd-signature-type tsd-kind-variable">oauthRequestApiRef</a><span class="tsd-signature-symbol"> = oauthRequestApiRef</span></div>
-<div class="tsd-comment tsd-typography"><p>The API reference for <a href="../types/_backstage_frontend-plugin-api.index.OAuthRequestApi.html" class="tsd-kind-type-alias">OAuthRequestApi</a>.</p>
-</div><aside class="tsd-sources">
+<li><a href="" aria-current="page">coreApis</a></li></ul>
+<h1>Variable coreApis<code class="tsd-tag">Const</code></h1></div>
+<div class="tsd-signature"><span class="tsd-kind-variable">coreApis</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/_backstage_frontend-plugin-api.index.CoreApis.html" class="tsd-signature-type tsd-kind-interface">CoreApis</a><span class="tsd-signature-symbol"> = ...</span></div>
+<div class="tsd-comment tsd-typography"><p>References to the <a href="../interfaces/_backstage_frontend-plugin-api.index.CoreApis.html" class="tsd-kind-interface">core Utility APIs</a> provided by the frontend system.</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-remarks">
+<h4 class="tsd-anchor-link" id="remarks">Remarks<a href="#remarks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Use these refs with <code>useApi</code> or when declaring API factory dependencies.
+Framework infrastructure APIs are grouped under <a href="../interfaces/_backstage_frontend-plugin-api.index.CoreApis.html#internal" class="tsd-kind-property">coreApis.internal</a>.
+Provider-specific authentication APIs are exported separately.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/d1d9866666f8a687e9ebb85cbdb6db02f5f8d676/packages/frontend-plugin-api/src/apis/definitions/coreApis.ts#L202">packages/frontend-plugin-api/src/apis/definitions/coreApis.ts:202</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/e05de9b99012e457f0bfc8a5c15138aa6955fbf3/packages/frontend-plugin-api/src/apis/definitions/coreApis.ts#L297">packages/frontend-plugin-api/src/apis/definitions/coreApis.ts:297</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
