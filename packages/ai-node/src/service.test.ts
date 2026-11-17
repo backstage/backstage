@@ -25,6 +25,16 @@ import type { AiService } from './contracts';
 import { aiServiceRef } from './service';
 
 describe('aiServiceRef', () => {
+  // Note on the parallel-SQLite "worker failed to exit gracefully" warning
+  // this file occasionally produces: it is Jest-environment noise, not an
+  // ai-node leak. Evidence: the only resources left after `backend.stop()`
+  // are one Timeout a bare `startTestBackend` without any AI consumer also
+  // leaves (backend-test-utils baseline) plus the default mock database
+  // service's in-memory knex pool, which the mock never destroys — the
+  // production database service owns pool teardown. Instrumenting every
+  // `setTimeout` created across the backend's lifecycle shows zero pending
+  // ai-node timers after stop, and the warning never appears under
+  // `--runInBand` or `--detectOpenHandles`.
   it('installs a wired plugin-scoped service that fails closed on in-memory databases', async () => {
     let service: AiService | undefined;
     const backend = await startTestBackend({

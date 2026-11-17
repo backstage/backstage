@@ -29,12 +29,8 @@ import type { JsonObject } from '@backstage/types';
 import type { AiCredentialStores, CredentialScope } from './credentials/types';
 import type { AiCredentialsPrecedence } from './config-extension/types';
 import { DEFAULT_REFRESH_WINDOW_MS } from './providers/auth/operations';
-import {
-  createAttemptJournal,
-  AI_AUDIT_READ_PERMISSION_NAME,
-  type AttemptJournal,
-  type AuditEventView,
-} from './journal/index';
+import { type AttemptJournal, type AuditEventView } from './journal/index';
+import { createWiredAttemptJournal } from './journal/wired';
 import { createModelOperationGuard } from './guard/createModelOperationGuard';
 import {
   createGuardedModelOperations,
@@ -77,7 +73,6 @@ function deepFreeze<T>(value: T): T {
 }
 
 /** The recovery session table written by the ownership module. */
-const RECOVERY_SESSIONS_TABLE = 'ai_recovery_sessions';
 const NAMESPACE_LEASES_TABLE = 'ai_namespace_leases';
 
 /** Drain-join poll interval for an open waiting on a draining admission. */
@@ -362,45 +357,10 @@ export async function createAiServiceIntegration(
     getOwnServiceCredentials: () => deps.auth.getOwnServiceCredentials(),
   });
 
-  const journal: AttemptJournal = createAttemptJournal({
+  const journal: AttemptJournal = createWiredAttemptJournal({
     db,
+    permissions: deps.permissions,
     providers: providerRegistry,
-    authorizer: {
-      authorizeAuditRead: async credentials => {
-        const decisions = await deps.permissions.authorize(
-          [
-            {
-              permission: {
-                type: 'basic',
-                name: AI_AUDIT_READ_PERMISSION_NAME,
-                attributes: {},
-              },
-            },
-          ],
-          { credentials },
-        );
-        return decisions[0]?.result === 'ALLOW';
-      },
-    },
-    // Session ownership for audit reads resolves through the ownership
-    // module's recovery sessions, not the journal's own records.
-    ownershipResolver: async namespace => {
-      const row = await db(RECOVERY_SESSIONS_TABLE)
-        .where({
-          plugin_id: namespace.pluginId,
-          session_id: namespace.sessionId,
-        })
-        .first('origin_kind', 'origin_user_id', 'origin_service_plugin_id');
-      if (row === undefined) {
-        return undefined;
-      }
-      if (row.origin_kind === 'user') {
-        return row.origin_user_id ?? undefined;
-      }
-      return row.origin_service_plugin_id
-        ? `plugin:${row.origin_service_plugin_id}`
-        : undefined;
-    },
     mirror: {
       mirror: (event: AuditEventView) => {
         // Best-effort write-through to the Backstage auditor; the durable

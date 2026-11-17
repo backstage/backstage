@@ -54,7 +54,7 @@ export interface UserCredentialProvider {
 }
 
 /**
- * Provides Pi {@link CredentialStore} instances bound to a single scope.
+ * Provides Pi credential store instances bound to a single scope.
  *
  * @alpha
  */

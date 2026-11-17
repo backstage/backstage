@@ -27,11 +27,11 @@ import {
   AI_INSTALLATION_CONFIG_PATH,
   parseAiInstallationConfig,
 } from '../config-extension';
-import { createAttemptJournal } from '../journal/knex';
 import {
   AI_AUDIT_READ_PERMISSION_NAME,
   type AuditPage,
 } from '../journal/types';
+import { createWiredAttemptJournal } from '../journal/wired';
 import { listUserSessions, readSessionOrigin } from '../ownership/recovery';
 import { createModelPermissions } from '../permissions/modelPermissions';
 
@@ -102,32 +102,10 @@ export async function createAiHttpSupport(
     aiSessionUsePermission,
     { type: 'basic', name: AI_AUDIT_READ_PERMISSION_NAME, attributes: {} },
   ]);
-  const journal = createAttemptJournal({
-    db,
-    ownershipResolver: async namespace => {
-      const origin = await readSessionOrigin(db, namespace);
-      if (origin?.kind === 'user') return origin.userId;
-      if (origin?.kind === 'service') return `plugin:${origin.pluginId}`;
-      return undefined;
-    },
-    authorizer: {
-      authorizeAuditRead: async credentials => {
-        const decisions = await permissions.authorize(
-          [
-            {
-              permission: {
-                type: 'basic',
-                name: AI_AUDIT_READ_PERMISSION_NAME,
-                attributes: {},
-              },
-            },
-          ],
-          { credentials },
-        );
-        return decisions.length === 1 && decisions[0]?.result === 'ALLOW';
-      },
-    },
-  });
+  // The same wired journal the managed integration consumes: ownership
+  // through the recovery sessions, audit reads through the separate
+  // ai.audit.read permission.
+  const journal = createWiredAttemptJournal({ db, permissions });
   async function user(credentials: BackstageCredentials): Promise<string> {
     if (!auth.isPrincipal(credentials, 'user'))
       throw new Error('AI routes require user credentials');

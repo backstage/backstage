@@ -196,17 +196,11 @@ it('settles in-flight guard work on worker death before headers', async () => {
     maxRetries: 0,
   });
   await started;
-  const t0 = Date.now();
   await terminateGoogleWorker();
-  process.stderr.write(`BDBG2 terminate took ${Date.now() - t0}ms\n`);
-  const t1 = Date.now();
   const outcome = await Promise.race([
     result.then(() => 'settled'),
     new Promise<string>(resolve => setTimeout(() => resolve('timeout'), 800)),
   ]);
-  process.stderr.write(
-    `BDBG2 settle took ${Date.now() - t1}ms outcome=${outcome}\n`,
-  );
   release(new Error('probe cleanup'));
   await result;
   expect(outcome).toBe('settled');
