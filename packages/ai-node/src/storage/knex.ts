@@ -290,18 +290,18 @@ class KnexStorage implements Storage {
     id: EntryId,
     context: Context,
   ): ReturnType<Storage['entry']>;
-  entry(
+  async entry(
     first: ConversationId | EntryId,
     second: EntryId | Context,
     context?: Context,
   ): ReturnType<Storage['entry']> {
-    return context === undefined
-      ? this.read(second as Context, s =>
-          s.entry(first as EntryId, second as Context),
-        )
-      : this.read(context, s =>
-          s.entry(first as ConversationId, second as EntryId, context),
-        );
+    if (typeof second === 'number') {
+      if (context === undefined) throw new TypeError('Context is required');
+      return this.read(context, s =>
+        s.entry(first as ConversationId, second, context),
+      );
+    }
+    return this.read(second, s => s.entry(first as EntryId, second));
   }
 
   private async scan<Q extends object, P extends { next?: Cursor }>(
@@ -312,12 +312,24 @@ class KnexStorage implements Storage {
     action: (state: MemoryStorage) => Promise<P>,
   ): Promise<P> {
     const { order: _order, ...filter } = query as Q & { order?: string };
-    const binding = JSON.stringify([
-      this.key.plugin_id,
-      this.key.session_id,
-      name,
-      filter,
-    ]);
+    const binding = JSON.stringify(
+      [this.key.plugin_id, this.key.session_id, name, filter],
+      (_key, value: unknown) => {
+        if (
+          value === null ||
+          typeof value !== 'object' ||
+          Array.isArray(value)
+        ) {
+          return value;
+        }
+        const object = value as Record<string, unknown>;
+        return Object.fromEntries(
+          Object.keys(object)
+            .sort()
+            .map(key => [key, object[key]]),
+        );
+      },
+    );
     if (cursor !== undefined && cursor.binding !== binding)
       throw new StorageRequestError('Invalid storage cursor for scan');
     const page = await this.read(context, action);

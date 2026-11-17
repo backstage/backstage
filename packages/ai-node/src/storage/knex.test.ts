@@ -26,6 +26,8 @@ import knex, { type Knex } from 'knex';
 import { BACKGROUND_CONTEXT as context } from '@earendil-works/chord/context';
 import {
   ROOT_CONVERSATION_ID,
+  type ConversationId,
+  type DocumentId,
   type EntryId,
   type Storage,
 } from '@earendil-works/pi-durable';
@@ -137,6 +139,140 @@ for (const dialect of [
   );
 
   describe(`Knex ${dialect} durability and fencing`, () => {
+    it('publishes promptly once and dispatches both entry overloads', async () => {
+      const f = await fixture(dialect);
+      try {
+        const publish = jest.fn();
+        expect(f.storage.publishing).toBeDefined();
+        f.storage.publishing!(publish, context);
+        expect(publish).toHaveBeenCalledTimes(1);
+        await Promise.resolve();
+        expect(publish).toHaveBeenCalledTimes(1);
+
+        const id = await f.storage.mintId<EntryId>();
+        expect(
+          await f.storage.commit(
+            [
+              [
+                { type: 'conversation', value: { id: ROOT_CONVERSATION_ID } },
+                {
+                  type: 'entry',
+                  value: {
+                    id,
+                    conversationId: ROOT_CONVERSATION_ID,
+                    kind: 'message',
+                  },
+                },
+              ],
+            ],
+            () => {},
+            context,
+          ),
+        ).toEqual({ stored: 1 });
+        expect((await f.storage.entry(id, context))?.entry.id).toBe(id);
+        expect(
+          (await f.storage.entry(ROOT_CONVERSATION_ID, id, context))?.entry.id,
+        ).toBe(id);
+        const entryWithoutContext = f.storage.entry as unknown as (
+          conversationId: ConversationId,
+          entryId: EntryId,
+          missing: undefined,
+        ) => Promise<unknown>;
+        await expect(
+          entryWithoutContext.call(
+            f.storage,
+            ROOT_CONVERSATION_ID,
+            id,
+            undefined,
+          ),
+        ).rejects.toThrow('Context is required');
+      } finally {
+        await f.storage.close(context);
+        await f.cleanup();
+      }
+    });
+
+    it('continues equivalent reordered nested filters after reopen', async () => {
+      const f = await fixture(dialect);
+      try {
+        const first = await f.storage.mintId<DocumentId>();
+        const second = await f.storage.mintId<DocumentId>();
+        const scope = {
+          kind: 'conversation' as const,
+          conversationId: ROOT_CONVERSATION_ID,
+        };
+        expect(
+          await f.storage.commit(
+            [
+              [
+                { type: 'conversation', value: { id: ROOT_CONVERSATION_ID } },
+                ...[first, second].map((id, index) => ({
+                  type: 'document.create' as const,
+                  record: {
+                    id,
+                    kind: 'doc',
+                    key: String(index),
+                    scope,
+                    history: 'rewindable' as const,
+                    fork: 'asOf' as const,
+                  },
+                  content: {
+                    kind: 'base' as const,
+                    version: 1,
+                    value: { index },
+                  },
+                })),
+              ],
+            ],
+            () => {},
+            context,
+          ),
+        ).toEqual({ stored: 1 });
+        const page = await f.storage.scanDocuments(
+          { scope, at: 'current', kind: 'doc' },
+          1,
+          undefined,
+          context,
+        );
+        expect(page.items.map(item => item.id)).toEqual([first]);
+        expect(page.next).toBeDefined();
+        await f.storage.close(context);
+        const reopened = await createKnexStorage({
+          db: f.db,
+          namespace,
+          fence,
+        });
+        try {
+          const query = {
+            kind: 'doc',
+            at: 'current' as const,
+            scope: {
+              conversationId: ROOT_CONVERSATION_ID,
+              kind: 'conversation' as const,
+            },
+          };
+          expect(
+            (
+              await reopened.scanDocuments(query, 1, page.next, context)
+            ).items.map(item => item.id),
+          ).toEqual([second]);
+          await expect(
+            reopened.scanDocuments(
+              { ...query, kind: 'other' },
+              1,
+              page.next,
+              context,
+            ),
+          ).rejects.toThrow('cursor');
+        } finally {
+          await reopened.close(context);
+        }
+      } finally {
+        await f.storage.close(context);
+        await f.cleanup();
+      }
+    });
+
     it('survives reopen and close leaves the shared pool open', async () => {
       const f = await fixture(dialect);
       try {
@@ -183,6 +319,63 @@ for (const dialect of [
         await f.cleanup();
       }
     });
+
+    if (dialect === 'sqlite')
+      it('compares TEXT lease expirations against the SQLite clock', async () => {
+        const f = await fixture(dialect);
+        const futureNamespace = { ...namespace, sessionId: 'text-future' };
+        const pastNamespace = { ...namespace, sessionId: 'text-past' };
+        try {
+          await f.db('ai_namespace_leases').insert([
+            {
+              plugin_id: namespace.pluginId,
+              session_id: futureNamespace.sessionId,
+              owner_id: fence.owner,
+              token: fence.token,
+              expires_at: f.db.raw(
+                "strftime('%Y-%m-%d %H:%M:%f', 'now', '+1 minute')",
+              ),
+            },
+            {
+              plugin_id: namespace.pluginId,
+              session_id: pastNamespace.sessionId,
+              owner_id: fence.owner,
+              token: fence.token,
+              expires_at: f.db.raw(
+                "strftime('%Y-%m-%d %H:%M:%f', 'now', '-1 minute')",
+              ),
+            },
+          ]);
+          const rows = await f
+            .db('ai_namespace_leases')
+            .whereIn('session_id', [
+              futureNamespace.sessionId,
+              pastNamespace.sessionId,
+            ])
+            .select(f.db.raw('typeof(expires_at) AS type'));
+          expect(rows.map(row => row.type)).toEqual(['text', 'text']);
+          const future = await createKnexStorage({
+            db: f.db,
+            namespace: futureNamespace,
+            fence: { ...fence, namespace: futureNamespace },
+          });
+          const past = await createKnexStorage({
+            db: f.db,
+            namespace: pastNamespace,
+            fence: { ...fence, namespace: pastNamespace },
+          });
+          try {
+            expect(await future.mintId()).toBe(2);
+            await expect(past.mintId()).rejects.toThrow('fence');
+          } finally {
+            await future.close(context);
+            await past.close(context);
+          }
+        } finally {
+          await f.storage.close(context);
+          await f.cleanup();
+        }
+      });
 
     if (dialect === 'sqlite')
       it('recovers committed state after the writer process exits', async () => {
