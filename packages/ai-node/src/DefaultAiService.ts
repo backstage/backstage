@@ -235,6 +235,49 @@ function conversationCreatedHook(
 type MediationState = { released: boolean };
 
 /**
+ * The declared managed native surface: exactly the members of
+ * `Omit<Harness, 'close'>` from the pinned Pi 1.5.2 declarations.
+ *
+ * @remarks
+ *
+ * The `Record` type checks both membership and completeness at compile time,
+ * so an upstream surface change fails the build instead of silently widening
+ * or narrowing the managed view. Everything else on the native harness — in
+ * particular implementation-only runtime properties such as the underlying
+ * `storage` — is not part of the managed surface and is hidden.
+ */
+const MANAGED_NATIVE_SURFACE: Readonly<
+  Record<keyof ManagedNativeHarness, true>
+> = {
+  // Session and DocumentObserver surface
+  commit: true,
+  closed: true,
+  observeDoc: true,
+  observeCommits: true,
+  subscribeClose: true,
+  snapshot: true,
+  snapshotAsOf: true,
+  watchDoc: true,
+  // Harness surface
+  resume: true,
+  wake: true,
+  root: true,
+  conversation: true,
+  createConversation: true,
+  inspect: true,
+  getTask: true,
+  submission: true,
+  abortSubmission: true,
+  abortTask: true,
+  waitForIdle: true,
+  waitForTask: true,
+  usage: true,
+  watchTaskGraph: true,
+  observeConversation: true,
+  observeTaskGraph: true,
+};
+
+/**
  * Receiver for members inherited from `Object.prototype`, so reflection on a
  * mediated view (for example `valueOf`) can never return the raw native
  * object.
@@ -293,11 +336,16 @@ function isOperationBearing(value: unknown): value is object {
  * so a method captured before release still rejects afterwards. Results that
  * carry native operations (conversations, submissions, watches) are mediated
  * with the same state.
+ *
+ * With `restrictToSurface`, only members of the declared managed native
+ * surface are exposed; every other property of the native harness —
+ * including implementation-only runtime capabilities such as the underlying
+ * `storage` — is hidden.
  */
 function createMediatedView<T extends object>(
   native: T,
   state: MediationState,
-  options: { blockClose: boolean },
+  options: { blockClose: boolean; restrictToSurface: boolean },
 ): T {
   return new Proxy({} as T, {
     get(_target, property) {
@@ -308,6 +356,16 @@ function createMediatedView<T extends object>(
               "close() is not part of the managed harness view; use release() on the managed handle instead. Closing is owned by the managed service's lifecycle",
             ),
           );
+      }
+      if (
+        options.restrictToSurface &&
+        (typeof property !== 'string' ||
+          !Object.prototype.hasOwnProperty.call(
+            MANAGED_NATIVE_SURFACE,
+            property,
+          ))
+      ) {
+        return undefined;
       }
       const owner = findOwner(native, property);
       if (owner === undefined) {
@@ -339,7 +397,10 @@ function createMediatedView<T extends object>(
 
 function mediateResult<T>(value: T, state: MediationState): T {
   if (isOperationBearing(value)) {
-    return createMediatedView(value, state, { blockClose: false }) as T;
+    return createMediatedView(value, state, {
+      blockClose: false,
+      restrictToSurface: false,
+    }) as T;
   }
   return value;
 }
@@ -350,7 +411,8 @@ function mediateResult<T>(value: T, state: MediationState): T {
  * @remarks
  *
  * This is a real per-handle facade, not the raw harness cast to
- * `Omit<Harness, 'close'>`: `close` is replaced with a rejection, operation
+ * `Omit<Harness, 'close'>`: `close` is replaced with a rejection, only the
+ * members of the declared managed native surface are exposed, operation
  * validity is checked at invocation time, returned operation-bearing objects
  * are mediated, and the raw harness is unreachable through the view.
  */
@@ -358,7 +420,10 @@ function createManagedNativeHarness(
   native: Harness,
   state: MediationState,
 ): ManagedNativeHarness {
-  return createMediatedView(native, state, { blockClose: true });
+  return createMediatedView(native, state, {
+    blockClose: true,
+    restrictToSurface: true,
+  });
 }
 
 /** A reference-counted acquisition of a process-local shared harness. */

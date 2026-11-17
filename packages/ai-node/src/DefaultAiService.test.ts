@@ -25,16 +25,23 @@ import type {
   PermissionsService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
-import { BACKGROUND_CONTEXT } from '@earendil-works/chord/context';
+import {
+  BACKGROUND_CONTEXT,
+  type Context,
+} from '@earendil-works/chord/context';
 import {
   configure,
+  createRegistry,
+  Harness,
+  MemoryStorage,
+  ROOT_CONVERSATION_ID,
   type AgentState,
   type ConversationId,
   type ConversationRecord,
-  type Harness,
   type RegistryReader,
   type Tx,
 } from '@earendil-works/pi-durable';
+import type { Models } from '@earendil-works/pi-ai';
 import {
   DefaultAiService,
   type AcquisitionBinding,
@@ -572,14 +579,15 @@ describe('DefaultAiService', () => {
       registry: makeRegistry(),
       registryVersion: 'v1',
     });
-    const raw = integration.handles[0];
     const view = handle.harness as unknown as Record<string, unknown>;
 
-    // Reflection must not recover the raw harness, whose close() would
-    // bypass the managed lifecycle.
-    expect(view.valueOf()).not.toBe(raw);
-    expect(view.valueOf()).not.toBe(raw as unknown as object);
-    expect(view.constructor).not.toBe(raw.constructor);
+    // Reflection and undeclared runtime properties must not recover the raw
+    // harness, whose close() would bypass the managed lifecycle: members
+    // outside the declared managed native surface are hidden entirely.
+    expect(view.valueOf).toBeUndefined();
+    expect(view.constructor).toBeUndefined();
+    expect(view.storage).toBeUndefined();
+    expect(Reflect.get(handle.harness, 'storage')).toBeUndefined();
 
     // A method captured before release still rejects at invocation time.
     const capturedRoot = view.root as (
@@ -587,6 +595,93 @@ describe('DefaultAiService', () => {
     ) => Promise<StandInConversation>;
     await handle.release();
     await expect(capturedRoot(handle.context)).rejects.toThrow(/released/s);
+  });
+
+  it('hides undeclared runtime capabilities from a real Pi harness', async () => {
+    // NONPRODUCTION TEST STAND-IN storage: MemoryStorage with a close
+    // counter, so escape attempts are observable. Not production durability.
+    class CountingMemoryStorage extends MemoryStorage {
+      closeCalls = 0;
+
+      override async close(context: Context): Promise<void> {
+        this.closeCalls += 1;
+        return super.close(context);
+      }
+    }
+
+    const storage = new CountingMemoryStorage();
+    const realHarness = await Harness.open(
+      storage,
+      {
+        // A model-less stub: generation is never exercised here, and a
+        // model-less conversation must reject generation, not open. Open
+        // binds client identity, so the stub carries the one member read
+        // at bind time.
+        models: {
+          getAuth: async () => undefined,
+        } as unknown as Models,
+        registry: createRegistry(),
+      },
+      BACKGROUND_CONTEXT,
+    );
+
+    const integration = new StandInIntegration();
+    integration.openNativeHarness = async input => {
+      integration.lastOpenInput = input;
+      return {
+        harness: realHarness,
+        context: BACKGROUND_CONTEXT,
+      };
+    };
+    integration.releaseNativeHarness = async () => {
+      await realHarness.close(BACKGROUND_CONTEXT);
+    };
+    const service = DefaultAiService.create({
+      deps: makeDeps(),
+      integration,
+    });
+    const options = {
+      sessionId: 's1',
+      config: serviceConfig({
+        mode: 'service',
+        model: { provider: 'acme', modelId: 'acme-large' },
+      }),
+      credentials: USER_A,
+      registry: makeRegistry(),
+      registryVersion: 'v1',
+    };
+    const first = await service.openHarness(options);
+    const second = await service.openHarness(options);
+
+    // The underlying storage is not reachable while acquisitions are live.
+    const view = first.harness as unknown as Record<string, unknown>;
+    expect(view.storage).toBeUndefined();
+    expect(view.lineStorage).toBeUndefined();
+    expect(storage.closeCalls).toBe(0);
+
+    // The declared surface still works against the real harness.
+    const conversation = await first.harness.root(first.context);
+    expect(conversation.id).toBe(ROOT_CONVERSATION_ID);
+    await conversation.configure(
+      { instructions: 'inspect the catalog' },
+      first.context,
+    );
+
+    // Captured methods still reject after release, and the property stays
+    // unreachable after release.
+    const capturedRoot = view.root as unknown as (
+      context: unknown,
+    ) => Promise<{ id: number }>;
+    await first.release();
+    await expect(capturedRoot(first.context)).rejects.toThrow(/released/s);
+    expect(view.storage).toBeUndefined();
+
+    // The other acquisition is unaffected; the legitimate release path is
+    // the only thing that closes the storage, exactly once.
+    const other = await second.harness.root(second.context);
+    expect(other.id).toBe(ROOT_CONVERSATION_ID);
+    await second.release();
+    expect(storage.closeCalls).toBe(1);
   });
 
   it('mediates operation-bearing results and gates them on release', async () => {
