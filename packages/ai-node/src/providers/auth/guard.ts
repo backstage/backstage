@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { emitSafe } from '../../observability/types';
+import type { AiEventEmitter } from '../../observability/types';
 import type {
   AttemptDecision,
   AttemptId,
@@ -41,6 +43,8 @@ export class AuthTokenRejection extends Error {
 
 type PendingAttempt = {
   id: AttemptId;
+  startedAt: number;
+  sentAt?: number;
   httpStatus?: number;
   settled: boolean;
 };
@@ -60,11 +64,24 @@ export async function recordAuthDenial(
   operation: TrustedAuthOperation,
   reason: string,
   attempt = 1,
+  events?: AiEventEmitter,
 ): Promise<void> {
   await journal.recordDecisionAndIntent(
     operation.fence,
     authDecision(operation, attempt, 'deny', undefined, reason),
   );
+  // Same discipline as the guard's own deny(): one failure per logical
+  // denial, emitted only once the journal row is durable.
+  emitSafe(events, {
+    kind: 'denial',
+    at: Date.now(),
+    pluginId: operation.fence.namespace.pluginId,
+    sessionId: operation.fence.namespace.sessionId,
+    provider: operation.provider,
+    operation: operation.operation,
+    reason,
+    attempt,
+  });
 }
 
 function authDecision(
@@ -131,8 +148,10 @@ export function createAuthOperationGuard(options: {
   recheck(operation: TrustedAuthOperation): Promise<boolean>;
   journal: AttemptJournal;
   modules: AuthModuleLookup;
+  /** Observability sink; no-op when absent. */
+  events?: AiEventEmitter;
 }): AuthOperationGuard {
-  const { transport, journal, modules } = options;
+  const { transport, journal, modules, events } = options;
   return {
     bind(operation): GuardedAuthOperation {
       let ordinal = 0;
@@ -152,12 +171,33 @@ export function createAuthOperationGuard(options: {
       ) => {
         if (attempt.settled) return;
         attempt.settled = true;
+        const durationMs = Math.max(
+          0,
+          Date.now() - (attempt.sentAt ?? attempt.startedAt),
+        );
+        // Terminal events follow the durable outcome, exactly as in the model
+        // guard: a failed journal write is uncertain, not completed.
+        const observe = (status: AttemptOutcome['status']) =>
+          emitSafe(events, {
+            kind: 'dispatch',
+            at: Date.now(),
+            pluginId: operation.fence.namespace.pluginId,
+            sessionId: operation.fence.namespace.sessionId,
+            provider: operation.provider,
+            operation: operation.operation,
+            outcome: status,
+            ...(outcome.httpStatus === undefined
+              ? {}
+              : { httpStatus: outcome.httpStatus }),
+            durationMs,
+          });
         const write = (async () => {
           try {
             await journal.recordOutcome(operation.fence, attempt.id, outcome);
           } catch (error) {
             uncertain = true;
             block();
+            observe('unknown');
             throw new Error(
               'Auth attempt outcome is uncertain: journal failed',
               {
@@ -165,6 +205,7 @@ export function createAuthOperationGuard(options: {
               },
             );
           }
+          observe(outcome.status);
         })();
         outcomeWrites.add(write);
         try {
@@ -188,6 +229,16 @@ export function createAuthOperationGuard(options: {
             cause: journalError,
           });
         }
+        emitSafe(events, {
+          kind: 'denial',
+          at: Date.now(),
+          pluginId: operation.fence.namespace.pluginId,
+          sessionId: operation.fence.namespace.sessionId,
+          provider: operation.provider,
+          operation: operation.operation,
+          reason,
+          attempt,
+        });
       };
       return {
         fetch(input, init) {
@@ -258,7 +309,11 @@ export function createAuthOperationGuard(options: {
               block();
               throw error;
             }
-            const pending: PendingAttempt = { id, settled: false };
+            const pending: PendingAttempt = {
+              id,
+              startedAt: Date.now(),
+              settled: false,
+            };
             attempts.push(pending);
             if (request.signal.aborted || blocked || finished) {
               await record(pending, { status: 'cancelled' }).catch(() => {});
@@ -275,6 +330,18 @@ export function createAuthOperationGuard(options: {
               throw error;
             }
             pending.httpStatus = response.status;
+            pending.sentAt = Date.now();
+            emitSafe(events, {
+              kind: 'dispatch',
+              at: Date.now(),
+              pluginId: operation.fence.namespace.pluginId,
+              sessionId: operation.fence.namespace.sessionId,
+              provider: operation.provider,
+              operation: operation.operation,
+              outcome: 'sent',
+              httpStatus: response.status,
+              durationMs: Date.now() - pending.startedAt,
+            });
             if (response.status >= 300 && response.status < 400) {
               block();
               await record(pending, {

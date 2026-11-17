@@ -17,6 +17,8 @@
 import type { Knex } from 'knex';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Fence } from '../contracts';
+import { emitSafe } from '../observability/types';
+import type { AiEventEmitter } from '../observability/types';
 import { bigintText, dbNow, fencedTransaction } from '../storage/dialect-kit';
 import { builtinProviderRegistry } from '../providers/builtins';
 import type { AiProviderRegistry } from '../providers/registry';
@@ -65,6 +67,8 @@ export interface AttemptJournalOptions {
   readonly authorizer: AuditReadAuthorizer;
   /** Best-effort write-through mirror to the Backstage auditor service. */
   readonly mirror?: JournalAuditorMirror;
+  /** Observability sink; no-op when absent. */
+  readonly events?: AiEventEmitter;
   /**
    * Integration-time override for session ownership lookup. When absent,
    * ownership is read from the journal's own stored session owners. A
@@ -126,6 +130,7 @@ class KnexAttemptJournal implements AttemptJournal {
   readonly #db: Knex;
   readonly #authorizer: AuditReadAuthorizer;
   readonly #mirror: JournalAuditorMirror | undefined;
+  readonly #events: AiEventEmitter | undefined;
   readonly #ownershipResolver:
     | AttemptJournalOptions['ownershipResolver']
     | undefined;
@@ -137,6 +142,7 @@ class KnexAttemptJournal implements AttemptJournal {
     this.#providers = options.providers ?? builtinProviderRegistry;
     this.#authorizer = options.authorizer;
     this.#mirror = options.mirror;
+    this.#events = options.events;
     this.#ownershipResolver = options.ownershipResolver;
     this.#sqlite = options.db.client.config.client === 'better-sqlite3';
   }
@@ -145,6 +151,7 @@ class KnexAttemptJournal implements AttemptJournal {
     fence: Fence,
     event: unknown,
   ): Promise<AttemptId> {
+    const started = Date.now();
     const parsed = parseDecision(event, this.#providers);
     const lease = parseFence(fence);
     const id = await this.#append(lease, async trx => {
@@ -163,6 +170,13 @@ class KnexAttemptJournal implements AttemptJournal {
       return this.#insertEvent(trx, decisionColumns(lease, parsed));
     });
     await this.#mirrorEvent(id);
+    emitSafe(this.#events, {
+      kind: 'journal',
+      action: 'decision',
+      at: Date.now(),
+      decision: parsed.decision,
+      durationMs: Date.now() - started,
+    });
     return id;
   }
 
@@ -171,6 +185,7 @@ class KnexAttemptJournal implements AttemptJournal {
     attempt: AttemptId,
     outcome: unknown,
   ): Promise<void> {
+    const started = Date.now();
     const parsed = parseOutcome(outcome);
     const attemptId = parseAttemptId(attempt);
     const lease = parseFence(fence);
@@ -200,15 +215,28 @@ class KnexAttemptJournal implements AttemptJournal {
       return this.#insertEvent(trx, outcomeColumns(lease, attemptId, parsed));
     });
     await this.#mirrorEvent(id);
+    emitSafe(this.#events, {
+      kind: 'journal',
+      action: 'outcome',
+      at: Date.now(),
+      durationMs: Date.now() - started,
+    });
   }
 
   async recordRecovery(fence: Fence, event: unknown): Promise<void> {
+    const started = Date.now();
     const parsed = parseRecovery(event);
     const lease = parseFence(fence);
     const id = await this.#append(lease, async trx => {
       return this.#insertEvent(trx, recoveryColumns(lease, parsed));
     });
     await this.#mirrorEvent(id);
+    emitSafe(this.#events, {
+      kind: 'journal',
+      action: 'recovery',
+      at: Date.now(),
+      durationMs: Date.now() - started,
+    });
   }
 
   async read(

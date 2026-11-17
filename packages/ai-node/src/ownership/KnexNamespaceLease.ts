@@ -16,6 +16,9 @@
 
 import type { Knex } from 'knex';
 import type { Fence, Namespace } from '../contracts';
+import { bigintText } from '../storage/dialect-kit';
+import { emitSafe } from '../observability/types';
+import type { AiEventEmitter } from '../observability/types';
 import {
   assertToken,
   dialectOf,
@@ -38,6 +41,8 @@ export interface KnexNamespaceLeaseOptions {
   readonly ttlMs?: number;
   /** Enumeration page size. Default 100. */
   readonly pageSize?: number;
+  /** Observability sink; no-op when absent. */
+  readonly events?: AiEventEmitter;
 }
 
 type LeaseKey = Readonly<{ plugin_id: string; session_id: string }>;
@@ -79,17 +84,28 @@ const DEFAULT_PAGE_SIZE = 100;
  * owner and token and never deletes it, so a stale release cannot affect a
  * successor's lease and the token counter cannot restart.
  */
+/** The action an acquire attempt actually performed. */
+function acquireAction(
+  fence: Fence | undefined,
+  renewal: boolean,
+): 'contention' | 'renew' | 'acquire' {
+  if (fence === undefined) return 'contention';
+  return renewal ? 'renew' : 'acquire';
+}
+
 export class KnexNamespaceLease implements NamespaceLease {
   readonly #db: Knex;
   readonly #dialect: Dialect;
   readonly #ttlMs: number;
   readonly #pageSize: number;
+  readonly #events: AiEventEmitter | undefined;
 
   constructor(options: KnexNamespaceLeaseOptions, dialect: Dialect) {
     this.#db = options.db;
     this.#dialect = dialect;
     this.#ttlMs = options.ttlMs ?? DEFAULT_TTL_MS;
     this.#pageSize = options.pageSize ?? DEFAULT_PAGE_SIZE;
+    this.#events = options.events;
   }
 
   #expiry(): Knex.Raw {
@@ -131,8 +147,13 @@ export class KnexNamespaceLease implements NamespaceLease {
       throw new TypeError('Invalid lease owner');
     }
     const key = keyOf(namespace);
-
-    return inTransaction(this.#db, async trx => {
+    const started = Date.now();
+    // Re-acquiring a live lease with the same owner is idempotent: it returns
+    // the same generation and extends it, so it is a renewal, not a second
+    // hold. The emitted action says which, because the health gauge derives
+    // the number of live holds from acquire/release events.
+    let renewal = false;
+    const fence = await inTransaction(this.#db, async trx => {
       // Lock first, then observe the row and its liveness in a fresh
       // statement, so a lock wait cannot carry a stale database clock.
       await this.#lockRow(trx, key);
@@ -166,6 +187,7 @@ export class KnexNamespaceLease implements NamespaceLease {
 
       if (row.live) {
         if (row.owner_id !== owner) return undefined;
+        renewal = true;
         const updated = await trx(TABLE)
           .where({ ...key, owner_id: owner, token })
           .whereRaw(liveCondition(this.#dialect))
@@ -187,6 +209,16 @@ export class KnexNamespaceLease implements NamespaceLease {
 
       return { namespace, owner, token: successor };
     });
+    emitSafe(this.#events, {
+      kind: 'lease',
+      at: Date.now(),
+      pluginId: namespace.pluginId,
+      sessionId: namespace.sessionId,
+      action: acquireAction(fence, renewal),
+      ...(fence === undefined ? {} : { generation: fence.token }),
+      durationMs: Date.now() - started,
+    });
+    return fence;
   }
 
   async renew(fence: Fence): Promise<boolean> {
@@ -206,19 +238,42 @@ export class KnexNamespaceLease implements NamespaceLease {
         })
         .whereRaw(liveCondition(this.#dialect))
         .update({ expires_at: this.#expiry() });
+      if (updated !== 1) {
+        emitSafe(this.#events, {
+          kind: 'lease',
+          at: Date.now(),
+          pluginId: fence.namespace.pluginId,
+          sessionId: fence.namespace.sessionId,
+          action: 'lost',
+          generation: fence.token,
+        });
+      }
       return updated === 1;
     });
   }
 
   async release(fence: Fence): Promise<void> {
     assertFence(fence);
-    await this.#db(TABLE)
+    const started = Date.now();
+    const updated = await this.#db(TABLE)
       .where({
         ...keyOf(fence.namespace),
         owner_id: fence.owner,
         token: fence.token,
       })
       .update({ expires_at: expiredNow(this.#db, this.#dialect) });
+    // Only a release that actually ended this generation is an event: a
+    // no-op release must not move the health gauge.
+    if (updated !== 1) return;
+    emitSafe(this.#events, {
+      kind: 'lease',
+      at: Date.now(),
+      pluginId: fence.namespace.pluginId,
+      sessionId: fence.namespace.sessionId,
+      action: 'release',
+      generation: fence.token,
+      durationMs: Date.now() - started,
+    });
   }
 
   async enumerate(
@@ -267,7 +322,7 @@ export class KnexNamespaceLease implements NamespaceLease {
  * seam promises; PostgreSQL's `int8` is cast the same way for symmetry.
  */
 function tokenColumn(executor: Knex | Knex.Transaction): Knex.Raw {
-  return executor.raw('CAST(token AS TEXT) as token');
+  return bigintText(executor, 'token');
 }
 
 function isUnique(error: unknown): boolean {

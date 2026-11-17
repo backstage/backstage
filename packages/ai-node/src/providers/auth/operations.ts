@@ -21,6 +21,7 @@ import type {
   CredentialScope,
 } from '../../credentials/types';
 import type { AttemptJournal } from '../../journal/types';
+import type { AiEventEmitter } from '../../observability/types';
 import { AuthTokenRejection, recordAuthDenial } from './guard';
 import type { AuthModuleLookup } from './guard';
 import type { AuthOperationGuard } from './types';
@@ -161,6 +162,8 @@ export interface AuthOperationsOptions {
   clientIds: Readonly<Record<string, string>>;
   /** Refresh credentials expiring within this window. Default one minute. */
   refreshWindowMs?: number;
+  /** Observability sink for local denials; no-op when absent. */
+  events?: AiEventEmitter;
   now?(): number;
 }
 
@@ -385,6 +388,8 @@ export function createAuthOperations(
                 options.journal,
                 operation,
                 're-authentication required: no stored credential',
+                1,
+                options.events,
               );
               throw new AuthOperationError(
                 'missing-credential',
@@ -396,6 +401,8 @@ export function createAuthOperations(
                 options.journal,
                 operation,
                 're-authentication required: stored credential is not an OAuth credential',
+                1,
+                options.events,
               );
               throw new AuthOperationError(
                 'not-oauth',
