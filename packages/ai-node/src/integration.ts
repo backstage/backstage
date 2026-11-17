@@ -28,6 +28,7 @@ import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { JsonObject } from '@backstage/types';
 import type { AiCredentialStores, CredentialScope } from './credentials/types';
 import type { AiCredentialsPrecedence } from './config-extension/types';
+import type { AiEventEmitter } from './observability/types';
 import { DEFAULT_REFRESH_WINDOW_MS } from './providers/auth/operations';
 import { type AttemptJournal, type AuditEventView } from './journal/index';
 import { createWiredAttemptJournal } from './journal/wired';
@@ -166,6 +167,11 @@ export interface AiServiceIntegrationOptions {
    * Absent means no automatic refresh: an expired credential denies.
    */
   readonly refreshExpiredCredential?: CredentialRefreshHook;
+  /**
+   * Observability sink for denials, dispatch outcomes, lease actions and
+   * journal appends. Absent means no subscriber; behavior is unchanged.
+   */
+  readonly events?: AiEventEmitter;
 }
 
 /**
@@ -345,11 +351,15 @@ export async function createAiServiceIntegration(
   const credentialStores = options.credentialStores;
   const credentialPrecedence = options.credentialPrecedence ?? 'user-first';
   const refreshExpiredCredential = options.refreshExpiredCredential;
+  const events = options.events;
   const catalog = (options.models ?? []).map(deepFreeze);
   const db: Knex = await deps.database.getClient();
   const pluginId = deps.pluginMetadata.getId();
 
-  const lease = await createKnexNamespaceLease({ db });
+  const lease = await createKnexNamespaceLease({
+    db,
+    ...(events ? { events } : {}),
+  });
   const recovery = await createAiRecovery({
     db,
     pluginId,

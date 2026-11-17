@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { emitSafe } from '../../observability/types';
+import type { AiEventEmitter } from '../../observability/types';
 import type {
   AttemptDecision,
   AttemptId,
@@ -131,8 +133,10 @@ export function createAuthOperationGuard(options: {
   recheck(operation: TrustedAuthOperation): Promise<boolean>;
   journal: AttemptJournal;
   modules: AuthModuleLookup;
+  /** Observability sink; no-op when absent. */
+  events?: AiEventEmitter;
 }): AuthOperationGuard {
-  const { transport, journal, modules } = options;
+  const { transport, journal, modules, events } = options;
   return {
     bind(operation): GuardedAuthOperation {
       let ordinal = 0;
@@ -275,6 +279,17 @@ export function createAuthOperationGuard(options: {
               throw error;
             }
             pending.httpStatus = response.status;
+            emitSafe(events, {
+              kind: 'dispatch',
+              at: Date.now(),
+              pluginId: operation.fence.namespace.pluginId,
+              sessionId: operation.fence.namespace.sessionId,
+              provider: operation.provider,
+              operation: operation.operation,
+              outcome: 'sent',
+              httpStatus: response.status,
+              durationMs: 0,
+            });
             if (response.status >= 300 && response.status < 400) {
               block();
               await record(pending, {

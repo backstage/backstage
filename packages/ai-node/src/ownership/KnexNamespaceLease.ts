@@ -16,6 +16,8 @@
 
 import type { Knex } from 'knex';
 import type { Fence, Namespace } from '../contracts';
+import { emitSafe } from '../observability/types';
+import type { AiEventEmitter } from '../observability/types';
 import {
   assertToken,
   dialectOf,
@@ -38,6 +40,8 @@ export interface KnexNamespaceLeaseOptions {
   readonly ttlMs?: number;
   /** Enumeration page size. Default 100. */
   readonly pageSize?: number;
+  /** Observability sink; no-op when absent. */
+  readonly events?: AiEventEmitter;
 }
 
 type LeaseKey = Readonly<{ plugin_id: string; session_id: string }>;
@@ -84,12 +88,14 @@ export class KnexNamespaceLease implements NamespaceLease {
   readonly #dialect: Dialect;
   readonly #ttlMs: number;
   readonly #pageSize: number;
+  readonly #events: AiEventEmitter | undefined;
 
   constructor(options: KnexNamespaceLeaseOptions, dialect: Dialect) {
     this.#db = options.db;
     this.#dialect = dialect;
     this.#ttlMs = options.ttlMs ?? DEFAULT_TTL_MS;
     this.#pageSize = options.pageSize ?? DEFAULT_PAGE_SIZE;
+    this.#events = options.events;
   }
 
   #expiry(): Knex.Raw {
@@ -131,8 +137,8 @@ export class KnexNamespaceLease implements NamespaceLease {
       throw new TypeError('Invalid lease owner');
     }
     const key = keyOf(namespace);
-
-    return inTransaction(this.#db, async trx => {
+    const started = Date.now();
+    const fence = await inTransaction(this.#db, async trx => {
       // Lock first, then observe the row and its liveness in a fresh
       // statement, so a lock wait cannot carry a stale database clock.
       await this.#lockRow(trx, key);
@@ -187,6 +193,15 @@ export class KnexNamespaceLease implements NamespaceLease {
 
       return { namespace, owner, token: successor };
     });
+    emitSafe(this.#events, {
+      kind: 'lease',
+      at: Date.now(),
+      pluginId: namespace.pluginId,
+      sessionId: namespace.sessionId,
+      action: fence === undefined ? 'contention' : 'acquire',
+      durationMs: Date.now() - started,
+    });
+    return fence;
   }
 
   async renew(fence: Fence): Promise<boolean> {
@@ -206,12 +221,22 @@ export class KnexNamespaceLease implements NamespaceLease {
         })
         .whereRaw(liveCondition(this.#dialect))
         .update({ expires_at: this.#expiry() });
+      if (updated !== 1) {
+        emitSafe(this.#events, {
+          kind: 'lease',
+          at: Date.now(),
+          pluginId: fence.namespace.pluginId,
+          sessionId: fence.namespace.sessionId,
+          action: 'lost',
+        });
+      }
       return updated === 1;
     });
   }
 
   async release(fence: Fence): Promise<void> {
     assertFence(fence);
+    const started = Date.now();
     await this.#db(TABLE)
       .where({
         ...keyOf(fence.namespace),
@@ -219,6 +244,14 @@ export class KnexNamespaceLease implements NamespaceLease {
         token: fence.token,
       })
       .update({ expires_at: expiredNow(this.#db, this.#dialect) });
+    emitSafe(this.#events, {
+      kind: 'lease',
+      at: Date.now(),
+      pluginId: fence.namespace.pluginId,
+      sessionId: fence.namespace.sessionId,
+      action: 'release',
+      durationMs: Date.now() - started,
+    });
   }
 
   async enumerate(

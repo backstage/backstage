@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { emitSafe } from '../observability/types';
+import type { AiEventEmitter } from '../observability/types';
 import type {
   AttemptDecision,
   AttemptId,
@@ -86,10 +88,13 @@ export function createModelOperationGuard(options: {
   recheck(operation: TrustedOperation): Promise<boolean>;
   journal: AttemptJournal;
   providers?: AiProviderRegistry;
+  /** Observability sink; no-op when absent. */
+  events?: AiEventEmitter;
 }): ModelOperationGuard {
   const providers = options.providers ?? builtinProviderRegistry;
   const transport = options.transport;
   const journal = options.journal;
+  const events = options.events;
   return {
     bind(operation): GuardedOperation {
       let ordinal = 0;
@@ -308,6 +313,21 @@ export function createModelOperationGuard(options: {
                     cause: journalError,
                   });
                 }
+                emitSafe(events, {
+                  kind: 'denial',
+                  at: Date.now(),
+                  pluginId: operation.fence.namespace.pluginId,
+                  sessionId: operation.fence.namespace.sessionId,
+                  provider: operation.provider,
+                  modelId: operation.modelId,
+                  operation:
+                    kind === 'model' ? `models.${operation.operation}` : kind,
+                  reason:
+                    kind === 'auth.token' && expired()
+                      ? 'credential expired; re-authentication required'
+                      : 'model operation denied',
+                  attempt: n,
+                });
               }
               throw error;
             }
@@ -349,6 +369,18 @@ export function createModelOperationGuard(options: {
               throw error;
             }
             attempt.httpStatus = response.status;
+            emitSafe(events, {
+              kind: 'dispatch',
+              at: Date.now(),
+              pluginId: operation.fence.namespace.pluginId,
+              sessionId: operation.fence.namespace.sessionId,
+              provider: operation.provider,
+              modelId: operation.modelId,
+              operation: `models.${operation.operation}`,
+              outcome: 'sent',
+              httpStatus: response.status,
+              durationMs: 0,
+            });
             if (response.status >= 300 && response.status < 400) {
               block();
               await record(attempt, {

@@ -15,6 +15,8 @@
  */
 
 import type { Knex } from 'knex';
+import { emitSafe } from '../observability/types';
+import type { AiEventEmitter } from '../observability/types';
 import { JOURNAL_EVENTS_TABLE } from './knex';
 
 /** Table holding durable uncertainty records for unresolved intents. */
@@ -30,6 +32,8 @@ export interface JournalRetentionOptions {
   readonly retentionMs: number;
   /** Wall clock used to compute the cutoff; defaults to `new Date()`. */
   readonly now?: Date;
+  /** Observability sink; no-op when absent. */
+  readonly events?: AiEventEmitter;
 }
 
 /**
@@ -64,6 +68,7 @@ export async function pruneAiJournal(
   db: Knex,
   options: JournalRetentionOptions,
 ): Promise<JournalPruneResult> {
+  const started = Date.now();
   const now = options.now ?? new Date();
   if (!Number.isSafeInteger(options.retentionMs) || options.retentionMs <= 0) {
     throw new Error('Invalid retentionMs: expected a positive integer');
@@ -71,7 +76,7 @@ export async function pruneAiJournal(
   const cutoff = new Date(now.getTime() - options.retentionMs);
   const sqlite = db.client.config.client === 'better-sqlite3';
 
-  return db.transaction(async trx => {
+  const result = await db.transaction(async trx => {
     // A settling outcome is one that establishes the remote result. An
     // explicitly recorded `unknown` outcome does not settle anything: it is
     // durable uncertainty, treated exactly like a missing outcome.
@@ -144,4 +149,12 @@ export async function pruneAiJournal(
 
     return { prunedEvents: pruned, uncertaintyRecords: uncertainty };
   });
+  emitSafe(options.events, {
+    kind: 'journal',
+    action: 'prune',
+    at: Date.now(),
+    durationMs: Date.now() - started,
+    pruned: result.prunedEvents,
+  });
+  return result;
 }
