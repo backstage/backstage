@@ -22,12 +22,12 @@
  * The entire surface of this package is coupled to the experimental
  * `@earendil-works/pi-durable` engine, so it is exposed as alpha from
  * `@backstage/ai-node/alpha` while the compatibility policy is not explicit.
- * The main entrypoint deliberately stays minimal: install the plugin-scoped
- * `aiServiceRef` and use the managed primitive through the alpha types.
+ * The main entrypoint deliberately exposes nothing: install the
+ * plugin-scoped `aiServiceRef` and use the managed primitive through the
+ * alpha entrypoint.
  *
  * @packageDocumentation
  * @alpha
  */
 
-export { aiServiceRef } from './service';
-export type { AiService } from './contracts';
+export {};
