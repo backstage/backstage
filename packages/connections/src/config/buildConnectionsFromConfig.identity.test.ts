@@ -30,6 +30,17 @@ jest.mock('../definitions/types', () => {
   >('../system/connectionBaseUrlSchema');
   return {
     connectionTypes: {
+      legacy: createConnectionType({
+        configSchema: z.object({
+          host: z.string(),
+          baseUrl: z.string().optional(),
+        }),
+        type: 'legacy',
+        title: 'Legacy',
+        authMethods: [
+          { method: 'none', title: 'None', configSchema: z.object({}) },
+        ],
+      }),
       instance: createConnectionType({
         ...withConnectionBaseUrl(
           z.object({
@@ -88,7 +99,6 @@ describe('URL-based connection identity', () => {
     for (const connection of connections) {
       expect(connection).not.toHaveProperty('host');
       expect(JSON.parse(JSON.stringify(connection))).not.toHaveProperty('host');
-      expect(connection).not.toHaveProperty('getLookupIdentity');
     }
   });
 
@@ -127,6 +137,49 @@ describe('URL-based connection identity', () => {
         }),
       }),
     ).toThrow('Unrecognized key: "host"');
+  });
+
+  it('keeps explicit host identity independent of base URL for existing types', () => {
+    const connections = [
+      {
+        type: 'legacy',
+        host: 'one.example.com',
+        baseUrl: 'https://shared.example.com/first',
+        auth,
+      },
+      {
+        type: 'legacy',
+        host: 'two.example.com',
+        baseUrl: 'https://shared.example.com/second',
+        auth,
+      },
+    ];
+    expect(
+      buildConnectionsFromConfig({
+        config: new ConfigReader({ connections }),
+      }),
+    ).toEqual([
+      expect.objectContaining({
+        host: 'one.example.com',
+        title: 'Legacy (one.example.com)',
+      }),
+      expect.objectContaining({
+        host: 'two.example.com',
+        title: 'Legacy (two.example.com)',
+      }),
+    ]);
+    expect(() =>
+      buildConnectionsFromConfig({
+        config: new ConfigReader({
+          connections: [
+            connections[0],
+            { ...connections[1], host: 'one.example.com' },
+          ],
+        }),
+      }),
+    ).toThrow(
+      'Duplicate connection of type "legacy" for host "one.example.com"',
+    );
   });
 
   it('deduplicates converted legacy entries by instance host and keeps the first', () => {

@@ -42,15 +42,21 @@ function describeError(error: unknown): string {
 function connectionIdentityOf(
   identityField: string | undefined,
   connection: object,
-  getLookupIdentity?: (config: unknown) => string,
 ): string | undefined {
-  if (getLookupIdentity) {
-    return getLookupIdentity(connection);
-  }
   if (!identityField) {
     return undefined;
   }
-  const value = (connection as Record<string, unknown>)[identityField];
+  const data = connection as Record<string, unknown>;
+  const value = data[identityField];
+  // Existing types configure host directly. URL-based types keep it out of
+  // returned data and use the instance URL, independently of API overrides.
+  if (
+    identityField === 'host' &&
+    value === undefined &&
+    typeof data.baseUrl === 'string'
+  ) {
+    return new URL(data.baseUrl).host;
+  }
   return typeof value === 'string' ? value : undefined;
 }
 
@@ -165,7 +171,6 @@ function dedupeLegacy(
       const identity = connectionIdentityOf(
         identityFields[connectionType.lookupStrategy],
         connection,
-        connectionType.getLookupIdentity,
       );
       if (identity === undefined) {
         result.push(connection);
@@ -201,7 +206,6 @@ function assignDefaultTitles(connections: ConfiguredConnection[]): void {
       const identity = connectionIdentityOf(
         identityFields[connectionType.lookupStrategy],
         c,
-        connectionType.getLookupIdentity,
       );
       (c as { title?: string }).title =
         typeCounts.get(type)! > 1 && identity
@@ -317,11 +321,7 @@ export function buildConnectionsFromConfig(options: {
       singletonsSeen.add(c.type);
     } else {
       const identityField = identityFields[connectionType.lookupStrategy];
-      const identity = connectionIdentityOf(
-        identityField,
-        c,
-        connectionType.getLookupIdentity,
-      );
+      const identity = connectionIdentityOf(identityField, c);
       if (identity !== undefined) {
         const key = `${c.type} ${identity}`;
         if (identitiesSeen.has(key)) {

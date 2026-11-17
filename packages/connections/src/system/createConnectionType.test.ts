@@ -108,13 +108,6 @@ describe('createConnectionType', () => {
       type: 'transformed',
       title: 'Transformed',
       configSchema: schema,
-      getLookupIdentity: config => {
-        const apiBaseUrl: string = config.apiBaseUrl;
-        expect(apiBaseUrl).toBe(config.baseUrl);
-        // @ts-expect-error - callback receives public parsed data, not a host field
-        expect(config.host).toBeUndefined();
-        return new URL(config.baseUrl).host;
-      },
       authMethods: [
         { method: 'none', title: 'None', configSchema: z.object({}) },
       ],
@@ -123,7 +116,6 @@ describe('createConnectionType', () => {
       baseUrl: 'https://example.com/context/',
     });
     expect(parsed.apiBaseUrl).toBe('https://example.com/context/');
-    expect(connectionType.getLookupIdentity?.(parsed)).toBe('example.com');
     expect(connectionType.configSchema.schema().schema).toMatchObject({
       properties: { baseUrl: { type: 'string' } },
       required: ['baseUrl'],

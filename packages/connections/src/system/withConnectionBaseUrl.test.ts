@@ -30,14 +30,14 @@ const options = withConnectionBaseUrl(
 const schema = options.configSchema;
 
 describe('withConnectionBaseUrl', () => {
-  it('defaults the API root to the instance URL and calculates host identity separately', () => {
-    for (const [baseUrl, host] of [
-      ['https://example.com', 'example.com'],
-      ['HTTPS://EXAMPLE.COM:443/context', 'example.com'],
-      ['http://example.com:80/context', 'example.com'],
-      ['http://example.com:443/context', 'example.com:443'],
-      ['https://example.com:80/context', 'example.com:80'],
-      ['https://[0:0:0:0:0:0:0:1]:08443/a%2Fb/%00%1F', '[::1]:8443'],
+  it('defaults the API root to the instance URL without adding a host field', () => {
+    for (const baseUrl of [
+      'https://example.com',
+      'HTTPS://EXAMPLE.COM:443/context',
+      'http://example.com:80/context',
+      'http://example.com:443/context',
+      'https://example.com:80/context',
+      'https://[0:0:0:0:0:0:0:1]:08443/a%2Fb/%00%1F',
     ]) {
       const parsed = schema.parse({ baseUrl, project: 'test' });
       expect(parsed).toEqual({
@@ -45,8 +45,6 @@ describe('withConnectionBaseUrl', () => {
         apiBaseUrl: `${baseUrl}/`,
         project: 'test',
       });
-      expect(options.getLookupIdentity(parsed)).toBe(host);
-      expect(options.getLookupIdentity(parsed)).toBe(new URL(baseUrl).host);
       expect(new URL('items', parsed.apiBaseUrl).href).toBe(
         new URL(`${baseUrl}/items`).href,
       );
@@ -68,7 +66,6 @@ describe('withConnectionBaseUrl', () => {
       baseUrl: 'https://jira.example.com/site/',
       apiBaseUrl: 'https://api.atlassian.com/ex/jira/cloud%2Fid/',
     });
-    expect(options.getLookupIdentity(parsed)).toBe('jira.example.com');
     expect(new URL('rest/api/3/issues', parsed.apiBaseUrl).href).toBe(
       'https://api.atlassian.com/ex/jira/cloud%2Fid/rest/api/3/issues',
     );
@@ -357,7 +354,6 @@ describe('withConnectionBaseUrl', () => {
       baseUrl: 'https://example.com/context/',
       apiBaseUrl: 'https://example.com/context/',
     });
-    expect(definition.getLookupIdentity?.(parsed)).toBe('example.com');
     const connection: Connection<typeof definition, 'token'> = {
       ...parsed,
       type: 'instance-test',

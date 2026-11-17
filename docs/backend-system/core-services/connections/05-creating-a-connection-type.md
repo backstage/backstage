@@ -106,9 +106,9 @@ export const AcmeConnectionType = createConnectionType({
 ```
 
 `cardinality` defaults to `multiton`, and `lookupStrategy` defaults to `host`.
-The helper calculates host identity from `baseUrl` for lookup and duplicate
-validation, without adding `host` to the returned connection. Existing types
-that configure a `host` field keep their current behavior.
+Host lookup and duplicate validation use a configured `host` when present,
+otherwise the host from `baseUrl`. The helper does not add `host` to returned
+connection data. Existing types keep their current behavior.
 
 Each type must declare at least one authentication method. Add `none` only
 when consumers can use the system without authentication. An empty method

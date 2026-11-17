@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { mockServices } from '@backstage/backend-test-utils';
-import { connectionTypes } from '@backstage/connections';
 import { buildConnectionsFromConfig } from '@backstage/connections/config';
 import { DefaultConnectionsService } from './DefaultConnectionsService';
 
@@ -24,8 +23,7 @@ jest.mock('@backstage/connections/config', () => ({
 }));
 
 // Configuration parsing is covered in connections. This service fixture models
-// an opted-in descriptor without changing the registered GitHub schema.
-const originalIdentity = connectionTypes.github.getLookupIdentity;
+// URL-based data without changing the registered GitHub schema.
 const query = { url: 'https://PUBLIC.EXAMPLE.COM:443/other-path/items' };
 const fixture = {
   type: 'github' as const,
@@ -52,21 +50,7 @@ function service() {
 
 describe('URL identity service lookup', () => {
   beforeEach(() => {
-    connectionTypes.github.getLookupIdentity = config => {
-      if (
-        !config ||
-        typeof config !== 'object' ||
-        !('baseUrl' in config) ||
-        typeof config.baseUrl !== 'string'
-      ) {
-        throw new Error('Expected parsed instance configuration');
-      }
-      return new URL(config.baseUrl).host;
-    };
     jest.mocked(buildConnectionsFromConfig).mockReturnValue([fixture]);
-  });
-  afterEach(() => {
-    connectionTypes.github.getLookupIdentity = originalIdentity;
   });
 
   it('finds the instance by host and returns no identity metadata with or without credentials', async () => {
@@ -91,9 +75,6 @@ describe('URL identity service lookup', () => {
     expect(info).not.toHaveProperty('host');
     expect(info).not.toHaveProperty('auth');
     expect(JSON.stringify(info)).not.toContain('secret');
-    expect(JSON.parse(JSON.stringify(info))).not.toHaveProperty(
-      'getLookupIdentity',
-    );
     await expect(
       catalog.find({
         type: 'github',
@@ -101,6 +82,40 @@ describe('URL identity service lookup', () => {
         authMethods: ['token'],
       }),
     ).rejects.toThrow('Connection not found');
+  });
+
+  it('preserves an existing explicit host even when the base URL differs', async () => {
+    const existing = { ...fixture, host: 'existing.example.com' };
+    jest.mocked(buildConnectionsFromConfig).mockReturnValue([existing]);
+    const catalog = service().forPlugin('catalog');
+    expect(
+      await catalog.find({
+        type: 'github',
+        query: { url: 'https://existing.example.com/items' },
+      }),
+    ).toMatchObject({ host: 'existing.example.com', baseUrl: fixture.baseUrl });
+    await expect(catalog.find({ type: 'github', query })).rejects.toThrow(
+      'Connection not found',
+    );
+  });
+
+  it('uses parsed instance host canonicalisation and scheme-sensitive ports', async () => {
+    for (const [baseUrl, queryUrl] of [
+      ['https://[0:0:0:0:0:0:0:1]:08443/site/', 'https://[::1]:8443/items'],
+      ['http://EXAMPLE.COM:80/site/', 'http://example.com/items'],
+      ['http://EXAMPLE.COM:443/site/', 'http://example.com:443/items'],
+      ['https://EXAMPLE.COM:80/site/', 'https://example.com:80/items'],
+    ]) {
+      const instance = { ...fixture, baseUrl };
+      jest.mocked(buildConnectionsFromConfig).mockReturnValue([instance]);
+      const catalog = service().forPlugin('catalog');
+      expect(
+        await catalog.find({ type: 'github', query: { url: queryUrl } }),
+      ).toMatchObject({ baseUrl });
+      await expect(
+        catalog.find({ type: 'github', query: { url: fixture.apiBaseUrl } }),
+      ).rejects.toThrow('Connection not found');
+    }
   });
 
   it('preserves plugin-scoped auth ordering and connection visibility', async () => {

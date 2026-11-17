@@ -49,15 +49,21 @@ function getLookupStrategy<K extends ConnectionLookupStrategy>(
 function connectionIdentityOf(
   strategy: { identityField?: string },
   connection: object,
-  getLookupIdentity?: (config: unknown) => string,
 ): string | undefined {
-  if (getLookupIdentity) {
-    return getLookupIdentity(connection);
-  }
   if (!strategy.identityField) {
     return undefined;
   }
-  const value = (connection as Record<string, unknown>)[strategy.identityField];
+  const data = connection as Record<string, unknown>;
+  const value = data[strategy.identityField];
+  // Keep this identity rule aligned with the connections config pipeline:
+  // explicit host takes precedence; otherwise derive it from the instance URL.
+  if (
+    strategy.identityField === 'host' &&
+    value === undefined &&
+    typeof data.baseUrl === 'string'
+  ) {
+    return new URL(data.baseUrl).host;
+  }
   return typeof value === 'string' ? value : undefined;
 }
 
@@ -116,13 +122,7 @@ class PluginConnectionsService implements ConnectionsService {
     let connection: ConfiguredConnection | undefined;
     if (identity !== undefined) {
       connection = this.connections.find(
-        c =>
-          c.type === type &&
-          connectionIdentityOf(
-            strategy,
-            c,
-            connectionType.getLookupIdentity,
-          ) === identity,
+        c => c.type === type && connectionIdentityOf(strategy, c) === identity,
       );
     } else {
       connection = this.connections.find(c => c.type === type);

@@ -17,7 +17,7 @@ import { z } from 'zod/v4';
 import { connectionBaseUrlSchema } from './connectionBaseUrlSchema';
 
 /**
- * Defines URL-based connection data and calculates its lookup host separately.
+ * Defines URL-based connection data for the existing host lookup strategy.
  * Spread the result into createConnectionType. The API root defaults to the
  * instance root; explicit API overrides may use an internal endpoint.
  */
@@ -91,9 +91,5 @@ export function withConnectionBaseUrl<
   return {
     configSchema,
     lookupStrategy: 'host' as const,
-    // Identity is never added to parsed/public data, so it cannot leak through
-    // credentials, credential-free responses or JSON serialization.
-    getLookupIdentity: (config: { baseUrl: string }) =>
-      new URL(config.baseUrl).host,
   };
 }
