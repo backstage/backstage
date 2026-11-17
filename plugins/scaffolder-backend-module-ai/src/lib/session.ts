@@ -21,6 +21,7 @@ import type {
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 import type { AiService, ManagedHarness } from '@backstage/ai-node/alpha';
+import { modelPermissionName } from '@backstage/ai-node/alpha';
 import { createRegistry } from '@earendil-works/pi-durable';
 import type { Message } from '@earendil-works/pi-ai';
 
@@ -94,28 +95,79 @@ async function latestAssistantText(
   return undefined;
 }
 
-/** Renders the settlement of a request that did not complete. */
-function settlementError(
-  sessionId: string,
-  settled: { reason: string; detail?: unknown },
-  model: ConfiguredModel | undefined,
-): Error {
-  const detail =
-    settled.detail === undefined
-      ? ''
-      : `: ${
-          typeof settled.detail === 'string'
-            ? settled.detail
-            : JSON.stringify(settled.detail)
-        }`;
-  // The engine's no-model settlement carries no detail of its own; the
-  // configured model is the actionable fact the caller needs.
-  const noModel =
-    settled.reason === 'no_model' && model !== undefined
-      ? `: the configured model '${model.provider}/${model.modelId}' is not available; it is not in this installation's 'ai.models' catalog. Ask an administrator to list it`
-      : '';
+/** Renders a settlement detail as displayable text. */
+function renderDetail(detail: unknown): string {
+  if (detail === undefined) {
+    return '';
+  }
+  return `: ${typeof detail === 'string' ? detail : JSON.stringify(detail)}`;
+}
+
+/**
+ * Renders the failure of a request that did not complete, mapped to its
+ * settlement reason: cancelled runs say so, an unlisted model names the
+ * catalog, missing credentials name the provider configuration, and a
+ * permission denied during the run names the model permission. The generic
+ * fallback never advises about models or credentials the reason does not
+ * support.
+ */
+async function settlementFailure(options: {
+  sessionId: string;
+  permissions: PermissionsService;
+  credentials: BackstageCredentials;
+  settled: { reason: string; detail?: unknown };
+  model: ConfiguredModel | undefined;
+}): Promise<Error> {
+  const { sessionId, settled, model } = options;
+  const detail = renderDetail(settled.detail);
+  const prefix = `The AI request of scaffolder task session '${sessionId}'`;
+  if (settled.reason === 'aborted') {
+    return new Error(
+      `${prefix} was cancelled before it completed. The attempt was recorded in the installation's AI audit journal`,
+    );
+  }
+  if (settled.reason === 'no_model' && model !== undefined) {
+    return new Error(
+      `${prefix} did not complete (reason: 'no_model'): the configured model '${model.provider}/${model.modelId}' is not available; it is not in this installation's 'ai.models' catalog. Ask an administrator to list it`,
+    );
+  }
+  if (
+    settled.reason === 'model_error' &&
+    typeof settled.detail === 'string' &&
+    settled.detail.includes('credentials are not configured')
+  ) {
+    return new Error(
+      `${prefix} did not complete (reason: 'model_error'${detail}). Ask an administrator to configure credentials for the configured model's provider`,
+    );
+  }
+  if (settled.reason === 'model_error' && model !== undefined) {
+    // A dispatch denied mid-run settles as a model error whose provider
+    // detail does not carry the denial reason, so re-check the model
+    // permission now: a denial that appeared during the run is named.
+    const decisions = await options.permissions.authorize(
+      [
+        {
+          permission: {
+            type: 'basic',
+            name: modelPermissionName(model),
+            attributes: {},
+          },
+        },
+      ],
+      { credentials: options.credentials },
+    );
+    if (decisions[0]?.result !== 'ALLOW') {
+      return new Error(
+        `${prefix} did not complete (reason: 'model_error'${detail}). The submitting user is no longer allowed to use the model '${
+          model.provider
+        }/${model.modelId}': the '${modelPermissionName(
+          model,
+        )}' permission was denied during the run; ask an administrator for access`,
+      );
+    }
+  }
   return new Error(
-    `The AI request of scaffolder task session '${sessionId}' did not complete (reason: '${settled.reason}'${detail}${noModel}). The decision was recorded in the installation's AI audit journal; configure a listed model and credentials, or ask an administrator to review the denial`,
+    `${prefix} did not complete (reason: '${settled.reason}'${detail}). The decision was recorded in the installation's AI audit journal; ask an administrator to review the denial`,
   );
 }
 
@@ -135,6 +187,7 @@ export async function runManagedCompletion(options: {
   ai: AiService;
   root: Config;
   credentials: BackstageCredentials;
+  permissions: PermissionsService;
   /** The scaffolder task's session identity, stable across task retries. */
   sessionId: string;
   instructions: string;
@@ -142,6 +195,12 @@ export async function runManagedCompletion(options: {
   logger: LoggerService;
   signal?: AbortSignal;
 }): Promise<string> {
+  // A task cancelled before the action started must not pay for a dispatch.
+  if (options.signal?.aborted) {
+    throw new Error(
+      `The AI request of scaffolder task session '${options.sessionId}' was cancelled before it started`,
+    );
+  }
   options.logger.info(`Opening the managed AI session '${options.sessionId}'`);
   const handle = await options.ai.openHarness({
     sessionId: options.sessionId,
@@ -159,6 +218,13 @@ export async function runManagedCompletion(options: {
     };
     options.signal?.addEventListener('abort', abort, { once: true });
     try {
+      // A task cancelled while the session opened must not pay for a
+      // dispatch either.
+      if (options.signal?.aborted) {
+        throw new Error(
+          `The AI request of scaffolder task session '${options.sessionId}' was cancelled before it started`,
+        );
+      }
       await conversation.configure(
         { instructions: options.instructions },
         handle.context,
@@ -170,11 +236,13 @@ export async function runManagedCompletion(options: {
       );
       const settled = await submission.wait(handle.context);
       if (settled.status !== 'done') {
-        throw settlementError(
-          options.sessionId,
+        throw await settlementFailure({
+          sessionId: options.sessionId,
+          permissions: options.permissions,
+          credentials: options.credentials,
           settled,
-          configuredModel(options.root),
-        );
+          model: configuredModel(options.root),
+        });
       }
       const reply = await latestAssistantText(conversation, handle.context);
       if (reply === undefined) {
@@ -198,11 +266,12 @@ export async function runManagedCompletion(options: {
  *
  * @remarks
  *
- * The permission name mirrors the managed AI service's model permission
- * model (`ai.model.<provider>.<modelId>.use`, each segment encoded with
- * `encodeURIComponent` and literal dots encoded as `%2E`); the managed
- * service re-checks it at admission and on every dispatch. When no model is
- * configured the check is skipped and dispatch defers to the service.
+ * Uses the managed AI service's own model permission naming
+ * (`ai.model.<provider>.<modelId>.use`); the managed service re-checks it at
+ * admission and on every dispatch. When no model is configured the check
+ * is skipped and dispatch defers to the service. The denial names both
+ * remedies without asserting which one applies: the user may lack the
+ * permission, or the model may not be listed in the installation catalog.
  */
 export async function authorizeConfiguredModel(options: {
   permissions: PermissionsService;
@@ -210,18 +279,14 @@ export async function authorizeConfiguredModel(options: {
   model: ConfiguredModel;
   actionId: string;
 }): Promise<void> {
-  const segment = (value: string) =>
-    encodeURIComponent(value).replace(/\./g, '%2E');
-  const name = `ai.model.${segment(options.model.provider)}.${segment(
-    options.model.modelId,
-  )}.use`;
+  const name = modelPermissionName(options.model);
   const decisions = await options.permissions.authorize(
     [{ permission: { type: 'basic', name, attributes: {} } }],
     { credentials: options.credentials },
   );
   if (decisions[0]?.result !== 'ALLOW') {
     throw new Error(
-      `Access denied: the submitting user is not allowed to use the model '${options.model.provider}/${options.model.modelId}' configured for the '${options.actionId}' action. The '${name}' permission was denied; ask an administrator for access, or configure a model the user may use`,
+      `Access denied: the submitting user is not allowed to use the model '${options.model.provider}/${options.model.modelId}' configured for the '${options.actionId}' action. The '${name}' permission was denied; ask an administrator to grant access, or configure a model that is listed in this installation's 'ai.models' catalog`,
     );
   }
 }

@@ -52,14 +52,22 @@ async function providerServer(replyText: string): Promise<{
   baseUrl: string;
   requests: ProbeRequest[];
   setReply(text: string): void;
+  /** When true, responses are held until released: requests stay pending. */
+  holdResponse: boolean;
+  releaseResponse(): void;
   close(): Promise<void>;
 }> {
   const requests: ProbeRequest[] = [];
   let reply = replyText;
+  let holdResponse = false;
+  let releaseResponse: () => void = () => {};
+  const responseGate = new Promise<void>(resolve => {
+    releaseResponse = resolve;
+  });
   const server: Server = createServer((req, res) => {
     const chunks: Buffer[] = [];
     req.on('data', (chunk: Buffer) => chunks.push(chunk));
-    req.on('end', () => {
+    req.on('end', async () => {
       requests.push({
         url: req.url,
         headers: { ...req.headers },
@@ -97,6 +105,9 @@ async function providerServer(replyText: string): Promise<{
           },
         },
       ];
+      if (holdResponse) {
+        await responseGate;
+      }
       res.writeHead(200, { 'content-type': 'text/event-stream' });
       for (const event of events) {
         res.write(`event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`);
@@ -113,6 +124,13 @@ async function providerServer(replyText: string): Promise<{
     setReply: text => {
       reply = text;
     },
+    get holdResponse() {
+      return holdResponse;
+    },
+    set holdResponse(value: boolean) {
+      holdResponse = value;
+    },
+    releaseResponse: () => releaseResponse(),
     close: async () => {
       server.closeAllConnections();
       server.close();
@@ -127,6 +145,8 @@ type Fixture = {
     credentials?: boolean;
     modelId?: string;
     denyModelFor?: (credentials: BackstageCredentials) => boolean;
+    /** Deny every model authorization from this 1-based call onward. */
+    denyFromCall?: number;
   }): Promise<{
     backend: TestBackend;
     action(id: string): TemplateAction<any>;
@@ -164,12 +184,16 @@ async function fixture(): Promise<Fixture> {
     async start(options) {
       const captured = new Map<string, TemplateAction<any>>();
       const denyModelFor = options.denyModelFor;
+      const denyFromCall = options.denyFromCall ?? Number.POSITIVE_INFINITY;
+      let authorizeCalls = 0;
       const permissions = mockServices.permissions.mock({
         authorize: async (queries, authOptions) =>
           queries.map(() => {
+            authorizeCalls += 1;
             const denied =
-              denyModelFor !== undefined &&
-              denyModelFor(authOptions.credentials as BackstageCredentials);
+              authorizeCalls >= denyFromCall ||
+              (denyModelFor !== undefined &&
+                denyModelFor(authOptions.credentials as BackstageCredentials));
             return {
               result: denied ? ('DENY' as const) : ('ALLOW' as const),
             };
@@ -274,6 +298,14 @@ function context(options: {
 
 const alice = () => mockCredentials.user('user:default/alice');
 const bob = () => mockCredentials.user('user:default/bob');
+
+async function waitFor(probe: () => Promise<boolean> | boolean) {
+  for (let i = 0; i < 600; i += 1) {
+    if (await probe()) return;
+    await new Promise(resolve => setTimeout(resolve, 10));
+  }
+  throw new Error('probe timeout');
+}
 
 describe('scaffolder AI actions', () => {
   it('registers the AI actions at the scaffolder extension point', async () => {
@@ -408,7 +440,7 @@ describe('scaffolder AI actions', () => {
         credentials: bob(),
       });
       await expect(action('ai:generate').handler(ctx)).rejects.toThrow(
-        `Access denied: the submitting user is not allowed to use the model 'openai/gpt-scaffolder' configured for the 'ai:generate' action. The '${MODEL_PERMISSION}' permission was denied`,
+        `Access denied: the submitting user is not allowed to use the model 'openai/gpt-scaffolder' configured for the 'ai:generate' action. The '${MODEL_PERMISSION}' permission was denied; ask an administrator to grant access, or configure a model that is listed in this installation's 'ai.models' catalog`,
       );
       // The denial happened before any dispatch: nothing reached the
       // provider and nothing was journaled as a send.
@@ -435,7 +467,7 @@ describe('scaffolder AI actions', () => {
         credentials: alice(),
       });
       await expect(action('ai:generate').handler(ctx)).rejects.toThrow(
-        /did not complete \(reason: 'no_model': the configured model 'openai\/not-in-the-catalog' is not available; it is not in this installation's 'ai\.models' catalog\. Ask an administrator to list it\)/,
+        /did not complete \(reason: 'no_model'\): the configured model 'openai\/not-in-the-catalog' is not available; it is not in this installation's 'ai\.models' catalog\. Ask an administrator to list it/,
       );
       expect(provider.requests).toHaveLength(0);
       await backend.stop();
@@ -499,6 +531,300 @@ describe('scaffolder AI actions', () => {
         /cannot be opened by 'user:user:default\/bob'/,
       );
       expect(provider.requests).toHaveLength(1);
+      await backend.stop();
+    } finally {
+      await provider.close();
+      await f.close();
+    }
+  }, 30000);
+
+  it('rejects outputPath that escapes the workspace', async () => {
+    const f = await fixture();
+    const provider = await providerServer('escaped content');
+    const workspaceRoot = await mkdtemp(join(tmpdir(), 't6-escape-'));
+    try {
+      const { backend, action } = await f.start({
+        providerUrl: provider.baseUrl,
+      });
+      const escaping = context({
+        actionId: 'ai:generate',
+        taskId: 'gen-escape',
+        input: { prompt: 'Write something', outputPath: '../../../escaped.md' },
+        credentials: alice(),
+        workspacePath: join(workspaceRoot, 'ws'),
+      });
+      await expect(action('ai:generate').handler(escaping)).rejects.toThrow(
+        "Invalid outputPath '../../../escaped.md' for the ai:generate action: '..' segments are not allowed; write only inside the task workspace",
+      );
+
+      const absolute = context({
+        actionId: 'ai:generate',
+        taskId: 'gen-escape',
+        input: {
+          prompt: 'Write something',
+          outputPath: join(workspaceRoot, 'absolute.md'),
+        },
+        credentials: alice(),
+        workspacePath: join(workspaceRoot, 'ws'),
+      });
+      await expect(action('ai:generate').handler(absolute)).rejects.toThrow(
+        'for the ai:generate action: it must be a relative path inside the task workspace',
+      );
+
+      // Model-controlled content never landed outside the workspace.
+      await waitFor(async () => provider.requests.length > 0);
+      expect(
+        await readFile(join(workspaceRoot, 'escaped.md'), 'utf8').catch(
+          () => undefined,
+        ),
+      ).toBeUndefined();
+      expect(
+        await readFile(join(workspaceRoot, 'absolute.md'), 'utf8').catch(
+          () => undefined,
+        ),
+      ).toBeUndefined();
+      await backend.stop();
+    } finally {
+      await provider.close();
+      await f.close();
+      await rm(workspaceRoot, { recursive: true, force: true });
+    }
+  }, 30000);
+
+  it('does not advise requesting access for a model that is not in the catalog', async () => {
+    const f = await fixture();
+    const provider = await providerServer('unused');
+    try {
+      const { backend, action } = await f.start({
+        providerUrl: provider.baseUrl,
+        modelId: 'not-in-the-catalog',
+        denyModelFor: () => true,
+      });
+      const ctx = context({
+        actionId: 'ai:generate',
+        taskId: 'gen-unlisted-denied',
+        input: { prompt: 'Write something' },
+        credentials: alice(),
+      });
+      // The denial names both remedies without asserting that access alone
+      // would fix an unlisted model.
+      await expect(action('ai:generate').handler(ctx)).rejects.toThrow(
+        new RegExp(
+          `The '${MODEL_PERMISSION.replace(
+            'gpt-scaffolder',
+            'not-in-the-catalog',
+          )}' permission was denied; ask an administrator to grant access, or configure a model that is listed in this installation's 'ai\\.models' catalog`,
+        ),
+      );
+      expect(provider.requests).toHaveLength(0);
+      await backend.stop();
+    } finally {
+      await provider.close();
+      await f.close();
+    }
+  }, 30000);
+
+  it('does not dispatch for a task cancelled before the action started', async () => {
+    const f = await fixture();
+    const provider = await providerServer('ran despite abort');
+    try {
+      const { backend, action } = await f.start({
+        providerUrl: provider.baseUrl,
+      });
+      const controller = new AbortController();
+      controller.abort();
+      const ctx = {
+        ...context({
+          actionId: 'ai:generate',
+          taskId: 'gen-pre-aborted',
+          input: { prompt: 'Write something' },
+          credentials: alice(),
+        }),
+        signal: controller.signal,
+      };
+      await expect(action('ai:generate').handler(ctx)).rejects.toThrow(
+        /was cancelled before it started/,
+      );
+      expect(provider.requests).toHaveLength(0);
+      await backend.stop();
+    } finally {
+      await provider.close();
+      await f.close();
+    }
+  }, 30000);
+
+  it('aborts an in-flight request on cancellation and recovers on retry', async () => {
+    const f = await fixture();
+    const provider = await providerServer('after cancel');
+    try {
+      const { backend, action } = await f.start({
+        providerUrl: provider.baseUrl,
+      });
+      provider.holdResponse = true;
+      const controller = new AbortController();
+      const ctx = {
+        ...context({
+          actionId: 'ai:generate',
+          taskId: 'gen-cancel',
+          input: { prompt: 'Write something' },
+          credentials: alice(),
+        }),
+        signal: controller.signal,
+      };
+      const pending = action('ai:generate').handler(ctx);
+      await waitFor(() => provider.requests.length > 0);
+      controller.abort();
+      await expect(pending).rejects.toThrow(
+        /was cancelled before it completed/,
+      );
+      provider.releaseResponse();
+
+      // The attempt was journaled as allowed and cancelled, with no
+      // uncertain outcome.
+      const events = await f
+        .db('ai_journal_events')
+        .where({ session_id: 'gen-cancel' });
+      expect(
+        events.some(row => row.kind === 'decision' && row.decision === 'allow'),
+      ).toBe(true);
+      expect(
+        events.some(
+          row => row.kind === 'outcome' && row.status === 'cancelled',
+        ),
+      ).toBe(true);
+      expect(await f.db('ai_journal_uncertainty').select()).toEqual([]);
+
+      // A subsequent clean run on the same task session works.
+      provider.holdResponse = false;
+      const retry = context({
+        actionId: 'ai:generate',
+        taskId: 'gen-cancel',
+        input: { prompt: 'Write something again' },
+        credentials: alice(),
+      });
+      await action('ai:generate').handler(retry);
+      expect(retry.output).toHaveBeenCalledWith('content', 'after cancel');
+      await backend.stop();
+    } finally {
+      provider.holdResponse = false;
+      provider.releaseResponse();
+      await provider.close();
+      await f.close();
+    }
+  }, 30000);
+
+  it('parses fenced JSON replies into values', async () => {
+    const f = await fixture();
+    const provider = await providerServer(
+      '```json\n{"serviceName": "fenced"}\n```',
+    );
+    try {
+      const { backend, action } = await f.start({
+        providerUrl: provider.baseUrl,
+      });
+      const ctx = context({
+        actionId: 'ai:transform',
+        taskId: 'transform-fenced',
+        input: {
+          prompt: 'Name the service',
+          schema: {
+            type: 'object',
+            properties: { serviceName: { type: 'string' } },
+          },
+        },
+        credentials: alice(),
+      });
+      await action('ai:transform').handler(ctx);
+      expect(ctx.output).toHaveBeenCalledWith('values', {
+        serviceName: 'fenced',
+      });
+      await backend.stop();
+    } finally {
+      await provider.close();
+      await f.close();
+    }
+  }, 30000);
+
+  it('surfaces an actionable error for non-JSON replies', async () => {
+    const f = await fixture();
+    const provider = await providerServer(
+      'I think the service should be called orders.',
+    );
+    try {
+      const { backend, action } = await f.start({
+        providerUrl: provider.baseUrl,
+      });
+      const ctx = context({
+        actionId: 'ai:transform',
+        taskId: 'transform-prose',
+        input: {
+          prompt: 'Name the service',
+          schema: {
+            type: 'object',
+            properties: { serviceName: { type: 'string' } },
+          },
+        },
+        credentials: alice(),
+      });
+      await expect(action('ai:transform').handler(ctx)).rejects.toThrow(
+        /not a JSON object for scaffolder task session 'transform-prose'\. Ask the model for a JSON object matching the schema, or adjust the schema; the reply started with: I think the service should be called orders\./,
+      );
+      await backend.stop();
+    } finally {
+      await provider.close();
+      await f.close();
+    }
+  }, 30000);
+
+  it('surfaces a permission revoked after the action check, at acquisition', async () => {
+    const f = await fixture();
+    const provider = await providerServer('unused');
+    try {
+      // The action's own check (first authorization call) allows; the
+      // service's acquisition check denies.
+      const { backend, action } = await f.start({
+        providerUrl: provider.baseUrl,
+        denyFromCall: 2,
+      });
+      const ctx = context({
+        actionId: 'ai:generate',
+        taskId: 'gen-revoked-acquisition',
+        input: { prompt: 'Write something' },
+        credentials: alice(),
+      });
+      await expect(action('ai:generate').handler(ctx)).rejects.toThrow(
+        /Access denied: the 'scaffolder' plugin's caller is not allowed to use the model 'openai\/gpt-scaffolder' configured at its AI configuration path/,
+      );
+      expect(provider.requests).toHaveLength(0);
+      await backend.stop();
+    } finally {
+      await provider.close();
+      await f.close();
+    }
+  }, 30000);
+
+  it('names the model permission when a dispatch is denied mid-run', async () => {
+    const f = await fixture();
+    const provider = await providerServer('unused');
+    try {
+      // The action check and the acquisition check allow; the guard's
+      // per-dispatch recheck denies.
+      const { backend, action } = await f.start({
+        providerUrl: provider.baseUrl,
+        denyFromCall: 3,
+      });
+      const ctx = context({
+        actionId: 'ai:generate',
+        taskId: 'gen-revoked-dispatch',
+        input: { prompt: 'Write something' },
+        credentials: alice(),
+      });
+      await expect(action('ai:generate').handler(ctx)).rejects.toThrow(
+        new RegExp(
+          `The submitting user is no longer allowed to use the model 'openai/gpt-scaffolder': the '${MODEL_PERMISSION}' permission was denied during the run; ask an administrator for access`,
+        ),
+      );
+      expect(provider.requests).toHaveLength(0);
       await backend.stop();
     } finally {
       await provider.close();

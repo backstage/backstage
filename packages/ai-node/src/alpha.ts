@@ -54,3 +54,5 @@ export type {
 } from './config-extension/index';
 
 export { aiServiceRef } from './service';
+export { modelPermissionName } from './permissions/modelPermissions';
+export type { ModelPair } from './permissions/modelPermissions';

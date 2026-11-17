@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { dirname, join } from 'node:path';
+import { dirname, isAbsolute } from 'node:path';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
 import type {
   BackstageCredentials,
@@ -68,6 +69,7 @@ async function complete(options: {
     ai: options.deps.ai,
     root: options.deps.config,
     credentials: options.credentials,
+    permissions: options.deps.permissions,
     sessionId: options.sessionId,
     instructions: options.instructions,
     prompt: options.prompt,
@@ -151,7 +153,26 @@ export function createAiGenerateAction(options: AiActionOptions) {
           : ctx.input.prompt,
       });
       if (ctx.input.outputPath) {
-        const target = join(ctx.workspacePath, ctx.input.outputPath);
+        // The model reply is untrusted content: its destination must stay
+        // inside the task's workspace. Absolute paths and `..` segments are
+        // rejected up front with an actionable error, and the safe resolver
+        // enforces the same guarantee the scaffolder's own file actions use.
+        if (isAbsolute(ctx.input.outputPath)) {
+          throw new Error(
+            `Invalid outputPath '${ctx.input.outputPath}' for the ai:generate action: it must be a relative path inside the task workspace`,
+          );
+        }
+        if (
+          ctx.input.outputPath.split(/[\\/]/).some(segment => segment === '..')
+        ) {
+          throw new Error(
+            `Invalid outputPath '${ctx.input.outputPath}' for the ai:generate action: '..' segments are not allowed; write only inside the task workspace`,
+          );
+        }
+        const target = resolveSafeChildPath(
+          ctx.workspacePath,
+          ctx.input.outputPath,
+        );
         ctx.logger.info(`Writing the generated content to ${target}`);
         await mkdir(dirname(target), { recursive: true });
         await writeFile(target, reply, 'utf8');
