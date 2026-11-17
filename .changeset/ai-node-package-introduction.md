@@ -1,0 +1,5 @@
+---
+'@backstage/ai-node': minor
+---
+
+Added a new `@backstage/ai-node` package with an alpha, plugin-scoped AI service that gives backend plugins a managed, low-level agent primitive: each plugin chooses its own configuration path in app-config, sessions are bound to their original owner, and callers acquire reference-counted handles whose release never cancels admitted work. Opening a harness currently fails closed in production until the storage, lease, and model-operation guard integration lands in a follow-up release. Plugins can persist agent sessions in their existing PostgreSQL or file-backed SQLite database and recover committed state after a backend restart, with fenced writes that prevent expired or superseded owners from changing a session. Organization- and service-scoped provider credentials can be supplied as read-only secrets from app-config, and users can store personal provider credentials encrypted in the Backstage database, with concurrent updates and OAuth refreshes serialized across replicas.
