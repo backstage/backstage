@@ -15,7 +15,7 @@
  */
 
 import { Select } from '@backstage/core-components';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import Box from '@material-ui/core/Box';
 import { useEffect, useMemo, useState } from 'react';
 import { EntityKindFilter } from '../../filters';
@@ -103,6 +103,7 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const alertApi = useApi(alertApiRef);
+  const analytics = useAnalytics();
 
   const { error, allKinds, selectedKind, setSelectedKind } =
     useEntityKindFilter({
@@ -133,7 +134,13 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
         label={t('entityKindPicker.title')}
         items={items}
         selected={selectedKind.toLowerCase()}
-        onChange={value => setSelectedKind(String(value))}
+        onChange={value => {
+          const kind = String(value);
+          setSelectedKind(kind);
+          analytics.captureEvent('filter', kind, {
+            attributes: { filter: 'kind' },
+          });
+        }}
       />
     </Box>
   );
