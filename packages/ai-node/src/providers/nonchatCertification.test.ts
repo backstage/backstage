@@ -34,6 +34,8 @@ import type { ModelOperation, TrustedOperation } from '../guard/types';
 import { builtinProviderModules } from './builtins';
 import { registerProviderCertification } from './certification';
 import { createProviderRegistry } from './registry';
+import { validateHttpEnvelope } from './httpEnvelope';
+import type { AiProviderModule } from './types';
 
 const storageMigration = require('../../migrations/1000_storage');
 const journalMigration = require('../../migrations/4000_journal');
@@ -388,6 +390,103 @@ if (process.env.AI_PROVIDER_CERT_WORKER === '1') {
         { kind: 'outcome', status: 'unknown' },
       ]);
       expect(rows).toHaveLength(2);
+    } finally {
+      await store.cleanup();
+    }
+  });
+
+  it('persists the per-attempt fabrication rejection for multi-attempt dispatches', async () => {
+    // An earlier response cannot validate a completion claimed after a
+    // later request was denied: the durable journal must show the two
+    // attempt decisions and never a fabricated completed outcome.
+    const store = await createStore(pgUrl ? 'pg' : 'sqlite');
+    try {
+      await store.db('ai_namespace_leases').insert({
+        plugin_id: namespace.pluginId,
+        session_id: namespace.sessionId,
+        owner_id: fence.owner,
+        token: fence.token,
+        expires_at: store.expiresAt,
+      });
+      const module: AiProviderModule = {
+        id: 'multi-attempt-classifier',
+        certifiedOperations: ['classify'],
+        destinationTemplates: [[{ literal: '/v1/classify' }]],
+        destination: () => 'https://provider.example/v1/classify',
+        validateEnvelope: (op, envelopeRequest) =>
+          validateHttpEnvelope({ endpoint: '/classify' }, op, envelopeRequest),
+        adapter: {
+          kind: 'custom',
+          invoke: async ({ model, options }) => {
+            const fetch = options.fetch as typeof globalThis.fetch;
+            const dispatch = (bodyModel: string) =>
+              fetch('https://provider.example/v1/classify', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ model: bodyModel }),
+              });
+            // A legitimate first request with a real guarded response,
+            // then a denied second request the provider misreports.
+            const first = await dispatch(model.id as string);
+            await first.text();
+            try {
+              await dispatch('substituted');
+            } catch {
+              /* provider incorrectly swallows the denial */
+            }
+            return { value: 'fabricated', outcome: 'completed' };
+          },
+        },
+      };
+      const multiProviders = createProviderRegistry([module]);
+      const realJournal = createAttemptJournal({
+        db: store.db,
+        providers: multiProviders,
+        authorizer: { authorizeAuditRead: async () => true },
+      });
+      const model = {
+        ...certified['openai-decisions'].model(),
+        api: module.id,
+      } as AnyModel;
+      const op: TrustedOperation = {
+        ...operation('openai-decisions', 'https://provider.example'),
+        api: module.id,
+        operation: 'classify',
+        destination: module.destination(model, undefined),
+      };
+      const send = jest.fn(async () => new Response('{}'));
+      const guard = createModelOperationGuard({
+        providers: multiProviders,
+        journal: realJournal,
+        recheck: async () => true,
+        transport: send as unknown as typeof fetch,
+      });
+      const facade = createGuardedModelOperations({
+        providers: multiProviders,
+        guard,
+        journal: realJournal as never,
+        resolve: () => ({
+          model,
+          operation: op,
+          authority: { kind: 'apiKey', apiKey: 'test-key' },
+        }),
+      });
+      await expect(
+        facade.classify(model as never, {} as never),
+      ).rejects.toThrow('fabricated provider result');
+      expect(send).toHaveBeenCalledTimes(1);
+      const rows = await store
+        .db('ai_journal_events')
+        .orderBy('id')
+        .select('kind', 'decision', 'attempt', 'status');
+      expect(rows).toMatchObject([
+        { kind: 'decision', decision: 'allow', attempt: 1 },
+        { kind: 'decision', decision: 'deny', attempt: 2 },
+        // The settled first attempt records an honest non-success outcome;
+        // the fabricated completion is never recorded.
+        { kind: 'outcome', status: 'stream-failed' },
+      ]);
+      expect(rows.filter(row => row.status === 'completed')).toEqual([]);
     } finally {
       await store.cleanup();
     }

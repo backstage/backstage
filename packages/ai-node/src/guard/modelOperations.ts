@@ -278,8 +278,14 @@ export function createGuardedModelOperations(options: {
       }
     }
     let guardAttempted = false;
-    let guardResponseReceived = false;
     let guardFetchRejected = false;
+    // Per-attempt response receipt: the invocation ordinal of the latest
+    // guarded fetch that received a response. A completion is valid only
+    // when the LATEST invoked fetch is the one that responded — a response
+    // to an earlier request can never validate a completion claimed after
+    // a later one was denied.
+    let invocationCount = 0;
+    let respondedInvocation: number | null = null;
     const pendingFetches = new Set<Promise<unknown>>();
     const callOptions = {
       ...requestOptions,
@@ -289,10 +295,11 @@ export function createGuardedModelOperations(options: {
       // No trusted or caller options may displace the enforcement boundary.
       fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
         guardAttempted = true;
+        const invocation = ++invocationCount;
         const attempt = (async () => {
           try {
             const response = await guarded.fetch(input, init);
-            guardResponseReceived = true;
+            respondedInvocation = invocation;
             return response;
           } catch (error) {
             guardFetchRejected = true;
@@ -321,8 +328,9 @@ export function createGuardedModelOperations(options: {
       usedGuard: () => guardAttempted,
       attemptedGuard: () => guardAttempted,
       // Consulted only for COMPLETED settlements: a claimed success is
-      // valid solely when the guarded fetch actually received a response.
-      receivedGuardedResponse: () => guardResponseReceived,
+      // valid solely when the LATEST guarded fetch received its own
+      // response, per the same per-attempt discipline as the guard.
+      receivedGuardedResponse: () => respondedInvocation === invocationCount,
       // Whether the guarded fetch rejected — the guard has then already
       // journaled its denial, so a fabrication on top of it must not write
       // a second deny record.

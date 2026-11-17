@@ -219,8 +219,18 @@ it('rejects fabricated completions while preserving honest error settlements', a
   // - detached: fires the guarded fetch without awaiting and fabricates success
   // - thrown: an honest in-band failed settlement after a transport error
   // - legit: an honest completed settlement after a real guarded response
-  let mode: 'swallow' | 'revoked' | 'detached' | 'thrown' | 'legit' = 'legit';
+  let mode:
+    | 'swallow'
+    | 'revoked'
+    | 'detached'
+    | 'thrown'
+    | 'legit'
+    | 'multi-denied'
+    | 'multi-revoked'
+    | 'multi-thrown' = 'legit';
   let denyPermission = false;
+  let checkCount = 0;
+  const transport = jest.fn(async () => new Response('ok'));
   const module: AiProviderModule = {
     id: 'example-classifier',
     certifiedOperations: ['classify'],
@@ -238,6 +248,36 @@ it('rejects fabricated completions while preserving honest error settlements', a
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({ model: bodyModel }),
           });
+        if (
+          mode === 'multi-denied' ||
+          mode === 'multi-revoked' ||
+          mode === 'multi-thrown'
+        ) {
+          // A legitimate first request with a real guarded response...
+          const first = await send(model.id);
+          await first.text();
+          if (mode === 'multi-thrown') {
+            transport.mockImplementationOnce(async () => {
+              throw new Error('network disconnected');
+            });
+          }
+          // ...then a second request whose outcome the provider misreports.
+          try {
+            const second = await send(
+              mode === 'multi-denied' ? 'substituted' : model.id,
+            );
+            await second.text();
+          } catch (error) {
+            if (mode === 'multi-thrown') {
+              return {
+                value: { errorMessage: String(error) },
+                outcome: 'failed',
+              };
+            }
+            return { value: { fake: true }, outcome: 'completed' };
+          }
+          return { value: { fake: true }, outcome: 'completed' };
+        }
         if (mode === 'detached') {
           void send(model.id).catch(() => {
             /* provider detaches its fetch */
@@ -282,11 +322,14 @@ it('rejects fabricated completions while preserving honest error settlements', a
     recordRecovery: async () => {},
     read: async () => ({ items: [] }),
   };
-  const transport = jest.fn(async () => new Response('ok'));
   const guard = createModelOperationGuard({
     providers,
     journal: journal as never,
-    recheck: async () => !denyPermission,
+    recheck: async () => {
+      checkCount += 1;
+      if (mode === 'multi-revoked') return checkCount < 2;
+      return !denyPermission;
+    },
     transport: transport as unknown as typeof fetch,
   });
   const operations = createGuardedModelOperations({
@@ -375,4 +418,37 @@ it('rejects fabricated completions while preserving honest error settlements', a
   });
   expect(events).toEqual(['decision:allow:1', 'outcome']);
   expect(transport).toHaveBeenCalledTimes(2);
+  events.length = 0;
+
+  // A response to an EARLIER request cannot validate a completion claimed
+  // after a LATER request was denied: the completion guard is per-attempt.
+  transport.mockImplementation(async () => new Response('ok'));
+  mode = 'multi-denied';
+  await expect(classify()).rejects.toThrow('fabricated provider result');
+  expect(events).toEqual(['decision:allow:1', 'decision:deny:2', 'outcome']);
+  expect(transport).toHaveBeenCalledTimes(3);
+  events.length = 0;
+
+  // The same per-attempt discipline holds when the later denial comes
+  // from the permission recheck.
+  mode = 'multi-revoked';
+  checkCount = 0;
+  await expect(classify()).rejects.toThrow('fabricated provider result');
+  expect(events).toEqual(['decision:allow:1', 'decision:deny:2', 'outcome']);
+  expect(transport).toHaveBeenCalledTimes(4);
+  events.length = 0;
+
+  // The honest multi-attempt shape: an earlier response plus a later
+  // transport failure settles in-band for that attempt — no denial.
+  mode = 'multi-thrown';
+  await expect(classify()).resolves.toMatchObject({
+    errorMessage: expect.stringContaining('network disconnected'),
+  });
+  expect(events).toEqual([
+    'decision:allow:1',
+    'decision:allow:2',
+    'outcome',
+    'outcome',
+  ]);
+  expect(transport).toHaveBeenCalledTimes(6);
 });
