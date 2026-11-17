@@ -1,5 +1,12 @@
 # @backstage/plugin-catalog-backend
 
+## 3.9.3
+
+### Patch Changes
+
+- e74403f: Improved repository validation for catalog entity placeholders on Azure DevOps. Placeholder-driven reads on a configured Azure DevOps integration are now restricted to the entity's own repository on every Azure DevOps host shape, including legacy `{org}.visualstudio.com` hosts and Azure DevOps Server hosts, and targets that cannot be attributed to a repository are rejected as well.
+- 7f2aa9e: Location annotations on entities submitted to the validate-entity endpoint can no longer override the location of the request.
+
 ## 3.9.2
 
 ### Patch Changes
