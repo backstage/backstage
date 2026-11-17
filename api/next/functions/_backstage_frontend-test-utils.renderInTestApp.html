@@ -19,7 +19,7 @@
 <div class="tsd-comment tsd-typography"><p>Renders the given element in a test app, for use in unit tests.</p>
 <p>Navigation is owned by a @backstage/frontend-plugin-api#AppHistoryApi
 with in-memory history, the same seam as production. Access it through
-<code>apis.get(appHistoryApiRef)</code> on the render result.</p>
+<code>apis.get(coreApis.appHistory)</code> on the render result.</p>
 <p>The element renders under the app's root React Router v6 projection, as in
 production. Wrap the element in its page's adapter when it needs routing-library
 context. Page matching and navigation use the framework routing APIs.
@@ -37,7 +37,7 @@ the app root's elements input.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="../types/_backstage_frontend-test-utils.TestAppOptions.html" class="tsd-signature-type tsd-kind-type-alias">TestAppOptions</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#renderintestapptapipairs">TApiPairs</a><span class="tsd-signature-symbol">&gt;</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="../types/_backstage_frontend-test-utils.TestAppRenderResult.html" class="tsd-signature-type tsd-kind-type-alias">TestAppRenderResult</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/724657a50dc8bebd82f8c6045273f77ac24f1dcd/packages/frontend-test-utils/src/app/renderInTestApp.tsx#L216">packages/frontend-test-utils/src/app/renderInTestApp.tsx:216</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/7e01cde94d592e27bbc28c5ab067af8c71f76b2e/packages/frontend-test-utils/src/app/renderInTestApp.tsx#L150">packages/frontend-test-utils/src/app/renderInTestApp.tsx:150</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
