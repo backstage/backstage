@@ -1,5 +1,19 @@
 # @backstage/integration-react
 
+## 1.3.0
+
+### Minor Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+
+### Patch Changes
+
+- 4c662c9: Removed this package's direct Material UI v4 dependencies. SCM integrations without a registered system icon now use a Remix code icon as the fallback.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/integration@2.2.0
+  - @backstage/config@1.3.11
+
 ## 1.2.24-next.1
 
 ### Patch Changes

@@ -1,5 +1,41 @@
 # @backstage/frontend-app-api
 
+## 1.0.0
+
+### Major Changes
+
+- b3befd0: Released version 1.0 of this frontend framework package. Its public APIs are now stable under the [package versioning policy](https://backstage.io/docs/overview/versioning-policy/#package-versioning-policy). Alpha and beta APIs retain their existing stability levels.
+
+### Minor Changes
+
+- 8c6c842: **BREAKING**: Removed the deprecated `createSpecializedApp` and `CreateSpecializedAppOptions` exports. Use `prepareSpecializedApp(options).finalize()` and `PrepareSpecializedAppOptions` instead. For sign-in or asynchronous session preparation, render the bootstrap app and subscribe with `onFinalized()` instead of calling `finalize()`.
+
+  Replace `advanced.apis` with `advanced.sessionState` from a previously finalized app to reuse its APIs, identity, and predicate context. Register custom APIs through `ApiBlueprint` extensions rather than passing an arbitrary API holder. Pass a supplied config API through the top-level `config` option. To reuse an identity supplied through the API holder, configure a sign-in page that calls `onSignInSuccess(identityApi)` and use the bootstrap/`onFinalized()` flow; an `ApiBlueprint` cannot override the app's identity proxy.
+
+### Patch Changes
+
+- d514e4d: Updated app options to use the `ExtensionFactoryMiddleware` type from `@backstage/frontend-app-api` instead of the deprecated export from `@backstage/frontend-plugin-api`. Middleware behavior is unchanged.
+- e55a4a8: Updated plugin identity handling to use `pluginId`, while preserving support for older plugin instances that only expose `id`.
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- 9d0a31b: Removed an unused `use-sync-external-store` dependency, which is no longer needed now that React 18 is the minimum supported version.
+- c147b7a: Fixed disabled external route bindings falling back to their default targets during link resolution.
+
+  Navigation analytics now use the most specific routed extension even when it has no route reference, including nested extensions with an empty path.
+
+- 2aa14e3: The new frontend system now owns app history independently of page routing libraries, so page matching, route references, and navigation analytics use the same location and route hierarchy. Href creation and navigation require app-absolute paths starting with `/`, excluding the deployment basename, and custom factories for `coreApis.appHistory` must be available during initialization without an `if` predicate. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
+
+  Query and state synchronization through direct browser history replacements stays silent across rerenders. In browsers with the Navigation API, third-party pushes and replacements that change the pathname or hash are still reported as navigation.
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/frontend-defaults@0.5.8
+  - @backstage/errors@1.4.0
+  - @backstage/core-app-api@1.20.7
+  - @backstage/version-bridge@1.1.0
+  - @backstage/config@1.3.11
+  - @backstage/filter-predicates@0.2.1
+
 ## 0.17.0-next.2
 
 ### Patch Changes

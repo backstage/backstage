@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-node
 
+## 0.7.8
+
+### Patch Changes
+
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.4
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+
 ## 0.7.8-next.2
 
 ### Patch Changes

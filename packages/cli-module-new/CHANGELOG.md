@@ -1,5 +1,20 @@
 # @backstage/cli-module-new
 
+## 0.1.9
+
+### Patch Changes
+
+- b937434: Fixed `backstage-cli new` rewriting the entire `CODEOWNERS` file when an owner is provided. Existing content, including comments and formatting, is now preserved and a single repository-relative entry such as `/packages/my-lib/ @org/team` is appended, rather than an entry with an absolute filesystem path.
+- c009ae4: The `frontend-plugin` template now declares package info: the generated `package.json` exports `./package.json`, and the plugin passes `info: { packageJson: () => import('../package.json') }` to `createFrontendPlugin`.
+- 500f8ff: Templates now depend on `@testing-library/react` 16 together with `@testing-library/dom` 10, which React Testing Library 16 requires as a peer dependency and which matches `@backstage/frontend-test-utils`.
+- c584676: Template version hints are now treated as a minimum version within their caret range, that is the same major version, or the same minor version for `0.x` hints. When the lockfile already contains a range for a dependency that resolves to the hinted version or a newer compatible one, `backstage-cli new` reuses the highest such range instead of adding an older one, which avoids duplicate dependency versions.
+- e769ccb: Fix an issue where creating a new package with the `cli-module` role would crash during the installation phase due to an unhandled role mapping.
+- 33894d6: Fixed an issue where scaffolding templates on Windows could generate corrupted file names for files in subdirectories.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6
+  - @backstage/errors@1.4.0
+  - @backstage/cli-common@0.3.3
+
 ## 0.1.9-next.2
 
 ### Patch Changes

@@ -1,5 +1,36 @@
 # @backstage/plugin-scaffolder
 
+## 1.41.0
+
+### Minor Changes
+
+- 3fe82f6: Added a `ScaffolderTemplateFilterBlueprint` that lets apps filter the new frontend system's template list using identity, catalog, or other viewer-specific state.
+- ae86338: Added GitLab branch autocompletion to RepoBranchPicker using user SCM credentials.
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+
+### Patch Changes
+
+- 111c6ce: Keep the task button bar at the user's chosen visibility when a task completes, so log visibility and start-over controls remain accessible. Action availability continues to depend on task state and permissions.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/integration@2.2.0
+  - @backstage/catalog-client@1.16.4
+  - @backstage/core-components@0.18.16
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-catalog-react@4.0.0
+  - @backstage/plugin-scaffolder-react@3.0.0
+  - @backstage/ui@0.20.0
+  - @backstage/integration-react@1.3.0
+  - @backstage/plugin-home-react@0.1.44
+  - @backstage/plugin-permission-react@0.5.7
+  - @backstage/plugin-techdocs-react@1.5.0
+  - @backstage/plugin-scaffolder-common@2.4.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/filter-predicates@0.2.1
+  - @backstage/plugin-catalog-common@1.2.2
+  - @backstage/plugin-techdocs-common@0.1.3
+
 ## 1.41.0-next.2
 
 ### Patch Changes

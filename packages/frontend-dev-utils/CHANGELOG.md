@@ -1,5 +1,20 @@
 # @backstage/frontend-dev-utils
 
+## 1.0.0
+
+### Major Changes
+
+- b3befd0: Released version 1.0 of this frontend framework package. Its public APIs are now stable under the [package versioning policy](https://backstage.io/docs/overview/versioning-policy/#package-versioning-policy). Alpha and beta APIs retain their existing stability levels.
+
+### Patch Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/plugin-app@0.6.0
+  - @backstage/frontend-defaults@0.5.8
+  - @backstage/ui@0.20.0
+
 ## 0.1.8-next.2
 
 ### Patch Changes
