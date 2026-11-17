@@ -208,6 +208,7 @@ describe('PluginTokenHandler', () => {
 
   it('runs issueToken', async () => {
     jest.useFakeTimers({
+      doNotFake: ['nextTick'],
       now: new Date(0),
     });
 

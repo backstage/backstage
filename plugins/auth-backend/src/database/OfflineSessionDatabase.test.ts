@@ -31,10 +31,7 @@ describe('OfflineSessionDatabase', () => {
     const knex = await databases.init(databaseId);
 
     await knex.migrate.latest({
-      directory: resolvePackagePath(
-        '@backstage/plugin-auth-backend',
-        'migrations',
-      ),
+      directory: resolvePackagePath(import.meta.url, 'migrations'),
     });
 
     return {

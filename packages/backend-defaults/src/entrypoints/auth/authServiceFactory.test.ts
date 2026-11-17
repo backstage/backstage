@@ -243,6 +243,7 @@ describe('authServiceFactory', () => {
     const expectedExpiresAt = 1712075314;
 
     jest.useFakeTimers({
+      doNotFake: ['nextTick'],
       now: expectedIssuedAt * 1000 + 600_000,
     });
 
@@ -361,6 +362,7 @@ describe('authServiceFactory', () => {
     const expectedExpiresAt = 1712075314;
 
     jest.useFakeTimers({
+      doNotFake: ['nextTick'],
       now: expectedIssuedAt * 1000 + 600_000,
     });
 

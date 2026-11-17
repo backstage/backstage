@@ -331,7 +331,7 @@ Bind React Aria to the public navigation contract at the component's route scope
 This supports anchors and collections without custom click handlers:
 
 ```tsx
-import { useNavigation } from '@backstage/frontend-plugin-api';
+import { useRoutingIntegration } from '@backstage/frontend-plugin-api/routing';
 import {
   RouterProvider,
   Link,
@@ -340,7 +340,7 @@ import {
 } from 'react-aria-components';
 
 export function ToolNavigation() {
-  const navigation = useNavigation();
+  const navigation = useRoutingIntegration();
   return (
     <RouterProvider
       useHref={navigation.createHref}
@@ -375,7 +375,7 @@ routing callbacks as above instead.
 
 ## Integrate a component library
 
-`useNavigation` from `@backstage/frontend-plugin-api` provides navigation at the
+`useRoutingIntegration` from `@backstage/frontend-plugin-api/routing` provides navigation at the
 calling component's route scope. Outside an adapter it uses framework navigation:
 app-absolute paths, external URLs, and empty/query/hash targets. Inside an adapter
 it also supports that library's relative destinations. The explicit framework
@@ -394,10 +394,10 @@ collection renders. For example, a library integration accepting browser hrefs
 and an activation callback can use:
 
 ```tsx
-import { useNavigation } from '@backstage/frontend-plugin-api';
+import { useRoutingIntegration } from '@backstage/frontend-plugin-api/routing';
 
 function NavigationRows({ items }) {
-  const navigation = useNavigation();
+  const navigation = useRoutingIntegration();
   return (
     <CustomGrid
       items={items}
@@ -421,7 +421,7 @@ This also applies to a React Aria `RouterProvider`: its `useHref` can be a hook,
 but its `navigate` callback is captured where that provider renders. Place that
 integration at the appropriate scope, or use `RouterLink` for individual anchors.
 
-Adapters supply `NavigationProvider` with a stable `useNavigation` hook. Consumers
+Adapters supply `RoutingProvider` with a stable `useRoutingIntegration` hook. Consumers
 invoke that hook at their own position, so it can read nested routing contexts.
 The BUI app integration uses the same public contract; adapters do not depend on BUI.
 This context is independent of the frozen legacy BUI routing context. Providers
@@ -460,7 +460,7 @@ When upgrading an existing integration:
 1. Use app-absolute paths or route-ref destinations outside an adapter.
    Within an adapter, BUI controls also accept library-relative paths.
    An empty target resolves to the current pathname, clearing query and hash.
-1. Bind directly used React Aria components to `useNavigation`, as
+1. Bind directly used React Aria components to `useRoutingIntegration`, as
    described in [React Aria integration](#use-react-aria-components-directly).
 
 BUI links treat URL schemes, including custom and mixed-case schemes, as
@@ -476,17 +476,19 @@ native browser navigation.
 
 ## Verify it works
 
-Render the page in a test app and navigate through the returned `appHistory`:
+Render the page in a test app and navigate through `apis.get(appHistoryApiRef)`:
 
 ```tsx title="plugins/tools/src/alpha.test.tsx"
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import { screen } from '@testing-library/react';
 
 it('renders the tools page under a TanStack router', async () => {
-  const { appHistory } = renderTestApp({
+  const { apis } = renderTestApp({
     extensions: [toolsPage],
     initialRouteEntries: ['/tools'],
   });
+  const appHistory = apis.get(appHistoryApiRef)!;
 
   expect(await screen.findByText('Tools')).toBeInTheDocument();
 
@@ -504,9 +506,8 @@ directly.
 ## Support for other libraries
 
 The three adapters above are the supported ones, and they are maintained in the
-Backstage repository. Adapters are not a plugin-side extension point: adapters obtain their mount through the public `useRouteResolution` API,
-but adding a supported library remains a contribution to Backstage rather
-than a plugin-side extension point.
+Backstage repository. Adding support for another routing library is a
+contribution to Backstage rather than a plugin-side extension point.
 
 If your plugin needs a library that is not covered here, open an issue. The
 existing adapters are small, and their source in `packages/frontend-adapter-react-router-v6`,

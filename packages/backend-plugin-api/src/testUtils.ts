@@ -43,6 +43,7 @@ export interface OverridePackagePathResolutionOptions {
 
 /**
  * This utility helps you override the paths returned by `resolvePackagePath` for a given package.
+ * Overrides also apply when the package is referenced using a file URL string.
  *
  * @public
  */

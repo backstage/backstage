@@ -158,8 +158,8 @@ Paths starting with `/` are absolute from the app root, without the deployment
 basename. Route-ref destinations work unchanged through this adapter's native
 navigation APIs and through BUI controls, including navigation to other plugins.
 
-The adapter supplies `NavigationProvider` from `@backstage/frontend-plugin-api`.
-`useNavigation`, `RouterLink`, and BUI controls resolve relative targets using
+The adapter supplies `RoutingProvider` from `@backstage/frontend-plugin-api/routing`.
+`useRoutingIntegration`, `RouterLink`, and BUI controls resolve relative targets using
 the routing library at the consuming control's route scope. Other component
 libraries can integrate through the same public hook; the adapter has no BUI
 runtime dependency. Outside an adapter, framework routing accepts only app-absolute

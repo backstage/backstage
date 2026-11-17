@@ -15,6 +15,7 @@
  */
 
 import {
+  IconComponent,
   ApiHolder,
   ApiRef,
   AppContext,
@@ -27,7 +28,6 @@ import {
   ErrorDisplayProps,
   NotFoundErrorPageProps,
   ExternalRouteRef,
-  IconComponent,
   IconElement,
   IconsApi,
   RouteFunc,

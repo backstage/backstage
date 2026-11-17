@@ -15,12 +15,12 @@
  */
 
 import { act, renderHook } from '@testing-library/react';
-import { createMockAppHistory } from '@backstage/frontend-test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import { useAppHistoryLocation } from './useAppHistoryLocation';
 
 describe('useAppHistoryLocation', () => {
   it('tracks the app history location and keeps a stable snapshot reference', () => {
-    const appHistory = createMockAppHistory({
+    const appHistory = mockApis.appHistory({
       initialLocation: '/catalog?q=1',
     });
 

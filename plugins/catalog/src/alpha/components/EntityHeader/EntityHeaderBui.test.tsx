@@ -16,6 +16,7 @@
 
 import { act, screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import {
   Entity,
   RELATION_OWNED_BY,
@@ -85,9 +86,11 @@ async function renderHeader(options: {
     catalogApiMock({ entities: options.catalogEntities ?? [] });
 
   return renderInTestApp(
-    <EntityProvider entity={options.entity}>
-      <EntityHeaderBui tabs={[]} contextMenuItems={[]} />
-    </EntityProvider>,
+    <ReactRouterV6PageRouter>
+      <EntityProvider entity={options.entity}>
+        <EntityHeaderBui tabs={[]} contextMenuItems={[]} />
+      </EntityProvider>
+    </ReactRouterV6PageRouter>,
     {
       apis: [
         catalogApi,

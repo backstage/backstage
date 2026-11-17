@@ -16,7 +16,7 @@
 
 import { act, renderHook } from '@testing-library/react';
 import { TestApiProvider } from '@backstage/test-utils';
-import { createMockAppHistory } from '@backstage/frontend-test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import { MemoryRouter } from 'react-router-dom';
 import { PropsWithChildren } from 'react';
 import { appHistoryApiRef } from './AppHistoryApi';
@@ -28,7 +28,7 @@ describe.each(['app history', 'legacy router'])(
   '%s location and query hooks',
   mode => {
     it('clears defaults when the initial query is empty', () => {
-      const history = createMockAppHistory({ initialLocation: '/page' });
+      const history = mockApis.appHistory({ initialLocation: '/page' });
       const wrapper = ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider apis={[[appHistoryApiRef, history]]}>
           {children}
@@ -44,7 +44,7 @@ describe.each(['app history', 'legacy router'])(
     });
 
     it('reads the location, updates repeated query values, clears defaults, and traverses history', () => {
-      const history = createMockAppHistory({
+      const history = mockApis.appHistory({
         initialLocation: '/base/page?tag=one&tag=two#section',
         basename: '/base',
       });
@@ -119,7 +119,7 @@ describe.each(['app history', 'legacy router'])(
 );
 
 it('prefers app history over a nested router location and follows external updates', () => {
-  const history = createMockAppHistory({
+  const history = mockApis.appHistory({
     initialLocation: '/catalog/default/component/example',
   });
   const { result, unmount } = renderHook(() => useAppLocation(), {

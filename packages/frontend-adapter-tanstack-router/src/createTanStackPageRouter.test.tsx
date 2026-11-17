@@ -16,19 +16,19 @@
 
 import { act, screen } from '@testing-library/react';
 import {
-  createMockAppHistory,
   renderInTestApp,
   renderTestApp,
   TestApiProvider,
+  mockApis,
 } from '@backstage/frontend-test-utils';
 import {
-  AppHistoryApi,
-  appHistoryApiRef,
   useApi,
   createExtension,
   createExtensionInput,
   coreExtensionData,
   ExtensionBoundary,
+  AppHistoryApi,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { StrictMode, useState } from 'react';
 import {
@@ -75,7 +75,7 @@ describe('createTanStackPageRouter', () => {
       const PageRouter = custom
         ? createTanStackPageRouter({ createRouter: routerFactory })
         : TanStackPageRouter;
-      const { appHistory } = renderInTestApp(
+      const { apis } = renderInTestApp(
         <PageRouter>
           <Probe />
         </PageRouter>,
@@ -84,6 +84,7 @@ describe('createTanStackPageRouter', () => {
           initialRouteEntries: ['/foo/foo/details'],
         },
       );
+      const appHistory = apis.get(coreApis.appHistory)!;
       expect(
         await screen.findByText('Path: /foo/foo/details'),
       ).toBeInTheDocument();
@@ -146,10 +147,11 @@ describe('createTanStackPageRouter', () => {
         ];
       },
     });
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [parent, child],
       initialRouteEntries: ['/catalog/edit'],
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
     expect(await screen.findByText('Edit child')).toBeInTheDocument();
     expect(
       await screen.findByText('Scoped path: /catalog/edit'),
@@ -264,7 +266,7 @@ describe('createTanStackPageRouter', () => {
     });
 
     function NavigateFromFramework() {
-      const appHistory = useApi(appHistoryApiRef);
+      const appHistory = useApi(coreApis.appHistory);
       return (
         <button
           type="button"
@@ -300,7 +302,7 @@ describe('createTanStackPageRouter', () => {
     expect(committedDestroy).toHaveBeenCalledTimes(1);
   });
   it('keeps TanStack back availability consistent with a custom host without entry facts', async () => {
-    const inner = createMockAppHistory({ initialLocation: '/tools' });
+    const inner = mockApis.appHistory({ initialLocation: '/tools' });
     let source = inner.getSnapshot();
     let snapshot = { location: source.location };
     const appHistory: AppHistoryApi = {
@@ -338,7 +340,7 @@ describe('createTanStackPageRouter', () => {
       );
     }
     renderInTestApp(
-      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+      <TestApiProvider apis={[[coreApis.appHistory, appHistory]]}>
         <TanStackPageRouter>
           <Probe />
         </TanStackPageRouter>

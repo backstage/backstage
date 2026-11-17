@@ -6,9 +6,10 @@ description: Mocking and testing Utility APIs
 ---
 
 The `mockApis` namespace from `@backstage/frontend-test-utils` provides test
-implementations of the core Utility APIs. Every member of `coreApis` has a
-matching `mockApis.<name>.mock()` helper. Some APIs also have functional fake
-instances for tests that need state or other behavior.
+implementations of the core Utility APIs. Every API in `coreApis`, including
+those grouped under `coreApis.internal`, has a matching `mockApis.<name>.mock()`
+helper. Some APIs also have functional fake instances for tests that need state
+or other behavior.
 
 ## Create Jest mocks
 
