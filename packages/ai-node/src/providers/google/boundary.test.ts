@@ -306,6 +306,42 @@ it('propagates a post-header caller abort to the host stream', async () => {
   expect(f.events).toContain('outcome:cancelled');
 });
 
+it('refuses new work while overlapping shutdowns are in flight', async () => {
+  let sends = 0;
+  const transport = (async () => {
+    sends += 1;
+    return new Response(sseBody(), {
+      headers: { 'content-type': 'text/event-stream' },
+    });
+  }) as typeof fetch;
+  const f = setup(
+    'https://generativelanguage.googleapis.com/v1beta',
+    transport,
+  );
+  const first = await f.facade.completeSimple(f.model, context(), {
+    maxRetries: 0,
+  });
+  expect(first.stopReason).toBe('stop');
+  // A graceful close begins; while it is still draining, an emergency
+  // terminate runs. Shutdown state is shared: the terminate cannot clear
+  // the graceful close's refusal, so a new stream started in the overlap
+  // window never dispatches.
+  const graceful = closeGoogleWorker();
+  await terminateGoogleWorker();
+  let closeDone = false;
+  void graceful.then(() => {
+    closeDone = true;
+  });
+  const result = await f.facade.completeSimple(f.model, context(), {
+    maxRetries: 0,
+  });
+  const closeDoneAtResult = closeDone;
+  await graceful;
+  expect(closeDoneAtResult).toBe(false);
+  expect(sends).toBe(1);
+  expect(result.errorMessage).toContain('shutting down');
+});
+
 it('does not dispatch a stream once immediate shutdown completes', async () => {
   const transport = jest.fn(
     async () =>

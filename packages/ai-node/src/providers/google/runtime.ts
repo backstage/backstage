@@ -123,7 +123,13 @@ class GoogleWorkerRuntime {
   #starting: Promise<Worker> | undefined;
   readonly #jobs = new Set<HostJob>();
   #generation = 0;
-  #shuttingDown = false;
+  // Terminal state: set by close() and never cleared — once a graceful
+  // close begins, this runtime refuses new streams until it is replaced.
+  #closed = false;
+  // In-flight shutdown calls: while any close path (graceful or immediate)
+  // is running, new streams are refused. An emergency terminate alone does
+  // not outlive its own call.
+  #activeShutdown = 0;
 
   stream(
     api: GoogleAdapterId,
@@ -157,8 +163,19 @@ class GoogleWorkerRuntime {
   }
 
   async #shutdown(mode: 'graceful' | 'immediate'): Promise<void> {
-    // New streams fail immediately while shutdown is in progress.
-    this.#shuttingDown = true;
+    // Shutdown state is shared across overlapping close paths: while any of
+    // them is running (and forever after a graceful close), new streams are
+    // refused. An emergency terminate cannot clear another path's state.
+    this.#activeShutdown += 1;
+    try {
+      await this.#shutdownInner(mode);
+    } finally {
+      this.#activeShutdown -= 1;
+      if (mode === 'graceful') this.#closed = true;
+    }
+  }
+
+  async #shutdownInner(mode: 'graceful' | 'immediate'): Promise<void> {
     const generation = this.#generation;
     // A worker still being created is awaited so it cannot be published —
     // and used — after shutdown returns.
@@ -186,7 +203,6 @@ class GoogleWorkerRuntime {
     for (const job of [...this.#jobs]) {
       this.#failJob(job, 'Google worker shut down');
     }
-    this.#shuttingDown = false;
   }
 
   #failJob(job: HostJob, message: string): void {
@@ -249,7 +265,7 @@ class GoogleWorkerRuntime {
     simple: boolean,
     output: AssistantMessageEventStream,
   ): Promise<void> {
-    if (this.#shuttingDown) {
+    if (this.#closed || this.#activeShutdown > 0) {
       throw new Error('Google worker transport is shutting down');
     }
     const opts = (options ?? {}) as StreamOptions;
@@ -301,7 +317,11 @@ class GoogleWorkerRuntime {
     // refused before it can send.
     const generation = this.#generation;
     const worker = await this.#ensureWorker();
-    if (this.#shuttingDown || generation !== this.#generation) {
+    if (
+      this.#closed ||
+      this.#activeShutdown > 0 ||
+      generation !== this.#generation
+    ) {
       throw new Error('Google worker transport shut down before dispatch');
     }
 
@@ -655,7 +675,7 @@ function pushWorkerError(
   output.end();
 }
 
-const runtime = new GoogleWorkerRuntime();
+let runtime = new GoogleWorkerRuntime();
 
 /**
  * Runs one pinned Google adapter stream inside the isolated worker and
@@ -681,7 +701,13 @@ export function runGoogleStream(
  * @internal
  */
 export async function closeGoogleWorker(): Promise<void> {
-  await runtime.close();
+  const closing = runtime;
+  await closing.close();
+  // The closed runtime is terminal: it refuses new streams forever. Replace
+  // the shared runtime so later callers get a fresh worker instead.
+  if (runtime === closing) {
+    runtime = new GoogleWorkerRuntime();
+  }
 }
 
 /**
