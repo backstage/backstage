@@ -142,11 +142,15 @@ contract. Direct lookups and factory dependencies now receive a promise, and
 `useApi` consumers may suspend. Update consumers and custom factories together;
 an override for the promise-valued API must also return a promise.
 
-For refs exported from a library package or another public surface outside the
-owning plugin package, this requires a breaking release. Refs that are not
-exported, or are exported only by the owning plugin package, follow the
+API refs intended for consumption by other plugins should be exported from a
+library package. Changing these refs, or refs exposed through another public
+consumer contract, to a promise requires a breaking release.
+
+Refs that are not exported, or are exported only by the owning plugin package
+for customizing that plugin, are plugin-internal. They follow the
 breaking-producers exception when the plugin updates its own consumers and
-default implementation together.
+default implementation together. Exporting a ref from a plugin package for
+customization does not provide a supported cross-plugin consumer contract.
 
 The `useApi` hook from `@backstage/core-plugin-api` keeps the old frontend
 system's behavior and returns promise-valued APIs directly. Automatic unwrapping
