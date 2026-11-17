@@ -98,10 +98,15 @@ to a partial implementation:
 
 ```tsx
 renderInTestApp(<MyComponent />, {
-  apis: [[myAsyncApiRef, Promise.resolve({ greet: () => 'Hello!' })]],
+  apis: [[myAsyncApiRef, Promise.resolve({ greet: jest.fn(() => 'Hello!') })]],
 });
 expect(await screen.findByText('Hello!')).toBeInTheDocument();
 ```
+
+`createApiMock` does not unwrap promised implementations. Mock the resolved
+implementation's methods with `jest.fn()` and supply its promise in a tuple.
+For a reusable, complete mock, use
+`attachMockApiFactory(myAsyncApiRef, Promise.resolve(mock))`.
 
 ### Test app defaults
 

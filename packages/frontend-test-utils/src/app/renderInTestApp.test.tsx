@@ -172,17 +172,35 @@ describe('renderInTestApp', () => {
     expect(screen.getByRole('button', { name: 'Ready' })).toBeInTheDocument();
     rendered.unmount();
 
-    const LazyContent = lazy(async () => ({
-      default: () => <div>Loaded content</div>,
-    }));
-    renderInTestApp(
-      <Suspense fallback="Custom loading state">
-        <LazyContent />
-      </Suspense>,
-    );
-    expect(screen.getByText('Custom loading state')).toBeInTheDocument();
-    expect(await screen.findByText('Loaded content')).toBeInTheDocument();
-    expect(screen.queryByText('Custom loading state')).not.toBeInTheDocument();
+    for (const withInnerBoundary of [false, true]) {
+      const LazyContent = lazy(async () => ({
+        default: () => <div>Loaded content</div>,
+      }));
+      const result = renderInTestApp(
+        <>
+          <span>Synchronous sibling</span>
+          {withInnerBoundary ? (
+            <Suspense fallback="Custom loading state">
+              <LazyContent />
+            </Suspense>
+          ) : (
+            <LazyContent />
+          )}
+        </>,
+      );
+      expect(Boolean(screen.queryByText('Synchronous sibling'))).toBe(
+        withInnerBoundary,
+      );
+      expect(Boolean(screen.queryByText('Custom loading state'))).toBe(
+        withInnerBoundary,
+      );
+      expect(await screen.findByText('Loaded content')).toBeInTheDocument();
+      expect(screen.getByText('Synchronous sibling')).toBeInTheDocument();
+      expect(
+        screen.queryByText('Custom loading state'),
+      ).not.toBeInTheDocument();
+      result.unmount();
+    }
   });
 
   it('should propagate rejected API initialization to the supplied error boundary', async () => {

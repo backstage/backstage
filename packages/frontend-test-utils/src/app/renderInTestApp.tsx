@@ -137,10 +137,11 @@ function TestAppPage({
  * @public
  * Renders the given element in a test app, for use in unit tests.
  *
- * Content that suspends renders nothing until it is ready. Only that content
- * needs asynchronous queries such as `findByText`; synchronous content remains
- * available immediately. Supply a Suspense boundary inside the element for a
- * custom fallback. The Suspense boundary does not catch rendering errors.
+ * Elements that do not suspend render immediately. If a descendant suspends,
+ * the entire element renders nothing until it is ready; use asynchronous queries
+ * such as `findByText` to await it. Supply an inner Suspense boundary to isolate
+ * suspended content or provide a custom fallback. Rendering errors are not caught
+ * by the Suspense boundary.
  *
  * Navigation is owned by a {@link @backstage/frontend-plugin-api#AppHistoryApi}
  * with in-memory history, the same seam as production. Access it through
