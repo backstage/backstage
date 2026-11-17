@@ -28,6 +28,7 @@ exports.up = async function up(knex) {
     table.boolean('dispatch_unknown').notNullable().defaultTo(false);
     table.text('status').notNullable();
     table.text('detail').nullable();
+    table.bigInteger('revision').notNullable().defaultTo(0);
     table.timestamp('updated_at', { useTz: true }).notNullable();
     table.primary(['plugin_id', 'session_id']);
     table.check("origin_kind IN ('user', 'service')");

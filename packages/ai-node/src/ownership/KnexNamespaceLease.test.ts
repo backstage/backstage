@@ -21,6 +21,7 @@ import { randomUUID } from 'node:crypto';
 import knex, { type Knex } from 'knex';
 import type { Namespace } from '../contracts';
 import { createKnexNamespaceLease } from './KnexNamespaceLease';
+import { liveCondition } from './sql';
 import type { NamespaceLease } from './types';
 
 const storageMigration = require('../../migrations/1000_storage');
@@ -326,4 +327,112 @@ if (pgUrl) {
       await admin.destroy();
     }
   });
+}
+
+async function waitUntil(
+  check: () => Promise<boolean>,
+  timeoutMs = 5_000,
+): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (await check()) return;
+    await new Promise(resolve => setTimeout(resolve, 20));
+  }
+  throw new Error('Timed out waiting for the expected database state');
+}
+
+if (pgUrl) {
+  it('does not revive a fence that expired while renew waited for the row lock', async () => {
+    const admin = knex({ client: 'pg', connection: pgUrl });
+    const schema = `ai_lease_lockwait_${randomUUID().replace(/-/g, '')}`;
+    await admin.schema.createSchema(schema);
+    const config = {
+      client: 'pg' as const,
+      connection: pgUrl,
+      searchPath: [schema],
+    };
+    const db = knex(config);
+    const blockerDb = knex(config);
+    try {
+      await storageMigration.up(db);
+      const lease = await createKnexNamespaceLease({ db, ttlMs });
+      const fence = await lease.acquire(namespace, 'replica-a');
+
+      // This generation expires 700ms from now, by database time.
+      await db('ai_namespace_leases')
+        .where({
+          plugin_id: namespace.pluginId,
+          session_id: namespace.sessionId,
+        })
+        .update({
+          expires_at: db.raw(
+            "statement_timestamp() + interval '700 milliseconds'",
+          ),
+        });
+
+      // A competing transaction holds the row, so the renewal waits.
+      const blocker = await blockerDb.transaction();
+      await blocker('ai_namespace_leases')
+        .where({
+          plugin_id: namespace.pluginId,
+          session_id: namespace.sessionId,
+        })
+        .forUpdate()
+        .select('token')
+        .first();
+
+      const renewal = lease.renew(fence!);
+      let settled = false;
+      renewal.then(
+        () => {
+          settled = true;
+        },
+        () => {
+          settled = true;
+        },
+      );
+
+      // The renewal is genuinely blocked on the row lock, not merely slow.
+      await waitUntil(async () => {
+        const { rows } = await db.raw(
+          `select count(*)::int as waiting from pg_stat_activity
+             where wait_event_type = 'Lock' and query ilike '%ai_namespace_leases%'
+               and pid <> pg_backend_pid()`,
+        );
+        return rows[0].waiting > 0;
+      });
+      expect(settled).toBe(false);
+
+      // Let the lease expire while the renewal is still waiting, and confirm
+      // the expiry with a fresh statement on another connection.
+      await new Promise(resolve => setTimeout(resolve, 900));
+      const expired = await db('ai_namespace_leases')
+        .where({
+          plugin_id: namespace.pluginId,
+          session_id: namespace.sessionId,
+        })
+        .select(db.raw(`${liveCondition('pg')} as live`))
+        .first();
+      expect(expired.live).toBe(false);
+
+      await blocker.rollback();
+
+      // The clock must be read after the lock wait: this renewal fails.
+      await expect(renewal).resolves.toBe(false);
+      const after = await db('ai_namespace_leases')
+        .where({
+          plugin_id: namespace.pluginId,
+          session_id: namespace.sessionId,
+        })
+        .select('token', db.raw(`${liveCondition('pg')} as live`))
+        .first();
+      expect(after.live).toBe(false);
+      expect(String(after.token)).toBe('1');
+    } finally {
+      await db.destroy();
+      await blockerDb.destroy();
+      await admin.schema.dropSchema(schema, true);
+      await admin.destroy();
+    }
+  }, 20_000);
 }

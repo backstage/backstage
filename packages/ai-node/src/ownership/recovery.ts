@@ -184,7 +184,23 @@ type RecoveryRow = {
   dispatch_unknown: boolean | number;
   status: RecoveryStatus;
   detail: string | null;
+  revision: string | number;
 };
+
+const ROW_COLUMNS = [
+  'session_id',
+  'origin_kind',
+  'origin_user_id',
+  'origin_service_plugin_id',
+  'definition_version',
+  'dispatch_unknown',
+  'status',
+  'detail',
+  'revision',
+] as const;
+
+/** How often one session is re-evaluated when its authority record changes. */
+const REVALIDATION_ATTEMPTS = 3;
 
 class StartupRecovery implements AiRecovery {
   readonly #options: AiRecoveryOptions;
@@ -275,26 +291,59 @@ class StartupRecovery implements AiRecovery {
             ),
           };
 
-    // An existing dispatch-unknown marker is durable evidence and is never
-    // cleared by recording the session again.
-    await this.#options
-      .db(TABLE)
+    const db = this.#options.db;
+    const key = {
+      plugin_id: namespace.pluginId,
+      session_id: namespace.sessionId,
+    };
+    await db(TABLE)
       .insert({
-        plugin_id: namespace.pluginId,
-        session_id: namespace.sessionId,
+        ...key,
         ...originColumns,
         definition_version: definitionVersion,
         dispatch_unknown: false,
         status: 'pending',
         detail: null,
-        updated_at: this.#options.db.fn.now(),
+        revision: 0,
+        updated_at: db.fn.now(),
       })
       .onConflict(['plugin_id', 'session_id'])
-      .merge({
-        ...originColumns,
-        definition_version: definitionVersion,
-        updated_at: this.#options.db.fn.now(),
-      });
+      .ignore();
+
+    // The origin and the definition version are the authority a resume is
+    // admitted against. They are immutable for the execution generation, so a
+    // write racing a recovery pass can never relabel running work, and an
+    // existing dispatch-unknown marker is never cleared.
+    const existing = await db(TABLE)
+      .where(key)
+      .first(
+        'origin_kind',
+        'origin_user_id',
+        'origin_service_plugin_id',
+        'definition_version',
+      );
+    if (existing === undefined) {
+      throw new Error(
+        `Cannot record the AI session '${namespace.sessionId}' of the '${namespace.pluginId}' plugin: the session record is missing`,
+      );
+    }
+    const unchanged =
+      existing.origin_kind === originColumns.origin_kind &&
+      existing.origin_user_id === originColumns.origin_user_id &&
+      existing.origin_service_plugin_id ===
+        originColumns.origin_service_plugin_id &&
+      existing.definition_version === definitionVersion;
+    if (!unchanged) {
+      throw new Error(
+        `The origin and definition version of the AI session '${
+          namespace.sessionId
+        }' of the '${
+          namespace.pluginId
+        }' plugin are immutable for its execution generation: recorded ${describeRecorded(
+          existing,
+        )}, attempted ${describeAttempted(originColumns, definitionVersion)}`,
+      );
+    }
   }
 
   async markDispatchUnknown(namespace: Namespace): Promise<void> {
@@ -309,6 +358,7 @@ class StartupRecovery implements AiRecovery {
         dispatch_unknown: true,
         status: 'unknown-dispatch-outcome',
         detail: 'A dispatch was attempted and its outcome is unknown',
+        revision: this.#options.db.raw('revision + 1'),
         updated_at: this.#options.db.fn.now(),
       });
     if (updated !== 1) {
@@ -354,16 +404,7 @@ class StartupRecovery implements AiRecovery {
         .db(TABLE)
         .where('plugin_id', this.#options.pluginId)
         .whereIn('session_id', sessions)
-        .select(
-          'session_id',
-          'origin_kind',
-          'origin_user_id',
-          'origin_service_plugin_id',
-          'definition_version',
-          'dispatch_unknown',
-          'status',
-          'detail',
-        );
+        .select(...ROW_COLUMNS);
       const bySession = new Map(rows.map(row => [row.session_id, row]));
 
       for (const namespace of page.namespaces) {
@@ -372,7 +413,7 @@ class StartupRecovery implements AiRecovery {
           // A namespace with no persisted session has no work to recover.
           continue;
         }
-        outcomes.push(await this.#recoverOne(namespace, row));
+        outcomes.push(await this.#recoverOne(namespace));
         examined++;
       }
 
@@ -399,29 +440,143 @@ class StartupRecovery implements AiRecovery {
       : { status: row.status, detail: row.detail ?? undefined };
   }
 
-  async #recoverOne(
-    namespace: Namespace,
-    row: RecoveryRow,
-  ): Promise<RecoveryOutcome> {
-    const outcome = await this.#decide(namespace, row);
-    await this.#options
-      .db(TABLE)
-      .where({
-        plugin_id: namespace.pluginId,
-        session_id: namespace.sessionId,
-      })
-      .update({
-        status: outcome.status,
-        detail: outcome.detail ?? null,
-        updated_at: this.#options.db.fn.now(),
-      });
-    return outcome;
+  async #recoverOne(namespace: Namespace): Promise<RecoveryOutcome> {
+    for (let attempt = 0; attempt < REVALIDATION_ATTEMPTS; attempt++) {
+      // Never authorize from stale metadata: the enumeration snapshot is only
+      // a candidate list, and every decision starts from a fresh authoritative
+      // read.
+      const row = await this.#readRow(namespace);
+      if (row === undefined) {
+        return {
+          namespace,
+          status: 'failed',
+          detail: 'The session record is missing',
+        };
+      }
+      const revision = String(row.revision);
+      const precheck = this.#precheck(namespace, row);
+      if (precheck !== undefined) {
+        const persisted = await this.#persist(namespace, revision, precheck);
+        if (persisted) return precheck;
+        continue;
+      }
+
+      const resolver = this.#resolvers
+        .get(namespace.pluginId)!
+        .get(row.definition_version)!;
+
+      let credentials: BackstageCredentials;
+      try {
+        credentials = await this.#options.getOwnServiceCredentials();
+        const principal = credentials?.principal as
+          | { type?: string }
+          | undefined;
+        if (principal?.type !== 'service') {
+          throw new Error(
+            'the plugin credential source did not return service credentials',
+          );
+        }
+      } catch (error) {
+        const blocked: RecoveryOutcome = {
+          namespace,
+          status: 'blocked-credentials',
+          detail: `Fresh service credentials for the '${
+            namespace.pluginId
+          }' plugin could not be obtained: ${describe(error)}`,
+        };
+        if (await this.#persist(namespace, revision, blocked)) return blocked;
+        continue;
+      }
+
+      // Admission: the authority the resume is authorized under must be the
+      // one still recorded after the credential work, and nothing newer may
+      // have claimed this generation.
+      const admitted = await this.#readRow(namespace);
+      if (
+        admitted === undefined ||
+        String(admitted.revision) !== revision ||
+        !sameAuthority(row, admitted)
+      ) {
+        continue;
+      }
+
+      let outcome: RecoveryOutcome;
+      try {
+        const resolution = await resolver.resume({
+          namespace,
+          origin: {
+            kind: 'service',
+            pluginId: row.origin_service_plugin_id!,
+          },
+          definitionVersion: row.definition_version,
+          credentials,
+        });
+        switch (resolution.kind) {
+          case 'resumed':
+            outcome = { namespace, status: 'recovered' };
+            break;
+          case 'blocked-definition':
+            outcome = {
+              namespace,
+              status: 'blocked-definition',
+              detail: resolution.reason,
+            };
+            break;
+          case 'failed':
+            outcome = {
+              namespace,
+              status: 'failed',
+              detail: resolution.reason,
+            };
+            break;
+          default:
+            outcome = {
+              namespace,
+              status: 'failed',
+              detail: `The '${namespace.pluginId}' plugin resolver returned an unknown resolution`,
+            };
+        }
+      } catch (error) {
+        outcome = { namespace, status: 'failed', detail: describe(error) };
+      }
+
+      if (await this.#persist(namespace, revision, outcome)) return outcome;
+
+      // A newer uncertainty or authority record landed while the resume ran.
+      // It wins: report what is actually persisted instead of overwriting it.
+      const current = await this.#readRow(namespace);
+      if (current !== undefined) {
+        return {
+          namespace,
+          status: current.status,
+          detail: current.detail ?? undefined,
+        };
+      }
+      continue;
+    }
+
+    const stale = await this.#readRow(namespace);
+    return {
+      namespace,
+      status: stale?.status ?? 'failed',
+      detail:
+        stale?.detail ??
+        'The session authority record kept changing during recovery',
+    };
   }
 
-  async #decide(
+  /**
+   * Decides everything that does not need credentials or a resume.
+   *
+   * @remarks
+   *
+   * `undefined` means the session is eligible for a service-origin resume and
+   * must go through admission.
+   */
+  #precheck(
     namespace: Namespace,
     row: RecoveryRow,
-  ): Promise<RecoveryOutcome> {
+  ): RecoveryOutcome | undefined {
     const record = (status: RecoveryStatus, detail?: string) => ({
       namespace,
       status,
@@ -454,60 +609,50 @@ class StartupRecovery implements AiRecovery {
       );
     }
 
-    const resolver = this.#resolvers
-      .get(namespace.pluginId)
-      ?.get(row.definition_version);
-    if (resolver === undefined) {
+    if (
+      this.#resolvers.get(namespace.pluginId)?.get(row.definition_version) ===
+      undefined
+    ) {
       return record(
         'blocked-definition',
         `No recovery resolver for the '${namespace.pluginId}' plugin registered definition version '${row.definition_version}'; the session cannot be reconstructed`,
       );
     }
 
-    let credentials: BackstageCredentials;
-    try {
-      credentials = await this.#options.getOwnServiceCredentials();
-      const principal = credentials?.principal as { type?: string } | undefined;
-      if (principal?.type !== 'service') {
-        throw new Error(
-          'the plugin credential source did not return service credentials',
-        );
-      }
-    } catch (error) {
-      return record(
-        'blocked-credentials',
-        `Fresh service credentials for the '${
-          namespace.pluginId
-        }' plugin could not be obtained: ${describe(error)}`,
-      );
-    }
+    return undefined;
+  }
 
-    try {
-      const resolution = await resolver.resume({
-        namespace,
-        origin: {
-          kind: 'service',
-          pluginId: row.origin_service_plugin_id,
-        },
-        definitionVersion: row.definition_version,
-        credentials,
+  /** Writes an outcome only if the authority record is unchanged. */
+  async #persist(
+    namespace: Namespace,
+    revision: string,
+    outcome: RecoveryOutcome,
+  ): Promise<boolean> {
+    const updated = await this.#options
+      .db(TABLE)
+      .where({
+        plugin_id: namespace.pluginId,
+        session_id: namespace.sessionId,
+        revision,
+      })
+      .update({
+        status: outcome.status,
+        detail: outcome.detail ?? null,
+        revision: this.#options.db.raw('revision + 1'),
+        updated_at: this.#options.db.fn.now(),
       });
-      switch (resolution.kind) {
-        case 'resumed':
-          return record('recovered');
-        case 'blocked-definition':
-          return record('blocked-definition', resolution.reason);
-        case 'failed':
-          return record('failed', resolution.reason);
-        default:
-          return record(
-            'failed',
-            `The '${namespace.pluginId}' plugin resolver returned an unknown resolution`,
-          );
-      }
-    } catch (error) {
-      return record('failed', describe(error));
-    }
+    return updated === 1;
+  }
+
+  async #readRow(namespace: Namespace): Promise<RecoveryRow | undefined> {
+    return this.#options
+      .db(TABLE)
+      .where({
+        plugin_id: namespace.pluginId,
+        session_id: namespace.sessionId,
+      })
+      .select(...ROW_COLUMNS)
+      .first();
   }
 
   #assertNamespace(namespace: Namespace): void {
@@ -535,6 +680,43 @@ class StartupRecovery implements AiRecovery {
 
 function describe(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+function sameAuthority(left: RecoveryRow, right: RecoveryRow): boolean {
+  return (
+    left.origin_kind === right.origin_kind &&
+    left.origin_user_id === right.origin_user_id &&
+    left.origin_service_plugin_id === right.origin_service_plugin_id &&
+    left.definition_version === right.definition_version &&
+    Boolean(left.dispatch_unknown) === Boolean(right.dispatch_unknown)
+  );
+}
+
+function describeRecorded(row: {
+  origin_kind: string;
+  origin_user_id: string | null;
+  origin_service_plugin_id: string | null;
+  definition_version: string;
+}): string {
+  const origin =
+    row.origin_kind === 'user'
+      ? `user '${row.origin_user_id}'`
+      : `service '${row.origin_service_plugin_id}'`;
+  return `origin ${origin} at definition version '${row.definition_version}'`;
+}
+
+function describeAttempted(
+  columns: {
+    origin_kind: string;
+    origin_user_id: string | null;
+    origin_service_plugin_id: string | null;
+  },
+  definitionVersion: string,
+): string {
+  return describeRecorded({
+    ...columns,
+    definition_version: definitionVersion,
+  });
 }
 
 /**

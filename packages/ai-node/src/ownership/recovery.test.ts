@@ -146,6 +146,45 @@ function resolver(overrides: Partial<RecoveryResolver> = {}): RecoveryResolver {
   };
 }
 
+function deferred<T = void>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>(done => {
+    resolve = done;
+  });
+  return { promise, resolve };
+}
+
+/** Inserts a recovery record directly, as another writer or probe would. */
+async function insertRawSession(
+  state: Fixture,
+  overrides: Record<string, unknown>,
+) {
+  await state.db('ai_recovery_sessions').insert({
+    plugin_id: pluginId,
+    session_id: namespace.sessionId,
+    origin_kind: 'service',
+    origin_user_id: null,
+    origin_service_plugin_id: pluginId,
+    definition_version: 'v1',
+    dispatch_unknown: false,
+    status: 'pending',
+    detail: null,
+    revision: 0,
+    updated_at: state.db.fn.now(),
+    ...overrides,
+  });
+}
+
+function gateCredentials(state: Fixture) {
+  const requested = deferred();
+  const release = deferred<BackstageCredentials>();
+  state.getOwnServiceCredentials.mockImplementation(async () => {
+    requested.resolve();
+    return release.promise;
+  });
+  return { requested: requested.promise, release };
+}
+
 const engines: [string, 'sqlite' | 'pg'][] = [['sqlite', 'sqlite']];
 if (pgUrl) engines.push(['postgres', 'pg']);
 else
@@ -449,5 +488,149 @@ describe.each(engines)('%s startup recovery', (_name, engine) => {
     await expect(
       current.recovery.markDispatchUnknown({ pluginId, sessionId: 'missing' }),
     ).rejects.toThrow('unknown AI session');
+  });
+
+  it('blocks a foreign service-plugin origin without consulting credentials or resuming', async () => {
+    const resume = jest.fn(async (_input: RecoveryResumeInput) => ({
+      kind: 'resumed' as const,
+    }));
+    current.recovery.registerResolver(resolver({ resume }));
+    current.recovery.completeStartup();
+    await current.lease.acquire(namespace, 'replica-a');
+    await insertRawSession(current, {
+      origin_service_plugin_id: 'someone-else',
+    });
+
+    const report = await current.recovery.recover();
+
+    expect(report.outcomes[0]).toEqual({
+      namespace,
+      status: 'blocked-credentials',
+      detail:
+        "The session originated as service work for the 'someone-else' plugin and cannot be resumed as the 'consumer' plugin",
+    });
+    expect(current.getOwnServiceCredentials).not.toHaveBeenCalled();
+    expect(resume).not.toHaveBeenCalled();
+    const raw = await current.db('ai_recovery_sessions').first();
+    expect(raw.origin_service_plugin_id).toBe('someone-else');
+    expect(raw.status).toBe('blocked-credentials');
+  });
+
+  it('never overwrites a dispatch-unknown marker recorded while a resume was running', async () => {
+    const started = deferred();
+    const release = deferred();
+    current.recovery.registerResolver(
+      resolver({
+        resume: async (_input: RecoveryResumeInput) => {
+          started.resolve();
+          await release.promise;
+          return { kind: 'resumed' as const };
+        },
+      }),
+    );
+    current.recovery.completeStartup();
+    await persist(current, namespace, { kind: 'service', pluginId });
+
+    const pass = current.recovery.recover();
+    await started.promise;
+    // A send attempt whose outcome is unknown lands mid-resume.
+    await current.recovery.markDispatchUnknown(namespace);
+    release.resolve();
+
+    const report = await pass;
+    expect(report.outcomes[0].status).toBe('unknown-dispatch-outcome');
+
+    const raw = await current.db('ai_recovery_sessions').first();
+    expect(Boolean(raw.dispatch_unknown)).toBe(true);
+    expect(raw.status).toBe('unknown-dispatch-outcome');
+
+    // The durable uncertainty still wins on the next pass.
+    const again = await current.recovery.recover();
+    expect(again.outcomes[0].status).toBe('unknown-dispatch-outcome');
+  });
+
+  it('refuses to relabel a service-origin session while its resume is admitted', async () => {
+    current.recovery.registerResolver(resolver());
+    current.recovery.completeStartup();
+    await persist(current, namespace, { kind: 'service', pluginId });
+    const gate = gateCredentials(current);
+
+    const pass = current.recovery.recover();
+    await gate.requested;
+
+    await expect(
+      current.recovery.recordSession({
+        namespace,
+        origin: { kind: 'user', userId: 'user:default/alice' },
+        definitionVersion: 'v1',
+      }),
+    ).rejects.toThrow('immutable for its execution generation');
+
+    gate.release.resolve(serviceCredentials());
+    const report = await pass;
+
+    expect(report.outcomes[0].status).toBe('recovered');
+    const raw = await current.db('ai_recovery_sessions').first();
+    expect(raw.origin_kind).toBe('service');
+    expect(raw.origin_service_plugin_id).toBe(pluginId);
+    expect(raw.status).toBe('recovered');
+  });
+
+  it('does not admit a resume decided from a superseded origin record', async () => {
+    const resume = jest.fn(async (_input: RecoveryResumeInput) => ({
+      kind: 'resumed' as const,
+    }));
+    current.recovery.registerResolver(resolver({ resume }));
+    current.recovery.completeStartup();
+    await persist(current, namespace, { kind: 'service', pluginId });
+    const gate = gateCredentials(current);
+
+    const pass = current.recovery.recover();
+    await gate.requested;
+
+    // Another writer replaces the authority record after enumeration started.
+    await current
+      .db('ai_recovery_sessions')
+      .where({ plugin_id: pluginId, session_id: namespace.sessionId })
+      .update({
+        origin_kind: 'user',
+        origin_user_id: 'user:default/alice',
+        origin_service_plugin_id: null,
+        revision: current.db.raw('revision + 1'),
+      });
+
+    gate.release.resolve(serviceCredentials());
+    const report = await pass;
+
+    expect(report.outcomes[0].status).toBe('needs-reauth');
+    expect(resume).not.toHaveBeenCalled();
+    const raw = await current.db('ai_recovery_sessions').first();
+    expect(raw.origin_kind).toBe('user');
+    expect(raw.status).toBe('needs-reauth');
+  });
+
+  it('does not admit a resume for a definition version that changed after enumeration', async () => {
+    const resume = jest.fn(async (_input: RecoveryResumeInput) => ({
+      kind: 'resumed' as const,
+    }));
+    current.recovery.registerResolver(resolver({ resume }));
+    current.recovery.completeStartup();
+    await persist(current, namespace, { kind: 'service', pluginId });
+    const gate = gateCredentials(current);
+
+    const pass = current.recovery.recover();
+    await gate.requested;
+
+    await current
+      .db('ai_recovery_sessions')
+      .where({ plugin_id: pluginId, session_id: namespace.sessionId })
+      .update({ definition_version: 'v2' });
+
+    gate.release.resolve(serviceCredentials());
+    const report = await pass;
+
+    expect(report.outcomes[0].status).toBe('blocked-definition');
+    expect(report.outcomes[0].detail).toContain("definition version 'v2'");
+    expect(resume).not.toHaveBeenCalled();
   });
 });

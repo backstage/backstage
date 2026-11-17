@@ -100,6 +100,28 @@ export class KnexNamespaceLease implements NamespaceLease {
     return executor.raw(`${liveCondition(this.#dialect)} as live`);
   }
 
+  /**
+   * Takes the row lock in a statement that does not read the clock.
+   *
+   * @remarks
+   *
+   * The expiry decision must be made by a *later* statement: PostgreSQL
+   * evaluates `statement_timestamp()` when a statement starts, which is before
+   * it waits for a row lock. Deciding inside the locking statement can
+   * therefore revive a fence that expired during the wait. Locking first, then
+   * deciding in a fresh statement, is the storage adapter's protocol. SQLite has
+   * a single writer, so there the write lock statement itself is enough.
+   */
+  async #lockRow(trx: Knex.Transaction, key: LeaseKey): Promise<void> {
+    if (this.#dialect === 'pg') {
+      await trx(TABLE).where(key).forUpdate().select('token').first();
+      return;
+    }
+    await trx(TABLE)
+      .where(key)
+      .update({ owner_id: trx.raw('owner_id') });
+  }
+
   async acquire(
     namespace: Namespace,
     owner: string,
@@ -111,20 +133,13 @@ export class KnexNamespaceLease implements NamespaceLease {
     const key = keyOf(namespace);
 
     return inTransaction(this.#db, async trx => {
-      // PostgreSQL locks the existing row outright; SQLite relies on the
-      // conditional statements below, whose compare-and-swap clauses are
-      // evaluated against the committed row while the write lock is held.
-      const row: LeaseRow | undefined =
-        this.#dialect === 'pg'
-          ? await trx(TABLE)
-              .where(key)
-              .forUpdate()
-              .select('owner_id', tokenColumn(trx), this.#live(trx))
-              .first()
-          : await trx(TABLE)
-              .where(key)
-              .select('owner_id', tokenColumn(trx), this.#live(trx))
-              .first();
+      // Lock first, then observe the row and its liveness in a fresh
+      // statement, so a lock wait cannot carry a stale database clock.
+      await this.#lockRow(trx, key);
+      const row: LeaseRow | undefined = await trx(TABLE)
+        .where(key)
+        .select('owner_id', tokenColumn(trx), this.#live(trx))
+        .first();
 
       if (!row) {
         try {
@@ -176,15 +191,23 @@ export class KnexNamespaceLease implements NamespaceLease {
 
   async renew(fence: Fence): Promise<boolean> {
     assertFence(fence);
-    const updated = await this.#db(TABLE)
-      .where({
-        ...keyOf(fence.namespace),
-        owner_id: fence.owner,
-        token: fence.token,
-      })
-      .whereRaw(liveCondition(this.#dialect))
-      .update({ expires_at: this.#expiry() });
-    return updated === 1;
+    const key = keyOf(fence.namespace);
+    return inTransaction(this.#db, async trx => {
+      // Serialize on the row first, then let a fresh statement decide whether
+      // this generation is still live. Without the separate decision statement
+      // PostgreSQL would answer from the clock captured before the lock wait and
+      // could renew a lease that expired while it waited.
+      await this.#lockRow(trx, key);
+      const updated = await trx(TABLE)
+        .where({
+          ...key,
+          owner_id: fence.owner,
+          token: fence.token,
+        })
+        .whereRaw(liveCondition(this.#dialect))
+        .update({ expires_at: this.#expiry() });
+      return updated === 1;
+    });
   }
 
   async release(fence: Fence): Promise<void> {
