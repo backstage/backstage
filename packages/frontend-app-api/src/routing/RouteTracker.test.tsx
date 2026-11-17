@@ -150,6 +150,44 @@ describe('RouteTracker', () => {
     );
   });
 
+  it('includes the name of the route ref that the page is mounted with', () => {
+    const routes: BackstageRouteObject[] = [
+      {
+        ...routeObjects[1],
+        appNode: {
+          spec: {
+            extension: { id: 'plugin1.page.index' },
+            plugin: { pluginId: 'plugin1', routes: { root: routeRef1 } },
+          },
+        } as unknown as AppNode,
+      },
+    ];
+    render(
+      <TestApiProvider
+        apis={[
+          [analyticsApiRef, mockedAnalytics],
+          [
+            appHistoryApiRef,
+            mockApis.appHistory({ initialLocation: '/path/foo/bar' }),
+          ],
+        ]}
+      >
+        <RouteTracker routeObjects={routes} />
+      </TestApiProvider>,
+    );
+    expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith({
+      action: 'navigate',
+      attributes: { p1: 'foo', p2: 'bar' },
+      context: {
+        pluginId: 'plugin1',
+        extensionId: 'plugin1.page.index',
+        routeRef: 'plugin1.root',
+      },
+      subject: '/path/foo/bar',
+      value: undefined,
+    });
+  });
+
   it('should capture the navigate event on load', async () => {
     renderWithNavigation('/path/foo/bar');
 

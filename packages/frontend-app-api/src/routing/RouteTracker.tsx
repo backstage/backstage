@@ -27,6 +27,26 @@ import { useAppHistoryLocation } from '@internal/frontend';
 import { BackstageRouteObject } from './types';
 
 /**
+ * Returns the name of the route ref that a route object is mounted with, in
+ * the form `<pluginId>.<routeKey>`, where `routeKey` is the key of the route
+ * ref in the plugin's `routes`. Returns undefined if the route object has no
+ * single route ref, or if it isn't one of the plugin's routes.
+ */
+const getRouteRefName = (
+  routeObject: BackstageRouteObject,
+): string | undefined => {
+  if (routeObject.routeRefs.size !== 1) {
+    return undefined;
+  }
+  const routeRef = routeObject.routeRefs.values().next().value;
+  const plugin = routeObject.appNode?.spec.plugin;
+  const routeKey = Object.entries(plugin?.routes ?? {}).find(
+    ([, ref]) => ref === routeRef,
+  )?.[0];
+  return plugin && routeKey ? `${plugin.pluginId}.${routeKey}` : undefined;
+};
+
+/**
  * Returns an extension context given the current pathname and a list of
  * Backstage route objects.
  */
@@ -73,11 +93,13 @@ const getExtensionContext = (
 
     const plugin = routeObject.appNode?.spec.plugin;
     const extension = routeObject.appNode?.spec.extension;
+    const routeRef = getRouteRefName(routeObject);
 
     return {
       params,
       pluginId: plugin?.pluginId || 'root',
       extensionId: extension?.id || 'App',
+      ...(routeRef ? { routeRef } : {}),
     };
   } catch {
     return undefined;
