@@ -20,8 +20,9 @@ import {
 } from '@earendil-works/chord/context';
 import { Harness, type Storage } from '@earendil-works/pi-durable';
 import type { AnyModel, Credential, Models } from '@earendil-works/pi-ai';
+import { resolveAzureConfig } from '@earendil-works/pi-ai/api/azure-openai-config';
 import type { Knex } from 'knex';
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { JsonObject } from '@backstage/types';
 import type { AiCredentialStores, CredentialScope } from './credentials/types';
@@ -62,22 +63,60 @@ import type {
 import type { Namespace } from './contracts';
 
 /**
- * The endpoint path each guarded provider API appends to the model's base
- * URL.
+ * Builds the canonical destination for a certified adapter from the host's
+ * canonical model alone.
  *
  * @remarks
  *
- * Must stay in sync with the endpoint enforcement in the guard's request
- * validation, which rejects any request whose path does not end in the
- * expected endpoint for the operation's API.
+ * Each certified provider adapter has a complete endpoint contract, and the
+ * guard compares the full request URL against this destination exactly: the
+ * Azure adapter normalizes the base URL and appends its mandatory
+ * `api-version` query, and the Codex adapter appends its `/codex/responses`
+ * path. Query parameters the SDK adds beyond the contract (for example the
+ * Anthropic beta flag) remain covered by the guard's SDK parameter allowlist.
  */
-const API_ENDPOINT_PATHS = {
-  'openai-responses': '/responses',
-  'openai-completions': '/chat/completions',
-  'azure-openai-responses': '/responses',
-  'openai-codex-responses': '/responses',
-  'anthropic-messages': '/messages',
-} as const;
+function canonicalDestination(
+  api: TrustedOperation['api'],
+  model: AnyModel,
+  env: Record<string, string> | undefined,
+): string {
+  const baseUrl = (model.baseUrl ?? '').replace(/\/+$/, '');
+  switch (api) {
+    case 'azure-openai-responses': {
+      const azure = resolveAzureConfig(model as never, { env });
+      return `${azure.baseUrl}/responses?api-version=${azure.apiVersion}`;
+    }
+    case 'openai-codex-responses':
+      return `${baseUrl}/codex/responses`;
+    case 'openai-completions':
+      return `${baseUrl}/chat/completions`;
+    case 'anthropic-messages':
+      // The Anthropic SDK appends the versioned path to the base URL.
+      return `${baseUrl}/v1/messages`;
+    default:
+      return `${baseUrl}/responses`;
+  }
+}
+
+/** The adapter APIs the guard certifies; anything else fails closed. */
+const CERTIFIED_APIS = [
+  'openai-responses',
+  'openai-completions',
+  'azure-openai-responses',
+  'openai-codex-responses',
+  'anthropic-messages',
+] as const;
+
+/** Deeply freezes the host-supplied canonical catalog at integration time. */
+function deepFreeze<T>(value: T): T {
+  if (value !== null && typeof value === 'object') {
+    for (const key of Object.getOwnPropertyNames(value)) {
+      deepFreeze((value as Record<string, unknown>)[key]);
+    }
+    Object.freeze(value);
+  }
+  return value;
+}
 
 /** The recovery session table written by the ownership module. */
 const RECOVERY_SESSIONS_TABLE = 'ai_recovery_sessions';
@@ -116,6 +155,12 @@ export interface ProductionAiServiceIntegration extends AiServiceIntegration {
   onNamespaceInvalidated(callback: (namespace: Namespace) => void): void;
   /** The plugin-scoped startup recovery owned by this integration. */
   readonly recovery: AiRecovery;
+  /**
+   * The model operation guard of this integration, already wired to the
+   * journal and recheck. Exposed so composed tests can drive unverified
+   * provenance through the real wiring.
+   */
+  readonly guard: ModelOperationGuard;
 }
 
 /** Per-open state the integration keeps for release and invalidation. */
@@ -123,6 +168,23 @@ type OpenState = {
   readonly harness: Harness;
   readonly fence: NonNullable<Awaited<ReturnType<NamespaceLease['acquire']>>>;
   readonly keepalive: LeaseKeepalive;
+  /** Namespace key of the acquisition this state belongs to. */
+  readonly namespaceKey: string;
+};
+
+/**
+ * The authority context of the most recent acquisition of a live namespace.
+ *
+ * @remarks
+ *
+ * A reused live harness serves every acquisition of the namespace, so the
+ * guard context — the acquiring call's original credentials and the provider
+ * authorities resolved for them — is refreshed on every acquisition, never
+ * retained from the first one.
+ */
+type NamespaceAuthority = {
+  readonly credentials: BackstageCredentials;
+  readonly authorities: ReadonlyMap<string, ResolvedAuthority>;
 };
 
 /** A resolved provider authority and its identity for recheck. */
@@ -130,6 +192,8 @@ type ResolvedAuthority = {
   readonly scope: CredentialScope;
   readonly generation: string;
   readonly authority: GuardedModelBinding['authority'];
+  /** Provider-scoped environment from the credential, e.g. Azure overrides. */
+  readonly env: Record<string, string> | undefined;
 };
 
 function principalOf(
@@ -176,7 +240,7 @@ export async function createAiServiceIntegration(
 ): Promise<ProductionAiServiceIntegration> {
   const { deps } = options;
   const credentialStores = options.credentialStores;
-  const catalog = options.models ?? [];
+  const catalog = (options.models ?? []).map(deepFreeze);
   const db: Knex = await deps.database.getClient();
   const pluginId = deps.pluginMetadata.getId();
 
@@ -308,26 +372,37 @@ export async function createAiServiceIntegration(
   const openStates = new Map<NativeHarnessHandle, OpenState>();
   const invalidationCallbacks: Array<(namespace: Namespace) => void> = [];
 
+  // Instance-unique lease owner component: two service instances of the same
+  // plugin principal must hold competing leases, not one shared generation.
+  const instanceId = randomUUID();
+  // The authority context of the most recent acquisition per live namespace.
+  const namespaceAuthorities = new Map<string, NamespaceAuthority>();
+
   /**
    * Builds the synchronous resolve contract the guarded model operations
-   * require: provider authorities are pre-resolved per acquisition, so
-   * dispatch either presents a complete trusted operation or a journaled
-   * denial.
+   * require. The binding derives ONLY from the host's canonical catalog and
+   * the current acquisition's authority: the caller's model object
+   * contributes identity fields (provider, model ID) for the catalog lookup
+   * and nothing else — its transport-derived fields (baseUrl, headers, and
+   * anything else a hook may have mutated) are never consulted, so a forged
+   * model copy cannot redirect dispatch or credentials.
    */
   function makeResolve(
     input: OpenNativeHarnessInput,
     fence: OpenState['fence'],
-    authorities: ReadonlyMap<string, ResolvedAuthority>,
+    authority: () => NamespaceAuthority,
   ): (model: AnyModel, operation: ModelOperation) => GuardedModelBinding {
-    // The guarded binding carries chat models; the resolve contract is
-    // typed through the guard's own binding shape.
     const sessionRef = `${input.namespace.pluginId}/${input.namespace.sessionId}`;
     let callOrdinal = 0;
     return (model, operation) => {
-      const api = model.api as TrustedOperation['api'];
+      const canonical = catalog.find(
+        entry => entry.provider === model.provider && entry.id === model.id,
+      );
+      const bindingModel = model as GuardedModelBinding['model'];
+      const current = authority();
       const trusted: TrustedOperation = {
         actor: input.owner,
-        credentials: input.credentials,
+        credentials: current.credentials,
         provenance: {
           origin: 'verified' as const,
           conversationId: sessionRef,
@@ -341,14 +416,23 @@ export async function createAiServiceIntegration(
         modelId: model.id,
         resolvedModel: model.id,
         operation,
-        api,
-        destination: `${model.baseUrl}${API_ENDPOINT_PATHS[api]}`,
+        api: (canonical ?? model).api as TrustedOperation['api'],
+        destination: 'unresolved://model',
         credentialScope: { kind: 'org' },
         credentialGeneration: 'unresolved',
         controller: new AbortController(),
       };
-      const bindingModel = model as GuardedModelBinding['model'];
-      const resolved = authorities.get(model.provider);
+      if (canonical === undefined) {
+        throw new GuardedResolutionError(
+          {
+            operation: trusted,
+            model: bindingModel,
+            authority: { kind: 'apiKey' },
+          },
+          `model not resolved: '${model.provider}/${model.id}' is not in the canonical catalog of this installation`,
+        );
+      }
+      const resolved = current.authorities.get(canonical.provider);
       if (resolved === undefined) {
         throw new GuardedResolutionError(
           {
@@ -359,16 +443,70 @@ export async function createAiServiceIntegration(
           'provider credentials are not configured for this installation',
         );
       }
+      const api = canonical.api as TrustedOperation['api'];
+      if (!CERTIFIED_APIS.includes(api)) {
+        throw new GuardedResolutionError(
+          {
+            operation: trusted,
+            model: bindingModel,
+            authority: { kind: 'apiKey' },
+          },
+          'unsupported model transport for the canonical model',
+        );
+      }
       return {
-        operation: { ...trusted, ...resolvedAuthorityFields(resolved) },
-        model: bindingModel,
+        operation: {
+          ...trusted,
+          api,
+          resolvedModel: canonical.id,
+          destination: canonicalDestination(api, canonical, resolved.env),
+          ...resolvedAuthorityFields(resolved),
+        },
+        model: canonical as GuardedModelBinding['model'],
         authority: resolved.authority,
       };
     };
   }
 
+  /**
+   * Journals the local denial of a dispatch whose model never resolved, so a
+   * missing catalog is auditable like a missing credential. The destination
+   * is absent: a local rejection never resolved one.
+   */
+  function journalUnresolvedModel(
+    input: OpenNativeHarnessInput,
+    fence: OpenState['fence'],
+    provider: string,
+    modelId: string,
+  ): void {
+    const sessionRef = `${input.namespace.pluginId}/${input.namespace.sessionId}`;
+    void journal
+      .recordDecisionAndIntent(fence, {
+        actor: input.owner,
+        conversationId: sessionRef,
+        taskId: sessionRef,
+        callId: `${sessionRef}#unresolved-${randomUUID().slice(0, 8)}`,
+        definitionVersion: input.registryVersion,
+        configVersion: input.configVersion,
+        provider,
+        model: modelId,
+        // The closed operation vocabulary classifies dispatch operations;
+        // the generation entry is the dispatch this resolution preempted.
+        operation: 'models.streamSimple',
+        attempt: 1,
+        decision: 'deny',
+        reason: `model not resolved: '${provider}/${modelId}' is not in the canonical catalog of this installation`,
+      })
+      .catch(error => {
+        deps.logger.warn(
+          `Failed to journal a model-resolution denial: ${error}`,
+        );
+      });
+  }
+
   const integration: ProductionAiServiceIntegration = {
     recovery,
+    guard,
 
     onNamespaceInvalidated(callback) {
       invalidationCallbacks.push(callback);
@@ -418,13 +556,63 @@ export async function createAiServiceIntegration(
           );
         }
       }
+      // Every admitted operation is associated with its acquiring call's
+      // verified original credentials. A live namespace admits exactly one
+      // authority: until per-handle binding exists, reuse under a different
+      // credentials object fails closed rather than transferring authority
+      // to the newest caller or retaining the first caller's.
+      const key = JSON.stringify([
+        binding.namespace.pluginId,
+        binding.namespace.sessionId,
+      ]);
+      const existing = namespaceAuthorities.get(key);
+      if (
+        existing !== undefined &&
+        existing.credentials !== binding.credentials
+      ) {
+        throw new Error(
+          `The AI session '${binding.namespace.sessionId}' of the '${pluginId}' plugin is live under a different verified authority; release the existing handles before acquiring it with different credentials`,
+        );
+      }
+      const providers = new Set<string>(catalog.map(model => model.provider));
+      if (binding.model !== undefined) {
+        providers.add(binding.model.provider);
+      }
+      const authorities = new Map<string, ResolvedAuthority>();
+      for (const providerId of providers) {
+        const resolved = await resolveAuthority(
+          providerId,
+          binding.credentials,
+        );
+        if (resolved !== undefined) {
+          authorities.set(providerId, resolved);
+        }
+      }
+      namespaceAuthorities.set(key, {
+        credentials: binding.credentials,
+        authorities,
+      });
     },
 
     async openNativeHarness(
       input: OpenNativeHarnessInput,
     ): Promise<NativeHarnessHandle> {
-      const fence = await lease.acquire(input.namespace, input.owner);
+      // The lease owner is the principal key plus an instance-unique
+      // component: within one instance the same-owner re-acquire semantics
+      // apply, while two instances of the same principal compete through the
+      // lease protocol instead of sharing one generation.
+      const fence = await lease.acquire(
+        input.namespace,
+        `${input.owner}:${instanceId}`,
+      );
+      const key = JSON.stringify([
+        input.namespace.pluginId,
+        input.namespace.sessionId,
+      ]);
       if (fence === undefined) {
+        // This acquisition did not open the namespace: drop its authority
+        // binding so a later acquisition is not compared against it.
+        namespaceAuthorities.delete(key);
         throw new Error(
           `The AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin is held by another live lease; retry once the current owner releases it`,
         );
@@ -436,47 +624,55 @@ export async function createAiServiceIntegration(
           namespace: input.namespace,
           fence,
         });
-        // Pre-resolve provider authorities for this acquisition: every
-        // provider the catalog or the configured model can dispatch to.
-        const providers = new Set<string>(catalog.map(m => m.provider));
-        if (input.model !== undefined) {
-          providers.add(input.model.provider);
-        }
-        const authorities = new Map<string, ResolvedAuthority>();
-        for (const providerId of providers) {
-          const resolved = await resolveAuthority(
-            providerId,
-            input.credentials,
-          );
-          if (resolved !== undefined) {
-            authorities.set(providerId, resolved);
-          }
-        }
-        const requests = createGuardedModelOperations({
-          guard,
-          journal,
-          resolve: makeResolve(input, fence, authorities),
-        });
-        const models = {
-          ...requests,
-          // Canonical catalog lookups only; no provider, credential or
-          // administrative access escapes to extensions. Provider auth access
-          // is bound at open (required by the native harness) but fails
-          // closed on every call.
-          getModel: (provider: string, id: string) =>
-            catalog.find(
-              model => model.provider === provider && model.id === id,
-            ),
-          getAuth: () => {
+        const authority = (): NamespaceAuthority => {
+          const current = namespaceAuthorities.get(key);
+          if (current === undefined) {
             throw new Error(
-              'Provider auth access is not exposed through the managed AI service',
+              'Model operation denied: no acquisition is bound for this session',
             );
-          },
-        } as unknown as Models;
+          }
+          return current;
+        };
+        // The native harness reads the models source at each use, so every
+        // dispatch binds the CURRENT acquisition's credentials and provider
+        // authorities rather than the first acquisition's.
+        const modelsSource = (): Models => {
+          const requests = createGuardedModelOperations({
+            guard,
+            journal,
+            resolve: makeResolve(input, fence, authority),
+          });
+          return {
+            ...requests,
+            // Canonical catalog lookups only; no provider, credential or
+            // administrative access escapes to extensions. Provider auth
+            // access is bound at open (required by the native harness) but
+            // fails closed on every call.
+            getModel: (provider: string, id: string) => {
+              const canonical = catalog.find(
+                entry => entry.provider === provider && entry.id === id,
+              );
+              if (canonical !== undefined) {
+                return canonical;
+              }
+              // A dispatch that fails model resolution journals a local
+              // denial — a local rejection never resolved a destination —
+              // and the native harness settles the run with its own
+              // no-model availability error.
+              journalUnresolvedModel(input, fence, provider, id);
+              return undefined;
+            },
+            getAuth: () => {
+              throw new Error(
+                'Provider auth access is not exposed through the managed AI service',
+              );
+            },
+          } as unknown as Models;
+        };
         const harness = await Harness.open(
           storage,
           {
-            models,
+            models: modelsSource,
             registry: input.registry,
             ...(input.conversationCreated === undefined
               ? {}
@@ -499,7 +695,12 @@ export async function createAiServiceIntegration(
           harness,
           context: BACKGROUND_CONTEXT as Context,
         };
-        openStates.set(handle, { harness, fence, keepalive });
+        openStates.set(handle, {
+          harness,
+          fence,
+          keepalive,
+          namespaceKey: key,
+        });
         return handle;
       } catch (error) {
         try {
@@ -508,6 +709,9 @@ export async function createAiServiceIntegration(
           /* The open already failed; the lease release below is the arbiter. */
         }
         await lease.release(fence);
+        // This acquisition did not open the namespace: drop its authority
+        // binding so a later acquisition is not compared against it.
+        namespaceAuthorities.delete(key);
         throw error;
       }
     },
@@ -518,6 +722,7 @@ export async function createAiServiceIntegration(
         return;
       }
       openStates.delete(handle);
+      namespaceAuthorities.delete(state.namespaceKey);
       await state.keepalive.stop();
       try {
         // Seals admission, settles accepted commits, and closes the fenced
@@ -581,7 +786,12 @@ function authorityOf(
     return {
       scope,
       generation: generationOf(scope, credential.key),
-      authority: { kind: 'apiKey', apiKey: credential.key },
+      authority: {
+        kind: 'apiKey',
+        apiKey: credential.key,
+        env: credential.env,
+      },
+      env: credential.env as Record<string, string> | undefined,
     };
   }
   return {
@@ -592,6 +802,7 @@ function authorityOf(
       headers: { authorization: `Bearer ${credential.access}` },
       expiresAt: credential.expires,
     },
+    env: undefined,
   };
 }
 
