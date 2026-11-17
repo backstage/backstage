@@ -278,14 +278,17 @@ export function createGuardedModelOperations(options: {
       }
     }
     let guardAttempted = false;
-    let guardFetchRejected = false;
-    // Per-attempt response receipt: the invocation ordinal of the latest
-    // guarded fetch that received a response. A completion is valid only
-    // when the LATEST invoked fetch is the one that responded — a response
-    // to an earlier request can never validate a completion claimed after
-    // a later one was denied.
+    // Per-attempt accounting: the invocation ordinal of the latest guarded
+    // fetch that received a response, and of the latest one that rejected.
+    // A completion is valid only when the LATEST invoked fetch is the one
+    // that responded — a response to an earlier request can never validate
+    // a completion claimed after a later one was denied — and a rejection
+    // from an earlier request must not be mistaken for the latest fetch
+    // having settled, which would skip the abort and pending-fetch
+    // settlement a detached later fetch still needs.
     let invocationCount = 0;
     let respondedInvocation: number | null = null;
+    let rejectedInvocation: number | null = null;
     const pendingFetches = new Set<Promise<unknown>>();
     const callOptions = {
       ...requestOptions,
@@ -302,7 +305,7 @@ export function createGuardedModelOperations(options: {
             respondedInvocation = invocation;
             return response;
           } catch (error) {
-            guardFetchRejected = true;
+            rejectedInvocation = invocation;
             throw error;
           }
         })();
@@ -331,10 +334,11 @@ export function createGuardedModelOperations(options: {
       // valid solely when the LATEST guarded fetch received its own
       // response, per the same per-attempt discipline as the guard.
       receivedGuardedResponse: () => respondedInvocation === invocationCount,
-      // Whether the guarded fetch rejected — the guard has then already
-      // journaled its denial, so a fabrication on top of it must not write
-      // a second deny record.
-      guardFetchRejected: () => guardFetchRejected,
+      // Whether the LATEST invoked guarded fetch rejected — the guard has
+      // then already journaled that attempt's denial, so a fabrication on
+      // top of it must not write a second deny record. A rejection of an
+      // EARLIER fetch does not count: the latest one may still be pending.
+      guardFetchRejected: () => rejectedInvocation === invocationCount,
       // Wait for fetches the provider detached (fired without awaiting).
       settleGuardedFetches: async () => {
         await Promise.allSettled([...pendingFetches]);

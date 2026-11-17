@@ -19,7 +19,7 @@ import { openaiProvider } from '@earendil-works/pi-ai/providers/openai';
 import { createModelOperationGuard } from '../guard/createModelOperationGuard';
 import { createGuardedModelOperations } from '../guard/modelOperations';
 import type { ModelOperation, TrustedOperation } from '../guard/types';
-import type { AttemptDecision } from '../journal/types';
+import type { AttemptDecision, AttemptOutcome } from '../journal/types';
 import type { Fence } from '../contracts';
 import { validateHttpEnvelope } from './httpEnvelope';
 import { createProviderRegistry } from './registry';
@@ -451,4 +451,157 @@ it('rejects fabricated completions while preserving honest error settlements', a
     'outcome',
   ]);
   expect(transport).toHaveBeenCalledTimes(6);
+});
+
+it('aborts a detached later fetch promptly after an earlier fetch failed', async () => {
+  // The reviewer's stale-rejection sequence: attempt 1's transport throws
+  // (allow plus unknown), the provider fires attempt 2 without awaiting,
+  // waits until attempt 2's permission recheck is held, then claims a
+  // fabricated completion. The earlier rejection must not be mistaken for
+  // the latest fetch having settled: the facade aborts the operation
+  // controller and settles the pending fetch in bounded time — the guard's
+  // recheck race makes the abort prompt even while the check is held.
+  const deferred = () => {
+    let resolve!: () => void;
+    const promise = new Promise<void>(r => {
+      resolve = r;
+    });
+    return { promise, resolve };
+  };
+  const entered = deferred();
+  const release = deferred();
+  const events: string[] = [];
+  let checks = 0;
+  const controller = new AbortController();
+  const module: AiProviderModule = {
+    id: 'example-classifier',
+    certifiedOperations: ['classify'],
+    destinationTemplates: [[{ literal: '/v1/classify' }]],
+    destination: () => 'https://provider.example/v1/classify',
+    validateEnvelope: (op, request) =>
+      validateHttpEnvelope({ endpoint: '/classify' }, op, request),
+    adapter: {
+      kind: 'custom',
+      invoke: async ({ model, options }) => {
+        const dispatch = () =>
+          (options.fetch as typeof globalThis.fetch)(
+            'https://provider.example/v1/classify',
+            {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({ model: model.id }),
+            },
+          );
+        try {
+          await dispatch();
+        } catch {
+          /* first network failure */
+        }
+        void dispatch().catch(() => {
+          /* provider detaches its second fetch */
+        });
+        await entered.promise;
+        return { value: 'fabricated', outcome: 'completed' };
+      },
+    },
+  };
+  const providers = createProviderRegistry([module]);
+  const model = { ...openaiProvider().getModels()[0], api: module.id } as never;
+  const canonical = model as unknown as ReturnType<
+    ReturnType<typeof openaiProvider>['getModels']
+  >[number];
+  const journal = {
+    recordDecisionAndIntent: async (_fence: Fence, event: AttemptDecision) => {
+      events.push(`decision:${event.decision}:${event.attempt}`);
+      return String(event.attempt);
+    },
+    recordOutcome: async (
+      _fence: Fence,
+      _id: string,
+      outcome: AttemptOutcome,
+    ) => {
+      events.push(`outcome:${outcome.status}`);
+    },
+    recordRecovery: async () => {},
+    read: async () => ({ items: [] }),
+  };
+  const transport = jest.fn(async () => {
+    throw new Error('first network failure');
+  });
+  const guard = createModelOperationGuard({
+    providers,
+    journal: journal as never,
+    recheck: async () => {
+      checks += 1;
+      if (checks === 2) {
+        entered.resolve();
+        await release.promise;
+        return false;
+      }
+      return true;
+    },
+    transport: transport as unknown as typeof fetch,
+  });
+  const operations = createGuardedModelOperations({
+    providers,
+    guard,
+    journal: journal as never,
+    resolve: (_model, operation: ModelOperation) => {
+      const op: TrustedOperation = {
+        actor: 'user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        provenance: {
+          origin: 'verified',
+          conversationId: '1',
+          taskId: '2',
+          callId: '3',
+        },
+        fence: {
+          namespace: { pluginId: 'test', sessionId: 's' },
+          owner: 'owner',
+          token: '1',
+        },
+        definitionVersion: 'v1',
+        configVersion: 'v1',
+        provider: canonical.provider,
+        modelId: canonical.id,
+        resolvedModel: canonical.id,
+        operation,
+        api: module.id,
+        destination: module.destination(canonical, undefined),
+        credentialScope: { kind: 'user', id: 'user:default/alice' },
+        credentialGeneration: '1',
+        controller,
+      };
+      return {
+        operation: op,
+        model: canonical,
+        authority: { kind: 'apiKey', apiKey: 'key' },
+      };
+    },
+  });
+  const result = operations.classify(model, {} as never).then(
+    () => 'resolved',
+    (error: Error) => error.message,
+  );
+  try {
+    // Bounded: the fabrication is rejected within the window even though
+    // the second attempt's recheck is still held.
+    const raced = await Promise.race([
+      result,
+      new Promise<'timeout'>(resolve =>
+        setTimeout(() => resolve('timeout'), 500),
+      ),
+    ]);
+    expect(raced).toBe('fabricated provider result');
+    expect(controller.signal.aborted).toBe(true);
+    expect(events).toEqual([
+      'decision:allow:1',
+      'outcome:unknown',
+      'decision:deny:2',
+    ]);
+    expect(transport).toHaveBeenCalledTimes(1);
+  } finally {
+    release.resolve();
+  }
 });
