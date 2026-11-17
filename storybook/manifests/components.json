@@ -12010,6 +12010,11 @@
           "snippet": "const WithGroupedTabs = () => <Header tabs={groupedTabs} />;"
         },
         {
+          "id": "backstage-ui-header--with-many-tabs",
+          "name": "With Many Tabs",
+          "snippet": "const WithManyTabs = () => <Header\n    tabs={[\n      ...tabs,\n      ...[\n        'Dependencies',\n        'Deployments',\n        'Pull Requests',\n        'Documentation',\n        'API Definition',\n        'Cost Insights',\n        'Security Scans',\n        'Feature Flags',\n        'On-call Schedule',\n      ].map(label => ({\n        id: label.toLowerCase().replace(/ /g, '-'),\n        label,\n        href: `/${label.toLowerCase().replace(/ /g, '-')}`,\n      })),\n    ]} />;"
+        },
+        {
           "id": "backstage-ui-header--with-explicit-active-tab",
           "name": "With Explicit Active Tab",
           "snippet": "const WithExplicitActiveTab = () => <Header tabs={tabs} activeTabId=\"campaigns\" />;"
@@ -18057,6 +18062,6 @@
   },
   "meta": {
     "docgen": "react-docgen",
-    "durationMs": 4585
+    "durationMs": 3357
   }
 }

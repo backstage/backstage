@@ -620,13 +620,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">54 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/54 infos</a><a class="filter-pill" data-k="no-api" href="#filter-no-api">7/54 without API description</a><span class="filter-pill ok" aria-disabled="true">552 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">54 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/54 infos</a><a class="filter-pill" data-k="no-api" href="#filter-no-api">7/54 without API description</a><span class="filter-pill ok" aria-disabled="true">553 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>4.6s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.4s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -8125,7 +8125,7 @@ style?: CSSProperties</code></pre>
       <div class="badges">
         <label for="c-23-backstage-ui-header-props" class="badge ok as-toggle">10 prop types</label>
         
-        <label for="c-23-backstage-ui-header-stories" class="badge ok as-toggle">19 stories</label>
+        <label for="c-23-backstage-ui-header-stories" class="badge ok as-toggle">20 stories</label>
         
         
       </div>
@@ -8519,6 +8519,34 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const WithGroupedTabs = () =&gt; &lt;Header tabs={groupedTabs} /&gt;;</code></pre>
+              
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Many Tabs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithManyTabs = () =&gt; &lt;Header
+    tabs={[
+      ...tabs,
+      ...[
+        &#39;Dependencies&#39;,
+        &#39;Deployments&#39;,
+        &#39;Pull Requests&#39;,
+        &#39;Documentation&#39;,
+        &#39;API Definition&#39;,
+        &#39;Cost Insights&#39;,
+        &#39;Security Scans&#39;,
+        &#39;Feature Flags&#39;,
+        &#39;On-call Schedule&#39;,
+      ].map(label =&gt; ({
+        id: label.toLowerCase().replace(/ /g, &#39;-&#39;),
+        label,
+        href: `/${label.toLowerCase().replace(/ /g, &#39;-&#39;)}`,
+      })),
+    ]} /&gt;;</code></pre>
               
             </div>
             <div class="note ok">
