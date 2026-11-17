@@ -14,12 +14,16 @@ APIs provided by the frontend system. For example, use `coreApis.config` to read
 configuration, `coreApis.identity` to access the signed-in user's identity, and
 `coreApis.toast` to display notifications.
 
+`coreApis` is a plain object of API refs. Its declaration uses erasable TypeScript
+syntax, without runtime TypeScript namespaces. This does not imply that the
+entire package or its dependencies can be executed directly by Node.js.
+
 Framework infrastructure APIs are grouped under `coreApis.internal`:
 `appLifecycle`, `oauthRequest`, `pluginHeaderActions`, `pluginWrapper`, and
 `swappableComponents`. These support app initialization, authentication
 coordination, and rendering infrastructure. Plugins normally use higher-level
 abstractions such as `PluginWrapperBlueprint`, `PluginHeaderActionBlueprint`,
-and `createSwappableComponent`. The nested namespace is public;
+and `createSwappableComponent`. The nested object is public;
 `coreApis.internal` identifies the intended audience rather than a different
 stability level.
 

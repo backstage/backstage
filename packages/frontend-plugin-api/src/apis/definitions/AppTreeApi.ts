@@ -118,7 +118,7 @@ export interface AppTreeApi {
  * The `ApiRef` of {@link AppTreeApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.appTree} instead.
+ * @deprecated Use {@link CoreApis.appTree | coreApis.appTree} instead.
  */
 export const appTreeApiRef = createApiRef<AppTreeApi>().with({
   id: 'core.app-tree',

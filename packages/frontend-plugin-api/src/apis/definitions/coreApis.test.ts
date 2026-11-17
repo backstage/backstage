@@ -14,15 +14,45 @@
  * limitations under the License.
  */
 
+import { readFileSync } from 'node:fs';
+import { stripTypeScriptTypes } from 'node:module';
+import { ConfigReader } from '@backstage/config';
 import * as apis from '../../index';
 import { appHistoryApiRef } from '../../routing/AppHistoryApi';
 
 const { coreApis } = apis;
 
-describe('core API namespaces', () => {
+describe('core API references', () => {
+  it('uses syntax supported by Node.js type stripping', () => {
+    // This checks this export's syntax, without loading the package's dependency graph.
+    const source = readFileSync(`${__dirname}/coreApis.ts`, 'utf8');
+    expect(() => stripTypeScriptTypes(source, { mode: 'strip' })).not.toThrow();
+  });
+
+  it('preserves API inference in factories', () => {
+    const factory = apis.createApiFactory({
+      api: coreApis.config,
+      deps: { config: coreApis.config },
+      factory: ({ config }) => config,
+    });
+    const config = new ConfigReader({ app: { title: 'Test app' } });
+    expect(factory.factory({ config }).getString('app.title')).toBe('Test app');
+    const wrongDeps: Parameters<typeof factory.factory>[0] = {
+      // @ts-expect-error The inferred dependency is ConfigApi, not any.
+      config: 1,
+    };
+    expect(wrongDeps.config).toBe(1);
+    expect(factory.deps.config).toBe(coreApis.config);
+
+    const configId: 'core.config' = coreApis.config.id;
+    expect(factory.api).toBe(coreApis.config);
+    expect(configId).toBe('core.config');
+  });
+
   it('preserves core API ref identity and metadata', () => {
+    const appHistory: apis.ApiRef<apis.AppHistoryApi> = appHistoryApiRef;
     const refs = {
-      appHistory: appHistoryApiRef,
+      appHistory,
       analytics: apis.analyticsApiRef,
       appLanguage: apis.appLanguageApiRef,
       appTheme: apis.appThemeApiRef,
@@ -39,7 +69,9 @@ describe('core API namespaces', () => {
       storage: apis.storageApiRef,
       toast: apis.toastApiRef,
       translation: apis.translationApiRef,
-    };
+    } satisfies Omit<typeof coreApis, 'internal'>;
+    const typedRefs: typeof refs = coreApis;
+    expect(typedRefs).toBe(coreApis);
 
     expect(Object.keys(coreApis).sort()).toEqual(
       [...Object.keys(refs), 'internal'].sort(),
@@ -57,7 +89,9 @@ describe('core API namespaces', () => {
       pluginHeaderActions: apis.pluginHeaderActionsApiRef,
       pluginWrapper: apis.pluginWrapperApiRef,
       swappableComponents: apis.swappableComponentsApiRef,
-    };
+    } satisfies typeof coreApis.internal;
+    const typedRefs: typeof refs = coreApis.internal;
+    expect(typedRefs).toBe(coreApis.internal);
 
     expect(Object.keys(coreApis.internal).sort()).toEqual(
       Object.keys(refs).sort(),

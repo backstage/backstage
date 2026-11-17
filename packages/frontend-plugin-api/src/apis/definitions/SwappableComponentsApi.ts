@@ -35,7 +35,7 @@ export interface SwappableComponentsApi {
  * The `ApiRef` of {@link SwappableComponentsApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.internal.swappableComponents} instead.
+ * @deprecated Use {@link InternalCoreApis.swappableComponents | coreApis.internal.swappableComponents} instead.
  */
 export const swappableComponentsApiRef =
   createApiRef<SwappableComponentsApi>().with({

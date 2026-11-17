@@ -53,7 +53,7 @@ export type FetchApi = {
  * instead.
  *
  * @public
- * @deprecated Use {@link coreApis.fetch} instead.
+ * @deprecated Use {@link CoreApis.fetch | coreApis.fetch} instead.
  */
 export const fetchApiRef = createApiRef<FetchApi>().with({
   id: 'core.fetch',

@@ -51,7 +51,7 @@ export interface AppLifecycleApi {
  * The {@link ApiRef} of {@link AppLifecycleApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.internal.appLifecycle} instead.
+ * @deprecated Use {@link InternalCoreApis.appLifecycle | coreApis.internal.appLifecycle} instead.
  */
 export const appLifecycleApiRef = createApiRef<AppLifecycleApi>().with({
   id: 'core.app-lifecycle',

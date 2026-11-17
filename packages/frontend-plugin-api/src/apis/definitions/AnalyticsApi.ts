@@ -130,7 +130,7 @@ export type AnalyticsApi = {
  * {@link @backstage/plugin-app-react#AnalyticsImplementationBlueprint}.
  *
  * @public
- * @deprecated Use {@link coreApis.analytics} instead.
+ * @deprecated Use {@link CoreApis.analytics | coreApis.analytics} instead.
  */
 export const analyticsApiRef = createApiRef<AnalyticsApi>().with({
   id: 'core.analytics',

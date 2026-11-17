@@ -41,137 +41,149 @@ import { swappableComponentsApiRef } from './SwappableComponentsApi';
 import { toastApiRef } from './ToastApi';
 import { translationApiRef } from './TranslationApi';
 
+// Keep member documentation explicit: editor hovers do not expand @inheritDoc.
+
 /**
- * References to the core Utility APIs provided by the frontend system.
- *
- * @remarks
- *
- * Use these refs with `useApi` or when declaring API factory dependencies.
- * Framework infrastructure APIs are grouped under {@link coreApis.internal}.
- * Provider-specific authentication APIs are exported separately.
+ * Core Utility API references provided by the frontend system.
  *
  * @public
  */
-export namespace coreApis {
+export interface CoreApis {
   /**
    * The API reference for {@link AppHistoryApi}.
    *
    * @public
    */
-  export const appHistory: ApiRef<AppHistoryApi> = appHistoryApiRef;
+  readonly appHistory: ApiRef<AppHistoryApi>;
 
   /**
-   * The API reference for {@link AnalyticsApi}.
+   * The API reference of {@link AnalyticsApi}.
+   *
+   * @remarks
+   *
+   * To define a concrete Analytics Implementation, use
+   * {@link @backstage/plugin-app-react#AnalyticsImplementationBlueprint}.
    *
    * @public
    */
-  export const analytics: typeof analyticsApiRef = analyticsApiRef;
+  readonly analytics: typeof analyticsApiRef;
 
   /**
    * The API reference for {@link AppLanguageApi}.
    *
    * @public
    */
-  export const appLanguage: typeof appLanguageApiRef = appLanguageApiRef;
+  readonly appLanguage: typeof appLanguageApiRef;
 
   /**
-   * The API reference for {@link AppThemeApi}.
+   * The {@link ApiRef} of {@link AppThemeApi}.
    *
    * @public
    */
-  export const appTheme: typeof appThemeApiRef = appThemeApiRef;
+  readonly appTheme: typeof appThemeApiRef;
 
   /**
-   * The API reference for {@link AppTreeApi}.
+   * The `ApiRef` of {@link AppTreeApi}.
    *
    * @public
    */
-  export const appTree: typeof appTreeApiRef = appTreeApiRef;
+  readonly appTree: typeof appTreeApiRef;
 
   /**
-   * The API reference for {@link ConfigApi}.
+   * The {@link ApiRef} of {@link ConfigApi}.
    *
    * @public
    */
-  export const config: typeof configApiRef = configApiRef;
+  readonly config: typeof configApiRef;
 
   /**
-   * The API reference for {@link DialogApi}.
+   * The `ApiRef` of {@link DialogApi}.
    *
    * @public
    */
-  export const dialog: typeof dialogApiRef = dialogApiRef;
+  readonly dialog: typeof dialogApiRef;
 
   /**
-   * The API reference for {@link DiscoveryApi}.
+   * The {@link ApiRef} of {@link DiscoveryApi}.
    *
    * @public
    */
-  export const discovery: typeof discoveryApiRef = discoveryApiRef;
+  readonly discovery: typeof discoveryApiRef;
 
   /**
-   * The API reference for {@link ErrorApi}.
+   * The {@link ApiRef} of {@link ErrorApi}.
    *
    * @public
    */
-  export const error: typeof errorApiRef = errorApiRef;
+  readonly error: typeof errorApiRef;
 
   /**
-   * The API reference for {@link FeatureFlagsApi}.
+   * The {@link ApiRef} of {@link FeatureFlagsApi}.
    *
    * @public
    */
-  export const featureFlags: typeof featureFlagsApiRef = featureFlagsApiRef;
+  readonly featureFlags: typeof featureFlagsApiRef;
 
   /**
-   * The API reference for {@link FetchApi}.
+   * The {@link ApiRef} of {@link FetchApi}.
+   *
+   * @remarks
+   *
+   * This is a wrapper for the fetch API, that has additional behaviors such as
+   * the ability to automatically inject auth information where necessary.
+   *
+   * Note that the default behavior of this API (unless overridden by your org),
+   * is to require that the user is already signed in so that it has auth
+   * information to inject. Therefore, using the default implementation of this
+   * utility API e.g. on the `SignInPage` or similar, would cause issues. In
+   * special circumstances like those, you can use the regular system `fetch`
+   * instead.
    *
    * @public
    */
-  export const fetch: typeof fetchApiRef = fetchApiRef;
+  readonly fetch: typeof fetchApiRef;
 
   /**
-   * The API reference for {@link IconsApi}.
+   * The `ApiRef` of {@link IconsApi}.
    *
    * @public
    */
-  export const icons: typeof iconsApiRef = iconsApiRef;
+  readonly icons: typeof iconsApiRef;
 
   /**
-   * The API reference for {@link IdentityApi}.
+   * The {@link ApiRef} of {@link IdentityApi}.
    *
    * @public
    */
-  export const identity: typeof identityApiRef = identityApiRef;
+  readonly identity: typeof identityApiRef;
 
   /**
-   * The API reference for {@link RouteResolutionApi}.
+   * The `ApiRef` of {@link RouteResolutionApi}.
    *
    * @public
    */
-  export const routeResolution: typeof routeResolutionApiRef =
-    routeResolutionApiRef;
+  readonly routeResolution: typeof routeResolutionApiRef;
 
   /**
-   * The API reference for {@link StorageApi}.
+   * The {@link ApiRef} of {@link StorageApi}.
    *
    * @public
    */
-  export const storage: typeof storageApiRef = storageApiRef;
+  readonly storage: typeof storageApiRef;
 
   /**
-   * The API reference for {@link ToastApi}.
+   * The {@link ApiRef} of {@link ToastApi}.
    *
    * @public
    */
-  export const toast: typeof toastApiRef = toastApiRef;
+  readonly toast: typeof toastApiRef;
 
   /**
    * The API reference for {@link TranslationApi}.
    *
    * @public
    */
-  export const translation: typeof translationApiRef = translationApiRef;
+  readonly translation: typeof translationApiRef;
 
   /**
    * References to core Utility APIs primarily intended for framework integrations.
@@ -186,43 +198,85 @@ export namespace coreApis {
    *
    * @public
    */
-  export namespace internal {
-    /**
-     * The API reference for {@link AppLifecycleApi}.
-     *
-     * @public
-     */
-    export const appLifecycle: typeof appLifecycleApiRef = appLifecycleApiRef;
-
-    /**
-     * The API reference for {@link OAuthRequestApi}.
-     *
-     * @public
-     */
-    export const oauthRequest: typeof oauthRequestApiRef = oauthRequestApiRef;
-
-    /**
-     * The API reference for {@link PluginHeaderActionsApi}.
-     *
-     * @public
-     */
-    export const pluginHeaderActions: typeof pluginHeaderActionsApiRef =
-      pluginHeaderActionsApiRef;
-
-    /**
-     * The API reference for {@link PluginWrapperApi}.
-     *
-     * @public
-     */
-    export const pluginWrapper: typeof pluginWrapperApiRef =
-      pluginWrapperApiRef;
-
-    /**
-     * The API reference for {@link SwappableComponentsApi}.
-     *
-     * @public
-     */
-    export const swappableComponents: typeof swappableComponentsApiRef =
-      swappableComponentsApiRef;
-  }
+  readonly internal: InternalCoreApis;
 }
+
+/**
+ * Core Utility API references primarily intended for framework integrations.
+ *
+ * @public
+ */
+export interface InternalCoreApis {
+  /**
+   * The {@link ApiRef} of {@link AppLifecycleApi}.
+   *
+   * @public
+   */
+  readonly appLifecycle: typeof appLifecycleApiRef;
+
+  /**
+   * The {@link ApiRef} of {@link OAuthRequestApi}.
+   *
+   * @public
+   */
+  readonly oauthRequest: typeof oauthRequestApiRef;
+
+  /**
+   * The `ApiRef` of {@link PluginHeaderActionsApi}.
+   *
+   * @public
+   */
+  readonly pluginHeaderActions: typeof pluginHeaderActionsApiRef;
+
+  /**
+   * The API reference of {@link PluginWrapperApi}.
+   *
+   * @public
+   */
+  readonly pluginWrapper: typeof pluginWrapperApiRef;
+
+  /**
+   * The `ApiRef` of {@link SwappableComponentsApi}.
+   *
+   * @public
+   */
+  readonly swappableComponents: typeof swappableComponentsApiRef;
+}
+
+/**
+ * References to the {@link CoreApis | core Utility APIs} provided by the frontend system.
+ *
+ * @remarks
+ *
+ * Use these refs with `useApi` or when declaring API factory dependencies.
+ * Framework infrastructure APIs are grouped under {@link CoreApis.internal | coreApis.internal}.
+ * Provider-specific authentication APIs are exported separately.
+ *
+ * @public
+ */
+export const coreApis: CoreApis = {
+  appHistory: appHistoryApiRef,
+  analytics: analyticsApiRef,
+  appLanguage: appLanguageApiRef,
+  appTheme: appThemeApiRef,
+  appTree: appTreeApiRef,
+  config: configApiRef,
+  dialog: dialogApiRef,
+  discovery: discoveryApiRef,
+  error: errorApiRef,
+  featureFlags: featureFlagsApiRef,
+  fetch: fetchApiRef,
+  icons: iconsApiRef,
+  identity: identityApiRef,
+  routeResolution: routeResolutionApiRef,
+  storage: storageApiRef,
+  toast: toastApiRef,
+  translation: translationApiRef,
+  internal: {
+    appLifecycle: appLifecycleApiRef,
+    oauthRequest: oauthRequestApiRef,
+    pluginHeaderActions: pluginHeaderActionsApiRef,
+    pluginWrapper: pluginWrapperApiRef,
+    swappableComponents: swappableComponentsApiRef,
+  },
+};

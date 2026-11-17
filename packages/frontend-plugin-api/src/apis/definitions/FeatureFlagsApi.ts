@@ -120,7 +120,7 @@ export interface FeatureFlagsApi {
  * The {@link ApiRef} of {@link FeatureFlagsApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.featureFlags} instead.
+ * @deprecated Use {@link CoreApis.featureFlags | coreApis.featureFlags} instead.
  */
 export const featureFlagsApiRef = createApiRef<FeatureFlagsApi>().with({
   id: 'core.featureflags',

@@ -75,7 +75,7 @@ export type AlertApi = {
  * The {@link ApiRef} of {@link AlertApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.toast} for notifications instead. AlertApi will
+ * @deprecated Use {@link CoreApis.toast | coreApis.toast} for notifications instead. AlertApi will
  * be removed in a future release.
  */
 export const alertApiRef = createApiRef<AlertApi>().with({

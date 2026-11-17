@@ -30,7 +30,7 @@ export type AppLanguageApi = {
 
 /**
  * @public
- * @deprecated Use {@link coreApis.appLanguage} instead.
+ * @deprecated Use {@link CoreApis.appLanguage | coreApis.appLanguage} instead.
  */
 export const appLanguageApiRef = createApiRef<AppLanguageApi>().with({
   id: 'core.applanguage',
