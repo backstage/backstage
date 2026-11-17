@@ -94,22 +94,32 @@ export class GenericScmEventRefreshProvider implements EntityProvider {
     )) {
       const result = await this.#knex<DbRefreshStateRow>('refresh_state')
         .update({ next_update_at: this.#knex.fn.now() })
-        .whereIn('entity_id', keysQuery => {
-          return keysQuery
-            .table<DbRefreshKeysRow>('refresh_keys')
-            .select('entity_id')
-            .whereIn('key', urls)
-            .union(searchQuery => {
-              return searchQuery
-                .table<DbSearchRow>('search')
+        .where(outer =>
+          outer
+            .whereIn('entity_id', keysQuery =>
+              keysQuery
+                .table<DbRefreshKeysRow>('refresh_keys')
                 .select('entity_id')
-                .whereIn('key', [
+                .whereIn('key', urls),
+            )
+            // Search rows are keyed by the final entity's slot ID, which can
+            // differ from the candidate's ID, so match candidates by ref.
+            .orWhereIn('entity_ref', searchQuery =>
+              searchQuery
+                .table<DbSearchRow>('search')
+                .join(
+                  'final_entities',
+                  'final_entities.entity_id',
+                  'search.entity_id',
+                )
+                .select('final_entities.entity_ref')
+                .whereIn('search.key', [
                   `metadata.annotations.${ANNOTATION_LOCATION}`,
                   `metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`,
                 ])
-                .whereIn('value', urls);
-            });
-        });
+                .whereIn('search.value', urls),
+            ),
+        );
 
       count += Number(result);
     }
@@ -121,32 +131,41 @@ export class GenericScmEventRefreshProvider implements EntityProvider {
     )) {
       const result = await this.#knex<DbRefreshStateRow>('refresh_state')
         .update({ next_update_at: this.#knex.fn.now() })
-        .whereIn('entity_id', keysQuery => {
-          return keysQuery
-            .table<DbRefreshKeysRow>('refresh_keys')
-            .select('entity_id')
-            .where(inner =>
-              prefixes.reduce(
-                (acc, prefix) => acc.orWhere('key', 'like', `${prefix}%`),
-                inner,
-              ),
-            )
-            .union(searchQuery => {
-              return searchQuery
-                .table<DbSearchRow>('search')
+        .where(outer =>
+          outer
+            .whereIn('entity_id', keysQuery =>
+              keysQuery
+                .table<DbRefreshKeysRow>('refresh_keys')
                 .select('entity_id')
-                .whereIn('key', [
+                .where(inner =>
+                  prefixes.reduce(
+                    (acc, prefix) => acc.orWhere('key', 'like', `${prefix}%`),
+                    inner,
+                  ),
+                ),
+            )
+            .orWhereIn('entity_ref', searchQuery =>
+              searchQuery
+                .table<DbSearchRow>('search')
+                .join(
+                  'final_entities',
+                  'final_entities.entity_id',
+                  'search.entity_id',
+                )
+                .select('final_entities.entity_ref')
+                .whereIn('search.key', [
                   `metadata.annotations.${ANNOTATION_LOCATION}`,
                   `metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`,
                 ])
                 .where(inner =>
                   prefixes.reduce(
-                    (acc, prefix) => acc.orWhere('value', 'like', `${prefix}%`),
+                    (acc, prefix) =>
+                      acc.orWhere('search.value', 'like', `${prefix}%`),
                     inner,
                   ),
-                );
-            });
-        });
+                ),
+            ),
+        );
 
       count += Number(result);
     }

@@ -22,6 +22,7 @@
 
 | Column            | Type                       | Nullable | Max Length | Default |
 | ----------------- | -------------------------- | -------- | ---------- | ------- |
+| `deleted_at`      | `timestamp with time zone` | true     | -          | -       |
 | `entity_id`       | `character varying`        | false    | 255        | -       |
 | `entity_ref`      | `character varying`        | false    | 255        | -       |
 | `final_entity`    | `text`                     | true     | -          | -       |

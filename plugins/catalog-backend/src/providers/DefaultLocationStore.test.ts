@@ -375,6 +375,60 @@ describe.each(databases.eachSupportedId())(
       });
     });
 
+    describe('getLocationByEntity after re-creation', () => {
+      it('finds search rows by the final row, not the candidate ID', async () => {
+        const { store, knex } = await createLocationStore();
+        const locationId = uuid();
+
+        // The entity was deleted and created again: its final row and search
+        // rows keep the original ID, while the new candidate has a new one.
+        await knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: 'new-candidate',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: '{}',
+          errors: '[]',
+          next_update_at: new Date(),
+          last_discovery_at: new Date(),
+        });
+        await knex<DbFinalEntitiesRow>('final_entities').insert({
+          entity_id: 'original-slot',
+          final_entity: '{}',
+          hash: 'hash',
+          entity_ref: 'k:ns/n',
+        });
+        await knex<DbSearchRow>('search').insert({
+          entity_id: 'original-slot',
+          key: `metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`,
+          value: `url:https://example.com`,
+          original_value: `url:https://example.com`,
+        });
+        await knex<DbLocationsRow>('locations').insert({
+          id: locationId,
+          type: 'url',
+          target: 'https://example.com',
+          location_entity_ref: computeLocationEntityRef(
+            'url',
+            'https://example.com',
+          ),
+        });
+
+        await expect(
+          store.getLocationByEntity({ kind: 'k', namespace: 'ns', name: 'n' }),
+        ).resolves.toEqual(expect.objectContaining({ id: locationId }));
+
+        // A tombstone is not an entity.
+        await knex<DbSearchRow>('search').delete();
+        await knex<DbFinalEntitiesRow>('final_entities').update({
+          final_entity: null,
+        });
+        await expect(
+          store.getLocationByEntity({ kind: 'k', namespace: 'ns', name: 'n' }),
+        ).rejects.toMatchInlineSnapshot(
+          `[NotFoundError: found no entity for ref k:ns/n]`,
+        );
+      });
+    });
+
     describe('SCM event handling', () => {
       it('handles location.deleted', async () => {
         const { store, knex, connection } = await createLocationStore();
