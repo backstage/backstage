@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.14
+
+### Patch Changes
+
+- fd7fe0c: Kubernetes proxy: stop forwarding the caller's `Authorization` and `Cookie` headers to the target cluster. Upstream requests now carry only credentials from the configured auth strategy or the `Backstage-Kubernetes-Authorization` header.
+
 ## 0.21.12
 
 ### Patch Changes

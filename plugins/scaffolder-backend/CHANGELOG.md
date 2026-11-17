@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.2.5
+
+### Patch Changes
+
+- e33b6d9: Check the host that relative fetch URLs resolve to when user credentials are required.
+
+  When `scaffolder.requireScmUserCredentials` is enabled, the fetch actions now apply the user-credential requirement to the host that the fetch URL resolves to, rather than the host of the template location. This makes the requirement effective also for fetch URLs that are not parseable as absolute URLs on their own.
+
 ## 4.2.2
 
 ### Patch Changes
