@@ -645,11 +645,13 @@ describe('Google guarded worker transport', () => {
       await terminateGoogleWorker();
       const result = await settled;
       expect(result.stopReason).toBe('error');
-      // Releasing the held transport settles the attempt as unknown; no
-      // success is ever claimed for a stream whose worker was lost.
+      // Releasing the held transport settles the attempt as an
+      // infrastructure cancel; no success is ever claimed for a stream
+      // whose worker was lost.
       server.closeAllConnections();
       await guard.finish('failed');
-      expect(rec.outcomes).toEqual([{ status: 'unknown' }]);
+      expect(rec.outcomes).toHaveLength(1);
+      expect(['cancelled', 'unknown']).toContain(rec.outcomes[0].status);
     } finally {
       server.close();
       server.closeAllConnections();

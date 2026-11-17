@@ -25,7 +25,7 @@ import type { MessagePort } from 'node:worker_threads';
  * it must be entirely self-contained: no imports of host modules and no
  * references to module-scope bindings, only `node:` builtins loaded through
  * dynamic import and platform globals. Everything it needs arrives through
- * {@link WorkerToWorkerMessage}s on the parent port and per-job ports.
+ * messages on the parent port and per-job ports.
  *
  * The pinned Google SDK has no request-scoped transport hook: it calls the
  * ambient global fetch on every actual HTTP attempt. This entry therefore
@@ -35,6 +35,12 @@ import type { MessagePort } from 'node:worker_threads';
  * authority binding (the job's own message port), so concurrent streams can
  * never cross their authorizations: a fetch that is not executing inside a
  * job's context has no binding and fails closed.
+ *
+ * Failure discipline mirrors the host guard: a caller payload callback that
+ * throws or returns a non-transferable value fails the whole job before any
+ * send — the original payload is never a fallback — and cancellation stays
+ * connected for the full lifetime of a response body, not just until
+ * headers arrive.
  *
  * @internal
  */
@@ -51,17 +57,23 @@ export async function googleWorkerEntry(): Promise<void> {
       options: unknown,
     ) => object;
   };
-  type PendingFetch = {
-    resolve: (response: Response) => void;
-    reject: (error: Error) => void;
+  type FetchEntry = {
+    /** `pending` until response headers arrive, then `streaming`. */
+    phase: 'pending' | 'streaming';
+    resolve?: (response: Response) => void;
+    reject?: (error: Error) => void;
+    controller?: ReadableStreamDefaultController;
+  };
+  type PayloadEntry = {
+    resolve(params: unknown): void;
+    reject(error: Error): void;
   };
   type JobBinding = {
     port: MessagePort;
     controller: AbortController;
     nextId: number;
-    fetches: Map<string, PendingFetch>;
-    payloads: Map<string, (params: unknown) => void>;
-    streams: Map<string, { controller?: ReadableStreamDefaultController }>;
+    fetches: Map<string, FetchEntry>;
+    payloads: Map<string, PayloadEntry>;
   };
 
   const store = new AsyncLocalStorage<JobBinding>();
@@ -73,6 +85,12 @@ export async function googleWorkerEntry(): Promise<void> {
       adapters.set(url, loaded);
     }
     return loaded;
+  };
+
+  const abortError = (): Error => {
+    const error = new Error('Google worker fetch aborted');
+    error.name = 'AbortError';
+    return error;
   };
 
   // The lifetime global-fetch shim: the only network path the SDK can take
@@ -90,8 +108,11 @@ export async function googleWorkerEntry(): Promise<void> {
     const request = new Request(input, init);
     const body = request.body ? await request.arrayBuffer() : null;
     const id = `f${binding.nextId++}`;
+    const entry: FetchEntry = { phase: 'pending' };
+    binding.fetches.set(id, entry);
     const settled = new Promise<Response>((resolve, reject) => {
-      binding.fetches.set(id, { resolve, reject });
+      entry.resolve = resolve;
+      entry.reject = reject;
     });
     binding.port.postMessage({
       type: 'fetch',
@@ -113,13 +134,17 @@ export async function googleWorkerEntry(): Promise<void> {
     }
     if (signal) {
       const onAbort = () => {
-        const pending = binding.fetches.get(id);
-        if (pending) {
-          binding.fetches.delete(id);
-          binding.port.postMessage({ type: 'fetch-abort', id });
-          const error = new Error('Google worker fetch aborted');
-          error.name = 'AbortError';
-          pending.reject(error);
+        // Cancellation remains live for the response stream's whole
+        // lifetime: a post-header abort still cancels the host transport
+        // and errors the streamed body instead of leaving it pending.
+        const current = binding.fetches.get(id);
+        if (!current) return;
+        binding.fetches.delete(id);
+        binding.port.postMessage({ type: 'fetch-abort', id });
+        if (current.phase === 'pending') {
+          current.reject?.(abortError());
+        } else {
+          current.controller?.error(abortError());
         }
       };
       if (signal.aborted) onAbort();
@@ -136,30 +161,42 @@ export async function googleWorkerEntry(): Promise<void> {
         binding.controller.abort();
         break;
       case 'onPayload-result': {
-        const resolve = binding.payloads.get(msg.id as string);
-        if (resolve) {
+        const entry = binding.payloads.get(msg.id as string);
+        if (entry) {
           binding.payloads.delete(msg.id as string);
-          resolve(msg.has === true ? msg.params : undefined);
+          entry.resolve(msg.has === true ? msg.params : undefined);
+        }
+        break;
+      }
+      case 'onPayload-error': {
+        // The caller callback failed (threw or returned a non-transferable
+        // value): the job fails closed before any send.
+        const entry = binding.payloads.get(msg.id as string);
+        if (entry) {
+          binding.payloads.delete(msg.id as string);
+          entry.reject(new Error(msg.message as string));
         }
         break;
       }
       case 'fetch-response': {
         const id = msg.id as string;
-        const pending = binding.fetches.get(id);
-        if (!pending) break;
-        binding.fetches.delete(id);
+        const entry = binding.fetches.get(id);
+        if (!entry) break;
         let body: ReadableStream<Uint8Array> | null = null;
         if (msg.hasBody === true) {
+          entry.phase = 'streaming';
           body = new ReadableStream<Uint8Array>({
             start(controller) {
-              binding.streams.set(id, { controller });
+              entry.controller = controller;
             },
             cancel() {
               binding.port.postMessage({ type: 'fetch-abort', id });
             },
           });
+        } else {
+          binding.fetches.delete(id);
         }
-        pending.resolve(
+        entry.resolve?.(
           new Response(body, {
             status: msg.status as number,
             statusText: msg.statusText as string,
@@ -169,31 +206,30 @@ export async function googleWorkerEntry(): Promise<void> {
         break;
       }
       case 'fetch-chunk': {
-        const entry = binding.streams.get(msg.id as string);
+        const entry = binding.fetches.get(msg.id as string);
         entry?.controller?.enqueue(new Uint8Array(msg.value as ArrayBuffer));
         break;
       }
       case 'fetch-end': {
-        const entry = binding.streams.get(msg.id as string);
+        const entry = binding.fetches.get(msg.id as string);
         if (entry) {
-          binding.streams.delete(msg.id as string);
+          binding.fetches.delete(msg.id as string);
           entry.controller?.close();
         }
         break;
       }
       case 'fetch-error': {
         const id = msg.id as string;
-        const entry = binding.streams.get(id);
+        const entry = binding.fetches.get(id);
         if (entry) {
-          binding.streams.delete(id);
-          entry.controller?.error(new Error(msg.message as string));
-        }
-        const pending = binding.fetches.get(id);
-        if (pending) {
           binding.fetches.delete(id);
           const error = new Error(msg.message as string);
           error.name = (msg.name as string) ?? 'Error';
-          pending.reject(error);
+          if (entry.phase === 'pending') {
+            entry.reject?.(error);
+          } else {
+            entry.controller?.error(error);
+          }
         }
         break;
       }
@@ -210,7 +246,6 @@ export async function googleWorkerEntry(): Promise<void> {
       nextId: 1,
       fetches: new Map(),
       payloads: new Map(),
-      streams: new Map(),
     };
     binding.port.on('message', m => handleJobMessage(binding, m));
     const options: Record<string, unknown> = {
@@ -222,7 +257,7 @@ export async function googleWorkerEntry(): Promise<void> {
       | undefined;
     if (callbacks?.onPayload) {
       options.onPayload = (params: unknown, model: unknown) =>
-        new Promise<unknown>(resolve => {
+        new Promise<unknown>((resolve, reject) => {
           const id = `p${binding.nextId++}`;
           // Transport-owned config (the abort signal and any per-request
           // http options) never crosses the RPC and is restored afterwards:
@@ -249,21 +284,24 @@ export async function googleWorkerEntry(): Promise<void> {
             params: portable,
             model,
           });
-          binding.payloads.set(id, (next: unknown) => {
-            if (next === undefined) {
-              resolve(params);
-              return;
-            }
-            const merged = { ...(next as object) } as {
-              config?: Record<string, unknown>;
-            };
-            if (protectedConfig || merged.config) {
-              merged.config = {
-                ...(merged.config ?? {}),
-                ...(protectedConfig ?? {}),
+          binding.payloads.set(id, {
+            resolve: (next: unknown) => {
+              if (next === undefined) {
+                resolve(params);
+                return;
+              }
+              const merged = { ...(next as object) } as {
+                config?: Record<string, unknown>;
               };
-            }
-            resolve(merged);
+              if (protectedConfig || merged.config) {
+                merged.config = {
+                  ...(merged.config ?? {}),
+                  ...(protectedConfig ?? {}),
+                };
+              }
+              resolve(merged);
+            },
+            reject: (error: Error) => reject(error),
           });
         });
     }
@@ -337,20 +375,6 @@ export async function googleWorkerEntry(): Promise<void> {
     }
   });
 }
-
-type WorkerToWorkerMessage =
-  | {
-      type: 'job';
-      adapterUrl: string;
-      simple: boolean;
-      model: unknown;
-      context: unknown;
-      options: unknown;
-      callbacks: { onPayload: boolean; onProviderStreamEvent: boolean };
-      port: MessagePort;
-    }
-  | { type: 'ping' }
-  | { type: 'testBareFetch'; url: string };
 
 /** @internal */
 export const GOOGLE_WORKER_SOURCE = `(${googleWorkerEntry})()`;

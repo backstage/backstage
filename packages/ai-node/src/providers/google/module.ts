@@ -98,10 +98,14 @@ function vertexProjectAndLocation(env: Record<string, string> | undefined): {
 
 function geminiDestination(model: AnyModel): string {
   const id = assertModelId(model);
-  const base =
-    trimBase(model.baseUrl) ?? 'https://generativelanguage.googleapis.com';
-  const version = includesVersion(base) ? '' : '/v1beta';
-  return `${base}${version}/models/${id}:streamGenerateContent?alt=sse`;
+  const custom = trimBase(model.baseUrl);
+  if (custom) {
+    // The pinned mldev adapter disables the SDK apiVersion whenever a
+    // custom base is set, versioned or not: the route is exactly
+    // `${base}/models/...` with nothing inserted.
+    return `${custom}/models/${id}:streamGenerateContent?alt=sse`;
+  }
+  return `https://generativelanguage.googleapis.com/v1beta/models/${id}:streamGenerateContent?alt=sse`;
 }
 
 function vertexDestination(
@@ -121,6 +125,11 @@ function vertexDestination(
 const GEMINI_TEMPLATES: readonly DestinationTemplate[] = [
   [
     { literal: '/v1beta/models/' },
+    { digest: 'model' },
+    { literal: ':streamGenerateContent' },
+  ],
+  [
+    { literal: '/models/' },
     { digest: 'model' },
     { literal: ':streamGenerateContent' },
   ],
