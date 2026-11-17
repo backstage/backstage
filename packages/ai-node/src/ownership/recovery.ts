@@ -259,7 +259,12 @@ const REVALIDATION_ATTEMPTS = 3;
 
 /** The decision made inside one admission bracket. */
 type SessionStep =
-  | Readonly<{ kind: 'decided'; outcome: RecoveryOutcome }>
+  | Readonly<{
+      kind: 'decided';
+      outcome: RecoveryOutcome;
+      /** The revision this decision wrote. */
+      revision: string;
+    }>
   | Readonly<{ kind: 'superseded-before-admission' }>
   | Readonly<{ kind: 'superseded-at-write' }>
   | Readonly<{ kind: 'failed'; error: unknown }>;
@@ -327,6 +332,7 @@ export class AdmissionLifetime implements RecoveryAdmission {
   readonly #cleanups: (() => void | Promise<void>)[] = [];
   #keepalive?: LeaseKeepalive;
   #invalidated = false;
+  #revokeReason?: LeaseInvalidationReason;
   #revoking?: Promise<void>;
   #disposed?: Promise<AdmissionDisposition>;
 
@@ -399,7 +405,14 @@ export class AdmissionLifetime implements RecoveryAdmission {
       await this.#keepalive?.stop();
       this.#keepalive = undefined;
       if (this.#invalidated) {
-        return { kind: 'revoked', reason: 'authority-superseded' } as const;
+        // A revocation may still be running (for example blocked inside a
+        // registered cleanup). Join it: a reported disposition means teardown
+        // finished, never that it started.
+        await this.#joining();
+        return {
+          kind: 'revoked',
+          reason: this.#revokeReason ?? 'authority-superseded',
+        } as const;
       }
       let held = false;
       try {
@@ -411,14 +424,30 @@ export class AdmissionLifetime implements RecoveryAdmission {
         await this.#revoke('authority-superseded');
         return { kind: 'fence-lost' } as const;
       }
+      // A revocation may have started while the fence check ran; never hand off
+      // a fence whose admission was already revoked, and never return before
+      // that revocation finished.
+      if (this.#invalidated) {
+        await this.#joining();
+        return {
+          kind: 'revoked',
+          reason: this.#revokeReason ?? 'authority-superseded',
+        } as const;
+      }
       return { kind: 'handed-off' } as const;
     })();
     return this.#disposed;
   }
 
+  /** Resolves once any in-flight revocation has completed. */
+  async #joining(): Promise<void> {
+    await this.#revoking;
+  }
+
   async #revoke(reason: LeaseInvalidationReason): Promise<void> {
     if (this.#revoking !== undefined) return this.#revoking;
     this.#invalidated = true;
+    this.#revokeReason = reason;
     this.#revoking = (async () => {
       await this.#keepalive?.stop();
       this.#keepalive = undefined;
@@ -813,7 +842,7 @@ class StartupRecovery implements AiRecovery {
       step.outcome.status === 'recovered' &&
       disposition.kind !== 'handed-off'
     ) {
-      return this.#downgradeRecovered(namespace);
+      return this.#downgradeRecovered(namespace, step.revision);
     }
 
     if (disposition.kind === 'handed-off') {
@@ -865,8 +894,9 @@ class StartupRecovery implements AiRecovery {
           namespace.pluginId
         }' plugin could not be obtained: ${describe(error)}`,
       };
-      if (await this.#persist(namespace, revision, blocked)) {
-        return { kind: 'decided', outcome: blocked };
+      const blockedRevision = await this.#persist(namespace, revision, blocked);
+      if (blockedRevision !== undefined) {
+        return { kind: 'decided', outcome: blocked, revision: blockedRevision };
       }
       return { kind: 'superseded-before-admission' };
     }
@@ -940,31 +970,40 @@ class StartupRecovery implements AiRecovery {
       };
     }
 
-    if (!(await this.#persist(namespace, revision, outcome))) {
+    const written = await this.#persist(namespace, revision, outcome);
+    if (written === undefined) {
       return { kind: 'superseded-at-write' };
     }
-    return { kind: 'decided', outcome };
+    return { kind: 'decided', outcome, revision: written };
   }
 
-  /** Rewrites a 'recovered' outcome whose fence was lost after it committed. */
-  async #downgradeRecovered(namespace: Namespace): Promise<RecoveryOutcome> {
+  /**
+   * Rewrites a 'recovered' outcome that this admission wrote, if and only if
+   * the record is still exactly at that write.
+   *
+   * @remarks
+   *
+   * The compensation is scoped to the revision this admission created. If a
+   * successor has since acquired the session and written its own newer state,
+   * the compare-and-swap fails and nothing is rewritten: the successor owns the
+   * record, and a stale admission must never turn its `recovered` into
+   * `failed`.
+   */
+  async #downgradeRecovered(
+    namespace: Namespace,
+    writeRevision: string,
+  ): Promise<RecoveryOutcome> {
     const detail = 'The session lease was lost while the outcome was recorded';
-    const current = await this.#readRow(namespace);
-    if (current === undefined) {
-      return { namespace, status: 'failed', detail };
-    }
-    if (current.status !== 'recovered') {
-      return {
-        namespace,
-        status: current.status,
-        detail: current.detail ?? detail,
-      };
-    }
     const failed: RecoveryOutcome = { namespace, status: 'failed', detail };
-    if (await this.#persist(namespace, String(current.revision), failed)) {
+    if (await this.#persist(namespace, writeRevision, failed)) {
       return failed;
     }
-    return this.#persistedOutcome(namespace, detail);
+    // Scope lost: a newer admission owns this session. Do nothing, and report
+    // whatever is actually persisted.
+    return this.#persistedOutcome(
+      namespace,
+      'A newer admission owns this session',
+    );
   }
 
   async #persistedOutcome(
@@ -1039,12 +1078,21 @@ class StartupRecovery implements AiRecovery {
     return undefined;
   }
 
-  /** Writes an outcome only if the authority record is unchanged. */
+  /**
+   * Writes an outcome only if the authority record is unchanged.
+   *
+   * @remarks
+   *
+   * Returns the revision this write created, or `undefined` when the
+   * compare-and-swap lost. Callers that may need to compensate must use that
+   * exact revision, so a compensation can never touch a successor's newer
+   * record.
+   */
   async #persist(
     namespace: Namespace,
     revision: string,
     outcome: RecoveryOutcome,
-  ): Promise<boolean> {
+  ): Promise<string | undefined> {
     const updated = await this.#options
       .db(TABLE)
       .where({
@@ -1058,7 +1106,7 @@ class StartupRecovery implements AiRecovery {
         revision: this.#options.db.raw('revision + 1'),
         updated_at: this.#options.db.fn.now(),
       });
-    return updated === 1;
+    return updated === 1 ? nextRevision(revision) : undefined;
   }
 
   async #readRow(namespace: Namespace): Promise<RecoveryRow | undefined> {
@@ -1097,6 +1145,11 @@ class StartupRecovery implements AiRecovery {
 
 function describe(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+/** The revision a successful compare-and-swap write creates. */
+function nextRevision(revision: string): string {
+  return (BigInt(revision) + 1n).toString();
 }
 
 function sameAuthority(left: RecoveryRow, right: RecoveryRow): boolean {

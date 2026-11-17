@@ -38,6 +38,8 @@
  * | 13 | hand-off | success | keepalive stops, fence stays live, resume keeps it | `resumes service-origin work under fresh same-plugin service credentials` |
  * | 14 | concurrent `recover()` on one instance | second pass competes | unique per-admission owner: second pass skips, winner's fence untouched | `gives every concurrent pass its own admission so a loser cannot release the winner` |
  * | 15 | post-hand-off fresh read | newer record landed | report the persisted status instead of `recovered` | N/A: same fresh-read code path as #12, no deterministic post-write seam |
+ * | 16 | finalization | revocation already running (async cleanup blocked) | dispose joins the in-flight revocation; a returned disposition means teardown finished | `does not report completion before an in-flight revocation finishes` |
+ * | 17 | compensation (`#downgradeRecovered`) | successor wrote a newer `recovered` first | compensation is scoped to this admission's write revision; on scope loss nothing is rewritten | `scopes its compensation to the revision it wrote, leaving a successor untouched` |
  */
 
 import { mkdtemp, rm } from 'node:fs/promises';
@@ -963,6 +965,99 @@ describe.each(engines)('%s startup recovery', (_name, engine) => {
     const raw = await current.db('ai_recovery_sessions').first();
     expect(raw.status).toBe('pending');
   });
+
+  it('scopes its compensation to the revision it wrote, leaving a successor untouched', async () => {
+    let successorRan = false;
+    let staleOwner: string | undefined;
+    let revisionAfterSuccessor: string | undefined;
+    let successorFence: { owner: string; token: string } | undefined;
+    // A holder breaks the cycle between the lease view and the recovery that
+    // uses it.
+    const successor: { recovery?: AiRecovery } = {};
+
+    // The stale admission's final fence check fails; a complete successor pass
+    // runs at exactly that point, before the stale admission compensates.
+    const leases: NamespaceLease = {
+      acquire: (key, owner) => current.lease.acquire(key, owner),
+      release: fence => current.lease.release(fence),
+      enumerate: (plugin, cursor) => current.lease.enumerate(plugin, cursor),
+      renew: async fence => {
+        if (
+          !successorRan &&
+          staleOwner !== undefined &&
+          fence.owner === staleOwner
+        ) {
+          successorRan = true;
+          current.clock.advance(60_001);
+          await successor.recovery!.recover();
+          revisionAfterSuccessor = String(
+            (await current.db('ai_recovery_sessions').first()).revision,
+          );
+        }
+        return current.lease.renew(fence);
+      },
+    };
+
+    successor.recovery = await createAiRecovery({
+      db: current.db,
+      pluginId,
+      leases,
+      getOwnServiceCredentials: async () => serviceCredentials(),
+      admissionKeepaliveMs: 20_000,
+    });
+    successor.recovery.registerResolver(
+      resolver({
+        resume: async (input: RecoveryResumeInput) => {
+          successorFence = {
+            owner: input.admission.fence.owner,
+            token: input.admission.fence.token,
+          };
+          return { kind: 'resumed' as const };
+        },
+      }),
+    );
+    successor.recovery.completeStartup();
+
+    const stale = await createAiRecovery({
+      db: current.db,
+      pluginId,
+      leases,
+      getOwnServiceCredentials: async () => serviceCredentials(),
+      admissionKeepaliveMs: 20_000,
+    });
+    stale.registerResolver(
+      resolver({
+        resume: async (input: RecoveryResumeInput) => {
+          staleOwner = input.admission.fence.owner;
+          return { kind: 'resumed' as const };
+        },
+      }),
+    );
+    stale.completeStartup();
+    await persist(current, namespace, { kind: 'service', pluginId });
+
+    const report = await stale.recover();
+
+    // The successor ran, owns the record, and its fence is still live.
+    expect(successorRan).toBe(true);
+    expect(successorFence).toBeDefined();
+    const raw = await current.db('ai_recovery_sessions').first();
+    expect(raw.status).toBe('recovered');
+    // The stale admission's compensation did not touch the newer revision.
+    expect(String(raw.revision)).toBe(revisionAfterSuccessor);
+    expect(
+      await current.lease.renew({
+        namespace,
+        owner: successorFence!.owner,
+        token: successorFence!.token,
+      }),
+    ).toBe(true);
+    // It reports what is actually persisted, with its own explanation.
+    expect(report.outcomes[0].status).toBe('recovered');
+    expect(report.outcomes[0].detail).toBe(
+      'A newer admission owns this session',
+    );
+  });
 });
 
 if (pgUrl) {
@@ -1015,6 +1110,75 @@ if (pgUrl) {
       expect(raw.status).toBe('failed');
       expect(await state.lease.acquire(namespace, 'replica-b')).toBeDefined();
     } finally {
+      await state.cleanup();
+    }
+  }, 20_000);
+
+  it('does not report completion before an in-flight revocation finishes', async () => {
+    const state = await fixture('pg', { admissionKeepaliveMs: 10 });
+    const invalidated = deferred<LeaseInvalidationReason>();
+    const cleanupStarted = deferred();
+    const cleanupRelease = deferred();
+    let cleanupFinished = false;
+    try {
+      state.recovery.registerResolver(
+        resolver({
+          resume: async (input: RecoveryResumeInput) => {
+            input.admission.onInvalidated(reason =>
+              invalidated.resolve(reason),
+            );
+            input.admission.registerCleanup(async () => {
+              cleanupStarted.resolve();
+              await cleanupRelease.promise;
+              cleanupFinished = true;
+            });
+            return { kind: 'resumed' as const };
+          },
+        }),
+      );
+      state.recovery.completeStartup();
+      await persist(state, namespace, { kind: 'service', pluginId });
+
+      // Hold the row so the outcome write waits while the fence is lost.
+      const blocker = await state.db.transaction();
+      await blocker('ai_recovery_sessions')
+        .where({ plugin_id: pluginId, session_id: namespace.sessionId })
+        .forUpdate()
+        .select('session_id')
+        .first();
+
+      const pass = state.recovery.recover();
+      await waitForLockWait(state.db, 'ai_recovery_sessions');
+
+      state.clock.advance(60_001);
+      await invalidated.promise;
+      await cleanupStarted.promise;
+
+      let settled = false;
+      void pass.then(
+        () => {
+          settled = true;
+        },
+        () => {
+          settled = true;
+        },
+      );
+
+      // The blocked outcome write lands after the revocation started.
+      await blocker.rollback();
+      await new Promise(resolve => setTimeout(resolve, 100));
+      // Teardown is still running, so no completion may be reported yet.
+      expect(settled).toBe(false);
+
+      cleanupRelease.resolve();
+      const report = await pass;
+
+      expect(cleanupFinished).toBe(true);
+      expect(report.outcomes[0].status).toBe('failed');
+      const raw = await state.db('ai_recovery_sessions').first();
+      expect(raw.status).toBe('failed');
+    } finally {
+      cleanupRelease.resolve();
       await state.cleanup();
     }
   }, 20_000);
