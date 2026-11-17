@@ -518,7 +518,7 @@ optional history `action`, `entry` (an opaque key and optional index), and
 need not include the browser's entire session history. Unknown metadata is
 omitted rather than replaced with guessed values.
 
-Snapshots are immutable and cached until history changes. Every committed
+Snapshots are immutable and cached until navigation is published. Every committed
 navigation publishes a new snapshot, including pushes or replacements at the
 same URL; the nested location retains its identity while its fields are
 unchanged. A push creates a new entry key, replacement preserves it, and
@@ -529,6 +529,15 @@ The store functions have stable identities and can be passed directly to
 returns the snapshot's location. The hook observes history changes, including
 metadata-only updates, while the returned location retains its identity when
 its fields are unchanged.
+
+Reading a snapshot or rendering a component again does not publish browser history writes. The
+default history keeps direct `replaceState` calls silent when the pathname and
+hash are unchanged, allowing plugins to persist query parameters without
+navigation. In browsers with the Navigation API, third-party `pushState` calls
+and replacements that change the pathname or hash are observed. Without that
+API, raw history writes are not reported until browser traversal or native hash
+navigation occurs. Navigation through `AppHistoryApi` and the routing adapters
+is always observed, including query-only replacements.
 
 Subscribers may navigate synchronously, for example to redirect to another page.
 The default history rejects excessively deep synchronous navigation chains with
@@ -578,7 +587,7 @@ deployment basename. Both methods replace executable URL schemes with
 Empty, query-only, and hash-only targets keep the current pathname. An empty
 target clears query and hash. Path-relative
 targets such as `details`, `.` and `../edit` are rejected by framework navigation,
-including explicit framework hooks. `RouterLink` and `useNavigation` instead
+including explicit framework hooks. `RouterLink` and `useRoutingIntegration` instead
 follow the nearest adapter when relative navigation is needed.
 The adapter supplies its library's relative-path semantics to BUI controls too.
 
@@ -757,9 +766,7 @@ their routing scope through `RouteResolutionApi.resolvePath`, using the current
 app node and an app-relative pathname. The app compiles the routing tree and
 indexes node ancestry once, then shares matching results across consumers.
 Concrete mount paths and route patterns do not need a separate React context
-or adapter props. The `useRouteResolution` hook reads the current node from
-the existing extension boundary and resolves its ancestry at the current app
-location.
+or adapter props.
 
 Calling `resolvePath({ pathname })` returns the selected branch, ordered from
 outermost to innermost. Supplying `node` limits the result to that node and its
@@ -773,20 +780,20 @@ For the steps to attach one, see [Choose a router for a page](../building-plugin
 
 ### Testing
 
-`renderInTestApp` and `renderTestApp` from `@backstage/frontend-test-utils` drive an in-memory `AppHistoryApi` and hand it back as `appHistory`, which is what you navigate and assert against. See [Testing](../building-plugins/02-testing.md#navigation-and-app-history) for the details.
+`renderInTestApp` and `renderTestApp` from `@backstage/frontend-test-utils` drive an in-memory `AppHistoryApi` and expose it through `apis.get(appHistoryApiRef)` on the render result for navigation and location assertions. See [Testing](../building-plugins/02-testing.md#navigation-and-app-history) for the details.
 
 ### Limits of the model
 
 The app root still projects React Router v6 context, because third-party chrome written for the new frontend system may read it. Legacy core-components also retain their React Router dependency.
 
-Routing adapters supply a component-library-neutral `NavigationProvider`. Its
+Routing adapters supply a component-library-neutral `RoutingProvider`. Its
 hook runs at each consumer's route scope and returns href creation, navigation,
 and the current browser pathname. Generated hrefs and pathname include the
 deployment basename; navigation accepts the original authored target. Outside
 explicit or implicit page adapters, the default uses app history with strict framework semantics.
 
 Backstage UI receives a `useNavigation` hook through `BUIProvider`. The app binds
-that hook to the public `useNavigation` contract. Other component libraries can
+that hook to the public `useRoutingIntegration` contract. Other component libraries can
 consume the same contract without BUI dependencies or duplicated resolution.
 The separate frozen V2 BUI integration retains React Router behavior for older
 consumers and is preserved through nested providers.

@@ -111,7 +111,7 @@ const handlers = [
 
 describe('HarnessUrlReader', () => {
   const worker = setupServer(...handlers);
-  beforeAll(() => worker.listen({ onUnhandledRequest: 'bypass' }));
+  beforeAll(() => worker.listen({ onUnhandledFrame: 'bypass' }));
   afterAll(() => {
     worker.close();
     jest.clearAllMocks();

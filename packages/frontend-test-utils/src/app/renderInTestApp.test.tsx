@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  useCallback,
-  useEffect,
-  useState,
-  useSyncExternalStore,
-  type ReactNode,
-} from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { act, screen, fireEvent } from '@testing-library/react';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
-  useRouteResolution,
   useAnalytics,
   createRouteRef,
   createExternalRouteRef,
@@ -41,17 +34,8 @@ import {
   createExtension,
   type StorageApi,
   useAppHref,
-  appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
-import {
-  UNSAFE_LocationContext,
-  UNSAFE_NavigationContext,
-  UNSAFE_RouteContext,
-  useLocation,
-  useParams,
-  useInRouterContext,
-  Link,
-} from 'react-router-dom';
+import { useRouteMatches } from '@internal/frontend';
 import type { AppError } from '@backstage/frontend-app-api';
 import { renderInTestApp } from './renderInTestApp';
 import { renderTestApp } from './renderTestApp';
@@ -62,7 +46,7 @@ import { AnalyticsImplementationBlueprint } from '@backstage/plugin-app-react';
  * routing library — which is what content that declares no router has.
  */
 function PathProbe() {
-  const appHistory = useApi(appHistoryApiRef);
+  const appHistory = useApi(coreApis.appHistory);
   const { location } = useSyncExternalStore(
     appHistory.subscribe,
     appHistory.getSnapshot,
@@ -75,66 +59,6 @@ function HrefProbe(props: { to: string }) {
     <a data-testid="probe" href={useAppHref(props.to)}>
       probe
     </a>
-  );
-}
-
-/**
- * Stands in for a real page router adapter such as `ReactRouterV6PageRouter`,
- * which lives in a package that depends on this one.
- *
- * Like a real adapter it injects React Router's contexts rather than nesting a
- * `<Router>`, which is what lets a page render one inside the app-root
- * projection above it — but unlike a real one it states a fixed match instead
- * of deriving it from the page mount and the app history. All this option has
- * to do is render the element inside the component it was given; what an
- * adapter puts in that context is its own conformance suite's business.
- */
-function TestPageRouter(props: { children?: ReactNode }) {
-  return (
-    <UNSAFE_NavigationContext.Provider
-      value={
-        {
-          basename: '',
-          navigator: { createHref: (to: any) => to.pathname },
-          static: false,
-          future: { v7_relativeSplatPath: false },
-        } as any
-      }
-    >
-      <UNSAFE_LocationContext.Provider
-        value={
-          {
-            location: {
-              pathname: '/things/alpha',
-              search: '',
-              hash: '',
-              state: null,
-              key: 'default',
-            },
-            navigationType: 'POP',
-          } as any
-        }
-      >
-        <UNSAFE_RouteContext.Provider
-          value={
-            {
-              outlet: null,
-              matches: [
-                {
-                  params: { id: 'alpha' },
-                  pathname: '/things/alpha',
-                  pathnameBase: '/things/alpha',
-                  route: { path: '/things/:id' },
-                },
-              ],
-              isDataRoute: false,
-            } as any
-          }
-        >
-          {props.children}
-        </UNSAFE_RouteContext.Provider>
-      </UNSAFE_LocationContext.Provider>
-    </UNSAFE_NavigationContext.Provider>
   );
 }
 
@@ -200,7 +124,7 @@ describe('renderInTestApp', () => {
   });
 
   it.each(['component', 'extensions'])(
-    'uses isolated fake defaults with explicit overrides for %s rendering',
+    'exposes the app APIs with isolated defaults and explicit overrides for %s rendering',
     async mode => {
       let toast: ReturnType<typeof mockApis.toast>;
       let storage: StorageApi;
@@ -241,7 +165,13 @@ describe('renderInTestApp', () => {
       }
 
       const first = renderProbe();
+      expect(
+        first.apis.get(coreApis.internal.appLifecycle)?.isFinalized(),
+      ).toBe(true);
+      const firstToast = first.apis.get(coreApis.toast);
       fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+      expect(firstToast).toBe(toast!);
+      expect(first.apis.get(coreApis.storage)).toBe(storage!);
       expect(toast!.getToasts()).toEqual([{ title: 'Saved' }]);
       expect(screen.queryByText('Saved')).not.toBeInTheDocument();
       await storage!.set('saved', true);
@@ -250,6 +180,8 @@ describe('renderInTestApp', () => {
 
       const second = renderProbe();
       await screen.findByRole('button', { name: 'Save' });
+      expect(second.apis.get(coreApis.toast)).toBe(toast!);
+      expect(second.apis.get(coreApis.toast)).not.toBe(firstToast);
       expect(toast!.getToasts()).toEqual([]);
       expect(storage!.snapshot('saved').value).toBeUndefined();
       second.unmount();
@@ -277,6 +209,7 @@ describe('renderInTestApp', () => {
       });
       const third = renderProbe([], [feature]);
       fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+      expect(third.apis.get(coreApis.toast)).toBe(featureToast);
       expect(toast!).toBe(featureToast);
       expect(featureToast.post).toHaveBeenCalledTimes(1);
       expect(captureEvent).toHaveBeenCalledWith(
@@ -285,7 +218,8 @@ describe('renderInTestApp', () => {
       third.unmount();
 
       const override = mockApis.toast.mock();
-      renderProbe([override], [feature]);
+      const fourth = renderProbe([override], [feature]);
+      expect(fourth.apis.get(coreApis.toast)).toBe(override);
       fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
       expect(toast!).toBe(override);
       expect(override.post).toHaveBeenCalledWith({ title: 'Saved' });
@@ -336,9 +270,10 @@ describe('renderInTestApp', () => {
   });
 
   it('should support setting different locations in the history stack', async () => {
-    const { appHistory } = renderInTestApp(<PathProbe />, {
+    const { apis } = renderInTestApp(<PathProbe />, {
       initialRouteEntries: ['/second-page'],
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     expect(screen.getByText('Path: /second-page')).toBeInTheDocument();
     expect(appHistory.getSnapshot().location.pathname).toBe('/second-page');
@@ -466,11 +401,11 @@ describe('renderInTestApp', () => {
     async mode => {
       const history = mockApis.appHistory({ initialLocation: '/custom' });
       function Probe() {
-        const activeHistory = useApi(appHistoryApiRef);
+        const activeHistory = useApi(coreApis.appHistory);
         expect(activeHistory).toBe(history);
         return <div>Custom history</div>;
       }
-      const apis = [[appHistoryApiRef, history] as const];
+      const apis = [[coreApis.appHistory, history] as const];
       const result =
         mode === 'component'
           ? renderInTestApp(<Probe />, { apis })
@@ -486,13 +421,13 @@ describe('renderInTestApp', () => {
               ],
             });
       expect(await screen.findByText('Custom history')).toBeInTheDocument();
-      expect(result.appHistory).toBe(history);
+      expect(result.apis.get(coreApis.appHistory)).toBe(history);
     },
   );
 
   it('should drive navigation through the in-memory app history', async () => {
     const LocationProbe = () => {
-      const navigation = useApi(appHistoryApiRef);
+      const navigation = useApi(coreApis.appHistory);
       return (
         <div>
           <PathProbe />
@@ -503,9 +438,10 @@ describe('renderInTestApp', () => {
       );
     };
 
-    const { appHistory } = renderInTestApp(<LocationProbe />, {
+    const { apis } = renderInTestApp(<LocationProbe />, {
       initialRouteEntries: ['/start'],
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     expect(screen.getByText('Path: /start')).toBeInTheDocument();
 
@@ -528,13 +464,14 @@ describe('renderInTestApp', () => {
       </div>
     );
 
-    const { appHistory } = renderInTestApp(<LocationProbe />, {
+    const { apis } = renderInTestApp(<LocationProbe />, {
       initialRouteEntries: ['/start'],
       config: {
         app: { baseUrl: 'http://localhost:3000/backstage' },
         backend: { baseUrl: 'http://localhost:7007' },
       },
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     expect(screen.getByText('Path: /start')).toBeInTheDocument();
     expect(screen.getByTestId('probe')).toHaveAttribute(
@@ -570,6 +507,77 @@ describe('renderInTestApp', () => {
       expect(screen.getByTestId('probe')).toHaveAttribute('href', expected);
     });
 
+    it('tracks mounted page params and visibility through framework navigation', async () => {
+      const ref = createRouteRef({ params: ['name'] });
+      function Page() {
+        const { name } = useRouteRefParams(ref);
+        const matches = useRouteMatches();
+        return (
+          <span>
+            Page: {name} at {matches.at(-1)?.basePath}
+          </span>
+        );
+      }
+      const { apis } = renderInTestApp(<Page />, {
+        mountPath: '/items/:name',
+        initialRouteEntries: ['/items/first/details'],
+        mountedRoutes: { '/elsewhere': createRouteRef() },
+        config: {
+          app: { baseUrl: 'http://localhost:3000/backstage' },
+          backend: { baseUrl: 'http://localhost:7007' },
+        },
+      });
+      const appHistory = apis.get(coreApis.appHistory)!;
+      expect(
+        await screen.findByText('Page: first at /items/first'),
+      ).toBeInTheDocument();
+      act(() => appHistory.navigate('/ITEMS/second?tab=info'));
+      expect(
+        await screen.findByText('Page: second at /ITEMS/second'),
+      ).toBeInTheDocument();
+      act(() => appHistory.navigate('/elsewhere'));
+      expect(screen.queryByText(/^Page:/)).not.toBeInTheDocument();
+      act(() => appHistory.navigate(-1));
+      expect(
+        await screen.findByText('Page: second at /ITEMS/second'),
+      ).toBeInTheDocument();
+    });
+
+    it('unmounts page errors off-route and recovers when returning', async () => {
+      const consoleError = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      let shouldThrow = true;
+      function Page() {
+        if (shouldThrow) {
+          throw new Error('Page failed to render');
+        }
+        return <span>Recovered page</span>;
+      }
+      try {
+        const { apis } = renderInTestApp(<Page />, {
+          mountPath: '/items',
+          initialRouteEntries: ['/items'],
+        });
+        const appHistory = apis.get(coreApis.appHistory)!;
+        expect(
+          await screen.findByText('Page failed to render'),
+        ).toBeInTheDocument();
+        act(() => appHistory.navigate('/elsewhere'));
+        expect(
+          screen.queryByText('Page failed to render'),
+        ).not.toBeInTheDocument();
+        shouldThrow = false;
+        act(() => appHistory.navigate(-1));
+        expect(await screen.findByText('Recovered page')).toBeInTheDocument();
+        expect(
+          screen.queryByText('Page failed to render'),
+        ).not.toBeInTheDocument();
+      } finally {
+        consoleError.mockRestore();
+      }
+    });
+
     it('leaves the mount unpublished when the location does not reach it', async () => {
       renderInTestApp(<HrefProbe to="/techdocs" />, {
         mountPath: '/catalog/:namespace/:kind/:name',
@@ -579,16 +587,12 @@ describe('renderInTestApp', () => {
       expect(screen.queryByTestId('probe')).not.toBeInTheDocument();
     });
 
-    // `'/'` and `'/*'` are the app root written two ways — the second is what
-    // a caller gets by default when they name a `router` and no mount — so
-    // they have to host what sits below them alike. A root mount that matched
-    // only the root itself rendered nothing at any deeper location, and said
-    // no more than "unable to find element" about it.
+    // Both spellings of the app root must also match deeper locations.
     it.each(['/', '/*'])(
       'hosts a deeper location when mounted at the app root with %s',
       async mountPath => {
         function Content() {
-          const mount = useRouteResolution().matches.at(-1);
+          const mount = useRouteMatches().at(-1);
           return (
             <>
               <span>Mount: {mount?.basePath ?? 'none'}</span>
@@ -611,33 +615,7 @@ describe('renderInTestApp', () => {
     );
   });
 
-  describe('without a router adapter', () => {
-    it('retains the production root router and follows app history', async () => {
-      function Probe() {
-        const location = useLocation();
-        const inRouter = useInRouterContext();
-        return (
-          <div>
-            <span>Root router: {String(inRouter)}</span>
-            <span>Location: {location.pathname}</span>
-            <Link to="next">Next</Link>
-          </div>
-        );
-      }
-      const { appHistory } = renderInTestApp(<Probe />, {
-        initialRouteEntries: ['/catalog/foo'],
-      });
-      expect(await screen.findByText('Root router: true')).toBeInTheDocument();
-      expect(screen.getByText('Location: /catalog/foo')).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: 'Next' })).toHaveAttribute(
-        'href',
-        '/next',
-      );
-      await act(async () => screen.getByRole('link', { name: 'Next' }).click());
-      expect(appHistory.getSnapshot().location.pathname).toBe('/next');
-      expect(screen.getByText('Location: /next')).toBeInTheDocument();
-    });
-
+  describe('without a page adapter', () => {
     it('leaves framework routing working', async () => {
       const routeRef = createRouteRef({ params: ['name'] });
 
@@ -673,24 +651,25 @@ describe('renderInTestApp', () => {
   // page, inside the app's own root React Router projection, so it has a router
   // in a real app and keeps one here.
   describe("renderAs: 'chrome'", () => {
-    it('renders app-wide elements inside the app root router', async () => {
+    it('renders app-wide elements independently of the page mount', async () => {
       function ChromeProbe() {
-        const { pathname } = useLocation();
+        const href = useAppHref('/catalog');
         return (
           <div>
-            <span>Chrome at: {pathname}</span>
-            <Link to="/catalog">Catalog</Link>
+            <PathProbe />
+            <a href={href}>Catalog</a>
           </div>
         );
       }
 
       renderInTestApp(<ChromeProbe />, {
         renderAs: 'chrome',
+        mountPath: '/another-page',
         initialRouteEntries: ['/catalog/default/component/foo'],
       });
 
       expect(
-        await screen.findByText('Chrome at: /catalog/default/component/foo'),
+        await screen.findByText('Path: /catalog/default/component/foo'),
       ).toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'Catalog' })).toHaveAttribute(
         'href',
@@ -699,33 +678,11 @@ describe('renderInTestApp', () => {
     });
   });
 
-  describe('router', () => {
-    it('renders the element inside the adapter the page declares', async () => {
-      function LibraryProbe() {
-        const params = useParams();
-        return <span>Id: {params.id}</span>;
-      }
-
-      renderInTestApp(<LibraryProbe />, { router: TestPageRouter });
-
-      expect(screen.getByText('Id: alpha')).toBeInTheDocument();
-    });
-
-    it('keeps framework hrefs app-absolute inside the adapter', async () => {
-      renderInTestApp(<HrefProbe to="/techdocs" />, {
-        router: TestPageRouter,
-        mountPath: '/catalog/:namespace/:kind/:name',
-        initialRouteEntries: ['/catalog/default/component/foo'],
-      });
-
-      expect(screen.getByTestId('probe')).toHaveAttribute('href', '/techdocs');
-    });
-  });
-
-  it('should expose an appHistory on the render result that drives the app', async () => {
-    const { appHistory } = renderInTestApp(<PathProbe />, {
+  it('should expose the app history through the API holder to drive the app', async () => {
+    const { apis } = renderInTestApp(<PathProbe />, {
       initialRouteEntries: ['/start'],
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     expect(appHistory.getSnapshot().location.pathname).toBe('/start');
     expect(appHistory.createHref('/catalog?q=1')).toBe('/catalog?q=1');

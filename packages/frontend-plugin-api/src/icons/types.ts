@@ -14,28 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentType, JSX } from 'react';
-
-/**
- * IconComponent is the common icon type used throughout Backstage when
- * working with and rendering generic icons, including the app system icons.
- *
- * @remarks
- *
- * The type is based on SvgIcon from Material UI, but we do not want the plugin-api
- * package to have a dependency on Material UI, nor do we want the props to be as broad
- * as the SvgIconProps interface.
- *
- * If you have the need to forward additional props from SvgIconProps, you can
- * open an issue or submit a PR to the main Backstage repo. When doing so please
- * also describe your use-case and reasoning of the addition.
- *
- * @public
- * @deprecated Use {@link IconElement} instead, passing `<MyIcon />` rather than `MyIcon`.
- */
-export type IconComponent = ComponentType<{
-  fontSize?: 'medium' | 'large' | 'small' | 'inherit';
-}>;
+import { JSX } from 'react';
 
 /**
  * The type used for icon elements throughout Backstage.

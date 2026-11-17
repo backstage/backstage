@@ -18,10 +18,7 @@ import { act, renderHook } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
-import {
-  createMockAppHistory,
-  createMockRouteResolutionApi,
-} from '@backstage/frontend-test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import { useRouteRef } from './useRouteRef';
 import { createRouteRef } from './RouteRef';
 import { createSubRouteRef } from './SubRouteRef';
@@ -35,10 +32,10 @@ describe('framework routing', () => {
     // A framework page is routerless: React Router's own `useLocation` throws
     // here, so this hook must read the location from the app history instead.
     const routeRef = createRouteRef();
-    const routeResolution = createMockRouteResolutionApi({
+    const routeResolution = mockApis.routeResolution({
       routes: [[routeRef, '/hello']],
     });
-    const appHistory = createMockAppHistory({
+    const appHistory = mockApis.appHistory({
       initialLocation: '/my-page',
       basename: '/backstage',
     });
@@ -75,7 +72,7 @@ describe('framework routing', () => {
 
   it('re-resolves a route after app finalization without losing its app history scope', () => {
     const routeRef = createRouteRef();
-    const appHistory = createMockAppHistory({ initialLocation: '/my-page' });
+    const appHistory = mockApis.appHistory({ initialLocation: '/my-page' });
     let finalized = false;
     let notify = () => {};
     const lifecycle = {
@@ -87,7 +84,7 @@ describe('framework routing', () => {
         };
       },
     };
-    const routeResolution = createMockRouteResolutionApi({
+    const routeResolution = mockApis.routeResolution({
       resolve: () => (finalized ? () => '/hello' : undefined),
     });
 
@@ -124,7 +121,7 @@ describe('framework routing', () => {
 
   it('should resolve routes with neither authority present', () => {
     const routeRef = createRouteRef();
-    const routeResolution = createMockRouteResolutionApi({
+    const routeResolution = mockApis.routeResolution({
       routes: [[routeRef, '/hello']],
     });
 
@@ -146,10 +143,10 @@ describe('framework routing', () => {
 
   it('should prefer the app history over a React Router that disagrees', () => {
     const routeRef = createRouteRef();
-    const routeResolution = createMockRouteResolutionApi({
+    const routeResolution = mockApis.routeResolution({
       routes: [[routeRef, '/hello']],
     });
-    const appHistory = createMockAppHistory({ initialLocation: '/my-page' });
+    const appHistory = mockApis.appHistory({ initialLocation: '/my-page' });
 
     renderHook(() => useRouteRef(routeRef), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
@@ -204,7 +201,7 @@ describe('v1 consumer', () => {
 
   it('should resolve routes', () => {
     const routeRef = createRouteRef();
-    const routeResolution = createMockRouteResolutionApi({
+    const routeResolution = mockApis.routeResolution({
       routes: [[routeRef, '/hello']],
     });
 
@@ -235,7 +232,7 @@ describe('v1 consumer', () => {
           apis={[
             [
               routeResolutionApiRef,
-              createMockRouteResolutionApi({ resolve: () => undefined }),
+              mockApis.routeResolution({ resolve: () => undefined }),
             ],
           ]}
         >
@@ -250,7 +247,7 @@ describe('v1 consumer', () => {
 
   it('re-resolves the routeFunc when the search parameters change', () => {
     const routeRef = createRouteRef();
-    const routeResolution = createMockRouteResolutionApi({
+    const routeResolution = mockApis.routeResolution({
       routes: [[routeRef, '/hello']],
     });
     const history = createBrowserHistory();
@@ -278,7 +275,7 @@ describe('v1 consumer', () => {
 
   it('does not re-resolve the routeFunc the location pathname does not change', () => {
     const routeRef = createRouteRef();
-    const routeResolution = createMockRouteResolutionApi({
+    const routeResolution = mockApis.routeResolution({
       routes: [[routeRef, '/hello']],
     });
 
@@ -307,7 +304,7 @@ describe('v1 consumer', () => {
 
   it('does not re-resolve the routeFunc when the search parameter changes', () => {
     const routeRef = createRouteRef();
-    const routeResolution = createMockRouteResolutionApi({
+    const routeResolution = mockApis.routeResolution({
       routes: [[routeRef, '/hello']],
     });
 
@@ -336,7 +333,7 @@ describe('v1 consumer', () => {
 
   it('does not re-resolve the routeFunc when the hash parameter changes', () => {
     const routeRef = createRouteRef();
-    const routeResolution = createMockRouteResolutionApi({
+    const routeResolution = mockApis.routeResolution({
       routes: [[routeRef, '/hello']],
     });
 

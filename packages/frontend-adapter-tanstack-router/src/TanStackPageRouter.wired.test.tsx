@@ -19,6 +19,7 @@ import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   PageBlueprint,
   SubPageBlueprint,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { useBlocker, useNavigate, useSearch } from '@tanstack/react-router';
 import { TanStackPageRouter } from './TanStackPageRouter';
@@ -157,10 +158,11 @@ describe('TanStackPageRouter wired path', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [tabbedPage, overviewSubPage, settingsSubPage],
       initialRouteEntries: ['/tabbed-ts/overview'],
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     expect(await screen.findByTestId('overview-page')).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();

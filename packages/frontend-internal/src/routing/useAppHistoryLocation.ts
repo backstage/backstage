@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useSyncExternalStore } from 'react';
 import type {
   AppHistoryApi,
   AppLocation,

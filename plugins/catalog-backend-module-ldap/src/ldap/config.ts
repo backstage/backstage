@@ -47,6 +47,8 @@ export type LdapProviderConfig = {
   groups: GroupConfig[];
   // Schedule configuration for refresh tasks.
   schedule?: SchedulerServiceTaskScheduleDefinition;
+  // Whether user and group reads run sequentially using one connection.
+  disableParallelReads?: boolean;
   // Configuration for overriding the vendor-specific default attribute names.
   vendor?: VendorConfig;
 };
@@ -88,7 +90,7 @@ export type UserConfig = {
   dn: string;
   // The search options to use.
   // Only the scope, filter, attributes, and paged fields are supported. The
-  // default is scope "one" and attributes "*" and "+".
+  // default is scope "one" and a minimal attribute set for mapped fields.
   options: SearchOptions;
 
   // JSON paths (on a.b.c form) and hard coded values to set on those paths
@@ -185,10 +187,38 @@ export type VendorConfig = {
   uuidAttributeName?: string;
 };
 
-const defaultUserConfig = {
+const DEFAULT_USER_SEARCH_ATTRIBUTES = [
+  'dn',
+  'entryDN',
+  'distinguishedName',
+  'entryUUID',
+  'objectGUID',
+  'ipaUniqueID',
+  'uid',
+  'cn',
+  'mail',
+];
+// `memberOf` is added via map.memberOf when that mapping is enabled (default).
+
+const DEFAULT_GROUP_SEARCH_ATTRIBUTES = [
+  'dn',
+  'entryDN',
+  'distinguishedName',
+  'entryUUID',
+  'objectGUID',
+  'ipaUniqueID',
+  'uid',
+  'cn',
+  'description',
+  'groupType',
+];
+// `member` is added via map.members when that mapping is enabled (default).
+// `memberOf` is added via map.memberOf when that mapping is enabled (default).
+
+const defaultUserConfig: RecursivePartial<UserConfig> = {
   options: {
     scope: 'one',
-    attributes: ['*', '+'],
+    attributes: DEFAULT_USER_SEARCH_ATTRIBUTES,
   },
   map: {
     rdn: 'uid',
@@ -199,10 +229,10 @@ const defaultUserConfig = {
   },
 };
 
-const defaultGroupConfig = {
+const defaultGroupConfig: RecursivePartial<GroupConfig> = {
   options: {
     scope: 'one',
-    attributes: ['*', '+'],
+    attributes: DEFAULT_GROUP_SEARCH_ATTRIBUTES,
   },
   map: {
     rdn: 'cn',
@@ -214,6 +244,62 @@ const defaultGroupConfig = {
     members: 'member',
   },
 };
+
+function replaceArraysIfPresent(_into: any, from: any) {
+  // Replace arrays instead of merging, otherwise default behavior
+  return Array.isArray(from) ? from : undefined;
+}
+
+/**
+ * Builds the LDAP attribute list for a search.
+ *
+ * Mapped fields and vendor DN/UUID names are merged in automatically so custom
+ * `map.*` overrides keep working when no explicit attribute list is supplied.
+ */
+function withEffectiveSearchAttributes<T extends UserConfig | GroupConfig>(
+  config: T,
+  vendor: VendorConfig | undefined,
+  baseAttributes: string[],
+): T {
+  const mappedAttributes = Object.values(config.map).filter(
+    (value): value is string => typeof value === 'string' && value.length > 0,
+  );
+
+  const attributes = [
+    ...new Set(
+      [
+        ...(config.options.attributes ?? baseAttributes),
+        ...mappedAttributes,
+        vendor?.dnAttributeName,
+        vendor?.uuidAttributeName,
+      ].filter((value): value is string => Boolean(value)),
+    ),
+  ];
+
+  return {
+    ...config,
+    options: {
+      ...config.options,
+      attributes,
+    },
+  };
+}
+
+function mergeWithEffectiveSearchAttributes<T extends UserConfig | GroupConfig>(
+  defaults: RecursivePartial<T>,
+  config: RecursivePartial<T> | undefined,
+  vendor: VendorConfig | undefined,
+  baseAttributes: string[],
+): T {
+  const hasExplicitAttributes = Array.isArray(
+    (config?.options as SearchOptions | undefined)?.attributes,
+  );
+  const merged = mergeWith({}, defaults, config, replaceArraysIfPresent) as T;
+  if (hasExplicitAttributes) {
+    return merged;
+  }
+  return withEffectiveSearchAttributes(merged, vendor, baseAttributes);
+}
 
 function freeze<T>(data: T): T {
   return JSON.parse(JSON.stringify(data), (_key, value) => {
@@ -403,17 +489,29 @@ function formatFilter(filter?: string): string | undefined {
 export function readLdapLegacyConfig(config: Config): LdapProviderConfig[] {
   const providerConfigs = config.getOptionalConfigArray('providers') ?? [];
   return providerConfigs.map(c => {
+    const vendor = readVendorConfig(c.getOptionalConfig('vendor'));
     const newConfig = {
       target: trimEnd(c.getString('target'), '/'),
       tls: readTlsConfig(c.getOptionalConfig('tls')),
       bind: readBindConfig(c.getOptionalConfig('bind')),
-      users: readUserConfig(c.getConfig('users')).map(it => {
-        return mergeWith({}, defaultUserConfig, it, replaceArraysIfPresent);
-      }),
-      groups: readGroupConfig(c.getConfig('groups')).map(it => {
-        return mergeWith({}, defaultGroupConfig, it, replaceArraysIfPresent);
-      }),
-      vendor: readVendorConfig(c.getOptionalConfig('vendor')),
+      users: readUserConfig(c.getConfig('users')).map(it =>
+        mergeWithEffectiveSearchAttributes(
+          defaultUserConfig,
+          it,
+          vendor,
+          DEFAULT_USER_SEARCH_ATTRIBUTES,
+        ),
+      ),
+      groups: readGroupConfig(c.getConfig('groups')).map(it =>
+        mergeWithEffectiveSearchAttributes(
+          defaultGroupConfig,
+          it,
+          vendor,
+          DEFAULT_GROUP_SEARCH_ATTRIBUTES,
+        ),
+      ),
+      disableParallelReads: c.getOptionalBoolean('disableParallelReads'),
+      vendor,
     };
 
     return freeze(newConfig) as LdapProviderConfig;
@@ -444,6 +542,7 @@ export function readProviderConfigs(config: Config): LdapProviderConfig[] {
     const isUserList = Array.isArray(c.getOptional('users'));
     const isGroupList = Array.isArray(c.getOptional('groups'));
 
+    const vendor = readVendorConfig(c.getOptionalConfig('vendor'));
     const newConfig = {
       id,
       target: trimEnd(c.getString('target'), '/'),
@@ -453,25 +552,31 @@ export function readProviderConfigs(config: Config): LdapProviderConfig[] {
         isUserList
           ? c.getOptionalConfigArray('users')
           : c.getOptionalConfig('users'),
-      ).map(it => {
-        return mergeWith({}, defaultUserConfig, it, replaceArraysIfPresent);
-      }),
+      ).map(it =>
+        mergeWithEffectiveSearchAttributes(
+          defaultUserConfig,
+          it,
+          vendor,
+          DEFAULT_USER_SEARCH_ATTRIBUTES,
+        ),
+      ),
       groups: readGroupConfig(
         isGroupList
           ? c.getOptionalConfigArray('groups')
           : c.getOptionalConfig('groups'),
-      ).map(it => {
-        return mergeWith({}, defaultGroupConfig, it, replaceArraysIfPresent);
-      }),
+      ).map(it =>
+        mergeWithEffectiveSearchAttributes(
+          defaultGroupConfig,
+          it,
+          vendor,
+          DEFAULT_GROUP_SEARCH_ATTRIBUTES,
+        ),
+      ),
       schedule,
-      vendor: readVendorConfig(c.getOptionalConfig('vendor')),
+      disableParallelReads: c.getOptionalBoolean('disableParallelReads'),
+      vendor,
     };
 
     return freeze(newConfig) as LdapProviderConfig;
   });
-}
-
-function replaceArraysIfPresent(_into: any, from: any) {
-  // Replace arrays instead of merging, otherwise default behavior
-  return Array.isArray(from) ? from : undefined;
 }

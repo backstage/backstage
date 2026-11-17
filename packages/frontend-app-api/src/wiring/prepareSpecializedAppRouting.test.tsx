@@ -16,15 +16,15 @@
 
 import {
   ApiBlueprint,
-  appHistoryApiRef,
   coreExtensionData,
   createApiFactory,
   createExtension,
   createFrontendPlugin,
   featureFlagsApiRef,
   type AppHistoryApi,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
-import { createMockAppHistory } from '@backstage/frontend-test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import {
   prepareSpecializedApp,
   type CreateSpecializedAppInternalOptions,
@@ -64,7 +64,7 @@ function makeAppHistoryApi(appHistory: AppHistoryApi) {
     name: 'app-history',
     params: defineParams =>
       defineParams({
-        api: appHistoryApiRef,
+        api: coreApis.appHistory,
         deps: {},
         factory: () => appHistory,
       }),
@@ -103,7 +103,7 @@ describe('prepareSpecializedApp', () => {
         },
       } as CreateSpecializedAppInternalOptions);
       const app = preparedApp.finalize();
-      const appHistory = app.apis.get(appHistoryApiRef)!;
+      const appHistory = app.apis.get(coreApis.appHistory)!;
 
       // Teardown is handed over during preparation, before finalization
       expect(dispose).toBeDefined();
@@ -141,12 +141,14 @@ describe('prepareSpecializedApp', () => {
     });
 
     it('should leave an overridden app history API untouched', () => {
-      const appHistory = createMockAppHistory();
+      const appHistory = mockApis.appHistory();
       let dispose: (() => void) | undefined;
       const preparedApp = prepareSpecializedApp({
         features: [makeAppPlugin()],
         __internal: {
-          apiFactoryOverrides: [createApiFactory(appHistoryApiRef, appHistory)],
+          apiFactoryOverrides: [
+            createApiFactory(coreApis.appHistory, appHistory),
+          ],
           onDispose: teardown => {
             dispose = teardown;
           },
@@ -155,7 +157,7 @@ describe('prepareSpecializedApp', () => {
       const app = preparedApp.finalize();
 
       // No window-backed app history is constructed, so nothing is listening
-      expect(app.apis.get(appHistoryApiRef)).toBe(appHistory);
+      expect(app.apis.get(coreApis.appHistory)).toBe(appHistory);
       expect(popstateListeners(addEventListenerSpy)).toHaveLength(0);
 
       dispose!();
@@ -164,7 +166,7 @@ describe('prepareSpecializedApp', () => {
     });
 
     it('should let an ApiBlueprint-supplied app history replace the default', () => {
-      const appHistory = createMockAppHistory();
+      const appHistory = mockApis.appHistory();
       let dispose: (() => void) | undefined;
       const preparedApp = prepareSpecializedApp({
         features: [makeAppPlugin([makeAppHistoryApi(appHistory)])],
@@ -178,7 +180,7 @@ describe('prepareSpecializedApp', () => {
 
       // The app's own factory is the one that wins, rather than being shadowed
       // by the framework default that is otherwise registered ahead of it.
-      expect(app.apis.get(appHistoryApiRef)).toBe(appHistory);
+      expect(app.apis.get(coreApis.appHistory)).toBe(appHistory);
       // And the default is never constructed, so there is no second history
       // listening for `popstate` behind the supplied one.
       expect(popstateListeners(addEventListenerSpy)).toHaveLength(0);
@@ -189,13 +191,13 @@ describe('prepareSpecializedApp', () => {
     });
 
     it('should still let a static factory override an ApiBlueprint-supplied app history', () => {
-      const appHistory = createMockAppHistory();
-      const overrideHistory = createMockAppHistory();
+      const appHistory = mockApis.appHistory();
+      const overrideHistory = mockApis.appHistory();
       const preparedApp = prepareSpecializedApp({
         features: [makeAppPlugin([makeAppHistoryApi(appHistory)])],
         __internal: {
           apiFactoryOverrides: [
-            createApiFactory(appHistoryApiRef, overrideHistory),
+            createApiFactory(coreApis.appHistory, overrideHistory),
           ],
         },
       } as CreateSpecializedAppInternalOptions);
@@ -203,12 +205,12 @@ describe('prepareSpecializedApp', () => {
 
       // Test harnesses supply the history they are going to assert against, so
       // they keep outranking whatever the app under test provides.
-      expect(app.apis.get(appHistoryApiRef)).toBe(overrideHistory);
+      expect(app.apis.get(coreApis.appHistory)).toBe(overrideHistory);
       expect(popstateListeners(addEventListenerSpy)).toHaveLength(0);
     });
 
     it('should fail loudly when a predicate-gated extension supplies the app history', () => {
-      const appHistory = createMockAppHistory();
+      const appHistory = mockApis.appHistory();
       const featureFlagsApi = {
         isActive: (name: string) => name === 'test-flag',
         registerFlag: () => {},
@@ -255,7 +257,7 @@ describe('prepareSpecializedApp', () => {
       // the primary registry. Supporting this would need the gated API resolved
       // before predicate context exists, so the default declines to be the
       // answer instead of quietly becoming it.
-      expect(() => app.apis.get(appHistoryApiRef)).toThrow(
+      expect(() => app.apis.get(coreApis.appHistory)).toThrow(
         /'core\.app-history' API is supplied by an extension that is gated behind an 'if' predicate/,
       );
 
@@ -263,7 +265,7 @@ describe('prepareSpecializedApp', () => {
     });
 
     it('should let an app history from a reused session replace the default', () => {
-      const appHistory = createMockAppHistory();
+      const appHistory = mockApis.appHistory();
       let dispose: (() => void) | undefined;
       const preparedApp = prepareSpecializedApp({
         features: [makeAppPlugin()],
@@ -282,7 +284,7 @@ describe('prepareSpecializedApp', () => {
 
       // A reused session's holder is consulted before the default is built, so
       // the history the caller supplied is the one the app navigates through.
-      expect(app.apis.get(appHistoryApiRef)).toBe(appHistory);
+      expect(app.apis.get(coreApis.appHistory)).toBe(appHistory);
       // And no second, window-backed history was constructed behind it — which
       // would otherwise outrank it and leave a `popstate` listener attached for
       // the lifetime of the page.
@@ -309,7 +311,7 @@ describe('prepareSpecializedApp', () => {
       expect(popstateListeners(addEventListenerSpy)).toHaveLength(0);
 
       // The default is created on first use.
-      expect(app.apis.get(appHistoryApiRef)).toBeDefined();
+      expect(app.apis.get(coreApis.appHistory)).toBeDefined();
       const attached = popstateListeners(addEventListenerSpy);
       expect(attached).toHaveLength(1);
 
@@ -338,7 +340,7 @@ describe('prepareSpecializedApp', () => {
       // Deferring construction means the app can still reach for a history
       // after teardown. It gets one, but a dead one: the listener that backs it
       // is released immediately, because nothing holds a handle to it anymore.
-      expect(app.apis.get(appHistoryApiRef)).toBeDefined();
+      expect(app.apis.get(coreApis.appHistory)).toBeDefined();
       expect(popstateListeners(addEventListenerSpy)).toHaveLength(1);
       expect(popstateListeners(removeEventListenerSpy)).toHaveLength(1);
     });

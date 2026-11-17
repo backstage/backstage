@@ -22,7 +22,6 @@ import {
   AppTree,
   AppTreeApi,
   appTreeApiRef,
-  appHistoryApiRef,
   ConfigApi,
   configApiRef,
   createApiFactory,
@@ -36,6 +35,7 @@ import {
   type AnyRouteRefParams,
   type AppNode,
   type IdentityApi,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { matchRouteRefs } from '../routing/matchRouteRefs';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -276,24 +276,24 @@ export function createPhaseApis(options: {
   // registers as usual and then declines to answer if a competitor turns up.
   const hasNavigationOverride =
     options.staticFactories.some(
-      factory => factory.api.id === appHistoryApiRef.id,
-    ) || Boolean(options.appApiRegistry.get(appHistoryApiRef));
+      factory => factory.api.id === coreApis.appHistory.id,
+    ) || Boolean(options.appApiRegistry.get(coreApis.appHistory));
 
-  // The app registry can only gain an `appHistoryApiRef` factory after this
+  // The app registry can only gain an `coreApis.appHistory` factory after this
   // point, and only from a predicate-gated API root that `hasNavigationOverride`
   // was unable to see. The default sits in the primary registry and would win
   // that race without making a sound, leaving the app running on a window
   // history nobody asked for, so it stops instead of winning.
   function assertNoDeferredNavigationOverride() {
-    if (!options.appApiRegistry.get(appHistoryApiRef)) {
+    if (!options.appApiRegistry.get(coreApis.appHistory)) {
       return;
     }
     throw new Error(
       [
-        `The '${appHistoryApiRef.id}' API is supplied by an extension that is gated behind an 'if' predicate, which is not supported.`,
+        `The '${coreApis.appHistory.id}' API is supplied by an extension that is gated behind an 'if' predicate, which is not supported.`,
         `Predicate-gated extensions are only resolved once predicate context exists, which is after the app has been prepared, and the app history has to be decided during preparation.`,
         `The built-in window history was therefore registered as the app default, and it outranks the extension's factory.`,
-        `Remove the 'if' from the extension that provides '${appHistoryApiRef.id}' and from every extension attached below it, or supply the history another way, such as an app-level API factory override.`,
+        `Remove the 'if' from the extension that provides '${coreApis.appHistory.id}' and from every extension attached below it, or supply the history another way, such as an app-level API factory override.`,
       ].join(' '),
     );
   }
@@ -326,12 +326,13 @@ export function createPhaseApis(options: {
       return undefined;
     }
     return createApiFactory({
-      api: appHistoryApiRef,
+      api: coreApis.appHistory,
       deps: {},
       factory: () => {
         assertNoDeferredNavigationOverride();
         return (
-          options.fallbackApis?.get(appHistoryApiRef) ?? getOrCreateAppHistory()
+          options.fallbackApis?.get(coreApis.appHistory) ??
+          getOrCreateAppHistory()
         );
       },
     });

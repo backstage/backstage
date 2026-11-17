@@ -15,15 +15,16 @@
  */
 
 import * as apis from '../../index';
-import { coreApis } from './coreApis';
+import { appHistoryApiRef } from '../../routing/AppHistoryApi';
 
-describe('coreApis', () => {
+const { coreApis } = apis;
+
+describe('core API namespaces', () => {
   it('preserves core API ref identity and metadata', () => {
     const refs = {
-      appHistory: apis.appHistoryApiRef,
+      appHistory: appHistoryApiRef,
       analytics: apis.analyticsApiRef,
       appLanguage: apis.appLanguageApiRef,
-      appLifecycle: apis.appLifecycleApiRef,
       appTheme: apis.appThemeApiRef,
       appTree: apis.appTreeApiRef,
       config: apis.configApiRef,
@@ -34,20 +35,37 @@ describe('coreApis', () => {
       fetch: apis.fetchApiRef,
       icons: apis.iconsApiRef,
       identity: apis.identityApiRef,
-      oauthRequest: apis.oauthRequestApiRef,
-      pluginHeaderActions: apis.pluginHeaderActionsApiRef,
-      pluginWrapper: apis.pluginWrapperApiRef,
       routeResolution: apis.routeResolutionApiRef,
       storage: apis.storageApiRef,
-      swappableComponents: apis.swappableComponentsApiRef,
       toast: apis.toastApiRef,
       translation: apis.translationApiRef,
     };
 
-    expect(Object.keys(coreApis).sort()).toEqual(Object.keys(refs).sort());
+    expect(Object.keys(coreApis).sort()).toEqual(
+      [...Object.keys(refs), 'internal'].sort(),
+    );
     for (const name of Object.keys(refs) as (keyof typeof refs)[]) {
       expect(coreApis[name]).toBe(refs[name]);
       expect(coreApis[name].id).toBe(refs[name].id);
+    }
+  });
+
+  it('separates framework APIs while preserving ref identity and metadata', () => {
+    const refs = {
+      appLifecycle: apis.appLifecycleApiRef,
+      oauthRequest: apis.oauthRequestApiRef,
+      pluginHeaderActions: apis.pluginHeaderActionsApiRef,
+      pluginWrapper: apis.pluginWrapperApiRef,
+      swappableComponents: apis.swappableComponentsApiRef,
+    };
+
+    expect(Object.keys(coreApis.internal).sort()).toEqual(
+      Object.keys(refs).sort(),
+    );
+    for (const name of Object.keys(refs) as (keyof typeof refs)[]) {
+      expect(coreApis.internal[name]).toBe(refs[name]);
+      expect(coreApis.internal[name].id).toBe(refs[name].id);
+      expect(coreApis).not.toHaveProperty(name);
     }
   });
 
@@ -58,8 +76,9 @@ describe('coreApis', () => {
     expect(providerRefs.length).toBeGreaterThan(0);
     for (const [, ref] of providerRefs) {
       expect(Object.values(coreApis)).not.toContain(ref);
+      expect(Object.values(coreApis.internal)).not.toContain(ref);
     }
-    expect(coreApis.oauthRequest).toBe(apis.oauthRequestApiRef);
+    expect(coreApis.internal.oauthRequest).toBe(apis.oauthRequestApiRef);
     expect(coreApis.identity).toBe(apis.identityApiRef);
   });
 });

@@ -21,10 +21,7 @@ import { UserInfoDatabase } from './UserInfoDatabase';
 import { AuthDatabase } from './AuthDatabase';
 import { DateTime } from 'luxon';
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-auth-backend',
-  'migrations',
-);
+const migrationsDir = resolvePackagePath(import.meta.url, 'migrations');
 
 jest.setTimeout(60_000);
 

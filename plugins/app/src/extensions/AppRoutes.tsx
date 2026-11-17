@@ -22,9 +22,9 @@ import {
   createExtensionInput,
   NotFoundErrorPage,
   ErrorDisplay,
-  appHistoryApiRef,
   routeResolutionApiRef,
   useApi,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { AppRouteSwitch, useAppHistoryLocation } from '@internal/frontend';
 
@@ -65,7 +65,7 @@ export const AppRoutes = createExtension({
     }
 
     const RoutesElement = () => {
-      const history = useApi(appHistoryApiRef);
+      const history = useApi(coreApis.appHistory);
       const routes = useApi(routeResolutionApiRef);
       const location = useAppHistoryLocation(history)!;
 

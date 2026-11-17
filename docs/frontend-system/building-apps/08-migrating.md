@@ -489,8 +489,8 @@ const queryClientWrapper = AppRootWrapperBlueprint.make({
 ```
 
 In tests, replace a root `MemoryRouter` with `renderInTestApp` or
-`renderTestApp` from `@backstage/frontend-test-utils` and navigate through the
-`appHistory` they return. The old frontend system still accepts
+`renderTestApp` from `@backstage/frontend-test-utils` and navigate through
+`apis.get(appHistoryApiRef)` on the render result. The old frontend system still accepts
 `components.Router`, so a plugin that has to run under both systems does not
 need to change its own React Router usage.
 
@@ -625,16 +625,16 @@ const app = createApp({
 
 #### `icons`
 
-Icons are now installed as extensions, using the `IconBundleBlueprint` to make new instances which can be added to the app.
+Icons are now installed as extensions, using the `IconBundleBlueprint` to make new instances which can be added to the app. Pass icon elements rather than components, and set `fontSize="inherit"` for Material UI icons.
 
-```ts
+```tsx
 import { IconBundleBlueprint } from '@backstage/plugin-app-react';
 
 const exampleIconBundle = IconBundleBlueprint.make({
   name: 'example-bundle',
   params: {
     icons: {
-      user: MyOwnUserIcon,
+      user: <MyOwnUserIcon fontSize="inherit" />,
     },
   },
 });

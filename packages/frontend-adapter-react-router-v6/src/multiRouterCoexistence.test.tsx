@@ -21,12 +21,12 @@ import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   PageBlueprint,
   SubPageBlueprint,
-  appHistoryApiRef,
   createFrontendPlugin,
   createRouteRef,
   useApi,
   useAppNavigate,
   useRouteRef,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import {
   Link as TanStackLink,
@@ -46,7 +46,7 @@ import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
  * about where the app is, whichever library is answering nearby.
  */
 function useAppLocation() {
-  const appHistory = useApi(appHistoryApiRef);
+  const appHistory = useApi(coreApis.appHistory);
   return useSyncExternalStore(
     appHistory.subscribe,
     appHistory.getSnapshot,
@@ -149,10 +149,11 @@ describe('TanStack + RR v6 coexistence', () => {
       ],
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       features: [catalogPlugin, toolsPlugin],
       initialRouteEntries: ['/catalog-pudding-ts'],
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('catalog-page')).toBeInTheDocument();
@@ -314,10 +315,11 @@ describe('TanStack + RR v6 coexistence', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [homePage, visualizerPage, treeSubPage, graphSubPage],
       initialRouteEntries: ['/home-pudding-ts'],
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('home-page')).toBeInTheDocument();
@@ -430,10 +432,11 @@ describe('TanStack + RR v6 coexistence', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [v6OuterPage, tanStackOuterPage],
       initialRouteEntries: ['/v6-outer/alpha'],
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('both')).toBeInTheDocument();
@@ -623,7 +626,8 @@ describe('TanStack + RR v6 coexistence', () => {
     }
 
     it('should resolve a TanStack sub-page target against the page and the sub-page', async () => {
-      const { appHistory } = renderMixedCatalog('/catalog-mix/overview');
+      const { apis } = renderMixedCatalog('/catalog-mix/overview');
+      const appHistory = apis.get(coreApis.appHistory)!;
 
       await waitFor(() => {
         expect(screen.getByTestId('tanstack-probe')).toBeInTheDocument();
@@ -674,7 +678,8 @@ describe('TanStack + RR v6 coexistence', () => {
     });
 
     it('should resolve a v6 sub-page target against the page and the sub-page, beside a TanStack tab', async () => {
-      const { appHistory } = renderMixedCatalog('/catalog-mix/overview');
+      const { apis } = renderMixedCatalog('/catalog-mix/overview');
+      const appHistory = apis.get(coreApis.appHistory)!;
       await waitFor(() => {
         expect(screen.getByTestId('tanstack-probe')).toBeInTheDocument();
       });
@@ -745,7 +750,8 @@ describe('TanStack + RR v6 coexistence', () => {
       // answer is the sub-page answer with the sub-page's segment removed, so
       // the segment demonstrably came from the sub-page mount and not from the
       // page's pattern being applied twice or from the target itself.
-      const { appHistory } = renderMixedCatalog('/tools-mix');
+      const { apis } = renderMixedCatalog('/tools-mix');
+      const appHistory = apis.get(coreApis.appHistory)!;
 
       await waitFor(() => {
         expect(screen.getByTestId('tanstack-probe')).toBeInTheDocument();

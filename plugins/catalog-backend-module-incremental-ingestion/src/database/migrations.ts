@@ -19,10 +19,7 @@ import { Knex } from 'knex';
 import { DB_MIGRATIONS_TABLE } from './tables';
 
 export async function applyDatabaseMigrations(knex: Knex): Promise<void> {
-  const migrationsDir = resolvePackagePath(
-    '@backstage/plugin-catalog-backend-module-incremental-ingestion',
-    'migrations',
-  );
+  const migrationsDir = resolvePackagePath(import.meta.url, 'migrations');
 
   await knex.migrate.latest({
     directory: migrationsDir,

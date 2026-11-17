@@ -9,4 +9,4 @@
 +import { PluginWrapperBlueprint } from '@backstage/frontend-plugin-api';
 ```
 
-The exported APIs retain the same behavior and identity. For the deprecated `pluginWrapperApiRef`, prefer `coreApis.pluginWrapper` from the main entry point.
+The exported APIs retain the same behavior and identity. For the deprecated `pluginWrapperApiRef`, prefer `coreApis.internal.pluginWrapper` from the main entry point.
