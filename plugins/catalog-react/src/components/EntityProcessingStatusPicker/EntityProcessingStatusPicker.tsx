@@ -25,6 +25,7 @@ import { useState } from 'react';
 import { useEntityList } from '../../hooks';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useAnalytics } from '@backstage/core-plugin-api';
 import { CatalogAutocomplete } from '../CatalogAutocomplete';
 
 /** @public */
@@ -47,6 +48,7 @@ export const EntityProcessingStatusPicker = () => {
   const classes = useStyles();
   const { updateFilters } = useEntityList();
   const { t } = useTranslationRef(catalogReactTranslationRef);
+  const analytics = useAnalytics();
 
   const [selectedAdvancedItems, setSelectedAdvancedItems] = useState<string[]>(
     [],
@@ -75,6 +77,9 @@ export const EntityProcessingStatusPicker = () => {
         options={availableAdvancedItems}
         value={selectedAdvancedItems}
         onChange={(_: object, value: string[]) => {
+          value
+            .filter(item => !selectedAdvancedItems.includes(item))
+            .forEach(item => analytics.captureEvent('filter', item));
           setSelectedAdvancedItems(value);
           orphanChange(value.includes('Is Orphan'));
           errorChange(value.includes('Has Error'));
