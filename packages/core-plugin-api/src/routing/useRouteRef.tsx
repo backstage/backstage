@@ -20,8 +20,8 @@ import { useVersionedContext } from '@backstage/version-bridge';
 import {
   RouteResolutionApi,
   routeResolutionApiRef,
-  useApi,
 } from '@backstage/frontend-plugin-api';
+import { useApi } from '../apis/system/useApi';
 import {
   AnyParams,
   ExternalRouteRef,

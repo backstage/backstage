@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
+import {
+  Component,
+  PropsWithChildren,
+  Suspense,
+  lazy,
+  useCallback,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import { act, screen, fireEvent } from '@testing-library/react';
+import { withLogCollector } from '@backstage/test-utils';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
   useAnalytics,
@@ -27,6 +37,8 @@ import {
   useApi,
   coreApis,
   ApiBlueprint,
+  PageBlueprint,
+  createApiRef,
   createFrontendModule,
   createFrontendPlugin,
   type FrontendFeature,
@@ -63,6 +75,216 @@ function HrefProbe(props: { to: string }) {
 }
 
 describe('renderInTestApp', () => {
+  it('should render lazy APIs with a plugin named test in both test helpers', async () => {
+    const apiRef = createApiRef<
+      Promise<{
+        getString(key: string): string;
+        getOptionalString(key: string): string | undefined;
+      }>
+    >().with({
+      id: 'plugin.test.client',
+    });
+    const load = jest.fn(async () => {
+      const { ConfigReader } = await import('@backstage/config');
+      return new ConfigReader({ message: 'Lazy API loaded' });
+    });
+    function Consumer() {
+      return <div>{useApi(apiRef).getString('message')}</div>;
+    }
+    const plugin = createFrontendPlugin({
+      pluginId: 'test',
+      extensions: [
+        ApiBlueprint.make({
+          params: defineParams =>
+            defineParams({
+              api: apiRef,
+              deps: { config: coreApis.config },
+              factory: ({ config }) => {
+                expect(config.getString('app.baseUrl')).toBe(
+                  'http://localhost:3000',
+                );
+                return load();
+              },
+            }),
+        }),
+        PageBlueprint.make({
+          params: { path: '/lazy', loader: async () => <Consumer /> },
+        }),
+      ],
+    });
+    expect(load).not.toHaveBeenCalled();
+    const rendered = renderTestApp({
+      features: [plugin],
+      initialRouteEntries: ['/lazy'],
+    });
+    expect(await screen.findByText('Lazy API loaded')).toBeInTheDocument();
+    expect(load).toHaveBeenCalledTimes(1);
+    rendered.unmount();
+
+    const second = renderTestApp({
+      features: [plugin],
+      initialRouteEntries: ['/lazy'],
+    });
+    expect(await screen.findByText('Lazy API loaded')).toBeInTheDocument();
+    expect(load).toHaveBeenCalledTimes(2);
+    second.unmount();
+
+    for (const renderAs of ['page', 'chrome'] as const) {
+      const result = renderInTestApp(<Consumer />, {
+        features: [plugin],
+        renderAs,
+      });
+      expect(await screen.findByText('Lazy API loaded')).toBeInTheDocument();
+      result.unmount();
+    }
+    expect(load).toHaveBeenCalledTimes(4);
+
+    const mock = Promise.resolve({ getString: () => 'Partial API mock' });
+    const mockedApp = renderTestApp({
+      features: [plugin],
+      initialRouteEntries: ['/lazy'],
+      apis: [[apiRef, mock]],
+    });
+    expect(await screen.findByText('Partial API mock')).toBeInTheDocument();
+    mockedApp.unmount();
+
+    for (const renderAs of ['page', 'chrome'] as const) {
+      const result = renderInTestApp(<Consumer />, {
+        apis: [[apiRef, mock]],
+        renderAs,
+      });
+      expect(await screen.findByText('Partial API mock')).toBeInTheDocument();
+      result.unmount();
+    }
+    expect(load).toHaveBeenCalledTimes(4);
+
+    const synchronousMock = { getString: () => 'Synchronous API mock' };
+    const synchronousApp = renderTestApp({
+      features: [plugin],
+      initialRouteEntries: ['/lazy'],
+      apis: [[apiRef, synchronousMock]],
+    });
+    expect(await screen.findByText('Synchronous API mock')).toBeInTheDocument();
+    synchronousApp.unmount();
+
+    for (const renderAs of ['page', 'chrome'] as const) {
+      const result = renderInTestApp(<Consumer />, {
+        apis: [[apiRef, synchronousMock]],
+        renderAs,
+      });
+      expect(screen.getByText('Synchronous API mock')).toBeInTheDocument();
+      result.unmount();
+    }
+    expect(load).toHaveBeenCalledTimes(4);
+  });
+
+  it('should preserve synchronous rendering and custom Suspense fallbacks', async () => {
+    const apiRef = createApiRef<{ label: string }>().with({
+      id: 'plugin.test.sync',
+    });
+    function SynchronousConsumer() {
+      return <button>{useApi(apiRef).label}</button>;
+    }
+    const rendered = renderInTestApp(<SynchronousConsumer />, {
+      apis: [[apiRef, { label: 'Ready' }]],
+    });
+    expect(screen.getByRole('button', { name: 'Ready' })).toBeInTheDocument();
+    rendered.unmount();
+
+    for (const withInnerBoundary of [false, true]) {
+      const LazyContent = lazy(async () => ({
+        default: () => <div>Loaded content</div>,
+      }));
+      const result = renderInTestApp(
+        <>
+          <span>Synchronous sibling</span>
+          {withInnerBoundary ? (
+            <Suspense fallback="Custom loading state">
+              <LazyContent />
+            </Suspense>
+          ) : (
+            <LazyContent />
+          )}
+        </>,
+      );
+      expect(Boolean(screen.queryByText('Synchronous sibling'))).toBe(
+        withInnerBoundary,
+      );
+      expect(Boolean(screen.queryByText('Custom loading state'))).toBe(
+        withInnerBoundary,
+      );
+      expect(await screen.findByText('Loaded content')).toBeInTheDocument();
+      expect(screen.getByText('Synchronous sibling')).toBeInTheDocument();
+      expect(
+        screen.queryByText('Custom loading state'),
+      ).not.toBeInTheDocument();
+      result.unmount();
+    }
+  });
+
+  it('should propagate rejected API initialization to the supplied error boundary', async () => {
+    class ErrorBoundary extends Component<
+      PropsWithChildren,
+      { error?: Error }
+    > {
+      static getDerivedStateFromError(error: Error) {
+        return { error };
+      }
+
+      state: { error?: Error } = {};
+
+      render() {
+        return this.state.error ? (
+          <div role="alert">{this.state.error.message}</div>
+        ) : (
+          this.props.children
+        );
+      }
+    }
+    const apiRef = createApiRef<Promise<string>>().with({
+      id: 'plugin.test.rejected',
+    });
+    let reject!: (error: Error) => void;
+    const promise = new Promise<string>((_, r) => {
+      reject = r;
+    });
+    function Consumer() {
+      return <div>{useApi(apiRef)}</div>;
+    }
+    await withLogCollector(['error'], async () => {
+      renderInTestApp(
+        <ErrorBoundary>
+          <Consumer />
+        </ErrorBoundary>,
+        {
+          features: [
+            createFrontendModule({
+              pluginId: 'app',
+              extensions: [
+                ApiBlueprint.make({
+                  params: defineParams =>
+                    defineParams({
+                      api: apiRef,
+                      deps: {},
+                      factory: () => promise,
+                    }),
+                }),
+              ],
+            }),
+          ],
+        },
+      );
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      await act(async () => {
+        reject(new Error('API initialization failed'));
+        await promise.catch(() => {});
+      });
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'API initialization failed',
+      );
+    });
+  });
+
   it('should throw for app errors that would show the error page', () => {
     const conflictingPlugin = createFrontendPlugin({
       pluginId: 'conflict',

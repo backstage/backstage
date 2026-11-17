@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useSyncExternalStore, type ReactNode } from 'react';
+import { Suspense, useSyncExternalStore, type ReactNode } from 'react';
 import { prepareSpecializedApp } from '@backstage/frontend-app-api';
 import type { RenderTestAppOptions } from './renderTestApp';
 import { render } from '@testing-library/react';
@@ -137,6 +137,12 @@ function TestAppPage({
  * @public
  * Renders the given element in a test app, for use in unit tests.
  *
+ * Elements that do not suspend render immediately. If a descendant suspends,
+ * the entire element renders nothing until it is ready; use asynchronous queries
+ * such as `findByText` to await it. Supply an inner Suspense boundary to isolate
+ * suspended content or provide a custom fallback. Rendering errors are not caught
+ * by the Suspense boundary.
+ *
  * Navigation is owned by a {@link @backstage/frontend-plugin-api#AppHistoryApi}
  * with in-memory history, the same seam as production. Access it through
  * `apis.get(coreApis.appHistory)` on the render result.
@@ -172,8 +178,9 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
         : { id: 'app/root', input: 'children' },
       output: [coreExtensionData.reactElement],
       factory: ({ node }) => {
+        const suspendedElement = <Suspense fallback={null}>{element}</Suspense>;
         if (asChrome) {
-          return [coreExtensionData.reactElement(element)];
+          return [coreExtensionData.reactElement(suspendedElement)];
         }
         const routePath =
           mountPath.replace(/\/\*$/, '').replace(/\/$/, '') || '/';
@@ -196,7 +203,9 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
             ]}
           >
             <TestAppPage node={node}>
-              <ExtensionBoundary node={node}>{element}</ExtensionBoundary>
+              <ExtensionBoundary node={node}>
+                {suspendedElement}
+              </ExtensionBoundary>
             </TestAppPage>
           </TestRouteResolver>
         );

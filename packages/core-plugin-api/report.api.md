@@ -72,7 +72,6 @@ import { StorageApi } from '@backstage/frontend-plugin-api';
 import { storageApiRef } from '@backstage/frontend-plugin-api';
 import { StorageValueSnapshot } from '@backstage/frontend-plugin-api';
 import { TypesToApiRefs } from '@backstage/frontend-plugin-api';
-import { useApi } from '@backstage/frontend-plugin-api';
 import { useApiHolder } from '@backstage/frontend-plugin-api';
 import { vmwareCloudAuthApiRef } from '@backstage/frontend-plugin-api';
 
@@ -551,7 +550,8 @@ export { TypesToApiRefs };
 // @public
 export function useAnalytics(): AnalyticsTracker;
 
-export { useApi };
+// @public
+export function useApi<T>(apiRef: ApiRef<T>): T;
 
 export { useApiHolder };
 

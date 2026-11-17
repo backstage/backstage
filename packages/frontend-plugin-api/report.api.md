@@ -2499,7 +2499,7 @@ export type TypesToApiRefs<T> = {
 export function useAnalytics(): AnalyticsTracker;
 
 // @public
-export function useApi<T>(apiRef: ApiRef<T>): T;
+export function useApi<T>(apiRef: ApiRef<T>): Awaited<T>;
 
 // @public
 export function useApiHolder(): ApiHolder;

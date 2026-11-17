@@ -65,6 +65,55 @@ const MyComponent = () => {
 };
 ```
 
+### Promise-valued APIs
+
+For a ref declared as `ApiRef<Promise<WorkApi>>`, `useApi` returns `WorkApi`.
+It suspends while the promise is pending and throws its rejection reason if
+initialization fails. Extension boundaries, including those used by
+`PageBlueprint`, provide Suspense and error boundaries. When rendering outside
+those boundaries, provide your own:
+
+```tsx
+<Suspense fallback={<Loading />}>
+  <WorkComponent />
+</Suspense>
+```
+
+Use an error boundary to handle rejected initialization. The framework caches
+the promise returned by an API factory, so a failed initialization is not retried
+on each render. A custom holder must likewise retain the same promise between
+lookups; creating a fresh promise on every lookup can cause repeated suspension.
+
+When treating an API as optional, catch only `NotImplementedError`, using
+`NotImplementedError.is(error)` from `@backstage/errors`. Let all other thrown
+values reach React. A catch-all would swallow suspension promises and initialization
+failures, causing a present API to appear absent.
+
+Direct holder lookups keep the declared API value:
+
+```ts
+const workPromise = apis.get(workApiRef); // Promise<WorkApi> | undefined
+if (workPromise === undefined) {
+  throw new Error('Work API is not available');
+}
+const workApi = await workPromise;
+```
+
+Factory dependencies also receive the promise unchanged. They must await it
+where they need the resolved API. An API with asynchronous methods can still be
+a synchronous value; only a promise-valued API causes `useApi` to suspend.
+
+The hook's return type is `Awaited<T>`, so promises and objects with a callable
+`then` property are recursively unwrapped. Synchronous API values are returned directly. The legacy `useApi`
+hook from `@backstage/core-plugin-api` returns the declared value, including
+promises, without unwrapping or suspending.
+
+Changing an existing ref to a promise changes its contract. See
+[changing an API to a promise](./02-creating.md#changing-an-api-to-a-promise) for
+consumer, factory, and release requirements. See
+[testing Utility APIs](./05-testing.md#provide-apis-to-components-and-extensions)
+for synchronous tuple mocks and promise mocks that exercise suspension.
+
 ## Via dependencies
 
 Your utility APIs can depend on other utility APIs in their factories. You do this by declaring `deps` on your `createApiFactory`, and reading the outcome in your `factory`.

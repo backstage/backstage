@@ -118,7 +118,9 @@ export function prepareTestAppFeatures(options: {
         }),
       ],
     }),
-    createFrontendPlugin({
+    createFrontendPlugin({ pluginId: 'test' }),
+    // Keep test extensions when a supplied plugin replaces the placeholder above.
+    createFrontendModule({
       pluginId: 'test',
       extensions,
     }),
