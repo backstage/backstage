@@ -18,6 +18,9 @@
 <div class="tsd-signature tsd-anchor-link" id="isdatabaseconflicterror"><span class="tsd-kind-call-signature">isDatabaseConflictError</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">e</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><a href="#isdatabaseconflicterror" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Tries to deduce whether a thrown error is a database conflict.</p>
+<p>PostgreSQL unique constraint violations are detected by their SQLSTATE code,
+since PostgreSQL localizes error messages based on the database
+configuration.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -29,7 +32,7 @@
 known database engine</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/b325d39698a65b0ed86ac229ddeaa9181ffa7191/packages/backend-plugin-api/src/services/utilities/database.ts#L27">packages/backend-plugin-api/src/services/utilities/database.ts:27</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/6b4aecbbe1159f48a3937dfd839e3018b85b608d/packages/backend-plugin-api/src/services/utilities/database.ts#L31">packages/backend-plugin-api/src/services/utilities/database.ts:31</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

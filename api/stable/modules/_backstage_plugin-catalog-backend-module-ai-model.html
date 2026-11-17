@@ -30,6 +30,14 @@
 <li><strong><code>rule</code></strong> — governance rules and constraints for AI coding tools. Supports additional fields: <code>disciplines</code>, <code>category</code> (required), <code>rationale</code> (required).</li>
 </ul>
 <p>Any other <code>type</code> value is accepted with the base spec fields: <code>type</code>, <code>lifecycle</code>, <code>owner</code>, and optionally <code>system</code>.</p>
+<h2 id="relations-to-custom-kinds" class="tsd-anchor-link">Relations to custom kinds<a href="#relations-to-custom-kinds" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>This module registers a catalog model source, which also enables model-based
+processing for built-in kinds. If <code>Component</code> or <code>Resource</code> entities refer to
+custom kinds through <code>dependsOn</code> or <code>dependencyOf</code>, declare the corresponding
+relation pairs in a catalog model layer to have the inverse relations emitted.
+See the <a href="../../docs/features/software-catalog/extending-the-model.md#relations-to-custom-kinds-with-catalog-model-layers">catalog model layer guidance</a>
+for an example. Relation fields with <code>allowedKinds</code> restrictions continue to
+enforce those restrictions.</p>
 <h2 id="accessing-skill-and-rule-content" class="tsd-anchor-link">Accessing skill and rule content<a href="#accessing-skill-and-rule-content" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>The actual content of skills and rules is not stored in the entity spec. Instead, the source file is referenced via the standard <code>backstage.io/source-location</code> annotation, consistent with how other Backstage entities reference their source files. Entity providers that generate <code>AiResource</code> entities from <code>SKILL.md</code> or rule files should set this annotation to point to the source file.</p>
 </section>
@@ -53,6 +61,7 @@
 <ul>
 <li><a href="#installation"><span>Installation</span></a></li>
 <li><a href="#entity-shape"><span>Entity shape</span></a></li>
+<li><a href="#relations-to-custom-kinds"><span>Relations to custom kinds</span></a></li>
 <li><a href="#accessing-skill-and-rule-content"><span>Accessing skill and rule content</span></a></li></ul>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Variables"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Variables</summary>
 <div><a href="#default"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Variable"><use href="../assets/icons.svg#icon-32"></use></svg><span>default</span></a></div></details></div></details></div>

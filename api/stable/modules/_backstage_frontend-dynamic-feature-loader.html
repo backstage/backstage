@@ -40,6 +40,15 @@ The frontend feature loader provided in this package works hand-in-hand with the
 </ul>
 </li>
 </ul>
+<h3 id="feature-loader-exports" class="tsd-anchor-link">Feature loader exports<a href="#feature-loader-exports" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>A dynamically loaded frontend plugin can expose either a <code>FrontendFeature</code> or a
+<code>FrontendFeatureLoader</code> as the default export of an exposed entry point. When a
+<code>FrontendFeatureLoader</code> is exported, this package returns it to the application's
+frontend feature resolution. The application framework invokes the loader with
+the <code>ConfigApi</code> and resolves its returned features, including nested feature
+loaders.</p>
+<p>This allows a plugin to select or configure its frontend features using the
+application configuration while keeping that selection logic within the plugin.</p>
 <h2 id="how-to-add-a-frontend-plugin-for-dynamic-loading" class="tsd-anchor-link">How to add a frontend plugin for dynamic loading<a href="#how-to-add-a-frontend-plugin-for-dynamic-loading" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>Adding a frontend plugin (with new frontend system support, possibly in alpha support), is straightforward and consists in:</p>
 <ul>
@@ -72,6 +81,9 @@ The frontend feature loader provided in this package works hand-in-hand with the
 <div class="tsd-accordion-details"><a href="#backstagefrontend-dynamic-feature-loader"><span>@backstage/frontend-<wbr/>dynamic-<wbr/>feature-<wbr/>loader</span></a>
 <ul>
 <li><a href="#usage"><span>Usage</span></a></li>
+<li>
+<ul>
+<li><a href="#feature-loader-exports"><span>Feature loader exports</span></a></li></ul></li>
 <li><a href="#how-to-add-a-frontend-plugin-for-dynamic-loading"><span>How to add a frontend plugin for dynamic loading</span></a></li></ul>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Type Aliases"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Type Aliases</summary>
 <div><a href="#dynamicfrontendfeaturesloaderoptions"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Type Alias"><use href="../assets/icons.svg#icon-2097152"></use></svg><span>Dynamic<wbr/>Frontend<wbr/>Features<wbr/>Loader<wbr/>Options</span></a></div></details>

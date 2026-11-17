@@ -64,11 +64,21 @@ of the provided <code>x-github-event</code> metadata field.</p>
 </code><button type="button">Copy</button></pre>
 
 <h2 id="configuration" class="tsd-anchor-link">Configuration<a href="#configuration" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Webhook authentication is secure by default. Requests to the module's endpoint <code>/api/events/http/github</code> without a configured webhook secret return an HTTP 403 Forbidden status. A secret is configured either as a single shared secret via <code>events.modules.github.webhookSecret</code>, or per GitHub App via the <code>webhookSecret</code> of an entry in <code>integrations.github[].apps</code>.</p>
+<p>This only covers the module's own endpoint. Routes created solely through <code>events.http.topics</code> have no validator attached and still accept unauthenticated requests.</p>
+<p>Add the following to your <code>app-config.yaml</code>:</p>
 <pre><code class="yaml"><span class="hl-10">events</span><span class="hl-2">:</span><br/><span class="hl-2">  </span><span class="hl-10">modules</span><span class="hl-2">:</span><br/><span class="hl-2">    </span><span class="hl-10">github</span><span class="hl-2">:</span><br/><span class="hl-2">      </span><span class="hl-10">webhookSecret</span><span class="hl-2">: </span><span class="hl-11">your-secret-token</span>
 </code><button type="button">Copy</button></pre>
 
-<p>Configuration at GitHub:
-<a href="https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks">https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks</a></p>
+<p>For more details on securing webhooks on GitHub, see the <a href="https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks">GitHub documentation</a>.</p>
+<h3 id="development-and-testing" class="tsd-anchor-link">Development and testing<a href="#development-and-testing" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>For development or testing environments where a webhook secret cannot be configured, you can set <code>dangerouslyAllowUnauthenticatedEvents: true</code> as an explicit escape hatch under the module configuration:</p>
+<pre><code class="yaml"><span class="hl-10">events</span><span class="hl-2">:</span><br/><span class="hl-2">  </span><span class="hl-10">modules</span><span class="hl-2">:</span><br/><span class="hl-2">    </span><span class="hl-10">github</span><span class="hl-2">:</span><br/><span class="hl-2">      </span><span class="hl-10">dangerouslyAllowUnauthenticatedEvents</span><span class="hl-2">: </span><span class="hl-3">true</span>
+</code><button type="button">Copy</button></pre>
+
+<div class="tsd-alert tsd-alert-warning"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><use href="../assets/icons.svg#icon-alertWarning"></use></svg><span>Warning</span></div><p>
+Only use <code>dangerouslyAllowUnauthenticatedEvents: true</code> for development or testing. Never enable this option in production environments.</p>
+</div>
 </section>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Classes"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="classes">Classes<a href="#classes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary><dl class="tsd-member-summaries"><dt class="tsd-member-summary" id="githubeventrouter"><span class="tsd-member-summary-name"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Class"><use href="../assets/icons.svg#icon-128"></use></svg><a href="../classes/_backstage_plugin-events-backend-module-github.GithubEventRouter.html">GithubEventRouter</a><a href="#githubeventrouter" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></span></dt><dd class="tsd-member-summary"></dd></dl></details>
@@ -98,7 +108,10 @@ of the provided <code>x-github-event</code> metadata field.</p>
 <ul>
 <li><a href="#event-router"><span>Event <wbr/>Router</span></a></li>
 <li><a href="#signature-validator"><span>Signature <wbr/>Validator</span></a></li></ul></li></ul></li>
-<li><a href="#configuration"><span>Configuration</span></a></li></ul>
+<li><a href="#configuration"><span>Configuration</span></a></li>
+<li>
+<ul>
+<li><a href="#development-and-testing"><span>Development and testing</span></a></li></ul></li></ul>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Classes"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Classes</summary>
 <div><a href="#githubeventrouter"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Class"><use href="../assets/icons.svg#icon-128"></use></svg><span>Github<wbr/>Event<wbr/>Router</span></a></div></details>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Variables"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Variables</summary>

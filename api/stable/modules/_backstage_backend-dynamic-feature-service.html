@@ -41,6 +41,10 @@
 <li><strong>Loading</strong>: The module loader loads the plugin code</li>
 <li><strong>Integration</strong>: Plugins are registered as Backstage features and made available to the backend</li>
 </ol>
+<h3 id="module-resolution" class="tsd-anchor-link">Module Resolution<a href="#module-resolution" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>When a backend dynamic plugin requires a module, it is resolved from the plugin's own <code>node_modules</code> first, then from the <code>node_modules</code> of the Backstage root, and then from the global folders of Node.js, which start with the directories in <code>NODE_PATH</code>. Plugins outside of the Backstage root reach the root <code>node_modules</code> through <code>NODE_PATH</code>, so for them the order of <code>NODE_PATH</code> applies. When <code>NODE_PATH</code> doesn't include it, the root <code>node_modules</code> is searched right after the global folders.</p>
+<p>Modules that are not found in these places are resolved from the host backend, through the <code>node_modules</code> directories of the backend package and of this package within the Backstage root. The backend package is found through the entry point of the process and the working directory. If the backend is started by another program, such as a process manager, use the backend package directory as its working directory, and adjust relative paths such as <code>--config</code> arguments.</p>
+<p>This lets a plugin require the packages it shares with the host when the package manager does not link them into the root <code>node_modules</code>, as with the pnpm <code>isolated</code> node linker. With the default pnpm hoisting, this includes the packages that pnpm hoists into <code>node_modules/.pnpm/node_modules</code>. With <code>hoist: false</code>, only the direct dependencies of the backend package and of this package are found.</p>
 <h2 id="usage" class="tsd-anchor-link">Usage<a href="#usage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <h3 id="basic-setup" class="tsd-anchor-link">Basic Setup<a href="#basic-setup" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <p>Add the service to your backend application:</p>
@@ -86,7 +90,7 @@
 <pre><code class="bash"><span class="hl-1">cd</span><span class="hl-2"> </span><span class="hl-4">my-backstage-plugin</span><br/><span class="hl-1">yarn</span><span class="hl-2"> </span><span class="hl-4">pack</span><br/><span class="hl-0"># Results in: package.tgz</span><br/><br/><span class="hl-0"># Extract to dynamic plugins directory</span><br/><span class="hl-1">mkdir</span><span class="hl-2"> </span><span class="hl-3">-p</span><span class="hl-2"> </span><span class="hl-4">/path/to/dynamic-plugins-root/my-backstage-plugin</span><br/><span class="hl-1">tar</span><span class="hl-2"> </span><span class="hl-3">-xzf</span><span class="hl-2"> </span><span class="hl-4">package.tgz</span><span class="hl-2"> </span><span class="hl-3">-C</span><span class="hl-2"> </span><span class="hl-4">/path/to/dynamic-plugins-root/my-backstage-plugin</span><span class="hl-2"> </span><span class="hl-3">--strip-components=1</span>
 </code><button type="button">Copy</button></pre>
 
-<p><strong>Why this works:</strong> The plugin can resolve all its dependencies from the main application's <code>node_modules</code>.</p>
+<p><strong>Why this works:</strong> The plugin can resolve all its dependencies from the main application. See <a href="#module-resolution">Module Resolution</a>.</p>
 <p><strong>Reality:</strong> Most plugins have private dependencies not available in the main application, so this approach has limited applicability.</p>
 <h3 id="2-manual-packaging-with-dependency-installation" class="tsd-anchor-link">2. Manual packaging with dependency installation<a href="#2-manual-packaging-with-dependency-installation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <p><strong>When to use:</strong> Plugin has private dependencies not available in the main Backstage application.</p>
@@ -160,7 +164,8 @@
 <li>
 <ul>
 <li><a href="#core-architecture"><span>Core <wbr/>Architecture</span></a></li>
-<li><a href="#loading-process"><span>Loading <wbr/>Process</span></a></li></ul></li>
+<li><a href="#loading-process"><span>Loading <wbr/>Process</span></a></li>
+<li><a href="#module-resolution"><span>Module <wbr/>Resolution</span></a></li></ul></li>
 <li><a href="#usage"><span>Usage</span></a></li>
 <li>
 <ul>
