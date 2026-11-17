@@ -36,8 +36,6 @@ import { getColumnTitle } from './file-download/serializeEntities';
 import type { CatalogExporter } from './file-download/useStreamingExport';
 import { CatalogExportType } from './CatalogExportType';
 
-export { CatalogExportType } from './CatalogExportType';
-
 /**
  * Custom exporter configuration for a catalog export format.
  * @public

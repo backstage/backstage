@@ -23,24 +23,24 @@ import type {
 
 /**
  * @public
- * @deprecated Import `CatalogExportSettings` from `@backstage/plugin-catalog-react` instead.
+ * @deprecated Use `CatalogExportSettings` from `@backstage/plugin-catalog-react` instead.
  */
 export type CatalogExportSettings = _CatalogExportSettings;
 
 /**
  * @public
- * @deprecated Import `CatalogExporterConfig` from `@backstage/plugin-catalog-react` instead.
+ * @deprecated Use `CatalogExporterConfig` from `@backstage/plugin-catalog-react` instead.
  */
 export type CatalogExporterConfig = _CatalogExporterConfig;
 
 /**
  * @public
- * @deprecated Import `CatalogExporter` from `@backstage/plugin-catalog-react` instead.
+ * @deprecated Use `CatalogExporter` from `@backstage/plugin-catalog-react` instead.
  */
 export type CatalogExporter = _CatalogExporter;
 
 /**
  * @public
- * @deprecated Import `CatalogExportSettingsColumn` from `@backstage/plugin-catalog-react` instead.
+ * @deprecated Use `CatalogExportSettingsColumn` from `@backstage/plugin-catalog-react` instead.
  */
 export type CatalogExportSettingsColumn = _CatalogExportSettingsColumn;

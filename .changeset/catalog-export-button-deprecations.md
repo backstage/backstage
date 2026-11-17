@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog': minor
+'@backstage/plugin-catalog': patch
 ---
 
 Deprecated the `CatalogExportSettings`, `CatalogExporterConfig`, `CatalogExportSettingsColumn` and `CatalogExporter` exports from both `@backstage/plugin-catalog` and `@backstage/plugin-catalog/alpha`. Import them from `@backstage/plugin-catalog-react` instead.
