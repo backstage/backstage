@@ -151,9 +151,13 @@ describe('runAiMigrations', () => {
     expect(ledger.map(row => row.name).sort()).toEqual([
       '1000_storage.js',
       '2000_credentials.js',
+      '3000_ownership_recovery.js',
+      '4000_journal.js',
     ]);
     expect(await db.schema.hasTable('ai_namespace_leases')).toBe(true);
     expect(await db.schema.hasTable('ai_credential_user_secrets')).toBe(true);
+    expect(await db.schema.hasTable('ai_recovery_sessions')).toBe(true);
+    expect(await db.schema.hasTable('ai_journal_events')).toBe(true);
 
     // Up to date: skipping now succeeds without touching the schema.
     await runAiMigrations({
