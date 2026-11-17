@@ -60,6 +60,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-components": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@remix-run/router": "^1.23.4",
     "@storybook/react-vite": "^10.4.0",
     "@testing-library/dom": "^10.0.0",

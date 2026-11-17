@@ -18,7 +18,7 @@ import { matchPath } from '@internal/frontend';
 import {
   ExtensionBoundary,
   type AppNode,
-  appHistoryApiRef,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { testPageRouter } from '../../frontend-test-utils/src/__testUtils__/testPageRouter';
@@ -171,7 +171,7 @@ describe(`React Router v7 route context matches a real router tree`, () => {
       <ExtensionBoundary node={mockRouteNode}>
         <TestApiProvider
           apis={[
-            [appHistoryApiRef, appHistory],
+            [coreApis.appHistory, appHistory],
             mockApis.routeResolution.mock({
               resolvePath: ({ pathname }) => ({
                 matches: [
@@ -206,7 +206,7 @@ describe(`React Router v7 route context matches a real router tree`, () => {
       <ExtensionBoundary node={mockRouteNode}>
         <TestApiProvider
           apis={[
-            [appHistoryApiRef, appHistory],
+            [coreApis.appHistory, appHistory],
             mockApis.routeResolution.mock({
               resolvePath: ({ pathname }) => ({
                 matches: [

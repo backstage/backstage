@@ -61,6 +61,12 @@ export interface RouteResolutionMatch {
 }
 
 /**
+ * Resolves routes and app-relative pathnames against the app's route tree.
+ *
+ * @remarks
+ *
+ * Available as `coreApis.routeResolution`.
+ *
  * @public
  */
 export interface RouteResolutionApi {
@@ -80,6 +86,10 @@ export interface RouteResolutionApi {
     matches: readonly RouteResolutionMatch[];
   };
 
+  /**
+   * Resolves a route reference into a function that generates a path for it,
+   * or `undefined` when the route reference has no bound route in the app.
+   */
   resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:
       | RouteRef<TParams>

@@ -34,7 +34,7 @@ import { appHistoryApiRef } from './AppHistoryApi';
 
 /**
  * The param names a route ref declares, which is what the caller asked for and
- * what its `Params` type promises.
+ * what its `TParams` type promises.
  *
  * A ref of neither kind (or one from a future version this build does not
  * know) declares nothing rather than throwing: this hook runs during render,
@@ -121,7 +121,7 @@ function resolveParams(
  * Without AppHistory, reads the old frontend's React Router params.
  *
  * The route ref says which params the caller wants: the returned object has
- * exactly the keys the ref declares, so its shape matches the ref's `Params`
+ * exactly the keys the ref declares, so its shape matches the ref's `TParams`
  * type rather than carrying whatever else the surrounding patterns happened to
  * bind. A declared param the current location does not bind is present with the
  * value `undefined` — the way React Router's own `useParams` reports an
@@ -132,9 +132,9 @@ function resolveParams(
  * @param routeRef - Ref of the route whose params are wanted.
  * @public
  */
-export function useRouteRefParams<Params extends AnyRouteRefParams>(
-  routeRef: RouteRef<Params> | SubRouteRef<Params>,
-): Params {
+export function useRouteRefParams<TParams extends AnyRouteRefParams>(
+  routeRef: RouteRef<TParams> | SubRouteRef<TParams>,
+): TParams {
   const appHistory = useApiHolder().get(appHistoryApiRef);
   // Subscribes to the app history: the params are read out of the location, so
   // they have to be recomputed when the app navigates.
@@ -154,6 +154,6 @@ export function useRouteRefParams<Params extends AnyRouteRefParams>(
     for (const name of declaredParamNames(routeRef)) {
       params[name] = resolved[name];
     }
-    return params as Params;
+    return params as TParams;
   }, [appHistory, routeRef, mountChain, pathname, legacyParams]);
 }

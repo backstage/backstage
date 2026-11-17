@@ -25,12 +25,12 @@ import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-route
 import { Route, Routes, useParams } from 'react-router-dom';
 import { renderInTestApp, renderTestApp } from '@backstage/frontend-test-utils';
 import {
-  appHistoryApiRef,
   BreadcrumbEntry,
   PageBlueprint,
   PageLayout,
   SubPageBlueprint,
   createFrontendPlugin,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 
 describe('PageLayout', () => {
@@ -149,7 +149,7 @@ describe('PageLayout', () => {
         backend: { baseUrl: 'http://localhost:7007' },
       },
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     const overview = await screen.findByRole('tab', { name: 'Overview' });
     expect(overview).toHaveAttribute(
@@ -220,7 +220,7 @@ describe('PageLayout', () => {
         backend: { baseUrl: 'http://localhost:7007' },
       },
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await screen.findByRole('tab', { name: 'Query' });
     const breadcrumbs = screen.getByRole('navigation', { name: 'Breadcrumbs' });

@@ -132,7 +132,7 @@ const testAppPlugin = createTestAppPlugin();
  *
  * Navigation is owned by a {@link @backstage/frontend-plugin-api#AppHistoryApi}
  * with in-memory history, the same seam as production. Access it through
- * `apis.get(appHistoryApiRef)` on the render result.
+ * `apis.get(coreApis.appHistory)` on the render result.
  *
  * The extensions are routed by the app itself, so each page declares its adapter
  * as it does in production. The app's root React Router v6 projection is also

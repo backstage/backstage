@@ -26,7 +26,6 @@ import {
   identityApiRef,
   useApi,
   coreApis,
-  internalCoreApis,
   ApiBlueprint,
   createFrontendModule,
   createFrontendPlugin,
@@ -35,7 +34,6 @@ import {
   createExtension,
   type StorageApi,
   useAppHref,
-  appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
 import { useRouteMatches } from '@internal/frontend';
 import type { AppError } from '@backstage/frontend-app-api';
@@ -48,7 +46,7 @@ import { AnalyticsImplementationBlueprint } from '@backstage/plugin-app-react';
  * routing library — which is what content that declares no router has.
  */
 function PathProbe() {
-  const appHistory = useApi(appHistoryApiRef);
+  const appHistory = useApi(coreApis.appHistory);
   const { location } = useSyncExternalStore(
     appHistory.subscribe,
     appHistory.getSnapshot,
@@ -167,9 +165,9 @@ describe('renderInTestApp', () => {
       }
 
       const first = renderProbe();
-      expect(first.apis.get(internalCoreApis.appLifecycle)?.isFinalized()).toBe(
-        true,
-      );
+      expect(
+        first.apis.get(coreApis.internal.appLifecycle)?.isFinalized(),
+      ).toBe(true);
       const firstToast = first.apis.get(coreApis.toast);
       fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
       expect(firstToast).toBe(toast!);
@@ -275,7 +273,7 @@ describe('renderInTestApp', () => {
     const { apis } = renderInTestApp(<PathProbe />, {
       initialRouteEntries: ['/second-page'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     expect(screen.getByText('Path: /second-page')).toBeInTheDocument();
     expect(appHistory.getSnapshot().location.pathname).toBe('/second-page');
@@ -403,11 +401,11 @@ describe('renderInTestApp', () => {
     async mode => {
       const history = mockApis.appHistory({ initialLocation: '/custom' });
       function Probe() {
-        const activeHistory = useApi(appHistoryApiRef);
+        const activeHistory = useApi(coreApis.appHistory);
         expect(activeHistory).toBe(history);
         return <div>Custom history</div>;
       }
-      const apis = [[appHistoryApiRef, history] as const];
+      const apis = [[coreApis.appHistory, history] as const];
       const result =
         mode === 'component'
           ? renderInTestApp(<Probe />, { apis })
@@ -423,13 +421,13 @@ describe('renderInTestApp', () => {
               ],
             });
       expect(await screen.findByText('Custom history')).toBeInTheDocument();
-      expect(result.apis.get(appHistoryApiRef)).toBe(history);
+      expect(result.apis.get(coreApis.appHistory)).toBe(history);
     },
   );
 
   it('should drive navigation through the in-memory app history', async () => {
     const LocationProbe = () => {
-      const navigation = useApi(appHistoryApiRef);
+      const navigation = useApi(coreApis.appHistory);
       return (
         <div>
           <PathProbe />
@@ -443,7 +441,7 @@ describe('renderInTestApp', () => {
     const { apis } = renderInTestApp(<LocationProbe />, {
       initialRouteEntries: ['/start'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     expect(screen.getByText('Path: /start')).toBeInTheDocument();
 
@@ -473,7 +471,7 @@ describe('renderInTestApp', () => {
         backend: { baseUrl: 'http://localhost:7007' },
       },
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     expect(screen.getByText('Path: /start')).toBeInTheDocument();
     expect(screen.getByTestId('probe')).toHaveAttribute(
@@ -529,7 +527,7 @@ describe('renderInTestApp', () => {
           backend: { baseUrl: 'http://localhost:7007' },
         },
       });
-      const appHistory = apis.get(appHistoryApiRef)!;
+      const appHistory = apis.get(coreApis.appHistory)!;
       expect(
         await screen.findByText('Page: first at /items/first'),
       ).toBeInTheDocument();
@@ -561,7 +559,7 @@ describe('renderInTestApp', () => {
           mountPath: '/items',
           initialRouteEntries: ['/items'],
         });
-        const appHistory = apis.get(appHistoryApiRef)!;
+        const appHistory = apis.get(coreApis.appHistory)!;
         expect(
           await screen.findByText('Page failed to render'),
         ).toBeInTheDocument();
@@ -684,7 +682,7 @@ describe('renderInTestApp', () => {
     const { apis } = renderInTestApp(<PathProbe />, {
       initialRouteEntries: ['/start'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     expect(appHistory.getSnapshot().location.pathname).toBe('/start');
     expect(appHistory.createHref('/catalog?q=1')).toBe('/catalog?q=1');

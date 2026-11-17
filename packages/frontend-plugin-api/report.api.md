@@ -177,11 +177,6 @@ export interface AppHistoryApi {
 }
 
 // @public
-export const appHistoryApiRef: ApiRef_2<AppHistoryApi, 'core.app-history'> & {
-  readonly $$type: '@backstage/ApiRef';
-};
-
-// @public
 export interface AppHistoryEntry {
   readonly index?: number;
   readonly key: string;
@@ -466,7 +461,7 @@ export interface ConfigurableExtensionDataRef<
 
 // @public
 export namespace coreApis {
-  const appHistory: typeof appHistoryApiRef;
+  const appHistory: ApiRef<AppHistoryApi>;
   const analytics: typeof analyticsApiRef;
   const appLanguage: typeof appLanguageApiRef;
   const appTheme: typeof appThemeApiRef;
@@ -483,6 +478,13 @@ export namespace coreApis {
   const storage: typeof storageApiRef;
   const toast: typeof toastApiRef;
   const translation: typeof translationApiRef;
+  export namespace internal {
+    const appLifecycle: typeof appLifecycleApiRef;
+    const oauthRequest: typeof oauthRequestApiRef;
+    const pluginHeaderActions: typeof pluginHeaderActionsApiRef;
+    const pluginWrapper: typeof pluginWrapperApiRef;
+    const swappableComponents: typeof swappableComponentsApiRef;
+  }
 }
 
 // @public (undocumented)
@@ -911,14 +913,14 @@ export interface CreateFrontendPluginOptions<
 }
 
 // @public
-export function createRouteRef<TParamKey extends string = never>(config?: {
-  readonly params?: TParamKey[];
+export function createRouteRef<TParamKeys extends string = never>(config?: {
+  readonly params?: TParamKeys[];
   aliasFor?: string;
 }): RouteRef<
-  [TParamKey] extends [never]
+  [TParamKeys] extends [never]
     ? undefined
     : {
-        [param in TParamKey]: string;
+        [param in TParamKeys]: string;
       }
 >;
 
@@ -1394,9 +1396,7 @@ export interface ExtensionInput<
 export interface ExternalRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > {
-  // (undocumented)
   readonly $$type: '@backstage/ExternalRouteRef';
-  // (undocumented)
   readonly T: TParams;
 }
 
@@ -1588,15 +1588,6 @@ export type IdentityApi = {
 export const identityApiRef: ApiRef_2<IdentityApi, 'core.identity'> & {
   readonly $$type: '@backstage/ApiRef';
 };
-
-// @public
-export namespace internalCoreApis {
-  const appLifecycle: typeof appLifecycleApiRef;
-  const oauthRequest: typeof oauthRequestApiRef;
-  const pluginHeaderActions: typeof pluginHeaderActionsApiRef;
-  const pluginWrapper: typeof pluginWrapperApiRef;
-  const swappableComponents: typeof swappableComponentsApiRef;
-}
 
 // @public
 export const microsoftAuthApiRef: ApiRef_2<
@@ -2087,15 +2078,12 @@ export type RouteFunc<TParams extends AnyRouteRefParams> = (
 export interface RouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > {
-  // (undocumented)
   readonly $$type: '@backstage/RouteRef';
-  // (undocumented)
   readonly T: TParams;
 }
 
-// @public (undocumented)
+// @public
 export interface RouteResolutionApi {
-  // (undocumented)
   resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:
       | RouteRef<TParams>
@@ -2254,11 +2242,8 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
 export interface SubRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > {
-  // (undocumented)
   readonly $$type: '@backstage/SubRouteRef';
-  // (undocumented)
   readonly path: string;
-  // (undocumented)
   readonly T: TParams;
 }
 
@@ -2544,9 +2529,9 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 ): RouteFunc<TParams> | undefined;
 
 // @public
-export function useRouteRefParams<Params extends AnyRouteRefParams>(
-  routeRef: RouteRef<Params> | SubRouteRef<Params>,
-): Params;
+export function useRouteRefParams<TParams extends AnyRouteRefParams>(
+  routeRef: RouteRef<TParams> | SubRouteRef<TParams>,
+): TParams;
 
 // @public (undocumented)
 export const useTranslationRef: <TMessages extends { [key in string]: string }>(

@@ -60,4 +60,3 @@ export * from './PluginHeaderActionsApi';
 export * from './PluginWrapperApi';
 
 export { coreApis } from './coreApis';
-export { internalCoreApis } from './internalCoreApis';

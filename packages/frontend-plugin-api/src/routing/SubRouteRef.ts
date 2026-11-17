@@ -33,10 +33,13 @@ const PARAM_PATTERN = /^\w+$/;
 export interface SubRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > {
+  /** Marker for an opaque route reference. */
   readonly $$type: '@backstage/SubRouteRef';
 
+  /** The route parameters that the bound path must supply. */
   readonly T: TParams;
 
+  /** The path pattern of this sub-route, relative to its parent route. */
   readonly path: string;
 }
 

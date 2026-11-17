@@ -15,13 +15,14 @@
  */
 
 import * as apis from '../../index';
+import { appHistoryApiRef } from '../../routing/AppHistoryApi';
 
-const { coreApis, internalCoreApis } = apis;
+const { coreApis } = apis;
 
 describe('core API namespaces', () => {
   it('preserves core API ref identity and metadata', () => {
     const refs = {
-      appHistory: apis.appHistoryApiRef,
+      appHistory: appHistoryApiRef,
       analytics: apis.analyticsApiRef,
       appLanguage: apis.appLanguageApiRef,
       appTheme: apis.appThemeApiRef,
@@ -40,7 +41,9 @@ describe('core API namespaces', () => {
       translation: apis.translationApiRef,
     };
 
-    expect(Object.keys(coreApis).sort()).toEqual(Object.keys(refs).sort());
+    expect(Object.keys(coreApis).sort()).toEqual(
+      [...Object.keys(refs), 'internal'].sort(),
+    );
     for (const name of Object.keys(refs) as (keyof typeof refs)[]) {
       expect(coreApis[name]).toBe(refs[name]);
       expect(coreApis[name].id).toBe(refs[name].id);
@@ -56,12 +59,12 @@ describe('core API namespaces', () => {
       swappableComponents: apis.swappableComponentsApiRef,
     };
 
-    expect(Object.keys(internalCoreApis).sort()).toEqual(
+    expect(Object.keys(coreApis.internal).sort()).toEqual(
       Object.keys(refs).sort(),
     );
     for (const name of Object.keys(refs) as (keyof typeof refs)[]) {
-      expect(internalCoreApis[name]).toBe(refs[name]);
-      expect(internalCoreApis[name].id).toBe(refs[name].id);
+      expect(coreApis.internal[name]).toBe(refs[name]);
+      expect(coreApis.internal[name].id).toBe(refs[name].id);
       expect(coreApis).not.toHaveProperty(name);
     }
   });
@@ -73,9 +76,9 @@ describe('core API namespaces', () => {
     expect(providerRefs.length).toBeGreaterThan(0);
     for (const [, ref] of providerRefs) {
       expect(Object.values(coreApis)).not.toContain(ref);
-      expect(Object.values(internalCoreApis)).not.toContain(ref);
+      expect(Object.values(coreApis.internal)).not.toContain(ref);
     }
-    expect(internalCoreApis.oauthRequest).toBe(apis.oauthRequestApiRef);
+    expect(coreApis.internal.oauthRequest).toBe(apis.oauthRequestApiRef);
     expect(coreApis.identity).toBe(apis.identityApiRef);
   });
 });

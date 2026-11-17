@@ -137,7 +137,7 @@ export interface AppHistoryApi {
 /**
  * The `ApiRef` of {@link AppHistoryApi}.
  *
- * @public
+ * @internal
  */
 export const appHistoryApiRef = createApiRef<AppHistoryApi>().with({
   id: 'core.app-history',

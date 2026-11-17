@@ -23,13 +23,13 @@ import {
   createFrontendPlugin,
   createRouteRef,
   coreExtensionData,
-  appHistoryApiRef,
   type ApiRef,
   type AppHistoryApi,
   type ExtensionDefinition,
   type ExternalRouteRef,
   type FrontendFeature,
   type RouteRef,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { OpaqueExternalRouteRef } from '@internal/frontend';
 import { getMockApiFactory } from '../apis/MockWithApiFactory';
@@ -64,7 +64,7 @@ export function prepareTestAppFeatures(options: {
     return createApiFactory(apiRef, implementation);
   });
   const historyOverride = callerApiFactories.find(
-    factory => factory.api === appHistoryApiRef,
+    factory => factory.api === coreApis.appHistory,
   );
   const appHistory: AppHistoryApi = historyOverride
     ? historyOverride.factory({})
@@ -111,7 +111,7 @@ export function prepareTestAppFeatures(options: {
           name: 'app-history',
           params: defineParams =>
             defineParams({
-              api: appHistoryApiRef,
+              api: coreApis.appHistory,
               deps: {},
               factory: () => appHistory,
             }),
@@ -132,7 +132,7 @@ export function prepareTestAppFeatures(options: {
   const apiFactoryOverrides = [
     ...callerApiFactories,
     // Prefer test history over production defaults (first registration wins).
-    createApiFactory(appHistoryApiRef, appHistory),
+    createApiFactory(coreApis.appHistory, appHistory),
   ];
 
   return { features, apiFactoryOverrides, externalBindings };

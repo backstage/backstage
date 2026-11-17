@@ -18,12 +18,12 @@ import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
-  appHistoryApiRef,
   createRouteRef,
   PageBlueprint,
   useRouteRef,
   useAppNavigate,
   RouterLink,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { useRoutingIntegration } from '@backstage/frontend-plugin-api/routing';
 
@@ -121,7 +121,7 @@ it('binds neutral anchors and collection navigation to nested routes', async () 
       backend: { baseUrl: 'http://localhost:7007' },
     },
   });
-  const appHistory = apis.get(appHistoryApiRef)!;
+  const appHistory = apis.get(coreApis.appHistory)!;
   expect(
     await screen.findByRole('link', { name: 'Relative anchor' }),
   ).toHaveAttribute('href', '/base/tools/alpha/section/sibling');
@@ -207,7 +207,7 @@ it('reconciles same-origin absolute links with exactly one deployment basename',
       backend: { baseUrl: 'http://localhost:7007' },
     },
   });
-  const appHistory = apis.get(appHistoryApiRef)!;
+  const appHistory = apis.get(coreApis.appHistory)!;
   expect(
     await screen.findByRole('link', { name: 'Same origin' }),
   ).toHaveAttribute('href', `${window.location.origin}/base/catalog?q=1#item`);

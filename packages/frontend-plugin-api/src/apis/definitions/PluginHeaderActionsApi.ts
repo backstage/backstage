@@ -39,7 +39,7 @@ export type PluginHeaderActionsApi = {
  * The `ApiRef` of {@link PluginHeaderActionsApi}.
  *
  * @public
- * @deprecated Use {@link internalCoreApis.pluginHeaderActions} instead.
+ * @deprecated Use {@link coreApis.internal.pluginHeaderActions} instead.
  */
 export const pluginHeaderActionsApiRef =
   createApiRef<PluginHeaderActionsApi>().with({

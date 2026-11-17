@@ -21,12 +21,12 @@ import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
   PageBlueprint,
   SubPageBlueprint,
-  appHistoryApiRef,
   createFrontendPlugin,
   createRouteRef,
   useApi,
   useAppNavigate,
   useRouteRef,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { useRouteMatches, useAppHistoryLocation } from '@internal/frontend';
 import { Link, useLocation, useResolvedPath } from 'react-router';
@@ -84,7 +84,7 @@ describe('multi-router coexistence', () => {
 
   it('should coexist as peer pages, each declaring its own adapter', async () => {
     const CatalogV6Page = () => {
-      const location = useAppHistoryLocation(useApi(appHistoryApiRef));
+      const location = useAppHistoryLocation(useApi(coreApis.appHistory));
       const settingsHref = useRouteRef(settingsRouteRef);
       return (
         <div data-testid="catalog-page">
@@ -156,7 +156,7 @@ describe('multi-router coexistence', () => {
       features: [catalogPlugin, settingsPlugin],
       initialRouteEntries: ['/catalog-pudding'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('catalog-page')).toBeInTheDocument();
@@ -257,7 +257,7 @@ describe('multi-router coexistence', () => {
     const homeRouteRef = createRouteRef();
 
     const HomeV6Page = () => {
-      const location = useAppHistoryLocation(useApi(appHistoryApiRef));
+      const location = useAppHistoryLocation(useApi(coreApis.appHistory));
       const navigate = useAppNavigate();
       return (
         <div data-testid="home-page">
@@ -351,7 +351,7 @@ describe('multi-router coexistence', () => {
       extensions: [homePage, visualizerPage, treeSubPage, graphSubPage],
       initialRouteEntries: ['/home-pudding'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('home-page')).toBeInTheDocument();
@@ -471,7 +471,7 @@ describe('multi-router coexistence', () => {
       extensions: [nestedPage],
       initialRouteEntries: ['/nested/alpha'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('nested-probe')).toBeInTheDocument();
@@ -548,7 +548,7 @@ describe('multi-router coexistence', () => {
       extensions: [nestedPage],
       initialRouteEntries: ['/nested-reverse/alpha'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('nested-probe')).toBeInTheDocument();
@@ -705,7 +705,7 @@ describe('multi-router coexistence', () => {
       expect(reactRouterV6.useResolvedPath).not.toBe(useResolvedPath);
 
       const { apis } = renderCatalogMajors('/catalog-majors/overview');
-      const appHistory = apis.get(appHistoryApiRef)!;
+      const appHistory = apis.get(coreApis.appHistory)!;
 
       await waitFor(() => {
         expect(screen.getByTestId('v7-probe')).toBeInTheDocument();

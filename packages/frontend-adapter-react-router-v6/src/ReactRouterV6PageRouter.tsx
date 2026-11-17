@@ -15,11 +15,7 @@
  */
 
 import { useContext, useMemo, type ReactNode } from 'react';
-import {
-  useApi,
-  useApiHolder,
-  appHistoryApiRef,
-} from '@backstage/frontend-plugin-api';
+import { useApi, useApiHolder, coreApis } from '@backstage/frontend-plugin-api';
 import {
   useRouteMatches,
   createAppHistoryRouter,
@@ -57,7 +53,7 @@ const v6Bindings: ReactRouterAdapterBindings = {
 
 /** Called by each navigation consumer, inside its own React Router route context. */
 function useAdapterNavigation(): RoutingIntegration {
-  const history = useApi(appHistoryApiRef);
+  const history = useApi(coreApis.appHistory);
   const location = useLocation();
   const navigate = useNavigate();
   const { matches } = useContext(UNSAFE_RouteContext);
@@ -138,7 +134,7 @@ export function ReactRouterV6PageRouter(props: { children?: ReactNode }) {
   // Read through the holder rather than `useApi`, which throws when no app
   // history is registered — that throw would happen before the passthrough
   // below could be reached, in exactly the apps that need it.
-  const appHistory = useApiHolder().get(appHistoryApiRef);
+  const appHistory = useApiHolder().get(coreApis.appHistory);
   const mounts = useRouteMatches();
   const routePattern = mounts.at(-1)?.routePattern;
 

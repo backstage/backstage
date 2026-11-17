@@ -38,6 +38,7 @@ export interface AppNavigate {
   (
     path: string,
     options?: {
+      /** Replace the current history entry instead of adding a new one. */
       replace?: boolean;
       /** User-visible state exposed on AppLocation.state. */
       state?: unknown;

@@ -16,13 +16,11 @@
 
 import {
   coreApis,
-  internalCoreApis,
   type RouteRef,
   type SubRouteRef,
   type ExternalRouteRef,
   type AnyRouteRefParams,
   type RouteResolutionMatch,
-  routeResolutionApiRef,
   type AnalyticsApi,
   type AnalyticsEvent,
   type AppNavigate,
@@ -48,7 +46,6 @@ import {
   type PluginHeaderActionsApi,
   type ToastApi,
   type ToastApiMessage,
-  appHistoryApiRef,
   type AppHistoryApi,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -110,9 +107,9 @@ function createObservableState<T>(initialValue: T) {
 
 /**
  * Mock implementations of the core utility APIs, to be used in tests.
- * Each member of {@link @backstage/frontend-plugin-api#coreApis} and
- * {@link @backstage/frontend-plugin-api#internalCoreApis} has a matching
- * `.mock()` helper. Some APIs also provide functional fake instances.
+ * Each API in {@link @backstage/frontend-plugin-api#coreApis}, including those
+ * grouped under {@link @backstage/frontend-plugin-api#coreApis.internal}, has a
+ * matching `.mock()` helper. Some APIs also provide functional fake instances.
  *
  * @public
  * @remarks
@@ -576,7 +573,7 @@ export namespace mockApis {
     return attachMockApiFactory<
       AppLifecycleApi,
       AppLifecycleApi & { setFinalized(finalized: boolean): void }
-    >(internalCoreApis.appLifecycle, {
+    >(coreApis.internal.appLifecycle, {
       isFinalized: () => finalized,
       subscribe(listener: () => void) {
         listeners.add(listener);
@@ -605,7 +602,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(internalCoreApis.appLifecycle, () => ({
+    export const mock = createApiMock(coreApis.internal.appLifecycle, () => ({
       isFinalized: jest.fn(),
       subscribe: jest.fn(),
     }));
@@ -729,7 +726,7 @@ export namespace mockApis {
    */
   export function oauthRequest(): MockWithApiFactory<OAuthRequestApi> {
     return attachMockApiFactory(
-      internalCoreApis.oauthRequest,
+      coreApis.internal.oauthRequest,
       new OAuthRequestManager(),
     );
   }
@@ -746,7 +743,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(internalCoreApis.oauthRequest, () => ({
+    export const mock = createApiMock(coreApis.internal.oauthRequest, () => ({
       createAuthRequester: jest.fn(),
       authRequest$: jest.fn(),
     }));
@@ -762,7 +759,7 @@ export namespace mockApis {
   }): MockWithApiFactory<PluginHeaderActionsApi> {
     const actions = new Map(Object.entries(options?.actions ?? {}));
     return attachMockApiFactory<PluginHeaderActionsApi>(
-      internalCoreApis.pluginHeaderActions,
+      coreApis.internal.pluginHeaderActions,
       {
         getPluginHeaderActions: pluginId => [...(actions.get(pluginId) ?? [])],
       },
@@ -782,7 +779,7 @@ export namespace mockApis {
      * @public
      */
     export const mock = createApiMock(
-      internalCoreApis.pluginHeaderActions,
+      coreApis.internal.pluginHeaderActions,
       () => ({
         getPluginHeaderActions: jest.fn(),
       }),
@@ -801,7 +798,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(internalCoreApis.pluginWrapper, () => ({
+    export const mock = createApiMock(coreApis.internal.pluginWrapper, () => ({
       getRootWrapper: jest.fn(),
       getPluginWrapper: jest.fn(),
     }));
@@ -847,7 +844,7 @@ export namespace mockApis {
     }>;
   } & MockWithApiFactory<AppHistoryApi> {
     const instance = createMockAppHistory(options);
-    return attachMockApiFactory(appHistoryApiRef, instance);
+    return attachMockApiFactory(coreApis.appHistory, instance);
   }
 
   /**
@@ -880,7 +877,7 @@ export namespace mockApis {
         },
       ) as unknown as jest.MockedFunction<AppHistoryApi['navigate']>;
 
-      return createApiMock(appHistoryApiRef, () => ({
+      return createApiMock(coreApis.appHistory, () => ({
         getSnapshot: jest.fn(instance.getSnapshot),
         subscribe: jest.fn(instance.subscribe),
         navigate: navigateMock,
@@ -947,7 +944,7 @@ export namespace mockApis {
     resolvePath: jest.MockedFunction<RouteResolutionApi['resolvePath']>;
   } & MockWithApiFactory<RouteResolutionApi> {
     const instance = createMockRouteResolutionApi(options);
-    return attachMockApiFactory(routeResolutionApiRef, instance);
+    return attachMockApiFactory(coreApis.routeResolution, instance);
   }
 
   /**
@@ -962,7 +959,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(routeResolutionApiRef, () => ({
+    export const mock = createApiMock(coreApis.routeResolution, () => ({
       resolve: jest.fn(),
       resolvePath: jest.fn<
         ReturnType<RouteResolutionApi['resolvePath']>,
@@ -984,7 +981,7 @@ export namespace mockApis {
      * @public
      */
     export const mock = createApiMock(
-      internalCoreApis.swappableComponents,
+      coreApis.internal.swappableComponents,
       () => ({
         getComponent: jest.fn(),
       }),

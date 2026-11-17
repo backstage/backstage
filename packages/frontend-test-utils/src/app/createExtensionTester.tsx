@@ -22,8 +22,8 @@ import {
   ExtensionDefinition,
   ExtensionDefinitionParameters,
   coreExtensionData,
-  appHistoryApiRef,
   useApiHolder,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { useRouteMatches, OpaqueExtensionDefinition } from '@internal/frontend';
 import type { AppError } from '@backstage/frontend-app-api';
@@ -53,7 +53,7 @@ import { resolveTestApiEntries, TestApiPairs } from '../apis/TestApiProvider';
 import { throwOnAppErrors } from './throwOnAppErrors';
 
 function ExtensionTestRoutes(props: { node: AppNode; children: ReactNode }) {
-  const history = useApiHolder().get(appHistoryApiRef);
+  const history = useApiHolder().get(coreApis.appHistory);
   const routePattern = useRouteMatches().at(-1)?.routePattern ?? '/';
   const routeObjects = useMemo(() => {
     const { routeObjects: routes } = extractRouteInfoFromAppNode(

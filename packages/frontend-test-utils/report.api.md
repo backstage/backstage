@@ -476,18 +476,11 @@ export type TestApiProviderProps<TApiPairs extends any[]> = {
 };
 
 // @public
-export type TestAppOptions<TApiPairs extends any[] = any[]> = {
-  mountedRoutes?: {
-    [path: string]: RouteRef | ExternalRouteRef;
+export type TestAppOptions<TApiPairs extends any[] = any[]> =
+  RenderTestAppOptions<TApiPairs> & {
+    mountPath?: string;
+    renderAs?: 'page' | 'chrome';
   };
-  config?: JsonObject;
-  features?: FrontendFeature[];
-  mountPath?: string;
-  renderAs?: 'page' | 'chrome';
-  initialRouteEntries?: string[];
-  apis?: readonly [...TestApiPairs<TApiPairs>];
-  isExpectedError?: (error: AppError) => boolean;
-};
 
 // @public
 export type TestAppRenderResult = RenderResult & {

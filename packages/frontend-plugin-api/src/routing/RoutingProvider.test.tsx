@@ -18,7 +18,7 @@ import { act, renderHook } from '@testing-library/react';
 import { createContext, useContext } from 'react';
 import { TestApiProvider, mockApis } from '@backstage/frontend-test-utils';
 import { RoutingProvider, useRoutingIntegration } from '../routingIntegration';
-import { appHistoryApiRef } from '../index';
+import { appHistoryApiRef } from './AppHistoryApi';
 import { useAppNavigate } from './useAppNavigate';
 import { useAppHref } from './useAppHref';
 

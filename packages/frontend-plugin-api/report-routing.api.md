@@ -9,8 +9,8 @@ import { ReactNode } from 'react';
 
 // @public
 export interface RoutingIntegration {
-  createHref(target: string): string;
-  navigate(target: string, options?: Parameters<AppNavigate>[1]): void;
+  createHref(to: string): string;
+  navigate(to: string, options?: Parameters<AppNavigate>[1]): void;
   pathname: string;
 }
 

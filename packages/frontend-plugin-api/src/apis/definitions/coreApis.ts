@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { appHistoryApiRef } from '../../routing/AppHistoryApi';
+import {
+  appHistoryApiRef,
+  type AppHistoryApi,
+} from '../../routing/AppHistoryApi';
+import type { ApiRef } from '../system/types';
 import { analyticsApiRef } from './AnalyticsApi';
 import { appLanguageApiRef } from './AppLanguageApi';
+import { appLifecycleApiRef } from './AppLifecycleApi';
 import { appThemeApiRef } from './AppThemeApi';
 import { appTreeApiRef } from './AppTreeApi';
 import { configApiRef } from './ConfigApi';
@@ -27,25 +32,33 @@ import { featureFlagsApiRef } from './FeatureFlagsApi';
 import { fetchApiRef } from './FetchApi';
 import { iconsApiRef } from './IconsApi';
 import { identityApiRef } from './IdentityApi';
+import { oauthRequestApiRef } from './OAuthRequestApi';
+import { pluginHeaderActionsApiRef } from './PluginHeaderActionsApi';
+import { pluginWrapperApiRef } from './PluginWrapperApi';
 import { routeResolutionApiRef } from './RouteResolutionApi';
 import { storageApiRef } from './StorageApi';
+import { swappableComponentsApiRef } from './SwappableComponentsApi';
 import { toastApiRef } from './ToastApi';
 import { translationApiRef } from './TranslationApi';
 
 /**
- * References to the core Utility APIs intended for use by plugins.
+ * References to the core Utility APIs provided by the frontend system.
  *
  * @remarks
  *
  * Use these refs with `useApi` or when declaring API factory dependencies.
- * Framework infrastructure APIs are available in {@link internalCoreApis}.
+ * Framework infrastructure APIs are grouped under {@link coreApis.internal}.
  * Provider-specific authentication APIs are exported separately.
  *
  * @public
  */
 export namespace coreApis {
-  /** Shared app navigation history. */
-  export const appHistory: typeof appHistoryApiRef = appHistoryApiRef;
+  /**
+   * The API reference for {@link AppHistoryApi}.
+   *
+   * @public
+   */
+  export const appHistory: ApiRef<AppHistoryApi> = appHistoryApiRef;
 
   /**
    * The API reference for {@link AnalyticsApi}.
@@ -159,4 +172,57 @@ export namespace coreApis {
    * @public
    */
   export const translation: typeof translationApiRef = translationApiRef;
+
+  /**
+   * References to core Utility APIs primarily intended for framework integrations.
+   *
+   * @remarks
+   *
+   * These APIs support app initialization, OAuth request coordination, and rendering
+   * infrastructure. Most plugins should use higher-level abstractions such as
+   * {@link PluginWrapperBlueprint},
+   * {@link PluginHeaderActionBlueprint}, and {@link createSwappableComponent}.
+   * These refs are public exports for integrations that need direct access.
+   *
+   * @public
+   */
+  export namespace internal {
+    /**
+     * The API reference for {@link AppLifecycleApi}.
+     *
+     * @public
+     */
+    export const appLifecycle: typeof appLifecycleApiRef = appLifecycleApiRef;
+
+    /**
+     * The API reference for {@link OAuthRequestApi}.
+     *
+     * @public
+     */
+    export const oauthRequest: typeof oauthRequestApiRef = oauthRequestApiRef;
+
+    /**
+     * The API reference for {@link PluginHeaderActionsApi}.
+     *
+     * @public
+     */
+    export const pluginHeaderActions: typeof pluginHeaderActionsApiRef =
+      pluginHeaderActionsApiRef;
+
+    /**
+     * The API reference for {@link PluginWrapperApi}.
+     *
+     * @public
+     */
+    export const pluginWrapper: typeof pluginWrapperApiRef =
+      pluginWrapperApiRef;
+
+    /**
+     * The API reference for {@link SwappableComponentsApi}.
+     *
+     * @public
+     */
+    export const swappableComponents: typeof swappableComponentsApiRef =
+      swappableComponentsApiRef;
+  }
 }

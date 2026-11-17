@@ -17,7 +17,6 @@
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
-  appHistoryApiRef,
   PageBlueprint,
   SubPageBlueprint,
   createFrontendPlugin,
@@ -29,6 +28,7 @@ import {
   useRouteRef,
   useRouteRefParams,
   useAppHref,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { useRouteMatches } from '@internal/frontend';
 import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
@@ -644,7 +644,7 @@ describe('AppRoutes', () => {
         backend: { baseUrl: 'http://localhost:7007' },
       },
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('catalog-page')).toBeInTheDocument();
