@@ -21,7 +21,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { StrictMode, Suspense } from 'react';
 import { attachMockApiFactory } from './MockWithApiFactory';
-import { TestApiProvider } from './TestApiProvider';
+import { resolveTestApiEntries, TestApiProvider } from './TestApiProvider';
 import { mockApis } from './mockApis';
 import { render, screen } from '@testing-library/react';
 
@@ -34,10 +34,18 @@ const yApiRef = createApiRef<string>({
 
 describe('TestApiProvider', () => {
   it('should preserve promise-valued tuple and embedded mocks through nested providers', async () => {
-    const ref = createApiRef<Promise<{ value: string }>>().with({
+    const ref = createApiRef<
+      Promise<{ value: string; unused(): number }>
+    >().with({
       id: 'test.promise',
     });
     const promise = Promise.resolve({ value: 'Tuple API' });
+    // @ts-expect-error - the resolved value must match the API's property types
+    resolveTestApiEntries([[ref, Promise.resolve({ value: 42 })]]);
+    // @ts-expect-error - promise-valued APIs still require promise-valued mocks
+    resolveTestApiEntries([[ref, { value: 'Not a promise' }]]);
+    // @ts-expect-error - an empty object is not a partial promise implementation
+    resolveTestApiEntries([[ref, {}]]);
     const observed: unknown[] = [];
     function Consumer() {
       observed.push(useApiHolder().get(ref));
@@ -58,7 +66,10 @@ describe('TestApiProvider', () => {
     expect(observed.every(value => value === promise)).toBe(true);
     rendered.unmount();
 
-    const embeddedPromise = Promise.resolve({ value: 'Embedded API' });
+    const embeddedPromise = Promise.resolve({
+      value: 'Embedded API',
+      unused: jest.fn(),
+    });
     const mock = attachMockApiFactory(ref, embeddedPromise);
     observed.length = 0;
     render(

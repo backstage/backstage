@@ -456,7 +456,12 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
 
 // @public
 export type TestApiPair<TApi> =
-  | readonly [ApiRef<TApi>, TApi extends infer TImpl ? Partial<TImpl> : never]
+  | readonly [
+      ApiRef<TApi>,
+      TApi extends PromiseLike<infer TImpl>
+        ? PromiseLike<Partial<Awaited<TImpl>>>
+        : Partial<TApi>,
+    ]
   | MockWithApiFactory<NoInfer<TApi>>;
 
 // @public

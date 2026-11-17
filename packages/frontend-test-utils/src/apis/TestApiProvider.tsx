@@ -25,10 +25,17 @@ import {
 
 /**
  * Represents a single API implementation, either as a tuple of the reference and the implementation, or a mock with an embedded factory.
+ * Tuple implementations may be partial. For promise-valued APIs, provide a
+ * promise that resolves to a partial implementation.
  * @public
  */
 export type TestApiPair<TApi> =
-  | readonly [ApiRef<TApi>, TApi extends infer TImpl ? Partial<TImpl> : never]
+  | readonly [
+      ApiRef<TApi>,
+      TApi extends PromiseLike<infer TImpl>
+        ? PromiseLike<Partial<Awaited<TImpl>>>
+        : Partial<TApi>,
+    ]
   | MockWithApiFactory<NoInfer<TApi>>;
 
 /**

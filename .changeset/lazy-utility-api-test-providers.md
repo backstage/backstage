@@ -10,5 +10,8 @@ Suspense boundary supplied inside the test element still controls its own
 fallback. Tests that relied on an ancestor boundary's loading UI may need
 updated assertions.
 
+Test API tuples accept promises that resolve to partial implementations for
+promise-valued API refs.
+
 Fixed test rendering helpers losing their test extensions when a plugin named
 `test` is included in `features`.

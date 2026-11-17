@@ -92,6 +92,17 @@ await renderInTestApp(<MyComponent />, {
 });
 ```
 
+Tuple implementations only need to provide the members used by the test. For a
+promise-valued API such as `ApiRef<Promise<MyApi>>`, supply a promise that resolves
+to a partial implementation:
+
+```tsx
+renderInTestApp(<MyComponent />, {
+  apis: [[myAsyncApiRef, Promise.resolve({ greet: () => 'Hello!' })]],
+});
+expect(await screen.findByText('Hello!')).toBeInTheDocument();
+```
+
 ### Test app defaults
 
 `renderInTestApp` and `renderTestApp` provide in-memory fakes for alerts,

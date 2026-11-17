@@ -77,7 +77,10 @@ function HrefProbe(props: { to: string }) {
 describe('renderInTestApp', () => {
   it('should render lazy APIs with a plugin named test in both test helpers', async () => {
     const apiRef = createApiRef<
-      Promise<{ getString(key: string): string }>
+      Promise<{
+        getString(key: string): string;
+        getOptionalString(key: string): string | undefined;
+      }>
     >().with({
       id: 'plugin.test.client',
     });
@@ -132,6 +135,25 @@ describe('renderInTestApp', () => {
         renderAs,
       });
       expect(await screen.findByText('Lazy API loaded')).toBeInTheDocument();
+      result.unmount();
+    }
+    expect(load).toHaveBeenCalledTimes(4);
+
+    const mock = Promise.resolve({ getString: () => 'Partial API mock' });
+    const mockedApp = renderTestApp({
+      features: [plugin],
+      initialRouteEntries: ['/lazy'],
+      apis: [[apiRef, mock]],
+    });
+    expect(await screen.findByText('Partial API mock')).toBeInTheDocument();
+    mockedApp.unmount();
+
+    for (const renderAs of ['page', 'chrome'] as const) {
+      const result = renderInTestApp(<Consumer />, {
+        apis: [[apiRef, mock]],
+        renderAs,
+      });
+      expect(await screen.findByText('Partial API mock')).toBeInTheDocument();
       result.unmount();
     }
     expect(load).toHaveBeenCalledTimes(4);
