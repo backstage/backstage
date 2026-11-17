@@ -15,6 +15,8 @@
  */
 
 import { createApiRef } from './ApiRef';
+import { ApiHolder, ApiRef } from './types';
+import { createApiRef as createFrontendApiRef } from '@backstage/frontend-plugin-api';
 
 describe('ApiRef', () => {
   it('should be created', () => {
@@ -28,6 +30,25 @@ describe('ApiRef', () => {
   it('should not accept pluginId in the core createApiRef config', () => {
     // @ts-expect-error pluginId is not supported in core-plugin-api
     createApiRef<string>({ id: 'abc', pluginId: 'test' });
+  });
+
+  it('should reject async refs in legacy API types and lookups at compile time', () => {
+    const syncRef = createFrontendApiRef<string>().with({ id: 'test.sync' });
+    const asyncRef = createFrontendApiRef<string>().with({
+      id: 'test.async',
+      loading: 'async',
+    });
+    const compatible: ApiRef<string> = syncRef;
+    expect(compatible).toBe(syncRef);
+    // @ts-expect-error Legacy API refs cannot be asynchronous.
+    const incompatible: ApiRef<string> = asyncRef;
+    expect(incompatible).toBe(asyncRef);
+
+    const holder: ApiHolder = { get: () => undefined };
+    const result: string | undefined = holder.get(syncRef);
+    expect(result).toBeUndefined();
+    // @ts-expect-error Legacy API holders cannot consume async refs.
+    holder.get(asyncRef);
   });
 
   it('should reject invalid ids', () => {

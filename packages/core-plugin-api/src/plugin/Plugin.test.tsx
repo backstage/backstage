@@ -15,6 +15,48 @@
  */
 
 import { createPlugin } from './Plugin';
+import { createApiFactory, createApiRef } from '../apis';
+import { createApiRef as createFrontendApiRef } from '@backstage/frontend-plugin-api';
+
+describe('Plugin APIs', () => {
+  it('should reject async API refs in registrations and dependencies at compile time', () => {
+    const oldRef = createApiRef<string>({ id: 'test.old' });
+    const syncRef = createFrontendApiRef<string>().with({ id: 'test.sync' });
+    const asyncRef = createFrontendApiRef<string>().with({
+      id: 'test.async',
+      loading: 'async',
+    });
+    const oldFactory = createApiFactory(oldRef, 'old');
+    const syncFactory = createApiFactory(syncRef, 'sync');
+    // Even a synchronous implementation cannot make an async ref compatible.
+    const asyncFactory = createApiFactory(asyncRef, 'async');
+
+    const plugin = createPlugin({
+      id: 'test',
+      apis: [oldFactory, syncFactory],
+    });
+    expect([...plugin.getApis()]).toEqual([oldFactory, syncFactory]);
+
+    createPlugin({
+      id: 'test',
+      // @ts-expect-error Old-system plugins cannot register async refs.
+      apis: [asyncFactory],
+    });
+    createPlugin({
+      id: 'test',
+      // @ts-expect-error Old-system API dependencies must also be synchronous.
+      apis: [
+        {
+          api: syncRef,
+          deps: {
+            value: asyncRef,
+          },
+          factory: () => 'value',
+        },
+      ],
+    });
+  });
+});
 
 describe('Plugin Feature Flag', () => {
   it('should be able to register and receive feature flags', () => {

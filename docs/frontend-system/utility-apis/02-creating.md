@@ -102,9 +102,11 @@ export const workApiRef = createApiRef<WorkApi>().with({
 ```
 
 Plugins that support the old frontend system must keep their APIs synchronous,
-including plugins that support both systems. Legacy conversion helpers preserve
-synchronous registrations and do not adapt API loading modes. An app can still
-include other converted legacy plugins alongside plugins that use async APIs.
+including plugins that support both systems. The old system's plugin
+registrations, API dependencies, and holder lookups reject async refs at compile
+time. Legacy conversion helpers preserve synchronous registrations and do not
+adapt API loading modes. An app can still include other converted legacy plugins
+alongside plugins that use async APIs.
 
 Prefer lazy implementations for APIs that are internal to a plugin. Shared APIs
 can also use lazy implementations to reduce the initial bundle size, but their
