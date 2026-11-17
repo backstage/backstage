@@ -65,10 +65,15 @@ export function configureAiInstallation(
 ): ConfiguredAiInstallation {
   const parsed = parseAiInstallationConfig(options.source);
   if (parsed.credentials === undefined) {
-    return { models: parsed.models, credentialPrecedence: 'user-first' };
+    return {
+      models: parsed.models,
+      credentialPrecedence: 'user-first',
+      credentialTokenEndpoints: [],
+    };
   }
 
-  const { encryptionKey, precedence, scopes } = parsed.credentials;
+  const { encryptionKey, precedence, scopes, tokenEndpoints } =
+    parsed.credentials;
   let credentialStores: AiCredentialStores;
   try {
     credentialStores = createCredentialStores({
@@ -94,5 +99,6 @@ export function configureAiInstallation(
     models: parsed.models,
     credentialStores,
     credentialPrecedence: precedence,
+    credentialTokenEndpoints: tokenEndpoints,
   };
 }

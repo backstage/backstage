@@ -76,6 +76,18 @@ export type AiInstallationCredentials = Readonly<{
   encryptionKey: Uint8Array;
   precedence: AiCredentialsPrecedence;
   scopes: AiConfigCredentialScopes;
+  /**
+   * Trusted OAuth token endpoints for guarded auth operations.
+   *
+   * @remarks
+   *
+   * Absolute `https` URLs on the journal-owned `/oauth/token` or
+   * `/v1/oauth/token` route. The host passes them to
+   * `createAuthOperations({ tokenEndpoints })`; a request to any other origin
+   * is denied before it is sent. Empty when the installation performs no
+   * guarded auth operations.
+   */
+  tokenEndpoints: readonly string[];
 }>;
 
 /**
@@ -104,4 +116,6 @@ export type ConfiguredAiInstallation = Readonly<{
   models: readonly AnyModel[];
   credentialStores?: AiCredentialStores;
   credentialPrecedence: AiCredentialsPrecedence;
+  /** Trusted token endpoints for guarded auth operations, if configured. */
+  credentialTokenEndpoints: readonly string[];
 }>;

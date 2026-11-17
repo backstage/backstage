@@ -30,8 +30,13 @@ import type {
   TrustedAuthOperation,
 } from './types';
 
-/** Default window before expiry in which a credential is refreshed. */
-const DEFAULT_REFRESH_WINDOW_MS = 60_000;
+/**
+ * Default window before expiry in which a credential is refreshed. The model
+ * integration uses the same constant to decide when to invoke a host refresh.
+ *
+ * @internal
+ */
+export const DEFAULT_REFRESH_WINDOW_MS = 60_000;
 
 /** Upper bound for a token response body. */
 const MAX_RESPONSE_BYTES = 64 * 1024;

@@ -28,6 +28,7 @@ import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { JsonObject } from '@backstage/types';
 import type { AiCredentialStores, CredentialScope } from './credentials/types';
 import type { AiCredentialsPrecedence } from './config-extension/types';
+import { DEFAULT_REFRESH_WINDOW_MS } from './providers/auth/operations';
 import {
   createAttemptJournal,
   AI_AUDIT_READ_PERMISSION_NAME,
@@ -62,7 +63,7 @@ import type {
   NativeHarnessHandle,
   OpenNativeHarnessInput,
 } from './DefaultAiService';
-import type { Namespace } from './contracts';
+import type { Fence, Namespace } from './contracts';
 
 /** Deeply freezes the host-supplied canonical catalog at integration time. */
 function deepFreeze<T>(value: T): T {
@@ -96,6 +97,49 @@ const DRAIN_WAIT_LIMIT_MS = 30_000;
 const LEASE_KEEPALIVE_INTERVAL_MS = 15_000;
 
 /**
+ * Input for a host-injected credential refresh.
+ *
+ * @remarks
+ *
+ * Structures exactly the trusted context an auth operation needs, so a host can
+ * bind it to `createAuthOperations().refresh` without reconstructing authority
+ * from caller data.
+ *
+ * @internal
+ */
+export interface CredentialRefreshInput {
+  readonly provider: string;
+  readonly scope: CredentialScope;
+  readonly credentials: BackstageCredentials;
+  readonly fence: Fence;
+  readonly actor: string;
+  readonly provenance: Readonly<{
+    conversationId: string;
+    taskId: string;
+    callId: string;
+  }>;
+  readonly definitionVersion: string;
+  readonly configVersion: string;
+}
+
+/**
+ * Guarded credential refresh invoked before a model dispatch whose OAuth
+ * credential is at or inside the refresh window.
+ *
+ * @remarks
+ *
+ * The hook is expected to perform a journaled `auth.token` operation and
+ * persist the rotated credential. Its rejection denies the dispatch. When it is
+ * absent, an expired OAuth credential is denied exactly as before: with a
+ * journaled `credential expired; re-authentication required` reason.
+ *
+ * @internal
+ */
+export type CredentialRefreshHook = (
+  input: CredentialRefreshInput,
+) => Promise<void>;
+
+/**
  * Options for {@link createAiServiceIntegration}.
  *
  * @internal
@@ -122,6 +166,11 @@ export interface AiServiceIntegrationOptions {
    * the next scope, a failed read never does.
    */
   readonly credentialPrecedence?: AiCredentialsPrecedence;
+  /**
+   * Guarded refresh for expiring OAuth credentials, invoked before dispatch.
+   * Absent means no automatic refresh: an expired credential denies.
+   */
+  readonly refreshExpiredCredential?: CredentialRefreshHook;
 }
 
 /**
@@ -300,6 +349,7 @@ export async function createAiServiceIntegration(
   const providerRegistry = options.providers ?? builtinProviderRegistry;
   const credentialStores = options.credentialStores;
   const credentialPrecedence = options.credentialPrecedence ?? 'user-first';
+  const refreshExpiredCredential = options.refreshExpiredCredential;
   const catalog = (options.models ?? []).map(deepFreeze);
   const db: Knex = await deps.database.getClient();
   const pluginId = deps.pluginMetadata.getId();
@@ -852,10 +902,13 @@ export async function createAiServiceIntegration(
     input: OpenNativeHarnessInput,
     fence: AdmissionFence,
     authority: () => AdmissionAuthority,
-  ): (model: AnyModel, operation: ModelOperation) => GuardedModelBinding {
+  ): (
+    model: AnyModel,
+    operation: ModelOperation,
+  ) => Promise<GuardedModelBinding> {
     const sessionRef = `${input.namespace.pluginId}/${input.namespace.sessionId}`;
     let callOrdinal = 0;
-    return (model, operation) => {
+    return async (model, operation) => {
       const canonical = catalog.find(
         entry => entry.provider === model.provider && entry.id === model.id,
       );
@@ -893,7 +946,89 @@ export async function createAiServiceIntegration(
           `model not resolved: '${model.provider}/${model.id}' is not in the canonical catalog of this installation`,
         );
       }
-      const resolved = current.authorities.get(canonical.provider);
+      let resolved = current.authorities.get(canonical.provider);
+      if (resolved === undefined) {
+        throw new GuardedResolutionError(
+          {
+            operation: trusted,
+            model: bindingModel,
+            authority: { kind: 'apiKey' },
+          },
+          'provider credentials are not configured for this installation',
+        );
+      }
+      // A guarded refresh is the only awaited step of resolution. It is bound
+      // to this dispatch's verified authority and fence, and the authority is
+      // re-read afterwards: a refresh that rotated the store must be visible to
+      // dispatch, and an admission that drained meanwhile must still fail
+      // closed (authority() throws). Everything the guard enforces — permission,
+      // credential generation, fence currency — is checked again in recheck
+      // before the intent and the send, so nothing between here and dispatch
+      // depends on the pre-await snapshot.
+      if (
+        refreshExpiredCredential !== undefined &&
+        credentialStores !== undefined &&
+        resolved.authority.kind === 'oauth' &&
+        !Number.isFinite(resolved.authority.expiresAt ?? Number.NaN)
+      ) {
+        throw new GuardedResolutionError(
+          {
+            operation: trusted,
+            model: bindingModel,
+            authority: { kind: 'apiKey' },
+          },
+          'credential expired; re-authentication required',
+        );
+      }
+      if (
+        refreshExpiredCredential !== undefined &&
+        credentialStores !== undefined &&
+        resolved.authority.kind === 'oauth' &&
+        (resolved.authority.expiresAt ?? 0) - Date.now() <=
+          DEFAULT_REFRESH_WINDOW_MS
+      ) {
+        const scope = resolved.scope;
+        const provenance = trusted.provenance;
+        try {
+          await refreshExpiredCredential({
+            provider: canonical.provider,
+            scope,
+            credentials: trusted.credentials,
+            fence: trusted.fence,
+            actor: trusted.actor,
+            provenance: {
+              conversationId: provenance.conversationId,
+              taskId: provenance.taskId,
+              callId: provenance.callId,
+            },
+            definitionVersion: trusted.definitionVersion,
+            configVersion: trusted.configVersion,
+          });
+        } catch {
+          // Auth denies and its own outcome are already journaled by the hook;
+          // this records the dispatch denial that follows, actionably and
+          // without a send.
+          throw new GuardedResolutionError(
+            {
+              operation: trusted,
+              model: bindingModel,
+              authority: { kind: 'apiKey' },
+            },
+            'credential expired; re-authentication required',
+          );
+        }
+        // Re-read the authority view after the await, and the credential from
+        // the scope that won. The pre-await binding is never trusted here.
+        // Throws when the admission drained or its fence moved during the
+        // refresh; the fresh credential is read from the store, never reused
+        // from the pre-await binding.
+        authority();
+        const refreshed = await credentialStores
+          .forScope(scope)
+          .read(canonical.provider);
+        resolved =
+          refreshed === undefined ? undefined : authorityOf(scope, refreshed);
+      }
       if (resolved === undefined) {
         throw new GuardedResolutionError(
           {

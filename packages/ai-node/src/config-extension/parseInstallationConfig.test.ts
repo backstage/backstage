@@ -283,6 +283,57 @@ describe('parseAiInstallationConfig', () => {
     ).toThrow(/provider ID/);
   });
 
+  it('accepts only reserved, secret-free token endpoints', () => {
+    const parsed = parse({
+      ai: {
+        credentials: credentialsSection({
+          tokenEndpoints: [
+            'https://api.anthropic.com/v1/oauth/token',
+            'https://auth.openai.com/oauth/token',
+          ],
+        }),
+      },
+    });
+    expect(parsed.credentials!.tokenEndpoints).toEqual([
+      'https://api.anthropic.com/v1/oauth/token',
+      'https://auth.openai.com/oauth/token',
+    ]);
+
+    // Omitted means no guarded auth operations.
+    expect(
+      parse({ ai: { credentials: credentialsSection() } }).credentials!
+        .tokenEndpoints,
+    ).toEqual([]);
+
+    const invalid: Array<[unknown, RegExp]> = [
+      [[], /at least one endpoint/],
+      [['https://api.anthropic.com/oauth/token?tenant=1'], /without query/],
+      [['https://api.anthropic.com/authorize'], /reserved token route/],
+      [['http://api.anthropic.com/v1/oauth/token'], /absolute https/],
+      [['ftp://api.anthropic.com/oauth/token'], /absolute https/],
+      [['https://user:pass@api.anthropic.com/oauth/token'], /without query/],
+      [
+        [
+          'https://api.anthropic.com/v1/oauth/token',
+          'https://api.anthropic.com/v1/oauth/token',
+        ],
+        /configured more than once/,
+      ],
+    ];
+    for (const [tokenEndpoints, expected] of invalid) {
+      expect(() =>
+        parse({
+          ai: { credentials: credentialsSection({ tokenEndpoints }) },
+        }),
+      ).toThrow(expected);
+    }
+    expect(() =>
+      parse({
+        ai: { credentials: credentialsSection({ tokenEndpoints: 'x' }) },
+      }),
+    ).toThrow(/tokenEndpoints/);
+  });
+
   it('treats credential entries as opaque', () => {
     // Kind interpretation belongs to the credential stores, not the schema:
     // an entry that is not a usable credential parses fine here and is
