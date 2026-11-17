@@ -22,6 +22,8 @@ export type MetricSeries = Readonly<{
   count: number;
   /** Total observed duration for series that carry durations. */
   totalMs?: number;
+  /** Mean observed duration; a value, never a label. */
+  avgMs?: number;
 }>;
 
 /**
@@ -34,10 +36,16 @@ export type AiHealthSnapshot = Readonly<{
   counters: readonly MetricSeries[];
   /** Sum of observed durations, by event kind. */
   durations: Readonly<Record<string, number>>;
-  /** Leases this process currently believes it holds. */
+  /** Leases this process currently believes it holds, by namespace. */
   activeLeases: number;
-  /** Denials and failed dispatches since start. */
+  /**
+   * Logical failures since start: one per denied request and one per dispatch
+   * that did not complete. A denial is counted once, from the operation's own
+   * event, not again from the journal row that records it.
+   */
   failures: number;
+  /** Journal decisions, reported separately so they never inflate failures. */
+  journalDecisions: Readonly<{ allow: number; deny: number }>;
   /** Total events observed. */
   events: number;
 }>;
@@ -59,6 +67,14 @@ export interface AiMetricsSubscriber extends AiEventEmitter {
   snapshot(): AiHealthSnapshot;
   reset(): void;
 }
+
+/**
+ * Hard ceiling on distinct series. Labels are already restricted by the
+ * validator, but a long-lived process can still see many provider/model
+ * combinations across config changes; beyond this, new combinations collapse
+ * into one overflow bucket so memory stays bounded.
+ */
+const MAX_SERIES = 256;
 
 function seriesKey(kind: string, labels: Record<string, string>): string {
   const entries = Object.entries(labels).sort(([a], [b]) => a.localeCompare(b));
@@ -82,9 +98,16 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
     }
   >();
   const durations: Record<string, number> = {};
-  let activeLeases = 0;
+  // identity -> the generation currently holding it. A stale holder's
+  // release/lost carries an older generation and cannot evict a newer hold.
+  const heldLeases = new Map<string, string | undefined>();
   let failures = 0;
   let events = 0;
+  const journalDecisions = { allow: 0, deny: 0 };
+
+  /** Lease identity: the gauge counts holds, not acquire events. */
+  const leaseId = (event: { pluginId: string; sessionId: string }) =>
+    `${event.pluginId}\u0000${event.sessionId}`;
 
   const count = (
     kind: string,
@@ -92,7 +115,21 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
     durationMs?: number,
   ) => {
     const key = seriesKey(kind, labels);
-    const existing = series.get(key);
+    let existing = series.get(key);
+    if (existing === undefined && series.size >= MAX_SERIES) {
+      const overflowKey = seriesKey('overflow', { source: kind });
+      existing = series.get(overflowKey);
+      if (existing === undefined) {
+        series.set(overflowKey, {
+          kind: 'overflow',
+          labels: { source: kind },
+          count: 1,
+          totalMs: durationMs ?? 0,
+          timed: durationMs !== undefined,
+        });
+        return;
+      }
+    }
     if (existing === undefined) {
       series.set(key, {
         kind,
@@ -142,9 +179,19 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
           );
           break;
         case 'lease':
-          if (event.action === 'acquire') activeLeases += 1;
+          if (event.action === 'acquire') {
+            heldLeases.set(leaseId(event), event.generation);
+          }
+          if (event.action === 'renew' && !heldLeases.has(leaseId(event))) {
+            heldLeases.set(leaseId(event), event.generation);
+          }
           if (event.action === 'release' || event.action === 'lost') {
-            activeLeases = Math.max(0, activeLeases - 1);
+            const id = leaseId(event);
+            const held = heldLeases.get(id);
+            // Only the generation that holds the identity may end it.
+            if (event.generation === undefined || held === event.generation) {
+              heldLeases.delete(id);
+            }
           }
           if (event.durationMs !== undefined) {
             durations.lease = (durations.lease ?? 0) + event.durationMs;
@@ -159,7 +206,8 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
           );
           break;
         case 'journal':
-          if (event.decision === 'deny') failures += 1;
+          if (event.decision === 'deny') journalDecisions.deny += 1;
+          if (event.decision === 'allow') journalDecisions.allow += 1;
           durations.journal = (durations.journal ?? 0) + event.durationMs;
           count(
             'journal',
@@ -178,26 +226,22 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
       return {
         counters: [...series.values()]
           .map(entry => ({
-            labels: {
-              kind: entry.kind,
-              ...entry.labels,
-              ...(entry.timed
-                ? {
-                    avgMs: String(
-                      Math.round((entry.totalMs / entry.count) * 100) / 100,
-                    ),
-                  }
-                : {}),
-            },
+            labels: { kind: entry.kind, ...entry.labels },
             count: entry.count,
-            ...(entry.timed ? { totalMs: entry.totalMs } : {}),
+            ...(entry.timed
+              ? {
+                  totalMs: entry.totalMs,
+                  avgMs: Math.round((entry.totalMs / entry.count) * 100) / 100,
+                }
+              : {}),
           }))
           .sort((a, b) =>
             JSON.stringify(a.labels) < JSON.stringify(b.labels) ? -1 : 1,
           ),
         durations: { ...durations },
-        activeLeases,
+        activeLeases: heldLeases.size,
         failures,
+        journalDecisions: { ...journalDecisions },
         events,
       };
     },
@@ -206,7 +250,9 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
       for (const key of Object.keys(durations)) {
         delete durations[key];
       }
-      activeLeases = 0;
+      heldLeases.clear();
+      journalDecisions.allow = 0;
+      journalDecisions.deny = 0;
       failures = 0;
       events = 0;
     },

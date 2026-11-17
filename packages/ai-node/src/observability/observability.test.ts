@@ -30,8 +30,10 @@ import { emitSafe, assertObservableEvent } from './types';
 const storageMigration = require('../../migrations/1000_storage');
 const journalMigration = require('../../migrations/4000_journal');
 
+const fence_namespace = { pluginId: 'plugin', sessionId: 'session' };
+
 const fence = {
-  namespace: { pluginId: 'plugin', sessionId: 'session' },
+  namespace: fence_namespace,
   owner: 'owner',
   token: '1',
 };
@@ -140,7 +142,9 @@ describe('observability seam', () => {
 
     const snapshot = metrics.snapshot();
     expect(snapshot.events).toBe(8);
+    // 2 denials + 1 failed dispatch. The journal allow is not a failure.
     expect(snapshot.failures).toBe(3);
+    expect(snapshot.journalDecisions).toEqual({ allow: 1, deny: 0 });
     expect(snapshot.activeLeases).toBe(1);
     expect(snapshot.durations).toEqual({ dispatch: 20, lease: 3, journal: 6 });
     // Two denials collapse into one series: the reason is never a label.
@@ -177,7 +181,7 @@ describe('observability seam', () => {
     });
   });
 
-  it('rejects secret-shaped and unbounded events before any subscriber', () => {
+  it('rejects secret-shaped and unbounded events before any subscriber', async () => {
     const metrics = createMetricsSubscriber();
     const rejected: unknown[] = [
       {
@@ -203,6 +207,121 @@ describe('observability seam', () => {
         prompt: 'what is the secret',
       },
       { kind: 'nope', at: 1 },
+      // Closed sets: an unknown union member would mint a new series.
+      {
+        kind: 'dispatch',
+        at: 1,
+        operation: 'models.stream',
+        outcome: 'exploded',
+        durationMs: 1,
+      },
+      { kind: 'lease', at: 1, pluginId: 'p', sessionId: 's', action: 'steal' },
+      {
+        kind: 'journal',
+        at: 1,
+        action: 'append',
+        durationMs: 1,
+      },
+      // Free-text and oversized label values are refused.
+      {
+        kind: 'denial',
+        at: 1,
+        provider: 'provider with spaces and a free form sentence',
+        operation: 'models.stream',
+        reason: 'denied',
+        attempt: 1,
+      },
+      {
+        kind: 'denial',
+        at: 1,
+        operation: 'models.stream',
+        reason: 'x'.repeat(400),
+        attempt: 1,
+      },
+      // Per-kind field sets: a journal field on a dispatch is refused.
+      {
+        kind: 'dispatch',
+        at: 1,
+        operation: 'anything',
+        outcome: 'completed',
+        durationMs: 1,
+        action: 'unexpected',
+      },
+      // Ranges and required fields.
+      {
+        kind: 'dispatch',
+        at: 1,
+        operation: 'models.stream',
+        outcome: 'completed',
+        durationMs: -1,
+      },
+      {
+        kind: 'dispatch',
+        at: 1,
+        operation: 'models.stream',
+        outcome: 'completed',
+        httpStatus: 99,
+        durationMs: 1,
+      },
+      {
+        kind: 'denial',
+        at: 1,
+        operation: 'models.stream',
+        attempt: 1,
+      },
+      { kind: 'lease', at: 1, action: 'acquire' },
+      // Credential-shaped identifiers, using the journal's own vocabulary.
+      {
+        kind: 'lease',
+        at: 1,
+        pluginId: 'ghp_abcdefghijklmnopqrstuvwxyz0123',
+        sessionId: 'session',
+        action: 'acquire',
+      },
+      {
+        kind: 'lease',
+        at: 1,
+        pluginId: 'plugin',
+        sessionId: 'sk-proj-abcdefghijklmnopqrstuvwxyz012345',
+        action: 'acquire',
+      },
+      {
+        kind: 'denial',
+        at: 1,
+        provider: 'AIzaSyA1234567890abcdefghijklmnopqrstuv',
+        operation: 'models.stream',
+        reason: 'denied',
+        attempt: 1,
+      },
+      {
+        kind: 'denial',
+        at: 1,
+        operation: 'models.stream',
+        reason: 'api_key=abcdefghijkl',
+        attempt: 1,
+      },
+      // Untyped content in a field declared as a string.
+      {
+        kind: 'lease',
+        at: 1,
+        pluginId: 7,
+        sessionId: 'session',
+        action: 'acquire',
+      },
+      {
+        kind: 'dispatch',
+        at: 1,
+        operation: true,
+        outcome: 'sent',
+        durationMs: 1,
+      },
+      {
+        kind: 'journal',
+        at: 1,
+        action: 'decision',
+        decision: { toString: () => 'allow' },
+        durationMs: 1,
+      },
     ];
     for (const event of rejected) {
       expect(() => assertObservableEvent(event)).toThrow();
@@ -210,6 +329,34 @@ describe('observability seam', () => {
       expect(() => emitSafe(metrics, event as never)).not.toThrow();
     }
     expect(metrics.snapshot().events).toBe(0);
+
+    // A rejecting async subscriber cannot surface an unhandled rejection.
+    const rejections: unknown[] = [];
+    const onRejection = (reason: unknown) => rejections.push(reason);
+    process.on('unhandledRejection', onRejection);
+    try {
+      expect(() =>
+        emitSafe(
+          {
+            async emit() {
+              throw new Error('async subscriber down');
+            },
+          },
+          {
+            kind: 'lease',
+            at: 1,
+            pluginId: 'p',
+            sessionId: 's',
+            action: 'acquire',
+          },
+        ),
+      ).not.toThrow();
+      await new Promise(resolve => setImmediate(resolve));
+      await new Promise(resolve => setImmediate(resolve));
+      expect(rejections).toEqual([]);
+    } finally {
+      process.off('unhandledRejection', onRejection);
+    }
 
     // A throwing subscriber cannot break the caller either.
     expect(() =>
@@ -228,6 +375,31 @@ describe('observability seam', () => {
         },
       ),
     ).not.toThrow();
+  });
+
+  it('bounds the label space regardless of the values it is fed', () => {
+    const metrics = createMetricsSubscriber();
+    for (let i = 0; i < 10_000; i++) {
+      metrics.emit({
+        kind: 'denial',
+        at: i,
+        provider: `provider-${i}`,
+        operation: 'models.stream',
+        reason: `denied reason ${i}`,
+        attempt: 1,
+      });
+    }
+    const snapshot = metrics.snapshot();
+    // 256 distinct series plus one overflow bucket for this kind alone, not
+    // 10 000. The budget is per kind, so four kinds can reach 260.
+    expect(snapshot.counters.length).toBeLessThanOrEqual(257);
+    expect(
+      snapshot.counters.some(series => series.labels.kind === 'overflow'),
+    ).toBe(true);
+    expect(snapshot.events).toBe(10_000);
+    expect(snapshot.failures).toBe(10_000);
+    // Structurally reason-free: no series label can carry the reason text.
+    expect(JSON.stringify(snapshot)).not.toContain('denied reason');
   });
 
   it('emits at journal, lease and guard boundaries', async () => {
@@ -363,6 +535,535 @@ describe('observability seam', () => {
         'denial',
       ]) {
         expect(paths).toContain(expected);
+      }
+    } finally {
+      await cleanup();
+    }
+  }, 20000);
+
+  it('tells the truth about idempotent acquires and hostile tenant text', async () => {
+    const { db, cleanup } = await memoryDb();
+    const metrics = createMetricsSubscriber();
+    try {
+      const lease = await createKnexNamespaceLease({ db, events: metrics });
+
+      // Re-acquiring a live lease with the same owner returns the same
+      // generation: one hold, so one release must zero the gauge.
+      const first = await lease.acquire(fence_namespace, 'owner');
+      const second = await lease.acquire(fence_namespace, 'owner');
+      expect(second).toEqual(first);
+      expect(metrics.snapshot().activeLeases).toBe(1);
+      const leaseSeries = () =>
+        metrics.snapshot().counters.filter(s => s.labels.kind === 'lease');
+      expect(
+        leaseSeries().find(s => s.labels.action === 'acquire')?.count,
+      ).toBe(1);
+      expect(leaseSeries().some(s => s.labels.action === 'renew')).toBe(true);
+
+      await lease.release(first!);
+      expect(metrics.snapshot().activeLeases).toBe(0);
+
+      // Producer-side free text and credential-shaped identifiers never reach
+      // the subscriber: the lease still works, the observation is dropped.
+      const hostile = { pluginId: 'P@ssw0rd!', sessionId: 'patient diagnosis' };
+      const before = metrics.snapshot().events;
+      const held = await lease.acquire(hostile, 'owner');
+      expect(held).toBeDefined();
+      await lease.release(held!);
+      expect(metrics.snapshot().events).toBe(before);
+      expect(JSON.stringify(metrics.snapshot())).not.toContain('P@ssw0rd');
+      expect(JSON.stringify(metrics.snapshot())).not.toContain('diagnosis');
+    } finally {
+      await cleanup();
+    }
+  }, 20000);
+
+  it('emits internal reason codes only, never caller text', async () => {
+    const { db, cleanup } = await memoryDb();
+    const seen: string[] = [];
+    const events = createMetricsSubscriber();
+    const recorder = {
+      emit(event: Parameters<typeof events.emit>[0]) {
+        if (event.kind === 'denial') seen.push(event.reason);
+        events.emit(event);
+      },
+    };
+    // The closed vocabulary every reason path may draw from.
+    const INTERNAL_REASONS = new Set([
+      'model operation denied',
+      'credential expired; re-authentication required',
+      'unverified auth operation',
+    ]);
+    try {
+      const lease = await createKnexNamespaceLease({ db, events: recorder });
+      const held = (await lease.acquire(fence_namespace, 'owner'))!;
+      const journal = createAttemptJournal({
+        db,
+        authorizer: { authorizeAuditRead: async () => true },
+        events: recorder,
+      });
+      const operation = (callId: string) =>
+        ({
+          actor: 'user:default/alice',
+          credentials: mockCredentials.user('user:default/alice'),
+          provenance: {
+            origin: 'verified',
+            conversationId: 'plugin/session',
+            taskId: 'plugin/session',
+            callId,
+          },
+          fence: held,
+          definitionVersion: 'v1',
+          configVersion: 'v1',
+          provider: 'openai',
+          modelId: 'gpt-review',
+          resolvedModel: 'gpt-review',
+          operation: 'stream',
+          api: 'openai-responses',
+          destination: 'https://provider.example/v1/responses',
+          credentialScope: { kind: 'org' },
+          credentialGeneration: 'gen-1',
+          controller: new AbortController(),
+        } as never);
+      const request = () => ({
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ model: 'gpt-review', input: [] }),
+      });
+
+      // A revoked authority denial and an expired-credential denial.
+      const revoked = createModelOperationGuard({
+        journal,
+        recheck: async () => false,
+        transport: (async () => new Response('no')) as never,
+        events: recorder,
+      }).bind(operation('plugin/session#revoked'));
+      await expect(
+        revoked.fetch('https://provider.example/v1/responses', request()),
+      ).rejects.toThrow();
+
+      const expired = createModelOperationGuard({
+        journal,
+        recheck: async () => true,
+        transport: (async () => new Response('no')) as never,
+        events: recorder,
+      }).bind({
+        ...(operation('plugin/session#expired') as object),
+        credentialScope: { kind: 'user', id: 'user:default/alice' },
+        providerCredentialExpiresAt: Date.now() - 1_000,
+      } as never);
+      await expect(
+        expired.fetch('https://provider.example/v1/responses', request()),
+      ).rejects.toThrow();
+
+      await lease.release(held);
+
+      expect(seen.length).toBeGreaterThanOrEqual(2);
+      for (const reason of seen) {
+        expect(INTERNAL_REASONS.has(reason)).toBe(true);
+        // No caller-supplied text can reach a reason.
+        expect(reason).not.toContain('plugin/session#');
+        expect(reason).not.toContain('alice');
+        expect(reason).not.toContain('provider.example');
+      }
+    } finally {
+      await cleanup();
+    }
+  }, 20000);
+
+  it('keeps the gauge with the current lease holder across a takeover', async () => {
+    const { db, cleanup } = await memoryDb();
+    const metrics = createMetricsSubscriber();
+    try {
+      const lease = await createKnexNamespaceLease({ db, events: metrics });
+      const oldHolder = (await lease.acquire(fence_namespace, 'old'))!;
+      expect(metrics.snapshot().activeLeases).toBe(1);
+
+      // Expire the row in the database, then let a new owner take over.
+      await db('ai_namespace_leases')
+        .where({ plugin_id: 'plugin', session_id: 'session' })
+        .update({ expires_at: db.raw('0') });
+      const newHolder = (await lease.acquire(fence_namespace, 'new'))!;
+      expect(newHolder.token).not.toBe(oldHolder.token);
+      expect(metrics.snapshot().activeLeases).toBe(1);
+
+      // The stale holder's renewal fails: its lost event must not evict the
+      // holder that superseded it.
+      await expect(lease.renew(oldHolder)).resolves.toBe(false);
+      expect(metrics.snapshot().activeLeases).toBe(1);
+
+      await lease.release(newHolder);
+      expect(metrics.snapshot().activeLeases).toBe(0);
+    } finally {
+      await cleanup();
+    }
+  }, 20000);
+
+  it('drops mis-typed identifiers from the real lease producer', async () => {
+    const { db, cleanup } = await memoryDb();
+    const metrics = createMetricsSubscriber();
+    try {
+      const lease = await createKnexNamespaceLease({ db, events: metrics });
+      const before = metrics.snapshot();
+      // The producer refuses an untyped namespace outright, so nothing can be
+      // forwarded, and no event is emitted for the rejected attempt.
+      await expect(
+        lease.acquire({ pluginId: 7, sessionId: true } as never, 'owner'),
+      ).rejects.toThrow(/Invalid namespace/);
+      expect(metrics.snapshot()).toEqual(before);
+
+      // A mis-typed field on an otherwise valid namespace is dropped by the
+      // seam rather than reaching a subscriber (see the validator cell); the
+      // lease itself keeps working.
+      const held = await lease.acquire(fence_namespace, 'owner');
+      expect(held).toBeDefined();
+    } finally {
+      await cleanup();
+    }
+  }, 20000);
+
+  it('reports an uncertain dispatch when the outcome write fails', async () => {
+    const { db, cleanup } = await memoryDb();
+    const metrics = createMetricsSubscriber();
+    try {
+      const lease = await createKnexNamespaceLease({ db });
+      const held = (await lease.acquire(fence_namespace, 'owner'))!;
+      const real = createAttemptJournal({
+        db,
+        authorizer: { authorizeAuditRead: async () => true },
+        events: metrics,
+      });
+      // The decision commits, the outcome write fails.
+      const journal = {
+        recordDecisionAndIntent: real.recordDecisionAndIntent.bind(real),
+        recordRecovery: real.recordRecovery.bind(real),
+        read: real.read.bind(real),
+        recordOutcome: async () => {
+          throw new Error('journal unavailable');
+        },
+      };
+      const guard = createModelOperationGuard({
+        journal: journal as never,
+        recheck: async () => true,
+        transport: (async () => new Response('ok', { status: 200 })) as never,
+        events: metrics,
+      }).bind({
+        actor: 'user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        provenance: {
+          origin: 'verified',
+          conversationId: 'plugin/session',
+          taskId: 'plugin/session',
+          callId: 'plugin/session#uncertain',
+        },
+        fence: held,
+        definitionVersion: 'v1',
+        configVersion: 'v1',
+        provider: 'openai',
+        modelId: 'gpt-review',
+        resolvedModel: 'gpt-review',
+        operation: 'stream',
+        api: 'openai-responses',
+        destination: 'https://provider.example/v1/responses',
+        credentialScope: { kind: 'org' },
+        credentialGeneration: 'gen-1',
+        controller: new AbortController(),
+      } as never);
+      const response = await guard.fetch(
+        'https://provider.example/v1/responses',
+        {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ model: 'gpt-review', input: [] }),
+        },
+      );
+      await response.text();
+      await expect(guard.finish('completed')).rejects.toThrow(
+        /uncertain|journal/,
+      );
+
+      const terminal = metrics
+        .snapshot()
+        .counters.filter(
+          series =>
+            series.labels.kind === 'dispatch' &&
+            series.labels.outcome !== 'sent',
+        )
+        .map(series => series.labels.outcome);
+      // Durable truth: the subscriber sees unknown, never completed.
+      expect(terminal).toContain('unknown');
+      expect(terminal).not.toContain('completed');
+    } finally {
+      await cleanup();
+    }
+  }, 20000);
+
+  it('emits a denial when the auth guard rejects an operation', async () => {
+    const metrics = createMetricsSubscriber();
+    const recorded: unknown[] = [];
+    const { createAuthOperationGuard } = require('../providers/auth/guard');
+    const { createAuthModuleRegistry } = require('../providers/auth/modules');
+    const { anthropicAuthModule } = require('../providers/auth/modules');
+    const guard = createAuthOperationGuard({
+      transport: (async () => new Response('{}', { status: 200 })) as never,
+      recheck: async () => true,
+      journal: {
+        recordDecisionAndIntent: async (_fence: unknown, event: unknown) => {
+          recorded.push(event);
+          return 'attempt-1';
+        },
+        recordOutcome: async () => undefined,
+      },
+      modules: createAuthModuleRegistry([anthropicAuthModule]),
+      events: metrics,
+    }).bind({
+      actor: 'user:default/alice',
+      credentials: mockCredentials.user('user:default/alice'),
+      provenance: {
+        origin: 'verified',
+        conversationId: 'plugin/session',
+        taskId: 'plugin/session',
+        callId: 'plugin/session#auth',
+      },
+      fence,
+      definitionVersion: 'v1',
+      configVersion: 'v1',
+      provider: 'anthropic',
+      operation: 'auth.token',
+      destination: 'https://token.example/v1/oauth/token',
+      // Nothing is trusted, so every attempt is denied before a send.
+      authTokenDestinations: [],
+      controller: new AbortController(),
+    } as never);
+
+    await expect(
+      guard.fetch('https://token.example/v1/oauth/token', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ grant_type: 'refresh_token' }),
+      }),
+    ).rejects.toThrow();
+
+    const snapshot = metrics.snapshot();
+    expect(recorded.length).toBeGreaterThan(0);
+    expect(snapshot.failures).toBe(1);
+    expect(
+      snapshot.counters.some(series => series.labels.kind === 'denial'),
+    ).toBe(true);
+  });
+
+  it('counts one logical denial and only real lease releases', async () => {
+    const { db, cleanup } = await memoryDb();
+    const metrics = createMetricsSubscriber();
+    try {
+      const lease = await createKnexNamespaceLease({ db, events: metrics });
+      const held = (await lease.acquire(fence_namespace, 'owner'))!;
+
+      // A real denial through the real guard and journal.
+      const journal = createAttemptJournal({
+        db,
+        authorizer: { authorizeAuditRead: async () => true },
+        events: metrics,
+      });
+      const guard = createModelOperationGuard({
+        journal,
+        recheck: async () => false,
+        transport: (async () => new Response('unreachable')) as never,
+        events: metrics,
+      }).bind({
+        actor: 'user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        provenance: {
+          origin: 'verified',
+          conversationId: 'plugin/session',
+          taskId: 'plugin/session',
+          callId: 'plugin/session#denied',
+        },
+        fence: held,
+        definitionVersion: 'v1',
+        configVersion: 'v1',
+        provider: 'openai',
+        modelId: 'gpt-review',
+        resolvedModel: 'gpt-review',
+        operation: 'stream',
+        api: 'openai-responses',
+        destination: 'https://provider.example/v1/responses',
+        credentialScope: { kind: 'org' },
+        credentialGeneration: 'gen-1',
+        controller: new AbortController(),
+      } as never);
+      await expect(
+        guard.fetch('https://provider.example/v1/responses', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ model: 'gpt-review', input: [] }),
+        }),
+      ).rejects.toThrow();
+
+      const snapshot = metrics.snapshot();
+      // One denied request is one failure, not one event + one journal row.
+      expect(snapshot.failures).toBe(1);
+      expect(snapshot.journalDecisions).toEqual({ allow: 0, deny: 1 });
+      expect(snapshot.activeLeases).toBe(1);
+
+      // A release that matched nothing must not move the gauge.
+      await lease.release(held);
+      await lease.release(held);
+      expect(metrics.snapshot().activeLeases).toBe(0);
+    } finally {
+      await cleanup();
+    }
+  }, 20000);
+
+  it('emits the whole dispatch lifecycle with real durations', async () => {
+    const { db, cleanup } = await memoryDb();
+    const metrics = createMetricsSubscriber();
+    const operation = (callId: string) =>
+      ({
+        actor: 'user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        provenance: {
+          origin: 'verified',
+          conversationId: 'plugin/session',
+          taskId: 'plugin/session',
+          callId,
+        },
+        fence: {
+          namespace: { pluginId: 'plugin', sessionId: 'session' },
+          owner: 'owner',
+          token: '1',
+        },
+        definitionVersion: 'v1',
+        configVersion: 'v1',
+        provider: 'openai',
+        modelId: 'gpt-review',
+        resolvedModel: 'gpt-review',
+        operation: 'stream',
+        api: 'openai-responses',
+        destination: 'https://provider.example/v1/responses',
+        credentialScope: { kind: 'org' },
+        credentialGeneration: 'gen-1',
+        controller: new AbortController(),
+      } as never);
+    const request = () => ({
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ model: 'gpt-review', input: [] }),
+    });
+    const outcomes = () =>
+      metrics
+        .snapshot()
+        .counters.filter(series => series.labels.kind === 'dispatch')
+        .map(series => series.labels.outcome);
+    try {
+      const lease = await createKnexNamespaceLease({ db });
+      const live = (await lease.acquire(fence_namespace, 'owner'))!;
+      const journal = createAttemptJournal({
+        db,
+        authorizer: { authorizeAuditRead: async () => true },
+      });
+      const guardFor = (
+        transport: typeof fetch,
+        callId: string,
+      ): { run(): Promise<void> } => {
+        const bound = createModelOperationGuard({
+          journal,
+          recheck: async () => true,
+          transport,
+          events: metrics,
+        }).bind({ ...(operation(callId) as object), fence: live } as never);
+        return {
+          async run() {
+            const response = await bound.fetch(
+              'https://provider.example/v1/responses',
+              request(),
+            );
+            await response.text();
+            await bound.finish('completed');
+          },
+        };
+      };
+
+      // Success: sent then completed, duration measured from the send.
+      await guardFor(
+        (async () => new Response('ok', { status: 200 })) as never,
+        'plugin/session#ok',
+      ).run();
+      expect(outcomes()).toEqual(expect.arrayContaining(['sent', 'completed']));
+      const completed = metrics
+        .snapshot()
+        .counters.find(series => series.labels.outcome === 'completed')!;
+      expect(completed.count).toBe(1);
+      // Duration is a value, never a label: avgMs cannot change a series key.
+      expect(typeof completed.avgMs).toBe('number');
+      expect(completed.labels).not.toHaveProperty('avgMs');
+      expect(completed.labels).not.toHaveProperty('totalMs');
+
+      // Provider rejected: sent then failed with the status.
+      const failedGuard = createModelOperationGuard({
+        journal,
+        recheck: async () => true,
+        transport: (async () => new Response('no', { status: 500 })) as never,
+        events: metrics,
+      }).bind({
+        ...(operation('plugin/session#fail') as object),
+        fence,
+      } as never);
+      const failedResponse = await failedGuard.fetch(
+        'https://provider.example/v1/responses',
+        request(),
+      );
+      await failedResponse.text();
+      await expect(failedGuard.finish('failed')).resolves.toBeUndefined();
+      expect(outcomes()).toEqual(expect.arrayContaining(['failed']));
+      expect(
+        metrics
+          .snapshot()
+          .counters.some(series => series.labels.httpStatus === '500'),
+      ).toBe(true);
+
+      // Transport never answered: sent is absent, the attempt is unknown.
+      const unknownGuard = createModelOperationGuard({
+        journal,
+        recheck: async () => true,
+        transport: (async () => {
+          throw new Error('socket hang up');
+        }) as never,
+        events: metrics,
+      }).bind({
+        ...(operation('plugin/session#unknown') as object),
+        fence,
+      } as never);
+      await expect(
+        unknownGuard.fetch('https://provider.example/v1/responses', request()),
+      ).rejects.toThrow();
+      expect(outcomes()).toEqual(expect.arrayContaining(['unknown']));
+
+      // A stream that ended without the caller settling cleanly is
+      // stream-failed: the body was read, so it is not unknown.
+      const broken = createModelOperationGuard({
+        journal,
+        recheck: async () => true,
+        transport: (async () =>
+          new Response('partial', { status: 200 })) as never,
+        events: metrics,
+      }).bind({
+        ...(operation('plugin/session#broken') as object),
+        fence: live,
+      } as never);
+      await (
+        await broken.fetch('https://provider.example/v1/responses', request())
+      ).text();
+      await expect(broken.finish('failed')).resolves.toBeUndefined();
+      expect(outcomes()).toEqual(expect.arrayContaining(['stream-failed']));
+
+      // Every dispatch series carries a measured duration, never a placeholder.
+      for (const series of metrics
+        .snapshot()
+        .counters.filter(entry => entry.labels.kind === 'dispatch')) {
+        expect(series.totalMs).toBeGreaterThanOrEqual(0);
+        expect(series.avgMs).toBeGreaterThanOrEqual(0);
+        expect(series.labels).not.toHaveProperty('reason');
       }
     } finally {
       await cleanup();

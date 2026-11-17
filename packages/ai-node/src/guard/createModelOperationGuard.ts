@@ -34,6 +34,8 @@ import type { AiProviderRegistry } from '../providers/registry';
 
 type PendingAttempt = {
   id: AttemptId;
+  startedAt: number;
+  sentAt?: number;
   httpStatus?: number;
   streamEnded: boolean;
   streamCancelled: boolean;
@@ -135,6 +137,28 @@ export function createModelOperationGuard(options: {
       ) => {
         if (attempt.settled) return;
         attempt.settled = true;
+        const durationMs = Math.max(
+          0,
+          Date.now() - (attempt.sentAt ?? attempt.startedAt),
+        );
+        // The terminal event reports durable truth: it is emitted only once
+        // the journal has committed the outcome, and a failed write is
+        // observed as unknown rather than as the outcome that was attempted.
+        const observe = (status: AttemptOutcome['status']) =>
+          emitSafe(events, {
+            kind: 'dispatch',
+            at: Date.now(),
+            pluginId: operation.fence.namespace.pluginId,
+            sessionId: operation.fence.namespace.sessionId,
+            provider: operation.provider,
+            modelId: operation.modelId,
+            operation: `models.${operation.operation}`,
+            outcome: status,
+            ...(outcome.httpStatus === undefined
+              ? {}
+              : { httpStatus: outcome.httpStatus }),
+            durationMs,
+          });
         const write = (async () => {
           try {
             if (!journal) throw new Error('Attempt journal is not bound');
@@ -144,11 +168,13 @@ export function createModelOperationGuard(options: {
           } catch (error) {
             uncertain = true;
             block();
+            observe('unknown');
             throw new Error(
               'Model dispatch outcome is uncertain: journal failed',
               { cause: error },
             );
           }
+          observe(outcome.status);
         })();
         outcomeWrites.add(write);
         try {
@@ -343,6 +369,7 @@ export function createModelOperationGuard(options: {
             }
             const attempt: PendingAttempt = {
               id,
+              startedAt: Date.now(),
               streamEnded: false,
               streamCancelled: false,
               settled: false,
@@ -369,6 +396,7 @@ export function createModelOperationGuard(options: {
               throw error;
             }
             attempt.httpStatus = response.status;
+            attempt.sentAt = Date.now();
             emitSafe(events, {
               kind: 'dispatch',
               at: Date.now(),
@@ -379,7 +407,7 @@ export function createModelOperationGuard(options: {
               operation: `models.${operation.operation}`,
               outcome: 'sent',
               httpStatus: response.status,
-              durationMs: 0,
+              durationMs: Date.now() - attempt.startedAt,
             });
             if (response.status >= 300 && response.status < 400) {
               block();

@@ -16,6 +16,7 @@
 
 import type { Knex } from 'knex';
 import type { Fence, Namespace } from '../contracts';
+import { bigintText } from '../storage/dialect-kit';
 import { emitSafe } from '../observability/types';
 import type { AiEventEmitter } from '../observability/types';
 import {
@@ -83,6 +84,15 @@ const DEFAULT_PAGE_SIZE = 100;
  * owner and token and never deletes it, so a stale release cannot affect a
  * successor's lease and the token counter cannot restart.
  */
+/** The action an acquire attempt actually performed. */
+function acquireAction(
+  fence: Fence | undefined,
+  renewal: boolean,
+): 'contention' | 'renew' | 'acquire' {
+  if (fence === undefined) return 'contention';
+  return renewal ? 'renew' : 'acquire';
+}
+
 export class KnexNamespaceLease implements NamespaceLease {
   readonly #db: Knex;
   readonly #dialect: Dialect;
@@ -138,6 +148,11 @@ export class KnexNamespaceLease implements NamespaceLease {
     }
     const key = keyOf(namespace);
     const started = Date.now();
+    // Re-acquiring a live lease with the same owner is idempotent: it returns
+    // the same generation and extends it, so it is a renewal, not a second
+    // hold. The emitted action says which, because the health gauge derives
+    // the number of live holds from acquire/release events.
+    let renewal = false;
     const fence = await inTransaction(this.#db, async trx => {
       // Lock first, then observe the row and its liveness in a fresh
       // statement, so a lock wait cannot carry a stale database clock.
@@ -172,6 +187,7 @@ export class KnexNamespaceLease implements NamespaceLease {
 
       if (row.live) {
         if (row.owner_id !== owner) return undefined;
+        renewal = true;
         const updated = await trx(TABLE)
           .where({ ...key, owner_id: owner, token })
           .whereRaw(liveCondition(this.#dialect))
@@ -198,7 +214,8 @@ export class KnexNamespaceLease implements NamespaceLease {
       at: Date.now(),
       pluginId: namespace.pluginId,
       sessionId: namespace.sessionId,
-      action: fence === undefined ? 'contention' : 'acquire',
+      action: acquireAction(fence, renewal),
+      ...(fence === undefined ? {} : { generation: fence.token }),
       durationMs: Date.now() - started,
     });
     return fence;
@@ -228,6 +245,7 @@ export class KnexNamespaceLease implements NamespaceLease {
           pluginId: fence.namespace.pluginId,
           sessionId: fence.namespace.sessionId,
           action: 'lost',
+          generation: fence.token,
         });
       }
       return updated === 1;
@@ -237,19 +255,23 @@ export class KnexNamespaceLease implements NamespaceLease {
   async release(fence: Fence): Promise<void> {
     assertFence(fence);
     const started = Date.now();
-    await this.#db(TABLE)
+    const updated = await this.#db(TABLE)
       .where({
         ...keyOf(fence.namespace),
         owner_id: fence.owner,
         token: fence.token,
       })
       .update({ expires_at: expiredNow(this.#db, this.#dialect) });
+    // Only a release that actually ended this generation is an event: a
+    // no-op release must not move the health gauge.
+    if (updated !== 1) return;
     emitSafe(this.#events, {
       kind: 'lease',
       at: Date.now(),
       pluginId: fence.namespace.pluginId,
       sessionId: fence.namespace.sessionId,
       action: 'release',
+      generation: fence.token,
       durationMs: Date.now() - started,
     });
   }
@@ -300,7 +322,7 @@ export class KnexNamespaceLease implements NamespaceLease {
  * seam promises; PostgreSQL's `int8` is cast the same way for symmetry.
  */
 function tokenColumn(executor: Knex | Knex.Transaction): Knex.Raw {
-  return executor.raw('CAST(token AS TEXT) as token');
+  return bigintText(executor, 'token');
 }
 
 function isUnique(error: unknown): boolean {
