@@ -17,6 +17,7 @@
 import { ForwardedError } from '@backstage/errors';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path/posix';
+import yaml from 'yaml';
 
 export async function resolveLinkedWorkspace(
   linkPath: string | undefined,
@@ -37,7 +38,22 @@ export async function resolveLinkedWorkspace(
       );
     });
 
-  if (!pkgJson.workspaces) {
+  // pnpm declares workspace packages in pnpm-workspace.yaml rather than
+  // package.json. Without a packages field the file only holds settings.
+  let isPnpmWorkspace = false;
+  const pnpmWorkspacePath = resolvePath(dir, 'pnpm-workspace.yaml');
+  if (await fs.pathExists(pnpmWorkspacePath)) {
+    try {
+      const data = yaml.parse(await fs.readFile(pnpmWorkspacePath, 'utf8'));
+      isPnpmWorkspace = Array.isArray(data?.packages);
+    } catch (error) {
+      throw new ForwardedError(
+        'Failed to read pnpm-workspace.yaml in linked workspace',
+        error,
+      );
+    }
+  }
+  if (!pkgJson.workspaces && !isPnpmWorkspace) {
     throw new Error(
       `Invalid workspace link, directory is not a workspace: ${dir}`,
     );

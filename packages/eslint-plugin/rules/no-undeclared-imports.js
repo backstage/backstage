@@ -16,6 +16,7 @@
 
 // @ts-check
 
+const fs = require('node:fs');
 const path = require('node:path');
 const getPackageMap = require('../lib/getPackages');
 const visitImports = require('../lib/visitImports');
@@ -106,16 +107,108 @@ function findConflict(pkg, name, expectedType) {
 }
 
 /**
- * @param {string} depsField
+ * @typedef {'yarn' | 'pnpm'} PackageManagerName
  */
-function getAddFlagForDepsField(depsField) {
+
+/**
+ * Returns the package manager that the packageManager field of a package.json
+ * names, or without that field its devEngines.packageManager field, when it
+ * is a supported one.
+ * @param {Record<string, any> | undefined} packageJson
+ * @returns {PackageManagerName | undefined}
+ */
+function getDeclaredPackageManager(packageJson) {
+  const declared = packageJson?.packageManager;
+  const devEngines = packageJson?.devEngines?.packageManager;
+  /** @type {unknown[]} */
+  const devEngineNames = [devEngines].flat().map(entry => entry?.name);
+  const declaredName =
+    typeof declared === 'string'
+      ? declared.split('@')[0]
+      : devEngineNames.find(name => name === 'yarn' || name === 'pnpm');
+  if (declaredName === 'yarn' || declaredName === 'pnpm') {
+    return declaredName;
+  }
+  return undefined;
+}
+
+/**
+ * @param {string} dir
+ * @returns {Record<string, any> | undefined}
+ */
+function readPackageJson(dir) {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'));
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Detects the package manager of the project, following the same order as
+ * the Backstage CLI as far as needed here: the packageManager field of the
+ * root package.json, or without that field its devEngines.packageManager
+ * field, when it names a supported package manager, then the lockfiles, then
+ * a pnpm-workspace.yaml file, and otherwise Yarn.
+ *
+ * The root that is found for the project is the nearest directory with a
+ * workspaces field, which for a Backstage installation in a subdirectory of a
+ * pnpm workspace is the installation rather than the workspace root. When the
+ * root has none of these, the nearest parent directory that has a lockfile or
+ * a pnpm-workspace.yaml file decides instead, in the same order.
+ * @param {import('../lib/getPackages').ExtendedPackage} root
+ * @returns {PackageManagerName}
+ */
+function detectPackageManager(root) {
+  const declared = getDeclaredPackageManager(root.packageJson);
+  if (declared) {
+    return declared;
+  }
+  for (let dir = root.dir; ; dir = path.dirname(dir)) {
+    const has = (/** @type {string} */ name) =>
+      fs.existsSync(path.join(dir, name));
+    const hasPnpmLockfile = has('pnpm-lock.yaml');
+    const hasYarnLockfile = has('yarn.lock');
+    if (hasPnpmLockfile || hasYarnLockfile || has('pnpm-workspace.yaml')) {
+      const declaredHere =
+        dir === root.dir
+          ? undefined
+          : getDeclaredPackageManager(readPackageJson(dir));
+      if (declaredHere) {
+        return declaredHere;
+      }
+      if (hasPnpmLockfile) {
+        return 'pnpm';
+      }
+      return hasYarnLockfile ? 'yarn' : 'pnpm';
+    }
+    if (path.dirname(dir) === dir) {
+      return 'yarn';
+    }
+  }
+}
+
+/**
+ * Returns the flag that makes the package manager's `add` command target a
+ * directory other than the current one.
+ * @param {PackageManagerName} packageManager
+ */
+function getDirFlag(packageManager) {
+  return packageManager === 'pnpm' ? '--dir' : '--cwd';
+}
+
+/**
+ * @param {string} depsField
+ * @param {PackageManagerName} packageManager
+ */
+function getAddFlagForDepsField(depsField, packageManager) {
   switch (depsField) {
     case depFields.dep:
       return '';
     case depFields.dev:
-      return ' --dev';
+      return packageManager === 'pnpm' ? ' --save-dev' : ' --dev';
     case depFields.peer:
-      return ' --peer';
+      return packageManager === 'pnpm' ? ' --save-peer' : ' --peer';
     default:
       return '';
   }
@@ -125,21 +218,18 @@ function getAddFlagForDepsField(depsField) {
  * Looks up the most common version range for a dependency if it already exists in the repo.
  *
  * @param {string} name
- * @param {string} flag
+ * @param {string} depsField
  * @param {getPackageMap.PackageMap} packages
+ * @param {PackageManagerName} packageManager
  * @returns {string}
  */
-function addVersionQuery(name, flag, packages) {
+function addVersionQuery(name, depsField, packages, packageManager) {
   const rangeCounts = new Map();
 
+  const field =
+    Object.values(depFields).find(f => f === depsField) ?? depFields.dep;
   for (const pkg of packages.list) {
-    const deps =
-      flag === '--dev'
-        ? pkg.packageJson.devDependencies
-        : flag === '--peer'
-        ? pkg.packageJson.peerDependencies
-        : pkg.packageJson.dependencies;
-    const range = deps?.[name];
+    const range = pkg.packageJson[field]?.[name];
     if (range) {
       rangeCounts.set(range, (rangeCounts.get(range) ?? 0) + 1);
     }
@@ -149,6 +239,10 @@ function addVersionQuery(name, flag, packages) {
     (a, b) => b[1] - a[1],
   )[0]?.[0];
   if (!mostCommonRange) {
+    // pnpm only links workspace packages that use the workspace protocol
+    if (packageManager === 'pnpm' && packages.map.has(name)) {
+      return `${name}@workspace:^`;
+    }
     return name;
   }
   return `${name}@${mostCommonRange}`;
@@ -156,40 +250,47 @@ function addVersionQuery(name, flag, packages) {
 
 /**
  * Add missing package imports
- * @param {Array<{name: string, flag: string, node: import('estree').Node}>} toAdd
+ * @param {Array<{name: string, depsField: string, node: import('estree').Node}>} toAdd
  * @param {import('../lib/getPackages').PackageMap} packages
  * @param {import('../lib/getPackages').ExtendedPackage} localPkg
+ * @param {PackageManagerName} packageManager
  */
-function addMissingImports(toAdd, packages, localPkg) {
+function addMissingImports(toAdd, packages, localPkg, packageManager) {
   /** @type Record<string, Set<string>> */
-  const byFlag = {};
+  const byField = {};
 
-  for (const { name, flag } of toAdd) {
-    byFlag[flag] = byFlag[flag] ?? new Set();
-    byFlag[flag].add(name);
+  for (const { name, depsField } of toAdd) {
+    byField[depsField] = byField[depsField] ?? new Set();
+    byField[depsField].add(name);
   }
 
-  for (const name of byFlag[''] ?? []) {
-    byFlag['--dev']?.delete(name);
+  for (const name of byField[depFields.dep] ?? []) {
+    byField[depFields.dev]?.delete(name);
   }
-  for (const name of byFlag['--peer'] ?? []) {
-    byFlag['']?.delete(name);
-    byFlag['--dev']?.delete(name);
+  for (const name of byField[depFields.peer] ?? []) {
+    byField[depFields.dep]?.delete(name);
+    byField[depFields.dev]?.delete(name);
   }
 
-  for (const [flag, names] of Object.entries(byFlag)) {
+  for (const [depsField, names] of Object.entries(byField)) {
+    const flag = getAddFlagForDepsField(depsField, packageManager).trim();
+
     // Look up existing version queries in the repo for the same dependency
     const namesWithQuery = [...names].map(name =>
-      addVersionQuery(name, flag, packages),
+      addVersionQuery(name, depsField, packages, packageManager),
     );
 
     // The security implication of this is a bit interesting, as crafted add-import
     // directives could be used to install malicious packages. However, the same is true
     // for adding malicious packages to package.json, so there's no significant difference.
-    execFileSync('yarn', ['add', ...(flag ? [flag] : []), ...namesWithQuery], {
-      cwd: localPkg.dir,
-      stdio: 'inherit',
-    });
+    execFileSync(
+      packageManager,
+      ['add', ...(flag ? [flag] : []), ...namesWithQuery],
+      {
+        cwd: localPkg.dir,
+        stdio: 'inherit',
+      },
+    );
   }
 }
 
@@ -197,8 +298,9 @@ function addMissingImports(toAdd, packages, localPkg) {
  * Removes dependency entries pointing to inlined workspace packages.
  * @param {Array<{pkg: import('../lib/getPackages').ExtendedPackage, node: import('estree').Node}>} toInline
  * @param {import('../lib/getPackages').ExtendedPackage} localPkg
+ * @param {PackageManagerName} packageManager
  */
-function removeInlineImports(toInline, localPkg) {
+function removeInlineImports(toInline, localPkg, packageManager) {
   /** @type Set<string> */
   const toRemove = new Set();
 
@@ -211,7 +313,7 @@ function removeInlineImports(toInline, localPkg) {
     }
   }
   if (toRemove.size > 0) {
-    execFileSync('yarn', ['remove', ...toRemove], {
+    execFileSync(packageManager, ['remove', ...toRemove], {
       cwd: localPkg.dir,
       stdio: 'inherit',
     });
@@ -222,8 +324,9 @@ function removeInlineImports(toInline, localPkg) {
  * Adds dependencies that are not properly forwarded from inline dependencies.
  * @param {Array<{pkg: import('../lib/getPackages').ExtendedPackage, node: import('estree').Node}>} toInline
  * @param {import('../lib/getPackages').ExtendedPackage} localPkg
+ * @param {PackageManagerName} packageManager
  */
-function addForwardedInlineImports(toInline, localPkg) {
+function addForwardedInlineImports(toInline, localPkg, packageManager) {
   const declaredProdDeps = new Set([
     ...Object.keys(localPkg.packageJson.dependencies ?? {}),
     ...Object.keys(localPkg.packageJson.peerDependencies ?? {}),
@@ -242,7 +345,7 @@ function addForwardedInlineImports(toInline, localPkg) {
         pkg.packageJson[depType] ?? {},
       )) {
         if (!declaredProdDeps.has(depName)) {
-          const flag = getAddFlagForDepsField(depType);
+          const flag = getAddFlagForDepsField(depType, packageManager).trim();
           const byName = byFlagByName.get(flag);
           if (byName) {
             const query = byName.get(depName);
@@ -265,10 +368,14 @@ function addForwardedInlineImports(toInline, localPkg) {
     const namesWithQuery = [...byName.entries()].map(
       ([name, query]) => `${name}@${query}`,
     );
-    execFileSync('yarn', ['add', ...(flag ? [flag] : []), ...namesWithQuery], {
-      cwd: localPkg.dir,
-      stdio: 'inherit',
-    });
+    execFileSync(
+      packageManager,
+      ['add', ...(flag ? [flag] : []), ...namesWithQuery],
+      {
+        cwd: localPkg.dir,
+        stdio: 'inherit',
+      },
+    );
   }
 }
 
@@ -279,7 +386,7 @@ module.exports = {
     fixable: 'code',
     messages: {
       undeclared:
-        "{{ packageName }} must be declared in {{ depsField }} of {{ packageJsonPath }}, run 'yarn --cwd {{ packagePath }} add{{ addFlag }} {{ packageName }}' from the project root.",
+        "{{ packageName }} must be declared in {{ depsField }} of {{ packageJsonPath }}, run '{{ packageManager }} {{ dirFlag }} {{ packagePath }} add{{ addFlag }} {{ addSpec }}' from the project root.",
       switch:
         '{{ packageName }} is declared in {{ oldDepsField }}, but should be moved to {{ depsField }} in {{ packageJsonPath }}.',
       switchBack: 'Switch back to import declaration',
@@ -306,7 +413,9 @@ module.exports = {
       return {};
     }
 
-    /** @type Array<{name: string, flag: string, node: import('estree').Node}> */
+    const packageManager = detectPackageManager(packages.root);
+
+    /** @type Array<{name: string, depsField: string, node: import('estree').Node}> */
     const importsToAdd = [];
 
     /** @type Array<{pkg: import('../lib/getPackages').ExtendedPackage, node: import('estree').Node}> */
@@ -317,7 +426,7 @@ module.exports = {
       // the program exit to execute all install directives that have been found.
       ['Program:exit']() {
         if (importsToAdd.length > 0) {
-          addMissingImports(importsToAdd, packages, localPkg);
+          addMissingImports(importsToAdd, packages, localPkg, packageManager);
 
           packages.clearCache();
           // This switches all import directives back to the original import.
@@ -334,8 +443,8 @@ module.exports = {
         }
 
         if (importsToInline.length > 0) {
-          removeInlineImports(importsToInline, localPkg);
-          addForwardedInlineImports(importsToInline, localPkg);
+          removeInlineImports(importsToInline, localPkg, packageManager);
+          addForwardedInlineImports(importsToInline, localPkg, packageManager);
 
           packages.clearCache();
           for (const inlined of importsToInline) {
@@ -377,7 +486,7 @@ module.exports = {
             }
 
             importsToAdd.push({
-              flag: getAddFlagForDepsField(type).trim(),
+              depsField: type,
               name,
               node: imp.node,
             });
@@ -502,8 +611,19 @@ module.exports = {
             data: {
               ...conflict,
               packagePath,
-              addFlag: getAddFlagForDepsField(conflict.depsField),
+              packageManager,
+              dirFlag: getDirFlag(packageManager),
+              addFlag: getAddFlagForDepsField(
+                conflict.depsField,
+                packageManager,
+              ),
               packageName: imp.packageName,
+              // pnpm only links workspace packages through the workspace
+              // protocol, and would look them up in the registry otherwise
+              addSpec:
+                packageManager === 'pnpm' && packages.map.has(imp.packageName)
+                  ? `${imp.packageName}@workspace:^`
+                  : imp.packageName,
               packageJsonPath: packageJsonPath,
             },
             // This fix callback is always executed, regardless of whether linting is run with

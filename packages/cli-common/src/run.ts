@@ -163,7 +163,10 @@ export function run(args: string[], options: RunOptions = {}): RunChildProcess {
  *
  * @remarks
  *
- * On error, both stdout and stderr are attached to the error object as properties.
+ * Fails when the command exits with a non-zero exit code, or when a signal
+ * ends it, since its output may then be incomplete. On error, both stdout and
+ * stderr are attached to the error object as properties, and when a signal
+ * ended the command, the `signal` property has the name of the signal.
  *
  * @public
  */
@@ -179,7 +182,7 @@ export async function runOutput(
   }
 
   try {
-    await run(args, {
+    const child = run(args, {
       ...options,
       onStdout: data => {
         stdoutChunks.push(data);
@@ -189,7 +192,16 @@ export async function runOutput(
         stderrChunks.push(data);
         options?.onStderr?.(data);
       },
-    }).waitForExit();
+    });
+    await child.waitForExit();
+    if (child.signalCode) {
+      throw Object.assign(
+        new Error(
+          `Command '${args.join(' ')}' was ended by ${child.signalCode}`,
+        ),
+        { signal: child.signalCode },
+      );
+    }
 
     return Buffer.concat(stdoutChunks).toString().trim();
   } catch (error) {
