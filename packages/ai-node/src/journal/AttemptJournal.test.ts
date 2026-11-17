@@ -542,12 +542,6 @@ for (const dialect of ['sqlite', 'pg'] as const) {
             freshDecision({ actor: `service:${awsKey}` }),
           ),
         ).rejects.toThrow('secret-shaped');
-        await expect(
-          f.journal.recordDecisionAndIntent(
-            fence,
-            freshDecision({ actor: 'not-a-principal' }),
-          ),
-        ).rejects.toThrow('Invalid actor');
         // Destination path segments are checked after decoding.
         await expect(
           f.journal.recordDecisionAndIntent(
@@ -600,61 +594,54 @@ for (const dialect of ['sqlite', 'pg'] as const) {
     it('accepts real plugin and external service principals end to end', async () => {
       const f = await fixture(dialect);
       try {
-        // A plugin principal appends under its native subject form and can
-        // read its own journal back: the actor grammar and the principal
-        // derived from read credentials are the same canonical form.
-        await f.journal.recordDecisionAndIntent(
-          fence,
-          freshDecision({ actor: 'plugin:catalog' }),
-        );
-        const pluginPage = await f.journal.read(credentials('plugin:catalog'), {
-          pluginId: namespace.pluginId,
-          sessionId: namespace.sessionId,
-        });
-        const pluginDecision = pluginPage.items.find(
-          item => item.kind === 'decision',
-        ) as Extract<AuditEventView, { kind: 'decision' }>;
-        expect(pluginDecision.actor).toBe('plugin:catalog');
-
-        await f.journal.recordRecovery(fence, {
-          actor: 'external:billing-api',
-          kind: 'needs-reauth',
-        });
-        const externalPage = await f.journal
-          .read(credentials('external:billing-api'), {
+        // Authenticated subjects are opaque strings: each native principal
+        // form — including JWKS issuer subjects whose `sub` contains
+        // colons and slashes — appends under its exact normalized form and
+        // reads its own journal back, because the reader principal is
+        // derived by the same normalization.
+        const actors = [
+          'plugin:catalog',
+          'external:billing-api',
+          'external:issuer:billing-api',
+          'external:repo:org/repo:ref:refs/heads/main',
+          'user:default/alice',
+        ];
+        for (const [index, actor] of actors.entries()) {
+          const sessionId = `session-${index}`;
+          const actorFence = {
+            namespace: { pluginId: namespace.pluginId, sessionId },
+            owner: fence.owner,
+            token: fence.token,
+          };
+          await f.db('ai_namespace_leases').insert({
+            plugin_id: namespace.pluginId,
+            session_id: sessionId,
+            owner_id: fence.owner,
+            token: fence.token,
+            expires_at: leaseTime(f.db, dialect, 60),
+          });
+          await f.journal.recordDecisionAndIntent(
+            actorFence,
+            freshDecision({ actor }),
+          );
+          const ownPage = await f.journal.read(credentials(actor), {
             pluginId: namespace.pluginId,
-            sessionId: namespace.sessionId,
-          })
-          .catch(error => error as Error);
-        // The external principal's actor form is accepted at the boundary,
-        // but it is not this session's owner: ownership still denies.
-        expect(externalPage).toBeInstanceOf(AuditAccessDeniedError);
-        const ownerPage = await f.journal.read(credentials('plugin:catalog'), {
-          pluginId: namespace.pluginId,
-          sessionId: namespace.sessionId,
-        });
-        expect(
-          ownerPage.items.some(
-            item =>
-              item.kind === 'recovery' && item.actor === 'external:billing-api',
-          ),
-        ).toBe(true);
+            sessionId,
+          });
+          const ownDecision = ownPage.items.find(
+            item => item.kind === 'decision',
+          ) as Extract<AuditEventView, { kind: 'decision' }>;
+          expect(ownDecision.actor).toBe(actor);
 
-        // Cross-principal reads still deny, and malformed principals
-        // (double-colon service spellings, free text) still reject at the
-        // boundary.
-        await expect(
-          f.journal.read(credentials('plugin:other'), {
-            pluginId: namespace.pluginId,
-            sessionId: namespace.sessionId,
-          }),
-        ).rejects.toThrow(AuditAccessDeniedError);
-        await expect(
-          f.journal.recordDecisionAndIntent(
-            fence,
-            freshDecision({ actor: 'service:plugin:catalog' }),
-          ),
-        ).rejects.toThrow('Invalid actor');
+          // Cross-principal reads of the same session deny.
+          const other = actors[(index + 1) % actors.length];
+          await expect(
+            f.journal.read(credentials(other), {
+              pluginId: namespace.pluginId,
+              sessionId,
+            }),
+          ).rejects.toThrow(AuditAccessDeniedError);
+        }
       } finally {
         await f.cleanup();
       }
@@ -698,6 +685,39 @@ for (const dialect of ['sqlite', 'pg'] as const) {
             fence,
             freshDecision({
               destination: `https://api.example.com/v1/users%2F${token}`,
+            }),
+          ),
+        ).rejects.toThrow('secret-shaped');
+        // A base64-shaped value containing a literal slash cannot divide
+        // itself into innocent per-segment pieces, plain or %2F-encoded.
+        const opaque =
+          'B7v9Q2mT4nX6pR8sD1fG3hJ5kL0zA2cE/F9u8W7y6K5j4H3g2D1s0P9o8I7v6M5n4';
+        for (const destination of [
+          `https://api.example.com/v1/${opaque}`,
+          `https://api.example.com/v1/${opaque.replace('/', '%2F')}`,
+        ]) {
+          await expect(
+            f.journal.recordDecisionAndIntent(
+              fence,
+              freshDecision({ destination }),
+            ),
+          ).rejects.toThrow('secret-shaped');
+        }
+        // The same contiguous slash-bearing value cannot hide in free text.
+        await expect(
+          f.journal.recordDecisionAndIntent(fence, {
+            ...freshDecision(),
+            reason: `provider rejected ${opaque}`,
+          }),
+        ).rejects.toThrow('secret-shaped');
+        // A PAT split across an encoded separator is caught by its intact
+        // contiguous prefix on the whole decoded destination.
+        await expect(
+          f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision({
+              destination:
+                'https://api.example.com/v1/ghp_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1%2Fa1a1a1a1a1a1a1a1a1a1',
             }),
           ),
         ).rejects.toThrow('secret-shaped');

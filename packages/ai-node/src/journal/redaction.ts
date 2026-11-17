@@ -41,18 +41,15 @@ const OPERATIONS: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * Credential VALUE shapes, not words. Free-text fields may say "credential
- * expired; re-authentication required" — the English words are fine — but a
- * value that looks like an actual secret fails closed. Known credential
- * formats (GitHub PATs, OpenAI/Anthropic keys, Slack tokens, AWS/Google
- * keys, JWTs, key material) are recognized wherever they occur, including
- * embedded inside longer text, not only at the start of a field.
+ * Strongly identifiable credential formats: GitHub PATs, Slack tokens,
+ * AWS/Google keys, JWTs, key material, and the letter-guarded short
+ * OpenAI/Anthropic-style prefixes. They match wherever they occur,
+ * including directly adjoining label characters: a prefixed or embedded
+ * credential value must not survive by hiding behind a word boundary or an
+ * encoded separator.
  */
-const SECRET_VALUE_SHAPED = [
+const KNOWN_CREDENTIAL_FORMATS = [
   /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
-  // Strongly identifiable formats match wherever they occur, including
-  // directly adjoining label characters: a prefixed or embedded credential
-  // value must not survive by hiding behind a word boundary.
   /gh[pousr]_[A-Za-z0-9]{20,}/,
   /xox[baprs]-[A-Za-z0-9-]{10,}/,
   /AKIA[0-9A-Z]{16}/,
@@ -62,10 +59,48 @@ const SECRET_VALUE_SHAPED = [
   // inside ordinary hyphenated words like "task-"), so they are rejected
   // only when not directly preceded by a letter.
   /(?<![A-Za-z])(?:sk-(?:ant-|proj-)?|rk-|pk-)[A-Za-z0-9_-]{20,}/,
+];
+
+/**
+ * Generic value shapes: assignments, bearer values, and long
+ * separator-free high-entropy runs. These run both over whole fields and,
+ * for destinations, over each structured component individually, so a
+ * benign dictionary route is never one long run while a long single
+ * component still fails closed.
+ */
+const GENERIC_VALUE_SHAPES = [
   /\bbearer\s+[A-Za-z0-9._~+/=-]{6,}/i,
   /\b(?:api[_-]?key|apikey|token|secret|password|passwd|credential|access[_-]?token|refresh[_-]?token|authorization)\s*[=:]\s*\S{8,}/i,
   /[A-Za-z0-9+/=_-]{48,}/,
 ];
+
+/**
+ * Rejects a contiguous base64/bearer-shaped value that merely contains a
+ * '/' (or an encoded '%2F' decoded before this check): the candidate
+ * charset includes the separator, so splitting the value across a slash
+ * cannot divide it into innocent pieces. Dictionary-word routes survive
+ * because a route run must also be high-entropy: at least six digits, six
+ * uppercase and six lowercase characters inside one run, which ordinary
+ * resource paths never have and random base64 always does.
+ */
+function assertNoSlashBearingHighEntropy(text: string, field: string): void {
+  for (const match of text.matchAll(/[A-Za-z0-9+/=_-]{48,}/g)) {
+    const run = match[0];
+    if (
+      countWhere(run, /[0-9]/) >= 6 &&
+      countWhere(run, /[A-Z]/) >= 6 &&
+      countWhere(run, /[a-z]/) >= 6
+    ) {
+      throw new Error(
+        `Invalid ${field}: value is secret-shaped; redact it before recording a journal event`,
+      );
+    }
+  }
+}
+
+function countWhere(text: string, pattern: RegExp): number {
+  return (text.match(new RegExp(pattern.source, 'g')) ?? []).length;
+}
 
 /**
  * Validates one free-text journal field: bounded, trimmed, control-character
@@ -96,46 +131,58 @@ export function assertRedactedText(
       `Invalid ${field}: expected a non-empty string of at most ${MAX_TEXT_LENGTH} characters without control characters or surrounding whitespace`,
     );
   }
-  for (const pattern of SECRET_VALUE_SHAPED) {
+  for (const pattern of [
+    ...KNOWN_CREDENTIAL_FORMATS,
+    ...GENERIC_VALUE_SHAPES,
+  ]) {
     if (pattern.test(value)) {
       throw new Error(
         `Invalid ${field}: value is secret-shaped; redact it before recording a journal event`,
       );
     }
   }
+  assertNoSlashBearingHighEntropy(value, field);
   return value;
 }
 
 /**
- * The one canonical actor/owner grammar shared by appended actors, stored
- * session owners, and the principal derived from read credentials: user
- * entity refs (`user:<namespace>/<name>`) and Backstage service principal
- * subjects (`plugin:<id>`, `external:<subject>`, and the equivalent
- * `service:<id>` spelling).
- */
-const PRINCIPAL_REF =
-  /^(?:user:[A-Za-z0-9_.\-]+(?:\/[A-Za-z0-9_.\-]+)?|(?:plugin|external|service):[A-Za-z0-9_.\-]+)$/;
-
-/**
- * Validates the redacted actor: a canonical principal reference, never
- * free text and never a token. Credential value shapes embedded anywhere in
- * the reference fail closed.
+ * Validates the redacted actor by NORMALIZATION, not by grammar.
+ *
+ * The value must be the authenticated principal exactly as Backstage
+ * presents it — a user principal's `userEntityRef`, or a service
+ * principal's opaque `subject` (native forms include `plugin:<id>` and
+ * JWKS-issuer subjects like `external:issuer:billing-api` or
+ * `external:repo:org/repo:ref:refs/heads/main`, whose `sub` may contain
+ * colons and slashes). Because Backstage authenticated subjects are
+ * open-ended opaque strings, no structural grammar is imposed: only length
+ * bounds, control-character rejection and credential-value checks apply.
+ * The identical normalization derives the reader principal in `read()`, so
+ * owner equality is exact-string on this normalized form.
  */
 export function assertPrincipalRef(value: unknown): string {
-  const text = assertRedactedText(value, 'actor', { required: true })!;
-  if (!PRINCIPAL_REF.test(text)) {
-    throw new Error(
-      'Invalid actor: expected a canonical principal reference: a user entity ref such as "user:default/alice", or a service principal subject such as "plugin:catalog" or "external:billing-api"; never a raw token',
-    );
-  }
-  return text;
+  return assertRedactedText(value, 'actor', { required: true })!;
 }
 
 /**
- * Rejects known credential value shapes anywhere in a decoded string.
+ * Rejects strongly identifiable credential formats anywhere in a decoded
+ * string, separators included.
  */
-function assertNoSecretShapes(text: string, field: string): void {
-  for (const pattern of SECRET_VALUE_SHAPED) {
+function assertNoKnownFormats(text: string, field: string): void {
+  for (const pattern of KNOWN_CREDENTIAL_FORMATS) {
+    if (pattern.test(text)) {
+      throw new Error(
+        `Invalid ${field}: value is secret-shaped; redact it before recording a journal event`,
+      );
+    }
+  }
+}
+
+/**
+ * Rejects generic value shapes (assignments, bearer values, long
+ * separator-free runs) in one bounded component.
+ */
+function assertNoGenericShapes(text: string, field: string): void {
+  for (const pattern of GENERIC_VALUE_SHAPES) {
     if (pattern.test(text)) {
       throw new Error(
         `Invalid ${field}: value is secret-shaped; redact it before recording a journal event`,
@@ -203,21 +250,28 @@ export function assertDestination(
   }
   // The path is part of the audit record, so a credential value hidden in a
   // path segment is rejected just like one in free text. Detection is
-  // per-structured-component (host, then each decoded path segment): normal
-  // multi-segment routes such as Azure or Vertex paths are not one long
-  // entropy run, while a token-valued segment still fails closed.
+  // two-layer. Over the WHOLE decoded destination, strongly identifiable
+  // formats and slash-bearing high-entropy values are caught with the
+  // separator inside the candidate, so a value split across a literal or
+  // encoded '/' cannot divide itself into innocent pieces. Then the GENERIC
+  // entropy/length rules run per structured component (host, then each
+  // decoded path segment), so benign dictionary-word routes such as Azure
+  // or Vertex paths are never one long entropy run while a long
+  // single-component value still fails closed.
   let decodedPath: string;
   try {
     decodedPath = decodeURIComponent(url.pathname);
   } catch {
     throw new Error(`Invalid ${field}: path is not valid percent-encoding`);
   }
+  assertNoKnownFormats(`${url.host}${decodedPath}`, field);
+  assertNoSlashBearingHighEntropy(`${url.host}${decodedPath}`, field);
   const components = [
     url.host,
     ...decodedPath.split('/').filter(segment => segment.length > 0),
   ];
   for (const component of components) {
-    assertNoSecretShapes(component, field);
+    assertNoGenericShapes(component, field);
   }
   return `${url.origin}${url.pathname}`;
 }
