@@ -185,6 +185,12 @@ type OpenState = {
 type NamespaceAuthority = {
   readonly credentials: BackstageCredentials;
   readonly authorities: ReadonlyMap<string, ResolvedAuthority>;
+  /**
+   * Live native handles bound to this authority. A binding exists only
+   * while at least one harness of the namespace is actually open, so a
+   * failed or released open never leaves a stale binding behind.
+   */
+  holders: number;
 };
 
 /** A resolved provider authority and its identity for recheck. */
@@ -377,6 +383,66 @@ export async function createAiServiceIntegration(
   const instanceId = randomUUID();
   // The authority context of the most recent acquisition per live namespace.
   const namespaceAuthorities = new Map<string, NamespaceAuthority>();
+  // In-flight native releases per namespace: an open of the same namespace
+  // waits for them before competing for the lease.
+  const namespaceDrains = new Map<string, Promise<void>>();
+
+  /**
+   * Resolves the provider authorities of an acquisition: every catalog
+   * provider plus the configured model's provider.
+   */
+  async function resolveAuthorities(
+    binding: AcquisitionBinding,
+  ): Promise<Map<string, ResolvedAuthority>> {
+    const providers = new Set<string>(catalog.map(model => model.provider));
+    if (binding.model !== undefined) {
+      providers.add(binding.model.provider);
+    }
+    const authorities = new Map<string, ResolvedAuthority>();
+    for (const providerId of providers) {
+      const resolved = await resolveAuthority(providerId, binding.credentials);
+      if (resolved !== undefined) {
+        authorities.set(providerId, resolved);
+      }
+    }
+    return authorities;
+  }
+
+  /**
+   * Binds the namespace authority for an acquisition that holds the lease:
+   * a live namespace admits exactly one authority, and reuse under a
+   * different credentials object fails closed rather than transferring
+   * authority in either direction. Called only once the lease is held, so a
+   * failure before this point leaves no binding behind.
+   */
+  async function bindNamespaceAuthority(
+    input: OpenNativeHarnessInput,
+    key: string,
+  ): Promise<void> {
+    const existing = namespaceAuthorities.get(key);
+    if (existing !== undefined && existing.credentials !== input.credentials) {
+      throw new Error(
+        `The AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin is live under a different verified authority; release the existing handles before acquiring it with different credentials`,
+      );
+    }
+    const authorities = await resolveAuthorities(input);
+    namespaceAuthorities.set(key, {
+      credentials: input.credentials,
+      authorities,
+      holders: existing?.holders ?? 0,
+    });
+  }
+
+  /** Drops one holder of a namespace authority binding. */
+  function releaseAuthoritySlot(key: string): void {
+    const entry = namespaceAuthorities.get(key);
+    if (entry !== undefined) {
+      entry.holders -= 1;
+      if (entry.holders <= 0) {
+        namespaceAuthorities.delete(key);
+      }
+    }
+  }
 
   /**
    * Builds the synchronous resolve contract the guarded model operations
@@ -558,9 +624,11 @@ export async function createAiServiceIntegration(
       }
       // Every admitted operation is associated with its acquiring call's
       // verified original credentials. A live namespace admits exactly one
-      // authority: until per-handle binding exists, reuse under a different
-      // credentials object fails closed rather than transferring authority
-      // to the newest caller or retaining the first caller's.
+      // authority: reuse under a different credentials object fails closed
+      // rather than transferring authority to the newest caller or
+      // retaining the first caller's. The binding itself is registered only
+      // once an open holds the lease (see openNativeHarness), so a failed
+      // open leaves no stale binding behind.
       const key = JSON.stringify([
         binding.namespace.pluginId,
         binding.namespace.sessionId,
@@ -574,29 +642,37 @@ export async function createAiServiceIntegration(
           `The AI session '${binding.namespace.sessionId}' of the '${pluginId}' plugin is live under a different verified authority; release the existing handles before acquiring it with different credentials`,
         );
       }
-      const providers = new Set<string>(catalog.map(model => model.provider));
-      if (binding.model !== undefined) {
-        providers.add(binding.model.provider);
+      if (existing !== undefined) {
+        // Same verified authority: refresh the resolved provider
+        // authorities for the reused live handle, so credential rotation
+        // is visible to the recheck without transferring authority.
+        const authorities = await resolveAuthorities(binding);
+        namespaceAuthorities.set(key, {
+          credentials: existing.credentials,
+          authorities,
+          holders: existing.holders,
+        });
       }
-      const authorities = new Map<string, ResolvedAuthority>();
-      for (const providerId of providers) {
-        const resolved = await resolveAuthority(
-          providerId,
-          binding.credentials,
-        );
-        if (resolved !== undefined) {
-          authorities.set(providerId, resolved);
-        }
-      }
-      namespaceAuthorities.set(key, {
-        credentials: binding.credentials,
-        authorities,
-      });
     },
 
     async openNativeHarness(
       input: OpenNativeHarnessInput,
     ): Promise<NativeHarnessHandle> {
+      const key = JSON.stringify([
+        input.namespace.pluginId,
+        input.namespace.sessionId,
+      ]);
+      // A release of this namespace may still be draining its old harness.
+      // Within one instance the same-owner re-acquire keeps the lease token,
+      // so an old drain's conditional release would act on a successor
+      // fence of the same owner and token: an open waits for the drain to
+      // finish before competing for the lease, and the successor then
+      // acquires a fresh generation with a later token.
+      let drain = namespaceDrains.get(key);
+      while (drain !== undefined) {
+        await drain;
+        drain = namespaceDrains.get(key);
+      }
       // The lease owner is the principal key plus an instance-unique
       // component: within one instance the same-owner re-acquire semantics
       // apply, while two instances of the same principal compete through the
@@ -605,20 +681,22 @@ export async function createAiServiceIntegration(
         input.namespace,
         `${input.owner}:${instanceId}`,
       );
-      const key = JSON.stringify([
-        input.namespace.pluginId,
-        input.namespace.sessionId,
-      ]);
       if (fence === undefined) {
-        // This acquisition did not open the namespace: drop its authority
-        // binding so a later acquisition is not compared against it.
-        namespaceAuthorities.delete(key);
+        // This acquisition did not open the namespace. No authority binding
+        // was registered for it, so a later acquisition with different
+        // credentials is not compared against a stale one.
         throw new Error(
           `The AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin is held by another live lease; retry once the current owner releases it`,
         );
       }
       let storage: Storage | undefined;
+      let bound = false;
       try {
+        // The authority binding is registered only now that this
+        // acquisition holds the lease: any earlier failure — including a
+        // lease insert exception — leaves no binding behind.
+        await bindNamespaceAuthority(input, key);
+        bound = true;
         storage = await createKnexStorage({
           db,
           namespace: input.namespace,
@@ -695,6 +773,10 @@ export async function createAiServiceIntegration(
           harness,
           context: BACKGROUND_CONTEXT as Context,
         };
+        const entry = namespaceAuthorities.get(key);
+        if (entry !== undefined) {
+          entry.holders += 1;
+        }
         openStates.set(handle, {
           harness,
           fence,
@@ -711,7 +793,9 @@ export async function createAiServiceIntegration(
         await lease.release(fence);
         // This acquisition did not open the namespace: drop its authority
         // binding so a later acquisition is not compared against it.
-        namespaceAuthorities.delete(key);
+        if (bound) {
+          releaseAuthoritySlot(key);
+        }
         throw error;
       }
     },
@@ -722,17 +806,34 @@ export async function createAiServiceIntegration(
         return;
       }
       openStates.delete(handle);
-      namespaceAuthorities.delete(state.namespaceKey);
-      await state.keepalive.stop();
+      // The drain is registered before the first await, so a concurrent open
+      // of the same namespace waits for this release — including the old
+      // admission's conditional lease release — before re-acquiring.
+      const drained = (async () => {
+        releaseAuthoritySlot(state.namespaceKey);
+        await state.keepalive.stop();
+        try {
+          // Seals admission, settles accepted commits, and closes the fenced
+          // storage without destroying the shared Knex pool. Admitted
+          // durable work is never cancelled by release itself.
+          await state.harness.close(BACKGROUND_CONTEXT);
+        } finally {
+          // Conditional on owner and token: a stale release never affects a
+          // successor's lease.
+          await lease.release(state.fence);
+        }
+      })();
+      const registered = drained.then(
+        () => undefined,
+        () => undefined,
+      );
+      namespaceDrains.set(state.namespaceKey, registered);
       try {
-        // Seals admission, settles accepted commits, and closes the fenced
-        // storage without destroying the shared Knex pool. Admitted durable
-        // work is never cancelled by release itself.
-        await state.harness.close(BACKGROUND_CONTEXT);
+        await drained;
       } finally {
-        // Conditional on owner and token: a stale release never affects a
-        // successor's lease.
-        await lease.release(state.fence);
+        if (namespaceDrains.get(state.namespaceKey) === registered) {
+          namespaceDrains.delete(state.namespaceKey);
+        }
       }
     },
   };

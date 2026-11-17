@@ -546,7 +546,18 @@ if (worker) {
           recheck: async () => true,
           transport: transport as unknown as typeof fetch,
         }).bind(operation(destination));
-        await expect(request(failed, destination)).rejects.toThrow();
+        // Jest's isError is realm-sensitive: better-sqlite3 builds its
+        // SqliteError constructor once per addon binding, so this raw driver
+        // rejection — the journal write itself failing on the dropped table —
+        // is not `instanceof Error` when delivered from a reused worker's
+        // foreign realm, and a bare .rejects.toThrow reported a false
+        // negative. Match the error's shape instead of its prototype.
+        const expectedJournalFailure =
+          dialect === 'sqlite' ? { code: 'SQLITE_ERROR' } : { code: '42P01' };
+        await expect(request(failed, destination)).rejects.toMatchObject({
+          ...expectedJournalFailure,
+          message: expect.stringContaining('ai_journal_events'),
+        });
         await expect(request(failed, destination)).rejects.toThrow('blocked');
         expect(transport).toHaveBeenCalledTimes(1);
       } finally {

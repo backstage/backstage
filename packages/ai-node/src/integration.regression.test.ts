@@ -579,6 +579,125 @@ describe('Wave 1 integration regressions', () => {
     }
   }, 20000);
 
+  it('a failed lease insert leaves no authority binding behind', async () => {
+    const f = await fixture();
+    try {
+      const { service } = await managed(f);
+      // The lease acquire is the first database write of the native open:
+      // make it fail once, before the open path reaches any try/catch that
+      // could clean up the acquisition's authority binding.
+      // The knex function object exposes its methods read-only, so the
+      // transaction seam is replaced through a configurable property.
+      const realTransaction = f.db.transaction;
+      const failTransaction = async () => {
+        throw new Error('simulated lease INSERT failure');
+      };
+      Object.defineProperty(f.db, 'transaction', {
+        value: failTransaction,
+        configurable: true,
+      });
+
+      // options() creates fresh credentials per call: the retry must not be
+      // compared against a binding the failed open never cleaned up.
+      await expect(
+        service.openHarness(options('stale-binding')),
+      ).rejects.toThrow('simulated lease INSERT failure');
+
+      Object.defineProperty(f.db, 'transaction', {
+        value: realTransaction,
+        configurable: true,
+      });
+      const handle = await service.openHarness(options('stale-binding'));
+      f.handles.push(handle);
+      await handle.harness.root(handle.context);
+    } finally {
+      await f.close();
+    }
+  }, 15000);
+
+  it('survives invalidation overlap: a delayed old drain never releases the successor fence', async () => {
+    const f = await fixture();
+    try {
+      const { integration } = await managed(f);
+      // The repro drives the integration seam directly because it owns the
+      // real NativeHarnessHandle: the managed service's mediated view
+      // deliberately hides the native harness, whose close is delayed here
+      // to hold the drain open while a same-instance successor re-acquires.
+      const namespace = {
+        pluginId: 'test-plugin',
+        sessionId: 'overlap',
+      };
+      const registry = createRegistry();
+      const base = {
+        namespace,
+        owner: 'user:user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        registry,
+        registryVersion: 'v1',
+        configVersion: 'v1',
+      };
+      const first = await integration.openNativeHarness(base);
+      const oldLease = await f.db('ai_namespace_leases').first();
+
+      // Delay the old harness close so the release drain is observably in
+      // flight while the successor competes for the same namespace.
+      const realClose = first.harness.close.bind(first.harness);
+      let finishClose!: () => void;
+      const closeGate = new Promise<void>(resolve => {
+        finishClose = resolve;
+      });
+      first.harness.close = async (
+        ...closeArgs: Parameters<typeof realClose>
+      ) => {
+        await closeGate;
+        return realClose(...closeArgs);
+      };
+      const drainPromise = integration.releaseNativeHarness(first);
+
+      // Same instance, same principal, fresh credentials: without the drain
+      // join the successor would re-acquire the SAME token under the same
+      // owner while the old close is still in flight, and the old
+      // admission's conditional release would then expire the successor's
+      // fence once the delayed close completes. The successor must wait.
+      const successorPromise = (async () => {
+        await integration.bindAcquisition({
+          namespace,
+          owner: base.owner,
+          credentials: mockCredentials.user('user:default/alice'),
+          registry,
+          registryVersion: 'v1',
+        });
+        return integration.openNativeHarness({
+          ...base,
+          credentials: mockCredentials.user('user:default/alice'),
+        });
+      })();
+      const early = await Promise.race([
+        successorPromise.then(
+          () => 'opened',
+          () => 'opened',
+        ),
+        new Promise(resolve => setTimeout(() => resolve('draining'), 300)),
+      ]);
+      expect(early).toBe('draining');
+
+      finishClose();
+      const second = await successorPromise;
+      await drainPromise;
+
+      // The successor holds a live fence of a strictly later generation:
+      // the old admission's conditional release only ever matched its own,
+      // already-released fence.
+      await second.harness.root(second.context);
+      const lease = await f.db('ai_namespace_leases').first();
+      expect(lease.token).toBeGreaterThan(oldLease.token);
+      expect(new Date(lease.expires_at).getTime()).toBeGreaterThan(Date.now());
+      await integration.releaseNativeHarness(second);
+    } finally {
+      await f.close();
+    }
+  }, 15000);
+
   it('real invalidation rejects captured methods and permits successor acquisition', async () => {
     const f = await fixture();
     try {
