@@ -18,7 +18,19 @@ import {
   BACKGROUND_CONTEXT,
   type Context,
 } from '@earendil-works/chord/context';
-import { Harness, type Storage } from '@earendil-works/pi-durable';
+import {
+  Harness,
+  type Extension,
+  type RegistryReader,
+  type RegistrySnapshot,
+  type Storage,
+} from '@earendil-works/pi-durable';
+import { createCodemodeExtension } from '@earendil-works/pi-durable/codemode';
+import { CodemodeSandbox } from '@earendil-works/pi-codemode';
+import type {
+  CodemodeRun,
+  CodemodeRunOptions,
+} from '@earendil-works/pi-codemode/portable';
 import type { AnyModel, Credential, Models } from '@earendil-works/pi-ai';
 import { builtinProviderRegistry } from './providers/builtins';
 import type { AiProviderRegistry } from './providers/registry';
@@ -166,6 +178,38 @@ export interface AiServiceIntegrationOptions {
    * Absent means no automatic refresh: an expired credential denies.
    */
   readonly refreshExpiredCredential?: CredentialRefreshHook;
+  /**
+   * Opt-in code mode: Pi's `codemode` extension, which runs model-written
+   * JavaScript in a QuickJS sandbox whose script survives restarts by
+   * deterministic replay. Presence enables it for every harness this
+   * integration opens, appended to the caller's registry selection; it
+   * replaces any caller extension also named `codemode`.
+   *
+   * Resource limits: `timeoutMs` is the host wall-clock ceiling per script
+   * execution including time spent in tools — a script's own
+   * `// @options {"timeout_ms": ...}` may lower it, never exceed it — and
+   * defaults to 300000. `memoryLimitBytes` bounds the QuickJS heap; it
+   * defaults to no explicit limit (the wasm32 address space bounds it at
+   * 4 GiB) — set one to bound a runaway script's allocations. Script output
+   * is capped at 16 MiB / 100000 items and script store writes at 1 MiB
+   * total. Replay storage is O(nested results): one journal commit plus
+   * one count commit per delivered result, on top of each nested call's
+   * own commits, in the conversation's durable storage (separate from the
+   * AI audit journal).
+   *
+   * Isolation and audit: scripts see only their tools and Pi's script
+   * globals — no network, filesystem, timers, `process`, or modules — and
+   * model calls from inside scripts (the `models.*` globals) route through
+   * the guarded facade like any other dispatch, with the per-attempt
+   * permission, fence, and credential recheck and audit journaling. Until a
+   * provider module certifies them, those calls deny fail-closed.
+   */
+  readonly codemode?: {
+    /** Host wall-clock ceiling per script execution. Default 300000. */
+    readonly timeoutMs?: number;
+    /** QuickJS heap limit. Default: no explicit limit. */
+    readonly memoryLimitBytes?: number;
+  };
 }
 
 /**
@@ -196,6 +240,8 @@ type HandleState = {
   readonly harness: Harness;
   /** The admission this handle was published on. */
   readonly admission: NativeAdmission;
+  /** The code mode sandbox of this open, closed with the harness. */
+  readonly codemodeSandbox?: { close(): Promise<void> };
 };
 
 /**
@@ -337,6 +383,44 @@ function principalOf(
  *
  * @internal
  */
+/**
+ * A code mode sandbox whose `start()` enforces a host wall-clock ceiling.
+ *
+ * The extension derives a script's deadline from the script's own
+ * `// @options {"timeout_ms": ...}` line and passes no timeout otherwise,
+ * and `CodemodeSandboxBase.start()` then runs with no deadline at all — a
+ * model-written script that keeps pending microtasks alive would run
+ * until it is aborted or the sandbox closes. This ceiling bounds every
+ * start regardless of what the script declares: a script may lower the
+ * deadline, never raise it above the host's. It is wall-clock only, so it
+ * does not enter the durable start data and cannot affect replay.
+ */
+class BoundedCodemodeSandbox extends CodemodeSandbox {
+  readonly #hostTimeoutMs: number;
+
+  constructor(
+    hostTimeoutMs: number,
+    options?: { readonly memoryLimitBytes?: number },
+  ) {
+    super(
+      options?.memoryLimitBytes === undefined
+        ? undefined
+        : { memoryLimitBytes: options.memoryLimitBytes },
+    );
+    this.#hostTimeoutMs = hostTimeoutMs;
+  }
+
+  start(code: string, options: CodemodeRunOptions): CodemodeRun {
+    return super.start(code, {
+      ...options,
+      timeoutMs: Math.min(
+        options.timeoutMs ?? Number.POSITIVE_INFINITY,
+        this.#hostTimeoutMs,
+      ),
+    });
+  }
+}
+
 export async function createAiServiceIntegration(
   options: AiServiceIntegrationOptions,
 ): Promise<ProductionAiServiceIntegration> {
@@ -793,6 +877,29 @@ export async function createAiServiceIntegration(
           journalUnresolvedModel(input, fence, provider, id);
           return undefined;
         },
+        // Catalog-type lookups for extension code (code mode's `models.*`
+        // catalog globals) — canonical entries only, no availability
+        // beyond catalog membership, no credentials. Dispatching one of
+        // these still goes through the guarded operations above.
+        getModelsOfType: (type: string, provider?: string) =>
+          catalog.filter(
+            entry =>
+              entry.type === type &&
+              (provider === undefined || entry.provider === provider),
+          ),
+        getModelOfType: (type: string, provider: string, id: string) =>
+          catalog.find(
+            entry =>
+              entry.type === type &&
+              entry.provider === provider &&
+              entry.id === id,
+          ),
+        getAvailableOfType: async (type: string, provider?: string) =>
+          catalog.filter(
+            entry =>
+              entry.type === type &&
+              (provider === undefined || entry.provider === provider),
+          ),
         getAuth: () => {
           throw new Error(
             'Provider auth access is not exposed through the managed AI service',
@@ -801,6 +908,24 @@ export async function createAiServiceIntegration(
       } as unknown as Models;
     };
     let storage: Storage | undefined;
+    // Opt-in code mode. The extension is appended to the caller's registry
+    // selection, and the registry reader re-reads the caller's snapshot on
+    // every read so later caller publications still apply; the sandbox is
+    // closed with this open's harness.
+    let codemodeSandbox: CodemodeSandbox | undefined;
+    let harnessRegistry: RegistryReader = input.registry;
+    if (options.codemode !== undefined) {
+      codemodeSandbox = new BoundedCodemodeSandbox(
+        options.codemode.timeoutMs ?? 300_000,
+        options.codemode,
+      );
+      const codemode = createCodemodeExtension({ sandbox: codemodeSandbox });
+      const callerRegistry = input.registry;
+      harnessRegistry = {
+        snapshot: () => appendExtension(callerRegistry.snapshot(), codemode),
+        subscribe: listener => callerRegistry.subscribe(listener),
+      };
+    }
     try {
       storage = await createKnexStorage({
         db,
@@ -811,7 +936,7 @@ export async function createAiServiceIntegration(
         storage,
         {
           models: modelsSource,
-          registry: input.registry,
+          registry: harnessRegistry,
           ...(input.conversationCreated === undefined
             ? {}
             : { conversationCreated: input.conversationCreated }),
@@ -837,10 +962,15 @@ export async function createAiServiceIntegration(
       // observe the half-converted state.
       admission.pending -= 1;
       admission.holders.add(handle);
-      handleStates.set(handle, { harness, admission });
+      handleStates.set(handle, {
+        harness,
+        admission,
+        ...(codemodeSandbox === undefined ? {} : { codemodeSandbox }),
+      });
       return handle;
     } catch (error) {
       try {
+        await codemodeSandbox?.close();
         await storage?.close(BACKGROUND_CONTEXT);
       } catch {
         /* The open already failed; the reservation undo is the arbiter. */
@@ -1256,6 +1386,9 @@ export async function createAiServiceIntegration(
         await drained;
       } finally {
         admission.closing.delete(closingRegistered);
+        // The open's code mode sandbox, if any, closes with its harness;
+        // close() aborts any in-flight script execution.
+        await state.codemodeSandbox?.close();
       }
     },
   };
@@ -1284,6 +1417,34 @@ export async function createAiServiceIntegration(
     });
 
   return integration;
+}
+
+/**
+ * A registry snapshot view with one extension appended. Every read
+ * delegates to the caller's current snapshot, so caller publications after
+ * the open still apply; the appended extension shadows a caller extension
+ * of the same name.
+ */
+function appendExtension(
+  snapshot: RegistrySnapshot,
+  extension: Extension,
+): RegistrySnapshot {
+  const installed = [...snapshot.installed(), extension];
+  return {
+    installed: () => installed,
+    extension: name =>
+      name === extension.name ? extension : snapshot.extension(name),
+    tools: () => [
+      ...snapshot.tools(),
+      ...(extension.tools ?? []).map(tool => ({ extension, tool })),
+    ],
+    sections: () => [
+      ...snapshot.sections(),
+      ...(extension.sections ?? []).map(section => ({ extension, section })),
+    ],
+    tasks: () => snapshot.tasks(),
+    task: name => snapshot.task(name),
+  };
 }
 
 function resolvedAuthorityFields(resolved: ResolvedAuthority): {
