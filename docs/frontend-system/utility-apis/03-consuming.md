@@ -84,6 +84,11 @@ the promise returned by an API factory, so a failed initialization is not retrie
 on each render. A custom holder must likewise retain the same promise between
 lookups; creating a fresh promise on every lookup can cause repeated suspension.
 
+When treating an API as optional, catch only `NotImplementedError`, using
+`NotImplementedError.is(error)` from `@backstage/errors`. Let all other thrown
+values reach React. A catch-all would swallow suspension promises and initialization
+failures, causing a present API to appear absent.
+
 Direct holder lookups keep the declared API value:
 
 ```ts
