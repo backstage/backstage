@@ -18,7 +18,7 @@ import Box from '@material-ui/core/Box';
 import { TextFieldProps } from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import { ReactNode, useEffect, useMemo, useState } from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityAutocompletePickerOption } from './EntityAutocompletePickerOption';
@@ -95,6 +95,7 @@ export function EntityAutocompletePicker<
     renderOption,
   } = props;
   const classes = useStyles();
+  const analytics = useAnalytics();
 
   const {
     updateFilters,
@@ -183,9 +184,16 @@ export function EntityAutocompletePicker<
         options={availableOptions}
         value={selectedOptions}
         TextFieldProps={InputProps}
-        onChange={(_event: object, options: string[]) =>
-          setSelectedOptions(options)
-        }
+        onChange={(_event: object, options: string[]) => {
+          options
+            .filter(option => !selectedOptions.includes(option))
+            .forEach(option =>
+              analytics.captureEvent('filter', option, {
+                attributes: { filter: String(name) },
+              }),
+            );
+          setSelectedOptions(options);
+        }}
         {...(getOptionLabel && { getOptionLabel })}
         renderOption={
           renderOption ??
