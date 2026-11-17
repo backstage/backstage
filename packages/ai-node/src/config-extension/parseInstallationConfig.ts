@@ -24,9 +24,6 @@ import type {
   AiInstallationCredentials,
 } from './types';
 
-/** The only credential scopes installation config may supply. */
-const CONFIG_SCOPE_KINDS = ['org', 'service'] as const;
-
 const PRECEDENCES: readonly AiCredentialsPrecedence[] = [
   'user-first',
   'org-first',
@@ -209,28 +206,34 @@ function parseScopes(section: Config, path: string): AiConfigCredentialScopes {
   const scopes = new Map<string, ReadonlyMap<string, JsonValue>>();
   for (const scopeKey of section.keys()) {
     const scopePath = `${path}.${scopeKey}`;
+    // Scope keys are matched exactly, so a key like 'org:extra' can never pass
+    // this schema and be rejected only by a store constructor downstream.
     if (scopeKey === 'org') {
       scopes.set('org', parseScope(section, scopeKey, scopePath));
       continue;
     }
-    if (scopeKey.startsWith('user:')) {
+    if (scopeKey === 'user' || scopeKey.startsWith('user:')) {
       throw configError(
         scopePath,
         `personal credentials are never supplied through installation config. Remove '${scopeKey}': user-scoped provider credentials are stored by the encrypted personal credential store, which is written by the login flow and read by the service`,
       );
     }
-    if (!CONFIG_SCOPE_KINDS.some(kind => scopeKey.startsWith(`${kind}:`))) {
-      throw configError(
+    if (scopeKey.startsWith('service:')) {
+      const serviceId = assertIdentifier(
+        scopeKey.slice('service:'.length),
         scopePath,
-        `the scope '${scopeKey}' is not supported. Use exactly 'org', or 'service:<plugin-id>' to scope credentials to one consuming plugin's service identity`,
+        'service scope id',
       );
+      scopes.set(
+        `service:${serviceId}`,
+        parseScope(section, scopeKey, scopePath),
+      );
+      continue;
     }
-    assertIdentifier(
-      scopeKey.slice('service:'.length),
+    throw configError(
       scopePath,
-      'service scope id',
+      `the scope '${scopeKey}' is not supported. Use exactly 'org', or 'service:<plugin-id>' to scope credentials to one consuming plugin's service identity`,
     );
-    scopes.set(scopeKey, parseScope(section, scopeKey, scopePath));
   }
   return scopes;
 }

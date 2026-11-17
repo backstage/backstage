@@ -36,6 +36,8 @@ import {
   DefaultAiService,
   type DefaultAiServiceDeps,
 } from '../DefaultAiService';
+import type { AnyModel, Credential } from '@earendil-works/pi-ai';
+import type { AiCredentialStores, CredentialScope } from '../credentials/types';
 import { createAiServiceIntegration } from '../integration';
 import { runAiMigrations } from '../migrations';
 import { configureAiInstallation } from './configureAiInstallation';
@@ -214,6 +216,63 @@ async function waitFor(probe: () => Promise<boolean> | boolean) {
     await new Promise(resolve => setTimeout(resolve, 10));
   }
   throw new Error('probe timeout');
+}
+
+/** A canonical catalog entry pointing at the probe server. */
+function catalogModel(baseUrl: string): AnyModel {
+  return {
+    type: 'chat',
+    id: 'gpt-review',
+    name: 'gpt-review',
+    provider: 'openai',
+    api: 'openai-responses',
+    baseUrl: `${baseUrl}/v1`,
+    contextWindow: 400_000,
+    maxTokens: 128_000,
+    input: ['text'],
+    reasoning: false,
+    cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+  } as unknown as AnyModel;
+}
+
+/**
+ * Observed credential-order test stand-in. Records every scope the
+ * integration reads and returns a fixed credential per scope, or rejects.
+ * Not production credential handling; it exists to observe the integration's
+ * own resolution order and error behavior.
+ */
+function scopedStores(entries: Readonly<Record<string, Credential | Error>>): {
+  stores: AiCredentialStores;
+  reads: string[];
+} {
+  const reads: string[] = [];
+  const keyOf = (scope: CredentialScope) =>
+    scope.kind === 'org' ? 'org' : `${scope.kind}:${scope.id}`;
+  return {
+    reads,
+    stores: {
+      forScope: scope => {
+        const key = keyOf(scope);
+        return {
+          async read() {
+            reads.push(key);
+            const entry = entries[key];
+            if (entry instanceof Error) {
+              throw entry;
+            }
+            return entry;
+          },
+          async list() {
+            return [];
+          },
+          async modify() {
+            return undefined;
+          },
+          async delete() {},
+        };
+      },
+    },
+  };
 }
 
 const engines: [string, (pg?: string) => Promise<Fixture>][] = [
@@ -471,4 +530,84 @@ describe.each(engines)('%s installation config end to end', (_engine, make) => {
       await f.close();
     }
   }, 30000);
+
+  /**
+   * Direct-integration cell: no installation config is involved, so this pins
+   * the integration's own default rather than the config layer's.
+   */
+  it('resolves user credentials before org credentials with no explicit precedence', async () => {
+    const f = await make(pgUrl);
+    const probe = await probeServer();
+    try {
+      const { stores, reads } = scopedStores({
+        'user:user:default/alice': { type: 'api_key', key: PERSONAL_KEY },
+        org: { type: 'api_key', key: ORG_KEY },
+      });
+      const integration = await createAiServiceIntegration({
+        deps: f.deps,
+        credentialStores: stores,
+        models: [catalogModel(probe.baseUrl)],
+        // credentialPrecedence intentionally omitted: the default must be
+        // user-first.
+      });
+      const service = DefaultAiService.create({ deps: f.deps, integration });
+
+      const handle = await service.openHarness(openOptions('default-order'));
+      f.handles.push(handle);
+      // Resolution stops at the first hit, so the first read must be the
+      // personal scope; flipping the default would read 'org' first and send
+      // the installation credential.
+      expect(reads).toEqual(['user:user:default/alice']);
+
+      const conversation = await handle.harness.root(handle.context);
+      await conversation.submit(
+        { type: 'input', content: 'hello' },
+        handle.context,
+      );
+      await waitFor(() => probe.requests.length > 0);
+      await conversation.abort(handle.context);
+
+      expect(
+        Object.values(probe.requests[0].headers).some(value =>
+          String(value).includes(PERSONAL_KEY),
+        ),
+      ).toBe(true);
+    } finally {
+      await probe.close();
+      await f.close();
+    }
+  }, 20000);
+
+  /**
+   * Direct-integration cell: a failed personal read is not absence, so it must
+   * never fall through to the installation credential.
+   */
+  it('does not fall through to org credentials when the personal read fails', async () => {
+    const f = await make(pgUrl);
+    const probe = await probeServer();
+    try {
+      const { stores, reads } = scopedStores({
+        'user:user:default/alice': new Error(
+          'personal credential store unavailable',
+        ),
+        org: { type: 'api_key', key: ORG_KEY },
+      });
+      const integration = await createAiServiceIntegration({
+        deps: f.deps,
+        credentialStores: stores,
+        models: [catalogModel(probe.baseUrl)],
+      });
+      const service = DefaultAiService.create({ deps: f.deps, integration });
+
+      await expect(
+        service.openHarness(openOptions('read-failure')),
+      ).rejects.toThrow(/personal credential store unavailable/);
+      // The failure was not absorbed into a fallback, so nothing dispatched.
+      expect(reads).toEqual(['user:user:default/alice']);
+      expect(probe.requests).toHaveLength(0);
+    } finally {
+      await probe.close();
+      await f.close();
+    }
+  }, 20000);
 });

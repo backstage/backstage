@@ -252,13 +252,21 @@ describe('parseAiInstallationConfig', () => {
     ).toThrow(
       /personal credentials are never supplied through installation config/,
     );
-    expect(() =>
-      parse({
-        ai: {
-          credentials: credentialsSection({ scopes: { 'Service:x': {} } }),
-        },
-      }),
-    ).toThrow(/not supported/);
+    // Scope keys are matched exactly: a near miss must not slip through to a
+    // store constructor, and the error must name the actual problem.
+    for (const scopeKey of ['Service:x', 'org:extra', 'org:x', 'service']) {
+      expect(() =>
+        parse({
+          ai: {
+            credentials: credentialsSection({ scopes: { [scopeKey]: {} } }),
+          },
+        }),
+      ).toThrow(
+        new RegExp(
+          `the scope '${scopeKey}' is not supported\\. Use exactly 'org', or 'service:<plugin-id>'`,
+        ),
+      );
+    }
     expect(() =>
       parse({
         ai: {
