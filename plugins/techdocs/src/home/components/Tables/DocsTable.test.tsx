@@ -101,6 +101,17 @@ describe('DocsTable test', () => {
     expect(link2.getAttribute('href')).toContain(
       '/docs/default/testkind2/testname2',
     );
+
+    expect(
+      await screen.findByRole('button', {
+        name: 'Copy link to testName documentation',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', {
+        name: 'Copy link to testName2 documentation',
+      }),
+    ).toBeInTheDocument();
   });
 
   it('should fall back to case-sensitive links when configured', async () => {

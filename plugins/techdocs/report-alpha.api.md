@@ -578,9 +578,9 @@ export const techdocsTranslationRef: TranslationRef<
     readonly 'table.header.actions': 'Actions';
     readonly 'table.title.all': 'All';
     readonly 'table.toolbar.searchPlaceholder': 'Filter';
-    readonly 'table.actions.addToFavorites': 'Add to favorites';
-    readonly 'table.actions.removeFromFavorites': 'Remove from favorites';
-    readonly 'table.actions.copyDocsUrl': 'Click to copy documentation link to clipboard';
+    readonly 'table.actions.addToFavorites': 'Add {{entityName}} to favorites';
+    readonly 'table.actions.removeFromFavorites': 'Remove {{entityName}} from favorites';
+    readonly 'table.actions.copyDocsUrl': 'Copy link to {{entityName}} documentation';
     readonly 'table.pagination.labelRowsSelect': 'rows';
     readonly 'table.emptyState.title': 'No documents to show';
     readonly 'table.emptyState.description': 'Create your own document. Check out our Getting Started Information';
