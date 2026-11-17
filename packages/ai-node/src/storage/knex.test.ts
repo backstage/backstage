@@ -385,7 +385,16 @@ for (const dialect of [
         const prelude = `
           import knex from 'knex';
           import { BACKGROUND_CONTEXT as context } from '@earendil-works/chord/context';
-          import { createKnexStorage } from ${JSON.stringify(moduleUrl)};
+          import { registerHooks } from 'node:module';
+          registerHooks({
+            resolve(specifier, context, nextResolve) {
+              if (specifier === './dialect-kit') return nextResolve('./dialect-kit.ts', context);
+              return nextResolve(specifier, context);
+            },
+          });
+          const { createKnexStorage } = await import(${JSON.stringify(
+            moduleUrl,
+          )});
           const namespace = { pluginId: 'plugin', sessionId: 'session' };
           const db = knex({ client: 'better-sqlite3', connection: { filename: process.argv[1] }, useNullAsDefault: true });
           const storage = await createKnexStorage({ db, namespace, fence: { namespace, owner: 'owner', token: '1' } });
