@@ -41,7 +41,7 @@
     "express": "^4.22.0",
     "fs-extra": "^11.2.0",
     "inquirer": "^8.2.0",
-    "react-dev-utils": "^12.0.0-next.60",
+    "open": "^10.2.0",
     "yaml": "^2.0.0"
   },
   "devDependencies": {

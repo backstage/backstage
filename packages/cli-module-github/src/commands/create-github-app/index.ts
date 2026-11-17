@@ -18,11 +18,10 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import { stringify as stringifyYaml } from 'yaml';
 import inquirer, { Question, Answers } from 'inquirer';
-import { targetPaths } from '@backstage/cli-common';
+import { openBrowser, targetPaths } from '@backstage/cli-common';
 import { cli } from 'cleye';
 
 import { GithubCreateAppServer } from './GithubCreateAppServer';
-import openBrowser from 'react-dev-utils/openBrowser';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 // This is an experimental command that at this point does not support GitHub Enterprise
