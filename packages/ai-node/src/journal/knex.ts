@@ -59,6 +59,18 @@ export interface AttemptJournalOptions {
   readonly authorizer: AuditReadAuthorizer;
   /** Best-effort write-through mirror to the Backstage auditor service. */
   readonly mirror?: JournalAuditorMirror;
+  /**
+   * Integration-time override for session ownership lookup. When absent,
+   * ownership is read from the journal's own stored session owners. A
+   * resolver returns the owning principal entity reference, or undefined for
+   * an unknown session.
+   */
+  readonly ownershipResolver?: (
+    namespace: Readonly<{
+      pluginId: string;
+      sessionId: string;
+    }>,
+  ) => Promise<string | undefined>;
 }
 
 interface EventRow {
@@ -108,12 +120,16 @@ class KnexAttemptJournal implements AttemptJournal {
   readonly #db: Knex;
   readonly #authorizer: AuditReadAuthorizer;
   readonly #mirror: JournalAuditorMirror | undefined;
+  readonly #ownershipResolver:
+    | AttemptJournalOptions['ownershipResolver']
+    | undefined;
   readonly #sqlite: boolean;
 
   constructor(options: AttemptJournalOptions) {
     this.#db = options.db;
     this.#authorizer = options.authorizer;
     this.#mirror = options.mirror;
+    this.#ownershipResolver = options.ownershipResolver;
     this.#sqlite = options.db.client.config.client === 'better-sqlite3';
   }
 
@@ -132,14 +148,11 @@ class KnexAttemptJournal implements AttemptJournal {
           plugin_id: lease.pluginId,
           session_id: lease.sessionId,
           owner_ref: parsed.actor,
-          created_at: trx.fn.now(),
+          created_at: this.#now(trx),
         })
         .onConflict(['plugin_id', 'session_id'])
         .ignore();
-      const inserted = await trx(JOURNAL_EVENTS_TABLE)
-        .insert({ ...decisionColumns(lease, parsed), created_at: trx.fn.now() })
-        .returning('id');
-      return String((inserted[0] as { id: string | number }).id);
+      return this.#insertEvent(trx, decisionColumns(lease, parsed));
     });
     await this.#mirrorEvent(id);
     return id;
@@ -176,13 +189,7 @@ class KnexAttemptJournal implements AttemptJournal {
           `Cannot record an outcome: attempt ${attemptId} already has one; outcomes are never rewritten`,
         );
       }
-      const inserted = await trx(JOURNAL_EVENTS_TABLE)
-        .insert({
-          ...outcomeColumns(lease, attemptId, parsed),
-          created_at: trx.fn.now(),
-        })
-        .returning('id');
-      return String((inserted[0] as { id: string | number }).id);
+      return this.#insertEvent(trx, outcomeColumns(lease, attemptId, parsed));
     });
     await this.#mirrorEvent(id);
   }
@@ -191,10 +198,7 @@ class KnexAttemptJournal implements AttemptJournal {
     const parsed = parseRecovery(event);
     const lease = parseFence(fence);
     const id = await this.#append(lease, async trx => {
-      const inserted = await trx(JOURNAL_EVENTS_TABLE)
-        .insert({ ...recoveryColumns(lease, parsed), created_at: trx.fn.now() })
-        .returning('id');
-      return String((inserted[0] as { id: string | number }).id);
+      return this.#insertEvent(trx, recoveryColumns(lease, parsed));
     });
     await this.#mirrorEvent(id);
   }
@@ -204,16 +208,23 @@ class KnexAttemptJournal implements AttemptJournal {
     query: unknown,
   ): Promise<AuditPage> {
     const parsed = parseAuditQuery(query);
-    const owner = await this.#db(JOURNAL_SESSION_OWNERS_TABLE)
-      .where(ns(parsed))
-      .first('owner_ref');
-    if (!owner) {
+    const ownerRef = this.#ownershipResolver
+      ? await this.#ownershipResolver({
+          pluginId: parsed.pluginId,
+          sessionId: parsed.sessionId,
+        })
+      : (
+          await this.#db(JOURNAL_SESSION_OWNERS_TABLE)
+            .where(ns(parsed))
+            .first('owner_ref')
+        )?.owner_ref;
+    if (!ownerRef) {
       throw new AuditSessionNotFoundError(
         `No journaled session ${parsed.pluginId}/${parsed.sessionId}`,
       );
     }
     const ref = principalRef(credentials);
-    if (ref === undefined || ref !== owner.owner_ref) {
+    if (ref === undefined || ref !== ownerRef) {
       throw new AuditAccessDeniedError(
         'Audit reads require ownership of the session',
       );
@@ -224,7 +235,7 @@ class KnexAttemptJournal implements AttemptJournal {
       );
     }
 
-    const rows: EventRow[] = await this.#db(JOURNAL_EVENTS_TABLE)
+    const rows: EventRow[] = await this.#selectEvents(this.#db)
       .where(ns(parsed))
       .where('id', '>', parsed.cursor ?? 0)
       .orderBy('id', 'asc')
@@ -241,7 +252,10 @@ class KnexAttemptJournal implements AttemptJournal {
         await this.#db(JOURNAL_EVENTS_TABLE)
           .where({ kind: 'outcome' })
           .whereIn('attempt_id', attemptIds)
-          .select('attempt_id', 'status');
+          .select(
+            this.#db.raw('CAST(attempt_id AS TEXT) AS attempt_id'),
+            'status',
+          );
       for (const outcome of outcomes) {
         resolved.set(String(outcome.attempt_id), outcome.status);
       }
@@ -251,6 +265,77 @@ class KnexAttemptJournal implements AttemptJournal {
       items: rows.map(row => rowToView(row, resolved.get(String(row.id)))),
       nextCursor: hasMore ? String(rows[rows.length - 1].id) : undefined,
     };
+  }
+
+  /**
+   * Inserts one journal event and returns its ID as an exact decimal string.
+   *
+   * SQLite returns INTEGER primary keys to JavaScript as numbers, which
+   * silently loses precision above 2^53, so the ID is cast to TEXT inside
+   * the database; PostgreSQL already returns bigints as strings.
+   */
+  async #insertEvent(
+    trx: Knex.Transaction,
+    columns: Record<string, unknown>,
+  ): Promise<AttemptId> {
+    const row = { ...columns, created_at: this.#now(trx) };
+    if (this.#sqlite) {
+      await trx(JOURNAL_EVENTS_TABLE).insert(row);
+      const rows = (await trx.raw(
+        `SELECT CAST(id AS TEXT) AS id FROM ${JOURNAL_EVENTS_TABLE} WHERE rowid = last_insert_rowid()`,
+      )) as Array<{ id: string }>;
+      return rows[0].id;
+    }
+    const inserted = await trx(JOURNAL_EVENTS_TABLE)
+      .insert(row)
+      .returning('id');
+    return String((inserted[0] as { id: string | number }).id);
+  }
+
+  /**
+   * Database clock for event timestamps. SQLite stores UTC ISO-8601 text with
+   * an explicit zone marker so reads, retention comparisons and timezone
+   * parsing are unambiguous; PostgreSQL uses its native timestamptz.
+   */
+  #now(trx: Knex.Transaction): Knex.Raw {
+    return this.#sqlite
+      ? trx.raw("strftime('%Y-%m-%dT%H:%M:%fZ', 'now')")
+      : trx.fn.now();
+  }
+
+  /**
+   * Selects journal event rows with the 64-bit ID columns cast to TEXT, so
+   * SQLite never rounds them through a JavaScript number. Explicit columns
+   * avoid ambiguous ORDER BY targets from `*` plus aliased casts.
+   */
+  #selectEvents(db: Knex): Knex.QueryBuilder {
+    return db(JOURNAL_EVENTS_TABLE).select(
+      db.raw('CAST(id AS TEXT) AS id'),
+      'plugin_id',
+      'session_id',
+      'kind',
+      db.raw('CAST(attempt_id AS TEXT) AS attempt_id'),
+      'actor',
+      'conversation_id',
+      'task_id',
+      'call_id',
+      'definition_version',
+      'config_version',
+      'provider',
+      'model',
+      'operation',
+      'destination',
+      'attempt',
+      'decision',
+      'reason',
+      'status',
+      'http_status',
+      'detail',
+      'recovery_kind',
+      'fence_owner',
+      'fence_token',
+      'created_at',
+    );
   }
 
   async #mirrorEvent(id: string): Promise<void> {
@@ -342,6 +427,23 @@ class KnexAttemptJournal implements AttemptJournal {
       .first('token');
     if (!row) throw new Error('Journal fence is stale or expired');
   }
+}
+
+/**
+ * Normalizes a stored timestamp to UTC ISO-8601. SQLite rows are UTC ISO
+ * text with an explicit zone marker; older rows written as timezone-less
+ * `YYYY-MM-DD HH:MM:SS` text (SQLite `CURRENT_TIMESTAMP`) or epoch numbers
+ * are interpreted as UTC, never as host-local time.
+ */
+function toIsoTimestamp(value: Date | string | number): string {
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'number') return new Date(value).toISOString();
+  const text = value.trim();
+  if (/Z$/i.test(text) || /[+-]\d{2}:?\d{2}$/.test(text)) {
+    return new Date(text).toISOString();
+  }
+  // Timezone-less text is UTC by storage contract, not host-local.
+  return new Date(`${text.replace(' ', 'T')}Z`).toISOString();
 }
 
 function ns(lease: { pluginId: string; sessionId: string }) {
@@ -447,9 +549,7 @@ function rowToView(
     id: String(row.id),
     pluginId: row.plugin_id,
     sessionId: row.session_id,
-    recordedAt: new Date(
-      row.created_at as string | number | Date,
-    ).toISOString(),
+    recordedAt: toIsoTimestamp(row.created_at),
     fenceOwner: row.fence_owner,
     fenceToken: row.fence_token,
   };

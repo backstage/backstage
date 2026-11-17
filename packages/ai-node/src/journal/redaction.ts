@@ -43,15 +43,19 @@ const OPERATIONS: ReadonlySet<string> = new Set([
 /**
  * Credential VALUE shapes, not words. Free-text fields may say "credential
  * expired; re-authentication required" — the English words are fine — but a
- * value that looks like an actual secret (key material, bearer value,
- * key=value assignment, long high-entropy run) fails closed.
+ * value that looks like an actual secret fails closed. Known credential
+ * formats (GitHub PATs, OpenAI/Anthropic keys, Slack tokens, AWS/Google
+ * keys, JWTs, key material) are recognized wherever they occur, including
+ * embedded inside longer text, not only at the start of a field.
  */
 const SECRET_VALUE_SHAPED = [
   /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
-  /^(sk|rk|pk)-/,
-  /^gh[pousr]_/,
-  /^xox[bpos]-/,
-  /^(AKIA|AIza)[0-9A-Za-z]{8,}/,
+  /\b(?:sk-(?:ant-)?[A-Za-z0-9_-]{20,}|rk-[A-Za-z0-9_-]{20,}|pk-[A-Za-z0-9_-]{20,})/,
+  /\bgh[pousr]_[A-Za-z0-9]{20,}/,
+  /\bxox[baprs]-[A-Za-z0-9-]{10,}/,
+  /\bAKIA[0-9A-Z]{16}\b/,
+  /\bAIza[0-9A-Za-z_-]{30,}/,
+  /\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{5,}/,
   /\bbearer\s+[A-Za-z0-9._~+/=-]{6,}/i,
   /\b(?:api[_-]?key|apikey|token|secret|password|passwd|credential|access[_-]?token|refresh[_-]?token|authorization)\s*[=:]\s*\S{8,}/i,
   /[A-Za-z0-9+/=_-]{48,}/,
@@ -94,6 +98,35 @@ export function assertRedactedText(
     }
   }
   return value;
+}
+
+/**
+ * Validates the redacted actor: a canonical principal entity reference
+ * (`user:<namespace>/<name>` or `service:<subject>`), never free text and
+ * never a token. Credential value shapes embedded anywhere in the reference
+ * fail closed.
+ */
+export function assertPrincipalRef(value: unknown): string {
+  const text = assertRedactedText(value, 'actor', { required: true })!;
+  if (!/^(user|service):([A-Za-z0-9_.\-]+\/)?[A-Za-z0-9_.\-]+$/.test(text)) {
+    throw new Error(
+      'Invalid actor: expected a canonical principal entity reference such as "user:default/alice" or "service:plugin-id", never a raw token',
+    );
+  }
+  return text;
+}
+
+/**
+ * Rejects known credential value shapes anywhere in a decoded string.
+ */
+function assertNoSecretShapes(text: string, field: string): void {
+  for (const pattern of SECRET_VALUE_SHAPED) {
+    if (pattern.test(text)) {
+      throw new Error(
+        `Invalid ${field}: value is secret-shaped; redact it before recording a journal event`,
+      );
+    }
+  }
 }
 
 /**
@@ -153,6 +186,16 @@ export function assertDestination(
       `Invalid ${field}: must be an https (or http) origin and path without query string, fragment or userinfo`,
     );
   }
+  // The path is part of the audit record, so a credential value hidden in a
+  // path segment is rejected just like one in free text. Benign words such
+  // as `/v1/oauth/token` pass.
+  let decodedPath: string;
+  try {
+    decodedPath = decodeURIComponent(url.pathname);
+  } catch {
+    throw new Error(`Invalid ${field}: path is not valid percent-encoding`);
+  }
+  assertNoSecretShapes(`${url.host}${decodedPath}`, field);
   return `${url.origin}${url.pathname}`;
 }
 
@@ -251,7 +294,7 @@ export function parseDecision(event: unknown): ParsedDecision {
     );
   }
   return {
-    actor: assertRedactedText(source.actor, 'actor', { required: true })!,
+    actor: assertPrincipalRef(source.actor),
     conversationId: assertRedactedText(source.conversationId, 'conversationId'),
     taskId: assertRedactedText(source.taskId, 'taskId'),
     callId: assertRedactedText(source.callId, 'callId'),
@@ -374,7 +417,7 @@ export function parseRecovery(event: unknown): ParsedRecovery {
     );
   }
   return {
-    actor: assertRedactedText(source.actor, 'actor', { required: true })!,
+    actor: assertPrincipalRef(source.actor),
     kind: source.kind as ParsedRecovery['kind'],
     conversationId: assertRedactedText(source.conversationId, 'conversationId'),
     taskId: assertRedactedText(source.taskId, 'taskId'),

@@ -19,9 +19,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import knex, { type Knex } from 'knex';
-import { createAttemptJournal } from './knex';
+import { createAttemptJournal, JOURNAL_EVENTS_TABLE } from './knex';
 import { pruneAiJournal } from './retention';
-import type { AttemptDecision } from './types';
+import type { AttemptDecision, AttemptId } from './types';
 
 const storageMigration = require('../../migrations/1000_storage');
 const journalMigration = require('../../migrations/4000_journal');
@@ -41,31 +41,52 @@ const decision: AttemptDecision = {
 };
 
 const HOUR_MS = 60 * 60 * 1000;
+const YEAR_MS = 365 * 24 * HOUR_MS;
 
-async function sqliteFixture() {
+type Fixture = {
+  db: Knex;
+  record(overrides?: Partial<AttemptDecision>): Promise<AttemptId>;
+  recordOutcome(attempt: AttemptId, status: string): Promise<void>;
+  cleanup(): Promise<void>;
+};
+
+async function sqliteFixture(): Promise<Fixture> {
   const dir = await mkdtemp(join(tmpdir(), 'ai-journal-retention-'));
   const db = knex({
     client: 'better-sqlite3',
     connection: { filename: join(dir, 'journal.sqlite') },
     useNullAsDefault: true,
   });
-  await storageMigration.up(db);
-  await journalMigration.up(db);
-  await db('ai_namespace_leases').insert({
-    ...key,
-    owner_id: fence.owner,
-    token: fence.token,
-    expires_at: db.raw("(julianday('now') - 2440587.5) * 86400000 + ?", [
-      60_000,
-    ]),
-  });
   const journal = createAttemptJournal({
     db,
     authorizer: { authorizeAuditRead: async () => true },
   });
+  try {
+    await storageMigration.up(db);
+    await journalMigration.up(db);
+    await db('ai_namespace_leases').insert({
+      ...key,
+      owner_id: fence.owner,
+      token: fence.token,
+      expires_at: db.raw("(julianday('now') - 2440587.5) * 86400000 + ?", [
+        60_000,
+      ]),
+    });
+  } catch (error) {
+    await db.destroy();
+    await rm(dir, { recursive: true, force: true });
+    throw error;
+  }
   return {
     db,
-    journal,
+    record: (overrides = {}) =>
+      journal.recordDecisionAndIntent(fence, {
+        ...decision,
+        callId: `call-${randomUUID()}`,
+        ...overrides,
+      }),
+    recordOutcome: (attempt, status) =>
+      journal.recordOutcome(fence, attempt, { status } as never),
     cleanup: async () => {
       await db.destroy();
       await rm(dir, { recursive: true, force: true });
@@ -73,16 +94,48 @@ async function sqliteFixture() {
   };
 }
 
-function freshDecision(
-  overrides: Partial<AttemptDecision> = {},
-): AttemptDecision {
-  return { ...decision, callId: `call-${randomUUID()}`, ...overrides };
-}
-
-async function ageEvent(db: Knex, id: string, hours: number) {
-  await db('ai_journal_events')
-    .where({ id })
-    .update({ created_at: new Date(Date.now() - hours * HOUR_MS) });
+async function pgFixture(): Promise<Fixture> {
+  const admin = knex({ client: 'pg', connection: pgUrl });
+  const schema = `ai_test_${randomUUID().replace(/-/g, '')}`;
+  await admin.schema.createSchema(schema);
+  const db = knex({ client: 'pg', connection: pgUrl, searchPath: [schema] });
+  const journal = createAttemptJournal({
+    db,
+    authorizer: { authorizeAuditRead: async () => true },
+  });
+  try {
+    await storageMigration.up(db);
+    await journalMigration.up(db);
+    await db('ai_namespace_leases').insert({
+      ...key,
+      owner_id: fence.owner,
+      token: fence.token,
+      expires_at: db.raw("statement_timestamp() + (? * interval '1 second')", [
+        60,
+      ]),
+    });
+  } catch (error) {
+    await db.destroy();
+    await admin.schema.dropSchema(schema, true);
+    await admin.destroy();
+    throw error;
+  }
+  return {
+    db,
+    record: (overrides = {}) =>
+      journal.recordDecisionAndIntent(fence, {
+        ...decision,
+        callId: `call-${randomUUID()}`,
+        ...overrides,
+      }),
+    recordOutcome: (attempt, status) =>
+      journal.recordOutcome(fence, attempt, { status } as never),
+    cleanup: async () => {
+      await db.destroy();
+      await admin.schema.dropSchema(schema, true);
+      await admin.destroy();
+    },
+  };
 }
 
 if (!pgUrl) {
@@ -93,122 +146,103 @@ for (const dialect of ['sqlite', 'pg'] as const) {
   if (dialect === 'pg' && !pgUrl) continue;
 
   describe(`journal retention (${dialect})`, () => {
-    it('prunes resolved events and preserves unresolved intents', async () => {
+    it('prunes settled attempts and preserves uncertain evidence', async () => {
       const f =
-        dialect === 'sqlite'
-          ? await sqliteFixture()
-          : await (async () => {
-              const admin = knex({ client: 'pg', connection: pgUrl });
-              const schema = `ai_test_${randomUUID().replace(/-/g, '')}`;
-              await admin.schema.createSchema(schema);
-              const db = knex({
-                client: 'pg',
-                connection: pgUrl,
-                searchPath: [schema],
-              });
-              try {
-                await storageMigration.up(db);
-                await journalMigration.up(db);
-                await db('ai_namespace_leases').insert({
-                  ...key,
-                  owner_id: fence.owner,
-                  token: fence.token,
-                  expires_at: db.raw(
-                    "statement_timestamp() + (? * interval '1 second')",
-                    [60],
-                  ),
-                });
-              } catch (error) {
-                await db.destroy();
-                await admin.schema.dropSchema(schema, true);
-                await admin.destroy();
-                throw error;
-              }
-              return {
-                db,
-                journal: createAttemptJournal({
-                  db,
-                  authorizer: { authorizeAuditRead: async () => true },
-                }),
-                cleanup: async () => {
-                  await db.destroy();
-                  await admin.schema.dropSchema(schema, true);
-                  await admin.destroy();
-                },
-              };
-            })();
-
+        dialect === 'sqlite' ? await sqliteFixture() : await pgFixture();
       try {
-        const now = new Date();
-        // Resolved attempt, old.
-        const resolved = await f.journal.recordDecisionAndIntent(
-          fence,
-          freshDecision(),
-        );
-        await f.journal.recordOutcome(fence, resolved, { status: 'completed' });
-        await ageEvent(f.db, resolved, 10);
-        // Unresolved send intent, old: must never be deleted.
-        const unresolved = await f.journal.recordDecisionAndIntent(
-          fence,
-          freshDecision(),
-        );
-        await ageEvent(f.db, unresolved, 10);
-        // Denial, old: settled, prunable.
-        const denied = await f.journal.recordDecisionAndIntent(
-          fence,
-          freshDecision({ decision: 'deny', reason: 'permission denied' }),
-        );
-        await ageEvent(f.db, denied, 10);
-        // Recovery event, old: prunable.
-        await f.journal.recordRecovery(fence, {
+        // Everything below is appended normally and left untouched; the
+        // injected future cutoff makes it all past the retention window.
+        // Settled: allow with a settled outcome.
+        const resolved = await f.record();
+        await f.recordOutcome(resolved, 'completed');
+        // Settled: denial.
+        await f.record({ decision: 'deny', reason: 'permission denied' });
+        // Uncertain: send intent with no outcome at all.
+        const unresolved = await f.record();
+        // Uncertain: send intent with an explicitly unknown outcome.
+        const unknownOutcome = await f.record();
+        await f.recordOutcome(unknownOutcome, 'unknown');
+        // Recovery evidence: unknown-dispatch must survive; other kinds age.
+        await createAttemptJournal({
+          db: f.db,
+          authorizer: { authorizeAuditRead: async () => true },
+        }).recordRecovery(fence, {
+          actor: 'user:default/alice',
+          kind: 'unknown-dispatch',
+        });
+        await createAttemptJournal({
+          db: f.db,
+          authorizer: { authorizeAuditRead: async () => true },
+        }).recordRecovery(fence, {
           actor: 'user:default/alice',
           kind: 'needs-reauth',
         });
-        const recovery = String(
-          (
-            await f
-              .db('ai_journal_events')
-              .where({ kind: 'recovery' })
-              .first('id')
-          ).id,
-        );
-        await ageEvent(f.db, recovery, 10);
-        // Fresh resolved attempt: within the window, untouched.
-        const fresh = await f.journal.recordDecisionAndIntent(
-          fence,
-          freshDecision(),
-        );
-        await f.journal.recordOutcome(fence, fresh, { status: 'failed' });
 
         const result = await pruneAiJournal(f.db, {
           retentionMs: HOUR_MS,
-          now,
+          now: new Date(Date.now() + YEAR_MS),
         });
-        expect(result.prunedEvents).toBe(4); // decision+outcome of resolved, denial, recovery
-        expect(result.uncertaintyRecords).toBe(1);
+        // decision + outcome of the resolved attempt, the denial, and the
+        // needs-reauth recovery. The unknown outcome row is NOT pruning
+        // evidence: it stays with its intent.
+        expect(result.prunedEvents).toBe(4);
+        expect(result.uncertaintyRecords).toBe(2);
 
-        const remaining = await f.db('ai_journal_events').select('id', 'kind');
-        expect(remaining).toHaveLength(3); // unresolved intent + fresh attempt with its outcome
-        expect(remaining.some(row => String(row.id) === unresolved)).toBe(true);
+        const remaining = await f
+          .db(JOURNAL_EVENTS_TABLE)
+          .select(
+            f.db.raw('*'),
+            f.db.raw('CAST(id AS TEXT) AS id'),
+            f.db.raw('CAST(attempt_id AS TEXT) AS attempt_id'),
+          );
+        const ids = remaining.map(row => String(row.id));
+        expect(ids).toContain(unresolved);
+        expect(ids).toContain(unknownOutcome);
+        // The unknown outcome row survives next to its intent.
+        expect(
+          remaining.some(
+            row => row.kind === 'outcome' && row.attempt_id === unknownOutcome,
+          ),
+        ).toBe(true);
+        // The unknown-dispatch recovery evidence survives.
+        expect(
+          remaining.some(row => row.recovery_kind === 'unknown-dispatch'),
+        ).toBe(true);
+        expect(remaining).toHaveLength(4); // two uncertain intents, the unknown outcome, the unknown-dispatch recovery
 
         const uncertainty = await f.db('ai_journal_uncertainty').select();
-        expect(uncertainty).toHaveLength(1);
-        expect(String(uncertainty[0].attempt_id)).toBe(unresolved);
-        expect(uncertainty[0].note).toContain('unknown');
+        expect(uncertainty.map(row => String(row.attempt_id)).sort()).toEqual(
+          [unresolved, unknownOutcome].sort(),
+        );
 
-        // A second pass writes no duplicate uncertainty record.
+        // A second pass is a no-op: no duplicate uncertainty, no more pruning.
         const again = await pruneAiJournal(f.db, {
           retentionMs: HOUR_MS,
-          now,
+          now: new Date(Date.now() + YEAR_MS),
         });
-        expect(again.uncertaintyRecords).toBe(0);
         expect(again.prunedEvents).toBe(0);
-        expect(
-          await f.db('ai_journal_uncertainty').select('attempt_id'),
-        ).toHaveLength(1);
-        expect(
-          await f.db('ai_journal_events').where({ id: unresolved }),
-        ).toHaveLength(1);
+        expect(again.uncertaintyRecords).toBe(0);
+        expect(await f.db('ai_journal_uncertainty')).toHaveLength(2);
+        expect(await f.db(JOURNAL_EVENTS_TABLE)).toHaveLength(4);
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('prunes untouched appended rows via an injected future cutoff', async () => {
+      const f =
+        dialect === 'sqlite' ? await sqliteFixture() : await pgFixture();
+      try {
+        const id = await f.record();
+        await f.recordOutcome(id, 'completed');
+        // The stored timestamp class must match what retention compares
+        // against, without any test-side rewriting of created_at.
+        const result = await pruneAiJournal(f.db, {
+          retentionMs: HOUR_MS,
+          now: new Date(Date.now() + YEAR_MS),
+        });
+        expect(result.prunedEvents).toBe(2);
+        expect(await f.db(JOURNAL_EVENTS_TABLE)).toEqual([]);
       } finally {
         await f.cleanup();
       }
