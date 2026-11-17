@@ -464,7 +464,6 @@ export namespace coreApis {
   const appHistory: ApiRef<AppHistoryApi>;
   const analytics: typeof analyticsApiRef;
   const appLanguage: typeof appLanguageApiRef;
-  const appLifecycle: typeof appLifecycleApiRef;
   const appTheme: typeof appThemeApiRef;
   const appTree: typeof appTreeApiRef;
   const config: typeof configApiRef;
@@ -475,14 +474,17 @@ export namespace coreApis {
   const fetch: typeof fetchApiRef;
   const icons: typeof iconsApiRef;
   const identity: typeof identityApiRef;
-  const oauthRequest: typeof oauthRequestApiRef;
-  const pluginHeaderActions: typeof pluginHeaderActionsApiRef;
-  const pluginWrapper: typeof pluginWrapperApiRef;
   const routeResolution: typeof routeResolutionApiRef;
   const storage: typeof storageApiRef;
-  const swappableComponents: typeof swappableComponentsApiRef;
   const toast: typeof toastApiRef;
   const translation: typeof translationApiRef;
+  export namespace internal {
+    const appLifecycle: typeof appLifecycleApiRef;
+    const oauthRequest: typeof oauthRequestApiRef;
+    const pluginHeaderActions: typeof pluginHeaderActionsApiRef;
+    const pluginWrapper: typeof pluginWrapperApiRef;
+    const swappableComponents: typeof swappableComponentsApiRef;
+  }
 }
 
 // @public (undocumented)

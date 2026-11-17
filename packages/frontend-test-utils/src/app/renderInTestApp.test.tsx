@@ -165,7 +165,9 @@ describe('renderInTestApp', () => {
       }
 
       const first = renderProbe();
-      expect(first.apis.get(coreApis.appLifecycle)?.isFinalized()).toBe(true);
+      expect(
+        first.apis.get(coreApis.internal.appLifecycle)?.isFinalized(),
+      ).toBe(true);
       const firstToast = first.apis.get(coreApis.toast);
       fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
       expect(firstToast).toBe(toast!);
