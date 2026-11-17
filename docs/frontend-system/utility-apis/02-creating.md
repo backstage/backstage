@@ -101,17 +101,16 @@ export const workApiRef = createApiRef<WorkApi>().with({
 });
 ```
 
-Prefer lazy implementations for APIs that are internal to a plugin. Keep their
-refs out of the package's public entry points. Shared APIs can also use lazy
-implementations to reduce the initial bundle size, but their consumers must
-handle asynchronous API resolution.
+Prefer lazy implementations for APIs that are internal to a plugin. Shared APIs
+can also use lazy implementations to reduce the initial bundle size, but their
+consumers must handle asynchronous API resolution.
 
 The ref retains this loading mode in its type. Omitting `loading` when creating
 a ref infers `'sync'`, and `ApiRef<WorkApi>` describes a synchronous ref. The
 second type parameter is the ref ID, and the third is the loading mode. For
 example, `ApiRef<WorkApi, 'plugin.example.work', 'async'>` describes an async ref
-with that ID. Use `AnyApiRef<WorkApi>` when a type needs to accept either loading
-mode.
+with that ID. Use `ApiRef<WorkApi, string, 'sync' | 'async'>` when a type needs to
+accept either loading mode.
 
 `ApiHolder.get()` preserves the ref's loading mode in its return type, including
 when the ref passes through a generic helper. Preserve the inferred type when
@@ -146,8 +145,34 @@ dependencies are resolved in parallel.
 
 An async-capable API can depend on both synchronous and async-capable APIs. A
 synchronous API can only depend on synchronous APIs, even if its own factory
-is synchronous. Changing an existing ref to `loading: 'async'` changes its public
-contract: callers of `apis.get()` must await the result.
+is synchronous. Factories, including overrides, must use refs with the same loading
+mode as their consumers. An async-capable factory may still return a synchronous
+implementation; its ref and lookup result remain asynchronous.
+
+### Changing loading mode
+
+Changing an existing ref from synchronous to asynchronous loading is a breaking
+contract change. Its consumers and factories must update together; the framework
+does not adapt older synchronous refs to an async implementation.
+
+The release impact depends on where the ref is exported:
+
+- **Plugin-internal API:** The ref is not exported, or exported only from the owning
+  frontend plugin package. Update the plugin's own consumers and default factory
+  together. The change follows the
+  [breaking-producers policy](../../overview/versioning-policy.md#changes-that-are-not-considered-breaking),
+  so it can ship without a breaking plugin release. Mark it
+  `**BREAKING PRODUCERS**:` in the changeset and explain how custom factories and
+  overrides need to update.
+- **Shared API:** The ref is exported from a library package, such as a plugin's
+  `-react` package, or through any other public surface outside the owning plugin
+  package. Changing it to async loading affects consumers and requires a breaking
+  release, even if the plugin's own components use `useApi`.
+
+Keep the ref's inferred type when exporting it. Factories and consumers must
+import compatible versions of the ref. See
+[consuming async-capable APIs](./03-consuming.md#async-capable-apis) for the changes
+needed at call sites.
 
 ## Adding configurability
 

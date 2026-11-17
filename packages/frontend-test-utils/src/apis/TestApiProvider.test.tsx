@@ -76,18 +76,6 @@ describe('TestApiProvider', () => {
     }
   });
 
-  it('should provide explicit async access to synchronous mocks', async () => {
-    const ref = createApiRef<{ value: string }>().with({ id: 'sync-mock' });
-    const implementation = { value: 'ready' };
-    const holder = resolveTestApiEntries([[ref, implementation]]);
-    const promise = holder.get(ref, { async: true });
-    expect(promise).toBeInstanceOf(Promise);
-    expect(holder.get(ref, { async: true })).toBe(promise);
-    expect(holder.get(ref)).toBe(implementation);
-    await expect(promise).resolves.toBe(implementation);
-    expect(resolveTestApiEntries([]).get(ref, { async: true })).toBeUndefined();
-  });
-
   it('should fall back to parent async APIs and keep lookup promises stable', async () => {
     const apiRef = createApiRef<{ value: string }>().with({
       id: 'async',

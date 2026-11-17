@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import { AnyApiRef, ApiHolder, ApiRef, ApiLookupResult } from './types';
+import { AnyApiRef, ApiHolder } from './types';
 import { useVersionedContext } from '@backstage/version-bridge';
 import { NotImplementedError } from '@backstage/errors';
 import {
-  apiHolderSupportsAsync,
-  apiPromiseState,
-  type ApiPromise,
-  createApiPromise,
-  createRejectedApiPromise,
+  resolvedApiPromise,
+  type ResolvedApiPromise,
 } from '@internal/frontend';
 
 const emptyApiHolder: ApiHolder = Object.freeze({ get: () => undefined });
@@ -35,79 +32,13 @@ type ApiPromiseState =
 // Keep state outside React so retries before the initial mount share it.
 const apiPromiseStates = new WeakMap<Promise<unknown>, ApiPromiseState>();
 
-// The v1 context is also provided by the legacy system, whose lookups are synchronous.
-type ApiHolderV1 = {
-  get(ref: AnyApiRef): unknown;
-  readonly [apiHolderSupportsAsync]?: true;
-};
-const apiHolderAdapters = new WeakMap<ApiHolderV1, ApiHolder>();
-
-function adaptApiHolder(holder: ApiHolderV1): ApiHolder {
-  const promises = new Map<
-    string,
-    | { kind: 'value'; value: unknown; promise: Promise<unknown> }
-    | { kind: 'error'; promise: Promise<unknown> }
-  >();
-
-  function get<
-    TApi = unknown,
-    TApiRef extends AnyApiRef = ApiRef<TApi>,
-    TAsync extends boolean = false,
-  >(
-    ref: TApiRef,
-    options?: { async?: TAsync },
-  ): ApiLookupResult<TApiRef, TAsync>;
-  function get(ref: AnyApiRef, options?: { async?: boolean }): unknown {
-    if (!options?.async && ref.loading !== 'async') {
-      return holder.get(ref);
-    }
-    const existing = promises.get(ref.id);
-    // Suspense retries must not rerun a failed legacy factory.
-    if (existing?.kind === 'error') {
-      return existing.promise;
-    }
-    try {
-      // Legacy aggregators forward refs but do not forward lookup options.
-      const value = holder.get(
-        ref.loading === 'async' ? ref : { ...ref, loading: 'async' },
-      );
-      if (value === undefined) {
-        promises.delete(ref.id);
-        return undefined;
-      }
-      if (value && typeof (value as Promise<unknown>).then === 'function') {
-        // Native async holders own their promise identity and invalidation.
-        promises.delete(ref.id);
-        return value;
-      }
-      if (existing?.kind === 'value' && Object.is(existing.value, value)) {
-        return existing.promise;
-      }
-      const promise = createApiPromise(value);
-      promises.set(ref.id, { kind: 'value', value, promise });
-      return promise;
-    } catch (error) {
-      const promise = createRejectedApiPromise(error);
-      promises.set(ref.id, { kind: 'error', promise });
-      return promise;
-    }
-  }
-
-  return { get };
-}
-
 /**
  * React hook for retrieving {@link ApiHolder}, an API catalog.
- * Async lookups are normalized when the context contains a legacy holder.
- * Synchronous lookups are forwarded unchanged. Native async holders are returned
- * unchanged.
  *
  * @public
  */
 export function useApiHolder(): ApiHolder {
-  const versionedHolder = useVersionedContext<{ 1: ApiHolderV1 }>(
-    'api-context',
-  );
+  const versionedHolder = useVersionedContext<{ 1: ApiHolder }>('api-context');
   if (!versionedHolder) {
     return emptyApiHolder;
   }
@@ -116,23 +47,15 @@ export function useApiHolder(): ApiHolder {
   if (!apiHolder) {
     throw new NotImplementedError('ApiContext v1 not available');
   }
-  if (apiHolder[apiHolderSupportsAsync]) {
-    return apiHolder as ApiHolder;
-  }
-  let adapter = apiHolderAdapters.get(apiHolder);
-  if (!adapter) {
-    adapter = adaptApiHolder(apiHolder);
-    apiHolderAdapters.set(apiHolder, adapter);
-  }
-  return adapter;
+  return apiHolder;
 }
 
 /**
  * React hook for retrieving APIs.
  *
  * Suspends while an async-capable API is being initialized, and throws if its
- * factory fails. Older synchronous refs can access migrated async APIs through
- * this hook too. Render consumers inside a Suspense boundary.
+ * factory fails. Synchronous refs require synchronous implementations.
+ * Render async API consumers inside a Suspense boundary.
  *
  * @param apiRef - Reference of the API to use.
  * @public
@@ -140,16 +63,17 @@ export function useApiHolder(): ApiHolder {
 export function useApi<T>(apiRef: AnyApiRef<T>): T {
   const apiHolder = useApiHolder();
 
-  let api: unknown = apiHolder.get(apiRef, { async: true });
-  // Handle promises even when the consumer has an older synchronous ref.
+  let api: unknown = apiHolder.get(apiRef);
   if (api && typeof (api as Promise<unknown>).then === 'function') {
-    const promise = api as ApiPromise<T>;
+    const promise = api as ResolvedApiPromise<T>;
     let state = apiPromiseStates.get(promise);
     if (!state) {
-      const settled = promise[apiPromiseState];
-      state = settled ?? { status: 'pending' };
+      const resolved = promise[resolvedApiPromise];
+      state = resolved
+        ? { status: 'fulfilled', value: resolved.value }
+        : { status: 'pending' };
       apiPromiseStates.set(promise, state);
-      if (!settled) {
+      if (!resolved) {
         promise.then(
           value =>
             apiPromiseStates.set(promise, { status: 'fulfilled', value }),

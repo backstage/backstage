@@ -3,8 +3,7 @@
 ---
 
 Added support for async-capable utility API refs in test API tuples and nested
-test API providers. Explicit async lookups also accept synchronous refs while
-ready mocks remain available without suspending.
+test API providers.
 
 Already-available mock implementations remain immediately readable through
 `useApi`, including async-capable refs and inline mocks under an outer Suspense

@@ -86,17 +86,14 @@ describe('ApiRef', () => {
 
     const promise = Promise.resolve({ value: 'loaded' });
     const holder: ApiHolder = {
-      get: ((ref: AnyApiRef, options?: { async?: boolean }) =>
-        options?.async || ref.loading === 'async'
+      get: ((ref: AnyApiRef) =>
+        ref.loading === 'async'
           ? promise
           : { value: 'sync' }) as ApiHolder['get'],
     };
 
-    function lookup<TApiRef extends AnyApiRef, TAsync extends boolean = false>(
-      ref: TApiRef,
-      options?: { async?: TAsync },
-    ) {
-      return holder.get(ref, options);
+    function lookup<TApiRef extends AnyApiRef>(ref: TApiRef) {
+      return holder.get(ref);
     }
 
     function lookupSync<TApi, TId extends string>(
@@ -135,37 +132,6 @@ describe('ApiRef', () => {
     // @ts-expect-error An unspecified mode cannot promise asynchronous lookup either.
     const invalidAsync: Promise<{ value: string }> | undefined =
       lookup(broadSync);
-    const forced: Promise<{ value: string }> | undefined = lookup(sync, {
-      async: true,
-    });
-    const forcedLegacy: Promise<{ value: string }> | undefined = lookup(
-      previousRef,
-      {
-        async: true,
-      },
-    );
-    const unchanged: { value: string } | undefined = holder.get(sync, {
-      async: false,
-    });
-    const stillAsync: Promise<{ value: string }> | undefined = holder.get(
-      asyncRef,
-      { async: false },
-    );
-    const options: { async: boolean } = { async: true };
-    const conditional:
-      | { value: string }
-      | Promise<{ value: string }>
-      | undefined = holder.get(sync, options);
-    // @ts-expect-error Forced async access cannot be consumed synchronously.
-    const invalidForced: { value: string } | undefined = holder.get(sync, {
-      async: true,
-    });
-    expect(forced).toBe(promise);
-    expect(forcedLegacy).toBe(promise);
-    expect(stillAsync).toBe(promise);
-    expect(conditional).toBe(promise);
-    expect(invalidForced).toBe(promise);
-    expect(unchanged).toEqual({ value: 'sync' });
     const missing: ApiLookupResult<typeof asyncRef> = undefined;
     // @ts-expect-error Missing APIs must not be represented by a promise.
     const invalidMissing: ApiLookupResult<typeof asyncRef> =

@@ -35,7 +35,7 @@ describe('useApi', () => {
 
     const value = renderedHook.result.current;
     expect(value).toBe('my-api-impl');
-    expect(get).toHaveBeenCalledWith({ ...apiRef, loading: 'async' });
+    expect(get).toHaveBeenCalledWith(apiRef);
   });
 });
 

@@ -177,28 +177,16 @@ export type ApiFactory<
 
 // @public
 export type ApiHolder = {
-  get<
-    TApi = unknown,
-    TApiRef extends AnyApiRef = ApiRef<TApi>,
-    TAsync extends boolean = false,
-  >(
+  get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
     api: TApiRef,
-    options?: {
-      async?: TAsync;
-    },
-  ): ApiLookupResult<TApiRef, TAsync>;
+  ): ApiLookupResult<TApiRef>;
 };
 
 // @public
-export type ApiLookupResult<
-  TApiRef extends AnyApiRef = AnyApiRef,
-  TAsync extends boolean = false,
-> =
-  | (TAsync extends true
-      ? Promise<TApiRef['T']>
-      : TApiRef extends {
-          readonly loading?: infer TLoading;
-        }
+export type ApiLookupResult<TApiRef extends AnyApiRef = AnyApiRef> =
+  | (TApiRef extends {
+      readonly loading?: infer TLoading;
+    }
       ? 'async' extends TLoading
         ? 'sync' extends TLoading
           ? TApiRef['T'] | Promise<TApiRef['T']>

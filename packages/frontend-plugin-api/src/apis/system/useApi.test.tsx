@@ -17,11 +17,7 @@
 import { act, render, renderHook, screen } from '@testing-library/react';
 import { Component, PropsWithChildren, StrictMode, Suspense } from 'react';
 import { withLogCollector } from '@backstage/test-utils';
-import {
-  createVersionedContext,
-  createVersionedContextForTesting,
-  createVersionedValueMap,
-} from '@backstage/version-bridge';
+import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import { createApiRef } from './ApiRef';
 import { useApi, useApiHolder } from './useApi';
 import { createApiFactory } from './helpers';
@@ -30,14 +26,6 @@ import {
   FrontendApiRegistry,
   FrontendApiResolver,
 } from '../../../../frontend-app-api/src/wiring/FrontendApiRegistry';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { ApiRegistry as LegacyApiRegistry } from '../../../../core-app-api/src/apis/system/ApiRegistry';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { ApiAggregator as LegacyApiAggregator } from '../../../../core-app-api/src/apis/system/ApiAggregator';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { ApiResolver as LegacyApiResolver } from '../../../../core-app-api/src/apis/system/ApiResolver';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { ApiFactoryRegistry as LegacyApiFactoryRegistry } from '../../../../core-app-api/src/apis/system/ApiFactoryRegistry';
 
 class TestErrorBoundary extends Component<
   PropsWithChildren,
@@ -70,80 +58,13 @@ describe('useApiHolder', () => {
     context.set({ 1: holder });
 
     const renderedHook = renderHook(() => useApiHolder());
-    const adapter = renderedHook.result.current;
+    const apiHolder = renderedHook.result.current;
+    expect(apiHolder).toBe(holder);
     const ref = createApiRef<string>().with({ id: 'x' });
-    expect(adapter.get(ref)).toBeUndefined();
+    expect(apiHolder.get(ref)).toBeUndefined();
     expect(holder.get).toHaveBeenCalledWith(ref);
     renderedHook.rerender();
-    expect(renderedHook.result.current).toBe(adapter);
-  });
-
-  it('should normalize direct async lookups from legacy registries and resolvers', async () => {
-    const sync = createApiRef<{ value: string }>().with({ id: 'legacy' });
-    const asyncRef = createApiRef<{ value: string }>().with({
-      id: sync.id,
-      loading: 'async',
-    });
-    const missing = createApiRef<string>().with({
-      id: 'missing',
-      loading: 'async',
-    });
-    const implementation = { value: 'legacy instance' };
-    const entries = new Map<string, unknown>([[sync.id, implementation]]);
-    const registry = new LegacyApiRegistry(entries);
-    const factories = new LegacyApiFactoryRegistry();
-    factories.register('default', createApiFactory(sync, implementation));
-    const resolver = new LegacyApiResolver(factories);
-    for (const legacy of [registry, resolver]) {
-      context.set({ 1: legacy });
-      const rendered = renderHook(() => useApiHolder());
-      const holder = rendered.result.current;
-      const promise = holder.get(asyncRef);
-      expect(promise).toBeInstanceOf(Promise);
-      expect(holder.get(asyncRef)).toBe(promise);
-      expect(await promise?.then(api => api.value)).toBe('legacy instance');
-      expect(holder.get(sync)).toBe(implementation);
-      expect(holder.get(missing)).toBeUndefined();
-      rendered.unmount();
-    }
-
-    context.set({ 1: registry });
-    const rendered = renderHook(() => useApiHolder());
-    const holder = rendered.result.current;
-    const previous = holder.get(asyncRef);
-    entries.set(sync.id, { value: 'replacement' });
-    const replacement = holder.get(asyncRef);
-    expect(replacement).not.toBe(previous);
-    await expect(replacement).resolves.toEqual({ value: 'replacement' });
-    entries.delete(sync.id);
-    expect(holder.get(asyncRef)).toBeUndefined();
-    rendered.unmount();
-
-    const failure = createApiRef<string>().with({ id: 'failure' });
-    const asyncFailure = createApiRef<string>().with({
-      id: failure.id,
-      loading: 'async',
-    });
-    const error = new Error('Legacy initialization failed');
-    const factory = jest.fn(() => {
-      throw error;
-    });
-    factories.register(
-      'default',
-      createApiFactory({
-        api: failure,
-        deps: {},
-        factory,
-      }),
-    );
-    context.set({ 1: resolver });
-    const failed = renderHook(() => useApiHolder()).result.current;
-    expect(() => failed.get(failure)).toThrow(error);
-    factory.mockClear();
-    const rejection = failed.get(asyncFailure);
-    expect(failed.get(asyncFailure)).toBe(rejection);
-    await expect(rejection).rejects.toBe(error);
-    expect(factory).toHaveBeenCalledTimes(1);
+    expect(renderedHook.result.current).toBe(apiHolder);
   });
 
   it('should preserve native promise identity and invalidation', async () => {
@@ -195,55 +116,83 @@ describe('useApi', () => {
     context.reset();
   });
 
-  it.each([
-    ['sync', 'sync'],
-    ['async', 'sync'],
-    ['sync', 'async'],
-    ['async', 'async'],
-  ] as const)(
-    'should consume a %s ref backed by a %s factory',
-    async (consumerMode, factoryMode) => {
+  it.each(['sync', 'async'] as const)(
+    'should consume a %s API using its declared loading mode',
+    async loading => {
       const apiRef = createApiRef<{ value: string }>().with({
-        id: 'migration',
-        loading: consumerMode,
-      });
-      const factoryRef = createApiRef<{ value: string }>().with({
-        id: 'migration',
-        loading: factoryMode,
+        id: 'example',
+        loading,
       });
       const factory = jest.fn(() => ({ value: 'Loaded API' }));
       const registry = new FrontendApiRegistry();
-      registry.register(
-        createApiFactory({ api: factoryRef, deps: {}, factory }),
-      );
+      registry.register(createApiFactory({ api: apiRef, deps: {}, factory }));
       const resolver = new FrontendApiResolver({ primaryRegistry: registry });
       const get = jest.spyOn(resolver, 'get');
       context.set({ 1: resolver });
       function Consumer() {
         return <div>{useApi(apiRef).value}</div>;
       }
-      const rendered = render(
+      render(
         <Suspense fallback="Loading">
           <Consumer />
         </Suspense>,
       );
-      const isSynchronous = factoryMode === 'sync';
-      expect(screen.queryByText('Loaded API') !== null).toBe(isSynchronous);
-      expect(screen.queryByText('Loading') !== null).toBe(!isSynchronous);
+      expect(screen.queryByText('Loaded API') !== null).toBe(
+        loading === 'sync',
+      );
+      expect(screen.queryByText('Loading') !== null).toBe(loading === 'async');
       expect(await screen.findByText('Loaded API')).toBeInTheDocument();
       expect(factory).toHaveBeenCalledTimes(1);
-      expect(apiRef.loading).toBe(consumerMode);
-      expect(get).toHaveBeenCalledWith(apiRef, { async: true });
-      rendered.unmount();
-
-      // Nested legacy providers still forward the lookup to the native holder.
-      context.set({ 1: new LegacyApiAggregator(resolver) });
-      render(<Consumer />);
-      expect(screen.getByText('Loaded API')).toBeInTheDocument();
+      expect(get).toHaveBeenCalledWith(apiRef);
     },
   );
 
-  it('should expose migrated API failures and synchronous dependency errors without repeated suspension', async () => {
+  it.each([
+    ['sync', 'async'],
+    ['async', 'sync'],
+  ] as const)(
+    'should reject a %s ref backed by a %s factory without suspending',
+    (consumerMode, factoryMode) => {
+      const apiRef = createApiRef<string>().with({
+        id: 'changed',
+        loading: consumerMode,
+      });
+      const factoryRef = createApiRef<string>().with({
+        id: apiRef.id,
+        loading: factoryMode,
+      });
+      const factory = jest.fn(() => 'implementation');
+      const registry = new FrontendApiRegistry();
+      registry.register(
+        createApiFactory({ api: factoryRef, deps: {}, factory }),
+      );
+      context.set({
+        1: new FrontendApiResolver({ primaryRegistry: registry }),
+      });
+      function Consumer() {
+        return <div>{useApi(apiRef)}</div>;
+      }
+      withLogCollector(['error'], () => {
+        render(
+          <TestErrorBoundary>
+            <Suspense fallback="Loading">
+              <Consumer />
+            </Suspense>
+          </TestErrorBoundary>,
+        );
+        expect(screen.getByRole('alert')).toHaveTextContent(
+          "Conflicting loading mode for API 'changed'",
+        );
+        expect(screen.getByRole('alert')).toHaveTextContent(
+          'matching versions of the API ref',
+        );
+        expect(screen.queryByText('Loading')).not.toBeInTheDocument();
+        expect(factory).not.toHaveBeenCalled();
+      });
+    },
+  );
+
+  it('should expose async factory failures and stale dependency refs', async () => {
     const oldRef = createApiRef<string>().with({ id: 'migrated' });
     const newRef = createApiRef<string>().with({
       id: 'migrated',
@@ -257,7 +206,7 @@ describe('useApi', () => {
     const resolver = new FrontendApiResolver({ primaryRegistry: registry });
     context.set({ 1: resolver });
     function Consumer() {
-      return <div>{useApi(oldRef)}</div>;
+      return <div>{useApi(newRef)}</div>;
     }
     await withLogCollector(['error'], async () => {
       const rendered = render(
@@ -292,7 +241,7 @@ describe('useApi', () => {
         </TestErrorBoundary>,
       );
       expect(await screen.findByRole('alert')).toHaveTextContent(
-        "API 'parent' requests it through dependency 'child'",
+        'Dependency path: parent[child] -> migrated',
       );
       expect(screen.queryByText('Loading')).not.toBeInTheDocument();
       expect(get.mock.calls.every(([ref]) => ref.loading !== 'async')).toBe(
@@ -385,64 +334,6 @@ describe('useApi', () => {
     expect(renderHook(() => useApi(apiRef)).result.current).toBe(false);
   });
 
-  it('should read async-capable refs from a legacy synchronous context', () => {
-    const apiRef = createApiRef<{ value: string }>().with({
-      id: 'legacy-context',
-      loading: 'async',
-    });
-    const implementation = { value: 'legacy instance' };
-    context.set({ 1: { get: () => implementation } });
-    expect(renderHook(() => useApi(apiRef)).result.current).toBe(
-      implementation,
-    );
-  });
-
-  it('should surface synchronous legacy failures through providers retried before their first commit', () => {
-    const ApiContext = createVersionedContext<{ 1: LegacyApiAggregator }>(
-      'api-context',
-    );
-    const ref = createApiRef<string>().with({ id: 'failed-legacy' });
-    const factory = jest.fn(() => {
-      throw new Error('Legacy initialization failed');
-    });
-    const factories = new LegacyApiFactoryRegistry();
-    factories.register(
-      'default',
-      createApiFactory({ api: ref, deps: {}, factory }),
-    );
-    const resolver = new LegacyApiResolver(factories);
-    function Consumer() {
-      return <div>{useApi(ref)}</div>;
-    }
-    function Providers() {
-      const holder = new LegacyApiAggregator(
-        new LegacyApiRegistry(new Map()),
-        resolver,
-      );
-      return (
-        <ApiContext.Provider value={createVersionedValueMap({ 1: holder })}>
-          <Consumer />
-        </ApiContext.Provider>
-      );
-    }
-    withLogCollector(['error'], () => {
-      render(
-        <StrictMode>
-          <TestErrorBoundary>
-            <Suspense fallback="Loading">
-              <Providers />
-            </Suspense>
-          </TestErrorBoundary>
-        </StrictMode>,
-      );
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        'Legacy initialization failed',
-      );
-      expect(screen.queryByText('Loading')).not.toBeInTheDocument();
-      expect(factory).toHaveBeenCalled();
-    });
-  });
-
   it('should resolve routes', () => {
     const get = jest.fn(() => 'my-api-impl');
     context.set({ 1: { get } });
@@ -452,6 +343,6 @@ describe('useApi', () => {
 
     const value = renderedHook.result.current;
     expect(value).toBe('my-api-impl');
-    expect(get).toHaveBeenCalledWith({ ...apiRef, loading: 'async' });
+    expect(get).toHaveBeenCalledWith(apiRef);
   });
 });

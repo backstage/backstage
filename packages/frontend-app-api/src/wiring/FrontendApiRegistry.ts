@@ -23,12 +23,6 @@ import {
   ApiRef,
 } from '@backstage/frontend-plugin-api';
 
-import {
-  apiHolderSupportsAsync,
-  createApiPromise,
-  createRejectedApiPromise,
-} from '@internal/frontend';
-
 export class FrontendApiRegistry {
   private readonly factories = new Map<string, AnyApiFactory>();
 
@@ -85,9 +79,7 @@ export class FrontendApiRegistry {
 }
 
 export class FrontendApiResolver implements ApiHolder {
-  readonly [apiHolderSupportsAsync] = true;
   private readonly apis = new Map<string, unknown>();
-  private readonly asyncApis = new Map<string, Promise<unknown>>();
   private readonly primaryRegistry?: FrontendApiRegistry;
   private readonly secondaryRegistry?: FrontendApiRegistry;
   private readonly fallbackApis?: ApiHolder;
@@ -102,163 +94,121 @@ export class FrontendApiResolver implements ApiHolder {
     this.fallbackApis = options.fallbackApis;
   }
 
-  get<
-    TApi = unknown,
-    TApiRef extends AnyApiRef = ApiRef<TApi>,
-    TAsync extends boolean = false,
-  >(
+  get<TApi = unknown, TApiRef extends AnyApiRef = ApiRef<TApi>>(
     ref: TApiRef,
-    options?: { async?: TAsync },
-  ): ApiLookupResult<TApiRef, TAsync> {
-    return this.load(ref, [], options?.async) as ApiLookupResult<
-      TApiRef,
-      TAsync
-    >;
+  ): ApiLookupResult<TApiRef> {
+    return this.load(ref) as ApiLookupResult<TApiRef>;
   }
 
   isMaterialized(apiRefId: string) {
-    return this.apis.has(apiRefId) || this.asyncApis.has(apiRefId);
+    return this.apis.has(apiRefId);
   }
 
   invalidate(apiRefIds?: Iterable<string>) {
     if (apiRefIds === undefined) {
       this.apis.clear();
-      this.asyncApis.clear();
       return;
     }
-
     for (const apiRefId of apiRefIds) {
       this.apis.delete(apiRefId);
-      this.asyncApis.delete(apiRefId);
     }
   }
 
   private load<T>(
     ref: AnyApiRef<T>,
     loading: { apiId: string; dependencyName: string }[] = [],
-    forceAsync = false,
   ): T | Promise<T> | undefined {
-    const isAsyncAccess = forceAsync || ref.loading === 'async';
     const factory =
       this.primaryRegistry?.get(ref) ?? this.secondaryRegistry?.get(ref);
-    if (!isAsyncAccess && factory?.api.loading === 'async') {
-      const consumer = loading[loading.length - 1];
-      throw Object.assign(
-        new Error(
-          `API '${
-            ref.id
-          }' is registered with loading: 'async' but was requested synchronously.${
-            consumer
-              ? ` API '${consumer.apiId}' requests it through dependency '${consumer.dependencyName}'.` +
-                ` Dependency path: ${loading
-                  .map(entry => `${entry.apiId}[${entry.dependencyName}]`)
-                  .join(' -> ')} -> ${ref.id}.` +
-                ` Set loading: 'async' on the ref for '${consumer.apiId}' and update its factory as needed.`
-              : ` Await apis.get(ref, { async: true }) or use useApi(ref) during rendering. Alternatively, update the package exporting this API ref to an async-capable version.`
-          }`,
-        ),
-        { name: 'AsyncApiAccessError', apiRefId: ref.id },
+    if (
+      factory &&
+      (factory.api.loading ?? 'sync') !== (ref.loading ?? 'sync')
+    ) {
+      throw new Error(
+        `Conflicting loading mode for API '${ref.id}': the ref declares '${
+          ref.loading ?? 'sync'
+        }' but the factory declares '${factory.api.loading ?? 'sync'}'.${
+          loading.length
+            ? ` Dependency path: ${loading
+                .map(entry => `${entry.apiId}[${entry.dependencyName}]`)
+                .join(' -> ')} -> ${ref.id}.`
+            : ''
+        } Update consumers and factories to use matching versions of the API ref.`,
       );
     }
     if (loading.some(entry => entry.apiId === ref.id)) {
       throw new Error(`Circular dependency of api factory for ${ref}`);
     }
-    if (isAsyncAccess && this.asyncApis.has(ref.id)) {
-      return this.asyncApis.get(ref.id) as Promise<T>;
+    if (this.apis.has(ref.id)) {
+      return this.apis.get(ref.id) as T | Promise<T>;
     }
+    if (!factory) {
+      return this.fallbackApis?.get(ref);
+    }
+
+    const isAsync = ref.loading === 'async';
     try {
-      let api: unknown;
-      if (this.apis.has(ref.id)) {
-        api = this.apis.get(ref.id);
-      } else {
-        if (!factory) {
-          const fallback = this.fallbackApis?.get(ref, {
-            async: isAsyncAccess,
-          });
-          if (!isAsyncAccess || fallback === undefined) {
-            return fallback;
-          }
-          const promise = createApiPromise(fallback) as Promise<T>;
-          this.asyncApis.set(ref.id, promise);
-          return promise;
-        }
-
-        const isAsyncFactory = factory.api.loading === 'async';
-        const depEntries = Object.entries(factory.deps);
-        const depValues = depEntries.map(([name, depRef]) => {
-          try {
-            if (!isAsyncFactory && depRef.loading === 'async') {
-              throw new Error(
-                `Synchronous API '${factory.api.id}' cannot depend on async API '${depRef.id}' through dependency '${name}'.` +
-                  ` Dependency path: ${[
-                    ...loading,
-                    { apiId: factory.api.id, dependencyName: name },
-                  ]
-                    .map(entry => `${entry.apiId}[${entry.dependencyName}]`)
-                    .join(' -> ')} -> ${depRef.id}.` +
-                  ` Set loading: 'async' on the ref for '${factory.api.id}' and update its factory as needed.`,
-              );
-            }
-            const dep = this.load(
-              depRef,
-              [...loading, { apiId: factory.api.id, dependencyName: name }],
-              isAsyncFactory,
+      const depEntries = Object.entries(factory.deps);
+      const depValues = depEntries.map(([name, depRef]) => {
+        try {
+          if (!isAsync && depRef.loading === 'async') {
+            throw new Error(
+              `Synchronous API '${ref.id}' cannot depend on async API '${depRef.id}' through dependency '${name}'.` +
+                ` Set loading: 'async' on the ref for '${ref.id}' and update its factory.`,
             );
-            if (dep === undefined) {
-              throw new Error(
-                `No API factory available for dependency ${depRef} of dependent ${factory.api}`,
-              );
-            }
-            return dep;
-          } catch (error) {
-            if (!isAsyncFactory) {
-              throw error;
-            }
-            return Promise.reject(error);
           }
-        });
-        const instantiate = (values: unknown[]) => {
-          const deps: { [name: string]: unknown } = {};
-          for (const [index, [key, depRef]] of depEntries.entries()) {
-            if (values[index] === undefined) {
-              throw new Error(
-                `No API factory available for dependency ${depRef} of dependent ${factory.api}`,
-              );
-            }
-            deps[key] = values[index];
+          const dep = this.load(depRef, [
+            ...loading,
+            { apiId: ref.id, dependencyName: name },
+          ]);
+          if (dep === undefined) {
+            throw new Error(
+              `No API factory available for dependency ${depRef} of dependent ${factory.api}`,
+            );
           }
-          return factory.factory(deps);
-        };
-
-        api = isAsyncFactory
-          ? Promise.all(depValues).then(instantiate)
-          : instantiate(depValues);
-        if (
-          !isAsyncFactory &&
-          api &&
-          typeof (api as Promise<unknown>).then === 'function'
-        ) {
-          // Observe a rejected promise even though the factory violates its contract.
-          Promise.resolve(api).catch(() => {});
-          throw new Error(
-            `API '${ref.id}' must opt in to async factories using loading: 'async'.` +
-              ` Update the ref used to register this factory, or return a synchronous implementation.`,
-          );
+          return dep;
+        } catch (error) {
+          if (!isAsync) {
+            throw error;
+          }
+          return Promise.reject(error);
         }
-        this.apis.set(ref.id, api);
+      });
+      const instantiate = (values: unknown[]) => {
+        const deps: { [name: string]: unknown } = {};
+        for (const [index, [key, depRef]] of depEntries.entries()) {
+          if (values[index] === undefined) {
+            throw new Error(
+              `No API factory available for dependency ${depRef} of dependent ${factory.api}`,
+            );
+          }
+          deps[key] = values[index];
+        }
+        return factory.factory(deps);
+      };
+      const api = isAsync
+        ? Promise.all(depValues).then(instantiate)
+        : instantiate(depValues);
+      if (
+        !isAsync &&
+        api &&
+        typeof (api as Promise<unknown>).then === 'function'
+      ) {
+        // Observe a rejected promise even though the factory violates its contract.
+        Promise.resolve(api).catch(() => {});
+        throw new Error(
+          `API '${ref.id}' must opt in to async factories using loading: 'async'.` +
+            ' Update the API ref and its consumers, or return a synchronous implementation.',
+        );
       }
-      if (isAsyncAccess) {
-        const promise = createApiPromise(api) as Promise<T>;
-        this.asyncApis.set(ref.id, promise);
-        return promise;
-      }
-      return api as T;
+      this.apis.set(ref.id, api);
+      return api as T | Promise<T>;
     } catch (error) {
-      if (!isAsyncAccess) {
+      if (!isAsync) {
         throw error;
       }
-      const promise = createRejectedApiPromise(error);
-      this.asyncApis.set(ref.id, promise);
+      const promise = Promise.reject<T>(error);
+      this.apis.set(ref.id, promise);
       return promise;
     }
   }

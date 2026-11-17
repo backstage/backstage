@@ -213,7 +213,7 @@ describe('FrontendApiResolver', () => {
     const registry = new FrontendApiRegistry();
     registry.register(createApiFactory(sync, 'synchronous'));
     const resolver = new FrontendApiResolver({ primaryRegistry: registry });
-    await expect(resolver.get(alias)).resolves.toBe('synchronous');
+    expect(() => resolver.get(alias)).toThrow('Conflicting loading mode');
     expect(resolver.get(sync)).toBe('synchronous');
 
     registry.set({ api: sync, deps: { asyncRef }, factory: () => 'invalid' });
@@ -229,74 +229,86 @@ describe('FrontendApiResolver', () => {
     );
   });
 
-  it('should share instances across access modes and preserve factory dependency contracts', async () => {
-    const sync = createApiRef<{ value: string }>().with({ id: 'migrated' });
-    const asyncRef = createApiRef<{ value: string }>().with({
-      id: 'migrated',
+  it.each([
+    ['sync', 'async'],
+    ['async', 'sync'],
+  ] as const)(
+    'should reject a %s ref for a %s factory before and after initialization',
+    async (consumerMode, factoryMode) => {
+      const api = createApiRef<{ value: string }>().with({
+        id: 'changed',
+        loading: factoryMode,
+      });
+      const staleRef = createApiRef<{ value: string }>().with({
+        id: api.id,
+        loading: consumerMode,
+      });
+      const factory = jest.fn(() => ({ value: 'instance' }));
+      const registry = new FrontendApiRegistry();
+      registry.register(createApiFactory({ api, deps: {}, factory }));
+      const resolver = new FrontendApiResolver({ primaryRegistry: registry });
+      expect(() => resolver.get(staleRef)).toThrow(
+        `the ref declares '${consumerMode}' but the factory declares '${factoryMode}'`,
+      );
+      expect(factory).not.toHaveBeenCalled();
+      const result = resolver.get(api);
+      await expect(Promise.resolve(result)).resolves.toEqual({
+        value: 'instance',
+      });
+      expect(resolver.get(api)).toBe(result);
+      expect(() => resolver.get(staleRef)).toThrow(
+        'matching versions of the API ref',
+      );
+      expect(factory).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it('should identify stale dependency refs and resolve them once updated', async () => {
+    const child = createApiRef<string>().with({
+      id: 'child',
       loading: 'async',
     });
-    const factory = jest.fn(() => ({ value: 'instance' }));
-    const registry = new FrontendApiRegistry();
-    registry.register(createApiFactory({ api: sync, deps: {}, factory }));
-    const resolver = new FrontendApiResolver({ primaryRegistry: registry });
-    const wrapped = resolver.get(asyncRef);
-    expect(await wrapped).toBe(resolver.get(sync));
-    expect(resolver.get(sync, { async: false })).toBe(resolver.get(sync));
-    expect(resolver.get(asyncRef)).toBe(wrapped);
-    expect(factory).toHaveBeenCalledTimes(1);
-
-    registry.set(createApiFactory({ api: asyncRef, deps: {}, factory }));
-    resolver.invalidate([sync.id]);
-    expect(() => resolver.get(sync)).toThrow(
-      'Await apis.get(ref, { async: true })',
-    );
-    const migrated = resolver.get(asyncRef);
-    await expect(migrated).resolves.toEqual({ value: 'instance' });
-    expect(resolver.get(asyncRef)).toBe(migrated);
-    expect(() => resolver.get(sync)).toThrow('requested synchronously');
-    expect(() => resolver.get(sync, { async: false })).toThrow(
-      'requested synchronously',
-    );
-    expect(factory).toHaveBeenCalledTimes(2);
-
-    const parent = createApiRef<string>().with({ id: 'parent' });
-    const asyncParent = createApiRef<string>().with({
+    const staleChild = createApiRef<string>().with({ id: child.id });
+    const parent = createApiRef<string>().with({
       id: 'parent',
       loading: 'async',
     });
-    const parentFactory = jest.fn(({ child }) => child.value);
-    registry.register(
+    const root = createApiRef<string>().with({ id: 'root', loading: 'async' });
+    const childFactory = jest.fn(() => 'loaded');
+    const parentFactory = jest.fn(({ child: value }) => value);
+    const registry = new FrontendApiRegistry();
+    registry.registerAll([
+      createApiFactory({ api: child, deps: {}, factory: childFactory }),
       createApiFactory({
-        api: asyncParent,
-        deps: { child: sync },
+        api: parent,
+        deps: { child: staleChild },
         factory: parentFactory,
       }),
+      createApiFactory({
+        api: root,
+        deps: { parent },
+        factory: ({ parent: value }) => value,
+      }),
+    ]);
+    const resolver = new FrontendApiResolver({ primaryRegistry: registry });
+    const rejected = resolver.get(root);
+    await expect(rejected).rejects.toThrow(
+      'Dependency path: root[parent] -> parent[child] -> child',
     );
-    await expect(resolver.get(asyncParent)).resolves.toBe('instance');
-    expect(parentFactory).toHaveBeenCalledTimes(1);
-
+    await expect(rejected).rejects.toThrow('matching versions of the API ref');
+    expect(resolver.get(root)).toBe(rejected);
+    expect(childFactory).not.toHaveBeenCalled();
+    expect(parentFactory).not.toHaveBeenCalled();
     registry.set(
       createApiFactory({
         api: parent,
-        deps: { child: sync },
+        deps: { child },
         factory: parentFactory,
       }),
     );
-    resolver.invalidate([parent.id]);
-    expect(() => resolver.get(parent)).toThrow(
-      "API 'parent' requests it through dependency 'child'",
-    );
-    expect(() => resolver.get(parent)).toThrow(
-      'Dependency path: parent[child] -> migrated',
-    );
-    expect(() => resolver.get(parent)).toThrow(
-      "Set loading: 'async' on the ref for 'parent'",
-    );
-    const rejected = resolver.get(asyncParent);
-    await expect(rejected).rejects.toThrow(
-      "API 'parent' requests it through dependency 'child'",
-    );
-    expect(resolver.get(asyncParent)).toBe(rejected);
+    resolver.invalidate([parent.id, root.id]);
+    await expect(resolver.get(root)).resolves.toBe('loaded');
+    expect(childFactory).toHaveBeenCalledTimes(1);
     expect(parentFactory).toHaveBeenCalledTimes(1);
   });
 
@@ -322,63 +334,6 @@ describe('FrontendApiResolver', () => {
     expect(fallback.get(api)).toBe(newResult);
     expect(fallback.get(api)).toBe(newResult);
   });
-
-  it('should normalize legacy fallback values for async access', async () => {
-    const syncRef = createApiRef<string>().with({ id: 'fallback' });
-    const asyncRef = createApiRef<string>().with({
-      id: 'fallback',
-      loading: 'async',
-    });
-    let value: string | undefined = 'first';
-    // Model the synchronous lookup contract of a legacy fallback holder.
-    const get = jest.fn().mockImplementation(() => value);
-    const resolver = new FrontendApiResolver({ fallbackApis: { get } });
-
-    expect(resolver.get(syncRef)).toBe('first');
-    const first = resolver.get(asyncRef);
-    await expect(first).resolves.toBe('first');
-    expect(resolver.get(asyncRef)).toBe(first);
-    value = 'second';
-    resolver.invalidate([asyncRef.id]);
-    const second = resolver.get(asyncRef);
-    expect(second).not.toBe(first);
-    await expect(second).resolves.toBe('second');
-    value = undefined;
-    resolver.invalidate();
-    expect(resolver.get(asyncRef)).toBeUndefined();
-    expect(resolver.isMaterialized(asyncRef.id)).toBe(false);
-  });
-
-  it.each(['sync', 'async'] as const)(
-    'should allow explicit async access to a %s factory through an older ref',
-    async loading => {
-      const oldRef = createApiRef<{ value: string }>().with({ id: 'migrated' });
-      const factoryRef = createApiRef<{ value: string }>().with({
-        id: oldRef.id,
-        loading,
-      });
-      const implementation = { value: 'shared' };
-      const factory = jest.fn(() => implementation);
-      const registry = new FrontendApiRegistry();
-      registry.register(
-        createApiFactory({ api: factoryRef, deps: {}, factory }),
-      );
-      const resolver = new FrontendApiResolver({ primaryRegistry: registry });
-      const promise = resolver.get(oldRef, { async: true });
-      expect(promise).toBeInstanceOf(Promise);
-      expect(resolver.get(oldRef, { async: true })).toBe(promise);
-      expect(resolver.get({ ...oldRef, loading: 'async' })).toBe(promise);
-      await expect(promise).resolves.toBe(implementation);
-      expect(factory).toHaveBeenCalledTimes(1);
-      expect(oldRef.loading).toBeUndefined();
-      const missing = createApiRef<string>().with({ id: 'missing' });
-      expect(resolver.get(missing, { async: true })).toBeUndefined();
-      resolver.invalidate([oldRef.id]);
-      expect(resolver.get(oldRef, { async: true })).not.toBe(promise);
-      await resolver.get(oldRef, { async: true });
-      expect(factory).toHaveBeenCalledTimes(2);
-    },
-  );
 
   it('should cache falsy API values', () => {
     const falseApiRef = createApiRef<boolean>({ id: 'test.false' });
