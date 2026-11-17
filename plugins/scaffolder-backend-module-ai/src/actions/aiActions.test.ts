@@ -147,6 +147,8 @@ type Fixture = {
     denyModelFor?: (credentials: BackstageCredentials) => boolean;
     /** Deny every model authorization from this 1-based call onward. */
     denyFromCall?: number;
+    /** Throw from every model authorization at this 1-based call onward. */
+    throwFromCall?: number;
   }): Promise<{
     backend: TestBackend;
     action(id: string): TemplateAction<any>;
@@ -185,11 +187,15 @@ async function fixture(): Promise<Fixture> {
       const captured = new Map<string, TemplateAction<any>>();
       const denyModelFor = options.denyModelFor;
       const denyFromCall = options.denyFromCall ?? Number.POSITIVE_INFINITY;
+      const throwFromCall = options.throwFromCall ?? Number.POSITIVE_INFINITY;
       let authorizeCalls = 0;
       const permissions = mockServices.permissions.mock({
-        authorize: async (queries, authOptions) =>
-          queries.map(() => {
-            authorizeCalls += 1;
+        authorize: async (queries, authOptions) => {
+          authorizeCalls += 1;
+          if (authorizeCalls >= throwFromCall) {
+            throw new Error('permissions backend unavailable');
+          }
+          return queries.map(() => {
             const denied =
               authorizeCalls >= denyFromCall ||
               (denyModelFor !== undefined &&
@@ -197,7 +203,8 @@ async function fixture(): Promise<Fixture> {
             return {
               result: denied ? ('DENY' as const) : ('ALLOW' as const),
             };
-          }),
+          });
+        },
       });
       const backend = await startTestBackend({
         extensionPoints: [
@@ -823,6 +830,36 @@ describe('scaffolder AI actions', () => {
         new RegExp(
           `The submitting user is no longer allowed to use the model 'openai/gpt-scaffolder': the '${MODEL_PERMISSION}' permission was denied during the run; ask an administrator for access`,
         ),
+      );
+      expect(provider.requests).toHaveLength(0);
+      await backend.stop();
+    } finally {
+      await provider.close();
+      await f.close();
+    }
+  }, 30000);
+
+  it('keeps the settlement diagnostic when the permissions backend fails on the re-check', async () => {
+    const f = await fixture();
+    const provider = await providerServer('unused');
+    try {
+      // The action check and the acquisition check allow; the guard's
+      // per-dispatch recheck denies; the post-failure attribution re-check
+      // throws — the surfaced message must be the settlement failure, not
+      // the permissions backend's error.
+      const { backend, action } = await f.start({
+        providerUrl: provider.baseUrl,
+        denyFromCall: 3,
+        throwFromCall: 4,
+      });
+      const ctx = context({
+        actionId: 'ai:generate',
+        taskId: 'gen-attribution-failure',
+        input: { prompt: 'Write something' },
+        credentials: alice(),
+      });
+      await expect(action('ai:generate').handler(ctx)).rejects.toThrow(
+        /did not complete \(reason: 'model_error': Request aborted\)\. The decision was recorded in the installation's AI audit journal; ask an administrator to review the denial/,
       );
       expect(provider.requests).toHaveLength(0);
       await backend.stop();

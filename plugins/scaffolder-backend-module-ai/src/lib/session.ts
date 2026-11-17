@@ -143,27 +143,34 @@ async function settlementFailure(options: {
   if (settled.reason === 'model_error' && model !== undefined) {
     // A dispatch denied mid-run settles as a model error whose provider
     // detail does not carry the denial reason, so re-check the model
-    // permission now: a denial that appeared during the run is named.
-    const decisions = await options.permissions.authorize(
-      [
-        {
-          permission: {
-            type: 'basic',
-            name: modelPermissionName(model),
-            attributes: {},
+    // permission now: a denial that appeared during the run is named. The
+    // attribution helper must never replace the AI-side diagnostic: a
+    // permissions backend that fails here falls through to the generic
+    // settlement failure.
+    try {
+      const decisions = await options.permissions.authorize(
+        [
+          {
+            permission: {
+              type: 'basic',
+              name: modelPermissionName(model),
+              attributes: {},
+            },
           },
-        },
-      ],
-      { credentials: options.credentials },
-    );
-    if (decisions[0]?.result !== 'ALLOW') {
-      return new Error(
-        `${prefix} did not complete (reason: 'model_error'${detail}). The submitting user is no longer allowed to use the model '${
-          model.provider
-        }/${model.modelId}': the '${modelPermissionName(
-          model,
-        )}' permission was denied during the run; ask an administrator for access`,
+        ],
+        { credentials: options.credentials },
       );
+      if (decisions[0]?.result !== 'ALLOW') {
+        return new Error(
+          `${prefix} did not complete (reason: 'model_error'${detail}). The submitting user is no longer allowed to use the model '${
+            model.provider
+          }/${model.modelId}': the '${modelPermissionName(
+            model,
+          )}' permission was denied during the run; ask an administrator for access`,
+        );
+      }
+    } catch {
+      // Fall through to the generic settlement failure.
     }
   }
   return new Error(
