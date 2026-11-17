@@ -87,6 +87,28 @@ function fixture() {
 }
 
 describe('model operation guard', () => {
+  it('settles promptly when the operation aborts during a stalled permission recheck', async () => {
+    const f = fixture();
+    let release!: (allowed: boolean) => void;
+    const held = new Promise<boolean>(resolve => {
+      release = resolve;
+    });
+    f.recheck.mockImplementationOnce(() => held);
+    const pending = f.fetch();
+    await new Promise(resolve => setImmediate(resolve));
+    expect(f.recheck).toHaveBeenCalledTimes(1);
+    // Abort while the recheck is still in flight: the fetch must settle now,
+    // not when the host-side check eventually finishes.
+    f.operation.controller.abort();
+    await expect(pending).rejects.toThrow('Model authority revoked');
+    expect(f.transport).not.toHaveBeenCalled();
+    expect(f.events).toContain('deny:1');
+    // The eventual check result grants nothing after the abort.
+    release(true);
+    await f.guard.finish('cancelled');
+    expect(f.transport).not.toHaveBeenCalled();
+  });
+
   it('gates every retry, latches revocation, and never sends later retries', async () => {
     const f = fixture();
     f.transport.mockImplementationOnce(async () => {
