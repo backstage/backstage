@@ -22,6 +22,7 @@ import { UnregisterEntityDialog } from './UnregisterEntityDialog';
 import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { catalogApiRef } from '../../api';
+import { entityPresentationApiRef } from '../../apis';
 import { entityRouteRef } from '../../routes';
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -332,11 +333,73 @@ describe('UnregisterEntityDialog', () => {
       expect(onConfirm).toHaveBeenCalled();
       expect(alertApi.getAlerts()).toContainEqual(
         expect.objectContaining({
-          message: 'Removed entity n',
+          message: 'Removed entity ns/n',
           severity: 'success',
           display: 'transient',
         }),
       );
     });
+  });
+
+  it('names the deleted entity using the entity presentation API', async () => {
+    const deleteEntity = jest.fn();
+    const onConfirm = jest.fn();
+    const entityPresentationApi = {
+      forEntity: jest.fn(() => ({
+        snapshot: {
+          entityRef: 'component:ns/n',
+          primaryTitle: 'Pretty Name',
+        },
+        promise: Promise.resolve({
+          entityRef: 'component:ns/n',
+          primaryTitle: 'Pretty Name',
+        }),
+      })),
+    };
+
+    stateSpy.mockImplementation(() => ({
+      type: 'only-delete',
+      location: 'url:http://example.com',
+      deleteEntity,
+    }));
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApiMock()],
+          [alertApiRef, alertApi],
+          [entityPresentationApiRef, entityPresentationApi],
+        ]}
+      >
+        <UnregisterEntityDialog
+          open
+          onClose={() => {}}
+          onConfirm={onConfirm}
+          entity={entity}
+        />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
+
+    await userEvent.click(await screen.findByText('Delete Entity'));
+
+    await waitFor(() => {
+      expect(deleteEntity).toHaveBeenCalled();
+      expect(onConfirm).toHaveBeenCalled();
+      expect(alertApi.getAlerts()).toContainEqual(
+        expect.objectContaining({
+          message: 'Removed entity Pretty Name',
+          severity: 'success',
+        }),
+      );
+    });
+    expect(entityPresentationApi.forEntity).toHaveBeenCalledWith(
+      entity,
+      undefined,
+    );
   });
 });
