@@ -21,15 +21,11 @@ import {
   type AssistantMessage,
   type AssistantMessageEventStream,
   type Context,
-  type Model,
   type Models,
   type ProviderHeaders,
 } from '@earendil-works/pi-ai';
-import * as responses from '@earendil-works/pi-ai/api/openai-responses';
-import * as completions from '@earendil-works/pi-ai/api/openai-completions';
-import * as azure from '@earendil-works/pi-ai/api/azure-openai-responses';
-import * as codex from '@earendil-works/pi-ai/api/openai-codex-responses';
-import * as anthropic from '@earendil-works/pi-ai/api/anthropic-messages';
+import { builtinProviderRegistry } from '../providers/builtins';
+import type { AiProviderRegistry } from '../providers/registry';
 import type { AttemptJournal } from '../journal/types';
 import { assertRedactedText } from '../journal/redaction';
 import type {
@@ -52,7 +48,7 @@ type ProviderAuthority = Readonly<{
 
 export type GuardedModelBinding = Readonly<{
   operation: TrustedOperation;
-  model: Model<any>;
+  model: AnyModel;
   authority: ProviderAuthority;
 }>;
 
@@ -82,26 +78,6 @@ type ModelRequests = Pick<
   | 'generateImages'
 >;
 
-type Adapter = {
-  stream(
-    model: never,
-    context: never,
-    options: never,
-  ): AssistantMessageEventStream;
-  streamSimple(
-    model: never,
-    context: never,
-    options: never,
-  ): AssistantMessageEventStream;
-};
-const ADAPTERS: Record<TrustedOperation['api'], Adapter> = {
-  'openai-responses': responses as unknown as Adapter,
-  'openai-completions': completions as unknown as Adapter,
-  'azure-openai-responses': azure as unknown as Adapter,
-  'openai-codex-responses': codex as unknown as Adapter,
-  'anthropic-messages': anthropic as unknown as Adapter,
-};
-
 /**
  * Request-only facade. The host supplies verified, filtered catalog lookups
  * separately; no provider, credential, mutation or administrative access escapes.
@@ -111,8 +87,10 @@ const ADAPTERS: Record<TrustedOperation['api'], Adapter> = {
 export function createGuardedModelOperations(options: {
   guard: ModelOperationGuard;
   journal: AttemptJournal;
+  providers?: AiProviderRegistry;
   resolve(model: AnyModel, operation: ModelOperation): GuardedModelBinding;
 }): ModelRequests {
+  const providers = options.providers ?? builtinProviderRegistry;
   class PolicyRejection extends Error {}
   class ResolveContractViolation extends Error {}
   const reject = async (
@@ -201,6 +179,119 @@ export function createGuardedModelOperations(options: {
     errorMessage: reason,
     timestamp: Date.now(),
   });
+  const prepare = async (
+    model: AnyModel,
+    caller: Record<string, unknown> | undefined,
+    operation: ModelOperation,
+  ) => {
+    const binding = await resolveBinding(model, operation);
+    const op: TrustedOperation = {
+      ...binding.operation,
+      ...(binding.authority.kind === 'oauth'
+        ? { providerCredentialExpiresAt: binding.authority.expiresAt }
+        : {}),
+    };
+    if (
+      !hasTrustedOperationContext(op) ||
+      !matches(binding, model, operation)
+    ) {
+      await reject(
+        binding,
+        `models.${operation}`,
+        'unverified model operation',
+      );
+    }
+    if (!['apiKey', 'oauth', 'federation'].includes(binding.authority.kind)) {
+      await reject(binding, 'auth.token', 'unsupported provider credentials');
+    }
+    // Pi can discover federation credentials from the process environment.
+    // Do not permit that path under a static or OAuth authority binding.
+    if (binding.authority.kind === 'federation') {
+      await reject(
+        binding,
+        'auth.token-exchange',
+        'federation token exchange is not certified',
+      );
+    }
+    const hasAuth =
+      !!binding.authority.apiKey ||
+      Object.entries(binding.authority.headers ?? {}).some(
+        ([key, value]) =>
+          ['authorization', 'x-api-key', 'cf-aig-authorization'].includes(
+            key.toLowerCase(),
+          ) &&
+          typeof value === 'string' &&
+          !!value.trim(),
+      );
+    if (!hasAuth) {
+      await reject(binding, 'auth.token', 'provider credentials required');
+    }
+    if (
+      binding.authority.kind === 'oauth' &&
+      (typeof binding.authority.expiresAt !== 'number' ||
+        !Number.isFinite(binding.authority.expiresAt) ||
+        binding.authority.expiresAt <= Date.now())
+    ) {
+      await reject(
+        binding,
+        'auth.token',
+        'credential expired; re-authentication required',
+      );
+    }
+    const guarded = options.guard.bind(op);
+    let requestOptions: Record<string, unknown>;
+    try {
+      requestOptions = guardedRequestOptions(op, guarded, caller, providers);
+    } catch {
+      await reject(binding, `models.${operation}`, 'unsupported model options');
+      throw new Error('unreachable');
+    }
+    const module = providers.get(op.api);
+    if (!module) {
+      await reject(
+        binding,
+        `models.${operation}`,
+        'unsupported model transport',
+      );
+      throw new Error('unreachable');
+    }
+    // Provider callbacks receive model objects. Never expose the host's
+    // canonical object to an extension that could mutate later headers.
+    for (const key of [
+      'onPayload',
+      'onResponse',
+      'onProviderStreamEvent',
+    ] as const) {
+      const callback = requestOptions[key];
+      if (typeof callback === 'function') {
+        requestOptions[key] = (value: unknown, callbackModel: AnyModel) =>
+          callback(value, structuredClone(callbackModel));
+      }
+    }
+    let guardedResponseReceived = false;
+    let guardAttempted = false;
+    const callOptions = {
+      ...requestOptions,
+      apiKey: binding.authority.apiKey,
+      headers: binding.authority.headers,
+      env: binding.authority.env,
+      // No trusted or caller options may displace the enforcement boundary.
+      fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
+        guardAttempted = true;
+        const response = await guarded.fetch(input, init);
+        guardedResponseReceived = true;
+        return response;
+      },
+    };
+    return {
+      binding,
+      guarded,
+      adapter: module.adapter,
+      callOptions,
+      usedGuard: () => guardedResponseReceived,
+      attemptedGuard: () => guardAttempted,
+    };
+  };
   function start(
     model: AnyModel,
     context: Context,
@@ -212,106 +303,17 @@ export function createGuardedModelOperations(options: {
     void (async () => {
       let guarded: ReturnType<ModelOperationGuard['bind']> | undefined;
       try {
-        const binding = await resolveBinding(model, operation);
-        const op: TrustedOperation = {
-          ...binding.operation,
-          ...(binding.authority.kind === 'oauth'
-            ? { providerCredentialExpiresAt: binding.authority.expiresAt }
-            : {}),
-        };
-        if (
-          !hasTrustedOperationContext(op) ||
-          !matches(binding, model, operation)
-        ) {
-          await reject(
-            binding,
-            `models.${operation}`,
-            'unverified model operation',
-          );
-        }
-        if (
-          !['apiKey', 'oauth', 'federation'].includes(binding.authority.kind)
-        ) {
-          await reject(
-            binding,
-            'auth.token',
-            'unsupported provider credentials',
-          );
-        }
-        // Pi can discover federation credentials from the process environment.
-        // Do not permit that path under a static or OAuth authority binding.
-        if (binding.authority.kind === 'federation') {
-          await reject(
-            binding,
-            'auth.token-exchange',
-            'federation token exchange is not certified',
-          );
-        }
-        const hasAuth =
-          !!binding.authority.apiKey ||
-          Object.entries(binding.authority.headers ?? {}).some(
-            ([key, value]) =>
-              ['authorization', 'x-api-key', 'cf-aig-authorization'].includes(
-                key.toLowerCase(),
-              ) &&
-              typeof value === 'string' &&
-              !!value.trim(),
-          );
-        if (!hasAuth) {
-          await reject(binding, 'auth.token', 'provider credentials required');
-        }
-        if (
-          binding.authority.kind === 'oauth' &&
-          (typeof binding.authority.expiresAt !== 'number' ||
-            !Number.isFinite(binding.authority.expiresAt) ||
-            binding.authority.expiresAt <= Date.now())
-        ) {
-          await reject(
-            binding,
-            'auth.token',
-            'credential expired; re-authentication required',
-          );
-        }
-        guarded = options.guard.bind(op);
-        let requestOptions: Record<string, unknown>;
-        try {
-          requestOptions = guardedRequestOptions(op, guarded, caller);
-        } catch {
-          await reject(
-            binding,
-            `models.${operation}`,
-            'unsupported model options',
-          );
-          throw new Error('unreachable');
-        }
-        const adapter = ADAPTERS[op.api];
-        if (!adapter)
+        const prepared = await prepare(model, caller, operation);
+        guarded = prepared.guarded;
+        const { binding, adapter, callOptions } = prepared;
+        if (adapter.kind !== 'stream') {
           await reject(
             binding,
             `models.${operation}`,
             'unsupported model transport',
           );
-        // Provider callbacks receive model objects. Never expose the host's
-        // canonical object to an extension that could mutate later headers.
-        for (const key of [
-          'onPayload',
-          'onResponse',
-          'onProviderStreamEvent',
-        ] as const) {
-          const callback = requestOptions[key];
-          if (typeof callback === 'function') {
-            requestOptions[key] = (value: unknown, callbackModel: AnyModel) =>
-              callback(value, structuredClone(callbackModel));
-          }
+          throw new Error('unreachable');
         }
-        const callOptions = {
-          ...requestOptions,
-          apiKey: binding.authority.apiKey,
-          headers: binding.authority.headers,
-          env: binding.authority.env,
-          // No trusted or caller options may displace the enforcement boundary.
-          fetch: guarded.fetch.bind(guarded),
-        };
         const input = normalizeContext(context);
         const native = (simple ? adapter.streamSimple : adapter.stream)(
           binding.model as never,
@@ -366,6 +368,68 @@ export function createGuardedModelOperations(options: {
       'unsupported model operation',
     );
   };
+  const invokeCustom = async (
+    model: AnyModel,
+    context: unknown,
+    caller: Record<string, unknown> | undefined,
+    operation: ModelOperation,
+  ): Promise<unknown> => {
+    const module = providers.get(model.api);
+    if (
+      !module ||
+      module.adapter.kind !== 'custom' ||
+      !module.certifiedOperations.includes(operation)
+    ) {
+      return unsupported(model, operation);
+    }
+    const {
+      binding,
+      guarded,
+      adapter,
+      callOptions,
+      usedGuard,
+      attemptedGuard,
+    } = await prepare(model, caller, operation);
+    if (adapter.kind !== 'custom')
+      throw new Error('Unsupported model transport');
+    try {
+      const result = await adapter.invoke({
+        operation,
+        model: binding.model,
+        context,
+        options: Object.freeze(callOptions),
+      });
+      if (!usedGuard()) {
+        await reject(
+          binding,
+          `models.${operation}`,
+          'provider did not use guarded transport',
+        );
+      }
+      if (
+        !result ||
+        !['completed', 'failed', 'cancelled'].includes(result.outcome)
+      ) {
+        throw new Error('Invalid provider outcome');
+      }
+      await guarded.finish(result.outcome);
+      return result.value;
+    } catch (error) {
+      try {
+        await guarded.finish('failed');
+      } catch {
+        /* already settled or uncertain */
+      }
+      if (!attemptedGuard() && !(error instanceof PolicyRejection)) {
+        return reject(
+          binding,
+          `models.${operation}`,
+          'provider dispatch failed before guarded send',
+        );
+      }
+      throw error;
+    }
+  };
   return {
     stream: (model, context, caller) =>
       start(model, context, caller as Record<string, unknown>, 'stream', false),
@@ -411,9 +475,33 @@ export function createGuardedModelOperations(options: {
       });
       return output;
     },
-    fetchDeferred: model => unsupported(model, 'fetchDeferred'),
-    cancelDeferred: model => unsupported(model, 'cancelDeferred'),
-    classify: model => unsupported(model, 'classify'),
-    generateImages: model => unsupported(model, 'generateImages'),
+    fetchDeferred: (model, handle, caller) =>
+      invokeCustom(
+        model,
+        handle,
+        caller as Record<string, unknown>,
+        'fetchDeferred',
+      ) as ReturnType<Models['fetchDeferred']>,
+    cancelDeferred: (model, handle, caller) =>
+      invokeCustom(
+        model,
+        handle,
+        caller as Record<string, unknown>,
+        'cancelDeferred',
+      ) as ReturnType<Models['cancelDeferred']>,
+    classify: (model, context, caller) =>
+      invokeCustom(
+        model,
+        context,
+        caller as Record<string, unknown>,
+        'classify',
+      ) as ReturnType<Models['classify']>,
+    generateImages: (model, context, caller) =>
+      invokeCustom(
+        model,
+        context,
+        caller as Record<string, unknown>,
+        'generateImages',
+      ) as ReturnType<Models['generateImages']>,
   };
 }

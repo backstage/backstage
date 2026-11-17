@@ -27,7 +27,8 @@ import type {
 } from './types';
 import { hasTrustedOperationContext } from './types';
 import { validateRequest } from './validateRequest';
-import { MODEL_HTTP_MATRIX } from './matrix';
+import { builtinProviderRegistry } from '../providers/builtins';
+import type { AiProviderRegistry } from '../providers/registry';
 
 type PendingAttempt = {
   id: AttemptId;
@@ -43,7 +44,9 @@ export function createModelOperationGuard(options: {
   /** Must recheck permission, credential generation and fence. */
   recheck(operation: TrustedOperation): Promise<boolean>;
   journal: AttemptJournal;
+  providers?: AiProviderRegistry;
 }): ModelOperationGuard {
+  const providers = options.providers ?? builtinProviderRegistry;
   const transport = options.transport;
   const journal = options.journal;
   return {
@@ -209,19 +212,12 @@ export function createModelOperationGuard(options: {
                 ]),
               });
               const validatedUrl = new URL(request.url);
-              if (
-                operation.api === 'anthropic-messages' &&
-                validatedUrl.pathname === '/v1/oauth/token'
-              ) {
-                kind = 'auth.token-exchange';
-              }
-              kind = await validateRequest(operation, request);
+              kind =
+                providers.get(operation.api)?.classifyRequest?.(request.url) ??
+                'model';
+              kind = await validateRequest(operation, request, providers);
               destination = `${validatedUrl.origin}${validatedUrl.pathname}`;
-              if (
-                kind === 'auth.token-exchange' &&
-                MODEL_HTTP_MATRIX.authentication.anthropicFederation ===
-                  'denied'
-              ) {
+              if (kind === 'auth.token-exchange') {
                 throw new Error('Federation token exchange is not certified');
               }
               if (expired()) {

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { createHash } from 'node:crypto';
+import { builtinProviderRegistry } from '../providers/builtins';
+import type { AiProviderRegistry } from '../providers/registry';
 import type { Fence } from '../contracts';
 import type { AttemptOutcome, RecoveryEvent } from './types';
 
@@ -177,8 +178,14 @@ function assertNoKnownFormats(text: string, field: string): void {
  * Operations never run free-text secret checks: `auth.token` is a
  * classification the audit trail must be able to record.
  */
-export function assertOperation(value: unknown): string {
-  if (typeof value !== 'string' || !OPERATIONS.has(value)) {
+export function assertOperation(
+  value: unknown,
+  registry: AiProviderRegistry = builtinProviderRegistry,
+): string {
+  if (
+    typeof value !== 'string' ||
+    (!OPERATIONS.has(value) && !registry.hasOperation(value))
+  ) {
     throw new Error(
       `Invalid operation: expected one of ${[...OPERATIONS].join(', ')}`,
     );
@@ -197,6 +204,7 @@ export function assertDestination(
   value: unknown,
   operation: string,
   field = 'destination',
+  registry: AiProviderRegistry = builtinProviderRegistry,
 ): string | undefined {
   if (value === undefined) return undefined;
   if (
@@ -271,32 +279,19 @@ export function assertDestination(
     }
   }
 
-  // Keep this registry in sync with the guard's certified adapter matrix.
-  // The producer binds the host to trusted configuration; it is not a
-  // caller-supplied identity and is therefore stored verbatim.
+  // Authentication routes remain journal-owned until auth modules are certified.
   const auth =
     operation === 'auth.token' || operation === 'auth.token-exchange';
-  const staticPaths = auth
-    ? ['/oauth/token', '/v1/oauth/token']
-    : [
-        '/v1/responses',
-        '/openai/v1/responses',
-        '/v1/chat/completions',
-        '/v1/messages',
-        '/backend-api/codex/responses',
-      ];
-  const origin = `${url.protocol}//${authority}`;
-  if (staticPaths.includes(path)) return `${origin}${path}`;
-  if (!auth) {
-    const azure = /^\/openai\/deployments\/(.+)\/responses$/.exec(path);
-    if (azure) {
-      const digest = createHash('sha256')
-        .update(azure[1])
-        .digest('hex')
-        .slice(0, 16);
-      return `${origin}/openai/deployments/{deployment=${digest}}/responses`;
-    }
+  let canonical: string | undefined;
+  if (auth) {
+    canonical = ['/oauth/token', '/v1/oauth/token'].includes(path)
+      ? path
+      : undefined;
+  } else {
+    canonical = registry.canonicalPath(path);
   }
+  if (canonical !== undefined)
+    return `${url.protocol}//${authority}${canonical}`;
   throw new Error(`Invalid ${field}: no approved route template`);
 }
 
@@ -368,7 +363,10 @@ export type ParsedDecision = {
   reason?: string;
 };
 
-export function parseDecision(event: unknown): ParsedDecision {
+export function parseDecision(
+  event: unknown,
+  registry: AiProviderRegistry = builtinProviderRegistry,
+): ParsedDecision {
   assertShape(
     event,
     {
@@ -394,7 +392,7 @@ export function parseDecision(event: unknown): ParsedDecision {
       'Invalid attempt decision: "decision" must be "allow" or "deny"',
     );
   }
-  const operation = assertOperation(source.operation);
+  const operation = assertOperation(source.operation, registry);
   return {
     actor: assertPrincipalRef(source.actor),
     conversationId: assertRedactedText(source.conversationId, 'conversationId'),
@@ -411,7 +409,12 @@ export function parseDecision(event: unknown): ParsedDecision {
     provider: assertRedactedText(source.provider, 'provider'),
     model: assertRedactedText(source.model, 'model'),
     operation,
-    destination: assertDestination(source.destination, operation),
+    destination: assertDestination(
+      source.destination,
+      operation,
+      'destination',
+      registry,
+    ),
     attempt: assertOrdinal(source.attempt, 'attempt'),
     decision: source.decision,
     reason: assertRedactedText(source.reason, 'reason'),

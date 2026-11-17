@@ -17,6 +17,8 @@
 import type { Knex } from 'knex';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Fence } from '../contracts';
+import { builtinProviderRegistry } from '../providers/builtins';
+import type { AiProviderRegistry } from '../providers/registry';
 import {
   assertPrincipalRef,
   parseAttemptId,
@@ -53,6 +55,8 @@ export const JOURNAL_SESSION_OWNERS_TABLE = 'ai_journal_session_owners';
  */
 export interface AttemptJournalOptions {
   readonly db: Knex;
+  /** Provider routes and operation classifications approved by the host. */
+  readonly providers?: AiProviderRegistry;
   /**
    * Checks the separate `ai.audit.read` permission for a reader. The journal
    * never authorizes reads itself.
@@ -125,9 +129,11 @@ class KnexAttemptJournal implements AttemptJournal {
     | AttemptJournalOptions['ownershipResolver']
     | undefined;
   readonly #sqlite: boolean;
+  readonly #providers: AiProviderRegistry;
 
   constructor(options: AttemptJournalOptions) {
     this.#db = options.db;
+    this.#providers = options.providers ?? builtinProviderRegistry;
     this.#authorizer = options.authorizer;
     this.#mirror = options.mirror;
     this.#ownershipResolver = options.ownershipResolver;
@@ -138,7 +144,7 @@ class KnexAttemptJournal implements AttemptJournal {
     fence: Fence,
     event: unknown,
   ): Promise<AttemptId> {
-    const parsed = parseDecision(event);
+    const parsed = parseDecision(event, this.#providers);
     const lease = parseFence(fence);
     const id = await this.#append(lease, async trx => {
       // The first recorded decision's actor becomes the stored session
