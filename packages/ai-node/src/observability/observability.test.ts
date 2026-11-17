@@ -25,6 +25,10 @@ import { createAttemptJournal } from '../journal/knex';
 import { pruneAiJournal } from '../journal/retention';
 import { createKnexNamespaceLease } from '../ownership/KnexNamespaceLease';
 import { createMetricsSubscriber } from './metrics';
+import {
+  GuardedResolutionError,
+  createGuardedModelOperations,
+} from '../guard/modelOperations';
 import { emitSafe, assertObservableEvent } from './types';
 
 const storageMigration = require('../../migrations/1000_storage');
@@ -862,9 +866,6 @@ describe('observability seam', () => {
     const { createAuthOperations } = require('../providers/auth/operations');
     const { createAuthOperationGuard } = require('../providers/auth/guard');
     const modules = require('../providers/auth/modules');
-    const {
-      createGuardedModelOperations,
-    } = require('../guard/modelOperations');
     const { builtinProviderRegistry } = require('../providers/builtins');
     try {
       await credentialsMigration.up(db);
@@ -879,7 +880,7 @@ describe('observability seam', () => {
         actor: 'user:default/alice',
         credentials: mockCredentials.user('user:default/alice'),
         provenance: {
-          origin: 'verified',
+          origin: 'verified' as const,
           conversationId: 'plugin/session',
           taskId: 'plugin/session',
           callId: 'plugin/session#auth-missing',
@@ -938,6 +939,7 @@ describe('observability seam', () => {
         events: metrics,
         providers: builtinProviderRegistry,
         resolve: () => ({
+          model: {} as never,
           operation: {
             ...context,
             provenance: {
@@ -984,6 +986,115 @@ describe('observability seam', () => {
       // Two logical denials: one auth, one model policy. Each counted once.
       expect(snapshot.failures).toBe(2);
       expect(snapshot.journalDecisions.deny).toBe(2);
+    } finally {
+      await cleanup();
+    }
+  }, 20000);
+
+  it('never forwards host callback text into an event reason', async () => {
+    const { db, cleanup } = await memoryDb();
+    const metrics = createMetricsSubscriber();
+    const reasons: string[] = [];
+    // Records the reason exactly as a subscriber receives it.
+    const recorder = {
+      emit(event: Parameters<typeof metrics.emit>[0]) {
+        if (event.kind === 'denial') reasons.push(event.reason);
+        metrics.emit(event);
+      },
+    };
+    try {
+      const lease = await createKnexNamespaceLease({ db });
+      const held = (await lease.acquire(fence_namespace, 'owner'))!;
+      const journal = createAttemptJournal({
+        db,
+        authorizer: { authorizeAuditRead: async () => true },
+        events: recorder,
+      });
+      const operation = {
+        actor: 'user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        provenance: {
+          origin: 'verified',
+          conversationId: 'plugin/session',
+          taskId: 'plugin/session',
+          callId: 'plugin/session#host-text',
+        },
+        fence: held,
+        definitionVersion: 'v1',
+        configVersion: 'v1',
+        provider: 'openai',
+        modelId: 'gpt-review',
+        resolvedModel: 'gpt-review',
+        operation: 'completeSimple',
+        api: 'openai-responses',
+        destination: 'https://provider.example/v1/responses',
+        credentialScope: { kind: 'org' },
+        credentialGeneration: 'gen-1',
+        controller: new AbortController(),
+      };
+      const model = {
+        id: 'gpt-review',
+        name: 'gpt-review',
+        provider: 'openai',
+        api: 'openai-responses',
+        baseUrl: 'https://provider.example/v1',
+        contextWindow: 400_000,
+        maxTokens: 128_000,
+        input: ['text'],
+        reasoning: false,
+        cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+      };
+      const requests = createGuardedModelOperations({
+        guard: createModelOperationGuard({
+          journal,
+          recheck: async () => true,
+          transport: (async () => new Response('ok')) as never,
+        }),
+        journal,
+        events: recorder,
+        providers: require('../providers/builtins').builtinProviderRegistry,
+        // A genuine, trusted binding: only the message is host-controlled.
+        resolve: async () => {
+          throw new GuardedResolutionError(
+            { operation, model } as never,
+            'Patient has a confidential diagnosis',
+          );
+        },
+      });
+
+      await requests.completeSimple(
+        model as never,
+        {
+          messages: [{ role: 'user', content: 'hello' }],
+        } as never,
+      );
+
+      const snapshot = metrics.snapshot();
+      expect(snapshot.failures).toBe(1);
+      expect(snapshot.journalDecisions.deny).toBe(1);
+      // The subscriber sees the fixed code only; the host text never appears.
+      expect(reasons).toEqual(['model resolution failed']);
+      expect(JSON.stringify(snapshot)).not.toContain('confidential');
+      expect(JSON.stringify(snapshot)).not.toContain('diagnosis');
+      expect(
+        snapshot.counters.find(series => series.labels.kind === 'denial'),
+      ).toMatchObject({
+        count: 1,
+        labels: {
+          operation: 'models.completeSimple',
+          provider: 'openai',
+        },
+      });
+
+      // The host's detail survives where it belongs: the durable journal.
+      const rows = await db('ai_journal_events')
+        .where({ decision: 'deny' })
+        .select('reason');
+      expect(
+        rows.some((row: { reason: string }) =>
+          row.reason.includes('confidential diagnosis'),
+        ),
+      ).toBe(true);
     } finally {
       await cleanup();
     }

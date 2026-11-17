@@ -110,6 +110,11 @@ export function createGuardedModelOperations(options: {
     binding: GuardedModelBinding,
     operation: string,
     reason: string,
+    /**
+     * The observed reason. Host-supplied text stays in the journal record,
+     * whose own redaction governs it; an event carries a fixed internal code.
+     */
+    eventReason = reason,
   ) => {
     const op = binding.operation;
     op.controller.abort();
@@ -125,7 +130,7 @@ export function createGuardedModelOperations(options: {
         provider: op.provider,
         modelId: op.modelId,
         operation,
-        reason,
+        reason: eventReason,
         attempt: 1,
       });
     await options.journal.recordDecisionAndIntent(op.fence, {
@@ -171,6 +176,9 @@ export function createGuardedModelOperations(options: {
         hasTrustedOperationContext(error.binding.operation) &&
         matches(error.binding, model, operation)
       ) {
+        // The callback's message is host-supplied text: the journal records it
+        // under its own redaction discipline, while the observation carries
+        // only a fixed code plus the identifiers the event already has.
         let reason = 'unsupported operation';
         try {
           reason = assertRedactedText(error.message, 'reason', {
@@ -179,7 +187,12 @@ export function createGuardedModelOperations(options: {
         } catch {
           /* keep fixed reason */
         }
-        return reject(error.binding, `models.${operation}`, reason);
+        return reject(
+          error.binding,
+          `models.${operation}`,
+          reason,
+          'model resolution failed',
+        );
       }
       throw new ResolveContractViolation(
         'Model operation denied: resolve contract violation',
