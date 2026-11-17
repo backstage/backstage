@@ -141,6 +141,99 @@ describe('model operation guard', () => {
     expect(failed.transport).not.toHaveBeenCalled();
   });
 
+  it('settles committed intents when cancellation or expiry occurs before send', async () => {
+    const cancelled = fixture();
+    cancelled.journal.recordDecisionAndIntent.mockImplementationOnce(
+      async () => {
+        cancelled.operation.controller.abort();
+        return '1';
+      },
+    );
+    await expect(cancelled.fetch()).rejects.toThrow('revoked before send');
+    expect(cancelled.transport).not.toHaveBeenCalled();
+    expect(cancelled.journal.recordOutcome).toHaveBeenCalledWith(
+      cancelled.operation.fence,
+      '1',
+      { status: 'cancelled' },
+    );
+    await expect(cancelled.fetch()).rejects.toThrow('blocked');
+
+    const expired = fixture();
+    const now = jest.spyOn(Date, 'now').mockReturnValue(100);
+    try {
+      const op = { ...expired.operation, providerCredentialExpiresAt: 101 };
+      expired.journal.recordDecisionAndIntent.mockImplementationOnce(
+        async () => {
+          now.mockReturnValue(102);
+          return '1';
+        },
+      );
+      const guard = createModelOperationGuard({
+        journal: expired.journal,
+        recheck: expired.recheck,
+        transport: expired.transport as unknown as typeof globalThis.fetch,
+      }).bind(op);
+      await expect(
+        guard.fetch(op.destination, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: '{"model":"gpt"}',
+        }),
+      ).rejects.toThrow('revoked before send');
+      expect(expired.journal.recordOutcome).toHaveBeenCalledWith(
+        op.fence,
+        '1',
+        { status: 'cancelled' },
+      );
+      expect(expired.transport).not.toHaveBeenCalled();
+    } finally {
+      now.mockRestore();
+    }
+  });
+
+  it('latches when the pre-send outcome cannot be written', async () => {
+    const f = fixture();
+    f.journal.recordDecisionAndIntent.mockImplementationOnce(async () => {
+      f.operation.controller.abort();
+      return '1';
+    });
+    f.journal.recordOutcome.mockRejectedValueOnce(
+      new Error('journal unavailable'),
+    );
+    await expect(f.fetch()).rejects.toThrow('uncertain');
+    await expect(f.fetch()).rejects.toThrow('blocked');
+    expect(f.transport).not.toHaveBeenCalled();
+  });
+
+  it('settles a committed intent as failed if the operation finishes before send', async () => {
+    const f = fixture();
+    let entered!: () => void;
+    let release!: () => void;
+    const inJournal = new Promise<void>(resolve => {
+      entered = resolve;
+    });
+    const gate = new Promise<void>(resolve => {
+      release = resolve;
+    });
+    f.journal.recordDecisionAndIntent.mockImplementationOnce(async () => {
+      entered();
+      await gate;
+      return '1';
+    });
+    const pending = f.fetch();
+    await inJournal;
+    const finished = f.guard.finish('completed');
+    release();
+    await expect(pending).rejects.toThrow('revoked before send');
+    await finished;
+    expect(f.journal.recordOutcome).toHaveBeenCalledWith(
+      f.operation.fence,
+      '1',
+      { status: 'failed' },
+    );
+    expect(f.transport).not.toHaveBeenCalled();
+  });
+
   it('disables redirects and reports post-send journal failure as uncertain', async () => {
     const redirect = fixture();
     redirect.transport.mockResolvedValueOnce(

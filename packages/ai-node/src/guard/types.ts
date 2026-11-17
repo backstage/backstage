@@ -64,6 +64,38 @@ export type TrustedOperation = Readonly<{
   controller: AbortController;
 }>;
 
+/** Shared validation before dispatch or a typed resolution-denial append. */
+export function hasTrustedOperationContext(
+  value: unknown,
+): value is TrustedOperation {
+  if (!value || typeof value !== 'object') return false;
+  const op = value as TrustedOperation;
+  const nonempty = (s: unknown) => typeof s === 'string' && s.length > 0;
+  return !!(
+    op.provenance?.origin === 'verified' &&
+    nonempty(op.provenance.conversationId) &&
+    nonempty(op.provenance.taskId) &&
+    nonempty(op.provenance.callId) &&
+    op.credentials &&
+    typeof op.credentials === 'object' &&
+    nonempty(op.actor) &&
+    nonempty(op.definitionVersion) &&
+    nonempty(op.configVersion) &&
+    nonempty(op.provider) &&
+    nonempty(op.modelId) &&
+    nonempty(op.resolvedModel) &&
+    op.credentialScope &&
+    typeof op.credentialScope === 'object' &&
+    nonempty(op.credentialGeneration) &&
+    nonempty(op.fence?.owner) &&
+    nonempty(op.fence?.token) &&
+    nonempty(op.fence?.namespace?.pluginId) &&
+    nonempty(op.fence?.namespace?.sessionId) &&
+    op.controller instanceof AbortController &&
+    !op.controller.signal.aborted
+  );
+}
+
 export interface GuardedOperation {
   fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
   finish(outcome: 'completed' | 'failed' | 'cancelled'): Promise<void>;

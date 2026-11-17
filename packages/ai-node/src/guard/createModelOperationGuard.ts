@@ -25,6 +25,7 @@ import type {
   ModelOperationGuard,
   TrustedOperation,
 } from './types';
+import { hasTrustedOperationContext } from './types';
 import { validateRequest } from './validateRequest';
 import { MODEL_HTTP_MATRIX } from './matrix';
 
@@ -197,27 +198,7 @@ export function createModelOperationGuard(options: {
               ) {
                 throw new Error('Concurrent model attempts are not supported');
               }
-              if (
-                !journal ||
-                operation.provenance?.origin !== 'verified' ||
-                !operation.credentials ||
-                !operation.actor ||
-                !operation.provenance.conversationId ||
-                !operation.provenance.taskId ||
-                !operation.provenance.callId ||
-                !operation.definitionVersion ||
-                !operation.configVersion ||
-                !operation.provider ||
-                !operation.modelId ||
-                !operation.resolvedModel ||
-                !operation.credentialScope ||
-                !operation.credentialGeneration ||
-                !operation.fence?.owner ||
-                !operation.fence.token ||
-                !operation.fence.namespace?.pluginId ||
-                !operation.fence.namespace.sessionId ||
-                operation.controller.signal.aborted
-              )
+              if (!journal || !hasTrustedOperationContext(operation))
                 throw new Error('Unverified model operation');
               request = new Request(input, init);
               request = new Request(request, {
@@ -293,8 +274,6 @@ export function createModelOperationGuard(options: {
                 operation.fence,
                 decision(n, 'allow', kind, destination),
               );
-              if (blocked || finished || request.signal.aborted || expired())
-                throw new Error('Model authority revoked before send');
             } catch (error) {
               block();
               throw error;
@@ -306,6 +285,17 @@ export function createModelOperationGuard(options: {
               settled: false,
             };
             attempts.push(attempt);
+            const cancelled = request.signal.aborted || expired();
+            if (blocked || finished || cancelled) {
+              try {
+                await record(attempt, {
+                  status: cancelled ? 'cancelled' : 'failed',
+                });
+              } finally {
+                block();
+              }
+              throw new Error('Model authority revoked before send');
+            }
             let response: Response;
             try {
               response = await transport(request);

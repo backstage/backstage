@@ -31,11 +31,13 @@ import * as azure from '@earendil-works/pi-ai/api/azure-openai-responses';
 import * as codex from '@earendil-works/pi-ai/api/openai-codex-responses';
 import * as anthropic from '@earendil-works/pi-ai/api/anthropic-messages';
 import type { AttemptJournal } from '../journal/types';
+import { assertRedactedText } from '../journal/redaction';
 import type {
   ModelOperation,
   ModelOperationGuard,
   TrustedOperation,
 } from './types';
+import { hasTrustedOperationContext } from './types';
 import { guardedRequestOptions } from './requestOptions';
 
 /** Host-resolved credentials. Never constructed from caller request options. */
@@ -48,11 +50,24 @@ type ProviderAuthority = Readonly<{
   expiresAt?: number;
 }>;
 
-type Binding = Readonly<{
+export type GuardedModelBinding = Readonly<{
   operation: TrustedOperation;
   model: Model<any>;
   authority: ProviderAuthority;
 }>;
+
+/**
+ * Host resolution failed after a trusted binding was established.
+ * Untyped throws or invalid bindings still deny, but cannot be journaled:
+ * the host violated the resolve contract, and audit authority is never
+ * invented from caller-provided model data. The unjournaled deny is observable.
+ */
+export class GuardedResolutionError extends Error {
+  constructor(readonly binding: GuardedModelBinding, reason: string) {
+    super(reason);
+    this.name = 'GuardedResolutionError';
+  }
+}
 
 type ModelRequests = Pick<
   Models,
@@ -96,11 +111,12 @@ const ADAPTERS: Record<TrustedOperation['api'], Adapter> = {
 export function createGuardedModelOperations(options: {
   guard: ModelOperationGuard;
   journal: AttemptJournal;
-  resolve(model: AnyModel, operation: ModelOperation): Binding;
+  resolve(model: AnyModel, operation: ModelOperation): GuardedModelBinding;
 }): ModelRequests {
   class PolicyRejection extends Error {}
+  class ResolveContractViolation extends Error {}
   const reject = async (
-    binding: Binding,
+    binding: GuardedModelBinding,
     operation: string,
     reason: string,
   ) => {
@@ -122,6 +138,47 @@ export function createGuardedModelOperations(options: {
       reason,
     });
     throw new PolicyRejection(reason);
+  };
+  const matches = (
+    binding: GuardedModelBinding,
+    model: AnyModel,
+    operation: ModelOperation,
+  ) => {
+    const op = binding.operation;
+    return (
+      op.operation === operation &&
+      op.provider === model.provider &&
+      op.modelId === model.id &&
+      binding.model?.provider === op.provider &&
+      binding.model?.id === op.modelId &&
+      binding.model?.api === op.api &&
+      model.api === op.api
+    );
+  };
+  const resolveBinding = async (model: AnyModel, operation: ModelOperation) => {
+    try {
+      return options.resolve(model, operation);
+    } catch (error) {
+      if (
+        error instanceof GuardedResolutionError &&
+        error.binding &&
+        hasTrustedOperationContext(error.binding.operation) &&
+        matches(error.binding, model, operation)
+      ) {
+        let reason = 'unsupported operation';
+        try {
+          reason = assertRedactedText(error.message, 'reason', {
+            required: true,
+          })!;
+        } catch {
+          /* keep fixed reason */
+        }
+        return reject(error.binding, `models.${operation}`, reason);
+      }
+      throw new ResolveContractViolation(
+        'Model operation denied: resolve contract violation',
+      );
+    }
   };
   const errorMessage = (
     model: AnyModel,
@@ -155,7 +212,7 @@ export function createGuardedModelOperations(options: {
     void (async () => {
       let guarded: ReturnType<ModelOperationGuard['bind']> | undefined;
       try {
-        const binding = options.resolve(model, operation);
+        const binding = await resolveBinding(model, operation);
         const op: TrustedOperation = {
           ...binding.operation,
           ...(binding.authority.kind === 'oauth'
@@ -163,14 +220,8 @@ export function createGuardedModelOperations(options: {
             : {}),
         };
         if (
-          op.provenance.origin !== 'verified' ||
-          op.operation !== operation ||
-          op.provider !== model.provider ||
-          op.modelId !== model.id ||
-          binding.model.provider !== op.provider ||
-          binding.model.id !== op.modelId ||
-          binding.model.api !== op.api ||
-          model.api !== op.api
+          !hasTrustedOperationContext(op) ||
+          !matches(binding, model, operation)
         ) {
           await reject(
             binding,
@@ -293,7 +344,10 @@ export function createGuardedModelOperations(options: {
           reason: 'error',
           error: errorMessage(
             model,
-            error instanceof PolicyRejection ? error.message : undefined,
+            error instanceof PolicyRejection ||
+              error instanceof ResolveContractViolation
+              ? error.message
+              : undefined,
           ),
         });
         output.end();
@@ -305,7 +359,7 @@ export function createGuardedModelOperations(options: {
     model: AnyModel,
     operation: ModelOperation,
   ): Promise<never> => {
-    const binding = options.resolve(model, operation);
+    const binding = await resolveBinding(model, operation);
     return reject(
       binding,
       `models.${operation}`,
@@ -347,7 +401,10 @@ export function createGuardedModelOperations(options: {
           reason: 'error',
           error: errorMessage(
             model,
-            error instanceof PolicyRejection ? error.message : undefined,
+            error instanceof PolicyRejection ||
+              error instanceof ResolveContractViolation
+              ? error.message
+              : undefined,
           ),
         });
         output.end();

@@ -19,10 +19,147 @@ import { openaiProvider } from '@earendil-works/pi-ai/providers/openai';
 import type { AttemptDecision, AttemptOutcome } from '../journal/types';
 import type { Fence } from '../contracts';
 import { createModelOperationGuard } from './createModelOperationGuard';
-import { createGuardedModelOperations } from './modelOperations';
+import {
+  createGuardedModelOperations,
+  GuardedResolutionError,
+  type GuardedModelBinding,
+} from './modelOperations';
 import type { ModelOperation, TrustedOperation } from './types';
 
 describe('guarded model operations', () => {
+  it('journals only typed resolution failures with valid trusted bindings', async () => {
+    const model = openaiProvider().getModels()[0];
+    const transport = jest.fn(async () => new Response('unexpected'));
+    const journal = {
+      recordDecisionAndIntent: jest.fn(
+        async (_fence: Fence, _event: AttemptDecision) => '1',
+      ),
+      recordOutcome: jest.fn(async () => {}),
+      recordRecovery: jest.fn(async () => {}),
+      read: jest.fn(async () => ({ items: [] })),
+    };
+    const guard = createModelOperationGuard({
+      journal,
+      recheck: async () => true,
+      transport: transport as unknown as typeof fetch,
+    });
+    let failure:
+      | 'valid'
+      | 'invalid'
+      | 'invalid-actor'
+      | 'mismatch'
+      | 'plain'
+      | 'secret' = 'valid';
+    const operations = createGuardedModelOperations({
+      guard,
+      journal,
+      resolve: (_model, method) => {
+        const op: TrustedOperation = {
+          actor: 'user:default/alice',
+          credentials: mockCredentials.user('user:default/alice'),
+          provenance: {
+            origin: 'verified',
+            conversationId: '1',
+            taskId: '2',
+            callId: '3',
+          },
+          fence: {
+            namespace: { pluginId: 'test', sessionId: 's' },
+            owner: 'owner',
+            token: '1',
+          },
+          definitionVersion: 'v1',
+          configVersion: 'v1',
+          provider: model.provider,
+          modelId: model.id,
+          resolvedModel: model.id,
+          operation: method,
+          api: 'openai-responses',
+          destination: 'https://provider.example/v1/responses',
+          credentialScope: { kind: 'user', id: 'user:default/alice' },
+          credentialGeneration: '1',
+          controller: new AbortController(),
+        };
+        const binding: GuardedModelBinding = {
+          operation: op,
+          model,
+          authority: { kind: 'apiKey', apiKey: 'key' },
+        };
+        if (failure === 'plain') throw new Error('untrusted error');
+        if (failure === 'invalid')
+          throw new GuardedResolutionError(
+            {
+              ...binding,
+              operation: { ...op, fence: { ...op.fence, token: '' } },
+            },
+            'invalid binding',
+          );
+        if (failure === 'invalid-actor')
+          throw new GuardedResolutionError(
+            { ...binding, operation: { ...op, actor: '' } },
+            'invalid binding',
+          );
+        if (failure === 'mismatch')
+          throw new GuardedResolutionError(
+            { ...binding, operation: { ...op, modelId: 'different' } },
+            'invalid binding',
+          );
+        throw new GuardedResolutionError(
+          binding,
+          failure === 'secret' ? 'token=secretvalue' : 'model is unavailable',
+        );
+      },
+    });
+    const handle = {} as never;
+    await expect(operations.fetchDeferred(model, handle)).rejects.toThrow(
+      'model is unavailable',
+    );
+    expect(journal.recordDecisionAndIntent).toHaveBeenCalledTimes(1);
+    expect(journal.recordDecisionAndIntent.mock.calls[0][1]).toMatchObject({
+      operation: 'models.fetchDeferred',
+      decision: 'deny',
+      reason: 'model is unavailable',
+    });
+    failure = 'secret';
+    await expect(operations.fetchDeferred(model, handle)).rejects.toThrow(
+      'unsupported operation',
+    );
+    expect(journal.recordDecisionAndIntent.mock.calls[1][1]).toMatchObject({
+      reason: 'unsupported operation',
+    });
+    failure = 'invalid';
+    await expect(operations.fetchDeferred(model, handle)).rejects.toThrow(
+      'resolve contract violation',
+    );
+    failure = 'invalid-actor';
+    await expect(operations.fetchDeferred(model, handle)).rejects.toThrow(
+      'resolve contract violation',
+    );
+    failure = 'mismatch';
+    await expect(operations.fetchDeferred(model, handle)).rejects.toThrow(
+      'resolve contract violation',
+    );
+    failure = 'plain';
+    await expect(operations.fetchDeferred(model, handle)).rejects.toThrow(
+      'resolve contract violation',
+    );
+    expect(
+      (await operations.completeSimple(model, { messages: [] })).errorMessage,
+    ).toContain('resolve contract violation');
+    expect(
+      (await operations.streamDeferred(model, handle).result()).errorMessage,
+    ).toContain('resolve contract violation');
+    expect(journal.recordDecisionAndIntent).toHaveBeenCalledTimes(2);
+    expect(transport).not.toHaveBeenCalled();
+    failure = 'valid';
+    const result = await operations.completeSimple(model, { messages: [] });
+    expect(result.stopReason).toBe('error');
+    expect(journal.recordDecisionAndIntent.mock.calls[2][1]).toMatchObject({
+      operation: 'models.completeSimple',
+      decision: 'deny',
+    });
+    expect(transport).not.toHaveBeenCalled();
+  });
   it('gates chat helpers, hides unsupported operations and rejects expired credentials and overrides', async () => {
     const model = {
       ...openaiProvider().getModels()[0],

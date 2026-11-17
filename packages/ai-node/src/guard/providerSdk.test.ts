@@ -35,6 +35,78 @@ import type { Fence } from '../contracts';
 
 jest.setTimeout(15000);
 
+it('rejects and latches a real undici redirect without following it', async () => {
+  const paths: string[] = [];
+  const server = createServer((req, res) => {
+    paths.push(req.url ?? '');
+    req.resume();
+    res.writeHead(307, { location: '/stolen' });
+    res.end();
+  });
+  server.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  try {
+    const address = server.address();
+    if (!address || typeof address === 'string')
+      throw new Error('No test port');
+    const destination = `http://127.0.0.1:${address.port}/v1/responses`;
+    const op: TrustedOperation = {
+      actor: 'user:default/alice',
+      credentials: mockCredentials.user('user:default/alice'),
+      provenance: {
+        origin: 'verified',
+        conversationId: '1',
+        taskId: '2',
+        callId: '3',
+      },
+      fence: {
+        namespace: { pluginId: 'test', sessionId: 's' },
+        owner: 'owner',
+        token: '1',
+      },
+      definitionVersion: 'v1',
+      configVersion: 'v1',
+      provider: 'openai',
+      modelId: 'gpt',
+      resolvedModel: 'gpt',
+      operation: 'stream',
+      api: 'openai-responses',
+      destination,
+      credentialScope: { kind: 'user', id: 'user:default/alice' },
+      credentialGeneration: '1',
+      controller: new AbortController(),
+    };
+    const journal = {
+      recordDecisionAndIntent: jest.fn(async () => '1'),
+      recordOutcome: jest.fn(async () => {}),
+      recordRecovery: jest.fn(async () => {}),
+      read: jest.fn(async () => ({ items: [] })),
+    };
+    const guard = createModelOperationGuard({
+      journal,
+      transport: globalThis.fetch,
+      recheck: async () => true,
+    }).bind(op);
+    const request = () =>
+      guard.fetch(destination, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: '{"model":"gpt"}',
+      });
+    await expect(request()).rejects.toThrow('redirects');
+    await expect(request()).rejects.toThrow('blocked');
+    expect(paths).toEqual(['/v1/responses']);
+    expect(op.controller.signal.aborted).toBe(true);
+    expect(journal.recordOutcome).toHaveBeenCalledWith(op.fence, '1', {
+      status: 'failed',
+      httpStatus: 307,
+    });
+  } finally {
+    server.close();
+    await once(server, 'close');
+  }
+});
+
 describe.each([
   'openai',
   'anthropic',

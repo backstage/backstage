@@ -23,8 +23,13 @@ import { once } from 'node:events';
 import { createServer } from 'node:http';
 import knex, { type Knex } from 'knex';
 import { mockCredentials } from '@backstage/backend-test-utils';
+import { openaiProvider } from '@earendil-works/pi-ai/providers/openai';
 import { createAttemptJournal } from '../journal/knex';
 import { createModelOperationGuard } from './createModelOperationGuard';
+import {
+  createGuardedModelOperations,
+  GuardedResolutionError,
+} from './modelOperations';
 import type { TrustedOperation } from './types';
 
 const storageMigration = require('../../migrations/1000_storage');
@@ -200,6 +205,104 @@ if (worker) {
           reason: 'credential expired; re-authentication required',
         });
         expect(JSON.stringify(page)).not.toContain('{"model":"gpt"}');
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it(`records redacted typed resolution denials in the real journal (${dialect})`, async () => {
+      const f = await fixture(dialect);
+      try {
+        const j = journal(f.db);
+        const model = openaiProvider().getModels()[0];
+        const transport = jest.fn(async () => new Response('unexpected'));
+        let reason = 'model is unavailable';
+        const facade = createGuardedModelOperations({
+          journal: j,
+          guard: createModelOperationGuard({
+            journal: j,
+            recheck: async () => true,
+            transport: transport as unknown as typeof fetch,
+          }),
+          resolve: (_model, method) => {
+            throw new GuardedResolutionError(
+              {
+                operation: {
+                  ...operation('https://provider.example/v1/responses'),
+                  provider: model.provider,
+                  modelId: model.id,
+                  resolvedModel: model.id,
+                  operation: method,
+                },
+                model,
+                authority: { kind: 'apiKey', apiKey: 'key' },
+              },
+              reason,
+            );
+          },
+        });
+        await expect(facade.fetchDeferred(model, {} as never)).rejects.toThrow(
+          'model is unavailable',
+        );
+        reason = 'token=secretvalue';
+        await expect(facade.fetchDeferred(model, {} as never)).rejects.toThrow(
+          'unsupported operation',
+        );
+        const page = await j.read(credentials, namespace);
+        expect(page.items).toHaveLength(2);
+        expect(page.items[0]).toMatchObject({
+          operation: 'models.fetchDeferred',
+          decision: 'deny',
+          reason: 'model is unavailable',
+        });
+        expect(page.items[1]).toMatchObject({
+          operation: 'models.fetchDeferred',
+          decision: 'deny',
+          reason: 'unsupported operation',
+        });
+        expect(JSON.stringify(page)).not.toContain('secretvalue');
+        expect(transport).not.toHaveBeenCalled();
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it(`persists cancellation after committed intent and before send (${dialect})`, async () => {
+      const f = await fixture(dialect);
+      try {
+        const j = journal(f.db);
+        const destination = 'https://provider.example/v1/responses';
+        const op = operation(destination);
+        const transport = jest.fn(async () => new Response('unexpected'));
+        const guard = createModelOperationGuard({
+          journal: {
+            recordDecisionAndIntent: async (fenceArg, event) => {
+              const id = await j.recordDecisionAndIntent(fenceArg, event);
+              op.controller.abort();
+              return id;
+            },
+            recordOutcome: j.recordOutcome.bind(j),
+            recordRecovery: j.recordRecovery.bind(j),
+            read: j.read.bind(j),
+          },
+          recheck: async () => true,
+          transport: transport as unknown as typeof fetch,
+        }).bind(op);
+        await expect(request(guard, destination)).rejects.toThrow(
+          'revoked before send',
+        );
+        expect(transport).not.toHaveBeenCalled();
+        const page = await j.read(credentials, namespace);
+        expect(page.items).toHaveLength(2);
+        expect(page.items[0]).toMatchObject({
+          kind: 'decision',
+          decision: 'allow',
+          outcomeStatus: 'cancelled',
+        });
+        expect(page.items[1]).toMatchObject({
+          kind: 'outcome',
+          status: 'cancelled',
+        });
       } finally {
         await f.cleanup();
       }
