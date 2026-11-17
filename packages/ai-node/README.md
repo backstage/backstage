@@ -3,11 +3,14 @@
 Managed, low-level AI service primitives for Backstage backend plugins, built
 on the [Pi Durable](https://github.com/earendil-works/pi) execution engine.
 
-> **Status: Wave 0 scaffold.** The service surface here is alpha and coupled
-> to the experimental `@earendil-works/pi-durable` engine (pinned to
-> `1.5.2`). Production `openHarness` calls fail closed until the Wave 1
-> storage, lease, and model-operation guard integration lands. Nothing in
-> this package should yet be treated as production security or durability.
+> **Status: Wave 1 integration.** The service surface here is alpha and
+> coupled to the experimental `@earendil-works/pi-durable` engine (pinned to
+> `1.5.2`). The managed primitive is wired for production: exclusive
+> namespace leases with startup recovery, fenced database persistence,
+> guarded model dispatch with per-attempt permission checks, and a durable
+> attempt journal. Provider credential and model catalog configuration is
+> not wired to a config source yet, so model dispatch fails closed with an
+> actionable reason until an installation supplies them to the integration.
 
 ## Overview
 
@@ -91,11 +94,16 @@ and are validated separately (Wave 1).
   identity under a live handle is rejected, never silently replaced.
 - **Reference counting**: release is idempotent per acquisition; the last
   release closes the shared harness. Methods on a released handle reject.
-- **Fail-closed Wave 0**: without the Wave 1 integration (Knex Pi storage
-  adapter, exclusive namespace lease, guarded model operation boundary),
-  production opens reject with an actionable error. Scaffold tests use
-  explicitly labeled non-production stand-ins, which are not security or
-  durability.
+- **Wave 1 wiring**: the production integration composes the exclusive
+  namespace lease with keepalive and startup recovery (admission and
+  revocation), the fenced Knex Pi storage adapter, guarded model operations
+  with per-attempt permission, fence, and credential-generation checks, and
+  the durable attempt journal. When a lease is invalidated, local handles of
+  that namespace are drained. Provider credentials and the canonical model
+  catalog are not wired to a configuration source yet: without them, model
+  dispatch is denied with an actionable reason, and model lookups resolve no
+  model. Scaffold tests use explicitly labeled non-production stand-ins,
+  which are not security or durability.
 
 ## Migrations
 

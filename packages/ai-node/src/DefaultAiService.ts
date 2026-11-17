@@ -33,7 +33,11 @@ import type {
   PermissionsService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
-import { parseAiServiceConfig, type AiServiceConfig } from './config';
+import {
+  parseAiServiceConfig,
+  type AiServiceConfig,
+  type AiServiceModel,
+} from './config';
 import type {
   AiService,
   ConfigAtPath,
@@ -73,10 +77,14 @@ export interface AcquisitionBinding {
   readonly credentials: BackstageCredentials;
   readonly registry: RegistryReader;
   readonly registryVersion: string;
+  /** The configured model, when the plugin's configuration selected one. */
+  readonly model?: AiServiceModel;
 }
 
 /** Input to {@link AiServiceIntegration.openNativeHarness}. */
 export interface OpenNativeHarnessInput extends AcquisitionBinding {
+  /** Stable identity of the configuration this acquisition was parsed from. */
+  readonly configVersion: string;
   /**
    * Installed by the service so that configuration initializes new
    * conversations only; see the package README. The integration must pass it
@@ -109,12 +117,13 @@ export interface OpenNativeHarnessInput extends AcquisitionBinding {
 export interface AiServiceIntegration {
   /**
    * Atomically returns the owner of the session's namespace, creating the
-   * session record with `owner` when it does not exist yet.
+   * session record with the acquisition's verified principal when it does not
+   * exist yet, and rejecting a principal that does not match the recorded
+   * session origin.
    */
-  ensureSessionOwnership(input: {
-    readonly namespace: Namespace;
-    readonly owner: string;
-  }): Promise<{ readonly owner: string }>;
+  ensureSessionOwnership(
+    binding: AcquisitionBinding,
+  ): Promise<{ readonly owner: string }>;
 
   /**
    * Binds per-acquisition authority for every acquisition, including reuse
@@ -449,6 +458,11 @@ class ManagedHarnessHandle implements ManagedHarness {
       await this.#service.releaseReference(this.#live, this);
     };
   }
+
+  /** Marks the handle released without releasing its reference. */
+  markInvalidated(): void {
+    this.#state.released = true;
+  }
 }
 
 /**
@@ -471,7 +485,7 @@ export class DefaultAiService implements AiService {
   readonly #locks = new Map<string, Promise<unknown>>();
   #closed = false;
 
-  static create(options: DefaultAiServiceOptions): AiService {
+  static create(options: DefaultAiServiceOptions): DefaultAiService {
     return new DefaultAiService(options);
   }
 
@@ -539,6 +553,9 @@ export class DefaultAiService implements AiService {
       credentials: options.credentials,
       registry: options.registry,
       registryVersion: options.registryVersion,
+      ...(parsedConfig.model === undefined
+        ? {}
+        : { model: parsedConfig.model }),
     };
     const key = namespaceKey(binding.namespace);
     const configKey = configKeyOf(options.config, parsedConfig);
@@ -548,10 +565,9 @@ export class DefaultAiService implements AiService {
       // acquisition waited for the namespace.
       this.assertNotClosed(pluginId, options.sessionId);
 
-      const ownership = await this.#integration!.ensureSessionOwnership({
-        namespace: binding.namespace,
-        owner,
-      });
+      const ownership = await this.#integration!.ensureSessionOwnership(
+        binding,
+      );
       if (ownership.owner !== owner) {
         throw new Error(
           `Access denied: the AI session '${options.sessionId}' of the '${pluginId}' plugin is owned by '${ownership.owner}' and cannot be opened by '${owner}'. Session ownership is fixed when the session is created`,
@@ -583,6 +599,7 @@ export class DefaultAiService implements AiService {
 
       const nativeHandle = await this.#integration!.openNativeHarness({
         ...binding,
+        configVersion: configKey,
         conversationCreated: conversationCreatedHook(parsedConfig),
       });
       if (this.#closed) {
@@ -629,6 +646,29 @@ export class DefaultAiService implements AiService {
     throw new Error(
       `openHarness requires authenticated Backstage credentials carrying a user or service principal, but the supplied credentials are unauthenticated`,
     );
+  }
+
+  /**
+   * Drains a namespace whose lease was invalidated: every live handle of the
+   * namespace rejects further operations, and the underlying harness is
+   * closed so in-flight guarded work aborts. A stale lease release never
+   * affects a successor's lease.
+   */
+  invalidateNamespace(namespace: Namespace): void {
+    const key = namespaceKey(namespace);
+    const live = this.#live.get(key);
+    if (live === undefined) {
+      return;
+    }
+    this.#live.delete(key);
+    for (const handle of live.references) {
+      handle.markInvalidated();
+    }
+    void this.#integration?.releaseNativeHarness(live.handle).catch(error => {
+      this.#deps.logger.warn(
+        `Failed to drain the invalidated AI session '${namespace.sessionId}' of the '${namespace.pluginId}' plugin: ${error}`,
+      );
+    });
   }
 
   releaseReference(

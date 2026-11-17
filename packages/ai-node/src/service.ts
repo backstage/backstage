@@ -21,6 +21,8 @@ import {
 } from '@backstage/backend-plugin-api';
 import { DefaultAiService } from './DefaultAiService';
 import type { AiService } from './contracts';
+import { createAiServiceIntegration } from './integration';
+import { runAiMigrations } from './migrations';
 
 /**
  * Plugin-scoped {@link AiService} giving backend plugins the managed, low-level
@@ -34,9 +36,13 @@ import type { AiService } from './contracts';
  * (`initialization: 'always'`) so that the module participates in startup
  * enumeration, as required by the ownership and recovery design.
  *
- * Wave 0: the default factory creates the scaffold service, whose production
- * `openHarness` calls fail closed until the Wave 1 storage, lease, and guard
- * integration lands.
+ * Wave 1: the default factory runs the AI migrations, wires the production
+ * integration — exclusive namespace lease with startup recovery, fenced Knex
+ * Pi storage, guarded model operations with per-attempt permission checks,
+ * and the durable attempt journal — and drains local handles when a lease is
+ * invalidated. Provider credential configuration is not wired to a config
+ * source yet, so model dispatch fails closed with an actionable reason until
+ * installation credentials are supplied to the integration.
  *
  * @alpha
  */
@@ -57,7 +63,16 @@ export const aiServiceRef = createServiceRef<AiService>({
       },
       initialization: 'always',
       async factory(deps) {
-        return DefaultAiService.create({ deps });
+        await runAiMigrations({
+          database: deps.database,
+          logger: deps.logger,
+        });
+        const integration = await createAiServiceIntegration({ deps });
+        const managedService = DefaultAiService.create({ deps, integration });
+        integration.onNamespaceInvalidated(namespace =>
+          managedService.invalidateNamespace(namespace),
+        );
+        return managedService;
       },
     }),
 });

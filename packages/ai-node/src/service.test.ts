@@ -25,7 +25,7 @@ import type { AiService } from './contracts';
 import { aiServiceRef } from './service';
 
 describe('aiServiceRef', () => {
-  it('installs a plugin-scoped service that fails closed on production opens', async () => {
+  it('installs a wired plugin-scoped service that fails closed on in-memory databases', async () => {
     let service: AiService | undefined;
     const backend = await startTestBackend({
       features: [
@@ -45,7 +45,9 @@ describe('aiServiceRef', () => {
 
     // The backend starting proves the factory's core service dependencies
     // (database, auth, permissions, logger, auditor, lifecycle,
-    // pluginMetadata) resolve under backend-test-utils.
+    // pluginMetadata) resolve under backend-test-utils, and that the
+    // production Wave 1 wiring (migrations, lease, storage, guard, journal)
+    // initializes.
     expect(service).toBeDefined();
     await expect(
       service!.openHarness({
@@ -66,7 +68,7 @@ describe('aiServiceRef', () => {
         },
         registryVersion: 'v1',
       }),
-    ).rejects.toThrow(/Wave 1 integration is not wired.*fail closed/s);
+    ).rejects.toThrow(/file-backed SQLite database/s);
 
     await backend.stop();
   });

@@ -870,6 +870,30 @@ describe('DefaultAiService', () => {
     await expect(service.openHarness(options)).rejects.toThrow(/shut down/s);
   });
 
+  it('drains handles when a namespace is invalidated', async () => {
+    const integration = new StandInIntegration();
+    const service = DefaultAiService.create({
+      deps: makeDeps(),
+      integration,
+    });
+    const handle = await service.openHarness({
+      sessionId: 's1',
+      config: SERVICE_MODE_CONFIG,
+      credentials: USER_A,
+      registry: makeRegistry(),
+      registryVersion: 'v1',
+    });
+
+    service.invalidateNamespace({ pluginId: 'test-plugin', sessionId: 's1' });
+    await new Promise(resolve => setImmediate(resolve));
+
+    // Live handles reject further operations and the harness is drained.
+    await expect(handle.harness.root(handle.context)).rejects.toThrow(
+      /released/s,
+    );
+    expect(integration.released).toHaveLength(1);
+  });
+
   it('supports the documented destructured release usage', async () => {
     const integration = new StandInIntegration();
     const service = DefaultAiService.create({
