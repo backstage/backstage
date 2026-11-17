@@ -120,6 +120,20 @@ function deepFreeze<T>(value: T): T {
 
 /** The recovery session table written by the ownership module. */
 const RECOVERY_SESSIONS_TABLE = 'ai_recovery_sessions';
+const NAMESPACE_LEASES_TABLE = 'ai_namespace_leases';
+
+/** Drain-join poll interval for an open waiting on a draining admission. */
+const DRAIN_POLL_MS = 20;
+/**
+ * Grace given to a drain whose fence is already dead: its conditional lease
+ * release is its last step, so it is normally settling right now.
+ */
+const DRAIN_GRACE_MS = 150;
+/**
+ * Hard overall bound on joining a drain, backing the fence-liveness signal:
+ * no open of this integration waits longer than this for a release.
+ */
+const DRAIN_WAIT_LIMIT_MS = 30_000;
 
 /** Lease keepalive cadence; the lease lifetime defaults to one minute. */
 const LEASE_KEEPALIVE_INTERVAL_MS = 15_000;
@@ -163,34 +177,72 @@ export interface ProductionAiServiceIntegration extends AiServiceIntegration {
   readonly guard: ModelOperationGuard;
 }
 
-/** Per-open state the integration keeps for release and invalidation. */
-type OpenState = {
+/** The shared fence of a namespace, set once the first reservation acquires it. */
+type AdmissionFence = NonNullable<
+  Awaited<ReturnType<NamespaceLease['acquire']>>
+>;
+
+/** Per-open state the integration keeps for release. */
+type HandleState = {
   readonly harness: Harness;
-  readonly fence: NonNullable<Awaited<ReturnType<NamespaceLease['acquire']>>>;
-  readonly keepalive: LeaseKeepalive;
-  /** Namespace key of the acquisition this state belongs to. */
-  readonly namespaceKey: string;
+  /** The admission this handle was published on. */
+  readonly admission: NativeAdmission;
 };
 
 /**
- * The authority context of the most recent acquisition of a live namespace.
+ * The native admission lifecycle of one namespace.
  *
  * @remarks
  *
- * A reused live harness serves every acquisition of the namespace, so the
- * guard context — the acquiring call's original credentials and the provider
- * authorities resolved for them — is refreshed on every acquisition, never
- * retained from the first one.
+ * A single serialized object owns everything a namespace's native handles
+ * share: the authority (the acquiring call's verified credentials and the
+ * provider authorities resolved for them), the fence, the keepalive, the
+ * published holders, the pending open reservations and the drain state.
+ * Every lifecycle transition has exactly one code path through this object:
+ *
+ * - Reservations are taken synchronously, before any await, so overlapping
+ *   opens resolve before any state is mutated: same-credentials opens join
+ *   the admission, distinct-credentials opens fail closed, and a pending
+ *   open can never overwrite an admission that went live (or died) while it
+ *   was resolving provider authorities — the reservation's identity is
+ *   pinned by the admission object it reserved on.
+ * - Cleanup is reservation-owned: a failed open undoes exactly its own
+ *   reservation, and the shared fence is released only when no pending or
+ *   live owner remains.
+ * - Drain joining is bounded: an open that meets a draining admission waits
+ *   for the drain, but never unboundedly — a close that never settles
+ *   surfaces as a bounded, retryable unavailability once the draining
+ *   admission's fence is no longer live. A successor is never admitted
+ *   merely because time elapsed: while the fence is live, the wait holds.
  */
-type NamespaceAuthority = {
+type NativeAdmission = {
+  readonly namespace: Namespace;
+  /** The single live authority: immutable for the admission's lifetime. */
+  readonly credentials: BackstageCredentials;
+  /** Provider authorities resolved for the acquiring credentials. */
+  authorities: ReadonlyMap<string, ResolvedAuthority>;
+  /** The shared fence, set once the first reservation acquires the lease. */
+  fence: AdmissionFence | undefined;
+  /** Renewal for the shared fence, started when the fence is acquired. */
+  keepalive: LeaseKeepalive | undefined;
+  /** Published native handles of this admission. */
+  readonly holders: Set<NativeHarnessHandle>;
+  /** In-flight open reservations. */
+  pending: number;
+  /** Serializes native opens of this admission. */
+  openChain: Promise<unknown>;
+  /** True once the last owner left and the admission is closing. */
+  draining: boolean;
+  /** The drain tail, never rejecting; undefined until draining starts. */
+  drain: Promise<void> | undefined;
+  /** True once the drain settled (map entry removed). */
+  drainSettled: boolean;
+};
+
+/** The authority context a dispatch binds to: the admission's view. */
+type AdmissionAuthority = {
   readonly credentials: BackstageCredentials;
   readonly authorities: ReadonlyMap<string, ResolvedAuthority>;
-  /**
-   * Live native handles bound to this authority. A binding exists only
-   * while at least one harness of the namespace is actually open, so a
-   * failed or released open never leaves a stale binding behind.
-   */
-  holders: number;
 };
 
 /** A resolved provider authority and its identity for recheck. */
@@ -375,17 +427,19 @@ export async function createAiServiceIntegration(
     journal,
   });
 
-  const openStates = new Map<NativeHarnessHandle, OpenState>();
+  const handleStates = new Map<NativeHarnessHandle, HandleState>();
   const invalidationCallbacks: Array<(namespace: Namespace) => void> = [];
 
   // Instance-unique lease owner component: two service instances of the same
   // plugin principal must hold competing leases, not one shared generation.
   const instanceId = randomUUID();
-  // The authority context of the most recent acquisition per live namespace.
-  const namespaceAuthorities = new Map<string, NamespaceAuthority>();
-  // In-flight native releases per namespace: an open of the same namespace
-  // waits for them before competing for the lease.
-  const namespaceDrains = new Map<string, Promise<void>>();
+  // The native admission lifecycle per namespace: one object owns the
+  // authority, fence, holders, reservations and drain state.
+  const admissions = new Map<string, NativeAdmission>();
+
+  function namespaceKeyOf(namespace: Namespace): string {
+    return JSON.stringify([namespace.pluginId, namespace.sessionId]);
+  }
 
   /**
    * Resolves the provider authorities of an acquisition: every catalog
@@ -409,38 +463,282 @@ export async function createAiServiceIntegration(
   }
 
   /**
-   * Binds the namespace authority for an acquisition that holds the lease:
-   * a live namespace admits exactly one authority, and reuse under a
-   * different credentials object fails closed rather than transferring
-   * authority in either direction. Called only once the lease is held, so a
-   * failure before this point leaves no binding behind.
+   * Starts the admission drain: the single closing transition. Registered
+   * synchronously — before its first await — so overlapping opens observe
+   * the draining admission and wait instead of joining a dying fence. The
+   * conditional lease release only ever matches this admission's own fence;
+   * the map entry is removed only after that release completed, so a
+   * successor reservation can never race ahead of it.
    */
-  async function bindNamespaceAuthority(
-    input: OpenNativeHarnessInput,
-    key: string,
+  function startDrain(
+    admission: NativeAdmission,
+    closingHarness: Harness | undefined,
   ): Promise<void> {
-    const existing = namespaceAuthorities.get(key);
-    if (existing !== undefined && existing.credentials !== input.credentials) {
-      throw new Error(
-        `The AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin is live under a different verified authority; release the existing handles before acquiring it with different credentials`,
-      );
+    if (admission.drain !== undefined) {
+      return admission.drain;
     }
-    const authorities = await resolveAuthorities(input);
-    namespaceAuthorities.set(key, {
-      credentials: input.credentials,
-      authorities,
-      holders: existing?.holders ?? 0,
+    admission.draining = true;
+    const key = namespaceKeyOf(admission.namespace);
+    const drained = (async () => {
+      if (admission.keepalive !== undefined) {
+        await admission.keepalive.stop();
+      }
+      try {
+        if (closingHarness !== undefined) {
+          // Seals admission, settles accepted commits, and closes the
+          // fenced storage without destroying the shared Knex pool.
+          // Admitted durable work is never cancelled by release itself.
+          await closingHarness.close(BACKGROUND_CONTEXT);
+        }
+      } finally {
+        if (admission.fence !== undefined) {
+          await lease.release(admission.fence);
+        }
+        admissions.delete(key);
+      }
+    })();
+    admission.drain = drained.then(
+      () => undefined,
+      () => undefined,
+    );
+    void admission.drain.then(() => {
+      admission.drainSettled = true;
     });
+    return drained;
   }
 
-  /** Drops one holder of a namespace authority binding. */
-  function releaseAuthoritySlot(key: string): void {
-    const entry = namespaceAuthorities.get(key);
-    if (entry !== undefined) {
-      entry.holders -= 1;
-      if (entry.holders <= 0) {
-        namespaceAuthorities.delete(key);
+  /**
+   * Whether the draining admission's fence is still the live lease row.
+   * Read directly from the lease table: a renewal would mutate the fence,
+   * and a polling read is the drain waiter's liveness signal.
+   */
+  async function fenceIsLive(admission: NativeAdmission): Promise<boolean> {
+    const fence = admission.fence;
+    if (fence === undefined) {
+      return false;
+    }
+    const row = await db(NAMESPACE_LEASES_TABLE)
+      .where({
+        plugin_id: admission.namespace.pluginId,
+        session_id: admission.namespace.sessionId,
+      })
+      .first();
+    return (
+      row !== undefined &&
+      row.owner_id === fence.owner &&
+      String(row.token) === fence.token &&
+      new Date(row.expires_at).getTime() > Date.now()
+    );
+  }
+
+  /**
+   * Bounded drain join for an open that meets a draining admission. The
+   * wait holds while the draining fence is live — a successor is never
+   * admitted merely because time elapsed. It ends when the drain settles,
+   * or, once the fence is no longer live (expired or taken over through the
+   * lease protocol by another instance), with a short grace for the drain
+   * to finish and otherwise a bounded, retryable unavailability: control
+   * returns to the caller instead of pending forever on a close that never
+   * settles. A hard overall bound backs the fence signal.
+   */
+  async function waitForDrainComplete(
+    admission: NativeAdmission,
+  ): Promise<boolean> {
+    const deadline = Date.now() + DRAIN_WAIT_LIMIT_MS;
+    for (;;) {
+      if (admission.drainSettled) {
+        return true;
       }
+      if (!(await fenceIsLive(admission))) {
+        // The drain's lease release is its last step: it may be settling
+        // right now. Give it a short grace before reporting the previous
+        // release as stuck.
+        const settled = await Promise.race([
+          admission.drain!.then(() => true),
+          new Promise<boolean>(resolve =>
+            setTimeout(() => resolve(false), DRAIN_GRACE_MS),
+          ),
+        ]);
+        return settled || admission.drainSettled;
+      }
+      if (Date.now() >= deadline) {
+        return false;
+      }
+      await new Promise(resolve => setTimeout(resolve, DRAIN_POLL_MS));
+    }
+  }
+
+  /**
+   * Undoes exactly one open reservation. The shared fence and authority
+   * binding survive while any pending or live owner remains; the last owner
+   * out drains the admission.
+   */
+  async function undoReservation(admission: NativeAdmission): Promise<void> {
+    admission.pending -= 1;
+    if (admission.pending <= 0 && admission.holders.size === 0) {
+      await startDrain(admission, undefined);
+    }
+  }
+
+  /**
+   * Runs an open serialized on the admission: reservations may overlap, but
+   * native opens (lease acquisition, storage, harness construction and
+   * publication) run one at a time per admission.
+   */
+  function serializeOpen(
+    admission: NativeAdmission,
+    run: () => Promise<NativeHarnessHandle>,
+  ): Promise<NativeHarnessHandle> {
+    const result = admission.openChain.then(run, run);
+    admission.openChain = result.then(
+      () => undefined,
+      () => undefined,
+    );
+    return result;
+  }
+
+  /**
+   * The serialized body of one admitted open: acquires the shared fence if
+   * this admission does not hold one yet, resolves the provider
+   * authorities, constructs the native harness and publishes the handle on
+   * the admission. Publication re-checks the reservation identity — an
+   * admission that drained while this open was running can never be
+   * published on.
+   */
+  async function openAdmittedHarness(
+    admission: NativeAdmission,
+    input: OpenNativeHarnessInput,
+  ): Promise<NativeHarnessHandle> {
+    const key = namespaceKeyOf(input.namespace);
+    if (admission.draining || admissions.get(key) !== admission) {
+      throw new Error(
+        `The AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin closed while its acquisition was still opening; retry the open`,
+      );
+    }
+    // The lease owner is the principal key plus an instance-unique
+    // component: within one instance the same-owner re-acquire semantics
+    // apply, while two instances of the same principal compete through the
+    // lease protocol instead of sharing one generation. Only the admission's
+    // first serialized open acquires; joins reuse the shared fence.
+    let fence = admission.fence;
+    if (fence === undefined) {
+      const acquired = await lease.acquire(
+        input.namespace,
+        `${input.owner}:${instanceId}`,
+      );
+      if (acquired === undefined) {
+        throw new Error(
+          `The AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin is held by another live lease; retry once the current owner releases it`,
+        );
+      }
+      fence = acquired;
+      admission.fence = fence;
+      admission.keepalive = startLeaseKeepalive(lease, fence, {
+        intervalMs: LEASE_KEEPALIVE_INTERVAL_MS,
+        onInvalidated: reason => {
+          deps.logger.warn(
+            `The lease of AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin was invalidated (${reason}); local handles are drained`,
+          );
+          for (const callback of invalidationCallbacks) {
+            callback(input.namespace);
+          }
+        },
+      });
+    }
+    const authorities = await resolveAuthorities(input);
+    const authority = (): AdmissionAuthority => {
+      if (admission.draining || admission.fence !== fence) {
+        throw new Error(
+          'Model operation denied: no acquisition is bound for this session',
+        );
+      }
+      return {
+        credentials: admission.credentials,
+        authorities: admission.authorities,
+      };
+    };
+    // The native harness reads the models source at each use, so every
+    // dispatch binds the CURRENT acquisition's credentials and provider
+    // authorities rather than the first acquisition's.
+    const modelsSource = (): Models => {
+      const requests = createGuardedModelOperations({
+        guard,
+        journal,
+        resolve: makeResolve(input, fence, authority),
+      });
+      return {
+        ...requests,
+        // Canonical catalog lookups only; no provider, credential or
+        // administrative access escapes to extensions. Provider auth
+        // access is bound at open (required by the native harness) but
+        // fails closed on every call.
+        getModel: (provider: string, id: string) => {
+          const canonical = catalog.find(
+            entry => entry.provider === provider && entry.id === id,
+          );
+          if (canonical !== undefined) {
+            return canonical;
+          }
+          // A dispatch that fails model resolution journals a local
+          // denial — a local rejection never resolved a destination —
+          // and the native harness settles the run with its own
+          // no-model availability error.
+          journalUnresolvedModel(input, fence, provider, id);
+          return undefined;
+        },
+        getAuth: () => {
+          throw new Error(
+            'Provider auth access is not exposed through the managed AI service',
+          );
+        },
+      } as unknown as Models;
+    };
+    let storage: Storage | undefined;
+    try {
+      storage = await createKnexStorage({
+        db,
+        namespace: input.namespace,
+        fence,
+      });
+      const harness = await Harness.open(
+        storage,
+        {
+          models: modelsSource,
+          registry: input.registry,
+          ...(input.conversationCreated === undefined
+            ? {}
+            : { conversationCreated: input.conversationCreated }),
+        },
+        BACKGROUND_CONTEXT,
+      );
+      // Publication: reservation identity re-checked. A reservation pins
+      // its admission against drains, so this holds unless the admission
+      // was closed by an explicit invalidation path; it can never publish
+      // onto another caller's admission.
+      if (admission.draining || admissions.get(key) !== admission) {
+        throw new Error(
+          `The AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin closed while its acquisition was still opening; retry the open`,
+        );
+      }
+      admission.authorities = authorities;
+      const handle: NativeHarnessHandle = {
+        harness,
+        context: BACKGROUND_CONTEXT as Context,
+      };
+      // The reservation converts into the published holder, synchronously
+      // with publication: a concurrent release of this handle can never
+      // observe the half-converted state.
+      admission.pending -= 1;
+      admission.holders.add(handle);
+      handleStates.set(handle, { harness, admission });
+      return handle;
+    } catch (error) {
+      try {
+        await storage?.close(BACKGROUND_CONTEXT);
+      } catch {
+        /* The open already failed; the reservation undo is the arbiter. */
+      }
+      throw error;
     }
   }
 
@@ -455,8 +753,8 @@ export async function createAiServiceIntegration(
    */
   function makeResolve(
     input: OpenNativeHarnessInput,
-    fence: OpenState['fence'],
-    authority: () => NamespaceAuthority,
+    fence: AdmissionFence,
+    authority: () => AdmissionAuthority,
   ): (model: AnyModel, operation: ModelOperation) => GuardedModelBinding {
     const sessionRef = `${input.namespace.pluginId}/${input.namespace.sessionId}`;
     let callOrdinal = 0;
@@ -541,7 +839,7 @@ export async function createAiServiceIntegration(
    */
   function journalUnresolvedModel(
     input: OpenNativeHarnessInput,
-    fence: OpenState['fence'],
+    fence: AdmissionFence,
     provider: string,
     modelId: string,
   ): void {
@@ -625,216 +923,123 @@ export async function createAiServiceIntegration(
       // Every admitted operation is associated with its acquiring call's
       // verified original credentials. A live namespace admits exactly one
       // authority: reuse under a different credentials object fails closed
-      // rather than transferring authority to the newest caller or
-      // retaining the first caller's. The binding itself is registered only
-      // once an open holds the lease (see openNativeHarness), so a failed
-      // open leaves no stale binding behind.
-      const key = JSON.stringify([
-        binding.namespace.pluginId,
-        binding.namespace.sessionId,
-      ]);
-      const existing = namespaceAuthorities.get(key);
+      // rather than transferring authority in either direction. This seam is
+      // an early check only — the admission reservation in openNativeHarness
+      // is the enforcement point — and a draining admission no longer
+      // represents a live authority, so it is not compared against.
+      const key = namespaceKeyOf(binding.namespace);
+      const existing = admissions.get(key);
       if (
         existing !== undefined &&
+        !existing.draining &&
         existing.credentials !== binding.credentials
       ) {
         throw new Error(
-          `The AI session '${binding.namespace.sessionId}' of the '${pluginId}' plugin is live under a different verified authority; release the existing handles before acquiring it with different credentials`,
+          existing.holders.size > 0
+            ? `The AI session '${binding.namespace.sessionId}' of the '${pluginId}' plugin is live under a different verified authority; release the existing handles before acquiring it with different credentials`
+            : `The AI session '${binding.namespace.sessionId}' of the '${pluginId}' plugin is being opened under a different verified authority; retry once that acquisition settles or release it first`,
         );
       }
-      if (existing !== undefined) {
-        // Same verified authority: refresh the resolved provider
-        // authorities for the reused live handle, so credential rotation
-        // is visible to the recheck without transferring authority.
+      if (
+        existing !== undefined &&
+        !existing.draining &&
+        existing.holders.size > 0
+      ) {
+        // Same verified authority on a live admission: refresh the resolved
+        // provider authorities for the reused handles, so credential
+        // rotation is visible to the recheck without transferring
+        // authority. The refresh is published only if the reservation
+        // identity still holds.
         const authorities = await resolveAuthorities(binding);
-        namespaceAuthorities.set(key, {
-          credentials: existing.credentials,
-          authorities,
-          holders: existing.holders,
-        });
+        if (
+          admissions.get(key) === existing &&
+          !existing.draining &&
+          existing.credentials === binding.credentials
+        ) {
+          existing.authorities = authorities;
+        }
       }
     },
 
     async openNativeHarness(
       input: OpenNativeHarnessInput,
     ): Promise<NativeHarnessHandle> {
-      const key = JSON.stringify([
-        input.namespace.pluginId,
-        input.namespace.sessionId,
-      ]);
-      // A release of this namespace may still be draining its old harness.
-      // Within one instance the same-owner re-acquire keeps the lease token,
-      // so an old drain's conditional release would act on a successor
-      // fence of the same owner and token: an open waits for the drain to
-      // finish before competing for the lease, and the successor then
-      // acquires a fresh generation with a later token.
-      let drain = namespaceDrains.get(key);
-      while (drain !== undefined) {
-        await drain;
-        drain = namespaceDrains.get(key);
-      }
-      // The lease owner is the principal key plus an instance-unique
-      // component: within one instance the same-owner re-acquire semantics
-      // apply, while two instances of the same principal compete through the
-      // lease protocol instead of sharing one generation.
-      const fence = await lease.acquire(
-        input.namespace,
-        `${input.owner}:${instanceId}`,
-      );
-      if (fence === undefined) {
-        // This acquisition did not open the namespace. No authority binding
-        // was registered for it, so a later acquisition with different
-        // credentials is not compared against a stale one.
-        throw new Error(
-          `The AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin is held by another live lease; retry once the current owner releases it`,
-        );
-      }
-      let storage: Storage | undefined;
-      let bound = false;
-      try {
-        // The authority binding is registered only now that this
-        // acquisition holds the lease: any earlier failure — including a
-        // lease insert exception — leaves no binding behind.
-        await bindNamespaceAuthority(input, key);
-        bound = true;
-        storage = await createKnexStorage({
-          db,
-          namespace: input.namespace,
-          fence,
-        });
-        const authority = (): NamespaceAuthority => {
-          const current = namespaceAuthorities.get(key);
-          if (current === undefined) {
+      const key = namespaceKeyOf(input.namespace);
+      for (;;) {
+        // ---- Reservation: synchronous, before any await ----------------
+        // Overlapping opens resolve before any state is mutated. A draining
+        // admission is joined bounded, never bypassed: within one instance
+        // the same-owner re-acquire keeps the lease token, so a successor
+        // admitted alongside the drain could hold the draining admission's
+        // fence, and its conditional release would then expire it.
+        const existing = admissions.get(key);
+        if (existing !== undefined && existing.draining) {
+          const completed = await waitForDrainComplete(existing);
+          if (!completed) {
             throw new Error(
-              'Model operation denied: no acquisition is bound for this session',
+              `The AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin is still closing its previous native harness and no longer holds a live lease; the previous release appears stuck. Retry the open once the previous release completes, and investigate the stalled close if this persists`,
             );
           }
-          return current;
-        };
-        // The native harness reads the models source at each use, so every
-        // dispatch binds the CURRENT acquisition's credentials and provider
-        // authorities rather than the first acquisition's.
-        const modelsSource = (): Models => {
-          const requests = createGuardedModelOperations({
-            guard,
-            journal,
-            resolve: makeResolve(input, fence, authority),
-          });
-          return {
-            ...requests,
-            // Canonical catalog lookups only; no provider, credential or
-            // administrative access escapes to extensions. Provider auth
-            // access is bound at open (required by the native harness) but
-            // fails closed on every call.
-            getModel: (provider: string, id: string) => {
-              const canonical = catalog.find(
-                entry => entry.provider === provider && entry.id === id,
-              );
-              if (canonical !== undefined) {
-                return canonical;
-              }
-              // A dispatch that fails model resolution journals a local
-              // denial — a local rejection never resolved a destination —
-              // and the native harness settles the run with its own
-              // no-model availability error.
-              journalUnresolvedModel(input, fence, provider, id);
-              return undefined;
-            },
-            getAuth: () => {
-              throw new Error(
-                'Provider auth access is not exposed through the managed AI service',
-              );
-            },
-          } as unknown as Models;
-        };
-        const harness = await Harness.open(
-          storage,
-          {
-            models: modelsSource,
-            registry: input.registry,
-            ...(input.conversationCreated === undefined
-              ? {}
-              : { conversationCreated: input.conversationCreated }),
-          },
-          BACKGROUND_CONTEXT,
-        );
-        const keepalive = startLeaseKeepalive(lease, fence, {
-          intervalMs: LEASE_KEEPALIVE_INTERVAL_MS,
-          onInvalidated: reason => {
-            deps.logger.warn(
-              `The lease of AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin was invalidated (${reason}); local handles are drained`,
-            );
-            for (const callback of invalidationCallbacks) {
-              callback(input.namespace);
-            }
-          },
-        });
-        const handle: NativeHarnessHandle = {
-          harness,
-          context: BACKGROUND_CONTEXT as Context,
-        };
-        const entry = namespaceAuthorities.get(key);
-        if (entry !== undefined) {
-          entry.holders += 1;
+          continue;
         }
-        openStates.set(handle, {
-          harness,
-          fence,
-          keepalive,
-          namespaceKey: key,
-        });
-        return handle;
-      } catch (error) {
+        if (
+          existing !== undefined &&
+          existing.credentials !== input.credentials
+        ) {
+          throw new Error(
+            existing.holders.size > 0
+              ? `The AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin is live under a different verified authority; release the existing handles before acquiring it with different credentials`
+              : `The AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin is being opened under a different verified authority; retry once that acquisition settles or release it first`,
+          );
+        }
+        const admission: NativeAdmission = existing ?? {
+          namespace: input.namespace,
+          credentials: input.credentials,
+          authorities: new Map<string, ResolvedAuthority>(),
+          fence: undefined,
+          keepalive: undefined,
+          holders: new Set<NativeHarnessHandle>(),
+          pending: 0,
+          openChain: Promise.resolve(),
+          draining: false,
+          drain: undefined,
+          drainSettled: false,
+        };
+        admissions.set(key, admission);
+        admission.pending += 1;
+
         try {
-          await storage?.close(BACKGROUND_CONTEXT);
-        } catch {
-          /* The open already failed; the lease release below is the arbiter. */
+          const handle = await serializeOpen(admission, () =>
+            openAdmittedHarness(admission, input),
+          );
+          return handle;
+        } catch (error) {
+          // Reservation-owned cleanup: undo exactly this reservation. The
+          // shared fence and authority survive while any pending or live
+          // owner remains; the last owner out drains the admission.
+          await undoReservation(admission);
+          throw error;
         }
-        await lease.release(fence);
-        // This acquisition did not open the namespace: drop its authority
-        // binding so a later acquisition is not compared against it.
-        if (bound) {
-          releaseAuthoritySlot(key);
-        }
-        throw error;
       }
     },
 
     async releaseNativeHarness(handle: NativeHarnessHandle): Promise<void> {
-      const state = openStates.get(handle);
+      const state = handleStates.get(handle);
       if (state === undefined) {
         return;
       }
-      openStates.delete(handle);
-      // The drain is registered before the first await, so a concurrent open
-      // of the same namespace waits for this release — including the old
-      // admission's conditional lease release — before re-acquiring.
-      const drained = (async () => {
-        releaseAuthoritySlot(state.namespaceKey);
-        await state.keepalive.stop();
-        try {
-          // Seals admission, settles accepted commits, and closes the fenced
-          // storage without destroying the shared Knex pool. Admitted
-          // durable work is never cancelled by release itself.
-          await state.harness.close(BACKGROUND_CONTEXT);
-        } finally {
-          // Conditional on owner and token: a stale release never affects a
-          // successor's lease.
-          await lease.release(state.fence);
-        }
-      })();
-      const registered = drained.then(
-        () => undefined,
-        () => undefined,
-      );
-      namespaceDrains.set(state.namespaceKey, registered);
-      try {
-        await drained;
-      } finally {
-        if (namespaceDrains.get(state.namespaceKey) === registered) {
-          namespaceDrains.delete(state.namespaceKey);
-        }
+      handleStates.delete(handle);
+      const admission = state.admission;
+      admission.holders.delete(handle);
+      if (admission.holders.size > 0 || admission.pending > 0) {
+        // Other owners remain: close only this handle's harness. The shared
+        // fence and authority binding stay theirs.
+        await state.harness.close(BACKGROUND_CONTEXT);
+        return;
       }
+      // Last owner: drain the admission. The drain is registered before its
+      // first await (inside startDrain), so overlapping opens observe it.
+      await startDrain(admission, state.harness);
     },
   };
 

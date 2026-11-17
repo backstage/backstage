@@ -31,9 +31,10 @@ import type {
   PermissionsService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
-import { createRegistry } from '@earendil-works/pi-durable';
+import { createRegistry, Harness } from '@earendil-works/pi-durable';
+import type { RegistryReader } from '@earendil-works/pi-durable';
 import { openaiProvider } from '@earendil-works/pi-ai/providers/openai';
-import type { AnyModel } from '@earendil-works/pi-ai';
+import type { AnyModel, Models } from '@earendil-works/pi-ai';
 import type { AiCredentialStores } from './credentials/types';
 import {
   createKnexNamespaceLease,
@@ -43,6 +44,7 @@ import type { TrustedOperation } from './guard/types';
 import {
   DefaultAiService,
   type DefaultAiServiceDeps,
+  type NativeHarnessHandle,
 } from './DefaultAiService';
 import {
   createAiServiceIntegration,
@@ -180,6 +182,16 @@ const wait = async (probe: () => Promise<boolean> | boolean) => {
   throw new Error('probe timeout');
 };
 
+/** Settles an open into either a handle or an error message. */
+function settle(
+  pending: Promise<NativeHarnessHandle>,
+): Promise<{ handle?: NativeHarnessHandle; error?: string }> {
+  return pending.then(
+    handle => ({ handle }),
+    (error: Error) => ({ error: String(error) }),
+  );
+}
+
 async function denyCount(db: Knex, sessionId?: string): Promise<number> {
   const query = db('ai_journal_events').where({ decision: 'deny' });
   if (sessionId !== undefined) {
@@ -234,6 +246,491 @@ async function probeServer(): Promise<{
 }
 
 describe('Wave 1 integration regressions', () => {
+  /**
+   * Admission lifecycle matrix: every await point of the per-namespace
+   * native admission x every failure/concurrency mode, and the test that
+   * pins the required resulting state. Cells marked N/A are justified.
+   *
+   * Await points:
+   *  R1 reservation drain-join (open meets a draining admission)
+   *  R2 open serialization (chained behind a peer's open)
+   *  R3 lease.acquire
+   *  R4 provider authority resolution
+   *  R5 storage creation
+   *  R6 Harness.open + publication
+   *  R7 failure undo (storage close + reservation removal)
+   *  R8 release: harness close
+   *  R9 drain: conditional lease release
+   *
+   * Modes:
+   *  M1 success
+   *  M2 peer live, same credentials
+   *  M3 peer live, distinct credentials
+   *  M4 peer pending (same / distinct credentials)
+   *  M5 peer failed mid-cleanup
+   *  M6 lease acquire throws
+   *  M7 lease acquire busy (another instance)
+   *  M8 drain in flight
+   *  M9 drain hung
+   *  M10 release during open
+   *  M11 invalidation during open
+   *
+   * R1 x M8 'survives invalidation overlap: a delayed old drain never
+   *          releases the successor fence'
+   * R1 x M9 'bounds a same-instance open while an old native close never
+   *          completes'
+   * R2 x M4 'concurrent same-credentials opens share one admission and one
+   *          fence' (same-credentials peers chain and share the fence)
+   * R2 x M3 N/A: a distinct-credentials open is rejected synchronously at
+   *          reservation (M4 distinct cell below), so it can never reach
+   *          the serialization chain.
+   * R3 x M1 'dispatches configured native generation to the canonical openai
+   *          -responses destination' (and the other adapter cases)
+   * R3 x M6 'a failed lease insert leaves no authority binding behind'
+   * R3 x M7 'requires independent replicas to hold different exclusive
+   *          lease generations'; 'bounds a same-instance open...' (early
+   *          cross-instance rejection)
+   * R4 x M4 'does not admit a distinct-credentials open while another is
+   *          resolving' (distinct); 'concurrent same-credentials opens
+   *          share one admission and one fence' (same — the join refreshes
+   *          nothing and reuses the admission's authority)
+   * R4 x M2 'rebinds authority per acquisition: same authority reuses,
+   *          different fails closed' (rotation refresh through
+   *          bindAcquisition) and 'refreshes provider authority during
+   *          dispatch recheck after same-reference reuse'
+   * R5/R6 x M1 the adapter dispatch cases end to end
+   * R6 x M4 'does not admit a distinct-credentials open while another is
+   *          resolving': the pending open publishes only on the admission
+   *          it reserved; a distinct peer was rejected before any state
+   *          existed.
+   * R7 x M5 'keeps a live native authority through peer failure and
+   *          release' (both variants: the failed open's cleanup undoes only
+   *          its own reservation and never the surviving holder's fence)
+   * R7 x M6 'a failed lease insert leaves no authority binding behind'
+   * R8 x M10 'a pending open keeps the fence when the last live holder
+   *          releases'
+   * R9 x M2 the reuse case dispatches under the retained fence
+   * R9 x M3 N/A: distinct credentials never share an admission, so no drain
+   *          ever conditionally releases a fence a distinct-credentials
+   *          holder depends on.
+   * R9 x M8 'survives invalidation overlap...': the successor acquires a
+   *          strictly later token only after the old conditional release.
+   * M11 x R4/R6 N/A (justified): an invalidation during a pending open does
+   *          not corrupt lifecycle state — the reservation pins the
+   *          admission, publication re-checks its identity, and the
+   *          published handle's every dispatch renews the fence at the
+   *          guard's recheck, so a lost lease denies dispatch fail-closed.
+   *          The recheck (guard/journalIntegration tests) owns that
+   *          enforcement, not the admission state machine.
+   */
+
+  it('does not admit a distinct-credentials open while another is resolving', async () => {
+    const f = await fixture();
+    let unlock!: () => void;
+    try {
+      // Hold the FIRST credential read so the first open is pending deep
+      // inside provider authority resolution when the second arrives.
+      const gate = new Promise<void>(resolve => {
+        unlock = resolve;
+      });
+      let entered!: () => void;
+      const enteredPromise = new Promise<void>(resolve => {
+        entered = resolve;
+      });
+      let reads = 0;
+      const a = mockCredentials.user('user:default/alice');
+      const b = mockCredentials.user('user:default/alice');
+      // A catalog model makes each open resolve provider authorities, so
+      // the first open can be held inside that resolution.
+      const model = reviewModel({
+        api: 'openai-responses',
+        baseUrl: 'http://127.0.0.1:9/v1',
+      });
+      const { integration } = await managed(f, {
+        models: [model],
+        credentialStores: {
+          forScope: () => ({
+            read: async () => {
+              reads += 1;
+              if (reads === 1) {
+                entered();
+                await gate;
+              }
+              return { type: 'api_key' as const, key: STAND_IN_KEY };
+            },
+            list: async () => [],
+            modify: async () => undefined,
+            delete: async () => {},
+          }),
+        },
+      });
+      const base = {
+        namespace: { pluginId: 'test-plugin', sessionId: 'concurrent-creds' },
+        owner: 'user:user:default/alice',
+        credentials: a,
+        registry: createRegistry(),
+        registryVersion: 'v1',
+        configVersion: 'v1',
+      };
+
+      const openA = settle(integration.openNativeHarness(base));
+      await enteredPromise;
+      const openB = await settle(
+        integration.openNativeHarness({ ...base, credentials: b }),
+      );
+      unlock();
+      const ra = await openA;
+
+      // The distinct-credentials open must not publish: exactly one of the
+      // two holds the namespace, and the pending open's stale resolution
+      // can never replace a live caller's credentials.
+      expect(Boolean(ra.handle) && Boolean(openB.handle)).toBe(false);
+      expect(ra.error).toBeUndefined();
+      if (ra.handle !== undefined) {
+        await integration.releaseNativeHarness(ra.handle);
+      }
+      if (openB.handle !== undefined) {
+        await integration.releaseNativeHarness(openB.handle);
+      }
+    } finally {
+      unlock();
+      await f.close();
+    }
+  }, 15000);
+
+  it.each([false, true])(
+    'keeps a live native authority through peer failure and release: %s',
+    async withRelease => {
+      const f = await fixture();
+      const probe = await probeServer();
+      try {
+        const port = (probe.server.address() as { port: number }).port;
+        const model = reviewModel({
+          api: 'openai-responses',
+          baseUrl: `http://127.0.0.1:${port}/v1`,
+        });
+        const { service, integration } = await managed(f, {
+          models: [model],
+        });
+        const creds = mockCredentials.user('user:default/alice');
+        const sessionId = withRelease ? 'holder-release' : 'holder-fail';
+        const base = {
+          namespace: { pluginId: 'test-plugin', sessionId },
+          owner: 'user:user:default/alice',
+          credentials: creds,
+          registry: createRegistry(),
+          registryVersion: 'v1',
+          configVersion: 'v1',
+        };
+        // A registry whose snapshot throws makes the open fail inside
+        // Harness.open, after the reservation and storage exist.
+        const badRegistry = {
+          snapshot: () => {
+            throw new Error('review registry failure');
+          },
+        } as unknown as RegistryReader;
+
+        const originalOpen = Harness.open.bind(Harness);
+        const sources: Array<() => Models> = [];
+        let entered!: () => void;
+        const enteredPromise = new Promise<void>(resolve => {
+          entered = resolve;
+        });
+        let unlock!: () => void;
+        const gate = new Promise<void>(resolve => {
+          unlock = resolve;
+        });
+        const spy = jest
+          .spyOn(Harness, 'open')
+          .mockImplementation(
+            async (
+              storage: Parameters<typeof originalOpen>[0],
+              opts: Parameters<typeof originalOpen>[1],
+              ctx: Parameters<typeof originalOpen>[2],
+            ) => {
+              if (opts.registry === badRegistry) {
+                const realStorageClose = storage.close.bind(storage);
+                storage.close = async (
+                  ...closeArgs: Parameters<typeof storage.close>
+                ) => {
+                  entered();
+                  await gate;
+                  return realStorageClose(...closeArgs);
+                };
+              }
+              sources.push(opts.models as () => Models);
+              return originalOpen(storage, opts, ctx);
+            },
+          );
+
+        const first = await service.openHarness(options(sessionId, creds));
+        f.handles.push(first);
+        await first.harness.root(first.context);
+        let source = sources[0];
+        if (withRelease) {
+          const second = await integration.openNativeHarness(base);
+          f.handles.push({
+            release: () => integration.releaseNativeHarness(second),
+          });
+          source = sources[1];
+        }
+
+        // The failing open pauses inside its own failure cleanup; a peer
+        // release completes meanwhile.
+        const badPending = settle(
+          integration.openNativeHarness({ ...base, registry: badRegistry }),
+        );
+        await enteredPromise;
+        if (withRelease) {
+          await first.release();
+        }
+        unlock();
+        const bad = await badPending;
+        expect(bad.error).toContain('review registry failure');
+        spy.mockRestore();
+
+        // The surviving admission still dispatches and holds a live fence:
+        // the failed peer undid only its own reservation.
+        await (
+          source().completeSimple as unknown as (
+            model: AnyModel,
+            context: unknown,
+            options: unknown,
+          ) => Promise<unknown>
+        )(model, { messages: [] }, { maxRetries: 0 });
+        const lease = await f.db('ai_namespace_leases').first();
+        expect(probe.requests.length).toBe(1);
+        expect(new Date(lease.expires_at).getTime()).toBeGreaterThan(
+          Date.now(),
+        );
+      } finally {
+        await probe.close();
+        await f.close();
+      }
+    },
+    15000,
+  );
+
+  it('bounds a same-instance open while an old native close never completes', async () => {
+    const f = await fixture();
+    let unlock!: () => void;
+    let pending:
+      | Promise<{ handle?: NativeHarnessHandle; error?: string }>
+      | undefined;
+    let drain: Promise<void> | undefined;
+    let a: Awaited<ReturnType<typeof managed>> | undefined;
+    try {
+      a = await managed(f);
+      const b = await managed(f);
+      const base = {
+        namespace: { pluginId: 'test-plugin', sessionId: 'hung-drain' },
+        owner: 'user:user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        registry: createRegistry(),
+        registryVersion: 'v1',
+        configVersion: 'v1',
+      };
+      const h = await a.integration.openNativeHarness(base);
+      const realClose = h.harness.close.bind(h.harness);
+      const gate = new Promise<void>(resolve => {
+        unlock = resolve;
+      });
+      h.harness.close = async (...closeArgs: Parameters<typeof realClose>) => {
+        await gate;
+        return realClose(...closeArgs);
+      };
+
+      // The old release drains but its close never settles on its own.
+      drain = a.integration.releaseNativeHarness(h);
+      pending = settle(a.integration.openNativeHarness(base));
+
+      // Another instance still fails closed while the lease is live.
+      await expect(b.integration.openNativeHarness(base)).rejects.toThrow(
+        /held by another live lease/,
+      );
+
+      // Force lease expiry: the other instance takes the namespace over
+      // through the lease protocol, with a later token.
+      await f.db('ai_namespace_leases').update({
+        expires_at: f.db.client.config.client === 'pg' ? new Date(0) : 0,
+      });
+      const other = await b.integration.openNativeHarness(base);
+      const afterTakeover = await f.db('ai_namespace_leases').first();
+      expect(Number(afterTakeover.token)).toBeGreaterThan(1);
+
+      // The same-instance open is bounded: it surfaces a retryable
+      // unavailability instead of pending forever on the hung close, and
+      // it is never admitted merely because time elapsed.
+      const result = await Promise.race([
+        pending,
+        new Promise(resolve => setTimeout(() => resolve('still-waiting'), 300)),
+      ]);
+      expect(result).not.toBe('still-waiting');
+      expect((result as { error?: string }).error).toContain('appears stuck');
+      await b.integration.releaseNativeHarness(other);
+    } finally {
+      unlock();
+      await drain;
+      const result = await pending;
+      if (result?.handle !== undefined && a !== undefined) {
+        await a.integration.releaseNativeHarness(result.handle);
+      }
+      await f.close();
+    }
+  }, 15000);
+
+  it('concurrent same-credentials opens share one admission and one fence', async () => {
+    const f = await fixture();
+    let unlock!: () => void;
+    try {
+      let entered!: () => void;
+      const enteredPromise = new Promise<void>(resolve => {
+        entered = resolve;
+      });
+      let reads = 0;
+      const gate = new Promise<void>(resolve => {
+        unlock = resolve;
+      });
+      const creds = mockCredentials.user('user:default/alice');
+      const model = reviewModel({
+        api: 'openai-responses',
+        baseUrl: 'http://127.0.0.1:9/v1',
+      });
+      const { integration } = await managed(f, {
+        models: [model],
+        credentialStores: {
+          forScope: () => ({
+            read: async () => {
+              reads += 1;
+              if (reads === 1) {
+                entered();
+                await gate;
+              }
+              return { type: 'api_key' as const, key: STAND_IN_KEY };
+            },
+            list: async () => [],
+            modify: async () => undefined,
+            delete: async () => {},
+          }),
+        },
+      });
+      const base = {
+        namespace: { pluginId: 'test-plugin', sessionId: 'shared-admission' },
+        owner: 'user:user:default/alice',
+        credentials: creds,
+        registry: createRegistry(),
+        registryVersion: 'v1',
+        configVersion: 'v1',
+      };
+
+      const openA = settle(integration.openNativeHarness(base));
+      await enteredPromise;
+      const openB = settle(integration.openNativeHarness(base));
+      unlock();
+      const [ra, rb] = await Promise.all([openA, openB]);
+
+      // Both same-credentials opens publish on one admission: one lease
+      // row, one token, two live holders.
+      expect(ra.handle).toBeDefined();
+      expect(rb.handle).toBeDefined();
+      expect(ra.error).toBeUndefined();
+      expect(rb.error).toBeUndefined();
+      const rows = await f.db('ai_namespace_leases').select();
+      expect(rows).toHaveLength(1);
+      expect(Number(rows[0].token)).toBe(1);
+      if (ra.handle !== undefined) {
+        await integration.releaseNativeHarness(ra.handle);
+      }
+      if (rb.handle !== undefined) {
+        await integration.releaseNativeHarness(rb.handle);
+      }
+    } finally {
+      unlock();
+      await f.close();
+    }
+  }, 15000);
+
+  it('a pending open keeps the fence when the last live holder releases', async () => {
+    const f = await fixture();
+    const probe = await probeServer();
+    let unlock!: () => void;
+    try {
+      const port = (probe.server.address() as { port: number }).port;
+      const model = reviewModel({
+        api: 'openai-responses',
+        baseUrl: `http://127.0.0.1:${port}/v1`,
+      });
+      const creds = mockCredentials.user('user:default/alice');
+      // Gate the SECOND credential read: the service-level open consumed
+      // the first, so the seam-level open is held inside authority
+      // resolution — after it joined the admission as a pending
+      // reservation — when the live holder releases.
+      let entered!: () => void;
+      const enteredPromise = new Promise<void>(resolve => {
+        entered = resolve;
+      });
+      let reads = 0;
+      const gate = new Promise<void>(resolve => {
+        unlock = resolve;
+      });
+      const { service, integration } = await managed(f, {
+        models: [model],
+        credentialStores: {
+          forScope: () => ({
+            read: async () => {
+              reads += 1;
+              if (reads === 2) {
+                entered();
+                await gate;
+              }
+              return { type: 'api_key' as const, key: STAND_IN_KEY };
+            },
+            list: async () => [],
+            modify: async () => undefined,
+            delete: async () => {},
+          }),
+        },
+      });
+
+      const first = await service.openHarness(
+        options('release-during-open', creds),
+      );
+      f.handles.push(first);
+      const base = {
+        namespace: {
+          pluginId: 'test-plugin',
+          sessionId: 'release-during-open',
+        },
+        owner: 'user:user:default/alice',
+        credentials: creds,
+        registry: createRegistry(),
+        registryVersion: 'v1',
+        configVersion: 'v1',
+      };
+      const openB = settle(integration.openNativeHarness(base));
+      await enteredPromise;
+
+      // The last live holder releases while the peer open is pending: the
+      // shared fence survives for the pending reservation.
+      await first.release();
+      unlock();
+      const rb = await openB;
+      expect(rb.handle).toBeDefined();
+      expect(rb.error).toBeUndefined();
+
+      const lease = await f.db('ai_namespace_leases').first();
+      expect(Number(lease.token)).toBe(1);
+      expect(new Date(lease.expires_at).getTime()).toBeGreaterThan(Date.now());
+      if (rb.handle !== undefined) {
+        await integration.releaseNativeHarness(rb.handle);
+      }
+    } finally {
+      unlock();
+      await probe.close();
+      await f.close();
+    }
+  }, 15000);
+
   it('requires independent replicas to hold different exclusive lease generations', async () => {
     const f = await fixture();
     try {
