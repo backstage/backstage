@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { MODEL_HTTP_MATRIX } from './matrix';
+import { builtinProviderRegistry } from '../providers/builtins';
+import type { AiProviderRegistry } from '../providers/registry';
 import type { GuardedOperation, TrustedOperation } from './types';
 
 /** Apply only at a private, host-owned provider boundary. */
@@ -22,12 +23,10 @@ export function guardedRequestOptions(
   operation: TrustedOperation,
   guarded: GuardedOperation,
   options: Record<string, unknown> = {},
+  registry: AiProviderRegistry = builtinProviderRegistry,
 ): Record<string, unknown> {
-  if (
-    !Object.hasOwn(MODEL_HTTP_MATRIX.operations, operation.operation) ||
-    !MODEL_HTTP_MATRIX.operations[operation.operation] ||
-    !Object.hasOwn(MODEL_HTTP_MATRIX.apis, operation.api)
-  ) {
+  const module = registry.get(operation.api);
+  if (!module || !module.certifiedOperations.includes(operation.operation)) {
     throw new Error('Unverified model operation or transport');
   }
   // None of these options may substitute a client, credential, endpoint or
@@ -47,7 +46,6 @@ export function guardedRequestOptions(
     if (options[key] !== undefined)
       throw new Error(`Unsupported model option: ${key}`);
   }
-  const isCodex = operation.api === 'openai-codex-responses';
   if (options.transport !== undefined && options.transport !== 'sse') {
     throw new Error('Unsupported model transport');
   }
@@ -60,7 +58,7 @@ export function guardedRequestOptions(
   }
   return {
     ...options,
-    ...(isCodex ? { transport: 'sse' } : {}),
+    ...(module.transport ? { transport: module.transport } : {}),
     signal: suppliedSignal
       ? AbortSignal.any([suppliedSignal, operation.controller.signal])
       : operation.controller.signal,

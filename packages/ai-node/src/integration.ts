@@ -20,7 +20,8 @@ import {
 } from '@earendil-works/chord/context';
 import { Harness, type Storage } from '@earendil-works/pi-durable';
 import type { AnyModel, Credential, Models } from '@earendil-works/pi-ai';
-import { resolveAzureConfig } from '@earendil-works/pi-ai/api/azure-openai-config';
+import { builtinProviderRegistry } from './providers/builtins';
+import type { AiProviderRegistry } from './providers/registry';
 import type { Knex } from 'knex';
 import { createHash, randomUUID } from 'node:crypto';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
@@ -62,51 +63,6 @@ import type {
 } from './DefaultAiService';
 import type { Namespace } from './contracts';
 
-/**
- * Builds the canonical destination for a certified adapter from the host's
- * canonical model alone.
- *
- * @remarks
- *
- * Each certified provider adapter has a complete endpoint contract, and the
- * guard compares the full request URL against this destination exactly: the
- * Azure adapter normalizes the base URL and appends its mandatory
- * `api-version` query, and the Codex adapter appends its `/codex/responses`
- * path. Query parameters the SDK adds beyond the contract (for example the
- * Anthropic beta flag) remain covered by the guard's SDK parameter allowlist.
- */
-function canonicalDestination(
-  api: TrustedOperation['api'],
-  model: AnyModel,
-  env: Record<string, string> | undefined,
-): string {
-  const baseUrl = (model.baseUrl ?? '').replace(/\/+$/, '');
-  switch (api) {
-    case 'azure-openai-responses': {
-      const azure = resolveAzureConfig(model as never, { env });
-      return `${azure.baseUrl}/responses?api-version=${azure.apiVersion}`;
-    }
-    case 'openai-codex-responses':
-      return `${baseUrl}/codex/responses`;
-    case 'openai-completions':
-      return `${baseUrl}/chat/completions`;
-    case 'anthropic-messages':
-      // The Anthropic SDK appends the versioned path to the base URL.
-      return `${baseUrl}/v1/messages`;
-    default:
-      return `${baseUrl}/responses`;
-  }
-}
-
-/** The adapter APIs the guard certifies; anything else fails closed. */
-const CERTIFIED_APIS = [
-  'openai-responses',
-  'openai-completions',
-  'azure-openai-responses',
-  'openai-codex-responses',
-  'anthropic-messages',
-] as const;
-
 /** Deeply freezes the host-supplied canonical catalog at integration time. */
 function deepFreeze<T>(value: T): T {
   if (value !== null && typeof value === 'object') {
@@ -145,6 +101,8 @@ const LEASE_KEEPALIVE_INTERVAL_MS = 15_000;
  */
 export interface AiServiceIntegrationOptions {
   readonly deps: DefaultAiServiceDeps;
+  /** Trusted provider registrations shared by the guard and journal. */
+  readonly providers?: AiProviderRegistry;
   /**
    * Credential stores feeding provider authority resolution. When absent,
    * every model dispatch is denied with an actionable reason: installation
@@ -311,6 +269,7 @@ export async function createAiServiceIntegration(
   options: AiServiceIntegrationOptions,
 ): Promise<ProductionAiServiceIntegration> {
   const { deps } = options;
+  const providerRegistry = options.providers ?? builtinProviderRegistry;
   const credentialStores = options.credentialStores;
   const catalog = (options.models ?? []).map(deepFreeze);
   const db: Knex = await deps.database.getClient();
@@ -326,6 +285,7 @@ export async function createAiServiceIntegration(
 
   const journal: AttemptJournal = createAttemptJournal({
     db,
+    providers: providerRegistry,
     authorizer: {
       authorizeAuditRead: async credentials => {
         const decisions = await deps.permissions.authorize(
@@ -406,6 +366,7 @@ export async function createAiServiceIntegration(
   };
 
   const guard: ModelOperationGuard = createModelOperationGuard({
+    providers: providerRegistry,
     transport: fetch,
     recheck: async operation => {
       // Fresh permission check with the original caller credentials.
@@ -771,6 +732,7 @@ export async function createAiServiceIntegration(
     // authorities rather than the first acquisition's.
     const modelsSource = (): Models => {
       const requests = createGuardedModelOperations({
+        providers: providerRegistry,
         guard,
         journal,
         resolve: makeResolve(input, fence, authority),
@@ -917,7 +879,8 @@ export async function createAiServiceIntegration(
         );
       }
       const api = canonical.api as TrustedOperation['api'];
-      if (!CERTIFIED_APIS.includes(api)) {
+      const module = providerRegistry.get(api);
+      if (!module) {
         throw new GuardedResolutionError(
           {
             operation: trusted,
@@ -932,7 +895,7 @@ export async function createAiServiceIntegration(
           ...trusted,
           api,
           resolvedModel: canonical.id,
-          destination: canonicalDestination(api, canonical, resolved.env),
+          destination: module!.destination(canonical, resolved.env),
           ...resolvedAuthorityFields(resolved),
         },
         model: canonical as GuardedModelBinding['model'],

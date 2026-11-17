@@ -47,12 +47,8 @@ export type TrustedOperation = Readonly<{
   /** Final remote selector; Azure deployment mapping must be trusted by the host. */
   resolvedModel: string;
   operation: ModelOperation;
-  api:
-    | 'openai-responses'
-    | 'openai-completions'
-    | 'azure-openai-responses'
-    | 'openai-codex-responses'
-    | 'anthropic-messages';
+  /** Registered provider module identifier. */
+  api: string;
   /** Exact host-constructed URL, including any provider query string. */
   destination: string;
   /** Host-configured Anthropic federation token endpoints, not caller options. */
