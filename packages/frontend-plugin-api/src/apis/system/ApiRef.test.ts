@@ -283,15 +283,33 @@ describe('ApiRef', () => {
     expect(wrongLiteralRef.id).toBe('abc');
   });
 
-  it('should reject invalid ids', () => {
-    for (const id of ['a', 'abc', 'ab-c', 'a.b.c', 'a-b.c', 'abc.a-b-c.abc3']) {
+  it('should validate each API ID component using the plugin ID format', () => {
+    for (const id of [
+      'a',
+      'abc',
+      'ab-c',
+      'a.b.c',
+      'a-b.c',
+      'abc.a-b-c.abc3',
+      'ab-3',
+      'plugin.example-2.todos',
+      'plugin.example-2-beta-3.todos',
+      'plugin.Example-2.todos',
+    ]) {
       expect(createApiRef({ id }).id).toBe(id);
+      expect(createApiRef().with({ id }).id).toBe(id);
+      expect(createApiRef().with({ id, loading: 'async' }).id).toBe(id);
     }
 
     for (const id of [
       '123',
-      'ab-3',
       'ab_c',
+      'a--b',
+      '-a',
+      'a-',
+      'a.-b',
+      'a.2-b',
+      'a b',
       '.',
       '2ac',
       'ab.3a',
@@ -301,15 +319,12 @@ describe('ApiRef', () => {
       '',
       '_',
     ]) {
-      expect(() => createApiRef({ id }).id).toThrow(
-        `API id must only contain period separated lowercase alphanum tokens with dashes, got '${id}'`,
+      const error = `API id must contain period-separated components that each match the plugin ID format (letters, digits, and dashes, starting with a letter), got '${id}'`;
+      expect(() => createApiRef({ id })).toThrow(error);
+      expect(() => createApiRef().with({ id })).toThrow(error);
+      expect(() => createApiRef().with({ id, loading: 'async' })).toThrow(
+        error,
       );
     }
-  });
-
-  it('should reject invalid ids with builder pattern', () => {
-    expect(() => createApiRef().with({ id: '123' })).toThrow(
-      `API id must only contain period separated lowercase alphanum tokens with dashes, got '123'`,
-    );
   });
 });

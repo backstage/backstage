@@ -16,6 +16,7 @@
 
 import { OpaqueApiRef } from '@internal/frontend';
 import type { ApiRef } from './types';
+import { ID_PATTERN } from '../../wiring/constants';
 
 /**
  * API reference configuration - holds an ID of the referenced API.
@@ -37,13 +38,10 @@ type ApiRefBuilderConfig<
 };
 
 function validateId(id: string): void {
-  const valid = id
-    .split('.')
-    .flatMap(part => part.split('-'))
-    .every(part => part.match(/^[a-z][a-z0-9]*$/));
+  const valid = id.split('.').every(part => ID_PATTERN.test(part));
   if (!valid) {
     throw new Error(
-      `API id must only contain period separated lowercase alphanum tokens with dashes, got '${id}'`,
+      `API id must contain period-separated components that each match the plugin ID format (letters, digits, and dashes, starting with a letter), got '${id}'`,
     );
   }
 }
@@ -75,9 +73,10 @@ function makeApiRef<
  *
  * @remarks
  *
- * The `id` is a stable identifier for the API implementation. The frontend
- * system infers the owning plugin for an API from the `id`. When using the
- * builder form, you can instead provide a `pluginId` explicitly. The
+ * The `id` is a stable identifier for the API implementation. Each period-separated
+ * component follows the plugin ID format, for example `plugin.example-2.todos`.
+ * The frontend system infers the owning plugin for an API from the `id`. When
+ * using the builder form, you can instead provide a `pluginId` explicitly. The
  * recommended pattern is `plugin.<plugin-id>.*` (for example,
  * `plugin.catalog.entity-presentation`). This ensures that other plugins can't
  * mistakenly override your API implementation.
