@@ -454,7 +454,10 @@ for (const dialect of [
               index => receipts.push(index),
               context,
             ),
-          ).rejects.toThrow('injected failure');
+          ).rejects.toMatchObject({
+            code: 'SQLITE_CONSTRAINT_TRIGGER',
+            message: expect.stringContaining('injected failure'),
+          });
           expect(receipts).toEqual([0]);
           expect(
             await f.storage.conversation(ROOT_CONVERSATION_ID, context),
