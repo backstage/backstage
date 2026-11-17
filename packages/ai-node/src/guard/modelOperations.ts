@@ -277,7 +277,6 @@ export function createGuardedModelOperations(options: {
           callback(value, structuredClone(callbackModel));
       }
     }
-    let guardedResponseReceived = false;
     let guardAttempted = false;
     const callOptions = {
       ...requestOptions,
@@ -288,7 +287,6 @@ export function createGuardedModelOperations(options: {
       fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
         guardAttempted = true;
         const response = await guarded.fetch(input, init);
-        guardedResponseReceived = true;
         return response;
       },
     };
@@ -297,7 +295,13 @@ export function createGuardedModelOperations(options: {
       guarded,
       adapter: module.adapter,
       callOptions,
-      usedGuard: () => guardedResponseReceived,
+      // A guarded send is USED from the moment the guarded fetch is invoked,
+      // not from response headers: a transport that ran and then threw has
+      // already been accounted for by the guard (an allow decision plus an
+      // uncertain outcome), so it must never produce a follow-on "did not
+      // use guarded transport" denial. Only a dispatch that never invoked
+      // the guarded fetch is rejected for bypassing it.
+      usedGuard: () => guardAttempted,
       attemptedGuard: () => guardAttempted,
     };
   };

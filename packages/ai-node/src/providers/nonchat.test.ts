@@ -351,6 +351,49 @@ describe('non-chat provider modules', () => {
     }
   });
 
+  it('accounts a transport that ran and threw as used, with no follow-on denial', async () => {
+    const model = {
+      ...OPENROUTER_IMAGE_MODELS['black-forest-labs/flux-3-image'],
+      baseUrl: 'http://127.0.0.1:1/v1',
+    } as never as AnyModel;
+    const f = harness(model, 'generateImages');
+    f.transport.mockImplementation(async () => {
+      throw new Error('network disconnected');
+    });
+    const result = (await f.facade.generateImages(
+      model as never,
+      { input: [{ type: 'text', text: 'a red circle' }] } as never,
+      { maxRetries: 0 } as never,
+    )) as { stopReason: string; errorMessage?: string };
+    // The dispatch settles in-band with the transport failure, and the
+    // journal shows exactly one allow with an uncertain outcome — never a
+    // contradictory "did not use guarded transport" denial.
+    expect(result.stopReason).toBe('error');
+    expect(result.errorMessage).toContain('network disconnected');
+    expect(f.events).toEqual(['check', 'allow:1', 'outcome:unknown']);
+    expect(f.transport).toHaveBeenCalledTimes(1);
+  });
+
+  it('records exactly one denial for a guard-rejected image request', async () => {
+    const model = {
+      ...OPENROUTER_IMAGE_MODELS['black-forest-labs/flux-3-image'],
+      baseUrl: 'http://127.0.0.1:1/v1',
+    } as never as AnyModel;
+    const f = harness(model, 'generateImages');
+    const result = (await f.facade.generateImages(
+      model as never,
+      { input: [{ type: 'image', mimeType: 'image/png', data: 'A' }] } as never,
+      { maxRetries: 0 } as never,
+    )) as { stopReason: string };
+    // The malformed image reference is denied once by the guard; the
+    // dispatch settles in-band (the denial aborts the operation's
+    // controller, so the adapter reports it as aborted) without a
+    // duplicate denial.
+    expect(['error', 'aborted']).toContain(result.stopReason);
+    expect(f.events).toEqual(['deny:1']);
+    expect(f.transport).not.toHaveBeenCalled();
+  });
+
   it('denies malformed image requests before sending', async () => {
     const { server, origin } = await startServer(() => ({}));
     try {
