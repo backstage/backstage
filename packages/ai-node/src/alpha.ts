@@ -39,4 +39,18 @@ export type {
   OpenHarnessOptions,
 } from './contracts';
 
+export {
+  AI_INSTALLATION_CONFIG_PATH,
+  configureAiInstallation,
+  parseAiInstallationConfig,
+} from './config-extension/index';
+export type {
+  AiConfigCredentialScopes,
+  AiCredentialsPrecedence,
+  AiInstallationConfig,
+  AiInstallationCredentials,
+  ConfigureAiInstallationOptions,
+  ConfiguredAiInstallation,
+} from './config-extension/index';
+
 export { aiServiceRef } from './service';

@@ -26,6 +26,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { JsonObject } from '@backstage/types';
 import type { AiCredentialStores, CredentialScope } from './credentials/types';
+import type { AiCredentialsPrecedence } from './config-extension/types';
 import {
   createAttemptJournal,
   AI_AUDIT_READ_PERMISSION_NAME,
@@ -157,6 +158,12 @@ export interface AiServiceIntegrationOptions {
    * no-model availability error.
    */
   readonly models?: readonly AnyModel[];
+  /**
+   * Whether a caller's personal provider credential wins over the
+   * installation's. Defaults to `user-first`: absence always falls through to
+   * the next scope, a failed read never does.
+   */
+  readonly credentialPrecedence?: AiCredentialsPrecedence;
 }
 
 /**
@@ -268,6 +275,27 @@ type ResolvedAuthority = {
   readonly env: Record<string, string> | undefined;
 };
 
+/**
+ * The credential scopes to try for a principal, in the configured order.
+ *
+ * @remarks
+ *
+ * Service principals have exactly one scope: their own installation. For user
+ * principals the caller's personal scope and the installation's are tried in
+ * the configured order, so absence falls through and a failed read rejects.
+ */
+function credentialScopesFor(
+  principal: ReturnType<typeof principalOf>,
+  precedence: AiCredentialsPrecedence,
+): CredentialScope[] {
+  if (principal.kind !== 'user') {
+    return [{ kind: 'org' }];
+  }
+  const personal: CredentialScope = { kind: 'user', id: principal.userId };
+  const org: CredentialScope = { kind: 'org' };
+  return precedence === 'org-first' ? [org, personal] : [personal, org];
+}
+
 function principalOf(
   deps: DefaultAiServiceDeps,
   credentials: BackstageCredentials,
@@ -312,6 +340,7 @@ export async function createAiServiceIntegration(
 ): Promise<ProductionAiServiceIntegration> {
   const { deps } = options;
   const credentialStores = options.credentialStores;
+  const credentialPrecedence = options.credentialPrecedence ?? 'user-first';
   const catalog = (options.models ?? []).map(deepFreeze);
   const db: Knex = await deps.database.getClient();
   const pluginId = deps.pluginMetadata.getId();
@@ -387,12 +416,9 @@ export async function createAiServiceIntegration(
       return undefined;
     }
     const principal = principalOf(deps, credentials);
-    // Personal credentials first for user principals, then installation
-    // credentials; absence falls through, a read failure does not.
-    const scopes: CredentialScope[] =
-      principal.kind === 'user'
-        ? [{ kind: 'user', id: principal.userId }, { kind: 'org' }]
-        : [{ kind: 'org' }];
+    // Personal and installation credentials in the configured order; absence
+    // falls through, a read failure does not.
+    const scopes = credentialScopesFor(principal, credentialPrecedence);
     for (const scope of scopes) {
       const credential = await credentialStores
         .forScope(scope)

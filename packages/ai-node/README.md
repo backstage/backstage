@@ -3,14 +3,15 @@
 Managed, low-level AI service primitives for Backstage backend plugins, built
 on the [Pi Durable](https://github.com/earendil-works/pi) execution engine.
 
-> **Status: Wave 1 integration.** The service surface here is alpha and
+> **Status: Wave 2 configuration.** The service surface here is alpha and
 > coupled to the experimental `@earendil-works/pi-durable` engine (pinned to
 > `1.5.2`). The managed primitive is wired for production: exclusive
 > namespace leases with startup recovery, fenced database persistence,
-> guarded model dispatch with per-attempt permission checks, and a durable
-> attempt journal. Provider credential and model catalog configuration is
-> not wired to a config source yet, so model dispatch fails closed with an
-> actionable reason until an installation supplies them to the integration.
+> guarded model dispatch with per-attempt permission checks, a durable
+> attempt journal, and an installation configuration source for provider
+> credentials and the canonical model catalog. An installation that
+> configures nothing keeps the fail-closed default: every dispatch is denied
+> with an actionable reason and no model resolves.
 
 ## Overview
 
@@ -82,8 +83,86 @@ The initial schema at that path is:
 - Errors name the consuming plugin, the exact config path, the offending
   field, and corrective guidance.
 
-Provider credential configuration and key material are installation-scoped
-and are validated separately (Wave 1).
+The installation-scoped configuration described below is separate from this
+per-plugin section: each consuming plugin still chooses its own path.
+
+## Installation configuration
+
+Provider credentials and the canonical model catalog are **installation**
+scoped, not plugin scoped. The default `aiServiceRef` factory reads them at
+the `ai` path (exported as `AI_INSTALLATION_CONFIG_PATH`); a host that wires
+the integration itself can pass any path to `configureAiInstallation`.
+
+```yaml
+ai:
+  credentials:
+    # Standard base64 of exactly 32 raw bytes, kept in an app-config secret.
+    encryptionKey: ${AI_CREDENTIAL_ENCRYPTION_KEY}
+    # `user-first` (default) or `org-first`.
+    precedence: user-first
+    scopes:
+      org:
+        anthropic:
+          type: api_key
+          key: ${ANTHROPIC_API_KEY}
+      service:catalog-indexer:
+        openai:
+          type: oauth
+          refresh: ...
+          access: ...
+          expires: 1234
+  models:
+    - provider: openai
+      modelId: gpt-5
+      # Adapter identifier of a provider module; the guard certifies it.
+      api: openai-responses
+      baseUrl: https://api.openai.com/v1
+      contextWindow: 400000
+      maxTokens: 128000
+      name: GPT-5 # optional, defaults to modelId
+      reasoning: true # optional, defaults to false
+      input: [text, image] # optional, defaults to [text]
+      cost: { input: 1.25, output: 10, cacheRead: 0.125 } # unset rates are 0
+```
+
+Both sections are optional. Without `ai.credentials` no credential stores are
+wired, and without `ai.models` no model resolves: a missing entry is always a
+journaled, actionable denial, never a fallback.
+
+- **`encryptionKey`** is required whenever `ai.credentials` exists, because it
+  encrypts personal credentials. Generate it with
+  `openssl rand -base64 32`, supply it through an environment variable, and do
+  not commit it. A non-canonical encoding or the wrong length rejects at
+  startup with an error that never echoes the key material.
+- **`scopes`** accepts exactly `org` and `service:<id>`. Personal credentials
+  are never supplied through configuration — user scopes are rejected with
+  guidance, because they live in the encrypted personal store written by the
+  login flow. These installation stores are read-only: a `modify` callback
+  that changes the value rejects, `delete` rejects, and a no-op `modify`
+  resolves.
+- **Credential entries are opaque.** The schema validates structure only;
+  the credential kind (`api_key`, `oauth`, a future kind) and its fields are
+  interpreted by the credential stores and provider modules that consume
+  them, so configuration never encodes provider semantics.
+- **`precedence`** selects which credential scope wins when both a personal and
+  an installation credential exist for a provider. The default `user-first`
+  prefers the caller's own provider account; `org-first` pins the installation
+  account. Absence always falls through to the next scope, while a failed read
+  fails closed. Service principals only ever use installation credentials.
+- **`models`** is the canonical catalog: the only models this installation may
+  dispatch, keyed by `provider` and `modelId`. Fields are the actual provider
+  and model identifiers plus the adapter and destination the guard verifies —
+  there are no aliases, tiers, or effort abstractions. `contextWindow` and
+  `maxTokens` are required because the engine derives sizing and compaction
+  from them; the schema never invents them.
+- **Permissions** are derived per configured model:
+  `ai.model.<provider>.<modelId>.use` with each segment passed through
+  `encodeURIComponent` and literal dots encoded as `%2E`. Names are exact;
+  grant each pair (or each pair of a provider) in policy.
+- **Fail-closed validation**: unknown fields, duplicate models, unusable
+  adapter identifiers, non-http(s) destinations and malformed scope keys all
+  reject with the exact configuration path, the offending field, and
+  corrective guidance.
 
 ## Semantics of the managed handle
 
@@ -94,15 +173,15 @@ and are validated separately (Wave 1).
   identity under a live handle is rejected, never silently replaced.
 - **Reference counting**: release is idempotent per acquisition; the last
   release closes the shared harness. Methods on a released handle reject.
-- **Wave 1 wiring**: the production integration composes the exclusive
-  namespace lease with keepalive and startup recovery (admission and
-  revocation), the fenced Knex Pi storage adapter, guarded model operations
-  with per-attempt permission, fence, and credential-generation checks, and
-  the durable attempt journal. When a lease is invalidated, local handles of
-  that namespace are drained. Provider credentials and the canonical model
-  catalog are not wired to a configuration source yet: without them, model
-  dispatch is denied with an actionable reason, and model lookups resolve no
-  model. Scaffold tests use explicitly labeled non-production stand-ins,
+- **Production wiring**: the integration composes the exclusive namespace
+  lease with keepalive and startup recovery (admission and revocation), the
+  fenced Knex Pi storage adapter, guarded model operations with per-attempt
+  permission, fence, and credential-generation checks, the scoped credential
+  stores and canonical catalog from installation configuration, and the
+  durable attempt journal. When a lease is invalidated, local handles of that
+  namespace are drained. Installation configuration is optional; without it
+  model dispatch is denied with an actionable reason and model lookups resolve
+  no model. Scaffold tests use explicitly labeled non-production stand-ins,
   which are not security or durability.
 
 ## Migrations
