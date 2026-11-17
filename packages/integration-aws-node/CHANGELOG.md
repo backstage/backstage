@@ -1,5 +1,15 @@
 # @backstage/integration-aws-node
 
+## 0.2.4
+
+### Patch Changes
+
+- f81ca4e: Credential providers returned by `DefaultAwsCredentialsManager` now include a `roleArn` field with the ARN of the IAM role the credentials are for, when the account is configured to assume a role.
+- Updated dependencies
+  - @backstage/errors@1.4.0
+  - @backstage/config@1.3.11
+  - @backstage/connections@0.4.2
+
 ## 0.2.4-next.1
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/catalog-client
 
+## 1.16.4
+
+### Patch Changes
+
+- 9c76a81: Documented that the `entities/by-query` endpoint currently applies only the first `orderField`; any additional order fields are ignored. Updated the OpenAPI spec parameter description and the Software Catalog API docs accordingly. No behavior change. Refs #17560.
+- Updated dependencies
+  - @backstage/errors@1.4.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/filter-predicates@0.2.1
+  - @backstage/plugin-catalog-common@1.2.2
+
 ## 1.16.4-next.1
 
 ### Patch Changes

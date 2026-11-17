@@ -1,5 +1,25 @@
 # @backstage/core-compat-api
 
+## 0.6.0
+
+### Minor Changes
+
+- df2bcee: **BREAKING**: `convertLegacyAppOptions` now rejects `components.Router`: remove plain `BrowserRouter` wrappers, move global providers to `AppRootWrapperBlueprint`, and use page router adapters for page-specific routing, with converted legacy pages receiving a scoped React Router v6 adapter automatically. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
+
+### Patch Changes
+
+- e55a4a8: Updated compatibility with the `FrontendPlugin` interface after removal of its deprecated `id` property, retaining support for older plugin instances.
+- e3d50c4: Added support for the new icons API when rendering plugins in old-system apps, while continuing to provide the original icons API for older plugins. Legacy app context icon lookups continue to return components.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/plugin-app-react@0.3.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-catalog-react@4.0.0
+  - @backstage/frontend-adapter-react-router-v6@0.2.0
+  - @backstage/version-bridge@1.1.0
+  - @backstage/filter-predicates@0.2.1
+
 ## 0.6.0-next.2
 
 ### Minor Changes

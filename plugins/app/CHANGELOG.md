@@ -1,5 +1,41 @@
 # @backstage/plugin-app
 
+## 0.6.0
+
+### Minor Changes
+
+- f9f794b: **BREAKING**: Icon bundles created with `IconBundleBlueprint` now accept only icon elements. Replace component values such as `icons: { user: MyIcon }` with `icons: { user: <MyIcon /> }`. For Material UI icons, use `<MyIcon fontSize="inherit" />`. Icons supplied through `convertLegacyAppOptions` continue to accept components and are converted automatically.
+- cedb355: The deprecated `DialogApi.show` and `DialogApi.showModal` methods now throw errors. Use `DialogApi.open` and provide your own dialog surface and dismissal handling.
+
+  Added support for the new icons API while preserving `IconsApi.getIcon` for older plugins.
+
+- 86681bf: Removed the ignored `anchorOrigin` option from the built-in alert display extension and toast display props. Remove this option from your extension configuration. Toasts continue to appear at the bottom center of the screen.
+- df2bcee: Pages and sub-pages now share app-owned navigation and can use different routing libraries, with implicit React Router v6 compatibility for existing pages. **BREAKING**: Removed the `router` input from `app/root`; remove root router extensions, move global providers to `AppRootWrapperBlueprint`, and use page adapters where needed. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
+- 24bde66: Custom navigation components now receive `navItems` without the deprecated flat `items` collection.
+
+### Patch Changes
+
+- 9bac36e: Fixed the app remounting during finalization when root elements are added, for example ones deferred with an `if` predicate. Root elements are now keyed by their extension ID and rendered in a single fixed position, so adding one no longer moves the rest of the app in the React tree.
+- edf309d: Ensure dismissed toasts are marked as closed in `ToastApiForwarder` so they are not replayed when `ToastDisplay` remounts (such as during theme changes).
+- e55a4a8: Updated plugin identity handling to use `pluginId`, while preserving support for older plugin instances that only expose `id`.
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- 9d0a31b: Removed an unused `use-sync-external-store` dependency, which is no longer needed now that React 18 is the minimum supported version.
+- ff23578: Added support for translated titles in navigation, page headers, tabs, and breadcrumbs.
+- 8f36712: Updated the app runtime to use the analytics implementation APIs from `@backstage/plugin-app-react`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/plugin-app-react@0.3.0
+  - @backstage/core-components@0.18.16
+  - @backstage/errors@1.4.0
+  - @backstage/ui@0.20.0
+  - @backstage/integration-react@1.3.0
+  - @backstage/plugin-permission-react@0.5.7
+  - @backstage/theme@0.7.4
+  - @backstage/version-bridge@1.1.0
+  - @backstage/config@1.3.11
+  - @backstage/filter-predicates@0.2.1
+
 ## 0.6.0-next.2
 
 ### Minor Changes

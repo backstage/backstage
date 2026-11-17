@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.3.17
+
+### Patch Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/backend-test-utils@1.12.0
+  - @backstage/plugin-scaffolder-node@1.0.0
+
 ## 0.3.17-next.1
 
 ### Patch Changes

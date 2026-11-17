@@ -1,5 +1,33 @@
 # @backstage/core-plugin-api
 
+## 1.13.0
+
+### Minor Changes
+
+- 558c076: Exported the alpha `TranslationRefTuple` type for messages selected by calling a translation ref. Refs are now callable functions; treat them as opaque values.
+
+  **BREAKING PRODUCERS**: Translation snapshots require `t` even when `ready` is false. Custom translation APIs must provide a translator using available messages and language fallbacks.
+
+### Patch Changes
+
+- ca02018: API reference IDs now use plugin ID validation for each dot-separated component.
+  This accepts numeric dash groups and mixed case, including IDs such as
+  `plugin.example-2.todos`.
+- 6540a44: Preserved the legacy `useApi` hook's direct-value behavior when the frontend
+  system's hook unwraps promise-valued APIs. The legacy hook continues returning
+  promises unchanged.
+- e55a4a8: Updated compatibility with the `FrontendPlugin` interface after removal of its deprecated `id` property, retaining support for older plugin instances.
+- 315f7bc: Made the legacy icon component and `withApis` compatibility APIs independent of `@backstage/frontend-plugin-api` so that they remain available to legacy frontend apps.
+
+  Deprecated `withApis`. Wrap class components in a function component that uses `useApi` instead.
+
+- e3d50c4: Updated `useApp` to support the new icons API. Its `getSystemIcon` and `getSystemIcons` methods continue to return icon components.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/errors@1.4.0
+  - @backstage/version-bridge@1.1.0
+  - @backstage/config@1.3.11
+
 ## 1.12.12-next.2
 
 ### Patch Changes

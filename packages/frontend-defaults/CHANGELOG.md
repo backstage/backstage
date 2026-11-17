@@ -1,5 +1,21 @@
 # @backstage/frontend-defaults
 
+## 0.5.8
+
+### Patch Changes
+
+- d514e4d: Updated app options to use the `ExtensionFactoryMiddleware` type from `@backstage/frontend-app-api` instead of the deprecated export from `@backstage/frontend-plugin-api`. Middleware behavior is unchanged.
+- f747f16: Removed the outdated warning that the frontend system is in alpha. This package remains on 0.x.
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- 2aa14e3: Apps now release their browser history listener when the React root is removed or a hot refresh replaces the app within the existing root. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for background on app-owned history.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/plugin-app@0.6.0
+  - @backstage/frontend-app-api@1.0.0
+  - @backstage/core-components@0.18.16
+  - @backstage/errors@1.4.0
+  - @backstage/config@1.3.11
+
 ## 0.5.8-next.2
 
 ### Patch Changes

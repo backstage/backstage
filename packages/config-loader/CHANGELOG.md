@@ -1,5 +1,14 @@
 # @backstage/config-loader
 
+## 1.11.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.4.0
+  - @backstage/cli-common@0.3.3
+  - @backstage/config@1.3.11
+
 ## 1.11.5-next.0
 
 ### Patch Changes

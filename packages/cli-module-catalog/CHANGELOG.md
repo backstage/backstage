@@ -1,5 +1,16 @@
 # @backstage/cli-module-catalog
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.4
+  - @backstage/cli-node@0.3.6
+  - @backstage/errors@1.4.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/filter-predicates@0.2.1
+
 ## 0.2.1-next.2
 
 ### Patch Changes

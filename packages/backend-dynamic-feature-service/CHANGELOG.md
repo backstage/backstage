@@ -1,5 +1,34 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.8.9
+
+### Patch Changes
+
+- ed8f1ef: Updated dependency `@module-federation/sdk` to `~2.9.0`.
+  Updated dependency `@module-federation/enhanced` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime` to `~2.9.0`.
+  Updated dependency `@module-federation/runtime-core` to `~2.9.0`.
+- c999b77: Dynamic backend plugins can now require the packages they share with the backend when those packages are not in the root `node_modules`, as with the pnpm `isolated` node linker. They are found through the backend package and through this package. With the default pnpm hoisting, this includes the packages that pnpm hoists into `node_modules/.pnpm/node_modules`. With `hoist: false`, only the direct dependencies of the backend package and of this package are found. Everything that was searched before is still searched first, so a module that was found before is found in the same place. The exception is plugins inside the Backstage root on Windows, which did not search the root `node_modules` before, other than through `NODE_PATH`. It is now searched in the same order as on other platforms.
+- Updated dependencies
+  - @backstage/backend-defaults@0.19.0
+  - @backstage/plugin-catalog-backend@4.0.3
+  - @backstage/cli-node@0.3.6
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-events-backend@0.6.8
+  - @backstage/backend-openapi-utils@0.7.4
+  - @backstage/plugin-events-node@0.5.0
+  - @backstage/plugin-auth-node@0.7.8
+  - @backstage/cli-common@0.3.3
+  - @backstage/config@1.3.11
+  - @backstage/config-loader@1.11.5
+  - @backstage/plugin-app-node@0.1.51
+  - @backstage/plugin-permission-common@0.9.13
+  - @backstage/plugin-permission-node@0.11.6
+  - @backstage/plugin-scaffolder-node@1.0.0
+  - @backstage/plugin-search-backend-node@1.4.10
+  - @backstage/plugin-search-common@1.2.27
+
 ## 0.8.9-next.2
 
 ### Patch Changes

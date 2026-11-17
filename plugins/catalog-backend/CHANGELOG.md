@@ -1,5 +1,45 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.3
+
+### Patch Changes
+
+- 9c76a81: Documented that the `entities/by-query` endpoint currently applies only the first `orderField`; any additional order fields are ignored. Updated the OpenAPI spec parameter description and the Software Catalog API docs accordingly. No behavior change. Refs #17560.
+- 7d765b6: Improved repository validation for catalog entity placeholders. Placeholder-driven reads, including `$openapi` and `$asyncapi` document references, are now restricted to the entity's own repository on SCM hosts; cross-repository references are rejected.
+- 2c223ee: Fixed a `Item of type "refresh" was emitted after processing had completed` warning that could appear when one of several placeholders in an entity failed to resolve. Processing now waits for all placeholders to finish before reporting the first failure.
+- c4b7cb1: The `entities/by-refs` endpoint now resolves entity references case-insensitively, matching `entities/by-name` and the documented entity reference contract where receivers treat refs case-insensitively. Previously, a ref whose casing differed from the stored lowercased ref returned `null`. Fixes #36743.
+- 3b97016: Improved the performance of entity facets and total item counts on PostgreSQL when the filter contains `$any` or `$not` conditions, such as those produced by conditional permission policies for catalog entity reads.
+- 3b97016: Entity filter predicates that combine `$all`, `$any` or `$not` with other keys in the same object, or that give `$all` or `$any` a non-array value, are now rejected with a 400 error. Previously the extra keys were silently ignored.
+- cd5fa5f: Improved the performance of entity queries on PostgreSQL when a filter matches a field against a long list of values, such as the ownership claims used by conditional permission policies for catalog entity reads.
+- eb5875d: Improved repository validation for catalog entity placeholders on Azure DevOps. Placeholder-driven reads on a configured Azure DevOps integration are now restricted to the entity's own repository on every Azure DevOps host shape, including legacy `{org}.visualstudio.com` hosts and Azure DevOps Server hosts, and targets that cannot be attributed to a repository are rejected as well.
+- 32e6642: Adds internal publication bookkeeping as groundwork for future catalog change tracking. Existing catalog APIs and deletion behavior are unchanged.
+
+  The PostgreSQL upgrade builds an index concurrently without rewriting existing entities, but still scans the catalog table. Large installations may need to prepare this index out of band before upgrading; see [Upgrading large installations](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/README.md#upgrading-large-installations).
+
+- 2a9f08b: Match URL locations in catalog rules in canonical form.
+
+  URL locations are now matched against catalog rules in a canonical form of the URL, so that rule decisions agree with how the location target is resolved when its content is fetched. URL patterns that relied on percent-encoded characters being matched as written, or on default ports being kept, no longer match and should be updated.
+
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- f7ce914: Fixed an issue where `/validate-entity` would not return after sending a 400 response on invalid entity validation, causing an unhandled `ERR_HTTP_HEADERS_SENT` error and triggering duplicate success/fail audit events.
+- 6a0de59: Backend plugins now locate their database migrations relative to their own package directory, without requiring the package to be resolvable by name.
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- 20746bc: Location annotations on entities submitted to the validate-entity endpoint can no longer override the location of the request.
+- Updated dependencies
+  - @backstage/integration@2.2.0
+  - @backstage/catalog-client@1.16.4
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/backend-openapi-utils@0.7.4
+  - @backstage/plugin-events-node@0.5.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/filter-predicates@0.2.1
+  - @backstage/plugin-catalog-common@1.2.2
+  - @backstage/plugin-catalog-node@3.0.0
+  - @backstage/plugin-permission-common@0.9.13
+  - @backstage/plugin-permission-node@0.11.6
+
 ## 4.0.3-next.2
 
 ### Patch Changes

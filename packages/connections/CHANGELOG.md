@@ -1,5 +1,13 @@
 # @backstage/connections
 
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.4.0
+  - @backstage/config@1.3.11
+
 ## 0.4.2-next.0
 
 ### Patch Changes
