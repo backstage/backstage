@@ -953,9 +953,16 @@ describe.each(engines)('%s startup recovery', (_name, engine) => {
     await persist(current, namespace, { kind: 'service', pluginId });
     await failRecoveredOutcomeWrites(current, engine);
 
-    await expect(current.recovery.recover()).rejects.toThrow(
-      'simulated outcome write failure',
-    );
+    // Jest's isError is realm-sensitive: better-sqlite3 builds its SqliteError
+    // constructor once per addon binding, so a rejection delivered from a reused
+    // worker's foreign realm is not `instanceof Error` even though the operation
+    // genuinely rejected — match the error's shape instead of its prototype.
+    const expectedTriggerCode =
+      engine === 'sqlite' ? 'SQLITE_CONSTRAINT_TRIGGER' : 'P0001';
+    await expect(current.recovery.recover()).rejects.toMatchObject({
+      code: expectedTriggerCode,
+      message: expect.stringContaining('simulated outcome write failure'),
+    });
 
     // The boundary finalized on the error path: cleanup ran, the resume was
     // told to stop, and the fence was released for the next replica.
