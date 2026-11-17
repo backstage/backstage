@@ -90,7 +90,11 @@ const sseBody = (text = 'hello') =>
     },
   })}\n\n`;
 
-function setup(baseUrl: string, transport: typeof fetch) {
+function setup(
+  baseUrl: string,
+  transport: typeof fetch,
+  recheck: () => Promise<boolean> = async () => true,
+) {
   const model = {
     ...googleProvider().getModels()[0],
     baseUrl,
@@ -144,7 +148,7 @@ function setup(baseUrl: string, transport: typeof fetch) {
     providers,
     journal: journal as never,
     transport,
-    recheck: async () => true,
+    recheck,
   });
   const facade = createGuardedModelOperations({
     providers,
@@ -340,6 +344,50 @@ it('refuses new work while overlapping shutdowns are in flight', async () => {
   expect(closeDoneAtResult).toBe(false);
   expect(sends).toBe(1);
   expect(result.errorMessage).toContain('shutting down');
+});
+
+it('settles the facade on close while an authority recheck is held', async () => {
+  let entered!: () => void;
+  let release!: (allowed: boolean) => void;
+  const started = new Promise<void>(resolve => {
+    entered = resolve;
+  });
+  const holding = new Promise<boolean>(resolve => {
+    release = resolve;
+  });
+  let sends = 0;
+  const transport = (async () => {
+    sends += 1;
+    return new Response(sseBody());
+  }) as typeof fetch;
+  const f = setup(
+    'https://generativelanguage.googleapis.com/v1beta',
+    transport,
+    async () => {
+      entered();
+      return holding;
+    },
+  );
+  const pending = f.facade.completeSimple(f.model, context(), {
+    maxRetries: 0,
+  });
+  const race = <T>(promise: Promise<T>, ms = 2500) =>
+    Promise.race([
+      promise,
+      new Promise<'timeout'>(resolve =>
+        setTimeout(() => resolve('timeout'), ms),
+      ),
+    ]);
+  expect(await race(started)).not.toBe('timeout');
+  await closeGoogleWorker();
+  const beforeRelease = await race(pending, 400);
+  release(true);
+  const afterRelease = await race(pending);
+  // The facade must not queue behind the stalled host-side check: it
+  // settles at close time with zero sends.
+  expect(beforeRelease).not.toBe('timeout');
+  expect(sends).toBe(0);
+  expect(afterRelease).not.toBe('timeout');
 });
 
 it('does not dispatch a stream once immediate shutdown completes', async () => {
