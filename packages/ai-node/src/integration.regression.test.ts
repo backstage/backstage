@@ -92,13 +92,13 @@ type Fixture = {
   close(): Promise<void>;
 };
 
-async function fixture(): Promise<Fixture> {
+async function fixture(poolSize = 1): Promise<Fixture> {
   const directory = await mkdtemp(join(tmpdir(), 'ai-node-regression-'));
   const db = knexFactory({
     client: 'better-sqlite3',
     connection: { filename: join(directory, 'db') },
     useNullAsDefault: true,
-    pool: { min: 1, max: 1 },
+    pool: { min: 1, max: poolSize },
   });
   await runAiMigrations({
     database: { getClient: async () => db },
@@ -860,15 +860,22 @@ describe('Wave 1 integration regressions', () => {
           : 'DROP TRIGGER review_fail_release',
       );
 
-      // With the fault removed, the reopen must SETTLE — a bounded retry of
-      // the retained release, or the bounded unavailability — and never
-      // rejoin the failed admission in a resolved-await loop.
+      // With the fault removed, the reopen must SETTLE — never rejoining
+      // the failed admission in a resolved-await loop — and the bounded
+      // retry of the retained release SUCCEEDS, so the namespace reopens
+      // on a fresh generation.
+      // The window only proves the reopen is bounded: a settled-drain
+      // rejoin loop never settles at any window width.
       const result = await Promise.race([
         settle(integration.openNativeHarness(base)),
-        new Promise(resolve => setTimeout(() => resolve('pending'), 500)),
+        new Promise(resolve => setTimeout(() => resolve('pending'), 2000)),
       ]);
       expect(result).not.toBe('pending');
-      const opened = result as { handle?: NativeHarnessHandle };
+      const opened = result as { handle?: NativeHarnessHandle; error?: string };
+      expect(opened.handle).toBeDefined();
+      expect(opened.error).toBeUndefined();
+      const reopened = await f.db('ai_namespace_leases').first();
+      expect(Number(reopened.token)).toBeGreaterThan(1);
       if (opened.handle !== undefined) {
         await integration.releaseNativeHarness(opened.handle);
       }
@@ -994,6 +1001,83 @@ describe('Wave 1 integration regressions', () => {
         }),
       ).rejects.toThrow();
       expect(await f.db('ai_journal_events').select()).toEqual([]);
+      await integration.releaseNativeHarness(successor);
+    } finally {
+      unlock();
+      await f.close();
+    }
+  }, 15000);
+
+  it('observes a committed but gated lease release as dead and fails the waiter bounded', async () => {
+    // Exact driver-response-gate timing: two pool connections, so the old
+    // lease UPDATE can commit while its promise is held — the liveness
+    // SELECT sees the dead fence on the other connection.
+    const f = await fixture(2);
+    let unlock!: () => void;
+    try {
+      const { integration } = await managed(f);
+      const base = {
+        namespace: { pluginId: 'test-plugin', sessionId: 'release-gate' },
+        owner: 'user:user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        registry: createRegistry(),
+        registryVersion: 'v1',
+        configVersion: 'v1',
+      };
+      const h = await integration.openNativeHarness(base);
+
+      let entered!: () => void;
+      const enteredPromise = new Promise<void>(resolve => {
+        entered = resolve;
+      });
+      let paused = false;
+      const gate = new Promise<void>(resolve => {
+        unlock = resolve;
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const originalQuery = (f.db.client as any)._query;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (f.db.client as any)._query = async function (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        conn: any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        query: any,
+      ) {
+        const result = await originalQuery.call(this, conn, query);
+        if (
+          !paused &&
+          /^update/i.test(query.sql) &&
+          query.sql.includes('ai_namespace_leases')
+        ) {
+          // The UPDATE committed; its response is gated, so the drain's
+          // release promise has not settled.
+          paused = true;
+          entered();
+          await gate;
+        }
+        return result;
+      };
+
+      const drain = integration.releaseNativeHarness(h);
+      await enteredPromise;
+      const pending = settle(integration.openNativeHarness(base));
+
+      // The liveness SELECT runs on the second connection, sees the dead
+      // fence, and the waiter fails bounded: never a successor against the
+      // dying admission whose release promise is still gated.
+      const early = await pending;
+      expect(early.handle).toBeUndefined();
+      expect(early.error).toContain('appears stuck');
+
+      unlock();
+      await drain;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (f.db.client as any)._query = originalQuery;
+
+      // After the gate opens, a retry acquires the successor generation.
+      const successor = await integration.openNativeHarness(base);
+      const row = await f.db('ai_namespace_leases').first();
+      expect(Number(row.token)).toBe(2);
       await integration.releaseNativeHarness(successor);
     } finally {
       unlock();

@@ -553,26 +553,36 @@ export async function createAiServiceIntegration(
   }
 
   /**
-   * Races a promise against a deadline, resolving undefined on timeout or
-   * rejection. The overall drain bound must enclose every awaited step of
-   * the join — pool acquisition and each lease-table liveness read — not
-   * only the intervals between them. A read that lands after the deadline
-   * is harmless: it is a pure read whose result is already discarded.
+   * The outcome of racing a promise against a deadline. `timedOut` is a
+   * distinct signal: it is true on deadline exhaustion AND on rejection
+   * (both map to the bounded unavailability), and never conflated with a
+   * successful void resolution of the raced promise.
+   */
+  type DeadlineOutcome<T> =
+    | { readonly timedOut: false; readonly value: T }
+    | { readonly timedOut: true };
+
+  /**
+   * Races a promise against a deadline. The overall drain bound must
+   * enclose every awaited step of the join — pool acquisition and each
+   * lease-table liveness read — not only the intervals between them. A read
+   * that lands after the deadline is harmless: it is a pure read whose
+   * result is already discarded.
    */
   function withDeadline<T>(
     promise: Promise<T>,
     ms: number,
-  ): Promise<T | undefined> {
+  ): Promise<DeadlineOutcome<T>> {
     return new Promise(resolve => {
-      const timer = setTimeout(() => resolve(undefined), ms);
+      const timer = setTimeout(() => resolve({ timedOut: true }), ms);
       promise.then(
         value => {
           clearTimeout(timer);
-          resolve(value);
+          resolve({ timedOut: false, value });
         },
         () => {
           clearTimeout(timer);
-          resolve(undefined);
+          resolve({ timedOut: true });
         },
       );
     });
@@ -610,7 +620,7 @@ export async function createAiServiceIntegration(
           lease.release(admission.fence),
           Math.max(remaining(), 0),
         );
-        if (retried === undefined) {
+        if (retried.timedOut) {
           return false;
         }
         admissions.delete(namespaceKeyOf(admission.namespace));
@@ -620,12 +630,12 @@ export async function createAiServiceIntegration(
         return true;
       }
       const live = await withDeadline(fenceIsLive(admission), remaining());
-      if (live === undefined) {
+      if (live.timedOut) {
         // Deadline exhausted, or the liveness read itself failed or never
         // acquired a connection: bounded and retryable, never unbounded.
         return false;
       }
-      if (!live) {
+      if (!live.value) {
         // The drain's lease release is its last step: it may be settling
         // right now. Give it a short grace — itself enclosed by the
         // deadline — before reporting the previous release as stuck.
