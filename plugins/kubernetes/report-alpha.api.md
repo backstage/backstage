@@ -32,11 +32,7 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ExtensionDataRef<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<ApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -45,20 +41,14 @@ const _default: OverridableFrontendPlugin<
         TLoading extends 'sync' | 'async' = 'sync',
       >(
         params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
-      ) => ExtensionBlueprintParams<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>
-      >;
+      ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:kubernetes/auth-providers': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'auth-providers';
       config: {};
       configInput: {};
-      output: ExtensionDataRef<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<ApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -67,20 +57,14 @@ const _default: OverridableFrontendPlugin<
         TLoading extends 'sync' | 'async' = 'sync',
       >(
         params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
-      ) => ExtensionBlueprintParams<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>
-      >;
+      ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:kubernetes/cluster-link-formatter': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'cluster-link-formatter';
       config: {};
       configInput: {};
-      output: ExtensionDataRef<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<ApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -89,20 +73,14 @@ const _default: OverridableFrontendPlugin<
         TLoading extends 'sync' | 'async' = 'sync',
       >(
         params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
-      ) => ExtensionBlueprintParams<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>
-      >;
+      ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:kubernetes/proxy': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'proxy';
       config: {};
       configInput: {};
-      output: ExtensionDataRef<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<ApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -111,9 +89,7 @@ const _default: OverridableFrontendPlugin<
         TLoading extends 'sync' | 'async' = 'sync',
       >(
         params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
-      ) => ExtensionBlueprintParams<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>
-      >;
+      ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'entity-content:kubernetes/kubernetes': OverridableExtensionDefinition<{
       kind: 'entity-content';

@@ -70,11 +70,7 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ExtensionDataRef<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<ApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -83,18 +79,12 @@ const _default: OverridableFrontendPlugin<
         TLoading extends 'sync' | 'async' = 'sync',
       >(
         params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
-      ) => ExtensionBlueprintParams<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>
-      >;
+      ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:scaffolder/form-decorators': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ExtensionDataRef<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<ApiFactory, 'core.api.factory', {}>;
       inputs: {
         formDecorators: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -118,18 +108,12 @@ const _default: OverridableFrontendPlugin<
         TLoading extends 'sync' | 'async' = 'sync',
       >(
         params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
-      ) => ExtensionBlueprintParams<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>
-      >;
+      ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'api:scaffolder/form-fields': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ExtensionDataRef<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<ApiFactory, 'core.api.factory', {}>;
       inputs: {
         formFields: ExtensionInput<
           ConfigurableExtensionDataRef<
@@ -153,9 +137,7 @@ const _default: OverridableFrontendPlugin<
         TLoading extends 'sync' | 'async' = 'sync',
       >(
         params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
-      ) => ExtensionBlueprintParams<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>
-      >;
+      ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'entity-icon-link:scaffolder/launch-template': OverridableExtensionDefinition<{
       kind: 'entity-icon-link';
@@ -755,11 +737,7 @@ export class DefaultScaffolderFormDecoratorsApi
 export const formDecoratorsApi: OverridableExtensionDefinition<{
   config: {};
   configInput: {};
-  output: ExtensionDataRef<
-    ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
-    'core.api.factory',
-    {}
-  >;
+  output: ExtensionDataRef<ApiFactory, 'core.api.factory', {}>;
   inputs: {
     formDecorators: ExtensionInput<
       ConfigurableExtensionDataRef<
@@ -783,9 +761,7 @@ export const formDecoratorsApi: OverridableExtensionDefinition<{
     TLoading extends 'sync' | 'async' = 'sync',
   >(
     params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
-  ) => ExtensionBlueprintParams<
-    ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>
-  >;
+  ) => ExtensionBlueprintParams<ApiFactory>;
 }>;
 
 // @public (undocumented)

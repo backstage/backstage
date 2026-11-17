@@ -114,13 +114,13 @@ export type ApiHolder = {
  *
  * Async-capable refs allow promises and async dependencies. All dependencies
  * are resolved before the factory is called. Synchronous refs only allow
- * synchronous factories and dependencies. Factory types default to synchronous
- * loading; specify the fourth type parameter to accept both modes.
+ * synchronous factories and dependencies. Factory types accept either loading
+ * mode by default; specify the fourth type parameter to restrict the mode.
  *
  * @remarks
  *
- * Without type arguments, accepts synchronous factories for any API and synchronous
- * dependencies. When only the API type is provided, the implementation defaults
+ * Without type arguments, accepts synchronous or asynchronous factories for any API
+ * and dependencies. When only the API type is provided, the implementation defaults
  * to that API type.
  *
  * @public
@@ -129,7 +129,7 @@ export type ApiFactory<
   Api = unknown,
   Impl extends Api = Api,
   Deps extends { [name in string]: unknown } = { [name in string]: unknown },
-  TLoading extends 'sync' | 'async' = 'sync',
+  TLoading extends 'sync' | 'async' = 'sync' | 'async',
 > = {
   api: ApiRef<Api, string, TLoading>;
   deps: TypesToApiRefs<
@@ -144,13 +144,8 @@ export type ApiFactory<
 /**
  * Catch-all {@link ApiFactory} type.
  *
- * @deprecated Use {@link ApiFactory} with an explicit loading mode instead.
+ * @deprecated Use {@link ApiFactory} without type arguments instead.
  *
  * @public
  */
-export type AnyApiFactory = ApiFactory<
-  unknown,
-  unknown,
-  { [key in string]: unknown },
-  'sync' | 'async'
->;
+export type AnyApiFactory = ApiFactory;

@@ -18,9 +18,7 @@ import { ApiFactory } from '../apis/system';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 import { createExtensionBlueprintParams } from '../wiring/createExtensionBlueprint';
 
-const factoryDataRef = createExtensionDataRef<
-  ApiFactory<unknown, unknown, Record<string, unknown>, 'sync' | 'async'>
->().with({
+const factoryDataRef = createExtensionDataRef<ApiFactory>().with({
   id: 'core.api.factory',
 });
 

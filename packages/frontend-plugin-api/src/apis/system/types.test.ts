@@ -74,7 +74,8 @@ describe('utility API type defaults', () => {
       'sync' | 'async'
     > = legacy;
     expect(compatible).toBe(factory);
-    const broadDependency: ApiRef = broad.deps.number;
+    const broadDependency: ApiRef<unknown, string, 'sync' | 'async'> =
+      broad.deps.number;
     expect(broadDependency).toBe(dependency);
 
     // @ts-expect-error The broad implementation type is unknown, not any.
@@ -88,7 +89,7 @@ describe('utility API type defaults', () => {
     expect(wrongDeps.number).toBe('wrong');
 
     const partial: ApiFactory<{ value: string }> = factory;
-    expect(partial.factory({ number: 4 }).value).toBe('4');
+    expect((await partial.factory({ number: 4 })).value).toBe('4');
     const instance = createApiFactory(api, { value: 'instance', extra: true });
     const noDeps: ApiFactory = instance;
     expect(noDeps.factory({})).toEqual({ value: 'instance', extra: true });
@@ -113,8 +114,17 @@ describe('utility API type defaults', () => {
     });
     const legacyAsync: AnyApiFactory = asyncFactory;
     await expect(legacyAsync.factory({})).resolves.toEqual({ value: 'async' });
-    // @ts-expect-error Factory defaults remain synchronous.
-    const syncOnly: ApiFactory = asyncFactory;
+    const broadAsync: ApiFactory = asyncFactory;
+    const partialAsync: ApiFactory<{ value: string }> = asyncFactory;
+    expect(broadAsync).toBe(asyncFactory);
+    await expect(partialAsync.factory({})).resolves.toEqual({ value: 'async' });
+    // @ts-expect-error Explicitly synchronous factories still reject async refs.
+    const syncOnly: ApiFactory<
+      unknown,
+      unknown,
+      Record<string, unknown>,
+      'sync'
+    > = asyncFactory;
     expect(syncOnly).toBe(asyncFactory);
   });
 });

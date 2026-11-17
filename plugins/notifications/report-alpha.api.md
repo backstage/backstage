@@ -32,11 +32,7 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ExtensionDataRef<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<ApiFactory, 'core.api.factory', {}>;
       inputs: {};
       params: <
         TApi,
@@ -45,9 +41,7 @@ const _default: OverridableFrontendPlugin<
         TLoading extends 'sync' | 'async' = 'sync',
       >(
         params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
-      ) => ExtensionBlueprintParams<
-        ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>
-      >;
+      ) => ExtensionBlueprintParams<ApiFactory>;
     }>;
     'home-page-widget:notifications/unread-notifications': OverridableExtensionDefinition<{
       kind: 'home-page-widget';

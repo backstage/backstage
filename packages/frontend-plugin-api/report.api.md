@@ -105,14 +105,7 @@ export type AnalyticsTracker = {
 };
 
 // @public @deprecated
-export type AnyApiFactory = ApiFactory<
-  unknown,
-  unknown,
-  {
-    [key in string]: unknown;
-  },
-  'sync' | 'async'
->;
+export type AnyApiFactory = ApiFactory;
 
 // @public @deprecated
 export type AnyApiRef<T = unknown> = ApiRef<T, string, 'sync' | 'async'>;
@@ -134,23 +127,13 @@ export const ApiBlueprint: ExtensionBlueprint_2<{
     TLoading extends 'sync' | 'async' = 'sync',
   >(
     params: ApiFactory<TApi, TImpl, TDeps, TLoading>,
-  ) => ExtensionBlueprintParams_2<
-    ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>
-  >;
-  output: ExtensionDataRef_2<
-    ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
-    'core.api.factory',
-    {}
-  >;
+  ) => ExtensionBlueprintParams_2<ApiFactory>;
+  output: ExtensionDataRef_2<ApiFactory, 'core.api.factory', {}>;
   inputs: {};
   config: {};
   configInput: {};
   dataRefs: {
-    factory: ConfigurableExtensionDataRef_2<
-      ApiFactory<unknown, unknown, Record<string, unknown>, 'async' | 'sync'>,
-      'core.api.factory',
-      {}
-    >;
+    factory: ConfigurableExtensionDataRef_2<ApiFactory, 'core.api.factory', {}>;
   };
 }>;
 
@@ -163,7 +146,7 @@ export type ApiFactory<
   } = {
     [name in string]: unknown;
   },
-  TLoading extends 'sync' | 'async' = 'sync',
+  TLoading extends 'sync' | 'async' = 'sync' | 'async',
 > = {
   api: ApiRef<Api, string, TLoading>;
   deps: TypesToApiRefs<

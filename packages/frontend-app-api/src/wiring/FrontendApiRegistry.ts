@@ -21,17 +21,10 @@ import {
   ApiRef,
 } from '@backstage/frontend-plugin-api';
 
-type RegisteredApiFactory = ApiFactory<
-  unknown,
-  unknown,
-  Record<string, unknown>,
-  'sync' | 'async'
->;
-
 export class FrontendApiRegistry {
-  private readonly factories = new Map<string, RegisteredApiFactory>();
+  private readonly factories = new Map<string, ApiFactory>();
 
-  register(factory: RegisteredApiFactory) {
+  register(factory: ApiFactory) {
     if (this.factories.has(factory.api.id)) {
       return false;
     }
@@ -40,38 +33,29 @@ export class FrontendApiRegistry {
     return true;
   }
 
-  registerAll(factories: RegisteredApiFactory[]) {
+  registerAll(factories: ApiFactory[]) {
     for (const factory of factories) {
       this.register(factory);
     }
   }
 
-  set(factory: RegisteredApiFactory) {
+  set(factory: ApiFactory) {
     this.factories.set(factory.api.id, factory);
   }
 
-  setAll(factories: Iterable<RegisteredApiFactory>) {
+  setAll(factories: Iterable<ApiFactory>) {
     for (const factory of factories) {
       this.set(factory);
     }
   }
 
-  get<T>(
-    api: ApiRef<T, string, 'sync' | 'async'>,
-  ):
-    | ApiFactory<T, T, { [name: string]: unknown }, 'sync' | 'async'>
-    | undefined {
+  get<T>(api: ApiRef<T, string, 'sync' | 'async'>): ApiFactory<T> | undefined {
     const factory = this.factories.get(api.id);
     if (!factory) {
       return undefined;
     }
 
-    return factory as ApiFactory<
-      T,
-      T,
-      { [name: string]: unknown },
-      'sync' | 'async'
-    >;
+    return factory as ApiFactory<T>;
   }
 
   getAllApis() {

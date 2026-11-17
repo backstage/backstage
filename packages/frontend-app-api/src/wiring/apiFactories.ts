@@ -16,7 +16,7 @@
 
 import {
   ApiBlueprint,
-  AnyApiFactory,
+  ApiFactory,
   ApiHolder,
   AppNode,
   FrontendFeature,
@@ -39,7 +39,7 @@ import { type ExtensionPredicateContext } from './predicates';
 export type ApiFactoryEntry = {
   node: AppNode;
   pluginId: string;
-  factory: AnyApiFactory;
+  factory: ApiFactory;
 };
 
 /**
@@ -64,7 +64,7 @@ export function registerFeatureFlagDeclarationsInHolder(
  * registered whenever that API is instantiated.
  */
 export function wrapFeatureFlagApiFactory(
-  factory: AnyApiFactory,
+  factory: ApiFactory,
   features: FrontendFeature[],
   collector: ErrorCollector,
 ) {
@@ -81,7 +81,7 @@ export function wrapFeatureFlagApiFactory(
       registerFeatureFlagDeclarations(featureFlagApi, features, collector);
       return featureFlagApi;
     },
-  } as AnyApiFactory;
+  } as ApiFactory;
 }
 
 /**

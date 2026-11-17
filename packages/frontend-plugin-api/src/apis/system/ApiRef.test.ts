@@ -158,7 +158,7 @@ describe('ApiRef', () => {
     await expect(asynchronous).resolves.toEqual({ value: 'loaded' });
   });
 
-  it('should keep existing factory declarations synchronous and catch-all factories broad', () => {
+  it('should enforce explicitly synchronous factory types and accept broad factories', () => {
     type Api = { value: string };
     const sync = createApiRef<Api>().with({ id: 'sync' });
     const asyncRef = createApiRef<Api>().with({
@@ -168,7 +168,7 @@ describe('ApiRef', () => {
     const defaultDeps: TypesToApiRefs<{ dependency: Api }> = {
       dependency: sync,
     };
-    const factory: ApiFactory<Api, Api, { dependency: Api }> = {
+    const factory: ApiFactory<Api, Api, { dependency: Api }, 'sync'> = {
       api: sync,
       deps: defaultDeps,
       factory: ({ dependency }) => dependency,
@@ -177,16 +177,16 @@ describe('ApiRef', () => {
       dependency: { value: 'sync' },
     });
     expect(implementation).toEqual({ value: 'sync' });
-    const invalidFactory: ApiFactory<Api, Api, {}> = {
+    const invalidFactory: ApiFactory<Api, Api, {}, 'sync'> = {
       api: sync,
       deps: {},
-      // @ts-expect-error Existing factory types require synchronous implementations.
+      // @ts-expect-error Explicitly synchronous factory types require synchronous implementations.
       factory: async () => ({ value: 'invalid' }),
     };
     expect(invalidFactory.api).toBe(sync);
-    const invalidDeps: ApiFactory<Api, Api, { dependency: Api }> = {
+    const invalidDeps: ApiFactory<Api, Api, { dependency: Api }, 'sync'> = {
       api: sync,
-      // @ts-expect-error Existing factory types require synchronous dependencies.
+      // @ts-expect-error Explicitly synchronous factory types require synchronous dependencies.
       deps: { dependency: asyncRef },
       factory: () => ({ value: 'invalid' }),
     };

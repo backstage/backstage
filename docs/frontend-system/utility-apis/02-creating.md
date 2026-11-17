@@ -119,6 +119,14 @@ example, `ApiRef<WorkApi, 'plugin.example.work', 'async'>` describes an async re
 with that ID. Use `ApiRef<WorkApi, string, 'sync' | 'async'>` when a type needs to
 accept either loading mode.
 
+The `ApiFactory` type accepts both synchronous and asynchronous factories by
+default. `ApiFactory<WorkApi>` therefore describes a factory returning `WorkApi`
+or `Promise<WorkApi>`. To restrict an annotation to synchronous factories, use
+`ApiFactory<WorkApi, WorkApi, WorkDeps, 'sync'>`. Factory creation through
+`createApiFactory` and `ApiBlueprint` still infers the loading mode from the ref,
+so synchronous refs retain their factory and dependency checks. The old frontend
+system's factory types remain explicitly synchronous.
+
 `ApiHolder.get()` preserves the ref's loading mode in its return type, including
 when the ref passes through a generic helper. Preserve the inferred type when
 exporting refs so consumers retain that distinction.

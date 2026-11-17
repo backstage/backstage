@@ -15,7 +15,7 @@
  */
 
 import {
-  AnyApiFactory,
+  ApiFactory,
   ApiHolder,
   AppLifecycleApi,
   appLifecycleApiRef,
@@ -244,7 +244,7 @@ export function createPhaseApis(options: {
   includeConfigApi: boolean;
   appBasePath: string;
   routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef | undefined>;
-  staticFactories: AnyApiFactory[];
+  staticFactories: ApiFactory[];
 }) {
   const appTreeApi = new AppTreeApiProxy(options.tree, options.appBasePath);
   const routeResolutionApi = new RouteResolutionApiProxy(
@@ -321,7 +321,7 @@ export function createPhaseApis(options: {
   // Register the default up front, but acquire history only when requested.
   // The primary registry outranks fallbackApis, so consult a reused session's
   // holder before constructing a history owned by this app.
-  function createAppHistoryFactory(): AnyApiFactory | undefined {
+  function createAppHistoryFactory(): ApiFactory | undefined {
     if (hasNavigationOverride) {
       return undefined;
     }
