@@ -27,6 +27,9 @@ const factoryDataRef = createExtensionDataRef<
 /**
  * Creates utility API extensions.
  *
+ * Async factories are supported only in plugins that exclusively support the
+ * new frontend system.
+ *
  * @public
  */
 export const ApiBlueprint = createExtensionBlueprint({

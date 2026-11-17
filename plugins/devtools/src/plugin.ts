@@ -16,14 +16,12 @@
 
 import {
   createApiFactory,
-  createApiRef,
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import { devToolsApiRef, type DevToolsApi } from './api/DevToolsApi';
-import { DevToolsClient } from './api/DevToolsClient';
+import { devToolsApiRef, DevToolsClient } from './api';
 
 import { rootRouteRef } from './routes';
 
@@ -32,7 +30,7 @@ export const devToolsPlugin = createPlugin({
   id: 'devtools',
   apis: [
     createApiFactory({
-      api: createApiRef<DevToolsApi>({ id: devToolsApiRef.id }),
+      api: devToolsApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
         fetchApi: fetchApiRef,

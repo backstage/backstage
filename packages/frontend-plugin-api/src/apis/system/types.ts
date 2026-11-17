@@ -19,6 +19,8 @@
  * factories and dependencies. Ref types and creation default to synchronous loading.
  * Async refs require their loading marker; synchronous and older refs may omit it.
  * The API type defaults to unknown when no type argument is provided.
+ * Async refs are supported only in plugins that exclusively support the new
+ * frontend system. Plugins that also support the old system keep synchronous refs.
  * Changing the loading mode is a breaking contract change. For plugin-internal
  * refs (not exported or exported only by the plugin package), it follows the
  * breaking-producers policy. Refs exported through a library or another public
@@ -97,6 +99,9 @@ export type ApiHolder = {
 
 /**
  * Describes a factory returning API implementations.
+ *
+ * Async factories are supported only in plugins that exclusively support the
+ * new frontend system. Legacy registration and conversion remain synchronous.
  *
  * Async-capable refs allow promises and async dependencies. All dependencies
  * are resolved before the factory is called. Synchronous refs only allow

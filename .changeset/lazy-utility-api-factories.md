@@ -7,6 +7,12 @@ Added support for lazy utility API implementations. API refs can opt in with
 `loading: 'async'`, allowing their factories to return promises and depend on other
 async-capable APIs. `useApi` suspends while these APIs initialize.
 
+Async APIs are supported only in plugins that exclusively support the new
+frontend system. Plugins with an old-system entry point keep their APIs
+synchronous; legacy conversion helpers do not adapt API loading modes. The host
+app uses the new frontend system but may still include other converted legacy
+plugins.
+
 **BREAKING PRODUCERS**: Custom `ApiHolder` implementations must return a stable
 promise for a present async-capable API and `undefined` immediately for a missing
 API. Synchronous refs continue returning instances directly.

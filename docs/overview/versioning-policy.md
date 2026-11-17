@@ -137,6 +137,10 @@ of the interface.
 Changes that fall under the above rule, must be marked with
 `**BREAKING PRODUCERS**:` in the changelog.
 
+Async Utility APIs are supported only in plugins that exclusively support the
+new frontend system. Plugins that also support the old system must keep their
+APIs synchronous, including their converted legacy entry points.
+
 Changing a frontend Utility API ref from synchronous to asynchronous loading is
 a breaking contract change. For a plugin-internal API, whose ref is not exported or
 exported only from the owning frontend plugin package, this falls under the
