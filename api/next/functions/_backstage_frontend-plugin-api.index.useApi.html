@@ -15,9 +15,13 @@
 <section class="tsd-panel">
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="useapi"><span class="tsd-kind-call-signature">useApi</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#useapit">T</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">apiRef</span><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_frontend-plugin-api.index.ApiRef.html" class="tsd-signature-type tsd-kind-type-alias">ApiRef</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#useapit">T</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#useapit">T</a><a href="#useapi" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="useapi"><span class="tsd-kind-call-signature">useApi</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#useapit">T</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">apiRef</span><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_frontend-plugin-api.index.ApiRef.html" class="tsd-signature-type tsd-kind-type-alias">ApiRef</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#useapit">T</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#useapit">T</a><span class="tsd-signature-symbol">&gt;</span><a href="#useapi" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>React hook for retrieving APIs.</p>
+<p>Promise-valued APIs are unwrapped. The hook suspends while the promise is
+pending and throws its rejection reason if it fails. Render consumers of
+promise-valued APIs inside a Suspense boundary.</p>
+<p>Direct holder lookups and factory dependencies retain the declared API value.</p>
 </div>
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
@@ -29,9 +33,9 @@
 <li><span><span class="tsd-kind-parameter">apiRef</span>: <a href="../types/_backstage_frontend-plugin-api.index.ApiRef.html" class="tsd-signature-type tsd-kind-type-alias">ApiRef</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#useapit">T</a><span class="tsd-signature-symbol">&gt;</span></span>
 <div class="tsd-comment tsd-typography"><p>Reference of the API to use.</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a class="tsd-signature-type tsd-kind-type-parameter" href="#useapit">T</a></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Awaited</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#useapit">T</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/50ab6d297b390ee91c219969cf39602eedd4fa39/packages/frontend-plugin-api/src/apis/system/useApi.tsx#L47">packages/frontend-plugin-api/src/apis/system/useApi.tsx:47</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/38b6d4ad34ceb44d6552eb03d20f1564aef8f193/packages/frontend-plugin-api/src/apis/system/useApi.tsx#L61">packages/frontend-plugin-api/src/apis/system/useApi.tsx:61</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

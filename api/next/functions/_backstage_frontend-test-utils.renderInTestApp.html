@@ -17,6 +17,11 @@
 <div class="tsd-signature tsd-anchor-link" id="renderintestapp"><span class="tsd-kind-call-signature">renderInTestApp</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-keyword">const</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#renderintestapptapipairs">TApiPairs</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">element</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Element</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="../types/_backstage_frontend-test-utils.TestAppOptions.html" class="tsd-signature-type tsd-kind-type-alias">TestAppOptions</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#renderintestapptapipairs">TApiPairs</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_frontend-test-utils.TestAppRenderResult.html" class="tsd-signature-type tsd-kind-type-alias">TestAppRenderResult</a><a href="#renderintestapp" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Renders the given element in a test app, for use in unit tests.</p>
+<p>Elements that do not suspend render immediately. If a descendant suspends,
+the entire element renders nothing until it is ready; use asynchronous queries
+such as <code>findByText</code> to await it. Supply an inner Suspense boundary to isolate
+suspended content or provide a custom fallback. Rendering errors are not caught
+by the Suspense boundary.</p>
 <p>Navigation is owned by a @backstage/frontend-plugin-api#AppHistoryApi
 with in-memory history, the same seam as production. Access it through
 <code>apis.get(coreApis.appHistory)</code> on the render result.</p>
@@ -37,7 +42,7 @@ the app root's elements input.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="../types/_backstage_frontend-test-utils.TestAppOptions.html" class="tsd-signature-type tsd-kind-type-alias">TestAppOptions</a><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#renderintestapptapipairs">TApiPairs</a><span class="tsd-signature-symbol">&gt;</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="../types/_backstage_frontend-test-utils.TestAppRenderResult.html" class="tsd-signature-type tsd-kind-type-alias">TestAppRenderResult</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/50ab6d297b390ee91c219969cf39602eedd4fa39/packages/frontend-test-utils/src/app/renderInTestApp.tsx#L150">packages/frontend-test-utils/src/app/renderInTestApp.tsx:150</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/38b6d4ad34ceb44d6552eb03d20f1564aef8f193/packages/frontend-test-utils/src/app/renderInTestApp.tsx#L156">packages/frontend-test-utils/src/app/renderInTestApp.tsx:156</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
