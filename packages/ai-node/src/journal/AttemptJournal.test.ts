@@ -17,7 +17,7 @@
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import knex, { type Knex } from 'knex';
@@ -442,6 +442,8 @@ for (const dialect of ['sqlite', 'pg'] as const) {
         for (const bad of [
           'https://api.openai.com/v1?api_key=abc',
           'https://api.openai.com/v1#fragment',
+          'https://api.openai.com/v1/responses?',
+          'https://api.openai.com/v1/responses#',
           'https://user:pass@api.openai.com/v1',
           'file:///etc/passwd',
           'not a url',
@@ -454,6 +456,60 @@ for (const dialect of ['sqlite', 'pg'] as const) {
           ).rejects.toThrow('destination');
         }
         expect(await f.db('ai_journal_events').select('id')).toHaveLength(1);
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('accepts only certified static model and auth paths', async () => {
+      const f = await fixture(dialect);
+      try {
+        const destinations = [
+          'https://api.openai.com/v1/responses',
+          'https://api.openai.com/v1/chat/completions',
+          'https://api.anthropic.com/v1/messages',
+          'https://chatgpt.com/backend-api/codex/responses',
+          'https://MiXeD.Example.com:443/v1/responses',
+          'http://localhost:1234/v1/responses',
+          'http://127.0.0.1:1234/v1/responses',
+          'http://[::1]:1234/v1/responses',
+        ];
+        for (const destination of destinations) {
+          await f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision({ destination }),
+          );
+        }
+        for (const operation of ['auth.token', 'auth.token-exchange']) {
+          for (const path of ['/oauth/token', '/v1/oauth/token']) {
+            await f.journal.recordDecisionAndIntent(
+              fence,
+              freshDecision({
+                operation,
+                destination: `https://auth.example.com${path}`,
+              }),
+            );
+          }
+        }
+        const rows = await f.db('ai_journal_events').select('destination');
+        expect(rows.map(row => row.destination)).toEqual([
+          ...destinations,
+          'https://auth.example.com/oauth/token',
+          'https://auth.example.com/v1/oauth/token',
+          'https://auth.example.com/oauth/token',
+          'https://auth.example.com/v1/oauth/token',
+        ]);
+        for (const [operation, destination] of [
+          ['models.stream', 'https://auth.example.com/oauth/token'],
+          ['auth.token', 'https://api.example.com/v1/responses'],
+        ]) {
+          await expect(
+            f.journal.recordDecisionAndIntent(
+              fence,
+              freshDecision({ operation, destination }),
+            ),
+          ).rejects.toThrow('no approved route template');
+        }
       } finally {
         await f.cleanup();
       }
@@ -647,81 +703,200 @@ for (const dialect of ['sqlite', 'pg'] as const) {
       }
     });
 
-    it('accepts structured multi-segment destinations and rejects hidden tokens', async () => {
+    it('uses the same principal validation for appends and resolver-backed reads', async () => {
       const f = await fixture(dialect);
       try {
-        // Realistic routed destinations are structured components, not one
-        // entropy run.
-        await f.journal.recordDecisionAndIntent(
-          fence,
-          freshDecision({
-            operation: 'models.stream',
-            destination:
-              'https://my-resource.openai.azure.com/openai/deployments/production-chat/chat/completions',
-          }),
-        );
-        await f.journal.recordDecisionAndIntent(
-          fence,
-          freshDecision({
-            operation: 'models.stream',
-            destination:
-              'https://us-central1-aiplatform.googleapis.com/v1/projects/my-project/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent',
-          }),
-        );
-        expect(await f.db('ai_journal_events').select('id')).toHaveLength(2);
+        const query = { ...namespace };
+        for (const [subject, valid] of [
+          ['', false],
+          ['x'.repeat(513), false],
+          ['user:default/alice\n', false],
+          [' user:default/alice', false],
+          ['user:default/alice ', false],
+          ['https://issuer.example.net/alice', true],
+          ['x.'.repeat(256), true],
+        ] as const) {
+          for (const type of ['user', 'service'] as const) {
+            const reader = {
+              $$type: '@backstage/BackstageCredentials',
+              principal:
+                type === 'user'
+                  ? { type, userEntityRef: subject }
+                  : { type, subject },
+            } as BackstageCredentials;
+            const journal = createAttemptJournal({
+              db: f.db,
+              authorizer: { authorizeAuditRead: async () => true },
+              ownershipResolver: async () => subject,
+            });
+            const appended = await journal
+              .recordDecisionAndIntent(fence, freshDecision({ actor: subject }))
+              .then(
+                () => true,
+                error => {
+                  if (!String(error.message).includes('Invalid actor'))
+                    throw error;
+                  return false;
+                },
+              );
+            const allowed = await journal.read(reader, query).then(
+              () => true,
+              error => {
+                if (!(error instanceof AuditAccessDeniedError)) throw error;
+                return false;
+              },
+            );
+            expect({ appended, allowed }).toEqual({
+              appended: valid,
+              allowed: valid,
+            });
+          }
+        }
+      } finally {
+        await f.cleanup();
+      }
+    });
 
-        // A token-valued path segment still fails closed, encoded or not.
-        const token = 'ghp_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1';
+    it('hashes dynamic route values in raw rows, reads and mirrors', async () => {
+      const f = await fixture(dialect);
+      const mirrored: AuditEventView[] = [];
+      const journal = createAttemptJournal({
+        db: f.db,
+        authorizer: { authorizeAuditRead: async () => true },
+        mirror: {
+          mirror: async event => {
+            mirrored.push(event);
+          },
+        },
+      });
+      try {
+        const values = [
+          'GPT4o-PROD-20261117',
+          'ngCCU70RuJyRwtoMhMN4WFAqkVN2tKyYwWTeUh/MXvXnvBCFPtCSMVK5sWzmGqUl',
+          '36e30f114e4a7f293a5b4dafe72b7765/bc5e5ce0ea555121d1e4a31e40ccc853',
+          'MFRGGZDFMZTWQ2LKNNWG23TPOIXXIYLM/MFRGGZDFMZTWQ2LKNNWG23TPOIXXIYLM',
+          'bcdefghijklmnopqrstuvwxyzabcdefg/hijklmnopqrstuvwxyzabcdefghijklm',
+        ];
+        const expected: string[] = [];
+        for (const value of values) {
+          for (const encoded of [
+            value,
+            value.replaceAll('/', '%2F'),
+            value.replaceAll('/', '%252F'),
+          ]) {
+            const digest = createHash('sha256')
+              .update(value)
+              .digest('hex')
+              .slice(0, 16);
+            expected.push(
+              `https://my-resource.openai.azure.com/openai/deployments/{deployment=${digest}}/responses`,
+            );
+            await journal.recordDecisionAndIntent(
+              fence,
+              freshDecision({
+                destination: `https://my-resource.openai.azure.com/openai/deployments/${encoded}/responses`,
+              }),
+            );
+          }
+        }
+        const rows = await f
+          .db('ai_journal_events')
+          .orderBy('id')
+          .select('destination');
+        const page = await journal.read(
+          credentials('user:default/alice'),
+          namespace,
+        );
+        expect(rows.map(row => row.destination)).toEqual(expected);
+        expect(
+          page.items.map(item => item.kind === 'decision' && item.destination),
+        ).toEqual(expected);
+        expect(
+          mirrored.map(item => item.kind === 'decision' && item.destination),
+        ).toEqual(expected);
+        const dump = JSON.stringify({ rows, page, mirrored });
+        for (const value of values) expect(dump).not.toContain(value);
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('rejects unapproved routes and known credentials before hashing', async () => {
+      const f = await fixture(dialect);
+      try {
         await expect(
           f.journal.recordDecisionAndIntent(
             fence,
             freshDecision({
-              destination: `https://api.example.com/v1/${token}/completions`,
+              destination:
+                'https://my-resource.openai.azure.com/openai/deployments/GPT4o-PROD-20261117/chat/completions',
             }),
           ),
-        ).rejects.toThrow('secret-shaped');
-        await expect(
-          f.journal.recordDecisionAndIntent(
-            fence,
-            freshDecision({
-              destination: `https://api.example.com/v1/users%2F${token}`,
-            }),
-          ),
-        ).rejects.toThrow('secret-shaped');
-        // A base64-shaped value containing a literal slash cannot divide
-        // itself into innocent per-segment pieces, plain or %2F-encoded.
-        const opaque =
-          'B7v9Q2mT4nX6pR8sD1fG3hJ5kL0zA2cE/F9u8W7y6K5j4H3g2D1s0P9o8I7v6M5n4';
+        ).rejects.toThrow('no approved route template');
         for (const destination of [
-          `https://api.example.com/v1/${opaque}`,
-          `https://api.example.com/v1/${opaque.replace('/', '%2F')}`,
+          'https://example.com/v1/projects/my-project',
+          'http://example.com/v1/responses',
         ]) {
           await expect(
             f.journal.recordDecisionAndIntent(
               fence,
               freshDecision({ destination }),
             ),
-          ).rejects.toThrow('secret-shaped');
+          ).rejects.toThrow('destination');
         }
-        // The same contiguous slash-bearing value cannot hide in free text.
-        await expect(
-          f.journal.recordDecisionAndIntent(fence, {
-            ...freshDecision(),
-            reason: `provider rejected ${opaque}`,
-          }),
-        ).rejects.toThrow('secret-shaped');
-        // A PAT split across an encoded separator is caught by its intact
-        // contiguous prefix on the whole decoded destination.
+        const tokens = [
+          'ghp_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
+          'xoxb-12345678901234567890',
+          'AKIAIOSFODNN7EXAMPLE',
+          'AIza012345678901234567890123456789',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+          '-----BEGIN RSA PRIVATE KEY-----',
+          'Bearer abcdef123456789',
+        ];
+        for (const token of tokens) {
+          const encoded = encodeURIComponent(token);
+          // Splitting known patterns at a slash must not hide them.
+          const at = token.startsWith('Bearer')
+            ? token.length - 8
+            : Math.floor(token.length / 2);
+          for (const value of [
+            encoded,
+            ...['/', '%2F', '%252F'].map(
+              separator =>
+                `${encodeURIComponent(
+                  token.slice(0, at),
+                )}${separator}${encodeURIComponent(token.slice(at))}`,
+            ),
+          ]) {
+            await expect(
+              f.journal.recordDecisionAndIntent(
+                fence,
+                freshDecision({
+                  destination: `https://example.com/openai/deployments/${value}/responses`,
+                }),
+              ),
+            ).rejects.toThrow('secret-shaped');
+          }
+        }
         await expect(
           f.journal.recordDecisionAndIntent(
             fence,
             freshDecision({
               destination:
-                'https://api.example.com/v1/ghp_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1%2Fa1a1a1a1a1a1a1a1a1a1',
+                'https://ghp_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1.example.com/v1/responses',
             }),
           ),
         ).rejects.toThrow('secret-shaped');
-        expect(await f.db('ai_journal_events').select('id')).toHaveLength(2);
+        await expect(
+          f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision({
+              operation: 'auth.token',
+              destination: 'https://example.com/not-a-token-route',
+            }),
+          ),
+        ).rejects.toThrow('no approved route template');
+        expect(await f.db('ai_journal_events').select('id')).toEqual([]);
       } finally {
         await f.cleanup();
       }

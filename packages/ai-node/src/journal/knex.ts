@@ -18,6 +18,7 @@ import type { Knex } from 'knex';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Fence } from '../contracts';
 import {
+  assertPrincipalRef,
   parseAttemptId,
   parseAuditQuery,
   parseDecision,
@@ -208,6 +209,12 @@ class KnexAttemptJournal implements AttemptJournal {
     query: unknown,
   ): Promise<AuditPage> {
     const parsed = parseAuditQuery(query);
+    const ref = principalRef(credentials);
+    if (ref === undefined) {
+      throw new AuditAccessDeniedError(
+        'Audit reads require ownership of the session',
+      );
+    }
     const ownerRef = this.#ownershipResolver
       ? await this.#ownershipResolver({
           pluginId: parsed.pluginId,
@@ -223,8 +230,7 @@ class KnexAttemptJournal implements AttemptJournal {
         `No journaled session ${parsed.pluginId}/${parsed.sessionId}`,
       );
     }
-    const ref = principalRef(credentials);
-    if (ref === undefined || ref !== ownerRef) {
+    if (ref !== ownerRef) {
       throw new AuditAccessDeniedError(
         'Audit reads require ownership of the session',
       );
@@ -611,25 +617,18 @@ function rowToView(
 function principalRef(credentials: BackstageCredentials): string | undefined {
   const principal = (credentials as { principal?: { type?: string } })
     .principal;
-  if (
-    typeof principal === 'object' &&
-    principal !== null &&
-    principal.type === 'user'
-  ) {
-    const ref = (principal as { userEntityRef?: unknown }).userEntityRef;
-    if (typeof ref === 'string' && ref.length > 0) return ref;
+  if (typeof principal !== 'object' || principal === null) return undefined;
+  let value: unknown;
+  if (principal.type === 'user') {
+    value = (principal as { userEntityRef?: unknown }).userEntityRef;
+  } else if (principal.type === 'service') {
+    value = (principal as { subject?: unknown }).subject;
+  }
+  try {
+    return assertPrincipalRef(value);
+  } catch {
     return undefined;
   }
-  if (
-    typeof principal === 'object' &&
-    principal !== null &&
-    principal.type === 'service'
-  ) {
-    const subject = (principal as { subject?: unknown }).subject;
-    if (typeof subject === 'string' && subject.length > 0) return subject;
-    return undefined;
-  }
-  return undefined;
 }
 
 /**

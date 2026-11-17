@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createHash } from 'node:crypto';
 import type { Fence } from '../contracts';
 import type { AttemptOutcome, RecoveryEvent } from './types';
 
@@ -61,13 +62,7 @@ const KNOWN_CREDENTIAL_FORMATS = [
   /(?<![A-Za-z])(?:sk-(?:ant-|proj-)?|rk-|pk-)[A-Za-z0-9_-]{20,}/,
 ];
 
-/**
- * Generic value shapes: assignments, bearer values, and long
- * separator-free high-entropy runs. These run both over whole fields and,
- * for destinations, over each structured component individually, so a
- * benign dictionary route is never one long run while a long single
- * component still fails closed.
- */
+/** Generic value shapes for free-text fields, not destination paths. */
 const GENERIC_VALUE_SHAPES = [
   /\bbearer\s+[A-Za-z0-9._~+/=-]{6,}/i,
   /\b(?:api[_-]?key|apikey|token|secret|password|passwd|credential|access[_-]?token|refresh[_-]?token|authorization)\s*[=:]\s*\S{8,}/i,
@@ -178,20 +173,6 @@ function assertNoKnownFormats(text: string, field: string): void {
 }
 
 /**
- * Rejects generic value shapes (assignments, bearer values, long
- * separator-free runs) in one bounded component.
- */
-function assertNoGenericShapes(text: string, field: string): void {
-  for (const pattern of GENERIC_VALUE_SHAPES) {
-    if (pattern.test(text)) {
-      throw new Error(
-        `Invalid ${field}: value is secret-shaped; redact it before recording a journal event`,
-      );
-    }
-  }
-}
-
-/**
  * Validates an operation name against the closed classification vocabulary.
  * Operations never run free-text secret checks: `auth.token` is a
  * classification the audit trail must be able to record.
@@ -206,13 +187,15 @@ export function assertOperation(value: unknown): string {
 }
 
 /**
- * Validates a canonical attempt destination: a bare http(s) URL consisting
- * of origin and path only, checked structurally. The path may legitimately
- * contain words like `token`; query strings, fragments, userinfo and any
- * other component fail closed.
+ * Canonicalizes destinations from the trusted producer, which binds the host
+ * to its configuration before journaling. Hosts are stored verbatim; callers
+ * must not supply untrusted or secret-bearing hosts. Paths are limited to the
+ * certified adapter templates, with dynamic values represented by a truncated
+ * SHA-256 digest. Query strings, fragments and userinfo fail closed.
  */
 export function assertDestination(
   value: unknown,
+  operation: string,
   field = 'destination',
 ): string | undefined {
   if (value === undefined) return undefined;
@@ -236,11 +219,19 @@ export function assertDestination(
       `Invalid ${field}: expected a canonical http(s) URL of origin and path only`,
     );
   }
+  const authority = /^https?:\/\/([^/?#]*)/i.exec(value)?.[1];
   if (
-    (url.protocol !== 'https:' && url.protocol !== 'http:') ||
+    !authority ||
+    authority.includes('@') ||
+    authority.includes('\\') ||
+    (url.protocol !== 'https:' &&
+      !(
+        url.protocol === 'http:' &&
+        ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
+      )) ||
     url.host.length === 0 ||
-    url.search.length > 0 ||
-    url.hash.length > 0 ||
+    value.includes('?') ||
+    value.includes('#') ||
     url.username.length > 0 ||
     url.password.length > 0
   ) {
@@ -248,32 +239,63 @@ export function assertDestination(
       `Invalid ${field}: must be an https (or http) origin and path without query string, fragment or userinfo`,
     );
   }
-  // The path is part of the audit record, so a credential value hidden in a
-  // path segment is rejected just like one in free text. Detection is
-  // two-layer. Over the WHOLE decoded destination, strongly identifiable
-  // formats and slash-bearing high-entropy values are caught with the
-  // separator inside the candidate, so a value split across a literal or
-  // encoded '/' cannot divide itself into innocent pieces. Then the GENERIC
-  // entropy/length rules run per structured component (host, then each
-  // decoded path segment), so benign dictionary-word routes such as Azure
-  // or Vertex paths are never one long entropy run while a long
-  // single-component value still fails closed.
-  let decodedPath: string;
-  try {
-    decodedPath = decodeURIComponent(url.pathname);
-  } catch {
-    throw new Error(`Invalid ${field}: path is not valid percent-encoding`);
+  // Check raw and recursively decoded representations before hashing. Joining
+  // slash-separated fragments also catches a known token split by %2F/%252F.
+  let decoded = value;
+  let hasEncoding = true;
+  while (hasEncoding) {
+    for (const text of [decoded, decoded.replaceAll('/', '')]) {
+      assertNoKnownFormats(text, field);
+      if (GENERIC_VALUE_SHAPES[0].test(text)) {
+        throw new Error(
+          `Invalid ${field}: value is secret-shaped; redact it before recording a journal event`,
+        );
+      }
+    }
+    hasEncoding = /%[0-9a-f]{2}/i.test(decoded);
+    if (hasEncoding) {
+      try {
+        decoded = decodeURIComponent(decoded);
+      } catch {
+        throw new Error(`Invalid ${field}: path is not valid percent-encoding`);
+      }
+    }
   }
-  assertNoKnownFormats(`${url.host}${decodedPath}`, field);
-  assertNoSlashBearingHighEntropy(`${url.host}${decodedPath}`, field);
-  const components = [
-    url.host,
-    ...decodedPath.split('/').filter(segment => segment.length > 0),
-  ];
-  for (const component of components) {
-    assertNoGenericShapes(component, field);
+  let path = url.pathname;
+  while (/%[0-9a-f]{2}/i.test(path)) {
+    try {
+      path = decodeURIComponent(path);
+    } catch {
+      throw new Error(`Invalid ${field}: path is not valid percent-encoding`);
+    }
   }
-  return `${url.origin}${url.pathname}`;
+
+  // Keep this registry in sync with the guard's certified adapter matrix.
+  // The producer binds the host to trusted configuration; it is not a
+  // caller-supplied identity and is therefore stored verbatim.
+  const auth =
+    operation === 'auth.token' || operation === 'auth.token-exchange';
+  const staticPaths = auth
+    ? ['/oauth/token', '/v1/oauth/token']
+    : [
+        '/v1/responses',
+        '/v1/chat/completions',
+        '/v1/messages',
+        '/backend-api/codex/responses',
+      ];
+  const origin = `${url.protocol}//${authority}`;
+  if (staticPaths.includes(path)) return `${origin}${path}`;
+  if (!auth) {
+    const azure = /^\/openai\/deployments\/(.+)\/responses$/.exec(path);
+    if (azure) {
+      const digest = createHash('sha256')
+        .update(azure[1])
+        .digest('hex')
+        .slice(0, 16);
+      return `${origin}/openai/deployments/{deployment=${digest}}/responses`;
+    }
+  }
+  throw new Error(`Invalid ${field}: no approved route template`);
 }
 
 /**
@@ -370,6 +392,7 @@ export function parseDecision(event: unknown): ParsedDecision {
       'Invalid attempt decision: "decision" must be "allow" or "deny"',
     );
   }
+  const operation = assertOperation(source.operation);
   return {
     actor: assertPrincipalRef(source.actor),
     conversationId: assertRedactedText(source.conversationId, 'conversationId'),
@@ -385,8 +408,8 @@ export function parseDecision(event: unknown): ParsedDecision {
     })!,
     provider: assertRedactedText(source.provider, 'provider'),
     model: assertRedactedText(source.model, 'model'),
-    operation: assertOperation(source.operation),
-    destination: assertDestination(source.destination),
+    operation,
+    destination: assertDestination(source.destination, operation),
     attempt: assertOrdinal(source.attempt, 'attempt'),
     decision: source.decision,
     reason: assertRedactedText(source.reason, 'reason'),
