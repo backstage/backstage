@@ -135,6 +135,33 @@ describe('runAiMigrations', () => {
     ).rejects.toThrow(/not up to date.*1002_create_ai_other.js/s);
   });
 
+  it('discovers the whole shared migrations directory by name range', async () => {
+    const db = await databases.init('SQLITE_3');
+    const logger = mockServices.logger.mock();
+
+    // No directory override: this runs against the package's real shared
+    // migrations directory, so the reserved name ranges (T2's 1000s,
+    // T-cred's 2000s) must all be discovered and applied.
+    await runAiMigrations({
+      database: { getClient: async () => db },
+      logger,
+    });
+
+    const ledger = await db(AI_MIGRATIONS_TABLE).select('name');
+    expect(ledger.map(row => row.name).sort()).toEqual([
+      '1000_storage.js',
+      '2000_credentials.js',
+    ]);
+    expect(await db.schema.hasTable('ai_namespace_leases')).toBe(true);
+    expect(await db.schema.hasTable('ai_credential_user_secrets')).toBe(true);
+
+    // Up to date: skipping now succeeds without touching the schema.
+    await runAiMigrations({
+      database: { getClient: async () => db, migrations: { skip: true } },
+      logger,
+    });
+  });
+
   it('honors skip once the schema exists', async () => {
     const db = await databases.init('SQLITE_3');
     const directory = makeMigrationsDir();
