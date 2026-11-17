@@ -62,3 +62,5 @@ export type {
   AuditEventView,
   AuditPage,
 } from './journal/types';
+export { modelPermissionName } from './permissions/modelPermissions';
+export type { ModelPair } from './permissions/modelPermissions';
