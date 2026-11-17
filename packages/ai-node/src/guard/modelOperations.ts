@@ -88,7 +88,16 @@ export function createGuardedModelOperations(options: {
   guard: ModelOperationGuard;
   journal: AttemptJournal;
   providers?: AiProviderRegistry;
-  resolve(model: AnyModel, operation: ModelOperation): GuardedModelBinding;
+  /**
+   * Resolves the trusted binding for one operation. Returns a promise when the
+   * host performs work before dispatch (for example a guarded credential
+   * refresh); the guard's own recheck, intent and send ordering is unchanged
+   * either way, because every guarded fetch re-validates before it sends.
+   */
+  resolve(
+    model: AnyModel,
+    operation: ModelOperation,
+  ): GuardedModelBinding | Promise<GuardedModelBinding>;
 }): ModelRequests {
   const providers = options.providers ?? builtinProviderRegistry;
   class PolicyRejection extends Error {}
@@ -135,7 +144,7 @@ export function createGuardedModelOperations(options: {
   };
   const resolveBinding = async (model: AnyModel, operation: ModelOperation) => {
     try {
-      return options.resolve(model, operation);
+      return await options.resolve(model, operation);
     } catch (error) {
       if (
         error instanceof GuardedResolutionError &&

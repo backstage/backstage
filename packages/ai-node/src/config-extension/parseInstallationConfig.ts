@@ -142,7 +142,12 @@ function parseCredentials(
   section: Config,
   path: string,
 ): AiInstallationCredentials {
-  rejectUnknownKeys(section, path, ['encryptionKey', 'precedence', 'scopes']);
+  rejectUnknownKeys(section, path, [
+    'encryptionKey',
+    'precedence',
+    'scopes',
+    'tokenEndpoints',
+  ]);
 
   const rawKey = section.getOptionalString('encryptionKey');
   if (rawKey === undefined) {
@@ -175,9 +180,103 @@ function parseCredentials(
       ? new Map<string, ReadonlyMap<string, JsonValue>>()
       : parseScopes(scopesSection, `${path}.scopes`);
 
-  return { encryptionKey, precedence, scopes };
+  const tokenEndpoints = parseTokenEndpoints(section, path);
+
+  return { encryptionKey, precedence, scopes, tokenEndpoints };
 }
 
+/**
+ * Trusted OAuth token endpoints for guarded auth operations. Every entry must
+ * be an absolute https (or localhost http) URL on one of the journal-owned
+ * token routes: those are the only authentication destinations an attempt may
+ * record, so a configured endpoint outside them could never be audited.
+ */
+function parseTokenEndpoints(
+  section: Config,
+  path: string,
+): Readonly<Record<string, string>> {
+  const sectionMap = section.getOptionalConfig('tokenEndpoints');
+  if (sectionMap === undefined) {
+    return {};
+  }
+  const endpoints: Record<string, string> = {};
+  const providers = sectionMap.keys();
+  if (providers.length === 0) {
+    throw fieldError(
+      path,
+      'tokenEndpoints',
+      'Expected at least one provider endpoint, or omit the field entirely to perform no guarded auth operations',
+    );
+  }
+  for (const providerId of providers) {
+    const field = `tokenEndpoints.${providerId}`;
+    if (
+      providerId.length === 0 ||
+      providerId.length > IDENTIFIER_MAX_LENGTH ||
+      providerId !== providerId.trim() ||
+      // eslint-disable-next-line no-control-regex
+      /[\u0000-\u001f\u007f]/.test(providerId)
+    ) {
+      throw fieldError(
+        field,
+        'tokenEndpoints',
+        'Expected each entry to be keyed by a provider ID',
+      );
+    }
+    const value = sectionMap.getOptionalString(providerId);
+    if (value === undefined) {
+      throw fieldError(
+        field,
+        'tokenEndpoints',
+        "Expected the provider's trusted token endpoint URL",
+      );
+    }
+    let url: URL | undefined;
+    try {
+      url = new URL(value);
+    } catch {
+      url = undefined;
+    }
+    const isLocalTestOrigin =
+      url !== undefined &&
+      url.protocol === 'http:' &&
+      ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
+    if (
+      url === undefined ||
+      value !== value.trim() ||
+      value.includes('?') ||
+      value.includes('#') ||
+      url.search.length > 0 ||
+      url.hash.length > 0 ||
+      url.username.length > 0 ||
+      url.password.length > 0 ||
+      (url.protocol !== 'https:' && !isLocalTestOrigin)
+    ) {
+      throw fieldError(
+        field,
+        'tokenEndpoints',
+        `Expected an absolute https URL (http is accepted only for localhost test origins) without query, fragment or userinfo, but got '${value}'`,
+      );
+    }
+    if (url.pathname !== '/oauth/token' && url.pathname !== '/v1/oauth/token') {
+      throw fieldError(
+        field,
+        'tokenEndpoints',
+        `Expected the reserved token route '/oauth/token' or '/v1/oauth/token', but got '${url.pathname}'. Model and authorization routes are not valid token endpoints`,
+      );
+    }
+    const canonical = `${url.protocol}//${url.host}${url.pathname}`;
+    if (Object.values(endpoints).includes(canonical)) {
+      throw fieldError(
+        field,
+        'tokenEndpoints',
+        `The token endpoint '${canonical}' is configured for more than one provider`,
+      );
+    }
+    endpoints[providerId] = canonical;
+  }
+  return endpoints;
+}
 function decodeEncryptionKey(raw: string, path: string): Uint8Array {
   const value = raw.trim();
   const canonical = Buffer.from(value, 'base64');

@@ -283,6 +283,71 @@ describe('parseAiInstallationConfig', () => {
     ).toThrow(/provider ID/);
   });
 
+  it('accepts only reserved, secret-free token endpoints keyed by provider', () => {
+    const parsed = parse({
+      ai: {
+        credentials: credentialsSection({
+          tokenEndpoints: {
+            anthropic: 'https://api.anthropic.com/v1/oauth/token',
+            openai: 'https://auth.openai.com/oauth/token',
+            'openai-azure': 'https://azure.example/oauth/token',
+          },
+        }),
+      },
+    });
+    // Two providers may share a token route: the map is keyed by provider.
+    expect(parsed.credentials!.tokenEndpoints).toEqual({
+      anthropic: 'https://api.anthropic.com/v1/oauth/token',
+      openai: 'https://auth.openai.com/oauth/token',
+      'openai-azure': 'https://azure.example/oauth/token',
+    });
+
+    // Omitted means no guarded auth operations.
+    expect(
+      parse({ ai: { credentials: credentialsSection() } }).credentials!
+        .tokenEndpoints,
+    ).toEqual({});
+
+    const invalid: Array<[unknown, RegExp]> = [
+      [{}, /at least one provider endpoint/],
+      [
+        { anthropic: 'https://api.anthropic.com/oauth/token?tenant=1' },
+        /without query/,
+      ],
+      [
+        { anthropic: 'https://api.anthropic.com/authorize' },
+        /reserved token route/,
+      ],
+      [
+        { anthropic: 'http://api.anthropic.com/v1/oauth/token' },
+        /absolute https/,
+      ],
+      [
+        { anthropic: 'https://user:pass@api.anthropic.com/oauth/token' },
+        /without query/,
+      ],
+      [
+        {
+          anthropic: 'https://api.anthropic.com/v1/oauth/token',
+          other: 'https://api.anthropic.com/v1/oauth/token',
+        },
+        /more than one provider/,
+      ],
+    ];
+    for (const [tokenEndpoints, expected] of invalid) {
+      expect(() =>
+        parse({
+          ai: { credentials: credentialsSection({ tokenEndpoints }) },
+        }),
+      ).toThrow(expected);
+    }
+    expect(() =>
+      parse({
+        ai: { credentials: credentialsSection({ tokenEndpoints: 'x' }) },
+      }),
+    ).toThrow(/tokenEndpoints/);
+  });
+
   it('treats credential entries as opaque', () => {
     // Kind interpretation belongs to the credential stores, not the schema:
     // an entry that is not a usable credential parses fine here and is
