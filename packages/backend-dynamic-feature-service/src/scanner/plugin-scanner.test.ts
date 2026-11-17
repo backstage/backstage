@@ -659,6 +659,35 @@ Please add '${mockDir.resolve(
           ],
         },
       },
+      {
+        name: 'dot-prefixed entries should be ignored',
+        fileSystem: {
+          backstageRoot: {
+            'dist-dynamic': {
+              '.staging-test-frontend-plugin': {
+                'package.json': JSON.stringify({
+                  name: 'test-frontend-plugin-dynamic',
+                  version: '0.0.0',
+                  main: 'dist/index.cjs.js',
+                  backstage: { role: 'frontend-plugin' },
+                }),
+              },
+              '.DS_Store': '',
+            },
+          },
+        },
+        expectedPluginPackages: [],
+        expectedLogs: {
+          debugs: expect.arrayContaining([
+            {
+              message: `skipping hidden entry '.staging-test-frontend-plugin'`,
+            },
+            {
+              message: `skipping hidden entry '.DS_Store'`,
+            },
+          ]),
+        },
+      },
     ])('$name', async (tc: TestCase): Promise<void> => {
       const logger = new MockedLogger();
       const backstageRoot = mockDir.resolve('backstageRoot');
