@@ -16,6 +16,7 @@
 
 import { once } from 'node:events';
 import { createServer } from 'node:http';
+import { Worker } from 'node:worker_threads';
 import { mkdtemp, rm, unlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -627,6 +628,280 @@ it('never sends after close when a close overtakes worker startup', async () => 
     maxRetries: 0,
   });
   expect(after.stopReason).toBe('stop');
+});
+
+/*
+ * Shutdown exception-safety matrix (cycle 4).
+ *
+ * Shutdown steps × {succeeds, throws} × invariants: every job settles
+ * (with its in-flight host fetches aborted), the close counter stays
+ * correct, no job stays pending on a dead runtime, nothing sends after
+ * any close returns, and the replacement publishes only after cleanup.
+ *
+ *   S1 await pending worker startup — cannot throw (failure swallowed).
+ *   S2 graceful abort-post loop — per-job try/catch, cannot throw.
+ *   S3 drain window (100 ms sleep) — cannot throw.
+ *   S4 runtime detach + generation bump — synchronous, cannot throw.
+ *   S5 worker.terminate() — CAN throw. The injected-rejection tests below
+ *      cover lone close, terminate overlapping a successful close, and a
+ *      double failure: in each, every job is failed (with fetch aborts)
+ *      before the rejection propagates, the counter still decrements, and
+ *      the replacement is published only after that cleanup.
+ *   S6 fail-jobs loop — synchronous and guarded; runs in a finally around
+ *      S5 so a termination failure cannot skip it.
+ *   S7 counter decrement + terminal flag — finally blocks on every path.
+ *   S8 runtime publication — coordinatedClose finally, ordered after S6.
+ *
+ * Success-path cells for every step are covered by the close-caller
+ * combination matrix above and the lifecycle suites.
+ */
+it('a failed lone close settles its old job while allowing a replacement', async () => {
+  const oldPost = Worker.prototype.postMessage;
+  const oldTerminate = Worker.prototype.terminate;
+  let firstWorker: Worker | undefined;
+  let entered!: () => void;
+  let release!: () => void;
+  const started = new Promise<void>(resolve => {
+    entered = resolve;
+  });
+  const held = new Promise<void>(resolve => {
+    release = resolve;
+  });
+  let sends = 0;
+  const transport = (async () => {
+    sends += 1;
+    return new Response(sseBody(), {
+      headers: { 'content-type': 'text/event-stream' },
+    });
+  }) as typeof fetch;
+  const bounded = <T>(promise: Promise<T>, ms = 2500) =>
+    Promise.race([
+      promise,
+      new Promise<'timeout'>(resolve =>
+        setTimeout(() => resolve('timeout'), ms),
+      ),
+    ]);
+  Worker.prototype.postMessage = function patchedPost(
+    this: Worker,
+    ...args: unknown[]
+  ) {
+    // Capturing the live worker requires aliasing `this` once.
+    // eslint-disable-next-line consistent-this
+    const target = this;
+    if (!firstWorker) firstWorker = target;
+    return (oldPost as (...a: unknown[]) => void).apply(target, args);
+  } as unknown as typeof Worker.prototype.postMessage;
+  try {
+    const f = setup(
+      'https://generativelanguage.googleapis.com/v1beta',
+      transport,
+    );
+    const guarded = f.guard.bind(f.op);
+    // A job held inside its payload callback: pre-send, so it has not
+    // touched the transport yet.
+    const pending = runGoogleStream(
+      'google-generative-ai',
+      f.model,
+      context(),
+      {
+        apiKey: 'key',
+        fetch: guarded.fetch,
+        maxRetries: 0,
+        onPayload: async () => {
+          entered();
+          await held;
+        },
+      },
+      true,
+    ).result();
+    expect(await bounded(started)).not.toBe('timeout');
+    const oldWorker = firstWorker;
+    if (!oldWorker) throw new Error('worker missing');
+    Worker.prototype.terminate = function (this: Worker) {
+      if (this === oldWorker) {
+        return Promise.reject(new Error('injected close failure'));
+      }
+      return oldTerminate.call(this);
+    } as unknown as typeof Worker.prototype.terminate;
+    let error = '';
+    try {
+      await closeGoogleWorker();
+    } catch (e) {
+      error = (e as Error).message;
+    }
+    // The close rejects, but the old job still settles bounded at close
+    // time — the termination failure cannot skip job cleanup.
+    const afterClose = await bounded(pending, 400);
+    // The replacement is published after the cleanup; fresh work succeeds.
+    const fresh = await bounded(
+      f.facade.completeSimple(f.model, context(), { maxRetries: 0 }),
+    );
+    const sendsBeforeRelease = sends;
+    release();
+    const eventual = await bounded(pending);
+    await oldTerminate.call(oldWorker);
+    expect(error).toContain('injected close failure');
+    expect(afterClose).not.toBe('timeout');
+    expect(fresh).not.toBe('timeout');
+    expect((fresh as { stopReason: string }).stopReason).toBe('stop');
+    // The late callback release changes nothing: the old job already
+    // settled and never sent.
+    expect(eventual).not.toBe('timeout');
+    expect(sendsBeforeRelease).toBe(1);
+    expect(sends).toBe(1);
+  } finally {
+    Worker.prototype.postMessage = oldPost;
+    Worker.prototype.terminate = oldTerminate;
+  }
+});
+
+it('a rejected terminate does not wedge an overlapping close counter', async () => {
+  let sends = 0;
+  const transport = (async () => {
+    sends += 1;
+    return new Response(sseBody(), {
+      headers: { 'content-type': 'text/event-stream' },
+    });
+  }) as typeof fetch;
+  const f = setup(
+    'https://generativelanguage.googleapis.com/v1beta',
+    transport,
+  );
+  const direct = () =>
+    f.facade.completeSimple(f.model, context(), { maxRetries: 0 });
+  expect((await direct()).stopReason).toBe('stop');
+  const original = Worker.prototype.terminate;
+  let failOnce = true;
+  Worker.prototype.terminate = function (this: Worker) {
+    if (failOnce) {
+      failOnce = false;
+      return Promise.reject(new Error('injected terminate failure'));
+    }
+    return original.call(this);
+  } as unknown as typeof Worker.prototype.terminate;
+  try {
+    const close = closeGoogleWorker();
+    const term = terminateGoogleWorker();
+    let error = '';
+    try {
+      await term;
+    } catch (e) {
+      error = (e as Error).message;
+    }
+    const bounded = <T>(promise: Promise<T>, ms = 2500) =>
+      Promise.race([
+        promise,
+        new Promise<'timeout'>(resolve =>
+          setTimeout(() => resolve('timeout'), ms),
+        ),
+      ]);
+    const during = await bounded(direct());
+    await close;
+    const after = await bounded(direct());
+    expect(error).toContain('injected terminate failure');
+    expect((during as { errorMessage: string }).errorMessage).toContain(
+      'shutting down',
+    );
+    expect((after as { stopReason: string }).stopReason).toBe('stop');
+    expect(sends).toBe(2);
+  } finally {
+    Worker.prototype.terminate = original;
+  }
+});
+
+it('overlapping failed closes still settle jobs and keep the counter correct', async () => {
+  const oldPost = Worker.prototype.postMessage;
+  const oldTerminate = Worker.prototype.terminate;
+  let firstWorker: Worker | undefined;
+  let entered!: () => void;
+  let release!: () => void;
+  const started = new Promise<void>(resolve => {
+    entered = resolve;
+  });
+  const held = new Promise<void>(resolve => {
+    release = resolve;
+  });
+  let sends = 0;
+  const transport = (async () => {
+    sends += 1;
+    return new Response(sseBody(), {
+      headers: { 'content-type': 'text/event-stream' },
+    });
+  }) as typeof fetch;
+  const bounded = <T>(promise: Promise<T>, ms = 2500) =>
+    Promise.race([
+      promise,
+      new Promise<'timeout'>(resolve =>
+        setTimeout(() => resolve('timeout'), ms),
+      ),
+    ]);
+  Worker.prototype.postMessage = function patchedPost(
+    this: Worker,
+    ...args: unknown[]
+  ) {
+    // Capturing the live worker requires aliasing `this` once.
+    // eslint-disable-next-line consistent-this
+    const target = this;
+    if (!firstWorker) firstWorker = target;
+    return (oldPost as (...a: unknown[]) => void).apply(target, args);
+  } as unknown as typeof Worker.prototype.postMessage;
+  try {
+    const f = setup(
+      'https://generativelanguage.googleapis.com/v1beta',
+      transport,
+    );
+    const guarded = f.guard.bind(f.op);
+    const pending = runGoogleStream(
+      'google-generative-ai',
+      f.model,
+      context(),
+      {
+        apiKey: 'key',
+        fetch: guarded.fetch,
+        maxRetries: 0,
+        onPayload: async () => {
+          entered();
+          await held;
+        },
+      },
+      true,
+    ).result();
+    expect(await bounded(started)).not.toBe('timeout');
+    const oldWorker = firstWorker;
+    if (!oldWorker) throw new Error('worker missing');
+    // Both overlapping closes fail their termination.
+    let failures = 2;
+    Worker.prototype.terminate = function (this: Worker) {
+      if (failures > 0) {
+        failures -= 1;
+        return Promise.reject(new Error('injected close failure'));
+      }
+      return oldTerminate.call(this);
+    } as unknown as typeof Worker.prototype.terminate;
+    const first = closeGoogleWorker();
+    const second = closeGoogleWorker();
+    const errors: string[] = [];
+    await first.catch(e => errors.push((e as Error).message));
+    await second.catch(e => errors.push((e as Error).message));
+    expect(errors).toHaveLength(2);
+    expect(errors[0]).toContain('injected close failure');
+    // Both rejections still settled the old job and decremented the
+    // counter: the replacement is published and fresh work succeeds.
+    const afterClose = await bounded(pending, 400);
+    const fresh = await bounded(
+      f.facade.completeSimple(f.model, context(), { maxRetries: 0 }),
+    );
+    release();
+    const eventual = await bounded(pending);
+    await oldTerminate.call(oldWorker);
+    expect(afterClose).not.toBe('timeout');
+    expect((fresh as { stopReason: string }).stopReason).toBe('stop');
+    expect(eventual).not.toBe('timeout');
+    expect(sends).toBe(1);
+  } finally {
+    Worker.prototype.postMessage = oldPost;
+    Worker.prototype.terminate = oldTerminate;
+  }
 });
 
 it('does not dispatch a stream once immediate shutdown completes', async () => {

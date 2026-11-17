@@ -178,30 +178,42 @@ class GoogleWorkerRuntime {
   async #shutdownInner(mode: 'graceful' | 'immediate'): Promise<void> {
     const generation = this.#generation;
     // A worker still being created is awaited so it cannot be published —
-    // and used — after shutdown returns.
+    // and used — after shutdown returns. This await cannot throw.
     if (this.#starting) {
       await this.#starting.catch(() => undefined);
     }
     const worker = this.#worker;
-    if (worker && mode === 'graceful') {
-      for (const job of this.#jobs) {
-        try {
-          job.port.postMessage({ type: 'abort' });
-        } catch {
-          /* already closed */
+    try {
+      if (worker && mode === 'graceful') {
+        for (const job of this.#jobs) {
+          try {
+            job.port.postMessage({ type: 'abort' });
+          } catch {
+            /* already closed */
+          }
+        }
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+    } finally {
+      // Exception safety: everything below runs even when a step above (or
+      // the termination itself) throws. The runtime is detached and its
+      // generation bumped synchronously, the worker termination failure is
+      // allowed to propagate to the close caller, and every job is failed
+      // BEFORE that — no job may remain pending on a dead runtime, and no
+      // in-flight host fetch may outlive the close.
+      this.#worker = undefined;
+      this.#starting = undefined;
+      this.#generation = generation + 1;
+      try {
+        if (worker) await worker.terminate();
+      } finally {
+        // Whatever the abort window did not settle is failed now: no stream
+        // may remain pending, and every in-flight host fetch is aborted so
+        // the guard records its outcome instead of hanging.
+        for (const job of [...this.#jobs]) {
+          this.#failJob(job, 'Google worker shut down');
         }
       }
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-    this.#worker = undefined;
-    this.#starting = undefined;
-    this.#generation = generation + 1;
-    if (worker) await worker.terminate();
-    // Whatever the abort window did not settle is failed now: no stream may
-    // remain pending, and every in-flight host fetch is aborted so the guard
-    // records its outcome instead of hanging.
-    for (const job of [...this.#jobs]) {
-      this.#failJob(job, 'Google worker shut down');
     }
   }
 
