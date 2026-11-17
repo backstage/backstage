@@ -506,10 +506,17 @@ export async function createAiServiceIntegration(
         // work is never cancelled by release itself: each close settles
         // the work it admitted before the shared fence goes away.
         await Promise.all([...admission.closing]);
+        // Only the current admission may release its fence after waiting.
+        if (admissions.get(key) !== admission) {
+          removed = true;
+          return;
+        }
         if (admission.fence !== undefined) {
           await lease.release(admission.fence);
         }
-        admissions.delete(key);
+        if (admissions.get(key) === admission) {
+          admissions.delete(key);
+        }
         removed = true;
       } finally {
         admission.drainSettled = true;
@@ -605,7 +612,9 @@ export async function createAiServiceIntegration(
   ): Promise<boolean> {
     const deadline = Date.now() + DRAIN_WAIT_LIMIT_MS;
     const remaining = () => deadline - Date.now();
+    const key = namespaceKeyOf(admission.namespace);
     for (;;) {
+      if (admissions.get(key) !== admission) return true;
       if (admission.drainFailed) {
         // Terminal failure: the drain terminated without completing the
         // conditional release, and the admission retains ownership. One
@@ -613,7 +622,7 @@ export async function createAiServiceIntegration(
         // admission; failure or timeout returns the bounded unavailability.
         // The failed admission is never reported as successfully drained.
         if (admission.fence === undefined) {
-          admissions.delete(namespaceKeyOf(admission.namespace));
+          if (admissions.get(key) === admission) admissions.delete(key);
           return true;
         }
         const retried = await withDeadline(
@@ -623,7 +632,9 @@ export async function createAiServiceIntegration(
         if (retried.timedOut) {
           return false;
         }
-        admissions.delete(namespaceKeyOf(admission.namespace));
+        // Another waiter may already have replaced this admission while the
+        // conditional release was in flight. Never remove its successor.
+        if (admissions.get(key) === admission) admissions.delete(key);
         return true;
       }
       if (admission.drainSettled) {
@@ -720,6 +731,13 @@ export async function createAiServiceIntegration(
       if (acquired === undefined) {
         throw new Error(
           `The AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin is held by another live lease; retry once the current owner releases it`,
+        );
+      }
+      // A reservation normally pins this admission while acquisition waits.
+      // Never publish a late lease onto an admission that lost ownership.
+      if (admission.draining || admissions.get(key) !== admission) {
+        throw new Error(
+          `The AI session '${input.namespace.sessionId}' of the '${pluginId}' plugin closed while its acquisition was still opening; retry the open`,
         );
       }
       fence = acquired;
@@ -1110,7 +1128,9 @@ export async function createAiServiceIntegration(
           // Reservation-owned cleanup: undo exactly this reservation. The
           // shared fence and authority survive while any pending or live
           // owner remains; the last owner out drains the admission.
-          await undoReservation(admission);
+          if (admissions.get(key) === admission) {
+            await undoReservation(admission);
+          }
           throw error;
         }
       }

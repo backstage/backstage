@@ -17,7 +17,7 @@
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { createServer, type Server } from 'node:http';
 import { once } from 'node:events';
 import knexFactory, { type Knex } from 'knex';
@@ -92,14 +92,26 @@ type Fixture = {
   close(): Promise<void>;
 };
 
-async function fixture(poolSize = 1): Promise<Fixture> {
+async function fixture(poolSize = 1, pgUrl?: string): Promise<Fixture> {
   const directory = await mkdtemp(join(tmpdir(), 'ai-node-regression-'));
-  const db = knexFactory({
-    client: 'better-sqlite3',
-    connection: { filename: join(directory, 'db') },
-    useNullAsDefault: true,
-    pool: { min: 1, max: poolSize },
-  });
+  const admin = pgUrl
+    ? knexFactory({ client: 'pg', connection: pgUrl })
+    : undefined;
+  const schema = `regression_${randomUUID().replaceAll('-', '')}`;
+  if (admin) await admin.schema.createSchema(schema);
+  const db = pgUrl
+    ? knexFactory({
+        client: 'pg',
+        connection: pgUrl,
+        searchPath: [schema],
+        pool: { min: 1, max: poolSize },
+      })
+    : knexFactory({
+        client: 'better-sqlite3',
+        connection: { filename: join(directory, 'db') },
+        useNullAsDefault: true,
+        pool: { min: 1, max: poolSize },
+      });
   await runAiMigrations({
     database: { getClient: async () => db },
     logger: mockServices.logger.mock(),
@@ -130,6 +142,10 @@ async function fixture(poolSize = 1): Promise<Fixture> {
         await handle.release().catch(() => {});
       }
       await db.destroy();
+      if (admin) {
+        await admin.schema.dropSchema(schema, true);
+        await admin.destroy();
+      }
       await rm(directory, { recursive: true, force: true });
     },
   };
@@ -851,9 +867,11 @@ describe('Wave 1 integration regressions', () => {
           ? "CREATE FUNCTION review_fail_release_fn() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'review release failure'; END; $$; CREATE TRIGGER review_fail_release BEFORE UPDATE ON ai_namespace_leases FOR EACH ROW EXECUTE FUNCTION review_fail_release_fn();"
           : "CREATE TRIGGER review_fail_release BEFORE UPDATE ON ai_namespace_leases BEGIN SELECT RAISE(ABORT, 'review release failure'); END",
       );
-      await expect(integration.releaseNativeHarness(h)).rejects.toThrow(
-        'review release failure',
-      );
+      // SQLite's native error may originate in another Jest worker realm.
+      await expect(integration.releaseNativeHarness(h)).rejects.toMatchObject({
+        code: isPg ? 'P0001' : 'SQLITE_CONSTRAINT_TRIGGER',
+        message: expect.stringContaining('review release failure'),
+      });
       await f.db.raw(
         isPg
           ? 'DROP TRIGGER review_fail_release ON ai_namespace_leases'
@@ -883,6 +901,142 @@ describe('Wave 1 integration regressions', () => {
       await f.close();
     }
   }, 15000);
+
+  for (const [dialect, pgUrl] of [
+    ['sqlite', undefined],
+    ...(process.env.AI_TEST_POSTGRES_URL
+      ? [['pg', process.env.AI_TEST_POSTGRES_URL] as const]
+      : []),
+  ] as const) {
+    it(`keeps the successor admission when an older release retry finishes late (${dialect})`, async () => {
+      const f = await fixture(2, pgUrl);
+      let allowFirst = () => {};
+      let allowSecond = () => {};
+      let first: ReturnType<typeof settle> | undefined;
+      let second: ReturnType<typeof settle> | undefined;
+      let integration: ProductionAiServiceIntegration | undefined;
+      const client = f.db.client as unknown as {
+        _query: (
+          connection: unknown,
+          query: { sql: string },
+        ) => Promise<unknown>;
+      };
+      const originalQuery = client._query;
+      try {
+        ({ integration } = await managed(f));
+        const base = {
+          namespace: { pluginId: 'test-plugin', sessionId: 'parallel-retry' },
+          owner: 'user:user:default/alice',
+          credentials: mockCredentials.user('user:default/alice'),
+          registry: createRegistry(),
+          registryVersion: 'v1',
+          configVersion: 'v1',
+        };
+        const initial = await integration.openNativeHarness(base);
+        await f.db.raw(
+          pgUrl
+            ? "CREATE FUNCTION fail_release_fn() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'release failure'; END; $$; CREATE TRIGGER fail_release BEFORE UPDATE ON ai_namespace_leases FOR EACH ROW EXECUTE FUNCTION fail_release_fn();"
+            : "CREATE TRIGGER fail_release BEFORE UPDATE ON ai_namespace_leases BEGIN SELECT RAISE(ABORT, 'release failure'); END",
+        );
+        const releaseError = await integration
+          .releaseNativeHarness(initial)
+          .then(
+            () => undefined,
+            (error: Error) => String(error),
+          );
+        expect(releaseError).toContain('release failure');
+        await f.db.raw(
+          pgUrl
+            ? 'DROP TRIGGER fail_release ON ai_namespace_leases'
+            : 'DROP TRIGGER fail_release',
+        );
+
+        let firstEntered!: () => void;
+        let secondEntered!: () => void;
+        const firstReady = new Promise<void>(resolve => {
+          firstEntered = resolve;
+        });
+        const secondReady = new Promise<void>(resolve => {
+          secondEntered = resolve;
+        });
+        const firstGate = new Promise<void>(resolve => {
+          allowFirst = resolve;
+        });
+        const secondGate = new Promise<void>(resolve => {
+          allowSecond = resolve;
+        });
+        let updates = 0;
+        client._query = async function gateReleaseQueries(connection, query) {
+          if (
+            /^update/i.test(query.sql) &&
+            query.sql.includes('ai_namespace_leases')
+          ) {
+            const order = ++updates;
+            if (order === 1) {
+              firstEntered();
+              await firstGate;
+            }
+            const result = await originalQuery.call(this, connection, query);
+            if (order === 2) {
+              secondEntered();
+              await secondGate;
+            }
+            return result;
+          }
+          return originalQuery.call(this, connection, query);
+        };
+        first = settle(integration.openNativeHarness(base));
+        await firstReady;
+        second = settle(
+          integration.openNativeHarness({
+            ...base,
+            credentials: mockCredentials.user('user:default/alice'),
+          }),
+        );
+        await secondReady;
+        allowFirst();
+        const firstResult = await first;
+        const before = await f.db('ai_namespace_leases').first();
+        allowSecond();
+        const secondResult = await second;
+        client._query = originalQuery;
+        const after = await f.db('ai_namespace_leases').first();
+        if (firstResult.handle) {
+          await firstResult.handle.harness.commit(
+            tx => tx.createConversation({ ownership: { kind: 'ownerless' } }),
+            firstResult.handle.context,
+          );
+        }
+        expect({
+          firstOpened: !!firstResult.handle,
+          firstError: firstResult.error,
+          secondOpened: !!secondResult.handle,
+          secondError: secondResult.error,
+          tokenBefore: Number(before.token),
+          tokenAfter: Number(after.token),
+        }).toEqual({
+          firstOpened: true,
+          firstError: undefined,
+          secondOpened: false,
+          secondError: expect.stringContaining('different verified authority'),
+          tokenBefore: 2,
+          tokenAfter: 2,
+        });
+      } finally {
+        allowFirst();
+        allowSecond();
+        client._query = originalQuery;
+        const results = await Promise.all([first, second]);
+        for (const result of results) {
+          if (result?.handle)
+            await integration
+              ?.releaseNativeHarness(result.handle)
+              .catch(() => {});
+        }
+        await f.close();
+      }
+    }, 15000);
+  }
 
   it('a failed native close still completes the drain and permits a successor', async () => {
     const f = await fixture();
