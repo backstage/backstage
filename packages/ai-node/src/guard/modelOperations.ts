@@ -309,8 +309,19 @@ export function createGuardedModelOperations(options: {
           callback(value, structuredClone(callbackModel));
       }
     }
-    let guardedResponseReceived = false;
     let guardAttempted = false;
+    // Per-attempt accounting: the invocation ordinal of the latest guarded
+    // fetch that received a response, and of the latest one that rejected.
+    // A completion is valid only when the LATEST invoked fetch is the one
+    // that responded — a response to an earlier request can never validate
+    // a completion claimed after a later one was denied — and a rejection
+    // from an earlier request must not be mistaken for the latest fetch
+    // having settled, which would skip the abort and pending-fetch
+    // settlement a detached later fetch still needs.
+    let invocationCount = 0;
+    let respondedInvocation: number | null = null;
+    let rejectedInvocation: number | null = null;
+    const pendingFetches = new Set<Promise<unknown>>();
     const callOptions = {
       ...requestOptions,
       apiKey: binding.authority.apiKey,
@@ -319,9 +330,23 @@ export function createGuardedModelOperations(options: {
       // No trusted or caller options may displace the enforcement boundary.
       fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
         guardAttempted = true;
-        const response = await guarded.fetch(input, init);
-        guardedResponseReceived = true;
-        return response;
+        const invocation = ++invocationCount;
+        const attempt = (async () => {
+          try {
+            const response = await guarded.fetch(input, init);
+            respondedInvocation = invocation;
+            return response;
+          } catch (error) {
+            rejectedInvocation = invocation;
+            throw error;
+          }
+        })();
+        pendingFetches.add(attempt);
+        try {
+          return await attempt;
+        } finally {
+          pendingFetches.delete(attempt);
+        }
       },
     };
     return {
@@ -329,8 +354,27 @@ export function createGuardedModelOperations(options: {
       guarded,
       adapter: module.adapter,
       callOptions,
-      usedGuard: () => guardedResponseReceived,
+      // A guarded send is USED from the moment the guarded fetch is invoked,
+      // not from response headers: a transport that ran and then threw has
+      // already been accounted for by the guard (an allow decision plus an
+      // uncertain outcome), so it must never produce a follow-on "did not
+      // use guarded transport" denial. Only a dispatch that never invoked
+      // the guarded fetch is rejected for bypassing it.
+      usedGuard: () => guardAttempted,
       attemptedGuard: () => guardAttempted,
+      // Consulted only for COMPLETED settlements: a claimed success is
+      // valid solely when the LATEST guarded fetch received its own
+      // response, per the same per-attempt discipline as the guard.
+      receivedGuardedResponse: () => respondedInvocation === invocationCount,
+      // Whether the LATEST invoked guarded fetch rejected — the guard has
+      // then already journaled that attempt's denial, so a fabrication on
+      // top of it must not write a second deny record. A rejection of an
+      // EARLIER fetch does not count: the latest one may still be pending.
+      guardFetchRejected: () => rejectedInvocation === invocationCount,
+      // Wait for fetches the provider detached (fired without awaiting).
+      settleGuardedFetches: async () => {
+        await Promise.allSettled([...pendingFetches]);
+      },
     };
   };
   function start(
@@ -430,6 +474,9 @@ export function createGuardedModelOperations(options: {
       callOptions,
       usedGuard,
       attemptedGuard,
+      receivedGuardedResponse,
+      guardFetchRejected,
+      settleGuardedFetches,
     } = await prepare(model, caller, operation);
     if (adapter.kind !== 'custom')
       throw new Error('Unsupported model transport');
@@ -452,6 +499,34 @@ export function createGuardedModelOperations(options: {
         !['completed', 'failed', 'cancelled'].includes(result.outcome)
       ) {
         throw new Error('Invalid provider outcome');
+      }
+      // A claimed success is valid only when the guarded fetch actually
+      // received a response for it. Error and aborted settlements are
+      // satisfied by invocation (the guard has already accounted for the
+      // attempt), but a COMPLETED result without a guarded response is a
+      // fabrication — a provider that catches a denial (or never awaits
+      // its fetch) and reports success anyway. When the guard already
+      // denied and journaled the fetch, the fabrication is rejected
+      // without a second deny record.
+      if (result.outcome === 'completed' && !receivedGuardedResponse()) {
+        if (!guardFetchRejected()) {
+          // The fetch may still be in flight (the provider detached it):
+          // abort it and wait for the guard to settle — the guard's own
+          // denial becomes the journal record for the fabrication, so no
+          // second deny is written. The fallback reject covers a settled
+          // fetch that neither returned a response nor rejected, which
+          // the accounting above cannot produce.
+          binding.operation.controller.abort();
+          await settleGuardedFetches();
+        }
+        if (!guardFetchRejected()) {
+          await reject(
+            binding,
+            `models.${operation}`,
+            'fabricated provider result',
+          );
+        }
+        throw new PolicyRejection('fabricated provider result');
       }
       await guarded.finish(result.outcome);
       return result.value;

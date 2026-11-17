@@ -23,6 +23,8 @@ export type HttpEnvelopeRules = Readonly<{
   sdkQueryParams?: Readonly<Record<string, string>>;
   zstd?: boolean;
   federation?: boolean;
+  /** Provider-specific structural inspection of the parsed JSON payload. */
+  inspectPayload?(payload: unknown): void;
 }>;
 
 function assertUniqueTopLevelKeys(json: string) {
@@ -157,5 +159,6 @@ export async function validateHttpEnvelope(
   ) {
     throw new Error('Request model does not match authorized model');
   }
+  rules.inspectPayload?.(payload);
   return 'model';
 }

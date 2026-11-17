@@ -21,6 +21,7 @@ import * as codex from '@earendil-works/pi-ai/api/openai-codex-responses';
 import * as anthropic from '@earendil-works/pi-ai/api/anthropic-messages';
 import { resolveAzureConfig } from '@earendil-works/pi-ai/api/azure-openai-config';
 import { validateHttpEnvelope } from './httpEnvelope';
+import { nonchatProviderModules } from './nonchat';
 import { createProviderRegistry } from './registry';
 import type { AiProviderModule, ProviderAdapter } from './types';
 
@@ -115,6 +116,7 @@ export const builtinProviderModules = Object.freeze([
   azureResponses,
   openaiCodexResponses,
   anthropicMessages,
+  ...nonchatProviderModules,
 ]);
 
 export const builtinProviderRegistry = createProviderRegistry(
