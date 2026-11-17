@@ -115,11 +115,14 @@ function PageContent(props: {
     }
   }, [matches, firstPath, pageMount, location, history]);
   return selected && selectedMatch ? (
-    <BreadcrumbEntry
-      entry={{ label: selected.label, href: selectedMatch.basePath }}
-    >
-      {selected.element}
-    </BreadcrumbEntry>
+    <>
+      <Helmet title={selected.label} />
+      <BreadcrumbEntry
+        entry={{ label: selected.label, href: selectedMatch.basePath }}
+      >
+        {selected.element}
+      </BreadcrumbEntry>
+    </>
   ) : (
     <>{children}</>
   );
