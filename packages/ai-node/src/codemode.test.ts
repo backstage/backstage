@@ -156,6 +156,7 @@ async function managed(
   options: {
     models: readonly AnyModel[];
     codemode?: { timeoutMs?: number; memoryLimitBytes?: number };
+    credentialStores?: AiCredentialStores;
   },
 ): Promise<{
   integration: ProductionAiServiceIntegration;
@@ -163,7 +164,7 @@ async function managed(
 }> {
   const integration = await createAiServiceIntegration({
     deps: f.deps,
-    credentialStores: STAND_IN_STORES,
+    credentialStores: options.credentialStores ?? STAND_IN_STORES,
     models: options.models,
     ...(options.codemode === undefined ? {} : { codemode: options.codemode }),
   });
@@ -266,8 +267,29 @@ function models(port: number): readonly AnyModel[] {
       api: 'openai-responses',
       baseUrl: `http://127.0.0.1:${port}/v1`,
     } as AnyModel,
+    {
+      ...chat,
+      provider: 'nokey',
+      id: 'clsf-missing',
+      type: 'classifier',
+      api: 'openai-responses',
+      baseUrl: `http://127.0.0.1:${port}/v1`,
+    } as AnyModel,
   ];
 }
+
+/** A store with a key for exactly one provider: 'nokey' resolves nothing. */
+const SELECTIVE_STORES: AiCredentialStores = {
+  forScope: () => ({
+    read: async (providerId: string) =>
+      providerId === 'openai'
+        ? { type: 'api_key' as const, key: STAND_IN_KEY }
+        : undefined,
+    list: async () => [],
+    modify: async () => undefined,
+    delete: async () => {},
+  }),
+};
 
 /** The codemode tool call's result text in a request body, if any. */
 function codemodeResult(body: string): string | undefined {
@@ -380,12 +402,16 @@ describe('opt-in code mode wiring', () => {
       const { bodies } = await runScript(
         f,
         [
+          'let importError = "import-resolved";',
+          'try { await import("node:fs"); } catch (error) { importError = "import-rejected"; }',
           'return JSON.stringify({',
           '  fetch: typeof fetch,',
           '  process: typeof process,',
           '  require: typeof require,',
           '  setTimeout: typeof setTimeout,',
           '  XMLHttpRequest: typeof XMLHttpRequest,',
+          '  importError,',
+          '  globals: Object.getOwnPropertyNames(globalThis).sort(),',
           '});',
         ].join('\n'),
         {},
@@ -393,13 +419,41 @@ describe('opt-in code mode wiring', () => {
       );
       // Everything the script probed is undefined inside the QuickJS VM:
       // no network, filesystem, timers, or module loader exist there. The
-      // script cannot even name them, let alone call them.
-      const output = codemodeResult(bodies[1]);
+      // script cannot even name them, let alone call them, and a dynamic
+      // import() rejects instead of resolving a module.
+      const output = codemodeResult(bodies[1]) ?? '';
       expect(output).toContain('"fetch":"undefined"');
       expect(output).toContain('"process":"undefined"');
       expect(output).toContain('"require":"undefined"');
       expect(output).toContain('"setTimeout":"undefined"');
       expect(output).toContain('"XMLHttpRequest":"undefined"');
+      expect(output).toContain('"importError":"import-rejected"');
+      // The VM's own enumeration shows only the sanctioned script globals
+      // and JavaScript builtins — a host or Node global smuggled in under
+      // any name would appear here.
+      const globals = JSON.parse(
+        output.slice(
+          output.indexOf('"globals":[') + '"globals":'.length,
+          output.lastIndexOf(']') + 1,
+        ),
+      ) as string[];
+      const forbidden = [
+        'fetch',
+        'process',
+        'require',
+        'setTimeout',
+        'setInterval',
+        'XMLHttpRequest',
+        'WebSocket',
+        'global',
+        'Buffer',
+        'module',
+        'exports',
+      ];
+      expect(globals.filter(name => forbidden.includes(name))).toEqual([]);
+      expect(globals).toContain('tools');
+      expect(globals).toContain('console');
+      expect(globals).toContain('models');
     } finally {
       await f.close();
     }
@@ -441,22 +495,59 @@ describe('opt-in code mode wiring', () => {
     const f = await fixture();
     try {
       const script = [
+        "let available = 'listing threw';",
+        'try {',
+        "  available = (await models.getAvailableOfType('classifier'))",
+        "    .map(m => m.provider + '/' + m.id)",
+        '    .sort()',
+        "    .join(',');",
+        '} catch (error) {',
+        "  available = 'listing threw: ' + String((error && error.message) || error);",
+        '}',
         'try {',
         '  const r = await models.classify(',
         "    { provider: 'openai', id: 'clsf-review' },",
         "    { state: {}, questions: { q: { type: 'bool', instructions: 'ok?', criteria: { true: 'yes', false: 'no' } } } },",
         '  );',
-        "  return 'classify returned ' + JSON.stringify(r);",
+        "  return 'available=' + available + ' | classify returned ' + JSON.stringify(r);",
         '} catch (error) {',
-        "  return 'classify threw: ' + String((error && error.message) || error);",
+        "  return 'available=' + available + ' | classify threw: ' + String((error && error.message) || error);",
         '}',
       ].join('\n');
-      const { bodies } = await runScript(f, script, {}, 'classify-routing');
+      const probe = await modelServer(script);
+      const port = (probe.server.address() as { port: number }).port;
+      const { service } = await managed(f, {
+        models: models(port),
+        codemode: {},
+        credentialStores: SELECTIVE_STORES,
+      });
+      const handle = await service.openHarness(openOptions('classify-routing'));
+      let bodies: string[];
+      try {
+        const conversation = await handle.harness.root(handle.context);
+        const submission = await conversation.submit(
+          { type: 'input', content: 'run the script' },
+          handle.context,
+        );
+        const settled = await submission.wait(handle.context);
+        expect((settled as { status?: string }).status).toBe('done');
+        await wait(() => probe.bodies.length >= 2);
+        bodies = probe.bodies;
+      } finally {
+        await handle.release();
+        await probe.close();
+      }
 
       // The script surfaced the facade's denial, not a provider answer.
       const output = codemodeResult(bodies[1]);
       expect(output).toContain('classify threw:');
       expect(output).not.toContain('classify returned');
+      // Availability is honest: the classifier whose provider has
+      // credentials is listed, the one whose provider resolves none is
+      // not — the catalog lookup still knows it, dispatch would still
+      // deny it.
+      expect(output).toContain('available=openai/clsf-review');
+      expect(output).not.toContain('nokey/');
 
       // The denial is journaled in the AI audit trail as a classify
       // attempt that no provider module certifies.

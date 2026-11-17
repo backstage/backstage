@@ -402,10 +402,17 @@ class BoundedCodemodeSandbox extends CodemodeSandbox {
     hostTimeoutMs: number,
     options?: { readonly memoryLimitBytes?: number },
   ) {
+    // The ceiling is also the sandbox-level default, so any future path
+    // through CodemodeSandboxBase.execute() (whose timeout falls back to
+    // the sandbox default) inherits the same host bound; start() keeps
+    // its explicit Math.min override for script-declared timeouts.
     super(
       options?.memoryLimitBytes === undefined
-        ? undefined
-        : { memoryLimitBytes: options.memoryLimitBytes },
+        ? { timeoutMs: hostTimeoutMs }
+        : {
+            timeoutMs: hostTimeoutMs,
+            memoryLimitBytes: options.memoryLimitBytes,
+          },
     );
     this.#hostTimeoutMs = hostTimeoutMs;
   }
@@ -878,9 +885,10 @@ export async function createAiServiceIntegration(
           return undefined;
         },
         // Catalog-type lookups for extension code (code mode's `models.*`
-        // catalog globals) — canonical entries only, no availability
-        // beyond catalog membership, no credentials. Dispatching one of
-        // these still goes through the guarded operations above.
+        // catalog globals) — canonical entries only, no credentials.
+        // getAvailableOfType additionally filters by the current
+        // acquisition's credential presence (see below). Dispatching one
+        // of these still goes through the guarded operations above.
         getModelsOfType: (type: string, provider?: string) =>
           catalog.filter(
             entry =>
@@ -894,12 +902,25 @@ export async function createAiServiceIntegration(
               entry.provider === provider &&
               entry.id === id,
           ),
-        getAvailableOfType: async (type: string, provider?: string) =>
-          catalog.filter(
+        // Availability is the catalog intersected with the CURRENT
+        // acquisition's resolved provider authorities, matching pi-ai's
+        // contract ("providers with complete auth configuration") from
+        // this acquisition's perspective; a drained admission lists
+        // nothing rather than throwing mid-listing.
+        getAvailableOfType: async (type: string, provider?: string) => {
+          let resolved: ReadonlyMap<string, unknown>;
+          try {
+            resolved = authority().authorities;
+          } catch {
+            return [];
+          }
+          return catalog.filter(
             entry =>
               entry.type === type &&
-              (provider === undefined || entry.provider === provider),
-          ),
+              (provider === undefined || entry.provider === provider) &&
+              resolved.has(entry.provider),
+          );
+        },
         getAuth: () => {
           throw new Error(
             'Provider auth access is not exposed through the managed AI service',
