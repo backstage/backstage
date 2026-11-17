@@ -28,7 +28,7 @@ import {
   coreExtensionData,
   ExtensionBoundary,
   AppHistoryApi,
-  appHistoryApiRef,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { StrictMode, useState } from 'react';
 import {
@@ -84,7 +84,7 @@ describe('createTanStackPageRouter', () => {
           initialRouteEntries: ['/foo/foo/details'],
         },
       );
-      const appHistory = apis.get(appHistoryApiRef)!;
+      const appHistory = apis.get(coreApis.appHistory)!;
       expect(
         await screen.findByText('Path: /foo/foo/details'),
       ).toBeInTheDocument();
@@ -151,7 +151,7 @@ describe('createTanStackPageRouter', () => {
       extensions: [parent, child],
       initialRouteEntries: ['/catalog/edit'],
     });
-    const appHistory = apis.get(appHistoryApiRef)!;
+    const appHistory = apis.get(coreApis.appHistory)!;
     expect(await screen.findByText('Edit child')).toBeInTheDocument();
     expect(
       await screen.findByText('Scoped path: /catalog/edit'),
@@ -266,7 +266,7 @@ describe('createTanStackPageRouter', () => {
     });
 
     function NavigateFromFramework() {
-      const appHistory = useApi(appHistoryApiRef);
+      const appHistory = useApi(coreApis.appHistory);
       return (
         <button
           type="button"
@@ -340,7 +340,7 @@ describe('createTanStackPageRouter', () => {
       );
     }
     renderInTestApp(
-      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+      <TestApiProvider apis={[[coreApis.appHistory, appHistory]]}>
         <TanStackPageRouter>
           <Probe />
         </TanStackPageRouter>

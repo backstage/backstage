@@ -15,12 +15,13 @@
  */
 
 import * as apis from '../../index';
+import { appHistoryApiRef } from '../../routing/AppHistoryApi';
 import { coreApis } from './coreApis';
 
 describe('coreApis', () => {
   it('preserves core API ref identity and metadata', () => {
     const refs = {
-      appHistory: apis.appHistoryApiRef,
+      appHistory: appHistoryApiRef,
       analytics: apis.analyticsApiRef,
       appLanguage: apis.appLanguageApiRef,
       appLifecycle: apis.appLifecycleApiRef,

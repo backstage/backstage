@@ -21,7 +21,6 @@ import {
   type ExternalRouteRef,
   type AnyRouteRefParams,
   type RouteResolutionMatch,
-  routeResolutionApiRef,
   type AnalyticsApi,
   type AnalyticsEvent,
   type AppNavigate,
@@ -47,7 +46,6 @@ import {
   type PluginHeaderActionsApi,
   type ToastApi,
   type ToastApiMessage,
-  appHistoryApiRef,
   type AppHistoryApi,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -842,7 +840,7 @@ export namespace mockApis {
     }>;
   } & MockWithApiFactory<AppHistoryApi> {
     const instance = createMockAppHistory(options);
-    return attachMockApiFactory(appHistoryApiRef, instance);
+    return attachMockApiFactory(coreApis.appHistory, instance);
   }
 
   /**
@@ -875,7 +873,7 @@ export namespace mockApis {
         },
       ) as unknown as jest.MockedFunction<AppHistoryApi['navigate']>;
 
-      return createApiMock(appHistoryApiRef, () => ({
+      return createApiMock(coreApis.appHistory, () => ({
         getSnapshot: jest.fn(instance.getSnapshot),
         subscribe: jest.fn(instance.subscribe),
         navigate: navigateMock,
@@ -942,7 +940,7 @@ export namespace mockApis {
     resolvePath: jest.MockedFunction<RouteResolutionApi['resolvePath']>;
   } & MockWithApiFactory<RouteResolutionApi> {
     const instance = createMockRouteResolutionApi(options);
-    return attachMockApiFactory(routeResolutionApiRef, instance);
+    return attachMockApiFactory(coreApis.routeResolution, instance);
   }
 
   /**
@@ -957,7 +955,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(routeResolutionApiRef, () => ({
+    export const mock = createApiMock(coreApis.routeResolution, () => ({
       resolve: jest.fn(),
       resolvePath: jest.fn<
         ReturnType<RouteResolutionApi['resolvePath']>,

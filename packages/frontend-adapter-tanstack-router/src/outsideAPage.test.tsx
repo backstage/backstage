@@ -18,7 +18,7 @@ import { matchPath, useRouteMatches } from '@internal/frontend';
 import {
   ExtensionBoundary,
   type AppNode,
-  appHistoryApiRef,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 
 import type { ReactNode } from 'react';
@@ -104,7 +104,7 @@ function renderWithContext(
       <TestApiProvider
         apis={[
           [
-            appHistoryApiRef,
+            coreApis.appHistory,
             mockApis.appHistory({ initialLocation: '/old/alpha' }),
           ],
         ]}

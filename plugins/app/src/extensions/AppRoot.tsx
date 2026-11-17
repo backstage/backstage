@@ -26,7 +26,7 @@ import {
   routeResolutionApiRef,
   pluginWrapperApiRef,
   useAnalytics,
-  appHistoryApiRef,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { useRoutingIntegration } from '@backstage/frontend-plugin-api/routing';
 import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
@@ -260,7 +260,7 @@ export function AppRouter(props: AppRouterProps) {
   const appIdentityProxy = toAppIdentityProxy(useApi(identityApiRef));
   const routeResolutionsApi = useApi(routeResolutionApiRef);
   const basePath = getBasePath(configApi);
-  const appHistory = useApi(appHistoryApiRef);
+  const appHistory = useApi(coreApis.appHistory);
 
   // TODO: Private access for now, probably replace with path -> node lookup method on the API
   if (!('getRouteObjects' in routeResolutionsApi)) {

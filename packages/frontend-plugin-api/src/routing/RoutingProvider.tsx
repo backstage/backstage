@@ -35,9 +35,9 @@ import type { AppNavigate } from '@backstage/frontend-plugin-api';
  */
 export interface RoutingIntegration {
   /** Converts an authored target to a browser-ready href, including the deployment basename. */
-  createHref(target: string): string;
+  createHref(to: string): string;
   /** Navigates to an authored target, never a generated browser href. */
-  navigate(target: string, options?: Parameters<AppNavigate>[1]): void;
+  navigate(to: string, options?: Parameters<AppNavigate>[1]): void;
   /** Current browser pathname, including the deployment basename, without query or hash. */
   pathname: string;
 }
