@@ -42,6 +42,7 @@ import {
   actionsServiceFactory,
   metricsServiceFactory,
   tracingServiceFactory,
+  telemetryRegistryServiceFactory,
   connectionsServiceFactory,
 } from '@backstage/backend-defaults/alpha';
 import { instanceMetadataServiceFactory } from './alpha/entrypoints/instanceMetadata/instanceMetadataServiceFactory';
@@ -75,6 +76,7 @@ export const defaultServiceFactories: ServiceFactory[] = [
   actionsServiceFactory,
   metricsServiceFactory,
   tracingServiceFactory,
+  telemetryRegistryServiceFactory,
   connectionsServiceFactory,
 
   // Unexported alpha services kept around for compatibility reasons

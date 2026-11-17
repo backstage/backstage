@@ -20,6 +20,7 @@ import {
   devToolsExternalDependenciesReadPermission,
   devToolsInfoReadPermission,
 } from '@backstage/plugin-devtools-common';
+import { devToolsOpenTelemetryReadPermission } from '@backstage/plugin-devtools-common/alpha';
 import { DevToolsBackendApi } from '../api';
 import { NotAllowedError } from '@backstage/errors';
 import Router from 'express-promise-router';
@@ -31,6 +32,7 @@ import {
   PermissionsService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
+import { TelemetryRegistryService } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * @internal
@@ -42,6 +44,7 @@ export interface RouterOptions {
   permissions: PermissionsService;
   discovery: DiscoveryService;
   httpAuth: HttpAuthService;
+  telemetryRegistry: TelemetryRegistryService;
 }
 
 /**
@@ -50,7 +53,7 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, config, permissions, httpAuth } = options;
+  const { logger, config, permissions, httpAuth, telemetryRegistry } = options;
 
   const devToolsBackendApi =
     options.devToolsBackendApi || new DevToolsBackendApi(logger, config);
@@ -112,6 +115,29 @@ export async function createRouter(
 
     response.status(200).json(health);
   });
+
+  router.get('/opentelemetry/metrics', async (req, response) => {
+    await authorizeOpenTelemetryRead(req);
+    response.status(200).json(await telemetryRegistry.listMetrics());
+  });
+
+  router.get('/opentelemetry/spans', async (req, response) => {
+    await authorizeOpenTelemetryRead(req);
+    response.status(200).json(await telemetryRegistry.listSpans());
+  });
+
+  async function authorizeOpenTelemetryRead(req: express.Request) {
+    const decision = (
+      await permissions.authorize(
+        [{ permission: devToolsOpenTelemetryReadPermission }],
+        { credentials: await httpAuth.credentials(req) },
+      )
+    )[0];
+
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
+  }
 
   return router;
 }

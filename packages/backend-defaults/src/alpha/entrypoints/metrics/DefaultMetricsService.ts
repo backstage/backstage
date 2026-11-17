@@ -26,6 +26,8 @@ import {
   MetricsServiceObservableCounter,
   MetricsServiceObservableGauge,
   MetricsServiceObservableUpDownCounter,
+  TelemetryRegistryMetricType,
+  TelemetryRegistryService,
 } from '@backstage/backend-plugin-api/alpha';
 
 /**
@@ -37,6 +39,15 @@ export interface DefaultMetricsServiceOptions {
   name: string;
   version?: string;
   schemaUrl?: string;
+  /**
+   * The ID of the plugin that owns this service. Required for instruments to
+   * be recorded in the telemetry registry.
+   */
+  pluginId?: string;
+  /**
+   * The registry that created instruments are recorded in.
+   */
+  telemetryRegistry?: TelemetryRegistryService;
 }
 
 /**
@@ -48,12 +59,16 @@ export interface DefaultMetricsServiceOptions {
  */
 export class DefaultMetricsService implements MetricsService {
   private readonly meter: Meter;
+  private readonly pluginId?: string;
+  private readonly telemetryRegistry?: TelemetryRegistryService;
 
   private constructor(opts: DefaultMetricsServiceOptions) {
     // The meter name sets the OpenTelemetry Instrumentation Scope which identifies the source of metrics in telemetry backends.
     this.meter = metrics.getMeter(opts.name, opts.version, {
       schemaUrl: opts.schemaUrl,
     });
+    this.pluginId = opts.pluginId;
+    this.telemetryRegistry = opts.telemetryRegistry;
   }
 
   /**
@@ -70,6 +85,7 @@ export class DefaultMetricsService implements MetricsService {
     name: string,
     opts?: MetricOptions,
   ): MetricsServiceCounter<TAttributes> {
+    this.register(name, 'counter', opts);
     return this.meter.createCounter(name, opts);
   }
 
@@ -77,6 +93,7 @@ export class DefaultMetricsService implements MetricsService {
     name: string,
     opts?: MetricOptions,
   ): MetricsServiceUpDownCounter<TAttributes> {
+    this.register(name, 'upDownCounter', opts);
     return this.meter.createUpDownCounter(name, opts);
   }
 
@@ -84,6 +101,7 @@ export class DefaultMetricsService implements MetricsService {
     name: string,
     opts?: MetricOptions,
   ): MetricsServiceHistogram<TAttributes> {
+    this.register(name, 'histogram', opts);
     return this.meter.createHistogram(name, opts);
   }
 
@@ -91,6 +109,7 @@ export class DefaultMetricsService implements MetricsService {
     name: string,
     opts?: MetricOptions,
   ): MetricsServiceGauge<TAttributes> {
+    this.register(name, 'gauge', opts);
     return this.meter.createGauge(name, opts);
   }
 
@@ -100,6 +119,7 @@ export class DefaultMetricsService implements MetricsService {
     name: string,
     opts?: MetricOptions,
   ): MetricsServiceObservableCounter<TAttributes> {
+    this.register(name, 'observableCounter', opts);
     return this.meter.createObservableCounter(name, opts);
   }
 
@@ -109,6 +129,7 @@ export class DefaultMetricsService implements MetricsService {
     name: string,
     opts?: MetricOptions,
   ): MetricsServiceObservableUpDownCounter<TAttributes> {
+    this.register(name, 'observableUpDownCounter', opts);
     return this.meter.createObservableUpDownCounter(name, opts);
   }
 
@@ -118,6 +139,24 @@ export class DefaultMetricsService implements MetricsService {
     name: string,
     opts?: MetricOptions,
   ): MetricsServiceObservableGauge<TAttributes> {
+    this.register(name, 'observableGauge', opts);
     return this.meter.createObservableGauge(name, opts);
+  }
+
+  private register(
+    name: string,
+    type: TelemetryRegistryMetricType,
+    opts?: MetricOptions,
+  ) {
+    if (!this.telemetryRegistry || !this.pluginId) {
+      return;
+    }
+    this.telemetryRegistry.registerMetric({
+      pluginId: this.pluginId,
+      name,
+      type,
+      ...(opts?.description !== undefined && { description: opts.description }),
+      ...(opts?.unit !== undefined && { unit: opts.unit }),
+    });
   }
 }

@@ -18,6 +18,7 @@ import {
   ServiceFactoryTester,
 } from '@backstage/backend-test-utils';
 import { tracingServiceFactory } from './tracingServiceFactory';
+import { telemetryRegistryServiceFactory } from '../telemetryRegistry';
 import { DefaultTracingService } from './DefaultTracingService';
 
 describe('tracingServiceFactory', () => {
@@ -35,6 +36,7 @@ describe('tracingServiceFactory', () => {
     mockServices.rootConfig.factory(),
     mockServices.httpAuth.factory(),
     tracingServiceFactory,
+    telemetryRegistryServiceFactory,
   ];
 
   it('uses backstage-plugin-{pluginId} as the tracer name when no config is set', async () => {
@@ -71,6 +73,7 @@ describe('tracingServiceFactory', () => {
         }),
         mockServices.httpAuth.factory(),
         tracingServiceFactory,
+        telemetryRegistryServiceFactory,
       ],
     }).getSubject('my-plugin');
 
@@ -103,6 +106,7 @@ describe('tracingServiceFactory', () => {
         }),
         mockServices.httpAuth.factory(),
         tracingServiceFactory,
+        telemetryRegistryServiceFactory,
       ],
     }).getSubject('my-plugin');
 
@@ -123,6 +127,7 @@ describe('tracingServiceFactory', () => {
         }),
         mockServices.httpAuth.factory(),
         tracingServiceFactory,
+        telemetryRegistryServiceFactory,
       ],
     }).getSubject('my-plugin');
 

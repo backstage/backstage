@@ -219,6 +219,51 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef_2;
       };
     }>;
+    'sub-page:devtools/opentelemetry': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'opentelemetry';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        path?: string | undefined;
+        title?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            TranslationRefTuple<undefined>,
+            'core.titleTranslation',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string | TranslationRefTuple<undefined>;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
+      };
+    }>;
     'sub-page:devtools/scheduled-tasks': OverridableExtensionDefinition<{
       kind: 'sub-page';
       name: 'scheduled-tasks';

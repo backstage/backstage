@@ -23,7 +23,9 @@ import { devToolsPermissions } from '@backstage/plugin-devtools-common';
 import {
   devToolsTaskSchedulerReadPermission,
   devToolsTaskSchedulerCreatePermission,
+  devToolsOpenTelemetryReadPermission,
 } from '@backstage/plugin-devtools-common/alpha';
+import { telemetryRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * DevTools backend plugin
@@ -42,6 +44,7 @@ export const devtoolsPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         httpAuth: coreServices.httpAuth,
         permissionsRegistry: coreServices.permissionsRegistry,
+        telemetryRegistry: telemetryRegistryServiceRef,
       },
       async init({
         config,
@@ -51,6 +54,7 @@ export const devtoolsPlugin = createBackendPlugin({
         discovery,
         httpAuth,
         permissionsRegistry,
+        telemetryRegistry,
       }) {
         httpRouter.use(
           await createRouter({
@@ -59,6 +63,7 @@ export const devtoolsPlugin = createBackendPlugin({
             permissions,
             discovery,
             httpAuth,
+            telemetryRegistry,
           }),
         );
         httpRouter.addAuthPolicy({
@@ -69,6 +74,7 @@ export const devtoolsPlugin = createBackendPlugin({
           ...devToolsPermissions,
           devToolsTaskSchedulerReadPermission,
           devToolsTaskSchedulerCreatePermission,
+          devToolsOpenTelemetryReadPermission,
         ]);
       },
     });

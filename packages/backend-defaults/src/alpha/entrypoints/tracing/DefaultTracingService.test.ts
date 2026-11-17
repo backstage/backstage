@@ -69,6 +69,7 @@ describe('DefaultTracingService', () => {
     version?: string;
     schemaUrl?: string;
     pluginId?: string;
+    telemetryRegistry?: any;
   }) {
     return DefaultTracingService.create({
       name: opts?.name ?? 'backstage-plugin-test',
@@ -77,8 +78,47 @@ describe('DefaultTracingService', () => {
       pluginId: opts?.pluginId ?? 'test',
       captureEndUser: opts?.captureEndUser ?? false,
       httpAuth: mockServices.httpAuth(),
+      telemetryRegistry: opts?.telemetryRegistry,
     });
   }
+
+  it('records started spans in the telemetry registry', async () => {
+    const telemetryRegistry = { registerSpan: jest.fn() };
+    const service = createService({ pluginId: 'my-plugin', telemetryRegistry });
+
+    await service.startActiveSpan('first', () => {});
+    await service.startActiveSpan('second', { kind: 'client' }, () => {});
+    await expect(
+      service.startActiveSpan('failing', () => {
+        throw new Error('boom');
+      }),
+    ).rejects.toThrow('boom');
+
+    const httpAuth = mockServices.httpAuth();
+    jest
+      .spyOn(httpAuth, 'credentials')
+      .mockRejectedValue(new Error('bad token'));
+    const unauthenticated = DefaultTracingService.create({
+      name: 'backstage-plugin-test',
+      pluginId: 'my-plugin',
+      captureEndUser: false,
+      httpAuth,
+      telemetryRegistry: telemetryRegistry as any,
+    });
+    await expect(
+      unauthenticated.startActiveSpan(
+        'never-started',
+        { request: { headers: {} } as any },
+        () => {},
+      ),
+    ).rejects.toThrow('bad token');
+
+    expect(telemetryRegistry.registerSpan.mock.calls).toEqual([
+      [{ pluginId: 'my-plugin', name: 'first', kind: 'internal' }],
+      [{ pluginId: 'my-plugin', name: 'second', kind: 'client' }],
+      [{ pluginId: 'my-plugin', name: 'failing', kind: 'internal' }],
+    ]);
+  });
 
   it('configures the tracer with name, version, and schemaUrl', () => {
     createService({

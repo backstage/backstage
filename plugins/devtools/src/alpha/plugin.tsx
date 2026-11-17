@@ -27,11 +27,15 @@ import {
 import { devToolsApiRef, DevToolsClient } from '../api';
 import BuildIcon from '@material-ui/icons/Build';
 import { rootRouteRef } from '../routes';
+import { openTelemetryRouteRef } from './routes';
 import {
   devToolsConfigReadPermission,
   devToolsInfoReadPermission,
 } from '@backstage/plugin-devtools-common';
-import { devToolsTaskSchedulerReadPermission } from '@backstage/plugin-devtools-common/alpha';
+import {
+  devToolsOpenTelemetryReadPermission,
+  devToolsTaskSchedulerReadPermission,
+} from '@backstage/plugin-devtools-common/alpha';
 
 /** @alpha */
 export const devToolsApi = ApiBlueprint.make({
@@ -150,6 +154,30 @@ export const devToolsScheduledTasksPage = SubPageBlueprint.make({
 });
 
 /** @alpha */
+export const devToolsOpenTelemetryPage = SubPageBlueprint.make({
+  name: 'opentelemetry',
+  params: {
+    path: 'opentelemetry',
+    title: 'OpenTelemetry',
+    routeRef: openTelemetryRouteRef,
+    loader: async () => {
+      const [m, { Container }, { RequirePermission }] = await Promise.all([
+        import('../components/Content/OpenTelemetryContent'),
+        import('@backstage/ui'),
+        import('@backstage/plugin-permission-react'),
+      ]);
+      return (
+        <Container>
+          <RequirePermission permission={devToolsOpenTelemetryReadPermission}>
+            <m.OpenTelemetryContent />
+          </RequirePermission>
+        </Container>
+      );
+    },
+  },
+});
+
+/** @alpha */
 export default createFrontendPlugin({
   pluginId: 'devtools',
   title: 'DevTools',
@@ -164,5 +192,6 @@ export default createFrontendPlugin({
     devToolsInfoPage,
     devToolsConfigPage,
     devToolsScheduledTasksPage,
+    devToolsOpenTelemetryPage,
   ],
 });

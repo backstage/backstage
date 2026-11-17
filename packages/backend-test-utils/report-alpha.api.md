@@ -14,6 +14,7 @@ import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { TelemetryRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { TracingService } from '@backstage/backend-plugin-api/alpha';
 import { TracingServiceAttributeValue } from '@backstage/backend-plugin-api/alpha';
 import { TracingServiceContextAPI } from '@backstage/backend-plugin-api/alpha';
@@ -135,6 +136,20 @@ export type ServiceMock<TService> = {
     ? TService[Key] & jest.MockInstance<Return, Args>
     : TService[Key];
 };
+
+// @alpha (undocumented)
+export namespace telemetryRegistryServiceMock {
+  const // (undocumented)
+    factory: () => ServiceFactory<
+      TelemetryRegistryService,
+      'root',
+      'singleton'
+    >;
+  const // (undocumented)
+    mock: (
+      partialImpl?: Partial<TelemetryRegistryService> | undefined,
+    ) => ServiceMock<TelemetryRegistryService>;
+}
 
 // @alpha
 export interface TracingServiceMock extends TracingService {

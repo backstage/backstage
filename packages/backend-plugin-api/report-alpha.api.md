@@ -312,6 +312,57 @@ export interface MetricsServiceUpDownCounter<
 }
 
 // @alpha
+export interface TelemetryRegistryMetric {
+  description?: string;
+  name: string;
+  pluginId: string;
+  type: TelemetryRegistryMetricType;
+  unit?: string;
+}
+
+// @alpha
+export type TelemetryRegistryMetricType =
+  | 'counter'
+  | 'upDownCounter'
+  | 'histogram'
+  | 'gauge'
+  | 'observableCounter'
+  | 'observableUpDownCounter'
+  | 'observableGauge';
+
+// @alpha
+export interface TelemetryRegistryService {
+  listMetrics(): Promise<{
+    metrics: TelemetryRegistryMetric[];
+  }>;
+  listSpans(): Promise<{
+    spans: TelemetryRegistrySpan[];
+  }>;
+  registerMetric(metric: TelemetryRegistryMetric): void;
+  registerSpan(span: {
+    pluginId: string;
+    name: string;
+    kind: TracingServiceSpanKind;
+  }): void;
+}
+
+// @alpha
+export const telemetryRegistryServiceRef: ServiceRef<
+  TelemetryRegistryService,
+  'root',
+  'singleton'
+>;
+
+// @alpha
+export interface TelemetryRegistrySpan {
+  count: number;
+  kind: TracingServiceSpanKind;
+  lastSeen: string;
+  name: string;
+  pluginId: string;
+}
+
+// @alpha
 export interface TracingService {
   readonly context: TracingServiceContextAPI;
   readonly propagation: TracingServicePropagationAPI;

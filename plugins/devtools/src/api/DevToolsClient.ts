@@ -21,6 +21,8 @@ import {
   ExternalDependency,
 } from '@backstage/plugin-devtools-common';
 import {
+  OpenTelemetryMetrics,
+  OpenTelemetrySpans,
   ScheduledTasks,
   TriggerScheduledTask,
 } from '@backstage/plugin-devtools-common/alpha';
@@ -125,6 +127,14 @@ export class DevToolsClient implements DevToolsApi {
 
     const info = await this.get<DevToolsInfo | undefined>(urlSegment);
     return info;
+  }
+
+  public async getOpenTelemetryMetrics(): Promise<OpenTelemetryMetrics> {
+    return this.get<OpenTelemetryMetrics>('opentelemetry/metrics');
+  }
+
+  public async getOpenTelemetrySpans(): Promise<OpenTelemetrySpans> {
+    return this.get<OpenTelemetrySpans>('opentelemetry/spans');
   }
 
   private async get<T>(path: string): Promise<T> {

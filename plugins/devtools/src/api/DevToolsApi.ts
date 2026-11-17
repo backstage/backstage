@@ -21,6 +21,8 @@ import {
   ExternalDependency,
 } from '@backstage/plugin-devtools-common';
 import {
+  OpenTelemetryMetrics,
+  OpenTelemetrySpans,
   ScheduledTasks,
   TriggerScheduledTask,
 } from '@backstage/plugin-devtools-common/alpha';
@@ -39,4 +41,6 @@ export interface DevToolsApi {
     taskId: string,
   ): Promise<TriggerScheduledTask>;
   cancelScheduledTask(plugin: string, taskId: string): Promise<void>;
+  getOpenTelemetryMetrics(): Promise<OpenTelemetryMetrics>;
+  getOpenTelemetrySpans(): Promise<OpenTelemetrySpans>;
 }

@@ -17,8 +17,13 @@
 export {
   devToolsTaskSchedulerReadPermission,
   devToolsTaskSchedulerCreatePermission,
+  devToolsOpenTelemetryReadPermission,
 } from './permissions';
 export type {
+  OpenTelemetryMetric,
+  OpenTelemetryMetrics,
+  OpenTelemetrySpan,
+  OpenTelemetrySpans,
   ScheduledTasks,
   TaskApiTasksResponse,
   TriggerScheduledTask,

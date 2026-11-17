@@ -82,3 +82,18 @@ export const tracingServiceRef = createServiceRef<
 >({
   id: 'alpha.core.tracing',
 });
+
+/**
+ * Service for listing the metric instruments and span names produced through
+ * the metrics and tracing services across all plugins.
+ *
+ * See {@link TelemetryRegistryService} for details.
+ *
+ * @alpha
+ */
+export const telemetryRegistryServiceRef = createServiceRef<
+  import('./TelemetryRegistryService').TelemetryRegistryService
+>({
+  id: 'alpha.core.telemetryRegistry',
+  scope: 'root',
+});

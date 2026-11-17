@@ -56,11 +56,19 @@ export type {
   TracingServiceSpanStatus,
 } from './TracingService';
 
+export type {
+  TelemetryRegistryService,
+  TelemetryRegistryMetric,
+  TelemetryRegistryMetricType,
+  TelemetryRegistrySpan,
+} from './TelemetryRegistryService';
+
 export {
   actionsRegistryServiceRef,
   actionsServiceRef,
   metricsServiceRef,
   tracingServiceRef,
+  telemetryRegistryServiceRef,
   connectionsServiceRef,
 } from './refs';
 

@@ -40,6 +40,23 @@ Scheduled tasks can be viewed and triggered under the `Scheduled Tasks` tab. [Se
 
 ![Example of Scheduled Tasks tab](./docs/devtools-scheduled-tasks-tab.png)
 
+### OpenTelemetry
+
+The `OpenTelemetry` tab lists the telemetry that your backend produces through the Backstage [Metrics](https://backstage.io/docs/backend-system/core-services/metrics) and [Tracing](https://backstage.io/docs/backend-system/core-services/tracing) services. This tab is only available in the new frontend system. It has two tabs:
+
+- **Metrics:** each metric that plugins have created, with its type, unit, description, and the plugin that created it.
+- **Traces:** each span name that plugins have started, with its kind, the plugin that started it, how many times it was started, and when it was last started.
+
+![Example of the Metrics tab in the OpenTelemetry tab](./docs/devtools-opentelemetry-metrics-tab.png)
+
+![Example of the Traces tab in the OpenTelemetry tab](./docs/devtools-opentelemetry-traces-tab.png)
+
+Each tab has its own URL, `/devtools/opentelemetry/metrics` and `/devtools/opentelemetry/traces`. The search text, plugin filter, and sort order are kept in the query string, so you can share a link to a filtered view.
+
+Metrics are listed once a plugin creates them, which is usually when the backend starts. Spans are listed only after the code that starts them has run at least once, so the Traces tab fills in as the backend handles requests. Both lists are kept in memory and start empty again when the backend restarts.
+
+The lists come from the [Telemetry Registry Service](https://backstage.io/docs/backend-system/core-services/telemetry-registry). They don't include metrics or spans created by calling the OpenTelemetry API directly, and they only cover the backend instance that served the request. Access is controlled by the alpha `devToolsOpenTelemetryReadPermission` from `@backstage/plugin-devtools-common/alpha`.
+
 ## Optional Features
 
 The DevTools plugin can be setup with other tabs with additional helpful features.
@@ -372,6 +389,17 @@ class TestPermissionPolicy implements PermissionPolicy {
       return { result: AuthorizeResult.DENY };
     }
 
+    if (isPermission(request.permission, devToolsOpenTelemetryReadPermission)) {
+      if (
+        user?.identity.ownershipEntityRefs.includes(
+          'group:default/backstage-admins',
+        )
+      ) {
+        return { result: AuthorizeResult.ALLOW };
+      }
+      return { result: AuthorizeResult.DENY };
+    }
+
     return { result: AuthorizeResult.ALLOW };
   }
 }
@@ -393,6 +421,7 @@ import {
   devToolsExternalDependenciesReadPermission,
   devToolsInfoReadPermission,
 } from '@backstage/plugin-devtools-common';
+import { devToolsOpenTelemetryReadPermission } from '@backstage/plugin-devtools-common/alpha';
 ```
 
 **Note:** The group "group:default/backstage-admins" is simply an example and does not exist. You can point this to any group you have in your catalog instead.
