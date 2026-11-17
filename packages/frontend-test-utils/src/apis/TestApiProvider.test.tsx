@@ -33,7 +33,7 @@ const yApiRef = createApiRef<string>({
 });
 
 describe('TestApiProvider', () => {
-  it('should preserve promise-valued tuple and embedded mocks through nested providers', async () => {
+  it('should preserve synchronous and promise-valued mocks through nested providers', async () => {
     const ref = createApiRef<
       Promise<{ value: string; unused(): number }>
     >().with({
@@ -42,15 +42,28 @@ describe('TestApiProvider', () => {
     const promise = Promise.resolve({ value: 'Tuple API' });
     // @ts-expect-error - the resolved value must match the API's property types
     resolveTestApiEntries([[ref, Promise.resolve({ value: 42 })]]);
-    // @ts-expect-error - promise-valued APIs still require promise-valued mocks
-    resolveTestApiEntries([[ref, { value: 'Not a promise' }]]);
-    // @ts-expect-error - an empty object is not a partial promise implementation
-    resolveTestApiEntries([[ref, {}]]);
+    // @ts-expect-error - synchronous mock members must match the resolved API
+    resolveTestApiEntries([[ref, { value: 42 }]]);
+    // @ts-expect-error - synchronous API refs still reject promise-valued mocks
+    resolveTestApiEntries([[xApiRef, Promise.resolve({ a: 'wrong shape' })]]);
+    const empty = {};
+    expect(resolveTestApiEntries([[ref, empty]]).get(ref)).toBe(empty);
     const observed: unknown[] = [];
     function Consumer() {
       observed.push(useApiHolder().get(ref));
       return <div>{useApi(ref).value}</div>;
     }
+    const synchronous = { value: 'Synchronous API' };
+    const syncRendered = render(
+      <TestApiProvider apis={[[ref, synchronous]]}>
+        <Consumer />
+      </TestApiProvider>,
+    );
+    expect(screen.getByText('Synchronous API')).toBeInTheDocument();
+    expect(observed).toEqual([synchronous]);
+    syncRendered.unmount();
+    observed.length = 0;
+
     const rendered = render(
       <StrictMode>
         <Suspense fallback="Loading API">

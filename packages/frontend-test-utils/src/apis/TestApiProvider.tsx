@@ -25,15 +25,16 @@ import {
 
 /**
  * Represents a single API implementation, either as a tuple of the reference and the implementation, or a mock with an embedded factory.
- * Tuple implementations may be partial. For promise-valued APIs, provide a
- * promise that resolves to a partial implementation.
+ * Tuple implementations may be partial. Promise-valued APIs also accept a
+ * synchronous partial implementation to avoid suspending on API access. Mocks are
+ * passed through unchanged; use a promise to test Suspense or promise consumers.
  * @public
  */
 export type TestApiPair<TApi> =
   | readonly [
       ApiRef<TApi>,
       TApi extends PromiseLike<infer TImpl>
-        ? PromiseLike<Partial<Awaited<TImpl>>>
+        ? Partial<Awaited<TImpl>> | PromiseLike<Partial<Awaited<TImpl>>>
         : Partial<TApi>,
     ]
   | MockWithApiFactory<NoInfer<TApi>>;

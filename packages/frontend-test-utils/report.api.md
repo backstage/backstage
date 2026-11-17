@@ -459,7 +459,7 @@ export type TestApiPair<TApi> =
   | readonly [
       ApiRef<TApi>,
       TApi extends PromiseLike<infer TImpl>
-        ? PromiseLike<Partial<Awaited<TImpl>>>
+        ? Partial<Awaited<TImpl>> | PromiseLike<Partial<Awaited<TImpl>>>
         : Partial<TApi>,
     ]
   | MockWithApiFactory<NoInfer<TApi>>;

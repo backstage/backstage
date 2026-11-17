@@ -93,8 +93,21 @@ await renderInTestApp(<MyComponent />, {
 ```
 
 Tuple implementations only need to provide the members used by the test. For a
-promise-valued API such as `ApiRef<Promise<MyApi>>`, supply a promise that resolves
-to a partial implementation:
+promise-valued API such as `ApiRef<Promise<MyApi>>`, you can supply a synchronous
+partial implementation so API access does not suspend:
+
+```tsx
+renderInTestApp(<MyComponent />, {
+  apis: [[myAsyncApiRef, { greet: jest.fn(() => 'Hello!') }]],
+});
+expect(screen.getByText('Hello!')).toBeInTheDocument();
+```
+
+This convenience is limited to test mock tuples. API refs and production
+factories retain their declared types. The test helpers pass mocks through
+unchanged, so a direct holder lookup also returns the plain object. Supply a
+promise when testing suspension, rejection, or consumers that use promise methods
+such as `.then()`:
 
 ```tsx
 renderInTestApp(<MyComponent />, {
@@ -104,7 +117,8 @@ expect(await screen.findByText('Hello!')).toBeInTheDocument();
 ```
 
 `createApiMock` does not unwrap promised implementations. Mock the resolved
-implementation's methods with `jest.fn()` and supply its promise in a tuple.
+implementation's methods with `jest.fn()` and supply the mock or its promise in a
+tuple.
 For a reusable, complete mock, use
 `attachMockApiFactory(myAsyncApiRef, Promise.resolve(mock))`.
 

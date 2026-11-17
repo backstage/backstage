@@ -110,8 +110,9 @@ promises, without unwrapping or suspending.
 
 Changing an existing ref to a promise changes its contract. See
 [changing an API to a promise](./02-creating.md#changing-an-api-to-a-promise) for
-consumer, factory, and release requirements. In tests, supply promise-valued
-mocks as promises and use asynchronous queries to await the rendered content.
+consumer, factory, and release requirements. See
+[testing Utility APIs](./05-testing.md#provide-apis-to-components-and-extensions)
+for synchronous tuple mocks and promise mocks that exercise suspension.
 
 ## Via dependencies
 

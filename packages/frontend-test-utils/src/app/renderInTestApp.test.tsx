@@ -157,6 +157,25 @@ describe('renderInTestApp', () => {
       result.unmount();
     }
     expect(load).toHaveBeenCalledTimes(4);
+
+    const synchronousMock = { getString: () => 'Synchronous API mock' };
+    const synchronousApp = renderTestApp({
+      features: [plugin],
+      initialRouteEntries: ['/lazy'],
+      apis: [[apiRef, synchronousMock]],
+    });
+    expect(await screen.findByText('Synchronous API mock')).toBeInTheDocument();
+    synchronousApp.unmount();
+
+    for (const renderAs of ['page', 'chrome'] as const) {
+      const result = renderInTestApp(<Consumer />, {
+        apis: [[apiRef, synchronousMock]],
+        renderAs,
+      });
+      expect(screen.getByText('Synchronous API mock')).toBeInTheDocument();
+      result.unmount();
+    }
+    expect(load).toHaveBeenCalledTimes(4);
   });
 
   it('should preserve synchronous rendering and custom Suspense fallbacks', async () => {
