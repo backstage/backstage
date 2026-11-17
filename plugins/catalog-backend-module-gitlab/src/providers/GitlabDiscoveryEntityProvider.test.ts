@@ -1126,14 +1126,14 @@ describe('GitlabDiscoveryEntityProvider - simple parameter', () => {
     await provider.connect(entityProviderConnection);
     await provider.refresh(logger);
 
-    expect(mockListProjects).toHaveBeenCalledWith({
-      group: 'test-group',
-      page: undefined,
-      per_page: 50,
-      archived: false,
-      // simple should not be present when skipReposMarkedForDeletion is true,
-      // because the marked_for_deletion_on field is not returned by simple=true
-    });
+    expect(mockListProjects).toHaveBeenCalledWith(
+      expect.objectContaining({
+        group: 'test-group',
+        per_page: 50,
+        archived: false,
+      }),
+    );
+    expect(mockListProjects.mock.calls[0][0]).not.toHaveProperty('simple');
   });
 
   it('should not pass simple when skipForkedRepos is true', async () => {

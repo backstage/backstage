@@ -583,7 +583,7 @@ describe('GitlabDiscoveryProcessor', () => {
           };
         },
         request => {
-          expect(request.url.searchParams.get('simple')).toBeNull();
+          expect(new URL(request.url).searchParams.get('simple')).toBeNull();
         },
       );
 
