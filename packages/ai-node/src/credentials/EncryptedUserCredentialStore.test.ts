@@ -546,12 +546,19 @@ describe('EncryptedUserCredentialStore', () => {
     );
 
     try {
+      // Match the triggered SqliteError structurally: better-sqlite3 builds its
+      // error constructor once per addon binding, so under Jest worker/VM reuse
+      // the rejection can arrive from a foreign realm where `instanceof Error`
+      // is false and `toThrow` reports a false negative.
       await expect(
         store1.modify('poison', async () => ({
           type: 'api_key',
           key: 'sk-never-stored',
         })),
-      ).rejects.toThrow(/forced write failure/);
+      ).rejects.toMatchObject({
+        code: 'SQLITE_CONSTRAINT_TRIGGER',
+        message: expect.stringContaining('forced write failure'),
+      });
 
       const lockRow = await db(CREDENTIAL_LOCKS_TABLE)
         .where({ scope: scopeKey, provider_id: 'poison' })
