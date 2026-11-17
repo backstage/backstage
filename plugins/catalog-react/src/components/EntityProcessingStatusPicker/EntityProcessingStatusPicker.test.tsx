@@ -133,11 +133,19 @@ describe('<EntityProcessingStatusPicker/>', () => {
     expect(analyticsApi.captureEvent).toHaveBeenCalledTimes(2);
     expect(analyticsApi.captureEvent).toHaveBeenNthCalledWith(
       1,
-      expect.objectContaining({ action: 'filter', subject: 'Is Orphan' }),
+      expect.objectContaining({
+        action: 'filter',
+        subject: 'Is Orphan',
+        attributes: { filter: 'orphan' },
+      }),
     );
     expect(analyticsApi.captureEvent).toHaveBeenNthCalledWith(
       2,
-      expect.objectContaining({ action: 'filter', subject: 'Has Error' }),
+      expect.objectContaining({
+        action: 'filter',
+        subject: 'Has Error',
+        attributes: { filter: 'error' },
+      }),
     );
   });
 

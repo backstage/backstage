@@ -67,6 +67,10 @@ export const EntityProcessingStatusPicker = () => {
   }
 
   const availableAdvancedItems = ['Is Orphan', 'Has Error'];
+  const filterKeys: Record<string, string> = {
+    'Is Orphan': 'orphan',
+    'Has Error': 'error',
+  };
 
   return (
     <Box className={classes.root} pb={1} pt={1}>
@@ -79,7 +83,11 @@ export const EntityProcessingStatusPicker = () => {
         onChange={(_: object, value: string[]) => {
           value
             .filter(item => !selectedAdvancedItems.includes(item))
-            .forEach(item => analytics.captureEvent('filter', item));
+            .forEach(item =>
+              analytics.captureEvent('filter', item, {
+                attributes: { filter: filterKeys[item] },
+              }),
+            );
           setSelectedAdvancedItems(value);
           orphanChange(value.includes('Is Orphan'));
           errorChange(value.includes('Has Error'));
