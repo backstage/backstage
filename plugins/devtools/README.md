@@ -38,6 +38,8 @@ Lists the configuration being used by your current running Backstage instance.
 
 Scheduled tasks can be viewed and triggered under the `Scheduled Tasks` tab. [See below to configure](#scheduled-tasks-configuration).
 
+If you don't have permission to run tasks, you can focus the indicator in the actions column to see why the actions are unavailable. When a plugin returns an empty task list, the page exposes a status update for assistive technologies.
+
 ![Example of Scheduled Tasks tab](./docs/devtools-scheduled-tasks-tab.png)
 
 ## Optional Features

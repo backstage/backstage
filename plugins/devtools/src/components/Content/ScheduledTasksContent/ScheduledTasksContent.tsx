@@ -32,7 +32,10 @@ import {
   Text,
   Tooltip,
   TooltipTrigger,
+  VisuallyHidden,
+  useBgConsumer,
 } from '@backstage/ui';
+import { Focusable } from 'react-aria-components';
 import { useScheduledTasks, useScheduledTasksOperations } from '../../../hooks';
 import {
   devToolsTaskSchedulerCreatePermission,
@@ -59,16 +62,25 @@ const StatusDisplay = ({ icon, text }: { icon: ReactNode; text: string }) => (
   </Flex>
 );
 
-const CreateNotAllowed = () => (
-  <TooltipTrigger>
-    <ButtonIcon
-      aria-label="You are not allowed to perform this action"
-      icon={<RiForbidLine />}
-      variant="tertiary"
-    />
-    <Tooltip>You are not allowed to perform this action</Tooltip>
-  </TooltipTrigger>
-);
+const CreateNotAllowed = () => {
+  const { bg } = useBgConsumer();
+
+  return (
+    <TooltipTrigger>
+      <Focusable>
+        <span
+          className={styles.permissionIndicator}
+          data-on-bg={bg}
+          role="img"
+          aria-label="You are not allowed to perform this action"
+        >
+          <RiForbidLine aria-hidden="true" />
+        </span>
+      </Focusable>
+      <Tooltip>You are not allowed to perform this action</Tooltip>
+    </TooltipTrigger>
+  );
+};
 
 /** @public */
 export const ScheduledTasksContent = () => {
@@ -286,6 +298,15 @@ export const ScheduledTasksContent = () => {
           onBlur={handleCommitChange}
         />
       </Box>
+
+      <VisuallyHidden role="status">
+        {!loading &&
+        !error &&
+        loadedPlugin === selectedPlugin &&
+        scheduledTasks?.length === 0
+          ? `No scheduled tasks found for ${selectedPlugin}.`
+          : ''}
+      </VisuallyHidden>
 
       {isLoadingDifferentPlugin && <Progress />}
 
