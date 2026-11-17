@@ -49,7 +49,11 @@ function getLookupStrategy<K extends ConnectionLookupStrategy>(
 function connectionIdentityOf(
   strategy: { identityField?: string },
   connection: object,
+  getLookupIdentity?: (config: unknown) => string,
 ): string | undefined {
+  if (getLookupIdentity) {
+    return getLookupIdentity(connection);
+  }
   if (!strategy.identityField) {
     return undefined;
   }
@@ -112,7 +116,13 @@ class PluginConnectionsService implements ConnectionsService {
     let connection: ConfiguredConnection | undefined;
     if (identity !== undefined) {
       connection = this.connections.find(
-        c => c.type === type && connectionIdentityOf(strategy, c) === identity,
+        c =>
+          c.type === type &&
+          connectionIdentityOf(
+            strategy,
+            c,
+            connectionType.getLookupIdentity,
+          ) === identity,
       );
     } else {
       connection = this.connections.find(c => c.type === type);

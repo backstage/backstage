@@ -16,69 +16,84 @@
 import { z } from 'zod/v4';
 import { connectionBaseUrlSchema } from './connectionBaseUrlSchema';
 
-function normalizeLookupHost(host: string): string {
-  // An explicit lookup host has no scheme, and the API endpoint may differ.
-  // HTTP drops port 80 and HTTPS drops port 443; using both preserves either
-  // explicit port while canonicalising hostname, IPv6 and numeric spelling.
-  const http = new URL(`http://${host}/`);
-  const https = new URL(`https://${host}/`);
-  const port = http.port || https.port;
-  return `${http.hostname}${port ? `:${port}` : ''}`;
-}
-
 /**
- * Defaults a missing baseUrl to an HTTPS root for the required lookup host.
- * Explicit endpoints are preserved. Opt in only when a same-host HTTPS root
- * is an appropriate default for the connection type.
+ * Defines URL-based connection data and calculates its lookup host separately.
+ * Spread the result into createConnectionType. The API root defaults to the
+ * instance root; explicit API overrides may use an internal endpoint.
  */
 export function withConnectionBaseUrl<
   TShape extends z.ZodRawShape & {
-    host: z.ZodType<string, string>;
-    baseUrl: z.ZodType<string | undefined>;
+    baseUrl: z.ZodType<string, string>;
+    apiBaseUrl: z.ZodOptional<z.ZodType<string, string>>;
+    host?: never;
   },
 >(schema: z.ZodObject<TShape>) {
-  return schema.transform((config, ctx) => {
-    // The object schema has already applied field defaults and transforms.
-    const { host, baseUrl } = config as { host: string; baseUrl?: string };
-    // Use a synthetic URL only to validate host syntax. The lookup identity has
-    // no scheme and must stay independent of the configured API endpoint.
-    if (
-      host.includes('/') ||
-      !connectionBaseUrlSchema.safeParse(`https://${host}/`).success
-    ) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['host'],
-        message: 'Expected a host with an optional port',
-      });
-      return z.NEVER;
-    }
-    let candidate = baseUrl;
-    if (candidate === undefined) {
-      // Apply the baseUrl field's own restrictions and transforms to the default.
-      // Supplied values have already been parsed and must not be parsed twice.
-      const result = schema.shape.baseUrl.safeParse(`https://${host}/`);
-      if (!result.success) {
-        for (const issue of result.error.issues) {
-          ctx.addIssue({ ...issue, path: ['baseUrl', ...issue.path] });
-        }
-        return z.NEVER;
-      }
-      candidate = result.data;
-    }
-    // A field transform may have changed the URL. Check the final root and add
-    // its trailing slash without rewriting context paths or encoded content.
-    const root = connectionBaseUrlSchema.safeParse(candidate);
-    if (!root.success) {
-      for (const issue of root.error.issues) {
+  // Defer API validation until the base URL is parsed and its fallback is known.
+  // Keep the provider's portable input constraints on the deferred string field.
+  const apiInputSchema = schema.shape.apiBaseUrl.toJSONSchema({
+    target: 'draft-07',
+    io: 'input',
+  });
+  delete apiInputSchema.$schema;
+  const inputSchema = schema.clone({
+    ...schema.def,
+    shape: {
+      ...schema.shape,
+      apiBaseUrl: z.string().optional().meta(apiInputSchema),
+    },
+    checks: [],
+  });
+  const resolvedSchema = inputSchema.strict().transform((config, ctx) => {
+    const { baseUrl, apiBaseUrl } = config as {
+      baseUrl: string;
+      apiBaseUrl?: string;
+    };
+    // The base/provider fields have already parsed once. The API field is still
+    // raw, so its complete schema sees only the resolved fallback or override.
+    const base = connectionBaseUrlSchema.safeParse(baseUrl);
+    if (!base.success) {
+      for (const issue of base.error.issues) {
         ctx.addIssue({ ...issue, path: ['baseUrl', ...issue.path] });
       }
       return z.NEVER;
     }
-    return {
-      ...config,
-      host: normalizeLookupHost(host),
-      baseUrl: root.data,
-    };
+    const resolved = schema.shape.apiBaseUrl.safeParse(apiBaseUrl ?? base.data);
+    if (!resolved.success) {
+      for (const issue of resolved.error.issues) {
+        ctx.addIssue({ ...issue, path: ['apiBaseUrl', ...issue.path] });
+      }
+      return z.NEVER;
+    }
+    const api = connectionBaseUrlSchema.safeParse(resolved.data);
+    if (!api.success) {
+      for (const issue of api.error.issues) {
+        ctx.addIssue({ ...issue, path: ['apiBaseUrl', ...issue.path] });
+      }
+      return z.NEVER;
+    }
+    if (apiBaseUrl === undefined && api.data !== base.data) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['apiBaseUrl'],
+        message:
+          'API URL transforms must preserve the baseUrl fallback; configure apiBaseUrl explicitly to use another endpoint',
+      });
+      return z.NEVER;
+    }
+    return { ...config, baseUrl: base.data, apiBaseUrl: api.data };
   });
+  // Object-level checks must see the resolved API value too, without reparsing
+  // provider fields or running their transforms a second time.
+  const configSchema = resolvedSchema.clone({
+    ...resolvedSchema.def,
+    checks: schema.def.checks,
+  });
+  return {
+    configSchema,
+    lookupStrategy: 'host' as const,
+    // Identity is never added to parsed/public data, so it cannot leak through
+    // credentials, credential-free responses or JSON serialization.
+    getLookupIdentity: (config: { baseUrl: string }) =>
+      new URL(config.baseUrl).host,
+  };
 }

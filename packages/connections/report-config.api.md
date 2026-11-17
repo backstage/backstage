@@ -85,6 +85,7 @@ export type ConnectionTypeDefinition<
   cardinality: T['cardinality'];
   lookupStrategy: T['lookupStrategy'];
   configSchema: PortableSchema<T['configSchema'], unknown>;
+  getLookupIdentity?: (config: unknown) => string;
   authMethods: readonly (T['auth'][number] extends infer TAuth
     ? TAuth extends {
         method: string;

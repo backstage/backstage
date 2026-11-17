@@ -102,22 +102,31 @@ describe('createConnectionType', () => {
 
   it('supports object transforms while keeping strict input and reserved-field checks', () => {
     const schema = z
-      .object({ host: z.string() })
-      .transform(config => ({ ...config, baseUrl: `https://${config.host}/` }));
+      .object({ baseUrl: z.string() })
+      .transform(config => ({ ...config, apiBaseUrl: config.baseUrl }));
     const connectionType = createConnectionType({
       type: 'transformed',
       title: 'Transformed',
       configSchema: schema,
+      getLookupIdentity: config => {
+        const apiBaseUrl: string = config.apiBaseUrl;
+        expect(apiBaseUrl).toBe(config.baseUrl);
+        // @ts-expect-error - callback receives public parsed data, not a host field
+        expect(config.host).toBeUndefined();
+        return new URL(config.baseUrl).host;
+      },
       authMethods: [
         { method: 'none', title: 'None', configSchema: z.object({}) },
       ],
     });
-    const parsed = connectionType.configSchema.parse({ host: 'example.com' });
-    const baseUrl: string = parsed.baseUrl;
-    expect(baseUrl).toBe('https://example.com/');
+    const parsed = connectionType.configSchema.parse({
+      baseUrl: 'https://example.com/context/',
+    });
+    expect(parsed.apiBaseUrl).toBe('https://example.com/context/');
+    expect(connectionType.getLookupIdentity?.(parsed)).toBe('example.com');
     expect(connectionType.configSchema.schema().schema).toMatchObject({
-      properties: { host: { type: 'string' } },
-      required: ['host'],
+      properties: { baseUrl: { type: 'string' } },
+      required: ['baseUrl'],
       additionalProperties: false,
     });
     expect(() =>

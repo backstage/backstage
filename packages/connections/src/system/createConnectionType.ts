@@ -91,6 +91,7 @@ export function createConnectionType<
   TCardinality extends 'singleton' | 'multiton' = 'multiton',
 >({
   configSchema,
+  getLookupIdentity,
   type,
   title,
   cardinality,
@@ -104,6 +105,7 @@ export function createConnectionType<
   cardinality?: TCardinality;
   lookupStrategy?: TLookupStrategy;
   configSchema: WithoutReservedFields<TConfigSchema>;
+  getLookupIdentity?: (config: ConfigFromSchema<TConfigSchema>) => string;
   authMethods: WithoutReservedAuthMethods<TAuthMethods>;
   matchAuth?: (
     authMethods: Expand<
@@ -173,6 +175,10 @@ export function createConnectionType<
       }),
     ),
     configSchema: portableConfigSchema,
+    getLookupIdentity: getLookupIdentity
+      ? (config: unknown) =>
+          getLookupIdentity(config as ConfigFromSchema<TConfigSchema>)
+      : undefined,
     matchAuth,
     validate,
   } as unknown as ConnectionTypeDefinition<{

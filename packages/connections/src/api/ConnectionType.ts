@@ -139,6 +139,12 @@ export type ConnectionTypeDefinition<
   /** Schema for a complete connection configuration. */
   configSchema: PortableSchema<T['configSchema'], unknown>;
   /**
+   * Calculates internal lookup identity from parsed configuration without
+   * exposing it as connection data. When omitted, the lookup strategy uses
+   * its configured identity field, preserving existing connection types.
+   */
+  getLookupIdentity?: (config: unknown) => string;
+  /**
    * Supported auth methods and their method-specific configuration schemas.
    * These schemas determine the auth values returned by
    * `ConnectionsService.find`.

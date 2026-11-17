@@ -42,7 +42,11 @@ function describeError(error: unknown): string {
 function connectionIdentityOf(
   identityField: string | undefined,
   connection: object,
+  getLookupIdentity?: (config: unknown) => string,
 ): string | undefined {
+  if (getLookupIdentity) {
+    return getLookupIdentity(connection);
+  }
   if (!identityField) {
     return undefined;
   }
@@ -161,6 +165,7 @@ function dedupeLegacy(
       const identity = connectionIdentityOf(
         identityFields[connectionType.lookupStrategy],
         connection,
+        connectionType.getLookupIdentity,
       );
       if (identity === undefined) {
         result.push(connection);
@@ -196,6 +201,7 @@ function assignDefaultTitles(connections: ConfiguredConnection[]): void {
       const identity = connectionIdentityOf(
         identityFields[connectionType.lookupStrategy],
         c,
+        connectionType.getLookupIdentity,
       );
       (c as { title?: string }).title =
         typeCounts.get(type)! > 1 && identity
@@ -311,7 +317,11 @@ export function buildConnectionsFromConfig(options: {
       singletonsSeen.add(c.type);
     } else {
       const identityField = identityFields[connectionType.lookupStrategy];
-      const identity = connectionIdentityOf(identityField, c);
+      const identity = connectionIdentityOf(
+        identityField,
+        c,
+        connectionType.getLookupIdentity,
+      );
       if (identity !== undefined) {
         const key = `${c.type} ${identity}`;
         if (identitiesSeen.has(key)) {

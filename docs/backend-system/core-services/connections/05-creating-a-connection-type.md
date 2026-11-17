@@ -69,15 +69,19 @@ This example defines a host-based type with token and unauthenticated methods:
 ```ts title="packages/connections/src/schema/acme.ts"
 import { z } from 'zod/v4';
 import { createConnectionType } from '../system/createConnectionType';
+import { connectionBaseUrlSchema } from '../system/connectionBaseUrlSchema';
+import { withConnectionBaseUrl } from '../system/withConnectionBaseUrl';
 
 /** @public */
 export const AcmeConnectionType = createConnectionType({
   type: 'acme',
   title: 'Acme',
-  configSchema: z.object({
-    host: z.string(),
-    apiBaseUrl: z.string().optional(),
-  }),
+  ...withConnectionBaseUrl(
+    z.object({
+      baseUrl: connectionBaseUrlSchema,
+      apiBaseUrl: connectionBaseUrlSchema.optional(),
+    }),
+  ),
   authMethods: [
     {
       method: 'none',
@@ -102,9 +106,9 @@ export const AcmeConnectionType = createConnectionType({
 ```
 
 `cardinality` defaults to `multiton`, and `lookupStrategy` defaults to `host`.
-For a host-based type, include a `host` string in the connection schema so the
-configuration pipeline can enforce unique identities and the service can
-match `query.url`.
+The helper calculates host identity from `baseUrl` for lookup and duplicate
+validation, without adding `host` to the returned connection. Existing types
+that configure a `host` field keep their current behavior.
 
 Each type must declare at least one authentication method. Add `none` only
 when consumers can use the system without authentication. An empty method
@@ -117,23 +121,15 @@ keeps a context prefix such as `/context/`. Consumer paths must be relative,
 without a leading slash. Credentials, queries and fragments are rejected; keep
 any provider-specific HTTPS or host checks as additional refinements.
 
-To default a missing `baseUrl` to `https://<host>/`, use `withConnectionBaseUrl`.
-`host` is required; it is never derived from the URL. Explicit endpoint overrides
-are preserved. Host names are normalized for lookup, but explicit ports are
-retained and must match the resource URL's parsed `host` (which omits default
-ports). Opt in only when a same-host HTTPS root is an appropriate default.
+Spread `withConnectionBaseUrl` into the definition as above. It requires the
+instance `baseUrl`; optional `apiBaseUrl` defaults to the normalized instance
+URL. Explicit API overrides can use another host, such as an internal endpoint.
+Provider checks run for supplied URLs and the fallback. API transforms must not
+replace the fallback with an automatically derived API destination.
 
-```ts
-import { connectionBaseUrlSchema } from '../system/connectionBaseUrlSchema';
-import { withConnectionBaseUrl } from '../system/withConnectionBaseUrl';
-
-const configSchema = withConnectionBaseUrl(
-  z.object({
-    host: z.string(),
-    baseUrl: connectionBaseUrlSchema.optional(),
-  }),
-);
-```
+Lookup still matches hosts only. Deployments at different paths on the same
+host cannot be distinguished and are rejected as duplicates. Designing lookup
+by instance URL or path is a separate follow-up.
 
 ### Avoid reserved fields
 
