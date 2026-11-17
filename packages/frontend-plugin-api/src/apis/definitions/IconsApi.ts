@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import { IconElement } from '../../icons';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * API for accessing app icons.
@@ -35,7 +39,7 @@ export interface IconsApi {
  * The `ApiRef` of {@link IconsApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.icons} instead.
+ * @deprecated Use {@link CoreApis.icons | coreApis.icons} instead.
  */
 export const iconsApiRef = createApiRef<IconsApi>().with({
   id: 'core.icons.v2',

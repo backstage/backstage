@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+import type { InternalCoreApis } from './coreApis';
 import { Observable } from '@backstage/types';
 import { createApiRef } from '../system';
 import { AuthProviderInfo } from './auth';
+
+// Retain documentation link targets in declarations.
+export type { InternalCoreApis };
 
 /**
  * Describes how to handle auth requests. Both how to show them to the user, and what to do when
@@ -125,7 +129,7 @@ export type OAuthRequestApi = {
  * The {@link ApiRef} of {@link OAuthRequestApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.internal.oauthRequest} instead.
+ * @deprecated Use {@link InternalCoreApis.oauthRequest | coreApis.internal.oauthRequest} instead.
  */
 export const oauthRequestApiRef = createApiRef<OAuthRequestApi>().with({
   id: 'core.oauthrequest',

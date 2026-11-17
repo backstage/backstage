@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * A wrapper for the fetch API, that has additional behaviors such as the
@@ -53,7 +57,7 @@ export type FetchApi = {
  * instead.
  *
  * @public
- * @deprecated Use {@link coreApis.fetch} instead.
+ * @deprecated Use {@link CoreApis.fetch | coreApis.fetch} instead.
  */
 export const fetchApiRef = createApiRef<FetchApi>().with({
   id: 'core.fetch',

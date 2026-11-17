@@ -460,32 +460,29 @@ export interface ConfigurableExtensionDataRef<
 }
 
 // @public
-export namespace coreApis {
-  const appHistory: ApiRef<AppHistoryApi>;
-  const analytics: typeof analyticsApiRef;
-  const appLanguage: typeof appLanguageApiRef;
-  const appTheme: typeof appThemeApiRef;
-  const appTree: typeof appTreeApiRef;
-  const config: typeof configApiRef;
-  const dialog: typeof dialogApiRef;
-  const discovery: typeof discoveryApiRef;
-  const error: typeof errorApiRef;
-  const featureFlags: typeof featureFlagsApiRef;
-  const fetch: typeof fetchApiRef;
-  const icons: typeof iconsApiRef;
-  const identity: typeof identityApiRef;
-  const routeResolution: typeof routeResolutionApiRef;
-  const storage: typeof storageApiRef;
-  const toast: typeof toastApiRef;
-  const translation: typeof translationApiRef;
-  export namespace internal {
-    const appLifecycle: typeof appLifecycleApiRef;
-    const oauthRequest: typeof oauthRequestApiRef;
-    const pluginHeaderActions: typeof pluginHeaderActionsApiRef;
-    const pluginWrapper: typeof pluginWrapperApiRef;
-    const swappableComponents: typeof swappableComponentsApiRef;
-  }
+export interface CoreApis {
+  readonly analytics: typeof analyticsApiRef;
+  readonly appHistory: ApiRef<AppHistoryApi>;
+  readonly appLanguage: typeof appLanguageApiRef;
+  readonly appTheme: typeof appThemeApiRef;
+  readonly appTree: typeof appTreeApiRef;
+  readonly config: typeof configApiRef;
+  readonly dialog: typeof dialogApiRef;
+  readonly discovery: typeof discoveryApiRef;
+  readonly error: typeof errorApiRef;
+  readonly featureFlags: typeof featureFlagsApiRef;
+  readonly fetch: typeof fetchApiRef;
+  readonly icons: typeof iconsApiRef;
+  readonly identity: typeof identityApiRef;
+  readonly internal: InternalCoreApis;
+  readonly routeResolution: typeof routeResolutionApiRef;
+  readonly storage: typeof storageApiRef;
+  readonly toast: typeof toastApiRef;
+  readonly translation: typeof translationApiRef;
 }
+
+// @public
+export const coreApis: CoreApis;
 
 // @public (undocumented)
 export const coreExtensionData: {
@@ -1588,6 +1585,15 @@ export type IdentityApi = {
 export const identityApiRef: ApiRef_2<IdentityApi, 'core.identity'> & {
   readonly $$type: '@backstage/ApiRef';
 };
+
+// @public
+export interface InternalCoreApis {
+  readonly appLifecycle: typeof appLifecycleApiRef;
+  readonly oauthRequest: typeof oauthRequestApiRef;
+  readonly pluginHeaderActions: typeof pluginHeaderActionsApiRef;
+  readonly pluginWrapper: typeof pluginWrapperApiRef;
+  readonly swappableComponents: typeof swappableComponentsApiRef;
+}
 
 // @public
 export const microsoftAuthApiRef: ApiRef_2<

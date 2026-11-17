@@ -19,7 +19,7 @@ Framework infrastructure APIs are grouped under `coreApis.internal`:
 `swappableComponents`. These support app initialization, authentication
 coordination, and rendering infrastructure. Plugins normally use higher-level
 abstractions such as `PluginWrapperBlueprint`, `PluginHeaderActionBlueprint`,
-and `createSwappableComponent`. The nested namespace is public;
+and `createSwappableComponent`. The nested object is public;
 `coreApis.internal` identifies the intended audience rather than a different
 stability level.
 

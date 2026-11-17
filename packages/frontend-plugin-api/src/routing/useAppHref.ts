@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from '../apis/definitions/coreApis';
 import {
   APP_ROOT_PATH,
   isExternalTarget,
@@ -30,11 +31,14 @@ import {
   stripLegacyBasename,
 } from './reactRouterContext';
 
+// Retain documentation link targets in declarations.
+export type { CoreApis };
+
 /**
  * Resolves an app-absolute path to a browser-ready href (including the app's
  * deploy basename), the react-aria-style counterpart to {@link useAppNavigate}.
  *
- * Falls back to React Router when no {@link coreApis.appHistory} is registered
+ * Falls back to React Router when no {@link CoreApis.appHistory | coreApis.appHistory} is registered
  * (old frontend system).
  *
  * Paths must start with `/` and are relative to the app root, excluding the

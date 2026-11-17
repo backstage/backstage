@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import {
   AnyRouteRefParams,
@@ -22,6 +23,9 @@ import {
   ExternalRouteRef,
 } from '../../routing';
 import type { AppNode } from './AppTreeApi';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * TS magic for handling route parameters.
@@ -109,7 +113,7 @@ export interface RouteResolutionApi {
  * The `ApiRef` of {@link RouteResolutionApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.routeResolution} instead.
+ * @deprecated Use {@link CoreApis.routeResolution | coreApis.routeResolution} instead.
  */
 export const routeResolutionApiRef = createApiRef<RouteResolutionApi>().with({
   id: 'core.route-resolution',

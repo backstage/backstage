@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import { Observable } from '@backstage/types';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * Message handled by the {@link AlertApi}.
@@ -75,7 +79,7 @@ export type AlertApi = {
  * The {@link ApiRef} of {@link AlertApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.toast} for notifications instead. AlertApi will
+ * @deprecated Use {@link CoreApis.toast | coreApis.toast} for notifications instead. AlertApi will
  * be removed in a future release.
  */
 export const alertApiRef = createApiRef<AlertApi>().with({
