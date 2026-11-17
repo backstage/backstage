@@ -15,39 +15,53 @@
  */
 
 import type { Fence } from '../contracts';
-import type {
-  AttemptDecision,
-  AttemptOutcome,
-  AuditQuery,
-  RecoveryEvent,
-} from './types';
+import type { AttemptOutcome, RecoveryEvent } from './types';
 
 const MAX_TEXT_LENGTH = 512;
 const MAX_LIMIT = 500;
 const DEFAULT_LIMIT = 100;
 
 /**
- * Secret-shaped text is rejected at the journal boundary. This is a
- * defense-in-depth heuristic on top of the structural control: journal events
- * have an exact, closed field set, so credentials, auth headers, prompts and
- * raw payloads have no field to live in. A free-text field that still looks
- * like a secret fails closed rather than being stored or mirrored.
+ * The closed vocabulary of classified operation names. An operation is a
+ * classification, not free text: unknown names fail closed so an unclassified
+ * code path can never reach durable audit storage.
  */
-const SECRET_SHAPED = [
+const OPERATIONS: ReadonlySet<string> = new Set([
+  'models.stream',
+  'models.complete',
+  'models.streamSimple',
+  'models.completeSimple',
+  'models.streamDeferred',
+  'models.fetchDeferred',
+  'models.cancelDeferred',
+  'models.classify',
+  'models.generateImages',
+  'auth.token',
+  'auth.token-exchange',
+]);
+
+/**
+ * Credential VALUE shapes, not words. Free-text fields may say "credential
+ * expired; re-authentication required" — the English words are fine — but a
+ * value that looks like an actual secret (key material, bearer value,
+ * key=value assignment, long high-entropy run) fails closed.
+ */
+const SECRET_VALUE_SHAPED = [
   /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
   /^(sk|rk|pk)-/,
   /^gh[pousr]_/,
   /^xox[bpos]-/,
-  /^(AKIA|AIza)[0-9A-Z]/,
-  /\bbearer\s+\S/i,
-  /\b(authorization|api[_ -]?key|apikey|secret|password|passwd|credential|token)\b/i,
+  /^(AKIA|AIza)[0-9A-Za-z]{8,}/,
+  /\bbearer\s+[A-Za-z0-9._~+/=-]{6,}/i,
+  /\b(?:api[_-]?key|apikey|token|secret|password|passwd|credential|access[_-]?token|refresh[_-]?token|authorization)\s*[=:]\s*\S{8,}/i,
   /[A-Za-z0-9+/=_-]{48,}/,
 ];
 
 /**
- * Validates one free-text journal field: bounded, trim, control-character
- * free and not secret-shaped. Returns `undefined` only for absent optional
- * fields; anything present must pass or the append is rejected.
+ * Validates one free-text journal field: bounded, trimmed, control-character
+ * free and free of credential value shapes. Returns `undefined` only for
+ * absent optional fields; anything present must pass or the append is
+ * rejected.
  */
 export function assertRedactedText(
   value: unknown,
@@ -72,7 +86,7 @@ export function assertRedactedText(
       `Invalid ${field}: expected a non-empty string of at most ${MAX_TEXT_LENGTH} characters without control characters or surrounding whitespace`,
     );
   }
-  for (const pattern of SECRET_SHAPED) {
+  for (const pattern of SECRET_VALUE_SHAPED) {
     if (pattern.test(value)) {
       throw new Error(
         `Invalid ${field}: value is secret-shaped; redact it before recording a journal event`,
@@ -80,6 +94,66 @@ export function assertRedactedText(
     }
   }
   return value;
+}
+
+/**
+ * Validates an operation name against the closed classification vocabulary.
+ * Operations never run free-text secret checks: `auth.token` is a
+ * classification the audit trail must be able to record.
+ */
+export function assertOperation(value: unknown): string {
+  if (typeof value !== 'string' || !OPERATIONS.has(value)) {
+    throw new Error(
+      `Invalid operation: expected one of ${[...OPERATIONS].join(', ')}`,
+    );
+  }
+  return value;
+}
+
+/**
+ * Validates a canonical attempt destination: a bare http(s) URL consisting
+ * of origin and path only, checked structurally. The path may legitimately
+ * contain words like `token`; query strings, fragments, userinfo and any
+ * other component fail closed.
+ */
+export function assertDestination(
+  value: unknown,
+  field = 'destination',
+): string | undefined {
+  if (value === undefined) return undefined;
+  if (
+    typeof value !== 'string' ||
+    value.length === 0 ||
+    value.length > MAX_TEXT_LENGTH ||
+    value !== value.trim() ||
+    // eslint-disable-next-line no-control-regex
+    /[\u0000-\u001f\u007f\s]/.test(value)
+  ) {
+    throw new Error(
+      `Invalid ${field}: expected a canonical http(s) URL of origin and path only`,
+    );
+  }
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new Error(
+      `Invalid ${field}: expected a canonical http(s) URL of origin and path only`,
+    );
+  }
+  if (
+    (url.protocol !== 'https:' && url.protocol !== 'http:') ||
+    url.host.length === 0 ||
+    url.search.length > 0 ||
+    url.hash.length > 0 ||
+    url.username.length > 0 ||
+    url.password.length > 0
+  ) {
+    throw new Error(
+      `Invalid ${field}: must be an https (or http) origin and path without query string, fragment or userinfo`,
+    );
+  }
+  return `${url.origin}${url.pathname}`;
 }
 
 /**
@@ -106,7 +180,10 @@ export function assertShape(
     }
   }
   for (const [key, mode] of Object.entries(fields)) {
-    if (mode === 'required' && value[key] === undefined) {
+    if (
+      mode === 'required' &&
+      (value as Record<string, unknown>)[key] === undefined
+    ) {
       throw new Error(`Invalid ${what}: field "${key}" is required`);
     }
   }
@@ -124,40 +201,6 @@ function assertOrdinal(value: unknown, field: string): number {
     );
   }
   return value;
-}
-
-/**
- * Validates a canonical attempt destination: a bare http(s) URL consisting
- * of origin and path only. Query strings, fragments, userinfo and any other
- * secret-bearing or non-HTTP component fail closed.
- */
-export function assertDestination(
-  value: unknown,
-  field = 'destination',
-): string | undefined {
-  const text = assertRedactedText(value, field);
-  if (text === undefined) return undefined;
-  let url: URL;
-  try {
-    url = new URL(text);
-  } catch {
-    throw new Error(
-      `Invalid ${field}: expected a canonical http(s) URL of origin and path only`,
-    );
-  }
-  if (
-    (url.protocol !== 'https:' && url.protocol !== 'http:') ||
-    url.host.length === 0 ||
-    url.search.length > 0 ||
-    url.hash.length > 0 ||
-    url.username.length > 0 ||
-    url.password.length > 0
-  ) {
-    throw new Error(
-      `Invalid ${field}: must be an https (or http) origin and path without query string, fragment or userinfo`,
-    );
-  }
-  return `${url.origin}${url.pathname}`;
 }
 
 /**
@@ -219,12 +262,10 @@ export function parseDecision(event: unknown): ParsedDecision {
     )!,
     configVersion: assertRedactedText(source.configVersion, 'configVersion', {
       required: true,
-    }),
+    })!,
     provider: assertRedactedText(source.provider, 'provider'),
     model: assertRedactedText(source.model, 'model'),
-    operation: assertRedactedText(source.operation, 'operation', {
-      required: true,
-    })!,
+    operation: assertOperation(source.operation),
     destination: assertDestination(source.destination),
     attempt: assertOrdinal(source.attempt, 'attempt'),
     decision: source.decision,

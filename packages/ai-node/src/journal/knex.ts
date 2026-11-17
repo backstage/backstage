@@ -15,11 +15,7 @@
  */
 
 import type { Knex } from 'knex';
-import {
-  NotAllowedError,
-  NotFoundError,
-  type BackstageCredentials,
-} from '@backstage/backend-plugin-api';
+import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Fence } from '../contracts';
 import {
   parseAttemptId,
@@ -30,9 +26,9 @@ import {
   parseRecovery,
   type ParsedDecision,
   type ParsedOutcome,
-  type ParsedQuery,
   type ParsedRecovery,
 } from './redaction';
+import { AuditAccessDeniedError, AuditSessionNotFoundError } from './errors';
 import {
   AI_AUDIT_READ_PERMISSION_NAME,
   type AttemptId,
@@ -64,8 +60,6 @@ export interface AttemptJournalOptions {
   /** Best-effort write-through mirror to the Backstage auditor service. */
   readonly mirror?: JournalAuditorMirror;
 }
-
-type Executor = Knex | Knex.Transaction;
 
 interface EventRow {
   id: string | number;
@@ -138,11 +132,12 @@ class KnexAttemptJournal implements AttemptJournal {
           plugin_id: lease.pluginId,
           session_id: lease.sessionId,
           owner_ref: parsed.actor,
+          created_at: trx.fn.now(),
         })
         .onConflict(['plugin_id', 'session_id'])
         .ignore();
       const inserted = await trx(JOURNAL_EVENTS_TABLE)
-        .insert(decisionColumns(lease, parsed))
+        .insert({ ...decisionColumns(lease, parsed), created_at: trx.fn.now() })
         .returning('id');
       return String((inserted[0] as { id: string | number }).id);
     });
@@ -182,7 +177,10 @@ class KnexAttemptJournal implements AttemptJournal {
         );
       }
       const inserted = await trx(JOURNAL_EVENTS_TABLE)
-        .insert(outcomeColumns(lease, attemptId, parsed))
+        .insert({
+          ...outcomeColumns(lease, attemptId, parsed),
+          created_at: trx.fn.now(),
+        })
         .returning('id');
       return String((inserted[0] as { id: string | number }).id);
     });
@@ -194,7 +192,7 @@ class KnexAttemptJournal implements AttemptJournal {
     const lease = parseFence(fence);
     const id = await this.#append(lease, async trx => {
       const inserted = await trx(JOURNAL_EVENTS_TABLE)
-        .insert(recoveryColumns(lease, parsed))
+        .insert({ ...recoveryColumns(lease, parsed), created_at: trx.fn.now() })
         .returning('id');
       return String((inserted[0] as { id: string | number }).id);
     });
@@ -210,16 +208,18 @@ class KnexAttemptJournal implements AttemptJournal {
       .where(ns(parsed))
       .first('owner_ref');
     if (!owner) {
-      throw new NotFoundError(
+      throw new AuditSessionNotFoundError(
         `No journaled session ${parsed.pluginId}/${parsed.sessionId}`,
       );
     }
     const ref = principalRef(credentials);
     if (ref === undefined || ref !== owner.owner_ref) {
-      throw new NotAllowedError('Audit reads require ownership of the session');
+      throw new AuditAccessDeniedError(
+        'Audit reads require ownership of the session',
+      );
     }
     if (!(await this.#authorizer.authorizeAuditRead(credentials))) {
-      throw new NotAllowedError(
+      throw new AuditAccessDeniedError(
         `Audit reads require the ${AI_AUDIT_READ_PERMISSION_NAME} permission`,
       );
     }
@@ -473,7 +473,9 @@ function rowToView(
       // A send intent with no recorded outcome stays unknown forever; the
       // journal never invents an outcome for a crashed attempt.
       outcomeStatus:
-        row.decision === 'deny' ? undefined : outcomeStatus ?? 'unknown',
+        row.decision === 'deny'
+          ? undefined
+          : (outcomeStatus as ParsedOutcome['status']) ?? 'unknown',
     };
   }
   if (row.kind === 'outcome') {

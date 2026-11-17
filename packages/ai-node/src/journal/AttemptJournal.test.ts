@@ -22,11 +22,9 @@ import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import knex, { type Knex } from 'knex';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
-import {
-  createAttemptJournal,
-  type AttemptJournal,
-  type AuditEventView,
-} from './knex';
+import { AuditAccessDeniedError, AuditSessionNotFoundError } from './errors';
+import type { AttemptJournal, AuditEventView } from './types';
+import { createAttemptJournal } from './knex';
 import type { AttemptDecision } from './types';
 
 const storageMigration = require('../../migrations/1000_storage');
@@ -142,11 +140,6 @@ if (!pgUrl) {
 
 for (const dialect of ['sqlite', 'pg'] as const) {
   if (dialect === 'pg' && !pgUrl) continue;
-  const jq = (query: string) =>
-    dialect === 'sqlite'
-      ? query
-      : `psql ${JSON.stringify(pgUrl!)} -qtAc ${JSON.stringify(query)}`;
-
   describe(`AttemptJournal (${dialect})`, () => {
     it('records a decision whose outcome is unknown until recorded', async () => {
       const f = await fixture(dialect);
@@ -336,8 +329,12 @@ for (const dialect of ['sqlite', 'pg'] as const) {
         await expect(
           f.journal.recordDecisionAndIntent(fence, {
             ...freshDecision(),
-            // @ts-expect-error deliberately smuggling an unknown field
-            prompt: 'write me a poem about secrets',
+            // Deliberately smuggle an unknown field; excess-property checking
+            // is bypassed through this cast so the runtime boundary rejects.
+            ...({ prompt: 'write me a poem about secrets' } as Record<
+              string,
+              unknown
+            >),
           }),
         ).rejects.toThrow('unknown field');
         await expect(
@@ -404,11 +401,12 @@ for (const dialect of ['sqlite', 'pg'] as const) {
         const rows = await f.db('ai_journal_events').select();
         const dump = JSON.stringify(rows);
         for (const marker of [
-          'sk-',
+          'sk-proj-',
           'Bearer',
           'PRIVATE KEY',
           'api-key',
           'password',
+          'ghp_',
         ]) {
           expect(dump).not.toContain(marker);
         }
@@ -455,6 +453,62 @@ for (const dialect of ['sqlite', 'pg'] as const) {
           ).rejects.toThrow('destination');
         }
         expect(await f.db('ai_journal_events').select('id')).toHaveLength(1);
+      } finally {
+        await f.cleanup();
+      }
+    });
+
+    it('records benign security words but never secret values', async () => {
+      const f = await fixture(dialect);
+      try {
+        // The audit trail must be able to name auth classifications.
+        await f.journal.recordDecisionAndIntent(
+          fence,
+          freshDecision({
+            operation: 'auth.token',
+            destination: 'https://auth.example.com/oauth/token',
+            reason: 'credential expired; re-authentication required',
+          }),
+        );
+        await f.journal.recordDecisionAndIntent(
+          fence,
+          freshDecision({
+            operation: 'models.complete',
+            reason: 'access token refresh needed before retry',
+          }),
+        );
+        expect(await f.db('ai_journal_events')).toHaveLength(2);
+
+        // But actual credential values fail closed in every free-text field.
+        for (const bad of [
+          'token=abcdef123456789',
+          'Bearer abc123',
+          'api_key: 0123456789abcdef',
+          'sk-proj-0123456789abcdefghijklmnopqrstuv',
+          '-----BEGIN RSA PRIVATE KEY-----',
+        ]) {
+          await expect(
+            f.journal.recordDecisionAndIntent(
+              fence,
+              freshDecision({ reason: bad }),
+            ),
+          ).rejects.toThrow('secret-shaped');
+          await expect(
+            f.journal.recordRecovery(fence, {
+              actor: 'user:default/alice',
+              kind: 'other',
+              detail: bad,
+            }),
+          ).rejects.toThrow('secret-shaped');
+        }
+        // Unknown operations are unclassified code paths and fail closed.
+        await expect(
+          f.journal.recordDecisionAndIntent(
+            fence,
+            freshDecision({ operation: 'models.unknown' }),
+          ),
+        ).rejects.toThrow('Invalid operation');
+        expect(await f.db('ai_journal_events')).toHaveLength(2);
       } finally {
         await f.cleanup();
       }
@@ -512,12 +566,12 @@ for (const dialect of ['sqlite', 'pg'] as const) {
         });
         await expect(
           strict.read(credentials('user:default/alice'), query),
-        ).rejects.toThrow(NotAllowedError);
+        ).rejects.toThrow(AuditAccessDeniedError);
 
         // Non-owner with the permission: denied.
         await expect(
           f.journal.read(credentials('user:default/bob'), query),
-        ).rejects.toThrow(NotAllowedError);
+        ).rejects.toThrow(AuditAccessDeniedError);
 
         // Unauthenticated: denied.
         await expect(
@@ -528,7 +582,7 @@ for (const dialect of ['sqlite', 'pg'] as const) {
             } as BackstageCredentials,
             query,
           ),
-        ).rejects.toThrow(NotAllowedError);
+        ).rejects.toThrow(AuditAccessDeniedError);
 
         // Both ownership and permission: allowed.
         const page = await f.journal.read(
@@ -543,7 +597,7 @@ for (const dialect of ['sqlite', 'pg'] as const) {
             ...query,
             sessionId: 'other',
           }),
-        ).rejects.toThrow(NotFoundError);
+        ).rejects.toThrow(AuditSessionNotFoundError);
       } finally {
         await f.cleanup();
       }

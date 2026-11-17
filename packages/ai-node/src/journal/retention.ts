@@ -86,14 +86,17 @@ export async function pruneAiJournal(
       .select('id');
     let uncertainty = 0;
     for (const row of unresolved) {
-      const written = await trx(JOURNAL_UNCERTAINTY_TABLE)
-        .insert({
-          attempt_id: String(row.id),
-          note: 'Send intent has no recorded outcome past the retention window; the remote outcome is permanently unknown',
-        })
-        .onConflict(['attempt_id'])
-        .ignore();
-      uncertainty += written ?? 0;
+      const attemptId = String(row.id);
+      const existing = await trx(JOURNAL_UNCERTAINTY_TABLE)
+        .where({ attempt_id: attemptId })
+        .first('attempt_id');
+      if (existing) continue;
+      await trx(JOURNAL_UNCERTAINTY_TABLE).insert({
+        attempt_id: attemptId,
+        note: 'Send intent has no recorded outcome past the retention window; the remote outcome is permanently unknown',
+        recorded_at: trx.fn.now(),
+      });
+      uncertainty += 1;
     }
 
     // Prune only settled attempts: denials, and allows with an outcome. An

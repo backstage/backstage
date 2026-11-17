@@ -15,5 +15,6 @@
  */
 
 export * from './types';
+export * from './errors';
 export * from './knex';
 export * from './retention';
