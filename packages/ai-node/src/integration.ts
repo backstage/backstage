@@ -229,14 +229,28 @@ type NativeAdmission = {
   readonly holders: Set<NativeHarnessHandle>;
   /** In-flight open reservations. */
   pending: number;
+  /**
+   * Native closes registered on this admission and still in flight. A
+   * closing harness — and the admitted work its close settles — stays
+   * owned by the admission until the close settles; the last-owner drain
+   * joins every registered close before the conditional lease release.
+   */
+  readonly closing: Set<Promise<void>>;
   /** Serializes native opens of this admission. */
   openChain: Promise<unknown>;
   /** True once the last owner left and the admission is closing. */
   draining: boolean;
   /** The drain tail, never rejecting; undefined until draining starts. */
   drain: Promise<void> | undefined;
-  /** True once the drain settled (map entry removed). */
+  /** True once the drain settled. */
   drainSettled: boolean;
+  /**
+   * True when the drain terminated WITHOUT completing the conditional
+   * release and removing the map entry: a terminal failure that retains
+   * ownership. A later open performs one bounded release retry; it must
+   * never report successful completion and rejoin the failed admission.
+   */
+  drainFailed: boolean;
 };
 
 /** The authority context a dispatch binds to: the admission's view. */
@@ -466,44 +480,51 @@ export async function createAiServiceIntegration(
    * Starts the admission drain: the single closing transition. Registered
    * synchronously — before its first await — so overlapping opens observe
    * the draining admission and wait instead of joining a dying fence. The
-   * conditional lease release only ever matches this admission's own fence;
-   * the map entry is removed only after that release completed, so a
-   * successor reservation can never race ahead of it.
+   * drain joins every registered in-flight native close — admitted work
+   * settles under its own fence — and only then runs the conditional lease
+   * release, which only ever matches this admission's own fence. The map
+   * entry is removed only after that release completed, so a successor
+   * reservation can never race ahead of it. A drain that terminates without
+   * completing the release is a terminal failure: the entry is retained
+   * (ownership is preserved) and flagged, and a later open performs one
+   * bounded release retry instead of rejoining the failed admission.
    */
-  function startDrain(
-    admission: NativeAdmission,
-    closingHarness: Harness | undefined,
-  ): Promise<void> {
+  function startDrain(admission: NativeAdmission): Promise<void> {
     if (admission.drain !== undefined) {
       return admission.drain;
     }
     admission.draining = true;
     const key = namespaceKeyOf(admission.namespace);
     const drained = (async () => {
-      if (admission.keepalive !== undefined) {
-        await admission.keepalive.stop();
-      }
+      let removed = false;
       try {
-        if (closingHarness !== undefined) {
-          // Seals admission, settles accepted commits, and closes the
-          // fenced storage without destroying the shared Knex pool.
-          // Admitted durable work is never cancelled by release itself.
-          await closingHarness.close(BACKGROUND_CONTEXT);
+        if (admission.keepalive !== undefined) {
+          await admission.keepalive.stop();
         }
-      } finally {
+        // Seals admission, settles accepted commits, and closes the fenced
+        // storage without destroying the shared Knex pool. Admitted durable
+        // work is never cancelled by release itself: each close settles
+        // the work it admitted before the shared fence goes away.
+        await Promise.all([...admission.closing]);
         if (admission.fence !== undefined) {
           await lease.release(admission.fence);
         }
         admissions.delete(key);
+        removed = true;
+      } finally {
+        admission.drainSettled = true;
+        if (!removed) {
+          admission.drainFailed = true;
+        }
       }
     })();
+    // The drain's own tail is never unhandled: callers await `drained` for
+    // error propagation, the admission keeps the sanitized form.
+    drained.catch(() => undefined);
     admission.drain = drained.then(
       () => undefined,
       () => undefined,
     );
-    void admission.drain.then(() => {
-      admission.drainSettled = true;
-    });
     return drained;
   }
 
@@ -532,6 +553,32 @@ export async function createAiServiceIntegration(
   }
 
   /**
+   * Races a promise against a deadline, resolving undefined on timeout or
+   * rejection. The overall drain bound must enclose every awaited step of
+   * the join — pool acquisition and each lease-table liveness read — not
+   * only the intervals between them. A read that lands after the deadline
+   * is harmless: it is a pure read whose result is already discarded.
+   */
+  function withDeadline<T>(
+    promise: Promise<T>,
+    ms: number,
+  ): Promise<T | undefined> {
+    return new Promise(resolve => {
+      const timer = setTimeout(() => resolve(undefined), ms);
+      promise.then(
+        value => {
+          clearTimeout(timer);
+          resolve(value);
+        },
+        () => {
+          clearTimeout(timer);
+          resolve(undefined);
+        },
+      );
+    });
+  }
+
+  /**
    * Bounded drain join for an open that meets a draining admission. The
    * wait holds while the draining fence is live — a successor is never
    * admitted merely because time elapsed. It ends when the drain settles,
@@ -539,32 +586,66 @@ export async function createAiServiceIntegration(
    * lease protocol by another instance), with a short grace for the drain
    * to finish and otherwise a bounded, retryable unavailability: control
    * returns to the caller instead of pending forever on a close that never
-   * settles. A hard overall bound backs the fence signal.
+   * settles. The hard overall bound encloses the ENTIRE join — every
+   * liveness read, including its pool acquisition — through a racing
+   * timer.
    */
   async function waitForDrainComplete(
     admission: NativeAdmission,
   ): Promise<boolean> {
     const deadline = Date.now() + DRAIN_WAIT_LIMIT_MS;
+    const remaining = () => deadline - Date.now();
     for (;;) {
+      if (admission.drainFailed) {
+        // Terminal failure: the drain terminated without completing the
+        // conditional release, and the admission retains ownership. One
+        // bounded retry of the conditional release — success replaces the
+        // admission; failure or timeout returns the bounded unavailability.
+        // The failed admission is never reported as successfully drained.
+        if (admission.fence === undefined) {
+          admissions.delete(namespaceKeyOf(admission.namespace));
+          return true;
+        }
+        const retried = await withDeadline(
+          lease.release(admission.fence),
+          Math.max(remaining(), 0),
+        );
+        if (retried === undefined) {
+          return false;
+        }
+        admissions.delete(namespaceKeyOf(admission.namespace));
+        return true;
+      }
       if (admission.drainSettled) {
         return true;
       }
-      if (!(await fenceIsLive(admission))) {
+      const live = await withDeadline(fenceIsLive(admission), remaining());
+      if (live === undefined) {
+        // Deadline exhausted, or the liveness read itself failed or never
+        // acquired a connection: bounded and retryable, never unbounded.
+        return false;
+      }
+      if (!live) {
         // The drain's lease release is its last step: it may be settling
-        // right now. Give it a short grace before reporting the previous
-        // release as stuck.
+        // right now. Give it a short grace — itself enclosed by the
+        // deadline — before reporting the previous release as stuck.
         const settled = await Promise.race([
           admission.drain!.then(() => true),
           new Promise<boolean>(resolve =>
-            setTimeout(() => resolve(false), DRAIN_GRACE_MS),
+            setTimeout(
+              () => resolve(false),
+              Math.min(DRAIN_GRACE_MS, Math.max(remaining(), 0)),
+            ),
           ),
         ]);
-        return settled || admission.drainSettled;
+        return settled || (admission.drainSettled && !admission.drainFailed);
       }
-      if (Date.now() >= deadline) {
+      if (remaining() <= 0) {
         return false;
       }
-      await new Promise(resolve => setTimeout(resolve, DRAIN_POLL_MS));
+      await new Promise(resolve =>
+        setTimeout(resolve, Math.min(DRAIN_POLL_MS, remaining())),
+      );
     }
   }
 
@@ -576,7 +657,7 @@ export async function createAiServiceIntegration(
   async function undoReservation(admission: NativeAdmission): Promise<void> {
     admission.pending -= 1;
     if (admission.pending <= 0 && admission.holders.size === 0) {
-      await startDrain(admission, undefined);
+      await startDrain(admission);
     }
   }
 
@@ -1000,10 +1081,12 @@ export async function createAiServiceIntegration(
           keepalive: undefined,
           holders: new Set<NativeHarnessHandle>(),
           pending: 0,
+          closing: new Set<Promise<void>>(),
           openChain: Promise.resolve(),
           draining: false,
           drain: undefined,
           drainSettled: false,
+          drainFailed: false,
         };
         admissions.set(key, admission);
         admission.pending += 1;
@@ -1030,16 +1113,36 @@ export async function createAiServiceIntegration(
       }
       handleStates.delete(handle);
       const admission = state.admission;
+      // Start the native close and register it on the admission BEFORE
+      // dropping the holder claim: a closing harness — and the admitted
+      // work its close settles — stays owned by the admission until the
+      // close settles. The last-owner drain joins every registered close
+      // before the conditional lease release, so admitted work never runs
+      // against a fence a successor already took over.
+      const closePromise = state.harness.close(BACKGROUND_CONTEXT);
+      const closingRegistered = closePromise.then(
+        () => undefined,
+        () => undefined,
+      );
+      admission.closing.add(closingRegistered);
       admission.holders.delete(handle);
-      if (admission.holders.size > 0 || admission.pending > 0) {
-        // Other owners remain: close only this handle's harness. The shared
-        // fence and authority binding stay theirs.
-        await state.harness.close(BACKGROUND_CONTEXT);
-        return;
+      try {
+        if (admission.holders.size > 0 || admission.pending > 0) {
+          // Other owners remain: await only this handle's close. The
+          // shared fence and authority binding stay theirs.
+          await closePromise;
+          return;
+        }
+        // Last owner: drain the admission. The drain is registered before
+        // its first await (inside startDrain), so overlapping opens
+        // observe it, and it joins every registered in-flight close —
+        // including this one — before releasing the fence.
+        const drained = startDrain(admission);
+        await closePromise;
+        await drained;
+      } finally {
+        admission.closing.delete(closingRegistered);
       }
-      // Last owner: drain the admission. The drain is registered before its
-      // first await (inside startDrain), so overlapping opens observe it.
-      await startDrain(admission, state.harness);
     },
   };
 

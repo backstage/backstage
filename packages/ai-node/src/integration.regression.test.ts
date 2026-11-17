@@ -50,6 +50,7 @@ import {
   createAiServiceIntegration,
   type ProductionAiServiceIntegration,
 } from './integration';
+import { createAttemptJournal } from './journal/knex';
 import { runAiMigrations } from './migrations';
 
 /**
@@ -322,6 +323,29 @@ describe('Wave 1 integration regressions', () => {
    *          guard's recheck, so a lost lease denies dispatch fail-closed.
    *          The recheck (guard/journalIntegration tests) owns that
    *          enforcement, not the admission state machine.
+   *
+   * Terminal states of drain/release (required admission-map / fence /
+   * holder state x caller-visible result), every cell tested:
+   *  T1 success — map entry removed after the conditional release, fence
+   *          released, closing holders joined; release callers see their
+   *          own close/release results. 'real invalidation rejects captured
+   *          methods and permits successor acquisition' and the adapter
+   *          dispatch cases.
+   *  T2 release-failure — map entry RETAINED with drainFailed (ownership
+   *          preserved, fence still held, no holders); the releasing caller
+   *          sees the release error; later opens perform one bounded
+   *          release retry — success replaces the admission, failure or
+   *          timeout returns the bounded retryable unavailability. 'a
+   *          failed conditional release settles bounded, never as a
+   *          settled-drain rejoin'.
+   *  T3 close-failure — the close error propagates to the releasing caller,
+   *          but the conditional release completed: map entry removed,
+   *          fence released, successor permitted. 'a failed native close
+   *          still completes the drain and permits a successor'.
+   *  T4 pool exhaustion during the join — map entry retained, waiters
+   *          bounded at the hard deadline (which encloses the liveness
+   *          read itself) with the retryable unavailability. 'encloses the
+   *          liveness read in the hard drain deadline'.
    */
 
   it('does not admit a distinct-credentials open while another is resolving', async () => {
@@ -730,6 +754,323 @@ describe('Wave 1 integration regressions', () => {
       await f.close();
     }
   }, 15000);
+
+  it('drains every closing native holder before releasing the shared fence', async () => {
+    const f = await fixture();
+    let unlock!: () => void;
+    try {
+      const { integration } = await managed(f);
+      const base = {
+        namespace: { pluginId: 'test-plugin', sessionId: 'closing-holder' },
+        owner: 'user:user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        registry: createRegistry(),
+        registryVersion: 'v1',
+        configVersion: 'v1',
+      };
+      const a = await integration.openNativeHarness(base);
+      const b = await integration.openNativeHarness(base);
+
+      // Admit a real native commit on holder A and hold it inside its
+      // callback: its close cannot settle until the commit does.
+      let entered!: () => void;
+      const enteredPromise = new Promise<void>(resolve => {
+        entered = resolve;
+      });
+      const gate = new Promise<void>(resolve => {
+        unlock = resolve;
+      });
+      const commit = a.harness
+        .commit(async tx => {
+          entered();
+          await gate;
+          return tx.createConversation({
+            ownership: { kind: 'ownerless' },
+          });
+        }, a.context)
+        .then(
+          () => ({ error: undefined as string | undefined }),
+          (error: Error) => ({ error: String(error) }),
+        );
+      await enteredPromise;
+
+      const releaseA = settle(
+        integration.releaseNativeHarness(a).then(() => undefined as never),
+      );
+      const releaseB = settle(
+        integration.releaseNativeHarness(b).then(() => undefined as never),
+      );
+      // A successor must not open while the admitted commit is unsettled.
+      const next = settle(integration.openNativeHarness(base));
+      const early = await Promise.race([
+        next,
+        new Promise(resolve => setTimeout(() => resolve('waiting'), 200)),
+      ]);
+      expect(early).toBe('waiting');
+
+      // Resuming the admitted commit must still succeed: the fence was
+      // never released underneath it.
+      unlock();
+      const committed = await commit;
+      expect(committed.error).toBeUndefined();
+      const ra = await releaseA;
+      const rb = await releaseB;
+      expect(ra.error).toBeUndefined();
+      expect(rb.error).toBeUndefined();
+      const successor = await next;
+      expect(successor.handle).toBeDefined();
+      if (successor.handle !== undefined) {
+        await integration.releaseNativeHarness(successor.handle);
+      }
+    } finally {
+      unlock();
+      await f.close();
+    }
+  }, 15000);
+
+  it('a failed conditional release settles bounded, never as a settled-drain rejoin', async () => {
+    const f = await fixture();
+    try {
+      const { integration } = await managed(f);
+      const base = {
+        namespace: { pluginId: 'test-plugin', sessionId: 'release-error' },
+        owner: 'user:user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        registry: createRegistry(),
+        registryVersion: 'v1',
+        configVersion: 'v1',
+      };
+      const h = await integration.openNativeHarness(base);
+
+      // A real lease UPDATE fault makes the drain's conditional release
+      // fail: the admission must retain ownership instead of reporting a
+      // settled drain.
+      const isPg = f.db.client.config.client === 'pg';
+      await f.db.raw(
+        isPg
+          ? "CREATE FUNCTION review_fail_release_fn() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'review release failure'; END; $$; CREATE TRIGGER review_fail_release BEFORE UPDATE ON ai_namespace_leases FOR EACH ROW EXECUTE FUNCTION review_fail_release_fn();"
+          : "CREATE TRIGGER review_fail_release BEFORE UPDATE ON ai_namespace_leases BEGIN SELECT RAISE(ABORT, 'review release failure'); END",
+      );
+      await expect(integration.releaseNativeHarness(h)).rejects.toThrow(
+        'review release failure',
+      );
+      await f.db.raw(
+        isPg
+          ? 'DROP TRIGGER review_fail_release ON ai_namespace_leases'
+          : 'DROP TRIGGER review_fail_release',
+      );
+
+      // With the fault removed, the reopen must SETTLE — a bounded retry of
+      // the retained release, or the bounded unavailability — and never
+      // rejoin the failed admission in a resolved-await loop.
+      const result = await Promise.race([
+        settle(integration.openNativeHarness(base)),
+        new Promise(resolve => setTimeout(() => resolve('pending'), 500)),
+      ]);
+      expect(result).not.toBe('pending');
+      const opened = result as { handle?: NativeHarnessHandle };
+      if (opened.handle !== undefined) {
+        await integration.releaseNativeHarness(opened.handle);
+      }
+    } finally {
+      await f.close();
+    }
+  }, 15000);
+
+  it('a failed native close still completes the drain and permits a successor', async () => {
+    const f = await fixture();
+    try {
+      const { integration } = await managed(f);
+      const base = {
+        namespace: { pluginId: 'test-plugin', sessionId: 'close-failure' },
+        owner: 'user:user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        registry: createRegistry(),
+        registryVersion: 'v1',
+        configVersion: 'v1',
+      };
+      const h = await integration.openNativeHarness(base);
+      h.harness.close = async () => {
+        throw new Error('review close failure');
+      };
+
+      // The close error propagates to the releasing caller, but the
+      // conditional release still completed: the entry is gone and the
+      // fence released, so a successor is admitted on a fresh generation.
+      await expect(integration.releaseNativeHarness(h)).rejects.toThrow(
+        'review close failure',
+      );
+      const lease = await f.db('ai_namespace_leases').first();
+      expect(new Date(lease.expires_at).getTime()).toBeLessThanOrEqual(
+        Date.now(),
+      );
+      const successor = await integration.openNativeHarness(base);
+      const after = await f.db('ai_namespace_leases').first();
+      expect(Number(after.token)).toBeGreaterThan(Number(lease.token));
+      await integration.releaseNativeHarness(successor);
+    } finally {
+      await f.close();
+    }
+  }, 15000);
+
+  it('does not bypass a conditional release observed as dead before its promise settles', async () => {
+    const f = await fixture();
+    let unlock!: () => void;
+    try {
+      const { integration } = await managed(f);
+      const ns = { pluginId: 'test-plugin', sessionId: 'release-poll-race' };
+      const base = {
+        namespace: ns,
+        owner: 'user:user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        registry: createRegistry(),
+        registryVersion: 'v1',
+        configVersion: 'v1',
+      };
+      const h = await integration.openNativeHarness(base);
+      const old = await f.db('ai_namespace_leases').first();
+      const fence = {
+        namespace: ns,
+        owner: old.owner_id,
+        token: String(old.token),
+      };
+
+      // Gate the native close so the drain — whose conditional lease
+      // release is its last step — has not settled, then make the fence
+      // observably dead: the waiter sees a dead fence while the drain
+      // promise is still pending.
+      let entered!: () => void;
+      const enteredPromise = new Promise<void>(resolve => {
+        entered = resolve;
+      });
+      const gate = new Promise<void>(resolve => {
+        unlock = resolve;
+      });
+      const realClose = h.harness.close.bind(h.harness);
+      h.harness.close = async (...closeArgs: Parameters<typeof realClose>) => {
+        entered();
+        await gate;
+        return realClose(...closeArgs);
+      };
+      const drain = integration.releaseNativeHarness(h);
+      await enteredPromise;
+      await f.db('ai_namespace_leases').update({
+        expires_at: f.db.client.config.client === 'pg' ? new Date(0) : 0,
+      });
+
+      const pending = settle(integration.openNativeHarness(base));
+      const early = await pending;
+      unlock();
+      await drain;
+
+      // The waiter failed bounded instead of opening against the dying
+      // admission, and a successor admitted after the drain acquires a
+      // strictly later fence.
+      expect(early.handle).toBeUndefined();
+      expect(early.error).toContain('appears stuck');
+      const successor = await integration.openNativeHarness(base);
+      const successorRow = await f.db('ai_namespace_leases').first();
+      expect(Number(successorRow.token)).toBe(2);
+
+      // A write under the OLD fence is rejected, and nothing journaled.
+      const journal = createAttemptJournal({
+        db: f.db,
+        authorizer: { authorizeAuditRead: async () => false },
+      });
+      await expect(
+        journal.recordDecisionAndIntent(fence, {
+          actor: base.owner,
+          conversationId: 'review',
+          taskId: 'review',
+          callId: 'review',
+          definitionVersion: 'v1',
+          configVersion: 'v1',
+          provider: 'openai',
+          model: 'gpt-review',
+          operation: 'models.complete',
+          attempt: 1,
+          decision: 'deny',
+          reason: 'review stale generation',
+        }),
+      ).rejects.toThrow();
+      expect(await f.db('ai_journal_events').select()).toEqual([]);
+      await integration.releaseNativeHarness(successor);
+    } finally {
+      unlock();
+      await f.close();
+    }
+  }, 15000);
+
+  it('encloses the liveness read in the hard drain deadline', async () => {
+    const f = await fixture();
+    let unlock!: () => void;
+    let pending:
+      | Promise<{ handle?: NativeHarnessHandle; error?: string }>
+      | undefined;
+    let drain: Promise<void> | undefined;
+    let managedIntegration: Awaited<ReturnType<typeof managed>> | undefined;
+    try {
+      managedIntegration = await managed(f);
+      const { integration } = managedIntegration;
+      const base = {
+        namespace: { pluginId: 'test-plugin', sessionId: 'poll-bound' },
+        owner: 'user:user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        registry: createRegistry(),
+        registryVersion: 'v1',
+        configVersion: 'v1',
+      };
+      const h = await integration.openNativeHarness(base);
+      let entered!: () => void;
+      const enteredPromise = new Promise<void>(resolve => {
+        entered = resolve;
+      });
+      const gate = new Promise<void>(resolve => {
+        unlock = resolve;
+      });
+      const close = h.harness.close.bind(h.harness);
+      h.harness.close = async (...closeArgs: Parameters<typeof close>) => {
+        entered();
+        await gate;
+        return close(...closeArgs);
+      };
+      drain = integration.releaseNativeHarness(h);
+      await enteredPromise;
+
+      // Hold the only pool connection: the waiter's lease-table liveness
+      // read cannot even acquire a connection. The hard deadline must
+      // enclose that read, so the open settles at the bound instead of
+      // after the connection frees.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const conn = await (f.db.client as any).acquireConnection();
+      const start = Date.now();
+      pending = settle(integration.openNativeHarness(base));
+      const result = await Promise.race([
+        pending,
+        new Promise(resolve =>
+          setTimeout(() => resolve('pending-after-hard-limit'), 31000),
+        ),
+      ]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (f.db.client as any).releaseConnection(conn);
+      expect(result).not.toBe('pending-after-hard-limit');
+      expect(Date.now() - start).toBeLessThan(31000);
+      const opened = result as { handle?: NativeHarnessHandle };
+      if (opened.handle !== undefined) {
+        await integration.releaseNativeHarness(opened.handle);
+      }
+    } finally {
+      unlock();
+      await drain;
+      const result = await pending;
+      if (result?.handle !== undefined && managedIntegration !== undefined) {
+        await managedIntegration.integration.releaseNativeHarness(
+          result.handle,
+        );
+      }
+      await f.close();
+    }
+  }, 40000);
 
   it('requires independent replicas to hold different exclusive lease generations', async () => {
     const f = await fixture();
