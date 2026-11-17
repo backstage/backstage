@@ -28,6 +28,57 @@ import type {
 const TABLE = 'ai_recovery_sessions';
 const DEFAULT_PAGE_SIZE = 100;
 
+/** Read the persisted origin without creating a session. @internal */
+export async function readSessionOrigin(
+  db: Knex,
+  namespace: Namespace,
+): Promise<SessionOrigin | undefined> {
+  const row = await db(TABLE)
+    .where({ plugin_id: namespace.pluginId, session_id: namespace.sessionId })
+    .first('origin_kind', 'origin_user_id', 'origin_service_plugin_id');
+  if (!row) return undefined;
+  if (row.origin_kind === 'user' && row.origin_user_id) {
+    return { kind: 'user', userId: row.origin_user_id };
+  }
+  if (row.origin_kind === 'service' && row.origin_service_plugin_id) {
+    return { kind: 'service', pluginId: row.origin_service_plugin_id };
+  }
+  throw new Error('Invalid persisted AI session origin');
+}
+
+/** List one user's session IDs in a plugin namespace. @internal */
+export async function listUserSessions(
+  db: Knex,
+  options: { pluginId: string; userId: string; cursor?: string; limit: number },
+): Promise<{ items: string[]; nextCursor?: string }> {
+  if (
+    !Number.isInteger(options.limit) ||
+    options.limit < 1 ||
+    options.limit > 500
+  ) {
+    throw new Error('Session page size must be between 1 and 500');
+  }
+  const query = db(TABLE)
+    .where({
+      plugin_id: options.pluginId,
+      origin_kind: 'user',
+      origin_user_id: options.userId,
+    })
+    .select('session_id')
+    .orderBy('session_id', 'asc')
+    .limit(options.limit + 1);
+  if (options.cursor !== undefined)
+    query.andWhere('session_id', '>', options.cursor);
+  const rows: { session_id: string }[] = await query;
+  const items = rows.slice(0, options.limit).map(row => row.session_id);
+  return {
+    items,
+    ...(rows.length > options.limit
+      ? { nextCursor: items[items.length - 1] }
+      : {}),
+  };
+}
+
 /**
  * Who originated the work in a managed session.
  *

@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-ai-backend
+  title: '@backstage/plugin-ai-backend'
+  description: HTTP backend for the managed AI service
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin
+  owner: maintainers

@@ -1,0 +1,439 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { mkdtemp, rm } from 'node:fs/promises';
+import { createServer } from 'node:http';
+import { randomUUID } from 'node:crypto';
+import { once } from 'node:events';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import knexFactory from 'knex';
+import request from 'supertest';
+import {
+  mockCredentials,
+  mockServices,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
+import {
+  coreServices,
+  createServiceFactory,
+  type PermissionsService,
+} from '@backstage/backend-plugin-api';
+import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
+import plugin from './index';
+
+async function database(pgUrl?: string) {
+  const directory = pgUrl
+    ? undefined
+    : await mkdtemp(join(tmpdir(), 'ai-backend-'));
+  const admin = pgUrl
+    ? knexFactory({ client: 'pg', connection: pgUrl })
+    : undefined;
+  const schema = `be_${randomUUID().replaceAll('-', '')}`;
+  if (admin) await admin.schema.createSchema(schema);
+  const knex = pgUrl
+    ? knexFactory({
+        client: 'pg',
+        connection: pgUrl,
+        searchPath: [schema],
+        pool: { min: 1, max: 1 },
+      })
+    : knexFactory({
+        client: 'better-sqlite3',
+        connection: { filename: join(directory!, 'db.sqlite') },
+        useNullAsDefault: true,
+        pool: { min: 1, max: 1 },
+      });
+  return {
+    knex,
+    async close() {
+      await knex.destroy();
+      if (admin) {
+        await admin.schema.dropSchema(schema, true);
+        await admin.destroy();
+      }
+      if (directory) await rm(directory, { recursive: true, force: true });
+    },
+  };
+}
+
+describe.each<[string, string | undefined]>([
+  ['sqlite', undefined],
+  ...(process.env.AI_TEST_POSTGRES_URL
+    ? [['postgres', process.env.AI_TEST_POSTGRES_URL] as [string, string]]
+    : []),
+])('AI backend (%s)', (_dialect, pgUrl) => {
+  it('streams a local provider response and exposes a journaled outcome', async () => {
+    let providerRequests = 0;
+    let breakStream = false;
+    let failRequest = false;
+    const deniedPermissions = new Set<string>();
+    const permissionService = {
+      authorize: async (
+        requests: Parameters<PermissionsService['authorize']>[0],
+      ) =>
+        requests.map(({ permission }) => ({
+          result: deniedPermissions.has(permission.name) ? 'DENY' : 'ALLOW',
+        })),
+    } as unknown as PermissionsService;
+    const provider = createServer((req, res) => {
+      providerRequests += 1;
+      req.resume();
+      if (failRequest) {
+        res.writeHead(400, { 'content-type': 'application/json' });
+        res.end(
+          JSON.stringify({
+            error: {
+              message: 'private provider error',
+              type: 'invalid_request_error',
+            },
+          }),
+        );
+        return;
+      }
+      res.writeHead(200, { 'content-type': 'text/event-stream' });
+      const chunk = (delta: object, finish: string | null) =>
+        `data: ${JSON.stringify({
+          id: 'test',
+          object: 'chat.completion.chunk',
+          created: 1,
+          model: 'example',
+          choices: [{ index: 0, delta, finish_reason: finish }],
+        })}\n\n`;
+      res.write(chunk({ role: 'assistant', content: 'Hello' }, null));
+      setTimeout(() => {
+        if (breakStream) res.destroy();
+        else res.end(`${chunk({}, 'stop')}data: [DONE]\n\n`);
+      }, 250);
+    });
+    provider.listen(0, '127.0.0.1');
+    await once(provider, 'listening');
+    const port = (provider.address() as { port: number }).port;
+    const db = await database(pgUrl);
+    const { knex } = db;
+    const data = {
+      ai: {
+        models: [
+          {
+            provider: 'openai',
+            modelId: 'example',
+            api: 'openai-completions',
+            baseUrl: `http://127.0.0.1:${port}/v1`,
+            contextWindow: 10000,
+            maxTokens: 1000,
+          },
+        ],
+        credentials: {
+          encryptionKey: Buffer.alloc(32, 9).toString('base64'),
+          scopes: { org: { openai: { type: 'api_key', key: 'test-key' } } },
+        },
+      },
+    };
+    const backend = await startTestBackend({
+      features: [
+        plugin,
+        httpRouterServiceFactory,
+        mockServices.database.factory({ knex }),
+        mockServices.rootConfig.factory({ data }),
+        createServiceFactory({
+          service: coreServices.permissions,
+          deps: {},
+          factory: async () => permissionService,
+        }),
+        mockServices.httpAuth.factory({
+          defaultCredentials: mockCredentials.none(),
+        }),
+      ],
+    });
+    try {
+      const alice = mockCredentials.user.token('user:default/alice');
+      const created = await request(backend.server)
+        .post('/api/ai/v1/sessions')
+        .auth(alice, { type: 'bearer' })
+        .send({ model: { provider: 'openai', modelId: 'example' } });
+      expect(created.status).toBe(201);
+      const session = created.body.sessionId;
+      const result = await request(backend.server)
+        .post(
+          `/api/ai/v1/sessions/${session}/conversations/${created.body.conversationId}/messages`,
+        )
+        .auth(alice, { type: 'bearer' })
+        .send({ content: 'hello' });
+      expect(result.status).toBe(200);
+      expect(result.text).toContain('event: partial');
+      expect(result.text).toContain('event: answer');
+      expect(result.text).toContain('Hello');
+      const history = await request(backend.server)
+        .get(
+          `/api/ai/v1/sessions/${session}/conversations/${created.body.conversationId}`,
+        )
+        .auth(alice, { type: 'bearer' });
+      expect(history.status).toBe(200);
+      expect(history.body.items).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ role: 'assistant', content: 'Hello' }),
+        ]),
+      );
+      const audit = await request(backend.server)
+        .get(`/api/ai/v1/sessions/${session}/audit`)
+        .auth(alice, { type: 'bearer' });
+      expect(audit.status).toBe(200);
+      expect(audit.body.items).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ kind: 'outcome', status: 'completed' }),
+        ]),
+      );
+      expect(JSON.stringify(audit.body)).not.toContain('test-key');
+
+      const second = await request(backend.server)
+        .post('/api/ai/v1/sessions')
+        .auth(alice, { type: 'bearer' })
+        .send({ model: { provider: 'openai', modelId: 'example' } });
+      const httpPort = (backend.server.address() as { port: number }).port;
+      const response = await fetch(
+        `http://127.0.0.1:${httpPort}/api/ai/v1/sessions/${second.body.sessionId}/conversations/${second.body.conversationId}/messages`,
+        {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${alice}`,
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify({ content: 'disconnect' }),
+        },
+      );
+      expect(response.status).toBe(200);
+      const reader = response.body!.getReader();
+      await reader.read();
+      await reader.cancel();
+      let observed = false;
+      for (let i = 0; i < 100 && !observed; i += 1) {
+        const page = await request(backend.server)
+          .get(`/api/ai/v1/sessions/${second.body.sessionId}/audit`)
+          .auth(alice, { type: 'bearer' });
+        observed =
+          page.body.items?.some(
+            (item: { kind: string; status: string }) =>
+              item.kind === 'outcome' && item.status === 'completed',
+          ) ?? false;
+        if (!observed) await new Promise(resolve => setTimeout(resolve, 30));
+      }
+      expect(observed).toBe(true);
+
+      breakStream = true;
+      const broken = await request(backend.server)
+        .post('/api/ai/v1/sessions')
+        .auth(alice, { type: 'bearer' })
+        .send({ model: { provider: 'openai', modelId: 'example' } });
+      const brokenResponse = await request(backend.server)
+        .post(
+          `/api/ai/v1/sessions/${broken.body.sessionId}/conversations/${broken.body.conversationId}/messages`,
+        )
+        .auth(alice, { type: 'bearer' })
+        .send({ content: 'broken stream' });
+      expect(brokenResponse.text).toContain('unanswered');
+      const brokenAudit = await request(backend.server)
+        .get(`/api/ai/v1/sessions/${broken.body.sessionId}/audit`)
+        .auth(alice, { type: 'bearer' });
+      expect(brokenAudit.body.items).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ kind: 'outcome', status: 'stream-failed' }),
+        ]),
+      );
+      breakStream = false;
+      failRequest = true;
+      const failed = await request(backend.server)
+        .post('/api/ai/v1/sessions')
+        .auth(alice, { type: 'bearer' })
+        .send({ model: { provider: 'openai', modelId: 'example' } });
+      const failedResponse = await request(backend.server)
+        .post(
+          `/api/ai/v1/sessions/${failed.body.sessionId}/conversations/${failed.body.conversationId}/messages`,
+        )
+        .auth(alice, { type: 'bearer' })
+        .send({ content: 'failure' });
+      expect(failedResponse.text).toContain('unanswered');
+      expect(failedResponse.text).not.toContain('private provider error');
+      const failedAudit = await request(backend.server)
+        .get(`/api/ai/v1/sessions/${failed.body.sessionId}/audit`)
+        .auth(alice, { type: 'bearer' });
+      expect(failedAudit.body.items).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ kind: 'outcome', status: 'failed' }),
+        ]),
+      );
+      failRequest = false;
+
+      const third = await request(backend.server)
+        .post('/api/ai/v1/sessions')
+        .auth(alice, { type: 'bearer' })
+        .send({ model: { provider: 'openai', modelId: 'example' } });
+      const before = providerRequests;
+      deniedPermissions.add('ai.model.openai.example.use');
+      const denial = await request(backend.server)
+        .post(
+          `/api/ai/v1/sessions/${third.body.sessionId}/conversations/${third.body.conversationId}/messages`,
+        )
+        .auth(alice, { type: 'bearer' })
+        .send({ content: 'denied' });
+      expect(denial.status).toBe(200);
+      expect(denial.text).toContain('unanswered');
+      expect(providerRequests).toBe(before);
+      const denialAudit = await request(backend.server)
+        .get(`/api/ai/v1/sessions/${third.body.sessionId}/audit`)
+        .auth(alice, { type: 'bearer' });
+      expect(denialAudit.body.items).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ kind: 'decision', decision: 'deny' }),
+        ]),
+      );
+      deniedPermissions.add('ai.audit.read');
+      expect(
+        (
+          await request(backend.server)
+            .get(`/api/ai/v1/sessions/${third.body.sessionId}/audit`)
+            .auth(alice, { type: 'bearer' })
+        ).status,
+      ).toBe(403);
+      const routes = [
+        ['get', '/api/ai/v1/models'],
+        ['get', '/api/ai/v1/sessions'],
+        ['post', '/api/ai/v1/sessions'],
+        ['get', `/api/ai/v1/sessions/${third.body.sessionId}`],
+        ['post', `/api/ai/v1/sessions/${third.body.sessionId}/conversations`],
+        [
+          'get',
+          `/api/ai/v1/sessions/${third.body.sessionId}/conversations/${third.body.conversationId}`,
+        ],
+        [
+          'post',
+          `/api/ai/v1/sessions/${third.body.sessionId}/conversations/${third.body.conversationId}/messages`,
+        ],
+        ['get', `/api/ai/v1/sessions/${third.body.sessionId}/audit`],
+      ] as const;
+      for (const [method, path] of routes) {
+        expect((await request(backend.server)[method](path)).status).toBe(401);
+      }
+      const bob = mockCredentials.user.token('user:default/bob');
+      for (const [method, path] of routes.slice(3)) {
+        expect(
+          (
+            await request(backend.server)
+              [method](path)
+              .auth(bob, { type: 'bearer' })
+          ).status,
+        ).toBe(path.endsWith('/audit') ? 403 : 404);
+      }
+      deniedPermissions.add('ai.session.use');
+      for (const [method, path] of routes) {
+        expect(
+          (
+            await request(backend.server)
+              [method](path)
+              .auth(alice, { type: 'bearer' })
+          ).status,
+        ).toBe(403);
+      }
+      expect(
+        (
+          await request(backend.server)
+            .get('/api/ai/v1/models')
+            .auth(alice, { type: 'bearer' })
+        ).status,
+      ).toBe(403);
+      expect(
+        (
+          await request(backend.server)
+            .get('/api/ai/v1/sessions')
+            .auth(alice, { type: 'bearer' })
+        ).status,
+      ).toBe(403);
+      expect(
+        (
+          await request(backend.server)
+            .post('/api/ai/v1/sessions')
+            .auth(alice, { type: 'bearer' })
+            .send({ model: { provider: 'openai', modelId: 'example' } })
+        ).status,
+      ).toBe(403);
+    } finally {
+      await backend.stop();
+      await db.close();
+      provider.closeAllConnections();
+      provider.close();
+    }
+  }, 20000);
+  it('enforces authenticated ownership through the backend wiring', async () => {
+    const db = await database(pgUrl);
+    const { knex } = db;
+    const backend = await startTestBackend({
+      features: [
+        plugin,
+        httpRouterServiceFactory,
+        mockServices.database.factory({ knex }),
+        mockServices.httpAuth.factory({
+          defaultCredentials: mockCredentials.none(),
+        }),
+      ],
+    });
+    try {
+      const alice = mockCredentials.user.token('user:default/alice');
+      const bob = mockCredentials.user.token('user:default/bob');
+      const denied = await request(backend.server).get('/api/ai/v1/sessions');
+      expect(denied.status).toBe(401);
+      const created = await request(backend.server)
+        .post('/api/ai/v1/sessions')
+        .auth(alice, { type: 'bearer' })
+        .send({ model: { provider: 'openai', modelId: 'example' } });
+      expect(created.status).toBe(201);
+      expect(created.body).toEqual({
+        sessionId: expect.any(String),
+        conversationId: expect.any(Number),
+      });
+      const sessionId = created.body.sessionId;
+      const own = await request(backend.server)
+        .get('/api/ai/v1/sessions')
+        .auth(alice, { type: 'bearer' });
+      expect(own.body.items).toContain(sessionId);
+      const foreign = await request(backend.server)
+        .get(`/api/ai/v1/sessions/${sessionId}`)
+        .auth(bob, { type: 'bearer' });
+      expect(foreign.status).toBe(404);
+      const audit = await request(backend.server)
+        .get(`/api/ai/v1/sessions/${sessionId}/audit`)
+        .auth(bob, { type: 'bearer' });
+      expect(audit.status).toBe(403);
+      const rejected = await request(backend.server)
+        .post(
+          `/api/ai/v1/sessions/${sessionId}/conversations/${created.body.conversationId}/messages`,
+        )
+        .auth(bob, { type: 'bearer' })
+        .send({ content: 'hello' });
+      expect(rejected.status).toBe(404);
+      const submission = await request(backend.server)
+        .post(
+          `/api/ai/v1/sessions/${sessionId}/conversations/${created.body.conversationId}/messages`,
+        )
+        .auth(alice, { type: 'bearer' })
+        .send({ content: 'hello' });
+      expect(submission.status).toBe(200);
+      expect(submission.header['content-type']).toMatch('text/event-stream');
+      expect(submission.text).toContain('event: settled');
+    } finally {
+      await backend.stop();
+      await db.close();
+    }
+  });
+});

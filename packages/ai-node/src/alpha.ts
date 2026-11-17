@@ -54,3 +54,11 @@ export type {
 } from './config-extension/index';
 
 export { aiServiceRef } from './service';
+export { aiSessionUsePermission, createAiHttpSupport } from './http';
+export type { AiHttpSupport, AiHttpSupportOptions } from './http';
+export type {
+  AttemptId,
+  AttemptOutcomeStatus,
+  AuditEventView,
+  AuditPage,
+} from './journal/types';
