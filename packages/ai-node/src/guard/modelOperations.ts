@@ -278,6 +278,9 @@ export function createGuardedModelOperations(options: {
       }
     }
     let guardAttempted = false;
+    let guardResponseReceived = false;
+    let guardFetchRejected = false;
+    const pendingFetches = new Set<Promise<unknown>>();
     const callOptions = {
       ...requestOptions,
       apiKey: binding.authority.apiKey,
@@ -286,8 +289,22 @@ export function createGuardedModelOperations(options: {
       // No trusted or caller options may displace the enforcement boundary.
       fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
         guardAttempted = true;
-        const response = await guarded.fetch(input, init);
-        return response;
+        const attempt = (async () => {
+          try {
+            const response = await guarded.fetch(input, init);
+            guardResponseReceived = true;
+            return response;
+          } catch (error) {
+            guardFetchRejected = true;
+            throw error;
+          }
+        })();
+        pendingFetches.add(attempt);
+        try {
+          return await attempt;
+        } finally {
+          pendingFetches.delete(attempt);
+        }
       },
     };
     return {
@@ -303,6 +320,17 @@ export function createGuardedModelOperations(options: {
       // the guarded fetch is rejected for bypassing it.
       usedGuard: () => guardAttempted,
       attemptedGuard: () => guardAttempted,
+      // Consulted only for COMPLETED settlements: a claimed success is
+      // valid solely when the guarded fetch actually received a response.
+      receivedGuardedResponse: () => guardResponseReceived,
+      // Whether the guarded fetch rejected — the guard has then already
+      // journaled its denial, so a fabrication on top of it must not write
+      // a second deny record.
+      guardFetchRejected: () => guardFetchRejected,
+      // Wait for fetches the provider detached (fired without awaiting).
+      settleGuardedFetches: async () => {
+        await Promise.allSettled([...pendingFetches]);
+      },
     };
   };
   function start(
@@ -402,6 +430,9 @@ export function createGuardedModelOperations(options: {
       callOptions,
       usedGuard,
       attemptedGuard,
+      receivedGuardedResponse,
+      guardFetchRejected,
+      settleGuardedFetches,
     } = await prepare(model, caller, operation);
     if (adapter.kind !== 'custom')
       throw new Error('Unsupported model transport');
@@ -424,6 +455,34 @@ export function createGuardedModelOperations(options: {
         !['completed', 'failed', 'cancelled'].includes(result.outcome)
       ) {
         throw new Error('Invalid provider outcome');
+      }
+      // A claimed success is valid only when the guarded fetch actually
+      // received a response for it. Error and aborted settlements are
+      // satisfied by invocation (the guard has already accounted for the
+      // attempt), but a COMPLETED result without a guarded response is a
+      // fabrication — a provider that catches a denial (or never awaits
+      // its fetch) and reports success anyway. When the guard already
+      // denied and journaled the fetch, the fabrication is rejected
+      // without a second deny record.
+      if (result.outcome === 'completed' && !receivedGuardedResponse()) {
+        if (!guardFetchRejected()) {
+          // The fetch may still be in flight (the provider detached it):
+          // abort it and wait for the guard to settle — the guard's own
+          // denial becomes the journal record for the fabrication, so no
+          // second deny is written. The fallback reject covers a settled
+          // fetch that neither returned a response nor rejected, which
+          // the accounting above cannot produce.
+          binding.operation.controller.abort();
+          await settleGuardedFetches();
+        }
+        if (!guardFetchRejected()) {
+          await reject(
+            binding,
+            `models.${operation}`,
+            'fabricated provider result',
+          );
+        }
+        throw new PolicyRejection('fabricated provider result');
       }
       await guarded.finish(result.outcome);
       return result.value;

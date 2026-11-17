@@ -210,3 +210,169 @@ it('registers and enforces non-chat modules without guard or journal edits', asy
   expect(events).toEqual(['decision:deny']);
   expect(transport).toHaveBeenCalledTimes(2);
 });
+
+it('rejects fabricated completions while preserving honest error settlements', async () => {
+  const events: string[] = [];
+  // The dispatch modes under test:
+  // - swallow: catches a guard denial (substituted model) and fabricates success
+  // - revoked: the permission recheck denies; the dispatch fabricates success
+  // - detached: fires the guarded fetch without awaiting and fabricates success
+  // - thrown: an honest in-band failed settlement after a transport error
+  // - legit: an honest completed settlement after a real guarded response
+  let mode: 'swallow' | 'revoked' | 'detached' | 'thrown' | 'legit' = 'legit';
+  let denyPermission = false;
+  const module: AiProviderModule = {
+    id: 'example-classifier',
+    certifiedOperations: ['classify'],
+    destinationTemplates: [[{ literal: '/v1/classify' }]],
+    destination: () => 'https://provider.example/v1/classify',
+    validateEnvelope: (op, request) =>
+      validateHttpEnvelope({ endpoint: '/classify' }, op, request),
+    adapter: {
+      kind: 'custom',
+      invoke: async ({ model, options }) => {
+        const fetch = options.fetch as typeof globalThis.fetch;
+        const send = (bodyModel: string) =>
+          fetch('https://provider.example/v1/classify', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ model: bodyModel }),
+          });
+        if (mode === 'detached') {
+          void send(model.id).catch(() => {
+            /* provider detaches its fetch */
+          });
+          return { value: { fake: true }, outcome: 'completed' };
+        }
+        try {
+          const response = await send(
+            mode === 'swallow' || mode === 'revoked' ? 'substituted' : model.id,
+          );
+          if (mode === 'thrown') {
+            throw new Error('network disconnected');
+          }
+          await response.text();
+        } catch (error) {
+          if (mode === 'swallow' || mode === 'revoked') {
+            // The provider incorrectly swallows the denial and fabricates.
+            return { value: { fake: true }, outcome: 'completed' };
+          }
+          return {
+            value: { errorMessage: String(error) },
+            outcome: 'failed',
+          };
+        }
+        return { value: { ok: true }, outcome: 'completed' };
+      },
+    },
+  };
+  const providers = createProviderRegistry([module]);
+  const model = { ...openaiProvider().getModels()[0], api: module.id } as never;
+  const canonical = model as unknown as ReturnType<
+    ReturnType<typeof openaiProvider>['getModels']
+  >[number];
+  const journal = {
+    recordDecisionAndIntent: async (_fence: Fence, event: AttemptDecision) => {
+      events.push(`decision:${event.decision}:${event.attempt}`);
+      return String(event.attempt);
+    },
+    recordOutcome: async () => {
+      events.push('outcome');
+    },
+    recordRecovery: async () => {},
+    read: async () => ({ items: [] }),
+  };
+  const transport = jest.fn(async () => new Response('ok'));
+  const guard = createModelOperationGuard({
+    providers,
+    journal: journal as never,
+    recheck: async () => !denyPermission,
+    transport: transport as unknown as typeof fetch,
+  });
+  const operations = createGuardedModelOperations({
+    providers,
+    guard,
+    journal: journal as never,
+    resolve: (_model, operation: ModelOperation) => {
+      const op: TrustedOperation = {
+        actor: 'user:default/alice',
+        credentials: mockCredentials.user('user:default/alice'),
+        provenance: {
+          origin: 'verified',
+          conversationId: '1',
+          taskId: '2',
+          callId: '3',
+        },
+        fence: {
+          namespace: { pluginId: 'test', sessionId: 's' },
+          owner: 'owner',
+          token: '1',
+        },
+        definitionVersion: 'v1',
+        configVersion: 'v1',
+        provider: canonical.provider,
+        modelId: canonical.id,
+        resolvedModel: canonical.id,
+        operation,
+        api: module.id,
+        destination: module.destination(canonical, undefined),
+        credentialScope: { kind: 'user', id: 'user:default/alice' },
+        credentialGeneration: '1',
+        controller: new AbortController(),
+      };
+      return {
+        operation: op,
+        model: canonical,
+        authority: { kind: 'apiKey', apiKey: 'key' },
+      };
+    },
+  });
+  const classify = () => operations.classify(model, {} as never);
+
+  // A legitimate completed settlement after a real guarded response passes.
+  mode = 'legit';
+  await expect(classify()).resolves.toEqual({ ok: true });
+  expect(events).toEqual(['decision:allow:1', 'outcome']);
+  events.length = 0;
+
+  // A guard-denied fetch that is caught and fabricated is rejected: the
+  // guard's own denial is the only journal record — no duplicate deny.
+  mode = 'swallow';
+  await expect(classify()).rejects.toThrow('fabricated provider result');
+  expect(events).toEqual(['decision:deny:1']);
+  expect(transport).toHaveBeenCalledTimes(1);
+  events.length = 0;
+
+  // A revoked permission that is caught and fabricated is likewise
+  // rejected without a second deny record.
+  mode = 'revoked';
+  denyPermission = true;
+  await expect(classify()).rejects.toThrow('fabricated provider result');
+  expect(events).toEqual(['decision:deny:1']);
+  expect(transport).toHaveBeenCalledTimes(1);
+  denyPermission = false;
+  events.length = 0;
+
+  // A detached fetch with an immediate fabricated completion is rejected;
+  // the fabrication deny is the only denial record (the background fetch
+  // settles through the guard's own accounting).
+  mode = 'detached';
+  await expect(classify()).rejects.toThrow('fabricated provider result');
+  expect(events.filter(event => event.startsWith('decision:deny'))).toEqual([
+    'decision:deny:1',
+  ]);
+  events.length = 0;
+
+  // An honest failed settlement after a transport that ran and threw
+  // settles in-band with allow plus an uncertain outcome — never a
+  // follow-on "did not use guarded transport" denial.
+  mode = 'thrown';
+  transport.mockImplementation(async () => {
+    throw new Error('network disconnected');
+  });
+  await expect(classify()).resolves.toMatchObject({
+    errorMessage: expect.stringContaining('network disconnected'),
+  });
+  expect(events).toEqual(['decision:allow:1', 'outcome']);
+  expect(transport).toHaveBeenCalledTimes(2);
+});
