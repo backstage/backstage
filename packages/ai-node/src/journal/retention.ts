@@ -15,6 +15,7 @@
  */
 
 import type { Knex } from 'knex';
+import { bigintText, dbNow } from '../storage/dialect-kit';
 import { JOURNAL_EVENTS_TABLE } from './knex';
 
 /** Table holding durable uncertainty records for unresolved intents. */
@@ -94,7 +95,7 @@ export async function pruneAiJournal(
       .where({ kind: 'decision', decision: 'allow' })
       .whereRaw(olderThanCutoff('created_at'))
       .whereNotIn('id', settlingOutcomes)
-      .select(trx.raw('CAST(id AS TEXT) AS id'));
+      .select(bigintText(trx, 'id'));
 
     let uncertainty = 0;
     for (const row of uncertain) {
@@ -105,9 +106,7 @@ export async function pruneAiJournal(
       await trx(JOURNAL_UNCERTAINTY_TABLE).insert({
         attempt_id: row.id,
         note: 'Send intent has no settled outcome past the retention window; the remote outcome is permanently unknown',
-        recorded_at: sqlite
-          ? trx.raw("strftime('%Y-%m-%dT%H:%M:%fZ', 'now')")
-          : trx.fn.now(),
+        recorded_at: dbNow(trx),
       });
       uncertainty += 1;
     }
@@ -121,7 +120,7 @@ export async function pruneAiJournal(
       .where(builder =>
         builder.where('decision', 'deny').orWhereIn('id', settlingOutcomes),
       )
-      .select(trx.raw('CAST(id AS TEXT) AS id'));
+      .select(bigintText(trx, 'id'));
 
     let pruned = 0;
     if (settled.length > 0) {
