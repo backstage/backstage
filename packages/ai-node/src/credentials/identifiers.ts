@@ -78,6 +78,7 @@ export function assertCredential(value: unknown, what: string): Credential {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     throw new Error(`Invalid ${what}: expected a credential object`);
   }
+  assertPersistable(value, what);
   const credential = value as Record<string, unknown>;
   if (credential.type === 'api_key') {
     if (
@@ -109,6 +110,36 @@ export function assertCredential(value: unknown, what: string): Credential {
   throw new Error(
     `Invalid ${what}: expected credential type "api_key" or "oauth"`,
   );
+}
+
+/**
+ * Rejects values that would not survive a JSON round trip unchanged.
+ *
+ * Credentials are persisted as JSON, so `NaN`, `Infinity`, `bigint`, functions
+ * and symbols would silently become `null` or disappear. Accepting them would
+ * replace a usable stored credential with an unreadable row, so they fail closed
+ * here instead of at the next read.
+ */
+function assertPersistable(value: unknown, what: string): void {
+  try {
+    JSON.stringify(value, (_key, item) => {
+      if (typeof item === 'number' && !Number.isFinite(item)) {
+        throw new Error(`non-finite number ${String(item)}`);
+      }
+      if (
+        typeof item === 'bigint' ||
+        typeof item === 'function' ||
+        typeof item === 'symbol'
+      ) {
+        throw new Error(`unsupported ${typeof item} value`);
+      }
+      return item;
+    });
+  } catch (error) {
+    throw new Error(
+      `Invalid ${what}: credentials must be JSON serializable with finite numbers (${error.message})`,
+    );
+  }
 }
 
 /**

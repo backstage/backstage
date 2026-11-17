@@ -134,6 +134,10 @@ export class EncryptedUserCredentialStore implements CredentialStore {
       // No cancellation checks past this point by design.
       const next = await fn(current);
       if (next === undefined) {
+        // A no-op still has to fail closed if the lock was taken over while the
+        // callback ran, otherwise the caller would resolve with a value that is
+        // no longer stored.
+        await this.#assertLockHeldInTransaction(id, owner);
         return current;
       }
 
@@ -298,6 +302,15 @@ export class EncryptedUserCredentialStore implements CredentialStore {
         owner_id: owner,
       })
       .update({ owner_id: null, expires_at: null });
+  }
+
+  async #assertLockHeldInTransaction(
+    providerId: string,
+    owner: string,
+  ): Promise<void> {
+    await this.#db.transaction(trx =>
+      this.#assertLockHeld(trx, providerId, owner),
+    );
   }
 
   async #assertLockHeld(

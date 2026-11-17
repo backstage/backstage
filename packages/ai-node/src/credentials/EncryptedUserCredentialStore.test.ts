@@ -398,4 +398,277 @@ describe('EncryptedUserCredentialStore', () => {
       })),
     ).resolves.toEqual({ type: 'api_key', key: 'sk-after-failure' });
   });
+
+  it('fails closed when the lock is taken over during a changed write', async () => {
+    const scopeKey = 'user:default/takeover-changed';
+    const store1 = store(scopeKey);
+    await store1.modify('anthropic', async () => ({
+      type: 'api_key',
+      key: 'sk-original',
+    }));
+    const before = await credentialRow(scopeKey, 'anthropic');
+
+    let release!: () => void;
+    const gate = new Promise<void>(resolve => {
+      release = resolve;
+    });
+    let entered = false;
+    const modify = store1.modify('anthropic', async () => {
+      entered = true;
+      await gate;
+      return { type: 'api_key', key: 'sk-from-lock-loser' };
+    });
+
+    await waitFor(() => entered);
+    await takeOverLock(scopeKey, 'anthropic');
+    release();
+
+    await expect(modify).rejects.toThrow(/Lost the credential lock/);
+    const after = await credentialRow(scopeKey, 'anthropic');
+    expect(after.nonce).toBe(before.nonce);
+    expect(after.ciphertext).toBe(before.ciphertext);
+    await expect(store1.read('anthropic')).resolves.toEqual({
+      type: 'api_key',
+      key: 'sk-original',
+    });
+  });
+
+  it('fails closed when the lock is taken over during a no-op', async () => {
+    const scopeKey = 'user:default/takeover-noop';
+    const store1 = store(scopeKey);
+    await store1.modify('anthropic', async () => ({
+      type: 'api_key',
+      key: 'sk-original',
+    }));
+
+    let release!: () => void;
+    const gate = new Promise<void>(resolve => {
+      release = resolve;
+    });
+    let entered = false;
+    const modify = store1.modify('anthropic', async current => {
+      expect(current).toEqual({ type: 'api_key', key: 'sk-original' });
+      entered = true;
+      await gate;
+      return undefined;
+    });
+
+    await waitFor(() => entered);
+    await takeOverLock(scopeKey, 'anthropic');
+    release();
+
+    await expect(modify).rejects.toThrow(/Lost the credential lock/);
+  });
+
+  it('fails closed with no-op and changed callbacks when the lock row is gone', async () => {
+    for (const [providerId, next] of [
+      ['anthropic', undefined],
+      ['openai', { type: 'api_key', key: 'sk-changed' }],
+    ] as const) {
+      const scopeKey = `user:default/missing-lock-${providerId}`;
+      const store1 = store(scopeKey);
+      await store1.modify(providerId, async () => ({
+        type: 'api_key',
+        key: 'sk-original',
+      }));
+      const before = await credentialRow(scopeKey, providerId);
+
+      let release!: () => void;
+      const gate = new Promise<void>(resolve => {
+        release = resolve;
+      });
+      let entered = false;
+      const modify = store1.modify(providerId, async () => {
+        entered = true;
+        await gate;
+        return next;
+      });
+
+      await waitFor(() => entered);
+      await removeLock(scopeKey, providerId);
+      release();
+
+      await expect(modify).rejects.toThrow(/Lost the credential lock/);
+      const after = await credentialRow(scopeKey, providerId);
+      expect(after.ciphertext).toBe(before.ciphertext);
+      await expect(store1.read(providerId)).resolves.toEqual({
+        type: 'api_key',
+        key: 'sk-original',
+      });
+    }
+  });
+
+  it('serializes delete behind an in-flight modify', async () => {
+    const scopeKey = 'user:default/delete-behind-modify';
+    const store1 = store(scopeKey);
+    await store1.modify('anthropic', async () => ({
+      type: 'api_key',
+      key: 'sk-before-delete',
+    }));
+
+    let release!: () => void;
+    const gate = new Promise<void>(resolve => {
+      release = resolve;
+    });
+    let entered = false;
+    const modify = store1.modify('anthropic', async () => {
+      entered = true;
+      await gate;
+      return { type: 'api_key', key: 'sk-rotated' };
+    });
+
+    await waitFor(() => entered);
+    const removal = store1.delete('anthropic');
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // The delete cannot overtake the modify that holds the lock.
+    await expect(store1.read('anthropic')).resolves.toEqual({
+      type: 'api_key',
+      key: 'sk-before-delete',
+    });
+
+    release();
+    await expect(modify).resolves.toEqual({
+      type: 'api_key',
+      key: 'sk-rotated',
+    });
+    await expect(removal).resolves.toBeUndefined();
+    await expect(store1.read('anthropic')).resolves.toBeUndefined();
+  });
+
+  it('releases the lock when the durable write is rejected by the database', async () => {
+    const scopeKey = 'user:default/forced-failure';
+    const store1 = store(scopeKey);
+    await db.raw(
+      `CREATE TRIGGER ai_credential_forced_failure BEFORE INSERT ON ${CREDENTIAL_SECRETS_TABLE}
+       FOR EACH ROW WHEN NEW.provider_id = 'poison'
+       BEGIN SELECT RAISE(ABORT, 'forced write failure'); END;`,
+    );
+
+    try {
+      await expect(
+        store1.modify('poison', async () => ({
+          type: 'api_key',
+          key: 'sk-never-stored',
+        })),
+      ).rejects.toThrow(/forced write failure/);
+
+      const lockRow = await db(CREDENTIAL_LOCKS_TABLE)
+        .where({ scope: scopeKey, provider_id: 'poison' })
+        .first();
+      expect(lockRow.owner_id).toBeNull();
+      await expect(store1.read('poison')).resolves.toBeUndefined();
+
+      // The same store keeps working for other providers.
+      await expect(
+        store1.modify('anthropic', async () => ({
+          type: 'api_key',
+          key: 'sk-after-rollback',
+        })),
+      ).resolves.toEqual({ type: 'api_key', key: 'sk-after-rollback' });
+    } finally {
+      await db.raw('DROP TRIGGER ai_credential_forced_failure');
+    }
+  });
+
+  it('persists credentials across a close and reopen', async () => {
+    const reopenDirectory = await mkdtemp(
+      join(tmpdir(), 'ai-node-credentials-reopen-'),
+    );
+    const reopenFile = join(reopenDirectory, 'credentials.sqlite');
+    const credential: Credential = {
+      type: 'oauth',
+      refresh: 'r',
+      access: 'a',
+      expires: 1_900_000_000_000,
+      accountId: 'acct',
+    };
+
+    const firstDb = openDatabase(reopenFile);
+    await MIGRATION.up(firstDb);
+    await store('user:default/reopen', { db: firstDb }).modify(
+      'anthropic',
+      async () => credential,
+    );
+    await firstDb.destroy();
+
+    const secondDb = openDatabase(reopenFile);
+    try {
+      const second = store('user:default/reopen', { db: secondDb });
+      await expect(second.read('anthropic')).resolves.toEqual(credential);
+      // A fresh store can still write and lock after the reopen.
+      await second.modify('anthropic', async () => ({
+        type: 'api_key',
+        key: 'sk-after-reopen',
+      }));
+      await expect(second.read('anthropic')).resolves.toEqual({
+        type: 'api_key',
+        key: 'sk-after-reopen',
+      });
+    } finally {
+      await secondDb.destroy();
+      await rm(reopenDirectory, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects credentials that would not survive JSON persistence', async () => {
+    const scopeKey = 'user:default/non-finite';
+    const store1 = store(scopeKey);
+    await store1.modify('anthropic', async () => ({
+      type: 'api_key',
+      key: 'sk-usable',
+    }));
+    const before = await credentialRow(scopeKey, 'anthropic');
+
+    const invalid = [
+      { type: 'oauth', refresh: 'r', access: 'a', expires: NaN },
+      { type: 'oauth', refresh: 'r', access: 'a', expires: Infinity },
+      { type: 'oauth', refresh: 'r', access: 'a', expires: -Infinity },
+      { type: 'oauth', refresh: 'r', access: 'a', expires: 1, skew: NaN },
+      { type: 'api_key', key: 'sk', retries: Infinity },
+    ];
+    for (const credential of invalid) {
+      await expect(
+        store1.modify('anthropic', async () => credential as Credential),
+      ).rejects.toThrow(/JSON serializable with finite numbers/);
+    }
+
+    // The stored credential is untouched and still readable.
+    const after = await credentialRow(scopeKey, 'anthropic');
+    expect(after.ciphertext).toBe(before.ciphertext);
+    await expect(store1.read('anthropic')).resolves.toEqual({
+      type: 'api_key',
+      key: 'sk-usable',
+    });
+
+    // Finite values, including extra fields, round-trip unchanged.
+    const finite: Credential = {
+      type: 'oauth',
+      refresh: 'r2',
+      access: 'a2',
+      expires: Number.MAX_SAFE_INTEGER,
+      skew: 0.5,
+      nested: { flag: true, values: [1, 2] },
+    };
+    await store1.modify('anthropic', async () => finite);
+    await expect(store1.read('anthropic')).resolves.toEqual(finite);
+  });
 });
+
+function credentialRow(scopeKey: string, providerId: string) {
+  return db(CREDENTIAL_SECRETS_TABLE)
+    .where({ scope: scopeKey, provider_id: providerId })
+    .first();
+}
+
+async function takeOverLock(scopeKey: string, providerId: string) {
+  await db(CREDENTIAL_LOCKS_TABLE)
+    .where({ scope: scopeKey, provider_id: providerId })
+    .update({ owner_id: 'other-instance', expires_at: Date.now() + 60_000 });
+}
+
+async function removeLock(scopeKey: string, providerId: string) {
+  await db(CREDENTIAL_LOCKS_TABLE)
+    .where({ scope: scopeKey, provider_id: providerId })
+    .del();
+}
