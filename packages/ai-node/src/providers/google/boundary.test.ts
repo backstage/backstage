@@ -1019,6 +1019,123 @@ it('a throwing stream settlement does not prevent cleanup of other jobs', async 
   }
 });
 
+it('an undefined settlement error still takes priority over a termination failure', async () => {
+  const oldPost = Worker.prototype.postMessage;
+  const oldTerminate = Worker.prototype.terminate;
+  let firstWorker: Worker | undefined;
+  let entered!: () => void;
+  let release!: () => void;
+  const started = new Promise<void>(resolve => {
+    entered = resolve;
+  });
+  const held = new Promise<void>(resolve => {
+    release = resolve;
+  });
+  let sends = 0;
+  const transport = (async () => {
+    sends += 1;
+    return new Response(sseBody(), {
+      headers: { 'content-type': 'text/event-stream' },
+    });
+  }) as typeof fetch;
+  const bounded = <T>(promise: Promise<T>, ms = 2500) =>
+    Promise.race([
+      promise,
+      new Promise<'timeout'>(resolve =>
+        setTimeout(() => resolve('timeout'), ms),
+      ),
+    ]);
+  Worker.prototype.postMessage = function patchedPost(
+    this: Worker,
+    ...args: unknown[]
+  ) {
+    // Capturing the live worker requires aliasing `this` once.
+    // eslint-disable-next-line consistent-this
+    const target = this;
+    if (!firstWorker) firstWorker = target;
+    return (oldPost as (...a: unknown[]) => void).apply(target, args);
+  } as unknown as typeof Worker.prototype.postMessage;
+  try {
+    const f = setup(
+      'https://generativelanguage.googleapis.com/v1beta',
+      transport,
+    );
+    const guarded = f.guard.bind(f.op);
+    let calls = 0;
+    const callback = async () => {
+      calls += 1;
+      if (calls === 2) entered();
+      await held;
+    };
+    const options = {
+      apiKey: 'key',
+      fetch: guarded.fetch,
+      onPayload: callback,
+    };
+    const a = runGoogleStream(
+      'google-generative-ai',
+      f.model,
+      context(),
+      options,
+      true,
+    );
+    const b = runGoogleStream(
+      'google-generative-ai',
+      f.model,
+      context(),
+      options,
+      true,
+    );
+    const aResult = a.result();
+    const bResult = b.result();
+    expect(await bounded(started)).not.toBe('timeout');
+    const worker = firstWorker;
+    if (!worker) throw new Error('worker missing');
+    // The first job's settlement throws undefined — a value the nullish
+    // capture cannot distinguish from "no error yet".
+    const oldPush = a.push.bind(a);
+    a.push = (() => {
+      // The thrown value itself is the reproduction's subject.
+      // eslint-disable-next-line no-throw-literal
+      throw undefined;
+    }) as typeof a.push;
+    Worker.prototype.terminate = function (this: Worker) {
+      if (this === worker) {
+        return Promise.reject(new Error('injected termination failure'));
+      }
+      return oldTerminate.call(this);
+    } as unknown as typeof Worker.prototype.terminate;
+    let caught = false;
+    let error: unknown = 'not thrown';
+    try {
+      await terminateGoogleWorker();
+    } catch (e) {
+      caught = true;
+      error = e;
+    }
+    a.push = oldPush;
+    Worker.prototype.terminate = oldTerminate;
+    // The settlement value — undefined — keeps precedence: the close
+    // rejects with it, not with the termination error.
+    expect(caught).toBe(true);
+    expect(error).toBeUndefined();
+    // Both jobs still settle bounded at close time.
+    const first = await bounded(aResult, 300);
+    const before = await bounded(bResult, 300);
+    release();
+    const after = await bounded(bResult);
+    await oldTerminate.call(worker);
+    expect(first).not.toBe('timeout');
+    expect(before).not.toBe('timeout');
+    expect(after).toBe(before);
+    expect(sends).toBe(0);
+  } finally {
+    Worker.prototype.postMessage = oldPost;
+    Worker.prototype.terminate = oldTerminate;
+    release();
+  }
+});
+
 it('does not dispatch a stream once immediate shutdown completes', async () => {
   const transport = jest.fn(
     async () =>

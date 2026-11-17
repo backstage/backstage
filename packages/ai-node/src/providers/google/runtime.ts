@@ -225,14 +225,21 @@ class GoogleWorkerRuntime {
     // independently: a throwing settlement (for example a notification push
     // that rejects) must not prevent the remaining jobs from failing.
     let settlementError: unknown;
+    let settlementThrew = false;
     for (const job of [...this.#jobs]) {
       try {
         this.#failJob(job, 'Google worker shut down');
       } catch (error) {
-        settlementError ??= error;
+        // An explicit flag (not a nullish check) so a settlement that
+        // throws undefined or null still keeps settlement-first
+        // precedence over the termination error.
+        if (!settlementThrew) {
+          settlementThrew = true;
+          settlementError = error;
+        }
       }
     }
-    if (settlementError !== undefined) throw settlementError;
+    if (settlementThrew) throw settlementError;
     if (terminateThrew) throw terminateError;
     if (phaseThrew) throw phaseError;
   }
