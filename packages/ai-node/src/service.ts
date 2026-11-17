@@ -23,6 +23,10 @@ import { DefaultAiService } from './DefaultAiService';
 import type { AiService } from './contracts';
 import { createAiServiceIntegration } from './integration';
 import { runAiMigrations } from './migrations';
+import {
+  AI_INSTALLATION_CONFIG_PATH,
+  configureAiInstallation,
+} from './config-extension/index';
 
 /**
  * Plugin-scoped {@link AiService} giving backend plugins the managed, low-level
@@ -31,18 +35,19 @@ import { runAiMigrations } from './migrations';
  * @remarks
  *
  * Each consuming plugin gets its own service instance whose factory composes
- * the native database, auth, permissions, logger, auditor, lifecycle, and
- * plugin metadata services. The factory initializes eagerly
+ * the native database, root configuration, auth, permissions, logger,
+ * auditor, lifecycle, and plugin metadata services. The factory initializes eagerly
  * (`initialization: 'always'`) so that the module participates in startup
  * enumeration, as required by the ownership and recovery design.
  *
- * Wave 1: the default factory runs the AI migrations, wires the production
+ * The default factory runs the AI migrations, reads the installation
+ * configuration at {@link AI_INSTALLATION_CONFIG_PATH}, wires the production
  * integration — exclusive namespace lease with startup recovery, fenced Knex
  * Pi storage, guarded model operations with per-attempt permission checks,
- * and the durable attempt journal — and drains local handles when a lease is
- * invalidated. Provider credential configuration is not wired to a config
- * source yet, so model dispatch fails closed with an actionable reason until
- * installation credentials are supplied to the integration.
+ * scoped credential stores, the canonical model catalog, and the durable
+ * attempt journal — and drains local handles when a lease is invalidated.
+ * Installations that configure nothing keep the fail-closed default: model
+ * dispatch is denied with an actionable reason and no model resolves.
  *
  * @alpha
  */
@@ -54,6 +59,7 @@ export const aiServiceRef = createServiceRef<AiService>({
       service,
       deps: {
         database: coreServices.database,
+        config: coreServices.rootConfig,
         auth: coreServices.auth,
         permissions: coreServices.permissions,
         logger: coreServices.logger,
@@ -67,7 +73,19 @@ export const aiServiceRef = createServiceRef<AiService>({
           database: deps.database,
           logger: deps.logger,
         });
-        const integration = await createAiServiceIntegration({ deps });
+        // Installation-scoped configuration supplies the canonical model
+        // catalog, the read-only org/service credential stores and the
+        // credential precedence. Without it, the integration keeps its
+        // fail-closed default: every dispatch is denied with an actionable
+        // reason.
+        const installation = configureAiInstallation({
+          source: { root: deps.config, path: AI_INSTALLATION_CONFIG_PATH },
+          db: await deps.database.getClient(),
+        });
+        const integration = await createAiServiceIntegration({
+          deps,
+          ...installation,
+        });
         const managedService = DefaultAiService.create({ deps, integration });
         integration.onNamespaceInvalidated(namespace =>
           managedService.invalidateNamespace(namespace),
