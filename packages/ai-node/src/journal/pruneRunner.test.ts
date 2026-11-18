@@ -268,6 +268,46 @@ for (const dialect of ['sqlite', 'pg'] as const) {
           process.off('unhandledRejection', onUnhandled);
         }
         expect(unhandled).toEqual([]);
+
+        // An async warn that rejects also satisfies the sync callback
+        // type structurally; its rejected promise must be swallowed the
+        // same way, never surfacing as an unhandled rejection.
+        const asyncBroken = knex({
+          client: dialect === 'pg' ? 'pg' : 'better-sqlite3',
+          connection:
+            dialect === 'pg'
+              ? { host: '127.0.0.1', port: 9, database: 'x', user: 'x' }
+              : { filename: '/nonexistent-dir/journal.sqlite' },
+        });
+        const onUnhandledAsync = (reason: unknown) =>
+          void unhandled.push(reason);
+        process.on('unhandledRejection', onUnhandledAsync);
+        const asyncRunner = startAiJournalPruneRunner({
+          db: asyncBroken,
+          retentionMs: HOUR_MS,
+          intervalMs: 30,
+          logger: {
+            info: () => {},
+            warn: async () => {
+              throw new Error('async logger rejected');
+            },
+          },
+          now: clock.now,
+        });
+        try {
+          const asyncResult = await asyncRunner.pruneNow();
+          expect(asyncResult).toEqual({
+            prunedEvents: 0,
+            uncertaintyRecords: 0,
+          });
+          await new Promise(resolve => setTimeout(resolve, 120));
+          expect(unhandled).toEqual([]);
+        } finally {
+          await asyncRunner.stop();
+          await asyncBroken.destroy().catch(() => {});
+          process.off('unhandledRejection', onUnhandledAsync);
+        }
+        expect(unhandled).toEqual([]);
         // The real journal is untouched.
         expect(
           Number((await f.db(JOURNAL_EVENTS_TABLE).count('id as n'))[0].n),

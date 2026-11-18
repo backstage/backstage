@@ -252,6 +252,57 @@ describe('evaluateAiHealth', () => {
     expect(report.status).toBe('degraded');
   });
 
+  it('reset clears the terminal-dispatch count with the durations: a second window stands alone', () => {
+    // The reviewer's shape: a first window with many settled attempts,
+    // a reset, then a fresh window with one slow attempt. The second
+    // window's mean must come from the second window's observations
+    // alone — a stale count from the first window would divide the fresh
+    // terminal duration down and suppress the alert.
+    const subscriber = createMetricsSubscriber();
+    for (let i = 0; i < 401; i += 1) {
+      subscriber.emit({
+        kind: 'dispatch',
+        at: i,
+        operation: 'models.stream',
+        outcome: 'completed',
+        durationMs: 10,
+      });
+    }
+    subscriber.reset();
+    const first = evaluateAiHealth(subscriber.snapshot(), {
+      dispatchLatencyMs: 800,
+    });
+    expect(
+      first.signals.find(s => s.name === 'dispatchLatencyMs')?.status,
+    ).toBe('ok');
+
+    subscriber.emit({
+      kind: 'dispatch',
+      at: 1000,
+      operation: 'models.stream',
+      outcome: 'sent',
+      durationMs: 5,
+    });
+    subscriber.emit({
+      kind: 'dispatch',
+      at: 1001,
+      operation: 'models.stream',
+      outcome: 'completed',
+      durationMs: 1000,
+    });
+    const second = evaluateAiHealth(subscriber.snapshot(), {
+      dispatchLatencyMs: 800,
+    });
+    const latency = second.signals.find(
+      signal => signal.name === 'dispatchLatencyMs',
+    );
+    // One settled attempt of 1000 ms in the second window: exactly 1000,
+    // not 1000/402 from a stale count.
+    expect(latency?.value).toBe(1000);
+    expect(latency?.status).toBe('degraded');
+    expect(latency?.detail).toContain('1 settled attempts');
+  });
+
   it('a journal event without durationMs does not poison the durations', () => {
     // A journal event lacking durationMs (the type allows it at runtime)
     // must leave durations.journal unset, not NaN: a NaN would serialize

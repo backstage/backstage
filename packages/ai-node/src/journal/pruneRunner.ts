@@ -91,10 +91,20 @@ export function startAiJournalPruneRunner(
   // A throwing logger is a broken observation channel, not a broken
   // prune: every logger call is isolated so maintenance stays fail-open
   // regardless of logger behavior, and a rejected `void pass()` can never
-  // surface as an unhandled rejection.
+  // surface as an unhandled rejection. A logger whose warn is async
+  // structurally satisfies the sync callback type, so a returned thenable
+  // gets a rejection handler attached (without awaiting), the same way
+  // the observability seam's emitSafe handles its subscribers.
   const warn = (message: string) => {
     try {
-      logger?.warn(message);
+      const result: unknown = logger?.warn(message);
+      if (
+        result !== null &&
+        typeof result === 'object' &&
+        typeof (result as PromiseLike<void>).then === 'function'
+      ) {
+        void Promise.resolve(result).catch(() => undefined);
+      }
     } catch {
       /* The pass failure it reports stands on its own. */
     }

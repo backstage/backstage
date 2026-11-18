@@ -278,6 +278,7 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
       heldLeases.clear();
       journalDecisions.allow = 0;
       journalDecisions.deny = 0;
+      terminalDispatches = 0;
       failures = 0;
       events = 0;
     },
