@@ -25,7 +25,6 @@ export {
   builtinAuthModuleRegistry,
   builtinAuthModules,
   createAuthModuleRegistry,
-  openaiAuthModule,
 } from './modules';
 export { AuthOperationError, createAuthOperations } from './operations';
 export type {

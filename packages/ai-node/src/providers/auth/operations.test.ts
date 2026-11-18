@@ -32,11 +32,8 @@ import { createAttemptJournal } from '../../journal/knex';
 import type { AttemptJournal } from '../../journal/types';
 import { createAuthOperationGuard, type AuthModuleLookup } from './guard';
 import { AuthTokenRejection } from './guard';
-import {
-  builtinAuthModules,
-  createAuthModuleRegistry,
-  openaiAuthModule,
-} from './modules';
+import { builtinAuthModules, createAuthModuleRegistry } from './modules';
+import { formAuthModule } from './formModuleFixture';
 import { jsonAuthModule } from './jsonModuleFixture';
 
 /** Core registry: the remaining built-ins plus the local JSON-bodied module. */
@@ -475,8 +472,8 @@ describe.each(engines)('%s auth operations', (_engine, make) => {
     server = first;
     const second = await tokenServer('/oauth/token');
     const modules = createAuthModuleRegistry([
-      openaiAuthModule,
-      { ...openaiAuthModule, id: 'openai-secondary' },
+      formAuthModule,
+      { ...formAuthModule, id: 'openai-secondary' },
     ]);
     try {
       const configured = await make(first.endpoint, {

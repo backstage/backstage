@@ -18,7 +18,7 @@
 
 /** The alpha entrypoint; the main entrypoint intentionally exposes nothing. */
 
-import type { AiProviderModule } from '@backstage/ai-node/temporary';
+import type { AiProviderModule } from '@backstage/ai-node/modules';
 import {
   openaiCodexResponses,
   openaiCompletions,
@@ -32,6 +32,7 @@ export {
   openaiResponses,
 } from './chat';
 export { openaiDecisions } from './decisions';
+export { openaiAuthModule } from './auth';
 
 /**
  * The OpenAI provider module family: chat (Responses, Chat Completions,

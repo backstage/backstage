@@ -52,12 +52,14 @@ import { builtinProviderModules } from '../../modules';
 import { createProviderRegistry } from '../registry';
 import type { AiProviderModule } from '../types';
 import { createAuthOperationGuard } from './guard';
+import { formAuthModule } from './formModuleFixture';
 import { jsonAuthModule } from './jsonModuleFixture';
 import { builtinAuthModules, createAuthModuleRegistry } from './modules';
 
-/** Core registry: remaining built-ins plus the local JSON-bodied module. */
+/** Core registry: remaining built-ins plus the local fixture modules. */
 const jsonAuthModules = createAuthModuleRegistry([
   jsonAuthModule,
+  formAuthModule,
   ...builtinAuthModules,
 ]);
 

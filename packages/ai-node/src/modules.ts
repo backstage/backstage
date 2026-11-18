@@ -28,6 +28,8 @@
  * @packageDocumentation
  */
 
+import type { AiProviderModule } from './providers/types';
+
 export type {
   AiProviderModule,
   ModuleAuthority,
@@ -61,6 +63,5 @@ export type { CredentialScope } from './credentials/types';
  *
  * @alpha
  */
-export const builtinProviderModules: readonly AiProviderModule[] = Object.freeze(
-  [],
-);
+export const builtinProviderModules: readonly AiProviderModule[] =
+  Object.freeze([]);

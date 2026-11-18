@@ -261,36 +261,11 @@ export function createTokenRequest(
  *
  * @internal
  */
-export const openaiAuthModule: AiAuthModule = {
-  id: 'openai',
-  tokenPath: '/oauth/token',
-  body: 'form',
-  refreshRequest: ({ endpoint, clientId, credential }) =>
-    createTokenRequest(endpoint, 'form', {
-      grant_type: 'refresh_token',
-      refresh_token: credential.refresh,
-      client_id: clientId,
-    }),
-  exchangeRequest: ({ endpoint, clientId, code, codeVerifier, redirectUri }) =>
-    createTokenRequest(endpoint, 'form', {
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: redirectUri,
-      client_id: clientId,
-      code_verifier: codeVerifier,
-    }),
-  validateTokenRequest: input =>
-    assertTokenRequest(input, 'form', '/oauth/token'),
-  parseTokenResponse: input =>
-    parseOAuthTokenResponse(input, ['account_id', 'chatgpt_account_id']),
-  extraFields: ['account_id', 'chatgpt_account_id'],
-};
-
 /** Host registration: add another trusted auth module here to enable it.
  *
  * @alpha
  */
-export const builtinAuthModules = Object.freeze([openaiAuthModule]);
+export const builtinAuthModules: readonly AiAuthModule[] = Object.freeze([]);
 
 /** @alpha */
 export const builtinAuthModuleRegistry =

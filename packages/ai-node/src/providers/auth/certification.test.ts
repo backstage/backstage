@@ -18,11 +18,13 @@ import type { Credential } from '@earendil-works/pi-ai';
 import { registerAuthCertification } from './certification';
 import { createAuthOperationGuard } from './guard';
 import { builtinAuthModules, createAuthModuleRegistry } from './modules';
+import { formAuthModule } from './formModuleFixture';
 import { jsonAuthModule } from './jsonModuleFixture';
 
-/** The moved anthropic module joined to the remaining core modules. */
+/** The moved families joined to the remaining core modules as fixtures. */
 const jsonAuthRegistry = createAuthModuleRegistry([
   jsonAuthModule,
+  formAuthModule,
   ...builtinAuthModules,
 ]);
 

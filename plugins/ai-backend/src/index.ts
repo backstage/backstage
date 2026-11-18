@@ -26,10 +26,6 @@ import {
   createToolPermissions,
 } from '@backstage/ai-node/alpha';
 import { aiBackendProviderModules } from './providerModules';
-import { anthropicProviderModules } from '@backstage/ai-node-provider-anthropic';
-import { azureProviderModules } from '@backstage/ai-node-provider-azure';
-import { typesafeProviderModules } from '@backstage/ai-node-provider-typesafe';
-import { openrouterProviderModules } from '@backstage/ai-node-provider-openrouter';
 import { aiModulesExtensionPoint } from './extensions';
 import { createRouter } from './router';
 

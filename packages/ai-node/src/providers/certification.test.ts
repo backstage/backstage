@@ -119,7 +119,6 @@ if (process.env.AI_PROVIDER_CERT_WORKER === '1') {
       const id = process.env.AI_PROVIDER_CERT_ID as Id;
       const origin = process.env.AI_PROVIDER_CERT_ORIGIN!;
       const op = operation(id, origin);
-      const module = providers.get(id)!;
       const guard = createModelOperationGuard({
         providers,
         journal: journal(db),

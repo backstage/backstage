@@ -16,7 +16,11 @@
 
 import { createHash } from 'node:crypto';
 import { assertDestination, assertOperation } from '../journal/redaction';
-import { azureResponses } from './builtins';
+import { fixtureProviderModules } from './testFixtures';
+
+const azureResponses = fixtureProviderModules.find(
+  module => module.id === 'azure-openai-responses',
+)!;
 import { createProviderRegistry } from './registry';
 import type { AiProviderModule } from './types';
 

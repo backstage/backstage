@@ -54,7 +54,7 @@ import { createAttemptJournal as createAttemptJournalBase } from './journal/knex
 import { runAiMigrations } from './migrations';
 import {
   builtinProviderRegistry,
-  testOpenaiResponses,
+  fixtureProviderModules,
 } from './providers/testFixtures';
 import { createAiModuleRegistry } from './moduleRegistry';
 
@@ -318,7 +318,9 @@ describe('Wave 1 integration regressions', () => {
       expect(missing.errorMessage).toContain('createAiServiceFactory');
       expect(missing.errorMessage).toContain('aiModulesExtensionPoint');
       expect(probe.requests).toHaveLength(0);
-      modules.registerProviderModules([testOpenaiResponses]);
+      modules.registerProviderModules([
+        fixtureProviderModules.find(m => m.id === 'openai-responses')!,
+      ]);
       const joined = await service.openHarness(options('snapshot', creds));
       f.handles.push(joined);
       expect((await call(sources[0])).errorMessage).toContain('not registered');

@@ -15,12 +15,12 @@
  */
 
 import type { AnyModel } from '@earendil-works/pi-ai';
-import type { DestinationTemplate } from '@backstage/ai-node/temporary';
+import type { DestinationTemplate } from '@backstage/ai-node/modules';
 import type {
   AiProviderModule,
   ProviderAdapter,
   ProviderEnvelope,
-} from '@backstage/ai-node/temporary';
+} from '@backstage/ai-node/modules';
 import { runGoogleStream } from './runtime';
 
 const CHAT = ['stream', 'complete', 'streamSimple', 'completeSimple'] as const;

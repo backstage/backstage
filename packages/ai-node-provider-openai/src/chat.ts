@@ -17,11 +17,11 @@
 import * as responses from '@earendil-works/pi-ai/api/openai-responses';
 import * as completions from '@earendil-works/pi-ai/api/openai-completions';
 import * as codex from '@earendil-works/pi-ai/api/openai-codex-responses';
-import { validateHttpEnvelope } from '@backstage/ai-node/temporary';
+import { validateHttpEnvelope } from '@backstage/ai-node/modules';
 import type {
   AiProviderModule,
   ProviderAdapter,
-} from '@backstage/ai-node/temporary';
+} from '@backstage/ai-node/modules';
 
 const CHAT = ['stream', 'complete', 'streamSimple', 'completeSimple'] as const;
 

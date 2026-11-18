@@ -145,7 +145,6 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
         request,
       ),
   },
-,
   {
     id: 'openai-responses',
     adapter: streamAdapter(responses),

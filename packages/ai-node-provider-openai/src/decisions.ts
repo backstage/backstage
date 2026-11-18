@@ -15,11 +15,11 @@
  */
 
 import * as decisions from '@earendil-works/pi-ai/api/openai-decisions';
-import { validateHttpEnvelope } from '@backstage/ai-node/temporary';
+import { validateHttpEnvelope } from '@backstage/ai-node/modules';
 import type {
   AiProviderModule,
   ProviderAdapter,
-} from '@backstage/ai-node/temporary';
+} from '@backstage/ai-node/modules';
 
 const base = (url: string | undefined) => (url ?? '').replace(/\/+$/, '');
 
