@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { targetPaths } from '@backstage/cli-common';
+import { BackstagePackage, PackageGraph } from '@backstage/cli-node';
 import pLimit from 'p-limit';
 import os from 'node:os';
 import { relative as relativePath, resolve as resolvePath } from 'node:path';
@@ -54,22 +55,68 @@ function logKnipReportInstructions() {
   console.log('');
 }
 
+/**
+ * Finds the dependencies that apps load through package discovery, which
+ * means that they are never imported from source code.
+ */
+export function findDiscoveredDependencies(
+  packages: BackstagePackage[],
+): Record<string, string[]> {
+  const discoverable = new Set(
+    packages
+      .filter(({ packageJson }) =>
+        ['frontend-plugin', 'frontend-plugin-module'].includes(
+          packageJson.backstage?.role ?? '',
+        ),
+      )
+      .map(({ packageJson }) => packageJson.name),
+  );
+
+  return Object.fromEntries(
+    packages
+      .filter(({ packageJson }) => packageJson.backstage?.role === 'frontend')
+      .map(
+        ({ dir, packageJson }) =>
+          [
+            dir,
+            Object.keys(packageJson.dependencies ?? {}).filter(name =>
+              discoverable.has(name),
+            ),
+          ] as const,
+      )
+      .filter(([, dependencies]) => dependencies.length > 0),
+  );
+}
+
 async function generateKnipConfig({ knipConfigPath }: KnipConfigOptions) {
+  const discoveredDependencies = findDiscoveredDependencies(
+    await PackageGraph.listTargetPackages(),
+  );
+  // A workspace entry for a specific package replaces this one, it does not merge
+  const packageWorkspace = {
+    entry: ['dev/**/*.{ts,tsx}', 'src/index.{ts,tsx}'],
+    ignore: [
+      '.eslintrc.js',
+      'config.d.ts',
+      'knexfile.js',
+      'node_modules/**',
+      'dist/**',
+      '{fixtures,migrations,templates}/**',
+      'src/tests/transforms/__fixtures__/**', // cli packaging tests
+    ],
+  };
   const knipConfig: KnipConfig = {
     workspaces: {
       '.': {},
-      '{packages,plugins}/*': {
-        entry: ['dev/**/*.{ts,tsx}', 'src/index.{ts,tsx}'],
-        ignore: [
-          '.eslintrc.js',
-          'config.d.ts',
-          'knexfile.js',
-          'node_modules/**',
-          'dist/**',
-          '{fixtures,migrations,templates}/**',
-          'src/tests/transforms/__fixtures__/**', // cli packaging tests
-        ],
-      },
+      '{packages,plugins}/*': packageWorkspace,
+      ...Object.fromEntries(
+        Object.entries(discoveredDependencies).map(
+          ([dir, ignoreDependencies]) => [
+            relativePath(targetPaths.rootDir, dir),
+            { ...packageWorkspace, ignoreDependencies },
+          ],
+        ),
+      ),
     },
     jest: {
       entry: ['src/setupTests.ts', 'src/**/*.test.{ts,tsx}'],
