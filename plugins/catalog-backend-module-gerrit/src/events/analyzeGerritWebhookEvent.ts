@@ -109,7 +109,10 @@ async function onRefUpdatedEvent(
     };
   }
 
-  const gitilesBaseUrl = options.gitilesBaseUrl.replace(/\/+$/, '');
+  let gitilesBaseUrl = options.gitilesBaseUrl;
+  while (gitilesBaseUrl.endsWith('/')) {
+    gitilesBaseUrl = gitilesBaseUrl.slice(0, -1);
+  }
 
   return {
     result: 'ok',
