@@ -85,6 +85,53 @@ describe('TablePagination', () => {
     expect(
       screen.queryByRole('button', { name: /Select table page size/ }),
     ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'First table page' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Last table page' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows first and last page controls by default and disables them at the boundaries', () => {
+    const onFirstPage = jest.fn();
+    const onLastPage = jest.fn();
+    const props = {
+      pageSize: 10,
+      totalCount: 25,
+      onFirstPage,
+      onLastPage,
+      onNextPage: jest.fn(),
+      onPreviousPage: jest.fn(),
+    };
+    const { rerender } = render(
+      <TablePagination
+        {...props}
+        offset={0}
+        hasNextPage
+        hasPreviousPage={false}
+      />,
+    );
+
+    const firstPage = screen.getByRole('button', { name: 'First table page' });
+    const lastPage = screen.getByRole('button', { name: 'Last table page' });
+    expect(firstPage).toBeDisabled();
+    expect(lastPage).toBeEnabled();
+    fireEvent.click(lastPage);
+    expect(onLastPage).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <TablePagination
+        {...props}
+        offset={20}
+        hasNextPage={false}
+        hasPreviousPage
+      />,
+    );
+    expect(firstPage).toBeEnabled();
+    expect(lastPage).toBeDisabled();
+    fireEvent.click(firstPage);
+    expect(onFirstPage).toHaveBeenCalledTimes(1);
   });
 
   it('falls back to the first option when pageSize is unavailable', () => {

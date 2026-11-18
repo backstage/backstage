@@ -21,6 +21,8 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import { BUIProvider } from '../../../provider/BUIProvider';
 import { Cell } from './Cell';
 import { Table } from './Table';
+import { useTable } from '../hooks/useTable';
+import type { ColumnConfig } from '../types';
 
 const routerFuture = {
   v7_startTransition: true,
@@ -47,6 +49,48 @@ function RouterFixture({ children }: PropsWithChildren) {
     </TestRouter>
   );
 }
+
+const paginationItems = Array.from({ length: 25 }, (_, id) => ({
+  id,
+  name: `Item ${id}`,
+}));
+const paginationColumns: ColumnConfig<(typeof paginationItems)[number]>[] = [
+  {
+    id: 'name',
+    label: 'Name',
+    isRowHeader: true,
+    cell: item => <Cell>{item.name}</Cell>,
+  },
+];
+
+function PaginationFixture() {
+  const { tableProps } = useTable({
+    mode: 'complete',
+    data: paginationItems,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return <Table columnConfig={paginationColumns} {...tableProps} />;
+}
+
+describe('Table pagination', () => {
+  it('shows first and last controls by default', () => {
+    render(<PaginationFixture />);
+
+    const firstPage = screen.getByRole('button', { name: 'First table page' });
+    const lastPage = screen.getByRole('button', { name: 'Last table page' });
+    expect(firstPage).toBeDisabled();
+    expect(lastPage).toBeEnabled();
+
+    fireEvent.click(lastPage);
+    expect(screen.getByText('21 - 25 of 25')).toBeInTheDocument();
+    expect(firstPage).toBeEnabled();
+    expect(lastPage).toBeDisabled();
+
+    fireEvent.click(firstPage);
+    expect(screen.getByText('1 - 10 of 25')).toBeInTheDocument();
+  });
+});
 
 describe('Table rowConfig navigation', () => {
   it('passes a relative getHref result to Row as an ordinary internal action', () => {

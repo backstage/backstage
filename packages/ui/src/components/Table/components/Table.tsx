@@ -283,8 +283,10 @@ export function Table<T extends TableItem>({
           totalCount={pagination.totalCount}
           hasNextPage={pagination.hasNextPage}
           hasPreviousPage={pagination.hasPreviousPage}
+          onFirstPage={pagination.onFirstPage}
           onNextPage={pagination.onNextPage}
           onPreviousPage={pagination.onPreviousPage}
+          onLastPage={pagination.onLastPage}
           onPageSizeChange={pagination.onPageSizeChange}
           showPageSizeOptions={pagination.showPageSizeOptions}
           getLabel={pagination.getLabel}

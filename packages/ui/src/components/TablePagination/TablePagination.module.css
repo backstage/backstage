@@ -22,6 +22,11 @@
     align-items: center;
     justify-content: space-between;
     padding-top: var(--bui-space-5);
+
+    &[data-has-first-last='true'] {
+      flex-wrap: wrap;
+      gap: var(--bui-space-2);
+    }
   }
 
   .bui-TablePaginationLeft {
@@ -35,6 +40,12 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--bui-space-2);
+
+    .bui-TablePagination[data-has-first-last='true'] & {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      max-width: 100%;
+    }
   }
 
   .bui-TablePaginationSelect {

@@ -42,8 +42,10 @@ export const Default: Story = {
     totalCount: 100,
     hasNextPage: true,
     hasPreviousPage: false,
+    onFirstPage: noop,
     onNextPage: noop,
     onPreviousPage: noop,
+    onLastPage: noop,
     onPageSizeChange: noop,
     showPageSizeOptions: true,
   },
@@ -83,6 +85,8 @@ export const CursorPagination: Story = {
   args: {
     ...Default.args,
     offset: undefined,
+    onFirstPage: undefined,
+    onLastPage: undefined,
   },
 };
 

@@ -57,10 +57,11 @@ export interface UsePageCacheResult<T, TCursor extends CursorType = string> {
   onPreviousPage: () => void;
   hasNextPage: boolean;
   onNextPage: () => void;
+  onJumpToPage: (cursor: TCursor | undefined) => void;
   reload: (options?: { keepCurrentCursor?: boolean }) => void;
 }
 
-type Direction = 'mount' | 'reset' | 'refresh' | 'next' | 'prev';
+type Direction = 'mount' | 'reset' | 'refresh' | 'next' | 'prev' | 'jump';
 
 class PageCacheStore<T, TCursor extends CursorType> {
   private cache = new Map<InternalCursor<TCursor>, PageEntry<T, TCursor>>();
@@ -91,6 +92,7 @@ class PageCacheStore<T, TCursor extends CursorType> {
     direction: Direction,
     currentCursor: InternalCursor<TCursor>,
     initialCurrentCursor: TCursor | undefined,
+    jumpCursor?: TCursor,
   ): InternalCursor<TCursor> | undefined {
     if (direction === 'mount') {
       return toInternalCursor(initialCurrentCursor);
@@ -100,6 +102,9 @@ class PageCacheStore<T, TCursor extends CursorType> {
     }
     if (direction === 'refresh') {
       return currentCursor;
+    }
+    if (direction === 'jump') {
+      return toInternalCursor(jumpCursor);
     }
     const currentEntry = this.cache.get(currentCursor);
 
@@ -162,11 +167,12 @@ export function usePageCache<T, TCursor extends CursorType = string>(
   const hasPreviousPage = currentPage?.prevCursor !== undefined;
 
   const goToPage = useCallback(
-    async (direction: Direction) => {
+    async (direction: Direction, jumpCursor?: TCursor) => {
       const targetCursor = cacheStore.getTargetCursor(
         direction,
         currentCursor,
         initialCurrentCursor,
+        jumpCursor,
       );
 
       if (targetCursor === undefined) {
@@ -255,6 +261,14 @@ export function usePageCache<T, TCursor extends CursorType = string>(
     goToPage('prev');
   }, [isPending, currentCursor, goToPage, cacheStore]);
 
+  const onJumpToPage = useCallback(
+    (cursor: TCursor | undefined) => {
+      if (isPending || toInternalCursor(cursor) === currentCursor) return;
+      goToPage('jump', cursor);
+    },
+    [isPending, currentCursor, goToPage],
+  );
+
   const reload = useCallback(
     (reloadOptions?: { keepCurrentCursor?: boolean }) => {
       if (abortControllerRef.current) {
@@ -278,6 +292,7 @@ export function usePageCache<T, TCursor extends CursorType = string>(
     onPreviousPage,
     hasNextPage,
     onNextPage,
+    onJumpToPage,
     reload,
   };
 }

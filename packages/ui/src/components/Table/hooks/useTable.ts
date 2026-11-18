@@ -66,6 +66,7 @@ function useTableProps<T extends TableItem>(
       totalCount: paginationResult.totalCount,
       hasNextPage: paginationResult.hasNextPage,
       hasPreviousPage: paginationResult.hasPreviousPage,
+      onFirstPage: paginationResult.onFirstPage,
       onNextPage: () => {
         paginationResult.onNextPage();
         onNextPageCallback?.();
@@ -74,6 +75,7 @@ function useTableProps<T extends TableItem>(
         paginationResult.onPreviousPage();
         onPreviousPageCallback?.();
       },
+      onLastPage: paginationResult.onLastPage,
       onPageSizeChange: (size: number) => {
         paginationResult.onPageSizeChange(size);
         onPageSizeChangeCallback?.(size);
@@ -90,8 +92,10 @@ function useTableProps<T extends TableItem>(
     paginationResult.totalCount,
     paginationResult.hasNextPage,
     paginationResult.hasPreviousPage,
+    paginationResult.onFirstPage,
     paginationResult.onNextPage,
     paginationResult.onPreviousPage,
+    paginationResult.onLastPage,
     paginationResult.onPageSizeChange,
     onNextPageCallback,
     onPreviousPageCallback,
@@ -125,6 +129,8 @@ function useTableProps<T extends TableItem>(
 /**
  * A hook that manages table data fetching, pagination, sorting, search, and filtering.
  * Supports three modes: `complete` for client-side data, `offset` for server-side offset pagination, and `cursor` for server-side cursor pagination.
+ * Paged complete and offset modes provide first and last page controls by default.
+ * Cursor mode provides only previous and next controls because the last cursor is not known.
  *
  * @public
  */
