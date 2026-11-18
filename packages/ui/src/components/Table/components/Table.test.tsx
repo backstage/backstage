@@ -22,6 +22,7 @@ import { BUIProvider } from '../../../provider/BUIProvider';
 import { Cell } from './Cell';
 import { Table } from './Table';
 import { useTable } from '../hooks/useTable';
+import type { OffsetParams } from '../hooks/types';
 import type { ColumnConfig } from '../types';
 
 const routerFuture = {
@@ -89,6 +90,62 @@ describe('Table pagination', () => {
 
     fireEvent.click(firstPage);
     expect(screen.getByText('1 - 10 of 25')).toBeInTheDocument();
+  });
+
+  it('keeps the current page available when jumps to uncached pages fail', async () => {
+    let failLastPage = true;
+    let failFirstPage = true;
+    const getData = jest.fn(
+      async ({ offset, pageSize }: OffsetParams<unknown>) => {
+        if (offset === 20 && failLastPage) {
+          failLastPage = false;
+          throw new Error('last page unavailable');
+        }
+        if (offset === 0 && failFirstPage) {
+          failFirstPage = false;
+          throw new Error('first page unavailable');
+        }
+        return {
+          data: paginationItems.slice(offset, offset + pageSize),
+          totalCount: paginationItems.length,
+        };
+      },
+    );
+
+    function OffsetPaginationFixture() {
+      const { tableProps } = useTable({
+        mode: 'offset',
+        getData,
+        paginationOptions: { pageSize: 10, initialOffset: 10 },
+      });
+      return <Table columnConfig={paginationColumns} {...tableProps} />;
+    }
+
+    render(<OffsetPaginationFixture />);
+    expect(await screen.findByText('Item 10')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Last table page' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'last page unavailable',
+    );
+    expect(screen.getByText('Item 10')).toBeInTheDocument();
+    expect(screen.getByText('11 - 20 of 25')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Last table page' }));
+    expect(await screen.findByText('Item 20')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'First table page' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'first page unavailable',
+    );
+    expect(screen.getByText('Item 20')).toBeInTheDocument();
+    expect(screen.getByText('21 - 25 of 25')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'First table page' }));
+    expect(await screen.findByText('Item 0')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(getData).toHaveBeenCalledTimes(5);
   });
 });
 

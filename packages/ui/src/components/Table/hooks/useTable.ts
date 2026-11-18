@@ -52,7 +52,9 @@ function useTableProps<T extends TableItem>(
   }
 
   const displayData = paginationResult.data ?? previousDataRef.current;
-  const isStale = paginationResult.isPending && displayData !== undefined;
+  const isStale =
+    displayData !== undefined &&
+    (paginationResult.isPending || paginationResult.data === undefined);
 
   const pagination = useMemo(() => {
     if (paginationOptions.type === 'none') {
@@ -130,6 +132,7 @@ function useTableProps<T extends TableItem>(
  * A hook that manages table data fetching, pagination, sorting, search, and filtering.
  * Supports three modes: `complete` for client-side data, `offset` for server-side offset pagination, and `cursor` for server-side cursor pagination.
  * Paged complete and offset modes provide first and last page controls by default.
+ * If a first or last page request fails, the current page remains available for retry.
  * Cursor mode provides only previous and next controls because the last cursor is not known.
  *
  * @public

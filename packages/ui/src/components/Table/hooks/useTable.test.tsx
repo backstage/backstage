@@ -338,9 +338,11 @@ describe('useTable', () => {
     await waitFor(() =>
       expect(result.current.tableProps.error?.message).toBe('page failed'),
     );
+    expect(result.current.tableProps.isStale).toBe(true);
 
     act(() => getPagination(result.current).onPreviousPage());
     expect(result.current.tableProps.error).toBeUndefined();
+    expect(result.current.tableProps.isStale).toBe(false);
     expect(result.current.tableProps.data?.[0]?.id).toBe(0);
 
     failSecondPage = false;

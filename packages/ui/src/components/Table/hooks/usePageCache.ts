@@ -168,9 +168,10 @@ export function usePageCache<T, TCursor extends CursorType = string>(
 
   const goToPage = useCallback(
     async (direction: Direction, jumpCursor?: TCursor) => {
+      const sourceCursor = currentCursor;
       const targetCursor = cacheStore.getTargetCursor(
         direction,
-        currentCursor,
+        sourceCursor,
         initialCurrentCursor,
         jumpCursor,
       );
@@ -187,7 +188,7 @@ export function usePageCache<T, TCursor extends CursorType = string>(
       }
 
       const entry = cacheStore.getOrCreate(targetCursor);
-      cacheStore.linkEntryToSource(entry, direction, currentCursor);
+      cacheStore.linkEntryToSource(entry, direction, sourceCursor);
       setCurrentCursor(targetCursor);
 
       if (abortControllerRef.current) {
@@ -230,6 +231,13 @@ export function usePageCache<T, TCursor extends CursorType = string>(
           return;
         }
 
+        // A jump does not connect adjacent pages, so restore its loaded source cursor.
+        if (
+          direction === 'jump' &&
+          cacheStore.get(sourceCursor)?.data !== undefined
+        ) {
+          setCurrentCursor(sourceCursor);
+        }
         setError(err instanceof Error ? err : new Error(String(err)));
         setIsPending(false);
       }
