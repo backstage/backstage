@@ -89,6 +89,13 @@ export type {
 } from './permissions/modelPermissions';
 export type { AiCredentialStores, CredentialScope } from './credentials/types';
 export type { RecoveryEvent } from './journal/types';
+export type { AiProviderRegistry } from './providers/registry';
+export type {
+  AiProviderModule,
+  ModuleAuthority,
+  ProviderAdapter,
+  ProviderEnvelope,
+} from './providers/types';
 export type { JournalPruneResult } from './journal/retention';
 export { startAiJournalPruneRunner } from './journal/pruneRunner';
 export type {

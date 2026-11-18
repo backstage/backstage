@@ -53,7 +53,13 @@ export interface AiJournalPruneRunnerOptions {
  * @alpha
  */
 export interface AiJournalPruneRunner {
-  /** Runs one pass now and resolves with its result; never overlaps a scheduled pass. */
+  /**
+   * Runs one pass now and resolves with its result; never overlaps a
+   * scheduled pass. A pass skipped because the runner was stopped, or
+   * failed and warned, resolves with zeros that carry no information:
+   * `prunedEvents: 0` and `uncertaintyRecords: 0` mean "not measured",
+   * never "the journal holds none".
+   */
   pruneNow(): Promise<JournalPruneResult>;
   /** Stops the schedule and resolves once the in-flight pass (if any) settled. */
   stop(): Promise<void>;

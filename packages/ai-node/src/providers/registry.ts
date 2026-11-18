@@ -29,7 +29,11 @@ export function modelCredentialKey(providerId: string): string | undefined {
   return providerId.startsWith(MCP_RESERVED_PREFIX) ? undefined : providerId;
 }
 
-/** Immutable, validated registrations shared by guard and journal. */
+/**
+ * Immutable, validated registrations shared by guard and journal.
+ *
+ * @alpha
+ */
 export type AiProviderRegistry = Readonly<{
   get(id: string): AiProviderModule | undefined;
   hasOperation(operation: string): boolean;

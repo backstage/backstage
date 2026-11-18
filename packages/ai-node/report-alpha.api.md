@@ -222,6 +222,58 @@ export type AiObservabilityEvent =
     }>;
 
 // @alpha
+export type AiProviderModule = Readonly<{
+  id: string;
+  adapter: ProviderAdapter;
+  certifiedOperations: readonly string[];
+  destinationTemplates: readonly DestinationTemplate[];
+  destination(model: AnyModel, env: Record<string, string> | undefined): string;
+  validateEnvelope(
+    operation: ProviderEnvelope,
+    request: Request,
+  ): Promise<'model' | 'auth.token-exchange'>;
+  classifyRequest?(url: string): 'model' | 'auth.token-exchange';
+  transport?: 'sse';
+  credentialKey?(providerId: string): string;
+  interpretCredential?(
+    scope: CredentialScope,
+    credential: Credential_2,
+  ): ModuleAuthority;
+  permissionName?(providerId: string, modelId: string): string;
+  resolveDispatch?(
+    model: AnyModel,
+    resolveCredential: () => Promise<
+      | {
+          scope: CredentialScope;
+          authority: ModuleAuthority['authority'];
+          generation: string;
+        }
+      | undefined
+    >,
+  ): Promise<
+    | {
+        resolved: true;
+        api: string;
+        destination: string;
+        authority: ModuleAuthority['authority'];
+        credentialScope: CredentialScope;
+        credentialGeneration: string;
+      }
+    | {
+        resolved: false;
+        reason: string;
+      }
+  >;
+}>;
+
+// @alpha
+export type AiProviderRegistry = Readonly<{
+  get(id: string): AiProviderModule | undefined;
+  hasOperation(operation: string): boolean;
+  canonicalPath(path: string): string | undefined;
+}>;
+
+// @alpha
 export interface AiPruneRunnerLogger {
   // (undocumented)
   info(message: string): void;
@@ -353,8 +405,6 @@ export function createAiHttpSupport(
 ): Promise<AiHttpSupport>;
 
 // @alpha
-export function createMetricsSubscriber(): AiMetricsSubscriber;
-
 export function createAiServiceFactory(
   options?: AiServiceFactoryOptions,
 ): <TService extends AiService>(
@@ -374,6 +424,9 @@ export function createGuardedToolOperations(options: {
     caller?: Record<string, unknown>;
   }): Promise<unknown>;
 };
+
+// @alpha
+export function createMetricsSubscriber(): AiMetricsSubscriber;
 
 // @alpha
 export function createToolPermissions(options: {
@@ -407,11 +460,6 @@ export type CredentialScope =
     }>;
 
 // @alpha
-export function evaluateAiHealth(
-  snapshot: AiHealthSnapshot,
-  thresholds?: AiHealthThresholds,
-): AiHealthReport;
-
 export type DestinationTemplate = readonly DestinationTemplatePart[];
 
 // @alpha
@@ -424,6 +472,12 @@ export type DestinationTemplatePart =
     }>;
 
 // @alpha
+export function evaluateAiHealth(
+  snapshot: AiHealthSnapshot,
+  thresholds?: AiHealthThresholds,
+): AiHealthReport;
+
+// @alpha
 export type Fence = Readonly<{
   namespace: Namespace;
   owner: string;
@@ -431,13 +485,6 @@ export type Fence = Readonly<{
 }>;
 
 // @alpha
-export interface JournalPruneResult {
-  // (undocumented)
-  readonly prunedEvents: number;
-  // (undocumented)
-  readonly uncertaintyRecords: number;
-}
-
 export type GuardedToolDispatch = Readonly<{
   callTool(
     model: AnyModel,
@@ -450,6 +497,14 @@ export type GuardedToolDispatch = Readonly<{
 export type GuardedToolOperations = ReturnType<
   typeof createGuardedToolOperations
 >;
+
+// @alpha
+export interface JournalPruneResult {
+  // (undocumented)
+  readonly prunedEvents: number;
+  // (undocumented)
+  readonly uncertaintyRecords: number;
+}
 
 // @alpha
 export interface ManagedHarness {
@@ -471,7 +526,9 @@ export type MetricSeries = Readonly<{
   count: number;
   totalMs?: number;
   avgMs?: number;
+}>;
 
+// @alpha
 export type ModelDescriptor = Readonly<{
   provider: string;
   modelId: string;
@@ -489,6 +546,18 @@ export type ModelPair = Readonly<{
 
 // @alpha
 export function modelPermissionName(input: ModelPair): string;
+
+// @alpha
+export type ModuleAuthority = Readonly<{
+  authority: Readonly<{
+    kind: 'apiKey' | 'oauth' | 'federation';
+    apiKey?: string;
+    headers?: Record<string, string | null>;
+    env?: Record<string, string>;
+    expiresAt?: number;
+  }>;
+  generation: string;
+}>;
 
 // @alpha
 export type Namespace = Readonly<{
@@ -511,6 +580,48 @@ export function parseAiInstallationConfig(
 ): AiInstallationConfig;
 
 // @alpha
+export type ProviderAdapter =
+  | Readonly<{
+      kind: 'stream';
+      stream(
+        model: never,
+        context: never,
+        options: never,
+      ): AssistantMessageEventStream;
+      streamSimple(
+        model: never,
+        context: never,
+        options: never,
+      ): AssistantMessageEventStream;
+    }>
+  | Readonly<{
+      kind: 'custom';
+      invoke(
+        input: Readonly<{
+          operation: string;
+          model: AnyModel;
+          context: unknown;
+          options: Readonly<Record<string, unknown>>;
+        }>,
+      ): Promise<
+        Readonly<{
+          value: unknown;
+          outcome: 'completed' | 'failed' | 'cancelled';
+        }>
+      >;
+    }>;
+
+// @alpha
+export type ProviderEnvelope = Readonly<{
+  api: string;
+  operation: string;
+  modelId: string;
+  resolvedModel: string;
+  destination: string;
+  authTokenDestinations?: readonly string[];
+}>;
+
+// @alpha
 export type RecoveryEvent = Readonly<{
   readonly actor: string;
   readonly kind:
@@ -531,6 +642,7 @@ export function startAiJournalPruneRunner(
   options: AiJournalPruneRunnerOptions,
 ): AiJournalPruneRunner;
 
+// @alpha
 export type ToolCallEnvelope = Readonly<{
   serverId: string;
   toolName: string;
@@ -592,19 +704,4 @@ export type ToolRegistry = Readonly<{
     | undefined;
   readonly modules: readonly ToolModule[];
 }>;
-
-// Warnings were encountered during analysis:
-//
-// src/contracts.d.ts:87:5 - (ae-undocumented) Missing documentation for "harness".
-// src/contracts.d.ts:88:5 - (ae-undocumented) Missing documentation for "context".
-// src/contracts.d.ts:95:5 - (ae-undocumented) Missing documentation for "release".
-// src/contracts.d.ts:103:5 - (ae-undocumented) Missing documentation for "openHarness".
-// src/credentials/types.d.ts:40:5 - (ae-undocumented) Missing documentation for "forScope".
-// src/http/index.d.ts:21:5 - (ae-undocumented) Missing documentation for "authorize".
-// src/http/index.d.ts:22:5 - (ae-undocumented) Missing documentation for "listModels".
-// src/http/index.d.ts:26:5 - (ae-undocumented) Missing documentation for "listSessions".
-// src/http/index.d.ts:33:5 - (ae-undocumented) Missing documentation for "assertSessionOwner".
-// src/http/index.d.ts:34:5 - (ae-undocumented) Missing documentation for "readAudit".
-// src/tools/registry.d.ts:27:5 - (ae-forgotten-export) The symbol "AiProviderRegistry" needs to be exported by the entry point alpha.d.ts
-// /Users/pschultz/.paseo/worktrees/1toga0xl/ai-node-tgw-google/packages/types/src/deferred.ts:1:1 - (ae-wrong-input-file-type) Incorrect file type; API Extractor expects to analyze compiler outputs with the .d.ts file extension. Troubleshooting tips: https://api-extractor.com/link/dts-error
 ```

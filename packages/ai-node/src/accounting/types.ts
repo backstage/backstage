@@ -112,6 +112,8 @@ export interface UsageAccountingOptions {
   /**
    * Namespace enumeration for queries that do not name sessions, typically the
    * host's `NamespaceLease.enumerate`. Accounting does not own discovery.
+   * Without it, a query that names no session ids fails closed with an
+   * actionable error instead of enumerating anything.
    */
   readonly listNamespaces?: (
     pluginId: string,
