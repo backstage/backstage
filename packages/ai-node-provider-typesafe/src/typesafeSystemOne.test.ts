@@ -1,0 +1,295 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Behavior tests for the TypeSafe System One module, restored from the
+ * core's pre-extraction non-chat suite: the classify flow through the
+ * real guarded facade, substitution denials, and the real pinned catalog
+ * base accepted through the durable journal's route-template check
+ * (both dialects; PostgreSQL when AI_TEST_POSTGRES_URL is set).
+ */
+import { once } from 'node:events';
+import { createServer, type Server } from 'node:http';
+import { mockCredentials } from '@backstage/backend-test-utils';
+import { TYPESAFE_CLASSIFIER_MODELS } from '@earendil-works/pi-ai/providers/typesafe.models';
+import type { AnyModel } from '@earendil-works/pi-ai';
+import {
+  createGuardedModelOperations,
+  createJournalHarness,
+  createModelOperationGuard,
+  createProviderRegistry,
+} from '@backstage/ai-node/testUtils';
+import type {
+  AttemptDecision,
+  AttemptOutcome,
+  Fence,
+  TrustedOperation,
+} from '@backstage/ai-node/testUtils';
+import { typesafeSystemOne } from './typesafeSystemOne';
+
+const providers = createProviderRegistry([typesafeSystemOne]);
+
+const classifierContext = {
+  state: { text: 'hello' },
+  questions: {
+    q1: {
+      type: 'bool' as const,
+      instructions: 'Is this a greeting?',
+      criteria: { true: 'it greets', false: 'it does not' },
+    },
+  },
+};
+
+type Body = Record<string, unknown>;
+
+async function startServer(
+  handle: (
+    pathname: string,
+    body: Body,
+    headers: Record<string, string>,
+  ) => Body,
+): Promise<{
+  server: Server;
+  origin: string;
+  requests: Array<{
+    pathname: string;
+    body: Body;
+    headers: Record<string, string>;
+  }>;
+}> {
+  const requests: Array<{
+    pathname: string;
+    body: Body;
+    headers: Record<string, string>;
+  }> = [];
+  const server = createServer((req, res) => {
+    const chunks: Buffer[] = [];
+    req.on('data', chunk => chunks.push(chunk));
+    req.on('end', () => {
+      const headers = Object.fromEntries(
+        Object.entries(req.headers).map(([k, v]) => [k, String(v)]),
+      );
+      const body = JSON.parse(Buffer.concat(chunks).toString('utf-8')) as Body;
+      requests.push({ pathname: req.url ?? '', body, headers });
+      const response = handle(req.url ?? '', body, headers);
+      res.writeHead(200, { 'content-type': 'application/json' });
+      res.end(JSON.stringify(response));
+    });
+  });
+  server.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  const address = server.address();
+  if (!address || typeof address === 'string') throw new Error('no port');
+  return { server, origin: `http://127.0.0.1:${address.port}`, requests };
+}
+
+function harness(model: AnyModel) {
+  const events: string[] = [];
+  const journal = {
+    recordDecisionAndIntent: jest.fn(
+      async (_fence: Fence, event: AttemptDecision) => {
+        events.push(`${event.decision}:${event.attempt}`);
+        return String(event.attempt);
+      },
+    ),
+    recordOutcome: jest.fn(
+      async (_fence: Fence, _id: string, outcome: AttemptOutcome) => {
+        events.push(`outcome:${outcome.status}`);
+      },
+    ),
+    recordRecovery: jest.fn(async () => {}),
+    read: jest.fn(async () => ({ items: [] })),
+  };
+  const transport = jest.fn(async (request: Request) => {
+    events.push('send');
+    return globalThis.fetch(request);
+  });
+  const op: TrustedOperation = {
+    actor: 'user:default/alice',
+    credentials: mockCredentials.user('user:default/alice'),
+    provenance: {
+      origin: 'verified',
+      conversationId: '1',
+      taskId: '2',
+      callId: '3',
+    },
+    fence: {
+      namespace: { pluginId: 'test', sessionId: 's' },
+      owner: 'owner',
+      token: '1',
+    },
+    definitionVersion: 'v1',
+    configVersion: 'v1',
+    provider: model.provider,
+    modelId: model.id,
+    resolvedModel: model.id,
+    operation: 'classify',
+    api: model.api,
+    destination: providers.get(model.api)!.destination(model, undefined),
+    credentialScope: { kind: 'user', id: 'user:default/alice' },
+    credentialGeneration: '1',
+    controller: new AbortController(),
+  };
+  const guard = createModelOperationGuard({
+    providers,
+    journal: journal as never,
+    recheck: async () => {
+      events.push('check');
+      return true;
+    },
+    transport: transport as unknown as typeof fetch,
+  });
+  const facade = createGuardedModelOperations({
+    providers,
+    guard,
+    journal: journal as never,
+    resolve: () => ({
+      model,
+      operation: op,
+      authority: { kind: 'apiKey', apiKey: 'test-key' },
+    }),
+  });
+  // Denials latch the operation, so every probe gets a fresh binding.
+  const probe = async (body: unknown, url: URL | string = op.destination) => {
+    const fresh = guard.bind({
+      ...op,
+      controller: new AbortController(),
+    });
+    await expect(
+      fresh.fetch(url, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      }),
+    ).rejects.toThrow();
+  };
+  return { events, transport, facade, probe, op };
+}
+
+const withBase = (model: AnyModel, origin: string) =>
+  ({ ...model, baseUrl: `${origin}/v1` } as AnyModel);
+
+function trustedOperation(model: AnyModel, fence: Fence): TrustedOperation {
+  return {
+    actor: 'user:default/alice',
+    credentials: mockCredentials.user('user:default/alice'),
+    provenance: {
+      origin: 'verified',
+      conversationId: '1',
+      taskId: '2',
+      callId: '3',
+    },
+    fence,
+    definitionVersion: 'v1',
+    configVersion: 'v1',
+    provider: model.provider,
+    modelId: model.id,
+    resolvedModel: model.id,
+    operation: 'classify',
+    api: model.api,
+    destination: providers.get(model.api)!.destination(model, undefined),
+    credentialScope: { kind: 'user', id: 'user:default/alice' },
+    credentialGeneration: '1',
+    controller: new AbortController(),
+  };
+}
+
+describe('typesafe system one', () => {
+  it('classifies through the TypeSafe System One protocol', async () => {
+    const { server, origin, requests } = await startServer(() => ({
+      answers: { q1: { type: 'noul', noul: 0.87 } },
+    }));
+    try {
+      const model = withBase(
+        TYPESAFE_CLASSIFIER_MODELS['jev-latest'] as never as AnyModel,
+        origin,
+      );
+      const f = harness(model);
+      const result = (await f.facade.classify(
+        model as never,
+        classifierContext as never,
+      )) as unknown as {
+        answers: { q1: { type: string; probability: number } };
+      };
+      expect(result.answers.q1).toEqual({
+        type: 'bool',
+        probability: 0.87,
+      });
+      expect(f.events).toEqual([
+        'check',
+        'allow:1',
+        'send',
+        'outcome:completed',
+      ]);
+      expect(requests).toHaveLength(1);
+      expect(requests[0].pathname).toBe('/v1/systemone');
+      expect(requests[0].headers.authorization).toBe('Bearer test-key');
+      expect(requests[0].body.model).toBe('jev-latest');
+      expect(
+        (requests[0].body.questions as Array<Record<string, unknown>>)[0] ??
+          (requests[0].body.questions as Record<string, { type: string }>).q1,
+      ).toEqual(expect.objectContaining({ type: 'noul' }));
+    } finally {
+      server.close();
+      await once(server, 'close');
+    }
+  });
+
+  it('denies classifier requests with substituted models or routes', async () => {
+    const model = {
+      ...(TYPESAFE_CLASSIFIER_MODELS['jev-latest'] as never as AnyModel),
+      baseUrl: 'https://provider.example/v1',
+    } as AnyModel;
+    const f = harness(model);
+    await f.probe({ model: 'other', state: {}, questions: {} });
+    const wrong = new URL(f.op.destination);
+    wrong.pathname = '/v1/systemtwo';
+    await f.probe({ model: model.id }, wrong);
+    const query = new URL(f.op.destination);
+    query.searchParams.set('unexpected', 'true');
+    await f.probe({ model: model.id }, query);
+    expect(f.events).toEqual(['deny:1', 'deny:1', 'deny:1']);
+    expect(f.transport).not.toHaveBeenCalled();
+  });
+
+  it('accepts the real pinned catalog base URL through the durable route-template check', async () => {
+    // Route templates must match the real catalog base, not only the
+    // localhost substitutions used for transport control: a template or
+    // catalog drift makes the durable journal reject the allow intent.
+    const store = await createJournalHarness({ providers });
+    try {
+      const model = TYPESAFE_CLASSIFIER_MODELS[
+        'jev-latest'
+      ] as never as AnyModel;
+      const op = trustedOperation(model, store.fence);
+      const send = jest.fn(async () => new Response('{}'));
+      const guard = createModelOperationGuard({
+        providers,
+        journal: store.journal,
+        recheck: async () => true,
+        transport: send as unknown as typeof fetch,
+      }).bind(op);
+      await guard.fetch(new URL(op.destination), {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ model: model.id }),
+      } as RequestInit);
+      expect(send).toHaveBeenCalledTimes(1);
+    } finally {
+      await store.cleanup();
+    }
+  });
+});

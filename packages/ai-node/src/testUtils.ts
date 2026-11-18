@@ -53,10 +53,17 @@ export type {
   ProviderAdapter,
   ProviderEnvelope,
 } from './providers/types';
+export { validateHttpEnvelope } from './providers/httpEnvelope';
+export type { HttpEnvelopeRules } from './providers/httpEnvelope';
 export type {
   DestinationTemplate,
   DestinationTemplatePart,
 } from './providers/templates';
+export {
+  createJournalHarness,
+  type JournalHarness,
+  type JournalHarnessOptions,
+} from './testUtilsJournalHarness';
 export {
   CRASH_TEST_CHILD_ENV,
   CRASH_TEST_DB_ENV,

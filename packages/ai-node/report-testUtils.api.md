@@ -7,7 +7,7 @@ import { AnyModel } from '@earendil-works/pi-ai';
 import type { AssistantMessageEventStream } from '@earendil-works/pi-ai';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Credential as Credential_2 } from '@earendil-works/pi-ai';
-import type { Knex } from 'knex';
+import { Knex } from 'knex';
 import { Models } from '@earendil-works/pi-ai';
 import { ProviderHeaders } from '@earendil-works/pi-ai';
 
@@ -323,6 +323,11 @@ export function createGuardedModelOperations(options: {
 }): ModelRequests;
 
 // @alpha
+export function createJournalHarness(
+  options: JournalHarnessOptions,
+): Promise<JournalHarness>;
+
+// @alpha
 export function createModelOperationGuard(options: {
   transport: typeof fetch;
   recheck(operation: TrustedOperation): Promise<boolean>;
@@ -382,6 +387,31 @@ export interface GuardedOperation {
   fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
   // (undocumented)
   finish(outcome: 'completed' | 'failed' | 'cancelled'): Promise<void>;
+}
+
+// @alpha
+export type HttpEnvelopeRules = Readonly<{
+  endpoint: string;
+  sdkQueryParams?: Readonly<Record<string, string>>;
+  zstd?: boolean;
+  federation?: boolean;
+  inspectPayload?(payload: unknown): void;
+}>;
+
+// @alpha
+export interface JournalHarness {
+  cleanup(): Promise<void>;
+  readonly credentials: BackstageCredentials;
+  readonly db: Knex;
+  readonly fence: Fence;
+  readonly journal: AttemptJournal;
+  readonly namespace: Namespace;
+}
+
+// @alpha
+export interface JournalHarnessOptions {
+  readonly dialect?: 'pg' | 'sqlite';
+  readonly providers: AiProviderRegistry;
 }
 
 // @alpha
@@ -553,4 +583,11 @@ export type TrustedOperation = Readonly<{
   providerCredentialExpiresAt?: number;
   controller: AbortController;
 }>;
+
+// @alpha
+export function validateHttpEnvelope(
+  rules: HttpEnvelopeRules,
+  operation: ProviderEnvelope,
+  request: Request,
+): Promise<'model' | 'auth.token-exchange'>;
 ```
