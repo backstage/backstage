@@ -42,6 +42,7 @@ const base = (url: string | undefined) => (url ?? '').replace(/\/+$/, '');
 export const anthropicMessages: AiProviderModule = {
   id: 'anthropic-messages',
   adapter: streamAdapter(anthropic),
+  credentialKinds: ['api_key', 'oauth'],
   certifiedOperations: CHAT,
   destinationTemplates: [[{ literal: '/v1/messages' }]],
   destination: model => `${base(model.baseUrl)}/v1/messages`,

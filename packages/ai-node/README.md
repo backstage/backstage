@@ -64,6 +64,85 @@ the families your installation needs into a factory override. The stock
 families in its composed default, so installations using that plugin need
 no factory override for the stock providers.
 
+### Credential kinds
+
+Each provider module declares the credential kinds it consumes, and a module
+that ships an OAuth auth module declares both. What a family accepts is
+therefore a property of the family, not of the permission model:
+
+| Package                                  | Modules                                                            | Credential kinds   |
+| ---------------------------------------- | ------------------------------------------------------------------ | ------------------ |
+| `@backstage/ai-node-provider-anthropic`  | `anthropic-messages`                                               | `api_key`, `oauth` |
+| `@backstage/ai-node-provider-openai`     | `openai-responses`, `openai-completions`, `openai-codex-responses` | `api_key`, `oauth` |
+| `@backstage/ai-node-provider-openai`     | `openai-decisions`                                                 | `api_key`          |
+| `@backstage/ai-node-provider-azure`      | `azure-openai-responses`                                           | `api_key`          |
+| `@backstage/ai-node-provider-google`     | `google-generative-ai`, `google-vertex`                            | `api_key`          |
+| `@backstage/ai-node-provider-typesafe`   | `typesafe-system-one`                                              | `api_key`          |
+| `@backstage/ai-node-provider-openrouter` | `openrouter-images`                                                | `api_key`          |
+| MCP tool servers                         | one module per server                                              | `api_key`, `oauth` |
+
+An installation OAuth entry for an API-key-only family rejects at startup,
+naming the provider, the configured kind and the supported kinds; a personal
+OAuth credential stored later for such a provider is refused at dispatch with
+the same guidance. A provider that serves several modules accepts the union of
+their kinds.
+
+## Custom gateways
+
+pi's catalog treats a gateway as a provider of its own: the entry keeps its
+own provider id and base URL while reusing a certified adapter. That works
+here unchanged, because every check keys on the pieces the catalog already
+carries:
+
+- **module resolution is by `api`**, not by provider id, so
+  `api: anthropic-messages` under `provider: my-gateway` resolves the
+  certified Anthropic module;
+- **credentials are scoped by the entry's provider id**, so a gateway reads its
+  own `my-gateway` credential from the same scopes every other provider uses;
+- **the destination must still be a certified route** of the resolved module,
+  and the gateway's base URL has to produce one.
+
+A gateway that serves a certified API at a bare path works as-is:
+
+```yaml
+ai:
+  credentials:
+    encryptionKey: ${AI_CREDENTIAL_ENCRYPTION_KEY}
+    scopes:
+      org:
+        # Keyed by the gateway's own provider id.
+        my-gateway:
+          type: api_key
+          key: ${MY_GATEWAY_API_KEY}
+  models:
+    - provider: my-gateway
+      modelId: claude-sonnet-4-5
+      # The certified adapter, not the gateway's name.
+      api: anthropic-messages
+      # Destination is '<baseUrl>/v1/messages', the certified route.
+      baseUrl: https://gateway.internal.example
+      contextWindow: 200000
+      maxTokens: 64000
+```
+
+Gateway base URLs that re-root the API under their own path do **not** match
+the certified routes, and fail closed with nothing sent. Both path-prefixed
+entries in pi's catalog are in that position today:
+
+| Gateway entry (pi catalog)                                                                                               | Certified destination path                      | Module templates                     | Result               |
+| ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- | ------------------------------------ | -------------------- |
+| `vercel-ai-gateway`, `anthropic-messages`, base `https://ai-gateway.vercel.sh`                                           | `/v1/messages`                                  | `/v1/messages`                       | dispatches           |
+| `cloudflare-ai-gateway`, `anthropic-messages`, base `https://gateway.ai.cloudflare.com/v1/{ACCOUNT}/{GATEWAY}/anthropic` | `/v1/{ACCOUNT}/{GATEWAY}/anthropic/v1/messages` | `/v1/messages`                       | denied, nothing sent |
+| `vercel-ai-gateway`, `typesafe-system-one`, base `https://ai-gateway.vercel.sh/typesafe/v1`                              | `/typesafe/v1/systemone`                        | `/v1/systemone`, `/api/v1/systemone` | denied, nothing sent |
+
+Certifying a gateway path prefix would need route templates that describe a
+prefix with digested segments and a per-module mapping from base URL to
+route — machinery this package does not have yet. Until then, point a gateway
+entry at a base URL that keeps the module's certified path, or front the
+gateway so the certified paths are preserved. OAuth through a gateway is out
+of scope as well: a family without an OAuth module refuses an `oauth`
+credential and names `api_key` as the supported kind.
+
 ## Usage
 
 ```ts
@@ -180,10 +259,14 @@ journaled, actionable denial, never a fallback.
   login flow. These installation stores are read-only: a `modify` callback
   that changes the value rejects, `delete` rejects, and a no-op `modify`
   resolves.
-- **Credential entries are opaque.** The schema validates structure only;
-  the credential kind (`api_key`, `oauth`, a future kind) and its fields are
-  interpreted by the credential stores and provider modules that consume
-  them, so configuration never encodes provider semantics.
+- **Credential kinds are checked against the modules.** The schema validates
+  the entry's structure; the kind is then checked at startup against the
+  modules registered for that provider's catalog entries, so a kind no module
+  consumes rejects before the service starts rather than at dispatch. A
+  provider with no registered module cannot be checked that way and stays
+  dispatch-time fail-closed. See [Credential kinds](#credential-kinds) for the
+  per-family table; a credential stored later in a personal store is checked
+  at dispatch instead, with the same guidance.
 - **`tokenEndpoints`** lists, per provider, the trusted OAuth token routes
   guarded auth operations may use for credential refresh — absolute
   `https` URLs on the provider's own origin ending in the reserved

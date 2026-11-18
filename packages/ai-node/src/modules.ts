@@ -29,6 +29,7 @@
  */
 
 export type {
+  AiCredentialKind,
   AiProviderModule,
   ModuleAuthority,
   ProviderAdapter,

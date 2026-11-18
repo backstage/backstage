@@ -48,6 +48,7 @@ export type {
 export type { Fence, Namespace } from './contracts';
 export type { CredentialScope } from './credentials/types';
 export type {
+  AiCredentialKind,
   AiProviderModule,
   ModuleAuthority,
   ProviderAdapter,

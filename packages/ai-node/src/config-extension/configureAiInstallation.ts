@@ -18,6 +18,7 @@ import type { Knex } from 'knex';
 import type { Credential } from '@earendil-works/pi-ai';
 import type { ConfigAtPath } from '../contracts';
 import { createCredentialStores } from '../credentials/createCredentialStores';
+import type { ConfiguredCredentialKind } from '../credentials/configCredentialKinds';
 import { createCredentialRotation } from '../credentials/rotation';
 import type { AiCredentialStores } from '../credentials/types';
 import { parseAiInstallationConfig } from './parseInstallationConfig';
@@ -33,6 +34,18 @@ export interface ConfigureAiInstallationOptions {
   readonly source: ConfigAtPath;
   /** The consuming plugin's Knex client, used for personal credentials. */
   readonly db: Knex;
+}
+
+function describeCredentialKinds(
+  scopes: ReadonlyMap<string, ReadonlyMap<string, Credential>>,
+): readonly ConfiguredCredentialKind[] {
+  const kinds: ConfiguredCredentialKind[] = [];
+  for (const [scopeKey, providers] of scopes) {
+    for (const [providerId, credential] of providers) {
+      kinds.push({ scope: scopeKey, providerId, kind: credential.type });
+    }
+  }
+  return kinds;
 }
 
 /**
@@ -105,6 +118,11 @@ export function configureAiInstallation(
   return {
     models: parsed.models,
     credentialStores,
+    // Already validated by createCredentialStores just above, so reading the
+    // kinds here cannot surface an unusable entry.
+    configCredentialKinds: describeCredentialKinds(
+      scopes as unknown as ReadonlyMap<string, ReadonlyMap<string, Credential>>,
+    ),
     ...(previousEncryptionKey === undefined
       ? {}
       : {

@@ -79,6 +79,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
     id: 'anthropic-messages',
     adapter: streamAdapter(anthropic),
+    credentialKinds: ['api_key', 'oauth'],
     certifiedOperations: CHAT,
     destinationTemplates: [[{ literal: '/v1/messages' }]],
     destination: model => `${base(model.baseUrl)}/v1/messages`,
@@ -100,6 +101,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
     id: 'azure-openai-responses',
     adapter: streamAdapter(azure),
+    credentialKinds: ['api_key'],
     certifiedOperations: CHAT,
     destinationTemplates: [
       [{ literal: '/openai/v1/responses' }],
@@ -119,6 +121,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
     id: 'typesafe-system-one',
     adapter: nonChatAdapter(systemOne.classify),
+    credentialKinds: ['api_key'],
     certifiedOperations: ['classify'],
     destinationTemplates: [
       [{ literal: '/v1/systemone' }],
@@ -131,6 +134,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
     id: 'openrouter-images',
     adapter: nonChatAdapter(images.generateImages),
+    credentialKinds: ['api_key'],
     certifiedOperations: ['generateImages'],
     destinationTemplates: [
       [{ literal: '/v1/chat/completions' }],
@@ -147,6 +151,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
     id: 'openai-responses',
     adapter: streamAdapter(responses),
+    credentialKinds: ['api_key', 'oauth'],
     certifiedOperations: CHAT,
     destinationTemplates: [[{ literal: '/v1/responses' }]],
     destination: model => `${base(model.baseUrl)}/responses`,
@@ -156,6 +161,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
     id: 'openai-completions',
     adapter: streamAdapter(completions),
+    credentialKinds: ['api_key', 'oauth'],
     certifiedOperations: CHAT,
     destinationTemplates: [[{ literal: '/v1/chat/completions' }]],
     destination: model => `${base(model.baseUrl)}/chat/completions`,
@@ -165,6 +171,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
     id: 'openai-codex-responses',
     adapter: streamAdapter(codex),
+    credentialKinds: ['api_key', 'oauth'],
     certifiedOperations: CHAT,
     destinationTemplates: [[{ literal: '/backend-api/codex/responses' }]],
     destination: model => `${base(model.baseUrl)}/codex/responses`,

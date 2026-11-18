@@ -43,6 +43,7 @@ const streamAdapter = (adapter: unknown): ProviderAdapter => {
 export const azureResponses: AiProviderModule = {
   id: 'azure-openai-responses',
   adapter: streamAdapter(azure),
+  credentialKinds: ['api_key'],
   certifiedOperations: CHAT,
   destinationTemplates: [
     [{ literal: '/openai/v1/responses' }],

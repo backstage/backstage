@@ -12,6 +12,9 @@ import { Models } from '@earendil-works/pi-ai';
 import { ProviderHeaders } from '@earendil-works/pi-ai';
 
 // @alpha
+export type AiCredentialKind = 'api_key' | 'oauth';
+
+// @alpha
 export interface AiEventEmitter {
   // (undocumented)
   emit(event: AiObservabilityEvent): void | Promise<void>;
@@ -70,6 +73,7 @@ export type AiObservabilityEvent =
 export type AiProviderModule = Readonly<{
   id: string;
   adapter: ProviderAdapter;
+  credentialKinds: readonly AiCredentialKind[];
   certifiedOperations: readonly string[];
   destinationTemplates: readonly DestinationTemplate[];
   destination(model: AnyModel, env: Record<string, string> | undefined): string;

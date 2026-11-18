@@ -29,6 +29,7 @@ describe('provider registration', () => {
     const module: AiProviderModule = {
       ...azureResponses,
       id: 'example-classifier',
+      credentialKinds: ['api_key'],
       certifiedOperations: ['classify', 'rerankV2'],
       destinationTemplates: [
         [

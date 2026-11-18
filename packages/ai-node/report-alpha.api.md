@@ -60,6 +60,9 @@ export type AiConfigCredentialScopes = ReadonlyMap<
 >;
 
 // @alpha
+export type AiCredentialKind = 'api_key' | 'oauth';
+
+// @alpha
 export type AiCredentialsPrecedence = 'user-first' | 'org-first';
 
 // @alpha
@@ -391,6 +394,7 @@ export type AiPolicyAuthorizer = Pick<
 export type AiProviderModule = Readonly<{
   id: string;
   adapter: ProviderAdapter;
+  credentialKinds: readonly AiCredentialKind[];
   certifiedOperations: readonly string[];
   destinationTemplates: readonly DestinationTemplate[];
   destination(model: AnyModel, env: Record<string, string> | undefined): string;
@@ -540,6 +544,13 @@ export function allowsConditional<TResource>(options: {
 }): boolean;
 
 // @alpha
+export function assertConfigCredentialKinds(options: {
+  models: readonly AnyModel[];
+  providers: AiProviderRegistry;
+  configured: readonly ConfiguredCredentialKind[];
+}): void;
+
+// @alpha
 export type AttemptId = string;
 
 // @alpha
@@ -655,6 +666,14 @@ export type ConfiguredAiInstallation = Readonly<{
   }>;
   credentialPrecedence: AiCredentialsPrecedence;
   credentialTokenEndpoints: Readonly<Record<string, string>>;
+  configCredentialKinds?: readonly ConfiguredCredentialKind[];
+}>;
+
+// @alpha
+export type ConfiguredCredentialKind = Readonly<{
+  scope: string;
+  providerId: string;
+  kind: AiCredentialKind;
 }>;
 
 // @alpha

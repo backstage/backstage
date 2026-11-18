@@ -153,6 +153,7 @@ function inspectImageRequestPayload(payload: unknown): void {
 export const openrouterImages: AiProviderModule = {
   id: 'openrouter-images',
   adapter: nonChatAdapter(images.generateImages),
+  credentialKinds: ['api_key'],
   certifiedOperations: ['generateImages'],
   destinationTemplates: [
     [{ literal: '/v1/chat/completions' }],
