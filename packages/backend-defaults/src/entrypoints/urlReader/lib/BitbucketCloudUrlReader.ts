@@ -32,7 +32,10 @@ import {
   getBitbucketCloudRequestOptions,
   ScmIntegrations,
 } from '@backstage/integration';
-import parseGitUrl from 'git-url-parse';
+// Share the SCM URL guard with the integration package without making it
+// part of that package's public API.
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { parseGitUrlSafe } from '../../../../../integration/src/parseGitUrlSafe';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
@@ -140,7 +143,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceReadTreeOptions,
   ): Promise<UrlReaderServiceReadTreeResponse> {
-    const { filepath } = parseGitUrl(url);
+    const { filepath } = parseGitUrlSafe(url);
 
     const lastCommitShortHash = await this.getLastCommitShortHash(url);
     if (options?.etag && options.etag === lastCommitShortHash) {
@@ -175,7 +178,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceSearchOptions,
   ): Promise<UrlReaderServiceSearchResponse> {
-    const { filepath } = parseGitUrl(url);
+    const { filepath } = parseGitUrlSafe(url);
 
     // If it's a direct URL we use readUrl instead
     if (!filepath?.match(/[*?]/)) {
@@ -240,7 +243,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
   }
 
   private async getLastCommitShortHash(url: string): Promise<string> {
-    const { name: repoName, owner: project, ref } = parseGitUrl(url);
+    const { name: repoName, owner: project, ref } = parseGitUrlSafe(url);
 
     let branch = ref;
     if (!branch) {

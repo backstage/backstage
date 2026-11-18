@@ -350,6 +350,14 @@ describe('BitbucketCloudUrlReader', () => {
 
       expect(response.etag).toBe('12ab34cd56ef');
     });
+
+    it('rejects path traversal encoded into the workspace', async () => {
+      await expect(
+        reader.readTree(
+          'https://bitbucket.org/%252e%252e%252f%252e%252e%252fvictim/mock/browse/src',
+        ),
+      ).rejects.toThrow(/path traversal is not allowed/);
+    });
   });
 
   describe('search hosted', () => {

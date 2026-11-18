@@ -131,6 +131,14 @@ describe('BitbucketServerUrlReader', () => {
 
       expect(response.etag).toBe('3bdd5457286a');
     });
+
+    it('rejects path traversal encoded into the project', async () => {
+      await expect(
+        reader.readTree(
+          'https://bitbucket.mycompany.net/projects/%252e%252e%252f%252e%252e%252fvictim/repos/mock/browse/src',
+        ),
+      ).rejects.toThrow(/path traversal is not allowed/);
+    });
   });
 
   describe('readTree without branch', () => {

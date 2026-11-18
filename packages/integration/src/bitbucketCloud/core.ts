@@ -15,8 +15,7 @@
  */
 
 import fetch from 'cross-fetch';
-import parseGitUrl from 'git-url-parse';
-import { parseGitUrlSafe } from '../helpers';
+import { parseGitUrlSafe } from '../parseGitUrlSafe';
 import { BitbucketCloudIntegrationConfig } from './config';
 import { DateTime } from 'luxon';
 
@@ -124,7 +123,7 @@ export async function getBitbucketCloudDefaultBranch(
   url: string,
   config: BitbucketCloudIntegrationConfig,
 ): Promise<string> {
-  const { name: repoName, owner: project } = parseGitUrl(url);
+  const { name: repoName, owner: project } = parseGitUrlSafe(url);
 
   const branchUrl = `${config.apiBaseUrl}/repositories/${project}/${repoName}`;
   const response = await fetch(

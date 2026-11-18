@@ -15,8 +15,7 @@
  */
 
 import fetch from 'cross-fetch';
-import parseGitUrl from 'git-url-parse';
-import { parseGitUrlSafe } from '../helpers';
+import { parseGitUrlSafe } from '../parseGitUrlSafe';
 import { BitbucketServerIntegrationConfig } from './config';
 
 /**
@@ -30,7 +29,7 @@ export async function getBitbucketServerDefaultBranch(
   url: string,
   config: BitbucketServerIntegrationConfig,
 ): Promise<string> {
-  const { name: repoName, owner: project } = parseGitUrl(url);
+  const { name: repoName, owner: project } = parseGitUrlSafe(url);
 
   // Bitbucket Server https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp184
   let branchUrl = `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/default-branch`;

@@ -15,7 +15,7 @@
  */
 
 import { GithubIntegrationConfig } from './config';
-import { parseGitUrlSafe } from '../helpers';
+import { parseGitUrlSafe } from '../parseGitUrlSafe';
 import { GithubCredentials } from './types';
 
 /**

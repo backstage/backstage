@@ -19,7 +19,6 @@ import {
   basicIntegrations,
   defaultScmResolveUrl,
   isValidHost,
-  parseGitUrlSafe,
 } from './helpers';
 
 describe('basicIntegrations', () => {
@@ -191,6 +190,26 @@ describe('defaultScmResolveUrl', () => {
     );
   });
 
+  it('works for object storage bases with delimiters in object names', () => {
+    // The owner and name components hold object names for these providers,
+    // and they never reach request URLs through link resolution
+    expect(
+      defaultScmResolveUrl({
+        url: '/other.yaml',
+        base: 'https://bucket.s3.us-east-1.amazonaws.com/a%23b/catalog-info.yaml',
+      }),
+    ).toBe(
+      'https://bucket.s3.us-east-1.amazonaws.com/a%23b/catalog-info.yaml/other.yaml',
+    );
+
+    expect(
+      defaultScmResolveUrl({
+        url: '/d.yaml',
+        base: 'https://storage.cloud.google.com/bucket/c%23.yaml',
+      }),
+    ).toBe('https://storage.cloud.google.com/bucket/c%23.yaml/d.yaml');
+  });
+
   it('works for files in the repo root', () => {
     expect(
       defaultScmResolveUrl({
@@ -316,101 +335,5 @@ describe('defaultScmResolveUrl', () => {
         base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/a.yaml?at=master',
       }),
     ).toBe('https://b.com/b.yaml');
-  });
-});
-
-describe('parseGitUrlSafe', () => {
-  it('parses a valid GitHub blob URL', () => {
-    const result = parseGitUrlSafe(
-      'https://github.com/owner/repo/blob/main/path/to/file.yaml',
-    );
-    expect(result.owner).toBe('owner');
-    expect(result.name).toBe('repo');
-    expect(result.ref).toBe('main');
-    expect(result.filepath).toBe('path/to/file.yaml');
-  });
-
-  it('rejects URLs with encoded path traversal in filepath', () => {
-    expect(() =>
-      parseGitUrlSafe(
-        'https://github.com/octocat/Hello-World/blob/main/%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fuser/repos',
-      ),
-    ).toThrow('path traversal');
-  });
-
-  it('rejects URLs with double-encoded path traversal in filepath', () => {
-    expect(() =>
-      parseGitUrlSafe(
-        'https://github.com/octocat/Hello-World/blob/main/foo%2f%2e%2e%2fbar%2f%2e%2e%2f%2e%2e%2fsecret',
-      ),
-    ).toThrow('path traversal');
-  });
-
-  it('rejects URLs with uppercase %2E encoding in filepath', () => {
-    expect(() =>
-      parseGitUrlSafe(
-        'https://github.com/octocat/Hello-World/blob/main/%2E%2E%2F%2E%2E%2Fuser/repos',
-      ),
-    ).toThrow('path traversal');
-  });
-
-  it('rejects URLs with mixed-case percent encoding', () => {
-    expect(() =>
-      parseGitUrlSafe(
-        'https://github.com/octocat/Hello-World/blob/main/%2E%2e%2Fuser/repos',
-      ),
-    ).toThrow('path traversal');
-  });
-
-  it('rejects URLs where git-url-parse leaves percent-encoded traversal segments', () => {
-    expect(() =>
-      parseGitUrlSafe(
-        'https://github.com/octocat/Hello-World/blob/main/%252e%252e%252fuser/repos',
-      ),
-    ).toThrow('path traversal');
-  });
-
-  it('rejects URLs with triple-encoded path traversal', () => {
-    expect(() =>
-      parseGitUrlSafe(
-        'https://github.com/octocat/Hello-World/blob/main/%25252e%25252e%25252fuser/repos',
-      ),
-    ).toThrow('path traversal');
-  });
-
-  it('rejects URLs with literal .. in the middle of the filepath', () => {
-    // URL normalization resolves foo/../bar to just bar, so the filepath
-    // won't contain traversal. But we verify parseGitUrlSafe still handles
-    // the resolved path safely.
-    const result = parseGitUrlSafe(
-      'https://github.com/owner/repo/blob/main/foo/../bar',
-    );
-    expect(result.filepath).toBe('bar');
-  });
-
-  it('handles literal ../ that gets normalized away by URL parsing', () => {
-    // Literal ../../../ gets resolved by the URL constructor before
-    // git-url-parse sees it. This mangles owner/name but the filepath
-    // is empty, so parseGitUrlSafe doesn't reject it. Downstream
-    // functions reject these via their own validation.
-    const result = parseGitUrlSafe(
-      'https://github.com/owner/repo/blob/main/../../../user/repos',
-    );
-    expect(result.filepath).toBe('');
-    expect(result.owner).not.toBe('owner');
-  });
-
-  it('allows filenames that contain dots but are not traversal', () => {
-    const result = parseGitUrlSafe(
-      'https://github.com/owner/repo/blob/main/path/to/some..file.yaml',
-    );
-    expect(result.filepath).toBe('path/to/some..file.yaml');
-  });
-
-  it('allows URLs without a filepath', () => {
-    const result = parseGitUrlSafe('https://github.com/owner/repo');
-    expect(result.owner).toBe('owner');
-    expect(result.name).toBe('repo');
-    expect(result.filepath).toBe('');
   });
 });

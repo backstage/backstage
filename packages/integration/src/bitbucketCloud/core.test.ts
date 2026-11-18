@@ -187,5 +187,19 @@ describe('bitbucketCloud core', () => {
       );
       expect(defaultBranch).toEqual('main');
     });
+
+    it('rejects path traversal encoded into the workspace', async () => {
+      const config: BitbucketCloudIntegrationConfig = {
+        host: 'bitbucket.org',
+        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+      };
+
+      await expect(
+        getBitbucketCloudDefaultBranch(
+          'https://bitbucket.org/%252e%252e%252f%252e%252e%252fvictim/mock/src/main',
+          config,
+        ),
+      ).rejects.toThrow(/path traversal is not allowed/);
+    });
   });
 });
