@@ -32,6 +32,10 @@ import {
   ScmIntegrations,
   GithubCredentials,
 } from '@backstage/integration';
+// Share the SCM URL guard with the integration package without making it
+// part of that package's public API.
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { parseGitUrlSafe } from '../../../../../integration/src/parseGitUrlSafe';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import fetch, { RequestInit, Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
@@ -335,7 +339,7 @@ export class GithubUrlReader implements UrlReaderService {
       trees_url: string;
     };
   }> {
-    const parsed = parseGitUrl(url);
+    const parsed = parseGitUrlSafe(url);
     const { ref, full_name } = parsed;
 
     const credentials = await this.getCredentials(url, options);

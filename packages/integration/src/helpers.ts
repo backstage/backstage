@@ -14,41 +14,9 @@
  * limitations under the License.
  */
 
-import parseGitUrl from 'git-url-parse';
 import lodash from 'lodash';
 import { ScmIntegration, ScmIntegrationsGroup } from './types';
-
-/**
- * Wraps git-url-parse and rejects URLs whose filepath contains path traversal
- * segments. Without this check, a URL like
- * `https://github.com/o/r/blob/main/%2e%2e%2f%2e%2e%2fuser/repos` would be
- * decoded to `../../user/repos` and could escape the expected API path when
- * interpolated into provider API URLs.
- */
-export function parseGitUrlSafe(url: string) {
-  const parsed = parseGitUrl(url);
-  if (parsed.filepath) {
-    let decoded = parsed.filepath;
-    let previous;
-    do {
-      previous = decoded;
-      try {
-        decoded = decodeURIComponent(decoded);
-      } catch {
-        break;
-      }
-    } while (decoded !== previous);
-
-    if (
-      decoded.split('/').some(segment => segment === '..' || segment === '.')
-    ) {
-      throw new Error(
-        'Invalid SCM URL: path traversal is not allowed in the URL',
-      );
-    }
-  }
-  return parsed;
-}
+import { parseGitUrlSafe } from './parseGitUrlSafe';
 
 /** Checks whether the given argument is a valid URL hostname */
 export function isValidHost(host: string): boolean {
@@ -116,7 +84,13 @@ export function defaultScmResolveUrl(options: {
 
   if (url.startsWith('/')) {
     // If it is an absolute path, move relative to the repo root
-    const { href, filepath } = parseGitUrlSafe(base);
+    // The owner and name of the base are only used to locate the path
+    // within the base URL here, never to construct request URLs, so the
+    // delimiter check of the guard is skipped; object names on storage
+    // providers may contain `#` or `?`
+    const { href, filepath } = parseGitUrlSafe(base, {
+      allowUrlDelimiters: true,
+    });
 
     updated = new URL(href);
 
