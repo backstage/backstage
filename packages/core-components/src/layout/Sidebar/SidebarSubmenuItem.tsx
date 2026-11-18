@@ -265,15 +265,9 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
               ) : null}
             </Typography>
             {showDropDown ? (
-              <ArrowDropUpIcon
-                className={classes.dropdownArrow}
-                fontSize="small"
-              />
+              <ArrowDropUpIcon className={classes.dropdownArrow} />
             ) : (
-              <ArrowDropDownIcon
-                className={classes.dropdownArrow}
-                fontSize="small"
-              />
+              <ArrowDropDownIcon className={classes.dropdownArrow} />
             )}
           </Button>
         </Tooltip>
