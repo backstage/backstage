@@ -29,7 +29,7 @@ const validBackstageToken =
 
 describe('ProxiedSignInIdentity', () => {
   describe('tokenToExpiry', () => {
-    beforeEach(() => jest.useFakeTimers());
+    beforeEach(() => jest.useFakeTimers({ doNotFake: ['nextTick'] }));
     afterEach(() => jest.useRealTimers());
 
     it('handles undefined', async () => {
@@ -77,7 +77,7 @@ describe('ProxiedSignInIdentity', () => {
   });
 
   describe('ProxiedSignInIdentity', () => {
-    beforeEach(() => jest.useFakeTimers());
+    beforeEach(() => jest.useFakeTimers({ doNotFake: ['nextTick'] }));
     afterEach(() => jest.useRealTimers());
 
     const worker = setupServer();

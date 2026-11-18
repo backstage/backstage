@@ -1,5 +1,28 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.4.3
+
+### Patch Changes
+
+- 4d7a3fe: Clarified in the config schema which `techdocs.generator.mkdocs` settings also apply to the Zensical engine: `legacyCopyReadmeMdToIndexMd`, `dangerouslyAllowAdditionalKeys` and `dangerouslyAllowAdditionalPlugins`.
+- bc73976: Restricts `markdown_extensions` in `mkdocs.yml` to known extension names before documentation generation, in both the MkDocs and Zensical engines. Extension names outside the permitted set are removed from the configuration with a warning. Allow additional extensions, for example from a custom build image, with the new `techdocs.generator.mkdocs.dangerouslyAllowAdditionalExtensions` configuration, or the `--dangerouslyAllowAdditionalExtensions` flag when using the TechDocs CLI.
+- Updated dependencies
+  - @backstage/integration@2.2.0
+  - @backstage/catalog-client@1.16.4
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-techdocs-node@2.3.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-node@3.0.0
+  - @backstage/plugin-techdocs-common@0.1.3
+
+## 2.4.3-next.2
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 2.4.2-next.2
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @backstage/plugin-events-backend
 
+## 0.6.8
+
+### Patch Changes
+
+- a1ca033: Fixed the database event bus listener connection inheriting the trace context of the request that first opened it. Its keepalive queries are now recorded as separate root spans instead of being attached to that request's trace for as long as the connection stays open.
+- 6a0de59: Backend plugins now locate their database migrations relative to their own package directory, without requiring the package to be resolvable by name.
+- a70aaea: The requests passed to request validators now include the parsed query string. The request rejection details now also
+  support an optional `contentType` option for the provided payload, defaulting to `application/json` but also allowing
+  `text/plain`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/backend-openapi-utils@0.7.4
+  - @backstage/plugin-events-node@0.5.0
+  - @backstage/config@1.3.11
+
 ## 0.6.8-next.2
 
 ### Patch Changes

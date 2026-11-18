@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import { FrontendPlugin, Extension, ExtensionDataRef } from '../../wiring';
 import { ExtensionAttachTo } from '../../wiring/resolveExtensionDefinition';
 import { FilterPredicate } from '@backstage/filter-predicates';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * The specification for this {@link AppNode} in the {@link AppTree}.
@@ -118,7 +122,7 @@ export interface AppTreeApi {
  * The `ApiRef` of {@link AppTreeApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.appTree} instead.
+ * @deprecated Use {@link CoreApis.appTree | coreApis.appTree} instead.
  */
 export const appTreeApiRef = createApiRef<AppTreeApi>().with({
   id: 'core.app-tree',

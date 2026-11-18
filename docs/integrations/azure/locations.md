@@ -84,6 +84,32 @@ See the Azure DevOps documentation on how to grant access to the [managed identi
 
 ### Using a personal access token (PAT)
 
+:::caution[Deprecated for Azure DevOps Services]
+
+Personal access tokens are deprecated for Azure DevOps Services (`dev.azure.com` and `*.visualstudio.com`). Microsoft [retires global personal access tokens](https://devblogs.microsoft.com/devops/retirement-of-global-personal-access-tokens-in-azure-devops/), which work across all organizations you can access, on January 27, 2027. Organization-scoped personal access tokens keep working, but Microsoft recommends Microsoft Entra ID credentials over all personal access tokens. Backstage logs a warning at startup when a personal access token is configured for Azure DevOps Services, unless `NODE_ENV` is `development`.
+
+- In production, use a [service principal](#using-a-service-principal-with-a-client-secret) or a [managed identity](#using-a-system-assigned-managed-identity).
+- Microsoft Entra ID credentials only work with the `dev.azure.com` host. If your integration uses a legacy `*.visualstudio.com` host, change the integration `host` and your repository URLs, such as catalog locations, to `dev.azure.com` before switching credentials. Otherwise Backstage fails to start.
+- For local development, sign in with the Azure CLI (`az login`) and leave out `credentials` for `dev.azure.com`. Backstage then falls back to [`DefaultAzureCredential`](https://learn.microsoft.com/en-us/javascript/api/@azure/identity/defaultazurecredential), which picks up your Azure CLI sign-in.
+
+Personal access tokens are still supported for Azure DevOps Server.
+
+:::
+
+If you still need a personal access token for Azure DevOps Services, create an organization-scoped token instead of a global one, and limit it to that organization with `organizations`:
+
+```yaml
+integrations:
+  azure:
+    - host: dev.azure.com
+      credentials:
+        - organizations:
+            - my-org
+          personalAccessToken: ${PERSONAL_ACCESS_TOKEN}
+```
+
+If Azure DevOps rejects a personal access token, for example because it has expired or is a retired global token, reading from Azure DevOps fails with an error saying the credentials were rejected.
+
 A personal access token (PAT) is a token you generate with a specific scope and expiration date. It allows Backstage to authenticate against Azure DevOps on your behalf.
 
 The following configuration shows how to use a personal access token to authenticate against Azure DevOps:

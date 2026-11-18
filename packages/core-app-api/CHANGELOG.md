@@ -1,5 +1,20 @@
 # @backstage/core-app-api
 
+## 1.20.7
+
+### Patch Changes
+
+- 9c97ff4: Fixed the OAuth "Login Required" popup (`OAuthRequestDialog`) appearing after a transient network failure during a background token refresh — for example right after the machine wakes from sleep, when the session has not actually expired.
+- 25297de: Fixed translation subscriptions failing when an abandoned language load rejects after switching to a language whose translations are already available.
+- 2aa14e3: Backstage UI links and collections now use client-side navigation at their consuming route scope, and apps with a custom `Router` that provides no React Router context render without failing at startup. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps.
+- 7285912: Translation snapshots now provide `t` while resources are loading, using available messages and language fallbacks. Check `ready` before rendering to wait for the selected language.
+- 8688124: Fix unexpected sign-in prompts when multiple tabs refresh a session at the same time with an auth provider that rotates refresh tokens. Refresh requests are coordinated across tabs in browsers that support the Web Locks API.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/ui@0.20.0
+  - @backstage/version-bridge@1.1.0
+  - @backstage/config@1.3.11
+
 ## 1.20.7-next.2
 
 ### Patch Changes

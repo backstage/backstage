@@ -23,15 +23,17 @@ import {
   type ComponentType,
   type ReactNode,
 } from 'react';
+import { useApi, useApiHolder, coreApis } from '@backstage/frontend-plugin-api';
 import {
-  appHistoryApiRef,
-  NavigationProvider,
-  type Navigation,
-  useApi,
-  useApiHolder,
-  useRouteResolution,
-} from '@backstage/frontend-plugin-api';
-import { isExternalTarget, sanitizeHref } from '@internal/frontend';
+  useRouteMatches,
+  isExternalTarget,
+  sanitizeHref,
+} from '@internal/frontend';
+import {
+  RoutingProvider,
+  type RoutingIntegration,
+} from '@backstage/frontend-plugin-api/routing';
+
 import type { RouterHistory } from '@tanstack/history';
 import {
   Outlet,
@@ -47,8 +49,8 @@ import {
 import { createTanStackHistory } from './createTanStackHistory';
 
 /** Resolves authored targets using the same route scope as a native TanStack Link. */
-function useAdapterNavigation(): Navigation {
-  const history = useApi(appHistoryApiRef);
+function useAdapterNavigation(): RoutingIntegration {
+  const history = useApi(coreApis.appHistory);
   const router = useRouter();
   const from = useMatch({
     strict: false,
@@ -143,9 +145,9 @@ export function createTanStackPageRouter(
   options: CreateTanStackPageRouterOptions,
 ): ComponentType<{ children?: ReactNode }> {
   return function TanStackPageRouterAdapter(props: { children?: ReactNode }) {
-    const mount = useRouteResolution().matches.at(-1);
+    const mount = useRouteMatches().at(-1);
     const routePattern = mount?.routePattern;
-    const appHistory = useApiHolder().get(appHistoryApiRef);
+    const appHistory = useApiHolder().get(coreApis.appHistory);
     const scoped = useMemo(() => {
       if (!routePattern || !appHistory) {
         return undefined;
@@ -222,9 +224,9 @@ export function createTanStackPageRouter(
 
     return (
       <PageContentContext.Provider value={props.children}>
-        <NavigationProvider useNavigation={useAdapterNavigation}>
+        <RoutingProvider useRoutingIntegration={useAdapterNavigation}>
           <RouterProvider router={scoped.router} />
-        </NavigationProvider>
+        </RoutingProvider>
       </PageContentContext.Provider>
     );
   };

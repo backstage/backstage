@@ -1,5 +1,14 @@
 # @backstage/cli-module-scaffolder
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.4
+  - @backstage/cli-node@0.3.6
+  - @backstage/errors@1.4.0
+
 ## 0.2.1-next.2
 
 ### Patch Changes

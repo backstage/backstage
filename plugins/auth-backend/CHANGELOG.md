@@ -1,5 +1,36 @@
 # @backstage/plugin-auth-backend
 
+## 0.31.0
+
+### Minor Changes
+
+- 352ad44: **BREAKING**: The deprecated experimental Dynamic Client Registration (DCR) support has been removed. Use Client ID Metadata Documents (CIMD) instead and remove `auth.experimentalDynamicClientRegistration` from your configuration. The database migration deletes registered clients and their authorization and offline sessions, invalidating existing DCR authorization codes and refresh tokens. Users must sign in again through a CIMD client. Already-issued user tokens remain valid until they expire. See the [migration guide](https://backstage.io/docs/ai/mcp-actions#migrating-from-dynamic-client-registration).
+- 9e22c4b: Added support for pre-registered OAuth clients through the new `auth.staticClients` configuration. This allows integrations that support neither Client ID Metadata Documents nor Dynamic Client Registration to act on behalf of signed-in users using a fixed client ID, an optional client secret, and exact redirect URIs. All clients must use PKCE. Clients with a secret must also authenticate at the token endpoint.
+
+  The token endpoint verifies client credentials for both authorization code and refresh token grants. Missing or incorrect credentials for confidential clients return `invalid_client` with HTTP 401. Public clients can identify themselves using HTTP Basic with an empty secret. Codes issued to a different client are rejected.
+
+  Removing a configured client rejects its outstanding authorization codes and refresh tokens. HTTP Basic authentication supports form-encoded client IDs and secrets.
+
+  PKCE now requires the `S256` challenge method for all clients, including existing CIMD clients. The `plain` method is no longer accepted or advertised. Update clients that use `plain` to generate SHA-256 challenges.
+
+### Patch Changes
+
+- 5fc15b7: Fixed authorization-code exchanges to reject supplied client IDs that do not match the client that obtained the code. These requests return `invalid_grant` without consuming the code. Exchanges that omit `client_id` remain supported for older clients but now log a deprecation warning; a future release will require it.
+- 97ee785: Allow Cursor clients to use Client ID Metadata Documents by default.
+- 8965c27: User tokens issued by sign-in resolvers now always have the entity refs in their `sub` and `ent` claims in canonical form, for example `user:default/jane.doe` rather than `User:default/Jane.Doe`, and duplicate `ent` refs are removed. Previously, a custom sign-in resolver could issue valid but non-canonical refs, which then failed to match stored user info and offline sessions on case-sensitive databases.
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- 6a0de59: Backend plugins now locate their database migrations relative to their own package directory, without requiring the package to be resolvable by name.
+- 7db7c52: Respect the `auth.backstageTokenExpiration` configuration when issuing OAuth access and ID tokens from the OIDC service, instead of hard-coding a 1-hour expiry.
+- fa0eb7a: Added a `POST /v1/offline-sessions/revoke` endpoint that lets other backend services revoke all offline sessions (refresh tokens) of a user. The endpoint only accepts service credentials, records an audit event, and is only available when `auth.experimentalRefreshToken.enabled` is set.
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-auth-node@0.7.8
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-node@3.0.0
+
 ## 0.31.0-next.2
 
 ### Minor Changes

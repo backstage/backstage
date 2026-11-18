@@ -1,5 +1,23 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.13
+
+### Patch Changes
+
+- 68abde4: Allow AWS Kubernetes clusters to select credentials from a configured AWS account without assuming another role. Set `kubernetes.io/aws-account-id` in the cluster's auth metadata to use that account's credentials directly, including credentials obtained through web identity federation.
+- 0915584: Kubernetes proxy: stop forwarding the caller's `Authorization` and `Cookie` headers to the target cluster. Upstream requests now carry only credentials from the configured auth strategy or the `Backstage-Kubernetes-Authorization` header.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.4
+  - @backstage/catalog-client@1.16.4
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-kubernetes-common@0.9.15
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-node@3.0.0
+  - @backstage/plugin-kubernetes-node@0.4.10
+  - @backstage/plugin-permission-common@0.9.13
+
 ## 0.21.13-next.2
 
 ### Patch Changes

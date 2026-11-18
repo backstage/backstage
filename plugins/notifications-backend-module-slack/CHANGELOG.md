@@ -1,5 +1,19 @@
 # @backstage/plugin-notifications-backend-module-slack
 
+## 0.4.8
+
+### Patch Changes
+
+- 6a0de59: Backend plugins now locate their database migrations relative to their own package directory, without requiring the package to be resolvable by name.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-node@3.0.0
+  - @backstage/plugin-notifications-common@0.2.6
+  - @backstage/plugin-notifications-node@0.2.32
+
 ## 0.4.8-next.1
 
 ### Patch Changes

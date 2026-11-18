@@ -1,5 +1,22 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.11
+
+### Patch Changes
+
+- c0ea056: Fixed broadcast notifications losing their saved status when marked as read or unread, and losing their read status when saved or unsaved.
+- 6a0de59: Backend plugins now locate their database migrations relative to their own package directory, without requiring the package to be resolvable by name.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/backend-openapi-utils@0.7.4
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-node@3.0.0
+  - @backstage/plugin-notifications-common@0.2.6
+  - @backstage/plugin-notifications-node@0.2.32
+  - @backstage/plugin-signals-node@0.2.7
+
 ## 0.6.11-next.2
 
 ### Patch Changes

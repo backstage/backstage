@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { ReactNode } from 'react';
 import { createApiRef } from '../system';
 import { Observable } from '@backstage/types';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * Describes a theme provided by the app.
@@ -81,7 +85,7 @@ export type AppThemeApi = {
  * The {@link ApiRef} of {@link AppThemeApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.appTheme} instead.
+ * @deprecated Use {@link CoreApis.appTheme | coreApis.appTheme} instead.
  */
 export const appThemeApiRef = createApiRef<AppThemeApi>().with({
   id: 'core.apptheme',

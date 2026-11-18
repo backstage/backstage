@@ -15,7 +15,8 @@
  */
 
 import { ElementType, JSX } from 'react';
-import { type IconComponent } from './types';
+import { type IconElement } from './types';
+import { type AuthProviderInfo } from '../apis/definitions/auth';
 
 // Emulate the MUI4 icon type
 type Mui4Icon = (props: {
@@ -57,11 +58,11 @@ type NotAnIcon2 = (props: {
   otherProp?: string;
 }) => JSX.Element;
 
-describe('IconComponent', () => {
+describe('AuthProviderInfo icon component compatibility', () => {
   // eslint-disable-next-line jest/expect-expect
   it('should be a component type', () => {
     // @ts-ignore
-    let icon: IconComponent;
+    let icon: Exclude<AuthProviderInfo['icon'], IconElement>;
     icon = {} as Mui4Icon;
     icon = {} as Mui5Icon;
     icon = {} as Mui6Icon;

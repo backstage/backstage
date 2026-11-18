@@ -1235,6 +1235,15 @@ These should NEVER appear in any of the above queries:
    on such pages, should show the hashed `(value || '') = ANY(...)` filter
    rather than an `= ANY` index condition.
 
+7. **Nested Loop with a Join Filter over a Materialize of a set** — The
+   candidate rows are walked in the order of the sort field and each one is
+   compared against every row of a materialized set of entity IDs, with
+   `Rows Removed by Join Filter` in the millions. PostgreSQL chooses this
+   under a LIMIT when it expects the matches to be spread evenly in sort
+   order. Sorted queries with a long list that is a direct condition should
+   instead build the set first, hash join it, and sort the matches, see
+   `sortsAfterMatching` in `src/service/request/longInLists.ts`.
+
 Facets and count queries (scenarios 15-18) have no LIMIT and must visit the
 whole filtered set. For those queries, a bounded spill of an intermediate set
 at a small `work_mem` is acceptable. Per-row work that grows with the number of

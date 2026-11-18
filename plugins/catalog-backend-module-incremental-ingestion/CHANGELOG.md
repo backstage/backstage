@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.9.1
+
+### Patch Changes
+
+- 6a0de59: Backend plugins now locate their database migrations relative to their own package directory, without requiring the package to be resolvable by name.
+- 7baaad7: Fixed incremental ingestion getting stuck when a provider emits the same entity more than once in a single page or event. Since the previous release, this made every attempt to ingest that page fail on PostgreSQL with `ON CONFLICT DO UPDATE command cannot affect row a second time`, so the provider never got past it. Now only the last copy of each entity is kept. A warning names the provider and some of the repeated entity refs, at most once every 10 minutes per provider.
+
+  Providers should still emit each entity at most once per page. If the copies differ and arrive in a different order on each run, the stored entity can change on every run.
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.19.0
+  - @backstage/plugin-catalog-backend@4.0.3
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-events-node@0.5.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-common@1.2.2
+  - @backstage/plugin-catalog-node@3.0.0
+  - @backstage/plugin-permission-common@0.9.13
+
 ## 0.9.1-next.2
 
 ### Patch Changes

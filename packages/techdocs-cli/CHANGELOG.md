@@ -1,5 +1,31 @@
 # @techdocs/cli
 
+## 1.15.0
+
+### Minor Changes
+
+- a4604d2: Add Zensical support to `serve`, `serve:raw` and `generate` via `--engine zensical` (or the `backstage.io/techdocs-engine` annotation in `catalog-info.yaml`), including live reload in the preview app. The default `--docker-image` is now chosen per engine instead of always being `spotify/techdocs`, and matches the image the TechDocs backend uses for that engine, so MkDocs previews now use `spotify/techdocs:v1.2.8` instead of `latest`. Passing `--docker-image` explicitly behaves as before.
+
+  The `serve` flags `--mkdocs-port`, `--mkdocs-config-file-name` and `--mkdocs-parameter-*` are deprecated in favor of `--engine-port`, `--config-file-name` and `--parameter-*`. If both the old and new flag are given, the new one wins and the warning says the old one is ignored.
+
+### Patch Changes
+
+- bc73976: Restricts `markdown_extensions` in `mkdocs.yml` to known extension names before documentation generation, in both the MkDocs and Zensical engines. Extension names outside the permitted set are removed from the configuration with a warning. Allow additional extensions, for example from a custom build image, with the new `techdocs.generator.mkdocs.dangerouslyAllowAdditionalExtensions` configuration, or the `--dangerouslyAllowAdditionalExtensions` flag when using the TechDocs CLI.
+- Updated dependencies
+  - @backstage/backend-defaults@0.19.0
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-techdocs-node@2.3.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/cli-common@0.3.3
+  - @backstage/config@1.3.11
+
+## 1.14.2-next.1
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 1.14.1-next.1
 
 ### Patch Changes

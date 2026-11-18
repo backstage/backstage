@@ -14,31 +14,27 @@
  * limitations under the License.
  */
 
-import { type ComponentType, type ReactNode } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import {
-  type AppError,
-  prepareSpecializedApp,
-} from '@backstage/frontend-app-api';
+import { Suspense, useSyncExternalStore, type ReactNode } from 'react';
+import { prepareSpecializedApp } from '@backstage/frontend-app-api';
+import type { RenderTestAppOptions } from './renderTestApp';
 import { render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import {
   createExtension,
   ExtensionBoundary,
   ExtensionDefinition,
   coreExtensionData,
-  RouteRef,
-  FrontendFeature,
-  ExternalRouteRef,
   identityApiRef,
+  useApi,
+  routeResolutionApiRef,
+  type AppNode,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { createTestAppPlugin } from './testAppPlugin';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/prepareSpecializedApp';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../frontend-app-api/src/routing/getBasePath';
-import { TestApiPairs } from '../apis/TestApiProvider';
 import { throwOnAppErrors } from './throwOnAppErrors';
 import {
   createTestNavigation,
@@ -56,153 +52,62 @@ const DEFAULT_MOCK_CONFIG = {
 
 /**
  * Options to customize the behavior of the test app.
+ *
+ * Extends the options of {@link renderTestApp}; see
+ * {@link RenderTestAppOptions} for the shared app, route, and API options.
+ *
  * @public
  */
-export type TestAppOptions<TApiPairs extends any[] = any[]> = {
-  /**
-   * An object of paths to mount route ref on, with the key being the path and the value
-   * being the route ref that the path will be bound to. This allows the route refs to be
-   * used by `useRouteRef` in the rendered elements.
-   *
-   * @example
-   * ```ts
-   * renderInTestApp(<MyComponent />, {
-   *   mountedRoutes: {
-   *     '/my-path': myRouteRef,
-   *   }
-   * })
-   * // ...
-   * const link = useRouteRef(myRouteRef)
-   * ```
-   */
-  mountedRoutes?: { [path: string]: RouteRef | ExternalRouteRef };
+export type TestAppOptions<TApiPairs extends any[] = any[]> =
+  RenderTestAppOptions<TApiPairs> & {
+    /**
+     * The route path pattern that the test element is rendered at.
+     *
+     * The element is treated as a page mounted at this pattern, so targets
+     * written relative to the page — a tab href, a `..` climb — resolve against
+     * it rather than against the app root, as they would in a real app, and
+     * `useParams` binds the params the pattern names.
+     *
+     * This publishes a framework page mount. Wrap the element in its page's
+     * adapter when it uses a routing library, or read framework params through
+     * `useParams`. Defaults to the app root.
+     *
+     * Should be used together with `initialRouteEntries` to set a concrete
+     * URL that matches the pattern.
+     *
+     * @example
+     * ```ts
+     * renderInTestApp(<EntityPage />, {
+     *   mountPath: '/catalog/:namespace/:kind/:name',
+     *   initialRouteEntries: ['/catalog/default/component/my-entity'],
+     * })
+     * ```
+     */
+    mountPath?: string;
 
-  /**
-   * Additional configuration passed to the app when rendering elements inside it.
-   */
-  config?: JsonObject;
-
-  /**
-   * Additional features to add to the test app.
-   */
-  features?: FrontendFeature[];
-
-  /**
-   * The route path pattern that the test element is rendered at.
-   *
-   * The element is treated as a page mounted at this pattern, so targets
-   * written relative to the page — a tab href, a `..` climb — resolve against
-   * it rather than against the app root, as they would in a real app, and
-   * `useRouteRefParams` binds the params the pattern names.
-   *
-   * This publishes a framework page mount. Pass the page's adapter with
-   * `router` when the element uses a routing library, or read framework params
-   * through `useRouteRefParams`.
-   *
-   * Should be used together with `initialRouteEntries` to set a concrete
-   * URL that matches the pattern.
-   *
-   * @example
-   * ```ts
-   * renderInTestApp(<EntityPage />, {
-   *   mountPath: '/catalog/:namespace/:kind/:name',
-   *   initialRouteEntries: ['/catalog/default/component/my-entity'],
-   * })
-   * ```
-   */
-  mountPath?: string;
-
-  /**
-   * The page router adapter the element under test is rendered inside, mirroring
-   * the adapter its page declares in production.
-   *
-   * The app retains its root React Router v6 projection. This option supplies
-   * the explicit page scope used by the page in production, including for
-   * adapters from other routing libraries.
-   *
-   * Pass the same adapter the page renders in its loader, and the element is
-   * rendered inside it exactly as the page renders it. Reach for this only for
-   * content that genuinely uses its routing library: `useRouteRef`,
-   * `useRouteRefParams` and `useAppHref` answer from the framework and need no
-   * adapter at all.
-   *
-   * Pairs with `mountPath`, which is what says where the page sits; without one
-   * the element is treated as a page mounted at the app root.
-   *
-   * @example
-   * ```ts
-   * import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
-   *
-   * renderInTestApp(<EntityHeader />, {
-   *   router: ReactRouterV6PageRouter,
-   *   mountPath: '/catalog/:namespace/:kind/:name',
-   *   initialRouteEntries: ['/catalog/default/component/my-entity'],
-   * })
-   * ```
-   */
-  router?: ComponentType<{ children?: ReactNode }>;
-
-  /**
-   * What the element is in the app, which decides where it is rendered.
-   *
-   * - `'page'` (the default) mounts it where a page goes, under the app's root
-   *   React Router v6 projection. `router` supplies the page's explicit adapter.
-   * - `'chrome'` mounts it on `app/root`'s `elements` input, where a sidebar, an
-   *   error page or any other app-wide element goes. Chrome renders above every
-   *   page and inside the app's own root React Router context, so it keeps one
-   *   here too, and `mountPath` does not apply — chrome is not mounted at a
-   *   route.
-   *
-   * Reach for `'chrome'` only for something that really is app-wide. `router`
-   * is not the alternative for it: that is a page adapter, and it would give
-   * chrome a page-scoped route context that no chrome has in a real app.
-   *
-   * @example
-   * ```ts
-   * renderInTestApp(<MySidebarItem />, {
-   *   renderAs: 'chrome',
-   *   initialRouteEntries: ['/catalog/default/component/my-entity'],
-   * })
-   * ```
-   */
-  renderAs?: 'page' | 'chrome';
-
-  /**
-   * Initial route entries for the in-memory app history.
-   * The last entry is the starting location.
-   */
-  initialRouteEntries?: string[];
-
-  /**
-   * API overrides to provide to the test app. In-memory fakes are provided by
-   * default for alerts, errors, OAuth requests, storage, and toasts.
-   * Explicit overrides take precedence. Use `mockApis` helpers
-   * from `@backstage/frontend-test-utils` to create mock implementations.
-   *
-   * @example
-   * ```ts
-   * import { mockApis } from '@backstage/frontend-test-utils';
-   *
-   * renderInTestApp(<MyComponent />, {
-   *   apis: [mockApis.identity({ userEntityRef: 'user:default/guest' })],
-   * })
-   * ```
-   */
-  apis?: readonly [...TestApiPairs<TApiPairs>];
-
-  /**
-   * Decides whether an error reported while creating the test app is
-   * expected. By default every app error fails the test.
-   *
-   * @example
-   * ```ts
-   * isExpectedError: error =>
-   *   error.code === 'EXTENSION_INPUT_DATA_IGNORED' &&
-   *   error.context.node.spec.id === 'page:my-plugin'
-   * ```
-   */
-  isExpectedError?: (error: AppError) => boolean;
-};
+    /**
+     * What the element is in the app, which decides where it is rendered.
+     *
+     * - `'page'` (the default) publishes a framework page mount. Wrap the element
+     *   in its page adapter when it needs routing-library context.
+     * - `'chrome'` mounts it on `app/root`'s `elements` input, where a sidebar, an
+     *   error page or any other app-wide element goes. Chrome renders above every
+     *   page and inside the app's own root React Router context, so it keeps one
+     *   here too, and `mountPath` does not apply — chrome is not mounted at a
+     *   route.
+     *
+     * Reach for `'chrome'` only for something that really is app-wide.
+     *
+     * @example
+     * ```ts
+     * renderInTestApp(<MySidebarItem />, {
+     *   renderAs: 'chrome',
+     *   initialRouteEntries: ['/catalog/default/component/my-entity'],
+     * })
+     * ```
+     */
+    renderAs?: 'page' | 'chrome';
+  };
 
 const testAppPlugin = createTestAppPlugin([
   'app/layout',
@@ -210,31 +115,50 @@ const testAppPlugin = createTestAppPlugin([
   'app/nav',
 ]);
 
+// Match through the same framework API that supplies page params and adapters.
+function TestAppPage({
+  node,
+  children,
+}: {
+  node: AppNode;
+  children: ReactNode;
+}) {
+  const history = useApi(coreApis.appHistory);
+  const routes = useApi(routeResolutionApiRef);
+  const { location } = useSyncExternalStore(
+    history.subscribe,
+    history.getSnapshot,
+  );
+  const { matches } = routes.resolvePath({ pathname: location.pathname, node });
+  return matches.length > 0 ? <>{children}</> : null;
+}
+
 /**
  * @public
  * Renders the given element in a test app, for use in unit tests.
  *
+ * Elements that do not suspend render immediately. If a descendant suspends,
+ * the entire element renders nothing until it is ready; use asynchronous queries
+ * such as `findByText` to await it. Supply an inner Suspense boundary to isolate
+ * suspended content or provide a custom fallback. Rendering errors are not caught
+ * by the Suspense boundary.
+ *
  * Navigation is owned by a {@link @backstage/frontend-plugin-api#AppHistoryApi}
- * with in-memory history, the same seam as production, and is returned as
- * `appHistory`.
+ * with in-memory history, the same seam as production. Access it through
+ * `apis.get(coreApis.appHistory)` on the render result.
  *
  * The element renders under the app's root React Router v6 projection, as in
- * production. Use `router` for the page's explicit adapter. Framework routing
- * hooks work without a page adapter. App-wide elements such as sidebars can
- * use `renderAs: 'chrome'` to render on the app root's elements input.
+ * production. Wrap the element in its page's adapter when it needs routing-library
+ * context. Page matching and navigation use the framework routing APIs.
+ * App-wide elements such as sidebars can use `renderAs: 'chrome'` to render on
+ * the app root's elements input.
  */
 export function renderInTestApp<const TApiPairs extends any[] = any[]>(
   element: JSX.Element,
   options?: TestAppOptions<TApiPairs>,
 ): TestAppRenderResult {
   const asChrome = options?.renderAs === 'chrome';
-  const PageRouter = options?.router;
-  // A page router adapter scopes a routing library to the page it renders, so
-  // it needs a page to be mounted at. A caller who named an adapter but no
-  // mount means the element under test *is* the page, so it is mounted at the
-  // app root — the same place it sat before this option existed. The splat is
-  // what lets that root mount host routes below it.
-  const mountPath = options?.mountPath ?? (PageRouter ? '/*' : undefined);
+  const mountPath = options?.mountPath ?? '/';
   const configData = options?.config ?? DEFAULT_MOCK_CONFIG;
   const defaultAppHistory = createTestNavigation({
     initialEntries: options?.initialRouteEntries,
@@ -242,6 +166,7 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
   });
 
   const extensions: Array<ExtensionDefinition> = [
+    ...(options?.extensions ?? []),
     createExtension({
       // Chrome is app-wide, so it goes where app-wide elements go: above every
       // page, inside the app's own root React Router projection. Nothing is
@@ -253,57 +178,44 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
         : { id: 'app/root', input: 'children' },
       output: [coreExtensionData.reactElement],
       factory: ({ node }) => {
+        const suspendedElement = <Suspense fallback={null}>{element}</Suspense>;
         if (asChrome) {
-          return [coreExtensionData.reactElement(element)];
+          return [coreExtensionData.reactElement(suspendedElement)];
         }
-        let content = PageRouter ? <PageRouter>{element}</PageRouter> : element;
-
-        if (mountPath) {
-          // Every mount hosts what sits below it, the app root included: `'/'`
-          // and `'/*'` are the same mount written two ways, and a bare `'/'`
-          // route would match only the root itself, rendering nothing as soon
-          // as `initialRouteEntries` points anywhere deeper.
-          const routePath = mountPath.endsWith('/*')
-            ? mountPath
-            : `${mountPath.replace(/\/$/, '')}/*`;
-          // Mounted route refs are link targets, not competing page matches.
-          // Resolve the subject in its own tree, including the root's splat.
-          content = (
-            <Routes>
-              <Route
-                path={routePath}
-                element={
-                  <TestRouteResolver
-                    routeObjects={[
-                      {
-                        path: routePath.replace(/\/\*$/, '') || '/',
-                        appNode: node,
-                        routeRefs: new Set(),
-                        caseSensitive: false,
-                        children: [
-                          {
-                            path: '*',
-                            routeRefs: new Set(),
-                            caseSensitive: false,
-                          },
-                        ],
-                      },
-                    ]}
-                  >
-                    <ExtensionBoundary node={node}>{content}</ExtensionBoundary>
-                  </TestRouteResolver>
-                }
-              />
-            </Routes>
-          );
-        }
+        const routePath =
+          mountPath.replace(/\/\*$/, '').replace(/\/$/, '') || '/';
+        const content = (
+          <TestRouteResolver
+            routeObjects={[
+              {
+                path: routePath,
+                appNode: node,
+                routeRefs: new Set(),
+                caseSensitive: false,
+                children: [
+                  {
+                    path: '*',
+                    routeRefs: new Set(),
+                    caseSensitive: false,
+                  },
+                ],
+              },
+            ]}
+          >
+            <TestAppPage node={node}>
+              <ExtensionBoundary node={node}>
+                {suspendedElement}
+              </ExtensionBoundary>
+            </TestAppPage>
+          </TestRouteResolver>
+        );
 
         return [coreExtensionData.reactElement(content)];
       },
     }),
   ];
 
-  const { appHistory, features, apiFactoryOverrides, externalBindings } =
+  const { features, apiFactoryOverrides, externalBindings } =
     prepareTestAppFeatures({
       extensions,
       appHistory: defaultAppHistory,
@@ -364,5 +276,5 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
     app.tree.root.instance!.getData(coreExtensionData.reactElement),
   );
 
-  return Object.assign(result, { appHistory });
+  return Object.assign(result, { apis: app.apis });
 }

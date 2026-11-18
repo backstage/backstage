@@ -1,5 +1,15 @@
 # @internal/techdocs-zensical
 
+## 0.0.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-techdocs-node@2.3.0
+  - @backstage/config@1.3.11
+
 ## 0.0.1-next.1
 
 ### Patch Changes

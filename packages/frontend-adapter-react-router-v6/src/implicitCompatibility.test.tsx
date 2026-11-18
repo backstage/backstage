@@ -31,6 +31,7 @@ import {
   PageBlueprint,
   RouterLink,
   useAppHref,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 
 describe('implicit page router compatibility', () => {
@@ -88,11 +89,12 @@ describe('implicit page router compatibility', () => {
         loader: async () => <h1>Other</h1>,
       },
     });
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [page, other],
       initialRouteEntries: ['/legacy/alpha'],
       config: { app: { baseUrl: 'http://localhost/backstage' } },
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
     expect(
       await screen.findByRole('heading', { name: 'Legacy alpha' }),
     ).toBeVisible();
@@ -159,7 +161,7 @@ describe('implicit page router compatibility', () => {
           </>
         );
       }
-      const { appHistory } = renderTestApp({
+      const { apis } = renderTestApp({
         config: { app: { baseUrl: `http://localhost${basename}` } },
         initialRouteEntries: ['/framework/alpha/details?old=1#old'],
         extensions: [
@@ -172,6 +174,7 @@ describe('implicit page router compatibility', () => {
           }),
         ],
       });
+      const appHistory = apis.get(coreApis.appHistory)!;
       expect(
         await screen.findByRole('link', { name: 'Absolute' }),
       ).toHaveAttribute('href', `${basename}/framework/alpha/other`);
@@ -293,10 +296,11 @@ describe('implicit page router compatibility', () => {
         loader: async () => <FrameworkContent />,
       },
     });
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [explicit, framework],
       initialRouteEntries: ['/explicit/alpha'],
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
     expect(
       await screen.findByRole('heading', { name: 'Explicit alpha' }),
     ).toBeVisible();

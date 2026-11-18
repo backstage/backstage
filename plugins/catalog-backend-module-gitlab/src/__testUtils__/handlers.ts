@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { http, HttpResponse, graphql } from 'msw';
+import { http, HttpResponse } from 'msw';
+import { graphql } from 'msw/graphql';
 import {
   all_groups_response,
   all_projects_response,

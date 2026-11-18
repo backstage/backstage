@@ -15,6 +15,7 @@
  */
 
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import { ForwardedError } from '@backstage/errors';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { loadYaml } from '../../../../../lib/yaml';
@@ -199,9 +200,8 @@ export async function command(
       console.group();
       console.log(chalk.red(err.message));
       console.groupEnd();
-    } else {
-      console.log(chalk.red(err.message));
-      console.log(chalk.red(`OpenAPI server stub generation failed.`));
+      return;
     }
+    throw new ForwardedError('OpenAPI server stub generation failed', err);
   }
 }

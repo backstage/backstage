@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useState, useSyncExternalStore } from 'react';
 import { createTranslatedMessagesSource } from './createTranslatedMessagesSource';
 
 /**

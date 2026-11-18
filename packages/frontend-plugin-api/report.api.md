@@ -95,7 +95,7 @@ export type AnalyticsTracker = {
   ) => void;
 };
 
-// @public
+// @public @deprecated
 export type AnyApiFactory = ApiFactory<
   unknown,
   unknown,
@@ -104,7 +104,7 @@ export type AnyApiFactory = ApiFactory<
   }
 >;
 
-// @public
+// @public @deprecated
 export type AnyApiRef = ApiRef<unknown>;
 
 // @public
@@ -123,25 +123,23 @@ export const ApiBlueprint: ExtensionBlueprint_2<{
     TDeps extends { [name in string]: unknown },
   >(
     params: ApiFactory<TApi, TImpl, TDeps>,
-  ) => ExtensionBlueprintParams_2<AnyApiFactory>;
-  output: ExtensionDataRef_2<AnyApiFactory, 'core.api.factory', {}>;
+  ) => ExtensionBlueprintParams_2<ApiFactory>;
+  output: ExtensionDataRef_2<ApiFactory, 'core.api.factory', {}>;
   inputs: {};
   config: {};
   configInput: {};
   dataRefs: {
-    factory: ConfigurableExtensionDataRef_2<
-      AnyApiFactory,
-      'core.api.factory',
-      {}
-    >;
+    factory: ConfigurableExtensionDataRef_2<ApiFactory, 'core.api.factory', {}>;
   };
 }>;
 
 // @public
 export type ApiFactory<
-  Api,
-  Impl extends Api,
+  Api = unknown,
+  Impl extends Api = Api,
   Deps extends {
+    [name in string]: unknown;
+  } = {
     [name in string]: unknown;
   },
 > = {
@@ -156,7 +154,7 @@ export type ApiHolder = {
 };
 
 // @public
-export type ApiRef<T, TId extends string = string> = {
+export type ApiRef<T = unknown, TId extends string = string> = {
   readonly $$type?: '@backstage/ApiRef';
   readonly id: TId;
   readonly T: T;
@@ -174,15 +172,9 @@ export type AppHistoryAction = 'PUSH' | 'REPLACE' | 'POP';
 export interface AppHistoryApi {
   createHref(to: string): string;
   getSnapshot(): AppHistorySnapshot;
-  navigate(path: string, options?: AppNavigateOptions): void;
-  navigate(delta: number): void;
+  navigate: AppNavigate;
   subscribe(listener: () => void): () => void;
 }
-
-// @public
-export const appHistoryApiRef: ApiRef_2<AppHistoryApi, 'core.app-history'> & {
-  readonly $$type: '@backstage/ApiRef';
-};
 
 // @public
 export interface AppHistoryEntry {
@@ -243,10 +235,15 @@ export interface AppLocation {
 }
 
 // @public
-export interface AppNavigateOptions {
-  // (undocumented)
-  replace?: boolean;
-  state?: unknown;
+export interface AppNavigate {
+  (delta: number): void;
+  (
+    path: string,
+    options?: {
+      replace?: boolean;
+      state?: unknown;
+    },
+  ): void;
 }
 
 // @public
@@ -367,7 +364,11 @@ export const atlassianAuthApiRef: ApiRef_2<
 export type AuthProviderInfo = {
   id: string;
   title: string;
-  icon: IconComponent | IconElement;
+  icon:
+    | IconElement
+    | ComponentType<{
+        fontSize?: 'medium' | 'large' | 'small' | 'inherit';
+      }>;
   message?: string;
 };
 
@@ -459,30 +460,29 @@ export interface ConfigurableExtensionDataRef<
 }
 
 // @public
-export namespace coreApis {
-  const appHistory: typeof appHistoryApiRef;
-  const analytics: typeof analyticsApiRef;
-  const appLanguage: typeof appLanguageApiRef;
-  const appLifecycle: typeof appLifecycleApiRef;
-  const appTheme: typeof appThemeApiRef;
-  const appTree: typeof appTreeApiRef;
-  const config: typeof configApiRef;
-  const dialog: typeof dialogApiRef;
-  const discovery: typeof discoveryApiRef;
-  const error: typeof errorApiRef;
-  const featureFlags: typeof featureFlagsApiRef;
-  const fetch: typeof fetchApiRef;
-  const icons: typeof iconsApiRef;
-  const identity: typeof identityApiRef;
-  const oauthRequest: typeof oauthRequestApiRef;
-  const pluginHeaderActions: typeof pluginHeaderActionsApiRef;
-  const pluginWrapper: typeof pluginWrapperApiRef;
-  const routeResolution: typeof routeResolutionApiRef;
-  const storage: typeof storageApiRef;
-  const swappableComponents: typeof swappableComponentsApiRef;
-  const toast: typeof toastApiRef;
-  const translation: typeof translationApiRef;
+export interface CoreApis {
+  readonly analytics: typeof analyticsApiRef;
+  readonly appHistory: ApiRef<AppHistoryApi>;
+  readonly appLanguage: typeof appLanguageApiRef;
+  readonly appTheme: typeof appThemeApiRef;
+  readonly appTree: typeof appTreeApiRef;
+  readonly config: typeof configApiRef;
+  readonly dialog: typeof dialogApiRef;
+  readonly discovery: typeof discoveryApiRef;
+  readonly error: typeof errorApiRef;
+  readonly featureFlags: typeof featureFlagsApiRef;
+  readonly fetch: typeof fetchApiRef;
+  readonly icons: typeof iconsApiRef;
+  readonly identity: typeof identityApiRef;
+  readonly internal: InternalCoreApis;
+  readonly routeResolution: typeof routeResolutionApiRef;
+  readonly storage: typeof storageApiRef;
+  readonly toast: typeof toastApiRef;
+  readonly translation: typeof translationApiRef;
 }
+
+// @public
+export const coreApis: CoreApis;
 
 // @public (undocumented)
 export const coreExtensionData: {
@@ -910,14 +910,14 @@ export interface CreateFrontendPluginOptions<
 }
 
 // @public
-export function createRouteRef<TParamKey extends string = never>(config?: {
-  readonly params?: TParamKey[];
+export function createRouteRef<TParamKeys extends string = never>(config?: {
+  readonly params?: TParamKeys[];
   aliasFor?: string;
 }): RouteRef<
-  [TParamKey] extends [never]
+  [TParamKeys] extends [never]
     ? undefined
     : {
-        [param in TParamKey]: string;
+        [param in TParamKeys]: string;
       }
 >;
 
@@ -1090,12 +1090,6 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
   // (undocumented)
   readonly id: string;
 }
-
-// @public (undocumented)
-export type ExtensionAttachTo = {
-  id: string;
-  input: string;
-};
 
 // @public (undocumented)
 export interface ExtensionBlueprint<
@@ -1399,9 +1393,7 @@ export interface ExtensionInput<
 export interface ExternalRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > {
-  // (undocumented)
   readonly $$type: '@backstage/ExternalRouteRef';
-  // (undocumented)
   readonly T: TParams;
 }
 
@@ -1469,11 +1461,7 @@ export const fetchApiRef: ApiRef_2<FetchApi, 'core.fetch'> & {
 };
 
 // @public (undocumented)
-export type FrontendFeature =
-  | (Omit<FrontendPlugin, 'pluginId'> & {
-      pluginId?: string;
-    })
-  | FrontendModule;
+export type FrontendFeature = FrontendPlugin | FrontendModule;
 
 // @public (undocumented)
 export interface FrontendFeatureLoader {
@@ -1568,11 +1556,6 @@ export const googleAuthApiRef: ApiRef_2<
   readonly $$type: '@backstage/ApiRef';
 };
 
-// @public @deprecated
-export type IconComponent = ComponentType<{
-  fontSize?: 'medium' | 'large' | 'small' | 'inherit';
-}>;
-
 // @public
 export type IconElement = JSX_2.Element | null;
 
@@ -1604,6 +1587,15 @@ export const identityApiRef: ApiRef_2<IdentityApi, 'core.identity'> & {
 };
 
 // @public
+export interface InternalCoreApis {
+  readonly appLifecycle: typeof appLifecycleApiRef;
+  readonly oauthRequest: typeof oauthRequestApiRef;
+  readonly pluginHeaderActions: typeof pluginHeaderActionsApiRef;
+  readonly pluginWrapper: typeof pluginWrapperApiRef;
+  readonly swappableComponents: typeof swappableComponentsApiRef;
+}
+
+// @public
 export const microsoftAuthApiRef: ApiRef_2<
   OAuthApi &
     OpenIdConnectApi &
@@ -1614,25 +1606,6 @@ export const microsoftAuthApiRef: ApiRef_2<
 > & {
   readonly $$type: '@backstage/ApiRef';
 };
-
-// @public
-export interface Navigation {
-  createHref(target: string): string;
-  navigate(target: string, options?: AppNavigateOptions): void;
-  pathname: string;
-}
-
-// @public
-export function NavigationProvider(
-  input: NavigationProviderProps,
-): JSX_3.Element;
-
-// @public (undocumented)
-export interface NavigationProviderProps {
-  // (undocumented)
-  children: ReactNode;
-  useNavigation: () => Navigation;
-}
 
 // @public (undocumented)
 export const NotFoundErrorPage: {
@@ -2111,15 +2084,12 @@ export type RouteFunc<TParams extends AnyRouteRefParams> = (
 export interface RouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > {
-  // (undocumented)
   readonly $$type: '@backstage/RouteRef';
-  // (undocumented)
   readonly T: TParams;
 }
 
-// @public (undocumented)
+// @public
 export interface RouteResolutionApi {
-  // (undocumented)
   resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:
       | RouteRef<TParams>
@@ -2158,9 +2128,10 @@ export const RouterLink: ForwardRefExoticComponent<
 
 // @public
 export interface RouterLinkProps
-  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>,
-    AppNavigateOptions {
+  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
   href: string;
+  replace?: boolean;
+  state?: unknown;
 }
 
 // @public
@@ -2192,7 +2163,7 @@ export type SetAppSearchParams = (
   next?:
     | AppSearchParamsInit
     | ((previous: URLSearchParams) => AppSearchParamsInit),
-  options?: AppNavigateOptions,
+  options?: Parameters<AppNavigate>[1],
 ) => void;
 
 export { StandardSchemaV1 };
@@ -2277,11 +2248,8 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
 export interface SubRouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > {
-  // (undocumented)
   readonly $$type: '@backstage/SubRouteRef';
-  // (undocumented)
   readonly path: string;
-  // (undocumented)
   readonly T: TParams;
 }
 
@@ -2531,7 +2499,7 @@ export type TypesToApiRefs<T> = {
 export function useAnalytics(): AnalyticsTracker;
 
 // @public
-export function useApi<T>(apiRef: ApiRef<T>): T;
+export function useApi<T>(apiRef: ApiRef<T>): Awaited<T>;
 
 // @public
 export function useApiHolder(): ApiHolder;
@@ -2543,7 +2511,7 @@ export function useAppHref(to: string): string;
 export function useAppLocation(): AppLocation;
 
 // @public
-export function useAppNavigate(): AppHistoryApi['navigate'];
+export function useAppNavigate(): AppNavigate;
 
 // @public
 export function useAppNode(): AppNode | undefined;
@@ -2559,9 +2527,6 @@ export function useBreadcrumbEntries(): {
 };
 
 // @public
-export function useNavigation(): Navigation;
-
-// @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(
   routeRef:
     | RouteRef<TParams>
@@ -2570,14 +2535,9 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 ): RouteFunc<TParams> | undefined;
 
 // @public
-export function useRouteRefParams<Params extends AnyRouteRefParams>(
-  routeRef: RouteRef<Params> | SubRouteRef<Params>,
-): Params;
-
-// @public
-export function useRouteResolution(): {
-  matches: readonly RouteResolutionMatch[];
-};
+export function useRouteRefParams<TParams extends AnyRouteRefParams>(
+  routeRef: RouteRef<TParams> | SubRouteRef<TParams>,
+): TParams;
 
 // @public (undocumented)
 export const useTranslationRef: <TMessages extends { [key in string]: string }>(

@@ -80,6 +80,9 @@ export class OidcError extends CustomErrorBase {
           `OIDC Request failed with status ${err.statusCode}: ${err.body.error} - ${err.body.error_description}`,
           err.cause,
         );
+        if (err.statusCode === 401 && err.body.error === 'invalid_client') {
+          res.setHeader('WWW-Authenticate', 'Basic realm="auth"');
+        }
         res.status(err.statusCode).json(err.body);
         return;
       }

@@ -1,5 +1,33 @@
 # @backstage/plugin-scaffolder-react
 
+## 3.0.0
+
+### Minor Changes
+
+- 3fe82f6: Added a `ScaffolderTemplateFilterBlueprint` that lets apps filter the new frontend system's template list using identity, catalog, or other viewer-specific state.
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- ff0ef74: The scaffolder wizard now shows or hides parameter steps based on their `when` condition, and values from hidden steps are left out of the submitted parameters.
+
+### Patch Changes
+
+- 1c461ca: Fixed BUI array item headings to use the item schema title and honor an explicit item `ui:title` without adding a numeric suffix. Untitled items retain the numbered fallback.
+- e8c4fb9: Improved screen reader support in the BUI scaffolder form theme: array item controls include the item name in their labels.
+- 818fbd6: The BUI form theme now renders a multi-select dropdown for array fields with unique `enum` items, and focus/blur events now report the selected values correctly.
+- 70bbe4b: The review step now applies `ui:backstage.review.mask`, `ui:backstage.review.show: false`, `ui:widget: password` and `ui:field: Secret` to fields and items nested inside arrays and inside objects with `ui:backstage.review.explode: false`. Previously these nested values were shown in clear text.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/catalog-client@1.16.4
+  - @backstage/core-components@0.18.16
+  - @backstage/plugin-catalog-react@4.0.0
+  - @backstage/frontend-test-utils@1.0.0
+  - @backstage/ui@0.20.0
+  - @backstage/plugin-permission-react@0.5.7
+  - @backstage/theme@0.7.4
+  - @backstage/version-bridge@1.1.0
+  - @backstage/plugin-scaffolder-common@2.4.0
+  - @backstage/catalog-model@1.10.3
+
 ## 3.0.0-next.2
 
 ### Patch Changes

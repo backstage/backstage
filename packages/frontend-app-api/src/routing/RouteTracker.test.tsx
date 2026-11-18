@@ -15,7 +15,7 @@
  */
 
 import { TestApiProvider } from '@backstage/test-utils';
-import { createMockAppHistory } from '@backstage/frontend-test-utils';
+import { mockApis } from '@backstage/frontend-test-utils';
 import { useEffect, type ReactNode } from 'react';
 import { BackstageRouteObject } from './types';
 import { act, render } from '@testing-library/react';
@@ -27,8 +27,8 @@ import {
   analyticsApiRef,
   AppNode,
   useAnalytics,
-  appHistoryApiRef,
   type AppHistoryApi,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
 
@@ -83,7 +83,7 @@ describe('RouteTracker', () => {
   function renderWithNavigation(
     initialPath: string,
     children?: ReactNode,
-    appHistory: AppHistoryApi = createMockAppHistory({
+    appHistory: AppHistoryApi = mockApis.appHistory({
       initialLocation: initialPath,
     }),
   ) {
@@ -93,7 +93,7 @@ describe('RouteTracker', () => {
         <TestApiProvider
           apis={[
             [analyticsApiRef, mockedAnalytics],
-            [appHistoryApiRef, appHistory],
+            [coreApis.appHistory, appHistory],
           ]}
         >
           <RouteTracker routeObjects={routeObjects} />
@@ -131,8 +131,8 @@ describe('RouteTracker', () => {
         apis={[
           [analyticsApiRef, mockedAnalytics],
           [
-            appHistoryApiRef,
-            createMockAppHistory({ initialLocation: '/path/foo/bar' }),
+            coreApis.appHistory,
+            mockApis.appHistory({ initialLocation: '/path/foo/bar' }),
           ],
         ]}
       >

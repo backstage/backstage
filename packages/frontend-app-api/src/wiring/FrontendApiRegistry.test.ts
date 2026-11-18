@@ -17,6 +17,7 @@
 import {
   type AnyApiFactory,
   createApiRef,
+  createApiFactory,
 } from '@backstage/frontend-plugin-api';
 import {
   FrontendApiRegistry,
@@ -24,6 +25,75 @@ import {
 } from './FrontendApiRegistry';
 
 describe('FrontendApiResolver', () => {
+  it('should cache promise-valued APIs and pass promises to dependent factories', async () => {
+    const child = createApiRef<Promise<{ value: string }>>().with({
+      id: 'test.child',
+    });
+    const parent = createApiRef<Promise<string>>().with({ id: 'test.parent' });
+    const childFactory = jest.fn(async () => ({ value: 'child' }));
+    const parentFactory = jest.fn(
+      async ({ dependency }: { dependency: Promise<{ value: string }> }) => {
+        return `parent: ${(await dependency).value}`;
+      },
+    );
+    const registry = new FrontendApiRegistry();
+    registry.register(
+      createApiFactory({ api: child, deps: {}, factory: childFactory }),
+    );
+    registry.register(
+      createApiFactory({
+        api: parent,
+        deps: { dependency: child },
+        factory: parentFactory,
+      }),
+    );
+    const container = createApiRef<{
+      dependency: Promise<{ value: string }>;
+    }>().with({ id: 'test.container' });
+    registry.register(
+      createApiFactory({
+        api: container,
+        deps: { dependency: child },
+        factory: deps => deps,
+      }),
+    );
+    const resolver = new FrontendApiResolver({ primaryRegistry: registry });
+    const first = resolver.get(parent);
+    const dependency: Promise<{ value: string }> | undefined =
+      resolver.get(child);
+    expect(resolver.get(parent)).toBe(first);
+    expect(parentFactory).toHaveBeenCalledWith({ dependency });
+    expect(resolver.get(container)?.dependency).toBe(dependency);
+    expect(childFactory).toHaveBeenCalledTimes(1);
+    expect(parentFactory).toHaveBeenCalledTimes(1);
+    await expect(first).resolves.toBe('parent: child');
+    expect(resolver.get(parent)).toBe(first);
+    expect(
+      resolver.get(createApiRef<Promise<string>>().with({ id: 'missing' })),
+    ).toBeUndefined();
+
+    resolver.invalidate([child.id, parent.id]);
+    const replacement = resolver.get(parent);
+    expect(replacement).not.toBe(first);
+    await expect(replacement).resolves.toBe('parent: child');
+    expect(childFactory).toHaveBeenCalledTimes(2);
+    expect(parentFactory).toHaveBeenCalledTimes(2);
+  });
+
+  it('should cache a rejected promise without rerunning its factory', async () => {
+    const api = createApiRef<Promise<string>>().with({ id: 'test.rejected' });
+    const factory = jest.fn(async () => {
+      throw new Error('API initialization failed');
+    });
+    const registry = new FrontendApiRegistry();
+    registry.register(createApiFactory({ api, deps: {}, factory }));
+    const resolver = new FrontendApiResolver({ primaryRegistry: registry });
+    const promise = resolver.get(api);
+    await expect(promise).rejects.toThrow('API initialization failed');
+    expect(resolver.get(api)).toBe(promise);
+    expect(factory).toHaveBeenCalledTimes(1);
+  });
+
   it('should cache falsy API values', () => {
     const falseApiRef = createApiRef<boolean>({ id: 'test.false' });
     const falseFactoryFn = jest.fn(() => false);

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import {
-  useRouteResolution,
   NotFoundErrorPage as SwappableNotFoundErrorPage,
   Progress as SwappableProgress,
   ErrorDisplay as SwappableErrorDisplay,
   PageLayout as SwappablePageLayout,
   type PageLayoutProps,
 } from '@backstage/frontend-plugin-api';
+import { useRouteMatches, normalizeBasePath } from '@internal/frontend';
 import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import {
   ErrorPage,
@@ -31,7 +31,7 @@ import {
   BreadcrumbEntry,
   useBreadcrumbEntries,
 } from '@backstage/frontend-plugin-api';
-import { normalizeBasePath } from '@internal/frontend';
+
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 import { useMemo } from 'react';
@@ -90,7 +90,7 @@ export const PageLayout = SwappableComponentBlueprint.make({
           children,
         } = props;
         // Breadcrumbs fall back to the framework-owned page mount.
-        const pageMount = useRouteResolution().matches.at(-1);
+        const pageMount = useRouteMatches().at(-1);
         const parentPath = normalizeBasePath(pageMount?.basePath ?? '');
         // Empty string titleLink is treated as unset (same as undefined) so the
         // breadcrumb still points at the page mount path rather than "".

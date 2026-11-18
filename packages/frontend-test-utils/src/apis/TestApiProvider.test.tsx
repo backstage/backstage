@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/frontend-plugin-api';
-import { TestApiProvider } from './TestApiProvider';
+import {
+  createApiRef,
+  useApi,
+  useApiHolder,
+} from '@backstage/frontend-plugin-api';
+import { StrictMode, Suspense } from 'react';
+import { attachMockApiFactory } from './MockWithApiFactory';
+import { resolveTestApiEntries, TestApiProvider } from './TestApiProvider';
 import { mockApis } from './mockApis';
 import { render, screen } from '@testing-library/react';
 
@@ -27,6 +33,69 @@ const yApiRef = createApiRef<string>({
 });
 
 describe('TestApiProvider', () => {
+  it('should preserve synchronous and promise-valued mocks through nested providers', async () => {
+    const ref = createApiRef<
+      Promise<{ value: string; unused(): number }>
+    >().with({
+      id: 'test.promise',
+    });
+    const promise = Promise.resolve({ value: 'Tuple API' });
+    // @ts-expect-error - the resolved value must match the API's property types
+    resolveTestApiEntries([[ref, Promise.resolve({ value: 42 })]]);
+    // @ts-expect-error - synchronous mock members must match the resolved API
+    resolveTestApiEntries([[ref, { value: 42 }]]);
+    // @ts-expect-error - synchronous API refs still reject promise-valued mocks
+    resolveTestApiEntries([[xApiRef, Promise.resolve({ a: 'wrong shape' })]]);
+    const empty = {};
+    expect(resolveTestApiEntries([[ref, empty]]).get(ref)).toBe(empty);
+    const observed: unknown[] = [];
+    function Consumer() {
+      observed.push(useApiHolder().get(ref));
+      return <div>{useApi(ref).value}</div>;
+    }
+    const synchronous = { value: 'Synchronous API' };
+    const syncRendered = render(
+      <TestApiProvider apis={[[ref, synchronous]]}>
+        <Consumer />
+      </TestApiProvider>,
+    );
+    expect(screen.getByText('Synchronous API')).toBeInTheDocument();
+    expect(observed).toEqual([synchronous]);
+    syncRendered.unmount();
+    observed.length = 0;
+
+    const rendered = render(
+      <StrictMode>
+        <Suspense fallback="Loading API">
+          <TestApiProvider apis={[[ref, promise]]}>
+            <TestApiProvider apis={[]}>
+              <Consumer />
+            </TestApiProvider>
+          </TestApiProvider>
+        </Suspense>
+      </StrictMode>,
+    );
+    expect(await screen.findByText('Tuple API')).toBeInTheDocument();
+    expect(observed.every(value => value === promise)).toBe(true);
+    rendered.unmount();
+
+    const embeddedPromise = Promise.resolve({
+      value: 'Embedded API',
+      unused: jest.fn(),
+    });
+    const mock = attachMockApiFactory(ref, embeddedPromise);
+    observed.length = 0;
+    render(
+      <TestApiProvider apis={[mock]}>
+        <Suspense fallback="Loading API">
+          <Consumer />
+        </Suspense>
+      </TestApiProvider>,
+    );
+    expect(await screen.findByText('Embedded API')).toBeInTheDocument();
+    expect(observed.every(value => value === embeddedPromise)).toBe(true);
+  });
+
   it('should provide tuple APIs and check types', () => {
     render(
       <TestApiProvider

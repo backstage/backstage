@@ -1,5 +1,22 @@
 # @backstage/plugin-search-react
 
+## 1.12.0
+
+### Minor Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+
+### Patch Changes
+
+- 6c8a6b1: Fixed `SearchFilter.Autocomplete` with `multiple` clearing the typed text on every keystroke once a value was selected.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/core-components@0.18.16
+  - @backstage/theme@0.7.4
+  - @backstage/version-bridge@1.1.0
+  - @backstage/plugin-search-common@1.2.27
+
 ## 1.11.10-next.2
 
 ### Patch Changes

@@ -21,6 +21,7 @@ import {
   PageBlueprint,
   coreExtensionData,
   createExtension,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import {
   Link,
@@ -126,11 +127,12 @@ describe('React Router v6 nested inside React Router v6', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [entityPage, plainPage, chromeProbe(<V6Probe id="chrome" />)],
       initialRouteEntries: ['/e/alpha'],
       config: CONFIG_WITH_BASENAME,
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('page')).toBeInTheDocument();
@@ -222,11 +224,12 @@ describe('React Router v6 nested inside React Router v6', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [doublyWrappedPage],
       initialRouteEntries: ['/e/alpha'],
       config: CONFIG_WITH_BASENAME,
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     await waitFor(() => {
       expect(screen.getByTestId('inner')).toBeInTheDocument();

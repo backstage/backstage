@@ -30,7 +30,9 @@ import { AnyRouteRefParams } from './types';
 export interface RouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
 > {
+  /** Marker for an opaque route reference. */
   readonly $$type: '@backstage/RouteRef';
+  /** The route parameters that the bound path must supply. */
   readonly T: TParams;
 }
 
@@ -41,16 +43,17 @@ export interface RouteRef<
  * @public
  */
 export function createRouteRef<
-  // ParamKey is narrowed to the literal union of param name strings.
+  // ParamKeys is narrowed to the literal union of param name strings.
   // Defaulting to never means we get undefined params when the array is empty or omitted.
-  TParamKey extends string = never,
+  TParamKeys extends string = never,
 >(config?: {
   /** A list of parameter names that the path that this route ref is bound to must contain */
-  readonly params?: TParamKey[];
+  readonly params?: TParamKeys[];
 
+  /** An ID of another route ref that this ref is an alias for, used to avoid duplicate route warnings when the same feature is reached through multiple routes. */
   aliasFor?: string;
 }): RouteRef<
-  [TParamKey] extends [never] ? undefined : { [param in TParamKey]: string }
+  [TParamKeys] extends [never] ? undefined : { [param in TParamKeys]: string }
 > {
   const params = (config?.params ?? []) as string[];
   const creationSite = describeParentCallSite();

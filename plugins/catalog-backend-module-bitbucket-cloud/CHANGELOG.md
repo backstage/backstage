@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-cloud
 
+## 0.5.17
+
+### Patch Changes
+
+- ed1cb3e: The Bitbucket Cloud entity provider now finds catalog files with the workspace code search API of Bitbucket Cloud, because Bitbucket Cloud removes the old code search API on 2026-11-15. The provider finds the same locations for the same configuration.
+
+  The new API needs a credential that identifies a user, for example an Atlassian account email as `username` with an API `token`. The token needs the scopes `read:repository:bitbucket` and `read:workspace:bitbucket`. The old API did not need `read:workspace:bitbucket`. Bitbucket Cloud rejects app passwords, legacy OAuth consumers, and API keys for this API. An API token without `read:workspace:bitbucket` is also rejected with `403`. When that happens, or when code search is not enabled, the provider checks catalog files with the source API instead. Adding `read:workspace:bitbucket` to the API token restores workspace code search.
+
+- Updated dependencies
+  - @backstage/integration@2.2.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.15
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-events-node@0.5.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-common@1.2.2
+  - @backstage/plugin-catalog-node@3.0.0
+
 ## 0.5.17-next.2
 
 ### Patch Changes
