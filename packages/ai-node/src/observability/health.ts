@@ -19,7 +19,7 @@ import type { AiHealthSnapshot, MetricSeries } from './metrics';
 /**
  * One derived health signal: a named measurement against a threshold.
  *
- * @internal
+ * @alpha
  */
 export type AiHealthSignal = Readonly<{
   /** Which measurement this is. */
@@ -41,7 +41,7 @@ export type AiHealthSignal = Readonly<{
 /**
  * A health report derived from a metrics snapshot.
  *
- * @internal
+ * @alpha
  */
 export type AiHealthReport = Readonly<{
   /** `degraded` when any signal is degraded. */
@@ -56,7 +56,7 @@ export type AiHealthReport = Readonly<{
  * defaults are conservative starting points for a host to tune, not
  * judgments about what a healthy installation looks like.
  *
- * @internal
+ * @alpha
  */
 export type AiHealthThresholds = Readonly<{
   /**
@@ -118,7 +118,7 @@ function seriesCount(
  * subscriber's last reset — hosts wanting windowed health reset the
  * subscriber on their own cadence.
  *
- * @internal
+ * @alpha
  */
 export function evaluateAiHealth(
   snapshot: AiHealthSnapshot,

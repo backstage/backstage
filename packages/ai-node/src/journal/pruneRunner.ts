@@ -18,7 +18,11 @@ import type { Knex } from 'knex';
 import type { AiEventEmitter } from '../observability/types';
 import { pruneAiJournal, type JournalPruneResult } from './retention';
 
-/** Minimal logger surface the runner needs; `LoggerService` satisfies it. */
+/**
+ * Minimal logger surface the runner needs; `LoggerService` satisfies it.
+ *
+ * @alpha
+ */
 export interface AiPruneRunnerLogger {
   info(message: string): void;
   warn(message: string): void;
@@ -27,11 +31,11 @@ export interface AiPruneRunnerLogger {
 /**
  * Options for {@link startAiJournalPruneRunner}.
  *
- * @internal
+ * @alpha
  */
 export interface AiJournalPruneRunnerOptions {
   readonly db: Knex;
-  /** Journal retention window; passed through to {@link pruneAiJournal}. */
+  /** Journal retention window, applied exactly as the retention contract defines. */
   readonly retentionMs: number;
   /** Time between passes. One pass also runs immediately on start. */
   readonly intervalMs: number;
@@ -46,7 +50,7 @@ export interface AiJournalPruneRunnerOptions {
 /**
  * A running journal prune schedule.
  *
- * @internal
+ * @alpha
  */
 export interface AiJournalPruneRunner {
   /** Runs one pass now and resolves with its result; never overlaps a scheduled pass. */
@@ -61,7 +65,7 @@ export interface AiJournalPruneRunner {
  * @remarks
  *
  * This adds scheduling only, no retention semantics: every pass is exactly
- * {@link pruneAiJournal} under the given window, which never deletes an
+ * the journal prune under the given window, which never deletes an
  * unresolved intent without its durable uncertainty record and never deletes
  * an uncertainty record. A failed pass is logged and retried at the next
  * interval — pruning is maintenance, and a failing pass must never block or
@@ -70,7 +74,7 @@ export interface AiJournalPruneRunner {
  * pass, so shutdown loses no pruning work but also waits for none that has
  * not started.
  *
- * @internal
+ * @alpha
  */
 export function startAiJournalPruneRunner(
   options: AiJournalPruneRunnerOptions,

@@ -213,6 +213,30 @@ describe('evaluateAiHealth', () => {
     expect(strict.status).toBe('degraded');
   });
 
+  it('a journal event without durationMs does not poison the durations', () => {
+    // A journal event lacking durationMs (the type allows it at runtime)
+    // must leave durations.journal unset, not NaN: a NaN would serialize
+    // as null in the snapshot and skew every derived latency signal.
+    const subscriber = createMetricsSubscriber();
+    subscriber.emit({
+      kind: 'journal',
+      at: 1,
+      action: 'decision',
+      decision: 'allow',
+    } as Partial<AiObservabilityEvent> as AiObservabilityEvent);
+    subscriber.emit({
+      kind: 'journal',
+      at: 2,
+      action: 'decision',
+      decision: 'deny',
+      durationMs: 5,
+    });
+    const snapshot = subscriber.snapshot();
+    expect(snapshot.durations.journal).toBe(5);
+    expect(JSON.stringify(snapshot)).not.toContain('null');
+    expect(JSON.stringify(snapshot)).not.toContain('NaN');
+  });
+
   it('is fail-open: a pure function that never throws on any snapshot', () => {
     // Weird but shape-valid snapshots (overflow series, missing durations)
     // evaluate without throwing; evaluation can never gate dispatch.

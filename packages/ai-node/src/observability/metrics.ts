@@ -16,7 +16,11 @@
 
 import type { AiEventEmitter, AiObservabilityEvent } from './types';
 
-/** A counter series: one label combination and its count. */
+/**
+ * A counter series: one label combination and its count.
+ *
+ * @alpha
+ */
 export type MetricSeries = Readonly<{
   labels: Readonly<Record<string, string>>;
   count: number;
@@ -29,7 +33,7 @@ export type MetricSeries = Readonly<{
 /**
  * The health view of the metrics subscriber.
  *
- * @internal
+ * @alpha
  */
 export type AiHealthSnapshot = Readonly<{
   /** Counters keyed by `kind` and the labels that describe them. */
@@ -61,7 +65,7 @@ export type AiHealthSnapshot = Readonly<{
  * series with a reason string (unbounded cardinality) and never stores payloads,
  * so a leaked secret is unrepresentable here.
  *
- * @internal
+ * @alpha
  */
 export interface AiMetricsSubscriber extends AiEventEmitter {
   snapshot(): AiHealthSnapshot;
@@ -84,7 +88,7 @@ function seriesKey(kind: string, labels: Record<string, string>): string {
 /**
  * Creates the metrics/health subscriber.
  *
- * @internal
+ * @alpha
  */
 export function createMetricsSubscriber(): AiMetricsSubscriber {
   const series = new Map<
@@ -208,7 +212,9 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
         case 'journal':
           if (event.decision === 'deny') journalDecisions.deny += 1;
           if (event.decision === 'allow') journalDecisions.allow += 1;
-          durations.journal = (durations.journal ?? 0) + event.durationMs;
+          if (event.durationMs !== undefined) {
+            durations.journal = (durations.journal ?? 0) + event.durationMs;
+          }
           count(
             'journal',
             {
