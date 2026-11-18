@@ -84,13 +84,22 @@ const useStyles = makeStyles(
       'text-overflow': 'ellipsis',
     },
     dropdownArrow: {
-      position: 'absolute',
-      right: 21,
+      flexShrink: 0,
+      marginLeft: 'auto',
+    },
+    labelWithDropdown: {
+      flex: '1 1 auto',
+      minWidth: 0,
+      textAlign: 'left',
+      marginTop: 0,
+      marginBottom: 0,
+      marginRight: 0,
     },
     dropdown: {
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'end',
+      alignItems: 'stretch',
+      width: '100%',
     },
     dropdownItem: {
       width: '100%',
@@ -106,18 +115,22 @@ const useStyles = makeStyles(
     },
     dropdownButton: {
       textTransform: 'none',
+      width: '100%',
       justifyContent: 'flex-start',
     },
     textContent: {
       color: 'inherit',
+      flex: '1 1 auto',
+      minWidth: 0,
       paddingLeft: theme.spacing(4),
       paddingRight: theme.spacing(1),
       fontSize: theme.typography.body2.fontSize,
       whiteSpace: 'nowrap',
       overflow: 'hidden',
-      'text-overflow': 'ellipsis',
+      textOverflow: 'ellipsis',
     },
     secondaryAction: {
+      flexShrink: 0,
       marginLeft: 'auto',
       display: 'flex',
       alignItems: 'center',
@@ -159,8 +172,10 @@ export type SidebarSubmenuItemDropdownItem = {
  * to: Path to navigate to when item is clicked
  * icon: Icon displayed on the left of text content
  * dropdownItems: Optional array of dropdown items displayed when submenu item is clicked.
- * children: Optional content rendered on the right side of the item, for example an
- * external link icon. Mirrors the secondary action slot on `SidebarItem`.
+ * children: Optional content rendered on the right side of link-style submenu items, for
+ * example an external link icon. Mirrors the secondary action slot on `SidebarItem`. Not
+ * rendered when `dropdownItems` is set; use `secondaryAction` on individual dropdown entries
+ * instead.
  *
  * @public
  */
@@ -233,25 +248,32 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
             <Typography
               variant="subtitle1"
               component="span"
-              className={classes.label}
+              className={classnames(classes.label, classes.labelWithDropdown)}
             >
               {title}
-              <br />
-              {subtitle && (
-                <Typography
-                  variant="caption"
-                  component="span"
-                  className={classes.subtitle}
-                >
-                  {subtitle}
-                </Typography>
-              )}
+              {subtitle ? (
+                <>
+                  <br />
+                  <Typography
+                    variant="caption"
+                    component="span"
+                    className={classes.subtitle}
+                  >
+                    {subtitle}
+                  </Typography>
+                </>
+              ) : null}
             </Typography>
-            {secondaryAction}
             {showDropDown ? (
-              <ArrowDropUpIcon className={classes.dropdownArrow} />
+              <ArrowDropUpIcon
+                className={classes.dropdownArrow}
+                fontSize="small"
+              />
             ) : (
-              <ArrowDropDownIcon className={classes.dropdownArrow} />
+              <ArrowDropDownIcon
+                className={classes.dropdownArrow}
+                fontSize="small"
+              />
             )}
           </Button>
         </Tooltip>

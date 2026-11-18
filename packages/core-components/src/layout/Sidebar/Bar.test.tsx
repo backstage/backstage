@@ -72,7 +72,9 @@ async function renderScalableSidebar({
                   ),
                 },
               ]}
-            />
+            >
+              <span data-testid="dropdown-parent-secondary-action">ext</span>
+            </SidebarSubmenuItem>
           </SidebarSubmenu>
         </SidebarItem>
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
@@ -159,6 +161,13 @@ describe('Sidebar', () => {
       expect(
         screen.getByTestId('dropdown-external-link-icon'),
       ).toBeInTheDocument();
+    });
+
+    it('does not render children on dropdown parent items', async () => {
+      await userEvent.hover(screen.getByTestId('item-with-submenu'));
+      expect(
+        screen.queryByTestId('dropdown-parent-secondary-action'),
+      ).not.toBeInTheDocument();
     });
   });
 
