@@ -874,7 +874,7 @@ describe('observability seam', () => {
     const recorded: unknown[] = [];
     const { createAuthOperationGuard } = require('../providers/auth/guard');
     const { createAuthModuleRegistry } = require('../providers/auth/modules');
-    const { anthropicAuthModule } = require('../providers/auth/modules');
+    const { jsonAuthModule } = require('../providers/auth/jsonModuleFixture');
     const guard = createAuthOperationGuard({
       transport: (async () => new Response('{}', { status: 200 })) as never,
       recheck: async () => true,
@@ -885,7 +885,9 @@ describe('observability seam', () => {
         },
         recordOutcome: async () => undefined,
       },
-      modules: createAuthModuleRegistry([anthropicAuthModule]),
+      modules: createAuthModuleRegistry([
+        { ...jsonAuthModule, id: 'anthropic' },
+      ]),
       events: metrics,
     }).bind({
       actor: 'user:default/alice',
@@ -933,6 +935,12 @@ describe('observability seam', () => {
     const { createAuthOperations } = require('../providers/auth/operations');
     const { createAuthOperationGuard } = require('../providers/auth/guard');
     const modules = require('../providers/auth/modules');
+    const { jsonAuthModule } = require('../providers/auth/jsonModuleFixture');
+    /** The extracted anthropic auth module stands in as a local fixture. */
+    const denyProbeModules = modules.createAuthModuleRegistry([
+      jsonAuthModule,
+      ...modules.builtinAuthModules,
+    ]);
     try {
       await credentialsMigration.up(db);
       const lease = await createKnexNamespaceLease({ db });
@@ -961,7 +969,7 @@ describe('observability seam', () => {
           recheck: async () => true,
           journal,
           events: metrics,
-          modules: modules.builtinAuthModuleRegistry,
+          modules: denyProbeModules,
         }),
         journal,
         stores: createCredentialStores({
@@ -970,7 +978,7 @@ describe('observability seam', () => {
           configCredentials: new Map(),
         }),
         events: metrics,
-        modules: modules.builtinAuthModuleRegistry,
+        modules: denyProbeModules,
         tokenEndpoints: { anthropic: 'https://token.example/v1/oauth/token' },
         clientIds: { anthropic: 'client-id' },
       });

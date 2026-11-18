@@ -23,9 +23,7 @@ import { join } from 'node:path';
 import knex from 'knex';
 import { mockCredentials } from '@backstage/backend-test-utils';
 import { openaiProvider } from '@earendil-works/pi-ai/providers/openai';
-import { anthropicProvider } from '@earendil-works/pi-ai/providers/anthropic';
 import { openaiCodexProvider } from '@earendil-works/pi-ai/providers/openai-codex';
-import { azureProvider } from '@earendil-works/pi-ai/providers/azure';
 import { normalizeContext } from '@earendil-works/pi-ai/utils/transcript';
 import { createAttemptJournal } from '../journal/knex';
 import { createModelOperationGuard } from '../guard/createModelOperationGuard';
@@ -46,9 +44,7 @@ const credentials = mockCredentials.user('user:default/alice');
 const paths = {
   'openai-responses': '/v1/responses',
   'openai-completions': '/v1/chat/completions',
-  'azure-openai-responses': '/openai/v1/responses?api-version=v1',
   'openai-codex-responses': '/backend-api/codex/responses',
-  'anthropic-messages': '/v1/messages',
   'test-classifier': '/v1/classify',
 };
 const providers = createProviderRegistry([
@@ -100,7 +96,6 @@ function request(
   substituteQuery = false,
 ): Request {
   const url = new URL(op.destination);
-  if (op.api === 'anthropic-messages') url.searchParams.set('beta', 'true');
   if (substituteQuery) url.searchParams.set('unexpected', 'true');
   return new Request(url, {
     method: 'POST',
@@ -141,16 +136,12 @@ if (process.env.AI_PROVIDER_CERT_WORKER === '1') {
         const factory = {
           'openai-responses': openaiProvider,
           'openai-completions': openaiProvider,
-          'azure-openai-responses': azureProvider,
           'openai-codex-responses': openaiCodexProvider,
-          'anthropic-messages': anthropicProvider,
         }[id];
         const prefix = {
           'openai-responses': '/v1',
           'openai-completions': '/v1',
-          'azure-openai-responses': '/openai/v1',
           'openai-codex-responses': '/backend-api',
-          'anthropic-messages': '',
         }[id];
         const model = {
           ...factory().getModels()[0],

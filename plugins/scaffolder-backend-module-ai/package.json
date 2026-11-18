@@ -37,6 +37,10 @@
   },
   "dependencies": {
     "@backstage/ai-node": "workspace:^",
+    "@backstage/ai-node-provider-anthropic": "workspace:^",
+    "@backstage/ai-node-provider-azure": "workspace:^",
+    "@backstage/ai-node-provider-openrouter": "workspace:^",
+    "@backstage/ai-node-provider-typesafe": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",

@@ -24,8 +24,6 @@ import { join } from 'node:path';
 import knex from 'knex';
 import { mockCredentials } from '@backstage/backend-test-utils';
 import { OPENAI_CLASSIFIER_MODELS } from '@earendil-works/pi-ai/providers/openai.models';
-import { OPENROUTER_IMAGE_MODELS } from '@earendil-works/pi-ai/providers/openrouter.models';
-import { TYPESAFE_CLASSIFIER_MODELS } from '@earendil-works/pi-ai/providers/typesafe.models';
 import type { AnyModel } from '@earendil-works/pi-ai';
 import { createAttemptJournal } from '../journal/knex';
 import { createModelOperationGuard } from '../guard/createModelOperationGuard';
@@ -54,9 +52,6 @@ const classifierContext = {
     },
   },
 };
-const imagesContext = {
-  input: [{ type: 'text' as const, text: 'a red circle on white canvas' }],
-};
 
 /**
  * The non-chat certification matrix: every module gets the full
@@ -64,23 +59,10 @@ const imagesContext = {
  * recheck, journal-before-send, latch, crash) for its operation kind.
  */
 const certified = {
-  'typesafe-system-one': {
-    operation: 'classify',
-    model: () => TYPESAFE_CLASSIFIER_MODELS['jev-latest'] as never as AnyModel,
-    context: classifierContext,
-  },
   'openai-decisions': {
     operation: 'classify',
     model: () => OPENAI_CLASSIFIER_MODELS['gpt-6-luna'] as never as AnyModel,
     context: classifierContext,
-  },
-  'openrouter-images': {
-    operation: 'generateImages',
-    model: () =>
-      OPENROUTER_IMAGE_MODELS[
-        'black-forest-labs/flux-3-image'
-      ] as never as AnyModel,
-    context: imagesContext,
   },
 } as const;
 
@@ -335,66 +317,6 @@ if (process.env.AI_PROVIDER_CERT_WORKER === '1') {
       await assertCrashUnknownOnce(id, dialect);
     }
   };
-  it('persists corrected records for a transport that ran and threw', async () => {
-    // The durable journal must hold exactly the allow decision and its
-    // uncertain outcome — no contradictory follow-on denial.
-    const store = await createStore(pgUrl ? 'pg' : 'sqlite');
-    try {
-      await store.db('ai_namespace_leases').insert({
-        plugin_id: namespace.pluginId,
-        session_id: namespace.sessionId,
-        owner_id: fence.owner,
-        token: fence.token,
-        expires_at: store.expiresAt,
-      });
-      const realJournal = journal(store.db);
-      const id = 'openrouter-images';
-      const model = {
-        ...certified[id].model(),
-        baseUrl: 'http://127.0.0.1:1/v1',
-      } as AnyModel;
-      const op = operation(id, 'http://127.0.0.1:1');
-      const send = jest.fn(async () => {
-        throw new Error('network disconnected');
-      });
-      const guard = createModelOperationGuard({
-        providers,
-        journal: realJournal,
-        recheck: async () => true,
-        transport: send as unknown as typeof fetch,
-      });
-      const facade = createGuardedModelOperations({
-        providers,
-        guard,
-        journal: realJournal as never,
-        resolve: () => ({
-          model,
-          operation: op,
-          authority: { kind: 'apiKey', apiKey: 'test-key' },
-        }),
-      });
-      const result = (await facade.generateImages(
-        model as never,
-        { input: [{ type: 'text', text: 'a red circle' }] } as never,
-        { maxRetries: 0 } as never,
-      )) as { stopReason: string; errorMessage?: string };
-      expect(result.stopReason).toBe('error');
-      expect(result.errorMessage).toContain('network disconnected');
-      expect(send).toHaveBeenCalledTimes(1);
-      const rows = await store
-        .db('ai_journal_events')
-        .orderBy('id')
-        .select('kind', 'decision', 'attempt', 'status', 'reason');
-      expect(rows).toMatchObject([
-        { kind: 'decision', decision: 'allow', attempt: 1 },
-        { kind: 'outcome', status: 'unknown' },
-      ]);
-      expect(rows).toHaveLength(2);
-    } finally {
-      await store.cleanup();
-    }
-  });
-
   it('persists the per-attempt fabrication rejection for multi-attempt dispatches', async () => {
     // An earlier response cannot validate a completion claimed after a
     // later request was denied: the durable journal must show the two

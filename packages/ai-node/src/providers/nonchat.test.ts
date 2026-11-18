@@ -18,8 +18,6 @@ import { once } from 'node:events';
 import { createServer, type Server } from 'node:http';
 import { mockCredentials } from '@backstage/backend-test-utils';
 import { OPENAI_CLASSIFIER_MODELS } from '@earendil-works/pi-ai/providers/openai.models';
-import { OPENROUTER_IMAGE_MODELS } from '@earendil-works/pi-ai/providers/openrouter.models';
-import { TYPESAFE_CLASSIFIER_MODELS } from '@earendil-works/pi-ai/providers/typesafe.models';
 import type { AnyModel } from '@earendil-works/pi-ai';
 import { createModelOperationGuard } from '../guard/createModelOperationGuard';
 import { createGuardedModelOperations } from '../guard/modelOperations';
@@ -27,17 +25,9 @@ import type { ModelOperation, TrustedOperation } from '../guard/types';
 import type { AttemptDecision, AttemptOutcome } from '../journal/types';
 import type { Fence } from '../contracts';
 import { createProviderRegistry } from './registry';
-import {
-  openaiDecisions,
-  openrouterImages,
-  typesafeSystemOne,
-} from './nonchat';
+import { openaiDecisions } from './nonchat';
 
-const providers = createProviderRegistry([
-  typesafeSystemOne,
-  openaiDecisions,
-  openrouterImages,
-]);
+const providers = createProviderRegistry([openaiDecisions]);
 
 const classifierContext = {
   state: { text: 'hello' },
@@ -48,17 +38,6 @@ const classifierContext = {
       criteria: { true: 'it greets', false: 'it does not' },
     },
   },
-};
-
-const imagesContext = {
-  input: [
-    { type: 'text' as const, text: 'a red circle on white canvas' },
-    {
-      type: 'image' as const,
-      mimeType: 'image/png',
-      data: 'QUJD', // "ABC" in base64; also the never-journaled marker
-    },
-  ],
 };
 
 type Body = Record<string, unknown>;
@@ -206,46 +185,6 @@ const withBase = (model: AnyModel, origin: string) =>
   ({ ...model, baseUrl: `${origin}/v1` } as AnyModel);
 
 describe('non-chat provider modules', () => {
-  it('classifies through the TypeSafe System One protocol', async () => {
-    const { server, origin, requests } = await startServer(() => ({
-      answers: { q1: { type: 'noul', noul: 0.87 } },
-    }));
-    try {
-      const model = withBase(
-        TYPESAFE_CLASSIFIER_MODELS['jev-latest'] as never as AnyModel,
-        origin,
-      );
-      const f = harness(model, 'classify');
-      const result = (await f.facade.classify(
-        model as never,
-        classifierContext as never,
-      )) as unknown as {
-        answers: { q1: { type: string; probability: number } };
-      };
-      expect(result.answers.q1).toEqual({
-        type: 'bool',
-        probability: 0.87,
-      });
-      expect(f.events).toEqual([
-        'check',
-        'allow:1',
-        'send',
-        'outcome:completed',
-      ]);
-      expect(requests).toHaveLength(1);
-      expect(requests[0].pathname).toBe('/v1/systemone');
-      expect(requests[0].headers.authorization).toBe('Bearer test-key');
-      expect(requests[0].body.model).toBe('jev-latest');
-      expect(
-        (requests[0].body.questions as Array<Record<string, unknown>>)[0] ??
-          (requests[0].body.questions as Record<string, { type: string }>).q1,
-      ).toEqual(expect.objectContaining({ type: 'noul' }));
-    } finally {
-      server.close();
-      await once(server, 'close');
-    }
-  });
-
   it('classifies through the OpenAI Decisions API', async () => {
     const { server, origin, requests } = await startServer(() => ({
       answers: [{ name: 'q1', type: 'predicate', probability: 0.91 }],
@@ -283,228 +222,15 @@ describe('non-chat provider modules', () => {
     }
   });
 
-  it('generates images over OpenRouter chat completions', async () => {
-    const { server, origin, requests } = await startServer(() => ({
-      id: 'resp-1',
-      choices: [
-        {
-          message: {
-            content: 'a red circle',
-            images: [
-              {
-                type: 'image_url',
-                image_url: { url: 'data:image/png;base64,QUJD' },
-              },
-            ],
-          },
-        },
-      ],
-      usage: { prompt_tokens: 2, completion_tokens: 3 },
-    }));
-    try {
-      const model = withBase(
-        OPENROUTER_IMAGE_MODELS[
-          'black-forest-labs/flux-3-image'
-        ] as never as AnyModel,
-        origin,
-      );
-      const f = harness(model, 'generateImages');
-      const result = (await f.facade.generateImages(
-        model as never,
-        imagesContext as never,
-      )) as unknown as {
-        output: Array<{ type: string; data?: string; text?: string }>;
-        stopReason: string;
-      };
-      expect(result.stopReason).toBe('stop');
-      expect(result.output).toEqual([
-        { type: 'text', text: 'a red circle' },
-        { type: 'image', mimeType: 'image/png', data: 'QUJD' },
-      ]);
-      expect(f.events).toEqual([
-        'check',
-        'allow:1',
-        'send',
-        'outcome:completed',
-      ]);
-      expect(requests[0].pathname).toBe('/v1/chat/completions');
-      expect(requests[0].body.model).toBe('black-forest-labs/flux-3-image');
-      expect(requests[0].body.stream).toBe(false);
-      const content = (
-        requests[0].body.messages as Array<{
-          content: Array<Record<string, unknown>>;
-        }>
-      )[0].content;
-      expect(content).toEqual([
-        { type: 'text', text: 'a red circle on white canvas' },
-        {
-          type: 'image_url',
-          image_url: { url: 'data:image/png;base64,QUJD' },
-        },
-      ]);
-      // Image blobs never reach the journal: decisions and outcomes only.
-      expect(JSON.stringify(f.journalCalls)).not.toContain('QUJD');
-      expect(JSON.stringify(f.journalCalls)).not.toContain('base64');
-    } finally {
-      server.close();
-      await once(server, 'close');
-    }
-  });
-
-  it('accounts a transport that ran and threw as used, with no follow-on denial', async () => {
-    const model = {
-      ...OPENROUTER_IMAGE_MODELS['black-forest-labs/flux-3-image'],
-      baseUrl: 'http://127.0.0.1:1/v1',
-    } as never as AnyModel;
-    const f = harness(model, 'generateImages');
-    f.transport.mockImplementation(async () => {
-      throw new Error('network disconnected');
-    });
-    const result = (await f.facade.generateImages(
-      model as never,
-      { input: [{ type: 'text', text: 'a red circle' }] } as never,
-      { maxRetries: 0 } as never,
-    )) as { stopReason: string; errorMessage?: string };
-    // The dispatch settles in-band with the transport failure, and the
-    // journal shows exactly one allow with an uncertain outcome — never a
-    // contradictory "did not use guarded transport" denial.
-    expect(result.stopReason).toBe('error');
-    expect(result.errorMessage).toContain('network disconnected');
-    expect(f.events).toEqual(['check', 'allow:1', 'outcome:unknown']);
-    expect(f.transport).toHaveBeenCalledTimes(1);
-  });
-
-  it('records exactly one denial for a guard-rejected image request', async () => {
-    const model = {
-      ...OPENROUTER_IMAGE_MODELS['black-forest-labs/flux-3-image'],
-      baseUrl: 'http://127.0.0.1:1/v1',
-    } as never as AnyModel;
-    const f = harness(model, 'generateImages');
-    const result = (await f.facade.generateImages(
-      model as never,
-      { input: [{ type: 'image', mimeType: 'image/png', data: 'A' }] } as never,
-      { maxRetries: 0 } as never,
-    )) as { stopReason: string };
-    // The malformed image reference is denied once by the guard; the
-    // dispatch settles in-band (the denial aborts the operation's
-    // controller, so the adapter reports it as aborted) without a
-    // duplicate denial.
-    expect(['error', 'aborted']).toContain(result.stopReason);
-    expect(f.events).toEqual(['deny:1']);
-    expect(f.transport).not.toHaveBeenCalled();
-  });
-
-  it('denies malformed image requests before sending', async () => {
-    const { server, origin } = await startServer(() => ({}));
-    try {
-      const model = withBase(
-        OPENROUTER_IMAGE_MODELS[
-          'black-forest-labs/flux-3-image'
-        ] as never as AnyModel,
-        origin,
-      );
-      const f = harness(model, 'generateImages');
-      const validBody = {
-        model: model.id,
-        messages: [
-          { role: 'user', content: [{ type: 'text', text: 'a red circle' }] },
-        ],
-        stream: false,
-      };
-      await f.probe({ ...validBody, model: 'other' });
-      await f.probe({ ...validBody, messages: [] });
-      await f.probe({
-        ...validBody,
-        messages: [
-          {
-            role: 'user',
-            content: [{ type: 'video', url: 'https://elsewhere.example' }],
-          },
-        ],
-      });
-      await f.probe({
-        ...validBody,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'image_url',
-                image_url: { url: 'https://elsewhere.example/a.png' },
-              },
-            ],
-          },
-        ],
-      });
-      await f.probe({
-        ...validBody,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'image_url',
-                image_url: { url: 'data:image/png;base64,not base64!' },
-              },
-            ],
-          },
-        ],
-      });
-      // Malformed base64 is denied before send: wrong length and padding.
-      for (const malformed of ['A', 'A=', 'AA=', '']) {
-        await f.probe({
-          ...validBody,
-          messages: [
-            {
-              role: 'user',
-              content: [
-                {
-                  type: 'image_url',
-                  image_url: { url: `data:image/png;base64,${malformed}` },
-                },
-              ],
-            },
-          ],
-        });
-      }
-      await f.probe({ ...validBody, stream: true });
-      await f.probe({ ...validBody, modalities: ['video'] });
-      await f.probe({
-        ...validBody,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'image_url',
-                image_url: {
-                  url: `data:image/png;base64,${'A'.repeat(16 * 1024 * 1024)}`,
-                },
-              },
-            ],
-          },
-        ],
-      });
-      const wrong = new URL(f.op.destination);
-      wrong.pathname = '/v1/elsewhere';
-      await f.probe(validBody, wrong);
-      expect(f.events).toEqual(Array(13).fill('deny:1'));
-      expect(f.transport).not.toHaveBeenCalled();
-    } finally {
-      server.close();
-      await once(server, 'close');
-    }
-  });
-
   it('denies classifier requests with substituted models or routes', async () => {
     const model = {
-      ...(TYPESAFE_CLASSIFIER_MODELS['jev-latest'] as never as AnyModel),
+      ...(OPENAI_CLASSIFIER_MODELS['gpt-6-luna'] as never as AnyModel),
       baseUrl: 'https://provider.example/v1',
     } as AnyModel;
     const f = harness(model, 'classify');
     await f.probe({ model: 'other', state: {}, questions: {} });
     const wrong = new URL(f.op.destination);
-    wrong.pathname = '/v1/systemtwo';
+    wrong.pathname = '/v1/decision';
     await f.probe({ model: model.id }, wrong);
     const query = new URL(f.op.destination);
     query.searchParams.set('unexpected', 'true');

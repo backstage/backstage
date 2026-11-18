@@ -20,6 +20,10 @@ import {
 } from '@backstage/backend-plugin-api';
 import { createPrivateAiService } from '@backstage/ai-node/alpha';
 import { builtinProviderModules } from '@backstage/ai-node/temporary';
+import { anthropicProviderModules } from '@backstage/ai-node-provider-anthropic';
+import { azureProviderModules } from '@backstage/ai-node-provider-azure';
+import { typesafeProviderModules } from '@backstage/ai-node-provider-typesafe';
+import { openrouterProviderModules } from '@backstage/ai-node-provider-openrouter';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
 import { createAiGenerateAction, createAiTransformAction } from './actions';
 
@@ -65,7 +69,13 @@ export const scaffolderModuleAi = createBackendModule({
             pluginMetadata,
           },
           config,
-          providerModules: builtinProviderModules,
+          providerModules: [
+            ...builtinProviderModules,
+            ...anthropicProviderModules,
+            ...azureProviderModules,
+            ...typesafeProviderModules,
+            ...openrouterProviderModules,
+          ],
         });
         const options = { ai, config, permissions };
         scaffolder.addActions(

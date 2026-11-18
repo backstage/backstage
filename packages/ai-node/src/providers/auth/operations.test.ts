@@ -33,10 +33,18 @@ import type { AttemptJournal } from '../../journal/types';
 import { createAuthOperationGuard, type AuthModuleLookup } from './guard';
 import { AuthTokenRejection } from './guard';
 import {
-  builtinAuthModuleRegistry,
+  builtinAuthModules,
   createAuthModuleRegistry,
   openaiAuthModule,
 } from './modules';
+import { jsonAuthModule } from './jsonModuleFixture';
+
+/** Core registry: the remaining built-ins plus the local JSON-bodied module. */
+const jsonAuthModules = createAuthModuleRegistry([
+  jsonAuthModule,
+  ...builtinAuthModules,
+]);
+
 import {
   AuthOperationError,
   createAuthOperations,
@@ -187,13 +195,13 @@ async function fixture(
       transport: fetch,
       recheck: async () => true,
       journal,
-      modules: options.modules ?? builtinAuthModuleRegistry,
+      modules: options.modules ?? jsonAuthModules,
     });
     const operations = createAuthOperations({
       guard,
       journal,
       stores,
-      modules: options.modules ?? builtinAuthModuleRegistry,
+      modules: options.modules ?? jsonAuthModules,
       tokenEndpoints: options.tokenEndpoints ?? { anthropic: endpoint },
       clientIds: {
         anthropic: 'client-id',
@@ -606,7 +614,7 @@ describe('auth operation construction', () => {
       guard: {} as never,
       journal: {} as AttemptJournal,
       stores: {} as AiCredentialStores,
-      modules: builtinAuthModuleRegistry,
+      modules: jsonAuthModules,
       clientIds: {
         anthropic: 'client-id',
         openai: 'client-id',

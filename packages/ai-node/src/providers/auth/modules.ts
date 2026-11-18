@@ -67,7 +67,7 @@ export function createAuthModuleRegistry(
   return Object.freeze({ get: (id: string) => byId.get(id) });
 }
 
-async function assertTokenRequest(
+export async function assertTokenRequest(
   input: {
     operation: AuthOperationKind;
     endpoint: string;
@@ -134,7 +134,7 @@ async function assertTokenRequest(
 }
 
 /** Validates the token response and builds the credential. */
-function parseTokenResponse(
+export function parseOAuthTokenResponse(
   input: {
     body: unknown;
     previous?: OAuthCredential;
@@ -181,7 +181,7 @@ function parseTokenResponse(
   ) as OAuthCredential;
 }
 
-function tokenRequest(
+export function createTokenRequest(
   endpoint: string,
   body: 'json' | 'form',
   fields: Record<string, string>,
@@ -203,37 +203,6 @@ function tokenRequest(
 }
 
 /**
- * Anthropic (Claude subscription) OAuth: JSON token requests on the reserved
- * `/v1/oauth/token` route.
- *
- * @internal
- */
-export const anthropicAuthModule: AiAuthModule = {
-  id: 'anthropic',
-  tokenPath: '/v1/oauth/token',
-  body: 'json',
-  refreshRequest: ({ endpoint, clientId, credential }) =>
-    tokenRequest(endpoint, 'json', {
-      grant_type: 'refresh_token',
-      refresh_token: credential.refresh,
-      client_id: clientId,
-    }),
-  exchangeRequest: ({ endpoint, clientId, code, codeVerifier, redirectUri }) =>
-    tokenRequest(endpoint, 'json', {
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: redirectUri,
-      client_id: clientId,
-      code_verifier: codeVerifier,
-    }),
-  validateTokenRequest: input =>
-    assertTokenRequest(input, 'json', '/v1/oauth/token'),
-  parseTokenResponse: input =>
-    parseTokenResponse(input, ['account', 'account_id']),
-  extraFields: ['account', 'account_id'],
-};
-
-/**
  * OpenAI (ChatGPT subscription) OAuth: form-encoded token requests on the
  * reserved `/oauth/token` route.
  *
@@ -244,13 +213,13 @@ export const openaiAuthModule: AiAuthModule = {
   tokenPath: '/oauth/token',
   body: 'form',
   refreshRequest: ({ endpoint, clientId, credential }) =>
-    tokenRequest(endpoint, 'form', {
+    createTokenRequest(endpoint, 'form', {
       grant_type: 'refresh_token',
       refresh_token: credential.refresh,
       client_id: clientId,
     }),
   exchangeRequest: ({ endpoint, clientId, code, codeVerifier, redirectUri }) =>
-    tokenRequest(endpoint, 'form', {
+    createTokenRequest(endpoint, 'form', {
       grant_type: 'authorization_code',
       code,
       redirect_uri: redirectUri,
@@ -260,15 +229,12 @@ export const openaiAuthModule: AiAuthModule = {
   validateTokenRequest: input =>
     assertTokenRequest(input, 'form', '/oauth/token'),
   parseTokenResponse: input =>
-    parseTokenResponse(input, ['account_id', 'chatgpt_account_id']),
+    parseOAuthTokenResponse(input, ['account_id', 'chatgpt_account_id']),
   extraFields: ['account_id', 'chatgpt_account_id'],
 };
 
 /** Host registration: add another trusted auth module here to enable it. */
-export const builtinAuthModules = Object.freeze([
-  anthropicAuthModule,
-  openaiAuthModule,
-]);
+export const builtinAuthModules = Object.freeze([openaiAuthModule]);
 
 /** @internal */
 export const builtinAuthModuleRegistry =

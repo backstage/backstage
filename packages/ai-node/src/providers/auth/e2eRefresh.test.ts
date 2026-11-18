@@ -52,7 +52,15 @@ import { builtinProviderModules } from '../../temporary';
 import { createProviderRegistry } from '../registry';
 import type { AiProviderModule } from '../types';
 import { createAuthOperationGuard } from './guard';
-import { builtinAuthModuleRegistry } from './modules';
+import { jsonAuthModule } from './jsonModuleFixture';
+import { builtinAuthModules, createAuthModuleRegistry } from './modules';
+
+/** Core registry: remaining built-ins plus the local JSON-bodied module. */
+const jsonAuthModules = createAuthModuleRegistry([
+  jsonAuthModule,
+  ...builtinAuthModules,
+]);
+
 import { createAuthOperations } from './operations';
 
 const pgUrl = process.env.AI_TEST_POSTGRES_URL;
@@ -350,11 +358,11 @@ describe.each(engines)(
           transport: fetch,
           recheck: async () => true,
           journal,
-          modules: builtinAuthModuleRegistry,
+          modules: jsonAuthModules,
         }),
         journal,
         stores: configured.credentialStores!,
-        modules: builtinAuthModuleRegistry,
+        modules: jsonAuthModules,
         tokenEndpoints: configured.credentialTokenEndpoints,
         clientIds: { openai: 'client-id' },
       });
