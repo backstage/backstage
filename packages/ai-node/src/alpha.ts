@@ -110,7 +110,11 @@ export {
   isServer,
   isTool,
 } from './permissions/rules';
-export type { AiPermissionRule, AiPolicyAuthorizer } from './permissions/rules';
+export type {
+  AiParamsSchema,
+  AiPermissionRule,
+  AiPolicyAuthorizer,
+} from './permissions/rules';
 export type { AiCredentialStores, CredentialScope } from './credentials/types';
 export type { RecoveryEvent } from './journal/types';
 export type { PageOfNamespaces } from './ownership/types';

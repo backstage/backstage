@@ -358,9 +358,26 @@ export type AiObservabilityEvent =
     }>;
 
 // @alpha
+export type AiParamsSchema = {
+  '~standard': {
+    validate(value: unknown):
+      | {
+          value: unknown;
+          issues?: undefined;
+        }
+      | {
+          issues: readonly unknown[];
+          value?: undefined;
+        }
+      | Promise<unknown>;
+  };
+};
+
+// @alpha
 export type AiPermissionRule<TResource> = Readonly<{
   name: string;
   resourceType: string;
+  paramsSchema?: AiParamsSchema;
   apply(resource: TResource, params: never): boolean;
 }>;
 
@@ -514,11 +531,12 @@ export const aiToolResourceRef: PermissionResourceRef<
 >;
 
 // @alpha
-export function allowsConditional<TResource>(
-  decision: QueryPermissionResponse,
-  rules: readonly AiPermissionRule<TResource>[],
-  resource: TResource,
-): boolean;
+export function allowsConditional<TResource>(options: {
+  decision: QueryPermissionResponse;
+  resourceType: string;
+  rules: readonly AiPermissionRule<TResource>[];
+  resource: TResource;
+}): boolean;
 
 // @alpha
 export type AttemptId = string;
@@ -669,7 +687,6 @@ export const createAiToolConditionalDecision: (
 export function createGuardedToolOperations(options: {
   tools: ToolRegistry;
   models: GuardedToolDispatch;
-  permissions: AiPolicyAuthorizer;
 }): {
   callTool(input: {
     serverId: string;
@@ -747,11 +764,12 @@ export function evaluateAiHealth(
 ): AiHealthReport;
 
 // @alpha
-export function evaluatePermissionCriteria<TResource>(
-  criteria: PermissionCriteria<PermissionCondition>,
-  rules: readonly AiPermissionRule<TResource>[],
-  resource: TResource,
-): boolean;
+export function evaluatePermissionCriteria<TResource>(options: {
+  criteria: PermissionCriteria<PermissionCondition>;
+  resourceType: string;
+  rules: readonly AiPermissionRule<TResource>[];
+  resource: TResource;
+}): boolean;
 
 // @alpha
 export type Fence = Readonly<{

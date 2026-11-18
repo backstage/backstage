@@ -61,7 +61,11 @@ import {
   allowsConditional,
   authorizeConditionalDecision,
 } from './permissions/rules';
-import { aiToolUsePermission } from '@backstage/plugin-ai-common';
+import {
+  aiToolUsePermission,
+  RESOURCE_TYPE_AI_MODEL,
+  RESOURCE_TYPE_AI_TOOL,
+} from '@backstage/plugin-ai-common';
 import { aiModelUsePermission } from '@backstage/plugin-ai-common';
 import { createGuardedToolOperations } from './tools/mediation';
 import { composeWithToolRegistry, createToolRegistry } from './tools/registry';
@@ -609,18 +613,20 @@ export async function createAiServiceIntegration(
         );
         const allowed =
           operation.operation === 'toolCall'
-            ? allowsConditional(
+            ? allowsConditional({
                 decision,
-                Object.values(aiToolPermissionRules),
-                {
+                resourceType: RESOURCE_TYPE_AI_TOOL,
+                rules: Object.values(aiToolPermissionRules),
+                resource: {
                   serverId: operation.provider,
                   toolName: operation.modelId,
                 },
-              )
-            : allowsConditional(
+              })
+            : allowsConditional({
                 decision,
-                Object.values(aiModelPermissionRules),
-                {
+                resourceType: RESOURCE_TYPE_AI_MODEL,
+                rules: Object.values(aiModelPermissionRules),
+                resource: {
                   provider: operation.provider,
                   modelId: operation.modelId,
                   ...(catalogTypeOf(operation.provider, operation.modelId) ===
@@ -633,7 +639,7 @@ export async function createAiServiceIntegration(
                         ),
                       }),
                 },
-              );
+              });
         if (!allowed) {
           return false;
         }
@@ -1079,7 +1085,6 @@ export async function createAiServiceIntegration(
     const toolsSource = toolRegistry
       ? createGuardedToolOperations({
           tools: toolRegistry,
-          permissions: deps.permissions,
           models: createGuardedModelOperations({
             providers: providerRegistry,
             guard,
@@ -1521,15 +1526,16 @@ export async function createAiServiceIntegration(
           aiModelUsePermission,
           binding.credentials,
         );
-        const allowed = allowsConditional(
+        const allowed = allowsConditional({
           decision,
-          Object.values(aiModelPermissionRules),
-          {
+          resourceType: RESOURCE_TYPE_AI_MODEL,
+          rules: Object.values(aiModelPermissionRules),
+          resource: {
             provider: binding.model.provider,
             modelId: binding.model.modelId,
             ...(modelType === undefined ? {} : { type: modelType }),
           },
-        );
+        });
         if (!allowed) {
           throw new Error(
             `Access denied: the '${pluginId}' plugin's caller is not allowed to use the model '${binding.model.provider}/${binding.model.modelId}' configured at its AI configuration path`,

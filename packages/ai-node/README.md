@@ -292,39 +292,64 @@ other.
 > `ALLOW` for `ai.tool.use` grants every registered tool. The default
 > posture is deny: return nothing (or a `DENY`) and nothing dispatches.
 
-Grant one model pair:
+A policy grants by returning the conditions the service evaluates:
 
 ```ts
 import {
+  isPermission,
+  type PolicyDecision,
+} from '@backstage/plugin-permission-common';
+import type {
+  PermissionPolicy,
+  PolicyQuery,
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
+import {
   aiModelConditions,
+  aiToolConditions,
   createAiModelConditionalDecision,
+  createAiToolConditionalDecision,
 } from '@backstage/ai-node/alpha';
-import { aiModelUsePermission } from '@backstage/plugin-ai-common';
+import {
+  aiModelUsePermission,
+  aiToolUsePermission,
+} from '@backstage/plugin-ai-common';
 
-if (
-  isPermission(request.permission, aiModelUsePermission) &&
-  request.identity.type === 'user'
-) {
-  return createAiModelConditionalDecision(request.permission, {
-    conditions: aiModelConditions.isModel({
-      provider: 'openai',
-      modelId: 'gpt-5',
-    }),
-  });
+export class AiPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
+    if (isPermission(request.permission, aiModelUsePermission)) {
+      return createAiModelConditionalDecision(request.permission, {
+        anyOf: [
+          aiModelConditions.isModel({ provider: 'openai', modelId: 'gpt-5' }),
+          aiModelConditions.isProvider({ provider: 'anthropic' }),
+          aiModelConditions.isModelType({ type: 'image' }),
+        ],
+      });
+    }
+    if (isPermission(request.permission, aiToolUsePermission)) {
+      return createAiToolConditionalDecision(
+        request.permission,
+        aiToolConditions.isServer({ serverId: 'files' }),
+      );
+    }
+    if (user === undefined) {
+      return { result: 'DENY' };
+    }
+    return { result: 'ALLOW' };
+  }
 }
 ```
 
-Grant whole providers and one model type, and every tool of one server:
+The conditional-decision helper takes the permission and the criteria
+directly; conditions come from the matching conditions object
+(`aiModelConditions`, `aiToolConditions`) and compose with `anyOf`, `allOf`
+and `not`. The caller's identity is the optional second `user` argument of
+`handle`, never part of the query.
 
-```ts
-conditions: aiModelConditions.anyOf([
-  aiModelConditions.isProvider({ provider: 'openai' }),
-  aiModelConditions.isModelType({ type: 'image' }),
-]);
-conditions: aiToolConditions.isServer({ serverId: 'files' });
-```
-
-Combined grants compose with `anyOf`, `allOf` and `not`. Discovery
+Discovery
 (`listModels`, `listProviders`) applies the same evaluated conditions per
 pair, so it reports exactly the pairs the caller's own credentials are
 allowed to use, each with its catalog fields (adapter, type, context

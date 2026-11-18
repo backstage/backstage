@@ -217,6 +217,22 @@ export const createAiToolConditionalDecision =
   toolExports.createConditionalDecision;
 
 /**
+ * The standard-schema validator every AI rule carries.
+ *
+ * @alpha
+ */
+export type AiParamsSchema = {
+  '~standard': {
+    validate(
+      value: unknown,
+    ):
+      | { value: unknown; issues?: undefined }
+      | { issues: readonly unknown[]; value?: undefined }
+      | Promise<unknown>;
+  };
+};
+
+/**
  * One rule as this package evaluates it in process.
  *
  * @alpha
@@ -224,6 +240,12 @@ export const createAiToolConditionalDecision =
 export type AiPermissionRule<TResource> = Readonly<{
   name: string;
   resourceType: string;
+  /**
+   * The rule's own parameter schema, through its standard-schema validator;
+   * every evaluation validates against it. A rule without one, or one whose
+   * validator answers asynchronously, cannot be validated and denies.
+   */
+  paramsSchema?: AiParamsSchema;
   apply(resource: TResource, params: never): boolean;
 }>;
 
@@ -235,52 +257,201 @@ export type AiPermissionRule<TResource> = Readonly<{
  * backend answers `ai.model.use` and `ai.tool.use` with the policy's
  * `PermissionCriteria`, and the caller — which already holds the model pair or
  * tool identity — applies the rules itself, the same way the catalog evaluates
- * entity conditions without a round trip per entity.
+ * entity conditions without a round trip per entity. The resource attributes
+ * never leave the process; only the permission identity and the caller's
+ * credentials are sent.
  *
- * Fail-closed by construction: a condition naming a rule this package does not
- * know, naming a rule of a different resource type, carrying parameters the
- * rule rejects, or a rule that throws all evaluate to `false`. Only a criteria
- * that evaluates positively allows.
+ * This evaluator is the enforcement boundary, so it is fail-closed by
+ * construction:
+ *
+ * - a condition naming a rule this package does not know, or a rule of a
+ *   different resource type, denies;
+ * - parameters are validated against the rule's own schema before `apply`, so
+ *   a type-invalid params object denies instead of evaluating to something the
+ *   rule never meant (an inverted `not` around a malformed condition can never
+ *   grant);
+ * - every node — the envelope, each compound and each leaf — must carry the
+ *   queried resource type, and a `pluginId` when present must be this plugin's,
+ *   so a foreign-resource response can never be satisfied by a leaf of the
+ *   queried type;
+ * - an empty `allOf` or `anyOf` denies. The permission framework types compounds
+ *   as non-empty, so this case only arises from a degenerate or hand-built
+ *   response; where the framework would treat an empty compound as vacuously
+ *   true, this guard is deliberately stricter.
  *
  * @alpha
  */
-export function evaluatePermissionCriteria<TResource>(
-  criteria: PermissionCriteria<PermissionCondition>,
-  rules: readonly AiPermissionRule<TResource>[],
-  resource: TResource,
-): boolean {
+export function evaluatePermissionCriteria<TResource>(options: {
+  criteria: PermissionCriteria<PermissionCondition>;
+  resourceType: string;
+  rules: readonly AiPermissionRule<TResource>[];
+  resource: TResource;
+}): boolean {
+  const context = {
+    resourceType: options.resourceType,
+    rules: options.rules,
+    resource: options.resource,
+  };
   try {
-    return evaluate(criteria, rules, resource);
+    assertValidCriteria(options.criteria, context);
+    return evaluateCriteria(options.criteria, context);
   } catch {
     return false;
   }
 }
 
-function evaluate<TResource>(
-  criteria: PermissionCriteria<PermissionCondition>,
-  rules: readonly AiPermissionRule<TResource>[],
-  resource: TResource,
-): boolean {
-  if ('anyOf' in criteria) {
-    return criteria.anyOf.some(entry => evaluate(entry, rules, resource));
+type EvaluationContext<TResource> = Readonly<{
+  resourceType: string;
+  rules: readonly AiPermissionRule<TResource>[];
+  resource: TResource;
+}>;
+
+/** The plugin id every AI condition node must carry when it carries one. */
+const AI_PLUGIN_ID = 'ai';
+
+const OPERATORS = ['allOf', 'anyOf', 'not'] as const;
+const LEAF_KEYS = ['rule', 'params'] as const;
+
+/**
+ * Validates the whole criteria tree before any boolean evaluation.
+ *
+ * @remarks
+ * Two passes on purpose: boolean evaluation short-circuits, so a valid first
+ * branch would otherwise hide a malformed later one (`anyOf`) or stop before
+ * reaching it (`allOf`). Validation visits every node first and any
+ * malformation denies the whole response — a mixed operator node, an empty
+ * compound, a foreign envelope or leaf, an unknown rule, or parameters the
+ * rule's schema rejects.
+ */
+function assertValidCriteria<TResource>(
+  criteria: unknown,
+  context: EvaluationContext<TResource>,
+  depth = 0,
+): void {
+  if (depth > 32) {
+    throw new Error('Permission criteria nested too deeply');
   }
-  if ('allOf' in criteria) {
-    return criteria.allOf.every(entry => evaluate(entry, rules, resource));
+  if (!criteria || typeof criteria !== 'object' || Array.isArray(criteria)) {
+    throw new Error('Invalid permission criteria node');
   }
-  if ('not' in criteria) {
-    return !evaluate(criteria.not, rules, resource);
+  const node = criteria as Record<string, unknown>;
+  if (
+    node.resourceType !== undefined &&
+    node.resourceType !== context.resourceType
+  ) {
+    throw new Error(
+      `Permission criteria for a foreign resource type: '${String(
+        node.resourceType,
+      )}' is not '${context.resourceType}'`,
+    );
   }
-  const rule = rules.find(
-    entry =>
-      entry.name === criteria.rule &&
-      entry.resourceType === criteria.resourceType,
+  if (node.pluginId !== undefined && node.pluginId !== AI_PLUGIN_ID) {
+    throw new Error(
+      `Permission criteria for a foreign plugin: '${String(
+        node.pluginId,
+      )}' is not '${AI_PLUGIN_ID}'`,
+    );
+  }
+  const operators = OPERATORS.filter(operator => operator in node);
+  const hasLeaf = LEAF_KEYS.some(key => key in node);
+  if (operators.length + (hasLeaf ? 1 : 0) !== 1) {
+    throw new Error(
+      'Malformed permission criteria node: expected one operator',
+    );
+  }
+  const allowedKeys = new Set<string>([
+    'resourceType',
+    'pluginId',
+    ...operators,
+    ...(hasLeaf ? LEAF_KEYS : []),
+  ]);
+  for (const key of Object.keys(node)) {
+    if (!allowedKeys.has(key)) {
+      throw new Error(`Unknown field in permission criteria node: '${key}'`);
+    }
+  }
+  if (operators.length === 1 && operators[0] !== 'not') {
+    const branches = node[operators[0] as 'allOf' | 'anyOf'];
+    if (!Array.isArray(branches) || branches.length === 0) {
+      throw new Error(
+        `Empty or malformed permission criteria compound: '${operators[0]}'`,
+      );
+    }
+    for (const branch of branches) {
+      assertValidCriteria(branch, context, depth + 1);
+    }
+    return;
+  }
+  if (operators.length === 1) {
+    assertValidCriteria(node.not, context, depth + 1);
+    return;
+  }
+  const name = node.rule;
+  const rule = context.rules.find(
+    entry => entry.name === name && entry.resourceType === context.resourceType,
   );
   if (!rule) {
     throw new Error(
-      `Unsupported permission rule '${criteria.rule}' for resource type '${criteria.resourceType}'`,
+      `Unsupported permission rule '${String(name)}' for resource type '${
+        context.resourceType
+      }'`,
     );
   }
-  return rule.apply(resource, criteria.params as never);
+  if (!isValidParams(rule.paramsSchema, node.params)) {
+    throw new Error(
+      `Invalid parameters for permission rule '${rule.name}' on resource type '${context.resourceType}'`,
+    );
+  }
+}
+
+/**
+ * Validation is synchronous and fail-closed: no validator, a rejected value or
+ * an asynchronous answer all count as invalid parameters.
+ */
+function isValidParams(
+  schema: AiParamsSchema | undefined,
+  params: unknown,
+): boolean {
+  const validate = schema?.['~standard']?.validate;
+  if (typeof validate !== 'function') {
+    return false;
+  }
+  const result = validate.call(schema?.['~standard'], params);
+  if (!result || typeof (result as Promise<unknown>).then === 'function') {
+    return false;
+  }
+  return !('issues' in result) || !result.issues;
+}
+
+/** Evaluates a tree {@link assertValidCriteria} already accepted. */
+function evaluateCriteria<TResource>(
+  criteria: PermissionCriteria<PermissionCondition>,
+  context: EvaluationContext<TResource>,
+): boolean {
+  const node = criteria as {
+    allOf?: readonly PermissionCriteria<PermissionCondition>[];
+    anyOf?: readonly PermissionCriteria<PermissionCondition>[];
+    not?: PermissionCriteria<PermissionCondition>;
+    rule?: string;
+    params?: unknown;
+  };
+  if (node.allOf) {
+    return node.allOf.every(entry => evaluateCriteria(entry, context));
+  }
+  if (node.anyOf) {
+    return node.anyOf.some(entry => evaluateCriteria(entry, context));
+  }
+  if (node.not) {
+    return !evaluateCriteria(node.not, context);
+  }
+  const rule = context.rules.find(
+    entry =>
+      entry.name === node.rule && entry.resourceType === context.resourceType,
+  );
+  if (!rule) {
+    return false;
+  }
+  return rule.apply(context.resource, node.params as never);
 }
 
 /**
@@ -336,13 +507,20 @@ export async function authorizeConditionalDecision(
  *
  * @alpha
  */
-export function allowsConditional<TResource>(
-  decision: QueryPermissionResponse,
-  rules: readonly AiPermissionRule<TResource>[],
-  resource: TResource,
-): boolean {
+export function allowsConditional<TResource>(options: {
+  decision: QueryPermissionResponse;
+  resourceType: string;
+  rules: readonly AiPermissionRule<TResource>[];
+  resource: TResource;
+}): boolean {
+  const { decision } = options;
   if (!decision || typeof decision !== 'object') return false;
   if (decision.result === 'ALLOW') return true;
-  if (decision.result !== 'CONDITIONAL') return false;
-  return evaluatePermissionCriteria(decision.conditions, rules, resource);
+  if (decision.result !== 'CONDITIONAL' || !decision.conditions) return false;
+  return evaluatePermissionCriteria({
+    criteria: decision.conditions,
+    resourceType: options.resourceType,
+    rules: options.rules,
+    resource: options.resource,
+  });
 }

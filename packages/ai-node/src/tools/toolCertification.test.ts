@@ -326,12 +326,6 @@ async function mediationHarness(options: {
   };
   module?: ToolModule;
 }) {
-  const allowAll = {
-    authorizeConditional: jest.fn(async (requests: readonly unknown[]) =>
-      requests.map(() => ({ result: 'ALLOW' as const })),
-    ),
-  };
-
   const tools = createToolRegistry([
     options.module ?? realToolModule(options.id, options.origin),
   ]);
@@ -392,11 +386,7 @@ async function mediationHarness(options: {
       };
     },
   });
-  const mediation = createGuardedToolOperations({
-    tools,
-    models,
-    permissions: allowAll,
-  });
+  const mediation = createGuardedToolOperations({ tools, models });
   const call = (args: unknown = { query: 'x' }) =>
     mediation.callTool({
       serverId: options.id,

@@ -23,6 +23,11 @@ import { randomUUID } from 'node:crypto';
 import knexFactory, { type Knex } from 'knex';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
+import type {
+  PermissionCondition,
+  PermissionCriteria,
+} from '@backstage/plugin-permission-common';
+import { aiModelConditions } from '@backstage/ai-node/alpha';
 import {
   startTestBackend,
   type TestBackend,
@@ -54,12 +59,15 @@ async function providerServer(replyText: string): Promise<{
   setReply(text: string): void;
   /** When true, responses are held until released: requests stay pending. */
   holdResponse: boolean;
+  /** When true, the next response is a provider error instead of a stream. */
+  failNextResponse: boolean;
   releaseResponse(): void;
   close(): Promise<void>;
 }> {
   const requests: ProbeRequest[] = [];
   let reply = replyText;
   let holdResponse = false;
+  let failNextResponse = false;
   let releaseResponse: () => void = () => {};
   const responseGate = new Promise<void>(resolve => {
     releaseResponse = resolve;
@@ -108,6 +116,16 @@ async function providerServer(replyText: string): Promise<{
       if (holdResponse) {
         await responseGate;
       }
+      if (failNextResponse) {
+        failNextResponse = false;
+        res.writeHead(400, { 'content-type': 'application/json' });
+        res.end(
+          JSON.stringify({
+            error: { message: 'provider rejected the request' },
+          }),
+        );
+        return;
+      }
       res.writeHead(200, { 'content-type': 'text/event-stream' });
       for (const event of events) {
         res.write(`event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`);
@@ -130,6 +148,12 @@ async function providerServer(replyText: string): Promise<{
     set holdResponse(value: boolean) {
       holdResponse = value;
     },
+    get failNextResponse() {
+      return failNextResponse;
+    },
+    set failNextResponse(value: boolean) {
+      failNextResponse = value;
+    },
     releaseResponse: () => releaseResponse(),
     close: async () => {
       server.closeAllConnections();
@@ -145,6 +169,8 @@ type Fixture = {
     credentials?: boolean;
     modelId?: string;
     denyModelFor?: (credentials: BackstageCredentials) => boolean;
+    /** A conditional grant for `ai.model.use`, as a real policy returns it. */
+    modelConditions?: () => PermissionCriteria<PermissionCondition>;
     /** Deny every model authorization from this 1-based call onward. */
     denyFromCall?: number;
     /** Throw from every model authorization at this 1-based call onward. */
@@ -194,19 +220,35 @@ async function fixture(): Promise<Fixture> {
         if (authorizeCalls >= throwFromCall) {
           throw new Error('permissions backend unavailable');
         }
-        return queries.map(() => {
+        return queries.map((query: any) => {
           const denied =
             authorizeCalls >= denyFromCall ||
             (denyModelFor !== undefined &&
               denyModelFor(authOptions.credentials as BackstageCredentials));
-          return {
-            result: denied ? ('DENY' as const) : ('ALLOW' as const),
-          };
+          if (denied) {
+            return { result: 'DENY' as const };
+          }
+          // A conditional grant, so a type-scoped policy is exercised exactly
+          // as the service evaluates it.
+          if (
+            options.modelConditions !== undefined &&
+            query.permission?.name === 'ai.model.use'
+          ) {
+            return {
+              result: 'CONDITIONAL' as const,
+              pluginId: 'ai',
+              resourceType: 'ai-model',
+              conditions: options.modelConditions(),
+            };
+          }
+          return { result: 'ALLOW' as const };
         });
       };
       const permissions = mockServices.permissions.mock({
-        authorize: decide,
-        authorizeConditional: decide,
+        // A conditional answer is only meaningful for the conditional entry
+        // point; the definitive one is the same predicate without conditions.
+        authorize: decide as never,
+        authorizeConditional: decide as never,
       });
       const backend = await startTestBackend({
         extensionPoints: [
@@ -241,6 +283,7 @@ async function fixture(): Promise<Fixture> {
                     modelId: 'gpt-scaffolder',
                     api: 'openai-responses',
                     baseUrl: `${options.providerUrl}/v1`,
+                    type: 'chat',
                     contextWindow: 400_000,
                     maxTokens: 128_000,
                   },
@@ -834,6 +877,42 @@ describe('scaffolder AI actions', () => {
         ),
       );
       expect(provider.requests).toHaveLength(0);
+      await backend.stop();
+    } finally {
+      await provider.close();
+      await f.close();
+    }
+  }, 30000);
+
+  // Reviewer finding 6: the diagnostic re-evaluated the policy without the
+  // catalog type, so a type-scoped grant looked like a denial and an unrelated
+  // model error was misattributed to the permission.
+  it('never attributes an unrelated model error to a type-scoped permission', async () => {
+    const f = await fixture();
+    const provider = await providerServer('unused');
+    try {
+      const { backend, action } = await f.start({
+        providerUrl: provider.baseUrl,
+        // The policy grants the chat model by its catalog type, exactly as the
+        // dispatch-time evaluation sees it.
+        modelConditions: () => aiModelConditions.isModelType({ type: 'chat' }),
+      });
+      provider.failNextResponse = true;
+      const ctx = context({
+        actionId: 'ai:generate',
+        taskId: 'gen-type-scoped',
+        input: { prompt: 'Write something' },
+        credentials: alice(),
+      });
+      const failure = await action('ai:generate')
+        .handler(ctx)
+        .then(
+          () => undefined,
+          (error: Error) => error,
+        );
+      expect(failure?.message).toContain("reason: 'model_error'");
+      expect(failure?.message).not.toContain('permission was denied');
+      expect(provider.requests).toHaveLength(1);
       await backend.stop();
     } finally {
       await provider.close();

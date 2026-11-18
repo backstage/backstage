@@ -15,7 +15,10 @@
  */
 
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
-import { aiModelUsePermission } from '@backstage/plugin-ai-common';
+import {
+  aiModelUsePermission,
+  RESOURCE_TYPE_AI_MODEL,
+} from '@backstage/plugin-ai-common';
 import {
   aiModelPermissionRules,
   allowsConditional,
@@ -92,11 +95,12 @@ export function createModelAccess(options: {
         aiModelUsePermission,
         credentials,
       );
-      return allowsConditional(
+      return allowsConditional({
         decision,
-        Object.values(aiModelPermissionRules),
-        attributesOf(entry),
-      );
+        resourceType: RESOURCE_TYPE_AI_MODEL,
+        rules: Object.values(aiModelPermissionRules),
+        resource: attributesOf(entry),
+      });
     },
     async listModels(
       credentials: BackstageCredentials,
@@ -109,7 +113,12 @@ export function createModelAccess(options: {
       const rules = Object.values(aiModelPermissionRules);
       return Object.freeze(
         models.filter(entry =>
-          allowsConditional(decision, rules, attributesOf(entry)),
+          allowsConditional({
+            decision,
+            resourceType: RESOURCE_TYPE_AI_MODEL,
+            rules,
+            resource: attributesOf(entry),
+          }),
         ),
       );
     },
@@ -126,7 +135,12 @@ export function createModelAccess(options: {
         ...new Set(
           models
             .filter(entry =>
-              allowsConditional(decision, rules, attributesOf(entry)),
+              allowsConditional({
+                decision,
+                resourceType: RESOURCE_TYPE_AI_MODEL,
+                rules,
+                resource: attributesOf(entry),
+              }),
             )
             .map(entry => entry.provider),
         ),

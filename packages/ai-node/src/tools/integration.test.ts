@@ -340,9 +340,12 @@ describe('stock service tool mediation', () => {
       expect(requests[1].pathname).toBe('/mcp/org-tools/tools/search');
       expect(requests[1].authorization).toBe('Bearer org-tool-token');
 
-      // Permission denial: the tool permission is refused before any send.
+      // Permission denial: the single per-attempt check runs inside the
+      // guarded dispatch, so the refusal is journaled with the tool identity
+      // and nothing reaches the wire.
       allowed = false;
       requests.length = 0;
+      const deniedAt = await db('ai_journal_events').max('id as id').first();
       await expect(
         handle.tools!.callTool({
           serverId: 'stock-tools',
@@ -350,10 +353,24 @@ describe('stock service tool mediation', () => {
           arguments: { query: 'x' },
           credentials,
         }),
-      ).rejects.toThrow(
-        "Access denied: the caller is not allowed to use the tool 'stock-tools/search'",
-      );
+      ).resolves.toMatchObject({
+        errorMessage: expect.stringContaining('revoked'),
+      });
       expect(requests).toHaveLength(0);
+      const denials = await db('ai_journal_events')
+        .where('id', '>', deniedAt?.id ?? 0)
+        .orderBy('id')
+        .select('kind', 'decision', 'operation', 'provider', 'model');
+      expect(denials).toEqual([
+        expect.objectContaining({
+          kind: 'decision',
+          decision: 'deny',
+          operation: 'models.toolCall',
+          provider: 'stock-tools',
+          model: 'search',
+        }),
+      ]);
+      allowed = true;
 
       // Credential rotation mid-call: the recheck re-resolves the scoped MCP
       // credential and rejects the retry when the generation changed.

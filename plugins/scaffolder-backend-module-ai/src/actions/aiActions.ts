@@ -27,6 +27,7 @@ import type {
 import type { AiService } from '@backstage/ai-node/alpha';
 import {
   authorizeConfiguredModel,
+  catalogModelType,
   configuredModel,
   runManagedCompletion,
 } from '../lib/session';
@@ -68,6 +69,7 @@ async function complete(options: {
       permissions: options.deps.permissions,
       credentials: options.credentials,
       model,
+      type: catalogModelType(options.deps.config, model),
       actionId: options.actionId,
     });
   }

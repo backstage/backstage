@@ -29,12 +29,6 @@ import { composeWithToolRegistry, createToolRegistry } from './registry';
 import { builtinProviderRegistry } from '../providers/testFixtures';
 import type { ToolModule } from './types';
 
-const allowAll = {
-  authorizeConditional: jest.fn(async (requests: readonly unknown[]) =>
-    requests.map(() => ({ result: 'ALLOW' as const })),
-  ),
-};
-
 type ServerFixture = {
   server: Server;
   origin: string;
@@ -234,11 +228,7 @@ function exampleToolServer(
       };
     },
   });
-  const mediation = createGuardedToolOperations({
-    tools,
-    models,
-    permissions: allowAll,
-  });
+  const mediation = createGuardedToolOperations({ tools, models });
   const callTool = (
     toolName = 'search',
     args: unknown = { query: 'x' },
@@ -515,11 +505,7 @@ describe('guarded tool operations', () => {
           },
         }),
       });
-      const mediation = createGuardedToolOperations({
-        tools: base,
-        models,
-        permissions: allowAll,
-      });
+      const mediation = createGuardedToolOperations({ tools: base, models });
       const call = () =>
         mediation.callTool({
           serverId: 'example-tools',

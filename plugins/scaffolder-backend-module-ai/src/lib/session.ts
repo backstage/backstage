@@ -22,11 +22,15 @@ import type {
 } from '@backstage/backend-plugin-api';
 import type { AiService, ManagedHarness } from '@backstage/ai-node/alpha';
 import {
+  AI_INSTALLATION_CONFIG_PATH,
   aiModelPermissionRules,
   allowsConditional,
   authorizeConditionalDecision,
 } from '@backstage/ai-node/alpha';
-import { aiModelUsePermission } from '@backstage/plugin-ai-common';
+import {
+  aiModelUsePermission,
+  RESOURCE_TYPE_AI_MODEL,
+} from '@backstage/plugin-ai-common';
 import { createRegistry } from '@earendil-works/pi-durable';
 import type { Message } from '@earendil-works/pi-ai';
 
@@ -53,6 +57,31 @@ export type ConfiguredModel = Readonly<{
   provider: string;
   modelId: string;
 }>;
+
+/**
+ * The catalog type of one configured model, read from the installation's
+ * `ai.models` catalog.
+ *
+ * @remarks
+ * Authorization evaluates the model rules against `{{ provider, modelId, type }}`,
+ * exactly as dispatch does, so `isModelType` must see the same type the
+ * installation catalog declares. Without it, a type-scoped grant would be
+ * evaluated against `type: undefined` and misfire in both directions.
+ */
+export function catalogModelType(
+  root: Config,
+  model: ConfiguredModel,
+): string | undefined {
+  const entries = root
+    .getOptionalConfig(AI_INSTALLATION_CONFIG_PATH)
+    ?.getOptionalConfigArray('models');
+  const entry = entries?.find(
+    candidate =>
+      candidate.getOptionalString('provider') === model.provider &&
+      candidate.getOptionalString('modelId') === model.modelId,
+  );
+  return entry?.getOptionalString('type');
+}
 
 /**
  * Reads the model the scaffolder plugin configured at
@@ -122,6 +151,8 @@ async function settlementFailure(options: {
   credentials: BackstageCredentials;
   settled: { reason: string; detail?: unknown };
   model: ConfiguredModel | undefined;
+  /** The catalog type of the settled model, when the catalog declares one. */
+  modelType: (model: ConfiguredModel) => string | undefined;
 }): Promise<Error> {
   const { sessionId, settled, model } = options;
   const detail = renderDetail(settled.detail);
@@ -145,7 +176,15 @@ async function settlementFailure(options: {
       `${prefix} did not complete (reason: 'model_error'${detail}). Ask an administrator to configure credentials for the configured model's provider`,
     );
   }
-  if (settled.reason === 'model_error' && model !== undefined) {
+  if (
+    settled.reason === 'model_error' &&
+    model !== undefined &&
+    // Attribution is a diagnostic, never a guess: when the installation
+    // catalog declares no type for this pair the policy's type conditions
+    // cannot be re-evaluated the way dispatch evaluated them, so the generic
+    // settlement failure is reported instead of inventing a permission denial.
+    options.modelType(model) !== undefined
+  ) {
     // A dispatch denied mid-run settles as a model error whose provider
     // detail does not carry the denial reason, so re-check the model
     // permission now: a denial that appeared during the run is named. The
@@ -158,11 +197,17 @@ async function settlementFailure(options: {
         aiModelUsePermission,
         options.credentials,
       );
-      const allowed = allowsConditional(
+      const type = options.modelType(model);
+      const allowed = allowsConditional({
         decision,
-        Object.values(aiModelPermissionRules),
-        { provider: model.provider, modelId: model.modelId },
-      );
+        resourceType: RESOURCE_TYPE_AI_MODEL,
+        rules: Object.values(aiModelPermissionRules),
+        resource: {
+          provider: model.provider,
+          modelId: model.modelId,
+          ...(type === undefined ? {} : { type }),
+        },
+      });
       if (!allowed) {
         return new Error(
           `${prefix} did not complete (reason: 'model_error'${detail}). The submitting user is no longer allowed to use the model '${model.provider}/${model.modelId}': the 'ai.model.use' permission was denied during the run; ask an administrator for access`,
@@ -248,6 +293,7 @@ export async function runManagedCompletion(options: {
           credentials: options.credentials,
           settled,
           model: configuredModel(options.root),
+          modelType: candidate => catalogModelType(options.root, candidate),
         });
       }
       const reply = await latestAssistantText(conversation, handle.context);
@@ -285,6 +331,8 @@ export async function authorizeConfiguredModel(options: {
   permissions: PermissionsService;
   credentials: BackstageCredentials;
   model: ConfiguredModel;
+  /** The model's catalog type, read from the installation catalog. */
+  type?: string;
   actionId: string;
 }): Promise<void> {
   const decision = await authorizeConditionalDecision(
@@ -293,9 +341,15 @@ export async function authorizeConfiguredModel(options: {
     options.credentials,
   );
   if (
-    !allowsConditional(decision, Object.values(aiModelPermissionRules), {
-      provider: options.model.provider,
-      modelId: options.model.modelId,
+    !allowsConditional({
+      decision,
+      resourceType: RESOURCE_TYPE_AI_MODEL,
+      rules: Object.values(aiModelPermissionRules),
+      resource: {
+        provider: options.model.provider,
+        modelId: options.model.modelId,
+        ...(options.type === undefined ? {} : { type: options.type }),
+      },
     })
   ) {
     throw new Error(

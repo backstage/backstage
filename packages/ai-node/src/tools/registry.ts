@@ -29,7 +29,9 @@ import type { ToolDeclaration, ToolModule } from './types';
 /**
  * Presents one tool module through the generic module resolution seam: the
  * credential key, interpretation and generation for its scoped MCP
- * credential, the tool permission name, and the `toolCall` binding facts.
+ * credential, and the `toolCall` binding facts. The permission is fixed
+ * (`ai.tool.use`) and selected by operation kind in the guard's recheck, so
+ * the module supplies no permission hook.
  * The integration consumes these hooks generically — the same seam provider
  * modules use — so adding a tool module requires no integration changes.
  */
