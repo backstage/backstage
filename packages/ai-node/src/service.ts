@@ -26,7 +26,10 @@ import type { Config } from '@backstage/config';
 import type { DefaultAiServiceDeps } from './DefaultAiService';
 import type { AiProviderModule } from './providers/types';
 import type { AiModuleRegistry } from './moduleRegistry';
-import { createAiServiceIntegration } from './integration';
+import {
+  createAiServiceIntegration,
+  type AiCodemodeOptions,
+} from './integration';
 import type { ToolModule } from './tools/types';
 import { runAiMigrations } from './migrations';
 import {
@@ -67,6 +70,13 @@ export type AiServiceFactoryOptions = Readonly<{
   toolModules?: readonly ToolModule[];
   /** Trusted provider modules available to new harness admissions. */
   providerModules?: readonly AiProviderModule[];
+  /**
+   * Opt-in code mode for every harness this service opens. The
+   * `createExtension` callback builds the extension; the default
+   * construction is `createBoundedCodemodeExtension` from
+   * `@backstage/ai-node-codemode`.
+   */
+  codemode?: AiCodemodeOptions;
 }>;
 
 /**
@@ -119,6 +129,7 @@ async function createConfiguredService(
     deps,
     providerModules: options.providerModules ?? [],
     toolModules: options.toolModules ?? [],
+    ...(options.codemode === undefined ? {} : { codemode: options.codemode }),
     ...(dynamic
       ? {
           moduleSource: () =>

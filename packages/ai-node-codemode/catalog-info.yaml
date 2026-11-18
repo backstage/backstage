@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-ai-node-codemode
+  title: '@backstage/ai-node-codemode'
+  description: Code mode extension construction for the Backstage managed AI service
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: framework-maintainers

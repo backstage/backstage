@@ -66,6 +66,7 @@ import {
 } from './integration';
 import { runAiMigrations } from './migrations';
 import { builtinProviderRegistry } from './providers/testFixtures';
+import { createBoundedCodemodeExtension } from '@backstage/ai-node-codemode/alpha';
 
 const createAiServiceIntegration = (
   options: Parameters<typeof createAiServiceIntegrationBase>[0],
@@ -177,7 +178,14 @@ async function managed(
     deps: f.deps,
     credentialStores: options.credentialStores ?? STAND_IN_STORES,
     models: options.models,
-    ...(options.codemode === undefined ? {} : { codemode: options.codemode }),
+    ...(options.codemode === undefined
+      ? {}
+      : {
+          codemode: {
+            ...options.codemode,
+            createExtension: createBoundedCodemodeExtension,
+          },
+        }),
   });
   const service = DefaultAiService.create({ deps: f.deps, integration });
   integration.onNamespaceInvalidated(namespace =>

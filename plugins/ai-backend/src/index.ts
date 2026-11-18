@@ -23,9 +23,9 @@ import {
   bindAiModuleRegistry,
   createAiHttpSupport,
   createAiModuleRegistry,
-  createToolPermissions,
 } from '@backstage/ai-node/alpha';
 import { builtinProviderModules } from '@backstage/ai-node/temporary';
+import { createToolPermissions } from '@backstage/ai-node-tools/alpha';
 import { aiModulesExtensionPoint } from './extensions';
 import { createRouter } from './router';
 

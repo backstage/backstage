@@ -13,6 +13,7 @@ import type { Context } from '@earendil-works/chord/context';
 import type { Credential as Credential_2 } from '@earendil-works/pi-ai';
 import type { CredentialStore } from '@earendil-works/pi-ai';
 import type { DatabaseService } from '@backstage/backend-plugin-api';
+import { Extension } from '@earendil-works/pi-durable';
 import type { Harness } from '@earendil-works/pi-durable';
 import type { JsonValue } from '@backstage/config';
 import type { Knex } from 'knex';
@@ -27,6 +28,21 @@ import type { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha
 export const AI_INSTALLATION_CONFIG_PATH = 'ai';
+
+// @alpha
+export type AiCodemodeOptions = Readonly<{
+  readonly timeoutMs?: number;
+  readonly memoryLimitBytes?: number;
+  readonly createExtension: (limits: {
+    readonly timeoutMs: number;
+    readonly memoryLimitBytes?: number;
+  }) => {
+    readonly extension: Extension;
+    readonly sandbox: {
+      close(): Promise<void>;
+    };
+  };
+}>;
 
 // @alpha
 export type AiConfigCredentialScopes = ReadonlyMap<
@@ -308,6 +324,7 @@ export interface AiService {
 export type AiServiceFactoryOptions = Readonly<{
   toolModules?: readonly ToolModule[];
   providerModules?: readonly AiProviderModule[];
+  codemode?: AiCodemodeOptions;
 }>;
 
 // @alpha
@@ -470,23 +487,6 @@ export function createPrivateAiService(
     config: Config;
   },
 ): Promise<AiService>;
-
-// @alpha
-export function createToolPermissions(options: {
-  tools: readonly ToolIdentity[];
-  authorizer: Pick<PermissionsService, 'authorize'>;
-  registry: Pick<PermissionsRegistryService, 'addPermissions'>;
-}): {
-  authorize: (
-    credentials: BackstageCredentials,
-    identities: readonly ToolIdentity[],
-  ) => Promise<
-    {
-      result: string;
-    }[]
-  >;
-  toolPermissionName: typeof toolPermissionName;
-};
 
 // @alpha
 export function createUsageAccounting(

@@ -25,12 +25,6 @@ import {
   type RegistrySnapshot,
   type Storage,
 } from '@earendil-works/pi-durable';
-import { createCodemodeExtension } from '@earendil-works/pi-durable/codemode';
-import { CodemodeSandbox } from '@earendil-works/pi-codemode';
-import type {
-  CodemodeRun,
-  CodemodeRunOptions,
-} from '@earendil-works/pi-codemode/portable';
 import type { AnyModel, Credential, Models } from '@earendil-works/pi-ai';
 import {
   createProviderRegistry,
@@ -233,13 +227,35 @@ export interface AiServiceIntegrationOptions {
    * permission, fence, and credential recheck and audit journaling. Until a
    * provider module certifies them, those calls deny fail-closed.
    */
-  readonly codemode?: {
-    /** Host wall-clock ceiling per script execution. Default 300000. */
-    readonly timeoutMs?: number;
-    /** QuickJS heap limit. Default: no explicit limit. */
-    readonly memoryLimitBytes?: number;
-  };
+  readonly codemode?: AiCodemodeOptions;
 }
+
+/**
+ * The opt-in code mode option: the host limits and the factory building
+ * the extension. The default construction is
+ * `createBoundedCodemodeExtension` from `@backstage/ai-node-codemode`;
+ * hosts wire it here because this package carries no sandbox
+ * implementation of its own.
+ *
+ * @alpha
+ */
+export type AiCodemodeOptions = Readonly<{
+  /** Host wall-clock ceiling per script execution. Default 300000. */
+  readonly timeoutMs?: number;
+  /** QuickJS heap limit. Default: no explicit limit. */
+  readonly memoryLimitBytes?: number;
+  /**
+   * Builds the code mode extension and the sandbox backing it, with the
+   * resolved limits.
+   */
+  readonly createExtension: (limits: {
+    readonly timeoutMs: number;
+    readonly memoryLimitBytes?: number;
+  }) => {
+    readonly extension: Extension;
+    readonly sandbox: { close(): Promise<void> };
+  };
+}>;
 
 /**
  * The production Wave 1 integration of the managed AI service.
@@ -426,51 +442,6 @@ function principalOf(
  *
  * @internal
  */
-/**
- * A code mode sandbox whose `start()` enforces a host wall-clock ceiling.
- *
- * The extension derives a script's deadline from the script's own
- * `// @options {"timeout_ms": ...}` line and passes no timeout otherwise,
- * and `CodemodeSandboxBase.start()` then runs with no deadline at all — a
- * model-written script that keeps pending microtasks alive would run
- * until it is aborted or the sandbox closes. This ceiling bounds every
- * start regardless of what the script declares: a script may lower the
- * deadline, never raise it above the host's. It is wall-clock only, so it
- * does not enter the durable start data and cannot affect replay.
- */
-class BoundedCodemodeSandbox extends CodemodeSandbox {
-  readonly #hostTimeoutMs: number;
-
-  constructor(
-    hostTimeoutMs: number,
-    options?: { readonly memoryLimitBytes?: number },
-  ) {
-    // The ceiling is also the sandbox-level default, so any future path
-    // through CodemodeSandboxBase.execute() (whose timeout falls back to
-    // the sandbox default) inherits the same host bound; start() keeps
-    // its explicit Math.min override for script-declared timeouts.
-    super(
-      options?.memoryLimitBytes === undefined
-        ? { timeoutMs: hostTimeoutMs }
-        : {
-            timeoutMs: hostTimeoutMs,
-            memoryLimitBytes: options.memoryLimitBytes,
-          },
-    );
-    this.#hostTimeoutMs = hostTimeoutMs;
-  }
-
-  start(code: string, options: CodemodeRunOptions): CodemodeRun {
-    return super.start(code, {
-      ...options,
-      timeoutMs: Math.min(
-        options.timeoutMs ?? Number.POSITIVE_INFINITY,
-        this.#hostTimeoutMs,
-      ),
-    });
-  }
-}
-
 export async function createAiServiceIntegration(
   options: AiServiceIntegrationOptions,
 ): Promise<ProductionAiServiceIntegration> {
@@ -1068,14 +1039,17 @@ export async function createAiServiceIntegration(
     // selection, and the registry reader re-reads the caller's snapshot on
     // every read so later caller publications still apply; the sandbox is
     // closed with this open's harness.
-    let codemodeSandbox: CodemodeSandbox | undefined;
+    let codemodeSandbox: { close(): Promise<void> } | undefined;
     let harnessRegistry: RegistryReader = input.registry;
     if (options.codemode !== undefined) {
-      codemodeSandbox = new BoundedCodemodeSandbox(
-        options.codemode.timeoutMs ?? 300_000,
-        options.codemode,
-      );
-      const codemode = createCodemodeExtension({ sandbox: codemodeSandbox });
+      const codemodeBuilt = options.codemode.createExtension({
+        timeoutMs: options.codemode.timeoutMs ?? 300_000,
+        ...(options.codemode.memoryLimitBytes === undefined
+          ? {}
+          : { memoryLimitBytes: options.codemode.memoryLimitBytes }),
+      });
+      codemodeSandbox = codemodeBuilt.sandbox;
+      const codemode = codemodeBuilt.extension;
       const callerRegistry = input.registry;
       harnessRegistry = {
         snapshot: () => appendExtension(callerRegistry.snapshot(), codemode),
