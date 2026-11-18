@@ -278,6 +278,33 @@ describe('gerrit core', () => {
         refType: 'branch',
       });
     });
+    it('can parse a gitiles url where the file path text also occurs before the url authority.', () => {
+      const gitilesConfig: GerritIntegrationConfig = {
+        host: 'gerrit.example.com',
+        gitilesBaseUrl: 'https://gerrit.example.com',
+      };
+      const sha = '157f862803d45b9d269f0e390f88aece1ded51e8';
+      const expected = {
+        basePath: `https://gerrit.example.com/repo/+/${sha}`,
+        path: '*@gerrit.example.com',
+        project: 'repo',
+        ref: sha,
+        refType: 'sha',
+      };
+
+      expect(
+        parseGitilesUrlRef(
+          gitilesConfig,
+          `https://127.0.0.1:9999*@gerrit.example.com/repo/+/${sha}/*@gerrit.example.com`,
+        ),
+      ).toEqual(expected);
+      expect(
+        parseGitilesUrlRef(
+          gitilesConfig,
+          `https://gerrit.example.com/repo/+/${sha}/*@gerrit.example.com`,
+        ),
+      ).toEqual(expected);
+    });
   });
 
   describe('getGerritBranchApiUrl', () => {

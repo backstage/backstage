@@ -28,6 +28,7 @@ import fetch, { Response } from 'node-fetch';
 import { Readable } from 'node:stream';
 import {
   GerritIntegration,
+  GerritIntegrationConfig,
   ScmIntegrations,
   buildGerritGitilesArchiveUrlFromLocation,
   getGerritBranchApiUrl,
@@ -45,6 +46,29 @@ import {
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { Minimatch } from 'minimatch';
 import { getGitilesAuthenticationUrl } from '@backstage/integration';
+
+/**
+ * Returns the gitiles tree url that lists the files of a repository, on the
+ * authenticated gitiles base url when a password is configured.
+ *
+ * @remarks
+ *
+ * The base path is derived by parsing the location url, so it is in the
+ * normalized form of `URL`. The configured gitiles base url is compared in the
+ * same form, so that a configuration that is written differently but denotes
+ * the same url (an explicit default port, a differently cased host) still gets
+ * the authentication prefix.
+ */
+export function getGitilesTreeUrl(
+  config: GerritIntegrationConfig,
+  basePath: string,
+): string {
+  const gitilesBaseUrl = new URL(config.gitilesBaseUrl!).toString();
+  return `${basePath}/?format=JSON&recursive`.replace(
+    gitilesBaseUrl.replace(/\/+$/, ''),
+    getGitilesAuthenticationUrl(config),
+  );
+}
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files in Gerrit.
@@ -279,10 +303,7 @@ export class GerritUrlReader implements UrlReaderService {
   ): Promise<UrlReaderServiceSearchResponse['files']> {
     const { path, basePath } = parseGitilesUrlRef(this.integration.config, url);
 
-    const treeUrl = `${basePath}/?format=JSON&recursive`.replace(
-      this.integration.config.gitilesBaseUrl,
-      getGitilesAuthenticationUrl(this.integration.config),
-    );
+    const treeUrl = getGitilesTreeUrl(this.integration.config, basePath);
 
     const treeResponse = await fetch(treeUrl, {
       ...getGerritRequestOptions(this.integration.config),
