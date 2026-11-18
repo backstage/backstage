@@ -15,10 +15,15 @@
  */
 
 import {
+  CacheService,
+  CacheServiceSetOptions,
+} from '@backstage/backend-plugin-api';
+import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
+import { durationToMilliseconds } from '@backstage/types';
 import { SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
@@ -34,17 +39,24 @@ interface AnyJWK extends Record<string, string> {
   kty: string;
 }
 
+const MOCK_AUDIENCE = 'backstage-app-aud-tag';
+
 class MockTokenFactory {
   private readonly publicKeys = new Array<AnyJWK>();
 
-  async userToken(): Promise<string> {
+  async userToken(
+    audience: string | null = null,
+    expiresInSeconds = 5,
+    issuedAtSeconds = 1600000000,
+  ): Promise<string> {
     const { privateKey, kid } = await this.makeKeys();
     return new SignJWT({
       iss: `https://mock-team.cloudflareaccess.com`,
+      ...(audience ? { aud: [audience] } : {}),
       sub: '1234567890',
       name: 'User Name',
-      iat: 1600000000,
-      exp: 1600000005,
+      iat: issuedAtSeconds,
+      exp: issuedAtSeconds + expiresInSeconds,
     })
       .setProtectedHeader({
         alg: 'ES256',
@@ -85,14 +97,55 @@ class MockTokenFactory {
   }
 }
 
+
+// msw 3 answers requests through process.nextTick, so leave that real
+function useFakeClock(now: number) {
+  jest.useFakeTimers({ now, doNotFake: ['nextTick'] });
+}
+
 describe('helpers', () => {
   const tokenFactory = new MockTokenFactory();
-  const cache = mockServices.cache.mock();
   const server = setupServer();
   registerMswTestHooks(server);
 
+  let cache: jest.Mocked<CacheService>;
+  let cacheStore: Map<string, { value: unknown; expiresAtMs: number }>;
+
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Wire the mocked cache with a store that expires entries once the
+    // TTL given to set has elapsed
+    cache = mockServices.cache.mock() as jest.Mocked<CacheService>;
+    cacheStore = new Map();
+    cache.get.mockImplementation(async (key: string) => {
+      const entry = cacheStore.get(key);
+      if (!entry) {
+        return undefined;
+      }
+      if (Date.now() >= entry.expiresAtMs) {
+        cacheStore.delete(key);
+        return undefined;
+      }
+      return entry.value as any;
+    });
+    cache.set.mockImplementation(
+      async (key: string, value: unknown, options?: CacheServiceSetOptions) => {
+        let ttlMs: number;
+        if (options?.ttl === undefined) {
+          ttlMs = Number.POSITIVE_INFINITY;
+        } else if (typeof options.ttl === 'number') {
+          ttlMs = options.ttl;
+        } else {
+          ttlMs = durationToMilliseconds(options.ttl);
+        }
+        cacheStore.set(key, {
+          value,
+          expiresAtMs: Date.now() + ttlMs,
+        });
+      },
+    );
+
     server.use(
       http.get(
         `https://mock-team.cloudflareaccess.com/cdn-cgi/access/certs`,
@@ -157,7 +210,7 @@ describe('helpers', () => {
     });
     expect(cache.set).toHaveBeenCalledTimes(1);
     expect(cache.set.mock.calls[0][0]).toBe(
-      'providers/cloudflare-access/profile-v1/1234567890',
+      'providers/cloudflare-access/profile-v1/1234567890/1600000000',
     );
     expect(JSON.parse(cache.set.mock.calls[0][1] as string)).toEqual(expected);
   });
@@ -280,7 +333,7 @@ describe('helpers', () => {
     });
     expect(cache.set).toHaveBeenCalledTimes(1);
     expect(cache.set.mock.calls[0][0]).toBe(
-      'providers/cloudflare-access/profile-v1/1234567890',
+      'providers/cloudflare-access/profile-v1/1234567890/1600000000',
     );
     expect(JSON.parse(cache.set.mock.calls[0][1] as string)).toEqual(expected);
   });
@@ -323,5 +376,209 @@ describe('helpers', () => {
       ...expected,
       token: token,
     });
+  });
+
+  it('returns the cached identity when the same token is used again within the cache TTL', async () => {
+    useFakeClock(1600000004000);
+
+    const identity = {
+      email: 'hello@example.com',
+      groups: [{ id: '123', email: 'foo@bar.com', name: 'foo' }],
+      id: '1234567890',
+      name: 'User Name',
+    } satisfies CloudflareAccessIdentityProfile;
+    const getIdentity = jest.fn(() => HttpResponse.json(identity));
+    server.use(
+      http.get(
+        `https://mock-team.cloudflareaccess.com/cdn-cgi/access/get-identity`,
+        () => getIdentity(),
+      ),
+    );
+
+    const helper = AuthHelper.fromConfig(
+      new ConfigReader({
+        teamName: 'mock-team',
+        audience: MOCK_AUDIENCE,
+      }),
+      { cache },
+    );
+    const token = await tokenFactory.userToken(MOCK_AUDIENCE, 300);
+    await helper.authenticate(
+      createRequest({ headers: { [CF_JWT_HEADER]: token } }),
+    );
+    expect(getIdentity).toHaveBeenCalledTimes(1);
+
+    // The clock moves past the JWKS fetch cooldown so that the token's
+    // signing key can still be fetched, but stays within the cache TTL.
+    jest.setSystemTime(1600000004000 + 31_000);
+    const result = await helper.authenticate(
+      createRequest({ headers: { [CF_JWT_HEADER]: token } }),
+    );
+
+    expect(getIdentity).toHaveBeenCalledTimes(1);
+    expect(cache.set).toHaveBeenCalledTimes(1);
+    expect(cache.get).toHaveBeenCalledWith(
+      'providers/cloudflare-access/profile-v1/1234567890/1600000000',
+    );
+    // The TTL is bounded by the maximum cache TTL, which is shorter than
+    // the lifetime of this token
+    expect(cache.set).toHaveBeenCalledWith(
+      'providers/cloudflare-access/profile-v1/1234567890/1600000000',
+      expect.any(String),
+      { ttl: { seconds: 60 } },
+    );
+    expect(result).toEqual({
+      claims: {
+        iss: `https://mock-team.cloudflareaccess.com`,
+        aud: [MOCK_AUDIENCE],
+        sub: '1234567890',
+        name: 'User Name',
+        iat: 1600000000,
+        exp: 1600000300,
+      },
+      cfIdentity: identity,
+      expiresInSeconds: 300,
+      token: token,
+    });
+  });
+
+  it('fetches a fresh identity on a later sign-in with a new token within the cache TTL', async () => {
+    useFakeClock(1600000004000);
+
+    const identity = {
+      email: 'hello@example.com',
+      groups: [{ id: '123', email: 'foo@bar.com', name: 'foo' }],
+      id: '1234567890',
+      name: 'User Name',
+    } satisfies CloudflareAccessIdentityProfile;
+    const getIdentity = jest.fn(() => HttpResponse.json(identity));
+    server.use(
+      http.get(
+        `https://mock-team.cloudflareaccess.com/cdn-cgi/access/get-identity`,
+        () => getIdentity(),
+      ),
+    );
+
+    const helper = AuthHelper.fromConfig(
+      new ConfigReader({
+        teamName: 'mock-team',
+        audience: MOCK_AUDIENCE,
+      }),
+      { cache },
+    );
+    const token = await tokenFactory.userToken(MOCK_AUDIENCE, 300);
+    await helper.authenticate(
+      createRequest({ headers: { [CF_JWT_HEADER]: token } }),
+    );
+    expect(getIdentity).toHaveBeenCalledTimes(1);
+
+    // Group membership is revoked upstream before the user signs in again
+    identity.groups = [];
+
+    // A fresh sign-in carries a new token with a new issued-at time, so
+    // the identity cached for the earlier token is never reused, even
+    // within the cache TTL. The clock moves past the JWKS fetch cooldown
+    // so that the fresh token's key can be fetched.
+    jest.setSystemTime(1600000004000 + 31_000);
+    const secondToken = await tokenFactory.userToken(
+      MOCK_AUDIENCE,
+      300,
+      1600000031,
+    );
+    const result = await helper.authenticate(
+      createRequest({ headers: { [CF_JWT_HEADER]: secondToken } }),
+    );
+
+    expect(getIdentity).toHaveBeenCalledTimes(2);
+    expect(cache.set).toHaveBeenCalledTimes(2);
+    expect(cache.get).toHaveBeenCalledWith(
+      'providers/cloudflare-access/profile-v1/1234567890/1600000031',
+    );
+    expect(result.cfIdentity.groups).toEqual([]);
+    expect(result.token).toBe(secondToken);
+  });
+
+  it('caps the cache TTL at the token expiry', async () => {
+    useFakeClock(1600000004000);
+
+    const identity = {
+      email: 'hello@example.com',
+      groups: [{ id: '123', email: 'foo@bar.com', name: 'foo' }],
+      id: '1234567890',
+      name: 'User Name',
+    } satisfies CloudflareAccessIdentityProfile;
+    server.use(
+      http.get(
+        `https://mock-team.cloudflareaccess.com/cdn-cgi/access/get-identity`,
+        () => HttpResponse.json(identity),
+      ),
+    );
+
+    const helper = AuthHelper.fromConfig(
+      new ConfigReader({
+        teamName: 'mock-team',
+        audience: MOCK_AUDIENCE,
+      }),
+      { cache },
+    );
+    // The token expires 26 seconds after the fake clock, sooner than the
+    // maximum cache TTL
+    const token = await tokenFactory.userToken(MOCK_AUDIENCE, 30);
+    await helper.authenticate(
+      createRequest({ headers: { [CF_JWT_HEADER]: token } }),
+    );
+
+    expect(cache.set).toHaveBeenCalledWith(
+      'providers/cloudflare-access/profile-v1/1234567890/1600000000',
+      expect.any(String),
+      { ttl: { seconds: 26 } },
+    );
+  });
+
+  it('refetches the identity on a later sign-in once the cache TTL has elapsed', async () => {
+    useFakeClock(1600000004000);
+
+    const identity = {
+      email: 'hello@example.com',
+      groups: [{ id: '123', email: 'foo@bar.com', name: 'foo' }],
+      id: '1234567890',
+      name: 'User Name',
+    } satisfies CloudflareAccessIdentityProfile;
+    const getIdentity = jest.fn(() => HttpResponse.json(identity));
+    server.use(
+      http.get(
+        `https://mock-team.cloudflareaccess.com/cdn-cgi/access/get-identity`,
+        () => getIdentity(),
+      ),
+    );
+
+    const helper = AuthHelper.fromConfig(
+      new ConfigReader({
+        teamName: 'mock-team',
+        audience: MOCK_AUDIENCE,
+      }),
+      { cache },
+    );
+    const token = await tokenFactory.userToken(MOCK_AUDIENCE, 300);
+    await helper.authenticate(
+      createRequest({ headers: { [CF_JWT_HEADER]: token } }),
+    );
+    expect(getIdentity).toHaveBeenCalledTimes(1);
+
+    // Group membership is revoked upstream before the user signs in again
+    identity.groups = [];
+
+    // The cached identity has outlived its TTL, even though the same
+    // token is presented again
+    jest.setSystemTime(1600000004000 + 60_000 + 1);
+
+    const result = await helper.authenticate(
+      createRequest({ headers: { [CF_JWT_HEADER]: token } }),
+    );
+
+    expect(getIdentity).toHaveBeenCalledTimes(2);
+    expect(cache.set).toHaveBeenCalledTimes(2);
+    expect(result.cfIdentity.groups).toEqual([]);
+    expect(result.token).toBe(token);
   });
 });
