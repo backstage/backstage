@@ -13,9 +13,9 @@ This guide is intended for app and plugin authors who have already migrated thei
 
 ## 1.57
 
-This release changes how the frontend system handles routing. The app now owns the browser history and exposes it as `AppHistoryApi`, and each page picks its own routing library instead of sharing a single app-wide React Router. Plugins navigate through framework APIs that work the same way on every page, while pages that need a routing library's own APIs render a page-scoped adapter. For the design background, see [RFC #33603](https://github.com/backstage/backstage/issues/33603).
+This release changes how the frontend system handles routing and requires React 18 in most frontend packages. The app now owns the browser history and exposes it as `AppHistoryApi`, and each page picks its own routing library instead of sharing a single app-wide React Router. Plugins navigate through framework APIs that work the same way on every page, while pages that need a routing library's own APIs render a page-scoped adapter. For the design background, see [RFC #33603](https://github.com/backstage/backstage/issues/33603).
 
-If your app uses the default routing setup, the only required action is to remove any router overrides, as described below. The remaining changes affect apps that customize navigation, apps that use Backstage UI outside a Backstage app, and plugin authors that use router-specific APIs.
+If your app uses the default routing setup, the only required routing action is to remove any router overrides, as described below. The remaining routing changes affect apps that customize navigation, apps that use Backstage UI outside a Backstage app, and plugin authors that use router-specific APIs.
 
 ### Removed `RouterBlueprint` and the `app/root` router input
 
@@ -87,7 +87,7 @@ const appHistory = ApiBlueprint.make({
 
 The factory must be available during app initialization. An `if` predicate on the factory's extension, or on the attachment path leading to it, is rejected with an error, because predicate context is evaluated after the app history is selected. Remove the predicate and decide inside the factory which implementation to return.
 
-In tests, replace a root `MemoryRouter` with `renderInTestApp` or `renderTestApp` from `@backstage/frontend-test-utils`, and navigate through the `appHistory` they return.
+In tests, replace a root `MemoryRouter` with `renderInTestApp` or `renderTestApp` from `@backstage/frontend-test-utils`, and navigate through `apis.get(appHistoryApiRef)` on the render result.
 
 ### Page-scoped routing with adapters
 
@@ -154,17 +154,19 @@ Uncaught errors thrown while page content renders now use the app's error displa
 
 ### Testing navigation
 
-`renderInTestApp` from `@backstage/frontend-test-utils` accepts a `router` option for rendering page adapters, and both `renderInTestApp` and `renderTestApp` return an `appHistory` that you use for navigation and location assertions:
+`renderInTestApp` from `@backstage/frontend-test-utils` matches `mountPath` through framework routing. Wrap the element in its page adapter when it needs routing-library context. Both `renderInTestApp` and `renderTestApp` return an API holder that provides access to `AppHistoryApi` for navigation and location assertions:
 
 ```tsx
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import { screen } from '@testing-library/react';
 
 it('renders the tools page and navigates', async () => {
-  const { appHistory } = renderTestApp({
+  const { apis } = renderTestApp({
     extensions: [toolsPage],
     initialRouteEntries: ['/tools'],
   });
+  const appHistory = apis.get(appHistoryApiRef)!;
 
   expect(await screen.findByText('Tools')).toBeInTheDocument();
 
@@ -174,7 +176,46 @@ it('renders the tools page and navigates', async () => {
 });
 ```
 
-For tests that need memory history or fixed route-reference paths outside a test app, use `createMockAppHistory`, `createMockRouteResolutionApi`, `mockApis.appHistory()`, and `mockApis.routeResolution()`. Mocks reject path-relative destinations, matching production history, so use app-absolute paths or route-ref destinations. See [navigation and app history](../building-plugins/02-testing.md#navigation-and-app-history) for more examples.
+For tests that need memory history or fixed route-reference paths outside a test app, use `mockApis.appHistory()` and `mockApis.routeResolution()`. Mocks reject path-relative destinations, matching production history, so use app-absolute paths or route-ref destinations. See [navigation and app history](../building-plugins/02-testing.md#navigation-and-app-history) for more examples.
+
+### React 17 support removed
+
+Most Backstage frontend packages now require React 18. Their peer dependency
+ranges for `react`, `react-dom`, and `@types/react` have changed from
+`^17.0.0 || ^18.0.0` to `^18.0.0` where those dependencies are declared.
+
+The old frontend system core packages `@backstage/core-plugin-api`,
+`@backstage/core-app-api`, `@backstage/core-compat-api`, and
+`@backstage/core-components` retain React 17 in their own peer dependency
+ranges. However, their dependencies include packages that now require React 18,
+so apps using the old frontend system also need to plan the upgrade.
+
+Update your app or plugin's `package.json` dependencies and peer dependencies
+as appropriate. For example, a plugin's peer dependencies can change from:
+
+```json title="package.json"
+{
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "@types/react": "^17.0.0 || ^18.0.0"
+  }
+}
+```
+
+to:
+
+```json title="package.json"
+{
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "@types/react": "^18.0.0"
+  }
+}
+```
+
+For the upgrade steps, see [Migrating to React 18](../../tutorials/react18-migration.md).
 
 ## 1.50
 

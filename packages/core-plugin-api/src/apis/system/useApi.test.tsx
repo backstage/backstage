@@ -17,13 +17,28 @@
 import { render, renderHook, screen } from '@testing-library/react';
 import { createVersionedContextForTesting } from '@backstage/version-bridge';
 import { createApiRef } from './ApiRef';
-import { useApi, withApis } from './useApi';
+import { useApi, useApiHolder, withApis } from './useApi';
 
 describe('useApi', () => {
   const context = createVersionedContextForTesting('api-context');
 
   afterEach(() => {
     context.reset();
+  });
+
+  it('should return promise-valued APIs directly without suspending', () => {
+    const ref = createApiRef<Promise<{ value: string }>>({
+      id: 'test.promise',
+    });
+    const promise = new Promise<{ value: string }>(() => {});
+    context.set({ 1: { get: () => promise } });
+    const rendered = renderHook(() => ({
+      api: useApi(ref),
+      holder: useApiHolder(),
+    }));
+    const api: Promise<{ value: string }> = rendered.result.current.api;
+    expect(api).toBe(promise);
+    expect(rendered.result.current.holder.get(ref)).toBe(promise);
   });
 
   it('should resolve routes', () => {

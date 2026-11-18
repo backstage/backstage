@@ -19,15 +19,23 @@
  * module only inspects the filter; the SQL is emitted by
  * `applyPredicateEntityFilterToQuery`.
  *
- * Background: a short list is matched per candidate row, with a correlated
- * `EXISTS (... value = ANY(list))`. Each such probe restarts an index scan
- * that sorts the list again, so its cost grows with the list length, and the
- * planner underestimates it badly. With long lists, such as the ownership
- * claims of a user in conditional permission policies, that multiplies into
- * entities times list length and pages can take minutes.
+ * Background: a list is matched per candidate row by default, with a
+ * correlated `EXISTS (... value = ANY(list))`. Each such probe restarts an
+ * index scan that sorts the list again, so its cost grows with the list
+ * length, and the planner underestimates it badly. With long lists, such as
+ * the ownership claims of a user in conditional permission policies, that
+ * multiplies into entities times list length and pages can take minutes.
  *
- * Long lists are therefore matched as a set of entity IDs that is computed
- * once per query, in one of two forms:
+ * On a small page, a probe of a list of `IN_SUBQUERY_MIN_VALUES` values or
+ * more therefore hashes the list instead, see `hashedProbeMinValues`, which
+ * makes each probe cost about the same whatever the list length. Elsewhere,
+ * only lists of `INDIRECT_IN_MIN_VALUES` values or more are hashed: on a deep
+ * page or a stream with a shorter list, PostgreSQL can build the matching set
+ * once from the index on the values, which beats even the hashed probe (with
+ * 40 claims, scenario 13 took 0.43 s that way and 1.1 s with hashed probes).
+ *
+ * Where even a hashed probe costs more, long lists are matched as a set of
+ * entity IDs that is computed once per query, in one of two forms:
  *
  * - JOIN: the set is a derived table, joined with a LEFT JOIN onto the
  *   candidate rows, and the condition becomes `alias.entity_id IS NOT NULL`.
@@ -50,12 +58,14 @@
  *   3.4 s became 0.35 s at 40).
  * - A list inside an `$any` or a `$not`, such as the claims of a conditional
  *   permission policy, is a set only from `INDIRECT_IN_MIN_VALUES` values, and
- *   never on a first page of up to 100 entities, where the probe stops early.
- *   It is IN, or JOIN when negated, since only a join can become an anti-join.
- *   With 174 claims this took late pages of groups from 18 s to 1.7 s and
- *   permissioned streams from 40 s to 9 s. Shorter lists, and JOIN sets in
- *   these places, were slower than the probe: a JOIN set whose size the
- *   planner underestimated took scenario 14 with 40 claims from 2.6 s to 25 s.
+ *   never on a page of up to 100 entities, where the hashed probe stops early
+ *   (late pages of scenario 20 with 174 claims: 1.7-2.4 s as a set, 0.46 s
+ *   probed). It is IN, or JOIN when negated, since only a join can become an
+ *   anti-join. With 174 claims this took deep pages of datasets from over
+ *   30 s to 5 s and permissioned streams from 40 s to 9 s. Shorter lists, and
+ *   JOIN sets in these places, were slower than the probe: a JOIN set whose
+ *   size the planner underestimated took scenario 14 with 40 claims from 2.6 s
+ *   to 25 s.
  *
  * When changing the thresholds or the rule, re-measure at least scenarios 1,
  * 3, 7, 12, 13, 14, 15, 18, 19, 20 and 21 and the owned entities page of the
@@ -259,7 +269,40 @@ export type LongInList = {
   keyAnyCase: string;
   value: FilterPredicateValue;
   form: LongInForm;
+  /** Whether the list is reached from the root through `$all` only */
+  direct: boolean;
 };
+
+/**
+ * The number of values from which a list that is probed per row is matched
+ * against a hash of the list rather than as part of the index condition. See
+ * the top of this file.
+ */
+export function hashedProbeMinValues(options: { smallPage: boolean }): number {
+  return options.smallPage ? IN_SUBQUERY_MIN_VALUES : INDIRECT_IN_MIN_VALUES;
+}
+
+/**
+ * Whether a sorted query of the filter should sort its matches rather than
+ * walk the sort index, because a list that is a direct condition of the
+ * filter is matched as a set of entity IDs.
+ *
+ * With a limit, PostgreSQL may walk the index of the sort field and join each
+ * row against such a set, expecting to fill the page early. It costs that
+ * plan as if the matches were spread evenly in sort order. When they are not,
+ * for example when the entities that a set of claims owns cluster in a range
+ * of names, the walk reads many rows and checks each one against the whole
+ * set: an owned entities page took 47 s that way with 174 claims. Ordering by
+ * an expression that the index cannot provide makes PostgreSQL build the set
+ * first and sort only the matches, which costs about the same as that plan
+ * did when PostgreSQL chose it by itself (0.5 s for the same page).
+ */
+export function sortsAfterMatching(
+  filter: FilterPredicate,
+  options: { smallPage: boolean },
+): boolean {
+  return findLongInLists(filter, options).some(list => list.direct);
+}
 
 /**
  * The rule that picks how a long `$in` list is matched, or `undefined` to
@@ -268,12 +311,12 @@ export type LongInList = {
 function chooseLongInForm(
   context: LongInContext,
   value: FilterPredicateValue,
-  smallFirstPage: boolean,
+  smallPage: boolean,
 ): LongInForm | undefined {
   if (context.direct) {
     return context.narrowed ? 'in' : 'join';
   }
-  if (smallFirstPage || countInValues(value) < INDIRECT_IN_MIN_VALUES) {
+  if (smallPage || countInValues(value) < INDIRECT_IN_MIN_VALUES) {
     return undefined;
   }
   return context.negated ? 'join' : 'in';
@@ -286,9 +329,9 @@ function chooseLongInForm(
  */
 export function findLongInLists(
   filter: FilterPredicate,
-  options?: { smallFirstPage?: boolean },
+  options?: { smallPage?: boolean },
 ): LongInList[] {
-  const smallFirstPage = Boolean(options?.smallFirstPage);
+  const smallPage = Boolean(options?.smallPage);
   const result: LongInList[] = [];
 
   const visit = (node: unknown, context: LongInContext) => {
@@ -338,7 +381,7 @@ export function findLongInLists(
       const form = chooseLongInForm(
         { ...context, narrowed },
         value as FilterPredicateValue,
-        smallFirstPage,
+        smallPage,
       );
       if (form) {
         result.push({
@@ -346,6 +389,7 @@ export function findLongInLists(
           keyAnyCase,
           value: value as FilterPredicateValue,
           form,
+          direct: context.direct,
         });
       }
     }

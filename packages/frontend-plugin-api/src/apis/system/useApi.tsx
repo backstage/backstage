@@ -20,6 +20,14 @@ import { NotImplementedError } from '@backstage/errors';
 
 const emptyApiHolder: ApiHolder = Object.freeze({ get: () => undefined });
 
+type ApiPromiseState =
+  | { status: 'pending'; promise: Promise<unknown> }
+  | { status: 'fulfilled'; value: unknown }
+  | { status: 'rejected'; error: unknown };
+
+// Keep state outside React so retries before the initial mount share it.
+const apiPromiseStates = new WeakMap<object, ApiPromiseState>();
+
 /**
  * React hook for retrieving {@link ApiHolder}, an API catalog.
  *
@@ -41,15 +49,45 @@ export function useApiHolder(): ApiHolder {
 /**
  * React hook for retrieving APIs.
  *
+ * Promise-valued APIs are unwrapped. The hook suspends while the promise is
+ * pending and throws its rejection reason if it fails. Render consumers of
+ * promise-valued APIs inside a Suspense boundary.
+ *
+ * Direct holder lookups and factory dependencies retain the declared API value.
+ *
  * @param apiRef - Reference of the API to use.
  * @public
  */
-export function useApi<T>(apiRef: ApiRef<T>): T {
+export function useApi<T>(apiRef: ApiRef<T>): Awaited<T> {
   const apiHolder = useApiHolder();
-
-  const api = apiHolder.get(apiRef);
-  if (!api) {
+  const api: unknown = apiHolder.get(apiRef);
+  if (api === undefined) {
     throw new NotImplementedError(`No implementation available for ${apiRef}`);
   }
-  return api;
+
+  if (
+    api !== null &&
+    (typeof api === 'object' || typeof api === 'function') &&
+    'then' in api &&
+    typeof api.then === 'function'
+  ) {
+    let state = apiPromiseStates.get(api);
+    if (!state) {
+      const promise = Promise.resolve(api);
+      state = { status: 'pending', promise };
+      apiPromiseStates.set(api, state);
+      promise.then(
+        value => apiPromiseStates.set(api, { status: 'fulfilled', value }),
+        error => apiPromiseStates.set(api, { status: 'rejected', error }),
+      );
+    }
+    if (state.status === 'pending') {
+      throw state.promise;
+    }
+    if (state.status === 'rejected') {
+      throw state.error;
+    }
+    return state.value as Awaited<T>;
+  }
+  return api as Awaited<T>;
 }

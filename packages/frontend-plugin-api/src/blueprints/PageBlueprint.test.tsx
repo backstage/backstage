@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { coreApis } from '@backstage/frontend-plugin-api';
 import { createRouteRef } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
 import { SubPageBlueprint } from './SubPageBlueprint';
@@ -30,7 +31,7 @@ import {
 import { createTranslationRef } from '../translation';
 import { act, screen, waitFor } from '@testing-library/react';
 import { ReactNode, useEffect } from 'react';
-import { useRouteResolution } from '../routing/useRouteResolution';
+import { useRouteMatches } from '@internal/frontend';
 import { useAppNode } from '../components/AppNodeProvider';
 import { pluginWrapperApiRef } from '../apis/definitions/PluginWrapperApi';
 import { analyticsApiRef } from '../apis/definitions/AnalyticsApi';
@@ -489,7 +490,7 @@ describe('PageBlueprint', () => {
     const SubPageRouter = ({ children }: { children?: ReactNode }) => (
       <div
         data-testid="sub-page-router"
-        data-mount={useRouteResolution().matches.at(-1)?.basePath}
+        data-mount={useRouteMatches().at(-1)?.basePath}
       >
         {children}
       </div>
@@ -497,7 +498,7 @@ describe('PageBlueprint', () => {
     const FirstSubPage = () => (
       <div
         data-testid="first-page"
-        data-mount={useRouteResolution().matches.at(-1)?.basePath}
+        data-mount={useRouteMatches().at(-1)?.basePath}
       />
     );
     const parentPage = PageBlueprint.make({
@@ -544,7 +545,7 @@ describe('PageBlueprint', () => {
     async ({ mountPath, basePath }) => {
       const Child = ({ name }: { name: string }) => (
         <p>
-          {name} at {useRouteResolution().matches.at(-1)?.basePath}
+          {name} at {useRouteMatches().at(-1)?.basePath}
         </p>
       );
       const parent = PageBlueprint.make({
@@ -565,10 +566,11 @@ describe('PageBlueprint', () => {
           }),
         );
       }
-      const { appHistory } = renderInTestApp(tester.reactElement(), {
+      const { apis } = renderInTestApp(tester.reactElement(), {
         mountPath,
         initialRouteEntries: [`${basePath}/second`],
       });
+      const appHistory = apis.get(coreApis.appHistory)!;
       expect(
         await screen.findByText(`second at ${basePath}/second`),
       ).toBeInTheDocument();
@@ -682,10 +684,11 @@ describe('PageBlueprint', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [parentPage, overviewSubPage, settingsSubPage],
       initialRouteEntries: ['/kept/overview'],
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     expect(await screen.findByTestId('overview')).toBeInTheDocument();
     const tabList = screen.getByRole('tablist');
@@ -705,7 +708,7 @@ describe('PageBlueprint', () => {
   it('should redirect to the first subpage on the parent index route, and leave a page without sub-pages alone', async () => {
     const parentPage = PageBlueprint.make({
       params: {
-        path: '/mixed',
+        path: '/mixed/:id',
         title: 'Mixed',
       },
     });
@@ -730,16 +733,24 @@ describe('PageBlueprint', () => {
       },
     });
 
-    const { appHistory } = renderTestApp({
+    const { apis } = renderTestApp({
       extensions: [parentPage, inputSubPage, plainPage],
-      initialRouteEntries: ['/mixed?tab=1#here'],
+      initialRouteEntries: ['/before', '/mixed/value?tab=1#here'],
     });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
     expect(await screen.findByTestId('input-page')).toBeInTheDocument();
     // The URL says which tab is showing, and the query and fragment survive.
-    expect(appHistory.getSnapshot().location.pathname).toBe('/mixed/input');
+    expect(appHistory.getSnapshot().location.pathname).toBe(
+      '/mixed/value/input',
+    );
     expect(appHistory.getSnapshot().location.search).toBe('?tab=1');
     expect(appHistory.getSnapshot().location.hash).toBe('#here');
+
+    await act(async () => {
+      appHistory.navigate(-1);
+    });
+    expect(appHistory.getSnapshot().location.pathname).toBe('/before');
 
     await act(async () => {
       appHistory.navigate('/plain');

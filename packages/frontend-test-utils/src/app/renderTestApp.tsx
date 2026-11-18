@@ -65,7 +65,8 @@ export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
   extensions?: ExtensionDefinition<any>[];
 
   /**
-   * Additional features to add to the test app.
+   * Additional features to add to the test app. Test rendering extensions are
+   * retained when features include a plugin named `test`.
    */
   features?: FrontendFeature[];
 
@@ -131,11 +132,10 @@ const testAppPlugin = createTestAppPlugin();
  * utilities as `@testing-library/react` `render` function.
  *
  * Navigation is owned by a {@link @backstage/frontend-plugin-api#AppHistoryApi}
- * with in-memory history, the same seam as production, and is returned as
- * `appHistory`.
+ * with in-memory history, the same seam as production. Access it through
+ * `apis.get(coreApis.appHistory)` on the render result.
  *
- * There is no `router` option here, and no need for one: the extensions are
- * routed by the app itself, so each page declares the adapter it wants exactly
+ * The extensions are routed by the app itself, so each page declares its adapter
  * as it does in production. The app's root React Router v6 projection is also
  * present. `renderInTestApp` supplies the page around a bare element.
  *
@@ -151,7 +151,7 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
     config: configData,
   });
 
-  const { appHistory, features, apiFactoryOverrides, externalBindings } =
+  const { features, apiFactoryOverrides, externalBindings } =
     prepareTestAppFeatures({
       extensions,
       appHistory: defaultAppHistory,
@@ -212,5 +212,5 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
     app.tree.root.instance!.getData(coreExtensionData.reactElement),
   );
 
-  return Object.assign(result, { appHistory });
+  return Object.assign(result, { apis: app.apis });
 }

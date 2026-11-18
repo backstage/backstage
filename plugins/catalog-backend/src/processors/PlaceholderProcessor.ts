@@ -16,7 +16,10 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import {
+  getAzureDownloadUrl,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
 import yaml from 'yaml';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
@@ -57,6 +60,12 @@ export class PlaceholderProcessor implements CatalogProcessor {
     location: LocationSpec,
     emit: CatalogProcessorEmit,
   ): Promise<Entity> {
+    // The first resolver error, in the order the errors happened. Every level
+    // of the traversal waits for all of its children to finish, so that no
+    // resolver is still running, and possibly emitting, after processing of
+    // the entity has completed. This is the error that then gets reported.
+    let firstError: { error: unknown } | undefined;
+
     const process = async (data: any): Promise<[any, boolean]> => {
       if (!data || !(data instanceof Object)) {
         // Scalars can't have placeholders
@@ -65,7 +74,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
 
       if (Array.isArray(data)) {
         // We're an array - process all entries recursively
-        const items = await Promise.all(data.map(item => process(item)));
+        const items = await settleAll(data.map(item => process(item)));
         return items.every(([, changed]) => !changed)
           ? [data, false]
           : [items.map(([item]) => item), true];
@@ -75,7 +84,7 @@ export class PlaceholderProcessor implements CatalogProcessor {
       if (!keys.some(k => k.startsWith('$'))) {
         // We're an object but no placeholders at this level - process all
         // entries recursively
-        const entries = await Promise.all(
+        const entries = await settleAll(
           Object.entries(data).map(([k, v]) =>
             process(v).then(vp => [k, vp] as const),
           ),
@@ -118,22 +127,39 @@ export class PlaceholderProcessor implements CatalogProcessor {
           base,
         });
 
-      return [
-        await resolver({
-          key: resolverKey,
-          value: resolverValue,
-          baseUrl: location.target,
-          read,
-          resolveUrl,
-          emit,
-        }),
-        true,
-      ];
+      try {
+        return [
+          await resolver({
+            key: resolverKey,
+            value: resolverValue,
+            baseUrl: location.target,
+            read,
+            resolveUrl,
+            emit,
+          }),
+          true,
+        ];
+      } catch (error) {
+        firstError ??= { error };
+        throw error;
+      }
     };
 
-    const [result] = await process(entity);
-    return result;
+    try {
+      const [result] = await process(entity);
+      return result;
+    } catch (error) {
+      throw firstError ? firstError.error : error;
+    }
   }
+}
+
+/**
+ * Like Promise.all, but waits for every promise to finish before rejecting.
+ */
+async function settleAll<T>(promises: Promise<T>[]): Promise<T[]> {
+  await Promise.allSettled(promises);
+  return Promise.all(promises);
 }
 
 /*
@@ -272,6 +298,34 @@ function assertSameRepository(
     return;
   }
 
+  // Azure DevOps file URLs take several host-specific shapes, and the
+  // git-url-parse based checks below only split them into a repository and
+  // a file path for the dev.azure.com form. For legacy cloud hosts and
+  // Azure DevOps Server hosts no file path parses, which used to skip the
+  // comparison for those targets entirely. Targets on a configured Azure
+  // DevOps integration are therefore attributed to a repository with the
+  // azure URL parsing of the integration package instead, the same parsing
+  // that the URL reader bases its fetches on. A URL that cannot be
+  // attributed to a repository at all cannot be fetched through that
+  // reader either, and counts as a different repository rather than
+  // skipping the comparison
+  if (integrations.byUrl(resolvedUrl)?.type === 'azure') {
+    let sameAzureRepository = false;
+    try {
+      sameAzureRepository =
+        azureRepositoryIdentity(resolvedUrl) ===
+        azureRepositoryIdentity(baseUrl);
+    } catch {
+      // The URL could not be attributed to an Azure DevOps repository
+    }
+    if (!sameAzureRepository) {
+      throw new Error(
+        `Placeholder may only reference files from the same repository as the entity`,
+      );
+    }
+    return;
+  }
+
   let resolved;
   let base;
   try {
@@ -340,6 +394,11 @@ function assertSameRepository(
       `Placeholder may only reference files from the same repository as the entity`,
     );
   }
+}
+
+function azureRepositoryIdentity(url: string): string {
+  const { host, pathname } = new URL(getAzureDownloadUrl(url));
+  return `${host}${pathname}`;
 }
 
 function relativeUrl({

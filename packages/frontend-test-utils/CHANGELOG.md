@@ -1,5 +1,102 @@
 # @backstage/frontend-test-utils
 
+## 1.0.0
+
+### Major Changes
+
+- b3befd0: Released version 1.0 of this frontend framework package. Its public APIs are now stable under the [package versioning policy](https://backstage.io/docs/overview/versioning-policy/#package-versioning-policy). Alpha and beta APIs retain their existing stability levels.
+
+### Minor Changes
+
+- 76b1c3d: Removed the deprecated standalone mock API type exports and the non-deprecated `MockFetchApiOptions` export. Use the corresponding `mockApis` helpers to create instances and derive types as follows:
+
+  | Removed type                 | Replacement type                                                     |
+  | ---------------------------- | -------------------------------------------------------------------- |
+  | `MockAlertApi`               | `ReturnType<typeof mockApis.alert>`                                  |
+  | `MockAnalyticsApi`           | `ReturnType<typeof mockApis.analytics>`                              |
+  | `MockConfigApi`              | `ReturnType<typeof mockApis.config>`                                 |
+  | `MockErrorApi`               | `ReturnType<typeof mockApis.error>`                                  |
+  | `MockFeatureFlagsApi`        | `ReturnType<typeof mockApis.featureFlags>`                           |
+  | `MockFetchApi`               | `ReturnType<typeof mockApis.fetch>`                                  |
+  | `MockPermissionApi`          | `ReturnType<typeof mockApis.permission>`                             |
+  | `MockStorageApi`             | `ReturnType<typeof mockApis.storage>`                                |
+  | `MockTranslationApi`         | `ReturnType<typeof mockApis.translation>`                            |
+  | `MockErrorApiOptions`        | `NonNullable<Parameters<typeof mockApis.error>[0]>`                  |
+  | `MockFetchApiOptions`        | `NonNullable<Parameters<typeof mockApis.fetch>[0]>`                  |
+  | `MockFeatureFlagsApiOptions` | `NonNullable<Parameters<typeof mockApis.featureFlags>[0]>`           |
+  | `ErrorWithContext`           | `ReturnType<ReturnType<typeof mockApis.error>['getErrors']>[number]` |
+
+  Import `mockApis` from `@backstage/frontend-test-utils`. For example, use `mockApis.analytics()` to create an analytics mock and `ReturnType<typeof mockApis.analytics>` when you need an explicit instance type. Existing calls to the helpers require no changes. Inspection methods such as `getEvents`, `getErrors`, and `getAlerts`, along with legacy alert support, remain available.
+
+- 2aa14e3: Added the `renderAs: 'chrome'` option to `renderInTestApp` and mock utilities for navigation tests: `mockApis.appHistory()` and `mockApis.routeResolution()`. Page matching uses framework routing; wrap test elements in their page adapter when they need routing-library context. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for detailed migration steps and the [routing test guide](https://backstage.io/docs/frontend-system/building-plugins/testing#navigation-and-app-history) for examples.
+- 53ab1aa: **BREAKING**: `renderInTestApp`, `renderTestApp` and `createExtensionTester` now throw for every error reported while creating the test app or extension tree, including the ones a real app only logs as warnings, such as `EXTENSION_IGNORED`. Previously `renderInTestApp` and `renderTestApp` ignored these errors, so a test could pass for an app that is broken. All three helpers accept a new `isExpectedError` option to allow specific errors.
+
+  **Migration:** fix the reported error in the test setup. The error message names the code to allow if the error is expected:
+
+  ```ts
+  renderInTestApp(<MyComponent />, {
+    isExpectedError: error =>
+      error.code === 'EXTENSION_INPUT_DATA_IGNORED' &&
+      error.context.node.spec.id === 'page:my-plugin',
+  });
+  ```
+
+  A common one is `API_FACTORY_CONFLICT` from providing an API that another plugin owns, such as a `core.*` API passed in `extensions`. That override was always rejected, so remove it, or use the `apis` option to replace an API in a test.
+
+- 8ca78a2: **BREAKING** Updated `renderInTestApp` and `renderTestApp` to provide default API implementations that are more suitable for testing. This may break existing tests that rely on the previous defaults:
+
+  - **Toasts** are collected in memory instead of being displayed. Tests that assert on visible notifications need to provide an API implementation that forwards toasts to the UI, or assert on an explicitly supplied toast fake instead.
+  - **Storage** is isolated in memory for each test app instead of using browser `localStorage`. Tests that seed or inspect `localStorage`, or rely on storage persisting between test apps, need to supply an explicit storage implementation.
+  - **Errors** are collected without forwarding them to alerts or installing global error handlers. Error subscriptions no longer receive events from the default implementation. Tests that rely on these behaviors need an explicit error API implementation; tests can also supply a collecting error fake to assert on reported errors.
+  - **Alerts** are collected and delivered to current subscribers, but earlier alerts are no longer replayed to new subscribers. Tests that rely on replay need an explicit alert API implementation.
+  - **OAuth requests** use an in-memory coordinator with the same request coordination behavior as before.
+
+  Explicit API overrides continue to take precedence over the defaults.
+
+  Added `mockApis` helpers for all APIs in `coreApis`, including those grouped under `coreApis.internal`. These cover app state, dialogs, icons, OAuth requests, plugin wrappers and header actions, route resolution, swappable components, and toast notifications. Each `.mock()` helper provides typed Jest stubs without default behavior that can be registered directly with frontend test utilities.
+
+  Added functional in-memory fakes for language, lifecycle, themes, icons, OAuth requests, plugin header actions, and toast notifications. Except for lifecycle, these can be supplied explicitly through the test app's `apis` option to configure behavior and inspect state. Use `TestApiProvider` for the lifecycle fake, since test apps manage their own lifecycle.
+
+  Fixed storage fake isolation for nested buckets with the same name under different parents.
+
+- e3d50c4: Removed the deprecated `show` and `showModal` methods from dialog test helpers, and `getIcon` from icons test helpers. Update tests to use `open` for dialogs and `icon` for icon elements.
+
+### Patch Changes
+
+- 6540a44: `renderInTestApp` now handles suspended content with an empty fallback, so
+  promise-valued APIs do not require a Suspense wrapper in each test. Use asynchronous
+  queries such as `findByText` to await suspended content. Elements that do not
+  suspend still render immediately. When a descendant suspends, the entire element
+  waits unless an inner Suspense boundary
+  isolates it. An inner boundary also controls its own fallback. Tests that relied
+  on an ancestor boundary's loading UI may need updated assertions.
+
+  Test API tuples for promise-valued refs accept both synchronous partial
+  implementations and promises of partial implementations. Synchronous mocks render
+  immediately and pass through unchanged. Use promise mocks to test loading,
+  failures, or code that calls promise methods.
+
+  Fixed test rendering helpers losing their test extensions when a plugin named
+  `test` is included in `features`.
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- 9d0a31b: Removed an unused `use-sync-external-store` dependency, which is no longer needed now that React 18 is the minimum supported version.
+- ec245df: Added `apis` to the results of `renderInTestApp` and `renderTestApp`, providing access to the app's Utility APIs using API refs. The holder exposes the same instances used by components, including registered APIs and test overrides.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/plugin-app-react@0.3.0
+  - @backstage/plugin-app@0.6.0
+  - @backstage/frontend-app-api@1.0.0
+  - @backstage/errors@1.4.0
+  - @backstage/test-utils@1.8.0
+  - @backstage/core-app-api@1.20.7
+  - @backstage/plugin-permission-react@0.5.7
+  - @backstage/version-bridge@1.1.0
+  - @backstage/config@1.3.11
+  - @backstage/filter-predicates@0.2.1
+  - @backstage/plugin-permission-common@0.9.13
+
 ## 0.7.0-next.2
 
 ### Minor Changes

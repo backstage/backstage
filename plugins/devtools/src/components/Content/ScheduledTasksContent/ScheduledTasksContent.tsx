@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import type { KeyboardEvent } from 'react';
+import { Focusable } from 'react-aria-components';
 import {
   Button,
   DialogTrigger,
@@ -27,22 +29,22 @@ import {
   Cell,
   CellText,
   ColumnConfig,
+  Combobox,
+  VisuallyHidden,
+  useBgConsumer,
   Flex,
   Text,
   Tooltip,
   TooltipTrigger,
 } from '@backstage/ui';
-// Retained for free-form entry with commit-on-blur/Enter and configured suggestions.
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import {
   RiArrowRightSLine,
   RiRefreshLine,
   RiStopLine,
   RiMoonLine,
+  RiLoader4Line,
+  RiForbidLine,
   RiErrorWarningLine,
-  RiProhibitedLine,
 } from '@remixicon/react';
 import { DevToolsTable } from '../DevToolsTable';
 import styles from './ScheduledTasksContent.module.css';
@@ -57,17 +59,25 @@ import { ScheduledTaskDetailPanel } from './ScheduledTaskDetailedPanel';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { Progress, toastApiRef } from '@backstage/frontend-plugin-api';
 
-const CreateNotAllowed = () => (
-  <TooltipTrigger>
-    <ButtonIcon
-      aria-label="You are not allowed to perform this action"
-      aria-disabled="true"
-      icon={<RiProhibitedLine />}
-      variant="tertiary"
-    />
-    <Tooltip>You are not allowed to perform this action</Tooltip>
-  </TooltipTrigger>
-);
+const CreateNotAllowed = () => {
+  const { bg } = useBgConsumer();
+
+  return (
+    <TooltipTrigger>
+      <Focusable>
+        <span
+          className={styles.permissionIndicator}
+          data-on-bg={bg}
+          role="img"
+          aria-label="You are not allowed to perform this action"
+        >
+          <RiForbidLine aria-hidden="true" />
+        </span>
+      </Focusable>
+      <Tooltip>You are not allowed to perform this action</Tooltip>
+    </TooltipTrigger>
+  );
+};
 
 /** @public */
 export const ScheduledTasksContent = () => {
@@ -80,24 +90,43 @@ export const ScheduledTasksContent = () => {
     useScheduledTasks(selectedPlugin);
   const { triggerTask, cancelTask, isLoading } = useScheduledTasksOperations();
 
-  const [inputValue, setInputValue] = useState(plugins[0] || '');
+  const [inputValue, setInputValue] = useState(selectedPlugin);
+  // Skip the Enter that picked an option, so it doesn't also commit the typed text
+  const optionSelectedRef = useRef(false);
 
-  const handleAutocompleteChange = (_event: any, newValue: string | null) => {
-    setSelectedPlugin(newValue || '');
+  const handleSelectionChange = (key: string | number | null) => {
+    if (key === null) {
+      return;
+    }
+    const pluginId = String(key);
+    optionSelectedRef.current = true;
+    setSelectedPlugin(pluginId);
+    setInputValue(pluginId);
+  };
+
+  const handleInputChange = (value: string) => {
+    optionSelectedRef.current = false;
+    setInputValue(value);
   };
 
   const handleCommitChange = () => {
-    if (inputValue !== selectedPlugin) {
-      setSelectedPlugin(inputValue);
+    const pluginId = inputValue.trim();
+    if (!pluginId) {
+      setInputValue(selectedPlugin);
+      return;
+    }
+    if (pluginId !== selectedPlugin) {
+      setSelectedPlugin(pluginId);
     }
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
+  const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
+      if (optionSelectedRef.current) {
+        optionSelectedRef.current = false;
+        return;
+      }
       handleCommitChange();
-      // Prevent Autocomplete's default behavior (which might select a filtered item)
-      event.preventDefault();
-      event.stopPropagation();
     }
   };
 
@@ -154,11 +183,7 @@ export const ScheduledTasksContent = () => {
         <Cell>
           <Flex align="center" gap="2">
             {rowData.taskState?.status === 'running' && (
-              <CircularProgress
-                color="inherit"
-                size={16}
-                aria-label="Task running"
-              />
+              <RiLoader4Line size={16} className={styles.spinner} aria-hidden />
             )}
             {rowData.taskState?.status === 'idle' && (
               <RiMoonLine size={16} aria-hidden />
@@ -276,27 +301,27 @@ export const ScheduledTasksContent = () => {
 
   return (
     <Box className={styles.content}>
-      <Autocomplete
+      <Combobox
+        label="Select Plugin"
         className={styles.pluginSelector}
         size="small"
-        freeSolo
-        options={plugins}
-        value={selectedPlugin}
-        inputValue={inputValue}
-        onChange={handleAutocompleteChange}
-        onInputChange={(_event, newInputValue) => {
-          setInputValue(newInputValue);
-        }}
-        renderInput={params => (
-          <TextField
-            {...params}
-            label="Select Plugin"
-            variant="outlined"
-            onKeyDown={handleKeyDown}
-            onBlur={handleCommitChange}
-          />
-        )}
+        allowsCustomValue
+        options={plugins.map(plugin => ({ id: plugin, label: plugin }))}
+        value={plugins.includes(selectedPlugin) ? selectedPlugin : null}
+        onChange={handleSelectionChange}
+        search={{ inputValue, onInputChange: handleInputChange }}
+        onKeyDown={handleKeyDown}
+        onBlur={handleCommitChange}
       />
+
+      <VisuallyHidden role="status">
+        {!loading &&
+        !error &&
+        loadedPlugin === selectedPlugin &&
+        scheduledTasks?.length === 0
+          ? `No scheduled tasks found for ${selectedPlugin}.`
+          : ''}
+      </VisuallyHidden>
 
       {isLoadingDifferentPlugin && <Progress />}
 
@@ -338,10 +363,12 @@ export const ScheduledTasksContent = () => {
           columns={columns}
           data={scheduledTasks.map(task => ({ ...task, id: task.taskId }))}
           emptyState={
-            <Alert
-              status="info"
-              title={`No scheduled tasks found for ${selectedPlugin}.`}
-            />
+            scheduledTasks.length === 0 ? (
+              <Alert
+                status="info"
+                title={`No scheduled tasks found for ${selectedPlugin}.`}
+              />
+            ) : undefined
           }
         />
       )}

@@ -17,6 +17,7 @@
 import {
   analyticsApiRef,
   coreExtensionData,
+  createApiRef,
   createExtension,
   createExtensionDataRef,
   createExtensionInput,
@@ -31,6 +32,28 @@ const stringDataRef = createExtensionDataRef<string>().with({
 });
 
 describe('createExtensionTester', () => {
+  it('should pass synchronous partial mocks for promise-valued refs through unchanged', () => {
+    const ref = createApiRef<
+      Promise<{ value: string; unused(): number }>
+    >().with({
+      id: 'plugin.test.client',
+    });
+    const mock = { value: 'Mock ready' };
+    const subject = createExtension({
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: [stringDataRef],
+      factory: ({ apis }) => {
+        expect(apis.get(ref)).toBe(mock);
+        return [stringDataRef(mock.value)];
+      },
+    });
+    expect(
+      createExtensionTester(subject, { apis: [[ref, mock]] }).get(
+        stringDataRef,
+      ),
+    ).toBe('Mock ready');
+  });
+
   describe('with an extension tree error', () => {
     const subject = createExtension({
       name: 'subject',

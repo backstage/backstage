@@ -28,7 +28,7 @@ test('Should not throw `ResizeObserver loop completed with undelivered notificat
   await page.goto('/home');
   await expect(
     page
-      .frameLocator('#webpack-dev-server-client-overlay')
+      .frameLocator('#rspack-dev-server-client-overlay')
       .getByText(
         /ResizeObserver loop completed with undelivered notifications/,
       ),

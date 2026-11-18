@@ -5,6 +5,12 @@
 ```ts
 import { BitbucketCloudIntegrationConfig } from '@backstage/integration';
 
+// @public
+export class BitbucketCloudApiError extends Error {
+  constructor(method: string, url: string, status: number, statusText: string);
+  readonly status: number;
+}
+
 // @public (undocumented)
 export class BitbucketCloudClient {
   // (undocumented)
@@ -27,10 +33,22 @@ export class BitbucketCloudClient {
     workspace: string,
     options?: FilterAndSortOptions & PartialResponseOptions,
   ): WithPagination<Models.PaginatedRepositories, Models.Repository>;
+  listRepositorySource(
+    workspace: string,
+    repoSlug: string,
+    commit: string,
+    directoryPath?: string,
+  ): AsyncGenerator<BitbucketCloudSourceEntry, void>;
   // (undocumented)
   listWorkspaces(
     options?: FilterAndSortOptions & PartialResponseOptions,
   ): WithPagination<Models.PaginatedWorkspaces, Models.Workspace>;
+  repositorySourceFileExists(
+    workspace: string,
+    repoSlug: string,
+    commit: string,
+    filePath: string,
+  ): Promise<boolean>;
   // @deprecated (undocumented)
   searchCode(
     workspace: string,
@@ -45,6 +63,12 @@ export class BitbucketCloudClient {
       maxResults?: number;
     },
   ): AsyncGenerator<CodeSearch.ResultPage, void>;
+}
+
+// @public
+export interface BitbucketCloudSourceEntry {
+  path: string;
+  type: string;
 }
 
 // @public

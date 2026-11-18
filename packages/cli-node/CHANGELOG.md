@@ -1,5 +1,21 @@
 # @backstage/cli-node
 
+## 0.3.6
+
+### Patch Changes
+
+- 4294614: Commands run through `runCli` now exit with the exit code they set, instead of always exiting with `0` on completion. For example, `catalog validate` and `template dry-run` now exit with a non-zero code when the input is invalid.
+- a96b99c: The Node.js module transform now uses the synchronous `module.registerHooks()` API when it is available, which avoids the `module.register()` deprecation warning printed by Node.js 26. On older Node.js versions it continues to use `module.register()`.
+- 8069934: Fixed the Node.js module transform loading ES module JavaScript files from packages without a `"type"` field as CommonJS, which broke named imports such as `import { DefaultGithubCredentialsProvider } from '@backstage/integration'` during local development. The format of these files is now detected by Node.js, while TypeScript files in such packages are still treated as CommonJS.
+- 27b7aaa: Support loading remote frontend features whose default export is a `FrontendFeatureLoader` and include that feature type in generated package metadata.
+- 04a54e2: Switched the compilation target to ES2024, which all supported Node.js versions fully support. Package builds, app bundles, and the backend development server now compile code for ES2024, and the TypeScript `target` and `lib` options in `@backstage/cli/config/tsconfig.json` are set to `ES2024`. This requires TypeScript 5.9 or later, which is now the oldest supported version according to the [versioning policy](https://backstage.io/docs/overview/versioning-policy#typescript-releases).
+
+  The `lib` change allows code to use ES2024 built-in APIs such as `Object.groupBy` and `Promise.withResolvers`. Backstage doesn't include polyfills, so frontend code that uses these APIs needs at least Chrome or Edge 119, Firefox 121, or Safari 17.4.
+
+- Updated dependencies
+  - @backstage/errors@1.4.0
+  - @backstage/cli-common@0.3.3
+
 ## 0.3.6-next.2
 
 ### Patch Changes

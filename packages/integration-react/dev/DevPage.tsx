@@ -15,10 +15,9 @@
  */
 
 import { ScmIntegration, ScmIntegrationsGroup } from '@backstage/integration';
-import Typography from '@material-ui/core/Typography';
+import { Box, Text } from '@backstage/ui';
 import { scmIntegrationsApiRef } from '../src/api/ScmIntegrationsApi';
 
-import { Content } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 const Integrations = (props: {
@@ -26,44 +25,50 @@ const Integrations = (props: {
 }) => {
   const integrations = props.group.list();
   if (!integrations) {
-    return (
-      <Typography color="textSecondary">
-        No integrations of this type
-      </Typography>
-    );
+    return <Text color="secondary">No integrations of this type</Text>;
   }
 
   return (
-    <Typography variant="caption">
+    <Text as="div" variant="body-x-small">
       <pre>{JSON.stringify(integrations, undefined, 2)}</pre>
-    </Typography>
+    </Text>
   );
 };
 
 export const DevPage = () => {
   const integrations = useApi(scmIntegrationsApiRef);
   return (
-    <Content>
-      <Typography paragraph variant="h2">
-        Azure
-      </Typography>
+    <Box p="6">
+      <Box mb="4">
+        <Text as="h2" variant="title-large">
+          Azure
+        </Text>
+      </Box>
       <Integrations group={integrations.azure} />
-      <Typography paragraph variant="h2">
-        Bitbucket Cloud
-      </Typography>
+      <Box mb="4">
+        <Text as="h2" variant="title-large">
+          Bitbucket Cloud
+        </Text>
+      </Box>
       <Integrations group={integrations.bitbucketCloud} />
-      <Typography paragraph variant="h2">
-        Bitbucket Server
-      </Typography>
+      <Box mb="4">
+        <Text as="h2" variant="title-large">
+          Bitbucket Server
+        </Text>
+      </Box>
       <Integrations group={integrations.bitbucketServer} />
-      <Typography paragraph variant="h2">
-        GitHub
-      </Typography>
+      <Box mb="4">
+        <Text as="h2" variant="title-large">
+          GitHub
+        </Text>
+      </Box>
       <Integrations group={integrations.github} />
-      <Typography paragraph variant="h2">
-        GitLab
-      </Typography>
+      <Box mb="4">
+        <Text as="h2" variant="title-large">
+          GitLab
+        </Text>
+      </Box>
       <Integrations group={integrations.gitlab} />
-    </Content>
+    </Box>
   );
 };

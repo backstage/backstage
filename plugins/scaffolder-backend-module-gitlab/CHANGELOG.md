@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.12.2
+
+### Patch Changes
+
+- ae86338: Added GitLab branch autocompletion to RepoBranchPicker using user SCM credentials.
+- 6c43d4f: Validates the `targetPath` input of the `gitlab:repo:push`, `publish:gitlab:merge-request` and `publish:github:pull-request` scaffolder actions, and the `filesToDelete` entries of `publish:github:pull-request`. The values must be relative paths within the target repository; absolute paths and paths containing `..` segments are now rejected, so changes are only applied inside the intended subdirectory of the repository.
+- ed8e58f: Fixed `publish:gitlab:merge-request` and `gitlab:repo:push` failing with "A file with this name already exists" when `commitAction` is `auto` and the repository file list cannot be fetched, for example when the request times out on a large repository. The actions now check each file individually in that case, instead of treating every file as new.
+- Updated dependencies
+  - @backstage/integration@2.2.0
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/config@1.3.11
+  - @backstage/plugin-scaffolder-node@1.0.0
+
 ## 0.12.2-next.1
 
 ### Patch Changes

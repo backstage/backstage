@@ -16,7 +16,11 @@
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import SvgIcon from '@material-ui/core/SvgIcon';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link Select} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type ClosedDropdownClassKey = 'icon';
 
 const useStyles = makeStyles(

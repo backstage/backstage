@@ -1,5 +1,19 @@
 # @backstage/integration
 
+## 2.2.0
+
+### Minor Changes
+
+- 2b201b6: Added a `ClientCertificate` credential kind for the Azure DevOps integration. Configure `clientId`, `tenantId` and either `clientCertificate` (PEM including the private key) or `clientCertificatePath` to authenticate an App Registration with a certificate instead of a client secret.
+
+### Patch Changes
+
+- f56086a: Fixed GitHub app credentials failing for every owner with `Cannot read properties of null (reading 'account')` when the list of app installations returned by GitHub contained null entries. Those entries are now ignored.
+- Updated dependencies
+  - @backstage/errors@1.4.0
+  - @backstage/config@1.3.11
+  - @backstage/connections@0.4.2
+
 ## 2.1.4-next.0
 
 ### Patch Changes

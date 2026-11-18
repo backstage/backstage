@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.10.2
+
+### Patch Changes
+
+- 1368ad3: Added a `github:repo:rulesets:create` action that creates a ruleset in a GitHub repository. Rules and bypass actors are written in the same format as the GitHub REST API, so any rule type that GitHub supports can be used in templates.
+- 6c43d4f: Validates the `targetPath` input of the `gitlab:repo:push`, `publish:gitlab:merge-request` and `publish:github:pull-request` scaffolder actions, and the `filesToDelete` entries of `publish:github:pull-request`. The values must be relative paths within the target repository; absolute paths and paths containing `..` segments are now rejected, so changes are only applied inside the intended subdirectory of the repository.
+- Updated dependencies
+  - @backstage/integration@2.2.0
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-node@3.0.0
+  - @backstage/plugin-scaffolder-node@1.0.0
+
 ## 0.10.2-next.1
 
 ### Patch Changes

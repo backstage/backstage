@@ -21,6 +21,7 @@ import {
   createRouteRef,
   PageBlueprint,
   useRouteRef,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import {
   Link as BuiLink,
@@ -86,7 +87,7 @@ it('uses the consuming library route for BUI links and preserves app-absolute ro
       loader: async () => <div>Other page</div>,
     },
   });
-  const { appHistory } = renderTestApp({
+  const { apis } = renderTestApp({
     extensions: [page, other],
     initialRouteEntries: ['/tools/alpha/section/item'],
     config: {
@@ -94,6 +95,7 @@ it('uses the consuming library route for BUI links and preserves app-absolute ro
       backend: { baseUrl: 'http://localhost:7007' },
     },
   });
+  const appHistory = apis.get(coreApis.appHistory)!;
   expect(
     await screen.findByRole('link', { name: 'BUI relative' }),
   ).toHaveAttribute('href', '/base/tools/alpha/section/sibling');

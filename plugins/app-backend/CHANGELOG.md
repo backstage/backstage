@@ -1,5 +1,20 @@
 # @backstage/plugin-app-backend
 
+## 0.5.20
+
+### Patch Changes
+
+- 11f4455: Documented that if your package manager doesn't hoist workspace packages, for example pnpm with `hoistWorkspacePackages: false`, you need to add the app package to the `dependencies` of the root `package.json`.
+- 6a0de59: Backend plugins now locate their database migrations relative to their own package directory, without requiring the package to be resolvable by name.
+- 2fea3e2: Reduced startup database traffic and memory usage when checking for previously cached static assets.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-auth-node@0.7.8
+  - @backstage/config@1.3.11
+  - @backstage/config-loader@1.11.5
+  - @backstage/plugin-app-node@0.1.51
+
 ## 0.5.20-next.1
 
 ### Patch Changes

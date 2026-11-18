@@ -22,7 +22,11 @@ import ArrowIcon from '@material-ui/icons/ArrowForward';
 import { MouseEvent } from 'react';
 import { Link } from '../../components/Link';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link BottomLink} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type BottomLinkClassKey = 'root' | 'boxTitle' | 'arrow';
 
 const useStyles = makeStyles(
@@ -42,7 +46,11 @@ const useStyles = makeStyles(
   { name: 'BackstageBottomLink' },
 );
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link BottomLink} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type BottomLinkProps = {
   link: string;
   title: string;
@@ -54,6 +62,8 @@ export type BottomLinkProps = {
  *
  * @public
  *
+ * @deprecated Compose `CardFooter` and `Link` from `@backstage/ui` instead.
+ * Pass the destination as `href` and add any desired arrow icon and layout.
  */
 export function BottomLink(props: BottomLinkProps) {
   const { link, title, onClick } = props;

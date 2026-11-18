@@ -23,13 +23,13 @@ import {
   createFrontendPlugin,
   createRouteRef,
   coreExtensionData,
-  appHistoryApiRef,
   type ApiRef,
   type AppHistoryApi,
   type ExtensionDefinition,
   type ExternalRouteRef,
   type FrontendFeature,
   type RouteRef,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { OpaqueExternalRouteRef } from '@internal/frontend';
 import { getMockApiFactory } from '../apis/MockWithApiFactory';
@@ -51,7 +51,6 @@ export function prepareTestAppFeatures(options: {
   /** Where synthetic mounted-route extensions attach. */
   mountedRouteAttachTo: { id: string; input: string };
 }): {
-  appHistory: AppHistoryApi;
   features: FrontendFeature[];
   apiFactoryOverrides: ReturnType<typeof createApiFactory>[];
   externalBindings: Map<ExternalRouteRef, RouteRef>;
@@ -65,7 +64,7 @@ export function prepareTestAppFeatures(options: {
     return createApiFactory(apiRef, implementation);
   });
   const historyOverride = callerApiFactories.find(
-    factory => factory.api === appHistoryApiRef,
+    factory => factory.api === coreApis.appHistory,
   );
   const appHistory: AppHistoryApi = historyOverride
     ? historyOverride.factory({})
@@ -112,14 +111,16 @@ export function prepareTestAppFeatures(options: {
           name: 'app-history',
           params: defineParams =>
             defineParams({
-              api: appHistoryApiRef,
+              api: coreApis.appHistory,
               deps: {},
               factory: () => appHistory,
             }),
         }),
       ],
     }),
-    createFrontendPlugin({
+    createFrontendPlugin({ pluginId: 'test' }),
+    // Keep test extensions when a supplied plugin replaces the placeholder above.
+    createFrontendModule({
       pluginId: 'test',
       extensions,
     }),
@@ -133,8 +134,8 @@ export function prepareTestAppFeatures(options: {
   const apiFactoryOverrides = [
     ...callerApiFactories,
     // Prefer test history over production defaults (first registration wins).
-    createApiFactory(appHistoryApiRef, appHistory),
+    createApiFactory(coreApis.appHistory, appHistory),
   ];
 
-  return { appHistory, features, apiFactoryOverrides, externalBindings };
+  return { features, apiFactoryOverrides, externalBindings };
 }

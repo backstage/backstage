@@ -17,7 +17,6 @@
 import {
   AppTreeApi,
   AppHistoryApi,
-  appHistoryApiRef,
   useAppLocation,
   ApiBlueprint,
   appTreeApiRef,
@@ -33,6 +32,7 @@ import {
   createFrontendModule,
   useAppNode,
   FrontendPluginInfo,
+  coreApis,
 } from '@backstage/frontend-plugin-api';
 import { ThemeBlueprint } from '@backstage/plugin-app-react';
 import {
@@ -253,7 +253,7 @@ describe('createApp', () => {
         .filter(([type]) => type === 'popstate')
         .map(([, listener]) => listener);
     function Page({ title }: { title: string }) {
-      histories.set(title, useApi(appHistoryApiRef));
+      histories.set(title, useApi(coreApis.appHistory));
       return (
         <div>
           {title}: {useAppLocation().pathname}

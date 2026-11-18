@@ -309,7 +309,15 @@ export default {
             'features/software-catalog/well-known-annotations',
             'features/software-catalog/well-known-relations',
             'features/software-catalog/well-known-statuses',
-            'features/software-catalog/extending-the-model',
+            {
+              type: 'category',
+              label: 'Extending the model',
+              link: {
+                type: 'doc',
+                id: 'features/software-catalog/extending-the-model',
+              },
+              items: ['features/software-catalog/catalog-model-layers'],
+            },
             {
               type: 'category',
               label: 'External integrations',
@@ -567,6 +575,7 @@ export default {
                 'backend-system/core-services/root-logger',
                 'backend-system/core-services/scheduler',
                 'backend-system/core-services/token-manager',
+                'backend-system/core-services/tracing',
                 'backend-system/core-services/url-reader',
                 'backend-system/core-services/user-info',
                 'backend-system/core-services/actions-registry',

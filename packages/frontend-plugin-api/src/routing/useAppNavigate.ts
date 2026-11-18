@@ -17,8 +17,7 @@
 import { useMemo } from 'react';
 import { resolveAppTarget, parsePath } from '@internal/frontend';
 import { useApiHolder } from '../apis/system';
-import { appHistoryApiRef, type AppHistoryApi } from './AppHistoryApi';
-import type { AppNavigateOptions } from './AppLocation';
+import { appHistoryApiRef } from './AppHistoryApi';
 import {
   DataRouterContext,
   LocationContext,
@@ -27,10 +26,28 @@ import {
   stripLegacyBasename,
 } from './reactRouterContext';
 
+/**
+ * Navigates to an app-absolute destination or traverses app history.
+ *
+ * @public
+ */
+export interface AppNavigate {
+  /** Traverse a relative number of history entries. */
+  (delta: number): void;
+  /** Navigate to an app-absolute path or an external URL. */
+  (
+    path: string,
+    options?: {
+      /** Replace the current history entry instead of adding a new one. */
+      replace?: boolean;
+      /** User-visible state exposed on AppLocation.state. */
+      state?: unknown;
+    },
+  ): void;
+}
+
 /** Adapts framework targets to a legacy React Router without requiring one. */
-function useOptionalReactRouterNavigate():
-  | AppHistoryApi['navigate']
-  | undefined {
+function useOptionalReactRouterNavigate(): AppNavigate | undefined {
   const navigation = useRouterContext(NavigationContext);
   const dataRouter = useRouterContext(DataRouterContext);
   const location = useRouterContext(LocationContext)?.location;
@@ -42,7 +59,7 @@ function useOptionalReactRouterNavigate():
 
     const navigate = (
       pathOrDelta: string | number,
-      options?: AppNavigateOptions,
+      options?: Parameters<AppNavigate>[1],
     ) => {
       if (typeof pathOrDelta === 'number') {
         navigation.navigator.go(pathOrDelta);
@@ -69,7 +86,7 @@ function useOptionalReactRouterNavigate():
         navigation.navigator.push(resolved, options?.state, options);
       }
     };
-    return navigate as AppHistoryApi['navigate'];
+    return navigate as AppNavigate;
   }, [dataRouter, navigation, location?.pathname]);
 }
 
@@ -84,9 +101,7 @@ function useOptionalReactRouterNavigate():
  *
  * @internal
  */
-export function useOptionalAppNavigate():
-  | AppHistoryApi['navigate']
-  | undefined {
+export function useOptionalAppNavigate(): AppNavigate | undefined {
   const apis = useApiHolder();
   const appHistory = apis.get(appHistoryApiRef);
   return useMemo(() => appHistory?.navigate.bind(appHistory), [appHistory]);
@@ -109,18 +124,18 @@ export function useOptionalAppNavigate():
  *
  * @public
  */
-export function useAppNavigate(): AppHistoryApi['navigate'] {
+export function useAppNavigate(): AppNavigate {
   const appNavigate = useOptionalAppNavigate();
   const reactRouterNavigate = useOptionalReactRouterNavigate();
   return useMemo(() => {
     const navigate = appNavigate ?? reactRouterNavigate;
     if (navigate) {
-      return navigate as AppHistoryApi['navigate'];
+      return navigate as AppNavigate;
     }
     return (() => {
       throw new Error(
         'useAppNavigate requires either an app history or a React Router context',
       );
-    }) as AppHistoryApi['navigate'];
+    }) as AppNavigate;
   }, [appNavigate, reactRouterNavigate]);
 }

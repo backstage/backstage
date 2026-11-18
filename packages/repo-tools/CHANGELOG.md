@@ -1,5 +1,24 @@
 # @backstage/repo-tools
 
+## 0.19.3
+
+### Patch Changes
+
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- 11437a9: The `type-deps` command now fails with a clear error when no packages with built type declarations are found, instead of silently passing. Make sure to build all packages before running it.
+- 7d58727: The peer dependency checks now expect React 18 for frontend packages, following the removal of React 17 support across the workspace. The old frontend system core packages continue to allow React 17.
+- 9120c46: Updated dependency `glob` to `^14.0.0`.
+- 5eb2381: The generated API reference documentation no longer overwrites pages when a package exports declarations whose names only differ in case, or that share a name but are of different kinds, for example a variable and an interface or namespace. One of them keeps the existing page, and the others get a page with their kind added to the filename, for example `-interface` or `-namespace`, or a number if they are of the same kind.
+- fbb676e: The `package schema openapi generate` command now exits with a non-zero code when client or server generation fails, for example when linting the generated code fails. Previously the failure was logged but the command still exited with code 0. Watch mode is unaffected and keeps watching after a failed generation.
+- 1fba2bb: The peer dependency check no longer enforces a shared `react-router-dom` version, so packages can declare their own supported major version. See the [1.57 migration notes](https://backstage.io/docs/frontend-system/architecture/migrations#157) for background on the routing changes this supports.
+- Updated dependencies
+  - @backstage/cli-node@0.3.6
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/cli-common@0.3.3
+  - @backstage/config-loader@1.11.5
+
 ## 0.19.3-next.1
 
 ### Patch Changes

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import Router from 'express-promise-router';
-import { OidcService } from './OidcService';
+import { OidcService, OidcClientCredentials } from './OidcService';
 import { AuthenticationError, isError } from '@backstage/errors';
 import {
   AuthService,
@@ -57,12 +57,14 @@ const tokenRequestBodySchema = z.object({
   code_verifier: z.string().optional(),
   refresh_token: z.string().optional(),
   client_id: z.string().optional(),
+  client_secret: z.string().optional(),
 });
 
 const revokeRequestBodySchema = z.object({
   token: z.string().min(1),
   token_type_hint: z.string().optional(),
   client_id: z.string().optional(),
+  client_secret: z.string().optional(),
 });
 
 function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
@@ -72,6 +74,37 @@ function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
     throw new OidcError('invalid_request', errorMessage, 400);
   }
   return parseResult.data;
+}
+
+function parseClientCredentials(opts: {
+  req: { headers: { authorization?: string } };
+  bodyClientId?: string;
+  bodyClientSecret?: string;
+}): Partial<OidcClientCredentials> {
+  const { req, bodyClientId, bodyClientSecret } = opts;
+
+  const basicAuth = req.headers.authorization?.match(/^Basic[ ]+([^\s]+)$/i);
+  if (basicAuth) {
+    try {
+      const decoded = Buffer.from(basicAuth[1], 'base64').toString('utf8');
+      const idx = decoded.indexOf(':');
+      if (idx >= 0) {
+        const clientId = decodeURIComponent(
+          decoded.slice(0, idx).replace(/\+/g, ' '),
+        );
+        const clientSecret = decodeURIComponent(
+          decoded.slice(idx + 1).replace(/\+/g, ' '),
+        );
+        if (clientId) {
+          return { clientId, clientSecret };
+        }
+      }
+    } catch {
+      // Fall back to credentials from the request body.
+    }
+  }
+
+  return { clientId: bodyClientId, clientSecret: bodyClientSecret };
 }
 
 export class OidcRouter {
@@ -184,7 +217,7 @@ export class OidcRouter {
       res.json(userInfo);
     });
 
-    if (cimdEnabled) {
+    if (cimdEnabled || this.oidc.hasStaticClients()) {
       // Authorization endpoint
       // https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
       // Handles the initial authorization request from the client, validates parameters,
@@ -347,9 +380,42 @@ export class OidcRouter {
           code_verifier: codeVerifier,
           refresh_token: refreshToken,
           client_id: bodyClientId,
+          client_secret: bodyClientSecret,
         } = validateRequest(tokenRequestBodySchema, req.body);
 
         try {
+          const { clientId, clientSecret } = parseClientCredentials({
+            req,
+            bodyClientId,
+            bodyClientSecret,
+          });
+          let authenticatedClientId: string | undefined;
+          if (clientSecret) {
+            if (
+              !clientId ||
+              !(await this.oidc.verifyClientCredentials({
+                clientId,
+                clientSecret,
+              }))
+            ) {
+              throw new OidcError(
+                'invalid_client',
+                'Invalid client credentials',
+                401,
+              );
+            }
+            authenticatedClientId = clientId;
+          } else if (
+            req.headers.authorization?.match(/^Basic[ ]+/i) &&
+            !clientId
+          ) {
+            throw new OidcError(
+              'invalid_client',
+              'Invalid client credentials',
+              401,
+            );
+          }
+
           // Handle authorization_code grant type
           if (grantType === 'authorization_code') {
             if (!code || !redirectUri) {
@@ -361,11 +427,12 @@ export class OidcRouter {
             }
 
             const result = await this.oidc.exchangeCodeForToken({
-              clientId: bodyClientId,
+              clientId: authenticatedClientId ?? clientId,
               code,
               redirectUri,
               codeVerifier,
               grantType,
+              authenticatedClientId,
             });
 
             return res.json({
@@ -392,7 +459,8 @@ export class OidcRouter {
 
             const result = await this.oidc.refreshAccessToken({
               refreshToken,
-              clientId: bodyClientId,
+              clientId: authenticatedClientId ?? clientId,
+              authenticatedClientId,
             });
 
             return res.json({
@@ -419,23 +487,40 @@ export class OidcRouter {
       });
 
       // Token Revocation endpoint (RFC 7009-like)
-      // Allows public clients to revoke refresh tokens using their client ID.
+      // Confidential clients must authenticate with their client secret.
+      // Public clients identify themselves with their client ID.
       router.post('/v1/revoke', async (req, res) => {
         try {
-          const { token, client_id: clientId } = validateRequest(
-            revokeRequestBodySchema,
-            req.body ?? {},
-          );
+          const {
+            token,
+            client_id: bodyClientId,
+            client_secret: bodyClientSecret,
+          } = validateRequest(revokeRequestBodySchema, req.body ?? {});
+
+          const { clientId, clientSecret } = parseClientCredentials({
+            req,
+            bodyClientId,
+            bodyClientSecret,
+          });
 
           if (!clientId) {
-            throw new OidcError('invalid_client', 'Client ID required', 401);
+            throw new OidcError(
+              'invalid_client',
+              'Client authentication required',
+              401,
+            );
           }
 
-          const isValidClient = await this.oidc.verifyRevocationClient(
+          const isValidClient = await this.oidc.verifyRevocationClient({
             clientId,
-          );
+            clientSecret,
+          });
           if (!isValidClient) {
-            throw new OidcError('invalid_client', 'Invalid client ID', 401);
+            throw new OidcError(
+              'invalid_client',
+              'Invalid client credentials',
+              401,
+            );
           }
 
           try {

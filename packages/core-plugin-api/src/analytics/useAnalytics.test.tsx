@@ -16,10 +16,10 @@
 
 import { renderHook } from '@testing-library/react';
 import { useAnalytics } from './useAnalytics';
-import { useApi } from '@backstage/frontend-plugin-api';
+import { useApi } from '../apis/system/useApi';
 
-jest.mock('@backstage/frontend-plugin-api', () => ({
-  ...jest.requireActual('@backstage/frontend-plugin-api'),
+jest.mock('../apis/system/useApi', () => ({
+  ...jest.requireActual('../apis/system/useApi'),
   useApi: jest.fn(),
 }));
 

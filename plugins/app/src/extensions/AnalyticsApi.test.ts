@@ -16,13 +16,15 @@
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 import { analyticsApi } from './AnalyticsApi';
 import {
-  AnalyticsImplementation,
   ApiBlueprint,
   configApiRef,
   createExtension,
   identityApiRef,
 } from '@backstage/frontend-plugin-api';
-import { AnalyticsImplementationBlueprint } from '@backstage/plugin-app-react';
+import {
+  AnalyticsImplementation,
+  AnalyticsImplementationBlueprint,
+} from '@backstage/plugin-app-react';
 
 describe('analyticsApi', () => {
   const mockEvent = {

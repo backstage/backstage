@@ -16,7 +16,7 @@
 
 import { useAnalyticsContext } from './AnalyticsContext';
 import { analyticsApiRef, AnalyticsTracker, AnalyticsApi } from '../apis';
-import { useApi } from '@backstage/frontend-plugin-api';
+import { useApi } from '../apis/system/useApi';
 import { useRef } from 'react';
 import { Tracker } from './Tracker';
 

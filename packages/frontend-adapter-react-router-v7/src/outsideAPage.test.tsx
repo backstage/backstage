@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-import { matchPath } from '@internal/frontend';
-import { type AppNode } from '@backstage/frontend-plugin-api';
+import { matchPath, useRouteMatches } from '@internal/frontend';
+import {
+  ExtensionBoundary,
+  type AppNode,
+  coreApis,
+} from '@backstage/frontend-plugin-api';
+
 import type { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
-import {
-  mockApis,
-  TestApiProvider,
-  createMockAppHistory,
-} from '@backstage/frontend-test-utils';
-import {
-  useRouteResolution,
-  appHistoryApiRef,
-} from '@backstage/frontend-plugin-api';
+import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
   MemoryRouter,
   Route,
@@ -36,18 +33,9 @@ import {
 } from 'react-router';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
 
-const mockRouteNode = {} as AppNode;
-
-// Isolate routing consumers from extension rendering; app tests cover real node ancestry.
-jest.mock('../../frontend-plugin-api/src/components/AppNodeProvider', () => {
-  const actual = jest.requireActual(
-    '../../frontend-plugin-api/src/components/AppNodeProvider',
-  );
-  return {
-    ...actual,
-    useAppNode: () => actual.useAppNode() ?? mockRouteNode,
-  };
-});
+const mockRouteNode = {
+  spec: { id: 'test', plugin: { pluginId: 'test' } },
+} as AppNode;
 
 /**
  * The adapter rendered where there is no page: the old frontend system, and
@@ -78,7 +66,7 @@ jest.mock('../../frontend-plugin-api/src/components/AppNodeProvider', () => {
 function LegacyProbe(props: { id: string }) {
   const params = useParams();
   const resolved = useResolvedPath('edit');
-  const mount = useRouteResolution().matches.at(-1);
+  const mount = useRouteMatches().at(-1);
   return (
     <span data-testid={props.id}>
       {JSON.stringify({
@@ -135,12 +123,14 @@ function renderUnderLegacyRouter(
   }
   if (options.appHistory) {
     tree = (
-      <TestApiProvider apis={[[appHistoryApiRef, createMockAppHistory()]]}>
+      <TestApiProvider apis={[[coreApis.appHistory, mockApis.appHistory()]]}>
         {tree}
       </TestApiProvider>
     );
   }
-  return render(tree);
+  return render(
+    <ExtensionBoundary node={mockRouteNode}>{tree}</ExtensionBoundary>,
+  );
 }
 
 describe('ReactRouterV7PageRouter outside a page', () => {
@@ -196,31 +186,34 @@ describe('ReactRouterV7PageRouter outside a page', () => {
     // The other side of the same switch: passing through when something is
     // missing must not turn into passing through when nothing is.
     render(
-      <TestApiProvider
-        apis={[
-          [
-            appHistoryApiRef,
-            createMockAppHistory({ initialLocation: '/old/alpha/deep' }),
-          ],
-          mockApis.routeResolution.mock({
-            resolvePath: ({ pathname }) => ({
-              matches: [
-                {
-                  params: matchPath('/old/:id', pathname, false)?.params ?? {},
-                  contributesPath: true,
-                  basePath: '/old/alpha',
-                  routePattern: '/old/:id',
-                  node: mockRouteNode,
-                },
-              ],
+      <ExtensionBoundary node={mockRouteNode}>
+        <TestApiProvider
+          apis={[
+            [
+              coreApis.appHistory,
+              mockApis.appHistory({ initialLocation: '/old/alpha/deep' }),
+            ],
+            mockApis.routeResolution.mock({
+              resolvePath: ({ pathname }) => ({
+                matches: [
+                  {
+                    params:
+                      matchPath('/old/:id', pathname, false)?.params ?? {},
+                    contributesPath: true,
+                    basePath: '/old/alpha',
+                    routePattern: '/old/:id',
+                    node: mockRouteNode,
+                  },
+                ],
+              }),
             }),
-          }),
-        ]}
-      >
-        <ReactRouterV7PageRouter>
-          <LegacyProbe id="scoped" />
-        </ReactRouterV7PageRouter>
-      </TestApiProvider>,
+          ]}
+        >
+          <ReactRouterV7PageRouter>
+            <LegacyProbe id="scoped" />
+          </ReactRouterV7PageRouter>
+        </TestApiProvider>
+      </ExtensionBoundary>,
     );
 
     // v7 resolves a relative target against the leaf match's full pathname,

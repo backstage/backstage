@@ -26,6 +26,10 @@ type Props = {
   tooltipClasses?: TooltipProps['classes'];
 };
 
+/**
+ * @deprecated Use the replacement described in {@link OverflowTooltip} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type OverflowTooltipClassKey = 'container';
 
 const useStyles = makeStyles(
@@ -45,6 +49,12 @@ const useStyles = makeStyles(
   { name: 'BackstageOverflowTooltip' },
 );
 
+/**
+ * @deprecated Compose `Text`, `TooltipTrigger`, and `Tooltip` from
+ * `@backstage/ui` instead. Use `truncate` for single-line text; multiline
+ * clamping still needs CSS. Provide a focusable tooltip trigger so the full
+ * text is available to keyboard users.
+ */
 export function OverflowTooltip(props: Props) {
   const classes = useStyles(props);
 

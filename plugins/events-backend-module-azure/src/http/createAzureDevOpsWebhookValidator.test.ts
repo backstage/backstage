@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import {
   RequestDetails,
@@ -46,6 +47,11 @@ describe('createAzureDevOpsWebhookValidator', () => {
       },
     },
   });
+  const mockLogger = mockServices.logger.mock();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   const requestWithHeader = (headerSecret: string | undefined) => {
     return {
@@ -61,18 +67,70 @@ describe('createAzureDevOpsWebhookValidator', () => {
     } as RequestDetails;
   };
 
-  it('should return undefined if no secret is configured', () => {
-    expect(createAzureDevOpsWebhookValidator(configWithoutSecret)).toEqual(
-      undefined,
+  it('missing secret without dangerouslyAllowUnauthenticatedEvents rejects with HTTP 403 and warns once at creation', async () => {
+    const validator = createAzureDevOpsWebhookValidator(
+      configWithoutSecret,
+      mockLogger,
     );
+
+    expect(mockLogger.warn).toHaveBeenCalledTimes(1);
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'No webhook secret is configured for the Azure DevOps events module',
+      ),
+    );
+
+    const request = requestWithHeader(undefined);
+    const context = new TestContext();
+    await validator(request, context);
+    await validator(requestWithHeader('anything'), context);
+
+    expect(mockLogger.warn).toHaveBeenCalledTimes(1);
+    expect(context.details).not.toBeUndefined();
+    expect(context.details?.status).toBe(403);
+    expect(context.details?.payload).toEqual({
+      message: 'webhook secret not configured',
+    });
+  });
+
+  it('missing secret with dangerouslyAllowUnauthenticatedEvents: true accepts events and warns once at creation', async () => {
+    const request = requestWithHeader(undefined);
+    const context = new TestContext();
+    const configWithDanger = new ConfigReader({
+      events: {
+        modules: {
+          azureDevOps: {
+            dangerouslyAllowUnauthenticatedEvents: true,
+          },
+        },
+      },
+    });
+
+    const validator = createAzureDevOpsWebhookValidator(
+      configWithDanger,
+      mockLogger,
+    );
+
+    expect(mockLogger.warn).toHaveBeenCalledTimes(1);
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'dangerouslyAllowUnauthenticatedEvents is enabled for the Azure DevOps events module',
+      ),
+    );
+    await validator(request, context);
+
+    expect(context.details).toBeUndefined();
   });
 
   it('secret configured, accept request with matching header', async () => {
     const request = requestWithHeader(secret);
     const context = new TestContext();
 
-    const validator = createAzureDevOpsWebhookValidator(configWithSecret);
-    await validator!(request, context);
+    const validator = createAzureDevOpsWebhookValidator(
+      configWithSecret,
+      mockLogger,
+    );
+    await validator(request, context);
 
     expect(context.details).toBeUndefined();
   });
@@ -81,8 +139,11 @@ describe('createAzureDevOpsWebhookValidator', () => {
     const request = requestWithHeader('wrong-secret');
     const context = new TestContext();
 
-    const validator = createAzureDevOpsWebhookValidator(configWithSecret);
-    await validator!(request, context);
+    const validator = createAzureDevOpsWebhookValidator(
+      configWithSecret,
+      mockLogger,
+    );
+    await validator(request, context);
 
     expect(context.details).not.toBeUndefined();
     expect(context.details?.status).toBe(403);
@@ -95,8 +156,11 @@ describe('createAzureDevOpsWebhookValidator', () => {
     const request = requestWithHeader(undefined);
     const context = new TestContext();
 
-    const validator = createAzureDevOpsWebhookValidator(configWithSecret);
-    await validator!(request, context);
+    const validator = createAzureDevOpsWebhookValidator(
+      configWithSecret,
+      mockLogger,
+    );
+    await validator(request, context);
 
     expect(context.details).not.toBeUndefined();
     expect(context.details?.status).toBe(403);

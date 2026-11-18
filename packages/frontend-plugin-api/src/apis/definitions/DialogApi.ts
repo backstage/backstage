@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * A handle for an open dialog that can be used to interact with it.
@@ -124,7 +128,7 @@ export interface DialogApi {
  * The `ApiRef` of {@link DialogApi}.
  *
  * @public
- * @deprecated Use {@link coreApis.dialog} instead.
+ * @deprecated Use {@link CoreApis.dialog | coreApis.dialog} instead.
  */
 export const dialogApiRef = createApiRef<DialogApi>().with({
   id: 'core.dialog.v2',

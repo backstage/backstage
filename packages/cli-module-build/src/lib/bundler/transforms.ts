@@ -175,6 +175,14 @@ export const transforms = (options: TransformOptions): Transforms => {
           loader: require.resolve('css-loader'),
           options: {
             sourceMap: true,
+            // Keeps the css-loader 6 defaults: only `*.module.css` files are
+            // CSS modules, with a default export that keeps the class names
+            // as written.
+            modules: {
+              auto: true,
+              namedExport: false,
+              exportLocalsConvention: 'as-is',
+            },
           },
         },
       ],

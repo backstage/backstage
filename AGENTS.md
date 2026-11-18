@@ -15,6 +15,8 @@ Packages prefixed with `core-` (e.g., `@backstage/core-plugin-api`) are part of 
 
 Changes to the docs should follow the documentation style guide at `/docs/contribute/doc-style-guide.md`.
 
+Write documentation, including `/docs` and root and package READMEs, for its intended audience. Focus on public behavior, APIs, configuration, usage, concepts, and rationale relevant to that reader. Avoid narrating internal code mechanics, transient implementation choices, or how a particular change was implemented. Keep useful implementation-specific explanations close to the code, such as in comments. Include implementation details in architecture or contributor documentation when they help the intended reader understand or work on the system.
+
 ## Code Standards
 
 The following files contain guidelines for the project:
