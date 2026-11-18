@@ -16,6 +16,7 @@
 
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
+import { mockServices } from '@backstage/backend-test-utils';
 import { DefaultReadTreeResponseFactory } from './tree';
 import {
   AzureBlobStorageUrlReader,
@@ -25,6 +26,7 @@ import {
   DefaultAzureCredentialsManager,
   ScmIntegrations,
 } from '@backstage/integration';
+import { UrlReaderPredicateMux } from './UrlReaderPredicateMux';
 import { UrlReaderPredicateTuple } from './types';
 import { Readable } from 'node:stream';
 import { ContainerClient } from '@azure/storage-blob';
@@ -121,25 +123,28 @@ describe('parseUrl', () => {
 
 describe('AzureBlobStorageUrlReader', () => {
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
-    const integrations = ScmIntegrations.fromConfig(new ConfigReader(config));
+    const configReader = new ConfigReader(config);
+    const integrations = ScmIntegrations.fromConfig(configReader);
     const credsManager =
       DefaultAzureCredentialsManager.fromIntegrations(integrations);
 
-    return integrations.azureBlobStorage.list().map(integrationConfig => {
-      const reader = new AzureBlobStorageUrlReader(
-        credsManager,
-        integrationConfig,
-        {
+    // Predicates are taken from the real factory, so that tests exercise the
+    // exact reader-selection logic that production uses
+    const predicates = AzureBlobStorageUrlReader.factory({
+      config: configReader,
+      logger: mockServices.logger.mock(),
+      treeResponseFactory,
+    }).map(({ predicate }) => predicate);
+
+    return integrations.azureBlobStorage
+      .list()
+      .map((integrationConfig, index) => ({
+        reader: new AzureBlobStorageUrlReader(credsManager, integrationConfig, {
           treeResponseFactory,
           createContainerClient: async () => createMockContainerClient(),
-        },
-      );
-      const predicate = (url: URL) =>
-        url.host.endsWith(
-          `${integrationConfig.config.accountName}.${integrationConfig.config.host}`,
-        );
-      return { reader, predicate };
-    });
+        }),
+        predicate: predicates[index],
+      }));
   };
 
   it('creates a reader with minimal config', () => {
@@ -169,6 +174,127 @@ describe('AzureBlobStorageUrlReader', () => {
       expect(
         predicate(new URL('https://wrongaccount.blob.core.windows.net')),
       ).toBe(false);
+    });
+  });
+
+  describe('predicates for colliding account names', () => {
+    const readers = createReader({
+      integrations: {
+        azureBlobStorage: [
+          { accountName: 'catalog' },
+          { accountName: 'prodcatalog' },
+        ],
+      },
+    });
+
+    it('does not match the host of an account whose name ends with this account name', () => {
+      expect(
+        readers[0].predicate(
+          new URL(
+            'https://prodcatalog.blob.core.windows.net/mycontainer/catalog-info.yaml',
+          ),
+        ),
+      ).toBe(false);
+      expect(
+        readers[0].predicate(
+          new URL(
+            'https://mycatalog.blob.core.windows.net/mycontainer/catalog-info.yaml',
+          ),
+        ),
+      ).toBe(false);
+    });
+
+    it('matches only the exact host of its own account', () => {
+      expect(
+        readers[0].predicate(
+          new URL(
+            'https://catalog.blob.core.windows.net/mycontainer/file.yaml',
+          ),
+        ),
+      ).toBe(true);
+      expect(
+        readers[1].predicate(
+          new URL(
+            'https://prodcatalog.blob.core.windows.net/mycontainer/catalog-info.yaml',
+          ),
+        ),
+      ).toBe(true);
+      expect(
+        readers[1].predicate(
+          new URL(
+            'https://catalog.blob.core.windows.net/mycontainer/file.yaml',
+          ),
+        ),
+      ).toBe(false);
+    });
+  });
+
+  describe('reader selection', () => {
+    it('reads a URL through the integration whose account host matches it exactly, even when account names collide', async () => {
+      // The 'catalog' integration is registered first on purpose: with a
+      // suffix-based predicate it would capture URLs that belong to the
+      // 'prodcatalog' account
+      const config = new ConfigReader({
+        integrations: {
+          azureBlobStorage: [
+            { accountName: 'catalog', accountKey: 'catalog-key' },
+            { accountName: 'prodcatalog', accountKey: 'prodcatalog-key' },
+          ],
+        },
+      });
+      const integrations = ScmIntegrations.fromConfig(config);
+      const credsManager =
+        DefaultAzureCredentialsManager.fromIntegrations(integrations);
+      const entries = AzureBlobStorageUrlReader.factory({
+        config,
+        logger: mockServices.logger.mock(),
+        treeResponseFactory,
+      });
+
+      const mux = new UrlReaderPredicateMux();
+      integrations.azureBlobStorage
+        .list()
+        .forEach((integrationConfig, index) => {
+          mux.register({
+            predicate: entries[index].predicate,
+            reader: new AzureBlobStorageUrlReader(
+              credsManager,
+              integrationConfig,
+              {
+                treeResponseFactory,
+                // Each reader resolves reads through its own integration, so
+                // the account name in the response tells us which integration
+                // the URL was routed to
+                createContainerClient: async () =>
+                  ({
+                    getBlobClient: () => ({
+                      download: async () => ({
+                        readableStreamBody: Readable.from(
+                          Buffer.from(
+                            integrationConfig.config.accountName ?? '',
+                          ),
+                        ),
+                      }),
+                    }),
+                  } as unknown as ContainerClient),
+              },
+            ),
+          });
+        });
+
+      const readAccountName = async (url: string) =>
+        (await (await mux.readUrl(url)).buffer()).toString();
+
+      expect(
+        await readAccountName(
+          'https://prodcatalog.blob.core.windows.net/mycontainer/catalog-info.yaml',
+        ),
+      ).toBe('prodcatalog');
+      expect(
+        await readAccountName(
+          'https://catalog.blob.core.windows.net/mycontainer/catalog-info.yaml',
+        ),
+      ).toBe('catalog');
     });
   });
 
