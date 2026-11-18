@@ -70,7 +70,6 @@ export type {
   ToolDispatchInput,
   ToolModule,
 } from './tools/types';
-export { toolPermissionName } from './tools/registry';
 export type { ToolIdentity } from './tools/registry';
 export { createGuardedToolOperations } from './tools/mediation';
 export type {
@@ -92,11 +91,26 @@ export type {
   AuditPage,
   AuditQuery,
 } from './journal/types';
-export { modelPermissionName } from './permissions/modelPermissions';
-export type {
-  ModelDescriptor,
-  ModelPair,
-} from './permissions/modelPermissions';
+export type { ModelDescriptor, ModelPair } from './permissions/modelAccess';
+export {
+  aiModelConditions,
+  aiModelPermissionRules,
+  aiModelResourceRef,
+  aiToolConditions,
+  aiToolPermissionRules,
+  aiToolResourceRef,
+  allowsConditional,
+  authorizeConditionalDecision,
+  createAiModelConditionalDecision,
+  createAiToolConditionalDecision,
+  evaluatePermissionCriteria,
+  isModel,
+  isModelType,
+  isProvider,
+  isServer,
+  isTool,
+} from './permissions/rules';
+export type { AiPermissionRule, AiPolicyAuthorizer } from './permissions/rules';
 export type { AiCredentialStores, CredentialScope } from './credentials/types';
 export type { RecoveryEvent } from './journal/types';
 export type { PageOfNamespaces } from './ownership/types';

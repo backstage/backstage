@@ -25,13 +25,15 @@ import type { AttemptDecision, AttemptOutcome } from '../journal/types';
 import type { Fence } from '../contracts';
 import { validateToolCallEnvelope } from './envelope';
 import { createGuardedToolOperations } from './mediation';
-import {
-  composeWithToolRegistry,
-  createToolRegistry,
-  toolPermissionName,
-} from './registry';
+import { composeWithToolRegistry, createToolRegistry } from './registry';
 import { builtinProviderRegistry } from '../providers/testFixtures';
 import type { ToolModule } from './types';
+
+const allowAll = {
+  authorizeConditional: jest.fn(async (requests: readonly unknown[]) =>
+    requests.map(() => ({ result: 'ALLOW' as const })),
+  ),
+};
 
 type ServerFixture = {
   server: Server;
@@ -232,7 +234,11 @@ function exampleToolServer(
       };
     },
   });
-  const mediation = createGuardedToolOperations({ tools, models });
+  const mediation = createGuardedToolOperations({
+    tools,
+    models,
+    permissions: allowAll,
+  });
   const callTool = (
     toolName = 'search',
     args: unknown = { query: 'x' },
@@ -509,7 +515,11 @@ describe('guarded tool operations', () => {
           },
         }),
       });
-      const mediation = createGuardedToolOperations({ tools: base, models });
+      const mediation = createGuardedToolOperations({
+        tools: base,
+        models,
+        permissions: allowAll,
+      });
       const call = () =>
         mediation.callTool({
           serverId: 'example-tools',
@@ -531,16 +541,6 @@ describe('guarded tool operations', () => {
       fixture.server.close();
       await once(fixture.server, 'close');
     }
-  });
-
-  it('encodes tool permission names like model permissions', () => {
-    expect(toolPermissionName({ serverId: 'a.b', toolName: 'search/x' })).toBe(
-      'ai.tool.a%2Eb.search%2Fx.use',
-    );
-    expect(toolPermissionName({ serverId: 'a', toolName: 'b.c' })).not.toBe(
-      toolPermissionName({ serverId: 'a.b', toolName: 'c' }),
-    );
-    expect(() => toolPermissionName({ serverId: '', toolName: 'x' })).toThrow();
   });
 
   it('rejects static or malformed route templates at registration', () => {

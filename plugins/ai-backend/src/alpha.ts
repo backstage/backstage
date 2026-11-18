@@ -18,3 +18,26 @@
 
 export { aiModulesExtensionPoint } from './extensions';
 export type { AiModulesExtensionPoint } from './extensions';
+/**
+ * Re-exported for policy authors who already depend on this plugin.
+ *
+ * @remarks
+ * The rules, their conditions and the conditional decision helpers are defined
+ * by `@backstage/ai-node/alpha`, which also evaluates them; this plugin owns no
+ * rules of its own.
+ */
+export {
+  aiModelConditions,
+  aiModelPermissionRules,
+  aiModelResourceRef,
+  aiToolConditions,
+  aiToolPermissionRules,
+  aiToolResourceRef,
+  createAiModelConditionalDecision,
+  createAiToolConditionalDecision,
+  isModel,
+  isModelType,
+  isProvider,
+  isServer,
+  isTool,
+} from '@backstage/ai-node/alpha';

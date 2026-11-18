@@ -144,6 +144,15 @@ describe('stock service tool mediation', () => {
               authorize(options.credentials, request.permission.name),
             ),
           ),
+        authorizeConditional: async (
+          requests: Array<{ permission: { name: string } }>,
+          options: { credentials: BackstageCredentials },
+        ) =>
+          Promise.all(
+            requests.map(request =>
+              authorize(options.credentials, request.permission.name),
+            ),
+          ),
       },
       logger: mockServices.logger.mock(),
       auditor: mockServices.auditor.mock(),
@@ -257,7 +266,7 @@ describe('stock service tool mediation', () => {
           toolServerModule('org-tools', origin),
         ],
         async (_credentials, name) => {
-          if (name === 'ai.tool.stock-tools.search.use') {
+          if (name === 'ai.tool.use') {
             return { result: allowed ? 'ALLOW' : 'DENY' };
           }
           return { result: 'ALLOW' };
@@ -341,9 +350,9 @@ describe('stock service tool mediation', () => {
           arguments: { query: 'x' },
           credentials,
         }),
-      ).resolves.toMatchObject({
-        errorMessage: expect.stringContaining('revoked'),
-      });
+      ).rejects.toThrow(
+        "Access denied: the caller is not allowed to use the tool 'stock-tools/search'",
+      );
       expect(requests).toHaveLength(0);
 
       // Credential rotation mid-call: the recheck re-resolves the scoped MCP

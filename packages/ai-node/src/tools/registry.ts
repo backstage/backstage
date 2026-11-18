@@ -53,8 +53,6 @@ function toolModuleWithResolution(module: ToolModule): AiProviderModule {
         generation: mcpCredentialGeneration(scope, secret ?? ''),
       };
     },
-    permissionName: (providerId, modelId) =>
-      toolPermissionName({ serverId: providerId, toolName: modelId }),
     resolveDispatch: async (model, resolveCredential) => {
       // Identity binding: the caller's provider string must name this
       // module. Cross-server dispatch facts — a forged model or a
@@ -98,24 +96,6 @@ function toolModuleWithResolution(module: ToolModule): AiProviderModule {
  * @alpha
  */
 export type ToolIdentity = Readonly<{ serverId: string; toolName: string }>;
-
-/**
- * `ai.tool.<server>.<tool>.use`, following the model permission encoding.
- *
- * @alpha
- */
-export function toolPermissionName({
-  serverId,
-  toolName,
-}: ToolIdentity): string {
-  function segment(value: string): string {
-    if (typeof value !== 'string' || !value.length) {
-      throw new Error('Tool permission segments must be nonempty strings');
-    }
-    return encodeURIComponent(value).replace(/\./g, '%2E');
-  }
-  return `ai.tool.${segment(serverId)}.${segment(toolName)}.use`;
-}
 
 /**
  * A validated set of tool modules: the provider-registry view the guard and

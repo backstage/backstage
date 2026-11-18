@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { BasicPermission } from '@backstage/plugin-permission-common';
 import type {
   AuthService,
   BackstageCredentials,
@@ -27,23 +28,21 @@ import {
   AI_INSTALLATION_CONFIG_PATH,
   parseAiInstallationConfig,
 } from '../config-extension';
-import {
-  AI_AUDIT_READ_PERMISSION_NAME,
-  type AuditPage,
-} from '../journal/types';
+import type { AuditPage } from '../journal/types';
 import { createWiredAttemptJournal } from '../journal/wired';
 import { listUserSessions, readSessionOrigin } from '../ownership/recovery';
 import {
-  createModelPermissions,
+  createModelAccess,
   type ModelDescriptor,
-} from '../permissions/modelPermissions';
+} from '../permissions/modelAccess';
+import {
+  aiAuditReadPermission,
+  aiSessionUsePermission as fixedSessionUsePermission,
+} from '@backstage/plugin-ai-common';
 
 /** Permission required for every AI HTTP operation. @alpha */
-export const aiSessionUsePermission = {
-  type: 'basic',
-  name: 'ai.session.use',
-  attributes: {},
-} as const;
+export const aiSessionUsePermission: BasicPermission =
+  fixedSessionUsePermission;
 
 /** Dependencies for a plugin-scoped, read-only HTTP adapter. @alpha */
 export type AiHttpSupportOptions = {
@@ -93,7 +92,7 @@ export async function createAiHttpSupport(
     root: options.config,
     path: AI_INSTALLATION_CONFIG_PATH,
   }).models;
-  const modelPermissions = createModelPermissions({
+  const modelAccess = createModelAccess({
     // The full canonical descriptors, so discovery reports the catalog
     // fields consumers choose models by, not just the identity pair.
     models: models.map(model => ({
@@ -109,11 +108,10 @@ export async function createAiHttpSupport(
       ...('maxTokens' in model ? { maxTokens: model.maxTokens } : {}),
     })),
     authorizer: permissions,
-    registry: permissionsRegistry,
   });
   permissionsRegistry.addPermissions([
     aiSessionUsePermission,
-    { type: 'basic', name: AI_AUDIT_READ_PERMISSION_NAME, attributes: {} },
+    aiAuditReadPermission,
   ]);
   // The same wired journal the managed integration consumes: ownership
   // through the recovery sessions, audit reads through the separate
@@ -136,7 +134,7 @@ export async function createAiHttpSupport(
     },
     async listModels(credentials) {
       await user(credentials);
-      return modelPermissions.listModels(credentials);
+      return modelAccess.listModels(credentials);
     },
     async listSessions(credentials, query) {
       const userId = await user(credentials);

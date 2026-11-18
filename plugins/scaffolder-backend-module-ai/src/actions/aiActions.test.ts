@@ -36,7 +36,7 @@ import { scaffolderModuleAi } from '../module';
 const pgUrl = process.env.AI_TEST_POSTGRES_URL;
 
 const ORG_KEY = 'sk-scaffolder-test-org-key';
-const MODEL_PERMISSION = 'ai.model.openai.gpt-scaffolder.use';
+const MODEL_PERMISSION = 'ai.model.use';
 
 type ProbeRequest = {
   url?: string;
@@ -189,22 +189,24 @@ async function fixture(): Promise<Fixture> {
       const denyFromCall = options.denyFromCall ?? Number.POSITIVE_INFINITY;
       const throwFromCall = options.throwFromCall ?? Number.POSITIVE_INFINITY;
       let authorizeCalls = 0;
+      const decide = async (queries: readonly unknown[], authOptions: any) => {
+        authorizeCalls += 1;
+        if (authorizeCalls >= throwFromCall) {
+          throw new Error('permissions backend unavailable');
+        }
+        return queries.map(() => {
+          const denied =
+            authorizeCalls >= denyFromCall ||
+            (denyModelFor !== undefined &&
+              denyModelFor(authOptions.credentials as BackstageCredentials));
+          return {
+            result: denied ? ('DENY' as const) : ('ALLOW' as const),
+          };
+        });
+      };
       const permissions = mockServices.permissions.mock({
-        authorize: async (queries, authOptions) => {
-          authorizeCalls += 1;
-          if (authorizeCalls >= throwFromCall) {
-            throw new Error('permissions backend unavailable');
-          }
-          return queries.map(() => {
-            const denied =
-              authorizeCalls >= denyFromCall ||
-              (denyModelFor !== undefined &&
-                denyModelFor(authOptions.credentials as BackstageCredentials));
-            return {
-              result: denied ? ('DENY' as const) : ('ALLOW' as const),
-            };
-          });
-        },
+        authorize: decide,
+        authorizeConditional: decide,
       });
       const backend = await startTestBackend({
         extensionPoints: [

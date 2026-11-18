@@ -21,7 +21,12 @@ import type {
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 import type { AiService, ManagedHarness } from '@backstage/ai-node/alpha';
-import { modelPermissionName } from '@backstage/ai-node/alpha';
+import {
+  aiModelPermissionRules,
+  allowsConditional,
+  authorizeConditionalDecision,
+} from '@backstage/ai-node/alpha';
+import { aiModelUsePermission } from '@backstage/plugin-ai-common';
 import { createRegistry } from '@earendil-works/pi-durable';
 import type { Message } from '@earendil-works/pi-ai';
 
@@ -148,25 +153,19 @@ async function settlementFailure(options: {
     // permissions backend that fails here falls through to the generic
     // settlement failure.
     try {
-      const decisions = await options.permissions.authorize(
-        [
-          {
-            permission: {
-              type: 'basic',
-              name: modelPermissionName(model),
-              attributes: {},
-            },
-          },
-        ],
-        { credentials: options.credentials },
+      const decision = await authorizeConditionalDecision(
+        options.permissions,
+        aiModelUsePermission,
+        options.credentials,
       );
-      if (decisions[0]?.result !== 'ALLOW') {
+      const allowed = allowsConditional(
+        decision,
+        Object.values(aiModelPermissionRules),
+        { provider: model.provider, modelId: model.modelId },
+      );
+      if (!allowed) {
         return new Error(
-          `${prefix} did not complete (reason: 'model_error'${detail}). The submitting user is no longer allowed to use the model '${
-            model.provider
-          }/${model.modelId}': the '${modelPermissionName(
-            model,
-          )}' permission was denied during the run; ask an administrator for access`,
+          `${prefix} did not complete (reason: 'model_error'${detail}). The submitting user is no longer allowed to use the model '${model.provider}/${model.modelId}': the 'ai.model.use' permission was denied during the run; ask an administrator for access`,
         );
       }
     } catch {
@@ -273,10 +272,12 @@ export async function runManagedCompletion(options: {
  *
  * @remarks
  *
- * Uses the managed AI service's own model permission naming
- * (`ai.model.<provider>.<modelId>.use`); the managed service re-checks it at
- * admission and on every dispatch. When no model is configured the check
- * is skipped and dispatch defers to the service. The denial names both
+ * Uses the managed AI service's fixed `ai.model.use` permission and evaluates
+ * the policy's conditions against the configured pair with the model rules, so
+ * a conditional policy (one model, one provider, or one model type) decides
+ * exactly as it does for dispatch; the managed service re-checks it at
+ * admission and on every dispatch. When no model is configured the check is
+ * skipped and dispatch defers to the service. The denial names both
  * remedies without asserting which one applies: the user may lack the
  * permission, or the model may not be listed in the installation catalog.
  */
@@ -286,14 +287,19 @@ export async function authorizeConfiguredModel(options: {
   model: ConfiguredModel;
   actionId: string;
 }): Promise<void> {
-  const name = modelPermissionName(options.model);
-  const decisions = await options.permissions.authorize(
-    [{ permission: { type: 'basic', name, attributes: {} } }],
-    { credentials: options.credentials },
+  const decision = await authorizeConditionalDecision(
+    options.permissions,
+    aiModelUsePermission,
+    options.credentials,
   );
-  if (decisions[0]?.result !== 'ALLOW') {
+  if (
+    !allowsConditional(decision, Object.values(aiModelPermissionRules), {
+      provider: options.model.provider,
+      modelId: options.model.modelId,
+    })
+  ) {
     throw new Error(
-      `Access denied: the submitting user is not allowed to use the model '${options.model.provider}/${options.model.modelId}' configured for the '${options.actionId}' action. The '${name}' permission was denied; ask an administrator to grant access, or configure a model that is listed in this installation's 'ai.models' catalog`,
+      `Access denied: the submitting user is not allowed to use the model '${options.model.provider}/${options.model.modelId}' configured for the '${options.actionId}' action. The 'ai.model.use' permission was denied; ask an administrator to grant access, or configure a model that is listed in this installation's 'ai.models' catalog`,
     );
   }
 }

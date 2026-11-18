@@ -129,6 +129,7 @@ async function fixture(): Promise<Fixture> {
     } as unknown as AuthService,
     permissions: {
       authorize: async () => [{ result: 'ALLOW' }],
+      authorizeConditional: async () => [{ result: 'ALLOW' }],
     } as unknown as PermissionsService,
     logger: mockServices.logger.mock(),
     auditor: mockServices.auditor.mock(),

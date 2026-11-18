@@ -144,7 +144,6 @@ export type AiProviderModule = Readonly<{
    * Names the permission guarding one operation of this module. Modules
    * without this hook use the shared model permission encoder.
    */
-  permissionName?(providerId: string, modelId: string): string;
   /**
    * Optional module-carried binding resolution for operations resolved
    * outside the canonical model catalog (tool servers): the module supplies

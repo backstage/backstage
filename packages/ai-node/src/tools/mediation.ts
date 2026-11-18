@@ -15,6 +15,13 @@
  */
 
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { aiToolUsePermission } from '@backstage/plugin-ai-common';
+import {
+  aiToolPermissionRules,
+  allowsConditional,
+  authorizeConditionalDecision,
+  type AiPolicyAuthorizer,
+} from '../permissions/rules';
 import type { AnyModel } from '@earendil-works/pi-ai';
 import type { ToolRegistry } from './registry';
 
@@ -58,6 +65,12 @@ export type GuardedToolDispatch = Readonly<{
 export function createGuardedToolOperations(options: {
   tools: ToolRegistry;
   models: GuardedToolDispatch;
+  /**
+   * Conditional authorizer over `ai.tool.use`. Per-attempt enforcement lives
+   * here, with the same fail-closed rule as model dispatch: anything but an
+   * `ALLOW` decision denies the call before it is journaled or sent.
+   */
+  permissions: AiPolicyAuthorizer;
 }) {
   return {
     async callTool(input: {
@@ -74,6 +87,25 @@ export function createGuardedToolOperations(options: {
       if (!resolved) {
         // No trusted binding exists to journal against: fail closed.
         throw new Error('unknown tool or unverified operation');
+      }
+      // One conditional query per dispatch with the caller's own credentials;
+      // the policy's conditions are evaluated here against the tool identity,
+      // and anything that is not a positive evaluation denies before the
+      // journal write and the send.
+      const decision = await authorizeConditionalDecision(
+        options.permissions,
+        aiToolUsePermission,
+        input.credentials,
+      );
+      if (
+        !allowsConditional(decision, Object.values(aiToolPermissionRules), {
+          serverId: input.serverId,
+          toolName: input.toolName,
+        })
+      ) {
+        throw new Error(
+          `Access denied: the caller is not allowed to use the tool '${input.serverId}/${input.toolName}'`,
+        );
       }
       const model = Object.freeze({
         id: input.toolName,
