@@ -148,7 +148,7 @@ export function emitSafe(
     const result: unknown = emitter.emit(assertObservableEvent(event));
     if (
       result !== null &&
-      typeof result === 'object' &&
+      (typeof result === 'object' || typeof result === 'function') &&
       typeof (result as PromiseLike<void>).then === 'function'
     ) {
       void Promise.resolve(result).catch(() => undefined);

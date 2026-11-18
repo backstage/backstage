@@ -100,7 +100,7 @@ export function startAiJournalPruneRunner(
       const result: unknown = logger?.warn(message);
       if (
         result !== null &&
-        typeof result === 'object' &&
+        (typeof result === 'object' || typeof result === 'function') &&
         typeof (result as PromiseLike<void>).then === 'function'
       ) {
         void Promise.resolve(result).catch(() => undefined);

@@ -269,6 +269,46 @@ for (const dialect of ['sqlite', 'pg'] as const) {
         }
         expect(unhandled).toEqual([]);
 
+        // A callable thenable — a function whose .then is bound to a
+        // rejecting promise, and which returns itself from the callback —
+        // satisfies the callback type while being neither typeof 'object'
+        // nor caught by the sync try/catch. The isolation wrapper must
+        // adopt and swallow its rejection. The pass fails synchronously
+        // (invalid retention window on the valid database) so the warn
+        // call, and with it the adoption, happen in the same microtask
+        // drain as the source promise's rejection.
+        const onUnhandledCallable = (reason: unknown) =>
+          void unhandled.push(reason);
+        process.on('unhandledRejection', onUnhandledCallable);
+        const callableWarn = (() => {
+          const rejecting = Promise.reject(
+            new Error('callable thenable rejected'),
+          );
+          const fn = () => fn;
+          fn.then = rejecting.then.bind(rejecting);
+          return fn as unknown as () => unknown;
+        })();
+        const callableRunner = startAiJournalPruneRunner({
+          db: f.db,
+          retentionMs: 0,
+          intervalMs: 30,
+          logger: { info: () => {}, warn: callableWarn },
+          now: clock.now,
+        });
+        try {
+          const callableResult = await callableRunner.pruneNow();
+          expect(callableResult).toEqual({
+            prunedEvents: 0,
+            uncertaintyRecords: 0,
+          });
+          await new Promise(resolve => setTimeout(resolve, 120));
+          expect(unhandled).toEqual([]);
+        } finally {
+          await callableRunner.stop();
+          process.off('unhandledRejection', onUnhandledCallable);
+        }
+        expect(unhandled).toEqual([]);
+
         // An async warn that rejects also satisfies the sync callback
         // type structurally; its rejected promise must be swallowed the
         // same way, never surfacing as an unhandled rejection.

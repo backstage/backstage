@@ -30,6 +30,7 @@ import {
   createGuardedModelOperations,
 } from '../guard/modelOperations';
 import { emitSafe, assertObservableEvent } from './types';
+import type { AiObservabilityEvent } from './types';
 
 const storageMigration = require('../../migrations/1000_storage');
 const journalMigration = require('../../migrations/4000_journal');
@@ -365,6 +366,47 @@ describe('observability seam', () => {
       expect(rejections).toEqual([]);
     } finally {
       process.off('unhandledRejection', onRejection);
+    }
+
+    // A callable thenable — a function with a .then method bound to a
+    // rejecting promise — is neither typeof 'object' nor caught by the
+    // sync try/catch; emitSafe must swallow its rejection too, keeping
+    // the same discipline as the prune runner's logger isolation.
+    {
+      const callableRejections: unknown[] = [];
+      const onCallable = (reason: unknown) => callableRejections.push(reason);
+      process.on('unhandledRejection', onCallable);
+      try {
+        const rejecting = Promise.reject(new Error('callable subscriber down'));
+        // The emitter returns the callable thenable itself; the wrapper
+        // decides on that return value.
+        const callableEmit = (() => {
+          const fn = () => fn;
+          fn.then = rejecting.then.bind(rejecting);
+          return fn as unknown as () => unknown;
+        })();
+        expect(() =>
+          emitSafe(
+            {
+              emit: callableEmit as unknown as (
+                event: AiObservabilityEvent,
+              ) => void | Promise<void>,
+            },
+            {
+              kind: 'lease',
+              at: 2,
+              pluginId: 'p',
+              sessionId: 's',
+              action: 'acquire',
+            },
+          ),
+        ).not.toThrow();
+        await new Promise(resolve => setImmediate(resolve));
+        await new Promise(resolve => setImmediate(resolve));
+        expect(callableRejections).toEqual([]);
+      } finally {
+        process.off('unhandledRejection', onCallable);
+      }
     }
 
     // A throwing subscriber cannot break the caller either.
