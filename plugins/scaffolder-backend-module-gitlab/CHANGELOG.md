@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.12.4
+
+### Patch Changes
+
+- 24de596: Bumped the version to account for a patch release from an older release line, so that `^` ranges resolve to this release.
+
 ## 0.12.2
 
 ### Patch Changes
