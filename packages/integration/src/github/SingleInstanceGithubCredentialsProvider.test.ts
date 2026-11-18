@@ -1040,6 +1040,144 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     }
   });
 
+  it('should share an in-flight allowlist refresh across concurrent repo misses', async () => {
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: { etag: '123' },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'selected',
+          account: { login: 'backstage' },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    let resolveRefreshRepos!: (value: unknown) => void;
+    octokit.apps.createInstallationAccessToken
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'initial_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response'])
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'refreshed_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    octokit.apps.listReposAccessibleToInstallation
+      .mockResolvedValueOnce({
+        data: { repositories: [{ name: 'existing-repo' }] },
+      } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response'])
+      .mockReturnValueOnce(
+        new Promise(resolve => {
+          resolveRefreshRepos = resolve;
+        }),
+      );
+
+    await github.getCredentials({ url: 'https://github.com/backstage' });
+
+    const first = github.getCredentials({
+      url: 'https://github.com/backstage/new-repo',
+    });
+    const second = github.getCredentials({
+      url: 'https://github.com/backstage/new-repo',
+    });
+
+    resolveRefreshRepos({
+      data: {
+        repositories: [{ name: 'existing-repo' }, { name: 'new-repo' }],
+      },
+    });
+
+    const [firstResult, secondResult] = await Promise.all([first, second]);
+    expect(firstResult.token).toEqual('refreshed_token');
+    expect(secondResult.token).toEqual('refreshed_token');
+    expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(2);
+  });
+
+  it('should check cached app credentials before refreshing other apps on a repo miss', async () => {
+    const multiAppProvider = SingleInstanceGithubCredentialsProvider.create({
+      host: 'github.com',
+      apps: [
+        {
+          appId: 1,
+          privateKey: 'privateKey1',
+          webhookSecret: '123',
+          clientId: 'CLIENT_ID_1',
+          clientSecret: 'CLIENT_SECRET_1',
+        },
+        {
+          appId: 2,
+          privateKey: 'privateKey2',
+          webhookSecret: '456',
+          clientId: 'CLIENT_ID_2',
+          clientSecret: 'CLIENT_SECRET_2',
+        },
+      ],
+    });
+
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: { etag: '123' },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'selected',
+          account: { login: 'backstage' },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    octokit.apps.createInstallationAccessToken
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'app1_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response'])
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'app2_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    octokit.apps.listReposAccessibleToInstallation
+      .mockResolvedValueOnce({
+        data: { repositories: [{ name: 'repo-a' }] },
+      } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response'])
+      .mockResolvedValueOnce({
+        data: { repositories: [{ name: 'repo-b1' }, { name: 'repo-b2' }] },
+      } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
+
+    // Warm both app caches.
+    const first = await multiAppProvider.getCredentials({
+      url: 'https://github.com/backstage/repo-a',
+    });
+    expect(first.token).toEqual('app1_token');
+    expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(2);
+
+    // Lookups for repositories covered by App 2's cache should not cause App 1 to refresh.
+    const b1 = await multiAppProvider.getCredentials({
+      url: 'https://github.com/backstage/repo-b1',
+    });
+    const b2 = await multiAppProvider.getCredentials({
+      url: 'https://github.com/backstage/repo-b2',
+    });
+    expect(b1.token).toEqual('app2_token');
+    expect(b2.token).toEqual('app2_token');
+    expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(2);
+    expect(
+      octokit.apps.listReposAccessibleToInstallation,
+    ).toHaveBeenCalledTimes(2);
+  });
+
   describe('public access', () => {
     it('should use an installation token when public access is enabled and owner is not in allowed list', async () => {
       const githubProvider = SingleInstanceGithubCredentialsProvider.create({
