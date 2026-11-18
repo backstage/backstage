@@ -53,6 +53,8 @@ import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-componen
 import { Selection as Selection_2 } from 'react-aria-components';
 import type { SelectProps as SelectProps_2 } from 'react-aria-components';
 import type { SeparatorProps } from 'react-aria-components';
+import type { SheetOverlayProps } from 'react-aria-components';
+import type { SheetTriggerProps as SheetTriggerProps_2 } from 'react-aria-components';
 import type { SliderProps as SliderProps_2 } from 'react-aria-components';
 import type { SortDescriptor as SortDescriptor_2 } from 'react-stately';
 import { SortDirection } from 'react-aria-components';
@@ -3904,6 +3906,164 @@ export const SelectTriggerDefinition: {
     readonly icon: {};
   };
 };
+
+// @public
+export const Sheet: ForwardRefExoticComponent<
+  SheetProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const SheetBody: ForwardRefExoticComponent<
+  SheetBodyProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const SheetBodyDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-SheetBody';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type SheetBodyOwnProps = {
+  children?: ReactNode;
+  className?: string;
+};
+
+// @public
+export interface SheetBodyProps
+  extends SheetBodyOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof SheetBodyOwnProps> {}
+
+// @public
+export const SheetDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-SheetOverlay';
+    readonly backdrop: 'bui-SheetBackdrop';
+    readonly container: 'bui-Sheet';
+    readonly content: 'bui-SheetContent';
+    readonly inner: 'bui-SheetInner';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+    readonly width: {};
+    readonly height: {};
+    readonly style: {};
+    readonly 'aria-label': {};
+    readonly 'aria-labelledby': {};
+    readonly swipeAnimation: {};
+    readonly swipeAnimationRange: {};
+    readonly stackAnimation: {
+      readonly default: 'bui-sheet-stack';
+    };
+    readonly overscrollPadding: {
+      readonly default: true;
+    };
+  };
+};
+
+// @public
+export const SheetFooter: ForwardRefExoticComponent<
+  SheetFooterProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const SheetFooterDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-SheetFooter';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+  };
+};
+
+// @public (undocumented)
+export type SheetFooterOwnProps = {
+  children?: ReactNode;
+  className?: string;
+};
+
+// @public
+export interface SheetFooterProps
+  extends SheetFooterOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof SheetFooterOwnProps> {}
+
+// @public
+export const SheetHeader: ForwardRefExoticComponent<
+  SheetHeaderProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const SheetHeaderDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-SheetHeader';
+    readonly title: 'bui-SheetHeaderTitle';
+  };
+  readonly propDefs: {
+    readonly children: {};
+    readonly className: {};
+    readonly level: {};
+  };
+};
+
+// @public (undocumented)
+export type SheetHeaderOwnProps = {
+  children?: ReactNode;
+  className?: string;
+  level?: number;
+};
+
+// @public
+export interface SheetHeaderProps
+  extends SheetHeaderOwnProps,
+    Omit<React.ComponentPropsWithoutRef<'div'>, keyof SheetHeaderOwnProps> {}
+
+// @public (undocumented)
+export type SheetOwnProps = {
+  children?: ReactNode;
+  className?: string;
+  width?: number | string;
+  height?: number | string;
+  style?: CSSProperties;
+  'aria-label'?: string;
+  'aria-labelledby'?: string;
+  swipeAnimation?: string;
+  swipeAnimationRange?: {
+    start?: number;
+    end?: number;
+  };
+  stackAnimation?: string;
+  overscrollPadding?: boolean;
+};
+
+// @public
+export interface SheetProps
+  extends SheetOwnProps,
+    Omit<SheetOverlayProps, keyof SheetOwnProps> {}
+
+// @public
+export const SheetTrigger: (props: SheetTriggerProps) => JSX_2.Element;
+
+// @public
+export interface SheetTriggerProps extends SheetTriggerProps_2 {}
 
 // @public
 export const Skeleton: (props: SkeletonProps) => JSX_2.Element;

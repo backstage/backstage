@@ -1,0 +1,155 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  Controlled,
+  Default,
+  Positions,
+  SnapPoints,
+  WithForm,
+} from './components';
+import {
+  sheetBodyPropDefs,
+  sheetFooterPropDefs,
+  sheetHeaderPropDefs,
+  sheetPropDefs,
+  sheetTriggerPropDefs,
+} from './props-definition';
+import {
+  sheetCloseSnippet,
+  sheetControlledSnippet,
+  sheetDefaultSnippet,
+  sheetPositionsSnippet,
+  sheetSnapPointsSnippet,
+  sheetUsageSnippet,
+  sheetWithFormSnippet,
+} from './snippets';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { SheetDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+
+export const reactAriaUrls = {
+  sheetTrigger: 'https://react-aria.adobe.com/Sheet#sheettrigger',
+  sheet: 'https://react-aria.adobe.com/Sheet',
+};
+
+<PageTitle
+  title="Sheet"
+  description="A swipeable overlay that slides in from the edge of the viewport, with header, body, and footer sections."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Default />}
+  code={sheetDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={sheetUsageSnippet} />
+
+## API reference
+
+### SheetTrigger
+
+Wraps a trigger element and the sheet content to handle open and close state.
+
+<PropsTable data={sheetTriggerPropDefs} />
+
+<ReactAriaLink component="SheetTrigger" href={reactAriaUrls.sheetTrigger} />
+
+### Sheet
+
+The sheet panel and overlay. Supports controlled open state, logical start and end positions, snap points, and swipe dismissal.
+
+<PropsTable data={sheetPropDefs} />
+
+<ReactAriaLink component="Sheet" href={reactAriaUrls.sheet} />
+
+### SheetHeader
+
+Displays the sheet title with a built-in close button.
+
+<PropsTable data={sheetHeaderPropDefs} />
+
+<ReactAriaLink
+  component="Heading"
+  href="https://react-aria.adobe.com/Heading"
+/>
+
+### SheetBody
+
+The main content area of the sheet.
+
+<PropsTable data={sheetBodyPropDefs} />
+
+### SheetFooter
+
+Contains action buttons or other footer content.
+
+<PropsTable data={sheetFooterPropDefs} />
+
+If you want to close the sheet when pressing a button, use the `slot="close"` prop on the button.
+
+<CodeBlock code={sheetCloseSnippet} />
+
+## Examples
+
+### Positions
+
+Use the `position` prop to choose which edge of the viewport the sheet opens from. The `start` and `end` positions are mirrored in right-to-left layouts.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Positions />}
+  code={sheetPositionsSnippet}
+/>
+
+### Sheet with form
+
+Forms can be embedded in the sheet body.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithForm />}
+  code={sheetWithFormSnippet}
+/>
+
+### Snap points
+
+Snap points make the sheet stop partially open. Drag the sheet to expand it, or swipe to dismiss it.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<SnapPoints />}
+  code={sheetSnapPointsSnippet}
+/>
+
+### Controlled open state
+
+You can control the sheet using your own state.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Controlled />}
+  code={sheetControlledSnippet}
+/>
+
+<Theming definition={SheetDefinition} />
+
+<ChangelogComponent
+  component={[
+    'sheet',
+    'sheet-trigger',
+    'sheet-header',
+    'sheet-body',
+    'sheet-footer',
+  ]}
+/>
