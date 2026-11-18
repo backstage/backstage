@@ -142,7 +142,9 @@ const knexMock = (
 
 async function harnessDirectories(): Promise<number> {
   const entries = await readdir(tmpdir());
-  return entries.filter(name => name.startsWith('ai-journal-harness-')).length;
+  return entries.filter(name =>
+    name.startsWith(`ai-journal-harness-${process.pid}-`),
+  ).length;
 }
 
 function resetState() {

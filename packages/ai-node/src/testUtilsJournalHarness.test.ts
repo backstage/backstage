@@ -37,7 +37,9 @@ jest.mock('../migrations/1000_storage', () => ({
 
 async function harnessDirectories(): Promise<number> {
   const entries = await readdir(tmpdir());
-  return entries.filter(name => name.startsWith('ai-journal-harness-')).length;
+  return entries.filter(name =>
+    name.startsWith(`ai-journal-harness-${process.pid}-`),
+  ).length;
 }
 
 async function harnessSchemas(): Promise<number> {

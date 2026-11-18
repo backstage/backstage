@@ -167,7 +167,11 @@ export async function createJournalHarness(
     }
   }
 
-  const directory = await mkdtemp(join(tmpdir(), 'ai-journal-harness-'));
+  // The pid scope keeps concurrent Jest workers — separate processes —
+  // from racing each other's directories in the shared tmpdir.
+  const directory = await mkdtemp(
+    join(tmpdir(), `ai-journal-harness-${process.pid}-`),
+  );
   let db: Knex | undefined;
   try {
     // Inside the protected region: a synchronous constructor failure
