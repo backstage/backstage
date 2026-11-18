@@ -165,6 +165,39 @@ describe('provider registration', () => {
     ).not.toThrow();
   });
 
+  it('rejects invalid, empty and duplicate credential kinds', () => {
+    // A module must declare at least one consumable kind, only known kinds,
+    // and no duplicates: the declaration is what dispatch and composition
+    // check credentials against, so a malformed one would silently accept or
+    // refuse the wrong credential.
+    for (const credentialKinds of [
+      [],
+      ['api_key', 'api_key'],
+      ['api_key', 'client_secret'],
+      ['oauth', 'api_key', 'oauth'],
+      'api_key',
+      undefined,
+    ]) {
+      expect(() =>
+        createProviderRegistry([
+          { ...azureResponses, credentialKinds } as unknown as AiProviderModule,
+        ]),
+      ).toThrow('Invalid provider credential kinds');
+    }
+    expect(() =>
+      createProviderRegistry([
+        { ...azureResponses, credentialKinds: ['api_key'] },
+        { ...azureResponses, credentialKinds: ['oauth'] },
+      ]),
+    ).toThrow('duplicate');
+    expect(() =>
+      createProviderRegistry([
+        { ...azureResponses, credentialKinds: ['api_key'] },
+        { ...azureResponses, id: 'example-oauth', credentialKinds: ['oauth'] },
+      ]),
+    ).not.toThrow();
+  });
+
   it('fails registration for ambiguous or cleartext dynamic declarations', () => {
     for (const template of [
       [],
