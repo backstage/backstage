@@ -169,6 +169,8 @@ type Fixture = {
     credentials?: boolean;
     modelId?: string;
     denyModelFor?: (credentials: BackstageCredentials) => boolean;
+    /** Omit the catalog entry's `type`, exercising the parser's default. */
+    omitCatalogType?: boolean;
     /** A conditional grant for `ai.model.use`, as a real policy returns it. */
     modelConditions?: () => PermissionCriteria<PermissionCondition>;
     /** Deny every model authorization from this 1-based call onward. */
@@ -283,7 +285,7 @@ async function fixture(): Promise<Fixture> {
                     modelId: 'gpt-scaffolder',
                     api: 'openai-responses',
                     baseUrl: `${options.providerUrl}/v1`,
-                    type: 'chat',
+                    ...(options.omitCatalogType ? {} : { type: 'chat' }),
                     contextWindow: 400_000,
                     maxTokens: 128_000,
                   },
@@ -878,6 +880,59 @@ describe('scaffolder AI actions', () => {
       );
       expect(provider.requests).toHaveLength(0);
       await backend.stop();
+    } finally {
+      await provider.close();
+      await f.close();
+    }
+  }, 30000);
+
+  // Reviewer round 2: the canonical parser defaults an omitted catalog `type`
+  // to chat, so authorization must see the same default — a type-scoped chat
+  // grant gets past the action boundary, and an image-scoped grant denies it,
+  // exactly as dispatch decides.
+  it('applies the canonical chat default for an entry without a type', async () => {
+    const f = await fixture();
+    const provider = await providerServer('unused');
+    try {
+      const ctx = (taskId: string) =>
+        context({
+          actionId: 'ai:generate',
+          taskId,
+          input: { prompt: 'Write something' },
+          credentials: alice(),
+        });
+
+      const chatGrant = await f.start({
+        providerUrl: provider.baseUrl,
+        omitCatalogType: true,
+        modelConditions: () => aiModelConditions.isModelType({ type: 'chat' }),
+      });
+      provider.failNextResponse = true;
+      const failure = await chatGrant
+        .action('ai:generate')
+        .handler(ctx('gen-legacy-chat'))
+        .then(
+          () => undefined,
+          (error: Error) => error,
+        );
+      // It reached the provider, so the chat-scoped grant authorized the entry
+      // whose type the catalog omits.
+      expect(failure?.message).not.toContain('is not allowed to use the model');
+      expect(provider.requests).toHaveLength(1);
+      await chatGrant.backend.stop();
+
+      const imageGrant = await f.start({
+        providerUrl: provider.baseUrl,
+        omitCatalogType: true,
+        modelConditions: () => aiModelConditions.isModelType({ type: 'image' }),
+      });
+      await expect(
+        imageGrant.action('ai:generate').handler(ctx('gen-legacy-image')),
+      ).rejects.toThrow(
+        /is not allowed to use the model 'openai\/gpt-scaffolder'/,
+      );
+      expect(provider.requests).toHaveLength(1);
+      await imageGrant.backend.stop();
     } finally {
       await provider.close();
       await f.close();

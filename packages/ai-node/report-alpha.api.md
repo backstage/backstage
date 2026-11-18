@@ -533,6 +533,7 @@ export const aiToolResourceRef: PermissionResourceRef<
 // @alpha
 export function allowsConditional<TResource>(options: {
   decision: QueryPermissionResponse;
+  pluginId?: string;
   resourceType: string;
   rules: readonly AiPermissionRule<TResource>[];
   resource: TResource;

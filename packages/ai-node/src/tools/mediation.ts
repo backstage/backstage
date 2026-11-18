@@ -80,6 +80,12 @@ export function createGuardedToolOperations(options: {
       // `ai.tool.use` with the caller's own credentials and every denial is
       // journaled. A pre-check here would spend a second query per attempt and
       // leave a denial with no audit row.
+      //
+      // The guarded path reports the closed-vocabulary reason (and the journal
+      // row carries the identity); this boundary names the tool the caller
+      // asked for, so the error a host sees is actionable on its own. Both
+      // contracts hold: the reason code is untouched, only the boundary text
+      // gains identification.
       const model = Object.freeze({
         id: input.toolName,
         provider: input.serverId,
@@ -88,11 +94,34 @@ export function createGuardedToolOperations(options: {
         // resolve; the shared dispatch path never reads them itself.
         credentials: input.credentials,
       }) as never as AnyModel;
-      return options.models.callTool(
-        model,
-        { arguments: input.arguments },
-        input.caller,
-      );
+      const tool = `the tool '${input.serverId}/${input.toolName}'`;
+      let result: unknown;
+      try {
+        result = await options.models.callTool(
+          model,
+          { arguments: input.arguments },
+          input.caller,
+        );
+      } catch (error) {
+        throw new Error(
+          `Tool call to ${tool} failed: ${(error as Error).message}`,
+        );
+      }
+      if (
+        result !== null &&
+        typeof result === 'object' &&
+        typeof (result as { errorMessage?: unknown }).errorMessage === 'string'
+      ) {
+        // The adapter settles denials as a value with an error message; the
+        // boundary identifies the tool without altering the reason inside it.
+        return {
+          ...(result as Record<string, unknown>),
+          errorMessage: `Tool call to ${tool} failed: ${
+            (result as { errorMessage: string }).errorMessage
+          }`,
+        };
+      }
+      return result;
     },
   };
 }

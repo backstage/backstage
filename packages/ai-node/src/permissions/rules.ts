@@ -417,7 +417,16 @@ function isValidParams(
     return false;
   }
   const result = validate.call(schema?.['~standard'], params);
-  if (!result || typeof (result as Promise<unknown>).then === 'function') {
+  if (!result) {
+    return false;
+  }
+  if (typeof (result as Promise<unknown>).then === 'function') {
+    // An asynchronous validator cannot be consulted synchronously, so it
+    // denies — and its rejection must still be observed: an unobserved
+    // rejection here would surface as an unhandled rejection in the backend
+    // process (the same callable-thenable discipline the prune runner and the
+    // observability emit path follow).
+    void Promise.resolve(result).catch(() => undefined);
     return false;
   }
   return !('issues' in result) || !result.issues;
@@ -501,24 +510,40 @@ export async function authorizeConditionalDecision(
  * Reduces one decision to a concrete answer for a resource held in hand.
  *
  * @remarks
- * `ALLOW` allows, `DENY` and any non-decision deny, and a conditional decision
- * is evaluated with {@link evaluatePermissionCriteria}, so an unknown rule, a
- * mismatched resource type or unusable parameters deny. Never a pass-through.
+ * The response envelope is checked before the criteria tree, and separately
+ * from it: a conditional decision carries its `pluginId` and `resourceType` as
+ * siblings of `conditions`, so a response describing another plugin's resource
+ * type denies even when its criteria happen to contain a matching leaf.
+ *
+ * `ALLOW` allows; `DENY`, an unknown result kind, a missing condition set, a
+ * foreign envelope, and any criteria the evaluator rejects all deny through
+ * {@link evaluatePermissionCriteria}. Never a pass-through.
  *
  * @alpha
  */
 export function allowsConditional<TResource>(options: {
   decision: QueryPermissionResponse;
+  /** The plugin id the queried permission belongs to; defaults to `ai`. */
+  pluginId?: string;
   resourceType: string;
   rules: readonly AiPermissionRule<TResource>[];
   resource: TResource;
 }): boolean {
   const { decision } = options;
   if (!decision || typeof decision !== 'object') return false;
-  if (decision.result === 'ALLOW') return true;
-  if (decision.result !== 'CONDITIONAL' || !decision.conditions) return false;
+  const envelope = decision as {
+    result?: unknown;
+    pluginId?: unknown;
+    resourceType?: unknown;
+    conditions?: unknown;
+  };
+  if (envelope.result === 'ALLOW') return true;
+  if (envelope.result !== 'CONDITIONAL') return false;
+  if (envelope.pluginId !== (options.pluginId ?? AI_PLUGIN_ID)) return false;
+  if (envelope.resourceType !== options.resourceType) return false;
+  if (!envelope.conditions) return false;
   return evaluatePermissionCriteria({
-    criteria: decision.conditions,
+    criteria: envelope.conditions as PermissionCriteria<PermissionCondition>,
     resourceType: options.resourceType,
     rules: options.rules,
     resource: options.resource,

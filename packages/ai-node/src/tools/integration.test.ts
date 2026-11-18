@@ -256,6 +256,7 @@ describe('stock service tool mediation', () => {
       };
 
       let allowed = true;
+      let foreignEnvelope = false;
       const service = await buildService(
         root,
         [
@@ -267,6 +268,21 @@ describe('stock service tool mediation', () => {
         ],
         async (_credentials, name) => {
           if (name === 'ai.tool.use') {
+            if (foreignEnvelope) {
+              // A conditional answer whose envelope describes another plugin's
+              // resource type while its criteria happen to carry a matching
+              // tool leaf: the reviewer's dispatch-bypass probe.
+              return {
+                result: 'CONDITIONAL',
+                pluginId: 'catalog',
+                resourceType: 'something-else',
+                conditions: {
+                  rule: 'IS_TOOL',
+                  resourceType: 'ai-tool',
+                  params: { serverId: 'stock-tools', toolName: 'search' },
+                },
+              };
+            }
             return { result: allowed ? 'ALLOW' : 'DENY' };
           }
           return { result: 'ALLOW' };
@@ -346,16 +362,18 @@ describe('stock service tool mediation', () => {
       allowed = false;
       requests.length = 0;
       const deniedAt = await db('ai_journal_events').max('id as id').first();
-      await expect(
-        handle.tools!.callTool({
-          serverId: 'stock-tools',
-          toolName: 'search',
-          arguments: { query: 'x' },
-          credentials,
-        }),
-      ).resolves.toMatchObject({
-        errorMessage: expect.stringContaining('revoked'),
-      });
+      const denial = (await handle.tools!.callTool({
+        serverId: 'stock-tools',
+        toolName: 'search',
+        arguments: { query: 'x' },
+        credentials,
+      })) as { errorMessage: string };
+      // The boundary names the tool the caller asked for; the reason inside it
+      // stays the closed-vocabulary code the guard emits.
+      expect(denial.errorMessage).toContain(
+        "Tool call to the tool 'stock-tools/search' failed",
+      );
+      expect(denial.errorMessage).toContain('revoked');
       expect(requests).toHaveLength(0);
       const denials = await db('ai_journal_events')
         .where('id', '>', deniedAt?.id ?? 0)
@@ -370,6 +388,41 @@ describe('stock service tool mediation', () => {
           model: 'search',
         }),
       ]);
+      // A foreign decision envelope must not dispatch either: the guard's
+      // recheck evaluates the envelope itself, so the tool request never
+      // leaves the process and the denial is journaled with tool identity.
+      foreignEnvelope = true;
+      requests.length = 0;
+      const foreignDeniedAt = await db('ai_journal_events')
+        .max('id as id')
+        .first();
+      const foreignDenial = (await handle.tools!.callTool({
+        serverId: 'stock-tools',
+        toolName: 'search',
+        arguments: { query: 'x' },
+        credentials,
+      })) as { errorMessage: string } | { result: string };
+      expect(foreignDenial).toMatchObject({
+        errorMessage: expect.stringContaining(
+          "Tool call to the tool 'stock-tools/search' failed",
+        ),
+      });
+      expect(requests).toHaveLength(0);
+      await expect(
+        db('ai_journal_events')
+          .where('id', '>', foreignDeniedAt?.id ?? 0)
+          .orderBy('id')
+          .select('kind', 'decision', 'operation', 'provider', 'model'),
+      ).resolves.toEqual([
+        expect.objectContaining({
+          kind: 'decision',
+          decision: 'deny',
+          operation: 'models.toolCall',
+          provider: 'stock-tools',
+          model: 'search',
+        }),
+      ]);
+      foreignEnvelope = false;
       allowed = true;
 
       // Credential rotation mid-call: the recheck re-resolves the scoped MCP

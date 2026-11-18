@@ -58,6 +58,25 @@ const models: ModelDescriptor[] = [
   { provider: 'anthropic', modelId: 'third', type: 'image' },
 ];
 
+/**
+ * A permissions client double that answers with a genuine
+ * `QueryPermissionResponse` envelope, exactly as the real client does: a
+ * conditional decision carries its plugin id and resource type next to the
+ * criteria, not inside them.
+ */
+function envelope(
+  conditions: unknown,
+  overrides: Record<string, unknown> = {},
+): unknown {
+  return {
+    result: 'CONDITIONAL',
+    pluginId: 'ai',
+    resourceType: RESOURCE_TYPE_AI_MODEL,
+    conditions,
+    ...overrides,
+  };
+}
+
 /** An authorizer whose single conditional answer the test controls. */
 function policy(answer: unknown) {
   const authorizeConditional = jest.fn(async () => [answer]);
@@ -251,14 +270,48 @@ describe('permission rule evaluation', () => {
     ).toBe(false);
   });
 
-  it('denies when a rule throws', () => {
+  it('denies an asynchronous validator without leaving a rejection unhandled', async () => {
+    const unhandled: unknown[] = [];
+    const listener = (reason: unknown) => unhandled.push(reason);
+    process.on('unhandledRejection', listener);
+    try {
+      for (const validate of [
+        () => Promise.resolve({ issues: ['async'] }),
+        () => Promise.reject(new Error('validator failed asynchronously')),
+      ]) {
+        const rule = {
+          name: aiModelConditions.isModel(pair).rule,
+          resourceType: RESOURCE_TYPE_AI_MODEL,
+          paramsSchema: { '~standard': { validate } },
+          apply: jest.fn(() => true),
+        };
+        expect(
+          evaluatePermissionCriteria({
+            criteria: aiModelConditions.isModel(pair),
+            resourceType: RESOURCE_TYPE_AI_MODEL,
+            rules: [rule as never],
+            resource: pair,
+          }),
+        ).toBe(false);
+        expect(rule.apply).not.toHaveBeenCalled();
+      }
+      // Let the rejecting validator's rejection reach the event loop.
+      await new Promise(resolve => setImmediate(resolve));
+      expect(unhandled).toEqual([]);
+    } finally {
+      process.off('unhandledRejection', listener);
+    }
+  });
+
+  it('denies when a rule throws, having actually invoked it', () => {
+    const apply = jest.fn(() => {
+      throw new Error('rule exploded');
+    });
     const throwing = {
-      name: 'THROWS',
+      name: aiModelConditions.isModel(pair).rule,
       resourceType: RESOURCE_TYPE_AI_MODEL,
       paramsSchema: aiModelPermissionRules.isModel.paramsSchema,
-      apply: () => {
-        throw new Error('rule exploded');
-      },
+      apply,
     };
     expect(
       evaluatePermissionCriteria({
@@ -268,6 +321,37 @@ describe('permission rule evaluation', () => {
         resource: pair,
       }),
     ).toBe(false);
+    // The denial must come from the throwing apply, not from a missing rule.
+    expect(apply).toHaveBeenCalledTimes(1);
+  });
+
+  // Reviewer round-2 probe: the response envelope's plugin id and resource
+  // type are siblings of `conditions`, so a foreign envelope wrapping a valid
+  // leaf must deny at the real authorizer boundary.
+  it('denies a foreign response envelope regardless of its criteria', async () => {
+    const probes = [
+      envelope(aiModelConditions.isModel(pair), {
+        pluginId: 'catalog',
+        resourceType: 'catalog-entity',
+      }),
+      envelope(aiModelConditions.isModel(pair), { resourceType: 'ai-tool' }),
+      envelope(aiModelConditions.isModel(pair), { pluginId: 'scaffolder' }),
+      { result: 'CONDITIONAL', conditions: aiModelConditions.isModel(pair) },
+      { result: 'MAYBE', conditions: aiModelConditions.isModel(pair) },
+    ];
+    for (const answer of probes) {
+      const { permissions } = policy(answer);
+      expect(
+        allowsConditional({
+          decision: (answer as never) ?? undefined,
+          resourceType: RESOURCE_TYPE_AI_MODEL,
+          rules: modelRules,
+          resource: pair,
+        }),
+      ).toBe(false);
+      const access = createModelAccess({ models, authorizer: permissions });
+      expect(await access.listModels(credentials)).toEqual([]);
+    }
   });
 
   it('asks for one conditional decision on the fixed permission with caller credentials', async () => {
@@ -309,10 +393,7 @@ describe('model access under conditional policies', () => {
       provider: 'openai',
       modelId: 'first',
     });
-    const { permissions } = policy({
-      result: 'CONDITIONAL',
-      conditions: granted,
-    });
+    const { permissions } = policy(envelope(granted));
     const access = createModelAccess({ models, authorizer: permissions });
 
     expect(await access.listModels(credentials)).toEqual([
@@ -340,10 +421,9 @@ describe('model access under conditional policies', () => {
   });
 
   it('scopes grants to a provider and honours a blanket grant', async () => {
-    const scoped = policy({
-      result: 'CONDITIONAL',
-      conditions: aiModelConditions.isProvider({ provider: 'anthropic' }),
-    });
+    const scoped = policy(
+      envelope(aiModelConditions.isProvider({ provider: 'anthropic' })),
+    );
     const scopedAccess = createModelAccess({
       models,
       authorizer: scoped.permissions,
@@ -422,7 +502,9 @@ describe('model access under conditional policies', () => {
     for (const answer of [
       { result: 'DENY' },
       undefined,
-      { result: 'CONDITIONAL', conditions: { rule: 'UNKNOWN_RULE' } },
+      envelope({ rule: 'UNKNOWN_RULE' }),
+      // A conditional answer without the envelope fields is unusable.
+      { result: 'CONDITIONAL', conditions: aiModelConditions.isModel(pair) },
     ]) {
       const { permissions } = policy(answer);
       const access = createModelAccess({ models, authorizer: permissions });
@@ -441,27 +523,23 @@ describe('tool access under conditional policies', () => {
   const tool = { serverId: 'files', toolName: 'read' };
 
   it('grants one tool, one server, or every tool', async () => {
+    const toolEnvelope = (conditions: unknown, overrides = {}) => ({
+      result: 'CONDITIONAL',
+      pluginId: 'ai',
+      resourceType: RESOURCE_TYPE_AI_TOOL,
+      conditions,
+      ...overrides,
+    });
     const cases: Array<[unknown, boolean, boolean]> = [
+      [toolEnvelope(aiToolConditions.isTool(tool)), true, false],
       [
-        { result: 'CONDITIONAL', conditions: aiToolConditions.isTool(tool) },
-        true,
-        false,
-      ],
-      [
-        {
-          result: 'CONDITIONAL',
-          conditions: aiToolConditions.isServer({ serverId: 'files' }),
-        },
+        toolEnvelope(aiToolConditions.isServer({ serverId: 'files' })),
         true,
         true,
       ],
       [{ result: 'ALLOW' }, true, true],
       [{ result: 'DENY' }, false, false],
-      [
-        { result: 'CONDITIONAL', conditions: { rule: 'UNKNOWN_RULE' } },
-        false,
-        false,
-      ],
+      [toolEnvelope({ rule: 'UNKNOWN_RULE' }), false, false],
     ];
     for (const [answer, read, write] of cases) {
       const { permissions, authorizeConditional } = policy(answer);

@@ -60,13 +60,15 @@ export type ConfiguredModel = Readonly<{
 
 /**
  * The catalog type of one configured model, read from the installation's
- * `ai.models` catalog.
+ * `ai.models` catalog, with the canonical parser's default applied.
  *
  * @remarks
- * Authorization evaluates the model rules against `{{ provider, modelId, type }}`,
- * exactly as dispatch does, so `isModelType` must see the same type the
- * installation catalog declares. Without it, a type-scoped grant would be
- * evaluated against `type: undefined` and misfire in both directions.
+ * Authorization evaluates the model rules against the pair and its catalog
+ * type, exactly as dispatch does, so `isModelType` must see the same type the
+ * installation catalog derives. The canonical parser defaults an omitted
+ * `type` to `chat`, so an entry without one is a chat model here too; only a
+ * pair the catalog does not list at all has no type, and callers treat that as
+ * unresolvable rather than guessing.
  */
 export function catalogModelType(
   root: Config,
@@ -80,7 +82,10 @@ export function catalogModelType(
       candidate.getOptionalString('provider') === model.provider &&
       candidate.getOptionalString('modelId') === model.modelId,
   );
-  return entry?.getOptionalString('type');
+  if (entry === undefined) {
+    return undefined;
+  }
+  return entry.getOptionalString('type') ?? 'chat';
 }
 
 /**

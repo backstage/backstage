@@ -82,9 +82,13 @@ describe.each<[string, string | undefined]>([
         authorizeConditional: jest.fn(async (requests: any[]) =>
           requests.map(({ permission }) => {
             if (permission.name === 'ai.model.use') {
+              // A genuine conditional envelope: plugin id and resource type
+              // ride beside the criteria, as the permission client answers.
               return allowedModel
                 ? {
                     result: 'CONDITIONAL',
+                    pluginId: 'ai',
+                    resourceType: 'ai-model',
                     conditions: aiModelConditions.isModel(allowedModel),
                   }
                 : { result: 'DENY' };
