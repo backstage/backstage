@@ -27,7 +27,8 @@ export type ModelOperation =
   | 'fetchDeferred'
   | 'cancelDeferred'
   | 'classify'
-  | 'generateImages';
+  | 'generateImages'
+  | 'toolCall';
 
 /** Constructed only by the host from verified durable origin and live credentials. */
 export type TrustedOperation = Readonly<{

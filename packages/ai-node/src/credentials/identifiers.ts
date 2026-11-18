@@ -18,6 +18,12 @@ import type { Credential } from '@earendil-works/pi-ai';
 import type { CredentialScope } from './types';
 
 const MAX_IDENTIFIER_LENGTH = 512;
+/**
+ * The credential-key prefix reserved for MCP tool server credentials. Model
+ * provider identifiers may not use it, so the two credential populations can
+ * never collide in the shared scoped stores.
+ */
+export const MCP_RESERVED_PREFIX = 'mcp:';
 
 /**
  * Rejects identifiers that would make scope or provider keys ambiguous, or
@@ -167,6 +173,10 @@ export function parseConfigCredentials(
     }
     const providers = new Map<string, Credential>();
     for (const [providerId, credential] of entries) {
+      // The mcp: prefix is a legitimate key here: installation config is
+      // also where org/service-scoped MCP tool server credentials live.
+      // Model-side reservation is enforced at every model provider intake
+      // (catalog and default-model parsing) instead.
       const id = assertIdentifier(providerId, 'provider ID');
       if (providers.has(id)) {
         throw new Error(`Duplicate provider ID in config: ${key}/${id}`);

@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
+import { MCP_RESERVED_PREFIX } from '../credentials/identifiers';
 import { compileDestinationTemplate } from './templates';
 import type { DestinationTemplate } from './templates';
 import type { AiProviderModule } from './types';
+
+/**
+ * The default scoped-credential key for a module without its own: the
+ * provider id itself. Ids in the reserved MCP tool-server namespace never
+ * resolve as model authority — they fail closed here, so a stored tool
+ * server credential cannot be reached through a model provider id.
+ */
+export function modelCredentialKey(providerId: string): string | undefined {
+  return providerId.startsWith(MCP_RESERVED_PREFIX) ? undefined : providerId;
+}
 
 /** Immutable, validated registrations shared by guard and journal. */
 export type AiProviderRegistry = Readonly<{

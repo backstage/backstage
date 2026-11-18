@@ -4,10 +4,12 @@
 
 ```ts
 import type { AnyModel } from '@earendil-works/pi-ai';
+import type { AssistantMessageEventStream } from '@earendil-works/pi-ai';
 import type { AuthService } from '@backstage/backend-plugin-api';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
 import type { Context } from '@earendil-works/chord/context';
+import type { Credential as Credential_2 } from '@earendil-works/pi-ai';
 import type { CredentialStore } from '@earendil-works/pi-ai';
 import type { DatabaseService } from '@backstage/backend-plugin-api';
 import type { Harness } from '@earendil-works/pi-durable';
@@ -17,7 +19,8 @@ import type { PermissionsRegistryService } from '@backstage/backend-plugin-api';
 import type { PermissionsService } from '@backstage/backend-plugin-api';
 import type { PluginMetadataService } from '@backstage/backend-plugin-api';
 import type { RegistryReader } from '@earendil-works/pi-durable';
-import { ServiceRef } from '@backstage/backend-plugin-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
+import type { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha
 export const AI_INSTALLATION_CONFIG_PATH = 'ai';
@@ -236,6 +239,11 @@ export interface AiService {
 }
 
 // @alpha
+export type AiServiceFactoryOptions = Readonly<{
+  toolModules?: readonly ToolModule[];
+}>;
+
+// @alpha
 export const aiServiceRef: ServiceRef<AiService, 'plugin', 'singleton'>;
 
 // @alpha
@@ -350,6 +358,43 @@ export function createAiHttpSupport(
 // @alpha
 export function createMetricsSubscriber(): AiMetricsSubscriber;
 
+export function createAiServiceFactory(
+  options?: AiServiceFactoryOptions,
+): <TService extends AiService>(
+  service: ServiceRef<TService, 'plugin'>,
+) => ServiceFactory<TService, 'plugin', 'singleton' | 'multiton'>;
+
+// @alpha
+export function createGuardedToolOperations(options: {
+  tools: ToolRegistry;
+  models: GuardedToolDispatch;
+}): {
+  callTool(input: {
+    serverId: string;
+    toolName: string;
+    arguments: unknown;
+    credentials: BackstageCredentials;
+    caller?: Record<string, unknown>;
+  }): Promise<unknown>;
+};
+
+// @alpha
+export function createToolPermissions(options: {
+  tools: readonly ToolIdentity[];
+  authorizer: Pick<PermissionsService, 'authorize'>;
+  registry: Pick<PermissionsRegistryService, 'addPermissions'>;
+}): {
+  authorize: (
+    credentials: BackstageCredentials,
+    identities: readonly ToolIdentity[],
+  ) => Promise<
+    {
+      result: string;
+    }[]
+  >;
+  toolPermissionName: typeof toolPermissionName;
+};
+
 // @alpha
 export type CredentialScope =
   | Readonly<{
@@ -370,6 +415,17 @@ export function evaluateAiHealth(
   thresholds?: AiHealthThresholds,
 ): AiHealthReport;
 
+export type DestinationTemplate = readonly DestinationTemplatePart[];
+
+// @alpha
+export type DestinationTemplatePart =
+  | Readonly<{
+      literal: string;
+    }>
+  | Readonly<{
+      digest: string;
+    }>;
+
 // @alpha
 export type Fence = Readonly<{
   namespace: Namespace;
@@ -385,6 +441,19 @@ export interface JournalPruneResult {
   readonly uncertaintyRecords: number;
 }
 
+export type GuardedToolDispatch = Readonly<{
+  callTool(
+    model: AnyModel,
+    context: unknown,
+    caller?: Record<string, unknown>,
+  ): Promise<unknown>;
+}>;
+
+// @alpha
+export type GuardedToolOperations = ReturnType<
+  typeof createGuardedToolOperations
+>;
+
 // @alpha
 export interface ManagedHarness {
   // (undocumented)
@@ -393,6 +462,7 @@ export interface ManagedHarness {
   readonly harness: ManagedNativeHarness;
   // (undocumented)
   release(): Promise<void>;
+  readonly tools?: GuardedToolOperations;
 }
 
 // @alpha
@@ -455,4 +525,81 @@ export type RecoveryEvent = Readonly<{
 export function startAiJournalPruneRunner(
   options: AiJournalPruneRunnerOptions,
 ): AiJournalPruneRunner;
+
+export type ToolCallEnvelope = Readonly<{
+  serverId: string;
+  toolName: string;
+  destination: string;
+}>;
+
+// @alpha
+export type ToolCallResult = Readonly<{
+  value: unknown;
+  outcome: 'completed' | 'failed' | 'cancelled';
+}>;
+
+// @alpha
+export type ToolDeclaration = Readonly<{
+  name: string;
+  description?: string;
+}>;
+
+// @alpha
+export type ToolDispatchInput = Readonly<{
+  tool: ToolDeclaration;
+  arguments: unknown;
+  options: Readonly<Record<string, unknown>>;
+}>;
+
+// @alpha
+export type ToolIdentity = Readonly<{
+  serverId: string;
+  toolName: string;
+}>;
+
+// @alpha
+export type ToolModule = Readonly<{
+  id: string;
+  tools: readonly ToolDeclaration[];
+  destination(toolName: string): string;
+  destinationTemplates: readonly DestinationTemplate[];
+  validateToolCall(
+    operation: ToolCallEnvelope,
+    request: Request,
+  ): Promise<void>;
+  adapter: Readonly<{
+    kind: 'tool';
+    invoke(input: ToolDispatchInput): Promise<ToolCallResult>;
+  }>;
+}>;
+
+// @alpha
+export function toolPermissionName(input: ToolIdentity): string;
+
+// @alpha
+export type ToolRegistry = Readonly<{
+  providerRegistry: AiProviderRegistry;
+  resolve(identity: ToolIdentity):
+    | {
+        module: ToolModule;
+        tool: ToolDeclaration;
+      }
+    | undefined;
+  readonly modules: readonly ToolModule[];
+}>;
+
+// Warnings were encountered during analysis:
+//
+// src/contracts.d.ts:87:5 - (ae-undocumented) Missing documentation for "harness".
+// src/contracts.d.ts:88:5 - (ae-undocumented) Missing documentation for "context".
+// src/contracts.d.ts:95:5 - (ae-undocumented) Missing documentation for "release".
+// src/contracts.d.ts:103:5 - (ae-undocumented) Missing documentation for "openHarness".
+// src/credentials/types.d.ts:40:5 - (ae-undocumented) Missing documentation for "forScope".
+// src/http/index.d.ts:21:5 - (ae-undocumented) Missing documentation for "authorize".
+// src/http/index.d.ts:22:5 - (ae-undocumented) Missing documentation for "listModels".
+// src/http/index.d.ts:26:5 - (ae-undocumented) Missing documentation for "listSessions".
+// src/http/index.d.ts:33:5 - (ae-undocumented) Missing documentation for "assertSessionOwner".
+// src/http/index.d.ts:34:5 - (ae-undocumented) Missing documentation for "readAudit".
+// src/tools/registry.d.ts:27:5 - (ae-forgotten-export) The symbol "AiProviderRegistry" needs to be exported by the entry point alpha.d.ts
+// /Users/pschultz/.paseo/worktrees/1toga0xl/ai-node-tgw-google/packages/types/src/deferred.ts:1:1 - (ae-wrong-input-file-type) Incorrect file type; API Extractor expects to analyze compiler outputs with the .d.ts file extension. Troubleshooting tips: https://api-extractor.com/link/dts-error
 ```

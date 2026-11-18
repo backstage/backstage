@@ -33,6 +33,7 @@ import type {
 } from '@earendil-works/pi-codemode/portable';
 import type { AnyModel, Credential, Models } from '@earendil-works/pi-ai';
 import { builtinProviderRegistry } from './providers/builtins';
+import { modelCredentialKey } from './providers/registry';
 import type { AiProviderRegistry } from './providers/registry';
 import type { Knex } from 'knex';
 import { createHash, randomUUID } from 'node:crypto';
@@ -57,6 +58,9 @@ import type {
   TrustedOperation,
 } from './guard/types';
 import { modelPermissionName } from './permissions/modelPermissions';
+import { createGuardedToolOperations } from './tools/mediation';
+import { composeWithToolRegistry, createToolRegistry } from './tools/registry';
+import type { ToolModule } from './tools/types';
 import {
   createAiRecovery,
   createKnexNamespaceLease,
@@ -157,6 +161,14 @@ export interface AiServiceIntegrationOptions {
   readonly deps: DefaultAiServiceDeps;
   /** Trusted provider registrations shared by the guard and journal. */
   readonly providers?: AiProviderRegistry;
+  /**
+   * Registered MCP tool servers. When present, every opened harness
+   * exposes guarded tool operations: a tool call is a journaled,
+   * authorized, guarded dispatch through the same machinery as model
+   * dispatch, with the recheck consulting the tool permission and the
+   * scoped `mcp:` credential generation.
+   */
+  readonly toolModules?: readonly ToolModule[];
   /**
    * Credential stores feeding provider authority resolution. When absent,
    * every model dispatch is denied with an actionable reason: installation
@@ -329,7 +341,7 @@ type ResolvedAuthority = {
   readonly generation: string;
   readonly authority: GuardedModelBinding['authority'];
   /** Provider-scoped environment from the credential, e.g. Azure overrides. */
-  readonly env: Record<string, string> | undefined;
+  readonly env?: Record<string, string> | undefined;
 };
 
 /**
@@ -441,7 +453,15 @@ export async function createAiServiceIntegration(
   options: AiServiceIntegrationOptions,
 ): Promise<ProductionAiServiceIntegration> {
   const { deps } = options;
-  const providerRegistry = options.providers ?? builtinProviderRegistry;
+  const toolRegistry = options.toolModules
+    ? createToolRegistry(options.toolModules)
+    : undefined;
+  const providerRegistry = toolRegistry
+    ? composeWithToolRegistry(
+        options.providers ?? builtinProviderRegistry,
+        toolRegistry,
+      )
+    : options.providers ?? builtinProviderRegistry;
   const credentialStores = options.credentialStores;
   const credentialPrecedence = options.credentialPrecedence ?? 'user-first';
   const refreshExpiredCredential = options.refreshExpiredCredential;
@@ -482,12 +502,27 @@ export async function createAiServiceIntegration(
     },
   });
 
-  /** Resolves the provider authority for a dispatch, or undefined. */
+  /**
+   * Resolves the authority for a dispatch, or undefined. One generic path for
+   * models and tool servers: the module (looked up by its api id) carries the
+   * credential key and interpretation when it has its own — tool servers —
+   * and the shared model-provider semantics apply otherwise.
+   */
   const resolveAuthority = async (
+    api: string,
     providerId: string,
     credentials: BackstageCredentials,
   ): Promise<ResolvedAuthority | undefined> => {
     if (credentialStores === undefined) {
+      return undefined;
+    }
+    const module = providerRegistry.get(api);
+    const key = module?.credentialKey
+      ? module.credentialKey(providerId)
+      : modelCredentialKey(providerId);
+    if (key === undefined) {
+      // Reserved namespaces no module claims never resolve as model
+      // authority.
       return undefined;
     }
     const principal = principalOf(deps, credentials);
@@ -495,11 +530,16 @@ export async function createAiServiceIntegration(
     // falls through, a read failure does not.
     const scopes = credentialScopesFor(principal, credentialPrecedence);
     for (const scope of scopes) {
-      const credential = await credentialStores
-        .forScope(scope)
-        .read(providerId);
+      const credential = await credentialStores.forScope(scope).read(key);
       if (credential === undefined) {
         continue;
+      }
+      if (module?.interpretCredential) {
+        const { authority, generation } = module.interpretCredential(
+          scope,
+          credential,
+        );
+        return { scope, generation, authority };
       }
       return authorityOf(scope, credential);
     }
@@ -511,16 +551,22 @@ export async function createAiServiceIntegration(
     transport: fetch,
     ...(events ? { events } : {}),
     recheck: async operation => {
-      // Fresh permission check with the original caller credentials.
+      // Fresh permission check with the original caller credentials. The
+      // permission name comes from the module when it carries its own (tool
+      // servers); the shared model encoder applies otherwise.
+      const module = providerRegistry.get(operation.api);
+      const permissionName = module?.permissionName
+        ? module.permissionName(operation.provider, operation.modelId)
+        : modelPermissionName({
+            provider: operation.provider,
+            modelId: operation.modelId,
+          });
       const decisions = await deps.permissions.authorize(
         [
           {
             permission: {
               type: 'basic',
-              name: modelPermissionName({
-                provider: operation.provider,
-                modelId: operation.modelId,
-              }),
+              name: permissionName,
               attributes: {},
             },
           },
@@ -536,6 +582,7 @@ export async function createAiServiceIntegration(
       }
       // Credential generation: the resolved credential must be unchanged.
       const resolved = await resolveAuthority(
+        operation.api,
         operation.provider,
         operation.credentials,
       );
@@ -571,7 +618,11 @@ export async function createAiServiceIntegration(
     }
     const authorities = new Map<string, ResolvedAuthority>();
     for (const providerId of providers) {
-      const resolved = await resolveAuthority(providerId, binding.credentials);
+      const resolved = await resolveAuthority(
+        providerId,
+        providerId,
+        binding.credentials,
+      );
       if (resolved !== undefined) {
         authorities.set(providerId, resolved);
       }
@@ -944,6 +995,22 @@ export async function createAiServiceIntegration(
         },
       } as unknown as Models;
     };
+    // Guarded tool operations through the same composition root: the
+    // facade carries no per-attempt logic of its own — it resolves the
+    // declared tool and dispatches through the shared guarded model
+    // operations whose resolve and recheck bind tool calls above.
+    const toolsSource = toolRegistry
+      ? createGuardedToolOperations({
+          tools: toolRegistry,
+          models: createGuardedModelOperations({
+            providers: providerRegistry,
+            guard,
+            journal,
+            ...(events ? { events } : {}),
+            resolve: makeResolve(input, fence, authority),
+          }),
+        })
+      : undefined;
     let storage: Storage | undefined;
     // Opt-in code mode. The extension is appended to the caller's registry
     // selection, and the registry reader re-reads the caller's snapshot on
@@ -993,6 +1060,7 @@ export async function createAiServiceIntegration(
       const handle: NativeHarnessHandle = {
         harness,
         context: BACKGROUND_CONTEXT as Context,
+        ...(toolsSource ? { tools: toolsSource } : {}),
       };
       // The reservation converts into the published holder, synchronously
       // with publication: a concurrent release of this handle can never
@@ -1036,6 +1104,80 @@ export async function createAiServiceIntegration(
     const sessionRef = `${input.namespace.pluginId}/${input.namespace.sessionId}`;
     let callOrdinal = 0;
     return async (model, operation) => {
+      const dispatchModule = providerRegistry.get(
+        model.api as TrustedOperation['api'],
+      );
+      if (dispatchModule?.resolveDispatch !== undefined) {
+        // Module-carried binding resolution — tool servers today — through
+        // the same generic seam provider modules use: the module supplies
+        // the dispatch facts and consumes the credential resolution, the
+        // host builds the trusted operation. No per-module branches.
+        const current = authority();
+        const trusted: TrustedOperation = {
+          actor: input.owner,
+          credentials: current.credentials,
+          provenance: {
+            origin: 'verified' as const,
+            conversationId: sessionRef,
+            taskId: sessionRef,
+            callId: `${sessionRef}#${(callOrdinal += 1)}`,
+          },
+          fence,
+          definitionVersion: input.registryVersion,
+          configVersion: input.configVersion,
+          provider: model.provider,
+          modelId: model.id,
+          resolvedModel: model.id,
+          operation,
+          api: model.api as TrustedOperation['api'],
+          destination: 'unresolved://dispatch',
+          credentialScope: { kind: 'org' },
+          credentialGeneration: 'unresolved',
+          controller: new AbortController(),
+        };
+        // The credential resolution is bound to the module's own identity —
+        // never to caller-supplied provider strings — and the module's
+        // dispatch facts must name the module itself, so the resolved
+        // module, the provider id and the credential key always agree.
+        const dispatch = await dispatchModule.resolveDispatch(model, () =>
+          resolveAuthority(
+            dispatchModule.id,
+            dispatchModule.id,
+            current.credentials,
+          ),
+        );
+        if (!dispatch.resolved) {
+          throw new GuardedResolutionError(
+            {
+              operation: trusted,
+              model: model as GuardedModelBinding['model'],
+              authority: { kind: 'apiKey' as const },
+            },
+            dispatch.reason,
+          );
+        }
+        if (dispatch.api !== dispatchModule.id) {
+          throw new GuardedResolutionError(
+            {
+              operation: trusted,
+              model: model as GuardedModelBinding['model'],
+              authority: { kind: 'apiKey' as const },
+            },
+            `module dispatch facts do not match the resolved module: '${dispatch.api}' is not '${dispatchModule.id}'`,
+          );
+        }
+        return {
+          operation: {
+            ...trusted,
+            api: dispatch.api,
+            destination: dispatch.destination,
+            credentialScope: dispatch.credentialScope,
+            credentialGeneration: dispatch.credentialGeneration,
+          },
+          model: model as GuardedModelBinding['model'],
+          authority: dispatch.authority,
+        };
+      }
       const canonical = catalog.find(
         entry => entry.provider === model.provider && entry.id === model.id,
       );

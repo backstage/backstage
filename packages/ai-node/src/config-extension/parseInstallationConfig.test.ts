@@ -122,6 +122,14 @@ describe('parseAiInstallationConfig', () => {
       [{ ai: { models: [modelEntry({ modelId: undefined })] } }, /modelId/],
       [{ ai: { models: [modelEntry({ provider: ' ' })] } }, /provider/],
       [
+        {
+          ai: {
+            models: [modelEntry({ provider: 'mcp:server' })],
+          },
+        },
+        /reserved for MCP tool server credentials/,
+      ],
+      [
         { ai: { models: [modelEntry({ api: 'OpenAI Responses' })] } },
         /adapter identifier/,
       ],
@@ -390,6 +398,28 @@ describe('parseAiInstallationConfig', () => {
         ai: { credentials: credentialsSection({ tokenEndpoints: 'x' }) },
       }),
     ).toThrow(/tokenEndpoints/);
+  });
+
+  it('keeps mcp: credential keys as legitimate tool credentials', () => {
+    // Org/service config maps are also where installation-scoped MCP tool
+    // server credentials live; the reservation applies to model provider
+    // ids, not to these keys.
+    const parsed = parse({
+      ai: {
+        credentials: {
+          encryptionKey: KEY_BASE64,
+          scopes: {
+            org: {
+              openai: { type: 'api_key', key: 'sk-org' },
+              'mcp:internal-tools': { type: 'api_key', key: 'tool-token' },
+            },
+          },
+        },
+      },
+    });
+    expect(
+      parsed.credentials?.scopes.get('org')?.get('mcp:internal-tools'),
+    ).toBeTruthy();
   });
 
   it('treats credential entries as opaque', () => {
