@@ -59,6 +59,7 @@ export function createGithubAutolinksAction(options: {
 // @public
 export function createGithubBranchProtectionAction(options: {
   integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
   requireScmUserCredentials?: boolean;
 }): TemplateAction<
   {
@@ -100,6 +101,7 @@ export function createGithubBranchProtectionAction(options: {
 // @public
 export function createGithubDeployKeyAction(options: {
   integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
   requireScmUserCredentials?: boolean;
 }): TemplateAction<
   {
@@ -120,6 +122,7 @@ export function createGithubDeployKeyAction(options: {
 export function createGithubEnvironmentAction(options: {
   integrations: ScmIntegrationRegistry;
   catalog: CatalogService;
+  githubCredentialsProvider?: GithubCredentialsProvider;
   requireScmUserCredentials?: boolean;
 }): TemplateAction<
   {

@@ -17,6 +17,10 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
+import {
+  connectionsServiceRef,
+  declareConnection,
+} from '@backstage/backend-plugin-api/alpha';
 import { scaffolderAutocompleteExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import {
   createGithubActionsDispatchAction,
@@ -34,9 +38,10 @@ import {
   createGithubBranchProtectionAction,
   createGithubRepoRulesetsCreateAction,
 } from './actions';
+import { createGitHubCredentialsProviderFromConnection } from '@backstage/integration/alpha';
 import {
-  DefaultGithubCredentialsProvider,
   ScmIntegrations,
+  type GithubCredentialsProvider,
 } from '@backstage/integration';
 import { createHandleAutocompleteRequest } from './autocomplete/autocomplete';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
@@ -49,21 +54,28 @@ import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-no
 export const githubModule = createBackendModule({
   pluginId: 'scaffolder',
   moduleId: 'github',
-  register({ registerInit }) {
-    registerInit({
+  register(reg) {
+    declareConnection(reg, {
+      type: 'github',
+      description:
+        'Used by the Scaffolder GitHub module to look up GitHub credentials via the connections service',
+    });
+
+    reg.registerInit({
       deps: {
         scaffolder: scaffolderActionsExtensionPoint,
         config: coreServices.rootConfig,
         catalog: catalogServiceRef,
         autocomplete: scaffolderAutocompleteExtensionPoint,
+        connections: connectionsServiceRef,
       },
-      async init({ scaffolder, config, autocomplete, catalog }) {
+      async init({ scaffolder, config, autocomplete, catalog, connections }) {
         const integrations = ScmIntegrations.fromConfig(config);
         const requireScmUserCredentials =
           config.getOptionalBoolean('scaffolder.requireScmUserCredentials') ??
           false;
-        const githubCredentialsProvider =
-          DefaultGithubCredentialsProvider.fromIntegrations(integrations);
+        const githubCredentialsProvider: GithubCredentialsProvider =
+          createGitHubCredentialsProviderFromConnection(connections);
 
         scaffolder.addActions(
           createGithubActionsDispatchAction({
@@ -78,11 +90,13 @@ export const githubModule = createBackendModule({
           }),
           createGithubDeployKeyAction({
             integrations,
+            githubCredentialsProvider,
             requireScmUserCredentials,
           }),
           createGithubEnvironmentAction({
             integrations,
             catalog,
+            githubCredentialsProvider,
             requireScmUserCredentials,
           }),
           createGithubIssuesLabelAction({
@@ -103,6 +117,7 @@ export const githubModule = createBackendModule({
           createGithubRepoPushAction({
             integrations,
             config,
+            githubCredentialsProvider,
             requireScmUserCredentials,
           }),
           createGithubWebhookAction({
@@ -129,6 +144,7 @@ export const githubModule = createBackendModule({
           }),
           createGithubBranchProtectionAction({
             integrations,
+            githubCredentialsProvider,
             requireScmUserCredentials,
           }),
           createGithubRepoRulesetsCreateAction({

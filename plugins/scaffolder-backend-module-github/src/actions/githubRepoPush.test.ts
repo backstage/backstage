@@ -120,6 +120,37 @@ describe('github:repo:push', () => {
     );
   });
 
+  it('should use the provided credentials provider when no token is given', async () => {
+    mockOctokit.rest.repos.get.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    const getCredentials = jest
+      .fn()
+      .mockResolvedValue({ token: 'provider-token', type: 'token' });
+    const customCredentialsProvider: GithubCredentialsProvider = {
+      getCredentials,
+    };
+
+    const providerAction = createGithubRepoPushAction({
+      integrations,
+      config,
+      githubCredentialsProvider: customCredentialsProvider,
+    });
+
+    await providerAction.handler(mockContext);
+
+    expect(getCredentials).toHaveBeenCalledWith({
+      url: 'https://github.com/owner/repository',
+    });
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ auth: 'provider-token' }),
+    );
+  });
+
   it('should call initRepoAndPush with the correct values', async () => {
     mockOctokit.rest.repos.get.mockResolvedValue({
       data: {
