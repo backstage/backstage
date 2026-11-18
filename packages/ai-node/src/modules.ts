@@ -28,13 +28,6 @@
  * @packageDocumentation
  */
 
-import {
-  openaiResponses,
-  openaiCompletions,
-  openaiCodexResponses,
-} from './providers/builtins';
-import { openaiDecisions } from './providers/nonchat';
-
 export type {
   AiProviderModule,
   ModuleAuthority,
@@ -62,13 +55,12 @@ export type {
 export type { CredentialScope } from './credentials/types';
 
 /**
- * The provider modules that remain in this package.
+ * The provider modules that remain in this package: none — every family now
+ * lives in its own provider package. The collection stays as the empty
+ * remainder consumers compose with the family collections.
  *
  * @alpha
  */
-export const builtinProviderModules = Object.freeze([
-  openaiResponses,
-  openaiCompletions,
-  openaiCodexResponses,
-  openaiDecisions,
-]);
+export const builtinProviderModules: readonly AiProviderModule[] = Object.freeze(
+  [],
+);

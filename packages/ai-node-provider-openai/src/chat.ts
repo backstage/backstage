@@ -17,10 +17,14 @@
 import * as responses from '@earendil-works/pi-ai/api/openai-responses';
 import * as completions from '@earendil-works/pi-ai/api/openai-completions';
 import * as codex from '@earendil-works/pi-ai/api/openai-codex-responses';
-import { validateHttpEnvelope } from './httpEnvelope';
-import type { AiProviderModule, ProviderAdapter } from './types';
+import { validateHttpEnvelope } from '@backstage/ai-node/temporary';
+import type {
+  AiProviderModule,
+  ProviderAdapter,
+} from '@backstage/ai-node/temporary';
 
 const CHAT = ['stream', 'complete', 'streamSimple', 'completeSimple'] as const;
+
 const streamAdapter = (adapter: unknown): ProviderAdapter => {
   const pinned = adapter as Extract<ProviderAdapter, { kind: 'stream' }>;
   return {
@@ -29,8 +33,10 @@ const streamAdapter = (adapter: unknown): ProviderAdapter => {
     streamSimple: pinned.streamSimple,
   };
 };
+
 const base = (url: string | undefined) => (url ?? '').replace(/\/+$/, '');
 
+/** OpenAI Responses API (`POST {base}/responses`). @alpha */
 export const openaiResponses: AiProviderModule = {
   id: 'openai-responses',
   adapter: streamAdapter(responses),
@@ -41,6 +47,7 @@ export const openaiResponses: AiProviderModule = {
     validateHttpEnvelope({ endpoint: '/responses' }, op, request),
 };
 
+/** OpenAI Chat Completions API (`POST {base}/chat/completions`). @alpha */
 export const openaiCompletions: AiProviderModule = {
   id: 'openai-completions',
   adapter: streamAdapter(completions),
@@ -51,6 +58,12 @@ export const openaiCompletions: AiProviderModule = {
     validateHttpEnvelope({ endpoint: '/chat/completions' }, op, request),
 };
 
+/**
+ * OpenAI Codex Responses API (`POST {base}/codex/responses`), dispatched
+ * through the pinned SSE transport.
+ *
+ * @alpha
+ */
 export const openaiCodexResponses: AiProviderModule = {
   id: 'openai-codex-responses',
   adapter: streamAdapter(codex),

@@ -52,8 +52,10 @@ import {
 } from './integration';
 import { createAttemptJournal as createAttemptJournalBase } from './journal/knex';
 import { runAiMigrations } from './migrations';
-import { openaiResponses } from './providers/builtins';
-import { builtinProviderRegistry } from './providers/testFixtures';
+import {
+  builtinProviderRegistry,
+  testOpenaiResponses,
+} from './providers/testFixtures';
 import { createAiModuleRegistry } from './moduleRegistry';
 
 const createAiServiceIntegration = (
@@ -316,7 +318,7 @@ describe('Wave 1 integration regressions', () => {
       expect(missing.errorMessage).toContain('createAiServiceFactory');
       expect(missing.errorMessage).toContain('aiModulesExtensionPoint');
       expect(probe.requests).toHaveLength(0);
-      modules.registerProviderModules([openaiResponses]);
+      modules.registerProviderModules([testOpenaiResponses]);
       const joined = await service.openHarness(options('snapshot', creds));
       f.handles.push(joined);
       expect((await call(sources[0])).errorMessage).toContain('not registered');

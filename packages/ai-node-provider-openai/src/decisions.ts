@@ -15,21 +15,19 @@
  */
 
 import * as decisions from '@earendil-works/pi-ai/api/openai-decisions';
-import { validateHttpEnvelope } from './httpEnvelope';
-import type { AiProviderModule, ProviderAdapter } from './types';
+import { validateHttpEnvelope } from '@backstage/ai-node/temporary';
+import type {
+  AiProviderModule,
+  ProviderAdapter,
+} from '@backstage/ai-node/temporary';
 
 const base = (url: string | undefined) => (url ?? '').replace(/\/+$/, '');
 
 /**
- * Non-chat dispatch through the pinned pi-ai adapter modules. Every adapter
+ * Non-chat dispatch through the pinned pi-ai adapter module. The adapter
  * receives the host's guarded transport via `options.fetch` and must use it
  * for its HTTP calls; the guard's `invokeCustom` path fails the operation
  * closed when a dispatch completes without a guarded send.
- *
- * Classify is a dispatched model operation — authorized per attempt by the
- * deterministic guard (envelope validation, permission recheck, journal
- * before send) — and is never consulted BY the guard when it makes
- * authorization decisions.
  */
 function outcomeForResult(
   stopReason: 'stop' | 'error' | 'aborted',
@@ -58,8 +56,10 @@ const nonChatAdapter = (
 });
 
 /**
- * OpenAI's Decisions API (`POST {base}/decisions`). Only the
- * `/v1/decisions` route shape is certified.
+ * OpenAI's Decisions API (`POST {base}/decisions`). Only the `/v1/decisions`
+ * route shape is certified.
+ *
+ * @alpha
  */
 export const openaiDecisions: AiProviderModule = {
   id: 'openai-decisions',

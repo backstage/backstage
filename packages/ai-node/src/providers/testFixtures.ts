@@ -16,6 +16,9 @@
 
 import * as anthropic from '@earendil-works/pi-ai/api/anthropic-messages';
 import * as azure from '@earendil-works/pi-ai/api/azure-openai-responses';
+import * as responses from '@earendil-works/pi-ai/api/openai-responses';
+import * as completions from '@earendil-works/pi-ai/api/openai-completions';
+import * as codex from '@earendil-works/pi-ai/api/openai-codex-responses';
 import * as images from '@earendil-works/pi-ai/api/openrouter-images';
 import * as systemOne from '@earendil-works/pi-ai/api/typesafe-system-one';
 import { resolveAzureConfig } from '@earendil-works/pi-ai/api/azure-openai-config';
@@ -141,6 +144,35 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
         operation,
         request,
       ),
+  },
+,
+  {
+    id: 'openai-responses',
+    adapter: streamAdapter(responses),
+    certifiedOperations: CHAT,
+    destinationTemplates: [[{ literal: '/v1/responses' }]],
+    destination: model => `${base(model.baseUrl)}/responses`,
+    validateEnvelope: (op, request) =>
+      validateHttpEnvelope({ endpoint: '/responses' }, op, request),
+  },
+  {
+    id: 'openai-completions',
+    adapter: streamAdapter(completions),
+    certifiedOperations: CHAT,
+    destinationTemplates: [[{ literal: '/v1/chat/completions' }]],
+    destination: model => `${base(model.baseUrl)}/chat/completions`,
+    validateEnvelope: (op, request) =>
+      validateHttpEnvelope({ endpoint: '/chat/completions' }, op, request),
+  },
+  {
+    id: 'openai-codex-responses',
+    adapter: streamAdapter(codex),
+    certifiedOperations: CHAT,
+    destinationTemplates: [[{ literal: '/backend-api/codex/responses' }]],
+    destination: model => `${base(model.baseUrl)}/codex/responses`,
+    validateEnvelope: (op, request) =>
+      validateHttpEnvelope({ endpoint: '/responses', zstd: true }, op, request),
+    transport: 'sse',
   },
 ];
 

@@ -15,17 +15,17 @@
  */
 
 import { createAiModuleRegistry } from './moduleRegistry';
-import { openaiResponses } from './providers/builtins';
+import { anthropicMessages } from './providers/builtins';
 import { validateToolCallEnvelope } from './tools/envelope';
 import type { ToolModule } from './tools/types';
 
 it('validates registrations atomically and preserves previous snapshots', () => {
   const registry = createAiModuleRegistry({
-    providerModules: [openaiResponses],
+    providerModules: [anthropicMessages],
     toolModules: [],
   });
   const tool: ToolModule = {
-    id: openaiResponses.id,
+    id: anthropicMessages.id,
     tools: [{ name: 'search' }],
     destination: name => `https://tools.example/mcp/server/tools/${name}`,
     destinationTemplates: [
@@ -43,13 +43,13 @@ it('validates registrations atomically and preserves previous snapshots', () => 
     },
   };
   const before = registry.snapshot();
-  expect(() => registry.registerProviderModules([openaiResponses])).toThrow();
+  expect(() => registry.registerProviderModules([anthropicMessages])).toThrow();
   expect(() => registry.registerToolModules([tool])).toThrow(/collision/i);
   registry.registerToolModules([{ ...tool, id: 'tools' }]);
   expect(before.toolModules).toHaveLength(0);
   expect(registry.snapshot().toolModules).toHaveLength(1);
   expect(() =>
-    registry.registerProviderModules([{ ...openaiResponses, id: 'tools' }]),
+    registry.registerProviderModules([{ ...anthropicMessages, id: 'tools' }]),
   ).toThrow(/collision/i);
   expect(registry.snapshot().providerModules).toHaveLength(1);
 });

@@ -183,6 +183,15 @@ export type HttpEnvelopeRules = Readonly<{
 }>;
 
 // @alpha
+export type HttpEnvelopeRules = Readonly<{
+  endpoint: string;
+  sdkQueryParams?: Readonly<Record<string, string>>;
+  zstd?: boolean;
+  federation?: boolean;
+  inspectPayload?(payload: unknown): void;
+}>;
+
+// @alpha
 export type ModuleAuthority = Readonly<{
   authority: Readonly<{
     kind: 'apiKey' | 'oauth' | 'federation';

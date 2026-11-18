@@ -14,18 +14,33 @@
  * limitations under the License.
  */
 
+/*
+ * Copyright 2026 The Backstage Authors.
+ *
+ * Transitional test-only relative imports into @backstage/ai-node source:
+ * P2b moves the guard/journal test machinery into
+ * @backstage/ai-node/testUtils, at which point these switch to it.
+ */
+/* eslint-disable @backstage/no-relative-monorepo-imports -- see above */
+
 import { once } from 'node:events';
 import { createServer, type Server } from 'node:http';
 import { mockCredentials } from '@backstage/backend-test-utils';
-import { OPENAI_CLASSIFIER_MODELS } from '@earendil-works/pi-ai/providers/openai.models';
 import type { AnyModel } from '@earendil-works/pi-ai';
-import { createModelOperationGuard } from '../guard/createModelOperationGuard';
-import { createGuardedModelOperations } from '../guard/modelOperations';
-import type { ModelOperation, TrustedOperation } from '../guard/types';
-import type { AttemptDecision, AttemptOutcome } from '../journal/types';
-import type { Fence } from '../contracts';
-import { createProviderRegistry } from './registry';
-import { openaiDecisions } from './nonchat';
+import { OPENAI_CLASSIFIER_MODELS } from '@earendil-works/pi-ai/providers/openai.models';
+import {
+  createProviderRegistry,
+  type Fence,
+  type ModelOperation,
+  type TrustedOperation,
+} from '@backstage/ai-node/testUtils';
+import { createModelOperationGuard } from '../../ai-node/src/guard/createModelOperationGuard';
+import { createGuardedModelOperations } from '../../ai-node/src/guard/modelOperations';
+import type {
+  AttemptDecision,
+  AttemptOutcome,
+} from '../../ai-node/src/journal/types';
+import { openaiDecisions } from './decisions';
 
 const providers = createProviderRegistry([openaiDecisions]);
 
@@ -85,18 +100,15 @@ async function startServer(
 
 function harness(model: AnyModel, operation: ModelOperation) {
   const events: string[] = [];
-  const journalCalls: unknown[] = [];
   const journal = {
     recordDecisionAndIntent: jest.fn(
       async (_fence: Fence, event: AttemptDecision) => {
-        journalCalls.push(event);
         events.push(`${event.decision}:${event.attempt}`);
         return String(event.attempt);
       },
     ),
     recordOutcome: jest.fn(
       async (_fence: Fence, _id: string, outcome: AttemptOutcome) => {
-        journalCalls.push(outcome);
         events.push(`outcome:${outcome.status}`);
       },
     ),
@@ -128,10 +140,7 @@ function harness(model: AnyModel, operation: ModelOperation) {
     resolvedModel: model.id,
     operation,
     api: model.api,
-    destination:
-      operation === 'classify'
-        ? providers.get(model.api)!.destination(model, undefined)
-        : providers.get(model.api)!.destination(model, undefined),
+    destination: providers.get(model.api)!.destination(model, undefined),
     credentialScope: { kind: 'user', id: 'user:default/alice' },
     credentialGeneration: '1',
     controller: new AbortController(),
@@ -169,31 +178,21 @@ function harness(model: AnyModel, operation: ModelOperation) {
       }),
     ).rejects.toThrow();
   };
-  return {
-    events,
-    journal,
-    journalCalls,
-    transport,
-    guard: guard.bind(op),
-    op,
-    facade,
-    probe,
-  };
+  return { events, transport, guard: guard.bind(op), op, facade, probe };
 }
 
-const withBase = (model: AnyModel, origin: string) =>
-  ({ ...model, baseUrl: `${origin}/v1` } as AnyModel);
-
-describe('non-chat provider modules', () => {
+describe('OpenAI Decisions module', () => {
   it('classifies through the OpenAI Decisions API', async () => {
     const { server, origin, requests } = await startServer(() => ({
       answers: [{ name: 'q1', type: 'predicate', probability: 0.91 }],
+      stop_reason: 'stop',
+      usage: { total_tokens: 10 },
     }));
     try {
-      const model = withBase(
-        OPENAI_CLASSIFIER_MODELS['gpt-6-luna'] as never as AnyModel,
-        origin,
-      );
+      const model = {
+        ...OPENAI_CLASSIFIER_MODELS['gpt-6-luna'],
+        baseUrl: `${origin}/v1`,
+      } as never as AnyModel;
       const f = harness(model, 'classify');
       const result = (await f.facade.classify(
         model as never,
@@ -222,7 +221,7 @@ describe('non-chat provider modules', () => {
     }
   });
 
-  it('denies classifier requests with substituted models or routes', async () => {
+  it('denies decisions requests with substituted models or routes', async () => {
     const model = {
       ...(OPENAI_CLASSIFIER_MODELS['gpt-6-luna'] as never as AnyModel),
       baseUrl: 'https://provider.example/v1',
@@ -230,7 +229,7 @@ describe('non-chat provider modules', () => {
     const f = harness(model, 'classify');
     await f.probe({ model: 'other', state: {}, questions: {} });
     const wrong = new URL(f.op.destination);
-    wrong.pathname = '/v1/decision';
+    wrong.pathname = '/v1/other';
     await f.probe({ model: model.id }, wrong);
     const query = new URL(f.op.destination);
     query.searchParams.set('unexpected', 'true');
