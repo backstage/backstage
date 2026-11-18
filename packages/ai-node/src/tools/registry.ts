@@ -21,6 +21,7 @@ import type {
 } from '@backstage/backend-plugin-api';
 import { createProviderRegistry } from '../providers/registry';
 import type { AiProviderRegistry } from '../providers/registry';
+import type { DestinationTemplate } from '../providers/templates';
 import { toolModuleAsProviderModule } from './types';
 import type { ToolDeclaration, ToolModule } from './types';
 
@@ -60,6 +61,26 @@ export type ToolRegistry = Readonly<{
   ): { module: ToolModule; tool: ToolDeclaration } | undefined;
 }>;
 
+/**
+ * The required route shape for tool modules: literal `/mcp/`, a digested
+ * server segment, literal `/tools/`, and a digested tool segment. Enforced
+ * at registration so no static or malformed template can journal arbitrary
+ * raw paths as approved routes.
+ */
+function isRequiredToolTemplate(template: DestinationTemplate): boolean {
+  return (
+    template.length === 4 &&
+    'literal' in template[0] &&
+    template[0].literal === '/mcp/' &&
+    'digest' in template[1] &&
+    (template[1] as { digest: unknown }).digest === 'server' &&
+    'literal' in template[2] &&
+    template[2].literal === '/tools/' &&
+    'digest' in template[3] &&
+    (template[3] as { digest: unknown }).digest === 'tool'
+  );
+}
+
 export function createToolRegistry(
   modules: readonly ToolModule[],
 ): ToolRegistry {
@@ -67,6 +88,14 @@ export function createToolRegistry(
   for (const module of modules) {
     if (byId.has(module.id)) {
       throw new Error(`Duplicate tool module id: ${module.id}`);
+    }
+    if (
+      module.destinationTemplates.length !== 1 ||
+      !isRequiredToolTemplate(module.destinationTemplates[0])
+    ) {
+      throw new Error(
+        `Invalid tool module route template: ${module.id} must declare exactly the digested /mcp/{server}/tools/{tool} route`,
+      );
     }
     for (const tool of module.tools) {
       if (

@@ -18,6 +18,12 @@ import type { Credential } from '@earendil-works/pi-ai';
 import type { CredentialScope } from './types';
 
 const MAX_IDENTIFIER_LENGTH = 512;
+/**
+ * The credential-key prefix reserved for MCP tool server credentials. Model
+ * provider identifiers may not use it, so the two credential populations can
+ * never collide in the shared scoped stores.
+ */
+export const MCP_RESERVED_PREFIX = 'mcp:';
 
 /**
  * Rejects identifiers that would make scope or provider keys ambiguous, or
@@ -168,6 +174,11 @@ export function parseConfigCredentials(
     const providers = new Map<string, Credential>();
     for (const [providerId, credential] of entries) {
       const id = assertIdentifier(providerId, 'provider ID');
+      if (id.startsWith(MCP_RESERVED_PREFIX)) {
+        throw new Error(
+          `Invalid provider ID in config: ${key}/${id} is reserved for MCP tool server credentials`,
+        );
+      }
       if (providers.has(id)) {
         throw new Error(`Duplicate provider ID in config: ${key}/${id}`);
       }

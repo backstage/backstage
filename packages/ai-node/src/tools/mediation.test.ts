@@ -17,8 +17,10 @@
 import { once } from 'node:events';
 import { createServer, type Server } from 'node:http';
 import { mockCredentials } from '@backstage/backend-test-utils';
+import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { createModelOperationGuard } from '../guard/createModelOperationGuard';
-import type { ModelOperationGuard, TrustedOperation } from '../guard/types';
+import { createGuardedModelOperations } from '../guard/modelOperations';
+import type { TrustedOperation } from '../guard/types';
 import type { AttemptDecision, AttemptOutcome } from '../journal/types';
 import type { Fence } from '../contracts';
 import { validateToolCallEnvelope } from './envelope';
@@ -66,12 +68,20 @@ type AdapterMode =
   | 'honest-error'
   | 'fabricate-after-response';
 
+type Authority = Readonly<{
+  kind: 'apiKey' | 'oauth';
+  apiKey?: string;
+  headers?: Record<string, string>;
+  expiresAt?: number;
+}>;
+
 function exampleToolServer(
   origin: string,
   hooks: {
     mode: () => AdapterMode;
     transport: typeof fetch;
     recheck: () => Promise<boolean>;
+    authority?: () => Authority;
   },
 ) {
   const module: ToolModule = {
@@ -94,7 +104,7 @@ function exampleToolServer(
       kind: 'tool',
       invoke: async ({ tool, arguments: args, options }) => {
         const fetch = options.fetch as typeof globalThis.fetch;
-        const headers = options.headers as Record<string, string>;
+        const headers = (options.headers ?? {}) as Record<string, string>;
         const send = (bodyTool: string) =>
           fetch(`${origin}/mcp/example-tools/tools/${tool.name}`, {
             method: 'POST',
@@ -158,15 +168,16 @@ function exampleToolServer(
     recordRecovery: jest.fn(async () => {}),
     read: jest.fn(async () => ({ items: [] })),
   };
-  const guard: ModelOperationGuard = createModelOperationGuard({
+  const guard = createModelOperationGuard({
     providers: tools.providerRegistry,
     journal: journal as never,
     recheck: hooks.recheck,
-    transport: hooks.transport as unknown as typeof fetch,
+    transport: hooks.transport,
   });
+  const credentials = mockCredentials.user('user:default/alice');
   const operationFor = (toolName: string): TrustedOperation => ({
     actor: 'user:default/alice',
-    credentials: mockCredentials.user('user:default/alice'),
+    credentials,
     provenance: {
       origin: 'verified',
       conversationId: '1',
@@ -190,15 +201,33 @@ function exampleToolServer(
     credentialGeneration: '1',
     controller: new AbortController(),
   });
-  const mediation = createGuardedToolOperations({
-    tools,
+  // The stock pattern: the model operations' resolve binds tool models —
+  // the tool name rides the model identity, the caller's credentials travel
+  // on the model, and the authority carries the interpreted MCP credential.
+  const models = createGuardedModelOperations({
+    providers: tools.providerRegistry,
     guard,
     journal: journal as never,
-    resolve: identity => ({
-      operation: operationFor(identity.toolName),
-      authority: { headers: { authorization: 'Bearer tool-token' } },
-    }),
+    resolve: model => {
+      const view = model as unknown as {
+        id: string;
+        credentials: BackstageCredentials;
+      };
+      const authority: Authority = hooks.authority
+        ? hooks.authority()
+        : {
+            kind: 'apiKey',
+            apiKey: 'tool-token',
+            headers: { authorization: 'Bearer tool-token' },
+          };
+      return {
+        model,
+        operation: { ...operationFor(view.id), credentials: view.credentials },
+        authority,
+      };
+    },
   });
+  const mediation = createGuardedToolOperations({ tools, models });
   const callTool = (
     toolName = 'search',
     args: unknown = { query: 'x' },
@@ -208,14 +237,14 @@ function exampleToolServer(
       serverId: 'example-tools',
       toolName,
       arguments: args,
-      credentials: mockCredentials.user('user:default/alice'),
+      credentials,
       ...(caller ? { caller } : {}),
     });
-  return { tools, events, journal, guard, module, callTool, operationFor };
+  return { tools, events, journal, module, callTool, operationFor };
 }
 
 describe('guarded tool operations', () => {
-  it('mediates a tool call through the guard like a model dispatch', async () => {
+  it('mediates a tool call through the shared dispatch path', async () => {
     const fixture = await startToolServer();
     try {
       let mode: AdapterMode = 'honest';
@@ -237,8 +266,8 @@ describe('guarded tool operations', () => {
         arguments: { query: 'x' },
       });
 
-      // Permission revocation mid-call: the next attempt is denied and
-      // latched; an honest failure settles in-band without a second send.
+      // Permission revocation: the next call is denied before sending and
+      // an honest failure settles in-band without a second send.
       revoked = true;
       mode = 'honest-error';
       await expect(f.callTool()).resolves.toMatchObject({
@@ -262,7 +291,7 @@ describe('guarded tool operations', () => {
         recheck: async () => true,
       });
       await expect(f.callTool()).rejects.toThrow(
-        'tool did not use guarded transport',
+        'provider did not use guarded transport',
       );
       expect(f.events).toEqual(['deny:1']);
       expect(fixture.requests).toHaveLength(0);
@@ -281,7 +310,7 @@ describe('guarded tool operations', () => {
         transport: globalThis.fetch,
         recheck: async () => true,
       });
-      await expect(f.callTool()).rejects.toThrow('fabricated tool result');
+      await expect(f.callTool()).rejects.toThrow('fabricated provider result');
       // Exactly the guard's own denial — no duplicate deny record.
       expect(f.events).toEqual(['deny:1']);
       expect(fixture.requests).toHaveLength(0);
@@ -300,7 +329,7 @@ describe('guarded tool operations', () => {
         transport: globalThis.fetch,
         recheck: async () => true,
       });
-      await expect(f.callTool()).rejects.toThrow('fabricated tool result');
+      await expect(f.callTool()).rejects.toThrow('fabricated provider result');
       expect(f.events.filter(event => event.startsWith('deny'))).toEqual([
         'deny:1',
       ]);
@@ -319,7 +348,7 @@ describe('guarded tool operations', () => {
         transport: globalThis.fetch,
         recheck: async () => true,
       });
-      await expect(f.callTool()).rejects.toThrow('fabricated tool result');
+      await expect(f.callTool()).rejects.toThrow('fabricated provider result');
       expect(f.events).toEqual(['allow:1', 'deny:2', 'outcome:unknown']);
       expect(fixture.requests).toHaveLength(1);
     } finally {
@@ -349,6 +378,36 @@ describe('guarded tool operations', () => {
     }
   });
 
+  it('denies an expiring credential during a held recheck', async () => {
+    const fixture = await startToolServer();
+    try {
+      const mode: AdapterMode = 'honest';
+      const f = exampleToolServer(fixture.origin, {
+        mode: () => mode,
+        transport: globalThis.fetch,
+        // The token expires while the permission recheck is held; the
+        // guard's post-recheck expiry check denies before any send.
+        recheck: async () => {
+          await new Promise(resolve => setTimeout(resolve, 150));
+          return true;
+        },
+        authority: () => ({
+          kind: 'oauth',
+          headers: { authorization: 'Bearer expiring-token' },
+          expiresAt: Date.now() + 80,
+        }),
+      });
+      await expect(f.callTool()).resolves.toMatchObject({
+        errorMessage: expect.stringContaining('credential expired'),
+      });
+      expect(f.events).toEqual(['deny:1']);
+      expect(fixture.requests).toHaveLength(0);
+    } finally {
+      fixture.server.close();
+      await once(fixture.server, 'close');
+    }
+  });
+
   it('fails closed on unknown tools and caller-supplied options', async () => {
     const fixture = await startToolServer();
     try {
@@ -364,9 +423,161 @@ describe('guarded tool operations', () => {
       expect(f.events).toEqual([]);
       await expect(
         f.callTool('search', {}, { fetch: async () => new Response('') }),
-      ).rejects.toThrow('unsupported tool options');
+      ).rejects.toThrow('unsupported model options');
       expect(f.events).toEqual(['deny:1']);
       expect(fixture.requests).toHaveLength(0);
+    } finally {
+      fixture.server.close();
+      await once(fixture.server, 'close');
+    }
+  });
+
+  it('denies malformed tool arguments and queried destinations', async () => {
+    const fixture = await startToolServer();
+    try {
+      const mode: AdapterMode = 'honest';
+      // The adapter misbehaves per probe: array or absent arguments, and a
+      // destination carrying a pre-configured query.
+      let shape: 'array' | 'missing' | 'query' | 'none' = 'none';
+      const module = {
+        adapter: {
+          kind: 'tool' as const,
+          invoke: async (
+            input: Readonly<{
+              tool: Readonly<{ name: string }>;
+              options: Readonly<Record<string, unknown>>;
+            }>,
+          ): Promise<{ value: unknown; outcome: 'completed' }> => {
+            const tool = input.tool;
+            const opts = input.options as unknown as {
+              fetch: typeof fetch;
+              headers: Record<string, string>;
+            };
+            const body: Record<string, unknown> =
+              shape === 'array'
+                ? { tool: tool.name, arguments: [] }
+                : { tool: tool.name, arguments: {} };
+            if (shape === 'missing') delete body.arguments;
+            const url =
+              shape === 'query'
+                ? `${fixture.origin}/mcp/example-tools/tools/${tool.name}?token=visible`
+                : `${fixture.origin}/mcp/example-tools/tools/${tool.name}`;
+            const response = await opts.fetch(url, {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json',
+                ...opts.headers,
+              },
+              body: JSON.stringify(body),
+            });
+            return {
+              value: await response.json(),
+              outcome: 'completed' as const,
+            };
+          },
+        },
+      };
+      const events: string[] = [];
+      const journal = {
+        recordDecisionAndIntent: jest.fn(
+          async (_fence: Fence, event: AttemptDecision) => {
+            events.push(`${event.decision}:${event.attempt}`);
+            return String(event.attempt);
+          },
+        ),
+        recordOutcome: jest.fn(
+          async (_fence: Fence, _id: string, outcome: AttemptOutcome) => {
+            events.push(`outcome:${outcome.status}`);
+          },
+        ),
+        recordRecovery: jest.fn(async () => {}),
+        read: jest.fn(async () => ({ items: [] })),
+      };
+      const base = createToolRegistry([
+        {
+          id: 'example-tools',
+          tools: [{ name: 'search' }],
+          destination: (toolName: string) =>
+            `${fixture.origin}/mcp/example-tools/tools/${toolName}`,
+          destinationTemplates: [
+            [
+              { literal: '/mcp/' },
+              { digest: 'server' },
+              { literal: '/tools/' },
+              { digest: 'tool' },
+            ],
+          ],
+          validateToolCall: validateToolCallEnvelope,
+          adapter: module.adapter,
+        },
+      ]);
+      const credentials = mockCredentials.user('user:default/alice');
+      const guard = createModelOperationGuard({
+        providers: base.providerRegistry,
+        journal: journal as never,
+        recheck: async () => true,
+        transport: globalThis.fetch,
+      });
+      const destination = base
+        .resolve({ serverId: 'example-tools', toolName: 'search' })!
+        .module.destination('search');
+      const models = createGuardedModelOperations({
+        providers: base.providerRegistry,
+        guard,
+        journal: journal as never,
+        resolve: model => ({
+          model,
+          operation: {
+            actor: 'user:default/alice',
+            credentials,
+            provenance: {
+              origin: 'verified',
+              conversationId: '1',
+              taskId: '2',
+              callId: '3',
+            },
+            fence: {
+              namespace: { pluginId: 'test', sessionId: 's' },
+              owner: 'owner',
+              token: '1',
+            },
+            definitionVersion: 'v1',
+            configVersion: 'v1',
+            provider: 'example-tools',
+            modelId: 'search',
+            resolvedModel: 'search',
+            operation: 'toolCall',
+            api: 'example-tools',
+            destination,
+            credentialScope: { kind: 'user', id: 'user:default/alice' },
+            credentialGeneration: '1',
+            controller: new AbortController(),
+          } as TrustedOperation,
+          authority: {
+            kind: 'apiKey',
+            apiKey: 'tool-token',
+            headers: { authorization: 'Bearer tool-token' },
+          },
+        }),
+      });
+      const mediation = createGuardedToolOperations({ tools: base, models });
+      const call = () =>
+        mediation.callTool({
+          serverId: 'example-tools',
+          toolName: 'search',
+          arguments: { query: 'x' },
+          credentials,
+        });
+      for (const probe of ['array', 'missing', 'query'] as const) {
+        shape = probe;
+        events.length = 0;
+        await expect(call()).rejects.toThrow();
+        expect(events.filter(event => event.startsWith('deny'))).toEqual([
+          'deny:1',
+        ]);
+      }
+      expect(fixture.requests).toHaveLength(0);
+      expect(mode).toBe('honest');
     } finally {
       fixture.server.close();
       await once(fixture.server, 'close');
@@ -381,5 +592,53 @@ describe('guarded tool operations', () => {
       toolPermissionName({ serverId: 'a.b', toolName: 'c' }),
     );
     expect(() => toolPermissionName({ serverId: '', toolName: 'x' })).toThrow();
+  });
+
+  it('rejects static or malformed route templates at registration', () => {
+    const base = {
+      id: 'bad-tools',
+      tools: [{ name: 'search' }],
+      destination: () => 'https://server.example/mcp/server/tools/search',
+      validateToolCall: validateToolCallEnvelope,
+      adapter: {
+        kind: 'tool' as const,
+        invoke: async () => ({ value: null, outcome: 'completed' as const }),
+      },
+    };
+    expect(() =>
+      createToolRegistry([
+        {
+          ...base,
+          destinationTemplates: [
+            [{ literal: '/mcp/server/tools/search' }],
+          ] as never,
+        },
+      ]),
+    ).toThrow('Invalid tool module route template');
+    expect(() =>
+      createToolRegistry([
+        {
+          ...base,
+          destinationTemplates: [
+            [{ literal: '/tools/' }, { digest: 'tool' }],
+          ] as never,
+        },
+      ]),
+    ).toThrow('Invalid tool module route template');
+    expect(() =>
+      createToolRegistry([
+        {
+          ...base,
+          destinationTemplates: [
+            [
+              { literal: '/mcp/' },
+              { digest: 'server' },
+              { literal: '/tools/' },
+              { digest: 'tool' },
+            ],
+          ],
+        },
+      ]),
+    ).not.toThrow();
   });
 });

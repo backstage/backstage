@@ -17,21 +17,27 @@
 import { createHash } from 'node:crypto';
 import type { Credential } from '@earendil-works/pi-ai';
 import type { CredentialScope } from './types';
-import { assertIdentifier, scopeKeyOf } from './identifiers';
+import {
+  assertIdentifier,
+  MCP_RESERVED_PREFIX,
+  scopeKeyOf,
+} from './identifiers';
 
 /**
  * The store key for one MCP tool server's credential. MCP server credentials
  * live in the same scoped encrypted stores as provider credentials — user,
  * org, and service scopes, opaque entries, the store's existing contract
  * (modify lock, fail-closed reads, no secret-bearing logs or events)
- * applying unchanged. The `mcp:` prefix keeps tool server entries in a
- * distinct namespace from provider IDs; the consuming tool module interprets
- * the credential kind (S4 discipline), the store never does.
+ * applying unchanged. The `mcp:` prefix is RESERVED: model-side provider
+ * identifiers matching it are rejected at config validation and credential
+ * parsing, so the `mcp:` key space holds exclusively tool server credentials
+ * and cross-protocol collision is impossible. The consuming tool module
+ * interprets the credential kind (S4 discipline), the store never does.
  *
  * @alpha
  */
 export function mcpCredentialId(serverId: string): string {
-  return `mcp:${assertIdentifier(serverId, 'MCP server id')}`;
+  return `${MCP_RESERVED_PREFIX}${assertIdentifier(serverId, 'MCP server id')}`;
 }
 
 /** The authority shape a tool dispatch uses for one MCP server credential. */
@@ -60,6 +66,15 @@ export function interpretMcpCredential(
       );
     }
     return { headers: { authorization: `Bearer ${credential.key}` } };
+  }
+  if (credential.type !== 'oauth') {
+    // Interpretation is the consuming module's obligation: unknown kinds
+    // fail closed here even if a store ever accepted one.
+    throw new Error(
+      `Unknown MCP server credential type: ${String(
+        (credential as { type?: unknown }).type,
+      )}; re-authenticate the server`,
+    );
   }
   if (
     typeof credential.access !== 'string' ||

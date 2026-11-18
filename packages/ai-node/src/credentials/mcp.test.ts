@@ -24,6 +24,7 @@ import {
   EncryptedUserCredentialStore,
 } from './EncryptedUserCredentialStore';
 import { ConfigCredentialStore } from './ConfigCredentialStore';
+import { parseConfigCredentials } from './identifiers';
 import {
   interpretMcpCredential,
   mcpCredentialGeneration,
@@ -165,6 +166,36 @@ describe('MCP server credentials in the scoped encrypted stores', () => {
     expect(first).not.toBe(mcpCredentialGeneration(otherScope, 'secret-one'));
     expect(first).toBe(mcpCredentialGeneration(userScope, 'secret-one'));
     expect(first).toMatch(/^[0-9a-f]{16}$/);
+  });
+
+  it('reserves the mcp: prefix against model provider identifiers', () => {
+    // A model provider using the reserved prefix is rejected by config
+    // validation and by config credential parsing, so tool server keys are
+    // unreachable as model credentials.
+    const parse = (
+      entries: ReadonlyMap<string, ReadonlyMap<string, Credential>>,
+    ) => parseConfigCredentials(entries);
+    expect(() =>
+      parse(
+        new Map([
+          ['org', new Map([['mcp:server', { type: 'api_key', key: 'x' }]])],
+        ]),
+      ),
+    ).toThrow('reserved for MCP tool server credentials');
+    // The reverse direction: a tool credential is stored under the reserved
+    // key and a model provider of that name can never be configured.
+    expect(mcpCredentialId('server')).toBe('mcp:server');
+    expect(() => mcpCredentialId('mcp:server')).not.toThrow();
+  });
+
+  it('fails closed on unknown credential kinds', () => {
+    expect(() =>
+      interpretMcpCredential({
+        type: 'unknown',
+        access: 'token',
+        expires: 1234,
+      } as unknown as Credential),
+    ).toThrow('Unknown MCP server credential type');
   });
 
   it('rejects invalid MCP server identifiers', () => {

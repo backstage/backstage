@@ -25,8 +25,8 @@ import knex from 'knex';
 import { mockCredentials } from '@backstage/backend-test-utils';
 import { createAttemptJournal } from '../journal/knex';
 import { createModelOperationGuard } from '../guard/createModelOperationGuard';
-import type { ModelOperation, TrustedOperation } from '../guard/types';
-import { registerProviderCertification } from '../providers/certification';
+import { createGuardedModelOperations } from '../guard/modelOperations';
+import type { TrustedOperation } from '../guard/types';
 import { validateToolCallEnvelope } from './envelope';
 import { createGuardedToolOperations } from './mediation';
 import { createToolRegistry } from './registry';
@@ -39,14 +39,31 @@ const namespace = { pluginId: 'test', sessionId: 'session' };
 const fence = { namespace, owner: 'owner', token: '1' };
 const credentials = mockCredentials.user('user:default/alice');
 
-function toolServerModule(origin: string): ToolModule {
+/**
+ * The tool certification matrix: every registered tool module gets the full
+ * per-attempt discipline through the REAL mediation path — the tool facade
+ * over the shared guarded dispatch — with a durable journal, never hand-
+ * built guard.fetch calls. The mediation-discipline set (skip-guard,
+ * fabrication, detached fetch) runs the same way with misbehaving adapter
+ * variants; the SIGKILL fixture kills a real mediated dispatch after its
+ * durable intent.
+ */
+const certified = {
+  'example-tools': { toolName: 'search' },
+  'fetch-tools': { toolName: 'fetch_page' },
+} as const;
+
+type Id = keyof typeof certified;
+
+function realToolModule(id: Id, origin: string): ToolModule {
+  const toolName = certified[id].toolName;
   return {
-    id: 'example-tools',
+    id,
     tools: [
-      { name: 'search', description: 'Search the index' },
-      { name: 'fetch_page', description: 'Fetch one page' },
+      { name: toolName, description: `A tool on ${id}` },
+      { name: 'other', description: 'Another tool' },
     ],
-    destination: toolName => `${origin}/mcp/example-tools/tools/${toolName}`,
+    destination: (name: string) => `${origin}/mcp/${id}/tools/${name}`,
     destinationTemplates: [
       [
         { literal: '/mcp/' },
@@ -60,79 +77,26 @@ function toolServerModule(origin: string): ToolModule {
       kind: 'tool',
       invoke: async ({ tool, arguments: args, options }) => {
         const fetch = options.fetch as typeof globalThis.fetch;
-        const headers = options.headers as Record<string, string>;
-        const response = await fetch(
-          `${origin}/mcp/example-tools/tools/${tool.name}`,
-          {
-            method: 'POST',
-            headers: { 'content-type': 'application/json', ...headers },
-            body: JSON.stringify({ tool: tool.name, arguments: args }),
-          },
-        );
-        return { value: await response.json(), outcome: 'completed' };
+        const headers = (options.headers ?? {}) as Record<string, string>;
+        try {
+          const response = await fetch(
+            `${origin}/mcp/${id}/tools/${tool.name}`,
+            {
+              method: 'POST',
+              headers: { 'content-type': 'application/json', ...headers },
+              body: JSON.stringify({ tool: tool.name, arguments: args }),
+            },
+          );
+          return { value: await response.json(), outcome: 'completed' };
+        } catch (error) {
+          return {
+            value: { errorMessage: String(error) },
+            outcome: 'failed',
+          };
+        }
       },
     },
   };
-}
-
-/** The tool certification matrix: one entry per certified tool server. */
-const certified = {
-  'example-tools': {
-    module: (origin: string) => toolServerModule(origin),
-    toolName: 'search',
-  },
-} as const;
-
-type Id = keyof typeof certified;
-const registryFor = (origin: string) =>
-  createToolRegistry([certified['example-tools'].module(origin)]);
-
-function operation(id: Id, origin: string): TrustedOperation {
-  const spec = certified[id];
-  const tools = registryFor(origin);
-  const module = tools.resolve({
-    serverId: id,
-    toolName: spec.toolName,
-  })!.module;
-  return {
-    actor: 'user:default/alice',
-    credentials,
-    provenance: {
-      origin: 'verified',
-      conversationId: '1',
-      taskId: '2',
-      callId: '3',
-    },
-    fence,
-    definitionVersion: 'v1',
-    configVersion: 'v1',
-    provider: id,
-    modelId: spec.toolName,
-    resolvedModel: spec.toolName,
-    operation: 'toolCall',
-    api: id,
-    destination: module.destination(spec.toolName),
-    credentialScope: { kind: 'user', id: 'user:default/alice' },
-    credentialGeneration: '1',
-    controller: new AbortController(),
-  };
-}
-
-function request(
-  op: TrustedOperation,
-  substituteTool = false,
-  substituteQuery = false,
-): Request {
-  const url = new URL(op.destination);
-  if (substituteQuery) url.searchParams.set('unexpected', 'true');
-  return new Request(url, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      tool: substituteTool ? 'other-tool' : op.resolvedModel,
-      arguments: { query: 'x' },
-    }),
-  });
 }
 
 const pgUrl = process.env.AI_TEST_POSTGRES_URL;
@@ -146,10 +110,16 @@ async function createStore(dialect: Dialect) {
     const db = knex({ client: 'pg', connection: pgUrl, searchPath: [schema] });
     await storageMigration.up(db);
     await journalMigration.up(db);
+    await db('ai_namespace_leases').insert({
+      plugin_id: namespace.pluginId,
+      session_id: namespace.sessionId,
+      owner_id: fence.owner,
+      token: fence.token,
+      expires_at: db.raw("statement_timestamp() + interval '60 seconds'"),
+    });
     return {
       db,
       env: { AI_TOOL_CERT_SCHEMA: schema },
-      expiresAt: db.raw("statement_timestamp() + interval '60 seconds'"),
       cleanup: async () => {
         await db.destroy();
         await admin.schema.dropSchema(schema, true);
@@ -167,10 +137,16 @@ async function createStore(dialect: Dialect) {
   });
   await storageMigration.up(db);
   await journalMigration.up(db);
+  await db('ai_namespace_leases').insert({
+    plugin_id: namespace.pluginId,
+    session_id: namespace.sessionId,
+    owner_id: fence.owner,
+    token: fence.token,
+    expires_at: db.raw("(julianday('now') - 2440587.5) * 86400000 + 60000"),
+  });
   return {
     db,
     env: { AI_TOOL_CERT_DB: filename },
-    expiresAt: db.raw("(julianday('now') - 2440587.5) * 86400000 + 60000"),
     cleanup: async () => {
       await db.destroy();
       await rm(dir, { recursive: true, force: true });
@@ -196,6 +172,100 @@ async function workerStore() {
   return { db, cleanup: async () => undefined };
 }
 
+/**
+ * The certification harness: the REAL tool facade over the shared guarded
+ * dispatch, a durable journal, and per-case transport/recheck control.
+ */
+async function mediationHarness(options: {
+  id: Id;
+  origin: string;
+  db: ReturnType<typeof knex>;
+  transport: typeof fetch;
+  recheck: () => Promise<boolean>;
+  authority?: {
+    kind: 'apiKey' | 'oauth';
+    apiKey?: string;
+    headers?: Record<string, string>;
+    expiresAt?: number;
+  };
+  module?: ToolModule;
+}) {
+  const tools = createToolRegistry([
+    options.module ?? realToolModule(options.id, options.origin),
+  ]);
+  const journal = createAttemptJournal({
+    db: options.db,
+    providers: tools.providerRegistry,
+    authorizer: { authorizeAuditRead: async () => true },
+  });
+  const guard = createModelOperationGuard({
+    providers: tools.providerRegistry,
+    journal,
+    recheck: options.recheck,
+    transport: options.transport,
+  });
+  const resolved = tools.resolve({
+    serverId: options.id,
+    toolName: certified[options.id].toolName,
+  })!;
+  const destination = resolved.module.destination(
+    certified[options.id].toolName,
+  );
+  const models = createGuardedModelOperations({
+    providers: tools.providerRegistry,
+    guard,
+    journal: journal as never,
+    resolve: model => {
+      const view = model as unknown as { id: string };
+      const operation: TrustedOperation = {
+        actor: 'user:default/alice',
+        credentials,
+        provenance: {
+          origin: 'verified',
+          conversationId: '1',
+          taskId: '2',
+          callId: '3',
+        },
+        fence,
+        definitionVersion: 'v1',
+        configVersion: 'v1',
+        provider: options.id,
+        modelId: view.id,
+        resolvedModel: view.id,
+        operation: 'toolCall',
+        api: options.id,
+        destination: resolved.module.destination(view.id),
+        credentialScope: { kind: 'user', id: 'user:default/alice' },
+        credentialGeneration: '1',
+        controller: new AbortController(),
+      };
+      return {
+        model,
+        operation,
+        authority: options.authority ?? {
+          kind: 'apiKey',
+          apiKey: 'test-key',
+          headers: { authorization: 'Bearer test-key' },
+        },
+      };
+    },
+  });
+  const mediation = createGuardedToolOperations({ tools, models });
+  const call = (args: unknown = { query: 'x' }) =>
+    mediation.callTool({
+      serverId: options.id,
+      toolName: certified[options.id].toolName,
+      arguments: args,
+      credentials,
+    });
+  const rows = async () =>
+    await options
+      .db('ai_journal_events')
+      .orderBy('id')
+      .select('kind', 'decision', 'attempt', 'status', 'reason');
+  return { call, rows, destination, journal };
+}
+
 if (process.env.AI_TOOL_CERT_WORKER === '1') {
   // eslint-disable-next-line jest/expect-expect
   it('sends after durable intent and waits to be killed', async () => {
@@ -203,33 +273,14 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
     try {
       const id = process.env.AI_TOOL_CERT_ID as Id;
       const origin = process.env.AI_TOOL_CERT_ORIGIN!;
-      const op = operation(id, origin);
-      const tools = registryFor(origin);
-      const journal = createAttemptJournal({
+      const harness = await mediationHarness({
+        id,
+        origin,
         db: store.db,
-        providers: tools.providerRegistry,
-        authorizer: { authorizeAuditRead: async () => true },
+        transport: globalThis.fetch,
+        recheck: async () => true,
       });
-      const mediation = createGuardedToolOperations({
-        tools,
-        guard: createModelOperationGuard({
-          providers: tools.providerRegistry,
-          journal,
-          recheck: async () => true,
-          transport: globalThis.fetch,
-        }),
-        journal,
-        resolve: () => ({
-          operation: op,
-          authority: { headers: { authorization: 'Bearer test-key' } },
-        }),
-      });
-      await mediation.callTool({
-        serverId: id,
-        toolName: certified[id].toolName,
-        arguments: { query: 'x' },
-        credentials,
-      });
+      await harness.call();
     } finally {
       await store.cleanup();
       await store.db.destroy();
@@ -274,13 +325,6 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
     });
     const exited = once(child, 'exit');
     try {
-      await store.db('ai_namespace_leases').insert({
-        plugin_id: namespace.pluginId,
-        session_id: namespace.sessionId,
-        owner_id: fence.owner,
-        token: fence.token,
-        expires_at: store.expiresAt,
-      });
       await Promise.race([
         once(server, 'request'),
         exited.then(() => {
@@ -295,7 +339,9 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
       ]);
       process.kill(-child.pid!, 'SIGKILL');
       await exited;
-      const tools = registryFor(`http://127.0.0.1:${address.port}`);
+      const tools = createToolRegistry([
+        realToolModule(id, `http://127.0.0.1:${address.port}`),
+      ]);
       const journal = createAttemptJournal({
         db: store.db,
         providers: tools.providerRegistry,
@@ -322,22 +368,327 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
       await store.cleanup();
     }
   };
-  const assertCrashUnknown = async (id: Id) => {
-    for (const dialect of pgUrl
-      ? (['sqlite', 'pg'] as const)
-      : (['sqlite'] as const)) {
-      await assertCrashUnknownOnce(id, dialect);
-    }
-  };
+
+  const dialects: readonly Dialect[] = pgUrl
+    ? ['sqlite', 'pg']
+    : (['sqlite'] as const);
   for (const id of Object.keys(certified) as Id[]) {
-    const tools = registryFor('https://provider.example');
-    registerProviderCertification({
-      name: id,
-      operation: 'toolCall' as ModelOperation,
-      providers: tools.providerRegistry,
-      createOperation: () => operation(id, 'https://provider.example'),
-      request,
-      assertCrashUnknown: () => assertCrashUnknown(id),
+    describe(`${id} tool certification (mediated)`, () => {
+      for (const dialect of dialects) {
+        it(`completes a guarded tool call with a durable allow and outcome (${dialect})`, async () => {
+          const store = await createStore(dialect);
+          try {
+            const transport = jest.fn(
+              async () =>
+                new Response(JSON.stringify({ result: 'ok' }), {
+                  headers: { 'content-type': 'application/json' },
+                }),
+            );
+            const harness = await mediationHarness({
+              id,
+              origin: 'https://provider.example',
+              db: store.db,
+              transport: transport as unknown as typeof fetch,
+              recheck: async () => true,
+            });
+            await expect(harness.call()).resolves.toEqual({ result: 'ok' });
+            expect(transport).toHaveBeenCalledTimes(1);
+            const request = (
+              transport.mock.calls[0] as unknown[]
+            )[0] as Request;
+            expect(request.headers.get('authorization')).toBe(
+              'Bearer test-key',
+            );
+            expect(await request.json()).toEqual({
+              tool: certified[id].toolName,
+              arguments: { query: 'x' },
+            });
+            expect(await harness.rows()).toMatchObject([
+              { kind: 'decision', decision: 'allow', attempt: 1 },
+              { kind: 'outcome', status: 'completed' },
+            ]);
+          } finally {
+            await store.cleanup();
+          }
+        });
+
+        it(`denies a revoked permission before sending (${dialect})`, async () => {
+          const store = await createStore(dialect);
+          try {
+            let revoked = false;
+            const transport = jest.fn(async () => new Response('{}'));
+            const harness = await mediationHarness({
+              id,
+              origin: 'https://provider.example',
+              db: store.db,
+              transport: transport as unknown as typeof fetch,
+              recheck: async () => !revoked,
+            });
+            revoked = true;
+            await expect(harness.call()).resolves.toMatchObject({
+              errorMessage: expect.stringContaining('revoked'),
+            });
+            expect(transport).not.toHaveBeenCalled();
+            expect(await harness.rows()).toMatchObject([
+              { kind: 'decision', decision: 'deny', attempt: 1 },
+            ]);
+          } finally {
+            await store.cleanup();
+          }
+        });
+
+        it(`denies an expiring credential during a held recheck (${dialect})`, async () => {
+          const store = await createStore(dialect);
+          try {
+            const transport = jest.fn(async () => new Response('{}'));
+            const harness = await mediationHarness({
+              id,
+              origin: 'https://provider.example',
+              db: store.db,
+              transport: transport as unknown as typeof fetch,
+              recheck: async () => {
+                await new Promise(resolve => setTimeout(resolve, 150));
+                return true;
+              },
+              authority: {
+                kind: 'oauth',
+                headers: { authorization: 'Bearer expiring' },
+                expiresAt: Date.now() + 80,
+              },
+            });
+            await expect(harness.call()).resolves.toMatchObject({
+              errorMessage: expect.stringContaining('credential expired'),
+            });
+            expect(transport).not.toHaveBeenCalled();
+            expect(await harness.rows()).toMatchObject([
+              { kind: 'decision', decision: 'deny', attempt: 1 },
+            ]);
+          } finally {
+            await store.cleanup();
+          }
+        });
+
+        it(`records a pre-header disconnect as unknown (${dialect})`, async () => {
+          const store = await createStore(dialect);
+          try {
+            const transport = jest.fn(async () => {
+              throw new Error('disconnect');
+            });
+            const harness = await mediationHarness({
+              id,
+              origin: 'https://provider.example',
+              db: store.db,
+              transport: transport as unknown as typeof fetch,
+              recheck: async () => true,
+            });
+            await expect(harness.call()).resolves.toMatchObject({
+              errorMessage: expect.stringContaining('disconnect'),
+            });
+            expect(transport).toHaveBeenCalledTimes(1);
+            expect(await harness.rows()).toMatchObject([
+              { kind: 'decision', decision: 'allow', attempt: 1 },
+              { kind: 'outcome', status: 'unknown' },
+            ]);
+          } finally {
+            await store.cleanup();
+          }
+        });
+
+        it(`latches a failed durable intent without sending (${dialect})`, async () => {
+          const store = await createStore(dialect);
+          try {
+            const transport = jest.fn(async () => new Response('{}'));
+            // The adapter retries once: the journal failure must latch the
+            // operation so the retry is refused before any send, and the
+            // dispatch settles in-band.
+            const harness = await mediationHarness({
+              id,
+              origin: 'https://provider.example',
+              db: store.db,
+              transport: transport as unknown as typeof fetch,
+              recheck: async () => true,
+              module: {
+                ...realToolModule(id, 'https://provider.example'),
+                adapter: {
+                  kind: 'tool',
+                  invoke: async ({ tool, options }) => {
+                    const fetch = options.fetch as typeof globalThis.fetch;
+                    const send = () =>
+                      fetch(
+                        `https://provider.example/mcp/${id}/tools/${tool.name}`,
+                        {
+                          method: 'POST',
+                          headers: { 'content-type': 'application/json' },
+                          body: JSON.stringify({
+                            tool: tool.name,
+                            arguments: {},
+                          }),
+                        },
+                      );
+                    try {
+                      await send();
+                    } catch {
+                      try {
+                        await send();
+                      } catch (latched) {
+                        return {
+                          value: { errorMessage: String(latched) },
+                          outcome: 'failed',
+                        };
+                      }
+                    }
+                    return { value: null, outcome: 'completed' };
+                  },
+                },
+              },
+            });
+            await store.db.schema.dropTable('ai_journal_events');
+            const result = (await harness.call()) as {
+              errorMessage?: string;
+            };
+            expect(result.errorMessage).toMatch(/blocked|journal/i);
+            expect(transport).not.toHaveBeenCalled();
+          } finally {
+            await store.cleanup();
+          }
+        });
+
+        // The supplied crash fixture contains the durable-journal assertions.
+        // eslint-disable-next-line jest/expect-expect
+        it(`retains an unknown outcome after SIGKILL (${dialect})`, async () => {
+          await assertCrashUnknownOnce(id, dialect);
+        }, 30000);
+      }
     });
   }
+
+  describe('mediation discipline through the real facade', () => {
+    for (const dialect of dialects) {
+      it(`rejects a tool call that never uses the guarded transport (${dialect})`, async () => {
+        const store = await createStore(dialect);
+        try {
+          const transport = jest.fn(async () => new Response('{}'));
+          const harness = await mediationHarness({
+            id: 'example-tools',
+            origin: 'https://provider.example',
+            db: store.db,
+            transport: transport as unknown as typeof fetch,
+            recheck: async () => true,
+            module: {
+              ...realToolModule('example-tools', 'https://provider.example'),
+              adapter: {
+                kind: 'tool',
+                invoke: async () => ({
+                  value: { fake: true },
+                  outcome: 'completed',
+                }),
+              },
+            },
+          });
+          await expect(harness.call()).rejects.toThrow(
+            'provider did not use guarded transport',
+          );
+          expect(transport).not.toHaveBeenCalled();
+          expect(await harness.rows()).toMatchObject([
+            { kind: 'decision', decision: 'deny', attempt: 1 },
+          ]);
+        } finally {
+          await store.cleanup();
+        }
+      });
+
+      it(`rejects a fabricated tool result over a guard denial (${dialect})`, async () => {
+        const store = await createStore(dialect);
+        try {
+          const transport = jest.fn(async () => new Response('{}'));
+          const harness = await mediationHarness({
+            id: 'example-tools',
+            origin: 'https://provider.example',
+            db: store.db,
+            transport: transport as unknown as typeof fetch,
+            recheck: async () => true,
+            module: {
+              ...realToolModule('example-tools', 'https://provider.example'),
+              adapter: {
+                kind: 'tool',
+                invoke: async ({ tool, options }) => {
+                  const fetch = options.fetch as typeof globalThis.fetch;
+                  try {
+                    // A substituted tool name is denied by the envelope.
+                    await fetch(
+                      `https://provider.example/mcp/example-tools/tools/other`,
+                      {
+                        method: 'POST',
+                        headers: { 'content-type': 'application/json' },
+                        body: JSON.stringify({
+                          tool: 'other',
+                          arguments: {},
+                        }),
+                      },
+                    );
+                  } catch {
+                    /* provider incorrectly swallows the denial */
+                  }
+                  void tool;
+                  return { value: { fake: true }, outcome: 'completed' };
+                },
+              },
+            },
+          });
+          await expect(harness.call()).rejects.toThrow(
+            'fabricated provider result',
+          );
+          expect(transport).not.toHaveBeenCalled();
+          const rows = await harness.rows();
+          expect(rows.filter(row => row.decision === 'deny')).toHaveLength(1);
+        } finally {
+          await store.cleanup();
+        }
+      });
+
+      it(`rejects a fabricated tool result over a detached fetch (${dialect})`, async () => {
+        const store = await createStore(dialect);
+        try {
+          const transport = jest.fn(async () => new Response('{}'));
+          const harness = await mediationHarness({
+            id: 'example-tools',
+            origin: 'https://provider.example',
+            db: store.db,
+            transport: transport as unknown as typeof fetch,
+            recheck: async () => true,
+            module: {
+              ...realToolModule('example-tools', 'https://provider.example'),
+              adapter: {
+                kind: 'tool',
+                invoke: async ({ options }) => {
+                  const fetch = options.fetch as typeof globalThis.fetch;
+                  void fetch(
+                    'https://provider.example/mcp/example-tools/tools/search',
+                    {
+                      method: 'POST',
+                      headers: { 'content-type': 'application/json' },
+                      body: JSON.stringify({
+                        tool: 'search',
+                        arguments: {},
+                      }),
+                    },
+                  ).catch(() => {
+                    /* provider detaches its fetch */
+                  });
+                  return { value: { fake: true }, outcome: 'completed' };
+                },
+              },
+            },
+          });
+          await expect(harness.call()).rejects.toThrow(
+            'fabricated provider result',
+          );
+          const rows = await harness.rows();
+          expect(rows.filter(row => row.decision === 'deny')).toHaveLength(1);
+        } finally {
+          await store.cleanup();
+        }
+      });
+    }
+  });
 }

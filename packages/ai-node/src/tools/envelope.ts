@@ -18,11 +18,14 @@ import { assertUniqueTopLevelKeys, readBody } from '../providers/httpEnvelope';
 import type { ToolCallEnvelope } from './types';
 
 /**
- * Validates the final adapter-produced tool-call envelope: exact destination,
- * POST with a JSON body, unique top-level keys, the called tool's name in the
- * body, object-shaped arguments, all under the shared 16 MiB cap. The tool
- * arguments are never journaled — the attempt journal records decisions and
- * outcomes only.
+ * Validates the final adapter-produced tool-call envelope: the exact
+ * destination with an EMPTY query string (tool routes never carry one, so a
+ * pre-configured query is rejected, not just a substituted one), POST with
+ * a JSON body, unique top-level keys, the called tool's name in the body,
+ * and arguments that are present and a plain object — arrays and absent
+ * arguments are rejected — all under the shared 16 MiB cap. Tool arguments
+ * are never journaled; the attempt journal records decisions and outcomes
+ * only.
  *
  * @alpha
  */
@@ -36,14 +39,15 @@ export async function validateToolCallEnvelope(
     expected.username ||
     expected.password ||
     expected.hash ||
+    expected.search !== '' ||
+    actual.search !== '' ||
     (expected.protocol !== 'https:' &&
       !(
         expected.protocol === 'http:' &&
         ['localhost', '127.0.0.1', '[::1]'].includes(expected.hostname)
       )) ||
     actual.origin !== expected.origin ||
-    actual.pathname !== expected.pathname ||
-    actual.search !== expected.search
+    actual.pathname !== expected.pathname
   ) {
     throw new Error('Unexpected tool destination');
   }
@@ -70,8 +74,10 @@ export async function validateToolCallEnvelope(
     throw new Error('Request tool does not match the called tool');
   }
   if (
-    body.arguments !== undefined &&
-    (typeof body.arguments !== 'object' || body.arguments === null)
+    !Object.hasOwn(body, 'arguments') ||
+    typeof body.arguments !== 'object' ||
+    body.arguments === null ||
+    Array.isArray(body.arguments)
   ) {
     throw new Error('Uninspectable tool arguments');
   }
