@@ -42,7 +42,7 @@ Example of use-cases:
 
 :::note
 
-As of the `1.42.0` release of Backstage, Notifications and Signals are installed as part of the default `@backstage/create-app` instance which means you won't need to follow the installation steps outlined here. The only exception to this is adding the [Notifications sidebar item](#add-notifications-sidebar-item) and optionally [Notifications tab to User Settings](#user-specific-notification-settings).
+As of the `1.42.0` release of Backstage, Notifications and Signals are installed as part of the default `@backstage/create-app` instance which means you won't need to follow the installation steps outlined here. The only exception to this is adding the [Notifications sidebar item](#add-notifications-sidebar-item). Release `1.58.0` installs the [Notifications tab to User Settings](#user-specific-notification-settings) by default.
 
 :::
 
@@ -124,19 +124,36 @@ Once installed, the signals plugin is automatically available in your app throug
 
 ### User-specific notification settings
 
-The notifications plugin provides a way for users to manage their notification settings. To enable this, you can create a frontend module that adds a settings tab to the user-settings plugin using the `SubPageBlueprint`:
+The notifications plugin provides a way for users to manage their notification settings. It is enabled by default.
+
+![Notification Settings](notificationSettings.png)
+
+Each notification processor has its own row in the settings page, where the user can enable or disable notifications from that processor.
+
+To disable the tab, add the following to your `app-config.yaml`:
+
+```yaml
+app:
+  extensions:
+    - sub-page:notifications/settings: false
+```
+
+#### Customizing origin and topic names
+
+To customize the names shown for notification origins or topics, create a custom frontend module that adds a settings tab to the user-settings plugin using the `SubPageBlueprint`:
 
 ```tsx title="packages/app/src/modules/NotificationSettingsPage.tsx"
-import { Content } from '@backstage/core-components';
+import { Container } from '@backstage/ui';
 import { UserNotificationSettingsCard } from '@backstage/plugin-notifications';
 
 export function NotificationSettingsPage() {
   return (
-    <Content>
+    <Container>
       <UserNotificationSettingsCard
         originNames={{ 'plugin:scaffolder': 'Scaffolder' }}
+        topicNames={{ 'template-completed': 'Completed successfully' }}
       />
-    </Content>
+    </Container>
   );
 }
 ```
@@ -163,13 +180,7 @@ export const notificationSettingsModule = createFrontendModule({
 });
 ```
 
-Then install the module in your app by adding it to the features array of `createApp`, or through default feature discovery if your app is set up for it.
-
-![Notification Settings](notificationSettings.png)
-
-You can customize the origin names shown in the UI by passing an object where the keys are the origins and the values are the names you want to show in the UI.
-
-Each notification processor will receive its own row in the settings page, where the user can enable or disable notifications from that processor.
+Then install the module in your app by adding it to the features array of `createApp`, or through default feature discovery if your app is set up for it. Don't forget to disable the built-in tab as shown above to avoid duplicate Notification settings.
 
 ### Default notification settings
 
