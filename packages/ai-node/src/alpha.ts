@@ -111,7 +111,26 @@ export {
   isTool,
 } from './permissions/rules';
 export type { ConfiguredCredentialKind } from './credentials/configCredentialKinds';
+export { createCredentialRefreshHook } from './credentials/refreshHook';
+export type { CreateCredentialRefreshHookOptions } from './credentials/refreshHook';
+export type {
+  CredentialRefreshHook,
+  CredentialRefreshInput,
+} from './integration';
+export type { AiTokenEndpoint } from './config-extension/types';
+export type {
+  AiAuthModule,
+  AuthOperationKind,
+  AuthTokenRequestBase,
+  OAuthLoginExchangeInput,
+  OAuthRefreshInput,
+} from './providers/auth/types';
 export type { AiCredentialKind } from './providers/types';
+export type {
+  AttemptDecision,
+  AttemptJournal,
+  AttemptOutcome,
+} from './journal/types';
 export { assertConfigCredentialKinds } from './credentials/configCredentialKinds';
 export type {
   AiParamsSchema,

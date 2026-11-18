@@ -20,6 +20,7 @@ import type { ConfigAtPath } from '../contracts';
 import { MCP_RESERVED_PREFIX } from '../credentials/identifiers';
 import type {
   AiConfigCredentialScopes,
+  AiTokenEndpoint,
   AiCredentialsPrecedence,
   AiInstallationConfig,
   AiInstallationCredentials,
@@ -221,12 +222,12 @@ function parseCredentials(
 function parseTokenEndpoints(
   section: Config,
   path: string,
-): Readonly<Record<string, string>> {
+): Readonly<Record<string, AiTokenEndpoint>> {
   const sectionMap = section.getOptionalConfig('tokenEndpoints');
   if (sectionMap === undefined) {
     return {};
   }
-  const endpoints: Record<string, string> = {};
+  const endpoints: Record<string, AiTokenEndpoint> = {};
   const providers = sectionMap.keys();
   if (providers.length === 0) {
     throw fieldError(
@@ -250,12 +251,29 @@ function parseTokenEndpoints(
         'Expected each entry to be keyed by a provider ID',
       );
     }
-    const value = sectionMap.getOptionalString(providerId);
-    if (value === undefined) {
+    const entry = sectionMap.getOptionalConfig(providerId);
+    if (entry === undefined) {
       throw fieldError(
         field,
         'tokenEndpoints',
+        "Expected the provider's trusted token endpoint as an object with 'url' and 'clientId'",
+      );
+    }
+    rejectUnknownKeys(entry, field, ['url', 'clientId']);
+    const value = entry.getOptionalString('url');
+    if (value === undefined) {
+      throw fieldError(
+        field,
+        'url',
         "Expected the provider's trusted token endpoint URL",
+      );
+    }
+    const clientId = entry.getOptionalString('clientId');
+    if (clientId === undefined || clientId.trim() !== clientId || !clientId) {
+      throw fieldError(
+        field,
+        'clientId',
+        'Expected the public OAuth client ID of this provider family. It is public by contract and never a secret, so it belongs in configuration',
       );
     }
     let url: URL | undefined;
@@ -293,14 +311,14 @@ function parseTokenEndpoints(
       );
     }
     const canonical = `${url.protocol}//${url.host}${url.pathname}`;
-    if (Object.values(endpoints).includes(canonical)) {
+    if (Object.values(endpoints).some(known => known.url === canonical)) {
       throw fieldError(
         field,
         'tokenEndpoints',
         `The token endpoint '${canonical}' is configured for more than one provider`,
       );
     }
-    endpoints[providerId] = canonical;
+    endpoints[providerId] = Object.freeze({ url: canonical, clientId });
   }
   return endpoints;
 }

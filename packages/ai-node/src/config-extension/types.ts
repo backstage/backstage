@@ -35,6 +35,20 @@ import type { Fence } from '../contracts';
 export const AI_INSTALLATION_CONFIG_PATH = 'ai';
 
 /**
+ * One provider's trusted OAuth refresh endpoint.
+ *
+ * @remarks
+ * `url` is an absolute `https` URL on the reserved `/oauth/token` or
+ * `/v1/oauth/token` route of the provider's own origin, without query,
+ * fragment or userinfo. `clientId` is the public OAuth client ID the family
+ * exchanges with — public by contract, never a secret, which is why it lives in
+ * configuration rather than a store.
+ *
+ * @alpha
+ */
+export type AiTokenEndpoint = Readonly<{ url: string; clientId: string }>;
+
+/**
  * Which credential scope wins when both a personal and an installation
  * credential exist for the same provider.
  *
@@ -86,13 +100,13 @@ export type AiInstallationCredentials = Readonly<{
    *
    * @remarks
    *
-   * Absolute `https` URLs on the journal-owned `/oauth/token` or
-   * `/v1/oauth/token` route. The host passes them to
+   * Each provider's trusted endpoint (`url` on the journal-owned
+   * `/oauth/token` or `/v1/oauth/token` route of its own origin) with the
+   * public `clientId` its refresh exchanges with. The host passes them to
    * `createAuthOperations({ tokenEndpoints })`; a request to any other origin
-   * is denied before it is sent. Keying by provider lets several providers
-   * share one token route, and empty means no guarded auth operations.
+   * is denied before it is sent, and empty means no guarded auth operations.
    */
-  tokenEndpoints: Readonly<Record<string, string>>;
+  tokenEndpoints: Readonly<Record<string, AiTokenEndpoint>>;
 }>;
 
 /**
@@ -130,8 +144,11 @@ export type ConfiguredAiInstallation = Readonly<{
     rotate(fence: Fence): Promise<{ inspected: number; rotated: number }>;
   }>;
   credentialPrecedence: AiCredentialsPrecedence;
-  /** Trusted token endpoints per provider for guarded auth operations. */
-  credentialTokenEndpoints: Readonly<Record<string, string>>;
+  /**
+   * Trusted token endpoints per provider for guarded auth operations, each
+   * with the public client ID its family's refresh exchanges with.
+   */
+  credentialTokenEndpoints: Readonly<Record<string, AiTokenEndpoint>>;
   /**
    * The kinds the configuration declares per provider, so composition can
    * reject one no registered module for that provider consumes.

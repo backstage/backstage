@@ -22,6 +22,7 @@ import type { JsonValue } from '@backstage/config';
 import type { Knex } from 'knex';
 import type { LifecycleService } from '@backstage/backend-plugin-api';
 import type { LoggerService } from '@backstage/backend-plugin-api';
+import type { OAuthCredential } from '@earendil-works/pi-ai';
 import type { PermissionCondition } from '@backstage/plugin-permission-common';
 import type { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { PermissionResourceRef } from '@backstage/plugin-permission-node';
@@ -37,6 +38,27 @@ import type { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha
 export const AI_INSTALLATION_CONFIG_PATH = 'ai';
+
+// @alpha
+export type AiAuthModule = Readonly<{
+  id: string;
+  tokenPath: '/oauth/token' | '/v1/oauth/token';
+  body: 'json' | 'form';
+  refreshRequest(input: OAuthRefreshInput): Request;
+  exchangeRequest(input: OAuthLoginExchangeInput): Request;
+  validateTokenRequest(input: {
+    operation: AuthOperationKind;
+    endpoint: string;
+    request: Request;
+  }): Promise<void>;
+  parseTokenResponse(input: {
+    operation: AuthOperationKind;
+    body: unknown;
+    previous?: OAuthCredential;
+    now: number;
+  }): OAuthCredential;
+  extraFields?: readonly string[];
+}>;
 
 // @alpha
 export type AiCodemodeOptions = Readonly<{
@@ -176,7 +198,7 @@ export type AiInstallationCredentials = Readonly<{
   previousEncryptionKey?: Uint8Array;
   precedence: AiCredentialsPrecedence;
   scopes: AiConfigCredentialScopes;
-  tokenEndpoints: Readonly<Record<string, string>>;
+  tokenEndpoints: Readonly<Record<string, AiTokenEndpoint>>;
 }>;
 
 // @alpha
@@ -404,6 +426,7 @@ export type AiProviderModule = Readonly<{
   ): Promise<'model' | 'auth.token-exchange'>;
   classifyRequest?(url: string): 'model' | 'auth.token-exchange';
   transport?: 'sse';
+  authModule?: AiAuthModule;
   credentialKey?(providerId: string): string;
   interpretCredential?(
     scope: CredentialScope,
@@ -461,6 +484,7 @@ export type AiServiceFactoryOptions = Readonly<{
   toolModules?: readonly ToolModule[];
   providerModules?: readonly AiProviderModule[];
   codemode?: AiCodemodeOptions;
+  refreshExpiredCredential?: CredentialRefreshHook;
 }>;
 
 // @alpha
@@ -468,6 +492,12 @@ export const aiServiceRef: ServiceRef<AiService, 'plugin', 'singleton'>;
 
 // @alpha
 export const aiSessionUsePermission: BasicPermission;
+
+// @alpha
+export type AiTokenEndpoint = Readonly<{
+  url: string;
+  clientId: string;
+}>;
 
 // @alpha
 export const aiToolConditions: Conditions<{
@@ -551,7 +581,53 @@ export function assertConfigCredentialKinds(options: {
 }): void;
 
 // @alpha
+export type AttemptDecision = Readonly<{
+  readonly actor: string;
+  readonly conversationId?: string;
+  readonly taskId?: string;
+  readonly callId?: string;
+  readonly definitionVersion: string;
+  readonly configVersion: string;
+  readonly provider?: string;
+  readonly model?: string;
+  readonly operation: string;
+  readonly destination?: string;
+  readonly attempt: number;
+  readonly decision: 'allow' | 'deny';
+  readonly reason?: string;
+}>;
+
+// @alpha
 export type AttemptId = string;
+
+// @alpha
+export interface AttemptJournal {
+  // (undocumented)
+  read(
+    credentials: BackstageCredentials,
+    query: AuditQuery,
+  ): Promise<AuditPage>;
+  // (undocumented)
+  recordDecisionAndIntent(
+    fence: Fence,
+    event: AttemptDecision,
+  ): Promise<AttemptId>;
+  // (undocumented)
+  recordOutcome(
+    fence: Fence,
+    attempt: AttemptId,
+    outcome: AttemptOutcome,
+  ): Promise<void>;
+  // (undocumented)
+  recordRecovery(fence: Fence, event: RecoveryEvent): Promise<void>;
+}
+
+// @alpha
+export type AttemptOutcome = Readonly<{
+  readonly status: AttemptOutcomeStatus;
+  readonly httpStatus?: number;
+  readonly detail?: string;
+}>;
 
 // @alpha
 export type AttemptOutcomeStatus =
@@ -625,11 +701,21 @@ export type AuditQuery = Readonly<{
 }>;
 
 // @alpha
+export type AuthOperationKind = 'auth.token' | 'auth.token-exchange';
+
+// @alpha
 export function authorizeConditionalDecision(
   authorizer: AiPolicyAuthorizer,
   permission: ResourcePermission,
   credentials: BackstageCredentials,
 ): Promise<QueryPermissionResponse>;
+
+// @alpha
+export type AuthTokenRequestBase = Readonly<{
+  endpoint: string;
+  providerId: string;
+  clientId: string;
+}>;
 
 // @alpha
 export function bindAiModuleRegistry(
@@ -665,7 +751,7 @@ export type ConfiguredAiInstallation = Readonly<{
     }>;
   }>;
   credentialPrecedence: AiCredentialsPrecedence;
-  credentialTokenEndpoints: Readonly<Record<string, string>>;
+  credentialTokenEndpoints: Readonly<Record<string, AiTokenEndpoint>>;
   configCredentialKinds?: readonly ConfiguredCredentialKind[];
 }>;
 
@@ -704,6 +790,21 @@ export const createAiToolConditionalDecision: (
 ) => ConditionalPolicyDecision;
 
 // @alpha
+export function createCredentialRefreshHook(
+  options: CreateCredentialRefreshHookOptions,
+): CredentialRefreshHook | undefined;
+
+// @alpha
+export interface CreateCredentialRefreshHookOptions {
+  events?: AiEventEmitter;
+  journal: AttemptJournal;
+  providerModules: readonly AiProviderModule[];
+  stores: AiCredentialStores;
+  tokenEndpoints: Readonly<Record<string, AiTokenEndpoint>>;
+  transport?: typeof fetch;
+}
+
+// @alpha
 export function createGuardedToolOperations(options: {
   tools: ToolRegistry;
   models: GuardedToolDispatch;
@@ -732,6 +833,35 @@ export function createPrivateAiService(
 export function createUsageAccounting(
   options: UsageAccountingOptions,
 ): UsageAccounting;
+
+// @alpha
+export type CredentialRefreshHook = (
+  input: CredentialRefreshInput,
+) => Promise<void>;
+
+// @alpha
+export interface CredentialRefreshInput {
+  // (undocumented)
+  readonly actor: string;
+  // (undocumented)
+  readonly configVersion: string;
+  // (undocumented)
+  readonly credentials: BackstageCredentials;
+  // (undocumented)
+  readonly definitionVersion: string;
+  // (undocumented)
+  readonly fence: Fence;
+  // (undocumented)
+  readonly provenance: Readonly<{
+    conversationId: string;
+    taskId: string;
+    callId: string;
+  }>;
+  // (undocumented)
+  readonly provider: string;
+  // (undocumented)
+  readonly scope: CredentialScope;
+}
 
 // @alpha
 export type CredentialScope =
@@ -948,6 +1078,20 @@ export type Namespace = Readonly<{
   pluginId: string;
   sessionId: string;
 }>;
+
+// @alpha
+export type OAuthLoginExchangeInput = AuthTokenRequestBase &
+  Readonly<{
+    code: string;
+    codeVerifier: string;
+    redirectUri: string;
+  }>;
+
+// @alpha
+export type OAuthRefreshInput = AuthTokenRequestBase &
+  Readonly<{
+    credential: OAuthCredential;
+  }>;
 
 // @alpha
 export type OpenHarnessOptions = Readonly<{

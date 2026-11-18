@@ -9,7 +9,29 @@ import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Credential as Credential_2 } from '@earendil-works/pi-ai';
 import { Knex } from 'knex';
 import { Models } from '@earendil-works/pi-ai';
+import type { OAuthCredential } from '@earendil-works/pi-ai';
 import { ProviderHeaders } from '@earendil-works/pi-ai';
+
+// @alpha
+export type AiAuthModule = Readonly<{
+  id: string;
+  tokenPath: '/oauth/token' | '/v1/oauth/token';
+  body: 'json' | 'form';
+  refreshRequest(input: OAuthRefreshInput): Request;
+  exchangeRequest(input: OAuthLoginExchangeInput): Request;
+  validateTokenRequest(input: {
+    operation: AuthOperationKind;
+    endpoint: string;
+    request: Request;
+  }): Promise<void>;
+  parseTokenResponse(input: {
+    operation: AuthOperationKind;
+    body: unknown;
+    previous?: OAuthCredential;
+    now: number;
+  }): OAuthCredential;
+  extraFields?: readonly string[];
+}>;
 
 // @alpha
 export type AiCredentialKind = 'api_key' | 'oauth';
@@ -83,6 +105,7 @@ export type AiProviderModule = Readonly<{
   ): Promise<'model' | 'auth.token-exchange'>;
   classifyRequest?(url: string): 'model' | 'auth.token-exchange';
   transport?: 'sse';
+  authModule?: AiAuthModule;
   credentialKey?(providerId: string): string;
   interpretCredential?(
     scope: CredentialScope,
@@ -239,6 +262,16 @@ export type AuditQuery = Readonly<{
   readonly sessionId: string;
   readonly cursor?: string;
   readonly limit?: number;
+}>;
+
+// @alpha
+export type AuthOperationKind = 'auth.token' | 'auth.token-exchange';
+
+// @alpha
+export type AuthTokenRequestBase = Readonly<{
+  endpoint: string;
+  providerId: string;
+  clientId: string;
 }>;
 
 // @alpha
@@ -476,6 +509,20 @@ export type Namespace = Readonly<{
   pluginId: string;
   sessionId: string;
 }>;
+
+// @alpha
+export type OAuthLoginExchangeInput = AuthTokenRequestBase &
+  Readonly<{
+    code: string;
+    codeVerifier: string;
+    redirectUri: string;
+  }>;
+
+// @alpha
+export type OAuthRefreshInput = AuthTokenRequestBase &
+  Readonly<{
+    credential: OAuthCredential;
+  }>;
 
 // @alpha
 export type ProviderAdapter =

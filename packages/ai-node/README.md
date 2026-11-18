@@ -228,8 +228,12 @@ ai:
     # Trusted OAuth token routes per provider for guarded auth operations.
     # Providers without an entry cannot refresh OAuth credentials; the
     # supported auth providers are Anthropic and OpenAI token endpoints.
+    # Per provider: the trusted refresh endpoint and the family's PUBLIC
+    # OAuth client ID. Declaring both is what enables pre-dispatch refresh.
     tokenEndpoints:
-      anthropic: https://platform.claude.com/v1/oauth/token
+      anthropic:
+        url: https://platform.claude.com/v1/oauth/token
+        clientId: ${ANTHROPIC_OAUTH_CLIENT_ID}
   models:
     - provider: openai
       modelId: gpt-5
@@ -267,18 +271,40 @@ journaled, actionable denial, never a fallback.
   dispatch-time fail-closed. See [Credential kinds](#credential-kinds) for the
   per-family table; a credential stored later in a personal store is checked
   at dispatch instead, with the same guidance.
-- **`tokenEndpoints`** lists, per provider, the trusted OAuth token routes
-  guarded auth operations may use for credential refresh — absolute
-  `https` URLs on the provider's own origin ending in the reserved
-  `/oauth/token` or `/v1/oauth/token` route. A provider without an entry
-  cannot refresh OAuth credentials; the supported auth providers are
-  Anthropic (`/v1/oauth/token`, matching its module's reserved route) and
-  OpenAI token endpoints. Declaring an endpoint alone does not enable
-  refresh: the guarded refresh machinery is internal to the package, and
-  the wiring that would invoke it before dispatch is not exposed by the
-  public or alpha API yet. In the shipped configuration an expired OAuth
-  credential therefore fails closed with an actionable denial; publicly
-  configurable pre-dispatch refresh is future work.
+- **`tokenEndpoints`** enables pre-dispatch OAuth refresh. Each entry holds
+  the provider's `url` — an absolute `https` URL on its own origin ending in
+  the reserved `/oauth/token` or `/v1/oauth/token` route, without query,
+  fragment or userinfo — and its `clientId`, the family's public OAuth client
+  ID (public by contract, never a secret, which is why it lives in
+  configuration). When an entry names a provider whose registered family
+  ships an auth module, the service wires the guarded refresh itself:
+  a dispatch whose OAuth credential is at or inside the refresh window
+  performs one journaled `auth.token` operation, writes the rotated
+  credential to the store it came from, re-reads the authority and only then
+  sends. Both halves are required — an endpoint with no family auth module,
+  or a family with no endpoint, keeps the fail-closed behavior and an expired
+  credential is denied with an actionable reason naming what is missing.
+  Anthropic (`/v1/oauth/token`) and OpenAI (`/oauth/token`) are the supported
+  token routes.
+- **Refresh contract, including its crash window.** A failed refresh fails
+  closed: the provider's rejection, an unusable token body or a read-only
+  store denies the dispatch and journals the denial, and nothing is sent
+  with the stale credential. The remote exchange and the local write are two
+  steps, so a process death after the provider rotated the token but before
+  the write commits leaves the store holding a refresh token the provider has
+  already invalidated: that is an uncertain rotation, the caller must
+  re-authenticate or run the store's recovery path, and this package makes no
+  exactly-once claim across a crash. Installation-scoped (org and service)
+  credentials are read-only by design and are never refreshed; refresh
+  applies to personal credentials.
+- **Custom refresh.** The default factory auto-wires refresh from the
+  configuration above. Reach for the alpha hook when a family's auth module
+  is not part of a registered provider module, or when the refresh machinery
+  must be replaced: pass `refreshExpiredCredential` to
+  `createAiServiceFactory` (or `createPrivateAiService`), and build it with
+  `createCredentialRefreshHook` from `@backstage/ai-node/alpha` to keep the
+  guarded, journaled behavior while supplying your own modules or transport.
+  An explicit hook always wins over the config-driven default.
 - **`precedence`** selects which credential scope wins when both a personal and
   an installation credential exist for a provider. The default `user-first`
   prefers the caller's own provider account; `org-first` pins the installation

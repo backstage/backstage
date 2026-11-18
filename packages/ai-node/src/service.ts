@@ -29,6 +29,7 @@ import type { AiModuleRegistry } from './moduleRegistry';
 import {
   createAiServiceIntegration,
   type AiCodemodeOptions,
+  type CredentialRefreshHook,
 } from './integration';
 import type { ToolModule } from './tools/types';
 import { runAiMigrations } from './migrations';
@@ -77,6 +78,19 @@ export type AiServiceFactoryOptions = Readonly<{
    * `@backstage/ai-node-codemode`.
    */
   codemode?: AiCodemodeOptions;
+  /**
+   * Guarded pre-dispatch OAuth refresh.
+   *
+   * @remarks
+   * An explicit hook here overrides the config-driven default: when
+   * `ai.credentials.tokenEndpoints` declares a provider whose registered family
+   * carries an auth module, the service wires refresh itself, so the standard
+   * configuration needs nothing here. Supply a hook for a provider whose auth
+   * module is not part of a registered family, or to replace the refresh
+   * machinery entirely; build it with `createCredentialRefreshHook` from
+   * `@backstage/ai-node/alpha` to keep the guarded, journaled behavior.
+   */
+  refreshExpiredCredential?: CredentialRefreshHook;
 }>;
 
 /**
@@ -130,6 +144,9 @@ async function createConfiguredService(
     providerModules: options.providerModules ?? [],
     toolModules: options.toolModules ?? [],
     ...(options.codemode === undefined ? {} : { codemode: options.codemode }),
+    ...(options.refreshExpiredCredential === undefined
+      ? {}
+      : { refreshExpiredCredential: options.refreshExpiredCredential }),
     ...(dynamic
       ? {
           moduleSource: () =>

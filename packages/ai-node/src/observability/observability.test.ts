@@ -976,8 +976,12 @@ describe('observability seam', () => {
         }),
         events: metrics,
         modules: denyProbeModules,
-        tokenEndpoints: { anthropic: 'https://token.example/v1/oauth/token' },
-        clientIds: { anthropic: 'client-id' },
+        tokenEndpoints: {
+          anthropic: {
+            url: 'https://token.example/v1/oauth/token',
+            clientId: 'client-id',
+          },
+        },
       });
 
       // 1. Local auth denial: no stored credential.

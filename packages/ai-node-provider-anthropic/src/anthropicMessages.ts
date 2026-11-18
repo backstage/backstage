@@ -20,6 +20,7 @@ import type {
   ProviderAdapter,
 } from '@backstage/ai-node/modules';
 import { validateHttpEnvelope } from '@backstage/ai-node/modules';
+import { anthropicAuthModule } from './anthropicAuth';
 
 const CHAT = ['stream', 'complete', 'streamSimple', 'completeSimple'] as const;
 
@@ -43,6 +44,7 @@ export const anthropicMessages: AiProviderModule = {
   id: 'anthropic-messages',
   adapter: streamAdapter(anthropic),
   credentialKinds: ['api_key', 'oauth'],
+  authModule: anthropicAuthModule,
   certifiedOperations: CHAT,
   destinationTemplates: [[{ literal: '/v1/messages' }]],
   destination: model => `${base(model.baseUrl)}/v1/messages`,

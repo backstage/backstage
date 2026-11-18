@@ -22,6 +22,7 @@ import type {
   AiProviderModule,
   ProviderAdapter,
 } from '@backstage/ai-node/modules';
+import { openaiAuthModule } from './auth';
 
 const CHAT = ['stream', 'complete', 'streamSimple', 'completeSimple'] as const;
 
@@ -41,6 +42,7 @@ export const openaiResponses: AiProviderModule = {
   id: 'openai-responses',
   adapter: streamAdapter(responses),
   credentialKinds: ['api_key', 'oauth'],
+  authModule: openaiAuthModule,
   certifiedOperations: CHAT,
   destinationTemplates: [[{ literal: '/v1/responses' }]],
   destination: model => `${base(model.baseUrl)}/responses`,
