@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { InputError } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -23,7 +24,10 @@ import {
 import fs from 'fs-extra';
 import path from 'node:path';
 import { createTemplateRenderer, TemplateCapabilities } from 'nunjitsu';
-import { collectActionTemplateCapabilities } from './templateActionHandler';
+import {
+  collectActionTemplateCapabilities,
+  containsGitDirectory,
+} from './templateActionHandler';
 
 export type TemplateFileActionInput = {
   targetPath: string;
@@ -52,6 +56,10 @@ export async function createTemplateFileActionHandler<
     ctx.workspacePath,
     ctx.input.targetPath,
   );
+
+  if (containsGitDirectory(path.relative(ctx.workspacePath, outputPath))) {
+    throw new InputError('targetPath must not be within a .git directory');
+  }
 
   if (fs.existsSync(outputPath) && !ctx.input.replace) {
     ctx.logger.info(

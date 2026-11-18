@@ -372,6 +372,77 @@ describe('fetch:template', () => {
     });
   });
 
+  describe('with .git directory entries in the template', () => {
+    beforeEach(() => {
+      mockFetchContents.mockImplementation(({ outputPath }) => {
+        mockDir.setContent({
+          [outputPath]: {
+            '.git': {
+              HEAD: 'ref:../../../../etc/secret',
+              config: '[core]',
+              'ref:..': {},
+            },
+            subdir: {
+              '.git': {
+                HEAD: 'ref:../../../../etc/secret',
+              },
+            },
+            'subdir/${{ values.gitDir }}/refs': {
+              'packed-refs': 'ref:../../../../etc/secret',
+            },
+            '.gitignore': 'node_modules',
+            'some-repo.git': 'bundle',
+            'static.txt': 'static content',
+          },
+        });
+
+        return Promise.resolve();
+      });
+    });
+
+    it('does not place any .git directory in the workspace', async () => {
+      await action.handler(
+        mockContext({
+          values: { test: 'value', gitDir: '.git' },
+        }),
+      );
+
+      await expect(
+        fs.pathExists(`${workspacePath}/target/.git`),
+      ).resolves.toEqual(false);
+      await expect(
+        fs.pathExists(`${workspacePath}/target/subdir/.git`),
+      ).resolves.toEqual(false);
+      await expect(
+        fs.pathExists(`${workspacePath}/target/subdir/.git/refs`),
+      ).resolves.toEqual(false);
+    });
+
+    it('still copies regular files, dotfiles, and .git-suffixed names', async () => {
+      await action.handler(
+        mockContext({
+          values: { test: 'value', gitDir: '.git' },
+        }),
+      );
+
+      await expect(
+        fs.readFile(`${workspacePath}/target/.gitignore`, 'utf-8'),
+      ).resolves.toEqual('node_modules');
+      await expect(
+        fs.readFile(`${workspacePath}/target/some-repo.git`, 'utf-8'),
+      ).resolves.toEqual('bundle');
+      await expect(
+        fs.readFile(`${workspacePath}/target/static.txt`, 'utf-8'),
+      ).resolves.toEqual('static content');
+    });
+
+    it('rejects a targetPath that resolves inside a .git directory', async () => {
+      await expect(() =>
+        action.handler(mockContext({ targetPath: './target/.git' })),
+      ).rejects.toThrow('targetPath must not be within a .git directory');
+    });
+  });
+
   describe('copyWithoutTemplating', () => {
     let context: ActionContext<FetchTemplateInput>;
 

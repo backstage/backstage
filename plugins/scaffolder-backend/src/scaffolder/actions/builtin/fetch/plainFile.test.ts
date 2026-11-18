@@ -62,6 +62,32 @@ describe('fetch:plain:file', () => {
     );
   });
 
+  it('should disallow a target path within a .git directory', async () => {
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          url: 'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets/Backstage%20Community%20Sessions.png',
+          targetPath: '.git/HEAD',
+        },
+      }),
+    ).rejects.toThrow('targetPath must not be within a .git directory');
+
+    // matched case-insensitively, for file systems that treat any casing of
+    // the name as the same directory
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          url: 'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets/Backstage%20Community%20Sessions.png',
+          targetPath: '.GIT/HEAD',
+        },
+      }),
+    ).rejects.toThrow('targetPath must not be within a .git directory');
+
+    expect(fetchFile).not.toHaveBeenCalled();
+  });
+
   it('passed through the token to fetchFile', async () => {
     await action.handler({
       ...mockContext,

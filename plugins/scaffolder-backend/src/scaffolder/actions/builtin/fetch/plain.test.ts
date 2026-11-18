@@ -62,6 +62,29 @@ describe('fetch:plain', () => {
     );
   });
 
+  it('should disallow a target path within a .git directory', async () => {
+    for (const targetPath of [
+      '.git',
+      // matched case-insensitively, for file systems that treat any
+      // casing of the name as the same directory
+      '.GIT',
+      '.Git/hooks',
+      'sub/.GIT',
+    ]) {
+      await expect(
+        action.handler({
+          ...mockContext,
+          input: {
+            url: 'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets',
+            targetPath,
+          },
+        }),
+      ).rejects.toThrow('targetPath must not be within a .git directory');
+    }
+
+    expect(fetchContents).not.toHaveBeenCalled();
+  });
+
   it('should fetch plain', async () => {
     await action.handler({
       ...mockContext,

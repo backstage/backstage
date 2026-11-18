@@ -159,6 +159,29 @@ describe('fs:rename', () => {
     expect(beforeContent).toEqual(afterContent);
   });
 
+  it('should throw when renaming into a .git directory', async () => {
+    for (const to of [
+      '.git',
+      '.git/objects',
+      'nested/.git/config',
+      '.GIT',
+      '.Git/HEAD',
+    ]) {
+      await expect(
+        action.handler({
+          ...mockContext,
+          input: {
+            files: [{ from: 'a-folder', to }],
+          },
+        }),
+      ).rejects.toThrow('files must not be renamed into a .git directory');
+    }
+
+    expect(
+      fs.existsSync(resolvePath(workspacePath, 'a-folder', 'file.md')),
+    ).toBe(true);
+  });
+
   it('should call fs.move with the correct values', async () => {
     mockInputFiles.forEach(file => {
       const filePath = resolvePath(workspacePath, file.from);

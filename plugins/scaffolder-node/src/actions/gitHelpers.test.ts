@@ -24,8 +24,13 @@ import {
   createBranch,
   initRepoAndPush,
 } from './gitHelpers';
-import { mockServices } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  createMockDirectory,
+} from '@backstage/backend-test-utils';
 import { loggerToWinstonLogger } from './loggerToWinstonLogger';
+import fs from 'fs-extra';
+import { join as joinPath } from 'node:path';
 
 jest.mock('../scm', () => ({
   Git: {
@@ -45,9 +50,10 @@ jest.mock('../scm', () => ({
     }),
   },
 }));
-jest.mock('fs-extra', () => ({
-  cpSync: jest.fn(),
-}));
+jest.mock('fs-extra', () => {
+  const actual = jest.requireActual('fs-extra');
+  return { ...actual, cpSync: jest.fn() };
+});
 
 const mockedGit = Git.fromAuth({
   logger: loggerToWinstonLogger(mockServices.logger.mock()),
@@ -56,6 +62,43 @@ const mockedGit = Git.fromAuth({
 describe('initRepoAndPush', () => {
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  it('replaces a pre-existing .git directory before initializing the repo', async () => {
+    const mockDir = createMockDirectory();
+    const dir = mockDir.resolve('repo');
+
+    mockDir.setContent({
+      repo: {
+        '.git': {
+          HEAD: 'ref:../../../../etc/secret',
+          config: '[core]',
+          'ref:..': {},
+        },
+        'README.md': 'content',
+      },
+    });
+
+    jest.mocked(mockedGit.init).mockImplementationOnce(async () => {
+      // By the time the repo is initialized, the pre-existing .git must
+      // already be gone, or it would survive git's init guard.
+      expect(fs.pathExistsSync(joinPath(dir, '.git'))).toBe(false);
+    });
+
+    await initRepoAndPush({
+      dir,
+      remoteUrl: 'git@github.com:test/repo.git',
+      auth: {
+        username: 'test-user',
+        password: 'test-password',
+      },
+      logger: loggerToWinstonLogger(mockServices.logger.mock()),
+    });
+
+    await expect(fs.pathExists(joinPath(dir, '.git'))).resolves.toBe(false);
+    await expect(
+      fs.readFile(joinPath(dir, 'README.md'), 'utf-8'),
+    ).resolves.toEqual('content');
   });
 
   describe('with minimal parameters', () => {
