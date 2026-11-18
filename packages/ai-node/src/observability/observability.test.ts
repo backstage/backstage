@@ -107,6 +107,7 @@ function decision(overrides: Record<string, unknown> = {}) {
 async function subscriberHarness(): Promise<{
   subscriber: ReturnType<typeof createMetricsSubscriber>;
   emit: (event: AiObservabilityEvent) => void;
+  publishForeign: (eventPayload: unknown) => void;
 }> {
   const subscriber = createMetricsSubscriber();
   const handlers: Array<(params: unknown) => void> = [];
@@ -120,7 +121,12 @@ async function subscriberHarness(): Promise<{
     },
   };
   await subscriber.subscribe(bus);
-  return { subscriber, emit: createAiEventSink(bus) };
+  return {
+    subscriber,
+    emit: createAiEventSink(bus),
+    // A foreign publisher on the same topics: no validation, no sink.
+    publishForeign: (eventPayload: unknown) => bus.publish({ eventPayload }),
+  };
 }
 
 describe('observability seam', () => {
@@ -385,6 +391,34 @@ describe('observability seam', () => {
       expect(() => harness.emit(event as never)).not.toThrow();
     }
     expect(metrics.snapshot().events).toBe(0);
+
+    // The topics are shared: a foreign publisher can put any shape on
+    // them without passing the sink. The subscriber validates on its
+    // side too — a malformed payload must neither corrupt the
+    // aggregation nor throw out of the events service.
+    expect(() =>
+      harness.publishForeign({
+        kind: 'journal',
+        at: 1,
+        action: 'decision',
+        decision: 'allow',
+        durationMs: 'not-a-number',
+      }),
+    ).not.toThrow();
+    harness.publishForeign({ kind: 'unknown' });
+    harness.publishForeign(null);
+    expect(metrics.snapshot().events).toBe(0);
+    expect(metrics.snapshot().journalDecisions).toEqual({ allow: 0, deny: 0 });
+
+    // A well-formed foreign payload still aggregates normally.
+    harness.publishForeign({
+      kind: 'journal',
+      at: 2,
+      action: 'decision',
+      decision: 'allow',
+      durationMs: 1,
+    });
+    expect(metrics.snapshot().journalDecisions).toEqual({ allow: 1, deny: 0 });
 
     // A rejecting publish cannot surface an unhandled rejection: the
     // events service is fire-and-forget from the sink's perspective.

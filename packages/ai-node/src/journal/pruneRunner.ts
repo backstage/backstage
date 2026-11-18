@@ -94,7 +94,7 @@ export function startAiJournalPruneRunner(
   // surface as an unhandled rejection. A logger whose warn is async
   // structurally satisfies the sync callback type, so a returned thenable
   // gets a rejection handler attached (without awaiting), the same way
-  // the observability seam's emitSafe handles its subscribers.
+  // the observability sink consumes its publish results.
   const warn = (message: string) => {
     try {
       const result: unknown = logger?.warn(message);

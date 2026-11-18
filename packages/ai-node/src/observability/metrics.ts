@@ -16,7 +16,7 @@
 
 import type { EventsService } from '@backstage/plugin-events-node';
 import type { AiObservabilityEvent } from './types';
-import { AI_OBSERVABILITY_TOPICS } from './types';
+import { AI_OBSERVABILITY_TOPICS, assertObservableEvent } from './types';
 
 /**
  * A counter series: one label combination and its count.
@@ -261,7 +261,15 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
         id: 'ai-metrics',
         topics: [...AI_OBSERVABILITY_TOPICS],
         onEvent: async ({ eventPayload }) => {
-          emit(eventPayload as AiObservabilityEvent);
+          // The topics are shared: any publisher can reach them, so the
+          // subscriber validates exactly like the sink and silently
+          // drops foreign shapes rather than feeding them to the
+          // aggregation or throwing out of the events service.
+          try {
+            emit(assertObservableEvent(eventPayload));
+          } catch {
+            // dropped
+          }
         },
       });
     },
