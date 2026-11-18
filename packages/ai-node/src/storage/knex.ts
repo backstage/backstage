@@ -28,6 +28,7 @@ import {
 } from '@earendil-works/pi-durable';
 import { MemoryStorage } from '@earendil-works/pi-durable/storage/memory';
 import type { Fence, Namespace } from '../contracts';
+import { checkFence, fencedTransaction } from './dialect-kit';
 
 export interface KnexStorageOptions {
   readonly db: Knex;
@@ -51,7 +52,6 @@ class KnexStorage implements Storage {
   private closed = false;
   private tail: Promise<void> = Promise.resolve();
   private readonly key: { plugin_id: string; session_id: string };
-  private readonly sqlite: boolean;
   private readonly options: KnexStorageOptions;
 
   constructor(options: KnexStorageOptions) {
@@ -60,7 +60,6 @@ class KnexStorage implements Storage {
       plugin_id: options.namespace.pluginId,
       session_id: options.namespace.sessionId,
     };
-    this.sqlite = options.db.client.config.client === 'better-sqlite3';
   }
 
   private assertOpen() {
@@ -106,16 +105,6 @@ class KnexStorage implements Storage {
     context?: Context,
   ): Promise<CounterRow> {
     context?.abortSignal?.throwIfAborted();
-    if (this.sqlite) {
-      // An UPDATE obtains SQLite's write lock before observing the lease.
-      await trx('ai_namespace_leases')
-        .where(this.key)
-        .update({ owner_id: trx.raw('owner_id') });
-    } else {
-      await trx('ai_namespace_leases').where(this.key).forUpdate().first();
-    }
-    await this.checkFence(trx);
-    context?.abortSignal?.throwIfAborted();
     await trx('ai_storage_counters')
       .insert({ ...this.key, next_id: 2, next_seq: 1 })
       .onConflict(['plugin_id', 'session_id'])
@@ -130,58 +119,27 @@ class KnexStorage implements Storage {
     context: Context | undefined,
     action: (trx: Knex.Transaction, counters: CounterRow) => Promise<T>,
   ): Promise<T> {
-    for (let attempt = 0; ; attempt++) {
-      const trx = await this.options.db.transaction();
-      let locked = false;
-      let committing = false;
-      try {
-        const counters = await this.lock(trx, context);
-        locked = true;
-        const result = await action(trx, counters);
-        committing = true;
-        await trx.commit();
-        return result;
-      } catch (error) {
-        let rolledBack = false;
-        if (!trx.isCompleted()) {
-          try {
-            await trx.rollback();
-            rolledBack = true;
-          } catch {
-            /* The outcome is not known safe. */
-          }
-        }
-        const code = (error as { code?: string })?.code;
-        if (
-          !committing &&
-          !locked &&
-          rolledBack &&
-          attempt < 3 &&
-          ['SQLITE_BUSY', 'SQLITE_LOCKED', '40001', '40P01'].includes(
-            code ?? '',
-          )
-        ) {
-          await new Promise(resolve => setTimeout(resolve, 50 * 2 ** attempt));
-          continue;
-        }
-        throw error;
-      }
-    }
+    return fencedTransaction(
+      this.options.db,
+      this.key,
+      this.options.fence,
+      'Storage fence is stale or expired',
+      trx => this.lock(trx, context),
+      action,
+      {
+        beforeLock: () => context?.abortSignal?.throwIfAborted(),
+        retryPreparation: true,
+      },
+    );
   }
 
   private async checkFence(trx: Knex.Transaction): Promise<void> {
-    const clock = this.sqlite
-      ? "CASE WHEN typeof(expires_at) IN ('integer', 'real') THEN expires_at > (julianday('now') - 2440587.5) * 86400000 ELSE julianday(expires_at) > julianday('now') END"
-      : 'expires_at > statement_timestamp()';
-    const lease = await trx('ai_namespace_leases')
-      .where(this.key)
-      .where({
-        owner_id: this.options.fence.owner,
-        token: this.options.fence.token,
-      })
-      .whereRaw(clock)
-      .first('token');
-    if (!lease) throw new Error('Storage fence is stale or expired');
+    return checkFence(
+      trx,
+      this.key,
+      this.options.fence,
+      'Storage fence is stale or expired',
+    );
   }
 
   async commit(

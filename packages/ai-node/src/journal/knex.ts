@@ -17,6 +17,9 @@
 import type { Knex } from 'knex';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Fence } from '../contracts';
+import { emitSafe } from '../observability/types';
+import type { AiEventEmitter } from '../observability/types';
+import { bigintText, dbNow, fencedTransaction } from '../storage/dialect-kit';
 import { builtinProviderRegistry } from '../providers/builtins';
 import type { AiProviderRegistry } from '../providers/registry';
 import {
@@ -64,6 +67,8 @@ export interface AttemptJournalOptions {
   readonly authorizer: AuditReadAuthorizer;
   /** Best-effort write-through mirror to the Backstage auditor service. */
   readonly mirror?: JournalAuditorMirror;
+  /** Observability sink; no-op when absent. */
+  readonly events?: AiEventEmitter;
   /**
    * Integration-time override for session ownership lookup. When absent,
    * ownership is read from the journal's own stored session owners. A
@@ -125,6 +130,7 @@ class KnexAttemptJournal implements AttemptJournal {
   readonly #db: Knex;
   readonly #authorizer: AuditReadAuthorizer;
   readonly #mirror: JournalAuditorMirror | undefined;
+  readonly #events: AiEventEmitter | undefined;
   readonly #ownershipResolver:
     | AttemptJournalOptions['ownershipResolver']
     | undefined;
@@ -136,6 +142,7 @@ class KnexAttemptJournal implements AttemptJournal {
     this.#providers = options.providers ?? builtinProviderRegistry;
     this.#authorizer = options.authorizer;
     this.#mirror = options.mirror;
+    this.#events = options.events;
     this.#ownershipResolver = options.ownershipResolver;
     this.#sqlite = options.db.client.config.client === 'better-sqlite3';
   }
@@ -144,6 +151,7 @@ class KnexAttemptJournal implements AttemptJournal {
     fence: Fence,
     event: unknown,
   ): Promise<AttemptId> {
+    const started = Date.now();
     const parsed = parseDecision(event, this.#providers);
     const lease = parseFence(fence);
     const id = await this.#append(lease, async trx => {
@@ -155,13 +163,20 @@ class KnexAttemptJournal implements AttemptJournal {
           plugin_id: lease.pluginId,
           session_id: lease.sessionId,
           owner_ref: parsed.actor,
-          created_at: this.#now(trx),
+          created_at: dbNow(trx),
         })
         .onConflict(['plugin_id', 'session_id'])
         .ignore();
       return this.#insertEvent(trx, decisionColumns(lease, parsed));
     });
     await this.#mirrorEvent(id);
+    emitSafe(this.#events, {
+      kind: 'journal',
+      action: 'decision',
+      at: Date.now(),
+      decision: parsed.decision,
+      durationMs: Date.now() - started,
+    });
     return id;
   }
 
@@ -170,6 +185,7 @@ class KnexAttemptJournal implements AttemptJournal {
     attempt: AttemptId,
     outcome: unknown,
   ): Promise<void> {
+    const started = Date.now();
     const parsed = parseOutcome(outcome);
     const attemptId = parseAttemptId(attempt);
     const lease = parseFence(fence);
@@ -199,15 +215,28 @@ class KnexAttemptJournal implements AttemptJournal {
       return this.#insertEvent(trx, outcomeColumns(lease, attemptId, parsed));
     });
     await this.#mirrorEvent(id);
+    emitSafe(this.#events, {
+      kind: 'journal',
+      action: 'outcome',
+      at: Date.now(),
+      durationMs: Date.now() - started,
+    });
   }
 
   async recordRecovery(fence: Fence, event: unknown): Promise<void> {
+    const started = Date.now();
     const parsed = parseRecovery(event);
     const lease = parseFence(fence);
     const id = await this.#append(lease, async trx => {
       return this.#insertEvent(trx, recoveryColumns(lease, parsed));
     });
     await this.#mirrorEvent(id);
+    emitSafe(this.#events, {
+      kind: 'journal',
+      action: 'recovery',
+      at: Date.now(),
+      durationMs: Date.now() - started,
+    });
   }
 
   async read(
@@ -266,10 +295,7 @@ class KnexAttemptJournal implements AttemptJournal {
         await this.#db(JOURNAL_EVENTS_TABLE)
           .where({ kind: 'outcome' })
           .whereIn('attempt_id', attemptIds)
-          .select(
-            this.#db.raw('CAST(attempt_id AS TEXT) AS attempt_id'),
-            'status',
-          );
+          .select(bigintText(this.#db, 'attempt_id'), 'status');
       for (const outcome of outcomes) {
         resolved.set(String(outcome.attempt_id), outcome.status);
       }
@@ -292,12 +318,12 @@ class KnexAttemptJournal implements AttemptJournal {
     trx: Knex.Transaction,
     columns: Record<string, unknown>,
   ): Promise<AttemptId> {
-    const row = { ...columns, created_at: this.#now(trx) };
+    const row = { ...columns, created_at: dbNow(trx) };
     if (this.#sqlite) {
       await trx(JOURNAL_EVENTS_TABLE).insert(row);
-      const rows = (await trx.raw(
-        `SELECT CAST(id AS TEXT) AS id FROM ${JOURNAL_EVENTS_TABLE} WHERE rowid = last_insert_rowid()`,
-      )) as Array<{ id: string }>;
+      const rows: Array<{ id: string }> = await trx(JOURNAL_EVENTS_TABLE)
+        .select(bigintText(trx, 'id'))
+        .whereRaw('rowid = last_insert_rowid()');
       return rows[0].id;
     }
     const inserted = await trx(JOURNAL_EVENTS_TABLE)
@@ -307,28 +333,17 @@ class KnexAttemptJournal implements AttemptJournal {
   }
 
   /**
-   * Database clock for event timestamps. SQLite stores UTC ISO-8601 text with
-   * an explicit zone marker so reads, retention comparisons and timezone
-   * parsing are unambiguous; PostgreSQL uses its native timestamptz.
-   */
-  #now(trx: Knex.Transaction): Knex.Raw {
-    return this.#sqlite
-      ? trx.raw("strftime('%Y-%m-%dT%H:%M:%fZ', 'now')")
-      : trx.fn.now();
-  }
-
-  /**
    * Selects journal event rows with the 64-bit ID columns cast to TEXT, so
    * SQLite never rounds them through a JavaScript number. Explicit columns
    * avoid ambiguous ORDER BY targets from `*` plus aliased casts.
    */
   #selectEvents(db: Knex): Knex.QueryBuilder {
     return db(JOURNAL_EVENTS_TABLE).select(
-      db.raw('CAST(id AS TEXT) AS id'),
+      bigintText(db, 'id'),
       'plugin_id',
       'session_id',
       'kind',
-      db.raw('CAST(attempt_id AS TEXT) AS attempt_id'),
+      bigintText(db, 'attempt_id'),
       'actor',
       'conversation_id',
       'task_id',
@@ -376,74 +391,14 @@ class KnexAttemptJournal implements AttemptJournal {
     lease: ReturnType<typeof parseFence>,
     insert: (trx: Knex.Transaction) => Promise<T>,
   ): Promise<T> {
-    for (let attempt = 0; ; attempt++) {
-      const trx = await this.#db.transaction();
-      let locked = false;
-      let committing = false;
-      try {
-        await this.#lockLeaseRow(trx, lease);
-        locked = true;
-        await this.#checkFence(trx, lease);
-        const result = await insert(trx);
-        committing = true;
-        await trx.commit();
-        return result;
-      } catch (error) {
-        let rolledBack = false;
-        if (!trx.isCompleted()) {
-          try {
-            await trx.rollback();
-            rolledBack = true;
-          } catch {
-            /* The outcome is not known safe. */
-          }
-        }
-        const code = (error as { code?: string })?.code;
-        if (
-          !committing &&
-          !locked &&
-          rolledBack &&
-          attempt < 3 &&
-          ['SQLITE_BUSY', 'SQLITE_LOCKED', '40001', '40P01'].includes(
-            code ?? '',
-          )
-        ) {
-          await new Promise(resolve => setTimeout(resolve, 50 * 2 ** attempt));
-          continue;
-        }
-        throw error;
-      }
-    }
-  }
-
-  async #lockLeaseRow(
-    trx: Knex.Transaction,
-    lease: ReturnType<typeof parseFence>,
-  ): Promise<void> {
-    const key = ns(lease);
-    if (this.#sqlite) {
-      // An UPDATE obtains SQLite's write lock before observing the lease.
-      await trx('ai_namespace_leases')
-        .where(key)
-        .update({ owner_id: trx.raw('owner_id') });
-    } else {
-      await trx('ai_namespace_leases').where(key).forUpdate().first();
-    }
-  }
-
-  async #checkFence(
-    trx: Knex.Transaction,
-    lease: ReturnType<typeof parseFence>,
-  ): Promise<void> {
-    const clock = this.#sqlite
-      ? "CASE WHEN typeof(expires_at) IN ('integer', 'real') THEN expires_at > (julianday('now') - 2440587.5) * 86400000 ELSE julianday(expires_at) > julianday('now') END"
-      : 'expires_at > statement_timestamp()';
-    const row = await trx('ai_namespace_leases')
-      .where(ns(lease))
-      .where({ owner_id: lease.owner, token: lease.token })
-      .whereRaw(clock)
-      .first('token');
-    if (!row) throw new Error('Journal fence is stale or expired');
+    return fencedTransaction(
+      this.#db,
+      ns(lease),
+      lease,
+      'Journal fence is stale or expired',
+      async () => undefined,
+      insert,
+    );
   }
 }
 

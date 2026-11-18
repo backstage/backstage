@@ -1821,6 +1821,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@earendil-works/chord": "npm:1.5.2"
     "@earendil-works/pi-ai": "npm:1.5.2"
+    "@earendil-works/pi-codemode": "npm:1.5.2"
     "@earendil-works/pi-durable": "npm:1.5.2"
     better-sqlite3: "npm:^12.0.0"
     jest: "npm:^30.5.0"
