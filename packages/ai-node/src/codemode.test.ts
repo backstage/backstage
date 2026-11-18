@@ -65,7 +65,7 @@ import {
   type ProductionAiServiceIntegration,
 } from './integration';
 import { runAiMigrations } from './migrations';
-import { builtinProviderRegistry } from './providers/testFixtures';
+import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 import { createBoundedCodemodeExtension } from '@backstage/ai-node-codemode/alpha';
 
 const createAiServiceIntegration = (
@@ -129,11 +129,13 @@ async function fixture(): Promise<Fixture> {
     } as unknown as AuthService,
     permissions: {
       authorize: async () => [{ result: 'ALLOW' }],
+      authorizeConditional: async () => [{ result: 'ALLOW' }],
     } as unknown as PermissionsService,
     logger: mockServices.logger.mock(),
     auditor: mockServices.auditor.mock(),
     lifecycle: { addShutdownHook: jest.fn() } as unknown as LifecycleService,
     pluginMetadata: { getId: () => 'test-plugin' } as PluginMetadataService,
+    events: mockServices.events(),
   };
   return {
     db,

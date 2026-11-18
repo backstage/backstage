@@ -32,7 +32,7 @@ import { createGuardedModelOperations as createGuardedModelOperationsBase } from
 import type { TrustedOperation } from './types';
 import type { AttemptDecision, AttemptOutcome } from '../journal/types';
 import type { Fence } from '../contracts';
-import { builtinProviderRegistry } from '../providers/testFixtures';
+import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 
 const createModelOperationGuard = (
   options: Parameters<typeof createModelOperationGuardBase>[0],

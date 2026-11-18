@@ -26,5 +26,10 @@ export type {
   AiHealthSignal,
   AiHealthThresholds,
 } from './health';
-export { assertObservableEvent, emitSafe, noopAiEventEmitter } from './types';
-export type { AiEventEmitter, AiObservabilityEvent } from './types';
+export {
+  AI_OBSERVABILITY_TOPICS,
+  aiObservabilityTopic,
+  assertObservableEvent,
+  createAiEventSink,
+} from './types';
+export type { AiEventSink, AiObservabilityEvent } from './types';

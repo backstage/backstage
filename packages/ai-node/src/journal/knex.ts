@@ -17,8 +17,7 @@
 import type { Knex } from 'knex';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Fence } from '../contracts';
-import { emitSafe } from '../observability/types';
-import type { AiEventEmitter } from '../observability/types';
+import type { AiEventSink } from '../observability/types';
 import { bigintText, dbNow, fencedTransaction } from '../storage/dialect-kit';
 import { emptyProviderRegistry } from '../providers/registry';
 import type { AiProviderRegistry } from '../providers/registry';
@@ -34,7 +33,7 @@ import {
   type ParsedOutcome,
   type ParsedRecovery,
 } from './redaction';
-import { AuditAccessDeniedError, AuditSessionNotFoundError } from './errors';
+import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import {
   AI_AUDIT_READ_PERMISSION_NAME,
   type AttemptId,
@@ -68,7 +67,7 @@ export interface AttemptJournalOptions {
   /** Best-effort write-through mirror to the Backstage auditor service. */
   readonly mirror?: JournalAuditorMirror;
   /** Observability sink; no-op when absent. */
-  readonly events?: AiEventEmitter;
+  readonly emit?: AiEventSink;
   /**
    * Integration-time override for session ownership lookup. When absent,
    * ownership is read from the journal's own stored session owners. A
@@ -130,7 +129,7 @@ class KnexAttemptJournal implements AttemptJournal {
   readonly #db: Knex;
   readonly #authorizer: AuditReadAuthorizer;
   readonly #mirror: JournalAuditorMirror | undefined;
-  readonly #events: AiEventEmitter | undefined;
+  readonly #emit: AiEventSink | undefined;
   readonly #ownershipResolver:
     | AttemptJournalOptions['ownershipResolver']
     | undefined;
@@ -142,7 +141,7 @@ class KnexAttemptJournal implements AttemptJournal {
     this.#providers = options.providers ?? emptyProviderRegistry;
     this.#authorizer = options.authorizer;
     this.#mirror = options.mirror;
-    this.#events = options.events;
+    this.#emit = options.emit;
     this.#ownershipResolver = options.ownershipResolver;
     this.#sqlite = options.db.client.config.client === 'better-sqlite3';
   }
@@ -170,7 +169,7 @@ class KnexAttemptJournal implements AttemptJournal {
       return this.#insertEvent(trx, decisionColumns(lease, parsed));
     });
     await this.#mirrorEvent(id);
-    emitSafe(this.#events, {
+    this.#emit?.({
       kind: 'journal',
       action: 'decision',
       at: Date.now(),
@@ -215,7 +214,7 @@ class KnexAttemptJournal implements AttemptJournal {
       return this.#insertEvent(trx, outcomeColumns(lease, attemptId, parsed));
     });
     await this.#mirrorEvent(id);
-    emitSafe(this.#events, {
+    this.#emit?.({
       kind: 'journal',
       action: 'outcome',
       at: Date.now(),
@@ -231,7 +230,7 @@ class KnexAttemptJournal implements AttemptJournal {
       return this.#insertEvent(trx, recoveryColumns(lease, parsed));
     });
     await this.#mirrorEvent(id);
-    emitSafe(this.#events, {
+    this.#emit?.({
       kind: 'journal',
       action: 'recovery',
       at: Date.now(),
@@ -246,9 +245,7 @@ class KnexAttemptJournal implements AttemptJournal {
     const parsed = parseAuditQuery(query);
     const ref = principalRef(credentials);
     if (ref === undefined) {
-      throw new AuditAccessDeniedError(
-        'Audit reads require ownership of the session',
-      );
+      throw new NotAllowedError('Audit reads require ownership of the session');
     }
     const ownerRef = this.#ownershipResolver
       ? await this.#ownershipResolver({
@@ -261,17 +258,15 @@ class KnexAttemptJournal implements AttemptJournal {
             .first('owner_ref')
         )?.owner_ref;
     if (!ownerRef) {
-      throw new AuditSessionNotFoundError(
+      throw new NotFoundError(
         `No journaled session ${parsed.pluginId}/${parsed.sessionId}`,
       );
     }
     if (ref !== ownerRef) {
-      throw new AuditAccessDeniedError(
-        'Audit reads require ownership of the session',
-      );
+      throw new NotAllowedError('Audit reads require ownership of the session');
     }
     if (!(await this.#authorizer.authorizeAuditRead(credentials))) {
-      throw new AuditAccessDeniedError(
+      throw new NotAllowedError(
         `Audit reads require the ${AI_AUDIT_READ_PERMISSION_NAME} permission`,
       );
     }

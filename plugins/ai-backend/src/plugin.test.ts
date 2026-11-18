@@ -22,6 +22,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import knexFactory from 'knex';
 import request from 'supertest';
+import express from 'express';
 import {
   mockCredentials,
   mockServices,
@@ -40,6 +41,7 @@ import type { AiService, ToolModule } from '@backstage/ai-node/alpha';
 import { ConfigReader } from '@backstage/config';
 import { createRegistry } from '@earendil-works/pi-durable';
 import plugin from './index';
+import { createRouter } from './router';
 import { aiModulesExtensionPoint } from '@backstage/plugin-ai-backend/alpha';
 
 const completions = aiBackendProviderModules.find(
@@ -95,6 +97,12 @@ describe.each<[string, string | undefined]>([
     const permissionService = {
       authorize: async (
         requests: Parameters<PermissionsService['authorize']>[0],
+      ) =>
+        requests.map(({ permission }) => ({
+          result: deniedPermissions.has(permission.name) ? 'DENY' : 'ALLOW',
+        })),
+      authorizeConditional: async (
+        requests: Parameters<PermissionsService['authorizeConditional']>[0],
       ) =>
         requests.map(({ permission }) => ({
           result: deniedPermissions.has(permission.name) ? 'DENY' : 'ALLOW',
@@ -352,7 +360,7 @@ describe.each<[string, string | undefined]>([
         .auth(alice, { type: 'bearer' })
         .send({ model: { provider: 'openai', modelId: 'example' } });
       const before = providerRequests;
-      deniedPermissions.add('ai.model.openai.example.use');
+      deniedPermissions.add('ai.model.use');
       const denial = await request(backend.server)
         .post(
           `/api/ai/v1/sessions/${third.body.sessionId}/conversations/${third.body.conversationId}/messages`,
@@ -722,6 +730,67 @@ describe.each<[string, string | undefined]>([
     } finally {
       await backend.stop();
       await db.close();
+    }
+  });
+
+  it('serves an unauthenticated readiness endpoint that reports ok', async () => {
+    const { knex, close } = await database(pgUrl);
+    try {
+      const backend = await startTestBackend({
+        features: [
+          plugin,
+          httpRouterServiceFactory,
+          mockServices.database.factory({ knex }),
+          mockServices.rootConfig.factory({ data: {} }),
+        ],
+      });
+      try {
+        const response = await request(backend.server).get('/api/ai/health');
+        expect(response.status).toBe(200);
+        expect(response.body.status).toBe('ok');
+        expect(Array.isArray(response.body.signals)).toBe(true);
+      } finally {
+        await backend.stop();
+      }
+    } finally {
+      await close();
+    }
+  });
+
+  it('maps a degraded health report to 503 on the readiness endpoint', async () => {
+    const router = createRouter({
+      ai: {} as never,
+      support: {} as never,
+      httpAuth: {
+        credentials: async () => mockCredentials.none(),
+      } as never,
+      health: () =>
+        ({
+          status: 'degraded',
+          signals: [
+            {
+              name: 'denialRate',
+              value: 1,
+              threshold: 0.5,
+              status: 'degraded',
+              detail: 'every dispatch denied',
+            },
+          ],
+        } as never),
+    });
+    const app = express();
+    app.use('/api/ai', router);
+    const server = createServer(app);
+    server.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    try {
+      const response = await request(server).get('/api/ai/health');
+      expect(response.status).toBe(503);
+      expect(response.body.status).toBe('degraded');
+      expect(response.body.signals[0].name).toBe('denialRate');
+    } finally {
+      server.close();
+      await once(server, 'close');
     }
   });
 });

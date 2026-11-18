@@ -53,8 +53,10 @@ Every action runs under the submitting user's credentials:
 - Each scaffolder task owns an AI session keyed by the task id; only the
   user who created it can open it.
 - Before the session opens, the action authorizes the submitting user for
-  the configured model through the `ai.model.<provider>.<modelId>.use`
-  permission; the managed service re-checks it on every dispatch.
+  the configured model through the fixed `ai.model.use` permission, with
+  the model pair evaluated against the policy's `isModel`, `isProvider`
+  and `isModelType` conditions; the managed service re-checks it on every
+  dispatch.
 - Every model dispatch is authorized, journaled, and fenced by the managed
   AI service. Denials surface the recorded reason — for example, missing
   installation credentials or a model that is not in the installation's

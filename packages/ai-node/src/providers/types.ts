@@ -20,6 +20,7 @@ import type {
   Credential,
 } from '@earendil-works/pi-ai';
 import type { CredentialScope } from '../credentials/types';
+import type { AiAuthModule } from './auth/types';
 import type { DestinationTemplate } from './templates';
 
 /**
@@ -90,6 +91,9 @@ export type ProviderAdapter =
       >;
     }>;
 
+/** A credential kind a provider module consumes. @alpha */
+export type AiCredentialKind = 'api_key' | 'oauth';
+
 /**
  * A host-trusted, in-process provider registration. Modules are not sandboxed:
  * their dispatch receives provider credentials and arbitrary plugin code can
@@ -114,6 +118,18 @@ export type ProviderAdapter =
 export type AiProviderModule = Readonly<{
   id: string;
   adapter: ProviderAdapter;
+  /**
+   * The credential kinds this module consumes. A family that ships an OAuth
+   * auth module declares `oauth` alongside `api_key`; an API-key-only family
+   * declares `api_key` alone, so a configured or stored credential of a kind
+   * it cannot interpret is refused instead of reaching the wire.
+   *
+   * Composition validates installation config against the modules used by the
+   * configured models (fail-fast at startup) and dispatch refuses a credential
+   * whose kind the resolved module does not declare, with guidance naming the
+   * supported kinds.
+   */
+  credentialKinds: readonly AiCredentialKind[];
   certifiedOperations: readonly string[];
   destinationTemplates: readonly DestinationTemplate[];
   destination(model: AnyModel, env: Record<string, string> | undefined): string;
@@ -125,6 +141,18 @@ export type AiProviderModule = Readonly<{
   classifyRequest?(url: string): 'model' | 'auth.token-exchange';
   /** The only allowed special transport requested at the pinned SDK boundary. */
   transport?: 'sse';
+  /**
+   * The family's OAuth auth module, when it has one.
+   *
+   * @remarks
+   * Carried by the provider module so the auth path travels with the family
+   * that needs it: registering a family's modules registers its OAuth refresh
+   * with it, through the same `providerModules` surface every consumer already
+   * uses. The auth module is consulted only for that family's OAuth refresh and
+   * is part of the family's trust surface — it is trusted in-process code with
+   * access to the guarded token transport, exactly like the dispatch module.
+   */
+  authModule?: AiAuthModule;
   /**
    * The scoped-store key this module's credentials live under. Tool servers
    * key under the reserved `mcp:` prefix; modules without this hook use the
@@ -140,11 +168,6 @@ export type AiProviderModule = Readonly<{
     scope: CredentialScope,
     credential: Credential,
   ): ModuleAuthority;
-  /**
-   * Names the permission guarding one operation of this module. Modules
-   * without this hook use the shared model permission encoder.
-   */
-  permissionName?(providerId: string, modelId: string): string;
   /**
    * Optional module-carried binding resolution for operations resolved
    * outside the canonical model catalog (tool servers): the module supplies

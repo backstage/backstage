@@ -252,7 +252,7 @@ export type AuditPage = Readonly<{
  * @remarks
  *
  * The journal never self-performs authorization: the host checks the
- * `ai.audit.read` permission ({@link AI_AUDIT_READ_PERMISSION_NAME}) for the
+ * `ai.audit.read` permission (`AI_AUDIT_READ_PERMISSION_NAME`) for the
  * caller and returns whether it is granted.
  *
  * @alpha

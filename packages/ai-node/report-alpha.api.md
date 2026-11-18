@@ -8,26 +8,67 @@ import type { AssistantMessageEventStream } from '@earendil-works/pi-ai';
 import type { AuditorService } from '@backstage/backend-plugin-api';
 import type { AuthService } from '@backstage/backend-plugin-api';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
+import type { BasicPermission } from '@backstage/plugin-permission-common';
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
+import { Conditions } from '@backstage/plugin-permission-node';
 import type { Config } from '@backstage/config';
 import type { Context } from '@earendil-works/chord/context';
 import type { Credential as Credential_2 } from '@earendil-works/pi-ai';
 import type { CredentialStore } from '@earendil-works/pi-ai';
 import type { DatabaseService } from '@backstage/backend-plugin-api';
+import type { EventsService } from '@backstage/plugin-events-node';
 import { Extension } from '@earendil-works/pi-durable';
 import type { Harness } from '@earendil-works/pi-durable';
 import type { JsonValue } from '@backstage/config';
 import type { Knex } from 'knex';
 import type { LifecycleService } from '@backstage/backend-plugin-api';
 import type { LoggerService } from '@backstage/backend-plugin-api';
+import type { OAuthCredential } from '@earendil-works/pi-ai';
+import type { PermissionCondition } from '@backstage/plugin-permission-common';
+import type { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { PermissionResourceRef } from '@backstage/plugin-permission-node';
+import { PermissionRule } from '@backstage/plugin-permission-node';
 import type { PermissionsRegistryService } from '@backstage/backend-plugin-api';
 import type { PermissionsService } from '@backstage/backend-plugin-api';
 import type { PluginMetadataService } from '@backstage/backend-plugin-api';
+import type { QueryPermissionResponse } from '@backstage/plugin-permission-common';
 import type { RegistryReader } from '@earendil-works/pi-durable';
+import type { ResourcePermission } from '@backstage/plugin-permission-common';
+import type { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import type { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha
 export const AI_INSTALLATION_CONFIG_PATH = 'ai';
+
+// @alpha
+export const AI_OBSERVABILITY_TOPICS: readonly [
+  'ai.observability.denial',
+  'ai.observability.dispatch',
+  'ai.observability.lease',
+  'ai.observability.journal',
+];
+
+// @alpha
+export type AiAuthModule = Readonly<{
+  id: string;
+  tokenPath: '/oauth/token' | '/v1/oauth/token';
+  body: 'json' | 'form';
+  refreshRequest(input: OAuthRefreshInput): Request;
+  exchangeRequest(input: OAuthLoginExchangeInput): Request;
+  validateTokenRequest(input: {
+    operation: AuthOperationKind;
+    endpoint: string;
+    request: Request;
+  }): Promise<void>;
+  parseTokenResponse(input: {
+    operation: AuthOperationKind;
+    body: unknown;
+    previous?: OAuthCredential;
+    now: number;
+  }): OAuthCredential;
+  extraFields?: readonly string[];
+}>;
 
 // @alpha
 export type AiCodemodeOptions = Readonly<{
@@ -51,6 +92,9 @@ export type AiConfigCredentialScopes = ReadonlyMap<
 >;
 
 // @alpha
+export type AiCredentialKind = 'api_key' | 'oauth';
+
+// @alpha
 export type AiCredentialsPrecedence = 'user-first' | 'org-first';
 
 // @alpha
@@ -60,10 +104,7 @@ export interface AiCredentialStores {
 }
 
 // @alpha
-export interface AiEventEmitter {
-  // (undocumented)
-  emit(event: AiObservabilityEvent): void | Promise<void>;
-}
+export type AiEventSink = (event: AiObservabilityEvent) => void;
 
 // @alpha
 export type AiHealthReport = Readonly<{
@@ -164,33 +205,126 @@ export type AiInstallationCredentials = Readonly<{
   previousEncryptionKey?: Uint8Array;
   precedence: AiCredentialsPrecedence;
   scopes: AiConfigCredentialScopes;
-  tokenEndpoints: Readonly<Record<string, string>>;
+  tokenEndpoints: Readonly<Record<string, AiTokenEndpoint>>;
 }>;
 
 // @alpha
-export interface AiJournalPruneRunner {
-  pruneNow(): Promise<JournalPruneResult>;
-  stop(): Promise<void>;
-}
-
-// @alpha
-export interface AiJournalPruneRunnerOptions {
+export interface AiJournalPruneScheduleOptions {
   // (undocumented)
   readonly db: Knex;
-  readonly events?: AiEventEmitter;
-  readonly intervalMs: number;
+  readonly emit?: AiEventSink;
+  readonly frequency: {
+    readonly milliseconds: number;
+  };
   readonly logger?: AiPruneRunnerLogger;
   readonly now?: () => Date;
   readonly retentionMs: number;
+  readonly scheduler: Pick<SchedulerService, 'scheduleTask'>;
+  readonly signal: AbortSignal;
 }
 
 // @alpha
-export interface AiMetricsSubscriber extends AiEventEmitter {
+export interface AiMetricsSubscriber {
   // (undocumented)
   reset(): void;
   // (undocumented)
   snapshot(): AiHealthSnapshot;
+  subscribe(events: Pick<EventsService, 'subscribe'>): Promise<void>;
 }
+
+// @alpha
+export const aiModelConditions: Conditions<{
+  isModel: PermissionRule<
+    Readonly<{
+      provider: string;
+      modelId: string;
+      type?: string;
+    }>,
+    {},
+    'ai-model',
+    {
+      provider: string;
+      modelId: string;
+    }
+  >;
+  isProvider: PermissionRule<
+    Readonly<{
+      provider: string;
+      modelId: string;
+      type?: string;
+    }>,
+    {},
+    'ai-model',
+    {
+      provider: string;
+    }
+  >;
+  isModelType: PermissionRule<
+    Readonly<{
+      provider: string;
+      modelId: string;
+      type?: string;
+    }>,
+    {},
+    'ai-model',
+    {
+      type: string;
+    }
+  >;
+}>;
+
+// @alpha
+export const aiModelPermissionRules: {
+  isModel: PermissionRule<
+    Readonly<{
+      provider: string;
+      modelId: string;
+      type?: string;
+    }>,
+    {},
+    'ai-model',
+    {
+      provider: string;
+      modelId: string;
+    }
+  >;
+  isProvider: PermissionRule<
+    Readonly<{
+      provider: string;
+      modelId: string;
+      type?: string;
+    }>,
+    {},
+    'ai-model',
+    {
+      provider: string;
+    }
+  >;
+  isModelType: PermissionRule<
+    Readonly<{
+      provider: string;
+      modelId: string;
+      type?: string;
+    }>,
+    {},
+    'ai-model',
+    {
+      type: string;
+    }
+  >;
+};
+
+// @alpha
+export const aiModelResourceRef: PermissionResourceRef<
+  Readonly<{
+    provider: string;
+    modelId: string;
+    type?: string;
+  }>,
+  {},
+  'ai-model',
+  'ai'
+>;
 
 // @alpha
 export type AiModuleRegistry = Readonly<{
@@ -255,9 +389,45 @@ export type AiObservabilityEvent =
     }>;
 
 // @alpha
+export function aiObservabilityTopic(
+  event: AiObservabilityEvent,
+): (typeof AI_OBSERVABILITY_TOPICS)[number];
+
+// @alpha
+export type AiParamsSchema = {
+  '~standard': {
+    validate(value: unknown):
+      | {
+          value: unknown;
+          issues?: undefined;
+        }
+      | {
+          issues: readonly unknown[];
+          value?: undefined;
+        }
+      | Promise<unknown>;
+  };
+};
+
+// @alpha
+export type AiPermissionRule<TResource> = Readonly<{
+  name: string;
+  resourceType: string;
+  paramsSchema?: AiParamsSchema;
+  apply(resource: TResource, params: never): boolean;
+}>;
+
+// @alpha
+export type AiPolicyAuthorizer = Pick<
+  PermissionsService,
+  'authorizeConditional'
+>;
+
+// @alpha
 export type AiProviderModule = Readonly<{
   id: string;
   adapter: ProviderAdapter;
+  credentialKinds: readonly AiCredentialKind[];
   certifiedOperations: readonly string[];
   destinationTemplates: readonly DestinationTemplate[];
   destination(model: AnyModel, env: Record<string, string> | undefined): string;
@@ -267,12 +437,12 @@ export type AiProviderModule = Readonly<{
   ): Promise<'model' | 'auth.token-exchange'>;
   classifyRequest?(url: string): 'model' | 'auth.token-exchange';
   transport?: 'sse';
+  authModule?: AiAuthModule;
   credentialKey?(providerId: string): string;
   interpretCredential?(
     scope: CredentialScope,
     credential: Credential_2,
   ): ModuleAuthority;
-  permissionName?(providerId: string, modelId: string): string;
   resolveDispatch?(
     model: AnyModel,
     resolveCredential: () => Promise<
@@ -325,20 +495,150 @@ export type AiServiceFactoryOptions = Readonly<{
   toolModules?: readonly ToolModule[];
   providerModules?: readonly AiProviderModule[];
   codemode?: AiCodemodeOptions;
+  refreshExpiredCredential?: CredentialRefreshHook;
 }>;
 
 // @alpha
 export const aiServiceRef: ServiceRef<AiService, 'plugin', 'singleton'>;
 
 // @alpha
-export const aiSessionUsePermission: {
-  readonly type: 'basic';
-  readonly name: 'ai.session.use';
-  readonly attributes: {};
+export const aiSessionUsePermission: BasicPermission;
+
+// @alpha
+export type AiTokenEndpoint = Readonly<{
+  url: string;
+  clientId: string;
+}>;
+
+// @alpha
+export const aiToolConditions: Conditions<{
+  isTool: PermissionRule<
+    Readonly<{
+      serverId: string;
+      toolName: string;
+    }>,
+    {},
+    'ai-tool',
+    {
+      serverId: string;
+      toolName: string;
+    }
+  >;
+  isServer: PermissionRule<
+    Readonly<{
+      serverId: string;
+      toolName: string;
+    }>,
+    {},
+    'ai-tool',
+    {
+      serverId: string;
+    }
+  >;
+}>;
+
+// @alpha
+export const aiToolPermissionRules: {
+  isTool: PermissionRule<
+    Readonly<{
+      serverId: string;
+      toolName: string;
+    }>,
+    {},
+    'ai-tool',
+    {
+      serverId: string;
+      toolName: string;
+    }
+  >;
+  isServer: PermissionRule<
+    Readonly<{
+      serverId: string;
+      toolName: string;
+    }>,
+    {},
+    'ai-tool',
+    {
+      serverId: string;
+    }
+  >;
 };
 
 // @alpha
+export const aiToolResourceRef: PermissionResourceRef<
+  Readonly<{
+    serverId: string;
+    toolName: string;
+  }>,
+  {},
+  'ai-tool',
+  'ai'
+>;
+
+// @alpha
+export function allowsConditional<TResource>(options: {
+  decision: QueryPermissionResponse;
+  pluginId?: string;
+  resourceType: string;
+  rules: readonly AiPermissionRule<TResource>[];
+  resource: TResource;
+}): boolean;
+
+// @alpha
+export function assertConfigCredentialKinds(options: {
+  models: readonly AnyModel[];
+  providers: AiProviderRegistry;
+  configured: readonly ConfiguredCredentialKind[];
+}): void;
+
+// @alpha
+export type AttemptDecision = Readonly<{
+  readonly actor: string;
+  readonly conversationId?: string;
+  readonly taskId?: string;
+  readonly callId?: string;
+  readonly definitionVersion: string;
+  readonly configVersion: string;
+  readonly provider?: string;
+  readonly model?: string;
+  readonly operation: string;
+  readonly destination?: string;
+  readonly attempt: number;
+  readonly decision: 'allow' | 'deny';
+  readonly reason?: string;
+}>;
+
+// @alpha
 export type AttemptId = string;
+
+// @alpha
+export interface AttemptJournal {
+  // (undocumented)
+  read(
+    credentials: BackstageCredentials,
+    query: AuditQuery,
+  ): Promise<AuditPage>;
+  // (undocumented)
+  recordDecisionAndIntent(
+    fence: Fence,
+    event: AttemptDecision,
+  ): Promise<AttemptId>;
+  // (undocumented)
+  recordOutcome(
+    fence: Fence,
+    attempt: AttemptId,
+    outcome: AttemptOutcome,
+  ): Promise<void>;
+  // (undocumented)
+  recordRecovery(fence: Fence, event: RecoveryEvent): Promise<void>;
+}
+
+// @alpha
+export type AttemptOutcome = Readonly<{
+  readonly status: AttemptOutcomeStatus;
+  readonly httpStatus?: number;
+  readonly detail?: string;
+}>;
 
 // @alpha
 export type AttemptOutcomeStatus =
@@ -412,6 +712,23 @@ export type AuditQuery = Readonly<{
 }>;
 
 // @alpha
+export type AuthOperationKind = 'auth.token' | 'auth.token-exchange';
+
+// @alpha
+export function authorizeConditionalDecision(
+  authorizer: AiPolicyAuthorizer,
+  permission: ResourcePermission,
+  credentials: BackstageCredentials,
+): Promise<QueryPermissionResponse>;
+
+// @alpha
+export type AuthTokenRequestBase = Readonly<{
+  endpoint: string;
+  providerId: string;
+  clientId: string;
+}>;
+
+// @alpha
 export function bindAiModuleRegistry(
   service: AiService,
   registry: AiModuleRegistry,
@@ -445,13 +762,32 @@ export type ConfiguredAiInstallation = Readonly<{
     }>;
   }>;
   credentialPrecedence: AiCredentialsPrecedence;
-  credentialTokenEndpoints: Readonly<Record<string, string>>;
+  credentialTokenEndpoints: Readonly<Record<string, AiTokenEndpoint>>;
+  configCredentialKinds?: readonly ConfiguredCredentialKind[];
 }>;
+
+// @alpha
+export type ConfiguredCredentialKind = Readonly<{
+  scope: string;
+  providerId: string;
+  kind: AiCredentialKind;
+}>;
+
+// @alpha
+export function createAiEventSink(events: {
+  publish(params: unknown): unknown;
+}): AiEventSink;
 
 // @alpha
 export function createAiHttpSupport(
   options: AiHttpSupportOptions,
 ): Promise<AiHttpSupport>;
+
+// @alpha
+export const createAiModelConditionalDecision: (
+  permission: ResourcePermission<'ai-model'>,
+  conditions: PermissionCriteria<PermissionCondition<'ai-model'>>,
+) => ConditionalPolicyDecision;
 
 // @alpha
 export function createAiModuleRegistry(initial: AiModules): AiModuleRegistry;
@@ -462,6 +798,27 @@ export function createAiServiceFactory(
 ): <TService extends AiService>(
   service: ServiceRef<TService, 'plugin'>,
 ) => ServiceFactory<TService, 'plugin', 'singleton' | 'multiton'>;
+
+// @alpha
+export const createAiToolConditionalDecision: (
+  permission: ResourcePermission<'ai-tool'>,
+  conditions: PermissionCriteria<PermissionCondition<'ai-tool'>>,
+) => ConditionalPolicyDecision;
+
+// @alpha
+export function createCredentialRefreshHook(
+  options: CreateCredentialRefreshHookOptions,
+): CredentialRefreshHook | undefined;
+
+// @alpha
+export interface CreateCredentialRefreshHookOptions {
+  emit?: AiEventSink;
+  journal: AttemptJournal;
+  providerModules: readonly AiProviderModule[];
+  stores: AiCredentialStores;
+  tokenEndpoints: Readonly<Record<string, AiTokenEndpoint>>;
+  transport?: typeof fetch;
+}
 
 // @alpha
 export function createGuardedToolOperations(options: {
@@ -494,6 +851,35 @@ export function createUsageAccounting(
 ): UsageAccounting;
 
 // @alpha
+export type CredentialRefreshHook = (
+  input: CredentialRefreshInput,
+) => Promise<void>;
+
+// @alpha
+export interface CredentialRefreshInput {
+  // (undocumented)
+  readonly actor: string;
+  // (undocumented)
+  readonly configVersion: string;
+  // (undocumented)
+  readonly credentials: BackstageCredentials;
+  // (undocumented)
+  readonly definitionVersion: string;
+  // (undocumented)
+  readonly fence: Fence;
+  // (undocumented)
+  readonly provenance: Readonly<{
+    conversationId: string;
+    taskId: string;
+    callId: string;
+  }>;
+  // (undocumented)
+  readonly provider: string;
+  // (undocumented)
+  readonly scope: CredentialScope;
+}
+
+// @alpha
 export type CredentialScope =
   | Readonly<{
       kind: 'org';
@@ -515,6 +901,7 @@ export interface DefaultAiServiceDeps {
   readonly auth: AuthService;
   // (undocumented)
   readonly database: DatabaseService;
+  readonly events: EventsService;
   // (undocumented)
   readonly lifecycle: LifecycleService;
   // (undocumented)
@@ -544,6 +931,14 @@ export function evaluateAiHealth(
 ): AiHealthReport;
 
 // @alpha
+export function evaluatePermissionCriteria<TResource>(options: {
+  criteria: PermissionCriteria<PermissionCondition>;
+  resourceType: string;
+  rules: readonly AiPermissionRule<TResource>[];
+  resource: TResource;
+}): boolean;
+
+// @alpha
 export type Fence = Readonly<{
   namespace: Namespace;
   owner: string;
@@ -556,12 +951,85 @@ export type GuardedToolDispatch = Readonly<{
     model: AnyModel,
     context: unknown,
     caller?: Record<string, unknown>,
-  ): Promise<unknown>;
+  ): Promise<{
+    value: unknown;
+    outcome: 'completed' | 'failed' | 'cancelled';
+  }>;
 }>;
 
 // @alpha
 export type GuardedToolOperations = ReturnType<
   typeof createGuardedToolOperations
+>;
+
+// @alpha
+export const isModel: PermissionRule<
+  Readonly<{
+    provider: string;
+    modelId: string;
+    type?: string;
+  }>,
+  {},
+  'ai-model',
+  {
+    provider: string;
+    modelId: string;
+  }
+>;
+
+// @alpha
+export const isModelType: PermissionRule<
+  Readonly<{
+    provider: string;
+    modelId: string;
+    type?: string;
+  }>,
+  {},
+  'ai-model',
+  {
+    type: string;
+  }
+>;
+
+// @alpha
+export const isProvider: PermissionRule<
+  Readonly<{
+    provider: string;
+    modelId: string;
+    type?: string;
+  }>,
+  {},
+  'ai-model',
+  {
+    provider: string;
+  }
+>;
+
+// @alpha
+export const isServer: PermissionRule<
+  Readonly<{
+    serverId: string;
+    toolName: string;
+  }>,
+  {},
+  'ai-tool',
+  {
+    serverId: string;
+  }
+>;
+
+// @alpha
+export const isTool: PermissionRule<
+  Readonly<{
+    serverId: string;
+    toolName: string;
+  }>,
+  {},
+  'ai-tool',
+  {
+    serverId: string;
+    toolName: string;
+  }
 >;
 
 // @alpha
@@ -611,9 +1079,6 @@ export type ModelPair = Readonly<{
 }>;
 
 // @alpha
-export function modelPermissionName(input: ModelPair): string;
-
-// @alpha
 export type ModuleAuthority = Readonly<{
   authority: Readonly<{
     kind: 'apiKey' | 'oauth' | 'federation';
@@ -630,6 +1095,20 @@ export type Namespace = Readonly<{
   pluginId: string;
   sessionId: string;
 }>;
+
+// @alpha
+export type OAuthLoginExchangeInput = AuthTokenRequestBase &
+  Readonly<{
+    code: string;
+    codeVerifier: string;
+    redirectUri: string;
+  }>;
+
+// @alpha
+export type OAuthRefreshInput = AuthTokenRequestBase &
+  Readonly<{
+    credential: OAuthCredential;
+  }>;
 
 // @alpha
 export type OpenHarnessOptions = Readonly<{
@@ -711,9 +1190,9 @@ export type RecoveryEvent = Readonly<{
 }>;
 
 // @alpha
-export function startAiJournalPruneRunner(
-  options: AiJournalPruneRunnerOptions,
-): AiJournalPruneRunner;
+export function scheduleAiJournalPrune(
+  options: AiJournalPruneScheduleOptions,
+): Promise<void>;
 
 // @alpha
 export type ToolCallEnvelope = Readonly<{
@@ -762,9 +1241,6 @@ export type ToolModule = Readonly<{
     invoke(input: ToolDispatchInput): Promise<ToolCallResult>;
   }>;
 }>;
-
-// @alpha
-export function toolPermissionName(input: ToolIdentity): string;
 
 // @alpha
 export type ToolRegistry = Readonly<{

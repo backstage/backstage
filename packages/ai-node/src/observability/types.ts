@@ -102,60 +102,71 @@ export type AiObservabilityEvent =
     }>;
 
 /**
- * Receives observations. One injected instance per module instance; there is no
- * global emitter.
+ * Publishes one observability event; never throws into the observed
+ * operation.
  *
  * @remarks
  *
- * Implementations must not throw and must not retain secrets: the emitter is
- * called on the dispatch and persistence paths, so a throwing subscriber would
- * break the operation it observes.
+ * The integration constructs exactly one sink per service with
+ * {@link createAiEventSink}: it validates the event and publishes it to
+ * the events service on the matching `ai.observability.*` topic,
+ * fire-and-forget — a rejection of the publish is consumed, never coupled
+ * to the journal or dispatch path it observes. Internal seams receive this
+ * callback; there is no emitter interface.
  *
  * @alpha
  */
-export interface AiEventEmitter {
-  /**
-   * @remarks
-   * A subscriber may return a promise; the emit path consumes a rejection so a
-   * failing async subscriber cannot surface as an unhandled rejection.
-   */
-  emit(event: AiObservabilityEvent): void | Promise<void>;
-}
-
-/** The default emitter: no subscriber, no overhead beyond the call. */
-export const noopAiEventEmitter: AiEventEmitter = Object.freeze({
-  emit() {},
-});
+export type AiEventSink = (event: AiObservabilityEvent) => void;
 
 /**
- * Emits one validated event, never throwing into the observed operation.
+ * The topics the managed AI service publishes its observability events on,
+ * one per event kind.
  *
- * @remarks
- * Modules emit through this helper: an emitter that throws or rejects, or an
- * event that fails the structural check, is dropped rather than turning an
- * observation into a dispatch or persistence failure. A subscriber therefore
- * sees strictly less than what was emitted, never a value that failed
- * validation.
- *
- * @internal
+ * @alpha
  */
-export function emitSafe(
-  emitter: AiEventEmitter | undefined,
+export const AI_OBSERVABILITY_TOPICS = [
+  'ai.observability.denial',
+  'ai.observability.dispatch',
+  'ai.observability.lease',
+  'ai.observability.journal',
+] as const;
+
+/** The topic one observability event publishes on. @alpha */
+export function aiObservabilityTopic(
   event: AiObservabilityEvent,
-): void {
-  if (emitter === undefined) return;
-  try {
-    const result: unknown = emitter.emit(assertObservableEvent(event));
-    if (
-      result !== null &&
-      (typeof result === 'object' || typeof result === 'function') &&
-      typeof (result as PromiseLike<void>).then === 'function'
-    ) {
-      void Promise.resolve(result).catch(() => undefined);
+): (typeof AI_OBSERVABILITY_TOPICS)[number] {
+  return `ai.observability.${event.kind}` as const;
+}
+
+/**
+ * Builds the publish-contract sink over an events service: every event is
+ * validated and published fire-and-forget on its `ai.observability.*`
+ * topic, and a throwing or rejecting publish is consumed — observation
+ * never changes the outcome of the operation it observes.
+ *
+ * @alpha
+ */
+export function createAiEventSink(events: {
+  publish(params: unknown): unknown;
+}): AiEventSink {
+  return event => {
+    try {
+      const validated = assertObservableEvent(event);
+      const result: unknown = events.publish({
+        topic: aiObservabilityTopic(validated),
+        eventPayload: validated,
+      });
+      if (
+        result !== null &&
+        (typeof result === 'object' || typeof result === 'function') &&
+        typeof (result as PromiseLike<void>).then === 'function'
+      ) {
+        void Promise.resolve(result).catch(() => undefined);
+      }
+    } catch {
+      // Observation never changes the outcome of the operation it observes.
     }
-  } catch {
-    // Observation never changes the outcome of the operation it observes.
-  }
+  };
 }
 
 /** Longest tolerated reason, short enough to stay a message not a payload. */

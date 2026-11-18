@@ -39,15 +39,15 @@ import { join } from 'node:path';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { mockCredentials } from '@backstage/backend-test-utils';
 import knex, { type Knex } from 'knex';
-import { createAttemptJournal } from './journal/knex';
-import type { AttemptJournal } from './journal/types';
-import type { Fence, Namespace } from './contracts';
-import type { AiProviderRegistry } from './providers/registry';
+import { createAttemptJournal } from '@backstage/ai-node/modules';
+import type { AttemptJournal } from '@backstage/ai-node/modules';
+import type { Fence, Namespace } from '@backstage/ai-node/modules';
+import type { AiProviderRegistry } from '@backstage/ai-node/modules';
 
 // eslint-disable-next-line @backstage/no-undeclared-imports
-const storageMigration = require('../migrations/1000_storage');
+const storageMigration = require('@backstage/ai-node/migrations/1000_storage');
 // eslint-disable-next-line @backstage/no-undeclared-imports
-const journalMigration = require('../migrations/4000_journal');
+const journalMigration = require('@backstage/ai-node/migrations/4000_journal');
 
 /** The harness a behavior test drives. @alpha */
 export interface JournalHarness {

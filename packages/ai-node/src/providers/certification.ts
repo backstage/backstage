@@ -30,6 +30,13 @@ import type { AiProviderRegistry } from './registry';
  *
  * @alpha
  */
+/**
+ * Registers one provider module's certification suite: every certified
+ * destination shape must be dispatched exactly as declared, and a module
+ * that fails the suite is not trusted to run.
+ *
+ * @alpha
+ */
 // The exported helper is intentionally imported by provider test suites.
 // eslint-disable-next-line jest/no-export
 export function registerProviderCertification(options: {

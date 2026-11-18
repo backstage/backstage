@@ -70,11 +70,13 @@ function makeDeps(db: Knex): DefaultAiServiceDeps {
     } as unknown as AuthService,
     permissions: {
       authorize: async () => [{ result: 'ALLOW' }],
+      authorizeConditional: async () => [{ result: 'ALLOW' }],
     } as unknown as PermissionsService,
     logger: mockServices.logger.mock(),
     auditor: mockServices.auditor.mock(),
     lifecycle: { addShutdownHook: jest.fn() } as unknown as LifecycleService,
     pluginMetadata: { getId: () => 'test-plugin' } as PluginMetadataService,
+    events: mockServices.events(),
   };
 }
 

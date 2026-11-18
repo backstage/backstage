@@ -20,7 +20,11 @@ import Router from 'express-promise-router';
 import { ConfigReader } from '@backstage/config';
 import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
 import type { HttpAuthService } from '@backstage/backend-plugin-api';
-import type { AiHttpSupport, AiService } from '@backstage/ai-node/alpha';
+import type {
+  AiHealthReport,
+  AiHttpSupport,
+  AiService,
+} from '@backstage/ai-node/alpha';
 import {
   createRegistry,
   type ConversationId,
@@ -54,9 +58,22 @@ export function createRouter(options: {
   ai: AiService;
   support: AiHttpSupport;
   httpAuth: HttpAuthService;
+  /** Fail-open health evaluation over the service's observability events. */
+  health: () => AiHealthReport;
 }): express.Router {
   const router = Router();
   router.use(express.json({ limit: '64kb' }));
+
+  // Readiness derived from the managed service's own signals. Deliberately
+  // unauthenticated, like the repo's other plugin health routes, for
+  // infrastructure probes; the signals carry no secrets — identifiers,
+  // counts, and durations only.
+  router.get('/health', (_req, res) => {
+    const report = options.health();
+    res
+      .status(report.status === 'ok' ? 200 : 503)
+      .json({ status: report.status, signals: report.signals });
+  });
   async function credentials(req: Request) {
     const result = await options.httpAuth.credentials(req, { allow: ['user'] });
     try {

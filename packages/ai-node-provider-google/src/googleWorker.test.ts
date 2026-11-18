@@ -18,13 +18,13 @@ import { createServer, type Server } from 'node:http';
 import {
   createModelOperationGuard,
   createProviderRegistry,
-} from '@backstage/ai-node/testUtils';
+} from '@backstage/ai-node-test-utils/alpha';
 import type {
   AttemptDecision,
   AttemptOutcome,
   Fence,
   TrustedOperation,
-} from '@backstage/ai-node/testUtils';
+} from '@backstage/ai-node-test-utils/alpha';
 import { once } from 'node:events';
 import { mockCredentials } from '@backstage/backend-test-utils';
 import { googleProvider } from '@earendil-works/pi-ai/providers/google';

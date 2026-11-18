@@ -23,7 +23,10 @@
     "./alpha": "./src/alpha.ts",
     "./modules": "./src/modules.ts",
     "./package.json": "./package.json",
-    "./testUtils": "./src/testUtils.ts"
+    "./migrations/1000_storage": "./migrations/1000_storage.js",
+    "./migrations/2000_credentials": "./migrations/2000_credentials.js",
+    "./migrations/3000_ownership_recovery": "./migrations/3000_ownership_recovery.js",
+    "./migrations/4000_journal": "./migrations/4000_journal.js"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -37,9 +40,6 @@
       ],
       "package.json": [
         "package.json"
-      ],
-      "testUtils": [
-        "src/testUtils.ts"
       ]
     }
   },
@@ -61,15 +61,21 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-ai-common": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
     "@earendil-works/chord": "1.5.2",
     "@earendil-works/pi-ai": "1.5.2",
     "@earendil-works/pi-durable": "1.5.2",
-    "knex": "^3.0.0"
+    "knex": "^3.0.0",
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/ai-node-codemode": "workspace:^",
+    "@backstage/ai-node-test-utils": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "better-sqlite3": "^12.0.0",

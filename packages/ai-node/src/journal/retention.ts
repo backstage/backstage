@@ -15,8 +15,7 @@
  */
 
 import type { Knex } from 'knex';
-import { emitSafe } from '../observability/types';
-import type { AiEventEmitter } from '../observability/types';
+import type { AiEventSink } from '../observability/types';
 import { bigintText, dbNow } from '../storage/dialect-kit';
 import { JOURNAL_EVENTS_TABLE } from './knex';
 
@@ -34,7 +33,7 @@ export interface JournalRetentionOptions {
   /** Wall clock used to compute the cutoff; defaults to `new Date()`. */
   readonly now?: Date;
   /** Observability sink; no-op when absent. */
-  readonly events?: AiEventEmitter;
+  readonly emit?: AiEventSink;
 }
 
 /**
@@ -177,7 +176,7 @@ export async function pruneAiJournal(
     prunedEvents: pruned,
     uncertaintyRecords: selected.uncertaintyRecords,
   };
-  emitSafe(options.events, {
+  options.emit?.({
     kind: 'journal',
     action: 'prune',
     at: Date.now(),

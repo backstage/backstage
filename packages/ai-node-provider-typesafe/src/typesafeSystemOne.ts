@@ -63,6 +63,7 @@ const nonChatAdapter = (
 export const typesafeSystemOne: AiProviderModule = {
   id: 'typesafe-system-one',
   adapter: nonChatAdapter(systemOne.classify),
+  credentialKinds: ['api_key'],
   certifiedOperations: ['classify'],
   destinationTemplates: [
     [{ literal: '/v1/systemone' }],

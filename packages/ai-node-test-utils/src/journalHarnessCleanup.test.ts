@@ -31,8 +31,8 @@
 import { randomUUID } from 'node:crypto';
 import { readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { createProviderRegistry } from './providers/registry';
-import { createJournalHarness } from './testUtilsJournalHarness';
+import { createProviderRegistry } from '@backstage/ai-node/modules';
+import { createJournalHarness } from './journalHarness';
 
 type KnexConfig = { client?: string; searchPath?: string[] };
 type MockState = {

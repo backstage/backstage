@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { emitSafe } from '../../observability/types';
-import type { AiEventEmitter } from '../../observability/types';
+import type { AiEventSink } from '../../observability/types';
 import type {
   AttemptDecision,
   AttemptId,
@@ -64,7 +63,7 @@ export async function recordAuthDenial(
   operation: TrustedAuthOperation,
   reason: string,
   attempt = 1,
-  events?: AiEventEmitter,
+  emit?: AiEventSink,
 ): Promise<void> {
   await journal.recordDecisionAndIntent(
     operation.fence,
@@ -72,7 +71,7 @@ export async function recordAuthDenial(
   );
   // Same discipline as the guard's own deny(): one failure per logical
   // denial, emitted only once the journal row is durable.
-  emitSafe(events, {
+  emit?.({
     kind: 'denial',
     at: Date.now(),
     pluginId: operation.fence.namespace.pluginId,
@@ -149,9 +148,9 @@ export function createAuthOperationGuard(options: {
   journal: AttemptJournal;
   modules: AuthModuleLookup;
   /** Observability sink; no-op when absent. */
-  events?: AiEventEmitter;
+  emit?: AiEventSink;
 }): AuthOperationGuard {
-  const { transport, journal, modules, events } = options;
+  const { transport, journal, modules, emit } = options;
   return {
     bind(operation): GuardedAuthOperation {
       let ordinal = 0;
@@ -178,7 +177,7 @@ export function createAuthOperationGuard(options: {
         // Terminal events follow the durable outcome, exactly as in the model
         // guard: a failed journal write is uncertain, not completed.
         const observe = (status: AttemptOutcome['status']) =>
-          emitSafe(events, {
+          emit?.({
             kind: 'dispatch',
             at: Date.now(),
             pluginId: operation.fence.namespace.pluginId,
@@ -229,7 +228,7 @@ export function createAuthOperationGuard(options: {
             cause: journalError,
           });
         }
-        emitSafe(events, {
+        emit?.({
           kind: 'denial',
           at: Date.now(),
           pluginId: operation.fence.namespace.pluginId,
@@ -331,7 +330,7 @@ export function createAuthOperationGuard(options: {
             }
             pending.httpStatus = response.status;
             pending.sentAt = Date.now();
-            emitSafe(events, {
+            emit?.({
               kind: 'dispatch',
               at: Date.now(),
               pluginId: operation.fence.namespace.pluginId,

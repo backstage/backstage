@@ -15,11 +15,13 @@
  */
 
 import type { Knex } from 'knex';
-import type { AiEventEmitter } from '../observability/types';
+import type { SchedulerService } from '@backstage/backend-plugin-api';
+import type { AiEventSink } from '../observability/types';
 import { pruneAiJournal, type JournalPruneResult } from './retention';
 
 /**
- * Minimal logger surface the runner needs; `LoggerService` satisfies it.
+ * Minimal logger surface the prune schedule needs; `LoggerService`
+ * satisfies it.
  *
  * @alpha
  */
@@ -29,44 +31,33 @@ export interface AiPruneRunnerLogger {
 }
 
 /**
- * Options for {@link startAiJournalPruneRunner}.
+ * Options for {@link scheduleAiJournalPrune}.
  *
  * @alpha
  */
-export interface AiJournalPruneRunnerOptions {
+export interface AiJournalPruneScheduleOptions {
+  /** The backend scheduler service that owns the recurring task. */
+  readonly scheduler: Pick<SchedulerService, 'scheduleTask'>;
   readonly db: Knex;
   /** Journal retention window, applied exactly as the retention contract defines. */
   readonly retentionMs: number;
-  /** Time between passes. One pass also runs immediately on start. */
-  readonly intervalMs: number;
-  /** Warns about failed passes; a failing pass never stops the runner. */
+  /** Time between scheduled passes. One pass also runs immediately on start. */
+  readonly frequency: { readonly milliseconds: number };
+  /** Warns about failed passes; a failing pass never stops the schedule. */
   readonly logger?: AiPruneRunnerLogger;
   /** Observability sink for prune outcomes; no-op when absent. */
-  readonly events?: AiEventEmitter;
+  readonly emit?: AiEventSink;
   /** Wall clock for tests; defaults to a fresh `Date` per pass. */
   readonly now?: () => Date;
-}
-
-/**
- * A running journal prune schedule.
- *
- * @alpha
- */
-export interface AiJournalPruneRunner {
   /**
-   * Runs one pass now and resolves with its result; never overlaps a
-   * scheduled pass. A pass skipped because the runner was stopped, or
-   * failed and warned, resolves with zeros that carry no information:
-   * `prunedEvents: 0` and `uncertaintyRecords: 0` mean "not measured",
-   * never "the journal holds none".
+   * Aborting stops the schedule. The in-flight pass, if any, settles on
+   * its own — it never rejects — and no further pass starts.
    */
-  pruneNow(): Promise<JournalPruneResult>;
-  /** Stops the schedule and resolves once the in-flight pass (if any) settled. */
-  stop(): Promise<void>;
+  readonly signal: AbortSignal;
 }
 
 /**
- * Schedules the journal retention prune on a host-started interval.
+ * Schedules the journal retention prune on the backend scheduler service.
  *
  * @remarks
  *
@@ -75,17 +66,18 @@ export interface AiJournalPruneRunner {
  * unresolved intent without its durable uncertainty record and never deletes
  * an uncertainty record. A failed pass is logged and retried at the next
  * interval — pruning is maintenance, and a failing pass must never block or
- * fail anything else (fail-open). Passes never overlap; `pruneNow()` joins
- * the same serialization. `stop()` clears the timer and awaits the in-flight
- * pass, so shutdown loses no pruning work but also waits for none that has
- * not started.
+ * fail anything else (fail-open). Passes never overlap: the schedule's task
+ * and the immediate start pass share one serialization. Aborting the signal
+ * stops the schedule; the task run is bounded at 80% of the frequency, the
+ * same headroom the catalog's maintenance tasks leave, so a slow pass never
+ * collides with the next.
  *
  * @alpha
  */
-export function startAiJournalPruneRunner(
-  options: AiJournalPruneRunnerOptions,
-): AiJournalPruneRunner {
-  const { db, retentionMs, intervalMs, events } = options;
+export async function scheduleAiJournalPrune(
+  options: AiJournalPruneScheduleOptions,
+): Promise<void> {
+  const { db, retentionMs, frequency, emit, signal } = options;
   const logger = options.logger;
   const now = options.now ?? (() => new Date());
   // A throwing logger is a broken observation channel, not a broken
@@ -94,7 +86,7 @@ export function startAiJournalPruneRunner(
   // surface as an unhandled rejection. A logger whose warn is async
   // structurally satisfies the sync callback type, so a returned thenable
   // gets a rejection handler attached (without awaiting), the same way
-  // the observability seam's emitSafe handles its subscribers.
+  // the observability sink consumes its publish results.
   const warn = (message: string) => {
     try {
       const result: unknown = logger?.warn(message);
@@ -109,20 +101,18 @@ export function startAiJournalPruneRunner(
       /* The pass failure it reports stands on its own. */
     }
   };
-  let timer: NodeJS.Timeout | undefined;
-  let stopped = false;
   let inFlight: Promise<JournalPruneResult> | undefined;
 
   const pass = (): Promise<JournalPruneResult> => {
     const run = (inFlight ?? Promise.resolve())
       .catch(() => undefined)
       .then(async () => {
-        if (stopped) {
+        if (signal.aborted) {
           return { prunedEvents: 0, uncertaintyRecords: 0 };
         }
         return pruneAiJournal(db, {
           retentionMs,
-          events,
+          emit,
           now: now(),
         });
       })
@@ -139,22 +129,16 @@ export function startAiJournalPruneRunner(
     return run;
   };
 
-  // One pass at start so a restarted host prunes promptly, then the
-  // interval. Unref'd: the schedule must not hold the process open; a host
-  // that wants it alive keeps its own process alive.
+  // One pass at start so a restarted host prunes promptly; the recurring
+  // schedule then owns the cadence. Both share the serialization above.
   void pass();
-  timer = setInterval(() => {
-    if (!stopped) void pass();
-  }, intervalMs);
-  timer.unref?.();
-
-  return {
-    pruneNow: () => pass(),
-    stop: async () => {
-      stopped = true;
-      if (timer !== undefined) clearInterval(timer);
-      timer = undefined;
-      await inFlight?.catch(() => undefined);
+  await options.scheduler.scheduleTask({
+    id: 'ai_journal_prune',
+    frequency: { milliseconds: frequency.milliseconds },
+    timeout: { milliseconds: frequency.milliseconds * 0.8 },
+    fn: async () => {
+      await pass();
     },
-  };
+    signal,
+  });
 }

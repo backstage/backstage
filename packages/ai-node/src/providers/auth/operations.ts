@@ -20,8 +20,9 @@ import type {
   AiCredentialStores,
   CredentialScope,
 } from '../../credentials/types';
+import type { AiTokenEndpoint } from '../../config-extension/types';
 import type { AttemptJournal } from '../../journal/types';
-import type { AiEventEmitter } from '../../observability/types';
+import type { AiEventSink } from '../../observability/types';
 import { AuthTokenRejection, recordAuthDenial } from './guard';
 import type { AuthModuleLookup } from './guard';
 import type { AuthOperationGuard } from './types';
@@ -153,17 +154,16 @@ export interface AuthOperationsOptions {
   stores: AiCredentialStores;
   modules: AuthModuleLookup;
   /**
-   * Host-configured trusted token endpoints keyed by provider ID. Each must be
-   * an absolute `https` (or local test `http`) URL on a reserved token route.
-   * Keying by provider lets several providers share a token route.
+   * Host-configured trusted token endpoints keyed by provider ID: the URL (an
+   * absolute `https`, or local test `http`, URL on a reserved token route) and
+   * the public OAuth client ID that provider family exchanges with. Keying by
+   * provider lets several providers share a token route.
    */
-  tokenEndpoints: Readonly<Record<string, string>>;
-  /** Public OAuth client IDs per provider ID. Never a client secret. */
-  clientIds: Readonly<Record<string, string>>;
+  tokenEndpoints: Readonly<Record<string, AiTokenEndpoint>>;
   /** Refresh credentials expiring within this window. Default one minute. */
   refreshWindowMs?: number;
   /** Observability sink for local denials; no-op when absent. */
-  events?: AiEventEmitter;
+  emit?: AiEventSink;
   now?(): number;
 }
 
@@ -242,7 +242,7 @@ export function createAuthOperations(
       'Auth operations require at least one trusted token endpoint from configuration',
     );
   }
-  const endpoints = new Map<string, string>();
+  const endpoints = new Map<string, AiTokenEndpoint>();
   for (const [providerId, raw] of entries) {
     if (typeof providerId !== 'string' || providerId.length === 0) {
       throw new AuthOperationError(
@@ -250,7 +250,18 @@ export function createAuthOperations(
         'Trusted token endpoints must be keyed by provider ID',
       );
     }
-    const canonical = endpointKey(raw);
+    if (
+      typeof raw !== 'object' ||
+      raw === null ||
+      typeof raw.url !== 'string' ||
+      typeof raw.clientId !== 'string'
+    ) {
+      throw new AuthOperationError(
+        'misconfigured',
+        'Trusted token endpoints must declare a url and a public clientId per provider',
+      );
+    }
+    const canonical = endpointKey(raw.url);
     if (canonical === undefined) {
       throw new AuthOperationError(
         'misconfigured',
@@ -264,9 +275,14 @@ export function createAuthOperations(
         'Trusted token endpoints must use the reserved /oauth/token or /v1/oauth/token route',
       );
     }
-    endpoints.set(providerId, canonical);
+    endpoints.set(
+      providerId,
+      Object.freeze({ url: canonical, clientId: raw.clientId }),
+    );
   }
-  const trusted = Object.freeze([...endpoints.values()]);
+  const trusted = Object.freeze(
+    [...endpoints.values()].map(entry => entry.url),
+  );
 
   const moduleFor = (providerId: string): AiAuthModule => {
     const module = options.modules.get(providerId);
@@ -279,7 +295,7 @@ export function createAuthOperations(
     return module;
   };
   const endpointFor = (module: AiAuthModule): string => {
-    const endpoint = endpoints.get(module.id);
+    const endpoint = endpoints.get(module.id)?.url;
     if (endpoint === undefined) {
       throw new AuthOperationError(
         'misconfigured',
@@ -295,7 +311,7 @@ export function createAuthOperations(
     return endpoint;
   };
   const clientIdFor = (providerId: string, override?: string): string => {
-    const clientId = override ?? options.clientIds[providerId];
+    const clientId = override ?? endpoints.get(providerId)?.clientId;
     if (typeof clientId !== 'string' || clientId.length === 0) {
       throw new AuthOperationError(
         'misconfigured',
@@ -304,12 +320,6 @@ export function createAuthOperations(
     }
     return clientId;
   };
-  if (Object.values(options.clientIds).some(id => typeof id !== 'string')) {
-    throw new AuthOperationError(
-      'misconfigured',
-      'Configured client IDs must be strings',
-    );
-  }
 
   const operationFor = (
     context: AuthOperationContext,
@@ -389,7 +399,7 @@ export function createAuthOperations(
                 operation,
                 're-authentication required: no stored credential',
                 1,
-                options.events,
+                options.emit,
               );
               throw new AuthOperationError(
                 'missing-credential',
@@ -402,7 +412,7 @@ export function createAuthOperations(
                 operation,
                 're-authentication required: stored credential is not an OAuth credential',
                 1,
-                options.events,
+                options.emit,
               );
               throw new AuthOperationError(
                 'not-oauth',

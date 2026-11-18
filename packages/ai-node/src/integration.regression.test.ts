@@ -55,7 +55,7 @@ import { runAiMigrations } from './migrations';
 import {
   builtinProviderRegistry,
   fixtureProviderModules,
-} from './providers/testFixtures';
+} from '@backstage/ai-node-test-utils/alpha';
 import { createAiModuleRegistry } from './moduleRegistry';
 
 const createAiServiceIntegration = (
@@ -142,11 +142,17 @@ async function fixture(poolSize = 1, pgUrl?: string): Promise<Fixture> {
         type: 'user' | 'service',
       ) => (credentials.principal as { type: string }).type === type,
     } as unknown as AuthService,
-    permissions: { authorize } as unknown as PermissionsService,
+    // One mock for both entry points: a test that revokes the authority
+    // revokes the per-attempt recheck with it.
+    permissions: {
+      authorize,
+      authorizeConditional: authorize,
+    } as unknown as PermissionsService,
     logger: mockServices.logger.mock(),
     auditor: mockServices.auditor.mock(),
     lifecycle: { addShutdownHook: jest.fn() } as unknown as LifecycleService,
     pluginMetadata: { getId: () => 'test-plugin' } as PluginMetadataService,
+    events: mockServices.events(),
   };
   const handles: Array<{ release(): Promise<void> }> = [];
   return {
@@ -1664,6 +1670,19 @@ describe('integration regressions', () => {
       await conversation.abort(second.context);
       expect(probe.requests).toEqual([]);
       expect(rechecks).toContain('acquired');
+      // The reason is the closed-vocabulary recheck code; the row stays
+      // actionable because it also carries the model identity.
+      const denied = await f
+        .db('ai_journal_events')
+        .where({ decision: 'deny', session_id: 'reused' })
+        .select('operation', 'provider', 'model');
+      expect(denied).toEqual([
+        expect.objectContaining({
+          operation: 'models.streamSimple',
+          provider: 'openai',
+          model: 'gpt-review',
+        }),
+      ]);
     } finally {
       await probe.close();
       await f.close();

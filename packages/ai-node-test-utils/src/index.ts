@@ -14,18 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * Alpha entrypoint for the tool composition surface of the managed AI
- * service.
- *
- * @remarks
- *
- * Everything here follows the managed AI service's alpha compatibility
- * policy until the underlying seams settle; consume it from
- * `@backstage/ai-node-tools/alpha`.
- *
- * @packageDocumentation
- * @alpha
- */
-
-export { createToolPermissions } from './createToolPermissions';
+export {};

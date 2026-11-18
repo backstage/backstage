@@ -247,6 +247,7 @@ function workerAdapter(
 export const googleGenerativeAi: AiProviderModule = {
   id: 'google-generative-ai',
   adapter: workerAdapter('google-generative-ai'),
+  credentialKinds: ['api_key'],
   certifiedOperations: CHAT,
   destinationTemplates: GEMINI_TEMPLATES,
   destination: model => geminiDestination(model),
@@ -262,6 +263,7 @@ export const googleGenerativeAi: AiProviderModule = {
 export const googleVertex: AiProviderModule = {
   id: 'google-vertex',
   adapter: workerAdapter('google-vertex'),
+  credentialKinds: ['api_key'],
   certifiedOperations: CHAT,
   destinationTemplates: VERTEX_TEMPLATES,
   destination: (model, env) => vertexDestination(model, env),

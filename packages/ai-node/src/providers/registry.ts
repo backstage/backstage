@@ -57,6 +57,16 @@ export function createProviderRegistry(
       throw new Error('Invalid or duplicate provider module id');
     }
     if (
+      !Array.isArray(module.credentialKinds) ||
+      module.credentialKinds.length === 0 ||
+      module.credentialKinds.some(
+        kind => kind !== 'api_key' && kind !== 'oauth',
+      ) ||
+      new Set(module.credentialKinds).size !== module.credentialKinds.length
+    ) {
+      throw new Error(`Invalid provider credential kinds: ${module.id}`);
+    }
+    if (
       !Array.isArray(module.certifiedOperations) ||
       !Array.isArray(module.destinationTemplates) ||
       module.destinationTemplates.length === 0 ||
@@ -118,6 +128,7 @@ export function createProviderRegistry(
         ...module,
         adapter: Object.freeze({ ...module.adapter }),
         certifiedOperations: Object.freeze(certified),
+        credentialKinds: Object.freeze([...module.credentialKinds]),
         destinationTemplates: Object.freeze(destinationTemplates),
       }),
     );

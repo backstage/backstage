@@ -15,12 +15,12 @@
  */
 
 import { once } from 'node:events';
-import { createProviderRegistry } from '@backstage/ai-node/testUtils';
-import type { TrustedOperation } from '@backstage/ai-node/testUtils';
+import { createProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
+import type { TrustedOperation } from '@backstage/ai-node-test-utils/alpha';
 import {
   createGuardedModelOperations,
   createModelOperationGuard,
-} from '@backstage/ai-node/testUtils';
+} from '@backstage/ai-node-test-utils/alpha';
 import { createServer } from 'node:http';
 import { Worker } from 'node:worker_threads';
 import { mkdtemp, rm, unlink, writeFile } from 'node:fs/promises';

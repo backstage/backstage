@@ -18,11 +18,11 @@ import { once } from 'node:events';
 import {
   createGuardedModelOperations,
   createModelOperationGuard,
-} from '@backstage/ai-node/testUtils';
+} from '@backstage/ai-node-test-utils/alpha';
 import type {
   AttemptDecision,
   AttemptOutcome,
-} from '@backstage/ai-node/testUtils';
+} from '@backstage/ai-node-test-utils/alpha';
 import { createServer, type Server } from 'node:http';
 import { mockCredentials } from '@backstage/backend-test-utils';
 import type { AnyModel } from '@earendil-works/pi-ai';
@@ -35,7 +35,7 @@ import {
   type Fence,
   type ModelOperation,
   type TrustedOperation,
-} from '@backstage/ai-node/testUtils';
+} from '@backstage/ai-node-test-utils/alpha';
 import { openaiDecisions } from './decisions';
 
 const providers = createProviderRegistry([openaiDecisions]);
@@ -292,6 +292,7 @@ describe('OpenAI Decisions module', () => {
     // attempt decisions and never a fabricated completed outcome.
     const module: AiProviderModule = {
       id: 'multi-attempt-classifier',
+      credentialKinds: ['api_key'],
       certifiedOperations: ['classify'],
       destinationTemplates: [[{ literal: '/v1/classify' }]],
       destination: () => 'https://provider.example/v1/classify',

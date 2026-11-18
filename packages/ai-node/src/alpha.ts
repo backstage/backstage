@@ -70,7 +70,6 @@ export type {
   ToolDispatchInput,
   ToolModule,
 } from './tools/types';
-export { toolPermissionName } from './tools/registry';
 export type { ToolIdentity } from './tools/registry';
 export { createGuardedToolOperations } from './tools/mediation';
 export type {
@@ -92,11 +91,52 @@ export type {
   AuditPage,
   AuditQuery,
 } from './journal/types';
-export { modelPermissionName } from './permissions/modelPermissions';
+export type { ModelDescriptor, ModelPair } from './permissions/modelAccess';
+export {
+  aiModelConditions,
+  aiModelPermissionRules,
+  aiModelResourceRef,
+  aiToolConditions,
+  aiToolPermissionRules,
+  aiToolResourceRef,
+  allowsConditional,
+  authorizeConditionalDecision,
+  createAiModelConditionalDecision,
+  createAiToolConditionalDecision,
+  evaluatePermissionCriteria,
+  isModel,
+  isModelType,
+  isProvider,
+  isServer,
+  isTool,
+} from './permissions/rules';
+export type { ConfiguredCredentialKind } from './credentials/configCredentialKinds';
+export { createCredentialRefreshHook } from './credentials/refreshHook';
+export type { CreateCredentialRefreshHookOptions } from './credentials/refreshHook';
 export type {
-  ModelDescriptor,
-  ModelPair,
-} from './permissions/modelPermissions';
+  CredentialRefreshHook,
+  CredentialRefreshInput,
+} from './integration';
+export type { AiTokenEndpoint } from './config-extension/types';
+export type {
+  AiAuthModule,
+  AuthOperationKind,
+  AuthTokenRequestBase,
+  OAuthLoginExchangeInput,
+  OAuthRefreshInput,
+} from './providers/auth/types';
+export type { AiCredentialKind } from './providers/types';
+export type {
+  AttemptDecision,
+  AttemptJournal,
+  AttemptOutcome,
+} from './journal/types';
+export { assertConfigCredentialKinds } from './credentials/configCredentialKinds';
+export type {
+  AiParamsSchema,
+  AiPermissionRule,
+  AiPolicyAuthorizer,
+} from './permissions/rules';
 export type { AiCredentialStores, CredentialScope } from './credentials/types';
 export type { RecoveryEvent } from './journal/types';
 export type { PageOfNamespaces } from './ownership/types';
@@ -119,10 +159,9 @@ export type {
   ProviderEnvelope,
 } from './providers/types';
 export type { JournalPruneResult } from './journal/retention';
-export { startAiJournalPruneRunner } from './journal/pruneRunner';
+export { scheduleAiJournalPrune } from './journal/pruneRunner';
 export type {
-  AiJournalPruneRunner,
-  AiJournalPruneRunnerOptions,
+  AiJournalPruneScheduleOptions,
   AiPruneRunnerLogger,
 } from './journal/pruneRunner';
 export { evaluateAiHealth } from './observability/health';
@@ -137,7 +176,9 @@ export type {
   AiMetricsSubscriber,
   MetricSeries,
 } from './observability/metrics';
-export type {
-  AiEventEmitter,
-  AiObservabilityEvent,
+export {
+  AI_OBSERVABILITY_TOPICS,
+  aiObservabilityTopic,
+  createAiEventSink,
 } from './observability/types';
+export type { AiEventSink, AiObservabilityEvent } from './observability/types';

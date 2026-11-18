@@ -16,7 +16,7 @@
 
 import { zstdCompressSync } from 'node:zlib';
 import { validateRequest as validateRequestBase } from './validateRequest';
-import { builtinProviderRegistry } from '../providers/testFixtures';
+import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 
 const validateRequest = (
   operation: Parameters<typeof validateRequestBase>[0],

@@ -39,8 +39,7 @@ import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { JsonObject } from '@backstage/types';
 import type { AiCredentialStores, CredentialScope } from './credentials/types';
 import type { AiCredentialsPrecedence } from './config-extension/types';
-import { emitSafe } from './observability/types';
-import type { AiEventEmitter } from './observability/types';
+import { createAiEventSink, type AiEventSink } from './observability/types';
 import { DEFAULT_REFRESH_WINDOW_MS } from './providers/auth/operations';
 import { type AttemptJournal, type AuditEventView } from './journal/index';
 import { createWiredAttemptJournal } from './journal/wired';
@@ -55,7 +54,24 @@ import type {
   ModelOperationGuard,
   TrustedOperation,
 } from './guard/types';
-import { modelPermissionName } from './permissions/modelPermissions';
+import {
+  aiModelPermissionRules,
+  aiToolPermissionRules,
+  allowsConditional,
+  authorizeConditionalDecision,
+} from './permissions/rules';
+import {
+  aiToolUsePermission,
+  RESOURCE_TYPE_AI_MODEL,
+  RESOURCE_TYPE_AI_TOOL,
+} from '@backstage/plugin-ai-common';
+import {
+  assertConfigCredentialKinds,
+  type ConfiguredCredentialKind,
+} from './credentials/configCredentialKinds';
+import { aiModelUsePermission } from '@backstage/plugin-ai-common';
+import { createCredentialRefreshHook } from './credentials/refreshHook';
+import type { AiTokenEndpoint } from './config-extension/types';
 import { createGuardedToolOperations } from './tools/mediation';
 import { composeWithToolRegistry, createToolRegistry } from './tools/registry';
 import type { ToolModule } from './tools/types';
@@ -114,9 +130,11 @@ const LEASE_KEEPALIVE_INTERVAL_MS = 15_000;
  *
  * Structures exactly the trusted context an auth operation needs, so a host can
  * bind it to `createAuthOperations().refresh` without reconstructing authority
- * from caller data.
+ * from caller data. The fields are the verified dispatch context: actor,
+ * caller credentials, fence, provenance and the config/definition versions —
+ * never anything caller-supplied beyond the request that triggered them.
  *
- * @internal
+ * @alpha
  */
 export interface CredentialRefreshInput {
   readonly provider: string;
@@ -144,7 +162,7 @@ export interface CredentialRefreshInput {
  * absent, an expired OAuth credential is denied exactly as before: with a
  * journaled `credential expired; re-authentication required` reason.
  *
- * @internal
+ * @alpha
  */
 export type CredentialRefreshHook = (
   input: CredentialRefreshInput,
@@ -185,22 +203,36 @@ export interface AiServiceIntegrationOptions {
    */
   readonly models?: readonly AnyModel[];
   /**
+   * The credential kinds installation configuration declares, validated
+   * against the registered modules at composition so a kind no module consumes
+   * fails at startup instead of at dispatch.
+   */
+  readonly configCredentialKinds?: readonly ConfiguredCredentialKind[];
+  /**
    * Whether a caller's personal provider credential wins over the
    * installation's. Defaults to `user-first`: absence always falls through to
    * the next scope, a failed read never does.
    */
   readonly credentialPrecedence?: AiCredentialsPrecedence;
   /**
+   * Trusted OAuth refresh endpoints per provider from installation
+   * configuration, each with the family's public client ID.
+   *
+   * @remarks
+   * When {@link AiServiceIntegrationOptions.refreshExpiredCredential} is absent
+   * and these endpoints line up with registered provider modules that carry an
+   * auth module, the integration wires pre-dispatch refresh itself — the
+   * config-driven default for adopters who configure `ai.credentials`. Without
+   * it (no endpoint, or no registered family with an auth module) an expired
+   * OAuth credential keeps failing closed with its actionable denial.
+   */
+  readonly credentialTokenEndpoints?: Readonly<Record<string, AiTokenEndpoint>>;
+  /**
    * Guarded refresh for expiring OAuth credentials, invoked before dispatch.
-   * Absent means no automatic refresh: an expired credential denies.
+   * An explicit hook here overrides the config-driven auto-wiring; absent, and
+   * without usable token endpoints, an expired credential denies.
    */
   readonly refreshExpiredCredential?: CredentialRefreshHook;
-  /**
-
-   * Observability sink for denials, dispatch outcomes, lease actions and
-   * journal appends. Absent means no subscriber; behavior is unchanged.
-   */
-  readonly events?: AiEventEmitter;
 
   /**
    * Opt-in code mode, enabled for every harness this integration opens.
@@ -381,6 +413,12 @@ type NativeAdmission = {
 /** The authority context a dispatch binds to: the admission's view. */
 type DispatchContext = {
   readonly providers: AiProviderRegistry;
+  /**
+   * The refresh hook for this module snapshot: an explicit host hook wins,
+   * otherwise the config-driven default built from the snapshot's provider
+   * modules and the configured token endpoints.
+   */
+  readonly refreshExpiredCredential: CredentialRefreshHook | undefined;
   readonly tools: ReturnType<typeof createToolRegistry> | undefined;
   readonly guard: ModelOperationGuard;
   readonly journal: AttemptJournal;
@@ -471,15 +509,28 @@ export async function createAiServiceIntegration(
   const { deps } = options;
   const credentialStores = options.credentialStores;
   const credentialPrecedence = options.credentialPrecedence ?? 'user-first';
-  const refreshExpiredCredential = options.refreshExpiredCredential;
-  const events = options.events;
+  const explicitRefreshHook = options.refreshExpiredCredential;
+  const credentialTokenEndpoints = options.credentialTokenEndpoints ?? {};
+  // The one observability sink: validated, fire-and-forget publishes to
+  // the events service; a failing publish never couples to what it
+  // observes.
+  const events: AiEventSink | undefined = options.deps.events
+    ? createAiEventSink(options.deps.events)
+    : undefined;
   const catalog = (options.models ?? []).map(deepFreeze);
+  /** The catalog `type` a policy sees for one model, when it declares one. */
+  const catalogTypeOf = (
+    provider: string,
+    modelId: string,
+  ): string | undefined =>
+    catalog.find(entry => entry.provider === provider && entry.id === modelId)
+      ?.type;
   const db: Knex = await deps.database.getClient();
   const pluginId = deps.pluginMetadata.getId();
 
   const lease = await createKnexNamespaceLease({
     db,
-    ...(events ? { events } : {}),
+    ...(events ? { emit: events } : {}),
   });
   const recovery = await createAiRecovery({
     db,
@@ -511,9 +562,18 @@ export async function createAiServiceIntegration(
     const providerRegistry = toolRegistry
       ? composeWithToolRegistry(providerBase, toolRegistry)
       : providerBase;
+    // Composition-time credential-kind validation, per module snapshot: a
+    // provider whose modules are all known rejects a configured kind none of
+    // them consumes, while an unregistered provider stays dispatch-time
+    // fail-closed because nothing here can say what it would accept.
+    assertConfigCredentialKinds({
+      models: catalog,
+      providers: providerRegistry,
+      configured: options.configCredentialKinds ?? [],
+    });
     const journal: AttemptJournal = createWiredAttemptJournal({
       db,
-      ...(events ? { events } : {}),
+      ...(events ? { emit: events } : {}),
       permissions: deps.permissions,
       providers: providerRegistry,
       mirror: {
@@ -532,6 +592,25 @@ export async function createAiServiceIntegration(
       },
     });
 
+    // Config-driven refresh, per module snapshot: an explicit hook always wins,
+    // and otherwise the installation's token endpoints are paired with the
+    // auth modules the registered families carry. Either half missing leaves
+    // the hook undefined, so an expired OAuth credential keeps its existing
+    // fail-closed denial.
+    const refreshExpiredCredential =
+      explicitRefreshHook ??
+      (credentialStores === undefined
+        ? undefined
+        : createCredentialRefreshHook({
+            providerModules: [
+              ...(options.providerModules ?? []),
+              ...(dynamic?.providerModules ?? []),
+            ],
+            tokenEndpoints: credentialTokenEndpoints,
+            stores: credentialStores,
+            journal,
+            ...(events === undefined ? {} : { emit: events }),
+          }));
     /**
      * Resolves the authority for a dispatch, or undefined. One generic path for
      * models and tool servers: the module (looked up by its api id) carries the
@@ -579,31 +658,50 @@ export async function createAiServiceIntegration(
     const guard: ModelOperationGuard = createModelOperationGuard({
       providers: providerRegistry,
       transport: fetch,
-      ...(events ? { events } : {}),
+      ...(events ? { emit: events } : {}),
       recheck: async operation => {
-        // Fresh permission check with the original caller credentials. The
-        // permission name comes from the module when it carries its own (tool
-        // servers); the shared model encoder applies otherwise.
-        const module = providerRegistry.get(operation.api);
-        const permissionName = module?.permissionName
-          ? module.permissionName(operation.provider, operation.modelId)
-          : modelPermissionName({
-              provider: operation.provider,
-              modelId: operation.modelId,
-            });
-        const decisions = await deps.permissions.authorize(
-          [
-            {
-              permission: {
-                type: 'basic',
-                name: permissionName,
-                attributes: {},
-              },
-            },
-          ],
-          { credentials: operation.credentials },
+        // Fresh permission check with the original caller credentials: one
+        // conditional query per attempt on the permission that matches the
+        // operation kind, then the policy's conditions are evaluated here
+        // against the model pair or tool identity in hand. Anything that is not
+        // a positive evaluation denies, and the guard journals the denial.
+        const decision = await authorizeConditionalDecision(
+          deps.permissions,
+          operation.operation === 'toolCall'
+            ? aiToolUsePermission
+            : aiModelUsePermission,
+          operation.credentials,
         );
-        if (decisions[0]?.result !== 'ALLOW') {
+        const allowed =
+          operation.operation === 'toolCall'
+            ? allowsConditional({
+                decision,
+                resourceType: RESOURCE_TYPE_AI_TOOL,
+                rules: Object.values(aiToolPermissionRules),
+                resource: {
+                  serverId: operation.provider,
+                  toolName: operation.modelId,
+                },
+              })
+            : allowsConditional({
+                decision,
+                resourceType: RESOURCE_TYPE_AI_MODEL,
+                rules: Object.values(aiModelPermissionRules),
+                resource: {
+                  provider: operation.provider,
+                  modelId: operation.modelId,
+                  ...(catalogTypeOf(operation.provider, operation.modelId) ===
+                  undefined
+                    ? {}
+                    : {
+                        type: catalogTypeOf(
+                          operation.provider,
+                          operation.modelId,
+                        ),
+                      }),
+                },
+              });
+        if (!allowed) {
           return false;
         }
         // Fence currency: a rejected renewal means this generation is stale.
@@ -622,6 +720,7 @@ export async function createAiServiceIntegration(
     });
     return {
       providers: providerRegistry,
+      refreshExpiredCredential,
       tools: toolRegistry,
       guard,
       journal,
@@ -974,7 +1073,7 @@ export async function createAiServiceIntegration(
         providers: providerRegistry,
         guard,
         journal,
-        ...(events ? { events } : {}),
+        ...(events ? { emit: events } : {}),
         resolve: makeResolve(input, fence, authority, admission.dispatch),
       });
       return {
@@ -1052,7 +1151,7 @@ export async function createAiServiceIntegration(
             providers: providerRegistry,
             guard,
             journal,
-            ...(events ? { events } : {}),
+            ...(events ? { emit: events } : {}),
             resolve: makeResolve(input, fence, authority, admission.dispatch),
           }),
         })
@@ -1152,7 +1251,11 @@ export async function createAiServiceIntegration(
     operation: ModelOperation,
   ) => Promise<GuardedModelBinding> {
     const sessionRef = `${input.namespace.pluginId}/${input.namespace.sessionId}`;
-    const { providers: providerRegistry, resolveAuthority } = dispatchContext;
+    const {
+      providers: providerRegistry,
+      resolveAuthority,
+      refreshExpiredCredential,
+    } = dispatchContext;
     let callOrdinal = 0;
     return async (model, operation) => {
       const dispatchModule = providerRegistry.get(
@@ -1277,6 +1380,28 @@ export async function createAiServiceIntegration(
         );
       }
       let resolved = current.authorities.get(canonical.provider);
+      if (resolved !== undefined) {
+        // Dispatch-time credential-kind check: the module that will serve this
+        // model must accept the stored credential's kind. An admission still
+        // resolves every catalog provider, so enforcement lives here, where the
+        // pair that actually dispatches is known. A refusal is a typed
+        // resolution denial, so it is journaled with the guidance.
+        const unsupported = unsupportedCredentialKindReason(
+          providerRegistry.get(canonical.api),
+          canonical.provider,
+          resolved.authority.kind,
+        );
+        if (unsupported !== undefined) {
+          throw new GuardedResolutionError(
+            {
+              operation: trusted,
+              model: bindingModel,
+              authority: resolved.authority,
+            },
+            unsupported,
+          );
+        }
+      }
       if (resolved === undefined) {
         throw new GuardedResolutionError(
           {
@@ -1427,7 +1552,7 @@ export async function createAiServiceIntegration(
       })
       .then(() => {
         // One failure per logical denial, observed after the durable row.
-        emitSafe(events, {
+        events?.({
           kind: 'denial',
           at: Date.now(),
           pluginId: input.namespace.pluginId,
@@ -1480,19 +1605,26 @@ export async function createAiServiceIntegration(
       // Fail early when the configured model is already denied, so callers
       // get an actionable error at acquisition instead of at dispatch.
       if (binding.model !== undefined) {
-        const decisions = await deps.permissions.authorize(
-          [
-            {
-              permission: {
-                type: 'basic',
-                name: modelPermissionName(binding.model),
-                attributes: {},
-              },
-            },
-          ],
-          { credentials: binding.credentials },
+        const modelType = catalogTypeOf(
+          binding.model.provider,
+          binding.model.modelId,
         );
-        if (decisions[0]?.result !== 'ALLOW') {
+        const decision = await authorizeConditionalDecision(
+          deps.permissions,
+          aiModelUsePermission,
+          binding.credentials,
+        );
+        const allowed = allowsConditional({
+          decision,
+          resourceType: RESOURCE_TYPE_AI_MODEL,
+          rules: Object.values(aiModelPermissionRules),
+          resource: {
+            provider: binding.model.provider,
+            modelId: binding.model.modelId,
+            ...(modelType === undefined ? {} : { type: modelType }),
+          },
+        });
+        if (!allowed) {
           throw new Error(
             `Access denied: the '${pluginId}' plugin's caller is not allowed to use the model '${binding.model.provider}/${binding.model.modelId}' configured at its AI configuration path`,
           );
@@ -1715,6 +1847,35 @@ function resolvedAuthorityFields(resolved: ResolvedAuthority): {
     credentialScope: resolved.scope,
     credentialGeneration: resolved.generation,
   };
+}
+
+/**
+ * Refuses a credential kind the resolved module does not consume, with
+ * guidance naming the kinds it does.
+ *
+ * @remarks
+ * A gateway provider can have an `api_key` entry while an `oauth` token for
+ * the same provider sits in a personal store; the module that serves the
+ * model decides, and a kind it cannot interpret never reaches the wire.
+ */
+function unsupportedCredentialKindReason(
+  module: AiProviderModule | undefined,
+  providerId: string,
+  kind: 'apiKey' | 'oauth' | 'federation',
+): string | undefined {
+  const credentialKind = kind === 'apiKey' ? 'api_key' : kind;
+  if (
+    module === undefined ||
+    !Array.isArray(module.credentialKinds) ||
+    module.credentialKinds.includes(credentialKind)
+  ) {
+    return undefined;
+  }
+  return `The stored credential for provider '${providerId}' is a '${credentialKind}' credential, which the registered module '${
+    module.id
+  }' does not accept. Supported credential kinds for this provider: ${module.credentialKinds.join(
+    ', ',
+  )}; store a credential of a supported kind instead`;
 }
 
 function authorityOf(

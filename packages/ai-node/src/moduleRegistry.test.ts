@@ -15,7 +15,7 @@
  */
 
 import { createAiModuleRegistry } from './moduleRegistry';
-import { fixtureProviderModules } from './providers/testFixtures';
+import { fixtureProviderModules } from '@backstage/ai-node-test-utils/alpha';
 
 const fixtureAnthropicMessages = fixtureProviderModules.find(
   module => module.id === 'anthropic-messages',

@@ -28,7 +28,7 @@ import type { TrustedOperation } from '../guard/types';
 import {
   registerProviderCertification,
   createProviderRegistry,
-} from '@backstage/ai-node/testUtils';
+} from '@backstage/ai-node-test-utils/alpha';
 import { validateHttpEnvelope } from './httpEnvelope';
 
 const storageMigration = require('../../migrations/1000_storage');
@@ -45,6 +45,7 @@ const paths = {
 const providers = createProviderRegistry([
   {
     id: 'test-classifier',
+    credentialKinds: ['api_key'],
     certifiedOperations: ['classify'],
     destinationTemplates: [[{ literal: '/v1/classify' }]],
     destination: () => 'https://provider.example/v1/classify',

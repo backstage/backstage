@@ -23,10 +23,24 @@ import {
   bindAiModuleRegistry,
   createAiHttpSupport,
   createAiModuleRegistry,
+  createMetricsSubscriber,
+  evaluateAiHealth,
 } from '@backstage/ai-node/alpha';
 import { aiBackendProviderModules } from './providerModules';
-import { createToolPermissions } from '@backstage/ai-node-tools/alpha';
+import {
+  aiModelPermissionRules,
+  aiModelResourceRef,
+  aiToolPermissionRules,
+  aiToolResourceRef,
+} from '@backstage/ai-node/alpha';
+import {
+  aiAuditReadPermission,
+  aiModelUsePermission,
+  aiSessionUsePermission,
+  aiToolUsePermission,
+} from '@backstage/plugin-ai-common';
 import { aiModulesExtensionPoint } from './extensions';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { createRouter } from './router';
 
 /** Backend plugin exposing managed AI sessions to authenticated users. @public */
@@ -60,6 +74,7 @@ export default createBackendPlugin({
         permissionsRegistry: coreServices.permissionsRegistry,
         pluginMetadata: coreServices.pluginMetadata,
         config: coreServices.rootConfig,
+        events: eventsServiceRef,
       },
       async init({
         ai,
@@ -71,20 +86,24 @@ export default createBackendPlugin({
         permissionsRegistry,
         pluginMetadata,
         config,
+        events,
       }) {
-        toolPermissions = registrations => {
-          createToolPermissions({
-            tools: registrations.flatMap(module =>
-              module.tools.map(tool => ({
-                serverId: module.id,
-                toolName: tool.name,
-              })),
-            ),
-            authorizer: permissions,
-            registry: permissionsRegistry,
-          });
-        };
-        toolPermissions(modules.snapshot().toolModules);
+        // Fixed permissions and the rules that give them granularity are
+        // registered once; policy authors import the matching conditions.
+        permissionsRegistry.addPermissions([
+          aiModelUsePermission,
+          aiToolUsePermission,
+          aiSessionUsePermission,
+          aiAuditReadPermission,
+        ]);
+        permissionsRegistry.addResourceType({
+          resourceRef: aiModelResourceRef,
+          rules: Object.values(aiModelPermissionRules),
+        });
+        permissionsRegistry.addResourceType({
+          resourceRef: aiToolResourceRef,
+          rules: Object.values(aiToolPermissionRules),
+        });
         bindAiModuleRegistry(ai, modules);
         const support = await createAiHttpSupport({
           database,
@@ -94,7 +113,19 @@ export default createBackendPlugin({
           pluginMetadata,
           config,
         });
-        httpRouter.use(createRouter({ ai, support, httpAuth }));
+        // Health derives from the metrics subscriber over the events
+        // service: the same ai.observability.* events the service
+        // publishes, aggregated, evaluated fail-open.
+        const metrics = createMetricsSubscriber();
+        await metrics.subscribe(events);
+        httpRouter.use(
+          createRouter({
+            ai,
+            support,
+            httpAuth,
+            health: () => evaluateAiHealth(metrics.snapshot()),
+          }),
+        );
       },
     });
   },

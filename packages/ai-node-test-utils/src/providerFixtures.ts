@@ -22,9 +22,12 @@ import * as codex from '@earendil-works/pi-ai/api/openai-codex-responses';
 import * as images from '@earendil-works/pi-ai/api/openrouter-images';
 import * as systemOne from '@earendil-works/pi-ai/api/typesafe-system-one';
 import { resolveAzureConfig } from '@earendil-works/pi-ai/api/azure-openai-config';
-import { validateHttpEnvelope } from './httpEnvelope';
-import { createProviderRegistry } from './registry';
-import type { AiProviderModule, ProviderAdapter } from './types';
+import { validateHttpEnvelope } from '@backstage/ai-node/modules';
+import { createProviderRegistry } from '@backstage/ai-node/modules';
+import type {
+  AiProviderModule,
+  ProviderAdapter,
+} from '@backstage/ai-node/modules';
 
 const CHAT = ['stream', 'complete', 'streamSimple', 'completeSimple'] as const;
 const base = (url: string | undefined) => (url ?? '').replace(/\/+$/, '');
@@ -65,20 +68,20 @@ const nonChatAdapter = (
 });
 
 /**
- * Fixture copies of the provider modules that now live in their own packages.
+ * Synthetic provider module copies of the extracted families, for tests that
+ * dispatch through a realistic registry without depending on a family package.
  *
  * @remarks
- * Core tests exercise guard, journal and transport behaviour against
- * representative modules; the extracted packages have their own certification
- * suites, so these local definitions only serve core tests and are never
- * exported from the service.
+ * The extracted packages have their own certification suites; these copies
+ * serve tests that need a realistic registry without a family dependency.
  *
- * @internal
+ * @alpha
  */
 export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
     id: 'anthropic-messages',
     adapter: streamAdapter(anthropic),
+    credentialKinds: ['api_key', 'oauth'],
     certifiedOperations: CHAT,
     destinationTemplates: [[{ literal: '/v1/messages' }]],
     destination: model => `${base(model.baseUrl)}/v1/messages`,
@@ -100,6 +103,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
     id: 'azure-openai-responses',
     adapter: streamAdapter(azure),
+    credentialKinds: ['api_key'],
     certifiedOperations: CHAT,
     destinationTemplates: [
       [{ literal: '/openai/v1/responses' }],
@@ -119,6 +123,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
     id: 'typesafe-system-one',
     adapter: nonChatAdapter(systemOne.classify),
+    credentialKinds: ['api_key'],
     certifiedOperations: ['classify'],
     destinationTemplates: [
       [{ literal: '/v1/systemone' }],
@@ -131,6 +136,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
     id: 'openrouter-images',
     adapter: nonChatAdapter(images.generateImages),
+    credentialKinds: ['api_key'],
     certifiedOperations: ['generateImages'],
     destinationTemplates: [
       [{ literal: '/v1/chat/completions' }],
@@ -147,6 +153,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
     id: 'openai-responses',
     adapter: streamAdapter(responses),
+    credentialKinds: ['api_key', 'oauth'],
     certifiedOperations: CHAT,
     destinationTemplates: [[{ literal: '/v1/responses' }]],
     destination: model => `${base(model.baseUrl)}/responses`,
@@ -156,6 +163,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
     id: 'openai-completions',
     adapter: streamAdapter(completions),
+    credentialKinds: ['api_key', 'oauth'],
     certifiedOperations: CHAT,
     destinationTemplates: [[{ literal: '/v1/chat/completions' }]],
     destination: model => `${base(model.baseUrl)}/chat/completions`,
@@ -165,6 +173,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
     id: 'openai-codex-responses',
     adapter: streamAdapter(codex),
+    credentialKinds: ['api_key', 'oauth'],
     certifiedOperations: CHAT,
     destinationTemplates: [[{ literal: '/backend-api/codex/responses' }]],
     destination: model => `${base(model.baseUrl)}/codex/responses`,
@@ -175,6 +184,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
 ];
 
 /** The extracted families' test fixtures, for core tests. */
+/** The fixture modules joined into one registry. @alpha */
 export const builtinProviderRegistry = createProviderRegistry([
   ...fixtureProviderModules,
 ]);

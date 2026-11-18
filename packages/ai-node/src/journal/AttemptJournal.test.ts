@@ -22,12 +22,12 @@ import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import knex, { type Knex } from 'knex';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
-import { AuditAccessDeniedError, AuditSessionNotFoundError } from './errors';
+import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import type { AttemptJournal, AuditEventView } from './types';
 import { createAttemptJournal as createAttemptJournalBase } from './knex';
 import { pruneAiJournal } from './retention';
 import type { AttemptDecision } from './types';
-import { builtinProviderRegistry } from '../providers/testFixtures';
+import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 
 const createAttemptJournal = (
   options: Parameters<typeof createAttemptJournalBase>[0],
@@ -703,7 +703,7 @@ for (const dialect of ['sqlite', 'pg'] as const) {
               pluginId: namespace.pluginId,
               sessionId,
             }),
-          ).rejects.toThrow(AuditAccessDeniedError);
+          ).rejects.toThrow(NotAllowedError);
         }
       } finally {
         await f.cleanup();
@@ -749,7 +749,7 @@ for (const dialect of ['sqlite', 'pg'] as const) {
             const allowed = await journal.read(reader, query).then(
               () => true,
               error => {
-                if (!(error instanceof AuditAccessDeniedError)) throw error;
+                if (!(error instanceof NotAllowedError)) throw error;
                 return false;
               },
             );
@@ -1047,12 +1047,12 @@ for (const dialect of ['sqlite', 'pg'] as const) {
         });
         await expect(
           strict.read(credentials('user:default/alice'), query),
-        ).rejects.toThrow(AuditAccessDeniedError);
+        ).rejects.toThrow(NotAllowedError);
 
         // Non-owner with the permission: denied.
         await expect(
           f.journal.read(credentials('user:default/bob'), query),
-        ).rejects.toThrow(AuditAccessDeniedError);
+        ).rejects.toThrow(NotAllowedError);
 
         // Unauthenticated: denied.
         await expect(
@@ -1063,7 +1063,7 @@ for (const dialect of ['sqlite', 'pg'] as const) {
             } as BackstageCredentials,
             query,
           ),
-        ).rejects.toThrow(AuditAccessDeniedError);
+        ).rejects.toThrow(NotAllowedError);
 
         // Both ownership and permission: allowed.
         const page = await f.journal.read(
@@ -1078,7 +1078,7 @@ for (const dialect of ['sqlite', 'pg'] as const) {
             ...query,
             sessionId: 'other',
           }),
-        ).rejects.toThrow(AuditSessionNotFoundError);
+        ).rejects.toThrow(NotFoundError);
       } finally {
         await f.cleanup();
       }

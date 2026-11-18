@@ -28,7 +28,12 @@ export type GuardedToolDispatch = Readonly<{
     model: AnyModel,
     context: unknown,
     caller?: Record<string, unknown>,
-  ): Promise<unknown>;
+  ): Promise<{
+    /** The adapter's payload, returned to the caller untouched on success. */
+    value: unknown;
+    /** The adapter's settlement, so the boundary never infers from payload. */
+    outcome: 'completed' | 'failed' | 'cancelled';
+  }>;
 }>;
 
 /**
@@ -75,6 +80,17 @@ export function createGuardedToolOperations(options: {
         // No trusted binding exists to journal against: fail closed.
         throw new Error('unknown tool or unverified operation');
       }
+      // No authorization here: this facade delegates straight into the shared
+      // guarded dispatch, where the single per-attempt check is made against
+      // `ai.tool.use` with the caller's own credentials and every denial is
+      // journaled. A pre-check here would spend a second query per attempt and
+      // leave a denial with no audit row.
+      //
+      // The guarded path reports the closed-vocabulary reason (and the journal
+      // row carries the identity); this boundary names the tool the caller
+      // asked for, so the error a host sees is actionable on its own. Both
+      // contracts hold: the reason code is untouched, only the boundary text
+      // gains identification.
       const model = Object.freeze({
         id: input.toolName,
         provider: input.serverId,
@@ -83,11 +99,34 @@ export function createGuardedToolOperations(options: {
         // resolve; the shared dispatch path never reads them itself.
         credentials: input.credentials,
       }) as never as AnyModel;
-      return options.models.callTool(
+      const tool = `the tool '${input.serverId}/${input.toolName}'`;
+      const result = await options.models.callTool(
         model,
         { arguments: input.arguments },
         input.caller,
       );
+      // A completed tool call returns its payload exactly as the tool produced
+      // it: a successful result whose data happens to contain an `errorMessage`
+      // field is application data, not a failure, and is never rewritten. The
+      // boundary names the tool only on a non-completed settlement, which the
+      // dispatch path reports explicitly.
+      if (result.outcome === 'completed') {
+        return result.value;
+      }
+      const value = result.value;
+      if (
+        value !== null &&
+        typeof value === 'object' &&
+        typeof (value as { errorMessage?: unknown }).errorMessage === 'string'
+      ) {
+        return {
+          ...(value as Record<string, unknown>),
+          errorMessage: `Tool call to ${tool} failed: ${
+            (value as { errorMessage: string }).errorMessage
+          }`,
+        };
+      }
+      return value;
     },
   };
 }

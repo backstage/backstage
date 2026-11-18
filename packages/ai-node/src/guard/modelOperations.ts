@@ -26,8 +26,7 @@ import {
 } from '@earendil-works/pi-ai';
 import { emptyProviderRegistry } from '../providers/registry';
 import type { AiProviderRegistry } from '../providers/registry';
-import { emitSafe } from '../observability/types';
-import type { AiEventEmitter } from '../observability/types';
+import type { AiEventSink } from '../observability/types';
 import type { AttemptJournal } from '../journal/types';
 import { assertRedactedText } from '../journal/redaction';
 import type {
@@ -104,8 +103,23 @@ export type ModelRequests = Pick<
     model: AnyModel,
     context: unknown,
     caller?: Record<string, unknown>,
-  ): Promise<unknown>;
+  ): Promise<{
+    /** The adapter's payload, exactly as the tool returned it. */
+    value: unknown;
+    /** The adapter's own settlement, never inferred from the payload. */
+    outcome: 'completed' | 'failed' | 'cancelled';
+  }>;
 };
+
+/**
+ * One custom-adapter dispatch: the adapter's payload and its own settlement.
+ *
+ * @alpha
+ */
+export type CustomDispatchResult = Readonly<{
+  value: unknown;
+  outcome: 'completed' | 'failed' | 'cancelled';
+}>;
 
 /**
  * Request-only facade. The host supplies verified, filtered catalog lookups
@@ -130,7 +144,7 @@ export function createGuardedModelOperations(options: {
     operation: ModelOperation,
   ): GuardedModelBinding | Promise<GuardedModelBinding>;
   /** Observability sink for local policy denials; no-op when absent. */
-  events?: AiEventEmitter;
+  emit?: AiEventSink;
 }): ModelRequests {
   const providers = options.providers ?? emptyProviderRegistry;
   class PolicyRejection extends Error {}
@@ -151,7 +165,7 @@ export function createGuardedModelOperations(options: {
     // Same discipline as the guard: the denial observation follows the durable
     // journal row, carries the internal reason and never caller text.
     const observe = () =>
-      emitSafe(options.events, {
+      options.emit?.({
         kind: 'denial',
         at: Date.now(),
         pluginId: op.fence.namespace.pluginId,
@@ -482,12 +496,17 @@ export function createGuardedModelOperations(options: {
       'unsupported model operation',
     );
   };
-  const invokeCustom = async (
+  /**
+   * Custom-adapter dispatch that KEEPS the adapter's outcome alongside the
+   * value, so a caller that must distinguish a completed result from a denial
+   * never has to sniff the payload.
+   */
+  const invokeCustomResult = async (
     model: AnyModel,
     context: unknown,
     caller: Record<string, unknown> | undefined,
     operation: ModelOperation,
-  ): Promise<unknown> => {
+  ): Promise<CustomDispatchResult> => {
     const module = providers.get(model.api);
     if (
       !module ||
@@ -558,7 +577,7 @@ export function createGuardedModelOperations(options: {
         throw new PolicyRejection('fabricated provider result');
       }
       await guarded.finish(result.outcome);
-      return result.value;
+      return { value: result.value, outcome: result.outcome };
     } catch (error) {
       try {
         await guarded.finish('failed');
@@ -575,6 +594,13 @@ export function createGuardedModelOperations(options: {
       throw error;
     }
   };
+  const invokeCustom = async (
+    model: AnyModel,
+    context: unknown,
+    caller: Record<string, unknown> | undefined,
+    operation: ModelOperation,
+  ): Promise<unknown> =>
+    (await invokeCustomResult(model, context, caller, operation)).value;
   return {
     stream: (model, context, caller) =>
       start(model, context, caller as Record<string, unknown>, 'stream', false),
@@ -649,11 +675,11 @@ export function createGuardedModelOperations(options: {
         'generateImages',
       ) as ReturnType<Models['generateImages']>,
     callTool: (model, context, caller) =>
-      invokeCustom(
+      invokeCustomResult(
         model,
         context,
         caller as Record<string, unknown>,
         'toolCall',
-      ) as Promise<unknown>,
+      ) as Promise<CustomDispatchResult>,
   };
 }
