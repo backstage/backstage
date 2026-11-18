@@ -47,7 +47,7 @@
     "test": "backstage-cli package test"
   },
   "jest": {
-    "resolver": "<rootDir>/../jestResolver.js"
+    "resolver": "<rootDir>/../../ai-node/jestResolver.js"
   },
   "dependencies": {
     "@backstage/ai-node": "workspace:^",

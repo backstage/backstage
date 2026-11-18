@@ -261,14 +261,3 @@ export function createTokenRequest(
  *
  * @internal
  */
-/** The empty set of core-bundled auth modules — every auth module lives in
- * its provider package. Hosts register additional modules through
- * `createAuthModuleRegistry`.
- *
- * @alpha
- */
-const builtinAuthModules: readonly AiAuthModule[] = Object.freeze([]);
-
-/** @alpha */
-export const builtinAuthModuleRegistry =
-  createAuthModuleRegistry(builtinAuthModules);

@@ -47,7 +47,7 @@
     "test": "backstage-cli package test"
   },
   "jest": {
-    "resolver": "<rootDir>/../jestResolver.js"
+    "resolver": "<rootDir>/../../ai-node/jestResolver.js"
   },
   "dependencies": {
     "@earendil-works/pi-codemode": "1.5.2",
