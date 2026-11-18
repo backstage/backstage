@@ -1397,6 +1397,120 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
       expect(type).toEqual('app');
       expect(token).toEqual('public_access_from_app_2');
     });
+
+    it('should not use an installation outside allowedInstallationOwners for the public access fallback', async () => {
+      const githubProvider = SingleInstanceGithubCredentialsProvider.create({
+        host: 'github.com',
+        apps: [
+          {
+            appId: 1,
+            privateKey: 'privateKey',
+            webhookSecret: '123',
+            clientId: 'CLIENT_ID',
+            clientSecret: 'confidential',
+            allowedInstallationOwners: ['allowed-org'],
+            publicAccess: true,
+          },
+        ],
+      });
+
+      octokit.apps.listInstallations.mockResolvedValue({
+        headers: {
+          etag: '123',
+        },
+        data: [
+          {
+            id: 1,
+            repository_selection: 'all',
+            account: {
+              login: 'excluded-org',
+            },
+          },
+        ],
+      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'excluded_installation_token',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+      const { token, headers, type } = await githubProvider.getCredentials({
+        url: 'https://github.com/excluded-org/repo',
+      });
+
+      expect(type).toEqual('token');
+      expect(token).toBeUndefined();
+      expect(headers).toBeUndefined();
+      // No installation token may be minted from outside the allow list
+      expect(octokit.apps.createInstallationAccessToken).not.toHaveBeenCalled();
+    });
+
+    it('should use an allowed installation for the public access fallback when earlier installations are excluded', async () => {
+      const githubProvider = SingleInstanceGithubCredentialsProvider.create({
+        host: 'github.com',
+        apps: [
+          {
+            appId: 1,
+            privateKey: 'privateKey',
+            webhookSecret: '123',
+            clientId: 'CLIENT_ID',
+            clientSecret: 'confidential',
+            allowedInstallationOwners: ['allowed-org'],
+            publicAccess: true,
+          },
+        ],
+      });
+
+      octokit.apps.listInstallations.mockResolvedValue({
+        headers: {
+          etag: '123',
+        },
+        data: [
+          {
+            id: 1,
+            repository_selection: 'all',
+            account: {
+              login: 'excluded-org',
+            },
+          },
+          {
+            id: 3,
+            repository_selection: 'all',
+            account: null,
+          },
+          {
+            id: 2,
+            repository_selection: 'all',
+            account: {
+              login: 'Allowed-Org',
+            },
+          },
+        ],
+      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'public_installation_token',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+      const { token, headers, type } = await githubProvider.getCredentials({
+        url: 'https://github.com/excluded-org/repo',
+      });
+
+      expect(type).toEqual('app');
+      expect(token).toEqual('public_installation_token');
+      expect(headers).toEqual({ Authorization: `Bearer ${token}` });
+      // The fallback must mint from the allowed installation, not from an
+      // earlier excluded or account-less one
+      expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledWith({
+        installation_id: 2,
+        headers: expect.anything(),
+      });
+    });
   });
 
   describe('bare host URL (no org/repo)', () => {
