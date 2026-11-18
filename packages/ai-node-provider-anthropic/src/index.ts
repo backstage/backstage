@@ -17,34 +17,12 @@
 /**
  * Anthropic Claude chat and OAuth provider modules for the managed AI service.
  *
+ * @remarks
+ *
+ * The modules are alpha-grade and exposed from the `./alpha` entrypoint;
+ * this entrypoint intentionally exposes nothing.
+ *
  * @packageDocumentation
  */
 
-import type {
-  AiAuthModule,
-  AiProviderModule,
-} from '@backstage/ai-node/modules';
-import { anthropicMessages } from './anthropicMessages';
-import { anthropicAuthModule } from './anthropicAuth';
-
-/** @public */
-export { anthropicMessages } from './anthropicMessages';
-/** @public */
-export { anthropicAuthModule } from './anthropicAuth';
-
-/**
- * Every Anthropic provider module, ready to register.
- *
- * @public
- */
-export const anthropicProviderModules: readonly AiProviderModule[] =
-  Object.freeze([anthropicMessages]);
-
-/**
- * Every Anthropic auth module, ready to register.
- *
- * @public
- */
-export const anthropicAuthModules: readonly AiAuthModule[] = Object.freeze([
-  anthropicAuthModule,
-]);
+export {};

@@ -15,7 +15,9 @@
  */
 
 /**
- * Package-scoped Jest resolver for @backstage/ai-node.
+ * Jest resolver for the @backstage/ai-node package family: this copy in
+ * @backstage/ai-node is the single original every family package's
+ * package.json "jest" key references.
  *
  * The Pi dependency stack (@earendil-works/chord, -pi-ai, -pi-durable, ...) is
  * ESM-only: the packages declare "type": "module" and their export maps only
@@ -27,8 +29,9 @@
  * @earendil-works/* only. Everything else keeps the default conditions, so
  * CommonJS dependencies in the graph (for example `pg`) are unaffected.
  *
- * It is referenced from the "jest" key of this package's package.json, which
- * the Backstage CLI merges into the generated per-package Jest config.
+ * It is referenced from the "jest" key of each family package's
+ * package.json (as `<rootDir>/../../ai-node/jestResolver.js`), which the
+ * Backstage CLI merges into the generated per-package Jest config.
  */
 
 const PI_SPECIFIER = /(?:^|\/)@earendil-works\//;

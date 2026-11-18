@@ -937,10 +937,7 @@ describe('observability seam', () => {
     const modules = require('../providers/auth/modules');
     const { jsonAuthModule } = require('../providers/auth/jsonModuleFixture');
     /** The extracted anthropic auth module stands in as a local fixture. */
-    const denyProbeModules = modules.createAuthModuleRegistry([
-      jsonAuthModule,
-      ...modules.builtinAuthModules,
-    ]);
+    const denyProbeModules = modules.createAuthModuleRegistry([jsonAuthModule]);
     try {
       await credentialsMigration.up(db);
       const lease = await createKnexNamespaceLease({ db });

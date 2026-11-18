@@ -25,7 +25,6 @@ import { mockCredentials } from '@backstage/backend-test-utils';
 import { createAttemptJournal } from '../journal/knex';
 import { createModelOperationGuard } from '../guard/createModelOperationGuard';
 import type { TrustedOperation } from '../guard/types';
-import { builtinProviderModules } from '../modules';
 import {
   registerProviderCertification,
   createProviderRegistry,
@@ -44,7 +43,6 @@ const paths = {
   'test-classifier': '/v1/classify',
 };
 const providers = createProviderRegistry([
-  ...builtinProviderModules,
   {
     id: 'test-classifier',
     certifiedOperations: ['classify'],

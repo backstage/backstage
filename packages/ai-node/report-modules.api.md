@@ -96,9 +96,6 @@ export type AuthTokenRequestBase = Readonly<{
 }>;
 
 // @alpha
-export const builtinProviderModules: readonly AiProviderModule[];
-
-// @alpha
 export function createTokenRequest(
   endpoint: string,
   body: 'json' | 'form',

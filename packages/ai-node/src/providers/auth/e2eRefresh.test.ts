@@ -48,19 +48,17 @@ import {
   type CredentialRefreshHook,
 } from '../../integration';
 import { runAiMigrations } from '../../migrations';
-import { builtinProviderModules } from '../../modules';
 import { createProviderRegistry } from '../registry';
 import type { AiProviderModule } from '../types';
 import { createAuthOperationGuard } from './guard';
 import { formAuthModule } from './formModuleFixture';
 import { jsonAuthModule } from './jsonModuleFixture';
-import { builtinAuthModules, createAuthModuleRegistry } from './modules';
+import { createAuthModuleRegistry } from './modules';
 
 /** Core registry: remaining built-ins plus the local fixture modules. */
 const jsonAuthModules = createAuthModuleRegistry([
   jsonAuthModule,
   formAuthModule,
-  ...builtinAuthModules,
 ]);
 
 import { createAuthOperations } from './operations';
@@ -383,7 +381,6 @@ describe.each(engines)(
         });
       };
       const providers = createProviderRegistry([
-        ...builtinProviderModules,
         probeAdapter(headers => {
           sentHeaders.push(headers.get('authorization') ?? '');
         }),

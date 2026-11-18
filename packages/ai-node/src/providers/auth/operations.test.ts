@@ -32,15 +32,12 @@ import { createAttemptJournal } from '../../journal/knex';
 import type { AttemptJournal } from '../../journal/types';
 import { createAuthOperationGuard, type AuthModuleLookup } from './guard';
 import { AuthTokenRejection } from './guard';
-import { builtinAuthModules, createAuthModuleRegistry } from './modules';
+import { createAuthModuleRegistry } from './modules';
 import { formAuthModule } from './formModuleFixture';
 import { jsonAuthModule } from './jsonModuleFixture';
 
 /** Core registry: the remaining built-ins plus the local JSON-bodied module. */
-const jsonAuthModules = createAuthModuleRegistry([
-  jsonAuthModule,
-  ...builtinAuthModules,
-]);
+const jsonAuthModules = createAuthModuleRegistry([jsonAuthModule]);
 
 import {
   AuthOperationError,

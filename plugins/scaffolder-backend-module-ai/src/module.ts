@@ -19,13 +19,12 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { createPrivateAiService } from '@backstage/ai-node/alpha';
-import { builtinProviderModules } from '@backstage/ai-node/modules';
 import { googleProviderModules } from '@backstage/ai-node-provider-google/alpha';
 import { openaiProviderModules } from '@backstage/ai-node-provider-openai/alpha';
-import { anthropicProviderModules } from '@backstage/ai-node-provider-anthropic';
-import { azureProviderModules } from '@backstage/ai-node-provider-azure';
-import { typesafeProviderModules } from '@backstage/ai-node-provider-typesafe';
-import { openrouterProviderModules } from '@backstage/ai-node-provider-openrouter';
+import { anthropicProviderModules } from '@backstage/ai-node-provider-anthropic/alpha';
+import { azureProviderModules } from '@backstage/ai-node-provider-azure/alpha';
+import { typesafeProviderModules } from '@backstage/ai-node-provider-typesafe/alpha';
+import { openrouterProviderModules } from '@backstage/ai-node-provider-openrouter/alpha';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
 import { createAiGenerateAction, createAiTransformAction } from './actions';
 
@@ -74,7 +73,6 @@ export const scaffolderModuleAi = createBackendModule({
           providerModules: [
             ...googleProviderModules,
             ...openaiProviderModules,
-            ...builtinProviderModules,
             ...anthropicProviderModules,
             ...azureProviderModules,
             ...typesafeProviderModules,

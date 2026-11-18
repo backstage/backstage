@@ -9,7 +9,19 @@ provider family, and they are registered by the host (for example through the AI
 backend plugin or a scaffolder action module) rather than loaded automatically.
 
 ```ts
-import { openrouterProviderModules } from '@backstage/ai-node-provider-openrouter';
+import { aiServiceRef, createAiServiceFactory } from '@backstage/ai-node/alpha';
+import { openrouterProviderModules } from '@backstage/ai-node-provider-openrouter/alpha';
 
-const providerModules = [...providerModules, ...openrouterProviderModules];
+// Build the AI service factory override that registers the OpenRouter
+// provider modules, in place of the default factory.
+const aiFactory = createAiServiceFactory({
+  // Compose EVERY family the installation needs: a factory override
+  // is global for aiServiceRef and replaces the default registration,
+  // so listing only one family makes the others unavailable.
+  providerModules: [
+    ...openrouterProviderModules,
+    // ...otherProviderModules, // compose the other families here
+  ],
+});
+const serviceFactory = aiFactory(aiServiceRef);
 ```

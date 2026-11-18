@@ -38,7 +38,7 @@ const streamAdapter = (adapter: unknown): ProviderAdapter => {
  * deployment-scoped `/openai/deployments/{deployment}/responses` route, with
  * the destination resolved from the Azure configuration.
  *
- * @public
+ * @alpha
  */
 export const azureResponses: AiProviderModule = {
   id: 'azure-openai-responses',
