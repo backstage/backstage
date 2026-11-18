@@ -64,3 +64,20 @@ The provider configuration consists of the following parts:
   Typically, you will want to have some filter here to exclude projects that will
   never contain any catalog files.
 - **`catalogPath`**: path relative to the root of the repository where the Backstage manifests are stored. It can also be a glob pattern supported by [`minimatch`](https://github.com/isaacs/minimatch) to load multiple files.
+
+## Event-based updates
+
+The provider can also refresh entities as soon as a branch changes in Gerrit, instead of waiting for the next scheduled run. It listens for Gerrit `ref-updated` events on the `gerrit` events topic and refreshes the entities that were registered from the updated branch.
+
+To set this up:
+
+1. Get Gerrit events into the Backstage events system on the `gerrit` topic, for example with the HTTP endpoint of the [events backend](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md) and the Gerrit webhooks plugin.
+2. Turn on SCM event handling in the catalog:
+
+```yaml
+# app-config.yaml
+catalog:
+  scmEvents: true
+```
+
+Gerrit events don't say which Gerrit instance they came from, so this only works when a single Gerrit integration is configured. With more than one, a warning is logged at startup and events are ignored.
