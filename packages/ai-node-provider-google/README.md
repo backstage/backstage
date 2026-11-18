@@ -19,10 +19,11 @@ Register the modules with the AI service together with the other provider
 module collections your installation composes:
 
 ```ts
-import { googleProviderModules } from '@backstage/ai-node-provider-google';
+import { createAiModuleRegistry } from '@backstage/ai-node/alpha';
+import { googleProviderModules } from '@backstage/ai-node-provider-google/alpha';
 
 const modules = createAiModuleRegistry({
-  providerModules: [...googleProviderModules, ...otherProviderModules],
+  providerModules: googleProviderModules,
   toolModules: [],
 });
 ```

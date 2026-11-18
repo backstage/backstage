@@ -34,9 +34,7 @@ import {
   type PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
-import { builtinProviderModules } from '@backstage/ai-node/modules';
-import { googleProviderModules } from '@backstage/ai-node-provider-google/alpha';
-import { openaiProviderModules } from '@backstage/ai-node-provider-openai/alpha';
+import { aiBackendProviderModules } from './providerModules';
 import { aiServiceRef } from '@backstage/ai-node/alpha';
 import type { AiService, ToolModule } from '@backstage/ai-node/alpha';
 import { ConfigReader } from '@backstage/config';
@@ -44,12 +42,7 @@ import { createRegistry } from '@earendil-works/pi-durable';
 import plugin from './index';
 import { aiModulesExtensionPoint } from '@backstage/plugin-ai-backend/alpha';
 
-const providerModules = [
-  ...googleProviderModules,
-  ...openaiProviderModules,
-  ...builtinProviderModules,
-];
-const completions = providerModules.find(
+const completions = aiBackendProviderModules.find(
   module => module.id === 'openai-completions',
 )!;
 

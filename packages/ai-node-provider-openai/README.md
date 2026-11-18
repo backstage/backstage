@@ -14,10 +14,11 @@ Register the modules with the AI service together with the other provider
 module collections your installation composes:
 
 ```ts
-import { openaiProviderModules } from '@backstage/ai-node-provider-openai';
+import { createAiModuleRegistry } from '@backstage/ai-node/alpha';
+import { openaiProviderModules } from '@backstage/ai-node-provider-openai/alpha';
 
 const modules = createAiModuleRegistry({
-  providerModules: [...openaiProviderModules, ...otherProviderModules],
+  providerModules: openaiProviderModules,
   toolModules: [],
 });
 ```

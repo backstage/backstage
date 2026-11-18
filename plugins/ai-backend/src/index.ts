@@ -25,9 +25,7 @@ import {
   createAiModuleRegistry,
   createToolPermissions,
 } from '@backstage/ai-node/alpha';
-import { builtinProviderModules } from '@backstage/ai-node/modules';
-import { googleProviderModules } from '@backstage/ai-node-provider-google/alpha';
-import { openaiProviderModules } from '@backstage/ai-node-provider-openai/alpha';
+import { aiBackendProviderModules } from './providerModules';
 import { anthropicProviderModules } from '@backstage/ai-node-provider-anthropic';
 import { azureProviderModules } from '@backstage/ai-node-provider-azure';
 import { typesafeProviderModules } from '@backstage/ai-node-provider-typesafe';
@@ -40,15 +38,7 @@ export default createBackendPlugin({
   pluginId: 'ai',
   register(env) {
     const modules = createAiModuleRegistry({
-      providerModules: [
-        ...googleProviderModules,
-        ...openaiProviderModules,
-        ...builtinProviderModules,
-        ...anthropicProviderModules,
-        ...azureProviderModules,
-        ...typesafeProviderModules,
-        ...openrouterProviderModules,
-      ],
+      providerModules: aiBackendProviderModules,
       toolModules: [],
     });
     let toolPermissions:
