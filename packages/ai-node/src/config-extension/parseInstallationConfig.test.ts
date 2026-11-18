@@ -195,6 +195,50 @@ describe('parseAiInstallationConfig', () => {
     expect(keyError).not.toContain(short);
   });
 
+  it('validates the previous encryption key without exposing its value', () => {
+    const previous = Buffer.alloc(32, 8).toString('base64');
+    const parsed = parse({
+      ai: {
+        credentials: credentialsSection({
+          rotation: { previousEncryptionKey: previous },
+        }),
+      },
+    });
+    expect(parsed.credentials?.previousEncryptionKey).toEqual(
+      new Uint8Array(32).fill(8),
+    );
+    expect(
+      parse({ ai: { credentials: credentialsSection() } }).credentials
+        ?.previousEncryptionKey,
+    ).toBeUndefined();
+    for (const rotation of [
+      {},
+      { previousEncryptionKey: 'not-secret!!' },
+      { previousEncryptionKey: Buffer.alloc(16, 3).toString('base64') },
+      { previousEncryptionKey: previous, extra: true },
+    ]) {
+      expect(() =>
+        parse({ ai: { credentials: credentialsSection({ rotation }) } }),
+      ).toThrow(/rotation|previousEncryptionKey/);
+    }
+    const message = (() => {
+      try {
+        parse({
+          ai: {
+            credentials: credentialsSection({
+              rotation: { previousEncryptionKey: 'secret-value!!' },
+            }),
+          },
+        });
+      } catch (error) {
+        return String(error);
+      }
+      return '';
+    })();
+    expect(message).toContain('previousEncryptionKey');
+    expect(message).not.toContain('secret-value!!');
+  });
+
   it('defaults credential precedence to user-first and rejects unknown values', () => {
     expect(
       parse({ ai: { credentials: credentialsSection() } }).credentials

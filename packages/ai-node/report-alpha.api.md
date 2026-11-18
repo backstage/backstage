@@ -94,6 +94,7 @@ export type AiInstallationConfig = Readonly<{
 // @alpha
 export type AiInstallationCredentials = Readonly<{
   encryptionKey: Uint8Array;
+  previousEncryptionKey?: Uint8Array;
   precedence: AiCredentialsPrecedence;
   scopes: AiConfigCredentialScopes;
   tokenEndpoints: Readonly<Record<string, string>>;
@@ -202,6 +203,12 @@ export interface ConfigureAiInstallationOptions {
 export type ConfiguredAiInstallation = Readonly<{
   models: readonly AnyModel[];
   credentialStores?: AiCredentialStores;
+  credentialRotation?: Readonly<{
+    rotate(fence: Fence): Promise<{
+      inspected: number;
+      rotated: number;
+    }>;
+  }>;
   credentialPrecedence: AiCredentialsPrecedence;
   credentialTokenEndpoints: Readonly<Record<string, string>>;
 }>;

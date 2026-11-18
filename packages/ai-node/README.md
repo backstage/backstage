@@ -185,6 +185,48 @@ journaled, actionable denial, never a fallback.
   reject with the exact configuration path, the offending field, and
   corrective guidance.
 
+## Rotate the personal credential encryption key
+
+Rotation changes key material, not the stored encryption format or `key_version`.
+Existing credentials remain readable during the rotation window. Both keys must
+be the standard base64 encoding of 32 bytes and supplied as secrets:
+
+```yaml
+ai:
+  credentials:
+    encryptionKey: ${AI_CREDENTIAL_NEW_KEY}
+    rotation:
+      previousEncryptionKey: ${AI_CREDENTIAL_OLD_KEY}
+```
+
+Before changing keys, stop all old-key writers and readers across every instance
+that shares the plugin's credential database. Old instances cannot read rows
+rewritten with the new key and may write new rows under the old key. Start all
+instances with the new key and previous key together. During the window, a read
+of an old-key credential re-encrypts it under the existing per-credential lock;
+new writes always use the new key. Failed decryption or writes fail closed.
+
+A trusted host that already holds a live namespace fence can proactively rotate
+all personal credentials in its plugin database:
+
+```ts
+const installation = configureAiInstallation({ source, db });
+const result = await installation.credentialRotation!.rotate(fence);
+```
+
+The host must own and renew `fence` throughout the operation. Each page and
+write checks it; losing the fence stops the operation. The result contains only
+`inspected` and `rotated` counts, not credential values. An interrupted run
+may leave a mix of keys; repeat it with both keys configured. After all old-key
+writers are stopped, rerun until `rotated` is zero for every plugin database,
+then remove `rotation.previousEncryptionKey`. Keep a secure backup of the
+previous key until all necessary backups have also been migrated or retired.
+
+The stock `AiService` does not expose a maintenance fence. This batch operation
+is available to integrations and maintenance tooling that already own one; a
+public maintenance or admin fence surface is future work. It does not grant
+access to other plugins' databases or return personal credentials.
+
 ## Semantics of the managed handle
 
 - **Session ownership** is fixed when a session is created, atomically with

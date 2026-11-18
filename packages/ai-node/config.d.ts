@@ -78,6 +78,15 @@ export interface Config {
        * @visibility secret
        */
       encryptionKey: string;
+      /** Previous key during personal credential encryption-key rotation. */
+      rotation?: {
+        /**
+         * Standard base64 of the previous 32-byte personal credential key.
+         *
+         * @visibility secret
+         */
+        previousEncryptionKey: string;
+      };
       /**
        * Which credential scope wins when both a personal and an installation
        * credential exist for a provider. Defaults to `user-first`.
