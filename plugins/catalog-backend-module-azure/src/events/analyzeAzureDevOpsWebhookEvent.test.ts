@@ -158,6 +158,48 @@ describe('analyzeAzureDevOpsWebhookEvent', () => {
       });
     });
 
+    it('encodes paths that contain URL query characters', async () => {
+      await expect(
+        analyzeAzureDevOpsWebhookEvent(
+          'git.push',
+          withPushEvent({
+            repository: baseRepository,
+            refUpdates: [{ name: 'refs/heads/main' }],
+            commits: [
+              {
+                commitId: 'abc',
+                changes: [
+                  {
+                    changeType: 'edit',
+                    item: { path: '/nested&dir/catalog-info.yaml' },
+                  },
+                  {
+                    changeType: 'add',
+                    item: { path: '/sub dir/read me#x=y.yaml' },
+                  },
+                ],
+              },
+            ],
+          }),
+          { isRelevantPath },
+        ),
+      ).resolves.toEqual({
+        result: 'ok',
+        events: [
+          {
+            type: 'location.updated',
+            url: `${baseRepository.remoteUrl}?path=/nested%26dir/catalog-info.yaml`,
+            context: { commitUrl: `${baseRepository.remoteUrl}/commit/abc` },
+          },
+          {
+            type: 'location.created',
+            url: `${baseRepository.remoteUrl}?path=/sub%20dir/read%20me%23x%3Dy.yaml`,
+            context: { commitUrl: `${baseRepository.remoteUrl}/commit/abc` },
+          },
+        ],
+      });
+    });
+
     it('ignores non-default-branch pushes', async () => {
       await expect(
         analyzeAzureDevOpsWebhookEvent(
