@@ -32,12 +32,18 @@ import {
   stringifyEntityRef,
   type CompoundEntityRef,
 } from '@backstage/catalog-model';
-import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
+import {
+  useApi,
+  useApiHolder,
+  useRouteRefParams,
+} from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   catalogApiRef,
   catalogReactTranslationRef,
   EntityDisplayName,
+  entityPresentationApiRef,
+  entityPresentationSnapshot,
   entityRouteRef,
   getEntityRelations,
   useAsyncEntity,
@@ -55,6 +61,8 @@ import {
 
 function useOwnerUsers(entity: Entity | undefined): HeaderMetadataUser[] {
   const catalogApi = useApi(catalogApiRef);
+  const apis = useApiHolder();
+  const presentationApi = apis.get(entityPresentationApiRef);
   const entityLink = useEntityRefLink();
   const ownerRefs = useMemo(
     () => getEntityRelations(entity, RELATION_OWNED_BY),
@@ -85,7 +93,8 @@ function useOwnerUsers(entity: Entity | undefined): HeaderMetadataUser[] {
     const profile = (owner?.spec as { profile?: { picture?: string } })
       ?.profile;
     return {
-      name: owner?.metadata.title ?? owner?.metadata.name ?? ref.name,
+      name: entityPresentationSnapshot(owner ?? ref, undefined, presentationApi)
+        .primaryTitle,
       src: profile?.picture,
       href: entityLink(ref),
     };
