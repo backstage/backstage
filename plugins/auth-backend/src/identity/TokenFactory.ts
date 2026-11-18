@@ -91,6 +91,10 @@ type Options = {
    * A list of claims to omit from issued tokens and only store in the user info database
    */
   omitClaimsFromToken?: string[];
+  /**
+   * Whether to include the issuer in the signed user identity proof, see `backend.auth.experimentalIssuerClaims`
+   */
+  includeIssuerInProof?: boolean;
 };
 
 /**
@@ -114,6 +118,7 @@ export class TokenFactory implements TokenIssuer {
   private readonly keyDurationSeconds: number;
   private readonly algorithm: string;
   private readonly omitClaimsFromToken?: string[];
+  private readonly includeIssuerInProof?: boolean;
 
   private keyExpiry?: Date;
   private privateKeyPromise?: Promise<JWK>;
@@ -125,6 +130,7 @@ export class TokenFactory implements TokenIssuer {
     this.keyDurationSeconds = options.keyDurationSeconds;
     this.algorithm = options.algorithm ?? 'ES256';
     this.omitClaimsFromToken = options.omitClaimsFromToken;
+    this.includeIssuerInProof = options.includeIssuerInProof;
   }
 
   async issueToken(
@@ -139,6 +145,7 @@ export class TokenFactory implements TokenIssuer {
       logger: this.logger,
       omitClaimsFromToken: this.omitClaimsFromToken,
       params,
+      includeIssuerInProof: this.includeIssuerInProof,
     });
   }
 

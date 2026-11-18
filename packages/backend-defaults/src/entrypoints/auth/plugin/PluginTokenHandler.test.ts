@@ -238,4 +238,38 @@ describe('PluginTokenHandler', () => {
 
     expect(getKeyMock).toHaveBeenCalledTimes(1);
   });
+
+  it('includes the issuer in issued tokens only when enabled', async () => {
+    const createIssuingHandler = (includeIssuer?: boolean) =>
+      DefaultPluginTokenHandler.create({
+        discovery: mockServices.discovery.mock({
+          getExternalBaseUrl: async pluginId =>
+            `https://backstage.example.com/api/${pluginId}`,
+        }),
+        keyDuration: { seconds: 10 },
+        logger: mockServices.logger.mock(),
+        ownPluginId: 'test',
+        includeIssuer,
+        keySource: {
+          getPrivateSigningKey: async () => mockPrivateKey,
+          listKeys: jest.fn(),
+        },
+      });
+
+    const { token: withIssuer } = await createIssuingHandler(true).issueToken({
+      pluginId: 'test',
+      targetPluginId: 'other',
+    });
+    expect(decodeJwt(withIssuer)).toMatchObject({
+      iss: 'https://backstage.example.com/api/test',
+      sub: 'test',
+      aud: 'other',
+    });
+
+    const { token: withoutIssuer } = await createIssuingHandler().issueToken({
+      pluginId: 'test',
+      targetPluginId: 'other',
+    });
+    expect(decodeJwt(withoutIssuer)).not.toHaveProperty('iss');
+  });
 });
