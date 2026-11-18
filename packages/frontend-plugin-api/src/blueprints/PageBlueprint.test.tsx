@@ -459,6 +459,67 @@ describe('PageBlueprint', () => {
     expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();
   });
 
+  it('should render the loader content as the index tab next to attached sub-pages', async () => {
+    const parentPage = PageBlueprint.make({
+      params: {
+        path: '/combined',
+        title: 'Combined',
+        loader: async () => <div data-testid="index-content">Index</div>,
+      },
+    });
+
+    const firstSubPage = SubPageBlueprint.make({
+      name: 'first',
+      params: {
+        path: 'first',
+        title: 'First',
+        loader: async () => <div data-testid="first">First</div>,
+      },
+    });
+
+    const secondSubPage = SubPageBlueprint.make({
+      name: 'second',
+      params: {
+        path: 'second',
+        title: 'Second',
+        loader: async () => <div data-testid="second">Second</div>,
+      },
+    });
+
+    const { apis } = renderTestApp({
+      extensions: [parentPage, firstSubPage, secondSubPage],
+      initialRouteEntries: ['/combined'],
+    });
+    const appHistory = apis.get(coreApis.appHistory)!;
+
+    // The page's own content shows at the index route, which is no longer
+    // handed over to the first sub-page
+    expect(await screen.findByTestId('index-content')).toBeInTheDocument();
+    expect(appHistory.getSnapshot().location.pathname).toBe('/combined');
+
+    // The loader content takes the first tab, ahead of the sub-pages
+    expect(screen.getByRole('tab', { name: 'Combined' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'First' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Second' })).toBeInTheDocument();
+
+    // Selecting a sub-page renders it instead, keeping the shell and its tabs
+    await act(async () => {
+      appHistory.navigate('/combined/second');
+    });
+    expect(await screen.findByTestId('second')).toBeInTheDocument();
+    expect(screen.queryByTestId('index-content')).not.toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Combined' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'First' })).toBeInTheDocument();
+
+    // Returning to the index tab shows the page's own content again
+    await act(async () => {
+      appHistory.navigate('/combined');
+    });
+    expect(await screen.findByTestId('index-content')).toBeInTheDocument();
+    expect(screen.queryByTestId('second')).not.toBeInTheDocument();
+    expect(appHistory.getSnapshot().location.pathname).toBe('/combined');
+  });
+
   it('should support SubPageBlueprint pages input', async () => {
     const parentPage = PageBlueprint.make({
       params: {

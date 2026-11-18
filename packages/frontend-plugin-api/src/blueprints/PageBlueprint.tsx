@@ -87,31 +87,43 @@ function PageContent(props: {
   matches?: readonly RouteResolutionMatch[];
   history?: AppHistoryApi;
   location?: AppLocation;
+  /**
+   * The sub-page path that the page index redirects to. Left undefined when
+   * the page has content of its own for its index route, i.e. a `loader`.
+   */
+  indexRedirectPath?: string;
   children?: ReactNode;
 }) {
-  const { subPages, pageMount, matches, history, location, children } = props;
+  const {
+    subPages,
+    pageMount,
+    matches,
+    history,
+    location,
+    indexRedirectPath,
+    children,
+  } = props;
   const selectedMatch = matches?.find(match =>
     subPages?.some(page => page.node === match.node),
   );
   const selected = subPages?.find(page => page.node === selectedMatch?.node);
-  const firstPath = subPages?.[0]?.path;
   useEffect(() => {
     if (
       matches &&
-      firstPath &&
+      indexRedirectPath &&
       pageMount &&
       location &&
       location.pathname.replace(/\/$/, '') ===
         pageMount.basePath.replace(/\/$/, '')
     ) {
-      const target = joinRoutePath(pageMount.basePath, firstPath);
+      const target = joinRoutePath(pageMount.basePath, indexRedirectPath);
       if (target !== pageMount.basePath) {
         history?.navigate(`${target}${location.search}${location.hash}`, {
           replace: true,
         });
       }
     }
-  }, [matches, firstPath, pageMount, location, history]);
+  }, [matches, indexRedirectPath, pageMount, location, history]);
   return selected && selectedMatch ? (
     <BreadcrumbEntry
       entry={{ label: selected.label, href: selectedMatch.basePath }}
@@ -130,6 +142,8 @@ function PluginPageShell(props: {
   icon?: IconElement;
   noHeader?: boolean;
   subPages?: readonly PageSubPage[];
+  /** Whether the page has its own content for its index route, i.e. a `loader`. */
+  hasIndexContent?: boolean;
   titleRouteRef?: RouteRef;
   pluginId: string;
   children?: ReactNode;
@@ -141,6 +155,7 @@ function PluginPageShell(props: {
     icon,
     noHeader,
     subPages,
+    hasIndexContent,
     titleRouteRef,
     pluginId,
     children,
@@ -170,14 +185,22 @@ function PluginPageShell(props: {
   const matches =
     location &&
     routeResolutionApi.resolvePath({ pathname: location.pathname }).matches;
-  const tabs =
-    mount &&
-    translatedSubPages?.map(({ path, label, icon: tabIcon }) => ({
-      id: path,
-      label,
-      icon: tabIcon,
-      href: joinRoutePath(mount.basePath, path),
-    }));
+  // A page with its own index content keeps it at the index route; only a
+  // page without one hands its index over to its first sub-page.
+  const indexRedirectPath = hasIndexContent ? undefined : subPages?.[0]?.path;
+  const tabs = mount &&
+    translatedSubPages && [
+      // The page's own content takes the first tab, ahead of the sub-pages
+      ...(hasIndexContent
+        ? [{ id: '', label: titles?.[0] ?? title, href: mount.basePath }]
+        : []),
+      ...translatedSubPages.map(({ path, label, icon: tabIcon }) => ({
+        id: path,
+        label,
+        icon: tabIcon,
+        href: joinRoutePath(mount.basePath, path),
+      })),
+    ];
   const headerActionsApi = useApi(pluginHeaderActionsApiRef);
   const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
 
@@ -200,6 +223,7 @@ function PluginPageShell(props: {
           matches={matches}
           history={history}
           location={location}
+          indexRedirectPath={indexRedirectPath}
         >
           {children}
         </PageContent>
@@ -242,7 +266,9 @@ function PluginPageShell(props: {
  * Sub-pages attached to the `pages` input (e.g. via `SubPageBlueprint`) are
  * ordinary route-bearing extensions. The page renders the child selected by
  * the app's matched extension branch and redirects its index to the first
- * sub-page. The app scopes each route-bearing extension's complete element
+ * sub-page, unless the page declares a `loader`, in which case the loader's
+ * content is shown at the index route and as the first tab alongside the
+ * sub-pages. The app scopes each route-bearing extension's complete element
  * output to its matched ancestry, including its header. The page retains
  * ownership of its shell and child rendering.
  * The content has one extension boundary for plugin providers, analytics,
@@ -318,9 +344,7 @@ export const PageBlueprint = createExtensionBlueprint({
     const titleRouteRef =
       (node.spec.plugin.routes as { root?: RouteRef }).root ?? params.routeRef;
     const routePath = config.path ?? params.path;
-    // A page written around a `loader` owns its whole content region, so
-    // anything attached to its `pages` input has nothing to be shown in.
-    const subPages = params.loader ? [] : collectSubPages(inputs.pages);
+    const subPages = collectSubPages(inputs.pages);
 
     if (translation) {
       yield coreExtensionData.titleTranslation(translation);
@@ -399,6 +423,9 @@ function createPageElement(options: {
     subPages,
   } = options;
 
+  // The loader provides the content for the page's index route
+  const hasIndexContent = loader !== undefined;
+
   const Content = loader
     ? lazy(() => loader().then(element => ({ default: () => element })))
     : undefined;
@@ -411,6 +438,7 @@ function createPageElement(options: {
       icon={resolvedIcon}
       noHeader={noHeader}
       subPages={subPages}
+      hasIndexContent={hasIndexContent}
       titleRouteRef={titleRouteRef}
       pluginId={pluginId}
     >
