@@ -31,8 +31,6 @@ import { googleProvider } from '@earendil-works/pi-ai/providers/google';
 import { googleVertexProvider } from '@earendil-works/pi-ai/providers/google-vertex';
 import { normalizeContext } from '@earendil-works/pi-ai/utils/transcript';
 import type { Model } from '@earendil-works/pi-ai';
-// Transitional test-only import: P2b moves this machinery into
-// @backstage/ai-node/testUtils.
 import { googleGenerativeAi, googleVertex } from './module';
 import {
   closeGoogleWorker,
