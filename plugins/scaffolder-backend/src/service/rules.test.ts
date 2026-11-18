@@ -325,6 +325,27 @@ describe('hasNumberProperty', () => {
         ).toEqual(false);
       },
     );
+
+    it.each([
+      [[42], 42, true],
+      [['42'], 42, true],
+      [['042'], 42, true],
+      [[{ name: 'Example Team', slug: '42' }], 42, true],
+      [['42', 'sub'], 42, true],
+      [['example/other'], 42, false],
+      [['12345', 'sub'], 42, false],
+      [[], 42, false],
+    ])(
+      'matches array input values for integration identifiers, path=%o value=%o',
+      (paths, value, expected) => {
+        expect(
+          hasNumberProperty.apply(
+            { action: 'gitlab:group:ensureExists', input: { path: paths } },
+            { key: 'path', value },
+          ),
+        ).toEqual(expected);
+      },
+    );
   });
 });
 
@@ -515,6 +536,118 @@ describe('hasStringProperty', () => {
         ).toEqual(false);
       },
     );
+
+    it.each([
+      [['example/team'], 'example/team', true],
+      [['ExAmPlE/TeAm'], 'example/team', true],
+      [[{ name: 'Example Team', slug: 'example/team' }], 'example/team', true],
+      [[{ name: 'Example Team', slug: 'ExAmPlE/TeAm' }], 'example/team', true],
+      [[42], '42', true],
+      [['042'], '42', true],
+      [[{ name: 'Example Team', slug: '042' }], '42', true],
+      // The elements of the array are joined into one nested path, so inputs
+      // that spell the path across multiple elements denote the same
+      // identifiers as the single-element spelling of the full path.
+      [['protected', 'production'], 'protected/production', true],
+      [['protected/production'], 'protected/production', true],
+      [
+        ['protected', { name: 'Production', slug: 'production' }],
+        'protected/production',
+        true,
+      ],
+      [
+        [{ name: 'Protected Group', slug: 'protected/production' }],
+        'protected/production',
+        true,
+      ],
+      // Each parent group of the nested path is ensured by the action, so a
+      // rule on a parent group matches as well.
+      [['protected', 'production'], 'protected', true],
+      [['protected/production'], 'protected', true],
+      [
+        [{ name: 'Protected Group', slug: 'protected/production' }],
+        'protected',
+        true,
+      ],
+      [['other', 'production'], 'protected/production', false],
+      [['protected'], 'protected/production', false],
+      // Leading and trailing empty segments do not denote identifiers of
+      // their own; the action drops them when it joins the path.
+      [['', 'protected'], 'protected', true],
+      [['/protected'], 'protected', true],
+      [['protected', ''], 'protected', true],
+      [['', 'other'], 'protected', false],
+      // An input that spells a different nested path does not denote the
+      // identifiers of the forbidden path.
+      [['example/other', 'example/team'], 'example/team', false],
+      [['example/other'], 'example/team', false],
+      [['example/other', 'example/third'], 'example/team', false],
+      [
+        ['example/other', { name: 'Other', slug: 'example/other' }],
+        'example/team',
+        false,
+      ],
+      [[], 'example/team', false],
+    ])(
+      'matches array input values for integration identifiers, path=%o value=%s',
+      (paths, value, expected) => {
+        expect(
+          hasStringProperty.apply(
+            { action: 'gitlab:group:ensureExists', input: { path: paths } },
+            { key: 'path', value },
+          ),
+        ).toEqual(expected);
+      },
+    );
+
+    it('does not match array input values for properties without an identifier re-check', () => {
+      for (const [action, key] of [
+        ['custom:action', 'projectId'],
+        ['gitlab:issues:create', 'title'],
+        ['gitlab:group:access', 'branchName'],
+        ['github:repo:create', 'owner'],
+        ['publish:github', 'repoName'],
+        ['publish:bitbucketCloud', 'repoUrl'],
+        ['gitlab:group:access', 'projectId'],
+      ]) {
+        expect(
+          hasStringProperty.apply(
+            { action, input: { [key]: ['example/team'] } },
+            { key, value: 'example/team' },
+          ),
+        ).toEqual(false);
+      }
+    });
+
+    it('matches the presence of identifiers in array input values', () => {
+      expect(
+        hasStringProperty.apply(
+          { action: 'gitlab:group:ensureExists', input: { path: ['team'] } },
+          { key: 'path' },
+        ),
+      ).toEqual(true);
+      expect(
+        hasStringProperty.apply(
+          {
+            action: 'gitlab:group:ensureExists',
+            input: { path: [{ name: 'Team', slug: 'team' }] },
+          },
+          { key: 'path' },
+        ),
+      ).toEqual(true);
+      expect(
+        hasStringProperty.apply(
+          { action: 'gitlab:group:ensureExists', input: { path: [42] } },
+          { key: 'path' },
+        ),
+      ).toEqual(true);
+      expect(
+        hasStringProperty.apply(
+          { action: 'gitlab:group:ensureExists', input: { path: [] } },
+          { key: 'path' },
+        ),
+      ).toEqual(false);
+    });
   });
 });
 
