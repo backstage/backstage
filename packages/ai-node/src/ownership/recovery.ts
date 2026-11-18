@@ -955,7 +955,7 @@ class StartupRecovery implements AiRecovery {
     const admitted = await this.#readRow(namespace);
     await this.#options.admissionSnapshotGate?.(namespace);
 
-    // GUARANTEE BOUNDARY (lead ruling, Wave 1 rework cycle 2): this admission
+    // GUARANTEE BOUNDARY: this admission
     // snapshot is the linearization point for LOCAL recovery work. Local
     // execution is deliberately not linearized against a concurrent authority
     // change: the resolver writes this same recovery row, so holding its lock

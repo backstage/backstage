@@ -154,7 +154,7 @@ class StandInHarness {
 }
 
 /**
- * NONPRODUCTION TEST STAND-IN for the Wave 1 integration.
+ * NONPRODUCTION TEST STAND-IN for the service integration.
  *
  * It emulates session ownership and harness open/release in memory so the
  * scaffold's management behavior can be exercised. It provides no lease, no
@@ -255,7 +255,7 @@ const SERVICE_MODE_CONFIG = serviceConfig({
 });
 
 describe('DefaultAiService', () => {
-  it('fails closed when the Wave 1 integration is missing', async () => {
+  it('fails closed when the integration is missing', async () => {
     const service = DefaultAiService.create({ deps: makeDeps() });
     await expect(
       service.openHarness({
@@ -265,7 +265,7 @@ describe('DefaultAiService', () => {
         registry: makeRegistry(),
         registryVersion: 'v1',
       }),
-    ).rejects.toThrow(/fail closed.*storage.*lease.*guard|Wave 1/s);
+    ).rejects.toThrow(/fail closed.*storage.*lease.*guard/s);
   });
 
   it('rejects invalid session ids, registry versions, and credentials', async () => {

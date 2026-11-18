@@ -21,8 +21,8 @@
  * @remarks
  *
  * Deliberately local to this module: `@backstage/errors` is not a declared
- * dependency of this package in Wave 0. Wave 1 integration may rebase these
- * onto the shared Backstage error types.
+ * dependency of this package, so these stay module-local rather than
+ * rebasing onto the shared Backstage error types.
  *
  * @alpha
  */

@@ -49,7 +49,7 @@ import type {
 import type { GuardedToolOperations } from './tools/mediation';
 
 /**
- * A process-local native harness opened by the Wave 1 integration.
+ * A process-local native harness opened by the service integration.
  *
  * @internal
  */
@@ -71,7 +71,7 @@ export interface NativeHarnessHandle {
  * @remarks
  *
  * The original `BackstageCredentials` — not the derived owner string — are
- * the authority for an acquisition, so the Wave 1 integration can enforce
+ * the authority for an acquisition, so the integration can enforce
  * the original caller's restrictions and bind (renewed) user credentials.
  * Credentials are never persisted by the managed service; the owner string
  * is session bookkeeping, not authority.
@@ -104,20 +104,18 @@ export interface OpenNativeHarnessInput extends AcquisitionBinding {
 }
 
 /**
- * Wave 1 integration seam of the managed AI service.
+ * Integration seam of the managed AI service.
  *
  * @remarks
  *
- * This reserves the private integration contract for the Wave 1 wiring: the
- * exclusive namespace lease (design §2), the Knex Pi storage adapter (design
- * §3), and the guarded model operation boundary (design §6). Wave 0 ships no
- * production implementation: the default service factory creates the service
- * without an integration, and every production `openHarness` call fails
- * closed with an actionable error rather than expose an unguarded harness.
- *
- * Wave 0 scaffold tests may inject an explicitly labeled non-production
- * stand-in; a stand-in must never be presented as production
- * security or durability.
+ * The private integration contract: the exclusive namespace lease (design
+ * §2), the Knex Pi storage adapter (design §3), and the guarded model
+ * operation boundary (design §6). The default service factory wires the
+ * production integration; opens fail closed with an actionable error only
+ * when a service is explicitly constructed without an integration, rather
+ * than expose an unguarded harness. Tests may inject an explicitly labeled
+ * non-production stand-in; a stand-in must never be presented as
+ * production security or durability.
  *
  * @internal
  */
@@ -134,7 +132,7 @@ export interface AiServiceIntegration {
 
   /**
    * Binds per-acquisition authority for every acquisition, including reuse
-   * of an already live namespace: the Wave 1 integration authorizes with the
+   * of an already live namespace: the integration authorizes with the
    * original caller credentials and their restrictions here. A rejection
    * blocks the acquisition. Must never persist the credentials.
    */
@@ -171,8 +169,8 @@ export interface DefaultAiServiceDeps {
 export interface DefaultAiServiceOptions {
   readonly deps: DefaultAiServiceDeps;
   /**
-   * Wave 1 integration. Absent in Wave 0, which makes every production
-   * `openHarness` call fail closed.
+   * The service integration. Absent on a service created without one, which
+   * makes every production `openHarness` call fail closed.
    */
   readonly integration?: AiServiceIntegration;
 }
@@ -501,11 +499,12 @@ class ManagedHarnessHandle implements ManagedHarness {
  *
  * @remarks
  *
- * Wave 0 scaffold: it owns session ownership checks, single-flight namespace
+ * This class owns session ownership checks, single-flight namespace
  * acquisition with per-acquisition authority binding, reference counting,
  * release semantics, the mediated harness view, configuration initialization
  * of new conversations, registry version identity, and shutdown-safe opens.
- * The storage, lease, and guard integration is Wave 1 and fails closed here.
+ * The storage, lease, and guard integration is wired by the integration
+ * and fails closed when absent.
  *
  * @internal
  */
@@ -535,7 +534,7 @@ export class DefaultAiService implements AiService {
 
     if (this.#integration === undefined) {
       throw new Error(
-        `The '${pluginId}' plugin cannot open an AI harness: the managed AI service's Wave 1 integration is not wired yet, so opens fail closed rather than expose an unguarded harness. Missing integration: the Knex Pi storage adapter, the exclusive namespace lease, and the guarded model operation boundary. This is expected on the Wave 0 scaffold; there is no production stand-in`,
+        `The '${pluginId}' plugin cannot open an AI harness: the storage adapter, namespace lease, and guarded model-operation boundary are not wired, so opens fail closed rather than expose an unguarded harness. Missing integration: the Knex Pi storage adapter, the exclusive namespace lease, and the guarded model operation boundary. There is no production stand-in`,
       );
     }
 

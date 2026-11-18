@@ -1,1 +1,0 @@
-Journal files and `migrations/4000_journal.js` are T5's originals from commit `7b48834580` (branch `ai-node-t5-audit-journal-1`), carried wholesale into the Wave 1 merge; T4's interim vendor copy is superseded.

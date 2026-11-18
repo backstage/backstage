@@ -173,8 +173,9 @@ export interface AiServiceIntegrationOptions {
   readonly toolModules?: readonly ToolModule[];
   /**
    * Credential stores feeding provider authority resolution. When absent,
-   * every model dispatch is denied with an actionable reason: installation
-   * credential configuration is not wired to a config source yet.
+   * every model dispatch is denied with an actionable reason — the
+   * fail-closed default for an integration constructed without them. The
+   * stock service factory supplies the installation's configured stores.
    */
   readonly credentialStores?: AiCredentialStores;
   /**
@@ -280,7 +281,7 @@ export type AiCodemodeOptions = Readonly<{
 }>;
 
 /**
- * The production Wave 1 integration of the managed AI service.
+ * The production integration of the managed AI service.
  *
  * @internal
  */
@@ -447,7 +448,7 @@ function principalOf(
 }
 
 /**
- * Creates the production Wave 1 integration: the exclusive namespace lease
+ * Creates the production integration: the exclusive namespace lease
  * with startup recovery (admission and revocation), the fenced Knex Pi
  * storage, the guarded model operations with per-attempt permission checks,
  * and the durable attempt journal.

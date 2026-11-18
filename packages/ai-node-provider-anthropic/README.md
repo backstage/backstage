@@ -1,6 +1,6 @@
 # @backstage/ai-node-provider-anthropic
 
-Anthropic Claude chat and OAuth modules for the managed AI service.
+Anthropic Claude Messages chat and OAuth auth modules for the managed AI service.
 
 This package provides provider module definitions for `@backstage/ai-node`. Provider
 modules are plain data plus the pinned `pi-ai` adapter: they declare the certified
@@ -25,3 +25,18 @@ const aiFactory = createAiServiceFactory({
 });
 const serviceFactory = aiFactory(aiServiceRef);
 ```
+
+Add `serviceFactory` to your backend (`backend.add(serviceFactory)`,
+where `backend` is your `Backend` instance from
+`@backstage/backend-defaults`); every opened harness can then use
+the Anthropic models.
+
+Two consequences of the factory override, stated plainly: it is
+global for `aiServiceRef` (every consumer of the service sees the
+same modules), and it bypasses the dynamic module registrations made
+through the AI backend plugin's extension points — the array you pass
+is the complete registration. Note that the stock `ai` backend
+plugin already registers these modules in its composed default, so
+re-registering the same family through its `aiModulesExtensionPoint`
+would be rejected as a duplicate module id — the extension point is
+for additional, distinct modules.

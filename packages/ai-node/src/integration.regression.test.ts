@@ -279,7 +279,7 @@ async function probeServer(): Promise<{
   };
 }
 
-describe('Wave 1 integration regressions', () => {
+describe('integration regressions', () => {
   it('keeps registration snapshots for live admissions and updates fresh admissions', async () => {
     const f = await fixture();
     const probe = await probeServer();

@@ -98,7 +98,7 @@ type Fixture = {
 async function fixture(dialectPgUrl?: string): Promise<Fixture> {
   const directory = dialectPgUrl
     ? undefined
-    : await mkdtemp(join(tmpdir(), 'ai-node-t7-'));
+    : await mkdtemp(join(tmpdir(), 'ai-node-installation-e2e-'));
   const admin = dialectPgUrl
     ? knexFactory({ client: 'pg', connection: dialectPgUrl })
     : undefined;

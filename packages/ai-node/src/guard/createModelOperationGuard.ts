@@ -169,8 +169,9 @@ export function createModelOperationGuard(options: {
         const write = (async () => {
           try {
             if (!journal) throw new Error('Attempt journal is not bound');
-            // Lead ruling: one outcome at settlement, not one per HTTP/stream event.
-            // Pi durable storage owns the logical result, joined through call/task IDs.
+            // One outcome at settlement, not one per HTTP/stream event: Pi
+            // durable storage owns the logical result, joined through
+            // call/task IDs.
             await journal.recordOutcome(operation.fence, attempt.id, outcome);
           } catch (error) {
             uncertain = true;

@@ -1,6 +1,31 @@
 # AI backend
 
-The AI backend exposes managed AI sessions under `/api/ai/v1`. Add `@backstage/plugin-ai-backend` to the backend and register it with `backend.add(import('@backstage/plugin-ai-backend'))`. Configure the installation's models and credentials under `ai` using the `@backstage/ai-node` configuration schema.
+The AI backend exposes managed AI sessions under `/api/ai/v1`.
+
+## Installation
+
+```shell
+yarn add --cwd packages/backend @backstage/plugin-ai-backend
+```
+
+```ts
+backend.add(import('@backstage/plugin-ai-backend'));
+```
+
+Configure the installation's models and credentials under `ai` using the
+`@backstage/ai-node` configuration schema.
+
+The plugin pre-registers the six stock provider families
+(`@backstage/ai-node-provider-google`, `-openai`, `-anthropic`, `-azure`,
+`-typesafe`, and `-openrouter`) in its composed default, so the stock
+providers need no service factory override.
+
+To add modules beyond the stock families, use the `aiModulesExtensionPoint`
+shown below — it is the normal additive path and keeps the stock families
+and every other registration intact. Replacing the AI service factory is
+the exceptional path for hosts that want full control of the composition:
+the factory override's registrations are the complete set, replacing both
+the stock families and any dynamic registrations.
 
 Backend modules for the `ai` plugin can register provider and tool modules through `aiModulesExtensionPoint` from `@backstage/plugin-ai-backend/alpha`:
 

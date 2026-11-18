@@ -140,8 +140,8 @@ describe('runAiMigrations', () => {
     const logger = mockServices.logger.mock();
 
     // No directory override: this runs against the package's real shared
-    // migrations directory, so the reserved name ranges (T2's 1000s,
-    // T-cred's 2000s) must all be discovered and applied.
+    // migrations directory, so every reserved migration range (storage's
+    // 1000s, credentials' 2000s) must all be discovered and applied.
     await runAiMigrations({
       database: { getClient: async () => db },
       logger,
