@@ -1,9 +1,9 @@
 {
-  "name": "@backstage/ai-node-tools",
+  "name": "@backstage/plugin-ai-common",
+  "description": "Common permission and resource definitions for the Backstage managed AI service",
   "version": "0.1.0",
-  "description": "Tool permission composition for the Backstage managed AI service",
   "backstage": {
-    "role": "node-library"
+    "role": "common-library"
   },
   "publishConfig": {
     "access": "public"
@@ -15,21 +15,17 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "packages/ai-node-tools"
+    "directory": "plugins/ai-common"
   },
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
-      "alpha": [
-        "src/alpha.ts"
-      ],
       "package.json": [
         "package.json"
       ]
@@ -46,12 +42,8 @@
     "postpack": "backstage-cli package postpack",
     "test": "backstage-cli package test"
   },
-  "jest": {
-    "resolver": "<rootDir>/../../ai-node/jestResolver.js"
-  },
   "dependencies": {
-    "@backstage/ai-node": "workspace:^",
-    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

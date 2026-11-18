@@ -43,7 +43,9 @@ type ServerFixture = {
   }>;
 };
 
-async function startToolServer(): Promise<ServerFixture> {
+async function startToolServer(
+  payload: Record<string, unknown> = { result: 'tool-output' },
+): Promise<ServerFixture> {
   const requests: ServerFixture['requests'] = [];
   const server = createServer((req, res) => {
     const chunks: Buffer[] = [];
@@ -55,7 +57,7 @@ async function startToolServer(): Promise<ServerFixture> {
         authorization: req.headers.authorization,
       });
       res.writeHead(200, { 'content-type': 'application/json' });
-      res.end(JSON.stringify({ result: 'tool-output' }));
+      res.end(JSON.stringify(payload));
     });
   });
   server.listen(0, '127.0.0.1');
@@ -279,6 +281,33 @@ describe('guarded tool operations', () => {
         errorMessage: expect.stringContaining('revoked'),
       });
       expect(f.events).toEqual(['allow:1', 'outcome:completed', 'deny:1']);
+      expect(fixture.requests).toHaveLength(1);
+    } finally {
+      fixture.server.close();
+      await once(fixture.server, 'close');
+    }
+  });
+
+  // Reviewer round 3: a successful tool result is application data. A payload
+  // that happens to carry an `errorMessage` field must pass through untouched;
+  // only a non-completed settlement gets the boundary text.
+  it('returns a successful payload byte-identical, even with errorMessage data', async () => {
+    const payload = {
+      errorMessage: 'application value: the tool reports a validation warning',
+      result: 'tool-output',
+      nested: { errorMessage: 'still data' },
+    };
+    const fixture = await startToolServer(payload);
+    try {
+      const f = exampleToolServer(fixture.origin, {
+        mode: () => 'honest',
+        transport: globalThis.fetch,
+        recheck: async () => true,
+      });
+      const result = await f.callTool();
+      expect(result).toEqual(payload);
+      expect(JSON.stringify(result)).toBe(JSON.stringify(payload));
+      expect(f.events).toEqual(['allow:1', 'outcome:completed']);
       expect(fixture.requests).toHaveLength(1);
     } finally {
       fixture.server.close();
@@ -531,16 +560,6 @@ describe('guarded tool operations', () => {
       fixture.server.close();
       await once(fixture.server, 'close');
     }
-  });
-
-  it('encodes tool permission names like model permissions', () => {
-    expect(toolPermissionName({ serverId: 'a.b', toolName: 'search/x' })).toBe(
-      'ai.tool.a%2Eb.search%2Fx.use',
-    );
-    expect(toolPermissionName({ serverId: 'a', toolName: 'b.c' })).not.toBe(
-      toolPermissionName({ serverId: 'a.b', toolName: 'c' }),
-    );
-    expect(() => toolPermissionName({ serverId: '', toolName: 'x' })).toThrow();
   });
 
   it('rejects static or malformed route templates at registration', () => {

@@ -106,7 +106,6 @@ export type AiProviderModule = Readonly<{
     scope: CredentialScope,
     credential: Credential_2,
   ): ModuleAuthority;
-  permissionName?(providerId: string, modelId: string): string;
   resolveDispatch?(
     model: AnyModel,
     resolveCredential: () => Promise<

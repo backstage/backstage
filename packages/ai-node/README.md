@@ -58,7 +58,6 @@ host-composition packages:
 - `@backstage/ai-node-provider-azure` — Azure OpenAI Responses
 - `@backstage/ai-node-provider-typesafe` — System One classification
 - `@backstage/ai-node-provider-openrouter` — image generation
-- `@backstage/ai-node-tools` — host-side registration of tool permissions
 - `@backstage/ai-node-codemode` — the default code mode extension construction
 
 The default factory this package provides registers none of them: compose
@@ -214,13 +213,11 @@ journaled, actionable denial, never a fallback.
   derives sizing and compaction from it; the schema never invents it) and must
   be absent for `image` entries, which carry none; `maxTokens` is required for
   `chat` and optional for the others.
-- **Permissions** are derived per configured model:
-  `ai.model.<provider>.<modelId>.use` with each segment passed through
-  `encodeURIComponent` and literal dots encoded as `%2E`. Names are exact;
-  grant each pair (or each pair of a provider) in policy. The exact
-  encoding rule and how to decode a name back to its pair are documented
-  under [Model permission names](#model-permission-names) for policy
-  authors.
+- **Permissions** are one fixed permission per resource kind:
+  `ai.model.use` for every dispatch, with the model pair travelling as
+  the resource the service already holds. Granularity lives in the
+  policy's rules, not in permission names — see [Model and tool
+  permissions](#model-and-tool-permissions).
 - **Fail-closed validation**: unknown fields, duplicate models, unusable
   adapter identifiers, non-http(s) destinations and malformed scope keys all
   reject with the exact configuration path, the offending field, and
@@ -268,64 +265,98 @@ is available to integrations and maintenance tooling that already own one; a
 public maintenance or admin fence surface is future work. It does not grant
 access to other plugins' databases or return personal credentials.
 
-## Model permission names
+## Model and tool permissions
 
-Each canonical catalog model gets one basic permission named
-`ai.model.<segment(provider)>.<segment(modelId)>.use`. `segment(s)` is
-`encodeURIComponent(s).replace(/\./g, '%2E')` applied to a nonempty,
-well-formed Unicode string: case is preserved, Unicode is never
-normalized, and a lone surrogate (an invalid string) is rejected at
-registration. The installed package exports `modelPermissionName` (from
-`@backstage/ai-node/alpha`) implementing exactly this rule.
+Every dispatch is checked against one fixed permission, so policy authors
+write rules rather than per-model names. `@backstage/plugin-ai-common`
+carries the names and resource types; `@backstage/ai-node/alpha` carries
+the rules and the helpers that produce conditional decisions.
 
-Because a segment can never contain a literal dot after encoding, the
-name splits unambiguously into five dot-separated parts — the literal
-`ai`, the literal `model`, the two encoded segments, and the literal
-`use`. A policy author holding a name decodes it back to the model pair
-like this:
+| Permission     | Resource type | Rules                                  |
+| -------------- | ------------- | -------------------------------------- |
+| `ai.model.use` | `ai-model`    | `isModel`, `isProvider`, `isModelType` |
+| `ai.tool.use`  | `ai-tool`     | `isTool`, `isServer`                   |
+
+The service asks the permission backend for a conditional decision with
+the caller's own credentials on every attempt — the guard's recheck for
+model dispatch, and the guarded tool operations before a tool call is
+journaled or sent. The policy's conditions are then evaluated in process
+against the attributes the service already holds: `{ provider, modelId,
+type? }` for a model, `{ serverId, toolName }` for a tool. Anything that
+is not a positive evaluation — `DENY`, no decision, a condition naming an
+unknown rule, a rule of another resource type, or parameters the rule
+rejects — denies, and a denial during dispatch is journaled like any
+other.
+
+> **A blanket `ALLOW` grants everything.** Because there is one permission
+> per resource kind, a policy that returns `ALLOW` for `ai.model.use`
+> without conditions grants every cataloged model, and an unconditional
+> `ALLOW` for `ai.tool.use` grants every registered tool. The default
+> posture is deny: return nothing (or a `DENY`) and nothing dispatches.
+
+A policy grants by returning the conditions the service evaluates:
 
 ```ts
-const parts = name.split('.');
-if (
-  parts.length !== 5 ||
-  parts[0] !== 'ai' ||
-  parts[1] !== 'model' ||
-  parts[4] !== 'use'
-)
-  throw new Error('not a model permission name');
-// %2E in a segment is always an encoded literal dot: the encoder's
-// encodeURIComponent would have turned a real '%' into %25 first.
-const decode = (segment: string) =>
-  decodeURIComponent(segment.replace(/%2E/g, '.'));
-const pair = {
-  provider: decode(parts[2]),
-  modelId: decode(parts[3]),
-};
+import {
+  isPermission,
+  type PolicyDecision,
+} from '@backstage/plugin-permission-common';
+import type {
+  PermissionPolicy,
+  PolicyQuery,
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
+import {
+  aiModelConditions,
+  aiToolConditions,
+  createAiModelConditionalDecision,
+  createAiToolConditionalDecision,
+} from '@backstage/ai-node/alpha';
+import {
+  aiModelUsePermission,
+  aiToolUsePermission,
+} from '@backstage/plugin-ai-common';
+
+export class AiPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
+    if (isPermission(request.permission, aiModelUsePermission)) {
+      return createAiModelConditionalDecision(request.permission, {
+        anyOf: [
+          aiModelConditions.isModel({ provider: 'openai', modelId: 'gpt-5' }),
+          aiModelConditions.isProvider({ provider: 'anthropic' }),
+          aiModelConditions.isModelType({ type: 'image' }),
+        ],
+      });
+    }
+    if (isPermission(request.permission, aiToolUsePermission)) {
+      return createAiToolConditionalDecision(
+        request.permission,
+        aiToolConditions.isServer({ serverId: 'files' }),
+      );
+    }
+    if (user === undefined) {
+      return { result: 'DENY' };
+    }
+    return { result: 'ALLOW' };
+  }
+}
 ```
 
-Worked examples:
+The conditional-decision helper takes the permission and the criteria
+directly; conditions come from the matching conditions object
+(`aiModelConditions`, `aiToolConditions`) and compose with `anyOf`, `allOf`
+and `not`. The caller's identity is the optional second `user` argument of
+`handle`, never part of the query.
 
-| provider / modelId         | permission name                         |
-| -------------------------- | --------------------------------------- |
-| `openai` / `gpt-5`         | `ai.model.openai.gpt-5.use`             |
-| `openai` / `gpt.4`         | `ai.model.openai.gpt%2E4.use`           |
-| `my.provider` / `model.v2` | `ai.model.my%2Eprovider.model%2Ev2.use` |
-| `anthropic` / `claude-é`   | `ai.model.anthropic.claude-%C3%A9.use`  |
-
-Names are exact, not wildcard patterns: there is no star syntax. A
-policy rule naming `ai.model.openai.*.use` matches exactly the one
-encoded pair it spells — or nothing. The literal-star edge: because
-`encodeURIComponent` passes `*` through unchanged and the catalog's
-identifier rules accept it, a model whose ID is literally `*` produces
-exactly that name; granting it authorizes only that literal pair, never
-a range of models. Policy authors should therefore never reach for `*`
-in a model permission name expecting wildcard semantics — either name
-the exact pair, or grant each pair of a provider separately. A model
-not in the canonical
-`ai.models` catalog has no permission name and no grant can make it
-dispatchable; discovery (`listModels`) reports exactly the pairs the
-caller's own credentials are allowed to use, each with its catalog
-fields (adapter, type, context window, output limit).
+Discovery
+(`listModels`, `listProviders`) applies the same evaluated conditions per
+pair, so it reports exactly the pairs the caller's own credentials are
+allowed to use, each with its catalog fields (adapter, type, context
+window, output limit). A model outside the canonical `ai.models` catalog
+never resolves and no policy can make it dispatchable.
 
 ## Semantics of the managed handle
 

@@ -16,7 +16,7 @@
 
 import { ConfigReader } from '@backstage/config';
 import type { AnyModel } from '@earendil-works/pi-ai';
-import { modelPermissionName } from '../permissions/modelPermissions';
+
 import { parseAiInstallationConfig } from './parseInstallationConfig';
 import type { AiInstallationConfig } from './types';
 
@@ -98,21 +98,6 @@ describe('parseAiInstallationConfig', () => {
       cacheRead: 0.125,
       cacheWrite: 0,
     });
-  });
-
-  it('derives the per-model permission name an installation must grant', () => {
-    const { models } = parse({
-      ai: {
-        models: [modelEntry({ provider: 'azure.openai', modelId: 'gpt-5.1' })],
-      },
-    });
-    // Dots are encoded, so the exact name policy authors register is:
-    expect(
-      modelPermissionName({
-        provider: models[0].provider,
-        modelId: models[0].id,
-      }),
-    ).toBe('ai.model.azure%2Eopenai.gpt-5%2E1.use');
   });
 
   it('rejects unknown fields, bad entries and duplicate models', () => {

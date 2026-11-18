@@ -21,6 +21,7 @@ import { join } from 'node:path';
 import knexFactory from 'knex';
 import { ConfigReader } from '@backstage/config';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { aiModelConditions } from '../permissions/rules';
 import type {
   AuthService,
   DatabaseService,
@@ -69,11 +70,33 @@ describe.each<[string, string | undefined]>([
         isPrincipal: (c: any, type: string) => c.principal.type === type,
       } as AuthService;
       const allowed = new Set(['ai.session.use', 'ai.audit.read']);
+      // The policy states model grants as conditions, the way a real policy
+      // does; discovery evaluates them against each cataloged pair.
+      let allowedModel: { provider: string; modelId: string } | undefined;
       const permissions = {
         authorize: jest.fn(async (requests: any[]) =>
           requests.map(({ permission }) => ({
             result: allowed.has(permission.name) ? 'ALLOW' : 'DENY',
           })),
+        ),
+        authorizeConditional: jest.fn(async (requests: any[]) =>
+          requests.map(({ permission }) => {
+            if (permission.name === 'ai.model.use') {
+              // A genuine conditional envelope: plugin id and resource type
+              // ride beside the criteria, as the permission client answers.
+              return allowedModel
+                ? {
+                    result: 'CONDITIONAL',
+                    pluginId: 'ai',
+                    resourceType: 'ai-model',
+                    conditions: aiModelConditions.isModel(allowedModel),
+                  }
+                : { result: 'DENY' };
+            }
+            return {
+              result: allowed.has(permission.name) ? 'ALLOW' : 'DENY',
+            };
+          }),
         ),
       } as unknown as PermissionsService;
       const pluginMetadata = { getId: () => 'ai' } as PluginMetadataService;
@@ -138,7 +161,7 @@ describe.each<[string, string | undefined]>([
         } as unknown as PermissionsRegistryService,
       });
       expect(addPermissions).toHaveBeenCalled();
-      allowed.add('ai.model.openai.first.use');
+      allowedModel = { provider: 'openai', modelId: 'first' };
       expect(await http.listModels(alice)).toEqual([
         {
           provider: 'openai',
@@ -149,7 +172,7 @@ describe.each<[string, string | undefined]>([
           maxTokens: 1000,
         },
       ]);
-      allowed.delete('ai.model.openai.first.use');
+      allowedModel = undefined;
       expect(await http.listModels(alice)).toEqual([]);
       await expect(
         http.authorize(mockCredentials.service('external:ci')),

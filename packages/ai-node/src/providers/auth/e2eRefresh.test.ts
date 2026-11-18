@@ -233,6 +233,7 @@ async function fixture(dialect: 'sqlite' | 'pg'): Promise<Fixture> {
     } as unknown as AuthService,
     permissions: {
       authorize: jest.fn(async () => [{ result: 'ALLOW' }]),
+      authorizeConditional: jest.fn(async () => [{ result: 'ALLOW' }]),
     } as unknown as PermissionsService,
     logger: mockServices.logger.mock(),
     auditor: mockServices.auditor.mock(),

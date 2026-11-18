@@ -21,7 +21,16 @@ import type {
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 import type { AiService, ManagedHarness } from '@backstage/ai-node/alpha';
-import { modelPermissionName } from '@backstage/ai-node/alpha';
+import {
+  AI_INSTALLATION_CONFIG_PATH,
+  aiModelPermissionRules,
+  allowsConditional,
+  authorizeConditionalDecision,
+} from '@backstage/ai-node/alpha';
+import {
+  aiModelUsePermission,
+  RESOURCE_TYPE_AI_MODEL,
+} from '@backstage/plugin-ai-common';
 import { createRegistry } from '@earendil-works/pi-durable';
 import type { Message } from '@earendil-works/pi-ai';
 
@@ -48,6 +57,36 @@ export type ConfiguredModel = Readonly<{
   provider: string;
   modelId: string;
 }>;
+
+/**
+ * The catalog type of one configured model, read from the installation's
+ * `ai.models` catalog, with the canonical parser's default applied.
+ *
+ * @remarks
+ * Authorization evaluates the model rules against the pair and its catalog
+ * type, exactly as dispatch does, so `isModelType` must see the same type the
+ * installation catalog derives. The canonical parser defaults an omitted
+ * `type` to `chat`, so an entry without one is a chat model here too; only a
+ * pair the catalog does not list at all has no type, and callers treat that as
+ * unresolvable rather than guessing.
+ */
+export function catalogModelType(
+  root: Config,
+  model: ConfiguredModel,
+): string | undefined {
+  const entries = root
+    .getOptionalConfig(AI_INSTALLATION_CONFIG_PATH)
+    ?.getOptionalConfigArray('models');
+  const entry = entries?.find(
+    candidate =>
+      candidate.getOptionalString('provider') === model.provider &&
+      candidate.getOptionalString('modelId') === model.modelId,
+  );
+  if (entry === undefined) {
+    return undefined;
+  }
+  return entry.getOptionalString('type') ?? 'chat';
+}
 
 /**
  * Reads the model the scaffolder plugin configured at
@@ -117,6 +156,8 @@ async function settlementFailure(options: {
   credentials: BackstageCredentials;
   settled: { reason: string; detail?: unknown };
   model: ConfiguredModel | undefined;
+  /** The catalog type of the settled model, when the catalog declares one. */
+  modelType: (model: ConfiguredModel) => string | undefined;
 }): Promise<Error> {
   const { sessionId, settled, model } = options;
   const detail = renderDetail(settled.detail);
@@ -140,7 +181,15 @@ async function settlementFailure(options: {
       `${prefix} did not complete (reason: 'model_error'${detail}). Ask an administrator to configure credentials for the configured model's provider`,
     );
   }
-  if (settled.reason === 'model_error' && model !== undefined) {
+  if (
+    settled.reason === 'model_error' &&
+    model !== undefined &&
+    // Attribution is a diagnostic, never a guess: when the installation
+    // catalog declares no type for this pair the policy's type conditions
+    // cannot be re-evaluated the way dispatch evaluated them, so the generic
+    // settlement failure is reported instead of inventing a permission denial.
+    options.modelType(model) !== undefined
+  ) {
     // A dispatch denied mid-run settles as a model error whose provider
     // detail does not carry the denial reason, so re-check the model
     // permission now: a denial that appeared during the run is named. The
@@ -148,25 +197,25 @@ async function settlementFailure(options: {
     // permissions backend that fails here falls through to the generic
     // settlement failure.
     try {
-      const decisions = await options.permissions.authorize(
-        [
-          {
-            permission: {
-              type: 'basic',
-              name: modelPermissionName(model),
-              attributes: {},
-            },
-          },
-        ],
-        { credentials: options.credentials },
+      const decision = await authorizeConditionalDecision(
+        options.permissions,
+        aiModelUsePermission,
+        options.credentials,
       );
-      if (decisions[0]?.result !== 'ALLOW') {
+      const type = options.modelType(model);
+      const allowed = allowsConditional({
+        decision,
+        resourceType: RESOURCE_TYPE_AI_MODEL,
+        rules: Object.values(aiModelPermissionRules),
+        resource: {
+          provider: model.provider,
+          modelId: model.modelId,
+          ...(type === undefined ? {} : { type }),
+        },
+      });
+      if (!allowed) {
         return new Error(
-          `${prefix} did not complete (reason: 'model_error'${detail}). The submitting user is no longer allowed to use the model '${
-            model.provider
-          }/${model.modelId}': the '${modelPermissionName(
-            model,
-          )}' permission was denied during the run; ask an administrator for access`,
+          `${prefix} did not complete (reason: 'model_error'${detail}). The submitting user is no longer allowed to use the model '${model.provider}/${model.modelId}': the 'ai.model.use' permission was denied during the run; ask an administrator for access`,
         );
       }
     } catch {
@@ -249,6 +298,7 @@ export async function runManagedCompletion(options: {
           credentials: options.credentials,
           settled,
           model: configuredModel(options.root),
+          modelType: candidate => catalogModelType(options.root, candidate),
         });
       }
       const reply = await latestAssistantText(conversation, handle.context);
@@ -273,10 +323,12 @@ export async function runManagedCompletion(options: {
  *
  * @remarks
  *
- * Uses the managed AI service's own model permission naming
- * (`ai.model.<provider>.<modelId>.use`); the managed service re-checks it at
- * admission and on every dispatch. When no model is configured the check
- * is skipped and dispatch defers to the service. The denial names both
+ * Uses the managed AI service's fixed `ai.model.use` permission and evaluates
+ * the policy's conditions against the configured pair with the model rules, so
+ * a conditional policy (one model, one provider, or one model type) decides
+ * exactly as it does for dispatch; the managed service re-checks it at
+ * admission and on every dispatch. When no model is configured the check is
+ * skipped and dispatch defers to the service. The denial names both
  * remedies without asserting which one applies: the user may lack the
  * permission, or the model may not be listed in the installation catalog.
  */
@@ -284,16 +336,29 @@ export async function authorizeConfiguredModel(options: {
   permissions: PermissionsService;
   credentials: BackstageCredentials;
   model: ConfiguredModel;
+  /** The model's catalog type, read from the installation catalog. */
+  type?: string;
   actionId: string;
 }): Promise<void> {
-  const name = modelPermissionName(options.model);
-  const decisions = await options.permissions.authorize(
-    [{ permission: { type: 'basic', name, attributes: {} } }],
-    { credentials: options.credentials },
+  const decision = await authorizeConditionalDecision(
+    options.permissions,
+    aiModelUsePermission,
+    options.credentials,
   );
-  if (decisions[0]?.result !== 'ALLOW') {
+  if (
+    !allowsConditional({
+      decision,
+      resourceType: RESOURCE_TYPE_AI_MODEL,
+      rules: Object.values(aiModelPermissionRules),
+      resource: {
+        provider: options.model.provider,
+        modelId: options.model.modelId,
+        ...(options.type === undefined ? {} : { type: options.type }),
+      },
+    })
+  ) {
     throw new Error(
-      `Access denied: the submitting user is not allowed to use the model '${options.model.provider}/${options.model.modelId}' configured for the '${options.actionId}' action. The '${name}' permission was denied; ask an administrator to grant access, or configure a model that is listed in this installation's 'ai.models' catalog`,
+      `Access denied: the submitting user is not allowed to use the model '${options.model.provider}/${options.model.modelId}' configured for the '${options.actionId}' action. The 'ai.model.use' permission was denied; ask an administrator to grant access, or configure a model that is listed in this installation's 'ai.models' catalog`,
     );
   }
 }

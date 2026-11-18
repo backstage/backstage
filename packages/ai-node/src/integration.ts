@@ -55,7 +55,18 @@ import type {
   ModelOperationGuard,
   TrustedOperation,
 } from './guard/types';
-import { modelPermissionName } from './permissions/modelPermissions';
+import {
+  aiModelPermissionRules,
+  aiToolPermissionRules,
+  allowsConditional,
+  authorizeConditionalDecision,
+} from './permissions/rules';
+import {
+  aiToolUsePermission,
+  RESOURCE_TYPE_AI_MODEL,
+  RESOURCE_TYPE_AI_TOOL,
+} from '@backstage/plugin-ai-common';
+import { aiModelUsePermission } from '@backstage/plugin-ai-common';
 import { createGuardedToolOperations } from './tools/mediation';
 import { composeWithToolRegistry, createToolRegistry } from './tools/registry';
 import type { ToolModule } from './tools/types';
@@ -474,6 +485,13 @@ export async function createAiServiceIntegration(
   const refreshExpiredCredential = options.refreshExpiredCredential;
   const events = options.events;
   const catalog = (options.models ?? []).map(deepFreeze);
+  /** The catalog `type` a policy sees for one model, when it declares one. */
+  const catalogTypeOf = (
+    provider: string,
+    modelId: string,
+  ): string | undefined =>
+    catalog.find(entry => entry.provider === provider && entry.id === modelId)
+      ?.type;
   const db: Knex = await deps.database.getClient();
   const pluginId = deps.pluginMetadata.getId();
 
@@ -581,29 +599,48 @@ export async function createAiServiceIntegration(
       transport: fetch,
       ...(events ? { events } : {}),
       recheck: async operation => {
-        // Fresh permission check with the original caller credentials. The
-        // permission name comes from the module when it carries its own (tool
-        // servers); the shared model encoder applies otherwise.
-        const module = providerRegistry.get(operation.api);
-        const permissionName = module?.permissionName
-          ? module.permissionName(operation.provider, operation.modelId)
-          : modelPermissionName({
-              provider: operation.provider,
-              modelId: operation.modelId,
-            });
-        const decisions = await deps.permissions.authorize(
-          [
-            {
-              permission: {
-                type: 'basic',
-                name: permissionName,
-                attributes: {},
-              },
-            },
-          ],
-          { credentials: operation.credentials },
+        // Fresh permission check with the original caller credentials: one
+        // conditional query per attempt on the permission that matches the
+        // operation kind, then the policy's conditions are evaluated here
+        // against the model pair or tool identity in hand. Anything that is not
+        // a positive evaluation denies, and the guard journals the denial.
+        const decision = await authorizeConditionalDecision(
+          deps.permissions,
+          operation.operation === 'toolCall'
+            ? aiToolUsePermission
+            : aiModelUsePermission,
+          operation.credentials,
         );
-        if (decisions[0]?.result !== 'ALLOW') {
+        const allowed =
+          operation.operation === 'toolCall'
+            ? allowsConditional({
+                decision,
+                resourceType: RESOURCE_TYPE_AI_TOOL,
+                rules: Object.values(aiToolPermissionRules),
+                resource: {
+                  serverId: operation.provider,
+                  toolName: operation.modelId,
+                },
+              })
+            : allowsConditional({
+                decision,
+                resourceType: RESOURCE_TYPE_AI_MODEL,
+                rules: Object.values(aiModelPermissionRules),
+                resource: {
+                  provider: operation.provider,
+                  modelId: operation.modelId,
+                  ...(catalogTypeOf(operation.provider, operation.modelId) ===
+                  undefined
+                    ? {}
+                    : {
+                        type: catalogTypeOf(
+                          operation.provider,
+                          operation.modelId,
+                        ),
+                      }),
+                },
+              });
+        if (!allowed) {
           return false;
         }
         // Fence currency: a rejected renewal means this generation is stale.
@@ -1480,19 +1517,26 @@ export async function createAiServiceIntegration(
       // Fail early when the configured model is already denied, so callers
       // get an actionable error at acquisition instead of at dispatch.
       if (binding.model !== undefined) {
-        const decisions = await deps.permissions.authorize(
-          [
-            {
-              permission: {
-                type: 'basic',
-                name: modelPermissionName(binding.model),
-                attributes: {},
-              },
-            },
-          ],
-          { credentials: binding.credentials },
+        const modelType = catalogTypeOf(
+          binding.model.provider,
+          binding.model.modelId,
         );
-        if (decisions[0]?.result !== 'ALLOW') {
+        const decision = await authorizeConditionalDecision(
+          deps.permissions,
+          aiModelUsePermission,
+          binding.credentials,
+        );
+        const allowed = allowsConditional({
+          decision,
+          resourceType: RESOURCE_TYPE_AI_MODEL,
+          rules: Object.values(aiModelPermissionRules),
+          resource: {
+            provider: binding.model.provider,
+            modelId: binding.model.modelId,
+            ...(modelType === undefined ? {} : { type: modelType }),
+          },
+        });
+        if (!allowed) {
           throw new Error(
             `Access denied: the '${pluginId}' plugin's caller is not allowed to use the model '${binding.model.provider}/${binding.model.modelId}' configured at its AI configuration path`,
           );

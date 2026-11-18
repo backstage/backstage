@@ -50,7 +50,7 @@ export default createBackendModule({
 
 New admissions use the latest registrations. A live session retains its module snapshot until all its handles are released. Custom AI service factories use their own registrations and do not consume this extension point.
 
-Routes require Backstage user bearer credentials and the `ai.session.use` permission. This plugin does not enable cookie authentication. Model discovery returns only models allowed by their `ai.model.<provider>.<model>.use` permissions; each model segment is URI-encoded, with literal dots encoded as `%2E`. Dispatch checks that permission again. Audit reads require both session ownership and `ai.audit.read`.
+Routes require Backstage user bearer credentials and the `ai.session.use` permission. This plugin does not enable cookie authentication. Model discovery returns only the models the caller is allowed to use under the fixed `ai.model.use` permission, evaluating the policy's `isModel`, `isProvider` and `isModelType` conditions against each cataloged pair; dispatch checks that permission again with the caller's own credentials. Tool dispatch is checked against `ai.tool.use` with the `isTool` and `isServer` conditions, inside the guarded tool operations rather than in plugin wiring. Audit reads require both session ownership and `ai.audit.read`.
 
 - `GET /models` lists permitted models.
 - `GET /sessions` lists the caller's sessions; pass the returned `nextCursor` as `cursor` to continue. The optional `limit` is a positive integer and is capped at 500.

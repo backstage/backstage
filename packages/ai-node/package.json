@@ -63,10 +63,14 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/plugin-ai-common": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
     "@earendil-works/chord": "1.5.2",
     "@earendil-works/pi-ai": "1.5.2",
     "@earendil-works/pi-durable": "1.5.2",
-    "knex": "^3.0.0"
+    "knex": "^3.0.0",
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/ai-node-codemode": "workspace:^",

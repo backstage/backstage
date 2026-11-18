@@ -99,6 +99,12 @@ describe.each<[string, string | undefined]>([
         requests.map(({ permission }) => ({
           result: deniedPermissions.has(permission.name) ? 'DENY' : 'ALLOW',
         })),
+      authorizeConditional: async (
+        requests: Parameters<PermissionsService['authorizeConditional']>[0],
+      ) =>
+        requests.map(({ permission }) => ({
+          result: deniedPermissions.has(permission.name) ? 'DENY' : 'ALLOW',
+        })),
     } as unknown as PermissionsService;
     const provider = createServer((req, res) => {
       providerRequests += 1;
@@ -352,7 +358,7 @@ describe.each<[string, string | undefined]>([
         .auth(alice, { type: 'bearer' })
         .send({ model: { provider: 'openai', modelId: 'example' } });
       const before = providerRequests;
-      deniedPermissions.add('ai.model.openai.example.use');
+      deniedPermissions.add('ai.model.use');
       const denial = await request(backend.server)
         .post(
           `/api/ai/v1/sessions/${third.body.sessionId}/conversations/${third.body.conversationId}/messages`,
