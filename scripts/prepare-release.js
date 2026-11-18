@@ -325,7 +325,7 @@ async function updatePackageVersions(repo) {
   if (patchVersions.size > 0) {
     await applyPatchVersions(repo, patchVersions);
   } else {
-    console.log('No packages have been patched');
+    console.log('No patched packages found on any patch branch');
   }
 }
 
