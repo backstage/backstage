@@ -642,6 +642,26 @@ describe('PageBlueprint', () => {
     expect(screen.getByRole('tab', { name: 'Sub' })).toBeInTheDocument();
   });
 
+  it('renders no tab bar for a loader page without attached sub-pages', async () => {
+    const plainPage = PageBlueprint.make({
+      name: 'plain-loader',
+      params: {
+        path: '/plain-loader',
+        title: 'Plain Loader',
+        loader: async () => <div data-testid="plain-loader">Content</div>,
+      },
+    });
+
+    renderTestApp({
+      extensions: [plainPage],
+      initialRouteEntries: ['/plain-loader'],
+    });
+
+    expect(await screen.findByTestId('plain-loader')).toBeInTheDocument();
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+    expect(screen.queryByRole('tablist')).not.toBeInTheDocument();
+  });
+
   it('should support SubPageBlueprint pages input', async () => {
     const parentPage = PageBlueprint.make({
       params: {

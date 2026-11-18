@@ -190,8 +190,9 @@ function PluginPageShell(props: {
   const indexRedirectPath = hasIndexContent ? undefined : subPages?.[0]?.path;
   const tabs = mount &&
     translatedSubPages && [
-      // The page's own content takes the first tab, ahead of the sub-pages
-      ...(hasIndexContent
+      // The page's own content takes the first tab, but only when there are
+      // sub-pages to show beside it; a loader page on its own keeps no tabs
+      ...(hasIndexContent && translatedSubPages.length > 0
         ? [{ id: '', label: titles?.[0] ?? title, href: mount.basePath }]
         : []),
       ...translatedSubPages.map(({ path, label, icon: tabIcon }) => ({
