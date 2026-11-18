@@ -37,7 +37,7 @@ const base = (url: string | undefined) => (url ?? '').replace(/\/+$/, '');
  * Anthropic's Messages API: chat dispatch on `POST {base}/v1/messages`, plus
  * the reserved `/v1/oauth/token` route classified as a token exchange.
  *
- * @public
+ * @alpha
  */
 export const anthropicMessages: AiProviderModule = {
   id: 'anthropic-messages',

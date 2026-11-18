@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import { builtinProviderModules } from '@backstage/ai-node/modules';
 import { googleProviderModules } from '@backstage/ai-node-provider-google/alpha';
 import { openaiProviderModules } from '@backstage/ai-node-provider-openai/alpha';
-import { anthropicProviderModules } from '@backstage/ai-node-provider-anthropic';
-import { azureProviderModules } from '@backstage/ai-node-provider-azure';
-import { typesafeProviderModules } from '@backstage/ai-node-provider-typesafe';
-import { openrouterProviderModules } from '@backstage/ai-node-provider-openrouter';
+import { anthropicProviderModules } from '@backstage/ai-node-provider-anthropic/alpha';
+import { azureProviderModules } from '@backstage/ai-node-provider-azure/alpha';
+import { typesafeProviderModules } from '@backstage/ai-node-provider-typesafe/alpha';
+import { openrouterProviderModules } from '@backstage/ai-node-provider-openrouter/alpha';
 
 /**
  * The provider module collection this plugin registers: every extracted
- * family plus the core remainder. Production registration and the test
- * fixtures compose this one array, so their parity holds by construction.
+ * family. Production registration and the test fixtures compose this one
+ * array, so their parity holds by construction.
  */
 export const aiBackendProviderModules = Object.freeze([
   ...googleProviderModules,
@@ -34,5 +33,4 @@ export const aiBackendProviderModules = Object.freeze([
   ...azureProviderModules,
   ...typesafeProviderModules,
   ...openrouterProviderModules,
-  ...builtinProviderModules,
 ]);

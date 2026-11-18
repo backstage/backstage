@@ -17,7 +17,7 @@
 import type { Credential } from '@earendil-works/pi-ai';
 import { registerAuthCertification } from './certification';
 import { createAuthOperationGuard } from './guard';
-import { builtinAuthModules, createAuthModuleRegistry } from './modules';
+import { createAuthModuleRegistry } from './modules';
 import { formAuthModule } from './formModuleFixture';
 import { jsonAuthModule } from './jsonModuleFixture';
 
@@ -25,7 +25,6 @@ import { jsonAuthModule } from './jsonModuleFixture';
 const jsonAuthRegistry = createAuthModuleRegistry([
   jsonAuthModule,
   formAuthModule,
-  ...builtinAuthModules,
 ]);
 
 import type { AiAuthModule } from './types';

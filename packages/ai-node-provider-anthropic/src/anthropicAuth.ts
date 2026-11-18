@@ -26,7 +26,7 @@ import {
  * `/v1/oauth/token` route. The host supplies the public client ID; no client
  * secret is ever part of a token request.
  *
- * @public
+ * @alpha
  */
 export const anthropicAuthModule: AiAuthModule = {
   id: 'anthropic',

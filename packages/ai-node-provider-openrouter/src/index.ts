@@ -17,19 +17,12 @@
 /**
  * OpenRouter image generation provider module for the managed AI service.
  *
+ * @remarks
+ *
+ * The modules are alpha-grade and exposed from the `./alpha` entrypoint;
+ * this entrypoint intentionally exposes nothing.
+ *
  * @packageDocumentation
  */
 
-import type { AiProviderModule } from '@backstage/ai-node/modules';
-import { openrouterImages } from './openrouterImages';
-
-/** @public */
-export { openrouterImages } from './openrouterImages';
-
-/**
- * Every OpenRouter provider module, ready to register.
- *
- * @public
- */
-export const openrouterProviderModules: readonly AiProviderModule[] =
-  Object.freeze([openrouterImages]);
+export {};

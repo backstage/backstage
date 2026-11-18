@@ -17,19 +17,12 @@
 /**
  * TypeSafe System One classification provider module for the managed AI service.
  *
+ * @remarks
+ *
+ * The modules are alpha-grade and exposed from the `./alpha` entrypoint;
+ * this entrypoint intentionally exposes nothing.
+ *
  * @packageDocumentation
  */
 
-import type { AiProviderModule } from '@backstage/ai-node/modules';
-import { typesafeSystemOne } from './typesafeSystemOne';
-
-/** @public */
-export { typesafeSystemOne } from './typesafeSystemOne';
-
-/**
- * Every TypeSafe provider module, ready to register.
- *
- * @public
- */
-export const typesafeProviderModules: readonly AiProviderModule[] =
-  Object.freeze([typesafeSystemOne]);
+export {};

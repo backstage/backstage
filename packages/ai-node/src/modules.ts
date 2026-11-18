@@ -28,8 +28,6 @@
  * @packageDocumentation
  */
 
-import type { AiProviderModule } from './providers/types';
-
 export type {
   AiProviderModule,
   ModuleAuthority,
@@ -55,13 +53,3 @@ export type {
   OAuthRefreshInput,
 } from './providers/auth/types';
 export type { CredentialScope } from './credentials/types';
-
-/**
- * The provider modules that remain in this package: none — every family now
- * lives in its own provider package. The collection stays as the empty
- * remainder consumers compose with the family collections.
- *
- * @alpha
- */
-export const builtinProviderModules: readonly AiProviderModule[] =
-  Object.freeze([]);

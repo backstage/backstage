@@ -21,11 +21,7 @@ export {
   recordAuthDenial,
 } from './guard';
 export type { AuthModuleLookup } from './guard';
-export {
-  builtinAuthModuleRegistry,
-  builtinAuthModules,
-  createAuthModuleRegistry,
-} from './modules';
+export { builtinAuthModuleRegistry, createAuthModuleRegistry } from './modules';
 export { AuthOperationError, createAuthOperations } from './operations';
 export type {
   AiAuthOperations,

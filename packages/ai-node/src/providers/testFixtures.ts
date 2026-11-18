@@ -22,7 +22,6 @@ import * as codex from '@earendil-works/pi-ai/api/openai-codex-responses';
 import * as images from '@earendil-works/pi-ai/api/openrouter-images';
 import * as systemOne from '@earendil-works/pi-ai/api/typesafe-system-one';
 import { resolveAzureConfig } from '@earendil-works/pi-ai/api/azure-openai-config';
-import { builtinProviderModules } from '../modules';
 import { validateHttpEnvelope } from './httpEnvelope';
 import { createProviderRegistry } from './registry';
 import type { AiProviderModule, ProviderAdapter } from './types';
@@ -175,8 +174,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
   },
 ];
 
-/** The remaining built-ins plus the extracted families, for core tests. */
+/** The extracted families' test fixtures, for core tests. */
 export const builtinProviderRegistry = createProviderRegistry([
-  ...builtinProviderModules,
   ...fixtureProviderModules,
 ]);

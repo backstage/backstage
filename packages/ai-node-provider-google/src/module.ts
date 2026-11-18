@@ -35,7 +35,7 @@ const MAX_BODY = 16 * 1024 * 1024;
  * module TSDoc in `types.ts` for the trust boundary.
  *
  * Host registration (no core edits): pass
- * `createProviderRegistry([...builtinProviderModules, ...googleProviderModules])`
+ * `createProviderRegistry([...googleProviderModules])`
  * as the `providers` option of the AI service integration.
  *
  * Certified configurations: API-key credentials only. `google-vertex` with
@@ -270,7 +270,7 @@ export const googleVertex: AiProviderModule = {
 
 /**
  * The Google provider modules, for host registration alongside the built-ins:
- * `createProviderRegistry([...builtinProviderModules, ...googleProviderModules])`.
+ * `createProviderRegistry([...googleProviderModules])`.
  *
  * @alpha
  */

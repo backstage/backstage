@@ -97,15 +97,19 @@ describe('anthropicAuthModule', () => {
       client_id: 'client-id-value',
       code_verifier: 'pkce-verifier-value',
     });
-    await anthropicAuthModule.validateTokenRequest({
-      operation: 'auth.token-exchange',
-      endpoint: ENDPOINT,
-      request,
-    });
+    await expect(
+      anthropicAuthModule.validateTokenRequest({
+        operation: 'auth.token-exchange',
+        endpoint: ENDPOINT,
+        request,
+      }),
+    ).resolves.toBeUndefined();
   });
 
   it('accepts its own refresh request on the exact destination', async () => {
-    await validate(anthropicAuthModule.refreshRequest(refreshInput()));
+    await expect(
+      validate(anthropicAuthModule.refreshRequest(refreshInput())),
+    ).resolves.toBeUndefined();
   });
 
   it('rejects requests off the reserved token route', async () => {

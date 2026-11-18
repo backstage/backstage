@@ -261,11 +261,13 @@ export function createTokenRequest(
  *
  * @internal
  */
-/** Host registration: add another trusted auth module here to enable it.
+/** The empty set of core-bundled auth modules — every auth module lives in
+ * its provider package. Hosts register additional modules through
+ * `createAuthModuleRegistry`.
  *
  * @alpha
  */
-export const builtinAuthModules: readonly AiAuthModule[] = Object.freeze([]);
+const builtinAuthModules: readonly AiAuthModule[] = Object.freeze([]);
 
 /** @alpha */
 export const builtinAuthModuleRegistry =

@@ -17,20 +17,12 @@
 /**
  * Azure OpenAI Responses provider module for the managed AI service.
  *
+ * @remarks
+ *
+ * The modules are alpha-grade and exposed from the `./alpha` entrypoint;
+ * this entrypoint intentionally exposes nothing.
+ *
  * @packageDocumentation
  */
 
-import type { AiProviderModule } from '@backstage/ai-node/modules';
-import { azureResponses } from './azureResponses';
-
-/** @public */
-export { azureResponses } from './azureResponses';
-
-/**
- * Every Azure OpenAI provider module, ready to register.
- *
- * @public
- */
-export const azureProviderModules: readonly AiProviderModule[] = Object.freeze([
-  azureResponses,
-]);
+export {};

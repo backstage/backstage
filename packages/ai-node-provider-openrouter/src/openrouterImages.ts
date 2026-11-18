@@ -148,7 +148,7 @@ function inspectImageRequestPayload(payload: unknown): void {
  * The default OpenRouter base uses /api/v1; /v1 covers custom gateways, so
  * both route shapes are approved below.
  *
- * @public
+ * @alpha
  */
 export const openrouterImages: AiProviderModule = {
   id: 'openrouter-images',

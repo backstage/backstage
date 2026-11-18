@@ -58,7 +58,7 @@ const nonChatAdapter = (
  * destination templates. The native TypeSafe base and OpenRouter's `/api/v1`
  * base both serve the protocol, so both route shapes are approved below.
  *
- * @public
+ * @alpha
  */
 export const typesafeSystemOne: AiProviderModule = {
   id: 'typesafe-system-one',
