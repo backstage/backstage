@@ -215,29 +215,37 @@ export interface AiServiceIntegrationOptions {
  * the integration opens, appended to the caller's registry selection; it
  * replaces any caller extension also named `codemode`.
  *
- * Resource limits: `timeoutMs` is the host wall-clock ceiling per script
- * execution including time spent in tools — a script's own
+ * The core's role is narrow: it resolves the limits, passes them to
+ * `createExtension`, appends the returned extension to the caller's
+ * registry selection, and closes the returned sandbox with the harness.
+ * Everything below is the sandbox behavior of the PROVIDED DEFAULT
+ * BUILDER — `createBoundedCodemodeExtension` from
+ * `@backstage/ai-node-codemode` — not something this type enforces on an
+ * arbitrary callback: a host-supplied `createExtension` decides its own
+ * sandbox's isolation and limits.
+ *
+ * With the default builder: `timeoutMs` is the host wall-clock ceiling
+ * per script execution including time spent in tools — a script's own
  * `// @options: {"timeout_ms": ...}` line may lower it, never exceed it —
  * and defaults to 300000. `memoryLimitBytes` bounds the QuickJS heap; it
  * defaults to no explicit limit (the wasm32 address space bounds it at
  * 4 GiB) — set one to bound a runaway script's allocations. Script output
- * is capped at 16777216 characters (UTF-16 code units) / 100000 items, a
- * single script store value at 262144 characters, and all of a run's
- * store writes combined at 1048576 characters. Replay storage is
- * O(nested results): one journal commit plus one count commit per
- * delivered result, on top of each nested call's own commits, in the
- * conversation's durable storage (separate from the AI audit journal).
+ * is capped at 16777216 characters (UTF-16 code units) / 100000 items,
+ * a single script store value at 262144 characters, and the currently
+ * stored keys and their serialized values combined at 1048576
+ * characters — the retained store, including preexisting state, not a
+ * cumulative write count. Replay storage is O(nested results): one
+ * journal commit plus one count commit per delivered result, on top of
+ * each nested call's own commits, in the conversation's durable storage
+ * (separate from the AI audit journal).
  *
- * Isolation and audit: scripts see only their tools and Pi's script
- * globals — no network, filesystem, timers, `process`, or modules — and
- * model calls from inside scripts (the `models.*` globals) route through
- * the guarded facade like any other dispatch, with the per-attempt
- * permission, fence, and credential recheck and audit journaling. Until a
- * provider module certifies them, those calls deny fail-closed.
- *
- * The default construction is `createBoundedCodemodeExtension` from
- * `@backstage/ai-node-codemode`; hosts wire it into `createExtension`
- * because the core package carries no sandbox implementation of its own.
+ * Isolation and audit, with the default builder: scripts see only their
+ * tools and Pi's script globals — no network, filesystem, timers,
+ * `process`, or modules — and model calls from inside scripts (the
+ * `models.*` globals) route through the guarded facade like any other
+ * dispatch, with the per-attempt permission, fence, and credential
+ * recheck and audit journaling. Until a provider module certifies them,
+ * those calls deny fail-closed.
  *
  * @alpha
  */

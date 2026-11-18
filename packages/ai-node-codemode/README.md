@@ -37,11 +37,16 @@ execution:
 
 ## Isolation, limits, and audit posture
 
+These are the guarantees of `createBoundedCodemodeExtension`, the default
+builder; a host supplying its own `createExtension` callback decides its
+own sandbox's behavior.
+
 - Scripts see only their tools and Pi's script globals — no network,
   filesystem, timers, `process`, or modules. Script output is capped at
   16777216 characters (UTF-16 code units) / 100000 items, a single store
-  value at 262144 characters, and all of a run's store writes combined at
-  1048576 characters.
+  value at 262144 characters, and the currently stored keys and their
+  serialized values combined at 1048576 characters — the retained store,
+  including preexisting state, not a cumulative write count.
 - The deadline is wall-clock only and does not enter the durable start
   data, so it cannot affect replay: a script may lower it through its own
   `// @options: {"timeout_ms": ...}` line, never raise it above the host's.
