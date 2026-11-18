@@ -18,8 +18,14 @@ Configure the installation's models and credentials under `ai` using the
 The plugin pre-registers the six stock provider families
 (`@backstage/ai-node-provider-google`, `-openai`, `-anthropic`, `-azure`,
 `-typesafe`, and `-openrouter`) in its composed default, so the stock
-providers need no service factory override. Override the AI service
-factory only to add custom or distinct modules.
+providers need no service factory override.
+
+To add modules beyond the stock families, use the `aiModulesExtensionPoint`
+shown below — it is the normal additive path and keeps the stock families
+and every other registration intact. Replacing the AI service factory is
+the exceptional path for hosts that want full control of the composition:
+the factory override's registrations are the complete set, replacing both
+the stock families and any dynamic registrations.
 
 Backend modules for the `ai` plugin can register provider and tool modules through `aiModulesExtensionPoint` from `@backstage/plugin-ai-backend/alpha`:
 

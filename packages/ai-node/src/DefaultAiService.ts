@@ -110,11 +110,12 @@ export interface OpenNativeHarnessInput extends AcquisitionBinding {
  *
  * The private integration contract: the exclusive namespace lease (design
  * §2), the Knex Pi storage adapter (design §3), and the guarded model
- * operation boundary (design §6). The default service factory creates the
- * service without an integration, and every production `openHarness` call
- * fails closed with an actionable error rather than expose an unguarded
- * harness. Tests may inject an explicitly labeled non-production stand-in;
- * a stand-in must never be presented as production security or durability.
+ * operation boundary (design §6). The default service factory wires the
+ * production integration; opens fail closed with an actionable error only
+ * when a service is explicitly constructed without an integration, rather
+ * than expose an unguarded harness. Tests may inject an explicitly labeled
+ * non-production stand-in; a stand-in must never be presented as
+ * production security or durability.
  *
  * @internal
  */

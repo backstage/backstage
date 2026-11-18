@@ -19,15 +19,33 @@ permission registry and mapping authorize requests back to tool identities.
 ## Usage
 
 ```ts
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
 import { createToolPermissions } from '@backstage/ai-node-tools/alpha';
 
-const tools = createToolPermissions({
-  tools: [
-    { serverId: 'example-tools', toolName: 'search' },
-    { serverId: 'example-tools', toolName: 'fetch' },
-  ],
-  authorizer: permissions,
-  registry: permissionsRegistry,
+export default createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'ai-tools',
+  register(env) {
+    env.registerInit({
+      deps: {
+        permissions: coreServices.permissions,
+        permissionsRegistry: coreServices.permissionsRegistry,
+      },
+      async init({ permissions, permissionsRegistry }) {
+        createToolPermissions({
+          tools: [
+            { serverId: 'example-tools', toolName: 'search' },
+            { serverId: 'example-tools', toolName: 'fetch' },
+          ],
+          authorizer: permissions,
+          registry: permissionsRegistry,
+        });
+      },
+    });
+  },
 });
 ```
 

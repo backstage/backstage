@@ -173,8 +173,9 @@ export interface AiServiceIntegrationOptions {
   readonly toolModules?: readonly ToolModule[];
   /**
    * Credential stores feeding provider authority resolution. When absent,
-   * every model dispatch is denied with an actionable reason: installation
-   * credential configuration is not wired to a config source yet.
+   * every model dispatch is denied with an actionable reason — the
+   * fail-closed default for an integration constructed without them. The
+   * stock service factory supplies the installation's configured stores.
    */
   readonly credentialStores?: AiCredentialStores;
   /**
