@@ -20,5 +20,11 @@ export type {
   AiMetricsSubscriber,
   MetricSeries,
 } from './metrics';
+export { evaluateAiHealth } from './health';
+export type {
+  AiHealthReport,
+  AiHealthSignal,
+  AiHealthThresholds,
+} from './health';
 export { assertObservableEvent, emitSafe, noopAiEventEmitter } from './types';
 export type { AiEventEmitter, AiObservabilityEvent } from './types';
