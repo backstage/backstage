@@ -63,6 +63,9 @@ export type {
   AuditPage,
 } from './journal/types';
 export { modelPermissionName } from './permissions/modelPermissions';
-export type { ModelPair } from './permissions/modelPermissions';
+export type {
+  ModelDescriptor,
+  ModelPair,
+} from './permissions/modelPermissions';
 export type { AiCredentialStores, CredentialScope } from './credentials/types';
 export type { RecoveryEvent } from './journal/types';

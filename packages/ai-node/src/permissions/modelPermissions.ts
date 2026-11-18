@@ -20,8 +20,33 @@ import type {
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 
-/** A provider and model ID pair identifying one canonical model. @alpha */
+/**
+ * A provider and model ID pair identifying one canonical model.
+ *
+ * @alpha
+ */
 export type ModelPair = Readonly<{ provider: string; modelId: string }>;
+
+/**
+ * One canonical catalog model as discovery reports it: the identity pair
+ * plus the catalog fields consumers choose models by. The optional fields
+ * are present exactly when the canonical catalog entry carries them; a
+ * pair without them still registers and still authorizes.
+ *
+ * @alpha
+ */
+export type ModelDescriptor = Readonly<{
+  provider: string;
+  modelId: string;
+  /** Certified adapter identifier of the provider module. */
+  api?: string;
+  /** Model type, e.g. `chat`, `classifier`, or `image`. */
+  type?: string;
+  /** Context window in tokens. */
+  contextWindow?: number;
+  /** Output limit in tokens. */
+  maxTokens?: number;
+}>;
 
 type BasicPermission = Extract<
   Parameters<PermissionsRegistryService['addPermissions']>[0][number],
@@ -47,20 +72,20 @@ export function modelPermissionName({ provider, modelId }: ModelPair): string {
 
 /** A snapshot of the canonical registry. Never use caller-supplied pairs as a registry. */
 export function createModelPermissions(options: {
-  models: readonly ModelPair[];
+  models: readonly ModelDescriptor[];
   authorizer: Pick<PermissionsService, 'authorize'>;
   registry: Pick<PermissionsRegistryService, 'addPermissions'>;
 }) {
   const pairs = new Map<
     string,
-    { model: ModelPair; permission: BasicPermission }
+    { model: ModelDescriptor; permission: BasicPermission }
   >();
-  for (const { provider, modelId } of options.models) {
-    const model = Object.freeze({ provider, modelId });
-    const name = modelPermissionName(model);
+  for (const model of options.models) {
+    const descriptor = Object.freeze({ ...model });
+    const name = modelPermissionName(descriptor);
     if (!pairs.has(name)) {
       pairs.set(name, {
-        model,
+        model: descriptor,
         permission: Object.freeze({
           type: 'basic',
           name,
@@ -95,7 +120,7 @@ export function createModelPermissions(options: {
     },
     async listModels(
       credentials: BackstageCredentials,
-    ): Promise<readonly ModelPair[]> {
+    ): Promise<readonly ModelDescriptor[]> {
       const entries = [...pairs.values()];
       const decisions = await authorize(entries, credentials);
       return entries.filter((_, i) => decisions[i]).map(entry => entry.model);

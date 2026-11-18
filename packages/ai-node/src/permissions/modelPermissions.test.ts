@@ -100,4 +100,113 @@ describe('model permissions', () => {
     authorize.mockRejectedValueOnce(new Error('unavailable'));
     await expect(permissions.listModels(user)).rejects.toThrow('unavailable');
   });
+
+  it("reports catalog descriptors, frozen, filtered by the caller's own authority", async () => {
+    const user = mockCredentials.user('user:default/alice');
+    const openaiName = 'ai.model.openai.gpt%2E5.use';
+    const authorize = jest.fn(
+      async (requests: Parameters<PermissionsService['authorize']>[0]) =>
+        requests.map(({ permission }) => ({
+          result: permission.name === openaiName ? 'ALLOW' : 'DENY',
+        })),
+    ) as unknown as jest.MockedFunction<PermissionsService['authorize']>;
+    const descriptor = {
+      provider: 'openai',
+      modelId: 'gpt.5',
+      api: 'openai-responses',
+      type: 'chat',
+      contextWindow: 400_000,
+      maxTokens: 128_000,
+    };
+    const permissions = createModelPermissions({
+      models: [
+        descriptor,
+        // An image model carries no context window; the descriptor keeps
+        // the entry's own shape.
+        {
+          provider: 'openrouter',
+          modelId: 'flux',
+          api: 'openai-completions',
+          type: 'image',
+          maxTokens: 4096,
+        },
+      ],
+      authorizer: { authorize },
+      registry: { addPermissions: jest.fn() },
+    });
+    const listed = await permissions.listModels(user);
+    expect(listed).toEqual([descriptor]);
+    // The caller cannot mutate the discovery result or its source.
+    expect(Object.isFrozen(listed[0])).toBe(true);
+    expect(() => {
+      (listed[0] as { modelId: string }).modelId = 'substituted';
+    }).toThrow();
+    descriptor.modelId = 'substitution';
+    expect((await permissions.listModels(user))[0].modelId).toBe('gpt.5');
+    // The authorization asked for exact names under the caller's own
+    // credentials, one request per registered pair — the first listModels
+    // call, before the mutation re-check call.
+    const requested = authorize.mock.calls[0][0]
+      .map(({ permission }) => permission.name)
+      .sort();
+    expect(requested).toEqual([
+      'ai.model.openai.gpt%2E5.use',
+      'ai.model.openrouter.flux.use',
+    ]);
+  });
+
+  it('round-trips the documented policy-author decoding exactly', async () => {
+    // The README documents this decode for policy authors; this pins the
+    // documented algorithm against the encoder for the tricky cases.
+    const decode = (segment: string) =>
+      decodeURIComponent(segment.replace(/%2E/g, '.'));
+    const decodeName = (name: string) => {
+      const parts = name.split('.');
+      if (
+        parts.length !== 5 ||
+        parts[0] !== 'ai' ||
+        parts[1] !== 'model' ||
+        parts[4] !== 'use'
+      ) {
+        throw new Error('not a model permission name');
+      }
+      return {
+        provider: decode(parts[2]),
+        modelId: decode(parts[3]),
+      };
+    };
+    for (const pair of [
+      { provider: 'openai', modelId: 'gpt-5' },
+      { provider: 'my.provider', modelId: 'model.v2' },
+      { provider: 'a/% é', modelId: 'b.c/%' },
+      { provider: 'Ünicode', modelId: 'Claude-é' },
+      { provider: 'p', modelId: 'with spaces' },
+    ]) {
+      expect(decodeName(modelPermissionName(pair))).toEqual(pair);
+    }
+    // A name that is not a model permission name rejects rather than
+    // decoding to nonsense.
+    expect(() => decodeName('ai.model.openai.gpt-5')).toThrow(
+      'not a model permission name',
+    );
+    // Another permission kind's name is not a model permission name; the
+    // decode rejects rather than misreading its segments, and a provider
+    // literally named 'model' stays unambiguous because the part count is
+    // fixed at five.
+    expect(() => decodeName('ai.session.use')).toThrow(
+      'not a model permission name',
+    );
+    expect(
+      decodeName(modelPermissionName({ provider: 'model', modelId: 'm' })),
+    ).toEqual({ provider: 'model', modelId: 'm' });
+    // A real '%' in a provider becomes %25 before %2E is applied, so the
+    // decode cannot confuse an encoded dot with an encoded percent.
+    expect(modelPermissionName({ provider: 'a%2Eb', modelId: 'm' })).toBe(
+      'ai.model.a%252Eb.m.use',
+    );
+    expect(decodeName('ai.model.a%252Eb.m.use')).toEqual({
+      provider: 'a%2Eb',
+      modelId: 'm',
+    });
+  });
 });

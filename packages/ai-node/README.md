@@ -179,11 +179,66 @@ journaled, actionable denial, never a fallback.
 - **Permissions** are derived per configured model:
   `ai.model.<provider>.<modelId>.use` with each segment passed through
   `encodeURIComponent` and literal dots encoded as `%2E`. Names are exact;
-  grant each pair (or each pair of a provider) in policy.
+  grant each pair (or each pair of a provider) in policy. The exact
+  encoding rule and how to decode a name back to its pair are documented
+  under [Model permission names](#model-permission-names) for policy
+  authors.
 - **Fail-closed validation**: unknown fields, duplicate models, unusable
   adapter identifiers, non-http(s) destinations and malformed scope keys all
   reject with the exact configuration path, the offending field, and
   corrective guidance.
+
+## Model permission names
+
+Each canonical catalog model gets one basic permission named
+`ai.model.<segment(provider)>.<segment(modelId)>.use`. `segment(s)` is
+`encodeURIComponent(s).replace(/\./g, '%2E')` applied to a nonempty,
+well-formed Unicode string: case is preserved, Unicode is never
+normalized, and a lone surrogate (an invalid string) is rejected at
+registration. The installed package exports `modelPermissionName` (from
+`@backstage/ai-node/alpha`) implementing exactly this rule.
+
+Because a segment can never contain a literal dot after encoding, the
+name splits unambiguously into five dot-separated parts — the literal
+`ai`, the literal `model`, the two encoded segments, and the literal
+`use`. A policy author holding a name decodes it back to the model pair
+like this:
+
+```ts
+const parts = name.split('.');
+if (
+  parts.length !== 5 ||
+  parts[0] !== 'ai' ||
+  parts[1] !== 'model' ||
+  parts[4] !== 'use'
+)
+  throw new Error('not a model permission name');
+// %2E in a segment is always an encoded literal dot: the encoder's
+// encodeURIComponent would have turned a real '%' into %25 first.
+const decode = (segment: string) =>
+  decodeURIComponent(segment.replace(/%2E/g, '.'));
+const pair = {
+  provider: decode(parts[2]),
+  modelId: decode(parts[3]),
+};
+```
+
+Worked examples:
+
+| provider / modelId         | permission name                         |
+| -------------------------- | --------------------------------------- |
+| `openai` / `gpt-5`         | `ai.model.openai.gpt-5.use`             |
+| `openai` / `gpt.4`         | `ai.model.openai.gpt%2E4.use`           |
+| `my.provider` / `model.v2` | `ai.model.my%2Eprovider.model%2Ev2.use` |
+| `anthropic` / `claude-é`   | `ai.model.anthropic.claude-%C3%A9.use`  |
+
+Names are exact, not wildcard patterns: a permission rule for
+`ai.model.openai.*.use` matches nothing, because no catalog model's
+encoded model ID is the literal `*`. A model not in the canonical
+`ai.models` catalog has no permission name and no grant can make it
+dispatchable; discovery (`listModels`) reports exactly the pairs the
+caller's own credentials are allowed to use, each with its catalog
+fields (adapter, type, context window, output limit).
 
 ## Semantics of the managed handle
 

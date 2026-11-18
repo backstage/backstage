@@ -47,12 +47,9 @@ export interface AiHttpSupport {
   // (undocumented)
   authorize(credentials: BackstageCredentials): Promise<void>;
   // (undocumented)
-  listModels(credentials: BackstageCredentials): Promise<
-    readonly {
-      provider: string;
-      modelId: string;
-    }[]
-  >;
+  listModels(
+    credentials: BackstageCredentials,
+  ): Promise<readonly ModelDescriptor[]>;
   // (undocumented)
   listSessions(
     credentials: BackstageCredentials,
@@ -244,6 +241,16 @@ export interface ManagedHarness {
 
 // @alpha
 export type ManagedNativeHarness = Omit<Harness, 'close'>;
+
+// @alpha
+export type ModelDescriptor = Readonly<{
+  provider: string;
+  modelId: string;
+  api?: string;
+  type?: string;
+  contextWindow?: number;
+  maxTokens?: number;
+}>;
 
 // @alpha
 export type ModelPair = Readonly<{
