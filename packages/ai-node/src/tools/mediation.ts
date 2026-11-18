@@ -87,3 +87,8 @@ export function createGuardedToolOperations(options: {
     },
   };
 }
+
+/** The guarded tool facade produced by {@link createGuardedToolOperations}. */
+export type GuardedToolOperations = ReturnType<
+  typeof createGuardedToolOperations
+>;

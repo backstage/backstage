@@ -121,6 +121,25 @@ export function createToolRegistry(
   });
 }
 
+/**
+ * Composes a model provider registry with a tool registry's provider view:
+ * the guard and journal consume one registry, with tool modules taking
+ * precedence for their ids. Tool route templates and operations flow
+ * through the existing seams unchanged.
+ */
+export function composeWithToolRegistry(
+  modelRegistry: AiProviderRegistry,
+  tools: AiProviderRegistry,
+): AiProviderRegistry {
+  return Object.freeze({
+    get: id => tools.get(id) ?? modelRegistry.get(id),
+    hasOperation: operation =>
+      tools.hasOperation(operation) || modelRegistry.hasOperation(operation),
+    canonicalPath: path =>
+      tools.canonicalPath(path) ?? modelRegistry.canonicalPath(path),
+  });
+}
+
 /** Registers one basic permission per declared tool, mirroring model permissions. */
 export function createToolPermissions(options: {
   tools: readonly ToolIdentity[];

@@ -46,6 +46,7 @@ import type {
   Namespace,
   OpenHarnessOptions,
 } from './contracts';
+import type { GuardedToolOperations } from './tools/mediation';
 
 /**
  * A process-local native harness opened by the Wave 1 integration.
@@ -55,6 +56,12 @@ import type {
 export interface NativeHarnessHandle {
   readonly harness: Harness;
   readonly context: Context;
+  /**
+   * Guarded tool operations, present when tool modules are registered with
+   * the integration. Tool calls dispatch through the same guarded path as
+   * model operations.
+   */
+  readonly tools?: GuardedToolOperations;
 }
 
 /**
@@ -439,6 +446,8 @@ function createManagedNativeHarness(
 class ManagedHarnessHandle implements ManagedHarness {
   readonly harness: ManagedNativeHarness;
   readonly context: Context;
+  /** Guarded tool operations when tool modules are registered. */
+  readonly tools?: GuardedToolOperations;
   /** Bound so the documented destructured `release()` usage works. */
   readonly release: () => Promise<void>;
   readonly #service: DefaultAiService;
@@ -450,6 +459,9 @@ class ManagedHarnessHandle implements ManagedHarness {
     this.#live = live;
     this.context = live.handle.context;
     this.harness = createManagedNativeHarness(live.handle.harness, this.#state);
+    if (live.handle.tools !== undefined) {
+      this.tools = live.handle.tools;
+    }
     this.release = async () => {
       if (this.#state.released) {
         return;

@@ -57,6 +57,18 @@ import type {
   TrustedOperation,
 } from './guard/types';
 import { modelPermissionName } from './permissions/modelPermissions';
+import { createGuardedToolOperations } from './tools/mediation';
+import {
+  composeWithToolRegistry,
+  createToolRegistry,
+  toolPermissionName,
+} from './tools/registry';
+import type { ToolModule } from './tools/types';
+import {
+  interpretMcpCredential,
+  mcpCredentialGeneration,
+  mcpCredentialId,
+} from './credentials/mcp';
 import {
   createAiRecovery,
   createKnexNamespaceLease,
@@ -157,6 +169,14 @@ export interface AiServiceIntegrationOptions {
   readonly deps: DefaultAiServiceDeps;
   /** Trusted provider registrations shared by the guard and journal. */
   readonly providers?: AiProviderRegistry;
+  /**
+   * Registered MCP tool servers. When present, every opened harness
+   * exposes guarded tool operations: a tool call is a journaled,
+   * authorized, guarded dispatch through the same machinery as model
+   * dispatch, with the recheck consulting the tool permission and the
+   * scoped `mcp:` credential generation.
+   */
+  readonly toolModules?: readonly ToolModule[];
   /**
    * Credential stores feeding provider authority resolution. When absent,
    * every model dispatch is denied with an actionable reason: installation
@@ -441,7 +461,15 @@ export async function createAiServiceIntegration(
   options: AiServiceIntegrationOptions,
 ): Promise<ProductionAiServiceIntegration> {
   const { deps } = options;
-  const providerRegistry = options.providers ?? builtinProviderRegistry;
+  const toolRegistry = options.toolModules
+    ? createToolRegistry(options.toolModules)
+    : undefined;
+  const providerRegistry = toolRegistry
+    ? composeWithToolRegistry(
+        options.providers ?? builtinProviderRegistry,
+        toolRegistry.providerRegistry,
+      )
+    : options.providers ?? builtinProviderRegistry;
   const credentialStores = options.credentialStores;
   const credentialPrecedence = options.credentialPrecedence ?? 'user-first';
   const refreshExpiredCredential = options.refreshExpiredCredential;
@@ -506,11 +534,95 @@ export async function createAiServiceIntegration(
     return undefined;
   };
 
+  /** A resolved MCP tool server authority and its identity for recheck. */
+  type ResolvedToolAuthority = Readonly<{
+    scope: CredentialScope;
+    generation: string;
+    authority:
+      | { kind: 'apiKey'; apiKey?: string; headers: Record<string, string> }
+      | {
+          kind: 'oauth';
+          headers: Record<string, string>;
+          expiresAt: number;
+        };
+  }>;
+
+  /** Resolves the scoped MCP credential for one tool server, or undefined. */
+  const resolveToolAuthority = async (
+    serverId: string,
+    credentials: BackstageCredentials,
+  ): Promise<ResolvedToolAuthority | undefined> => {
+    if (credentialStores === undefined || toolRegistry === undefined) {
+      return undefined;
+    }
+    const principal = principalOf(deps, credentials);
+    const key = mcpCredentialId(serverId);
+    const scopes = credentialScopesFor(principal, credentialPrecedence);
+    for (const scope of scopes) {
+      const credential = await credentialStores.forScope(scope).read(key);
+      if (credential === undefined) {
+        continue;
+      }
+      const interpreted = interpretMcpCredential(credential);
+      const secret =
+        credential.type === 'api_key' ? credential.key : credential.access;
+      const generation = mcpCredentialGeneration(scope, secret ?? '');
+      if (interpreted.expiresAt === undefined) {
+        return {
+          scope,
+          generation,
+          authority: { kind: 'apiKey', headers: interpreted.headers },
+        };
+      }
+      return {
+        scope,
+        generation,
+        authority: {
+          kind: 'oauth',
+          headers: interpreted.headers,
+          expiresAt: interpreted.expiresAt,
+        },
+      };
+    }
+    return undefined;
+  };
+
   const guard: ModelOperationGuard = createModelOperationGuard({
     providers: providerRegistry,
     transport: fetch,
     ...(events ? { events } : {}),
     recheck: async operation => {
+      if (operation.operation === 'toolCall') {
+        // Tool calls recheck the tool permission and the scoped MCP
+        // credential generation — the same per-attempt discipline as model
+        // dispatch, with no host-supplied wiring.
+        const decisions = await deps.permissions.authorize(
+          [
+            {
+              permission: {
+                type: 'basic',
+                name: toolPermissionName({
+                  serverId: operation.provider,
+                  toolName: operation.modelId,
+                }),
+                attributes: {},
+              },
+            },
+          ],
+          { credentials: operation.credentials },
+        );
+        if (decisions[0]?.result !== 'ALLOW') {
+          return false;
+        }
+        if (!(await lease.renew(operation.fence))) {
+          return false;
+        }
+        const resolved = await resolveToolAuthority(
+          operation.provider,
+          operation.credentials,
+        );
+        return resolved?.generation === operation.credentialGeneration;
+      }
       // Fresh permission check with the original caller credentials.
       const decisions = await deps.permissions.authorize(
         [
@@ -944,6 +1056,22 @@ export async function createAiServiceIntegration(
         },
       } as unknown as Models;
     };
+    // Guarded tool operations through the same composition root: the
+    // facade carries no per-attempt logic of its own — it resolves the
+    // declared tool and dispatches through the shared guarded model
+    // operations whose resolve and recheck bind tool calls above.
+    const toolsSource = toolRegistry
+      ? createGuardedToolOperations({
+          tools: toolRegistry,
+          models: createGuardedModelOperations({
+            providers: providerRegistry,
+            guard,
+            journal,
+            ...(events ? { events } : {}),
+            resolve: makeResolve(input, fence, authority),
+          }),
+        })
+      : undefined;
     let storage: Storage | undefined;
     // Opt-in code mode. The extension is appended to the caller's registry
     // selection, and the registry reader re-reads the caller's snapshot on
@@ -993,6 +1121,7 @@ export async function createAiServiceIntegration(
       const handle: NativeHarnessHandle = {
         harness,
         context: BACKGROUND_CONTEXT as Context,
+        ...(toolsSource ? { tools: toolsSource } : {}),
       };
       // The reservation converts into the published holder, synchronously
       // with publication: a concurrent release of this handle can never
@@ -1036,6 +1165,78 @@ export async function createAiServiceIntegration(
     const sessionRef = `${input.namespace.pluginId}/${input.namespace.sessionId}`;
     let callOrdinal = 0;
     return async (model, operation) => {
+      if (operation === 'toolCall') {
+        // Tool dispatch: the tool name rides the model identity and the
+        // server id the provider; the binding resolves the declared tool
+        // and the scoped MCP credential with the same fail-closed shape as
+        // model resolution.
+        const sessionToolRef = `${input.namespace.pluginId}/${input.namespace.sessionId}`;
+        const current = authority();
+        const trusted: TrustedOperation = {
+          actor: input.owner,
+          credentials: current.credentials,
+          provenance: {
+            origin: 'verified' as const,
+            conversationId: sessionToolRef,
+            taskId: sessionToolRef,
+            callId: `${sessionToolRef}#tool-${(callOrdinal += 1)}`,
+          },
+          fence,
+          definitionVersion: input.registryVersion,
+          configVersion: input.configVersion,
+          provider: model.provider,
+          modelId: model.id,
+          resolvedModel: model.id,
+          operation,
+          api: model.api,
+          destination: 'unresolved://tool',
+          credentialScope: { kind: 'org' },
+          credentialGeneration: 'unresolved',
+          controller: new AbortController(),
+        };
+        const unresolvedBinding = () => ({
+          operation: trusted,
+          model: model as GuardedModelBinding['model'],
+          authority: { kind: 'apiKey' as const },
+        });
+        if (toolRegistry === undefined) {
+          throw new GuardedResolutionError(
+            unresolvedBinding(),
+            'tool dispatch is not configured for this installation',
+          );
+        }
+        const declared = toolRegistry.resolve({
+          serverId: model.provider,
+          toolName: model.id,
+        });
+        if (declared === undefined) {
+          throw new GuardedResolutionError(
+            unresolvedBinding(),
+            `tool not registered: '${model.provider}/${model.id}' is not a declared tool of this installation`,
+          );
+        }
+        const resolvedTool = await resolveToolAuthority(
+          model.provider,
+          current.credentials,
+        );
+        if (resolvedTool === undefined) {
+          throw new GuardedResolutionError(
+            unresolvedBinding(),
+            `MCP server credentials are not configured for tool server '${model.provider}'`,
+          );
+        }
+        return {
+          operation: {
+            ...trusted,
+            api: declared.module.id,
+            destination: declared.module.destination(model.id),
+            credentialScope: resolvedTool.scope,
+            credentialGeneration: resolvedTool.generation,
+          },
+          model: model as GuardedModelBinding['model'],
+          authority: resolvedTool.authority,
+        };
+      }
       const canonical = catalog.find(
         entry => entry.provider === model.provider && entry.id === model.id,
       );

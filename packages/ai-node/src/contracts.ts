@@ -17,6 +17,7 @@
 import type { Config } from '@backstage/config';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Context } from '@earendil-works/chord/context';
+import type { GuardedToolOperations } from './tools/mediation';
 import type { Harness, RegistryReader } from '@earendil-works/pi-durable';
 
 /**
@@ -101,6 +102,12 @@ export type OpenHarnessOptions = Readonly<{
 export interface ManagedHarness {
   readonly harness: ManagedNativeHarness;
   readonly context: Context;
+  /**
+   * Guarded tool operations, present when tool modules are registered with
+   * the integration. Tool calls dispatch through the same guarded path as
+   * model operations.
+   */
+  readonly tools?: GuardedToolOperations;
   release(): Promise<void>;
 }
 
