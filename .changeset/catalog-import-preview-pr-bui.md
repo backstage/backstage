@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-import': patch
 ---
 
-The pull request preview card in the import flow now uses Backstage UI components.
+The pull request and catalog-info preview cards in the import flow now use Backstage UI components.
