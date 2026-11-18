@@ -23,6 +23,8 @@ import {
   bindAiModuleRegistry,
   createAiHttpSupport,
   createAiModuleRegistry,
+  createMetricsSubscriber,
+  evaluateAiHealth,
 } from '@backstage/ai-node/alpha';
 import { aiBackendProviderModules } from './providerModules';
 import {
@@ -38,6 +40,7 @@ import {
   aiToolUsePermission,
 } from '@backstage/plugin-ai-common';
 import { aiModulesExtensionPoint } from './extensions';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { createRouter } from './router';
 
 /** Backend plugin exposing managed AI sessions to authenticated users. @public */
@@ -71,6 +74,7 @@ export default createBackendPlugin({
         permissionsRegistry: coreServices.permissionsRegistry,
         pluginMetadata: coreServices.pluginMetadata,
         config: coreServices.rootConfig,
+        events: eventsServiceRef,
       },
       async init({
         ai,
@@ -82,6 +86,7 @@ export default createBackendPlugin({
         permissionsRegistry,
         pluginMetadata,
         config,
+        events,
       }) {
         // Fixed permissions and the rules that give them granularity are
         // registered once; policy authors import the matching conditions.
@@ -108,7 +113,19 @@ export default createBackendPlugin({
           pluginMetadata,
           config,
         });
-        httpRouter.use(createRouter({ ai, support, httpAuth }));
+        // Health derives from the metrics subscriber over the events
+        // service: the same ai.observability.* events the service
+        // publishes, aggregated, evaluated fail-open.
+        const metrics = createMetricsSubscriber();
+        await metrics.subscribe(events);
+        httpRouter.use(
+          createRouter({
+            ai,
+            support,
+            httpAuth,
+            health: () => evaluateAiHealth(metrics.snapshot()),
+          }),
+        );
       },
     });
   },

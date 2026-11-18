@@ -17,8 +17,7 @@
 import type { Knex } from 'knex';
 import type { Fence, Namespace } from '../contracts';
 import { bigintText } from '../storage/dialect-kit';
-import { emitSafe } from '../observability/types';
-import type { AiEventEmitter } from '../observability/types';
+import type { AiEventSink } from '../observability/types';
 import {
   assertToken,
   dialectOf,
@@ -42,7 +41,7 @@ export interface KnexNamespaceLeaseOptions {
   /** Enumeration page size. Default 100. */
   readonly pageSize?: number;
   /** Observability sink; no-op when absent. */
-  readonly events?: AiEventEmitter;
+  readonly emit?: AiEventSink;
 }
 
 type LeaseKey = Readonly<{ plugin_id: string; session_id: string }>;
@@ -98,14 +97,14 @@ export class KnexNamespaceLease implements NamespaceLease {
   readonly #dialect: Dialect;
   readonly #ttlMs: number;
   readonly #pageSize: number;
-  readonly #events: AiEventEmitter | undefined;
+  readonly #emit: AiEventSink | undefined;
 
   constructor(options: KnexNamespaceLeaseOptions, dialect: Dialect) {
     this.#db = options.db;
     this.#dialect = dialect;
     this.#ttlMs = options.ttlMs ?? DEFAULT_TTL_MS;
     this.#pageSize = options.pageSize ?? DEFAULT_PAGE_SIZE;
-    this.#events = options.events;
+    this.#emit = options.emit;
   }
 
   #expiry(): Knex.Raw {
@@ -209,7 +208,7 @@ export class KnexNamespaceLease implements NamespaceLease {
 
       return { namespace, owner, token: successor };
     });
-    emitSafe(this.#events, {
+    this.#emit?.({
       kind: 'lease',
       at: Date.now(),
       pluginId: namespace.pluginId,
@@ -239,7 +238,7 @@ export class KnexNamespaceLease implements NamespaceLease {
         .whereRaw(liveCondition(this.#dialect))
         .update({ expires_at: this.#expiry() });
       if (updated !== 1) {
-        emitSafe(this.#events, {
+        this.#emit?.({
           kind: 'lease',
           at: Date.now(),
           pluginId: fence.namespace.pluginId,
@@ -265,7 +264,7 @@ export class KnexNamespaceLease implements NamespaceLease {
     // Only a release that actually ended this generation is an event: a
     // no-op release must not move the health gauge.
     if (updated !== 1) return;
-    emitSafe(this.#events, {
+    this.#emit?.({
       kind: 'lease',
       at: Date.now(),
       pluginId: fence.namespace.pluginId,

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import {
   coreServices,
   createServiceFactory,
@@ -167,6 +168,7 @@ function makeAiServiceFactory(
         auditor: coreServices.auditor,
         lifecycle: coreServices.lifecycle,
         pluginMetadata: coreServices.pluginMetadata,
+        events: eventsServiceRef,
       },
       initialization: 'always',
       async factory(deps) {

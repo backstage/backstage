@@ -47,8 +47,9 @@ export type {
   AuditQuery,
   RecoveryEvent,
 } from '@backstage/ai-node/modules';
+export { createAiEventSink } from '@backstage/ai-node/modules';
 export type {
-  AiEventEmitter,
+  AiEventSink,
   AiObservabilityEvent,
 } from '@backstage/ai-node/modules';
 export type { Fence, Namespace } from '@backstage/ai-node/modules';

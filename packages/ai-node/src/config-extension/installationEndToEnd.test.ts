@@ -44,6 +44,29 @@ import { configureAiInstallation } from './configureAiInstallation';
 import { createMetricsSubscriber } from '../observability/metrics';
 import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 
+/**
+ * A synchronous events bus wired to the subscriber: the deps publish, the
+ * subscriber aggregates, all in the same call stack.
+ */
+function eventsBusFor(
+  subscriber: ReturnType<typeof createMetricsSubscriber>,
+): DefaultAiServiceDeps['events'] {
+  const handlers: Array<(params: unknown) => void> = [];
+  void subscriber.subscribe({
+    subscribe: async (options: {
+      onEvent: (params: never) => Promise<void>;
+    }) => {
+      handlers.push(options.onEvent as unknown as (params: unknown) => void);
+    },
+  } as never);
+  return {
+    publish: async params => {
+      for (const handler of handlers) handler(params);
+    },
+    subscribe: async () => {},
+  } as DefaultAiServiceDeps['events'];
+}
+
 const createAiServiceIntegration = (
   options: Parameters<typeof createAiServiceIntegrationBase>[0],
 ) =>
@@ -91,6 +114,7 @@ async function probeServer(): Promise<Probe> {
 type Fixture = {
   db: Knex;
   deps: DefaultAiServiceDeps;
+  metrics: ReturnType<typeof createMetricsSubscriber>;
   handles: Array<{ release(): Promise<void> }>;
   close(): Promise<void>;
 };
@@ -123,6 +147,8 @@ async function fixture(dialectPgUrl?: string): Promise<Fixture> {
     database: { getClient: async () => db },
     logger: mockServices.logger.mock(),
   });
+  const metrics = createMetricsSubscriber();
+  const bus = eventsBusFor(metrics);
   const deps: DefaultAiServiceDeps = {
     database: { getClient: async () => db } as DatabaseService,
     auth: {
@@ -139,11 +165,13 @@ async function fixture(dialectPgUrl?: string): Promise<Fixture> {
     auditor: mockServices.auditor.mock(),
     lifecycle: { addShutdownHook: jest.fn() } as unknown as LifecycleService,
     pluginMetadata: { getId: () => 'test-plugin' } as PluginMetadataService,
+    events: bus,
   };
   const handles: Fixture['handles'] = [];
   return {
     db,
     deps,
+    metrics,
     handles,
     close: async () => {
       for (const handle of handles.reverse()) {
@@ -414,7 +442,6 @@ describe.each(engines)('%s installation config end to end', (_engine, make) => {
   it('still fails closed when the model is not in the configured catalog', async () => {
     const f = await make(pgUrl);
     const probe = await probeServer();
-    const metrics = createMetricsSubscriber();
     try {
       const configured = configureAiInstallation({
         source: {
@@ -431,7 +458,6 @@ describe.each(engines)('%s installation config end to end', (_engine, make) => {
       });
       const integration = await createAiServiceIntegration({
         deps: f.deps,
-        events: metrics,
         ...configured,
       });
       const service = DefaultAiService.create({ deps: f.deps, integration });
@@ -458,8 +484,8 @@ describe.each(engines)('%s installation config end to end', (_engine, make) => {
 
       // The unresolved-model denial is one logical failure, visible through
       // the production composition root, and counted once with its journal row.
-      await waitFor(async () => metrics.snapshot().failures > 0);
-      const snapshot = metrics.snapshot();
+      await waitFor(async () => f.metrics.snapshot().failures > 0);
+      const snapshot = f.metrics.snapshot();
       expect(snapshot.failures).toBe(1);
       expect(snapshot.journalDecisions.deny).toBeGreaterThanOrEqual(1);
       expect(

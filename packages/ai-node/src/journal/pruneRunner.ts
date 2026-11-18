@@ -16,7 +16,7 @@
 
 import type { Knex } from 'knex';
 import type { SchedulerService } from '@backstage/backend-plugin-api';
-import type { AiEventEmitter } from '../observability/types';
+import type { AiEventSink } from '../observability/types';
 import { pruneAiJournal, type JournalPruneResult } from './retention';
 
 /**
@@ -46,7 +46,7 @@ export interface AiJournalPruneScheduleOptions {
   /** Warns about failed passes; a failing pass never stops the schedule. */
   readonly logger?: AiPruneRunnerLogger;
   /** Observability sink for prune outcomes; no-op when absent. */
-  readonly events?: AiEventEmitter;
+  readonly emit?: AiEventSink;
   /** Wall clock for tests; defaults to a fresh `Date` per pass. */
   readonly now?: () => Date;
   /**
@@ -77,7 +77,7 @@ export interface AiJournalPruneScheduleOptions {
 export async function scheduleAiJournalPrune(
   options: AiJournalPruneScheduleOptions,
 ): Promise<void> {
-  const { db, retentionMs, frequency, events, signal } = options;
+  const { db, retentionMs, frequency, emit, signal } = options;
   const logger = options.logger;
   const now = options.now ?? (() => new Date());
   // A throwing logger is a broken observation channel, not a broken
@@ -86,7 +86,7 @@ export async function scheduleAiJournalPrune(
   // surface as an unhandled rejection. A logger whose warn is async
   // structurally satisfies the sync callback type, so a returned thenable
   // gets a rejection handler attached (without awaiting), the same way
-  // the observability seam's emitSafe handles its subscribers.
+  // the observability sink consumes its publish results.
   const warn = (message: string) => {
     try {
       const result: unknown = logger?.warn(message);
@@ -112,7 +112,7 @@ export async function scheduleAiJournalPrune(
         }
         return pruneAiJournal(db, {
           retentionMs,
-          events,
+          emit,
           now: now(),
         });
       })

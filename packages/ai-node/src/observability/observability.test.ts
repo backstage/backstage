@@ -29,7 +29,7 @@ import {
   GuardedResolutionError,
   createGuardedModelOperations as createGuardedModelOperationsBase,
 } from '../guard/modelOperations';
-import { emitSafe, assertObservableEvent } from './types';
+import { assertObservableEvent, createAiEventSink } from './types';
 import type { AiObservabilityEvent } from './types';
 import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 
@@ -99,10 +99,41 @@ function decision(overrides: Record<string, unknown> = {}) {
   };
 }
 
+/**
+ * A synchronous bus double wired to a metrics subscriber: the sink
+ * publishes, the subscriber aggregates, all in the same call stack —
+ * the real service's delivery discipline without its asynchronous hops.
+ */
+async function subscriberHarness(): Promise<{
+  subscriber: ReturnType<typeof createMetricsSubscriber>;
+  emit: (event: AiObservabilityEvent) => void;
+  publishForeign: (eventPayload: unknown) => void;
+}> {
+  const subscriber = createMetricsSubscriber();
+  const handlers: Array<(params: unknown) => void> = [];
+  const bus = {
+    publish(params: unknown) {
+      for (const handler of handlers) handler(params);
+      return Promise.resolve();
+    },
+    async subscribe(options: { onEvent: (params: never) => Promise<void> }) {
+      handlers.push(options.onEvent as unknown as (params: unknown) => void);
+    },
+  };
+  await subscriber.subscribe(bus);
+  return {
+    subscriber,
+    emit: createAiEventSink(bus),
+    // A foreign publisher on the same topics: no validation, no sink.
+    publishForeign: (eventPayload: unknown) => bus.publish({ eventPayload }),
+  };
+}
+
 describe('observability seam', () => {
-  it('aggregates every event type without unbounded labels', () => {
-    const metrics = createMetricsSubscriber();
-    metrics.emit({
+  it('aggregates every event type without unbounded labels', async () => {
+    const harness = await subscriberHarness();
+    const metrics = harness.subscriber;
+    harness.emit({
       kind: 'denial',
       at: 1,
       provider: 'openai',
@@ -110,7 +141,7 @@ describe('observability seam', () => {
       reason: 'model operation denied',
       attempt: 1,
     });
-    metrics.emit({
+    harness.emit({
       kind: 'denial',
       at: 2,
       provider: 'openai',
@@ -118,7 +149,7 @@ describe('observability seam', () => {
       reason: 'credential expired; re-authentication required',
       attempt: 2,
     });
-    metrics.emit({
+    harness.emit({
       kind: 'dispatch',
       at: 3,
       provider: 'openai',
@@ -127,7 +158,7 @@ describe('observability seam', () => {
       httpStatus: 200,
       durationMs: 12,
     });
-    metrics.emit({
+    harness.emit({
       kind: 'dispatch',
       at: 4,
       operation: 'auth.token',
@@ -135,7 +166,7 @@ describe('observability seam', () => {
       httpStatus: 401,
       durationMs: 8,
     });
-    metrics.emit({
+    harness.emit({
       kind: 'lease',
       at: 5,
       pluginId: 'plugin',
@@ -143,21 +174,21 @@ describe('observability seam', () => {
       action: 'acquire',
       durationMs: 3,
     });
-    metrics.emit({
+    harness.emit({
       kind: 'lease',
       at: 6,
       pluginId: 'plugin',
       sessionId: 'session',
       action: 'contention',
     });
-    metrics.emit({
+    harness.emit({
       kind: 'journal',
       at: 7,
       action: 'decision',
       decision: 'allow',
       durationMs: 2,
     });
-    metrics.emit({
+    harness.emit({
       kind: 'journal',
       at: 8,
       action: 'prune',
@@ -193,7 +224,7 @@ describe('observability seam', () => {
     ).toHaveLength(2);
     expect(JSON.stringify(snapshot)).not.toContain('credential expired');
 
-    metrics.emit({
+    harness.emit({
       kind: 'lease',
       at: 9,
       pluginId: 'plugin',
@@ -212,7 +243,8 @@ describe('observability seam', () => {
   });
 
   it('rejects secret-shaped and unbounded events before any subscriber', async () => {
-    const metrics = createMetricsSubscriber();
+    const harness = await subscriberHarness();
+    const metrics = harness.subscriber;
     const rejected: unknown[] = [
       {
         kind: 'denial',
@@ -355,31 +387,58 @@ describe('observability seam', () => {
     ];
     for (const event of rejected) {
       expect(() => assertObservableEvent(event)).toThrow();
-      // The helper drops it instead of breaking the observed operation.
-      expect(() => emitSafe(metrics, event as never)).not.toThrow();
+      // The sink drops it instead of breaking the observed operation.
+      expect(() => harness.emit(event as never)).not.toThrow();
     }
     expect(metrics.snapshot().events).toBe(0);
 
-    // A rejecting async subscriber cannot surface an unhandled rejection.
+    // The topics are shared: a foreign publisher can put any shape on
+    // them without passing the sink. The subscriber validates on its
+    // side too — a malformed payload must neither corrupt the
+    // aggregation nor throw out of the events service.
+    expect(() =>
+      harness.publishForeign({
+        kind: 'journal',
+        at: 1,
+        action: 'decision',
+        decision: 'allow',
+        durationMs: 'not-a-number',
+      }),
+    ).not.toThrow();
+    harness.publishForeign({ kind: 'unknown' });
+    harness.publishForeign(null);
+    expect(metrics.snapshot().events).toBe(0);
+    expect(metrics.snapshot().journalDecisions).toEqual({ allow: 0, deny: 0 });
+
+    // A well-formed foreign payload still aggregates normally.
+    harness.publishForeign({
+      kind: 'journal',
+      at: 2,
+      action: 'decision',
+      decision: 'allow',
+      durationMs: 1,
+    });
+    expect(metrics.snapshot().journalDecisions).toEqual({ allow: 1, deny: 0 });
+
+    // A rejecting publish cannot surface an unhandled rejection: the
+    // events service is fire-and-forget from the sink's perspective.
     const rejections: unknown[] = [];
     const onRejection = (reason: unknown) => rejections.push(reason);
     process.on('unhandledRejection', onRejection);
     try {
+      const rejectingSink = createAiEventSink({
+        publish: async () => {
+          throw new Error('publish down');
+        },
+      });
       expect(() =>
-        emitSafe(
-          {
-            async emit() {
-              throw new Error('async subscriber down');
-            },
-          },
-          {
-            kind: 'lease',
-            at: 1,
-            pluginId: 'p',
-            sessionId: 's',
-            action: 'acquire',
-          },
-        ),
+        rejectingSink({
+          kind: 'lease',
+          at: 1,
+          pluginId: 'p',
+          sessionId: 's',
+          action: 'acquire',
+        }),
       ).not.toThrow();
       await new Promise(resolve => setImmediate(resolve));
       await new Promise(resolve => setImmediate(resolve));
@@ -388,38 +447,35 @@ describe('observability seam', () => {
       process.off('unhandledRejection', onRejection);
     }
 
-    // A callable thenable — a function with a .then method bound to a
-    // rejecting promise — is neither typeof 'object' nor caught by the
-    // sync try/catch; emitSafe must swallow its rejection too, keeping
-    // the same discipline as the prune runner's logger isolation.
+    // A callable thenable — a publish returning a function with a .then
+    // method bound to a rejecting promise — is neither typeof 'object'
+    // nor caught by the sync try/catch; the sink must swallow its
+    // rejection too, keeping the same discipline as the prune runner's
+    // logger isolation.
     {
       const callableRejections: unknown[] = [];
       const onCallable = (reason: unknown) => callableRejections.push(reason);
       process.on('unhandledRejection', onCallable);
       try {
-        const rejecting = Promise.reject(new Error('callable subscriber down'));
-        // The emitter returns the callable thenable itself; the wrapper
+        const rejecting = Promise.reject(new Error('callable publish down'));
+        // The publish returns the callable thenable itself; the sink
         // decides on that return value.
-        const callableEmit = (() => {
+        const callablePublish = (() => {
           const fn = () => fn;
           fn.then = rejecting.then.bind(rejecting);
           return fn as unknown as () => unknown;
         })();
+        const callableSink = createAiEventSink({
+          publish: callablePublish,
+        });
         expect(() =>
-          emitSafe(
-            {
-              emit: callableEmit as unknown as (
-                event: AiObservabilityEvent,
-              ) => void | Promise<void>,
-            },
-            {
-              kind: 'lease',
-              at: 2,
-              pluginId: 'p',
-              sessionId: 's',
-              action: 'acquire',
-            },
-          ),
+          callableSink({
+            kind: 'lease',
+            at: 2,
+            pluginId: 'p',
+            sessionId: 's',
+            action: 'acquire',
+          }),
         ).not.toThrow();
         await new Promise(resolve => setImmediate(resolve));
         await new Promise(resolve => setImmediate(resolve));
@@ -429,29 +485,27 @@ describe('observability seam', () => {
       }
     }
 
-    // A throwing subscriber cannot break the caller either.
+    // A throwing publish cannot break the caller either.
     expect(() =>
-      emitSafe(
-        {
-          emit() {
-            throw new Error('subscriber down');
-          },
+      createAiEventSink({
+        publish: () => {
+          throw new Error('publish threw');
         },
-        {
-          kind: 'lease',
-          at: 1,
-          pluginId: 'p',
-          sessionId: 's',
-          action: 'acquire',
-        },
-      ),
+      })({
+        kind: 'lease',
+        at: 1,
+        pluginId: 'p',
+        sessionId: 's',
+        action: 'acquire',
+      }),
     ).not.toThrow();
   });
 
-  it('bounds the label space regardless of the values it is fed', () => {
-    const metrics = createMetricsSubscriber();
+  it('bounds the label space regardless of the values it is fed', async () => {
+    const harness = await subscriberHarness();
+    const metrics = harness.subscriber;
     for (let i = 0; i < 10_000; i++) {
-      metrics.emit({
+      harness.emit({
         kind: 'denial',
         at: i,
         provider: `provider-${i}`,
@@ -474,10 +528,11 @@ describe('observability seam', () => {
   });
 
   it('emits at journal, lease and guard boundaries', async () => {
+    const harness = await subscriberHarness();
     const { db, cleanup } = await memoryDb();
-    const metrics = createMetricsSubscriber();
+    const metrics = harness.subscriber;
     try {
-      const lease = await createKnexNamespaceLease({ db, events: metrics });
+      const lease = await createKnexNamespaceLease({ db, emit: harness.emit });
       const fenceValue = await lease.acquire(fence.namespace, fence.owner);
       expect(fenceValue).toBeDefined();
       // A competing owner contends for the same namespace.
@@ -489,7 +544,7 @@ describe('observability seam', () => {
       const journal = createAttemptJournal({
         db,
         authorizer: { authorizeAuditRead: async () => true },
-        events: metrics,
+        emit: harness.emit,
       });
       const id = await journal.recordDecisionAndIntent(
         fenceValue!,
@@ -510,7 +565,7 @@ describe('observability seam', () => {
         recheck: async () => true,
         transport: (async () =>
           new Response('ok', { status: 200 })) as unknown as typeof fetch,
-        events: metrics,
+        emit: harness.emit,
       }).bind({
         actor: 'user:default/alice',
         credentials: mockCredentials.user('user:default/alice'),
@@ -546,7 +601,7 @@ describe('observability seam', () => {
         recheck: async () => false,
         transport: (async () =>
           new Response('nope')) as unknown as typeof fetch,
-        events: metrics,
+        emit: harness.emit,
       }).bind({
         actor: 'user:default/alice',
         credentials: mockCredentials.user('user:default/alice'),
@@ -613,10 +668,11 @@ describe('observability seam', () => {
   }, 20000);
 
   it('tells the truth about idempotent acquires and hostile tenant text', async () => {
+    const harness = await subscriberHarness();
     const { db, cleanup } = await memoryDb();
-    const metrics = createMetricsSubscriber();
+    const metrics = harness.subscriber;
     try {
-      const lease = await createKnexNamespaceLease({ db, events: metrics });
+      const lease = await createKnexNamespaceLease({ db, emit: harness.emit });
 
       // Re-acquiring a live lease with the same owner returns the same
       // generation: one hold, so one release must zero the gauge.
@@ -652,12 +708,10 @@ describe('observability seam', () => {
   it('emits internal reason codes only, never caller text', async () => {
     const { db, cleanup } = await memoryDb();
     const seen: string[] = [];
-    const events = createMetricsSubscriber();
-    const recorder = {
-      emit(event: Parameters<typeof events.emit>[0]) {
-        if (event.kind === 'denial') seen.push(event.reason);
-        events.emit(event);
-      },
+    const harness = await subscriberHarness();
+    const recorder = (event: AiObservabilityEvent) => {
+      if (event.kind === 'denial') seen.push(event.reason);
+      harness.emit(event);
     };
     // The closed vocabulary every reason path may draw from.
     const INTERNAL_REASONS = new Set([
@@ -666,12 +720,12 @@ describe('observability seam', () => {
       'unverified auth operation',
     ]);
     try {
-      const lease = await createKnexNamespaceLease({ db, events: recorder });
+      const lease = await createKnexNamespaceLease({ db, emit: recorder });
       const held = (await lease.acquire(fence_namespace, 'owner'))!;
       const journal = createAttemptJournal({
         db,
         authorizer: { authorizeAuditRead: async () => true },
-        events: recorder,
+        emit: recorder,
       });
       const operation = (callId: string) =>
         ({
@@ -707,7 +761,7 @@ describe('observability seam', () => {
         journal,
         recheck: async () => false,
         transport: (async () => new Response('no')) as never,
-        events: recorder,
+        emit: recorder,
       }).bind(operation('plugin/session#revoked'));
       await expect(
         revoked.fetch('https://provider.example/v1/responses', request()),
@@ -717,7 +771,7 @@ describe('observability seam', () => {
         journal,
         recheck: async () => true,
         transport: (async () => new Response('no')) as never,
-        events: recorder,
+        emit: recorder,
       }).bind({
         ...(operation('plugin/session#expired') as object),
         credentialScope: { kind: 'user', id: 'user:default/alice' },
@@ -743,10 +797,11 @@ describe('observability seam', () => {
   }, 20000);
 
   it('keeps the gauge with the current lease holder across a takeover', async () => {
+    const harness = await subscriberHarness();
     const { db, cleanup } = await memoryDb();
-    const metrics = createMetricsSubscriber();
+    const metrics = harness.subscriber;
     try {
-      const lease = await createKnexNamespaceLease({ db, events: metrics });
+      const lease = await createKnexNamespaceLease({ db, emit: harness.emit });
       const oldHolder = (await lease.acquire(fence_namespace, 'old'))!;
       expect(metrics.snapshot().activeLeases).toBe(1);
 
@@ -771,10 +826,11 @@ describe('observability seam', () => {
   }, 20000);
 
   it('drops mis-typed identifiers from the real lease producer', async () => {
+    const harness = await subscriberHarness();
     const { db, cleanup } = await memoryDb();
-    const metrics = createMetricsSubscriber();
+    const metrics = harness.subscriber;
     try {
-      const lease = await createKnexNamespaceLease({ db, events: metrics });
+      const lease = await createKnexNamespaceLease({ db, emit: harness.emit });
       const before = metrics.snapshot();
       // The producer refuses an untyped namespace outright, so nothing can be
       // forwarded, and no event is emitted for the rejected attempt.
@@ -794,15 +850,16 @@ describe('observability seam', () => {
   }, 20000);
 
   it('reports an uncertain dispatch when the outcome write fails', async () => {
+    const harness = await subscriberHarness();
     const { db, cleanup } = await memoryDb();
-    const metrics = createMetricsSubscriber();
+    const metrics = harness.subscriber;
     try {
       const lease = await createKnexNamespaceLease({ db });
       const held = (await lease.acquire(fence_namespace, 'owner'))!;
       const real = createAttemptJournal({
         db,
         authorizer: { authorizeAuditRead: async () => true },
-        events: metrics,
+        emit: harness.emit,
       });
       // The decision commits, the outcome write fails.
       const journal = {
@@ -817,7 +874,7 @@ describe('observability seam', () => {
         journal: journal as never,
         recheck: async () => true,
         transport: (async () => new Response('ok', { status: 200 })) as never,
-        events: metrics,
+        emit: harness.emit,
       }).bind({
         actor: 'user:default/alice',
         credentials: mockCredentials.user('user:default/alice'),
@@ -870,7 +927,8 @@ describe('observability seam', () => {
   }, 20000);
 
   it('emits a denial when the auth guard rejects an operation', async () => {
-    const metrics = createMetricsSubscriber();
+    const harness = await subscriberHarness();
+    const metrics = harness.subscriber;
     const recorded: unknown[] = [];
     const { createAuthOperationGuard } = require('../providers/auth/guard');
     const { createAuthModuleRegistry } = require('../providers/auth/modules');
@@ -888,7 +946,7 @@ describe('observability seam', () => {
       modules: createAuthModuleRegistry([
         { ...jsonAuthModule, id: 'anthropic' },
       ]),
-      events: metrics,
+      emit: harness.emit,
     }).bind({
       actor: 'user:default/alice',
       credentials: mockCredentials.user('user:default/alice'),
@@ -926,8 +984,9 @@ describe('observability seam', () => {
   });
 
   it('reports every local denial boundary as one failure', async () => {
+    const harness = await subscriberHarness();
     const { db, cleanup } = await memoryDb();
-    const metrics = createMetricsSubscriber();
+    const metrics = harness.subscriber;
     const credentialsMigration = require('../../migrations/2000_credentials');
     const {
       createCredentialStores,
@@ -945,7 +1004,7 @@ describe('observability seam', () => {
       const journal = createAttemptJournal({
         db,
         authorizer: { authorizeAuditRead: async () => true },
-        events: metrics,
+        emit: harness.emit,
       });
       const context = {
         actor: 'user:default/alice',
@@ -965,7 +1024,7 @@ describe('observability seam', () => {
           transport: (async () => new Response('{}', { status: 200 })) as never,
           recheck: async () => true,
           journal,
-          events: metrics,
+          emit: harness.emit,
           modules: denyProbeModules,
         }),
         journal,
@@ -974,7 +1033,7 @@ describe('observability seam', () => {
           encryptionKey: new Uint8Array(32).fill(4),
           configCredentials: new Map(),
         }),
-        events: metrics,
+        emit: harness.emit,
         modules: denyProbeModules,
         tokenEndpoints: { anthropic: 'https://token.example/v1/oauth/token' },
         clientIds: { anthropic: 'client-id' },
@@ -1007,7 +1066,7 @@ describe('observability seam', () => {
           transport: (async () => new Response('ok')) as never,
         }),
         journal,
-        events: metrics,
+        emit: harness.emit,
         providers: builtinProviderRegistry,
         resolve: () => ({
           model: {} as never,
@@ -1064,14 +1123,13 @@ describe('observability seam', () => {
 
   it('never forwards host callback text into an event reason', async () => {
     const { db, cleanup } = await memoryDb();
-    const metrics = createMetricsSubscriber();
+    const harness = await subscriberHarness();
+    const metrics = harness.subscriber;
     const reasons: string[] = [];
     // Records the reason exactly as a subscriber receives it.
-    const recorder = {
-      emit(event: Parameters<typeof metrics.emit>[0]) {
-        if (event.kind === 'denial') reasons.push(event.reason);
-        metrics.emit(event);
-      },
+    const recorder = (event: AiObservabilityEvent) => {
+      if (event.kind === 'denial') reasons.push(event.reason);
+      harness.emit(event);
     };
     try {
       const lease = await createKnexNamespaceLease({ db });
@@ -1079,7 +1137,7 @@ describe('observability seam', () => {
       const journal = createAttemptJournal({
         db,
         authorizer: { authorizeAuditRead: async () => true },
-        events: recorder,
+        emit: recorder,
       });
       const operation = {
         actor: 'user:default/alice',
@@ -1122,7 +1180,7 @@ describe('observability seam', () => {
           transport: (async () => new Response('ok')) as never,
         }),
         journal,
-        events: recorder,
+        emit: recorder,
         providers: builtinProviderRegistry,
         // A genuine, trusted binding: only the message is host-controlled.
         resolve: async () => {
@@ -1172,23 +1230,24 @@ describe('observability seam', () => {
   }, 20000);
 
   it('counts one logical denial and only real lease releases', async () => {
+    const harness = await subscriberHarness();
     const { db, cleanup } = await memoryDb();
-    const metrics = createMetricsSubscriber();
+    const metrics = harness.subscriber;
     try {
-      const lease = await createKnexNamespaceLease({ db, events: metrics });
+      const lease = await createKnexNamespaceLease({ db, emit: harness.emit });
       const held = (await lease.acquire(fence_namespace, 'owner'))!;
 
       // A real denial through the real guard and journal.
       const journal = createAttemptJournal({
         db,
         authorizer: { authorizeAuditRead: async () => true },
-        events: metrics,
+        emit: harness.emit,
       });
       const guard = createModelOperationGuard({
         journal,
         recheck: async () => false,
         transport: (async () => new Response('unreachable')) as never,
-        events: metrics,
+        emit: harness.emit,
       }).bind({
         actor: 'user:default/alice',
         credentials: mockCredentials.user('user:default/alice'),
@@ -1235,8 +1294,9 @@ describe('observability seam', () => {
   }, 20000);
 
   it('emits the whole dispatch lifecycle with real durations', async () => {
+    const harness = await subscriberHarness();
     const { db, cleanup } = await memoryDb();
-    const metrics = createMetricsSubscriber();
+    const metrics = harness.subscriber;
     const operation = (callId: string) =>
       ({
         actor: 'user:default/alice',
@@ -1289,7 +1349,7 @@ describe('observability seam', () => {
           journal,
           recheck: async () => true,
           transport,
-          events: metrics,
+          emit: harness.emit,
         }).bind({ ...(operation(callId) as object), fence: live } as never);
         return {
           async run() {
@@ -1323,7 +1383,7 @@ describe('observability seam', () => {
         journal,
         recheck: async () => true,
         transport: (async () => new Response('no', { status: 500 })) as never,
-        events: metrics,
+        emit: harness.emit,
       }).bind({
         ...(operation('plugin/session#fail') as object),
         fence,
@@ -1348,7 +1408,7 @@ describe('observability seam', () => {
         transport: (async () => {
           throw new Error('socket hang up');
         }) as never,
-        events: metrics,
+        emit: harness.emit,
       }).bind({
         ...(operation('plugin/session#unknown') as object),
         fence,
@@ -1365,7 +1425,7 @@ describe('observability seam', () => {
         recheck: async () => true,
         transport: (async () =>
           new Response('partial', { status: 200 })) as never,
-        events: metrics,
+        emit: harness.emit,
       }).bind({
         ...(operation('plugin/session#broken') as object),
         fence: live,
@@ -1390,21 +1450,22 @@ describe('observability seam', () => {
   }, 20000);
 
   it('prunes through the seam and stays behavior-identical without a subscriber', async () => {
+    const harness = await subscriberHarness();
     const withEvents = await memoryDb();
     const withoutEvents = await memoryDb();
     try {
-      const metrics = createMetricsSubscriber();
-      const journalFor = (db: Knex, events?: typeof metrics) =>
+      const metrics = harness.subscriber;
+      const journalFor = (db: Knex, emit?: typeof harness.emit) =>
         createAttemptJournal({
           db,
           authorizer: { authorizeAuditRead: async () => true },
-          ...(events ? { events } : {}),
+          ...(emit ? { emit } : {}),
         });
       const leaseA = await createKnexNamespaceLease({ db: withEvents.db });
       const leaseB = await createKnexNamespaceLease({ db: withoutEvents.db });
       const fenceA = (await leaseA.acquire(fence.namespace, fence.owner))!;
       const fenceB = (await leaseB.acquire(fence.namespace, fence.owner))!;
-      const a = journalFor(withEvents.db, metrics);
+      const a = journalFor(withEvents.db, harness.emit);
       const b = journalFor(withoutEvents.db);
       for (const [journal, leaseFence] of [
         [a, fenceA],
@@ -1423,7 +1484,7 @@ describe('observability seam', () => {
       const pruneA = await pruneAiJournal(withEvents.db, {
         retentionMs: 1,
         now: new Date(Date.now() + 60_000),
-        events: metrics,
+        emit: harness.emit,
       });
       const pruneB = await pruneAiJournal(withoutEvents.db, {
         retentionMs: 1,

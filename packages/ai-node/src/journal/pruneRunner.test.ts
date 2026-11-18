@@ -183,7 +183,7 @@ for (const dialect of ['sqlite', 'pg'] as const) {
           db: f.db,
           retentionMs: HOUR_MS,
           frequency: { milliseconds: 10_000 },
-          events: { emit: event => void events.push(event) },
+          emit: event => void events.push(event),
           now: clock.now,
           signal: controller.signal,
         });

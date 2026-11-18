@@ -46,6 +46,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-ai-common": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
     "@earendil-works/pi-durable": "1.5.2",
     "yaml": "^2.0.0"

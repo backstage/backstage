@@ -152,6 +152,7 @@ async function fixture(poolSize = 1, pgUrl?: string): Promise<Fixture> {
     auditor: mockServices.auditor.mock(),
     lifecycle: { addShutdownHook: jest.fn() } as unknown as LifecycleService,
     pluginMetadata: { getId: () => 'test-plugin' } as PluginMetadataService,
+    events: mockServices.events(),
   };
   const handles: Array<{ release(): Promise<void> }> = [];
   return {

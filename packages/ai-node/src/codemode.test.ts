@@ -135,6 +135,7 @@ async function fixture(): Promise<Fixture> {
     auditor: mockServices.auditor.mock(),
     lifecycle: { addShutdownHook: jest.fn() } as unknown as LifecycleService,
     pluginMetadata: { getId: () => 'test-plugin' } as PluginMetadataService,
+    events: mockServices.events(),
   };
   return {
     db,

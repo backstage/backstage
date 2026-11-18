@@ -239,6 +239,7 @@ async function fixture(dialect: 'sqlite' | 'pg'): Promise<Fixture> {
     auditor: mockServices.auditor.mock(),
     lifecycle: { addShutdownHook: jest.fn() } as unknown as LifecycleService,
     pluginMetadata: { getId: () => pluginId } as PluginMetadataService,
+    events: mockServices.events(),
   };
   const handles: Fixture['handles'] = [];
   return {

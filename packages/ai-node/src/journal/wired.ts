@@ -45,9 +45,12 @@ export function createWiredAttemptJournal(options: {
   providers?: Parameters<typeof createAttemptJournal>[0]['providers'];
   /** Best-effort write-through mirror to the Backstage auditor service. */
   mirror?: Parameters<typeof createAttemptJournal>[0]['mirror'];
+  /** Observability sink; no-op when absent. */
+  emit?: Parameters<typeof createAttemptJournal>[0]['emit'];
 }): AttemptJournal {
   return createAttemptJournal({
     db: options.db,
+    ...(options.emit === undefined ? {} : { emit: options.emit }),
     ...(options.providers === undefined
       ? {}
       : { providers: options.providers }),
