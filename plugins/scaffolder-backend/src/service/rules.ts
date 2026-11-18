@@ -30,7 +30,7 @@ import {
 import { SerializedTask, TaskFilter } from '@backstage/plugin-scaffolder-node';
 
 import { z } from 'zod/v3';
-import { JsonObject, JsonPrimitive } from '@backstage/types';
+import { JsonArray, JsonObject, JsonPrimitive } from '@backstage/types';
 import { get, toPath } from 'lodash';
 
 /**
@@ -52,6 +52,69 @@ const INTEGRATION_IDENTIFIER_PROPERTIES: readonly string[] = [
   'projectId',
   'repoUrl',
 ];
+
+/**
+ * Returns the input property that identifies the target entity for actions
+ * of integrations whose identifiers the permission rules accept as arrays,
+ * mirroring the property that the task runner's identifier re-check covers.
+ * Actions with a `group` segment identify their target by `path`, and other
+ * actions of those integrations by `projectId`.
+ */
+export function getIntegrationIdentifierKey(
+  action: string,
+): 'path' | 'projectId' | undefined {
+  const segments = action.split(':');
+  if (segments.includes('group')) {
+    return 'path';
+  }
+  return segments.some(segment =>
+    INTEGRATION_ACTION_SEGMENT_PATTERN.test(segment),
+  )
+    ? 'projectId'
+    : undefined;
+}
+
+/**
+ * Returns the identifiers that an array-valued integration identifier input
+ * denotes. Actions such as `gitlab:group:ensureExists` join the elements of
+ * the array into a single nested path and ensure each parent group along the
+ * way, so the input denotes each of those paths. Elements in the
+ * `{ name, slug }` object form contribute their slug, which is how the
+ * actions themselves interpret them.
+ */
+export function getIntegrationIdentifierValues(input: JsonArray): string[] {
+  const segments: string[] = [];
+  for (const element of input) {
+    if (typeof element === 'string') {
+      segments.push(...element.split('/'));
+    } else if (typeof element === 'number') {
+      segments.push(String(element));
+    } else {
+      const objectElement = z
+        .object({ name: z.string(), slug: z.string() })
+        .safeParse(element);
+      if (objectElement.success) {
+        // The actions pass the slug through to the integration as part of
+        // the path, so slashes in it separate path segments there too.
+        segments.push(...objectElement.data.slug.split('/'));
+      }
+    }
+  }
+
+  const identifiers: string[] = [];
+  let prefix: string | undefined;
+  for (const segment of segments) {
+    // The actions drop leading empty segments when they join the path, and
+    // the integration does not accept empty path segments elsewhere, so
+    // empty segments do not denote identifiers of their own.
+    if (!segment) {
+      continue;
+    }
+    prefix = prefix === undefined ? segment : `${prefix}/${segment}`;
+    identifiers.push(prefix);
+  }
+  return identifiers;
+}
 
 export const createTemplatePermissionRule = makeCreatePermissionRule<
   TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
@@ -134,7 +197,6 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
         .describe(`Value of the given property to match on`),
     }) as unknown as z.ZodType<{ key: string; value?: z.infer<Schema> }>,
     apply: (resource, { key, value }) => {
-      let foundValue = get(resource.input, key);
       const property = toPath(key).join('.');
       const actionSegments = resource.action.split(':');
       const integration = actionSegments.find(segment =>
@@ -145,45 +207,71 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
         (INTEGRATION_IDENTIFIER_PROPERTIES.includes(property) ||
           (actionSegments.includes('group') && property === 'path'));
 
-      // Some integration identifiers, such as GitLab project and group IDs,
-      // are accepted as either numbers or the equivalent numeric strings, and
-      // the integration treats the two forms as the same entity. Normalize
-      // the input value to the rule's type for those properties so that
-      // policies match regardless of which form the input uses.
-      if (isIntegrationProperty) {
-        if (
-          valueKind === 'number' &&
-          typeof foundValue === 'string' &&
-          /^\d+$/u.test(foundValue)
-        ) {
-          foundValue = Number(foundValue);
-        } else if (valueKind === 'string' && typeof foundValue === 'number') {
-          foundValue = String(foundValue);
-        }
-      }
-
-      if (validateProperty && !valueSchema.safeParse(foundValue).success) {
-        return false;
-      }
-      if (value !== undefined) {
-        if (valueSchema.safeParse(value).success) {
-          if (typeof value === 'string' && typeof foundValue === 'string') {
-            if (isIntegrationProperty) {
-              if (/^\d+$/u.test(value) && /^\d+$/u.test(foundValue)) {
-                // Digit-only identifiers may carry leading zeros; the
-                // integration resolves them to the same entity as the
-                // unpadded form.
-                return Number(value) === Number(foundValue);
-              }
-              return value.toLowerCase() === foundValue.toLowerCase();
-            }
+      const matchesValue = (inputValue: unknown): boolean => {
+        // Some integration identifiers, such as GitLab project and group IDs,
+        // are accepted as either numbers or the equivalent numeric strings,
+        // and the integration treats the two forms as the same entity.
+        // Normalize the input value to the rule's type for those properties
+        // so that policies match regardless of which form the input uses.
+        let foundValue = inputValue;
+        if (isIntegrationProperty) {
+          if (
+            valueKind === 'number' &&
+            typeof foundValue === 'string' &&
+            /^\d+$/u.test(foundValue)
+          ) {
+            foundValue = Number(foundValue);
+          } else if (valueKind === 'string' && typeof foundValue === 'number') {
+            foundValue = String(foundValue);
           }
-          return value === foundValue;
         }
-        return false;
+
+        if (validateProperty && !valueSchema.safeParse(foundValue).success) {
+          return false;
+        }
+        if (value !== undefined) {
+          if (valueSchema.safeParse(value).success) {
+            if (typeof value === 'string' && typeof foundValue === 'string') {
+              if (isIntegrationProperty) {
+                if (/^\d+$/u.test(value) && /^\d+$/u.test(foundValue)) {
+                  // Digit-only identifiers may carry leading zeros; the
+                  // integration resolves them to the same entity as the
+                  // unpadded form.
+                  return Number(value) === Number(foundValue);
+                }
+                return value.toLowerCase() === foundValue.toLowerCase();
+              }
+            }
+            return value === foundValue;
+          }
+          return false;
+        }
+
+        return foundValue !== undefined;
+      };
+
+      const inputValue = get(resource.input, key);
+
+      // Some integration identifiers are accepted as an array of path segments
+      // rather than a single value, such as the path of
+      // gitlab:group:ensureExists, where the elements are joined into one
+      // nested path and each parent group is ensured along the way. Match the
+      // rule against each of the identifiers that such an input denotes,
+      // since an input that denotes the identifier should reach the same
+      // decision as the equivalent single identifier. This is limited to the
+      // identifier properties that the task runner's identifier re-check
+      // covers, where the policy is enforced for every one of those
+      // identifiers; array values of other identifier properties keep their
+      // existing behavior.
+      if (
+        isIntegrationProperty &&
+        property === getIntegrationIdentifierKey(resource.action) &&
+        Array.isArray(inputValue)
+      ) {
+        return getIntegrationIdentifierValues(inputValue).some(matchesValue);
       }
 
-      return foundValue !== undefined;
+      return matchesValue(inputValue);
     },
     toQuery: () => ({}),
   });

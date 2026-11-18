@@ -62,6 +62,7 @@ import { UserEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   AuthorizeResult,
+  type ConditionalPolicyDecision,
   type PermissionCondition,
   type PermissionCriteria,
   PolicyDecision,
@@ -85,7 +86,8 @@ import {
 import { resolveDefaultEnvironment } from '../../lib/defaultEnvironment';
 import { createDefaultFilters } from '../../lib/templating/filters/createDefaultFilters';
 import {
-  INTEGRATION_ACTION_SEGMENT_PATTERN,
+  getIntegrationIdentifierKey,
+  getIntegrationIdentifierValues,
   scaffolderActionRules,
 } from '../../service/rules';
 import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
@@ -244,20 +246,6 @@ const numberPropertyConditionSchema = z.object({
 
 const numericIdentifierSchema = z.number().or(z.string().regex(/^\d+$/u));
 
-// Returns the input property that identifies the target entity for actions
-// that accept integration identifiers either as numbers or as strings.
-function getIdentifierKey(action: string): 'path' | 'projectId' | undefined {
-  const segments = action.split(':');
-  if (segments.includes('group')) {
-    return 'path';
-  }
-  return segments.some(segment =>
-    INTEGRATION_ACTION_SEGMENT_PATTERN.test(segment),
-  )
-    ? 'projectId'
-    : undefined;
-}
-
 function getIdentifierConditionValues(
   criteria: PermissionCriteria<PermissionCondition>,
   key: string,
@@ -306,12 +294,63 @@ function isActionInputAuthorized(
     return true;
   }
 
-  const identifierKey = getIdentifierKey(action);
+  const identifierKey = getIntegrationIdentifierKey(action);
   const identifier = identifierKey ? input[identifierKey] : undefined;
-  if (
-    !identifierKey ||
-    (typeof identifier !== 'string' && typeof identifier !== 'number')
-  ) {
+  if (!identifierKey) {
+    return true;
+  }
+
+  // Some actions accept the identifier as an array of path segments, such as
+  // the path of gitlab:group:ensureExists, where the elements are joined into
+  // one nested path and each parent group is ensured along the way. The input
+  // is only authorized if the policy authorizes the action for every one of
+  // the identifiers that the input denotes. Each of them is therefore checked
+  // as the scalar identifier, together with the alias re-check in
+  // isIdentifierValueAuthorized.
+  if (Array.isArray(identifier)) {
+    const identifierValues = getIntegrationIdentifierValues(identifier);
+    // An array that denotes no identifiers at all would otherwise be
+    // vacuously authorized by the check below. There is nothing that the
+    // policy authorized, so the input is not authorized.
+    if (identifierValues.length === 0) {
+      return false;
+    }
+    return identifierValues.every(
+      identifierValue =>
+        isActionAuthorized(decision, {
+          action,
+          input: { ...input, [identifierKey]: identifierValue },
+        }) &&
+        isIdentifierValueAuthorized(
+          decision,
+          action,
+          input,
+          identifierKey,
+          identifierValue,
+        ),
+    );
+  }
+
+  return isIdentifierValueAuthorized(
+    decision,
+    action,
+    input,
+    identifierKey,
+    identifier,
+  );
+}
+
+// Checks whether the policy authorizes the action when the identifier in the
+// input takes the given scalar value, including values that the policy refers
+// to in the other numeric or path form.
+function isIdentifierValueAuthorized(
+  decision: ConditionalPolicyDecision,
+  action: string,
+  input: JsonObject,
+  identifierKey: 'path' | 'projectId',
+  identifier: unknown,
+): boolean {
+  if (typeof identifier !== 'string' && typeof identifier !== 'number') {
     return true;
   }
 
