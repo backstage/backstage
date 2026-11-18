@@ -1,5 +1,11 @@
 # @backstage/plugin-api-docs
 
+## 0.14.9
+
+### Patch Changes
+
+- 24de596: Bumped the version to account for a patch release from an older release line, so that `^` ranges resolve to this release.
+
 ## 0.14.7
 
 ### Patch Changes

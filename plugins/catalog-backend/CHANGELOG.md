@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.5
+
+### Patch Changes
+
+- 24de596: Bumped the version to account for a patch release from an older release line, so that `^` ranges resolve to this release.
+
 ## 4.0.3
 
 ### Patch Changes
