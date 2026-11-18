@@ -30,6 +30,7 @@
  */
 
 export type {
+  AiFeatureName,
   AiService,
   ConfigAtPath,
   Fence,
@@ -93,6 +94,9 @@ export type {
 } from './journal/types';
 export type { ModelDescriptor, ModelPair } from './permissions/modelAccess';
 export {
+  aiFeatureConditions,
+  aiFeaturePermissionRules,
+  aiFeatureResourceRef,
   aiModelConditions,
   aiModelPermissionRules,
   aiModelResourceRef,
@@ -101,11 +105,15 @@ export {
   aiToolResourceRef,
   allowsConditional,
   authorizeConditionalDecision,
+  createAiFeatureConditionalDecision,
   createAiModelConditionalDecision,
   createAiToolConditionalDecision,
   evaluatePermissionCriteria,
+  isFeature,
+  isFeaturePlugin,
   isModel,
   isModelType,
+  isPlugin,
   isProvider,
   isServer,
   isTool,

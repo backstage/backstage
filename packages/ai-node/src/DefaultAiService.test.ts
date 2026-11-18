@@ -50,7 +50,7 @@ import {
   type NativeHarnessHandle,
   type OpenNativeHarnessInput,
 } from './DefaultAiService';
-import type { ConfigAtPath } from './contracts';
+import type { AiFeatureName, ConfigAtPath } from './contracts';
 
 /** NONPRODUCTION TEST STAND-IN for a native conversation handle. */
 class StandInConversation {
@@ -162,6 +162,7 @@ class StandInHarness {
  * production security or durability.
  */
 class StandInIntegration implements AiServiceIntegration {
+  registeredFeatures: readonly AiFeatureName[] = [];
   readonly sessions = new Map<string, string>();
   readonly handles: StandInHarness[] = [];
   readonly released: StandInHarness[] = [];

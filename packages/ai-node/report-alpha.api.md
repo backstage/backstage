@@ -107,6 +107,72 @@ export interface AiCredentialStores {
 export type AiEventSink = (event: AiObservabilityEvent) => void;
 
 // @alpha
+export const aiFeatureConditions: Conditions<{
+  isFeature: PermissionRule<
+    Readonly<{
+      pluginId: string;
+      feature: string;
+    }>,
+    {},
+    'ai-feature',
+    {
+      feature: string;
+    }
+  >;
+  isPlugin: PermissionRule<
+    Readonly<{
+      pluginId: string;
+      feature: string;
+    }>,
+    {},
+    'ai-feature',
+    {
+      pluginId: string;
+    }
+  >;
+}>;
+
+// @alpha
+export type AiFeatureName = 'tools' | 'codemode';
+
+// @alpha
+export const aiFeaturePermissionRules: {
+  isFeature: PermissionRule<
+    Readonly<{
+      pluginId: string;
+      feature: string;
+    }>,
+    {},
+    'ai-feature',
+    {
+      feature: string;
+    }
+  >;
+  isPlugin: PermissionRule<
+    Readonly<{
+      pluginId: string;
+      feature: string;
+    }>,
+    {},
+    'ai-feature',
+    {
+      pluginId: string;
+    }
+  >;
+};
+
+// @alpha
+export const aiFeatureResourceRef: PermissionResourceRef<
+  Readonly<{
+    pluginId: string;
+    feature: string;
+  }>,
+  {},
+  'ai-feature',
+  'ai'
+>;
+
+// @alpha
 export type AiHealthReport = Readonly<{
   readonly status: 'ok' | 'degraded';
   readonly signals: readonly AiHealthSignal[];
@@ -516,6 +582,7 @@ export const aiToolConditions: Conditions<{
     Readonly<{
       serverId: string;
       toolName: string;
+      pluginId: string;
     }>,
     {},
     'ai-tool',
@@ -528,11 +595,24 @@ export const aiToolConditions: Conditions<{
     Readonly<{
       serverId: string;
       toolName: string;
+      pluginId: string;
     }>,
     {},
     'ai-tool',
     {
       serverId: string;
+    }
+  >;
+  isPlugin: PermissionRule<
+    Readonly<{
+      serverId: string;
+      toolName: string;
+      pluginId: string;
+    }>,
+    {},
+    'ai-tool',
+    {
+      pluginId: string;
     }
   >;
 }>;
@@ -543,6 +623,7 @@ export const aiToolPermissionRules: {
     Readonly<{
       serverId: string;
       toolName: string;
+      pluginId: string;
     }>,
     {},
     'ai-tool',
@@ -555,11 +636,24 @@ export const aiToolPermissionRules: {
     Readonly<{
       serverId: string;
       toolName: string;
+      pluginId: string;
     }>,
     {},
     'ai-tool',
     {
       serverId: string;
+    }
+  >;
+  isPlugin: PermissionRule<
+    Readonly<{
+      serverId: string;
+      toolName: string;
+      pluginId: string;
+    }>,
+    {},
+    'ai-tool',
+    {
+      pluginId: string;
     }
   >;
 };
@@ -569,6 +663,7 @@ export const aiToolResourceRef: PermissionResourceRef<
   Readonly<{
     serverId: string;
     toolName: string;
+    pluginId: string;
   }>,
   {},
   'ai-tool',
@@ -779,6 +874,12 @@ export function createAiEventSink(events: {
 }): AiEventSink;
 
 // @alpha
+export const createAiFeatureConditionalDecision: (
+  permission: ResourcePermission<'ai-feature'>,
+  conditions: PermissionCriteria<PermissionCondition<'ai-feature'>>,
+) => ConditionalPolicyDecision;
+
+// @alpha
 export function createAiHttpSupport(
   options: AiHttpSupportOptions,
 ): Promise<AiHttpSupport>;
@@ -963,6 +1064,32 @@ export type GuardedToolOperations = ReturnType<
 >;
 
 // @alpha
+export const isFeature: PermissionRule<
+  Readonly<{
+    pluginId: string;
+    feature: string;
+  }>,
+  {},
+  'ai-feature',
+  {
+    feature: string;
+  }
+>;
+
+// @alpha
+export const isFeaturePlugin: PermissionRule<
+  Readonly<{
+    pluginId: string;
+    feature: string;
+  }>,
+  {},
+  'ai-feature',
+  {
+    pluginId: string;
+  }
+>;
+
+// @alpha
 export const isModel: PermissionRule<
   Readonly<{
     provider: string;
@@ -992,6 +1119,20 @@ export const isModelType: PermissionRule<
 >;
 
 // @alpha
+export const isPlugin: PermissionRule<
+  Readonly<{
+    serverId: string;
+    toolName: string;
+    pluginId: string;
+  }>,
+  {},
+  'ai-tool',
+  {
+    pluginId: string;
+  }
+>;
+
+// @alpha
 export const isProvider: PermissionRule<
   Readonly<{
     provider: string;
@@ -1010,6 +1151,7 @@ export const isServer: PermissionRule<
   Readonly<{
     serverId: string;
     toolName: string;
+    pluginId: string;
   }>,
   {},
   'ai-tool',
@@ -1023,6 +1165,7 @@ export const isTool: PermissionRule<
   Readonly<{
     serverId: string;
     toolName: string;
+    pluginId: string;
   }>,
   {},
   'ai-tool',
@@ -1117,6 +1260,7 @@ export type OpenHarnessOptions = Readonly<{
   credentials: BackstageCredentials;
   registry: RegistryReader;
   registryVersion: string;
+  features?: readonly AiFeatureName[];
 }>;
 
 // @alpha

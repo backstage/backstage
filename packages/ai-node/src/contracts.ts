@@ -77,7 +77,48 @@ export type ConfigAtPath = Readonly<{ root: Config; path: string }>;
 export type ManagedNativeHarness = Omit<Harness, 'close'>;
 
 /**
+ * A harness feature a plugin can request.
+ *
+ * @remarks
+ * The closed vocabulary the service registers and authorizes:
+ *
+ * - `tools` — the guarded tool operations on the managed handle, which
+ *   dispatch registered tool servers through the same guarded, journaled path
+ *   as model operations;
+ * - `codemode` — the code-mode extension, which adds the sandbox globals.
+ *
+ * A feature is available when three things hold: the service registered it
+ * (tools without a registered tool server, or code mode without a configured
+ * extension, is nothing to expose), the plugin requested it for the harness,
+ * and the `ai.feature.use` permission allows it for that plugin and feature.
+ *
+ * @alpha
+ */
+export type AiFeatureName = 'tools' | 'codemode';
+
+/**
  * Options for {@link AiService.openHarness}.
+ *
+ * @remarks
+ * `features` is the plugin's declaration of what this harness needs. Each
+ * entry is authorized for the caller with `ai.feature.use` and the
+ * `ai-feature` resource attributes `{ pluginId, feature }` before the harness
+ * opens: the caller's own credentials are the query's credentials, and the
+ * policy's conditions are evaluated in process, the same way model and tool
+ * decisions are. A denied feature rejects the open with a reason naming the
+ * feature and plugin, and an entry the service does not register rejects with
+ * a registration reason — that is wiring, not policy.
+ *
+ * Availability is snapshotted at admission, like module registrations: a live
+ * harness keeps the features it opened with until its last handle releases,
+ * and a fresh open evaluates again. Re-opening a live session with a
+ * different declaration is rejected rather than silently changing the surface
+ * under running work.
+ *
+ * No policy is the permission framework's default allow, so a registered
+ * feature is available unless a policy denies it: deployments that want
+ * restrictions write a DENY policy, which is the same sharp edge as the
+ * blanket ALLOW on model and tool use.
  *
  * @alpha
  */
@@ -87,6 +128,11 @@ export type OpenHarnessOptions = Readonly<{
   credentials: BackstageCredentials;
   registry: RegistryReader;
   registryVersion: string;
+  /**
+   * Features this harness requests. Omitted or empty means a harness with no
+   * feature surface: no tool operations, no code-mode globals.
+   */
+  features?: readonly AiFeatureName[];
 }>;
 
 /**
@@ -103,9 +149,9 @@ export interface ManagedHarness {
   readonly harness: ManagedNativeHarness;
   readonly context: Context;
   /**
-   * Guarded tool operations, present when tool modules are registered with
-   * the integration. Tool calls dispatch through the same guarded path as
-   * model operations.
+   * Guarded tool operations, present when the harness was granted the `tools`
+   * feature. Tool calls dispatch through the same guarded path as model
+   * operations. The surface is fixed for the admission's lifetime.
    */
   readonly tools?: GuardedToolOperations;
   release(): Promise<void>;

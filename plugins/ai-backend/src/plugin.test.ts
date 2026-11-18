@@ -566,6 +566,7 @@ describe.each<[string, string | undefined]>([
         credentials,
         registry: createRegistry(),
         registryVersion: 'v1',
+        features: ['tools'],
       });
       try {
         await expect(
