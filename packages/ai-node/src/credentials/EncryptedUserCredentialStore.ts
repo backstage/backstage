@@ -22,6 +22,8 @@ import type {
   CredentialStore,
 } from '@earendil-works/pi-ai';
 import type { Knex } from 'knex';
+import type { Fence } from '../contracts';
+import { checkFence, fencedTransaction } from '../storage/dialect-kit';
 import {
   assertEncryptionKey,
   credentialAad,
@@ -84,15 +86,21 @@ interface SecretsRow {
 export class EncryptedUserCredentialStore implements CredentialStore {
   readonly #db: Knex;
   readonly #key: Buffer;
+  readonly #previousKey: Buffer | undefined;
   readonly #scopeKey: string;
 
   constructor(options: {
     db: Knex;
     encryptionKey: Uint8Array;
+    previousEncryptionKey?: Uint8Array;
     scopeKey: string;
   }) {
     this.#db = options.db;
     this.#key = assertEncryptionKey(options.encryptionKey);
+    this.#previousKey =
+      options.previousEncryptionKey === undefined
+        ? undefined
+        : assertEncryptionKey(options.previousEncryptionKey);
     this.#scopeKey = options.scopeKey;
   }
 
@@ -103,7 +111,24 @@ export class EncryptedUserCredentialStore implements CredentialStore {
     const id = assertIdentifier(providerId, 'provider ID');
     options?.signal?.throwIfAborted();
     const row = await this.#selectRow(this.#db, id);
-    return row === undefined ? undefined : this.#decode(row);
+    if (row === undefined) return undefined;
+    const decoded = this.#decode(row);
+    if (!decoded.previous) return decoded.credential;
+
+    // Re-read under the writer lock: another writer may have updated or
+    // deleted the row since the first read.
+    return this.#withLock(id, options?.signal, async owner =>
+      this.#db.transaction(async trx => {
+        await this.#assertLockHeld(trx, id, owner);
+        const latest = await this.#selectRow(trx, id);
+        if (latest === undefined) return undefined;
+        const current = this.#decode(latest);
+        if (current.previous) {
+          await this.#write(trx, id, current.credential);
+        }
+        return current.credential;
+      }),
+    );
   }
 
   async list(
@@ -129,7 +154,8 @@ export class EncryptedUserCredentialStore implements CredentialStore {
     const id = assertIdentifier(providerId, 'provider ID');
     return this.#withLock(id, options?.signal, async owner => {
       const row = await this.#selectRow(this.#db, id);
-      const current = row === undefined ? undefined : this.#decode(row);
+      const decoded = row === undefined ? undefined : this.#decode(row);
+      const current = decoded?.credential;
 
       // No cancellation checks past this point by design.
       const next = await fn(current);
@@ -137,7 +163,14 @@ export class EncryptedUserCredentialStore implements CredentialStore {
         // A no-op still has to fail closed if the lock was taken over while the
         // callback ran, otherwise the caller would resolve with a value that is
         // no longer stored.
-        await this.#assertLockHeldInTransaction(id, owner);
+        if (decoded?.previous) {
+          await this.#db.transaction(async trx => {
+            await this.#assertLockHeld(trx, id, owner);
+            await this.#write(trx, id, decoded.credential);
+          });
+        } else {
+          await this.#assertLockHeldInTransaction(id, owner);
+        }
         return current;
       }
 
@@ -145,27 +178,9 @@ export class EncryptedUserCredentialStore implements CredentialStore {
         next,
         `credential ${this.#scopeKey}/${id}`,
       );
-      const sealed = sealCredential(
-        this.#key,
-        credentialAad(this.#scopeKey, id),
-        JSON.stringify(credential),
-      );
       await this.#db.transaction(async trx => {
         await this.#assertLockHeld(trx, id, owner);
-        await trx(CREDENTIAL_SECRETS_TABLE)
-          .insert({
-            scope: this.#scopeKey,
-            provider_id: id,
-            credential_type: credential.type,
-            algorithm: sealed.algorithm,
-            key_version: sealed.keyVersion,
-            nonce: sealed.nonce,
-            ciphertext: sealed.ciphertext,
-            tag: sealed.tag,
-            updated_at: new Date(),
-          })
-          .onConflict(['scope', 'provider_id'])
-          .merge();
+        await this.#write(trx, id, credential);
       });
       return credential;
     });
@@ -186,19 +201,94 @@ export class EncryptedUserCredentialStore implements CredentialStore {
     });
   }
 
-  #decode(row: SecretsRow): Credential {
-    const plaintext = openCredential(
-      this.#key,
-      this.#scopeKey,
-      row.provider_id,
-      {
-        algorithm: row.algorithm,
-        keyVersion: row.key_version,
-        nonce: row.nonce,
-        ciphertext: row.ciphertext,
-        tag: row.tag,
-      },
+  /** Re-encrypt one row under both the credential lock and the host fence. */
+  async rotate(providerId: string, fence: Fence): Promise<boolean> {
+    const id = assertIdentifier(providerId, 'provider ID');
+    const key = {
+      plugin_id: fence.namespace.pluginId,
+      session_id: fence.namespace.sessionId,
+    };
+    return this.#withLock(id, undefined, owner =>
+      fencedTransaction(
+        this.#db,
+        key,
+        fence,
+        'Credential rotation fence is stale',
+        async trx => {
+          await this.#assertLockHeld(trx, id, owner);
+        },
+        async trx => {
+          const row = await this.#selectRow(trx, id);
+          if (row === undefined) return false;
+          const decoded = this.#decode(row);
+          if (!decoded.previous) return false;
+          await this.#write(trx, id, decoded.credential);
+          await this.#assertLockHeld(trx, id, owner);
+          await checkFence(
+            trx,
+            key,
+            fence,
+            'Credential rotation fence is stale',
+          );
+          return true;
+        },
+      ),
     );
+  }
+
+  async #write(
+    trx: Knex.Transaction,
+    id: string,
+    credential: Credential,
+  ): Promise<void> {
+    const sealed = sealCredential(
+      this.#key,
+      credentialAad(this.#scopeKey, id),
+      JSON.stringify(credential),
+    );
+    await trx(CREDENTIAL_SECRETS_TABLE)
+      .insert({
+        scope: this.#scopeKey,
+        provider_id: id,
+        credential_type: credential.type,
+        algorithm: sealed.algorithm,
+        key_version: sealed.keyVersion,
+        nonce: sealed.nonce,
+        ciphertext: sealed.ciphertext,
+        tag: sealed.tag,
+        updated_at: new Date(),
+      })
+      .onConflict(['scope', 'provider_id'])
+      .merge();
+  }
+
+  #decode(row: SecretsRow): { credential: Credential; previous: boolean } {
+    const sealed = {
+      algorithm: row.algorithm,
+      keyVersion: row.key_version,
+      nonce: row.nonce,
+      ciphertext: row.ciphertext,
+      tag: row.tag,
+    };
+    let plaintext: string;
+    let previous = false;
+    try {
+      plaintext = openCredential(
+        this.#key,
+        this.#scopeKey,
+        row.provider_id,
+        sealed,
+      );
+    } catch (error) {
+      if (!this.#previousKey) throw error;
+      plaintext = openCredential(
+        this.#previousKey,
+        this.#scopeKey,
+        row.provider_id,
+        sealed,
+      );
+      previous = true;
+    }
     let parsed: unknown;
     try {
       parsed = JSON.parse(plaintext);
@@ -216,7 +306,7 @@ export class EncryptedUserCredentialStore implements CredentialStore {
         `Stored credential for ${row.provider_id} is corrupted: type metadata does not match the sealed value`,
       );
     }
-    return credential;
+    return { credential, previous };
   }
 
   async #selectRow(

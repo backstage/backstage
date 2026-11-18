@@ -50,6 +50,10 @@ export function createCredentialStores(
     );
   }
   const encryptionKey = assertEncryptionKey(options.encryptionKey);
+  const previousEncryptionKey =
+    options.previousEncryptionKey === undefined
+      ? undefined
+      : assertEncryptionKey(options.previousEncryptionKey);
   const configScopes = parseConfigCredentials(options.configCredentials);
 
   return {
@@ -66,6 +70,7 @@ export function createCredentialStores(
           return new EncryptedUserCredentialStore({
             db,
             encryptionKey,
+            previousEncryptionKey,
             scopeKey,
           });
         default:

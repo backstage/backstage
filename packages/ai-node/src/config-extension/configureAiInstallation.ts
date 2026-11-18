@@ -18,6 +18,7 @@ import type { Knex } from 'knex';
 import type { Credential } from '@earendil-works/pi-ai';
 import type { ConfigAtPath } from '../contracts';
 import { createCredentialStores } from '../credentials/createCredentialStores';
+import { createCredentialRotation } from '../credentials/rotation';
 import type { AiCredentialStores } from '../credentials/types';
 import { parseAiInstallationConfig } from './parseInstallationConfig';
 import type { ConfiguredAiInstallation } from './types';
@@ -72,13 +73,19 @@ export function configureAiInstallation(
     };
   }
 
-  const { encryptionKey, precedence, scopes, tokenEndpoints } =
-    parsed.credentials;
+  const {
+    encryptionKey,
+    previousEncryptionKey,
+    precedence,
+    scopes,
+    tokenEndpoints,
+  } = parsed.credentials;
   let credentialStores: AiCredentialStores;
   try {
     credentialStores = createCredentialStores({
       db: options.db,
       encryptionKey,
+      previousEncryptionKey,
       // Opaque config entries become typed credentials here. The cast is
       // discharged by createCredentialStores, which validates and rejects
       // every entry before any store is handed out.
@@ -98,6 +105,15 @@ export function configureAiInstallation(
   return {
     models: parsed.models,
     credentialStores,
+    ...(previousEncryptionKey === undefined
+      ? {}
+      : {
+          credentialRotation: createCredentialRotation({
+            db: options.db,
+            encryptionKey,
+            previousEncryptionKey,
+          }),
+        }),
     credentialPrecedence: precedence,
     credentialTokenEndpoints: tokenEndpoints,
   };

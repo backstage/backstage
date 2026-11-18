@@ -144,6 +144,7 @@ function parseCredentials(
 ): AiInstallationCredentials {
   rejectUnknownKeys(section, path, [
     'encryptionKey',
+    'rotation',
     'precedence',
     'scopes',
     'tokenEndpoints',
@@ -156,7 +157,25 @@ function parseCredentials(
       `the required field 'encryptionKey' is missing. Set it to the installation's personal-credential encryption key: the standard base64 encoding of exactly ${ENCRYPTION_KEY_BYTES} raw bytes, supplied through an app-config environment variable rather than committed to the file`,
     );
   }
-  const encryptionKey = decodeEncryptionKey(rawKey, path);
+  const encryptionKey = decodeEncryptionKey(rawKey, path, 'encryptionKey');
+  const rotation = section.getOptionalConfig('rotation');
+  let previousEncryptionKey: Uint8Array | undefined;
+  if (rotation !== undefined) {
+    const rotationPath = `${path}.rotation`;
+    rejectUnknownKeys(rotation, rotationPath, ['previousEncryptionKey']);
+    const previous = rotation.getOptionalString('previousEncryptionKey');
+    if (previous === undefined) {
+      throw configError(
+        rotationPath,
+        "the required field 'previousEncryptionKey' is missing",
+      );
+    }
+    previousEncryptionKey = decodeEncryptionKey(
+      previous,
+      rotationPath,
+      'previousEncryptionKey',
+    );
+  }
 
   const rawPrecedence = section.getOptionalString('precedence');
   if (
@@ -182,7 +201,13 @@ function parseCredentials(
 
   const tokenEndpoints = parseTokenEndpoints(section, path);
 
-  return { encryptionKey, precedence, scopes, tokenEndpoints };
+  return {
+    encryptionKey,
+    ...(previousEncryptionKey === undefined ? {} : { previousEncryptionKey }),
+    precedence,
+    scopes,
+    tokenEndpoints,
+  };
 }
 
 /**
@@ -277,7 +302,11 @@ function parseTokenEndpoints(
   }
   return endpoints;
 }
-function decodeEncryptionKey(raw: string, path: string): Uint8Array {
+function decodeEncryptionKey(
+  raw: string,
+  path: string,
+  field: string,
+): Uint8Array {
   const value = raw.trim();
   const canonical = Buffer.from(value, 'base64');
   const isBase64 =
@@ -287,14 +316,14 @@ function decodeEncryptionKey(raw: string, path: string): Uint8Array {
   if (!isBase64) {
     throw fieldError(
       path,
-      'encryptionKey',
+      field,
       `Expected the standard base64 encoding of exactly ${ENCRYPTION_KEY_BYTES} raw bytes (as produced by 'openssl rand -base64 ${ENCRYPTION_KEY_BYTES}'), but the value is not canonical base64. The key material itself is never echoed in this error`,
     );
   }
   if (canonical.length !== ENCRYPTION_KEY_BYTES) {
     throw fieldError(
       path,
-      'encryptionKey',
+      field,
       `Expected exactly ${ENCRYPTION_KEY_BYTES} raw bytes, but the configured value decodes to ${canonical.length}. Generate ${ENCRYPTION_KEY_BYTES} bytes, base64-encode them, and keep the result in an app-config secret`,
     );
   }
