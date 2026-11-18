@@ -20,14 +20,13 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import { targetPaths } from '@backstage/cli-common';
 import { execFileSync, spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 import { getPortPromise } from 'portfinder';
+import { setTimeout as delay } from 'node:timers/promises';
 import { OutputOptions, rollup } from 'rollup';
 import { makeRollupConfigs } from '../builder/config';
 import { Output } from '../builder/types';
-
-const describeUnix = process.platform === 'win32' ? describe.skip : describe;
 
 describe('embeddedPostgresProcess', () => {
   const mockDir = createMockDirectory();
@@ -89,7 +88,7 @@ describe('embeddedPostgresProcess', () => {
           '--eval',
           `(${source})(${JSON.stringify(
             require.resolve('embedded-postgres'),
-          )}, ${JSON.stringify(require.resolve('async-exit-hook'))})`,
+          )})`,
         ],
         {
           env: {
@@ -143,10 +142,14 @@ describe('embeddedPostgresProcess', () => {
     }
   }, 30_000);
 
-  describeUnix('cleanup deadline', () => {
-    it('terminates only its own group when initialization or shutdown hangs', async () => {
+  describe('forced cleanup', () => {
+    it('terminates its blocked worker and descendants without stopping unrelated processes', async () => {
       const source = await compileSource(true);
-      for (const initializing of [false, true]) {
+      for (const { initializing, killHelper } of [
+        { initializing: false, killHelper: false },
+        { initializing: true, killHelper: false },
+        { initializing: false, killHelper: true },
+      ]) {
         const unrelated = spawn(
           process.execPath,
           ['--eval', 'setInterval(() => {}, 1000)'],
@@ -157,16 +160,23 @@ describe('embeddedPostgresProcess', () => {
         );
         const unrelatedExit = once(unrelated, 'exit');
         const fakeModule = resolvePath(mockDir.path, 'fake-postgres.mjs');
+        const descendantPath = resolvePath(mockDir.path, 'descendant.pid');
+        const stoppedPath = resolvePath(mockDir.path, 'stop-called');
         writeFileSync(
           fakeModule,
           `
           import { writeFile } from 'node:fs/promises';
+          import { spawn } from 'node:child_process';
           export default class {
             constructor(options) { this.dir = options.databaseDir; }
             async initialise() {
+              const child = spawn(process.execPath, ['--eval', 'setInterval(() => {}, 1000)'], { stdio: 'ignore' });
+              await writeFile(${JSON.stringify(
+                descendantPath,
+              )}, String(child.pid));
               if (${initializing}) {
                 process.send({ initializing: true });
-                await new Promise(() => setInterval(() => {}, 1000));
+                Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0);
               }
             }
             async start() {
@@ -174,20 +184,22 @@ describe('embeddedPostgresProcess', () => {
                 String(unrelated.pid),
               )});
             }
-            stop() { return new Promise(() => {}); }
+            async stop() { await writeFile(${JSON.stringify(
+              stoppedPath,
+            )}, 'called'); await new Promise(() => {}); }
           }
         `,
         );
         const helper = spawn(
           process.execPath,
-          [
-            '--eval',
-            `(${source})(${JSON.stringify(fakeModule)}, ${JSON.stringify(
-              require.resolve('async-exit-hook'),
-            )})`,
-          ],
+          ['--eval', `(${source})(${JSON.stringify(fakeModule)})`],
           {
-            env: { ...process.env, TMPDIR: mockDir.path },
+            env: {
+              ...process.env,
+              TMPDIR: mockDir.path,
+              TMP: mockDir.path,
+              TEMP: mockDir.path,
+            },
             stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
             detached: true,
           },
@@ -203,12 +215,40 @@ describe('embeddedPostgresProcess', () => {
           expect(await ready).toEqual([
             initializing ? { initializing: true } : { ready: true },
           ]);
-          helper.disconnect();
-          expect(await helperExit).toEqual([null, 'SIGKILL']);
+          const databaseDirectories = readdirSync(mockDir.path).filter(name =>
+            name.startsWith('backstage-embedded-db-'),
+          );
+          if (killHelper) {
+            helper.kill('SIGKILL');
+          } else {
+            helper.disconnect();
+          }
+          expect(
+            await Promise.race([
+              helperExit,
+              delay(3000).then(() => 'timed out'),
+            ]),
+          ).toEqual(killHelper ? [null, 'SIGKILL'] : [0, null]);
+          const descendantPid = Number(readFileSync(descendantPath, 'utf8'));
+          for (let i = 0; i < 400; i++) {
+            try {
+              process.kill(descendantPid, 0);
+            } catch {
+              break;
+            }
+            await delay(10);
+          }
+          expect(() => process.kill(descendantPid, 0)).toThrow();
+          expect(existsSync(stoppedPath)).toBe(!initializing);
+          expect(
+            readdirSync(mockDir.path).filter(name =>
+              name.startsWith('backstage-embedded-db-'),
+            ),
+          ).toEqual(killHelper ? databaseDirectories : []);
           expect(() => process.kill(unrelated.pid!, 0)).not.toThrow();
         } finally {
           if (helper.exitCode === null && helper.signalCode === null) {
-            process.kill(-helper.pid!, 'SIGKILL');
+            helper.kill('SIGKILL');
             await helperExit;
           }
           unrelated.kill('SIGKILL');
@@ -216,6 +256,6 @@ describe('embeddedPostgresProcess', () => {
           mockDir.clear();
         }
       }
-    }, 45_000);
+    }, 20_000);
   });
 });

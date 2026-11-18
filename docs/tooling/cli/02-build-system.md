@@ -414,11 +414,12 @@ Backends running outside the development CLI retain their normal signal handling
 
 When using `backend.database.client: embedded-postgres` for local development,
 PostgreSQL stays available across backend reloads. A separate helper owns the
-database and stops it when the CLI disconnects, including after Ctrl-C or an
-unexpected CLI exit. Ctrl-C does not wait for database cleanup to finish. The
-helper also handles termination signals and cleans up only its own database
-directory. Files left after forcibly killing the helper or a machine failure are
-left to the operating system's temporary-file cleanup policy.
+database and terminates it when the CLI disconnects, including after Ctrl-C or an
+unexpected CLI exit. Database cleanup is bounded and may terminate PostgreSQL
+abruptly. Ctrl-C does not wait for database cleanup to finish. The helper also
+handles termination signals and attempts to remove only its own database directory.
+Files left after forcibly killing the helper or a machine failure are left to the
+operating system's temporary-file cleanup policy.
 
 ### Backend Production
 

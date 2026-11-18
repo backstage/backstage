@@ -59,7 +59,6 @@
     "@rspack/plugin-react-refresh": "^2.0.2",
     "@swc/core": "^1.15.6",
     "@swc/helpers": "^0.5.23",
-    "async-exit-hook": "^2.0.1",
     "bfj": "^9.0.2",
     "browserslist": "^4.28.1",
     "buffer": "^6.0.3",

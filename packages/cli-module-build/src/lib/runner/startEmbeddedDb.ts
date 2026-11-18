@@ -114,8 +114,6 @@ async function startEmbeddedDbInternal(
       '--eval',
       `(${embeddedPostgresProcess.toString()})(${JSON.stringify(
         embeddedPostgresPath,
-      )}, ${JSON.stringify(
-        require.resolve('async-exit-hook', { paths: [embeddedPostgresPath] }),
       )})`,
     ],
     {

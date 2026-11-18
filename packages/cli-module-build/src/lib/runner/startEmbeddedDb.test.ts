@@ -235,9 +235,12 @@ describe('embedded Postgres process lifecycle', () => {
           await Promise.race([closed, delay(3000).then(() => 'timed out')]),
         ).toEqual([0, null]);
         expect(await exit).toEqual([0, null]);
-        expect(await fs.pathExists(databaseDir)).toBe(true);
       } finally {
-        process.kill(pid, 'SIGCONT');
+        try {
+          process.kill(pid, 'SIGCONT');
+        } catch {
+          // Forced cleanup can terminate PostgreSQL before the CLI closes.
+        }
       }
       await waitFor(async () => !(await fs.pathExists(databaseDir)));
     }, 30_000);

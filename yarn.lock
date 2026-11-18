@@ -2172,7 +2172,6 @@ __metadata:
     "@types/lodash": "npm:^4.14.151"
     "@types/npm-packlist": "npm:^3.0.0"
     "@types/shell-quote": "npm:^1.7.5"
-    async-exit-hook: "npm:^2.0.1"
     bfj: "npm:^9.0.2"
     browserslist: "npm:^4.28.1"
     buffer: "npm:^6.0.3"
