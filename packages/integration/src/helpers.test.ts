@@ -229,6 +229,36 @@ describe('defaultScmResolveUrl', () => {
     );
   });
 
+  it('works for root-relative paths when base contains percent-encoded characters', () => {
+    expect(
+      defaultScmResolveUrl({
+        url: '/catalog-info.yaml',
+        base: 'https://gitlab.com/owner/repo/-/blob/main/docs/my%20file.md',
+      }),
+    ).toBe('https://gitlab.com/owner/repo/-/blob/main/catalog-info.yaml');
+
+    expect(
+      defaultScmResolveUrl({
+        url: '/catalog-info.yaml',
+        base: 'https://github.com/owner/repo/blob/main/docs/a%20b%20c%20d.md',
+      }),
+    ).toBe('https://github.com/owner/repo/blob/main/catalog-info.yaml');
+
+    expect(
+      defaultScmResolveUrl({
+        url: '/catalog-info.yaml',
+        base: 'https://gitlab.com/my%20group/repo/-/blob/main/docs/my%23file.md',
+      }),
+    ).toBe('https://gitlab.com/my%20group/repo/-/blob/main/catalog-info.yaml');
+
+    expect(
+      defaultScmResolveUrl({
+        url: '/catalog-info.yaml',
+        base: 'https://github.com/owner/repo/blob/main/caf%C3%A9/README.md',
+      }),
+    ).toBe('https://github.com/owner/repo/blob/main/catalog-info.yaml');
+  });
+
   it('works for absolute paths and retains query params', () => {
     expect(
       defaultScmResolveUrl({
