@@ -32,3 +32,18 @@ export type {
   DestinationTemplate,
   DestinationTemplatePart,
 } from './providers/templates';
+export {
+  CRASH_TEST_CHILD_ENV,
+  CRASH_TEST_DB_ENV,
+  CRASH_TEST_FENCE_ENV,
+  CRASH_TEST_NAMESPACE_ENV,
+  CRASH_TEST_ORIGIN_ENV,
+  createCrashTestFixture,
+  runCrashChild,
+} from './testUtilsCrashFixture';
+export type {
+  CrashChildContext,
+  CrashTestFixture,
+  CrashTestFixtureOptions,
+  CrashTestOptions,
+} from './testUtilsCrashFixture';

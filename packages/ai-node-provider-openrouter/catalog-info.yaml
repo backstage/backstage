@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-ai-node-provider-openrouter
+  title: '@backstage/ai-node-provider-openrouter'
+  description: OpenRouter image generation provider module for the managed AI service
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: framework-maintainers

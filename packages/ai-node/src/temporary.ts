@@ -19,15 +19,9 @@
 import {
   openaiResponses,
   openaiCompletions,
-  azureResponses,
   openaiCodexResponses,
-  anthropicMessages,
 } from './providers/builtins';
-import {
-  typesafeSystemOne,
-  openaiDecisions,
-  openrouterImages,
-} from './providers/nonchat';
+import { openaiDecisions } from './providers/nonchat';
 
 export type {
   AiProviderModule,
@@ -39,16 +33,20 @@ export type {
   DestinationTemplate,
   DestinationTemplatePart,
 } from './providers/templates';
+export { validateHttpEnvelope } from './providers/httpEnvelope';
+export type { HttpEnvelopeRules } from './providers/httpEnvelope';
+export {
+  assertTokenRequest,
+  createTokenRequest,
+  parseOAuthTokenResponse,
+} from './providers/auth/modules';
+export type { AiAuthModule, AuthOperationKind } from './providers/auth/types';
 export type { CredentialScope } from './credentials/types';
 
 /** Provider modules available until provider packages are extracted. @alpha */
 export const builtinProviderModules = Object.freeze([
   openaiResponses,
   openaiCompletions,
-  azureResponses,
   openaiCodexResponses,
-  anthropicMessages,
-  typesafeSystemOne,
   openaiDecisions,
-  openrouterImages,
 ]);
