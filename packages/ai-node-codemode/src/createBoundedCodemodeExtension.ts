@@ -66,7 +66,7 @@ export type BoundedCodemodeExtension = Readonly<{
  * @remarks
  *
  * The extension derives a script's deadline from the script's own
- * `// @options {"timeout_ms": ...}` line and passes no timeout otherwise,
+ * `// @options: {"timeout_ms": ...}` line and passes no timeout otherwise,
  * and `CodemodeSandboxBase.start()` then runs with no deadline at all — a
  * model-written script that keeps pending microtasks alive would run
  * until it is aborted or the sandbox closes. This ceiling bounds every

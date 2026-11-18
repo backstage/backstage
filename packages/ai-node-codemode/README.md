@@ -31,18 +31,20 @@ execution:
 
 - `timeoutMs` is the host ceiling, in milliseconds, per script execution
   including time spent in tools. A script's own
-  `// @options {"timeout_ms": ...}` may lower it, never exceed it. Defaults
-  to 300000.
+  `// @options: {"timeout_ms": ...}` line may lower it, never exceed it.
+  Defaults to 300000.
 - `memoryLimitBytes` bounds the QuickJS heap. Defaults to no explicit limit.
 
 ## Isolation, limits, and audit posture
 
 - Scripts see only their tools and Pi's script globals — no network,
-  filesystem, timers, `process`, or modules — and script output is capped
-  (16 MiB / 100000 items) as are script store writes (1 MiB total).
+  filesystem, timers, `process`, or modules. Script output is capped at
+  16777216 characters (UTF-16 code units) / 100000 items, a single store
+  value at 262144 characters, and all of a run's store writes combined at
+  1048576 characters.
 - The deadline is wall-clock only and does not enter the durable start
   data, so it cannot affect replay: a script may lower it through its own
-  `// @options {"timeout_ms": ...}` line, never raise it above the host's.
+  `// @options: {"timeout_ms": ...}` line, never raise it above the host's.
 - A script survives restarts by deterministic replay: one journal commit
   plus one count commit per delivered nested result, stored in the
   conversation's durable storage. That bookkeeping is separate from the
@@ -51,9 +53,8 @@ execution:
   credential recheck, journaled before send — while script bookkeeping
   itself does not.
 
-The long-form contract is the `codemode` option's TSDoc on
-`createAiServiceIntegration` (`AiCodemodeOptions` in
-`@backstage/ai-node/alpha`) and the header of the core integration suite
+The long-form contract is the `AiCodemodeOptions` TSDoc in
+`@backstage/ai-node/alpha` and the header of the core integration suite
 `packages/ai-node/src/codemode.test.ts`, which pins each check.
 
 ## Installation
