@@ -3,9 +3,9 @@
 Managed, low-level AI service primitives for Backstage backend plugins, built
 on the [Pi Durable](https://github.com/earendil-works/pi) execution engine.
 
-> **Status: Wave 2 configuration.** The service surface here is alpha and
-> coupled to the experimental `@earendil-works/pi-durable` engine (pinned to
-> `1.5.2`). The managed primitive is wired for production: exclusive
+> **Status: alpha.** The service surface here is alpha and coupled to the
+> experimental `@earendil-works/pi-durable` engine (pinned to `1.5.2`). The
+> managed primitive is wired for production: exclusive
 > namespace leases with startup recovery, fenced database persistence,
 > guarded model dispatch with per-attempt permission checks, a durable
 > attempt journal, and an installation configuration source for provider
@@ -44,6 +44,26 @@ uses the registrations available when it opens.
 
 Provider packages can run `registerProviderCertification` from
 `@backstage/ai-node/testUtils` in their test suites.
+
+## Provider packages
+
+Every provider family ships as its own package, alongside the two
+host-composition packages:
+
+- `@backstage/ai-node-provider-google` — Gemini and Vertex AI, over the guarded worker transport
+- `@backstage/ai-node-provider-openai` — Responses, Chat Completions, and Codex chat, plus the Decisions classifier and the OAuth auth module
+- `@backstage/ai-node-provider-anthropic` — Messages chat plus its OAuth auth module
+- `@backstage/ai-node-provider-azure` — Azure OpenAI Responses
+- `@backstage/ai-node-provider-typesafe` — System One classification
+- `@backstage/ai-node-provider-openrouter` — image generation
+- `@backstage/ai-node-tools` — host-side registration of tool permissions
+- `@backstage/ai-node-codemode` — the default code mode extension construction
+
+The default factory this package provides registers none of them: compose
+the families your installation needs into a factory override. The stock
+`@backstage/plugin-ai-backend` plugin pre-registers all six provider
+families in its composed default, so installations using that plugin need
+no factory override for the stock providers.
 
 ## Usage
 
@@ -338,12 +358,13 @@ enumerated in code.
 
 ## Tests and the ESM-only Pi dependency stack
 
-The Pi dependency stack (`@earendil-works/chord`, `-pi-ai`, `-pi-durable`)
-is ESM-only with `import`-condition export maps, so this package ships a
-scoped Jest resolver (`jestResolver.js`, referenced from the `jest` key of
-`package.json`) that adds the `import` export condition for
-`@earendil-works/*` specifiers only, leaving CommonJS dependencies
-untouched. Run tests through the repository root, as usual:
+Contributor note: the Pi dependency stack (`@earendil-works/chord`,
+`-pi-ai`, `-pi-durable`) is ESM-only with `import`-condition export maps,
+so the `@backstage/ai-node` package family shares one Jest resolver
+(`packages/ai-node/jestResolver.js`, referenced from the `jest` key of
+every family package's `package.json`) that adds the `import` export
+condition for `@earendil-works/*` specifiers only, leaving CommonJS
+dependencies untouched. Run tests through the repository root, as usual:
 
 ```bash
 CI=1 yarn test packages/ai-node
