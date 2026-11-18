@@ -392,10 +392,11 @@ describe('parseAiInstallationConfig', () => {
         /clientId/,
       ],
       [
-        // The bare-URL shape of the previous unpublished schema is refused by
-        // the config reader before the schema sees it.
+        // The bare-URL shape of the previous unpublished schema now
+        // surfaces the crafted endpoint guidance rather than the config
+        // reader's raw type error.
         { anthropic: 'https://api.anthropic.com/v1/oauth/token' },
-        /Invalid type in config/,
+        /Expected the provider's trusted token endpoint as an object/,
       ],
       [
         {

@@ -251,8 +251,13 @@ function parseTokenEndpoints(
         'Expected each entry to be keyed by a provider ID',
       );
     }
-    const entry = sectionMap.getOptionalConfig(providerId);
-    if (entry === undefined) {
+    // `keys()` only lists keys that carry a value, so a listed key is never
+    // absent: getOptionalConfig either returns its object or throws on a
+    // scalar. The crafted guidance rides that throw.
+    let entry: Config;
+    try {
+      entry = sectionMap.getOptionalConfig(providerId)!;
+    } catch {
       throw fieldError(
         field,
         'tokenEndpoints',
