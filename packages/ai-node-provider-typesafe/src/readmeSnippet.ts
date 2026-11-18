@@ -22,8 +22,8 @@
 import { aiServiceRef, createAiServiceFactory } from '@backstage/ai-node/alpha';
 import { typesafeProviderModules } from '@backstage/ai-node-provider-typesafe/alpha';
 
-// Build the AI service factory override that registers the provider
-// modules, in place of the default factory.
+// Build the AI service factory override that registers the TypeSafe
+// provider modules, in place of the default factory.
 const aiFactory = createAiServiceFactory({
   // Compose EVERY family the installation needs: a factory override
   // is global for aiServiceRef and replaces the default registration,

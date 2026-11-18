@@ -22,8 +22,8 @@
 import { aiServiceRef, createAiServiceFactory } from '@backstage/ai-node/alpha';
 import { googleProviderModules } from '@backstage/ai-node-provider-google/alpha';
 
-// Build the AI service factory override that registers the provider
-// modules, in place of the default factory.
+// Build the AI service factory override that registers the Google
+// provider modules, in place of the default factory.
 const aiFactory = createAiServiceFactory({
   // Compose EVERY family the installation needs: a factory override
   // is global for aiServiceRef and replaces the default registration,
