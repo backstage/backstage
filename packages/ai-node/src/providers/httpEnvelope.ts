@@ -27,7 +27,8 @@ export type HttpEnvelopeRules = Readonly<{
   inspectPayload?(payload: unknown): void;
 }>;
 
-function assertUniqueTopLevelKeys(json: string) {
+/** Shared structural check: rejects duplicate top-level JSON keys. */
+export function assertUniqueTopLevelKeys(json: string) {
   const seen = new Set<string>();
   let depth = 0;
   for (let i = 0; i < json.length; i++) {
@@ -54,7 +55,8 @@ function assertUniqueTopLevelKeys(json: string) {
   }
 }
 
-async function readBody(request: Request): Promise<Buffer> {
+/** Shared body reader with the 16 MiB validation cap. */
+export async function readBody(request: Request): Promise<Buffer> {
   const reader = request.body?.getReader();
   if (!reader) throw new Error('Missing request body');
   const chunks: Buffer[] = [];
