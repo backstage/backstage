@@ -38,6 +38,53 @@ export interface AiCredentialStores {
 }
 
 // @alpha
+export interface AiEventEmitter {
+  // (undocumented)
+  emit(event: AiObservabilityEvent): void | Promise<void>;
+}
+
+// @alpha
+export type AiHealthReport = Readonly<{
+  readonly status: 'ok' | 'degraded';
+  readonly signals: readonly AiHealthSignal[];
+  readonly snapshot: AiHealthSnapshot;
+}>;
+
+// @alpha
+export type AiHealthSignal = Readonly<{
+  readonly name:
+    | 'denialRate'
+    | 'leaseContention'
+    | 'dispatchLatencyMs'
+    | 'journalGrowth';
+  readonly status: 'ok' | 'degraded';
+  readonly value: number;
+  readonly threshold: number;
+  readonly detail: string;
+}>;
+
+// @alpha
+export type AiHealthSnapshot = Readonly<{
+  counters: readonly MetricSeries[];
+  durations: Readonly<Record<string, number>>;
+  activeLeases: number;
+  failures: number;
+  journalDecisions: Readonly<{
+    allow: number;
+    deny: number;
+  }>;
+  events: number;
+}>;
+
+// @alpha
+export type AiHealthThresholds = Readonly<{
+  readonly denialRate?: number;
+  readonly leaseContention?: number;
+  readonly dispatchLatencyMs?: number;
+  readonly journalGrowth?: number;
+}>;
+
+// @alpha
 export interface AiHttpSupport {
   // (undocumented)
   assertSessionOwner(
@@ -99,6 +146,88 @@ export type AiInstallationCredentials = Readonly<{
   scopes: AiConfigCredentialScopes;
   tokenEndpoints: Readonly<Record<string, string>>;
 }>;
+
+// @alpha
+export interface AiJournalPruneRunner {
+  pruneNow(): Promise<JournalPruneResult>;
+  stop(): Promise<void>;
+}
+
+// @alpha
+export interface AiJournalPruneRunnerOptions {
+  // (undocumented)
+  readonly db: Knex;
+  readonly events?: AiEventEmitter;
+  readonly intervalMs: number;
+  readonly logger?: AiPruneRunnerLogger;
+  readonly now?: () => Date;
+  readonly retentionMs: number;
+}
+
+// @alpha
+export interface AiMetricsSubscriber extends AiEventEmitter {
+  // (undocumented)
+  reset(): void;
+  // (undocumented)
+  snapshot(): AiHealthSnapshot;
+}
+
+// @alpha
+export type AiObservabilityEvent =
+  | Readonly<{
+      kind: 'denial';
+      at: number;
+      pluginId?: string;
+      sessionId?: string;
+      provider?: string;
+      modelId?: string;
+      operation: string;
+      reason: string;
+      attempt: number;
+    }>
+  | Readonly<{
+      kind: 'dispatch';
+      at: number;
+      pluginId?: string;
+      sessionId?: string;
+      provider?: string;
+      modelId?: string;
+      operation: string;
+      outcome:
+        | 'sent'
+        | 'completed'
+        | 'failed'
+        | 'cancelled'
+        | 'unknown'
+        | 'stream-failed';
+      httpStatus?: number;
+      durationMs: number;
+    }>
+  | Readonly<{
+      kind: 'lease';
+      at: number;
+      pluginId: string;
+      sessionId: string;
+      action: 'acquire' | 'contention' | 'renew' | 'release' | 'lost';
+      generation?: string;
+      durationMs?: number;
+    }>
+  | Readonly<{
+      kind: 'journal';
+      at: number;
+      action: 'decision' | 'outcome' | 'recovery' | 'prune';
+      decision?: 'allow' | 'deny';
+      durationMs: number;
+      pruned?: number;
+    }>;
+
+// @alpha
+export interface AiPruneRunnerLogger {
+  // (undocumented)
+  info(message: string): void;
+  // (undocumented)
+  warn(message: string): void;
+}
 
 // @alpha
 export interface AiService {
@@ -219,6 +348,9 @@ export function createAiHttpSupport(
 ): Promise<AiHttpSupport>;
 
 // @alpha
+export function createMetricsSubscriber(): AiMetricsSubscriber;
+
+// @alpha
 export type CredentialScope =
   | Readonly<{
       kind: 'org';
@@ -233,11 +365,25 @@ export type CredentialScope =
     }>;
 
 // @alpha
+export function evaluateAiHealth(
+  snapshot: AiHealthSnapshot,
+  thresholds?: AiHealthThresholds,
+): AiHealthReport;
+
+// @alpha
 export type Fence = Readonly<{
   namespace: Namespace;
   owner: string;
   token: string;
 }>;
+
+// @alpha
+export interface JournalPruneResult {
+  // (undocumented)
+  readonly prunedEvents: number;
+  // (undocumented)
+  readonly uncertaintyRecords: number;
+}
 
 // @alpha
 export interface ManagedHarness {
@@ -251,6 +397,14 @@ export interface ManagedHarness {
 
 // @alpha
 export type ManagedNativeHarness = Omit<Harness, 'close'>;
+
+// @alpha
+export type MetricSeries = Readonly<{
+  labels: Readonly<Record<string, string>>;
+  count: number;
+  totalMs?: number;
+  avgMs?: number;
+}>;
 
 // @alpha
 export type ModelPair = Readonly<{
@@ -296,4 +450,9 @@ export type RecoveryEvent = Readonly<{
   readonly configVersion?: string;
   readonly detail?: string;
 }>;
+
+// @alpha
+export function startAiJournalPruneRunner(
+  options: AiJournalPruneRunnerOptions,
+): AiJournalPruneRunner;
 ```

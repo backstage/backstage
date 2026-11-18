@@ -66,3 +66,26 @@ export { modelPermissionName } from './permissions/modelPermissions';
 export type { ModelPair } from './permissions/modelPermissions';
 export type { AiCredentialStores, CredentialScope } from './credentials/types';
 export type { RecoveryEvent } from './journal/types';
+export type { JournalPruneResult } from './journal/retention';
+export { startAiJournalPruneRunner } from './journal/pruneRunner';
+export type {
+  AiJournalPruneRunner,
+  AiJournalPruneRunnerOptions,
+  AiPruneRunnerLogger,
+} from './journal/pruneRunner';
+export { evaluateAiHealth } from './observability/health';
+export type {
+  AiHealthReport,
+  AiHealthSignal,
+  AiHealthThresholds,
+} from './observability/health';
+export { createMetricsSubscriber } from './observability/metrics';
+export type {
+  AiHealthSnapshot,
+  AiMetricsSubscriber,
+  MetricSeries,
+} from './observability/metrics';
+export type {
+  AiEventEmitter,
+  AiObservabilityEvent,
+} from './observability/types';
