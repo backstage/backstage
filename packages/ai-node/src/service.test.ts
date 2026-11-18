@@ -60,7 +60,7 @@ describe('aiServiceRef', () => {
     // The backend starting proves the factory's core service dependencies
     // (database, auth, permissions, logger, auditor, lifecycle,
     // pluginMetadata) resolve under backend-test-utils, and that the
-    // production Wave 1 wiring (migrations, lease, storage, guard, journal)
+    // production wiring (migrations, lease, storage, guard, journal)
     // initializes.
     expect(service).toBeDefined();
     await expect(

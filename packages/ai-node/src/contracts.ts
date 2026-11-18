@@ -39,8 +39,8 @@ export type Namespace = Readonly<{ pluginId: string; sessionId: string }>;
  * @remarks
  *
  * The token is a monotonically increasing database value represented as a
- * decimal string; see the module design for the lease protocol. Wave 0 ships
- * no lease implementation; this type reserves the integration contract.
+ * decimal string; see the module design for the lease protocol. The lease
+ * implementation lives in the integration; this type is its contract.
  *
  * @alpha
  */

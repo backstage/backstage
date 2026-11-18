@@ -280,7 +280,7 @@ export type AiCodemodeOptions = Readonly<{
 }>;
 
 /**
- * The production Wave 1 integration of the managed AI service.
+ * The production integration of the managed AI service.
  *
  * @internal
  */
@@ -447,7 +447,7 @@ function principalOf(
 }
 
 /**
- * Creates the production Wave 1 integration: the exclusive namespace lease
+ * Creates the production integration: the exclusive namespace lease
  * with startup recovery (admission and revocation), the fenced Knex Pi
  * storage, the guarded model operations with per-attempt permission checks,
  * and the durable attempt journal.
