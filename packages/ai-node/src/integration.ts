@@ -209,23 +209,26 @@ export interface AiServiceIntegrationOptions {
 }
 
 /**
- * The opt-in code mode option: Pi's `codemode` extension, which runs
- * model-written JavaScript in a QuickJS sandbox whose script survives
- * restarts by deterministic replay. Presence enables it for every harness
- * the integration opens, appended to the caller's registry selection; it
- * replaces any caller extension also named `codemode`.
+ * Opt-in host-supplied extension wiring for code-mode scripting. The
+ * callback builds an extension — and the sandbox backing it — for every
+ * harness the integration opens; the core appends the returned extension
+ * to the caller's registry selection and closes the returned sandbox with
+ * the harness.
  *
- * The core's role is narrow: it resolves the limits, passes them to
- * `createExtension`, appends the returned extension to the caller's
- * registry selection, and closes the returned sandbox with the harness.
- * Everything below is the sandbox behavior of the PROVIDED DEFAULT
- * BUILDER — `createBoundedCodemodeExtension` from
- * `@backstage/ai-node-codemode` — not something this type enforces on an
- * arbitrary callback: a host-supplied `createExtension` decides its own
- * sandbox's isolation and limits.
+ * Everything below is the behavior of the PROVIDED DEFAULT BUILDER —
+ * `createBoundedCodemodeExtension` from `@backstage/ai-node-codemode` —
+ * not something this type enforces on an arbitrary callback: a
+ * host-supplied `createExtension` decides its own extension's behavior.
  *
- * With the default builder: `timeoutMs` is the host wall-clock ceiling
- * per script execution including time spent in tools — a script's own
+ * With the default builder, the extension is Pi's `codemode` extension:
+ * it runs model-written JavaScript in a QuickJS sandbox whose script
+ * survives restarts by deterministic replay. The returned extension is
+ * appended to the caller's registry selection — an existing caller
+ * extension is not removed — and a lookup of its name resolves to it.
+ *
+ * With the default builder, the limits passed to the callback:
+ * `timeoutMs` is the host wall-clock ceiling per script execution
+ * including time spent in tools — a script's own
  * `// @options: {"timeout_ms": ...}` line may lower it, never exceed it —
  * and defaults to 300000. `memoryLimitBytes` bounds the QuickJS heap; it
  * defaults to no explicit limit (the wasm32 address space bounds it at
@@ -250,13 +253,22 @@ export interface AiServiceIntegrationOptions {
  * @alpha
  */
 export type AiCodemodeOptions = Readonly<{
-  /** Host wall-clock ceiling per script execution. Default 300000. */
+  /**
+   * Passed to `createExtension` as the callback's wall-clock ceiling per
+   * script execution. The default builder applies it as described above.
+   * Default 300000.
+   */
   readonly timeoutMs?: number;
-  /** QuickJS heap limit. Default: no explicit limit. */
+  /**
+   * Passed to `createExtension` as the callback's heap limit. The default
+   * builder bounds the QuickJS heap with it. Default: no explicit limit.
+   */
   readonly memoryLimitBytes?: number;
   /**
    * Builds the code mode extension and the sandbox backing it, with the
-   * resolved limits.
+   * resolved limits. The core appends the returned extension to the
+   * caller's registry selection (extensions resolve by
+   * `extension.name`) and closes the returned sandbox with the harness.
    */
   readonly createExtension: (limits: {
     readonly timeoutMs: number;
@@ -1668,8 +1680,9 @@ export async function createAiServiceIntegration(
 /**
  * A registry snapshot view with one extension appended. Every read
  * delegates to the caller's current snapshot, so caller publications after
- * the open still apply; the appended extension shadows a caller extension
- * of the same name.
+ * the open still apply; a lookup of the appended extension's name
+ * resolves to it, without removing an existing caller extension of that
+ * name from the arrays.
  */
 function appendExtension(
   snapshot: RegistrySnapshot,
