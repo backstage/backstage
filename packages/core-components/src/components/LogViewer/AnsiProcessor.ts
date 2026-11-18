@@ -227,10 +227,11 @@ export class AnsiProcessor {
 
     let currentModifiers = modifiers;
     for (let i = 0; i < params.length; i++) {
-      // 38 and 48 set an extended foreground or background color, followed
-      // by either 5;n or 2;r;g;b. Those colors are not supported, but their
-      // arguments must be skipped so that they are not read as other codes.
-      if (params[i] === 38 || params[i] === 48) {
+      // 38, 48 and 58 set an extended foreground, background or underline
+      // color, followed by either 5;n or 2;r;g;b. Those colors are not
+      // supported, but their arguments must be skipped so that they are not
+      // read as other codes.
+      if (params[i] === 38 || params[i] === 48 || params[i] === 58) {
         if (params[i + 1] === 5) {
           i += 2;
         } else if (params[i + 1] === 2) {

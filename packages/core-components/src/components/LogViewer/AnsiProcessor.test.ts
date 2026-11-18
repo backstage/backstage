@@ -287,6 +287,23 @@ x\x1b[39my\x1b[23mz`);
     ]);
   });
 
+  it('should skip the arguments of extended underline color codes', () => {
+    expect(
+      new AnsiProcessor().process('\x1b[31mx\x1b[58;5;1my\x1b[58;2;0;0;0mz'),
+    ).toEqual([
+      {
+        chunks: [
+          { text: '', modifiers: {} },
+          { text: 'x', modifiers: { foreground: 'red' } },
+          { text: 'y', modifiers: { foreground: 'red' } },
+          { text: 'z', modifiers: { foreground: 'red' } },
+        ],
+        text: 'xyz',
+        lineNumber: 1,
+      },
+    ]);
+  });
+
   it('should not carry modifiers to the next line after a reset', () => {
     expect(
       new AnsiProcessor().process('\x1b[32mgreen\x1b[0m\nnext line'),
