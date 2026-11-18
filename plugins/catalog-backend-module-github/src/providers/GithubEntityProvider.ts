@@ -314,13 +314,21 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     });
   }
 
-  private createLocationUrl(repository: Repository): string {
+  private createLocationUrl(repository: Repository): string | undefined {
     const branch =
       this.config.filters.branch || repository.defaultBranchRef || '-';
+    // The default branch name is influenced by the owners of the ingested
+    // repositories, so it is encoded with the same rules as the commit file
+    // paths. A name that cannot be encoded is not a name that git itself
+    // produces, and the repository is skipped.
+    const encodedBranch = encodeBranchName(branch);
+    if (!encodedBranch) {
+      return undefined;
+    }
     const catalogFile = this.config.catalogPath.startsWith('/')
       ? this.config.catalogPath.substring(1)
       : this.config.catalogPath;
-    return `${repository.url}/blob/${branch}/${catalogFile}`;
+    return `${repository.url}/blob/${encodedBranch}/${catalogFile}`;
   }
 
   private static toLocationSpec(target: string): LocationSpec {
@@ -389,6 +397,18 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       return;
     }
 
+    // The branch name is interpolated into the location URLs below, so it
+    // is encoded with the same rules as the commit file paths. A name that
+    // cannot be encoded, such as one with encoded traversal segments, is
+    // not a name that git itself produces, and the event is skipped.
+    const encodedBranch = encodeBranchName(branch);
+    if (!encodedBranch) {
+      this.logger.debug(
+        `skipping push event with invalid branch name ${branch}`,
+      );
+      return;
+    }
+
     const repository = this.createRepoFromEvent(event);
 
     const matchingTargets = this.matchesFilters([repository]);
@@ -404,13 +424,13 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     // https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#push
     const added = this.collectDeferredEntitiesFromCommit(
       repoUrl,
-      branch,
+      encodedBranch,
       event.commits,
       (commit: Commit) => [...commit.added],
     );
     const removed = this.collectDeferredEntitiesFromCommit(
       repoUrl,
-      branch,
+      encodedBranch,
       event.commits,
       (commit: Commit) => [...commit.removed],
     );
@@ -424,16 +444,21 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         ? this.config.catalogPath.substring(1)
         : this.config.catalogPath;
 
+      const modifiedFilePaths = modified.flatMap(filePath => {
+        const encodedFilePath = encodeCommitFilePath(filePath);
+        return encodedFilePath ? [encodedFilePath] : [];
+      });
+
       await this.connection!.refresh({
         keys: [
           ...new Set([
-            ...modified.map(
-              filePath => `url:${repoUrl}/tree/${branch}/${filePath}`,
+            ...modifiedFilePaths.map(
+              filePath => `url:${repoUrl}/tree/${encodedBranch}/${filePath}`,
             ),
-            ...modified.map(
-              filePath => `url:${repoUrl}/blob/${branch}/${filePath}`,
+            ...modifiedFilePaths.map(
+              filePath => `url:${repoUrl}/blob/${encodedBranch}/${filePath}`,
             ),
-            `url:${repoUrl}/tree/${branch}/${catalogPath}`,
+            `url:${repoUrl}/tree/${encodedBranch}/${catalogPath}`,
           ]),
         ],
       });
@@ -724,7 +749,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 
   private collectDeferredEntitiesFromCommit(
     repositoryUrl: string,
-    branch: string,
+    encodedBranch: string,
     commits: Commit[],
     transformOperation: (commit: Commit) => string[],
   ): DeferredEntity[] {
@@ -733,9 +758,12 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       transformOperation,
     );
     return this.toDeferredEntities(
-      catalogFiles.map(
-        filePath => `${repositoryUrl}/blob/${branch}/${filePath}`,
-      ),
+      catalogFiles.flatMap(filePath => {
+        const encodedFilePath = encodeCommitFilePath(filePath);
+        return encodedFilePath
+          ? [`${repositoryUrl}/blob/${encodedBranch}/${encodedFilePath}`]
+          : [];
+      }),
     );
   }
 
@@ -774,6 +802,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   ): DeferredEntity[] {
     return repositories
       .map(repository => this.createLocationUrl(repository))
+      .filter((target): target is string => Boolean(target))
       .map(GithubEntityProvider.toLocationSpec)
       .map(location => {
         return {
@@ -824,4 +853,56 @@ export function parseUrl(urlString: string): {
 
 export function escapeRegExp(str: string): RegExp {
   return new RegExp(`^${str.replace(/\*/g, '.*')}$`);
+}
+
+function isDotSegment(segment: string): boolean {
+  if (segment === '.' || segment === '..') {
+    return true;
+  }
+  try {
+    const decoded = decodeURIComponent(segment);
+    return decoded === '.' || decoded === '..';
+  } catch {
+    return false;
+  }
+}
+
+function encodePathSegment(segment: string): string {
+  return segment.replace(/[^A-Za-z0-9\-._~!$&'()*+,;=:@[\]|]/gu, char =>
+    encodeURIComponent(char),
+  );
+}
+
+/*
+ * Encodes a file path from a commit for interpolation into a URL. Each path
+ * segment keeps the characters that a URL parser accepts as-is in a path —
+ * the same set that the URL reader uses when it builds URLs for search
+ * results — so that location URLs for ordinary file paths are unchanged.
+ * Everything else is percent-encoded, including '%' (which a URL parser
+ * would pass through as an escape sequence marker), '?', '#' and '\\', so
+ * that the file path cannot affect the structure of the resulting URL.
+ * Paths that contain `.` or `..` segments, which git itself never produces,
+ * are rejected.
+ */
+function encodeCommitFilePath(filePath: string): string | undefined {
+  // Both '/' and a backslash are treated as separators when looking for dot
+  // segments. A URL parser treats a backslash in the path of an http(s) URL
+  // as a separator, and the URL reader decodes '%5C' back into a backslash
+  // before it builds the request, so a backslash-separated traversal would
+  // otherwise survive the encoding and resolve outside the repository.
+  if (filePath.split(/[\\/]/u).some(isDotSegment)) {
+    return undefined;
+  }
+  return filePath.split('/').map(encodePathSegment).join('/');
+}
+
+/*
+ * Encodes a branch name for interpolation into a location URL, using the
+ * same rules as commit file paths: characters that a URL parser accepts in
+ * a path are kept, everything else is percent-encoded, and names that
+ * contain `.` or `..` segments, which git itself never produces, are
+ * rejected.
+ */
+function encodeBranchName(branch: string): string | undefined {
+  return encodeCommitFilePath(branch);
 }
