@@ -70,11 +70,11 @@ const searchDependencies = (
   dependencies: PackageDependencyRow[],
   query: string,
 ) => {
-  const search = query.toLocaleLowerCase();
+  const search = query.toLowerCase();
   return dependencies.filter(
     dependency =>
-      dependency.name.toLocaleLowerCase().includes(search) ||
-      dependency.versions.toLocaleLowerCase().includes(search),
+      dependency.name.toLowerCase().includes(search) ||
+      dependency.versions.toLowerCase().includes(search),
   );
 };
 
