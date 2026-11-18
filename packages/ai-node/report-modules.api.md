@@ -34,10 +34,10 @@ export type AiAuthModule = Readonly<{
 }>;
 
 // @alpha
-export interface AiEventEmitter {
-  // (undocumented)
-  emit(event: AiObservabilityEvent): void | Promise<void>;
-}
+export type AiCredentialKind = 'api_key' | 'oauth';
+
+// @alpha
+export type AiEventSink = (event: AiObservabilityEvent) => void;
 
 // @alpha
 export type AiObservabilityEvent =
@@ -92,6 +92,7 @@ export type AiObservabilityEvent =
 export type AiProviderModule = Readonly<{
   id: string;
   adapter: ProviderAdapter;
+  credentialKinds: readonly AiCredentialKind[];
   certifiedOperations: readonly string[];
   destinationTemplates: readonly DestinationTemplate[];
   destination(model: AnyModel, env: Record<string, string> | undefined): string;
@@ -198,7 +199,7 @@ export interface AttemptJournalOptions {
   readonly authorizer: AuditReadAuthorizer;
   // (undocumented)
   readonly db: Knex;
-  readonly events?: AiEventEmitter;
+  readonly emit?: AiEventSink;
   readonly mirror?: JournalAuditorMirror;
   readonly ownershipResolver?: (
     namespace: Readonly<{
@@ -304,6 +305,11 @@ export type AuthTokenRequestBase = Readonly<{
 }>;
 
 // @alpha
+export function createAiEventSink(events: {
+  publish(params: unknown): unknown;
+}): AiEventSink;
+
+// @alpha
 export function createAttemptJournal(
   options: AttemptJournalOptions,
 ): AttemptJournal;
@@ -317,7 +323,7 @@ export function createGuardedModelOperations(options: {
     model: AnyModel,
     operation: ModelOperation,
   ): GuardedModelBinding | Promise<GuardedModelBinding>;
-  events?: AiEventEmitter;
+  emit?: AiEventSink;
 }): ModelRequests;
 
 // @alpha
@@ -326,7 +332,7 @@ export function createModelOperationGuard(options: {
   recheck(operation: TrustedOperation): Promise<boolean>;
   journal: AttemptJournal;
   providers?: AiProviderRegistry;
-  events?: AiEventEmitter;
+  emit?: AiEventSink;
 }): ModelOperationGuard;
 
 // @alpha
@@ -440,7 +446,10 @@ export type ModelRequests = Pick<
     model: AnyModel,
     context: unknown,
     caller?: Record<string, unknown>,
-  ): Promise<unknown>;
+  ): Promise<{
+    value: unknown;
+    outcome: 'completed' | 'failed' | 'cancelled';
+  }>;
 };
 
 // @alpha

@@ -16,6 +16,7 @@ import type { Context } from '@earendil-works/chord/context';
 import type { Credential as Credential_2 } from '@earendil-works/pi-ai';
 import type { CredentialStore } from '@earendil-works/pi-ai';
 import type { DatabaseService } from '@backstage/backend-plugin-api';
+import type { EventsService } from '@backstage/plugin-events-node';
 import { Extension } from '@earendil-works/pi-durable';
 import type { Harness } from '@earendil-works/pi-durable';
 import type { JsonValue } from '@backstage/config';
@@ -33,11 +34,20 @@ import type { PluginMetadataService } from '@backstage/backend-plugin-api';
 import type { QueryPermissionResponse } from '@backstage/plugin-permission-common';
 import type { RegistryReader } from '@earendil-works/pi-durable';
 import type { ResourcePermission } from '@backstage/plugin-permission-common';
+import type { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import type { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha
 export const AI_INSTALLATION_CONFIG_PATH = 'ai';
+
+// @alpha
+export const AI_OBSERVABILITY_TOPICS: readonly [
+  'ai.observability.denial',
+  'ai.observability.dispatch',
+  'ai.observability.lease',
+  'ai.observability.journal',
+];
 
 // @alpha
 export type AiAuthModule = Readonly<{
@@ -94,10 +104,7 @@ export interface AiCredentialStores {
 }
 
 // @alpha
-export interface AiEventEmitter {
-  // (undocumented)
-  emit(event: AiObservabilityEvent): void | Promise<void>;
-}
+export type AiEventSink = (event: AiObservabilityEvent) => void;
 
 // @alpha
 export type AiHealthReport = Readonly<{
@@ -202,28 +209,27 @@ export type AiInstallationCredentials = Readonly<{
 }>;
 
 // @alpha
-export interface AiJournalPruneRunner {
-  pruneNow(): Promise<JournalPruneResult>;
-  stop(): Promise<void>;
-}
-
-// @alpha
-export interface AiJournalPruneRunnerOptions {
+export interface AiJournalPruneScheduleOptions {
   // (undocumented)
   readonly db: Knex;
-  readonly events?: AiEventEmitter;
-  readonly intervalMs: number;
+  readonly emit?: AiEventSink;
+  readonly frequency: {
+    readonly milliseconds: number;
+  };
   readonly logger?: AiPruneRunnerLogger;
   readonly now?: () => Date;
   readonly retentionMs: number;
+  readonly scheduler: Pick<SchedulerService, 'scheduleTask'>;
+  readonly signal: AbortSignal;
 }
 
 // @alpha
-export interface AiMetricsSubscriber extends AiEventEmitter {
+export interface AiMetricsSubscriber {
   // (undocumented)
   reset(): void;
   // (undocumented)
   snapshot(): AiHealthSnapshot;
+  subscribe(events: Pick<EventsService, 'subscribe'>): Promise<void>;
 }
 
 // @alpha
@@ -381,6 +387,11 @@ export type AiObservabilityEvent =
       durationMs: number;
       pruned?: number;
     }>;
+
+// @alpha
+export function aiObservabilityTopic(
+  event: AiObservabilityEvent,
+): (typeof AI_OBSERVABILITY_TOPICS)[number];
 
 // @alpha
 export type AiParamsSchema = {
@@ -763,6 +774,11 @@ export type ConfiguredCredentialKind = Readonly<{
 }>;
 
 // @alpha
+export function createAiEventSink(events: {
+  publish(params: unknown): unknown;
+}): AiEventSink;
+
+// @alpha
 export function createAiHttpSupport(
   options: AiHttpSupportOptions,
 ): Promise<AiHttpSupport>;
@@ -796,7 +812,7 @@ export function createCredentialRefreshHook(
 
 // @alpha
 export interface CreateCredentialRefreshHookOptions {
-  events?: AiEventEmitter;
+  emit?: AiEventSink;
   journal: AttemptJournal;
   providerModules: readonly AiProviderModule[];
   stores: AiCredentialStores;
@@ -885,6 +901,7 @@ export interface DefaultAiServiceDeps {
   readonly auth: AuthService;
   // (undocumented)
   readonly database: DatabaseService;
+  readonly events: EventsService;
   // (undocumented)
   readonly lifecycle: LifecycleService;
   // (undocumented)
@@ -1173,9 +1190,9 @@ export type RecoveryEvent = Readonly<{
 }>;
 
 // @alpha
-export function startAiJournalPruneRunner(
-  options: AiJournalPruneRunnerOptions,
-): AiJournalPruneRunner;
+export function scheduleAiJournalPrune(
+  options: AiJournalPruneScheduleOptions,
+): Promise<void>;
 
 // @alpha
 export type ToolCallEnvelope = Readonly<{
