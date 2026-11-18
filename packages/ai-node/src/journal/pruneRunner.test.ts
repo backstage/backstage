@@ -223,6 +223,60 @@ for (const dialect of ['sqlite', 'pg'] as const) {
       }
     }, 20000);
 
+    it('a throwing logger never breaks the runner or rejects unhandled', async () => {
+      const f = await fixture(dialect === 'pg' ? pgUrl : undefined);
+      try {
+        await f.record({ decision: 'deny', reason: 'permission denied' });
+        const clock = new TestClock();
+        clock.advance(YEAR_MS);
+        const unhandled: unknown[] = [];
+        const onUnhandled = (reason: unknown) => void unhandled.push(reason);
+        process.on('unhandledRejection', onUnhandled);
+        const broken = knex({
+          client: dialect === 'pg' ? 'pg' : 'better-sqlite3',
+          connection:
+            dialect === 'pg'
+              ? { host: '127.0.0.1', port: 9, database: 'x', user: 'x' }
+              : { filename: '/nonexistent-dir/journal.sqlite' },
+        });
+        const runner = startAiJournalPruneRunner({
+          db: broken,
+          retentionMs: HOUR_MS,
+          intervalMs: 30,
+          // The logger throws on every warn: a broken observation channel
+          // must not turn a failed pass into a rejection.
+          logger: {
+            info: () => {},
+            warn: () => {
+              throw new Error('logger exploded');
+            },
+          },
+          now: clock.now,
+        });
+        try {
+          // The start pass fails against the broken database, the logger
+          // throws while reporting it, and pruneNow still resolves zeros.
+          const result = await runner.pruneNow();
+          expect(result).toEqual({ prunedEvents: 0, uncertaintyRecords: 0 });
+          // Scheduled passes keep running with the throwing logger and
+          // leave no unhandled rejection behind.
+          await new Promise(resolve => setTimeout(resolve, 120));
+          expect(unhandled).toEqual([]);
+        } finally {
+          await runner.stop();
+          await broken.destroy().catch(() => {});
+          process.off('unhandledRejection', onUnhandled);
+        }
+        expect(unhandled).toEqual([]);
+        // The real journal is untouched.
+        expect(
+          Number((await f.db(JOURNAL_EVENTS_TABLE).count('id as n'))[0].n),
+        ).toBe(1);
+      } finally {
+        await f.cleanup();
+      }
+    }, 20000);
+
     it('fails open: a failing pass is warned, not thrown, and the schedule continues', async () => {
       const f = await fixture(dialect === 'pg' ? pgUrl : undefined);
       try {

@@ -85,8 +85,20 @@ export interface AiJournalPruneRunner {
 export function startAiJournalPruneRunner(
   options: AiJournalPruneRunnerOptions,
 ): AiJournalPruneRunner {
-  const { db, retentionMs, intervalMs, logger, events } = options;
+  const { db, retentionMs, intervalMs, events } = options;
+  const logger = options.logger;
   const now = options.now ?? (() => new Date());
+  // A throwing logger is a broken observation channel, not a broken
+  // prune: every logger call is isolated so maintenance stays fail-open
+  // regardless of logger behavior, and a rejected `void pass()` can never
+  // surface as an unhandled rejection.
+  const warn = (message: string) => {
+    try {
+      logger?.warn(message);
+    } catch {
+      /* The pass failure it reports stands on its own. */
+    }
+  };
   let timer: NodeJS.Timeout | undefined;
   let stopped = false;
   let inFlight: Promise<JournalPruneResult> | undefined;
@@ -105,7 +117,7 @@ export function startAiJournalPruneRunner(
         });
       })
       .catch(error => {
-        logger?.warn(
+        warn(
           `AI journal prune pass failed; retrying at the next interval: ${error}`,
         );
         return { prunedEvents: 0, uncertaintyRecords: 0 };

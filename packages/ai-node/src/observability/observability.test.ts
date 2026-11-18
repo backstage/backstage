@@ -150,7 +150,12 @@ describe('observability seam', () => {
     expect(snapshot.failures).toBe(3);
     expect(snapshot.journalDecisions).toEqual({ allow: 1, deny: 0 });
     expect(snapshot.activeLeases).toBe(1);
-    expect(snapshot.durations).toEqual({ dispatch: 20, lease: 3, journal: 6 });
+    expect(snapshot.durations).toEqual({
+      dispatch: 20,
+      dispatchTerminal: 8,
+      lease: 3,
+      journal: 6,
+    });
     // Two denials collapse into one series: the reason is never a label.
     expect(
       snapshot.counters.find(series => series.labels.kind === 'denial'),

@@ -98,8 +98,11 @@ describe('evaluateAiHealth', () => {
     // 1 of 3 decisions denied.
     expect(byName.denialRate.value).toBeCloseTo(1 / 3);
     expect(byName.denialRate.detail).toContain('1 of 3');
-    // Mean over the two dispatch events.
-    expect(byName.dispatchLatencyMs.value).toBe(200);
+    // Latency is terminal-only: the sent event (100 ms) is throughput,
+    // the completed event (300 ms) is the attempt's terminal duration,
+    // so one observation of 300 ms.
+    expect(byName.dispatchLatencyMs.value).toBe(300);
+    expect(byName.dispatchLatencyMs.detail).toContain('1 settled attempts');
     expect(byName.leaseContention.value).toBe(1);
     expect(byName.journalGrowth.value).toBe(3);
   });
@@ -147,7 +150,7 @@ describe('evaluateAiHealth', () => {
         kind: 'dispatch',
         at: 1,
         operation: 'models.stream',
-        outcome: 'sent',
+        outcome: 'completed',
         durationMs: 60_000,
       },
       {
@@ -213,6 +216,42 @@ describe('evaluateAiHealth', () => {
     expect(strict.status).toBe('degraded');
   });
 
+  it('dispatch latency is one terminal observation per attempt, not sent-plus-terminal', () => {
+    // The reviewer's exact shape: a dispatch sent after 100 ms, then the
+    // same attempt settling with a terminal duration of 1000 ms measured
+    // from the sent timestamp. The sent timing is throughput; the latency
+    // signal must report the terminal observation alone — not 550 (the
+    // old mean over both events) and not 1100 (their sum).
+    const report = evaluateAiHealth(
+      snapshotOf([
+        {
+          kind: 'dispatch',
+          at: 1,
+          operation: 'models.stream',
+          outcome: 'sent',
+          durationMs: 100,
+        },
+        {
+          kind: 'dispatch',
+          at: 2,
+          operation: 'models.stream',
+          outcome: 'completed',
+          durationMs: 1000,
+        },
+      ]),
+      { dispatchLatencyMs: 800 },
+    );
+    const latency = report.signals.find(
+      signal => signal.name === 'dispatchLatencyMs',
+    );
+    expect(latency?.value).toBe(1000);
+    expect(latency?.status).toBe('degraded');
+    expect(latency?.detail).toContain('1 settled attempts');
+    // The old math reported 550 across 2 dispatches and stayed ok at an
+    // 800 ms threshold; the corrected signal degrades.
+    expect(report.status).toBe('degraded');
+  });
+
   it('a journal event without durationMs does not poison the durations', () => {
     // A journal event lacking durationMs (the type allows it at runtime)
     // must leave durations.journal unset, not NaN: a NaN would serialize
@@ -244,6 +283,7 @@ describe('evaluateAiHealth', () => {
       counters: [{ labels: { source: 'lease' }, count: 5 }],
       durations: {},
       activeLeases: 3,
+      terminalDispatches: 0,
       failures: 1,
       journalDecisions: { allow: 0, deny: 0 },
       events: 6,

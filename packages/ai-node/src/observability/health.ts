@@ -136,13 +136,11 @@ export function evaluateAiHealth(
   const denialRate =
     decisions === 0 ? 0 : snapshot.journalDecisions.deny / decisions;
 
-  const dispatchCount = snapshot.counters
-    .filter(entry => entry.labels.outcome !== undefined)
-    .reduce((total, entry) => total + entry.count, 0);
+  const terminalDispatches = snapshot.terminalDispatches;
   const dispatchLatencyMs =
-    dispatchCount === 0
+    terminalDispatches === 0
       ? 0
-      : (snapshot.durations.dispatch ?? 0) / dispatchCount;
+      : (snapshot.durations.dispatchTerminal ?? 0) / terminalDispatches;
 
   const contention = seriesCount(snapshot.counters, 'action', 'contention');
 
@@ -176,9 +174,9 @@ export function evaluateAiHealth(
       'dispatchLatencyMs',
       dispatchLatencyMs,
       latencyThreshold,
-      `mean dispatch latency ${Math.round(
+      `mean terminal dispatch latency ${Math.round(
         dispatchLatencyMs,
-      )} ms across ${dispatchCount} dispatches`,
+      )} ms across ${terminalDispatches} settled attempts`,
     ),
     signal(
       'journalGrowth',

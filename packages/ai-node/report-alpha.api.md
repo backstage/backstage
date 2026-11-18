@@ -71,6 +71,7 @@ export type AiHealthSnapshot = Readonly<{
   counters: readonly MetricSeries[];
   durations: Readonly<Record<string, number>>;
   activeLeases: number;
+  terminalDispatches: number;
   failures: number;
   journalDecisions: Readonly<{
     allow: number;
