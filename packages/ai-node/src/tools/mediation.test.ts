@@ -25,11 +25,7 @@ import type { AttemptDecision, AttemptOutcome } from '../journal/types';
 import type { Fence } from '../contracts';
 import { validateToolCallEnvelope } from './envelope';
 import { createGuardedToolOperations } from './mediation';
-import {
-  composeWithToolRegistry,
-  createToolRegistry,
-  toolPermissionName,
-} from './registry';
+import { composeWithToolRegistry, createToolRegistry } from './registry';
 import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 import type { ToolModule } from './types';
 
