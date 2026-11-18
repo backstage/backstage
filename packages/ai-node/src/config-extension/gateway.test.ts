@@ -39,7 +39,7 @@ import {
 import type { AiCredentialStores, CredentialScope } from '../credentials/types';
 import { createAiServiceIntegration } from '../integration';
 import { runAiMigrations } from '../migrations';
-import { builtinProviderRegistry } from '../providers/testFixtures';
+import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 
 type Probe = {
   baseUrl: string;
@@ -107,6 +107,10 @@ async function fixture(): Promise<Fixture> {
     auditor: mockServices.auditor.mock(),
     lifecycle: { addShutdownHook: jest.fn() } as unknown as LifecycleService,
     pluginMetadata: { getId: () => 'test-plugin' } as PluginMetadataService,
+    events: {
+      publish: async () => {},
+      subscribe: async () => {},
+    },
   };
   const handles: Fixture['handles'] = [];
   return {

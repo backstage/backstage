@@ -394,7 +394,7 @@ export function createModelOperationGuard(options: {
                       cause: journalError,
                     });
                   }
-                  emitSafe(events, {
+                  emit?.({
                     kind: 'denial',
                     at: Date.now(),
                     pluginId: operation.fence.namespace.pluginId,
