@@ -18,9 +18,12 @@ import {
   resolveSafeChildPath,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { examples } from './plain.examples';
 import { assertScmUserCredentials } from './assertScmUserCredentials';
+import { containsGitDirectory } from './templateActionHandler';
+import { relative } from 'node:path';
 
 import {
   createTemplateAction,
@@ -76,6 +79,10 @@ export function createFetchPlainAction(options: {
       // Finally move the template result into the task workspace
       const targetPath = ctx.input.targetPath ?? './';
       const outputPath = resolveSafeChildPath(ctx.workspacePath, targetPath);
+
+      if (containsGitDirectory(relative(ctx.workspacePath, outputPath))) {
+        throw new InputError('targetPath must not be within a .git directory');
+      }
 
       assertScmUserCredentials({
         integrations,

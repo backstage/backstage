@@ -16,6 +16,8 @@
 
 import { Git } from '../scm';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import fs from 'fs-extra';
+import path from 'node:path';
 
 /**
  * @public
@@ -47,6 +49,10 @@ export async function initRepoAndPush(input: {
     ...auth,
     logger,
   });
+
+  // Make the initialization authoritative: any pre-existing `.git`
+  // directory is replaced rather than reused.
+  await fs.remove(path.join(dir, '.git'));
 
   await git.init({
     dir,

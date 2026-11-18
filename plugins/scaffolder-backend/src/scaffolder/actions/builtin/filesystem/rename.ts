@@ -17,8 +17,10 @@
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import fs from 'fs-extra';
+import { relative } from 'node:path';
 import { examples } from './rename.examples';
 import { InputError } from '@backstage/errors';
+import { containsGitDirectory } from '../fetch/templateActionHandler';
 
 /**
  * Creates a new action that allows renames of files and directories in the workspace.
@@ -69,6 +71,16 @@ export const createFilesystemRenameAction = () => {
           file.from,
         );
         const destFilepath = resolveSafeChildPath(ctx.workspacePath, file.to);
+
+        // A '.git' directory in the task workspace is reserved for the
+        // scaffolder's own git operations. Renaming into it would let
+        // template content reach the repository metadata that the publish
+        // actions interpret.
+        if (containsGitDirectory(relative(ctx.workspacePath, destFilepath))) {
+          throw new InputError(
+            'files must not be renamed into a .git directory',
+          );
+        }
 
         try {
           await fs.move(sourceFilepath, destFilepath, {
