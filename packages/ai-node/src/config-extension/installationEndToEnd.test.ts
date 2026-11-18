@@ -42,7 +42,7 @@ import { createAiServiceIntegration as createAiServiceIntegrationBase } from '..
 import { runAiMigrations } from '../migrations';
 import { configureAiInstallation } from './configureAiInstallation';
 import { createMetricsSubscriber } from '../observability/metrics';
-import { builtinProviderRegistry } from '../providers/testFixtures';
+import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 
 const createAiServiceIntegration = (
   options: Parameters<typeof createAiServiceIntegrationBase>[0],

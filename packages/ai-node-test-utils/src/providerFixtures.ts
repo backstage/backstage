@@ -22,9 +22,12 @@ import * as codex from '@earendil-works/pi-ai/api/openai-codex-responses';
 import * as images from '@earendil-works/pi-ai/api/openrouter-images';
 import * as systemOne from '@earendil-works/pi-ai/api/typesafe-system-one';
 import { resolveAzureConfig } from '@earendil-works/pi-ai/api/azure-openai-config';
-import { validateHttpEnvelope } from './httpEnvelope';
-import { createProviderRegistry } from './registry';
-import type { AiProviderModule, ProviderAdapter } from './types';
+import { validateHttpEnvelope } from '@backstage/ai-node/modules';
+import { createProviderRegistry } from '@backstage/ai-node/modules';
+import type {
+  AiProviderModule,
+  ProviderAdapter,
+} from '@backstage/ai-node/modules';
 
 const CHAT = ['stream', 'complete', 'streamSimple', 'completeSimple'] as const;
 const base = (url: string | undefined) => (url ?? '').replace(/\/+$/, '');
@@ -65,15 +68,14 @@ const nonChatAdapter = (
 });
 
 /**
- * Fixture copies of the provider modules that now live in their own packages.
+ * Synthetic provider module copies of the extracted families, for tests that
+ * dispatch through a realistic registry without depending on a family package.
  *
  * @remarks
- * Core tests exercise guard, journal and transport behaviour against
- * representative modules; the extracted packages have their own certification
- * suites, so these local definitions only serve core tests and are never
- * exported from the service.
+ * The extracted packages have their own certification suites; these copies
+ * serve tests that need a realistic registry without a family dependency.
  *
- * @internal
+ * @alpha
  */
 export const fixtureProviderModules: readonly AiProviderModule[] = [
   {
@@ -175,6 +177,7 @@ export const fixtureProviderModules: readonly AiProviderModule[] = [
 ];
 
 /** The extracted families' test fixtures, for core tests. */
+/** The fixture modules joined into one registry. @alpha */
 export const builtinProviderRegistry = createProviderRegistry([
   ...fixtureProviderModules,
 ]);

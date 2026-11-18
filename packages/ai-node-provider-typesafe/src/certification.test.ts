@@ -25,8 +25,8 @@ import {
   createProviderRegistry,
   registerProviderCertification,
   runCrashChild,
-} from '@backstage/ai-node/testUtils';
-import type { TrustedOperation } from '@backstage/ai-node/testUtils';
+} from '@backstage/ai-node-test-utils/alpha';
+import type { TrustedOperation } from '@backstage/ai-node-test-utils/alpha';
 import { typesafeSystemOne } from './typesafeSystemOne';
 
 const providers = createProviderRegistry([typesafeSystemOne]);

@@ -40,7 +40,7 @@ import {
   GuardedResolutionError,
 } from './modelOperations';
 import type { TrustedOperation } from './types';
-import { builtinProviderRegistry } from '../providers/testFixtures';
+import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 
 const createAttemptJournal = (
   options: Parameters<typeof createAttemptJournalBase>[0],

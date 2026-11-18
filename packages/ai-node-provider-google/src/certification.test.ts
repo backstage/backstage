@@ -28,7 +28,7 @@ import {
   registerProviderCertification,
   runCrashChild,
   type TrustedOperation,
-} from '@backstage/ai-node/testUtils';
+} from '@backstage/ai-node-test-utils/alpha';
 import { googleGenerativeAi, googleVertex } from './module';
 
 const credentials = { $$type: '@backstage/BackstageCredentials' } as never;

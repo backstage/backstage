@@ -24,7 +24,7 @@ import {
   type GuardedModelBinding,
 } from '../../guard/modelOperations';
 import type { TrustedOperation } from '../../guard/types';
-import { builtinProviderRegistry } from '../testFixtures';
+import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 
 const createModelOperationGuard = (
   options: Parameters<typeof createModelOperationGuardBase>[0],
