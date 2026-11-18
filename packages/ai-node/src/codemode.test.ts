@@ -25,9 +25,11 @@
  *    the AI audit journal — model calls from scripts leave AI audit rows,
  *    script bookkeeping does not.
  * 4. Nested-call routing: `models.classify()` from inside a script routes
- *    through the guarded facade and denies fail-closed (no provider module
- *    certifies classify yet), with a journaled AI audit denial and no
- *    network dispatch.
+ *    through the guarded facade and denies fail-closed when the model is
+ *    not one a certified module dispatches (classification is certified
+ *    through the TypeSafe and OpenAI Decisions modules; this catalog entry
+ *    uses the chat openai-responses transport, which certifies no classify
+ *    operation), with a journaled AI audit denial and no network dispatch.
  *
  * The default-off behavior (no `codemode` option) is pinned here too: the
  * codemode tool is not offered to the model, and the rest is covered by the
@@ -550,7 +552,7 @@ describe('opt-in code mode wiring', () => {
       expect(output).not.toContain('nokey/');
 
       // The denial is journaled in the AI audit trail as a classify
-      // attempt that no provider module certifies.
+      // attempt this model's transport does not certify.
       await wait(async () => {
         const rows = await f
           .db('ai_journal_events')
