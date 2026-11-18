@@ -442,6 +442,7 @@ export default {
         sidebarElementWithIndex({ label: 'Azure DevOps' }, [
           'integrations/azure/locations',
           'integrations/azure/discovery',
+          'integrations/azure/scaffolder',
         ]),
         sidebarElementWithIndex({ label: 'Microsoft Entra ID' }, [
           'integrations/azure/org',
