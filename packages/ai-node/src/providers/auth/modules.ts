@@ -67,7 +67,26 @@ export function createAuthModuleRegistry(
   return Object.freeze({ get: (id: string) => byId.get(id) });
 }
 
-/** @alpha */
+/**
+ * Validates one token request envelope against a module's declaration.
+ *
+ * @remarks
+ * The checks are structural and fail closed on anything unexpected: the method
+ * must be `POST`, the URL must be exactly the operation destination with
+ * `tokenPath` as its pathname, the content type must match `body`, the payload
+ * must be under the 8 KiB cap, and the fields must be exactly the allowlisted
+ * grant fields for the operation kind. A module calls this from its
+ * `validateTokenRequest`, which the auth guard runs before it journals the
+ * intent and sends.
+ *
+ * @param input - The operation kind, the trusted endpoint and the request clone.
+ * @param body - Encoding the module declares: `json` or `form`.
+ * @param tokenPath - The module's reserved token route, e.g. `/v1/oauth/token`.
+ * @throws Error when the envelope differs in method, endpoint, encoding, size,
+ * field set or grant type, so no secret material is ever forwarded by mistake.
+ *
+ * @alpha
+ */
 export async function assertTokenRequest(
   input: {
     operation: AuthOperationKind;
@@ -134,11 +153,21 @@ export async function assertTokenRequest(
   }
 }
 
-/** Validates the token response and builds the credential.
+/**
+ * Validates a token response and builds the credential to persist.
+ *
+ * @remarks
+ * Only declared fields survive: the access token, the refresh token (falling
+ * back to the previous one) and the module's `extraFields`. Anything else in
+ * the response body is discarded, so an unexpected field cannot be stored.
+ *
+ * @param input - The parsed body, the credential being replaced, and the clock.
+ * @param extraFields - Non-secret fields the module declares, e.g. `account`.
+ * @throws Error when the body shape, access token, refresh token or expiry is
+ * unusable, so a partial rotation is never committed.
  *
  * @alpha
  */
-/** @alpha */
 export function parseOAuthTokenResponse(
   input: {
     body: unknown;
@@ -186,7 +215,25 @@ export function parseOAuthTokenResponse(
   ) as OAuthCredential;
 }
 
-/** @alpha */
+/**
+ * Builds one token request for a module's `refreshRequest` or
+ * `exchangeRequest`.
+ *
+ * @remarks
+ * Only fields the caller passes are encoded — a `client_secret` is not part of
+ * the allowlist and cannot appear — and the request is a plain `POST` whose
+ * content type matches `body`. Callers supply the public client ID from the
+ * host configuration and the grant fields that belong to the operation kind;
+ * the auth guard then validates the envelope again before sending.
+ *
+ * @param endpoint - The trusted token endpoint the host configured.
+ * @param body - Encoding to use: `json` for an `application/json` body, `form`
+ * for `application/x-www-form-urlencoded`.
+ * @param fields - Grant fields to encode; values must be non-empty strings.
+ * @returns A `Request` ready for `assertTokenRequest` to validate.
+ *
+ * @alpha
+ */
 export function createTokenRequest(
   endpoint: string,
   body: 'json' | 'form',

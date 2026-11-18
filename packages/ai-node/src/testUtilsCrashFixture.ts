@@ -26,34 +26,25 @@ import type { Fence, Namespace } from './contracts';
 import { createAttemptJournal } from './journal/knex';
 import { createModelOperationGuard } from './guard/createModelOperationGuard';
 import type { ModelOperation, TrustedOperation } from './guard/types';
-import type { AnyModel } from '@earendil-works/pi-ai';
 import type { AiProviderRegistry } from './providers/registry';
 import { builtinProviderRegistry } from './providers/testFixtures';
 
 const storageMigration = require('../migrations/1000_storage');
 const journalMigration = require('../migrations/4000_journal');
 
-/** Environment flag the child branch of a crash test runs unde
- *
- * @alpha
- */ export const CRASH_TEST_CHILD_ENV = 'AI_CRASH_TEST_CHILD';
+/** Environment flag the child branch of a crash test runs under. @alpha */
+export const CRASH_TEST_CHILD_ENV = 'AI_CRASH_TEST_CHILD';
 
-/** Origin the child reaches; a bare server that never answer
- *
- * @alpha
- */ export const CRASH_TEST_ORIGIN_ENV = 'AI_CRASH_TEST_ORIGIN';
+/** Origin the child reaches; a bare server that never answers. @alpha */
+export const CRASH_TEST_ORIGIN_ENV = 'AI_CRASH_TEST_ORIGIN';
 
-/** Database file the child appends t
- *
- * @alpha
- */ export const CRASH_TEST_DB_ENV = 'AI_CRASH_TEST_DB';
+/** Database file the child appends to. @alpha */
+export const CRASH_TEST_DB_ENV = 'AI_CRASH_TEST_DB';
 
-/** Namespace and fence the child writes wit
- *
- * @alpha
- */ export const CRASH_TEST_NAMESPACE_ENV = 'AI_CRASH_TEST_NAMESPACE';
-/** @alpha */
-/** @alpha */
+/** Namespace the child writes with. @alpha */
+export const CRASH_TEST_NAMESPACE_ENV = 'AI_CRASH_TEST_NAMESPACE';
+
+/** Fence the child writes with. @alpha */
 export const CRASH_TEST_FENCE_ENV = 'AI_CRASH_TEST_FENCE';
 
 const DEFAULT_NAMESPACE: Namespace = {
@@ -61,10 +52,16 @@ const DEFAULT_NAMESPACE: Namespace = {
   sessionId: 'session',
 };
 
-/** A prepared crash fixture: durable journal plus a leased namespac
+/**
+ * A prepared crash fixture: a migrated database and a leased namespace.
+ *
+ * @remarks
+ * The journal over the fixture's database stays internal; tests raise the
+ * crash cell through {@link CrashTestFixture.assertCrashUnknown}.
  *
  * @alpha
- */ export interface CrashTestFixture {
+ */
+export interface CrashTestFixture {
   readonly namespace: Namespace;
   readonly fence: Fence;
   readonly credentials: BackstageCredentials;
@@ -72,8 +69,7 @@ const DEFAULT_NAMESPACE: Namespace = {
   assertCrashUnknown(options?: CrashTestOptions): Promise<void>;
 }
 
-/** @alpha */
-/** @alpha */
+/** Options for {@link createCrashTestFixture}. @alpha */
 export interface CrashTestFixtureOptions {
   /** Knex client, typically a file-backed better-sqlite3 database. */
   readonly db: Knex;
@@ -85,8 +81,7 @@ export interface CrashTestFixtureOptions {
   readonly authorizeAuditRead?: (credentials: BackstageCredentials) => boolean;
 }
 
-/** @alpha */
-/** @alpha */
+/** Options for {@link CrashTestFixture.assertCrashUnknown}. @alpha */
 export interface CrashTestOptions {
   /** Test file the child runs; defaults to the calling test file. */
   readonly testFile?: string;
@@ -267,10 +262,44 @@ export async function createCrashTestFixture(
   };
 }
 
-/** What a crash worker receives in its own proces
+/**
+ * One guarded dispatch a crash worker can perform.
  *
  * @alpha
- */ export interface CrashChildContext {
+ */
+export interface CrashChildBinding {
+  /** Guarded transport to hand to the provider adapter. */
+  readonly fetch: typeof fetch;
+  /** The trusted operation the transport is bound to. */
+  readonly operation: TrustedOperation;
+}
+
+/**
+ * Input for {@link CrashChildContext.bind}.
+ *
+ * @alpha
+ */
+export interface CrashChildBindInput {
+  /** Provider ID the operation dispatches to. */
+  readonly provider: string;
+  /** Model ID the operation resolves to. */
+  readonly modelId: string;
+  /** Model ID actually sent; defaults to `modelId`. */
+  readonly resolvedModel?: string;
+  /** Guarded model operation, e.g. `streamSimple` or `complete`. */
+  readonly operation: ModelOperation;
+  /** Provider API identifier of the adapter making the call. */
+  readonly api: string;
+  /** Exact destination URL the operation is allowed to reach. */
+  readonly destination: string;
+}
+
+/**
+ * What a crash worker receives in its own process.
+ *
+ * @alpha
+ */
+export interface CrashChildContext {
   /** The origin the parent is watching; it never answers. */
   readonly origin: string;
   readonly namespace: Namespace;
@@ -279,15 +308,7 @@ export async function createCrashTestFixture(
    * Binds one trusted operation to this process's fence and returns the
    * guarded transport to hand to the provider adapter.
    */
-  bind(input: {
-    readonly provider: string;
-    readonly modelId: string;
-    readonly resolvedModel?: string;
-    readonly operation: ModelOperation;
-    readonly api: string;
-    readonly destination: string;
-    readonly model?: AnyModel;
-  }): { readonly fetch: typeof fetch; readonly operation: TrustedOperation };
+  bind(input: CrashChildBindInput): CrashChildBinding;
 }
 
 /**

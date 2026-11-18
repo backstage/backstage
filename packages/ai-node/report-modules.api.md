@@ -74,7 +74,7 @@ export type AiProviderModule = Readonly<{
   >;
 }>;
 
-// @alpha (undocumented)
+// @alpha
 export function assertTokenRequest(
   input: {
     operation: AuthOperationKind;
@@ -140,7 +140,7 @@ export const builtinProviderModules: readonly Readonly<{
   >;
 }>[];
 
-// @alpha (undocumented)
+// @alpha
 export function createTokenRequest(
   endpoint: string,
   body: 'json' | 'form',
@@ -173,7 +173,7 @@ export type DestinationTemplatePart =
       digest: string;
     }>;
 
-// @alpha (undocumented)
+// @alpha
 export type HttpEnvelopeRules = Readonly<{
   endpoint: string;
   sdkQueryParams?: Readonly<Record<string, string>>;
@@ -208,7 +208,7 @@ export type OAuthRefreshInput = AuthTokenRequestBase &
     credential: OAuthCredential;
   }>;
 
-// @alpha (undocumented)
+// @alpha
 export function parseOAuthTokenResponse(
   input: {
     body: unknown;

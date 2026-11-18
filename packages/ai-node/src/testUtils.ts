@@ -42,6 +42,8 @@ export {
   runCrashChild,
 } from './testUtilsCrashFixture';
 export type {
+  CrashChildBindInput,
+  CrashChildBinding,
   CrashChildContext,
   CrashTestFixture,
   CrashTestFixtureOptions,

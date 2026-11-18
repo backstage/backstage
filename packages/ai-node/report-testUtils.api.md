@@ -67,7 +67,7 @@ export const CRASH_TEST_CHILD_ENV = 'AI_CRASH_TEST_CHILD';
 // @alpha
 export const CRASH_TEST_DB_ENV = 'AI_CRASH_TEST_DB';
 
-// @alpha (undocumented)
+// @alpha
 export const CRASH_TEST_FENCE_ENV = 'AI_CRASH_TEST_FENCE';
 
 // @alpha
@@ -77,19 +77,24 @@ export const CRASH_TEST_NAMESPACE_ENV = 'AI_CRASH_TEST_NAMESPACE';
 export const CRASH_TEST_ORIGIN_ENV = 'AI_CRASH_TEST_ORIGIN';
 
 // @alpha
+export interface CrashChildBinding {
+  readonly fetch: typeof fetch;
+  readonly operation: TrustedOperation;
+}
+
+// @alpha
+export interface CrashChildBindInput {
+  readonly api: string;
+  readonly destination: string;
+  readonly modelId: string;
+  readonly operation: ModelOperation;
+  readonly provider: string;
+  readonly resolvedModel?: string;
+}
+
+// @alpha
 export interface CrashChildContext {
-  bind(input: {
-    readonly provider: string;
-    readonly modelId: string;
-    readonly resolvedModel?: string;
-    readonly operation: ModelOperation;
-    readonly api: string;
-    readonly destination: string;
-    readonly model?: AnyModel;
-  }): {
-    readonly fetch: typeof fetch;
-    readonly operation: TrustedOperation;
-  };
+  bind(input: CrashChildBindInput): CrashChildBinding;
   // (undocumented)
   readonly fence: Fence;
   // (undocumented)
@@ -108,7 +113,7 @@ export interface CrashTestFixture {
   readonly namespace: Namespace;
 }
 
-// @alpha (undocumented)
+// @alpha
 export interface CrashTestFixtureOptions {
   readonly authorizeAuditRead?: (credentials: BackstageCredentials) => boolean;
   readonly db: Knex;
@@ -116,7 +121,7 @@ export interface CrashTestFixtureOptions {
   readonly providers?: AiProviderRegistry;
 }
 
-// @alpha (undocumented)
+// @alpha
 export interface CrashTestOptions {
   readonly env?: Readonly<Record<string, string | undefined>>;
   readonly testFile?: string;
