@@ -107,12 +107,22 @@ export async function createJournalHarness(
     // setup leaves nothing behind.
     const cleanup = async () => {
       try {
-        await db?.destroy();
-      } catch {
-        /* the connection may already be gone */
+        try {
+          await db?.destroy();
+        } catch {
+          /* the connection may already be gone */
+        }
+        try {
+          await admin.raw(`drop schema if exists "${schema}" cascade`);
+        } catch {
+          /* the schema may never have been created, or the drop may
+             fail on a dead connection; the destroy below still runs. */
+        }
+      } finally {
+        // Runs regardless of the drop result: a failed create or drop
+        // must not leak the admin connection.
+        await admin.destroy();
       }
-      await admin.raw(`drop schema if exists "${schema}" cascade`);
-      await admin.destroy();
     };
     try {
       await admin.raw(`create schema "${schema}"`);
@@ -151,43 +161,54 @@ export async function createJournalHarness(
   }
 
   const directory = await mkdtemp(join(tmpdir(), 'ai-journal-harness-'));
-  const db = knex({
-    client: 'better-sqlite3',
-    connection: { filename: join(directory, 'harness.sqlite') },
-    useNullAsDefault: true,
-    pool: { min: 1, max: 1 },
-  });
+  let db: Knex | undefined;
   try {
-    await storageMigration.up(db);
-    await journalMigration.up(db);
-    await db('ai_namespace_leases').insert({
+    // Inside the protected region: a synchronous constructor failure
+    // must still remove the directory.
+    const connection = knex({
+      client: 'better-sqlite3',
+      connection: { filename: join(directory, 'harness.sqlite') },
+      useNullAsDefault: true,
+      pool: { min: 1, max: 1 },
+    });
+    db = connection;
+    await storageMigration.up(connection);
+    await journalMigration.up(connection);
+    await connection('ai_namespace_leases').insert({
       plugin_id: namespace.pluginId,
       session_id: namespace.sessionId,
       owner_id: fence.owner,
       token: fence.token,
-      expires_at: db.raw("(julianday('now') - 2440587.5) * 86400000 + 60000"),
+      expires_at: connection.raw(
+        "(julianday('now') - 2440587.5) * 86400000 + 60000",
+      ),
     });
+    const journal = createAttemptJournal({
+      db: connection,
+      providers: options.providers,
+      authorizer: { authorizeAuditRead: async () => true },
+    });
+    return {
+      journal,
+      db: connection,
+      namespace,
+      fence,
+      credentials,
+      cleanup: async () => {
+        try {
+          await connection.destroy();
+        } finally {
+          // Runs regardless of the destroy result: a rejected destroy
+          // must not leak the directory.
+          await rm(directory, { recursive: true, force: true });
+        }
+      },
+    };
   } catch (error) {
-    await db.destroy().catch(() => undefined);
+    await db?.destroy().catch(() => undefined);
     await rm(directory, { recursive: true, force: true }).catch(
       () => undefined,
     );
     throw error;
   }
-  const journal = createAttemptJournal({
-    db,
-    providers: options.providers,
-    authorizer: { authorizeAuditRead: async () => true },
-  });
-  return {
-    journal,
-    db,
-    namespace,
-    fence,
-    credentials,
-    cleanup: async () => {
-      await db.destroy();
-      await rm(directory, { recursive: true, force: true });
-    },
-  };
 }
