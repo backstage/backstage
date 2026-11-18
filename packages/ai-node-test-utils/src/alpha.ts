@@ -16,23 +16,29 @@
 
 /** @packageDocumentation */
 
-export { registerProviderCertification } from './providers/certification';
-export { createProviderRegistry } from './providers/registry';
-export type { AiProviderRegistry } from './providers/registry';
-export { createModelOperationGuard } from './guard/createModelOperationGuard';
-export { createGuardedModelOperations } from './guard/modelOperations';
-export type { ModelOperation, TrustedOperation } from './guard/types';
+export { registerProviderCertification } from '@backstage/ai-node/modules';
+export { createProviderRegistry } from '@backstage/ai-node/modules';
+export type { AiProviderRegistry } from '@backstage/ai-node/modules';
+export { createModelOperationGuard } from '@backstage/ai-node/modules';
+export { createGuardedModelOperations } from '@backstage/ai-node/modules';
+export type {
+  ModelOperation,
+  TrustedOperation,
+} from '@backstage/ai-node/modules';
 export type {
   AttemptDecision,
   AttemptId,
   AttemptOutcome,
-} from './journal/types';
+} from '@backstage/ai-node/modules';
 export type {
   GuardedModelBinding,
   ModelRequests,
   ProviderAuthority,
-} from './guard/modelOperations';
-export type { GuardedOperation, ModelOperationGuard } from './guard/types';
+} from '@backstage/ai-node/modules';
+export type {
+  GuardedOperation,
+  ModelOperationGuard,
+} from '@backstage/ai-node/modules';
 export type {
   AttemptJournal,
   AttemptOutcomeStatus,
@@ -40,30 +46,31 @@ export type {
   AuditPage,
   AuditQuery,
   RecoveryEvent,
-} from './journal/types';
+} from '@backstage/ai-node/modules';
 export type {
   AiEventEmitter,
   AiObservabilityEvent,
-} from './observability/types';
-export type { Fence, Namespace } from './contracts';
-export type { CredentialScope } from './credentials/types';
+} from '@backstage/ai-node/modules';
+export type { Fence, Namespace } from '@backstage/ai-node/modules';
+export type { CredentialScope } from '@backstage/ai-node/modules';
 export type {
   AiProviderModule,
   ModuleAuthority,
   ProviderAdapter,
   ProviderEnvelope,
-} from './providers/types';
-export { validateHttpEnvelope } from './providers/httpEnvelope';
-export type { HttpEnvelopeRules } from './providers/httpEnvelope';
+} from '@backstage/ai-node/modules';
+export { validateHttpEnvelope } from '@backstage/ai-node/modules';
+export type { HttpEnvelopeRules } from '@backstage/ai-node/modules';
 export type {
   DestinationTemplate,
   DestinationTemplatePart,
-} from './providers/templates';
+} from '@backstage/ai-node/modules';
+export { createAttemptJournal } from '@backstage/ai-node/modules';
 export {
   createJournalHarness,
   type JournalHarness,
   type JournalHarnessOptions,
-} from './testUtilsJournalHarness';
+} from './journalHarness';
 export {
   CRASH_TEST_CHILD_ENV,
   CRASH_TEST_DB_ENV,
@@ -72,7 +79,7 @@ export {
   CRASH_TEST_ORIGIN_ENV,
   createCrashTestFixture,
   runCrashChild,
-} from './testUtilsCrashFixture';
+} from './crashFixture';
 export type {
   CrashChildBindInput,
   CrashChildBinding,
@@ -80,4 +87,8 @@ export type {
   CrashTestFixture,
   CrashTestFixtureOptions,
   CrashTestOptions,
-} from './testUtilsCrashFixture';
+} from './crashFixture';
+export {
+  builtinProviderRegistry,
+  fixtureProviderModules,
+} from './providerFixtures';

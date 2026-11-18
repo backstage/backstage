@@ -15,7 +15,7 @@
  */
 
 import { guardedRequestOptions as guardedRequestOptionsBase } from './requestOptions';
-import { builtinProviderRegistry } from '../providers/testFixtures';
+import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 
 const guardedRequestOptions = (
   operation: Parameters<typeof guardedRequestOptionsBase>[0],

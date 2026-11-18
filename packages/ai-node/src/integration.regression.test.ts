@@ -55,7 +55,7 @@ import { runAiMigrations } from './migrations';
 import {
   builtinProviderRegistry,
   fixtureProviderModules,
-} from './providers/testFixtures';
+} from '@backstage/ai-node-test-utils/alpha';
 import { createAiModuleRegistry } from './moduleRegistry';
 
 const createAiServiceIntegration = (

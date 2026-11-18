@@ -27,7 +27,7 @@ import {
   registerProviderCertification,
   runCrashChild,
   type TrustedOperation,
-} from '@backstage/ai-node/testUtils';
+} from '@backstage/ai-node-test-utils/alpha';
 import { openaiProviderModules } from './alpha';
 
 const credentials = { $$type: '@backstage/BackstageCredentials' } as never;

@@ -22,15 +22,18 @@ import { dirname, join, relative, resolve } from 'node:path';
 import type { Knex } from 'knex';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { mockCredentials } from '@backstage/backend-test-utils';
-import type { Fence, Namespace } from './contracts';
-import { createAttemptJournal } from './journal/knex';
-import { createModelOperationGuard } from './guard/createModelOperationGuard';
-import type { ModelOperation, TrustedOperation } from './guard/types';
-import type { AiProviderRegistry } from './providers/registry';
-import { builtinProviderRegistry } from './providers/testFixtures';
+import type { Fence, Namespace } from '@backstage/ai-node/modules';
+import { createAttemptJournal } from '@backstage/ai-node/modules';
+import { createModelOperationGuard } from '@backstage/ai-node/modules';
+import type {
+  ModelOperation,
+  TrustedOperation,
+} from '@backstage/ai-node/modules';
+import type { AiProviderRegistry } from '@backstage/ai-node/modules';
+import { builtinProviderRegistry } from './providerFixtures';
 
-const storageMigration = require('../migrations/1000_storage');
-const journalMigration = require('../migrations/4000_journal');
+const storageMigration = require('@backstage/ai-node/migrations/1000_storage');
+const journalMigration = require('@backstage/ai-node/migrations/4000_journal');
 
 /** Environment flag the child branch of a crash test runs under. @alpha */
 export const CRASH_TEST_CHILD_ENV = 'AI_CRASH_TEST_CHILD';

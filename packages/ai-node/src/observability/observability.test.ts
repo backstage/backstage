@@ -31,7 +31,7 @@ import {
 } from '../guard/modelOperations';
 import { emitSafe, assertObservableEvent } from './types';
 import type { AiObservabilityEvent } from './types';
-import { builtinProviderRegistry } from '../providers/testFixtures';
+import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 
 const createModelOperationGuard = (
   options: Parameters<typeof createModelOperationGuardBase>[0],

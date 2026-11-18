@@ -30,11 +30,11 @@
  */
 import { readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { createProviderRegistry } from './providers/registry';
-import { createJournalHarness } from './testUtilsJournalHarness';
+import { createProviderRegistry } from '@backstage/ai-node/modules';
+import { createJournalHarness } from './journalHarness';
 
 // The injected failure: the first setup step that touches the database.
-jest.mock('../migrations/1000_storage', () => ({
+jest.mock('@backstage/ai-node/migrations/1000_storage', () => ({
   up: async () => {
     throw new Error('injected setup failure');
   },

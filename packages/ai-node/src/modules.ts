@@ -20,7 +20,11 @@
  * @remarks
  * This entry point is what provider packages build on: it exports the
  * `AiProviderModule` and `AiAuthModule` contracts, the request-envelope
- * validator and the OAuth token-request helpers used to assemble a module.
+ * validator and the OAuth token-request helpers used to assemble a module,
+ * and the certification and guard-construction machinery module authors use
+ * to certify their modules against the real guard — the provider
+ * certification registrar, the provider registry, the guard constructors and
+ * the journal constructor they drive.
  * It is alpha-grade: the shapes are stable enough to author against, but they
  * may change in a minor release as the extraction of provider packages
  * completes, and they are not yet covered by the stable `@public` surface.
@@ -53,3 +57,39 @@ export type {
   OAuthRefreshInput,
 } from './providers/auth/types';
 export type { CredentialScope } from './credentials/types';
+export type { Fence, Namespace } from './contracts';
+export { registerProviderCertification } from './providers/certification';
+export { createProviderRegistry } from './providers/registry';
+export type { AiProviderRegistry } from './providers/registry';
+export { createModelOperationGuard } from './guard/createModelOperationGuard';
+export { createGuardedModelOperations } from './guard/modelOperations';
+export type {
+  GuardedModelBinding,
+  ModelRequests,
+  ProviderAuthority,
+} from './guard/modelOperations';
+export type {
+  GuardedOperation,
+  ModelOperation,
+  ModelOperationGuard,
+  TrustedOperation,
+} from './guard/types';
+export { createAttemptJournal } from './journal/knex';
+export type { AttemptJournalOptions } from './journal/knex';
+export type {
+  AttemptDecision,
+  AttemptId,
+  AttemptOutcome,
+  AttemptJournal,
+  AttemptOutcomeStatus,
+  AuditEventView,
+  AuditPage,
+  AuditQuery,
+  AuditReadAuthorizer,
+  JournalAuditorMirror,
+  RecoveryEvent,
+} from './journal/types';
+export type {
+  AiEventEmitter,
+  AiObservabilityEvent,
+} from './observability/types';

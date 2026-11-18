@@ -43,7 +43,9 @@ retains its module snapshot until its last handle is released; a fresh admission
 uses the registrations available when it opens.
 
 Provider packages can run `registerProviderCertification` from
-`@backstage/ai-node/testUtils` in their test suites.
+`@backstage/ai-node-test-utils` in their test suites; the certification and
+guard-construction machinery is published on the module-authoring entry
+point, `@backstage/ai-node/modules`.
 
 ## Provider packages
 

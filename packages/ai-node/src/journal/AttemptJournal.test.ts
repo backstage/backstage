@@ -27,7 +27,7 @@ import type { AttemptJournal, AuditEventView } from './types';
 import { createAttemptJournal as createAttemptJournalBase } from './knex';
 import { pruneAiJournal } from './retention';
 import type { AttemptDecision } from './types';
-import { builtinProviderRegistry } from '../providers/testFixtures';
+import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 
 const createAttemptJournal = (
   options: Parameters<typeof createAttemptJournalBase>[0],

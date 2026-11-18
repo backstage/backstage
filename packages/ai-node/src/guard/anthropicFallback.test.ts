@@ -24,7 +24,7 @@ import type { Fence } from '../contracts';
 import type { AttemptDecision, AttemptOutcome } from '../journal/types';
 import { createModelOperationGuard as createModelOperationGuardBase } from './createModelOperationGuard';
 import type { TrustedOperation } from './types';
-import { builtinProviderRegistry } from '../providers/testFixtures';
+import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 
 const createModelOperationGuard = (
   options: Parameters<typeof createModelOperationGuardBase>[0],

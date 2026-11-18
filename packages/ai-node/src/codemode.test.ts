@@ -65,7 +65,7 @@ import {
   type ProductionAiServiceIntegration,
 } from './integration';
 import { runAiMigrations } from './migrations';
-import { builtinProviderRegistry } from './providers/testFixtures';
+import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 import { createBoundedCodemodeExtension } from '@backstage/ai-node-codemode/alpha';
 
 const createAiServiceIntegration = (
