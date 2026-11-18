@@ -265,17 +265,19 @@ describe('custom gateway providers', () => {
       'cloudflare-ai-gateway',
       'anthropic-messages',
       '/v1/acct/gateway/anthropic',
-      '/v1/messages',
+      'no approved route template for destination',
     ],
     [
       'vercel-ai-gateway',
       'typesafe-system-one',
       '/typesafe/v1',
-      '/v1/systemone',
+      // This family's custom adapter refuses the request shape first, so the
+      // journaled reason is that refusal rather than the route check.
+      'unsupported model options',
     ],
   ])(
     'denies the catalog path shape of %s (%s) that no template certifies',
-    async (provider, api, pathPrefix) => {
+    async (provider, api, pathPrefix, expectedReason) => {
       const f = await fixture();
       const probe = await probeServer();
       try {
@@ -307,10 +309,25 @@ describe('custom gateway providers', () => {
         await conversation.abort(handle.context);
 
         // Fail closed: the prefixed path is not a certified route, so the
-        // request never leaves the process. The rejection surfaces as a
-        // model error carrying the route denial.
+        // request never leaves the process — and the refusal is journaled as a
+        // denial with the closed reason and the attempt's identity, like every
+        // other denial before a send.
         expect(probe.requests).toEqual([]);
         expect(settled.status).not.toBe('done');
+        await expect(
+          f
+            .db('ai_journal_events')
+            .orderBy('id')
+            .select('kind', 'decision', 'reason', 'provider', 'model'),
+        ).resolves.toEqual([
+          expect.objectContaining({
+            kind: 'decision',
+            decision: 'deny',
+            reason: expectedReason,
+            provider,
+            model: 'gateway-chat',
+          }),
+        ]);
       } finally {
         await probe.close();
         await f.close();
