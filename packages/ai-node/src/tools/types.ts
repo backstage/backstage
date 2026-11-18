@@ -109,6 +109,9 @@ export function toolModuleAsProviderModule(
 ): AiProviderModule {
   return {
     id: module.id,
+    // MCP servers take either an API key or an OAuth access token; the
+    // interpretation below decides from the stored credential's shape.
+    credentialKinds: ['api_key', 'oauth'],
     certifiedOperations: ['toolCall'],
     destinationTemplates: module.destinationTemplates,
     destination: (model: AnyModel) => module.destination(model.id),

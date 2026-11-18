@@ -35,6 +35,7 @@ it('registers and enforces non-chat modules without guard or journal edits', asy
   const bypass = jest.fn(async () => new Response('unguarded'));
   const module: AiProviderModule = {
     id: 'example-classifier',
+    credentialKinds: ['api_key'],
     certifiedOperations: ['classify', 'generateImages'],
     destinationTemplates: [[{ literal: '/v1/classify' }]],
     destination: () => 'https://provider.example/v1/classify',
@@ -233,6 +234,7 @@ it('rejects fabricated completions while preserving honest error settlements', a
   const transport = jest.fn(async () => new Response('ok'));
   const module: AiProviderModule = {
     id: 'example-classifier',
+    credentialKinds: ['api_key'],
     certifiedOperations: ['classify'],
     destinationTemplates: [[{ literal: '/v1/classify' }]],
     destination: () => 'https://provider.example/v1/classify',
@@ -475,6 +477,7 @@ it('aborts a detached later fetch promptly after an earlier fetch failed', async
   const controller = new AbortController();
   const module: AiProviderModule = {
     id: 'example-classifier',
+    credentialKinds: ['api_key'],
     certifiedOperations: ['classify'],
     destinationTemplates: [[{ literal: '/v1/classify' }]],
     destination: () => 'https://provider.example/v1/classify',

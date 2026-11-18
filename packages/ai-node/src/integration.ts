@@ -65,6 +65,10 @@ import {
   RESOURCE_TYPE_AI_MODEL,
   RESOURCE_TYPE_AI_TOOL,
 } from '@backstage/plugin-ai-common';
+import {
+  assertConfigCredentialKinds,
+  type ConfiguredCredentialKind,
+} from './credentials/configCredentialKinds';
 import { aiModelUsePermission } from '@backstage/plugin-ai-common';
 import { createGuardedToolOperations } from './tools/mediation';
 import { composeWithToolRegistry, createToolRegistry } from './tools/registry';
@@ -194,6 +198,12 @@ export interface AiServiceIntegrationOptions {
    * no-model availability error.
    */
   readonly models?: readonly AnyModel[];
+  /**
+   * The credential kinds installation configuration declares, validated
+   * against the registered modules at composition so a kind no module consumes
+   * fails at startup instead of at dispatch.
+   */
+  readonly configCredentialKinds?: readonly ConfiguredCredentialKind[];
   /**
    * Whether a caller's personal provider credential wins over the
    * installation's. Defaults to `user-first`: absence always falls through to
@@ -527,6 +537,15 @@ export async function createAiServiceIntegration(
     const providerRegistry = toolRegistry
       ? composeWithToolRegistry(providerBase, toolRegistry)
       : providerBase;
+    // Composition-time credential-kind validation, per module snapshot: a
+    // provider whose modules are all known rejects a configured kind none of
+    // them consumes, while an unregistered provider stays dispatch-time
+    // fail-closed because nothing here can say what it would accept.
+    assertConfigCredentialKinds({
+      models: catalog,
+      providers: providerRegistry,
+      configured: options.configCredentialKinds ?? [],
+    });
     const journal: AttemptJournal = createWiredAttemptJournal({
       db,
       ...(events ? { emit: events } : {}),
@@ -1312,6 +1331,28 @@ export async function createAiServiceIntegration(
         );
       }
       let resolved = current.authorities.get(canonical.provider);
+      if (resolved !== undefined) {
+        // Dispatch-time credential-kind check: the module that will serve this
+        // model must accept the stored credential's kind. An admission still
+        // resolves every catalog provider, so enforcement lives here, where the
+        // pair that actually dispatches is known. A refusal is a typed
+        // resolution denial, so it is journaled with the guidance.
+        const unsupported = unsupportedCredentialKindReason(
+          providerRegistry.get(canonical.api),
+          canonical.provider,
+          resolved.authority.kind,
+        );
+        if (unsupported !== undefined) {
+          throw new GuardedResolutionError(
+            {
+              operation: trusted,
+              model: bindingModel,
+              authority: resolved.authority,
+            },
+            unsupported,
+          );
+        }
+      }
       if (resolved === undefined) {
         throw new GuardedResolutionError(
           {
@@ -1757,6 +1798,35 @@ function resolvedAuthorityFields(resolved: ResolvedAuthority): {
     credentialScope: resolved.scope,
     credentialGeneration: resolved.generation,
   };
+}
+
+/**
+ * Refuses a credential kind the resolved module does not consume, with
+ * guidance naming the kinds it does.
+ *
+ * @remarks
+ * A gateway provider can have an `api_key` entry while an `oauth` token for
+ * the same provider sits in a personal store; the module that serves the
+ * model decides, and a kind it cannot interpret never reaches the wire.
+ */
+function unsupportedCredentialKindReason(
+  module: AiProviderModule | undefined,
+  providerId: string,
+  kind: 'apiKey' | 'oauth' | 'federation',
+): string | undefined {
+  const credentialKind = kind === 'apiKey' ? 'api_key' : kind;
+  if (
+    module === undefined ||
+    !Array.isArray(module.credentialKinds) ||
+    module.credentialKinds.includes(credentialKind)
+  ) {
+    return undefined;
+  }
+  return `The stored credential for provider '${providerId}' is a '${credentialKind}' credential, which the registered module '${
+    module.id
+  }' does not accept. Supported credential kinds for this provider: ${module.credentialKinds.join(
+    ', ',
+  )}; store a credential of a supported kind instead`;
 }
 
 function authorityOf(

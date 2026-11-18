@@ -64,6 +64,7 @@ const nonChatAdapter = (
 export const openaiDecisions: AiProviderModule = {
   id: 'openai-decisions',
   adapter: nonChatAdapter(decisions.classify),
+  credentialKinds: ['api_key'],
   certifiedOperations: ['classify'],
   destinationTemplates: [[{ literal: '/v1/decisions' }]],
   destination: model => `${base(model.baseUrl)}/decisions`,

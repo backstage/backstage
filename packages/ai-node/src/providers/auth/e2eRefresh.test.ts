@@ -136,6 +136,7 @@ function probeAdapter(record: (headers: Headers) => void): AiProviderModule {
   return {
     id: 'tauth-probe',
     adapter: { kind: 'stream', stream, streamSimple: stream },
+    credentialKinds: ['api_key', 'oauth'],
     certifiedOperations: [
       'stream',
       'complete',

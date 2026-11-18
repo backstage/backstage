@@ -194,6 +194,18 @@ export function assertOperation(
 }
 
 /**
+ * A destination whose path no registered module certifies.
+ *
+ * @remarks
+ * Typed so the guard can journal the refusal instead of only failing: a
+ * destination that cannot be canonicalized is a denial, and denials before a
+ * send are recorded like every other one.
+ *
+ * @alpha
+ */
+export class UnapprovedDestinationError extends Error {}
+
+/**
  * Canonicalizes destinations from the trusted producer, which binds the host
  * to its configuration before journaling. Hosts are stored verbatim; callers
  * must not supply untrusted or secret-bearing hosts. Paths are limited to the
@@ -292,7 +304,9 @@ export function assertDestination(
   }
   if (canonical !== undefined)
     return `${url.protocol}//${authority}${canonical}`;
-  throw new Error(`Invalid ${field}: no approved route template`);
+  throw new UnapprovedDestinationError(
+    `Invalid ${field}: no approved route template`,
+  );
 }
 
 /**

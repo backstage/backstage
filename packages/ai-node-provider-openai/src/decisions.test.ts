@@ -292,6 +292,7 @@ describe('OpenAI Decisions module', () => {
     // attempt decisions and never a fabricated completed outcome.
     const module: AiProviderModule = {
       id: 'multi-attempt-classifier',
+      credentialKinds: ['api_key'],
       certifiedOperations: ['classify'],
       destinationTemplates: [[{ literal: '/v1/classify' }]],
       destination: () => 'https://provider.example/v1/classify',

@@ -17,6 +17,7 @@
 import type { JsonValue } from '@backstage/config';
 import type { AnyModel } from '@earendil-works/pi-ai';
 import type { AiCredentialStores } from '../credentials/types';
+import type { ConfiguredCredentialKind } from '../credentials/configCredentialKinds';
 import type { Fence } from '../contracts';
 
 /**
@@ -131,4 +132,9 @@ export type ConfiguredAiInstallation = Readonly<{
   credentialPrecedence: AiCredentialsPrecedence;
   /** Trusted token endpoints per provider for guarded auth operations. */
   credentialTokenEndpoints: Readonly<Record<string, string>>;
+  /**
+   * The kinds the configuration declares per provider, so composition can
+   * reject one no registered module for that provider consumes.
+   */
+  configCredentialKinds?: readonly ConfiguredCredentialKind[];
 }>;

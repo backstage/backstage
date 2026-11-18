@@ -40,6 +40,7 @@ const base = (url: string | undefined) => (url ?? '').replace(/\/+$/, '');
 export const openaiResponses: AiProviderModule = {
   id: 'openai-responses',
   adapter: streamAdapter(responses),
+  credentialKinds: ['api_key', 'oauth'],
   certifiedOperations: CHAT,
   destinationTemplates: [[{ literal: '/v1/responses' }]],
   destination: model => `${base(model.baseUrl)}/responses`,
@@ -51,6 +52,7 @@ export const openaiResponses: AiProviderModule = {
 export const openaiCompletions: AiProviderModule = {
   id: 'openai-completions',
   adapter: streamAdapter(completions),
+  credentialKinds: ['api_key', 'oauth'],
   certifiedOperations: CHAT,
   destinationTemplates: [[{ literal: '/v1/chat/completions' }]],
   destination: model => `${base(model.baseUrl)}/chat/completions`,
@@ -67,6 +69,7 @@ export const openaiCompletions: AiProviderModule = {
 export const openaiCodexResponses: AiProviderModule = {
   id: 'openai-codex-responses',
   adapter: streamAdapter(codex),
+  credentialKinds: ['api_key', 'oauth'],
   certifiedOperations: CHAT,
   destinationTemplates: [[{ literal: '/backend-api/codex/responses' }]],
   destination: model => `${base(model.baseUrl)}/codex/responses`,

@@ -21,6 +21,7 @@ import type {
   AttemptJournal,
   AttemptOutcome,
 } from '../journal/types';
+import { UnapprovedDestinationError } from '../journal/redaction';
 import type {
   GuardedOperation,
   ModelOperationGuard,
@@ -372,6 +373,41 @@ export function createModelOperationGuard(options: {
               );
             } catch (error) {
               block();
+              if (error instanceof UnapprovedDestinationError) {
+                // A destination no module certifies is a denial, and a denial
+                // before a send is journaled like any other: the reason is the
+                // closed code, and the row keeps the attempt identity.
+                if (journal) {
+                  try {
+                    await journal.recordDecisionAndIntent(
+                      operation.fence,
+                      decision(
+                        n,
+                        'deny',
+                        kind,
+                        undefined,
+                        'no approved route template for destination',
+                      ),
+                    );
+                  } catch (journalError) {
+                    throw new Error('Model denial journal failed', {
+                      cause: journalError,
+                    });
+                  }
+                  emitSafe(events, {
+                    kind: 'denial',
+                    at: Date.now(),
+                    pluginId: operation.fence.namespace.pluginId,
+                    sessionId: operation.fence.namespace.sessionId,
+                    provider: operation.provider,
+                    modelId: operation.modelId,
+                    operation:
+                      kind === 'model' ? `models.${operation.operation}` : kind,
+                    reason: 'no approved route template for destination',
+                    attempt: n,
+                  });
+                }
+              }
               throw error;
             }
             const attempt: PendingAttempt = {

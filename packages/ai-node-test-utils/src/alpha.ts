@@ -55,6 +55,7 @@ export type {
 export type { Fence, Namespace } from '@backstage/ai-node/modules';
 export type { CredentialScope } from '@backstage/ai-node/modules';
 export type {
+  AiCredentialKind,
   AiProviderModule,
   ModuleAuthority,
   ProviderAdapter,

@@ -90,6 +90,9 @@ export type ProviderAdapter =
       >;
     }>;
 
+/** A credential kind a provider module consumes. @alpha */
+export type AiCredentialKind = 'api_key' | 'oauth';
+
 /**
  * A host-trusted, in-process provider registration. Modules are not sandboxed:
  * their dispatch receives provider credentials and arbitrary plugin code can
@@ -114,6 +117,18 @@ export type ProviderAdapter =
 export type AiProviderModule = Readonly<{
   id: string;
   adapter: ProviderAdapter;
+  /**
+   * The credential kinds this module consumes. A family that ships an OAuth
+   * auth module declares `oauth` alongside `api_key`; an API-key-only family
+   * declares `api_key` alone, so a configured or stored credential of a kind
+   * it cannot interpret is refused instead of reaching the wire.
+   *
+   * Composition validates installation config against the modules used by the
+   * configured models (fail-fast at startup) and dispatch refuses a credential
+   * whose kind the resolved module does not declare, with guidance naming the
+   * supported kinds.
+   */
+  credentialKinds: readonly AiCredentialKind[];
   certifiedOperations: readonly string[];
   destinationTemplates: readonly DestinationTemplate[];
   destination(model: AnyModel, env: Record<string, string> | undefined): string;
@@ -140,10 +155,6 @@ export type AiProviderModule = Readonly<{
     scope: CredentialScope,
     credential: Credential,
   ): ModuleAuthority;
-  /**
-   * Names the permission guarding one operation of this module. Modules
-   * without this hook use the shared model permission encoder.
-   */
   /**
    * Optional module-carried binding resolution for operations resolved
    * outside the canonical model catalog (tool servers): the module supplies

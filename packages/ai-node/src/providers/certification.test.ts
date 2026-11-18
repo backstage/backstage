@@ -45,6 +45,7 @@ const paths = {
 const providers = createProviderRegistry([
   {
     id: 'test-classifier',
+    credentialKinds: ['api_key'],
     certifiedOperations: ['classify'],
     destinationTemplates: [[{ literal: '/v1/classify' }]],
     destination: () => 'https://provider.example/v1/classify',

@@ -20,17 +20,19 @@ import { anthropicProviderModules } from '@backstage/ai-node-provider-anthropic/
 import { azureProviderModules } from '@backstage/ai-node-provider-azure/alpha';
 import { typesafeProviderModules } from '@backstage/ai-node-provider-typesafe/alpha';
 import { openrouterProviderModules } from '@backstage/ai-node-provider-openrouter/alpha';
+import type { AiProviderModule } from '@backstage/ai-node/alpha';
 
 /**
  * The provider module collection this plugin registers: every extracted
  * family. Production registration and the test fixtures compose this one
  * array, so their parity holds by construction.
  */
-export const aiBackendProviderModules = Object.freeze([
-  ...googleProviderModules,
-  ...openaiProviderModules,
-  ...anthropicProviderModules,
-  ...azureProviderModules,
-  ...typesafeProviderModules,
-  ...openrouterProviderModules,
-]);
+export const aiBackendProviderModules: readonly AiProviderModule[] =
+  Object.freeze([
+    ...googleProviderModules,
+    ...openaiProviderModules,
+    ...anthropicProviderModules,
+    ...azureProviderModules,
+    ...typesafeProviderModules,
+    ...openrouterProviderModules,
+  ]);

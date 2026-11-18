@@ -110,6 +110,9 @@ export {
   isServer,
   isTool,
 } from './permissions/rules';
+export type { ConfiguredCredentialKind } from './credentials/configCredentialKinds';
+export type { AiCredentialKind } from './providers/types';
+export { assertConfigCredentialKinds } from './credentials/configCredentialKinds';
 export type {
   AiParamsSchema,
   AiPermissionRule,
