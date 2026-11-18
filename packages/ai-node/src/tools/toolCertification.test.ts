@@ -398,7 +398,14 @@ async function mediationHarness(options: {
     await options
       .db('ai_journal_events')
       .orderBy('id')
-      .select('kind', 'decision', 'attempt', 'status', 'reason');
+      .select(
+        'kind',
+        'decision',
+        'attempt',
+        'status',
+        'reason',
+        'recovery_kind as recoveryKind',
+      );
   return { call, rows, destination, journal };
 }
 
@@ -624,6 +631,8 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
             expect(await harness.rows()).toMatchObject([
               { kind: 'decision', decision: 'allow', attempt: 1 },
               { kind: 'outcome', status: 'unknown' },
+              // The uncertainty is recovery evidence, like model dispatches.
+              { kind: 'recovery', recoveryKind: 'unknown-dispatch' },
             ]);
           } finally {
             await store.cleanup();

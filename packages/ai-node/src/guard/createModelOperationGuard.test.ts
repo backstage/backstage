@@ -293,6 +293,18 @@ describe('model operation guard', () => {
     f.transport.mockRejectedValueOnce(new Error('socket disconnected'));
     await expect(f.fetch()).rejects.toThrow('socket disconnected');
     expect(f.events).toEqual(['check', 'allow:1', 'unknown:1']);
+    // The uncertainty is also recovery evidence: one unknown-dispatch row
+    // carrying the attempt identity, written fail-open.
+    expect(f.journal.recordRecovery).toHaveBeenCalledTimes(1);
+    expect(f.journal.recordRecovery).toHaveBeenCalledWith(
+      f.operation.fence,
+      expect.objectContaining({
+        actor: f.operation.actor,
+        kind: 'unknown-dispatch',
+        callId: f.operation.provenance.callId,
+        detail: 'transport failed',
+      }),
+    );
     const response = await f.fetch();
     expect(response.status).toBe(200);
     expect(f.journal.recordOutcome).toHaveBeenCalledTimes(1);
