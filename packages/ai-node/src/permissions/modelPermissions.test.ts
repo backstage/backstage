@@ -16,6 +16,11 @@
 
 import { mockCredentials } from '@backstage/backend-test-utils';
 import type { PermissionsService } from '@backstage/backend-plugin-api';
+import { ConfigReader } from '@backstage/config';
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
+import { parseAiInstallationConfig } from '../config-extension';
 import {
   createModelPermissions,
   modelPermissionName,
@@ -136,7 +141,9 @@ describe('model permissions', () => {
     });
     const listed = await permissions.listModels(user);
     expect(listed).toEqual([descriptor]);
-    // The caller cannot mutate the discovery result or its source.
+    // The caller cannot mutate the discovery result or its source: the
+    // returned array is frozen, and so is every entry.
+    expect(Object.isFrozen(listed)).toBe(true);
     expect(Object.isFrozen(listed[0])).toBe(true);
     expect(() => {
       (listed[0] as { modelId: string }).modelId = 'substituted';
@@ -155,26 +162,162 @@ describe('model permissions', () => {
     ]);
   });
 
+  it('drops extra input fields at the seam, keeping only descriptor fields', async () => {
+    // A structurally compatible input (the catalog's AnyModel entries are
+    // wider than ModelDescriptor) must not smuggle extra fields —
+    // headers, metadata — into discovery descriptors.
+    const user = mockCredentials.user('user:default/alice');
+    const authorize = jest.fn(async () => [
+      { result: 'ALLOW' },
+    ]) as unknown as jest.MockedFunction<PermissionsService['authorize']>;
+    // Wider than ModelDescriptor on purpose — the seam must shed the
+    // extra fields, which is why the literal needs the cast.
+    const input = [
+      {
+        provider: 'openai',
+        modelId: 'gpt-5',
+        api: 'openai-responses',
+        type: 'chat',
+        contextWindow: 400_000,
+        maxTokens: 128_000,
+        baseUrl: 'https://api.openai.com/v1',
+        headers: { authorization: 'private-value' },
+        extraMetadata: 'confidential',
+        cost: { input: 1, output: 2 },
+      },
+    ] as unknown as Parameters<typeof createModelPermissions>[0]['models'];
+    const permissions = createModelPermissions({
+      models: input,
+      authorizer: { authorize },
+      registry: { addPermissions: jest.fn() },
+    });
+    const listed = await permissions.listModels(user);
+    expect(listed).toEqual([
+      {
+        provider: 'openai',
+        modelId: 'gpt-5',
+        api: 'openai-responses',
+        type: 'chat',
+        contextWindow: 400_000,
+        maxTokens: 128_000,
+      },
+    ]);
+    expect(JSON.stringify(listed)).not.toContain('private-value');
+    expect(JSON.stringify(listed)).not.toContain('confidential');
+    expect(JSON.stringify(listed)).not.toContain('baseUrl');
+  });
+
+  it('configures classifier and image models through the real config path', async () => {
+    const user = mockCredentials.user('user:default/alice');
+    const installation = parseAiInstallationConfig({
+      root: new ConfigReader({
+        ai: {
+          models: [
+            {
+              provider: 'openai',
+              modelId: 'gpt-decisions',
+              type: 'classifier',
+              api: 'openai-decisions',
+              baseUrl: 'https://api.openai.com/v1',
+              contextWindow: 272_000,
+            },
+            {
+              provider: 'openrouter',
+              modelId: 'flux-3-image',
+              type: 'image',
+              api: 'openrouter-images',
+              baseUrl: 'https://openrouter.ai/api/v1',
+              maxTokens: 4096,
+            },
+            {
+              provider: 'openai',
+              modelId: 'gpt-5',
+              api: 'openai-responses',
+              baseUrl: 'https://api.openai.com/v1',
+              contextWindow: 400_000,
+              maxTokens: 128_000,
+            },
+          ],
+        },
+      }),
+      path: 'ai',
+    });
+    expect(installation.models).toHaveLength(3);
+    const authorize = jest.fn(
+      async (requests: Parameters<PermissionsService['authorize']>[0]) =>
+        requests.map(() => ({ result: 'ALLOW' })),
+    ) as unknown as jest.MockedFunction<PermissionsService['authorize']>;
+    const permissions = createModelPermissions({
+      models: installation.models.map(model => ({
+        provider: model.provider,
+        modelId: model.id,
+        api: model.api,
+        type: model.type,
+        ...('contextWindow' in model
+          ? { contextWindow: model.contextWindow }
+          : {}),
+        ...('maxTokens' in model ? { maxTokens: model.maxTokens } : {}),
+      })),
+      authorizer: { authorize },
+      registry: { addPermissions: jest.fn() },
+    });
+    const listed = await permissions.listModels(user);
+    expect(listed).toEqual([
+      {
+        provider: 'openai',
+        modelId: 'gpt-decisions',
+        api: 'openai-decisions',
+        type: 'classifier',
+        contextWindow: 272_000,
+      },
+      {
+        provider: 'openrouter',
+        modelId: 'flux-3-image',
+        api: 'openrouter-images',
+        type: 'image',
+        maxTokens: 4096,
+      },
+      {
+        provider: 'openai',
+        modelId: 'gpt-5',
+        api: 'openai-responses',
+        type: 'chat',
+        contextWindow: 400_000,
+        maxTokens: 128_000,
+      },
+    ]);
+  });
+
   it('round-trips the documented policy-author decoding exactly', async () => {
-    // The README documents this decode for policy authors; this pins the
-    // documented algorithm against the encoder for the tricky cases.
-    const decode = (segment: string) =>
-      decodeURIComponent(segment.replace(/%2E/g, '.'));
-    const decodeName = (name: string) => {
-      const parts = name.split('.');
-      if (
-        parts.length !== 5 ||
-        parts[0] !== 'ai' ||
-        parts[1] !== 'model' ||
-        parts[4] !== 'use'
-      ) {
-        throw new Error('not a model permission name');
-      }
-      return {
-        provider: decode(parts[2]),
-        modelId: decode(parts[3]),
-      };
+    // The README documents this decode for policy authors. The test
+    // executes the README's own fenced snippet — extracted and
+    // transpiled — so the documented algorithm and the tested one
+    // cannot drift apart.
+    const markdown = readFileSync(join(__dirname, '../../README.md'), 'utf8');
+    const section = markdown
+      .split('## Model permission names')[1]
+      .split('## Semantics')[0];
+    const fenced = section.match(/```ts\n([\s\S]*?)```/);
+    expect(fenced).not.toBeNull();
+    // The repo-root TypeScript compiler, required at runtime so the
+    // package declares no dependency for one documentation test.
+    const ts = createRequire(import.meta.url)('typescript') as {
+      transpileModule(
+        code: string,
+        options: { compilerOptions: { target: number } },
+      ): { outputText: string };
+      ScriptTarget: { ES2022: number };
     };
+    const transpiled = ts.transpileModule(fenced![1], {
+      compilerOptions: { target: ts.ScriptTarget.ES2022 },
+    }).outputText;
+    // The Function constructor is eval; the input here is this
+    // repository's own README snippet, extracted from the fenced block
+    // we author, and the argument is a permission name the test built.
+    // eslint-disable-next-line no-new-func
+    const decodeName = new Function('name', `${transpiled}\nreturn pair;`) as (
+      name: string,
+    ) => { provider: string; modelId: string };
     for (const pair of [
       { provider: 'openai', modelId: 'gpt-5' },
       { provider: 'my.provider', modelId: 'model.v2' },

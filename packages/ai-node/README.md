@@ -173,9 +173,13 @@ journaled, actionable denial, never a fallback.
 - **`models`** is the canonical catalog: the only models this installation may
   dispatch, keyed by `provider` and `modelId`. Fields are the actual provider
   and model identifiers plus the adapter and destination the guard verifies —
-  there are no aliases, tiers, or effort abstractions. `contextWindow` and
-  `maxTokens` are required because the engine derives sizing and compaction
-  from them; the schema never invents them.
+  there are no aliases, tiers, or effort abstractions. Each entry's `type`
+  follows the pinned pi-ai catalog shapes: `chat` (the default) for
+  generation, `classifier` for classification, `image` for image generation.
+  `contextWindow` is required for `chat` and `classifier` entries (the engine
+  derives sizing and compaction from it; the schema never invents it) and must
+  be absent for `image` entries, which carry none; `maxTokens` is required for
+  `chat` and optional for the others.
 - **Permissions** are derived per configured model:
   `ai.model.<provider>.<modelId>.use` with each segment passed through
   `encodeURIComponent` and literal dots encoded as `%2E`. Names are exact;

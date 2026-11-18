@@ -81,7 +81,20 @@ export function createModelPermissions(options: {
     { model: ModelDescriptor; permission: BasicPermission }
   >();
   for (const model of options.models) {
-    const descriptor = Object.freeze({ ...model });
+    // Pick exactly the supported fields with conditional presence, so a
+    // structurally compatible input cannot smuggle extra fields (headers,
+    // metadata) into discovery descriptors, and nested values never need
+    // deep freezing because none are kept.
+    const descriptor = Object.freeze({
+      provider: model.provider,
+      modelId: model.modelId,
+      ...(model.api === undefined ? {} : { api: model.api }),
+      ...(model.type === undefined ? {} : { type: model.type }),
+      ...(model.contextWindow === undefined
+        ? {}
+        : { contextWindow: model.contextWindow }),
+      ...(model.maxTokens === undefined ? {} : { maxTokens: model.maxTokens }),
+    });
     const name = modelPermissionName(descriptor);
     if (!pairs.has(name)) {
       pairs.set(name, {
@@ -123,20 +136,22 @@ export function createModelPermissions(options: {
     ): Promise<readonly ModelDescriptor[]> {
       const entries = [...pairs.values()];
       const decisions = await authorize(entries, credentials);
-      return entries.filter((_, i) => decisions[i]).map(entry => entry.model);
+      return Object.freeze(
+        entries.filter((_, i) => decisions[i]).map(entry => entry.model),
+      );
     },
     async listProviders(
       credentials: BackstageCredentials,
     ): Promise<readonly string[]> {
       const entries = [...pairs.values()];
       const decisions = await authorize(entries, credentials);
-      return [
+      return Object.freeze([
         ...new Set(
           entries
             .filter((_, i) => decisions[i])
             .map(entry => entry.model.provider),
         ),
-      ];
+      ]);
     },
   };
 }
