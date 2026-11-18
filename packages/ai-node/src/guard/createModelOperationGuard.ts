@@ -83,6 +83,13 @@ function raceRecheckAbort(
   });
 }
 
+/**
+ * Creates the guard that mediates provider dispatches: per-attempt envelope
+ * validation, permission rechecks, durable journal-before-send ordering and
+ * the revocation latch.
+ *
+ * @alpha
+ */
 export function createModelOperationGuard(options: {
   /** Captured real transport, never the guarded fetch itself. */
   transport: typeof fetch;

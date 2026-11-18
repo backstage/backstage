@@ -39,7 +39,12 @@ import { hasTrustedOperationContext } from './types';
 import { guardedRequestOptions } from './requestOptions';
 
 /** Host-resolved credentials. Never constructed from caller request options. */
-type ProviderAuthority = Readonly<{
+/**
+ * The dispatch authority a host resolve produces for one binding.
+ *
+ * @alpha
+ */
+export type ProviderAuthority = Readonly<{
   kind: 'apiKey' | 'oauth' | 'federation';
   apiKey?: string;
   headers?: ProviderHeaders;
@@ -48,6 +53,12 @@ type ProviderAuthority = Readonly<{
   expiresAt?: number;
 }>;
 
+/**
+ * One resolved dispatch binding: the trusted operation, the model and the
+ * authority the host produced for it.
+ *
+ * @alpha
+ */
 export type GuardedModelBinding = Readonly<{
   operation: TrustedOperation;
   model: AnyModel;
@@ -67,7 +78,13 @@ export class GuardedResolutionError extends Error {
   }
 }
 
-type ModelRequests = Pick<
+/**
+ * The guarded request surface the host invokes: the pinned provider
+ * operations plus the guarded tool dispatch entry.
+ *
+ * @alpha
+ */
+export type ModelRequests = Pick<
   Models,
   | 'stream'
   | 'complete'
@@ -95,6 +112,8 @@ type ModelRequests = Pick<
  * separately; no provider, credential, mutation or administrative access escapes.
  * Native Models.applyAuth is deliberately not used: it can refresh OAuth outside
  * the guarded transport. Only the pinned provider adapters above may dispatch.
+ *
+ * @alpha
  */
 export function createGuardedModelOperations(options: {
   guard: ModelOperationGuard;

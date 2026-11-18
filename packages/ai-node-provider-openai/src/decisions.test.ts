@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-/*
- * Copyright 2026 The Backstage Authors.
- *
- * Transitional test-only relative imports into @backstage/ai-node source:
- * P2b moves the guard/journal test machinery into
- * @backstage/ai-node/testUtils, at which point these switch to it.
- */
-/* eslint-disable @backstage/no-relative-monorepo-imports -- see above */
-
 import { once } from 'node:events';
+import {
+  createGuardedModelOperations,
+  createModelOperationGuard,
+} from '@backstage/ai-node/testUtils';
+import type {
+  AttemptDecision,
+  AttemptOutcome,
+} from '@backstage/ai-node/testUtils';
 import { createServer, type Server } from 'node:http';
 import { mockCredentials } from '@backstage/backend-test-utils';
 import type { AnyModel } from '@earendil-works/pi-ai';
@@ -34,12 +33,6 @@ import {
   type ModelOperation,
   type TrustedOperation,
 } from '@backstage/ai-node/testUtils';
-import { createModelOperationGuard } from '../../ai-node/src/guard/createModelOperationGuard';
-import { createGuardedModelOperations } from '../../ai-node/src/guard/modelOperations';
-import type {
-  AttemptDecision,
-  AttemptOutcome,
-} from '../../ai-node/src/journal/types';
 import { openaiDecisions } from './decisions';
 
 const providers = createProviderRegistry([openaiDecisions]);

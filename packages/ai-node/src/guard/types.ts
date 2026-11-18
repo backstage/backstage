@@ -94,11 +94,21 @@ export function hasTrustedOperationContext(
   );
 }
 
+/**
+ * One bound guarded operation: the guarded transport and its settlement.
+ *
+ * @alpha
+ */
 export interface GuardedOperation {
   fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
   finish(outcome: 'completed' | 'failed' | 'cancelled'): Promise<void>;
 }
 
+/**
+ * The guard that mediates provider dispatches.
+ *
+ * @alpha
+ */
 export interface ModelOperationGuard {
   bind(operation: TrustedOperation): GuardedOperation;
 }

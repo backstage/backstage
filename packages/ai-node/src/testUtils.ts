@@ -19,7 +19,32 @@
 export { registerProviderCertification } from './providers/certification';
 export { createProviderRegistry } from './providers/registry';
 export type { AiProviderRegistry } from './providers/registry';
+export { createModelOperationGuard } from './guard/createModelOperationGuard';
+export { createGuardedModelOperations } from './guard/modelOperations';
 export type { ModelOperation, TrustedOperation } from './guard/types';
+export type {
+  AttemptDecision,
+  AttemptId,
+  AttemptOutcome,
+} from './journal/types';
+export type {
+  GuardedModelBinding,
+  ModelRequests,
+  ProviderAuthority,
+} from './guard/modelOperations';
+export type { GuardedOperation, ModelOperationGuard } from './guard/types';
+export type {
+  AttemptJournal,
+  AttemptOutcomeStatus,
+  AuditEventView,
+  AuditPage,
+  AuditQuery,
+  RecoveryEvent,
+} from './journal/types';
+export type {
+  AiEventEmitter,
+  AiObservabilityEvent,
+} from './observability/types';
 export type { Fence, Namespace } from './contracts';
 export type { CredentialScope } from './credentials/types';
 export type {

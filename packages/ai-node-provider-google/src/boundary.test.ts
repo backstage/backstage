@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-/*
- * Copyright 2026 The Backstage Authors.
- *
- * Transitional test-only relative imports into @backstage/ai-node source:
- * P2b moves the guard/journal test machinery into
- * @backstage/ai-node/testUtils, at which point these switch to it.
- */
-/* eslint-disable @backstage/no-relative-monorepo-imports -- see above */
-
 import { once } from 'node:events';
+import { createProviderRegistry } from '@backstage/ai-node/testUtils';
+import type { TrustedOperation } from '@backstage/ai-node/testUtils';
+import {
+  createGuardedModelOperations,
+  createModelOperationGuard,
+} from '@backstage/ai-node/testUtils';
 import { createServer } from 'node:http';
 import { Worker } from 'node:worker_threads';
 import { mkdtemp, rm, unlink, writeFile } from 'node:fs/promises';
@@ -36,10 +33,6 @@ import { normalizeContext } from '@earendil-works/pi-ai/utils/transcript';
 import type { Model } from '@earendil-works/pi-ai';
 // Transitional test-only import: P2b moves this machinery into
 // @backstage/ai-node/testUtils.
-import { createModelOperationGuard } from '../../ai-node/src/guard/createModelOperationGuard';
-import { createGuardedModelOperations } from '../../ai-node/src/guard/modelOperations';
-import type { TrustedOperation } from '@backstage/ai-node/testUtils';
-import { createProviderRegistry } from '@backstage/ai-node/testUtils';
 import { googleGenerativeAi, googleVertex } from './module';
 import {
   closeGoogleWorker,
