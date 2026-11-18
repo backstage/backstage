@@ -151,6 +151,12 @@ export type AiProviderModule = Readonly<{
    * the dispatch facts and consumes the host's credential resolution; the
    * host builds the trusted operation from them. Modules without this hook
    * resolve through the canonical catalog like every model dispatch.
+   *
+   * The invariant the host enforces: the credential resolution is bound to
+   * the module's own identity (never to caller-supplied provider strings),
+   * and the returned api must name the module itself, so the resolved
+   * module, the provider id on the operation, and the credential key always
+   * agree.
    */
   resolveDispatch?(
     model: AnyModel,

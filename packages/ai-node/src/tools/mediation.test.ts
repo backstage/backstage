@@ -650,4 +650,57 @@ describe('guarded tool operations', () => {
       'stream',
     );
   });
+
+  it('binds tool dispatch to the module identity, rejecting cross-server facts', async () => {
+    const makeModule = (id: string): ToolModule => ({
+      id,
+      tools: [{ name: 'search' }],
+      destination: toolName =>
+        `https://server.example/mcp/${id}/tools/${toolName}`,
+      destinationTemplates: [
+        [
+          { literal: '/mcp/' },
+          { digest: 'server' },
+          { literal: '/tools/' },
+          { digest: 'tool' },
+        ],
+      ],
+      validateToolCall: validateToolCallEnvelope,
+      adapter: {
+        kind: 'tool',
+        invoke: async () => ({ value: null, outcome: 'completed' as const }),
+      },
+    });
+    const tools = createToolRegistry([
+      makeModule('a-tools'),
+      makeModule('b-tools'),
+    ]);
+    const facade = tools.providerRegistry.get('a-tools')!;
+    expect(facade.resolveDispatch).toBeDefined();
+    const resolveCredential = async () => ({
+      scope: { kind: 'user' as const, id: 'user:default/alice' },
+      authority: { kind: 'apiKey' as const, headers: {} },
+      generation: '1',
+    });
+    // Dispatch facts naming a different server than the resolved module
+    // fail closed before any credential is consulted or any send happens.
+    const crossed = await facade.resolveDispatch!(
+      { id: 'search', provider: 'b-tools', api: 'a-tools' } as never,
+      resolveCredential,
+    );
+    expect(crossed).toEqual({
+      resolved: false,
+      reason: expect.stringContaining("'b-tools' is not 'a-tools'"),
+    });
+    // Matching facts resolve through the module's own identity.
+    const matched = await facade.resolveDispatch!(
+      { id: 'search', provider: 'a-tools', api: 'a-tools' } as never,
+      resolveCredential,
+    );
+    expect(matched).toMatchObject({
+      resolved: true,
+      api: 'a-tools',
+      destination: 'https://server.example/mcp/a-tools/tools/search',
+    });
+  });
 });

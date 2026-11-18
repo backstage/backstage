@@ -61,6 +61,16 @@ function toolModuleWithResolution(module: ToolModule): AiProviderModule {
     permissionName: (providerId, modelId) =>
       toolPermissionName({ serverId: providerId, toolName: modelId }),
     resolveDispatch: async (model, resolveCredential) => {
+      // Identity binding: the caller's provider string must name this
+      // module. Cross-server dispatch facts — a forged model or a
+      // mis-registered module — fail closed here, and the credential below
+      // is always resolved through the module's own identity.
+      if (model.provider !== module.id) {
+        return {
+          resolved: false as const,
+          reason: `tool dispatch does not match the registered tool server: '${model.provider}' is not '${module.id}'`,
+        };
+      }
       const tool = module.tools.find(entry => entry.name === model.id);
       if (tool === undefined) {
         return {

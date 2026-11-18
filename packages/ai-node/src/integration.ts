@@ -33,6 +33,7 @@ import type {
 } from '@earendil-works/pi-codemode/portable';
 import type { AnyModel, Credential, Models } from '@earendil-works/pi-ai';
 import { builtinProviderRegistry } from './providers/builtins';
+import { modelCredentialKey } from './providers/registry';
 import type { AiProviderRegistry } from './providers/registry';
 import type { Knex } from 'knex';
 import { createHash, randomUUID } from 'node:crypto';
@@ -56,7 +57,6 @@ import type {
   ModelOperationGuard,
   TrustedOperation,
 } from './guard/types';
-import { MCP_RESERVED_PREFIX } from './credentials/identifiers';
 import { modelPermissionName } from './permissions/modelPermissions';
 import { createGuardedToolOperations } from './tools/mediation';
 import { composeWithToolRegistry, createToolRegistry } from './tools/registry';
@@ -517,17 +517,14 @@ export async function createAiServiceIntegration(
       return undefined;
     }
     const module = providerRegistry.get(api);
-    if (
-      module?.credentialKey === undefined &&
-      providerId.startsWith(MCP_RESERVED_PREFIX)
-    ) {
-      // The reserved namespace is never model authority: a stored MCP tool
-      // server credential cannot be reached through a model provider id.
-      return undefined;
-    }
     const key = module?.credentialKey
       ? module.credentialKey(providerId)
-      : providerId;
+      : modelCredentialKey(providerId);
+    if (key === undefined) {
+      // Reserved namespaces no module claims never resolve as model
+      // authority.
+      return undefined;
+    }
     const principal = principalOf(deps, credentials);
     // Personal and installation credentials in the configured order; absence
     // falls through, a read failure does not.
@@ -1138,10 +1135,14 @@ export async function createAiServiceIntegration(
           credentialGeneration: 'unresolved',
           controller: new AbortController(),
         };
+        // The credential resolution is bound to the module's own identity —
+        // never to caller-supplied provider strings — and the module's
+        // dispatch facts must name the module itself, so the resolved
+        // module, the provider id and the credential key always agree.
         const dispatch = await dispatchModule.resolveDispatch(model, () =>
           resolveAuthority(
             dispatchModule.id,
-            model.provider,
+            dispatchModule.id,
             current.credentials,
           ),
         );
@@ -1153,6 +1154,16 @@ export async function createAiServiceIntegration(
               authority: { kind: 'apiKey' as const },
             },
             dispatch.reason,
+          );
+        }
+        if (dispatch.api !== dispatchModule.id) {
+          throw new GuardedResolutionError(
+            {
+              operation: trusted,
+              model: model as GuardedModelBinding['model'],
+              authority: { kind: 'apiKey' as const },
+            },
+            `module dispatch facts do not match the resolved module: '${dispatch.api}' is not '${dispatchModule.id}'`,
           );
         }
         return {
