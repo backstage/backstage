@@ -173,17 +173,125 @@ journaled, actionable denial, never a fallback.
 - **`models`** is the canonical catalog: the only models this installation may
   dispatch, keyed by `provider` and `modelId`. Fields are the actual provider
   and model identifiers plus the adapter and destination the guard verifies —
-  there are no aliases, tiers, or effort abstractions. `contextWindow` and
-  `maxTokens` are required because the engine derives sizing and compaction
-  from them; the schema never invents them.
+  there are no aliases, tiers, or effort abstractions. Each entry's `type`
+  follows the pinned pi-ai catalog shapes: `chat` (the default) for
+  generation, `classifier` for classification, `image` for image generation.
+  `contextWindow` is required for `chat` and `classifier` entries (the engine
+  derives sizing and compaction from it; the schema never invents it) and must
+  be absent for `image` entries, which carry none; `maxTokens` is required for
+  `chat` and optional for the others.
 - **Permissions** are derived per configured model:
   `ai.model.<provider>.<modelId>.use` with each segment passed through
   `encodeURIComponent` and literal dots encoded as `%2E`. Names are exact;
-  grant each pair (or each pair of a provider) in policy.
+  grant each pair (or each pair of a provider) in policy. The exact
+  encoding rule and how to decode a name back to its pair are documented
+  under [Model permission names](#model-permission-names) for policy
+  authors.
 - **Fail-closed validation**: unknown fields, duplicate models, unusable
   adapter identifiers, non-http(s) destinations and malformed scope keys all
   reject with the exact configuration path, the offending field, and
   corrective guidance.
+
+## Rotate the personal credential encryption key
+
+Rotation changes key material, not the stored encryption format or `key_version`.
+Existing credentials remain readable during the rotation window. Both keys must
+be the standard base64 encoding of 32 bytes and supplied as secrets:
+
+```yaml
+ai:
+  credentials:
+    encryptionKey: ${AI_CREDENTIAL_NEW_KEY}
+    rotation:
+      previousEncryptionKey: ${AI_CREDENTIAL_OLD_KEY}
+```
+
+Before changing keys, stop all old-key writers and readers across every instance
+that shares the plugin's credential database. Old instances cannot read rows
+rewritten with the new key and may write new rows under the old key. Start all
+instances with the new key and previous key together. During the window, a read
+of an old-key credential re-encrypts it under the existing per-credential lock;
+new writes always use the new key. Failed decryption or writes fail closed.
+
+A trusted host that already holds a live namespace fence can proactively rotate
+all personal credentials in its plugin database:
+
+```ts
+const installation = configureAiInstallation({ source, db });
+const result = await installation.credentialRotation!.rotate(fence);
+```
+
+The host must own and renew `fence` throughout the operation. Each page and
+write checks it; losing the fence stops the operation. The result contains only
+`inspected` and `rotated` counts, not credential values. An interrupted run
+may leave a mix of keys; repeat it with both keys configured. After all old-key
+writers are stopped, rerun until `rotated` is zero for every plugin database,
+then remove `rotation.previousEncryptionKey`. Keep a secure backup of the
+previous key until all necessary backups have also been migrated or retired.
+
+The stock `AiService` does not expose a maintenance fence. This batch operation
+is available to integrations and maintenance tooling that already own one; a
+public maintenance or admin fence surface is future work. It does not grant
+access to other plugins' databases or return personal credentials.
+
+## Model permission names
+
+Each canonical catalog model gets one basic permission named
+`ai.model.<segment(provider)>.<segment(modelId)>.use`. `segment(s)` is
+`encodeURIComponent(s).replace(/\./g, '%2E')` applied to a nonempty,
+well-formed Unicode string: case is preserved, Unicode is never
+normalized, and a lone surrogate (an invalid string) is rejected at
+registration. The installed package exports `modelPermissionName` (from
+`@backstage/ai-node/alpha`) implementing exactly this rule.
+
+Because a segment can never contain a literal dot after encoding, the
+name splits unambiguously into five dot-separated parts — the literal
+`ai`, the literal `model`, the two encoded segments, and the literal
+`use`. A policy author holding a name decodes it back to the model pair
+like this:
+
+```ts
+const parts = name.split('.');
+if (
+  parts.length !== 5 ||
+  parts[0] !== 'ai' ||
+  parts[1] !== 'model' ||
+  parts[4] !== 'use'
+)
+  throw new Error('not a model permission name');
+// %2E in a segment is always an encoded literal dot: the encoder's
+// encodeURIComponent would have turned a real '%' into %25 first.
+const decode = (segment: string) =>
+  decodeURIComponent(segment.replace(/%2E/g, '.'));
+const pair = {
+  provider: decode(parts[2]),
+  modelId: decode(parts[3]),
+};
+```
+
+Worked examples:
+
+| provider / modelId         | permission name                         |
+| -------------------------- | --------------------------------------- |
+| `openai` / `gpt-5`         | `ai.model.openai.gpt-5.use`             |
+| `openai` / `gpt.4`         | `ai.model.openai.gpt%2E4.use`           |
+| `my.provider` / `model.v2` | `ai.model.my%2Eprovider.model%2Ev2.use` |
+| `anthropic` / `claude-é`   | `ai.model.anthropic.claude-%C3%A9.use`  |
+
+Names are exact, not wildcard patterns: there is no star syntax. A
+policy rule naming `ai.model.openai.*.use` matches exactly the one
+encoded pair it spells — or nothing. The literal-star edge: because
+`encodeURIComponent` passes `*` through unchanged and the catalog's
+identifier rules accept it, a model whose ID is literally `*` produces
+exactly that name; granting it authorizes only that literal pair, never
+a range of models. Policy authors should therefore never reach for `*`
+in a model permission name expecting wildcard semantics — either name
+the exact pair, or grant each pair of a provider separately. A model
+not in the canonical
+`ai.models` catalog has no permission name and no grant can make it
+dispatchable; discovery (`listModels`) reports exactly the pairs the
+caller's own credentials are allowed to use, each with its catalog
+fields (adapter, type, context window, output limit).
 
 ## Semantics of the managed handle
 

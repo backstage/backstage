@@ -43,7 +43,7 @@ import { assertRedactedText } from '../journal/redaction';
  * character-bounded, and any value matching the journal's credential formats,
  * `key=value` secret assignments or high-entropy base64 runs is dropped.
  *
- * @internal
+ * @alpha
  */
 export type AiObservabilityEvent =
   | Readonly<{
@@ -111,7 +111,7 @@ export type AiObservabilityEvent =
  * called on the dispatch and persistence paths, so a throwing subscriber would
  * break the operation it observes.
  *
- * @internal
+ * @alpha
  */
 export interface AiEventEmitter {
   /**
@@ -148,7 +148,7 @@ export function emitSafe(
     const result: unknown = emitter.emit(assertObservableEvent(event));
     if (
       result !== null &&
-      typeof result === 'object' &&
+      (typeof result === 'object' || typeof result === 'function') &&
       typeof (result as PromiseLike<void>).then === 'function'
     ) {
       void Promise.resolve(result).catch(() => undefined);

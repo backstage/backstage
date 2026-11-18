@@ -78,7 +78,17 @@ type ModelRequests = Pick<
   | 'cancelDeferred'
   | 'classify'
   | 'generateImages'
->;
+> & {
+  /**
+   * Guarded tool dispatch: routes through the same invokeCustom path as
+   * model operations, so every per-attempt invariant applies unchanged.
+   */
+  callTool(
+    model: AnyModel,
+    context: unknown,
+    caller?: Record<string, unknown>,
+  ): Promise<unknown>;
+};
 
 /**
  * Request-only facade. The host supplies verified, filtered catalog lookups
@@ -619,5 +629,12 @@ export function createGuardedModelOperations(options: {
         caller as Record<string, unknown>,
         'generateImages',
       ) as ReturnType<Models['generateImages']>,
+    callTool: (model, context, caller) =>
+      invokeCustom(
+        model,
+        context,
+        caller as Record<string, unknown>,
+        'toolCall',
+      ) as Promise<unknown>,
   };
 }

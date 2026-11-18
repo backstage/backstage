@@ -77,7 +77,16 @@ export async function pruneAiJournal(
   const cutoff = new Date(now.getTime() - options.retentionMs);
   const sqlite = db.client.config.client === 'better-sqlite3';
 
-  const result = await db.transaction(async trx => {
+  // Deletes run in bounded chunks, each its own transaction, so a large
+  // pass cannot hold SQLite's single serialized writer (and its lock) for
+  // the whole prune: a concurrent journal append interleaves between
+  // chunks. The retention contract is unaffected — the uncertainty records
+  // are committed by the selection transaction below BEFORE any deletion,
+  // settled-ness can only be decided by rows that already exist, and a
+  // crash between chunks leaves a partial prune the next pass completes.
+  const DELETE_CHUNK = 500;
+
+  const selected = await db.transaction(async trx => {
     // A settling outcome is one that establishes the remote result. An
     // explicitly recorded `unknown` outcome does not settle anything: it is
     // durable uncertainty, treated exactly like a missing outcome.
@@ -127,27 +136,47 @@ export async function pruneAiJournal(
       )
       .select(bigintText(trx, 'id'));
 
-    let pruned = 0;
-    if (settled.length > 0) {
-      const ids = settled.map(row => row.id);
-      pruned += await trx(JOURNAL_EVENTS_TABLE)
-        .where({ kind: 'outcome' })
-        .whereIn('attempt_id', ids)
-        .del();
-      pruned += await trx(JOURNAL_EVENTS_TABLE).whereIn('id', ids).del();
-    }
-
     // Recovery events are prunable by age, except unknown-dispatch events,
     // which are the durable evidence that an attempt's remote outcome can
     // never be established.
-    pruned += await trx(JOURNAL_EVENTS_TABLE)
+    const recovery: Array<{ id: string }> = await trx(JOURNAL_EVENTS_TABLE)
       .where({ kind: 'recovery' })
       .whereRaw(olderThanCutoff('created_at'))
       .whereNot('recovery_kind', 'unknown-dispatch')
-      .del();
+      .select(bigintText(trx, 'id'));
 
-    return { prunedEvents: pruned, uncertaintyRecords: uncertainty };
+    return {
+      settledIds: settled.map(row => row.id),
+      recoveryIds: recovery.map(row => row.id),
+      uncertaintyRecords: uncertainty,
+    };
   });
+
+  let pruned = 0;
+  const settledIds = selected.settledIds;
+  for (let start = 0; start < settledIds.length; start += DELETE_CHUNK) {
+    const ids = settledIds.slice(start, start + DELETE_CHUNK);
+    pruned += await db.transaction(async trx => {
+      let deleted = 0;
+      deleted += await trx(JOURNAL_EVENTS_TABLE)
+        .where({ kind: 'outcome' })
+        .whereIn('attempt_id', ids)
+        .del();
+      deleted += await trx(JOURNAL_EVENTS_TABLE).whereIn('id', ids).del();
+      return deleted;
+    });
+  }
+  const recoveryIds = selected.recoveryIds;
+  for (let start = 0; start < recoveryIds.length; start += DELETE_CHUNK) {
+    const ids = recoveryIds.slice(start, start + DELETE_CHUNK);
+    pruned += await db.transaction(async trx =>
+      Number(await trx(JOURNAL_EVENTS_TABLE).whereIn('id', ids).del()),
+    );
+  }
+  const result = {
+    prunedEvents: pruned,
+    uncertaintyRecords: selected.uncertaintyRecords,
+  };
   emitSafe(options.events, {
     kind: 'journal',
     action: 'prune',

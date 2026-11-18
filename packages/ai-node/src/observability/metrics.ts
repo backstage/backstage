@@ -16,7 +16,11 @@
 
 import type { AiEventEmitter, AiObservabilityEvent } from './types';
 
-/** A counter series: one label combination and its count. */
+/**
+ * A counter series: one label combination and its count.
+ *
+ * @alpha
+ */
 export type MetricSeries = Readonly<{
   labels: Readonly<Record<string, string>>;
   count: number;
@@ -29,7 +33,7 @@ export type MetricSeries = Readonly<{
 /**
  * The health view of the metrics subscriber.
  *
- * @internal
+ * @alpha
  */
 export type AiHealthSnapshot = Readonly<{
   /** Counters keyed by `kind` and the labels that describe them. */
@@ -38,6 +42,13 @@ export type AiHealthSnapshot = Readonly<{
   durations: Readonly<Record<string, number>>;
   /** Leases this process currently believes it holds, by namespace. */
   activeLeases: number;
+  /**
+   * Terminal dispatch observations since the last reset: one per logical
+   * attempt that settled (completed, failed, cancelled, unknown, or
+   * stream-failed). The mean terminal duration for the latency signal is
+   * `durations.dispatchTerminal / terminalDispatches`.
+   */
+  terminalDispatches: number;
   /**
    * Logical failures since start: one per denied request and one per dispatch
    * that did not complete. A denial is counted once, from the operation's own
@@ -61,7 +72,7 @@ export type AiHealthSnapshot = Readonly<{
  * series with a reason string (unbounded cardinality) and never stores payloads,
  * so a leaked secret is unrepresentable here.
  *
- * @internal
+ * @alpha
  */
 export interface AiMetricsSubscriber extends AiEventEmitter {
   snapshot(): AiHealthSnapshot;
@@ -84,7 +95,7 @@ function seriesKey(kind: string, labels: Record<string, string>): string {
 /**
  * Creates the metrics/health subscriber.
  *
- * @internal
+ * @alpha
  */
 export function createMetricsSubscriber(): AiMetricsSubscriber {
   const series = new Map<
@@ -103,6 +114,7 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
   const heldLeases = new Map<string, string | undefined>();
   let failures = 0;
   let events = 0;
+  let terminalDispatches = 0;
   const journalDecisions = { allow: 0, deny: 0 };
 
   /** Lease identity: the gauge counts holds, not acquire events. */
@@ -166,6 +178,16 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
           if (event.durationMs !== undefined) {
             durations.dispatch = (durations.dispatch ?? 0) + event.durationMs;
           }
+          // One latency observation per logical attempt, terminal only:
+          // the terminal duration measures sentAt-or-startedAt to
+          // settlement, while `sent` measures start to first response and
+          // is a throughput observation, not a latency one. Both event
+          // kinds keep their cumulative sum in durations.dispatch.
+          if (event.outcome !== 'sent' && event.durationMs !== undefined) {
+            terminalDispatches += 1;
+            durations.dispatchTerminal =
+              (durations.dispatchTerminal ?? 0) + event.durationMs;
+          }
           count(
             'dispatch',
             {
@@ -208,7 +230,9 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
         case 'journal':
           if (event.decision === 'deny') journalDecisions.deny += 1;
           if (event.decision === 'allow') journalDecisions.allow += 1;
-          durations.journal = (durations.journal ?? 0) + event.durationMs;
+          if (event.durationMs !== undefined) {
+            durations.journal = (durations.journal ?? 0) + event.durationMs;
+          }
           count(
             'journal',
             {
@@ -240,6 +264,7 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
           ),
         durations: { ...durations },
         activeLeases: heldLeases.size,
+        terminalDispatches,
         failures,
         journalDecisions: { ...journalDecisions },
         events,
@@ -253,6 +278,7 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
       heldLeases.clear();
       journalDecisions.allow = 0;
       journalDecisions.deny = 0;
+      terminalDispatches = 0;
       failures = 0;
       events = 0;
     },

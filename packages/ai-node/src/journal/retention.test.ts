@@ -146,6 +146,33 @@ for (const dialect of ['sqlite', 'pg'] as const) {
   if (dialect === 'pg' && !pgUrl) continue;
 
   describe(`journal retention (${dialect})`, () => {
+    it('prunes a large settled backlog in bounded chunks with an exact count', async () => {
+      const f =
+        dialect === 'sqlite' ? await sqliteFixture() : await pgFixture();
+      try {
+        // More settled denials than one delete chunk (500): the pass must
+        // still prune every one, exactly once, and leave nothing behind.
+        const TOTAL = 520;
+        for (let i = 0; i < TOTAL; i += 1) {
+          await f.record({
+            decision: 'deny',
+            reason: 'permission denied',
+          });
+        }
+        const result = await pruneAiJournal(f.db, {
+          retentionMs: HOUR_MS,
+          now: new Date(Date.now() + YEAR_MS),
+        });
+        expect(result.prunedEvents).toBe(TOTAL);
+        expect(result.uncertaintyRecords).toBe(0);
+        expect(
+          Number((await f.db(JOURNAL_EVENTS_TABLE).count('id as n'))[0].n),
+        ).toBe(0);
+      } finally {
+        await f.cleanup();
+      }
+    }, 60000);
+
     it('prunes settled attempts and preserves uncertain evidence', async () => {
       const f =
         dialect === 'sqlite' ? await sqliteFixture() : await pgFixture();

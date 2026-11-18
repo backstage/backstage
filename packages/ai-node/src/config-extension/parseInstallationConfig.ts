@@ -17,6 +17,7 @@
 import type { Config, JsonValue } from '@backstage/config';
 import type { AnyModel, ModelInputModality } from '@earendil-works/pi-ai';
 import type { ConfigAtPath } from '../contracts';
+import { MCP_RESERVED_PREFIX } from '../credentials/identifiers';
 import type {
   AiConfigCredentialScopes,
   AiCredentialsPrecedence,
@@ -36,6 +37,7 @@ const MODEL_FIELDS = [
   'modelId',
   'api',
   'baseUrl',
+  'type',
   'contextWindow',
   'maxTokens',
   'name',
@@ -144,6 +146,7 @@ function parseCredentials(
 ): AiInstallationCredentials {
   rejectUnknownKeys(section, path, [
     'encryptionKey',
+    'rotation',
     'precedence',
     'scopes',
     'tokenEndpoints',
@@ -156,7 +159,25 @@ function parseCredentials(
       `the required field 'encryptionKey' is missing. Set it to the installation's personal-credential encryption key: the standard base64 encoding of exactly ${ENCRYPTION_KEY_BYTES} raw bytes, supplied through an app-config environment variable rather than committed to the file`,
     );
   }
-  const encryptionKey = decodeEncryptionKey(rawKey, path);
+  const encryptionKey = decodeEncryptionKey(rawKey, path, 'encryptionKey');
+  const rotation = section.getOptionalConfig('rotation');
+  let previousEncryptionKey: Uint8Array | undefined;
+  if (rotation !== undefined) {
+    const rotationPath = `${path}.rotation`;
+    rejectUnknownKeys(rotation, rotationPath, ['previousEncryptionKey']);
+    const previous = rotation.getOptionalString('previousEncryptionKey');
+    if (previous === undefined) {
+      throw configError(
+        rotationPath,
+        "the required field 'previousEncryptionKey' is missing",
+      );
+    }
+    previousEncryptionKey = decodeEncryptionKey(
+      previous,
+      rotationPath,
+      'previousEncryptionKey',
+    );
+  }
 
   const rawPrecedence = section.getOptionalString('precedence');
   if (
@@ -182,7 +203,13 @@ function parseCredentials(
 
   const tokenEndpoints = parseTokenEndpoints(section, path);
 
-  return { encryptionKey, precedence, scopes, tokenEndpoints };
+  return {
+    encryptionKey,
+    ...(previousEncryptionKey === undefined ? {} : { previousEncryptionKey }),
+    precedence,
+    scopes,
+    tokenEndpoints,
+  };
 }
 
 /**
@@ -277,7 +304,11 @@ function parseTokenEndpoints(
   }
   return endpoints;
 }
-function decodeEncryptionKey(raw: string, path: string): Uint8Array {
+function decodeEncryptionKey(
+  raw: string,
+  path: string,
+  field: string,
+): Uint8Array {
   const value = raw.trim();
   const canonical = Buffer.from(value, 'base64');
   const isBase64 =
@@ -287,14 +318,14 @@ function decodeEncryptionKey(raw: string, path: string): Uint8Array {
   if (!isBase64) {
     throw fieldError(
       path,
-      'encryptionKey',
+      field,
       `Expected the standard base64 encoding of exactly ${ENCRYPTION_KEY_BYTES} raw bytes (as produced by 'openssl rand -base64 ${ENCRYPTION_KEY_BYTES}'), but the value is not canonical base64. The key material itself is never echoed in this error`,
     );
   }
   if (canonical.length !== ENCRYPTION_KEY_BYTES) {
     throw fieldError(
       path,
-      'encryptionKey',
+      field,
       `Expected exactly ${ENCRYPTION_KEY_BYTES} raw bytes, but the configured value decodes to ${canonical.length}. Generate ${ENCRYPTION_KEY_BYTES} bytes, base64-encode them, and keep the result in an app-config secret`,
     );
   }
@@ -361,7 +392,7 @@ function parseModels(section: Config, path: string): readonly AnyModel[] {
   if (entries.length === 0) {
     throw configError(
       `${path}.models`,
-      'the catalog is empty. Remove it, or list at least one canonical model entry with provider, modelId, api, baseUrl, contextWindow and maxTokens',
+      'the catalog is empty. Remove it, or list at least one canonical model entry with provider, modelId, api and baseUrl (plus the size fields its type requires: chat needs contextWindow and maxTokens, classifier needs contextWindow, image carries no context window)',
     );
   }
 
@@ -376,6 +407,13 @@ function parseModels(section: Config, path: string): readonly AnyModel[] {
       entryPath,
       'provider',
     );
+    if (provider.startsWith(MCP_RESERVED_PREFIX)) {
+      throw fieldError(
+        entryPath,
+        'provider',
+        `the '${MCP_RESERVED_PREFIX}' prefix is reserved for MCP tool server credentials and can never be a model provider id; configure an actual model provider`,
+      );
+    }
     const modelId = assertIdentifier(
       requireString(entry, 'modelId', entryPath),
       entryPath,
@@ -406,12 +444,33 @@ function parseModels(section: Config, path: string): readonly AnyModel[] {
         `Expected an absolute http or https URL — the canonical destination of the provider adapter — but got '${baseUrl}'`,
       );
     }
-    const contextWindow = requirePositiveInteger(
-      entry,
-      'contextWindow',
-      entryPath,
-    );
-    const maxTokens = requirePositiveInteger(entry, 'maxTokens', entryPath);
+    // Model type follows the pinned pi-ai catalog shapes: chat and
+    // classifier models carry a context window, image models do not, and
+    // only chat requires the output limit.
+    const type = entry.getOptionalString('type') ?? 'chat';
+    if (type !== 'chat' && type !== 'classifier' && type !== 'image') {
+      throw fieldError(
+        entryPath,
+        'type',
+        `Expected 'chat', 'classifier', or 'image', but got '${type}'`,
+      );
+    }
+    let contextWindow: number | undefined;
+    if (type === 'image') {
+      if (entry.getOptionalNumber('contextWindow') !== undefined) {
+        throw fieldError(
+          entryPath,
+          'contextWindow',
+          "Image models carry no context window; remove the field or configure the entry as 'chat' or 'classifier'",
+        );
+      }
+    } else {
+      contextWindow = requirePositiveInteger(entry, 'contextWindow', entryPath);
+    }
+    const maxTokens =
+      type === 'chat'
+        ? requirePositiveInteger(entry, 'maxTokens', entryPath)
+        : optionalPositiveInteger(entry, 'maxTokens', entryPath);
 
     const name = entry.getOptionalString('name') ?? modelId;
     assertIdentifier(name, entryPath, 'name');
@@ -429,7 +488,7 @@ function parseModels(section: Config, path: string): readonly AnyModel[] {
     seen.add(identity);
 
     models.push({
-      type: 'chat',
+      type,
       id: modelId,
       name,
       provider,
@@ -438,8 +497,8 @@ function parseModels(section: Config, path: string): readonly AnyModel[] {
       input,
       cost,
       reasoning,
-      contextWindow,
-      maxTokens,
+      ...(contextWindow === undefined ? {} : { contextWindow }),
+      ...(maxTokens === undefined ? {} : { maxTokens }),
     } as unknown as AnyModel);
   });
   return models;
@@ -452,6 +511,26 @@ function requireString(entry: Config, field: string, path: string): string {
       path,
       field,
       `The required field '${field}' is missing or empty. Every canonical catalog entry needs the actual provider and model identifiers, the certified adapter identifier, the canonical base URL, and the model's context window and output limit`,
+    );
+  }
+  return value;
+}
+
+/** Optional positive integer: absent is fine, present must be valid. */
+function optionalPositiveInteger(
+  entry: Config,
+  field: string,
+  path: string,
+): number | undefined {
+  const value = entry.getOptionalNumber(field);
+  if (value === undefined) {
+    return undefined;
+  }
+  if (!Number.isSafeInteger(value) || value <= 0) {
+    throw fieldError(
+      path,
+      field,
+      `Expected a positive integer number of tokens, but got '${value}'`,
     );
   }
   return value;

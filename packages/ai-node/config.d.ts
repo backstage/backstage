@@ -78,6 +78,15 @@ export interface Config {
        * @visibility secret
        */
       encryptionKey: string;
+      /** Previous key during personal credential encryption-key rotation. */
+      rotation?: {
+        /**
+         * Standard base64 of the previous 32-byte personal credential key.
+         *
+         * @visibility secret
+         */
+        previousEncryptionKey: string;
+      };
       /**
        * Which credential scope wins when both a personal and an installation
        * credential exist for a provider. Defaults to `user-first`.
@@ -126,8 +135,22 @@ export interface Config {
       /** Certified adapter identifier of a registered provider module. */
       api: string;
       baseUrl: string;
-      contextWindow: number;
-      maxTokens: number;
+      /**
+       * Model type following the pinned pi-ai catalog shapes. `chat`
+       * (default) dispatches generation, `classifier` classification,
+       * `image` image generation.
+       */
+      type?: 'chat' | 'classifier' | 'image';
+      /**
+       * Context window in tokens. Required for `chat` and `classifier`
+       * entries; an `image` entry carries none and must omit the field.
+       */
+      contextWindow?: number;
+      /**
+       * Output limit in tokens. Required for `chat` entries, optional for
+       * the others.
+       */
+      maxTokens?: number;
       /** Display name; defaults to `modelId`. */
       name?: string;
       reasoning?: boolean;

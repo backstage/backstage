@@ -15,6 +15,7 @@
  */
 
 import type { ConfigAtPath } from './contracts';
+import { MCP_RESERVED_PREFIX } from './credentials/identifiers';
 
 /**
  * Execution mode chosen at a plugin's own configuration path.
@@ -170,6 +171,14 @@ export function parseAiServiceConfig(
         `${source.path}.model`,
         provider === undefined ? 'provider' : 'modelId',
         `'model.provider' and 'model.modelId' must both be set to the actual provider and model identifiers, or the whole 'model' section must be omitted. A model is required for 'mode: service'; for 'mode: interactive' it may be omitted until an explicit selection`,
+      );
+    }
+    if (provider.startsWith(MCP_RESERVED_PREFIX)) {
+      throw fieldValueError(
+        pluginId,
+        `${source.path}.model`,
+        'provider',
+        `'model.provider' must be an actual model provider identifier; the '${MCP_RESERVED_PREFIX}' prefix is reserved for MCP tool server credentials`,
       );
     }
     model = { provider, modelId };

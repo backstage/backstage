@@ -19,7 +19,7 @@ import type { Fence, Namespace } from '../contracts';
 /**
  * One page of namespaces owned by a plugin.
  *
- * @internal
+ * @alpha
  */
 export interface PageOfNamespaces {
   readonly namespaces: readonly Namespace[];

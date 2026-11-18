@@ -17,6 +17,7 @@
 import type { JsonValue } from '@backstage/config';
 import type { AnyModel } from '@earendil-works/pi-ai';
 import type { AiCredentialStores } from '../credentials/types';
+import type { Fence } from '../contracts';
 
 /**
  * Installation default for the path of the AI installation configuration.
@@ -74,6 +75,8 @@ export type AiConfigCredentialScopes = ReadonlyMap<
 export type AiInstallationCredentials = Readonly<{
   /** Raw 32-byte authenticated-encryption key for personal credentials. */
   encryptionKey: Uint8Array;
+  /** Previous personal credential key, accepted only during rotation. */
+  previousEncryptionKey?: Uint8Array;
   precedence: AiCredentialsPrecedence;
   scopes: AiConfigCredentialScopes;
   /**
@@ -116,6 +119,15 @@ export type AiInstallationConfig = Readonly<{
 export type ConfiguredAiInstallation = Readonly<{
   models: readonly AnyModel[];
   credentialStores?: AiCredentialStores;
+  /**
+   * Re-encrypts personal credentials for this plugin's database during a key
+   * rotation. Only trusted hosts holding a live fence may invoke this operation.
+   * It reports counts, never credential contents. The default AiService does
+   * not expose a fence for maintenance operations.
+   */
+  credentialRotation?: Readonly<{
+    rotate(fence: Fence): Promise<{ inspected: number; rotated: number }>;
+  }>;
   credentialPrecedence: AiCredentialsPrecedence;
   /** Trusted token endpoints per provider for guarded auth operations. */
   credentialTokenEndpoints: Readonly<Record<string, string>>;

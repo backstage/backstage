@@ -53,7 +53,27 @@ export type {
   ConfiguredAiInstallation,
 } from './config-extension/index';
 
-export { aiServiceRef } from './service';
+export { aiServiceRef, createAiServiceFactory } from './service';
+export type { AiServiceFactoryOptions } from './service';
+export type {
+  ToolCallResult,
+  ToolDeclaration,
+  ToolDispatchInput,
+  ToolModule,
+} from './tools/types';
+export { createToolPermissions, toolPermissionName } from './tools/registry';
+export type { ToolIdentity } from './tools/registry';
+export { createGuardedToolOperations } from './tools/mediation';
+export type {
+  GuardedToolDispatch,
+  GuardedToolOperations,
+} from './tools/mediation';
+export type { ToolRegistry } from './tools/registry';
+export type { ToolCallEnvelope } from './tools/types';
+export type {
+  DestinationTemplate,
+  DestinationTemplatePart,
+} from './providers/templates';
 export { aiSessionUsePermission, createAiHttpSupport } from './http';
 export type { AiHttpSupport, AiHttpSupportOptions } from './http';
 export type {
@@ -61,8 +81,54 @@ export type {
   AttemptOutcomeStatus,
   AuditEventView,
   AuditPage,
+  AuditQuery,
 } from './journal/types';
 export { modelPermissionName } from './permissions/modelPermissions';
-export type { ModelPair } from './permissions/modelPermissions';
+export type {
+  ModelDescriptor,
+  ModelPair,
+} from './permissions/modelPermissions';
 export type { AiCredentialStores, CredentialScope } from './credentials/types';
 export type { RecoveryEvent } from './journal/types';
+export type { PageOfNamespaces } from './ownership/types';
+export { createUsageAccounting } from './accounting/aggregate';
+export type {
+  UsageAccounting,
+  UsageAccountingOptions,
+  UsageAggregateRow,
+  UsageDimension,
+  UsageJournalReader,
+  UsageOutcomes,
+  UsageQuery,
+  UsageReport,
+} from './accounting/types';
+export type { AiProviderRegistry } from './providers/registry';
+export type {
+  AiProviderModule,
+  ModuleAuthority,
+  ProviderAdapter,
+  ProviderEnvelope,
+} from './providers/types';
+export type { JournalPruneResult } from './journal/retention';
+export { startAiJournalPruneRunner } from './journal/pruneRunner';
+export type {
+  AiJournalPruneRunner,
+  AiJournalPruneRunnerOptions,
+  AiPruneRunnerLogger,
+} from './journal/pruneRunner';
+export { evaluateAiHealth } from './observability/health';
+export type {
+  AiHealthReport,
+  AiHealthSignal,
+  AiHealthThresholds,
+} from './observability/health';
+export { createMetricsSubscriber } from './observability/metrics';
+export type {
+  AiHealthSnapshot,
+  AiMetricsSubscriber,
+  MetricSeries,
+} from './observability/metrics';
+export type {
+  AiEventEmitter,
+  AiObservabilityEvent,
+} from './observability/types';

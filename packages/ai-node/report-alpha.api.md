@@ -4,10 +4,12 @@
 
 ```ts
 import type { AnyModel } from '@earendil-works/pi-ai';
+import type { AssistantMessageEventStream } from '@earendil-works/pi-ai';
 import type { AuthService } from '@backstage/backend-plugin-api';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
 import type { Context } from '@earendil-works/chord/context';
+import type { Credential as Credential_2 } from '@earendil-works/pi-ai';
 import type { CredentialStore } from '@earendil-works/pi-ai';
 import type { DatabaseService } from '@backstage/backend-plugin-api';
 import type { Harness } from '@earendil-works/pi-durable';
@@ -17,7 +19,8 @@ import type { PermissionsRegistryService } from '@backstage/backend-plugin-api';
 import type { PermissionsService } from '@backstage/backend-plugin-api';
 import type { PluginMetadataService } from '@backstage/backend-plugin-api';
 import type { RegistryReader } from '@earendil-works/pi-durable';
-import { ServiceRef } from '@backstage/backend-plugin-api';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
+import type { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha
 export const AI_INSTALLATION_CONFIG_PATH = 'ai';
@@ -38,6 +41,54 @@ export interface AiCredentialStores {
 }
 
 // @alpha
+export interface AiEventEmitter {
+  // (undocumented)
+  emit(event: AiObservabilityEvent): void | Promise<void>;
+}
+
+// @alpha
+export type AiHealthReport = Readonly<{
+  readonly status: 'ok' | 'degraded';
+  readonly signals: readonly AiHealthSignal[];
+  readonly snapshot: AiHealthSnapshot;
+}>;
+
+// @alpha
+export type AiHealthSignal = Readonly<{
+  readonly name:
+    | 'denialRate'
+    | 'leaseContention'
+    | 'dispatchLatencyMs'
+    | 'journalGrowth';
+  readonly status: 'ok' | 'degraded';
+  readonly value: number;
+  readonly threshold: number;
+  readonly detail: string;
+}>;
+
+// @alpha
+export type AiHealthSnapshot = Readonly<{
+  counters: readonly MetricSeries[];
+  durations: Readonly<Record<string, number>>;
+  activeLeases: number;
+  terminalDispatches: number;
+  failures: number;
+  journalDecisions: Readonly<{
+    allow: number;
+    deny: number;
+  }>;
+  events: number;
+}>;
+
+// @alpha
+export type AiHealthThresholds = Readonly<{
+  readonly denialRate?: number;
+  readonly leaseContention?: number;
+  readonly dispatchLatencyMs?: number;
+  readonly journalGrowth?: number;
+}>;
+
+// @alpha
 export interface AiHttpSupport {
   // (undocumented)
   assertSessionOwner(
@@ -47,12 +98,9 @@ export interface AiHttpSupport {
   // (undocumented)
   authorize(credentials: BackstageCredentials): Promise<void>;
   // (undocumented)
-  listModels(credentials: BackstageCredentials): Promise<
-    readonly {
-      provider: string;
-      modelId: string;
-    }[]
-  >;
+  listModels(
+    credentials: BackstageCredentials,
+  ): Promise<readonly ModelDescriptor[]>;
   // (undocumented)
   listSessions(
     credentials: BackstageCredentials,
@@ -94,16 +142,156 @@ export type AiInstallationConfig = Readonly<{
 // @alpha
 export type AiInstallationCredentials = Readonly<{
   encryptionKey: Uint8Array;
+  previousEncryptionKey?: Uint8Array;
   precedence: AiCredentialsPrecedence;
   scopes: AiConfigCredentialScopes;
   tokenEndpoints: Readonly<Record<string, string>>;
 }>;
 
 // @alpha
+export interface AiJournalPruneRunner {
+  pruneNow(): Promise<JournalPruneResult>;
+  stop(): Promise<void>;
+}
+
+// @alpha
+export interface AiJournalPruneRunnerOptions {
+  // (undocumented)
+  readonly db: Knex;
+  readonly events?: AiEventEmitter;
+  readonly intervalMs: number;
+  readonly logger?: AiPruneRunnerLogger;
+  readonly now?: () => Date;
+  readonly retentionMs: number;
+}
+
+// @alpha
+export interface AiMetricsSubscriber extends AiEventEmitter {
+  // (undocumented)
+  reset(): void;
+  // (undocumented)
+  snapshot(): AiHealthSnapshot;
+}
+
+// @alpha
+export type AiObservabilityEvent =
+  | Readonly<{
+      kind: 'denial';
+      at: number;
+      pluginId?: string;
+      sessionId?: string;
+      provider?: string;
+      modelId?: string;
+      operation: string;
+      reason: string;
+      attempt: number;
+    }>
+  | Readonly<{
+      kind: 'dispatch';
+      at: number;
+      pluginId?: string;
+      sessionId?: string;
+      provider?: string;
+      modelId?: string;
+      operation: string;
+      outcome:
+        | 'sent'
+        | 'completed'
+        | 'failed'
+        | 'cancelled'
+        | 'unknown'
+        | 'stream-failed';
+      httpStatus?: number;
+      durationMs: number;
+    }>
+  | Readonly<{
+      kind: 'lease';
+      at: number;
+      pluginId: string;
+      sessionId: string;
+      action: 'acquire' | 'contention' | 'renew' | 'release' | 'lost';
+      generation?: string;
+      durationMs?: number;
+    }>
+  | Readonly<{
+      kind: 'journal';
+      at: number;
+      action: 'decision' | 'outcome' | 'recovery' | 'prune';
+      decision?: 'allow' | 'deny';
+      durationMs: number;
+      pruned?: number;
+    }>;
+
+// @alpha
+export type AiProviderModule = Readonly<{
+  id: string;
+  adapter: ProviderAdapter;
+  certifiedOperations: readonly string[];
+  destinationTemplates: readonly DestinationTemplate[];
+  destination(model: AnyModel, env: Record<string, string> | undefined): string;
+  validateEnvelope(
+    operation: ProviderEnvelope,
+    request: Request,
+  ): Promise<'model' | 'auth.token-exchange'>;
+  classifyRequest?(url: string): 'model' | 'auth.token-exchange';
+  transport?: 'sse';
+  credentialKey?(providerId: string): string;
+  interpretCredential?(
+    scope: CredentialScope,
+    credential: Credential_2,
+  ): ModuleAuthority;
+  permissionName?(providerId: string, modelId: string): string;
+  resolveDispatch?(
+    model: AnyModel,
+    resolveCredential: () => Promise<
+      | {
+          scope: CredentialScope;
+          authority: ModuleAuthority['authority'];
+          generation: string;
+        }
+      | undefined
+    >,
+  ): Promise<
+    | {
+        resolved: true;
+        api: string;
+        destination: string;
+        authority: ModuleAuthority['authority'];
+        credentialScope: CredentialScope;
+        credentialGeneration: string;
+      }
+    | {
+        resolved: false;
+        reason: string;
+      }
+  >;
+}>;
+
+// @alpha
+export type AiProviderRegistry = Readonly<{
+  get(id: string): AiProviderModule | undefined;
+  hasOperation(operation: string): boolean;
+  canonicalPath(path: string): string | undefined;
+}>;
+
+// @alpha
+export interface AiPruneRunnerLogger {
+  // (undocumented)
+  info(message: string): void;
+  // (undocumented)
+  warn(message: string): void;
+}
+
+// @alpha
 export interface AiService {
   // (undocumented)
   openHarness(options: OpenHarnessOptions): Promise<ManagedHarness>;
 }
+
+// @alpha
+export type AiServiceFactoryOptions = Readonly<{
+  toolModules?: readonly ToolModule[];
+}>;
 
 // @alpha
 export const aiServiceRef: ServiceRef<AiService, 'plugin', 'singleton'>;
@@ -182,6 +370,14 @@ export type AuditPage = Readonly<{
 }>;
 
 // @alpha
+export type AuditQuery = Readonly<{
+  readonly pluginId: string;
+  readonly sessionId: string;
+  readonly cursor?: string;
+  readonly limit?: number;
+}>;
+
+// @alpha
 export type ConfigAtPath = Readonly<{
   root: Config;
   path: string;
@@ -202,6 +398,12 @@ export interface ConfigureAiInstallationOptions {
 export type ConfiguredAiInstallation = Readonly<{
   models: readonly AnyModel[];
   credentialStores?: AiCredentialStores;
+  credentialRotation?: Readonly<{
+    rotate(fence: Fence): Promise<{
+      inspected: number;
+      rotated: number;
+    }>;
+  }>;
   credentialPrecedence: AiCredentialsPrecedence;
   credentialTokenEndpoints: Readonly<Record<string, string>>;
 }>;
@@ -210,6 +412,52 @@ export type ConfiguredAiInstallation = Readonly<{
 export function createAiHttpSupport(
   options: AiHttpSupportOptions,
 ): Promise<AiHttpSupport>;
+
+// @alpha
+export function createAiServiceFactory(
+  options?: AiServiceFactoryOptions,
+): <TService extends AiService>(
+  service: ServiceRef<TService, 'plugin'>,
+) => ServiceFactory<TService, 'plugin', 'singleton' | 'multiton'>;
+
+// @alpha
+export function createGuardedToolOperations(options: {
+  tools: ToolRegistry;
+  models: GuardedToolDispatch;
+}): {
+  callTool(input: {
+    serverId: string;
+    toolName: string;
+    arguments: unknown;
+    credentials: BackstageCredentials;
+    caller?: Record<string, unknown>;
+  }): Promise<unknown>;
+};
+
+// @alpha
+export function createMetricsSubscriber(): AiMetricsSubscriber;
+
+// @alpha
+export function createToolPermissions(options: {
+  tools: readonly ToolIdentity[];
+  authorizer: Pick<PermissionsService, 'authorize'>;
+  registry: Pick<PermissionsRegistryService, 'addPermissions'>;
+}): {
+  authorize: (
+    credentials: BackstageCredentials,
+    identities: readonly ToolIdentity[],
+  ) => Promise<
+    {
+      result: string;
+    }[]
+  >;
+  toolPermissionName: typeof toolPermissionName;
+};
+
+// @alpha
+export function createUsageAccounting(
+  options: UsageAccountingOptions,
+): UsageAccounting;
 
 // @alpha
 export type CredentialScope =
@@ -226,11 +474,51 @@ export type CredentialScope =
     }>;
 
 // @alpha
+export type DestinationTemplate = readonly DestinationTemplatePart[];
+
+// @alpha
+export type DestinationTemplatePart =
+  | Readonly<{
+      literal: string;
+    }>
+  | Readonly<{
+      digest: string;
+    }>;
+
+// @alpha
+export function evaluateAiHealth(
+  snapshot: AiHealthSnapshot,
+  thresholds?: AiHealthThresholds,
+): AiHealthReport;
+
+// @alpha
 export type Fence = Readonly<{
   namespace: Namespace;
   owner: string;
   token: string;
 }>;
+
+// @alpha
+export type GuardedToolDispatch = Readonly<{
+  callTool(
+    model: AnyModel,
+    context: unknown,
+    caller?: Record<string, unknown>,
+  ): Promise<unknown>;
+}>;
+
+// @alpha
+export type GuardedToolOperations = ReturnType<
+  typeof createGuardedToolOperations
+>;
+
+// @alpha
+export interface JournalPruneResult {
+  // (undocumented)
+  readonly prunedEvents: number;
+  // (undocumented)
+  readonly uncertaintyRecords: number;
+}
 
 // @alpha
 export interface ManagedHarness {
@@ -240,10 +528,29 @@ export interface ManagedHarness {
   readonly harness: ManagedNativeHarness;
   // (undocumented)
   release(): Promise<void>;
+  readonly tools?: GuardedToolOperations;
 }
 
 // @alpha
 export type ManagedNativeHarness = Omit<Harness, 'close'>;
+
+// @alpha
+export type MetricSeries = Readonly<{
+  labels: Readonly<Record<string, string>>;
+  count: number;
+  totalMs?: number;
+  avgMs?: number;
+}>;
+
+// @alpha
+export type ModelDescriptor = Readonly<{
+  provider: string;
+  modelId: string;
+  api?: string;
+  type?: string;
+  contextWindow?: number;
+  maxTokens?: number;
+}>;
 
 // @alpha
 export type ModelPair = Readonly<{
@@ -253,6 +560,18 @@ export type ModelPair = Readonly<{
 
 // @alpha
 export function modelPermissionName(input: ModelPair): string;
+
+// @alpha
+export type ModuleAuthority = Readonly<{
+  authority: Readonly<{
+    kind: 'apiKey' | 'oauth' | 'federation';
+    apiKey?: string;
+    headers?: Record<string, string | null>;
+    env?: Record<string, string>;
+    expiresAt?: number;
+  }>;
+  generation: string;
+}>;
 
 // @alpha
 export type Namespace = Readonly<{
@@ -270,9 +589,58 @@ export type OpenHarnessOptions = Readonly<{
 }>;
 
 // @alpha
+export interface PageOfNamespaces {
+  // (undocumented)
+  readonly namespaces: readonly Namespace[];
+  readonly next?: string;
+}
+
+// @alpha
 export function parseAiInstallationConfig(
   source: ConfigAtPath,
 ): AiInstallationConfig;
+
+// @alpha
+export type ProviderAdapter =
+  | Readonly<{
+      kind: 'stream';
+      stream(
+        model: never,
+        context: never,
+        options: never,
+      ): AssistantMessageEventStream;
+      streamSimple(
+        model: never,
+        context: never,
+        options: never,
+      ): AssistantMessageEventStream;
+    }>
+  | Readonly<{
+      kind: 'custom';
+      invoke(
+        input: Readonly<{
+          operation: string;
+          model: AnyModel;
+          context: unknown;
+          options: Readonly<Record<string, unknown>>;
+        }>,
+      ): Promise<
+        Readonly<{
+          value: unknown;
+          outcome: 'completed' | 'failed' | 'cancelled';
+        }>
+      >;
+    }>;
+
+// @alpha
+export type ProviderEnvelope = Readonly<{
+  api: string;
+  operation: string;
+  modelId: string;
+  resolvedModel: string;
+  destination: string;
+  authTokenDestinations?: readonly string[];
+}>;
 
 // @alpha
 export type RecoveryEvent = Readonly<{
@@ -289,4 +657,154 @@ export type RecoveryEvent = Readonly<{
   readonly configVersion?: string;
   readonly detail?: string;
 }>;
+
+// @alpha
+export function startAiJournalPruneRunner(
+  options: AiJournalPruneRunnerOptions,
+): AiJournalPruneRunner;
+
+// @alpha
+export type ToolCallEnvelope = Readonly<{
+  serverId: string;
+  toolName: string;
+  destination: string;
+}>;
+
+// @alpha
+export type ToolCallResult = Readonly<{
+  value: unknown;
+  outcome: 'completed' | 'failed' | 'cancelled';
+}>;
+
+// @alpha
+export type ToolDeclaration = Readonly<{
+  name: string;
+  description?: string;
+}>;
+
+// @alpha
+export type ToolDispatchInput = Readonly<{
+  tool: ToolDeclaration;
+  arguments: unknown;
+  options: Readonly<Record<string, unknown>>;
+}>;
+
+// @alpha
+export type ToolIdentity = Readonly<{
+  serverId: string;
+  toolName: string;
+}>;
+
+// @alpha
+export type ToolModule = Readonly<{
+  id: string;
+  tools: readonly ToolDeclaration[];
+  destination(toolName: string): string;
+  destinationTemplates: readonly DestinationTemplate[];
+  validateToolCall(
+    operation: ToolCallEnvelope,
+    request: Request,
+  ): Promise<void>;
+  adapter: Readonly<{
+    kind: 'tool';
+    invoke(input: ToolDispatchInput): Promise<ToolCallResult>;
+  }>;
+}>;
+
+// @alpha
+export function toolPermissionName(input: ToolIdentity): string;
+
+// @alpha
+export type ToolRegistry = Readonly<{
+  providerRegistry: AiProviderRegistry;
+  resolve(identity: ToolIdentity):
+    | {
+        module: ToolModule;
+        tool: ToolDeclaration;
+      }
+    | undefined;
+  readonly modules: readonly ToolModule[];
+}>;
+
+// @alpha
+export interface UsageAccounting {
+  // (undocumented)
+  aggregate(
+    credentials: BackstageCredentials,
+    query: UsageQuery,
+  ): Promise<UsageReport>;
+}
+
+// @alpha
+export interface UsageAccountingOptions {
+  readonly journal: UsageJournalReader;
+  readonly listNamespaces?: (
+    pluginId: string,
+    cursor?: string,
+  ) => Promise<PageOfNamespaces>;
+}
+
+// @alpha
+export interface UsageAggregateRow {
+  readonly attempts: number;
+  // (undocumented)
+  readonly decisions: Readonly<{
+    allow: number;
+    deny: number;
+  }>;
+  readonly key: Readonly<Partial<Record<UsageDimension, string>>>;
+  readonly lastRecordedAt?: string;
+  // (undocumented)
+  readonly outcomes: UsageOutcomes;
+}
+
+// @alpha
+export type UsageDimension =
+  | 'pluginId'
+  | 'sessionId'
+  | 'provider'
+  | 'model'
+  | 'operation';
+
+// @alpha
+export type UsageJournalReader = Readonly<{
+  read(
+    credentials: BackstageCredentials,
+    query: AuditQuery,
+  ): Promise<AuditPage>;
+}>;
+
+// @alpha
+export interface UsageOutcomes {
+  // (undocumented)
+  readonly 'stream-failed': number;
+  // (undocumented)
+  readonly cancelled: number;
+  // (undocumented)
+  readonly completed: number;
+  // (undocumented)
+  readonly failed: number;
+  readonly unknown: number;
+}
+
+// @alpha
+export interface UsageQuery {
+  readonly from?: string;
+  readonly groupBy?: readonly UsageDimension[];
+  readonly maxEvents?: number;
+  readonly maxRows?: number;
+  readonly pageSize?: number;
+  readonly pluginId: string;
+  readonly sessionIds?: readonly string[];
+  readonly until?: string;
+}
+
+// @alpha
+export interface UsageReport {
+  readonly eventsRead: number;
+  // (undocumented)
+  readonly rows: readonly UsageAggregateRow[];
+  readonly sessionsRead: number;
+  readonly truncated: boolean;
+}
 ```

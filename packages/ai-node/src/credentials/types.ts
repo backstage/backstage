@@ -74,6 +74,8 @@ export interface AiCredentialStores {
 export interface CredentialStoresOptions {
   readonly db: Knex;
   readonly encryptionKey: Uint8Array;
+  /** Previous personal credential key accepted during rotation. */
+  readonly previousEncryptionKey?: Uint8Array;
   readonly configCredentials: ReadonlyMap<
     string,
     ReadonlyMap<string, Credential>
