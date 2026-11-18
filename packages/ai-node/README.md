@@ -232,9 +232,16 @@ Worked examples:
 | `my.provider` / `model.v2` | `ai.model.my%2Eprovider.model%2Ev2.use` |
 | `anthropic` / `claude-é`   | `ai.model.anthropic.claude-%C3%A9.use`  |
 
-Names are exact, not wildcard patterns: a permission rule for
-`ai.model.openai.*.use` matches nothing, because no catalog model's
-encoded model ID is the literal `*`. A model not in the canonical
+Names are exact, not wildcard patterns: there is no star syntax. A
+policy rule naming `ai.model.openai.*.use` matches exactly the one
+encoded pair it spells — or nothing. The literal-star edge: because
+`encodeURIComponent` passes `*` through unchanged and the catalog's
+identifier rules accept it, a model whose ID is literally `*` produces
+exactly that name; granting it authorizes only that literal pair, never
+a range of models. Policy authors should therefore never reach for `*`
+in a model permission name expecting wildcard semantics — either name
+the exact pair, or grant each pair of a provider separately. A model
+not in the canonical
 `ai.models` catalog has no permission name and no grant can make it
 dispatchable; discovery (`listModels`) reports exactly the pairs the
 caller's own credentials are allowed to use, each with its catalog

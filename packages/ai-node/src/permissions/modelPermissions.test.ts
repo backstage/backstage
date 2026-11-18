@@ -181,9 +181,15 @@ describe('model permissions', () => {
       { provider: 'a/% é', modelId: 'b.c/%' },
       { provider: 'Ünicode', modelId: 'Claude-é' },
       { provider: 'p', modelId: 'with spaces' },
+      // encodeURIComponent passes '*' through unchanged, so a literal-star
+      // model ID is a legal, exact, non-wildcard name.
+      { provider: 'openai', modelId: '*' },
     ]) {
       expect(decodeName(modelPermissionName(pair))).toEqual(pair);
     }
+    expect(modelPermissionName({ provider: 'openai', modelId: '*' })).toBe(
+      'ai.model.openai.*.use',
+    );
     // A name that is not a model permission name rejects rather than
     // decoding to nonsense.
     expect(() => decodeName('ai.model.openai.gpt-5')).toThrow(
