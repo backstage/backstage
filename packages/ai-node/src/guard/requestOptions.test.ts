@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
-import { guardedRequestOptions } from './requestOptions';
+import { guardedRequestOptions as guardedRequestOptionsBase } from './requestOptions';
+import { builtinProviderRegistry } from '../providers/testFixtures';
+
+const guardedRequestOptions = (
+  operation: Parameters<typeof guardedRequestOptionsBase>[0],
+  guarded: Parameters<typeof guardedRequestOptionsBase>[1],
+  options?: Parameters<typeof guardedRequestOptionsBase>[2],
+) =>
+  guardedRequestOptionsBase(
+    operation,
+    guarded,
+    options,
+    builtinProviderRegistry,
+  );
 import type { TrustedOperation } from './types';
 
 describe('guarded request options', () => {

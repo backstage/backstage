@@ -32,8 +32,12 @@ import type {
   CodemodeRunOptions,
 } from '@earendil-works/pi-codemode/portable';
 import type { AnyModel, Credential, Models } from '@earendil-works/pi-ai';
-import { builtinProviderRegistry } from './providers/builtins';
-import { modelCredentialKey } from './providers/registry';
+import {
+  createProviderRegistry,
+  modelCredentialKey,
+} from './providers/registry';
+import type { AiProviderModule } from './providers/types';
+import type { AiModules } from './moduleRegistry';
 import type { AiProviderRegistry } from './providers/registry';
 import type { Knex } from 'knex';
 import { createHash, randomUUID } from 'node:crypto';
@@ -161,6 +165,10 @@ export interface AiServiceIntegrationOptions {
   readonly deps: DefaultAiServiceDeps;
   /** Trusted provider registrations shared by the guard and journal. */
   readonly providers?: AiProviderRegistry;
+  /** Explicit provider modules. */
+  readonly providerModules?: readonly AiProviderModule[];
+  /** Additional registrations captured when a new admission opens. */
+  readonly moduleSource?: () => AiModules;
   /**
    * Registered MCP tool servers. When present, every opened harness
    * exposes guarded tool operations: a tool call is a journaled,
@@ -295,6 +303,8 @@ type NativeAdmission = {
   readonly namespace: Namespace;
   /** The single live authority: immutable for the admission's lifetime. */
   readonly credentials: BackstageCredentials;
+  /** Dispatch registrations stay fixed for the admission's lifetime. */
+  readonly dispatch: DispatchContext;
   /** Provider authorities resolved for the acquiring credentials. */
   authorities: ReadonlyMap<string, ResolvedAuthority>;
   /** The shared fence, set once the first reservation acquires the lease. */
@@ -330,6 +340,18 @@ type NativeAdmission = {
 };
 
 /** The authority context a dispatch binds to: the admission's view. */
+type DispatchContext = {
+  readonly providers: AiProviderRegistry;
+  readonly tools: ReturnType<typeof createToolRegistry> | undefined;
+  readonly guard: ModelOperationGuard;
+  readonly journal: AttemptJournal;
+  readonly resolveAuthority: (
+    api: string,
+    providerId: string,
+    credentials: BackstageCredentials,
+  ) => Promise<ResolvedAuthority | undefined>;
+};
+
 type AdmissionAuthority = {
   readonly credentials: BackstageCredentials;
   readonly authorities: ReadonlyMap<string, ResolvedAuthority>;
@@ -453,15 +475,6 @@ export async function createAiServiceIntegration(
   options: AiServiceIntegrationOptions,
 ): Promise<ProductionAiServiceIntegration> {
   const { deps } = options;
-  const toolRegistry = options.toolModules
-    ? createToolRegistry(options.toolModules)
-    : undefined;
-  const providerRegistry = toolRegistry
-    ? composeWithToolRegistry(
-        options.providers ?? builtinProviderRegistry,
-        toolRegistry,
-      )
-    : options.providers ?? builtinProviderRegistry;
   const credentialStores = options.credentialStores;
   const credentialPrecedence = options.credentialPrecedence ?? 'user-first';
   const refreshExpiredCredential = options.refreshExpiredCredential;
@@ -481,115 +494,147 @@ export async function createAiServiceIntegration(
     getOwnServiceCredentials: () => deps.auth.getOwnServiceCredentials(),
   });
 
-  const journal: AttemptJournal = createWiredAttemptJournal({
-    db,
-    ...(events ? { events } : {}),
-    permissions: deps.permissions,
-    providers: providerRegistry,
-    mirror: {
-      mirror: (event: AuditEventView) => {
-        // Best-effort write-through to the Backstage auditor; the durable
-        // journal is the authority and mirror failures are swallowed.
-        void deps.auditor
-          .createEvent({
-            eventId: 'ai.attempt',
-            severityLevel: 'low',
-            meta: event as unknown as JsonObject,
-          })
-          .then(auditEvent => auditEvent.success())
-          .catch(() => {});
+  function createDispatchContext(): DispatchContext {
+    const dynamic = options.moduleSource?.();
+    if (options.providers && dynamic?.providerModules.length) {
+      throw new Error(
+        'Cannot combine a provider registry with dynamic provider modules',
+      );
+    }
+    const providerBase =
+      options.providers ??
+      createProviderRegistry([
+        ...(options.providerModules ?? []),
+        ...(dynamic?.providerModules ?? []),
+      ]);
+    const toolModules = [
+      ...(options.toolModules ?? []),
+      ...(dynamic?.toolModules ?? []),
+    ];
+    const toolRegistry = toolModules.length
+      ? createToolRegistry(toolModules)
+      : undefined;
+    const providerRegistry = toolRegistry
+      ? composeWithToolRegistry(providerBase, toolRegistry)
+      : providerBase;
+    const journal: AttemptJournal = createWiredAttemptJournal({
+      db,
+      ...(events ? { events } : {}),
+      permissions: deps.permissions,
+      providers: providerRegistry,
+      mirror: {
+        mirror: (event: AuditEventView) => {
+          // Best-effort write-through to the Backstage auditor; the durable
+          // journal is the authority and mirror failures are swallowed.
+          void deps.auditor
+            .createEvent({
+              eventId: 'ai.attempt',
+              severityLevel: 'low',
+              meta: event as unknown as JsonObject,
+            })
+            .then(auditEvent => auditEvent.success())
+            .catch(() => {});
+        },
       },
-    },
-  });
+    });
 
-  /**
-   * Resolves the authority for a dispatch, or undefined. One generic path for
-   * models and tool servers: the module (looked up by its api id) carries the
-   * credential key and interpretation when it has its own — tool servers —
-   * and the shared model-provider semantics apply otherwise.
-   */
-  const resolveAuthority = async (
-    api: string,
-    providerId: string,
-    credentials: BackstageCredentials,
-  ): Promise<ResolvedAuthority | undefined> => {
-    if (credentialStores === undefined) {
-      return undefined;
-    }
-    const module = providerRegistry.get(api);
-    const key = module?.credentialKey
-      ? module.credentialKey(providerId)
-      : modelCredentialKey(providerId);
-    if (key === undefined) {
-      // Reserved namespaces no module claims never resolve as model
-      // authority.
-      return undefined;
-    }
-    const principal = principalOf(deps, credentials);
-    // Personal and installation credentials in the configured order; absence
-    // falls through, a read failure does not.
-    const scopes = credentialScopesFor(principal, credentialPrecedence);
-    for (const scope of scopes) {
-      const credential = await credentialStores.forScope(scope).read(key);
-      if (credential === undefined) {
-        continue;
+    /**
+     * Resolves the authority for a dispatch, or undefined. One generic path for
+     * models and tool servers: the module (looked up by its api id) carries the
+     * credential key and interpretation when it has its own — tool servers —
+     * and the shared model-provider semantics apply otherwise.
+     */
+    const resolveAuthority = async (
+      api: string,
+      providerId: string,
+      credentials: BackstageCredentials,
+    ): Promise<ResolvedAuthority | undefined> => {
+      if (credentialStores === undefined) {
+        return undefined;
       }
-      if (module?.interpretCredential) {
-        const { authority, generation } = module.interpretCredential(
-          scope,
-          credential,
-        );
-        return { scope, generation, authority };
+      const module = providerRegistry.get(api);
+      const key = module?.credentialKey
+        ? module.credentialKey(providerId)
+        : modelCredentialKey(providerId);
+      if (key === undefined) {
+        // Reserved namespaces no module claims never resolve as model
+        // authority.
+        return undefined;
       }
-      return authorityOf(scope, credential);
-    }
-    return undefined;
-  };
+      const principal = principalOf(deps, credentials);
+      // Personal and installation credentials in the configured order; absence
+      // falls through, a read failure does not.
+      const scopes = credentialScopesFor(principal, credentialPrecedence);
+      for (const scope of scopes) {
+        const credential = await credentialStores.forScope(scope).read(key);
+        if (credential === undefined) {
+          continue;
+        }
+        if (module?.interpretCredential) {
+          const { authority, generation } = module.interpretCredential(
+            scope,
+            credential,
+          );
+          return { scope, generation, authority };
+        }
+        return authorityOf(scope, credential);
+      }
+      return undefined;
+    };
 
-  const guard: ModelOperationGuard = createModelOperationGuard({
-    providers: providerRegistry,
-    transport: fetch,
-    ...(events ? { events } : {}),
-    recheck: async operation => {
-      // Fresh permission check with the original caller credentials. The
-      // permission name comes from the module when it carries its own (tool
-      // servers); the shared model encoder applies otherwise.
-      const module = providerRegistry.get(operation.api);
-      const permissionName = module?.permissionName
-        ? module.permissionName(operation.provider, operation.modelId)
-        : modelPermissionName({
-            provider: operation.provider,
-            modelId: operation.modelId,
-          });
-      const decisions = await deps.permissions.authorize(
-        [
-          {
-            permission: {
-              type: 'basic',
-              name: permissionName,
-              attributes: {},
+    const guard: ModelOperationGuard = createModelOperationGuard({
+      providers: providerRegistry,
+      transport: fetch,
+      ...(events ? { events } : {}),
+      recheck: async operation => {
+        // Fresh permission check with the original caller credentials. The
+        // permission name comes from the module when it carries its own (tool
+        // servers); the shared model encoder applies otherwise.
+        const module = providerRegistry.get(operation.api);
+        const permissionName = module?.permissionName
+          ? module.permissionName(operation.provider, operation.modelId)
+          : modelPermissionName({
+              provider: operation.provider,
+              modelId: operation.modelId,
+            });
+        const decisions = await deps.permissions.authorize(
+          [
+            {
+              permission: {
+                type: 'basic',
+                name: permissionName,
+                attributes: {},
+              },
             },
-          },
-        ],
-        { credentials: operation.credentials },
-      );
-      if (decisions[0]?.result !== 'ALLOW') {
-        return false;
-      }
-      // Fence currency: a rejected renewal means this generation is stale.
-      if (!(await lease.renew(operation.fence))) {
-        return false;
-      }
-      // Credential generation: the resolved credential must be unchanged.
-      const resolved = await resolveAuthority(
-        operation.api,
-        operation.provider,
-        operation.credentials,
-      );
-      return resolved?.generation === operation.credentialGeneration;
-    },
-    journal,
-  });
+          ],
+          { credentials: operation.credentials },
+        );
+        if (decisions[0]?.result !== 'ALLOW') {
+          return false;
+        }
+        // Fence currency: a rejected renewal means this generation is stale.
+        if (!(await lease.renew(operation.fence))) {
+          return false;
+        }
+        // Credential generation: the resolved credential must be unchanged.
+        const resolved = await resolveAuthority(
+          operation.api,
+          operation.provider,
+          operation.credentials,
+        );
+        return resolved?.generation === operation.credentialGeneration;
+      },
+      journal,
+    });
+    return {
+      providers: providerRegistry,
+      tools: toolRegistry,
+      guard,
+      journal,
+      resolveAuthority,
+    };
+  }
+  const initialDispatch = createDispatchContext();
 
   const handleStates = new Map<NativeHarnessHandle, HandleState>();
   const invalidationCallbacks: Array<(namespace: Namespace) => void> = [];
@@ -611,6 +656,7 @@ export async function createAiServiceIntegration(
    */
   async function resolveAuthorities(
     binding: AcquisitionBinding,
+    dispatch: DispatchContext,
   ): Promise<Map<string, ResolvedAuthority>> {
     const providers = new Set<string>(catalog.map(model => model.provider));
     if (binding.model !== undefined) {
@@ -618,7 +664,7 @@ export async function createAiServiceIntegration(
     }
     const authorities = new Map<string, ResolvedAuthority>();
     for (const providerId of providers) {
-      const resolved = await resolveAuthority(
+      const resolved = await dispatch.resolveAuthority(
         providerId,
         providerId,
         binding.credentials,
@@ -908,7 +954,13 @@ export async function createAiServiceIntegration(
         },
       });
     }
-    const authorities = await resolveAuthorities(input);
+    const {
+      providers: providerRegistry,
+      tools: toolRegistry,
+      guard,
+      journal,
+    } = admission.dispatch;
+    const authorities = await resolveAuthorities(input, admission.dispatch);
     const authority = (): AdmissionAuthority => {
       if (admission.draining || admission.fence !== fence) {
         throw new Error(
@@ -929,7 +981,7 @@ export async function createAiServiceIntegration(
         guard,
         journal,
         ...(events ? { events } : {}),
-        resolve: makeResolve(input, fence, authority),
+        resolve: makeResolve(input, fence, authority, admission.dispatch),
       });
       return {
         ...requests,
@@ -948,7 +1000,7 @@ export async function createAiServiceIntegration(
           // denial — a local rejection never resolved a destination —
           // and the native harness settles the run with its own
           // no-model availability error.
-          journalUnresolvedModel(input, fence, provider, id);
+          journalUnresolvedModel(input, fence, provider, id, journal);
           return undefined;
         },
         // Catalog-type lookups for extension code (code mode's `models.*`
@@ -1007,7 +1059,7 @@ export async function createAiServiceIntegration(
             guard,
             journal,
             ...(events ? { events } : {}),
-            resolve: makeResolve(input, fence, authority),
+            resolve: makeResolve(input, fence, authority, admission.dispatch),
           }),
         })
       : undefined;
@@ -1097,11 +1149,13 @@ export async function createAiServiceIntegration(
     input: OpenNativeHarnessInput,
     fence: AdmissionFence,
     authority: () => AdmissionAuthority,
+    dispatchContext: DispatchContext,
   ): (
     model: AnyModel,
     operation: ModelOperation,
   ) => Promise<GuardedModelBinding> {
     const sessionRef = `${input.namespace.pluginId}/${input.namespace.sessionId}`;
+    const { providers: providerRegistry, resolveAuthority } = dispatchContext;
     let callOrdinal = 0;
     return async (model, operation) => {
       const dispatchModule = providerRegistry.get(
@@ -1213,6 +1267,16 @@ export async function createAiServiceIntegration(
             authority: { kind: 'apiKey' },
           },
           `model not resolved: '${model.provider}/${model.id}' is not in the canonical catalog of this installation`,
+        );
+      }
+      if (providerRegistry.get(canonical.api) === undefined) {
+        throw new GuardedResolutionError(
+          {
+            operation: trusted,
+            model: bindingModel,
+            authority: { kind: 'apiKey' },
+          },
+          `provider module '${canonical.api}' is not registered; use createAiServiceFactory({ providerModules }) or aiModulesExtensionPoint.registerProviderModules`,
         );
       }
       let resolved = current.authorities.get(canonical.provider);
@@ -1344,6 +1408,7 @@ export async function createAiServiceIntegration(
     fence: AdmissionFence,
     provider: string,
     modelId: string,
+    journal: AttemptJournal,
   ): void {
     const sessionRef = `${input.namespace.pluginId}/${input.namespace.sessionId}`;
     void journal
@@ -1386,7 +1451,7 @@ export async function createAiServiceIntegration(
 
   const integration: ProductionAiServiceIntegration = {
     recovery,
-    guard,
+    guard: initialDispatch.guard,
 
     onNamespaceInvalidated(callback) {
       invalidationCallbacks.push(callback);
@@ -1466,7 +1531,10 @@ export async function createAiServiceIntegration(
         // rotation is visible to the recheck without transferring
         // authority. The refresh is published only if the reservation
         // identity still holds.
-        const authorities = await resolveAuthorities(binding);
+        const authorities = await resolveAuthorities(
+          binding,
+          existing.dispatch,
+        );
         if (
           admissions.get(key) === existing &&
           !existing.draining &&
@@ -1511,6 +1579,7 @@ export async function createAiServiceIntegration(
         const admission: NativeAdmission = existing ?? {
           namespace: input.namespace,
           credentials: input.credentials,
+          dispatch: createDispatchContext(),
           authorities: new Map<string, ResolvedAuthority>(),
           fence: undefined,
           keepalive: undefined,

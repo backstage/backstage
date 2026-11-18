@@ -30,9 +30,11 @@ import { normalizeContext } from '@earendil-works/pi-ai/utils/transcript';
 import { createAttemptJournal } from '../journal/knex';
 import { createModelOperationGuard } from '../guard/createModelOperationGuard';
 import type { TrustedOperation } from '../guard/types';
-import { builtinProviderModules } from './builtins';
-import { registerProviderCertification } from './certification';
-import { createProviderRegistry } from './registry';
+import { builtinProviderModules } from '../temporary';
+import {
+  registerProviderCertification,
+  createProviderRegistry,
+} from '@backstage/ai-node/testUtils';
 import { validateHttpEnvelope } from './httpEnvelope';
 
 const storageMigration = require('../../migrations/1000_storage');

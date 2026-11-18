@@ -24,7 +24,7 @@ import {
   type Models,
   type ProviderHeaders,
 } from '@earendil-works/pi-ai';
-import { builtinProviderRegistry } from '../providers/builtins';
+import { emptyProviderRegistry } from '../providers/registry';
 import type { AiProviderRegistry } from '../providers/registry';
 import { emitSafe } from '../observability/types';
 import type { AiEventEmitter } from '../observability/types';
@@ -113,7 +113,7 @@ export function createGuardedModelOperations(options: {
   /** Observability sink for local policy denials; no-op when absent. */
   events?: AiEventEmitter;
 }): ModelRequests {
-  const providers = options.providers ?? builtinProviderRegistry;
+  const providers = options.providers ?? emptyProviderRegistry;
   class PolicyRejection extends Error {}
   class ResolveContractViolation extends Error {}
   const reject = async (

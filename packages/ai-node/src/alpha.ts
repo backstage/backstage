@@ -53,8 +53,16 @@ export type {
   ConfiguredAiInstallation,
 } from './config-extension/index';
 
-export { aiServiceRef, createAiServiceFactory } from './service';
+export {
+  aiServiceRef,
+  createAiServiceFactory,
+  createPrivateAiService,
+  bindAiModuleRegistry,
+} from './service';
+export { createAiModuleRegistry } from './moduleRegistry';
+export type { AiModuleRegistry, AiModules } from './moduleRegistry';
 export type { AiServiceFactoryOptions } from './service';
+export type { DefaultAiServiceDeps } from './DefaultAiService';
 export type {
   ToolCallResult,
   ToolDeclaration,

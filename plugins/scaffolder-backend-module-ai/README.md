@@ -76,6 +76,9 @@ backend.add(import('@backstage/plugin-scaffolder-backend-module-ai'));
 
 ## Configuration
 
+The module uses a private AI service instance with its own provider registrations.
+It shares the installation's `ai` configuration conventions, but not the AI
+backend plugin's dynamic module registrations or personal credential store.
 The installation-scoped `ai` section of `app-config.yaml` configures the
 model catalog and credentials (see the `@backstage/ai-node` documentation).
 The scaffolder plugin selects its own model at `scaffolder.ai`:

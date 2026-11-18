@@ -28,7 +28,7 @@ import type { AiProviderRegistry } from './registry';
  * This suite tests guard/registration boundaries, not arbitrary code that
  * bypasses the guard. Provider-specific SDK integration tests are also needed.
  *
- * @internal
+ * @alpha
  */
 // The exported helper is intentionally imported by provider test suites.
 // eslint-disable-next-line jest/no-export

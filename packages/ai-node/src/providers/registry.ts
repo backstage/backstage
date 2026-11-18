@@ -40,6 +40,7 @@ export type AiProviderRegistry = Readonly<{
   canonicalPath(path: string): string | undefined;
 }>;
 
+/** Creates an immutable registry of trusted provider modules. @alpha */
 export function createProviderRegistry(
   modules: readonly AiProviderModule[],
 ): AiProviderRegistry {
@@ -140,3 +141,6 @@ export function createProviderRegistry(
     },
   });
 }
+
+/** Registry used when no provider modules are registered. */
+export const emptyProviderRegistry = createProviderRegistry([]);

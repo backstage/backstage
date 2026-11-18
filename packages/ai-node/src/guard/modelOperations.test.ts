@@ -18,13 +18,29 @@ import { mockCredentials } from '@backstage/backend-test-utils';
 import { openaiProvider } from '@earendil-works/pi-ai/providers/openai';
 import type { AttemptDecision, AttemptOutcome } from '../journal/types';
 import type { Fence } from '../contracts';
-import { createModelOperationGuard } from './createModelOperationGuard';
+import { createModelOperationGuard as createModelOperationGuardBase } from './createModelOperationGuard';
 import {
-  createGuardedModelOperations,
+  createGuardedModelOperations as createGuardedModelOperationsBase,
   GuardedResolutionError,
   type GuardedModelBinding,
 } from './modelOperations';
 import type { ModelOperation, TrustedOperation } from './types';
+import { builtinProviderRegistry } from '../providers/testFixtures';
+
+const createModelOperationGuard = (
+  options: Parameters<typeof createModelOperationGuardBase>[0],
+) =>
+  createModelOperationGuardBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
+const createGuardedModelOperations = (
+  options: Parameters<typeof createGuardedModelOperationsBase>[0],
+) =>
+  createGuardedModelOperationsBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
 
 describe('guarded model operations', () => {
   it('journals only typed resolution failures with valid trusted bindings', async () => {

@@ -24,9 +24,15 @@ import knex, { type Knex } from 'knex';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { AuditAccessDeniedError, AuditSessionNotFoundError } from './errors';
 import type { AttemptJournal, AuditEventView } from './types';
-import { createAttemptJournal } from './knex';
+import { createAttemptJournal as createAttemptJournalBase } from './knex';
 import { pruneAiJournal } from './retention';
 import type { AttemptDecision } from './types';
+import { builtinProviderRegistry } from '../providers/testFixtures';
+
+const createAttemptJournal = (
+  options: Parameters<typeof createAttemptJournalBase>[0],
+) =>
+  createAttemptJournalBase({ providers: builtinProviderRegistry, ...options });
 
 const storageMigration = require('../../migrations/1000_storage');
 const journalMigration = require('../../migrations/4000_journal');

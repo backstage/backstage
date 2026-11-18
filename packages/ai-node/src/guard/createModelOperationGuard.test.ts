@@ -15,10 +15,19 @@
  */
 
 import { mockCredentials } from '@backstage/backend-test-utils';
-import { createModelOperationGuard } from './createModelOperationGuard';
+import { createModelOperationGuard as createModelOperationGuardBase } from './createModelOperationGuard';
 import type { TrustedOperation } from './types';
 import type { AttemptDecision, AttemptOutcome } from '../journal/types';
 import type { Fence } from '../contracts';
+import { builtinProviderRegistry } from '../providers/testFixtures';
+
+const createModelOperationGuard = (
+  options: Parameters<typeof createModelOperationGuardBase>[0],
+) =>
+  createModelOperationGuardBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
 
 function fixture() {
   const operation: TrustedOperation = {

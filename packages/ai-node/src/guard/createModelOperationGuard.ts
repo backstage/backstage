@@ -29,7 +29,7 @@ import type {
 } from './types';
 import { hasTrustedOperationContext } from './types';
 import { validateRequest } from './validateRequest';
-import { builtinProviderRegistry } from '../providers/builtins';
+import { emptyProviderRegistry } from '../providers/registry';
 import type { AiProviderRegistry } from '../providers/registry';
 
 type PendingAttempt = {
@@ -93,7 +93,7 @@ export function createModelOperationGuard(options: {
   /** Observability sink; no-op when absent. */
   events?: AiEventEmitter;
 }): ModelOperationGuard {
-  const providers = options.providers ?? builtinProviderRegistry;
+  const providers = options.providers ?? emptyProviderRegistry;
   const transport = options.transport;
   const journal = options.journal;
   const events = options.events;

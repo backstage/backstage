@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { builtinProviderRegistry } from '../providers/builtins';
+import { emptyProviderRegistry } from '../providers/registry';
 import type { AiProviderRegistry } from '../providers/registry';
 import type { TrustedOperation } from './types';
 
@@ -39,7 +39,7 @@ async function enforceBodyLimit(request: Request): Promise<void> {
 export async function validateRequest(
   operation: TrustedOperation,
   request: Request,
-  registry: AiProviderRegistry = builtinProviderRegistry,
+  registry: AiProviderRegistry = emptyProviderRegistry,
 ): Promise<'model' | 'auth.token-exchange'> {
   const module = registry.get(operation.api);
   if (!module || !module.certifiedOperations.includes(operation.operation)) {

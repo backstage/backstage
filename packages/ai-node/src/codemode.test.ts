@@ -61,10 +61,19 @@ import {
   type DefaultAiServiceDeps,
 } from './DefaultAiService';
 import {
-  createAiServiceIntegration,
+  createAiServiceIntegration as createAiServiceIntegrationBase,
   type ProductionAiServiceIntegration,
 } from './integration';
 import { runAiMigrations } from './migrations';
+import { builtinProviderRegistry } from './providers/testFixtures';
+
+const createAiServiceIntegration = (
+  options: Parameters<typeof createAiServiceIntegrationBase>[0],
+) =>
+  createAiServiceIntegrationBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
 
 // Jest runs this suite in a VM context, but Node's global `structuredClone`
 // (used by pi-ai's tool-argument validation) deserializes into the host

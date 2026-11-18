@@ -21,8 +21,6 @@ import * as codex from '@earendil-works/pi-ai/api/openai-codex-responses';
 import * as anthropic from '@earendil-works/pi-ai/api/anthropic-messages';
 import { resolveAzureConfig } from '@earendil-works/pi-ai/api/azure-openai-config';
 import { validateHttpEnvelope } from './httpEnvelope';
-import { nonchatProviderModules } from './nonchat';
-import { createProviderRegistry } from './registry';
 import type { AiProviderModule, ProviderAdapter } from './types';
 
 const CHAT = ['stream', 'complete', 'streamSimple', 'completeSimple'] as const;
@@ -108,17 +106,3 @@ export const anthropicMessages: AiProviderModule = {
       request,
     ),
 };
-
-/** Host registration: add another trusted module here to enable its routes. */
-export const builtinProviderModules = Object.freeze([
-  openaiResponses,
-  openaiCompletions,
-  azureResponses,
-  openaiCodexResponses,
-  anthropicMessages,
-  ...nonchatProviderModules,
-]);
-
-export const builtinProviderRegistry = createProviderRegistry(
-  builtinProviderModules,
-);

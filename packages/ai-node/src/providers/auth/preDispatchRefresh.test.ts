@@ -17,13 +17,29 @@
 import { mockCredentials } from '@backstage/backend-test-utils';
 import { openaiProvider } from '@earendil-works/pi-ai/providers/openai';
 import type { AttemptDecision } from '../../journal/types';
-import { createModelOperationGuard } from '../../guard/createModelOperationGuard';
+import { createModelOperationGuard as createModelOperationGuardBase } from '../../guard/createModelOperationGuard';
 import {
-  createGuardedModelOperations,
+  createGuardedModelOperations as createGuardedModelOperationsBase,
   GuardedResolutionError,
   type GuardedModelBinding,
 } from '../../guard/modelOperations';
 import type { TrustedOperation } from '../../guard/types';
+import { builtinProviderRegistry } from '../testFixtures';
+
+const createModelOperationGuard = (
+  options: Parameters<typeof createModelOperationGuardBase>[0],
+) =>
+  createModelOperationGuardBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
+const createGuardedModelOperations = (
+  options: Parameters<typeof createGuardedModelOperationsBase>[0],
+) =>
+  createGuardedModelOperationsBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
 
 /**
  * The await inside resolution is the seam a guarded credential refresh uses.

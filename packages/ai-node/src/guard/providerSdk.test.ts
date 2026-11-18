@@ -27,11 +27,27 @@ import { streamSimple as anthropicStream } from '@earendil-works/pi-ai/api/anthr
 import { streamSimple as codexStream } from '@earendil-works/pi-ai/api/openai-codex-responses';
 import { streamSimple as completionsStream } from '@earendil-works/pi-ai/api/openai-completions';
 import { streamSimple as azureStream } from '@earendil-works/pi-ai/api/azure-openai-responses';
-import { createModelOperationGuard } from './createModelOperationGuard';
-import { createGuardedModelOperations } from './modelOperations';
+import { createModelOperationGuard as createModelOperationGuardBase } from './createModelOperationGuard';
+import { createGuardedModelOperations as createGuardedModelOperationsBase } from './modelOperations';
 import type { TrustedOperation } from './types';
 import type { AttemptDecision, AttemptOutcome } from '../journal/types';
 import type { Fence } from '../contracts';
+import { builtinProviderRegistry } from '../providers/testFixtures';
+
+const createModelOperationGuard = (
+  options: Parameters<typeof createModelOperationGuardBase>[0],
+) =>
+  createModelOperationGuardBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
+const createGuardedModelOperations = (
+  options: Parameters<typeof createGuardedModelOperationsBase>[0],
+) =>
+  createGuardedModelOperationsBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
 
 jest.setTimeout(15000);
 

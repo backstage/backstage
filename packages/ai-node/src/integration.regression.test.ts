@@ -47,11 +47,26 @@ import {
   type NativeHarnessHandle,
 } from './DefaultAiService';
 import {
-  createAiServiceIntegration,
+  createAiServiceIntegration as createAiServiceIntegrationBase,
   type ProductionAiServiceIntegration,
 } from './integration';
-import { createAttemptJournal } from './journal/knex';
+import { createAttemptJournal as createAttemptJournalBase } from './journal/knex';
 import { runAiMigrations } from './migrations';
+import { openaiResponses } from './providers/builtins';
+import { builtinProviderRegistry } from './providers/testFixtures';
+import { createAiModuleRegistry } from './moduleRegistry';
+
+const createAiServiceIntegration = (
+  config: Parameters<typeof createAiServiceIntegrationBase>[0],
+) =>
+  createAiServiceIntegrationBase({
+    providers: builtinProviderRegistry,
+    ...config,
+  });
+const createAttemptJournal = (
+  config: Parameters<typeof createAttemptJournalBase>[0],
+) =>
+  createAttemptJournalBase({ providers: builtinProviderRegistry, ...config });
 
 /**
  * A stand-in provider key shaped as a JWT whose payload carries a ChatGPT
@@ -263,6 +278,67 @@ async function probeServer(): Promise<{
 }
 
 describe('Wave 1 integration regressions', () => {
+  it('keeps registration snapshots for live admissions and updates fresh admissions', async () => {
+    const f = await fixture();
+    const probe = await probeServer();
+    const modules = createAiModuleRegistry({
+      providerModules: [],
+      toolModules: [],
+    });
+    const baseUrl = `http://127.0.0.1:${
+      (probe.server.address() as { port: number }).port
+    }/v1`;
+    const model = reviewModel({ api: 'openai-responses', baseUrl });
+    const sources: Array<() => Models> = [];
+    const originalOpen = Harness.open.bind(Harness);
+    const spy = jest
+      .spyOn(Harness, 'open')
+      .mockImplementation(async (storage, opts, ctx) => {
+        sources.push(opts.models as () => Models);
+        return originalOpen(storage, opts, ctx);
+      });
+    try {
+      const integration = await createAiServiceIntegrationBase({
+        deps: f.deps,
+        models: [model],
+        credentialStores: STAND_IN_STORES,
+        moduleSource: () => modules.snapshot(),
+      });
+      const service = DefaultAiService.create({ deps: f.deps, integration });
+      const creds = mockCredentials.user('user:default/alice');
+      const first = await service.openHarness(options('snapshot', creds));
+      f.handles.push(first);
+      const call = async (source: () => Models) =>
+        source().completeSimple(model as never, { messages: [] } as never, {
+          maxRetries: 0,
+        });
+      const missing = await call(sources[0]);
+      expect(missing.errorMessage).toContain('createAiServiceFactory');
+      expect(missing.errorMessage).toContain('aiModulesExtensionPoint');
+      expect(probe.requests).toHaveLength(0);
+      modules.registerProviderModules([openaiResponses]);
+      const joined = await service.openHarness(options('snapshot', creds));
+      f.handles.push(joined);
+      expect((await call(sources[0])).errorMessage).toContain('not registered');
+      expect(probe.requests).toHaveLength(0);
+      const concurrent = await service.openHarness(
+        options('new-snapshot', creds),
+      );
+      f.handles.push(concurrent);
+      await call(sources[1]);
+      expect(probe.requests).toHaveLength(1);
+      await joined.release();
+      await first.release();
+      const fresh = await service.openHarness(options('snapshot', creds));
+      f.handles.push(fresh);
+      await call(sources[2]);
+      expect(probe.requests).toHaveLength(2);
+    } finally {
+      spy.mockRestore();
+      await f.close();
+      await probe.close();
+    }
+  });
   /**
    * Admission lifecycle matrix: every await point of the per-namespace
    * native admission x every failure/concurrency mode, and the test that

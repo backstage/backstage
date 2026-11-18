@@ -5,6 +5,7 @@
 ```ts
 import type { AnyModel } from '@earendil-works/pi-ai';
 import type { AssistantMessageEventStream } from '@earendil-works/pi-ai';
+import type { AuditorService } from '@backstage/backend-plugin-api';
 import type { AuthService } from '@backstage/backend-plugin-api';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
@@ -15,6 +16,8 @@ import type { DatabaseService } from '@backstage/backend-plugin-api';
 import type { Harness } from '@earendil-works/pi-durable';
 import type { JsonValue } from '@backstage/config';
 import type { Knex } from 'knex';
+import type { LifecycleService } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import type { PermissionsRegistryService } from '@backstage/backend-plugin-api';
 import type { PermissionsService } from '@backstage/backend-plugin-api';
 import type { PluginMetadataService } from '@backstage/backend-plugin-api';
@@ -174,6 +177,19 @@ export interface AiMetricsSubscriber extends AiEventEmitter {
 }
 
 // @alpha
+export type AiModuleRegistry = Readonly<{
+  registerProviderModules(modules: readonly AiProviderModule[]): void;
+  registerToolModules(modules: readonly ToolModule[]): void;
+  snapshot(): AiModules;
+}>;
+
+// @alpha
+export type AiModules = Readonly<{
+  providerModules: readonly AiProviderModule[];
+  toolModules: readonly ToolModule[];
+}>;
+
+// @alpha
 export type AiObservabilityEvent =
   | Readonly<{
       kind: 'denial';
@@ -291,6 +307,7 @@ export interface AiService {
 // @alpha
 export type AiServiceFactoryOptions = Readonly<{
   toolModules?: readonly ToolModule[];
+  providerModules?: readonly AiProviderModule[];
 }>;
 
 // @alpha
@@ -378,6 +395,12 @@ export type AuditQuery = Readonly<{
 }>;
 
 // @alpha
+export function bindAiModuleRegistry(
+  service: AiService,
+  registry: AiModuleRegistry,
+): void;
+
+// @alpha
 export type ConfigAtPath = Readonly<{
   root: Config;
   path: string;
@@ -414,6 +437,9 @@ export function createAiHttpSupport(
 ): Promise<AiHttpSupport>;
 
 // @alpha
+export function createAiModuleRegistry(initial: AiModules): AiModuleRegistry;
+
+// @alpha
 export function createAiServiceFactory(
   options?: AiServiceFactoryOptions,
 ): <TService extends AiService>(
@@ -436,6 +462,14 @@ export function createGuardedToolOperations(options: {
 
 // @alpha
 export function createMetricsSubscriber(): AiMetricsSubscriber;
+
+// @alpha
+export function createPrivateAiService(
+  options: AiServiceFactoryOptions & {
+    deps: DefaultAiServiceDeps;
+    config: Config;
+  },
+): Promise<AiService>;
 
 // @alpha
 export function createToolPermissions(options: {
@@ -472,6 +506,24 @@ export type CredentialScope =
       kind: 'service';
       id: string;
     }>;
+
+// @alpha
+export interface DefaultAiServiceDeps {
+  // (undocumented)
+  readonly auditor: AuditorService;
+  // (undocumented)
+  readonly auth: AuthService;
+  // (undocumented)
+  readonly database: DatabaseService;
+  // (undocumented)
+  readonly lifecycle: LifecycleService;
+  // (undocumented)
+  readonly logger: LoggerService;
+  // (undocumented)
+  readonly permissions: PermissionsService;
+  // (undocumented)
+  readonly pluginMetadata: PluginMetadataService;
+}
 
 // @alpha
 export type DestinationTemplate = readonly DestinationTemplatePart[];

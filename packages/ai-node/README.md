@@ -33,10 +33,22 @@ harness for the `(pluginId, sessionId)` namespace. Releasing a handle never
 cancels admitted durable work, and the mediated harness view exposes native
 Pi operations without `close`.
 
+## Provider registration
+
+The default service registers no providers. Register trusted provider modules
+with `createAiServiceFactory({ providerModules })` at the backend level, or
+use the AI backend plugin's `aiModulesExtensionPoint` for its default service.
+A custom service factory uses only its own registrations. A live admission
+retains its module snapshot until its last handle is released; a fresh admission
+uses the registrations available when it opens.
+
+Provider packages can run `registerProviderCertification` from
+`@backstage/ai-node/testUtils` in their test suites.
+
 ## Usage
 
 ```ts
-import { aiServiceRef } from '@backstage/ai-node';
+import { aiServiceRef } from '@backstage/ai-node/alpha';
 import type { OpenHarnessOptions } from '@backstage/ai-node/alpha';
 
 // inside a backend plugin's registerInit:

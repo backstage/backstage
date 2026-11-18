@@ -212,10 +212,3 @@ export const openrouterImages: AiProviderModule = {
       request,
     ),
 };
-
-/** Host registration: non-chat built-ins on the T-PM seam. */
-export const nonchatProviderModules = Object.freeze([
-  typesafeSystemOne,
-  openaiDecisions,
-  openrouterImages,
-]);

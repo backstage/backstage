@@ -30,7 +30,7 @@ import {
   createToolRegistry,
   toolPermissionName,
 } from './registry';
-import { builtinProviderRegistry } from '../providers/builtins';
+import { builtinProviderRegistry } from '../providers/testFixtures';
 import type { ToolModule } from './types';
 
 type ServerFixture = {

@@ -156,7 +156,7 @@ export interface AiServiceIntegration {
   releaseNativeHarness(handle: NativeHarnessHandle): Promise<void>;
 }
 
-/** Dependencies injected by the plugin-scoped service factory. */
+/** Dependencies injected by the plugin-scoped service factory. @alpha */
 export interface DefaultAiServiceDeps {
   readonly database: DatabaseService;
   readonly auth: AuthService;

@@ -18,6 +18,7 @@ import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Fence } from '../contracts';
 import type { CredentialScope } from '../credentials/types';
 
+/** An operation mediated by the AI model guard. @alpha */
 export type ModelOperation =
   | 'stream'
   | 'complete'
@@ -30,7 +31,7 @@ export type ModelOperation =
   | 'generateImages'
   | 'toolCall';
 
-/** Constructed only by the host from verified durable origin and live credentials. */
+/** Constructed only by the host from verified durable origin and live credentials. @alpha */
 export type TrustedOperation = Readonly<{
   actor: string;
   credentials: BackstageCredentials;
