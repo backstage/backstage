@@ -178,7 +178,15 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceSearchOptions,
   ): Promise<UrlReaderServiceSearchResponse> {
-    const { filepath } = parseGitUrlSafe(url);
+    const {
+      filepath,
+      filepathtype,
+      name,
+      owner,
+      protocol,
+      ref,
+      resource,
+    } = parseGitUrlSafe(url);
 
     // If it's a direct URL we use readUrl instead
     if (!filepath?.match(/[*?]/)) {
@@ -213,7 +221,14 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     // a future improvement, we could be smart and try to deduce that non-glob
     // prefixes (like for filepaths such as some-prefix/**/a.yaml) can be used
     // to get just that part of the repo.
-    const treeUrl = trimEnd(url.replace(filepath, ''), '/');
+    //
+    // The tree URL is built from the parsed URL components rather than by
+    // removing the filepath from the raw URL string, so that it is always on
+    // the same origin as the input URL.
+    const treeUrl = trimEnd(
+      `${protocol}://${resource}/${owner}/${name}/${filepathtype}/${ref}`,
+      '/',
+    );
 
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,

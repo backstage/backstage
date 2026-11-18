@@ -430,6 +430,26 @@ describe('BitbucketCloudUrlReader', () => {
       );
     });
 
+    it('keeps requests on the integration host when the file path text also occurs before the url authority', async () => {
+      // The tree URL must be built from the parsed URL rather than by
+      // removing the file path text from the raw URL string, since that
+      // would otherwise direct the archive request below at
+      // other.host.invalid rather than bitbucket.org
+      worker.use(
+        http.get(
+          'https://other.host.invalid/backstage/mock/get/master.tar.gz',
+          () => new HttpResponse(null, { status: 500 }),
+        ),
+      );
+
+      const result = await reader.search(
+        'https://other.host.invalid*@bitbucket.org/backstage/mock/src/master/*@bitbucket.org',
+      );
+
+      expect(result.etag).toBe('12ab34cd56ef');
+      expect(result.files).toHaveLength(0);
+    });
+
     it('throws NotModifiedError when same etag', async () => {
       await expect(
         reader.search(
