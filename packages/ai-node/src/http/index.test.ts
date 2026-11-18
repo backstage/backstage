@@ -140,7 +140,14 @@ describe.each<[string, string | undefined]>([
       expect(addPermissions).toHaveBeenCalled();
       allowed.add('ai.model.openai.first.use');
       expect(await http.listModels(alice)).toEqual([
-        { provider: 'openai', modelId: 'first' },
+        {
+          provider: 'openai',
+          modelId: 'first',
+          api: 'openai-responses',
+          type: 'chat',
+          contextWindow: 10000,
+          maxTokens: 1000,
+        },
       ]);
       allowed.delete('ai.model.openai.first.use');
       expect(await http.listModels(alice)).toEqual([]);

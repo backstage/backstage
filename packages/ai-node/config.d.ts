@@ -135,8 +135,22 @@ export interface Config {
       /** Certified adapter identifier of a registered provider module. */
       api: string;
       baseUrl: string;
-      contextWindow: number;
-      maxTokens: number;
+      /**
+       * Model type following the pinned pi-ai catalog shapes. `chat`
+       * (default) dispatches generation, `classifier` classification,
+       * `image` image generation.
+       */
+      type?: 'chat' | 'classifier' | 'image';
+      /**
+       * Context window in tokens. Required for `chat` and `classifier`
+       * entries; an `image` entry carries none and must omit the field.
+       */
+      contextWindow?: number;
+      /**
+       * Output limit in tokens. Required for `chat` entries, optional for
+       * the others.
+       */
+      maxTokens?: number;
       /** Display name; defaults to `modelId`. */
       name?: string;
       reasoning?: boolean;

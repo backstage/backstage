@@ -33,7 +33,10 @@ import {
 } from '../journal/types';
 import { createWiredAttemptJournal } from '../journal/wired';
 import { listUserSessions, readSessionOrigin } from '../ownership/recovery';
-import { createModelPermissions } from '../permissions/modelPermissions';
+import {
+  createModelPermissions,
+  type ModelDescriptor,
+} from '../permissions/modelPermissions';
 
 /** Permission required for every AI HTTP operation. @alpha */
 export const aiSessionUsePermission = {
@@ -57,7 +60,7 @@ export interface AiHttpSupport {
   authorize(credentials: BackstageCredentials): Promise<void>;
   listModels(
     credentials: BackstageCredentials,
-  ): Promise<readonly { provider: string; modelId: string }[]>;
+  ): Promise<readonly ModelDescriptor[]>;
   listSessions(
     credentials: BackstageCredentials,
     options?: { cursor?: string; limit?: number },
@@ -91,9 +94,19 @@ export async function createAiHttpSupport(
     path: AI_INSTALLATION_CONFIG_PATH,
   }).models;
   const modelPermissions = createModelPermissions({
+    // The full canonical descriptors, so discovery reports the catalog
+    // fields consumers choose models by, not just the identity pair.
     models: models.map(model => ({
       provider: model.provider,
       modelId: model.id,
+      api: model.api,
+      type: model.type,
+      // Image models carry no context window; presence follows the
+      // catalog entry's own shape.
+      ...('contextWindow' in model
+        ? { contextWindow: model.contextWindow }
+        : {}),
+      ...('maxTokens' in model ? { maxTokens: model.maxTokens } : {}),
     })),
     authorizer: permissions,
     registry: permissionsRegistry,
