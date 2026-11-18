@@ -206,7 +206,20 @@ class GithubAppManager {
   }
 
   async getPublicInstallationToken(): Promise<{ accessToken: string }> {
-    const [installation] = await this.getCachedInstallations();
+    const installations = await this.getCachedInstallations();
+    const allowedOwners = this.allowedInstallationOwners;
+
+    // Only installations whose owner is within the allow list of this app
+    // may provide the public access fallback token; an app without an
+    // allow list allows all installations
+    const installation = allowedOwners
+      ? installations.find(
+          inst =>
+            inst.account &&
+            'login' in inst.account &&
+            allowedOwners.includes(inst.account.login?.toLowerCase()),
+        )
+      : installations[0];
 
     if (!installation) {
       throw new Error(`No installation found for public app`);
