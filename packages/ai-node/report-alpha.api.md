@@ -785,7 +785,10 @@ export type GuardedToolDispatch = Readonly<{
     model: AnyModel,
     context: unknown,
     caller?: Record<string, unknown>,
-  ): Promise<unknown>;
+  ): Promise<{
+    value: unknown;
+    outcome: 'completed' | 'failed' | 'cancelled';
+  }>;
 }>;
 
 // @alpha

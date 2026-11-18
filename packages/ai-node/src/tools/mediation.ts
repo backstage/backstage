@@ -28,7 +28,12 @@ export type GuardedToolDispatch = Readonly<{
     model: AnyModel,
     context: unknown,
     caller?: Record<string, unknown>,
-  ): Promise<unknown>;
+  ): Promise<{
+    /** The adapter's payload, returned to the caller untouched on success. */
+    value: unknown;
+    /** The adapter's settlement, so the boundary never infers from payload. */
+    outcome: 'completed' | 'failed' | 'cancelled';
+  }>;
 }>;
 
 /**
@@ -95,33 +100,33 @@ export function createGuardedToolOperations(options: {
         credentials: input.credentials,
       }) as never as AnyModel;
       const tool = `the tool '${input.serverId}/${input.toolName}'`;
-      let result: unknown;
-      try {
-        result = await options.models.callTool(
-          model,
-          { arguments: input.arguments },
-          input.caller,
-        );
-      } catch (error) {
-        throw new Error(
-          `Tool call to ${tool} failed: ${(error as Error).message}`,
-        );
+      const result = await options.models.callTool(
+        model,
+        { arguments: input.arguments },
+        input.caller,
+      );
+      // A completed tool call returns its payload exactly as the tool produced
+      // it: a successful result whose data happens to contain an `errorMessage`
+      // field is application data, not a failure, and is never rewritten. The
+      // boundary names the tool only on a non-completed settlement, which the
+      // dispatch path reports explicitly.
+      if (result.outcome === 'completed') {
+        return result.value;
       }
+      const value = result.value;
       if (
-        result !== null &&
-        typeof result === 'object' &&
-        typeof (result as { errorMessage?: unknown }).errorMessage === 'string'
+        value !== null &&
+        typeof value === 'object' &&
+        typeof (value as { errorMessage?: unknown }).errorMessage === 'string'
       ) {
-        // The adapter settles denials as a value with an error message; the
-        // boundary identifies the tool without altering the reason inside it.
         return {
-          ...(result as Record<string, unknown>),
+          ...(value as Record<string, unknown>),
           errorMessage: `Tool call to ${tool} failed: ${
-            (result as { errorMessage: string }).errorMessage
+            (value as { errorMessage: string }).errorMessage
           }`,
         };
       }
-      return result;
+      return value;
     },
   };
 }

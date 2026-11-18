@@ -449,7 +449,10 @@ export type ModelRequests = Pick<
     model: AnyModel,
     context: unknown,
     caller?: Record<string, unknown>,
-  ): Promise<unknown>;
+  ): Promise<{
+    value: unknown;
+    outcome: 'completed' | 'failed' | 'cancelled';
+  }>;
 };
 
 // @alpha
