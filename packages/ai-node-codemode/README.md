@@ -35,11 +35,26 @@ execution:
   to 300000.
 - `memoryLimitBytes` bounds the QuickJS heap. Defaults to no explicit limit.
 
-Scripts see only their tools and Pi's script globals — no network,
-filesystem, timers, `process`, or modules — and model calls from inside
-scripts route through the service's guarded facade like any other dispatch.
-See the `@backstage/ai-node` README for the full isolation and audit
-contract.
+## Isolation, limits, and audit posture
+
+- Scripts see only their tools and Pi's script globals — no network,
+  filesystem, timers, `process`, or modules — and script output is capped
+  (16 MiB / 100000 items) as are script store writes (1 MiB total).
+- The deadline is wall-clock only and does not enter the durable start
+  data, so it cannot affect replay: a script may lower it through its own
+  `// @options {"timeout_ms": ...}` line, never raise it above the host's.
+- A script survives restarts by deterministic replay: one journal commit
+  plus one count commit per delivered nested result, stored in the
+  conversation's durable storage. That bookkeeping is separate from the
+  AI audit journal: model calls made from inside scripts (the `models.*`
+  globals) leave per-attempt AI audit rows — permission, fence, and
+  credential recheck, journaled before send — while script bookkeeping
+  itself does not.
+
+The long-form contract is the `codemode` option's TSDoc on
+`createAiServiceIntegration` (`AiCodemodeOptions` in
+`@backstage/ai-node/alpha`) and the header of the core integration suite
+`packages/ai-node/src/codemode.test.ts`, which pins each check.
 
 ## Installation
 
