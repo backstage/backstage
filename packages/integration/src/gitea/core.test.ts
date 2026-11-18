@@ -183,5 +183,138 @@ describe('gitea core', () => {
         path: '',
       });
     });
+
+    it('keeps encoded refs and dotted path segments intact', () => {
+      const config: GiteaIntegrationConfig = {
+        host: 'gitea.example.com',
+      };
+      expect(
+        parseGiteaUrl(
+          config,
+          'https://gitea.example.com/owner/repo/src/branch/release%2Fv1/some.dir/catalog-info.yaml',
+        ),
+      ).toEqual({
+        url: 'https://gitea.example.com',
+        owner: 'owner',
+        name: 'repo',
+        ref: 'release%2Fv1',
+        path: 'some.dir/catalog-info.yaml',
+      });
+      expect(
+        parseGiteaUrl(
+          config,
+          'https://gitea.example.com/owner/repo/src/branch/main/docs/50%off/catalog-info.yaml',
+        ),
+      ).toEqual({
+        url: 'https://gitea.example.com',
+        owner: 'owner',
+        name: 'repo',
+        ref: 'main',
+        path: 'docs/50%off/catalog-info.yaml',
+      });
+    });
+
+    it('rejects path traversal in any URL component', () => {
+      const config: GiteaIntegrationConfig = {
+        host: 'gitea.example.com',
+      };
+
+      const traversalUrls = [
+        // traversal in the owner component
+        'https://gitea.example.com/../victim/repo/src/branch/main/catalog-info.yaml',
+        'https://gitea.example.com/%2e%2e/victim/repo/src/branch/main/catalog-info.yaml',
+        // traversal in the repo name component
+        'https://gitea.example.com/owner/../victim/src/branch/main/catalog-info.yaml',
+        'https://gitea.example.com/owner/%2e%2e/victim/src/branch/main/catalog-info.yaml',
+        // traversal in the ref component
+        'https://gitea.example.com/owner/repo/src/branch/../../victim/catalog-info.yaml',
+        'https://gitea.example.com/owner/repo/src/branch/%2e%2e/%2e%2e/victim/catalog-info.yaml',
+        // traversal in the file path component
+        'https://gitea.example.com/owner/repo/src/branch/main/../../../../victim/v2/secret.yaml',
+        'https://gitea.example.com/owner/repo/src/branch/main/%2e%2e/%2e%2e/%2e%2e/%2e%2e/victim/v2/secret.yaml',
+        // encoded separators and multi-level encodings
+        'https://gitea.example.com/owner/repo/src/branch/main/%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2fvictim/v2/secret.yaml',
+        'https://gitea.example.com/owner/repo/src/branch/main/%252e%252e%252f%252e%252e%252fvictim/v2/secret.yaml',
+        'https://gitea.example.com/owner/repo/src/branch/main/%2E%2E/%2E%2E/victim/v2/secret.yaml',
+        'https://gitea.example.com/owner/repo/src/branch/main/.%2e/.%2e/victim/v2/secret.yaml',
+        // a malformed escape in one segment must not disable the check for
+        // traversal in the other segments
+        'https://gitea.example.com/owner/repo/src/branch/main/%2e%2e/%2e%2e/%2e%2e/%2e%2e/victim/v2/secret.yaml#%ZZ',
+        // backslashes as separators
+        'https://gitea.example.com/owner/repo/src/branch/main/..\\..\\victim/v2/secret.yaml',
+        // tab, line feed and carriage return inside dot segments
+        'https://gitea.example.com/owner/repo/src/branch/main/.\t./.\t./.\t./.\t./victim/v2/secret.yaml',
+        'https://gitea.example.com/owner/repo/src/branch/main/.\n./.\n./victim/v2/secret.yaml',
+        'https://gitea.example.com/owner/repo/src/branch/main/.\r./victim/v2/secret.yaml',
+      ];
+
+      for (const url of traversalUrls) {
+        expect(() => parseGiteaUrl(config, url)).toThrow(/path traversal/);
+      }
+    });
+
+    it('rejects URL query and fragment delimiters in the owner and repository name', () => {
+      const config: GiteaIntegrationConfig = {
+        host: 'gitea.example.com',
+      };
+
+      const delimiterUrls = [
+        // a raw ? or # in the owner ends the path of the request
+        'https://gitea.example.com/owner?marker=1/repo/src/branch/main/catalog-info.yaml',
+        'https://gitea.example.com/owner#frag/repo/src/branch/main/catalog-info.yaml',
+        // traversal payloads with a delimiter are caught by the same rule
+        'https://gitea.example.com/..?/victim/repo/src/branch/main/catalog-info.yaml',
+        'https://gitea.example.com/%2e%2e#/victim/repo/src/branch/main/catalog-info.yaml',
+        // encoded delimiters, revealed by decoding
+        'https://gitea.example.com/owner%3Fmarker/repo/src/branch/main/catalog-info.yaml',
+        'https://gitea.example.com/owner/repo%23frag/src/branch/main/catalog-info.yaml',
+        // a delimiter that is only revealed after a second decoding pass
+        'https://gitea.example.com/own%253Fer/repo/src/branch/main/catalog-info.yaml',
+      ];
+
+      for (const url of delimiterUrls) {
+        expect(() => parseGiteaUrl(config, url)).toThrow(
+          /fragment and query delimiters/,
+        );
+      }
+    });
+
+    it('rejects URLs for hosts other than the integration host', () => {
+      const config: GiteaIntegrationConfig = {
+        host: 'gitea.example.com',
+      };
+      expect(() =>
+        parseGiteaUrl(
+          config,
+          'https://gitea.example.com.evil.com/owner/repo/src/branch/main/catalog-info.yaml',
+        ),
+      ).toThrow(/expected URL host to be gitea\.example\.com/);
+    });
+  });
+
+  describe('traversal rejection', () => {
+    const config: GiteaIntegrationConfig = {
+      host: 'gitea.example.com',
+    };
+
+    it('rejects traversal payloads in all URL builders', () => {
+      const fileUrl =
+        'https://gitea.example.com/owner/repo/src/branch/main/%2e%2e/%2e%2e/%2e%2e/%2e%2e/victim/v2/secret.yaml';
+      expect(() => getGiteaFileContentsUrl(config, fileUrl)).toThrow(
+        /path traversal/,
+      );
+      expect(() => getGiteaEditContentsUrl(config, fileUrl)).toThrow(
+        /path traversal/,
+      );
+
+      const branchUrl =
+        'https://gitea.example.com/owner/repo/src/branch/%2e%2e/%2e%2e/victim';
+      expect(() => getGiteaArchiveUrl(config, branchUrl)).toThrow(
+        /path traversal/,
+      );
+      expect(() => getGiteaLatestCommitUrl(config, branchUrl)).toThrow(
+        /path traversal/,
+      );
+    });
   });
 });
