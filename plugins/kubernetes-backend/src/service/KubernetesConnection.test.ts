@@ -272,7 +272,7 @@ describe('KubernetesConnection', () => {
   });
 
   describe('handleUnsuccessfulResponse', () => {
-    it('returns error with correct type and logs warning', async () => {
+    it('returns NOT_FOUND error and logs warning by default for 404', async () => {
       const warn = jest.spyOn(logger, 'warn');
 
       worker.use(
@@ -300,6 +300,40 @@ describe('KubernetesConnection', () => {
       expect(warn).toHaveBeenCalledWith(
         expect.stringContaining('Received 404 status'),
       );
+    });
+
+    it('logs at debug instead of warn for 404 when silentNotFound is set', async () => {
+      const warn = jest.spyOn(logger, 'warn');
+      const debug = jest.spyOn(logger, 'debug');
+      warn.mockClear();
+
+      worker.use(
+        http.get('http://localhost:9999/api/v1/pods', () =>
+          HttpResponse.text('not found', { status: 404 }),
+        ),
+      );
+
+      const response = await connection.fetchWithConnection(
+        { name: 'cluster1', url: 'http://localhost:9999', authMetadata: {} },
+        { type: 'bearer token', token: 'token' },
+        '/api/v1/pods',
+      );
+
+      const error = await connection.handleUnsuccessfulResponse(
+        'cluster1',
+        response,
+        { silentNotFound: true },
+      );
+
+      expect(error).toEqual({
+        errorType: 'NOT_FOUND',
+        statusCode: 404,
+        resourcePath: '/api/v1/pods',
+      });
+      expect(debug).toHaveBeenCalledWith(
+        expect.stringContaining('not found on cluster'),
+      );
+      expect(warn).not.toHaveBeenCalled();
     });
   });
 

@@ -588,7 +588,9 @@ describe('KubernetesFetcher', () => {
       );
     });
     it('should suppress 404 errors and return only successful resources', async () => {
+      const warn = jest.spyOn(logger, 'warn');
       const debug = jest.spyOn(logger, 'debug');
+      warn.mockClear();
       debug.mockClear();
       worker.use(
         http.get('http://localhost:9999/api/v1/pods', ({ request: req }) =>
@@ -629,12 +631,15 @@ describe('KubernetesFetcher', () => {
           },
         ],
       });
+      expect(warn).not.toHaveBeenCalled();
       expect(debug).toHaveBeenCalledWith(
         expect.stringContaining('not found on cluster'),
       );
     });
     it('should suppress 404 for a custom resource and return other resources', async () => {
+      const warn = jest.spyOn(logger, 'warn');
       const debug = jest.spyOn(logger, 'debug');
+      warn.mockClear();
       debug.mockClear();
       worker.use(
         http.get('http://localhost:9999/api/v1/pods', ({ request: req }) =>
@@ -690,6 +695,7 @@ describe('KubernetesFetcher', () => {
           expect.objectContaining({ type: 'services' }),
         ]),
       );
+      expect(warn).not.toHaveBeenCalled();
       expect(debug).toHaveBeenCalledWith(
         expect.stringContaining('not found on cluster'),
       );
@@ -1475,6 +1481,48 @@ describe('KubernetesFetcher', () => {
       expect(debug).toHaveBeenCalledWith(
         expect.stringContaining('not found on cluster'),
       );
+    });
+    it('should surface a pod-list error even when the metrics API also returns 404', async () => {
+      worker.use(
+        http.get('http://localhost:9999/api/v1/namespaces/ns-a/pods', () =>
+          HttpResponse.json(
+            { kind: 'Status', apiVersion: 'v1', status: 'Failure', code: 500 },
+            { status: 500 },
+          ),
+        ),
+        http.get(
+          'http://localhost:9999/apis/metrics.k8s.io/v1beta1/namespaces/ns-a/pods',
+          () =>
+            HttpResponse.json(
+              {
+                kind: 'Status',
+                apiVersion: 'v1',
+                status: 'Failure',
+                code: 404,
+              },
+              { status: 404 },
+            ),
+        ),
+      );
+
+      const result = await sut.fetchPodMetricsByNamespaces(
+        {
+          name: 'cluster1',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        { type: 'bearer token', token: 'token' },
+        new Set(['ns-a']),
+      );
+
+      expect(result.errors).toStrictEqual([
+        {
+          errorType: 'SYSTEM_ERROR',
+          resourcePath: '/api/v1/namespaces/ns-a/pods',
+          statusCode: 500,
+        },
+      ]);
+      expect(result.responses).toStrictEqual([]);
     });
     it('should mask secret data values with ***', async () => {
       worker.use(

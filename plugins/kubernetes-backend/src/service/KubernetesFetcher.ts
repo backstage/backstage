@@ -32,7 +32,7 @@ import {
   ClusterDetails,
   KubernetesCredential,
 } from '@backstage/plugin-kubernetes-node';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import { KubernetesConnection } from './KubernetesConnection';
 
 export interface KubernetesClientBasedFetcherOptions {
@@ -44,6 +44,13 @@ type FetchResult = FetchResponse | KubernetesFetchError;
 
 const isError = (fr: FetchResult): fr is KubernetesFetchError =>
   fr.hasOwnProperty('errorType');
+
+function suppressNotFound(wrapper: FetchResponseWrapper): FetchResponseWrapper {
+  return {
+    ...wrapper,
+    errors: wrapper.errors.filter(e => e.errorType !== 'NOT_FOUND'),
+  };
+}
 
 function fetchResultsToResponseWrapper(
   results: FetchResult[],
@@ -61,11 +68,9 @@ function fetchResultsToResponseWrapper(
 }
 
 export class KubernetesClientBasedFetcher implements KubernetesFetcher {
-  private readonly logger: LoggerService;
   private readonly connection: KubernetesConnection;
 
-  constructor({ logger, connection }: KubernetesClientBasedFetcherOptions) {
-    this.logger = logger;
+  constructor({ connection }: KubernetesClientBasedFetcherOptions) {
     this.connection = connection;
   }
 
@@ -97,15 +102,14 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
               : this.connection.handleUnsuccessfulResponse(
                   params.clusterDetails.name,
                   r,
+                  { silentNotFound: true },
                 ),
         ),
       );
 
     return Promise.all(fetchResults)
       .then(fetchResultsToResponseWrapper)
-      .then(wrapper =>
-        this.suppressNotFound(wrapper, params.clusterDetails.name),
-      );
+      .then(suppressNotFound);
   }
 
   async fetchPodMetricsByNamespaces(
@@ -125,23 +129,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
     return Promise.all(fetchResults)
       .then(fetchResultsToResponseWrapper)
-      .then(wrapper => this.suppressNotFound(wrapper, clusterDetails.name));
-  }
-
-  private suppressNotFound(
-    wrapper: FetchResponseWrapper,
-    clusterName: string,
-  ): FetchResponseWrapper {
-    const errors = wrapper.errors.filter(e => {
-      if (e.errorType === 'NOT_FOUND') {
-        this.logger.debug(
-          `Resource "${e.resourcePath}" not found on cluster "${clusterName}", skipping`,
-        );
-        return false;
-      }
-      return true;
-    });
-    return { ...wrapper, errors };
+      .then(suppressNotFound);
   }
 
   private async fetchPodMetricsForNamespace(
@@ -185,11 +173,21 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       return this.connection.handleUnsuccessfulResponse(
         clusterDetails.name,
         podList,
+        { silentNotFound: true },
+      );
+    } else if (!podList.ok && podMetrics.status === 404) {
+      // Metrics API unavailable (404) but the core pod-list also failed —
+      // report the pod-list error so a real failure is not silently dropped.
+      return this.connection.handleUnsuccessfulResponse(
+        clusterDetails.name,
+        podList,
+        { silentNotFound: true },
       );
     }
     return this.connection.handleUnsuccessfulResponse(
       clusterDetails.name,
       podMetrics,
+      { silentNotFound: true },
     );
   }
 
