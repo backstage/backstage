@@ -19,7 +19,7 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { createPrivateAiService } from '@backstage/ai-node/alpha';
-import { builtinProviderModules } from '@backstage/ai-node/temporary';
+import { builtinProviderModules } from '@backstage/ai-node/modules';
 import { anthropicProviderModules } from '@backstage/ai-node-provider-anthropic';
 import { azureProviderModules } from '@backstage/ai-node-provider-azure';
 import { typesafeProviderModules } from '@backstage/ai-node-provider-typesafe';

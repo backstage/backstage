@@ -39,7 +39,7 @@ const EXCHANGE_FIELDS = [
  * Validates registrations once and refuses duplicates and unsupported token
  * routes.
  *
- * @internal
+ * @alpha
  */
 export function createAuthModuleRegistry(
   modules: readonly AiAuthModule[],
@@ -67,6 +67,7 @@ export function createAuthModuleRegistry(
   return Object.freeze({ get: (id: string) => byId.get(id) });
 }
 
+/** @alpha */
 export async function assertTokenRequest(
   input: {
     operation: AuthOperationKind;
@@ -133,7 +134,11 @@ export async function assertTokenRequest(
   }
 }
 
-/** Validates the token response and builds the credential. */
+/** Validates the token response and builds the credential.
+ *
+ * @alpha
+ */
+/** @alpha */
 export function parseOAuthTokenResponse(
   input: {
     body: unknown;
@@ -181,6 +186,7 @@ export function parseOAuthTokenResponse(
   ) as OAuthCredential;
 }
 
+/** @alpha */
 export function createTokenRequest(
   endpoint: string,
   body: 'json' | 'form',
@@ -233,9 +239,12 @@ export const openaiAuthModule: AiAuthModule = {
   extraFields: ['account_id', 'chatgpt_account_id'],
 };
 
-/** Host registration: add another trusted auth module here to enable it. */
+/** Host registration: add another trusted auth module here to enable it.
+ *
+ * @alpha
+ */
 export const builtinAuthModules = Object.freeze([openaiAuthModule]);
 
-/** @internal */
+/** @alpha */
 export const builtinAuthModuleRegistry =
   createAuthModuleRegistry(builtinAuthModules);

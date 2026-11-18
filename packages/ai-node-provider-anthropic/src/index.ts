@@ -23,7 +23,7 @@
 import type {
   AiAuthModule,
   AiProviderModule,
-} from '@backstage/ai-node/temporary';
+} from '@backstage/ai-node/modules';
 import { anthropicMessages } from './anthropicMessages';
 import { anthropicAuthModule } from './anthropicAuth';
 

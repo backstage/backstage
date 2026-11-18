@@ -19,7 +19,7 @@ import * as azure from '@earendil-works/pi-ai/api/azure-openai-responses';
 import * as images from '@earendil-works/pi-ai/api/openrouter-images';
 import * as systemOne from '@earendil-works/pi-ai/api/typesafe-system-one';
 import { resolveAzureConfig } from '@earendil-works/pi-ai/api/azure-openai-config';
-import { builtinProviderModules } from '../temporary';
+import { builtinProviderModules } from '../modules';
 import { validateHttpEnvelope } from './httpEnvelope';
 import { createProviderRegistry } from './registry';
 import type { AiProviderModule, ProviderAdapter } from './types';

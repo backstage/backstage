@@ -28,7 +28,7 @@ import { normalizeContext } from '@earendil-works/pi-ai/utils/transcript';
 import { createAttemptJournal } from '../journal/knex';
 import { createModelOperationGuard } from '../guard/createModelOperationGuard';
 import type { TrustedOperation } from '../guard/types';
-import { builtinProviderModules } from '../temporary';
+import { builtinProviderModules } from '../modules';
 import {
   registerProviderCertification,
   createProviderRegistry,

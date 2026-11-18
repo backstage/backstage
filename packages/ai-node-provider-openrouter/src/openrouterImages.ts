@@ -18,8 +18,8 @@ import * as images from '@earendil-works/pi-ai/api/openrouter-images';
 import type {
   AiProviderModule,
   ProviderAdapter,
-} from '@backstage/ai-node/temporary';
-import { validateHttpEnvelope } from '@backstage/ai-node/temporary';
+} from '@backstage/ai-node/modules';
+import { validateHttpEnvelope } from '@backstage/ai-node/modules';
 
 const base = (url: string | undefined) => (url ?? '').replace(/\/+$/, '');
 
@@ -125,8 +125,28 @@ function inspectImageRequestPayload(payload: unknown): void {
 
 /**
  * Image generation over OpenRouter's chat-completions endpoint: a POST of
- * `{base}/chat/completions`. Both the native `/api/v1` and a `/v1` gateway route
- * are certified.
+ * `{base}/chat/completions`.
+ *
+ * Resource limits — two distinct costs; only the first is bounded here:
+ *
+ * - Request cost: each dispatch sends the input it is given, image blocks
+ *   included, to the provider. A single request is bounded at the shared
+ *   16 MiB envelope cap. The input context is whatever the caller passes;
+ *   this module does not assume it represents the session history.
+ *
+ * - Stored-history cost: if higher layers persist image-bearing records,
+ *   the durable store's snapshot reconstruction loads and rebuilds the
+ *   entire persisted commit history in memory on every read and write
+ *   (O(history) per access), so the request cap does NOT bound total
+ *   stored image bytes or replay memory — those grow with the history.
+ *
+ * Hosts must therefore bound total persisted image bytes and history
+ * length before enabling image attachments in higher layers (coordinate
+ * with the codemode resource-limits caveat). The attempt journal records
+ * outcomes only — image data is never journaled.
+ *
+ * The default OpenRouter base uses /api/v1; /v1 covers custom gateways, so
+ * both route shapes are approved below.
  *
  * @public
  */

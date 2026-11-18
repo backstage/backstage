@@ -29,7 +29,7 @@ import { createAttemptJournal } from '../journal/knex';
 import { createModelOperationGuard } from '../guard/createModelOperationGuard';
 import { createGuardedModelOperations } from '../guard/modelOperations';
 import type { ModelOperation, TrustedOperation } from '../guard/types';
-import { builtinProviderModules } from '../temporary';
+import { builtinProviderModules } from '../modules';
 import { registerProviderCertification } from './certification';
 import { createProviderRegistry } from './registry';
 import { validateHttpEnvelope } from './httpEnvelope';

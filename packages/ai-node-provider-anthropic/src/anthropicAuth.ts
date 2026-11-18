@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { AiAuthModule } from '@backstage/ai-node/temporary';
+import type { AiAuthModule } from '@backstage/ai-node/modules';
 import {
   assertTokenRequest,
   createTokenRequest,
   parseOAuthTokenResponse,
-} from '@backstage/ai-node/temporary';
+} from '@backstage/ai-node/modules';
 
 /**
  * Anthropic (Claude subscription) OAuth: JSON token requests on the reserved

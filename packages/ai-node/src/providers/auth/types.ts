@@ -29,7 +29,7 @@ import type { Fence } from '../../contracts';
  * are journal-owned operations: their token endpoints are the reserved
  * `/oauth/token` and `/v1/oauth/token` routes.
  *
- * @internal
+ * @alpha
  */
 export type AuthOperationKind = 'auth.token' | 'auth.token-exchange';
 
@@ -100,7 +100,11 @@ export function hasTrustedAuthOperationContext(
   );
 }
 
-/** Input shared by both auth request builders. */
+/**
+ * Input shared by both auth request builders.
+ *
+ * @alpha
+ */
 export type AuthTokenRequestBase = Readonly<{
   /** Exact allowlisted token endpoint. */
   endpoint: string;
@@ -109,11 +113,19 @@ export type AuthTokenRequestBase = Readonly<{
   clientId: string;
 }>;
 
-/** Input for a refresh request. */
+/**
+ * Input for a refresh request.
+ *
+ * @alpha
+ */
 export type OAuthRefreshInput = AuthTokenRequestBase &
   Readonly<{ credential: OAuthCredential }>;
 
-/** Input for an authorization-code exchange request. */
+/**
+ * Input for an authorization-code exchange request.
+ *
+ * @alpha
+ */
 export type OAuthLoginExchangeInput = AuthTokenRequestBase &
   Readonly<{
     code: string;
@@ -135,7 +147,7 @@ export type OAuthLoginExchangeInput = AuthTokenRequestBase &
  * The token endpoint is one of the two journal-owned routes; the host supplies
  * the allowlisted absolute endpoints, never the module.
  *
- * @internal
+ * @alpha
  */
 export type AiAuthModule = Readonly<{
   /** Provider ID this module authenticates. */

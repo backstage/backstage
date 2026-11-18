@@ -25,7 +25,6 @@ import { mockCredentials } from '@backstage/backend-test-utils';
 import type { Fence, Namespace } from './contracts';
 import { createAttemptJournal } from './journal/knex';
 import { createModelOperationGuard } from './guard/createModelOperationGuard';
-import type { AttemptJournal } from './journal/types';
 import type { ModelOperation, TrustedOperation } from './guard/types';
 import type { AnyModel } from '@earendil-works/pi-ai';
 import type { AiProviderRegistry } from './providers/registry';
@@ -34,17 +33,27 @@ import { builtinProviderRegistry } from './providers/testFixtures';
 const storageMigration = require('../migrations/1000_storage');
 const journalMigration = require('../migrations/4000_journal');
 
-/** Environment flag the child branch of a crash test runs under. */
-export const CRASH_TEST_CHILD_ENV = 'AI_CRASH_TEST_CHILD';
+/** Environment flag the child branch of a crash test runs unde
+ *
+ * @alpha
+ */ export const CRASH_TEST_CHILD_ENV = 'AI_CRASH_TEST_CHILD';
 
-/** Origin the child reaches; a bare server that never answers. */
-export const CRASH_TEST_ORIGIN_ENV = 'AI_CRASH_TEST_ORIGIN';
+/** Origin the child reaches; a bare server that never answer
+ *
+ * @alpha
+ */ export const CRASH_TEST_ORIGIN_ENV = 'AI_CRASH_TEST_ORIGIN';
 
-/** Database file the child appends to. */
-export const CRASH_TEST_DB_ENV = 'AI_CRASH_TEST_DB';
+/** Database file the child appends t
+ *
+ * @alpha
+ */ export const CRASH_TEST_DB_ENV = 'AI_CRASH_TEST_DB';
 
-/** Namespace and fence the child writes with. */
-export const CRASH_TEST_NAMESPACE_ENV = 'AI_CRASH_TEST_NAMESPACE';
+/** Namespace and fence the child writes wit
+ *
+ * @alpha
+ */ export const CRASH_TEST_NAMESPACE_ENV = 'AI_CRASH_TEST_NAMESPACE';
+/** @alpha */
+/** @alpha */
 export const CRASH_TEST_FENCE_ENV = 'AI_CRASH_TEST_FENCE';
 
 const DEFAULT_NAMESPACE: Namespace = {
@@ -52,17 +61,19 @@ const DEFAULT_NAMESPACE: Namespace = {
   sessionId: 'session',
 };
 
-/** A prepared crash fixture: durable journal plus a leased namespace. */
-export interface CrashTestFixture {
+/** A prepared crash fixture: durable journal plus a leased namespac
+ *
+ * @alpha
+ */ export interface CrashTestFixture {
   readonly namespace: Namespace;
   readonly fence: Fence;
   readonly credentials: BackstageCredentials;
-  /** The real journal over the fixture's database. */
-  readonly journal: AttemptJournal;
   /** Raise this from the certification harness's crash cell. */
   assertCrashUnknown(options?: CrashTestOptions): Promise<void>;
 }
 
+/** @alpha */
+/** @alpha */
 export interface CrashTestFixtureOptions {
   /** Knex client, typically a file-backed better-sqlite3 database. */
   readonly db: Knex;
@@ -74,6 +85,8 @@ export interface CrashTestFixtureOptions {
   readonly authorizeAuditRead?: (credentials: BackstageCredentials) => boolean;
 }
 
+/** @alpha */
+/** @alpha */
 export interface CrashTestOptions {
   /** Test file the child runs; defaults to the calling test file. */
   readonly testFile?: string;
@@ -125,7 +138,7 @@ function callingTestFile(explicit: string | undefined): string {
  * machinery stays internal, and only the fixture is exported so provider
  * packages can run the full certification from the public surface.
  *
- * @internal
+ * @alpha
  */
 export async function createCrashTestFixture(
   options: CrashTestFixtureOptions,
@@ -165,7 +178,6 @@ export async function createCrashTestFixture(
     namespace,
     fence,
     credentials,
-    journal,
     async assertCrashUnknown(crash: CrashTestOptions = {}) {
       const testFile = callingTestFile(crash.testFile);
       const root = repoRootFrom(testFile);
@@ -255,8 +267,10 @@ export async function createCrashTestFixture(
   };
 }
 
-/** What a crash worker receives in its own process. */
-export interface CrashChildContext {
+/** What a crash worker receives in its own proces
+ *
+ * @alpha
+ */ export interface CrashChildContext {
   /** The origin the parent is watching; it never answers. */
   readonly origin: string;
   readonly namespace: Namespace;
@@ -285,7 +299,7 @@ export interface CrashChildContext {
  * process once the request arrives, so `dispatch` never returns in a passing
  * run; it stays pending on the unanswering server.
  *
- * @internal
+ * @alpha
  */
 export async function runCrashChild(options: {
   providers: AiProviderRegistry;

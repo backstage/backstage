@@ -18,8 +18,8 @@ import * as anthropic from '@earendil-works/pi-ai/api/anthropic-messages';
 import type {
   AiProviderModule,
   ProviderAdapter,
-} from '@backstage/ai-node/temporary';
-import { validateHttpEnvelope } from '@backstage/ai-node/temporary';
+} from '@backstage/ai-node/modules';
+import { validateHttpEnvelope } from '@backstage/ai-node/modules';
 
 const CHAT = ['stream', 'complete', 'streamSimple', 'completeSimple'] as const;
 

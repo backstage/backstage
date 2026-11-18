@@ -21,9 +21,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
-    "./testUtils": "./src/testUtils.ts",
-    "./temporary": "./src/temporary.ts",
-    "./package.json": "./package.json"
+    "./modules": "./src/modules.ts",
+    "./package.json": "./package.json",
+    "./testUtils": "./src/testUtils.ts"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -32,14 +32,14 @@
       "alpha": [
         "src/alpha.ts"
       ],
-      "testUtils": [
-        "src/testUtils.ts"
-      ],
-      "temporary": [
-        "src/temporary.ts"
+      "modules": [
+        "src/modules.ts"
       ],
       "package.json": [
         "package.json"
+      ],
+      "testUtils": [
+        "src/testUtils.ts"
       ]
     }
   },

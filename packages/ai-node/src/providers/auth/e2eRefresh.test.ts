@@ -48,7 +48,7 @@ import {
   type CredentialRefreshHook,
 } from '../../integration';
 import { runAiMigrations } from '../../migrations';
-import { builtinProviderModules } from '../../temporary';
+import { builtinProviderModules } from '../../modules';
 import { createProviderRegistry } from '../registry';
 import type { AiProviderModule } from '../types';
 import { createAuthOperationGuard } from './guard';

@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-/** Temporary provider implementations pending extraction into separate packages. @packageDocumentation */
+/**
+ * Module-authoring surface for provider and auth modules.
+ *
+ * @remarks
+ * This entry point is what provider packages build on: it exports the
+ * `AiProviderModule` and `AiAuthModule` contracts, the request-envelope
+ * validator and the OAuth token-request helpers used to assemble a module.
+ * It is alpha-grade: the shapes are stable enough to author against, but they
+ * may change in a minor release as the extraction of provider packages
+ * completes, and they are not yet covered by the stable `@public` surface.
+ *
+ * @packageDocumentation
+ */
 
 import {
   openaiResponses,
@@ -40,10 +52,20 @@ export {
   createTokenRequest,
   parseOAuthTokenResponse,
 } from './providers/auth/modules';
-export type { AiAuthModule, AuthOperationKind } from './providers/auth/types';
+export type {
+  AiAuthModule,
+  AuthOperationKind,
+  AuthTokenRequestBase,
+  OAuthLoginExchangeInput,
+  OAuthRefreshInput,
+} from './providers/auth/types';
 export type { CredentialScope } from './credentials/types';
 
-/** Provider modules available until provider packages are extracted. @alpha */
+/**
+ * The provider modules that remain in this package.
+ *
+ * @alpha
+ */
 export const builtinProviderModules = Object.freeze([
   openaiResponses,
   openaiCompletions,

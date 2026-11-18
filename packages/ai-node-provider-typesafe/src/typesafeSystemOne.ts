@@ -18,8 +18,8 @@ import * as systemOne from '@earendil-works/pi-ai/api/typesafe-system-one';
 import type {
   AiProviderModule,
   ProviderAdapter,
-} from '@backstage/ai-node/temporary';
-import { validateHttpEnvelope } from '@backstage/ai-node/temporary';
+} from '@backstage/ai-node/modules';
+import { validateHttpEnvelope } from '@backstage/ai-node/modules';
 
 const base = (url: string | undefined) => (url ?? '').replace(/\/+$/, '');
 
@@ -51,9 +51,12 @@ const nonChatAdapter = (
 
 /**
  * TypeSafe's System One classification protocol (`POST {base}/systemone`).
- * OpenRouter serves the same protocol from a different base URL; only the
- * `/v1/systemone` and `/api/v1/systemone` route shapes are certified, and any
- * other base URL is rejected fail-closed by the destination templates.
+ * OpenRouter serves the same protocol with a different base URL; a proxy
+ * that hides both the provider ID and the OpenRouter host must set
+ * `compat.imageInput`. Only the `/v1/systemone` route shape is certified;
+ * custom base URLs that do not produce it are rejected fail-closed by the
+ * destination templates. The native TypeSafe base and OpenRouter's `/api/v1`
+ * base both serve the protocol, so both route shapes are approved below.
  *
  * @public
  */

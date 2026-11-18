@@ -7,6 +7,7 @@ import type { AnyModel } from '@earendil-works/pi-ai';
 import type { AssistantMessageEventStream } from '@earendil-works/pi-ai';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Credential as Credential_2 } from '@earendil-works/pi-ai';
+import type { Knex } from 'knex';
 
 // @alpha
 export type AiProviderModule = Readonly<{
@@ -59,6 +60,73 @@ export type AiProviderRegistry = Readonly<{
   hasOperation(operation: string): boolean;
   canonicalPath(path: string): string | undefined;
 }>;
+
+// @alpha
+export const CRASH_TEST_CHILD_ENV = 'AI_CRASH_TEST_CHILD';
+
+// @alpha
+export const CRASH_TEST_DB_ENV = 'AI_CRASH_TEST_DB';
+
+// @alpha (undocumented)
+export const CRASH_TEST_FENCE_ENV = 'AI_CRASH_TEST_FENCE';
+
+// @alpha
+export const CRASH_TEST_NAMESPACE_ENV = 'AI_CRASH_TEST_NAMESPACE';
+
+// @alpha
+export const CRASH_TEST_ORIGIN_ENV = 'AI_CRASH_TEST_ORIGIN';
+
+// @alpha
+export interface CrashChildContext {
+  bind(input: {
+    readonly provider: string;
+    readonly modelId: string;
+    readonly resolvedModel?: string;
+    readonly operation: ModelOperation;
+    readonly api: string;
+    readonly destination: string;
+    readonly model?: AnyModel;
+  }): {
+    readonly fetch: typeof fetch;
+    readonly operation: TrustedOperation;
+  };
+  // (undocumented)
+  readonly fence: Fence;
+  // (undocumented)
+  readonly namespace: Namespace;
+  readonly origin: string;
+}
+
+// @alpha
+export interface CrashTestFixture {
+  assertCrashUnknown(options?: CrashTestOptions): Promise<void>;
+  // (undocumented)
+  readonly credentials: BackstageCredentials;
+  // (undocumented)
+  readonly fence: Fence;
+  // (undocumented)
+  readonly namespace: Namespace;
+}
+
+// @alpha (undocumented)
+export interface CrashTestFixtureOptions {
+  readonly authorizeAuditRead?: (credentials: BackstageCredentials) => boolean;
+  readonly db: Knex;
+  readonly namespace?: Namespace;
+  readonly providers?: AiProviderRegistry;
+}
+
+// @alpha (undocumented)
+export interface CrashTestOptions {
+  readonly env?: Readonly<Record<string, string | undefined>>;
+  readonly testFile?: string;
+  readonly timeoutMs?: number;
+}
+
+// @alpha
+export function createCrashTestFixture(
+  options: CrashTestFixtureOptions,
+): Promise<CrashTestFixture>;
 
 // @alpha
 export function createProviderRegistry(
@@ -184,6 +252,12 @@ export function registerProviderCertification(options: {
   ): Request;
   assertCrashUnknown(): Promise<void>;
 }): void;
+
+// @alpha
+export function runCrashChild(options: {
+  providers: AiProviderRegistry;
+  dispatch(context: CrashChildContext): Promise<void>;
+}): Promise<void>;
 
 // @alpha
 export type TrustedOperation = Readonly<{

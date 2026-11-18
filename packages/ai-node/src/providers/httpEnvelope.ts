@@ -18,6 +18,7 @@ import { zstdDecompressSync } from 'node:zlib';
 import type { ProviderEnvelope } from './types';
 
 const MAX_BODY = 16 * 1024 * 1024;
+/** @alpha */
 export type HttpEnvelopeRules = Readonly<{
   endpoint: string;
   sdkQueryParams?: Readonly<Record<string, string>>;
@@ -78,7 +79,11 @@ export async function readBody(request: Request): Promise<Buffer> {
   return Buffer.concat(chunks, size);
 }
 
-/** Validate the final SDK-produced envelope, not the original Model object. */
+/**
+ * Validate the final SDK-produced envelope, not the original Model object.
+ *
+ * @alpha
+ */
 export async function validateHttpEnvelope(
   rules: HttpEnvelopeRules,
   operation: ProviderEnvelope,

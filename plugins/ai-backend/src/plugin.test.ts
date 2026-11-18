@@ -34,7 +34,7 @@ import {
   type PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
-import { builtinProviderModules } from '@backstage/ai-node/temporary';
+import { builtinProviderModules } from '@backstage/ai-node/modules';
 import { aiServiceRef } from '@backstage/ai-node/alpha';
 import type { AiService, ToolModule } from '@backstage/ai-node/alpha';
 import { ConfigReader } from '@backstage/config';

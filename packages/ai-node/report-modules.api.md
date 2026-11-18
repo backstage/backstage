@@ -6,6 +6,28 @@
 import { AnyModel } from '@earendil-works/pi-ai';
 import type { AssistantMessageEventStream } from '@earendil-works/pi-ai';
 import { Credential as Credential_2 } from '@earendil-works/pi-ai';
+import type { OAuthCredential } from '@earendil-works/pi-ai';
+
+// @alpha
+export type AiAuthModule = Readonly<{
+  id: string;
+  tokenPath: '/oauth/token' | '/v1/oauth/token';
+  body: 'json' | 'form';
+  refreshRequest(input: OAuthRefreshInput): Request;
+  exchangeRequest(input: OAuthLoginExchangeInput): Request;
+  validateTokenRequest(input: {
+    operation: AuthOperationKind;
+    endpoint: string;
+    request: Request;
+  }): Promise<void>;
+  parseTokenResponse(input: {
+    operation: AuthOperationKind;
+    body: unknown;
+    previous?: OAuthCredential;
+    now: number;
+  }): OAuthCredential;
+  extraFields?: readonly string[];
+}>;
 
 // @alpha
 export type AiProviderModule = Readonly<{
@@ -50,6 +72,27 @@ export type AiProviderModule = Readonly<{
         reason: string;
       }
   >;
+}>;
+
+// @alpha (undocumented)
+export function assertTokenRequest(
+  input: {
+    operation: AuthOperationKind;
+    endpoint: string;
+    request: Request;
+  },
+  body: 'json' | 'form',
+  tokenPath: string,
+): Promise<void>;
+
+// @alpha
+export type AuthOperationKind = 'auth.token' | 'auth.token-exchange';
+
+// @alpha
+export type AuthTokenRequestBase = Readonly<{
+  endpoint: string;
+  providerId: string;
+  clientId: string;
 }>;
 
 // @alpha
@@ -97,6 +140,13 @@ export const builtinProviderModules: readonly Readonly<{
   >;
 }>[];
 
+// @alpha (undocumented)
+export function createTokenRequest(
+  endpoint: string,
+  body: 'json' | 'form',
+  fields: Record<string, string>,
+): Request;
+
 // @alpha
 export type CredentialScope =
   | Readonly<{
@@ -123,6 +173,15 @@ export type DestinationTemplatePart =
       digest: string;
     }>;
 
+// @alpha (undocumented)
+export type HttpEnvelopeRules = Readonly<{
+  endpoint: string;
+  sdkQueryParams?: Readonly<Record<string, string>>;
+  zstd?: boolean;
+  federation?: boolean;
+  inspectPayload?(payload: unknown): void;
+}>;
+
 // @alpha
 export type ModuleAuthority = Readonly<{
   authority: Readonly<{
@@ -134,6 +193,30 @@ export type ModuleAuthority = Readonly<{
   }>;
   generation: string;
 }>;
+
+// @alpha
+export type OAuthLoginExchangeInput = AuthTokenRequestBase &
+  Readonly<{
+    code: string;
+    codeVerifier: string;
+    redirectUri: string;
+  }>;
+
+// @alpha
+export type OAuthRefreshInput = AuthTokenRequestBase &
+  Readonly<{
+    credential: OAuthCredential;
+  }>;
+
+// @alpha (undocumented)
+export function parseOAuthTokenResponse(
+  input: {
+    body: unknown;
+    previous?: OAuthCredential;
+    now: number;
+  },
+  extraFields?: readonly string[],
+): OAuthCredential;
 
 // @alpha
 export type ProviderAdapter =
@@ -176,6 +259,13 @@ export type ProviderEnvelope = Readonly<{
   destination: string;
   authTokenDestinations?: readonly string[];
 }>;
+
+// @alpha
+export function validateHttpEnvelope(
+  rules: HttpEnvelopeRules,
+  operation: ProviderEnvelope,
+  request: Request,
+): Promise<'model' | 'auth.token-exchange'>;
 
 // (No @packageDocumentation comment for this package)
 ```

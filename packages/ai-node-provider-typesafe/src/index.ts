@@ -20,7 +20,7 @@
  * @packageDocumentation
  */
 
-import type { AiProviderModule } from '@backstage/ai-node/temporary';
+import type { AiProviderModule } from '@backstage/ai-node/modules';
 import { typesafeSystemOne } from './typesafeSystemOne';
 
 /** @public */
