@@ -23,6 +23,7 @@ import type { PermissionsRegistryService } from '@backstage/backend-plugin-api';
 import type { PermissionsService } from '@backstage/backend-plugin-api';
 import type { PluginMetadataService } from '@backstage/backend-plugin-api';
 import type { RegistryReader } from '@earendil-works/pi-durable';
+import type { SchedulerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import type { ServiceRef } from '@backstage/backend-plugin-api';
 
@@ -168,20 +169,18 @@ export type AiInstallationCredentials = Readonly<{
 }>;
 
 // @alpha
-export interface AiJournalPruneRunner {
-  pruneNow(): Promise<JournalPruneResult>;
-  stop(): Promise<void>;
-}
-
-// @alpha
-export interface AiJournalPruneRunnerOptions {
+export interface AiJournalPruneScheduleOptions {
   // (undocumented)
   readonly db: Knex;
   readonly events?: AiEventEmitter;
-  readonly intervalMs: number;
+  readonly frequency: {
+    readonly milliseconds: number;
+  };
   readonly logger?: AiPruneRunnerLogger;
   readonly now?: () => Date;
   readonly retentionMs: number;
+  readonly scheduler: Pick<SchedulerService, 'scheduleTask'>;
+  readonly signal: AbortSignal;
 }
 
 // @alpha
@@ -711,9 +710,9 @@ export type RecoveryEvent = Readonly<{
 }>;
 
 // @alpha
-export function startAiJournalPruneRunner(
-  options: AiJournalPruneRunnerOptions,
-): AiJournalPruneRunner;
+export function scheduleAiJournalPrune(
+  options: AiJournalPruneScheduleOptions,
+): Promise<void>;
 
 // @alpha
 export type ToolCallEnvelope = Readonly<{

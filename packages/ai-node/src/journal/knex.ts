@@ -34,7 +34,7 @@ import {
   type ParsedOutcome,
   type ParsedRecovery,
 } from './redaction';
-import { AuditAccessDeniedError, AuditSessionNotFoundError } from './errors';
+import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import {
   AI_AUDIT_READ_PERMISSION_NAME,
   type AttemptId,
@@ -246,9 +246,7 @@ class KnexAttemptJournal implements AttemptJournal {
     const parsed = parseAuditQuery(query);
     const ref = principalRef(credentials);
     if (ref === undefined) {
-      throw new AuditAccessDeniedError(
-        'Audit reads require ownership of the session',
-      );
+      throw new NotAllowedError('Audit reads require ownership of the session');
     }
     const ownerRef = this.#ownershipResolver
       ? await this.#ownershipResolver({
@@ -261,17 +259,15 @@ class KnexAttemptJournal implements AttemptJournal {
             .first('owner_ref')
         )?.owner_ref;
     if (!ownerRef) {
-      throw new AuditSessionNotFoundError(
+      throw new NotFoundError(
         `No journaled session ${parsed.pluginId}/${parsed.sessionId}`,
       );
     }
     if (ref !== ownerRef) {
-      throw new AuditAccessDeniedError(
-        'Audit reads require ownership of the session',
-      );
+      throw new NotAllowedError('Audit reads require ownership of the session');
     }
     if (!(await this.#authorizer.authorizeAuditRead(credentials))) {
-      throw new AuditAccessDeniedError(
+      throw new NotAllowedError(
         `Audit reads require the ${AI_AUDIT_READ_PERMISSION_NAME} permission`,
       );
     }
