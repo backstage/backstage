@@ -61,8 +61,10 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-ai-common": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/plugin-notifications-node": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
+    "@backstage/plugin-signals-node": "workspace:^",
     "@earendil-works/pi-durable": "1.5.2",
     "express": "^4.22.0",
     "express-promise-router": "^4.1.1"

@@ -41,6 +41,8 @@ import {
 } from '@backstage/plugin-ai-common';
 import { aiModulesExtensionPoint } from './extensions';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { signalsServiceRef } from '@backstage/plugin-signals-node';
+import { notificationService } from '@backstage/plugin-notifications-node';
 import { createRouter } from './router';
 
 /** Backend plugin exposing managed AI sessions to authenticated users. @public */
@@ -75,6 +77,9 @@ export default createBackendPlugin({
         pluginMetadata: coreServices.pluginMetadata,
         config: coreServices.rootConfig,
         events: eventsServiceRef,
+        signals: signalsServiceRef,
+        notifications: notificationService,
+        logger: coreServices.logger,
       },
       async init({
         ai,
@@ -87,6 +92,9 @@ export default createBackendPlugin({
         pluginMetadata,
         config,
         events,
+        signals,
+        notifications,
+        logger,
       }) {
         // Fixed permissions and the rules that give them granularity are
         // registered once; policy authors import the matching conditions.
@@ -124,6 +132,9 @@ export default createBackendPlugin({
             support,
             httpAuth,
             health: () => evaluateAiHealth(metrics.snapshot()),
+            signals,
+            notifications,
+            logger,
           }),
         );
       },
