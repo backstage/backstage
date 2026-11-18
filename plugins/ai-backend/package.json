@@ -56,6 +56,7 @@
     "@backstage/ai-node-provider-openai": "workspace:^",
     "@backstage/ai-node-provider-openrouter": "workspace:^",
     "@backstage/ai-node-provider-typesafe": "workspace:^",
+    "@backstage/ai-node-tools": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",

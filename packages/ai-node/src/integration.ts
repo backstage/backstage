@@ -25,12 +25,6 @@ import {
   type RegistrySnapshot,
   type Storage,
 } from '@earendil-works/pi-durable';
-import { createCodemodeExtension } from '@earendil-works/pi-durable/codemode';
-import { CodemodeSandbox } from '@earendil-works/pi-codemode';
-import type {
-  CodemodeRun,
-  CodemodeRunOptions,
-} from '@earendil-works/pi-codemode/portable';
 import type { AnyModel, Credential, Models } from '@earendil-works/pi-ai';
 import {
   createProviderRegistry,
@@ -208,38 +202,82 @@ export interface AiServiceIntegrationOptions {
   readonly events?: AiEventEmitter;
 
   /**
-   * Opt-in code mode: Pi's `codemode` extension, which runs model-written
-   * JavaScript in a QuickJS sandbox whose script survives restarts by
-   * deterministic replay. Presence enables it for every harness this
-   * integration opens, appended to the caller's registry selection; it
-   * replaces any caller extension also named `codemode`.
-   *
-   * Resource limits: `timeoutMs` is the host wall-clock ceiling per script
-   * execution including time spent in tools — a script's own
-   * `// @options {"timeout_ms": ...}` may lower it, never exceed it — and
-   * defaults to 300000. `memoryLimitBytes` bounds the QuickJS heap; it
-   * defaults to no explicit limit (the wasm32 address space bounds it at
-   * 4 GiB) — set one to bound a runaway script's allocations. Script output
-   * is capped at 16 MiB / 100000 items and script store writes at 1 MiB
-   * total. Replay storage is O(nested results): one journal commit plus
-   * one count commit per delivered result, on top of each nested call's
-   * own commits, in the conversation's durable storage (separate from the
-   * AI audit journal).
-   *
-   * Isolation and audit: scripts see only their tools and Pi's script
-   * globals — no network, filesystem, timers, `process`, or modules — and
-   * model calls from inside scripts (the `models.*` globals) route through
-   * the guarded facade like any other dispatch, with the per-attempt
-   * permission, fence, and credential recheck and audit journaling. Until a
-   * provider module certifies them, those calls deny fail-closed.
+   * Opt-in code mode, enabled for every harness this integration opens.
+   * See {@link AiCodemodeOptions} for the full contract.
    */
-  readonly codemode?: {
-    /** Host wall-clock ceiling per script execution. Default 300000. */
-    readonly timeoutMs?: number;
-    /** QuickJS heap limit. Default: no explicit limit. */
-    readonly memoryLimitBytes?: number;
-  };
+  readonly codemode?: AiCodemodeOptions;
 }
+
+/**
+ * Opt-in host-supplied extension wiring for code-mode scripting. The
+ * callback builds an extension — and the sandbox backing it — for every
+ * harness the integration opens; the core appends the returned extension
+ * to the caller's registry selection and closes the returned sandbox with
+ * the harness.
+ *
+ * Everything below is the behavior of the PROVIDED DEFAULT BUILDER —
+ * `createBoundedCodemodeExtension` from `@backstage/ai-node-codemode` —
+ * not something this type enforces on an arbitrary callback: a
+ * host-supplied `createExtension` decides its own extension's behavior.
+ *
+ * With the default builder, the extension is Pi's `codemode` extension:
+ * it runs model-written JavaScript in a QuickJS sandbox whose script
+ * survives restarts by deterministic replay. The returned extension is
+ * appended to the caller's registry selection — an existing caller
+ * extension is not removed — and a lookup of its name resolves to it.
+ *
+ * With the default builder, the limits passed to the callback:
+ * `timeoutMs` is the host wall-clock ceiling per script execution
+ * including time spent in tools — a script's own
+ * `// @options: {"timeout_ms": ...}` line may lower it, never exceed it —
+ * and defaults to 300000. `memoryLimitBytes` bounds the QuickJS heap; it
+ * defaults to no explicit limit (the wasm32 address space bounds it at
+ * 4 GiB) — set one to bound a runaway script's allocations. Script output
+ * is capped at 16777216 characters (UTF-16 code units) / 100000 items,
+ * a single script store value at 262144 characters, and the currently
+ * stored keys and their serialized values combined at 1048576
+ * characters — the retained store, including preexisting state, not a
+ * cumulative write count. Replay storage is O(nested results): one
+ * journal commit plus one count commit per delivered result, on top of
+ * each nested call's own commits, in the conversation's durable storage
+ * (separate from the AI audit journal).
+ *
+ * Isolation and audit, with the default builder: scripts see only their
+ * tools and Pi's script globals — no network, filesystem, timers,
+ * `process`, or modules — and model calls from inside scripts (the
+ * `models.*` globals) route through the guarded facade like any other
+ * dispatch, with the per-attempt permission, fence, and credential
+ * recheck and audit journaling. Until a provider module certifies them,
+ * those calls deny fail-closed.
+ *
+ * @alpha
+ */
+export type AiCodemodeOptions = Readonly<{
+  /**
+   * Passed to `createExtension` as the callback's wall-clock ceiling per
+   * script execution. The default builder applies it as described above.
+   * Default 300000.
+   */
+  readonly timeoutMs?: number;
+  /**
+   * Passed to `createExtension` as the callback's heap limit. The default
+   * builder bounds the QuickJS heap with it. Default: no explicit limit.
+   */
+  readonly memoryLimitBytes?: number;
+  /**
+   * Builds the code mode extension and the sandbox backing it, with the
+   * resolved limits. The core appends the returned extension to the
+   * caller's registry selection (extensions resolve by
+   * `extension.name`) and closes the returned sandbox with the harness.
+   */
+  readonly createExtension: (limits: {
+    readonly timeoutMs: number;
+    readonly memoryLimitBytes?: number;
+  }) => {
+    readonly extension: Extension;
+    readonly sandbox: { close(): Promise<void> };
+  };
+}>;
 
 /**
  * The production Wave 1 integration of the managed AI service.
@@ -426,51 +464,6 @@ function principalOf(
  *
  * @internal
  */
-/**
- * A code mode sandbox whose `start()` enforces a host wall-clock ceiling.
- *
- * The extension derives a script's deadline from the script's own
- * `// @options {"timeout_ms": ...}` line and passes no timeout otherwise,
- * and `CodemodeSandboxBase.start()` then runs with no deadline at all — a
- * model-written script that keeps pending microtasks alive would run
- * until it is aborted or the sandbox closes. This ceiling bounds every
- * start regardless of what the script declares: a script may lower the
- * deadline, never raise it above the host's. It is wall-clock only, so it
- * does not enter the durable start data and cannot affect replay.
- */
-class BoundedCodemodeSandbox extends CodemodeSandbox {
-  readonly #hostTimeoutMs: number;
-
-  constructor(
-    hostTimeoutMs: number,
-    options?: { readonly memoryLimitBytes?: number },
-  ) {
-    // The ceiling is also the sandbox-level default, so any future path
-    // through CodemodeSandboxBase.execute() (whose timeout falls back to
-    // the sandbox default) inherits the same host bound; start() keeps
-    // its explicit Math.min override for script-declared timeouts.
-    super(
-      options?.memoryLimitBytes === undefined
-        ? { timeoutMs: hostTimeoutMs }
-        : {
-            timeoutMs: hostTimeoutMs,
-            memoryLimitBytes: options.memoryLimitBytes,
-          },
-    );
-    this.#hostTimeoutMs = hostTimeoutMs;
-  }
-
-  start(code: string, options: CodemodeRunOptions): CodemodeRun {
-    return super.start(code, {
-      ...options,
-      timeoutMs: Math.min(
-        options.timeoutMs ?? Number.POSITIVE_INFINITY,
-        this.#hostTimeoutMs,
-      ),
-    });
-  }
-}
-
 export async function createAiServiceIntegration(
   options: AiServiceIntegrationOptions,
 ): Promise<ProductionAiServiceIntegration> {
@@ -1068,14 +1061,17 @@ export async function createAiServiceIntegration(
     // selection, and the registry reader re-reads the caller's snapshot on
     // every read so later caller publications still apply; the sandbox is
     // closed with this open's harness.
-    let codemodeSandbox: CodemodeSandbox | undefined;
+    let codemodeSandbox: { close(): Promise<void> } | undefined;
     let harnessRegistry: RegistryReader = input.registry;
     if (options.codemode !== undefined) {
-      codemodeSandbox = new BoundedCodemodeSandbox(
-        options.codemode.timeoutMs ?? 300_000,
-        options.codemode,
-      );
-      const codemode = createCodemodeExtension({ sandbox: codemodeSandbox });
+      const codemodeBuilt = options.codemode.createExtension({
+        timeoutMs: options.codemode.timeoutMs ?? 300_000,
+        ...(options.codemode.memoryLimitBytes === undefined
+          ? {}
+          : { memoryLimitBytes: options.codemode.memoryLimitBytes }),
+      });
+      codemodeSandbox = codemodeBuilt.sandbox;
+      const codemode = codemodeBuilt.extension;
       const callerRegistry = input.registry;
       harnessRegistry = {
         snapshot: () => appendExtension(callerRegistry.snapshot(), codemode),
@@ -1684,8 +1680,9 @@ export async function createAiServiceIntegration(
 /**
  * A registry snapshot view with one extension appended. Every read
  * delegates to the caller's current snapshot, so caller publications after
- * the open still apply; the appended extension shadows a caller extension
- * of the same name.
+ * the open still apply; a lookup of the appended extension's name
+ * resolves to it, without removing an existing caller extension of that
+ * name from the arrays.
  */
 function appendExtension(
   snapshot: RegistrySnapshot,
