@@ -81,6 +81,7 @@ export type {
   AttemptOutcomeStatus,
   AuditEventView,
   AuditPage,
+  AuditQuery,
 } from './journal/types';
 export { modelPermissionName } from './permissions/modelPermissions';
 export type {
@@ -89,6 +90,18 @@ export type {
 } from './permissions/modelPermissions';
 export type { AiCredentialStores, CredentialScope } from './credentials/types';
 export type { RecoveryEvent } from './journal/types';
+export type { PageOfNamespaces } from './ownership/types';
+export { createUsageAccounting } from './accounting/aggregate';
+export type {
+  UsageAccounting,
+  UsageAccountingOptions,
+  UsageAggregateRow,
+  UsageDimension,
+  UsageJournalReader,
+  UsageOutcomes,
+  UsageQuery,
+  UsageReport,
+} from './accounting/types';
 export type { AiProviderRegistry } from './providers/registry';
 export type {
   AiProviderModule,

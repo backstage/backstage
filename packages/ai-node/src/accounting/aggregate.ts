@@ -154,7 +154,7 @@ function serializeKey(
  * Durations stay a live-observability signal (the event seam) until a journal
  * read extension exposes them.
  *
- * @internal
+ * @alpha
  */
 export function createUsageAccounting(
   options: UsageAccountingOptions,

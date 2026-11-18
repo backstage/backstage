@@ -16,7 +16,11 @@
 
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Namespace } from '../contracts';
-import type { AttemptJournal, AttemptOutcomeStatus } from '../journal/types';
+import type {
+  AttemptOutcomeStatus,
+  AuditPage,
+  AuditQuery,
+} from '../journal/types';
 import type { PageOfNamespaces } from '../ownership/types';
 
 /**
@@ -27,7 +31,7 @@ import type { PageOfNamespaces } from '../ownership/types';
  * remain in the result key, so a narrower grouping is a roll-up of the same
  * durable facts rather than a different read.
  *
- * @internal
+ * @alpha
  */
 export type UsageDimension =
   | 'pluginId'
@@ -36,7 +40,11 @@ export type UsageDimension =
   | 'model'
   | 'operation';
 
-/** The outcome distribution of the attempts in one aggregate row. */
+/**
+ * The outcome distribution of the attempts in one aggregate row.
+ *
+ * @alpha
+ */
 export interface UsageOutcomes {
   readonly completed: number;
   readonly failed: number;
@@ -54,7 +62,7 @@ export interface UsageOutcomes {
  * appear here, because every field is either an identifier the journal itself
  * validated or a number.
  *
- * @internal
+ * @alpha
  */
 export interface UsageAggregateRow {
   /** The grouping key: the requested dimensions that are known. */
@@ -67,7 +75,11 @@ export interface UsageAggregateRow {
   readonly lastRecordedAt?: string;
 }
 
-/** A time-windowed, grouped usage query. */
+/**
+ * A time-windowed, grouped usage query.
+ *
+ * @alpha
+ */
 export interface UsageQuery {
   /** Plugin whose sessions are aggregated. */
   readonly pluginId: string;
@@ -90,7 +102,11 @@ export interface UsageQuery {
   readonly sessionIds?: readonly string[];
 }
 
-/** The result of one usage query. */
+/**
+ * The result of one usage query.
+ *
+ * @alpha
+ */
 export interface UsageReport {
   readonly rows: readonly UsageAggregateRow[];
   /** Events actually read from the journal. */
@@ -102,13 +118,29 @@ export interface UsageReport {
 }
 
 /**
+ * The audit journal read seam accounting consumes: one method, the same
+ * authorized, redacted page read the audit surface exposes.
+ *
+ * @alpha
+ */
+export type UsageJournalReader = Readonly<{
+  read(
+    credentials: BackstageCredentials,
+    query: AuditQuery,
+  ): Promise<AuditPage>;
+}>;
+
+/**
  * Options for the accounting reader.
  *
- * @internal
+ * @alpha
  */
 export interface UsageAccountingOptions {
-  /** The audit journal; accounting never reads the database directly. */
-  readonly journal: AttemptJournal;
+  /**
+   * The audit journal's read seam; accounting never reads the database
+   * directly. Any `AttemptJournal` satisfies it structurally.
+   */
+  readonly journal: UsageJournalReader;
   /**
    * Namespace enumeration for queries that do not name sessions, typically the
    * host's `NamespaceLease.enumerate`. Accounting does not own discovery.
@@ -121,7 +153,11 @@ export interface UsageAccountingOptions {
   ) => Promise<PageOfNamespaces>;
 }
 
-/** The accounting reader. */
+/**
+ * The accounting reader.
+ *
+ * @alpha
+ */
 export interface UsageAccounting {
   aggregate(
     credentials: BackstageCredentials,

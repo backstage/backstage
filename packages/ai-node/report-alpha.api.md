@@ -369,6 +369,14 @@ export type AuditPage = Readonly<{
 }>;
 
 // @alpha
+export type AuditQuery = Readonly<{
+  readonly pluginId: string;
+  readonly sessionId: string;
+  readonly cursor?: string;
+  readonly limit?: number;
+}>;
+
+// @alpha
 export type ConfigAtPath = Readonly<{
   root: Config;
   path: string;
@@ -444,6 +452,11 @@ export function createToolPermissions(options: {
   >;
   toolPermissionName: typeof toolPermissionName;
 };
+
+// @alpha
+export function createUsageAccounting(
+  options: UsageAccountingOptions,
+): UsageAccounting;
 
 // @alpha
 export type CredentialScope =
@@ -575,6 +588,13 @@ export type OpenHarnessOptions = Readonly<{
 }>;
 
 // @alpha
+export interface PageOfNamespaces {
+  // (undocumented)
+  readonly namespaces: readonly Namespace[];
+  readonly next?: string;
+}
+
+// @alpha
 export function parseAiInstallationConfig(
   source: ConfigAtPath,
 ): AiInstallationConfig;
@@ -704,4 +724,86 @@ export type ToolRegistry = Readonly<{
     | undefined;
   readonly modules: readonly ToolModule[];
 }>;
+
+// @alpha
+export interface UsageAccounting {
+  // (undocumented)
+  aggregate(
+    credentials: BackstageCredentials,
+    query: UsageQuery,
+  ): Promise<UsageReport>;
+}
+
+// @alpha
+export interface UsageAccountingOptions {
+  readonly journal: UsageJournalReader;
+  readonly listNamespaces?: (
+    pluginId: string,
+    cursor?: string,
+  ) => Promise<PageOfNamespaces>;
+}
+
+// @alpha
+export interface UsageAggregateRow {
+  readonly attempts: number;
+  // (undocumented)
+  readonly decisions: Readonly<{
+    allow: number;
+    deny: number;
+  }>;
+  readonly key: Readonly<Partial<Record<UsageDimension, string>>>;
+  readonly lastRecordedAt?: string;
+  // (undocumented)
+  readonly outcomes: UsageOutcomes;
+}
+
+// @alpha
+export type UsageDimension =
+  | 'pluginId'
+  | 'sessionId'
+  | 'provider'
+  | 'model'
+  | 'operation';
+
+// @alpha
+export type UsageJournalReader = Readonly<{
+  read(
+    credentials: BackstageCredentials,
+    query: AuditQuery,
+  ): Promise<AuditPage>;
+}>;
+
+// @alpha
+export interface UsageOutcomes {
+  // (undocumented)
+  readonly 'stream-failed': number;
+  // (undocumented)
+  readonly cancelled: number;
+  // (undocumented)
+  readonly completed: number;
+  // (undocumented)
+  readonly failed: number;
+  readonly unknown: number;
+}
+
+// @alpha
+export interface UsageQuery {
+  readonly from?: string;
+  readonly groupBy?: readonly UsageDimension[];
+  readonly maxEvents?: number;
+  readonly maxRows?: number;
+  readonly pageSize?: number;
+  readonly pluginId: string;
+  readonly sessionIds?: readonly string[];
+  readonly until?: string;
+}
+
+// @alpha
+export interface UsageReport {
+  readonly eventsRead: number;
+  // (undocumented)
+  readonly rows: readonly UsageAggregateRow[];
+  readonly sessionsRead: number;
+  readonly truncated: boolean;
+}
 ```
