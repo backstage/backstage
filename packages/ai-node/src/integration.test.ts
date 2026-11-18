@@ -76,6 +76,7 @@ function makeDeps(db: Knex): DefaultAiServiceDeps {
     auditor: mockServices.auditor.mock(),
     lifecycle: { addShutdownHook: jest.fn() } as unknown as LifecycleService,
     pluginMetadata: { getId: () => 'test-plugin' } as PluginMetadataService,
+    events: mockServices.events(),
   };
 }
 

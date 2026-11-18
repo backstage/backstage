@@ -52,6 +52,7 @@ New admissions use the latest registrations. A live session retains its module s
 
 Routes require Backstage user bearer credentials and the `ai.session.use` permission. This plugin does not enable cookie authentication. Model discovery returns only the models the caller is allowed to use under the fixed `ai.model.use` permission, evaluating the policy's `isModel`, `isProvider` and `isModelType` conditions against each cataloged pair; dispatch checks that permission again with the caller's own credentials. Tool dispatch is checked against `ai.tool.use` with the `isTool` and `isServer` conditions, inside the guarded tool operations rather than in plugin wiring. Audit reads require both session ownership and `ai.audit.read`.
 
+- `GET /health` reports readiness, unauthenticated, for infrastructure probes: `200` with `{ "status": "ok", "signals": [...] }` when the service's health evaluation is ok, `503` with `status: "degraded"` when a signal crosses its threshold. The signals carry identifiers, counts, and durations only.
 - `GET /models` lists permitted models.
 - `GET /sessions` lists the caller's sessions; pass the returned `nextCursor` as `cursor` to continue. The optional `limit` is a positive integer and is capped at 500.
 - `POST /sessions` accepts `{ "model": { "provider": "...", "modelId": "..." } }` and returns a session and root conversation ID.

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import type { AiEventEmitter, AiObservabilityEvent } from './types';
+import type { EventsService } from '@backstage/plugin-events-node';
+import type { AiObservabilityEvent } from './types';
+import { AI_OBSERVABILITY_TOPICS } from './types';
 
 /**
  * A counter series: one label combination and its count.
@@ -63,18 +65,25 @@ export type AiHealthSnapshot = Readonly<{
 
 /**
  * The one subscriber this deliverable ships: an in-process metrics and health
- * implementation.
+ * implementation over the events service.
  *
  * @remarks
  *
- * It is a subscriber, not instrumentation: modules emit through
- * {@link AiEventEmitter} and this object only aggregates. It never labels a
- * series with a reason string (unbounded cardinality) and never stores payloads,
- * so a leaked secret is unrepresentable here.
+ * It is a subscriber, not instrumentation: the service publishes its
+ * observability events on the `ai.observability.*` topics and this object
+ * only aggregates what is delivered. It never labels a series with a reason
+ * string (unbounded cardinality) and never stores payloads, so a leaked
+ * secret is unrepresentable here. Its event handler never throws, so a
+ * delivery failure is never attributed to the subscriber.
  *
  * @alpha
  */
-export interface AiMetricsSubscriber extends AiEventEmitter {
+export interface AiMetricsSubscriber {
+  /**
+   * Subscribes to the `ai.observability.*` topics on the events service.
+   * The same aggregation runs for every delivered event.
+   */
+  subscribe(events: Pick<EventsService, 'subscribe'>): Promise<void>;
   snapshot(): AiHealthSnapshot;
   reset(): void;
 }
@@ -159,92 +168,102 @@ export function createMetricsSubscriber(): AiMetricsSubscriber {
     }
   };
 
-  return {
-    emit(input: AiObservabilityEvent) {
-      const event = input;
-      events += 1;
-      switch (event.kind) {
-        case 'denial':
+  const emit = (input: AiObservabilityEvent) => {
+    const event = input;
+    events += 1;
+    switch (event.kind) {
+      case 'denial':
+        failures += 1;
+        count('denial', {
+          operation: event.operation,
+          ...(event.provider ? { provider: event.provider } : {}),
+        });
+        break;
+      case 'dispatch':
+        if (event.outcome !== 'sent' && event.outcome !== 'completed') {
           failures += 1;
-          count('denial', {
+        }
+        if (event.durationMs !== undefined) {
+          durations.dispatch = (durations.dispatch ?? 0) + event.durationMs;
+        }
+        // One latency observation per logical attempt, terminal only:
+        // the terminal duration measures sentAt-or-startedAt to
+        // settlement, while `sent` measures start to first response and
+        // is a throughput observation, not a latency one. Both event
+        // kinds keep their cumulative sum in durations.dispatch.
+        if (event.outcome !== 'sent' && event.durationMs !== undefined) {
+          terminalDispatches += 1;
+          durations.dispatchTerminal =
+            (durations.dispatchTerminal ?? 0) + event.durationMs;
+        }
+        count(
+          'dispatch',
+          {
             operation: event.operation,
-            ...(event.provider ? { provider: event.provider } : {}),
-          });
-          break;
-        case 'dispatch':
-          if (event.outcome !== 'sent' && event.outcome !== 'completed') {
-            failures += 1;
+            outcome: event.outcome,
+            ...(event.httpStatus !== undefined
+              ? { httpStatus: String(event.httpStatus) }
+              : {}),
+          },
+          event.durationMs,
+        );
+        break;
+      case 'lease':
+        if (event.action === 'acquire') {
+          heldLeases.set(leaseId(event), event.generation);
+        }
+        if (event.action === 'renew' && !heldLeases.has(leaseId(event))) {
+          heldLeases.set(leaseId(event), event.generation);
+        }
+        if (event.action === 'release' || event.action === 'lost') {
+          const id = leaseId(event);
+          const held = heldLeases.get(id);
+          // Only the generation that holds the identity may end it.
+          if (event.generation === undefined || held === event.generation) {
+            heldLeases.delete(id);
           }
-          if (event.durationMs !== undefined) {
-            durations.dispatch = (durations.dispatch ?? 0) + event.durationMs;
-          }
-          // One latency observation per logical attempt, terminal only:
-          // the terminal duration measures sentAt-or-startedAt to
-          // settlement, while `sent` measures start to first response and
-          // is a throughput observation, not a latency one. Both event
-          // kinds keep their cumulative sum in durations.dispatch.
-          if (event.outcome !== 'sent' && event.durationMs !== undefined) {
-            terminalDispatches += 1;
-            durations.dispatchTerminal =
-              (durations.dispatchTerminal ?? 0) + event.durationMs;
-          }
-          count(
-            'dispatch',
-            {
-              operation: event.operation,
-              outcome: event.outcome,
-              ...(event.httpStatus !== undefined
-                ? { httpStatus: String(event.httpStatus) }
-                : {}),
-            },
-            event.durationMs,
-          );
-          break;
-        case 'lease':
-          if (event.action === 'acquire') {
-            heldLeases.set(leaseId(event), event.generation);
-          }
-          if (event.action === 'renew' && !heldLeases.has(leaseId(event))) {
-            heldLeases.set(leaseId(event), event.generation);
-          }
-          if (event.action === 'release' || event.action === 'lost') {
-            const id = leaseId(event);
-            const held = heldLeases.get(id);
-            // Only the generation that holds the identity may end it.
-            if (event.generation === undefined || held === event.generation) {
-              heldLeases.delete(id);
-            }
-          }
-          if (event.durationMs !== undefined) {
-            durations.lease = (durations.lease ?? 0) + event.durationMs;
-          }
-          count(
-            'lease',
-            {
-              action: event.action,
-              ...(event.pluginId ? { pluginId: event.pluginId } : {}),
-            },
-            event.durationMs,
-          );
-          break;
-        case 'journal':
-          if (event.decision === 'deny') journalDecisions.deny += 1;
-          if (event.decision === 'allow') journalDecisions.allow += 1;
-          if (event.durationMs !== undefined) {
-            durations.journal = (durations.journal ?? 0) + event.durationMs;
-          }
-          count(
-            'journal',
-            {
-              action: event.action,
-              ...(event.decision ? { decision: event.decision } : {}),
-            },
-            event.durationMs,
-          );
-          break;
-        default:
-          break;
-      }
+        }
+        if (event.durationMs !== undefined) {
+          durations.lease = (durations.lease ?? 0) + event.durationMs;
+        }
+        count(
+          'lease',
+          {
+            action: event.action,
+            ...(event.pluginId ? { pluginId: event.pluginId } : {}),
+          },
+          event.durationMs,
+        );
+        break;
+      case 'journal':
+        if (event.decision === 'deny') journalDecisions.deny += 1;
+        if (event.decision === 'allow') journalDecisions.allow += 1;
+        if (event.durationMs !== undefined) {
+          durations.journal = (durations.journal ?? 0) + event.durationMs;
+        }
+        count(
+          'journal',
+          {
+            action: event.action,
+            ...(event.decision ? { decision: event.decision } : {}),
+          },
+          event.durationMs,
+        );
+        break;
+      default:
+        break;
+    }
+  };
+
+  return {
+    async subscribe(service) {
+      await service.subscribe({
+        id: 'ai-metrics',
+        topics: [...AI_OBSERVABILITY_TOPICS],
+        onEvent: async ({ eventPayload }) => {
+          emit(eventPayload as AiObservabilityEvent);
+        },
+      });
     },
     snapshot(): AiHealthSnapshot {
       return {

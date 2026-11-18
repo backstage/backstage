@@ -153,7 +153,7 @@ for (const dialect of ['sqlite', 'pg'] as const) {
           db: f.db,
           retentionMs: HOUR_MS,
           intervalMs: 10_000,
-          events: { emit: event => void events.push(event) },
+          emit: event => void events.push(event),
           now: clock.now,
         });
         try {

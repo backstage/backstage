@@ -33,6 +33,7 @@ import type {
   PermissionsService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
+import type { EventsService } from '@backstage/plugin-events-node';
 import {
   parseAiServiceConfig,
   type AiServiceConfig,
@@ -163,6 +164,11 @@ export interface DefaultAiServiceDeps {
   readonly auditor: AuditorService;
   readonly lifecycle: LifecycleService;
   readonly pluginMetadata: PluginMetadataService;
+  /**
+   * The root-shared events service. Observability events publish to the
+   * `ai.observability.*` topics on it, fire-and-forget.
+   */
+  readonly events: EventsService;
 }
 
 /** Options for {@link DefaultAiService.create}. */

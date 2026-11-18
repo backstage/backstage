@@ -12,10 +12,7 @@ import { Models } from '@earendil-works/pi-ai';
 import { ProviderHeaders } from '@earendil-works/pi-ai';
 
 // @alpha
-export interface AiEventEmitter {
-  // (undocumented)
-  emit(event: AiObservabilityEvent): void | Promise<void>;
-}
+export type AiEventSink = (event: AiObservabilityEvent) => void;
 
 // @alpha
 export type AiObservabilityEvent =
@@ -305,6 +302,11 @@ export interface CrashTestOptions {
 }
 
 // @alpha
+export function createAiEventSink(events: {
+  publish(params: unknown): unknown;
+}): AiEventSink;
+
+// @alpha
 export function createCrashTestFixture(
   options: CrashTestFixtureOptions,
 ): Promise<CrashTestFixture>;
@@ -318,7 +320,7 @@ export function createGuardedModelOperations(options: {
     model: AnyModel,
     operation: ModelOperation,
   ): GuardedModelBinding | Promise<GuardedModelBinding>;
-  events?: AiEventEmitter;
+  emit?: AiEventSink;
 }): ModelRequests;
 
 // @alpha
@@ -332,7 +334,7 @@ export function createModelOperationGuard(options: {
   recheck(operation: TrustedOperation): Promise<boolean>;
   journal: AttemptJournal;
   providers?: AiProviderRegistry;
-  events?: AiEventEmitter;
+  emit?: AiEventSink;
 }): ModelOperationGuard;
 
 // @alpha

@@ -39,8 +39,7 @@ import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { JsonObject } from '@backstage/types';
 import type { AiCredentialStores, CredentialScope } from './credentials/types';
 import type { AiCredentialsPrecedence } from './config-extension/types';
-import { emitSafe } from './observability/types';
-import type { AiEventEmitter } from './observability/types';
+import { createAiEventSink, type AiEventSink } from './observability/types';
 import { DEFAULT_REFRESH_WINDOW_MS } from './providers/auth/operations';
 import { type AttemptJournal, type AuditEventView } from './journal/index';
 import { createWiredAttemptJournal } from './journal/wired';
@@ -202,12 +201,6 @@ export interface AiServiceIntegrationOptions {
    * Absent means no automatic refresh: an expired credential denies.
    */
   readonly refreshExpiredCredential?: CredentialRefreshHook;
-  /**
-
-   * Observability sink for denials, dispatch outcomes, lease actions and
-   * journal appends. Absent means no subscriber; behavior is unchanged.
-   */
-  readonly events?: AiEventEmitter;
 
   /**
    * Opt-in code mode, enabled for every harness this integration opens.
@@ -479,7 +472,12 @@ export async function createAiServiceIntegration(
   const credentialStores = options.credentialStores;
   const credentialPrecedence = options.credentialPrecedence ?? 'user-first';
   const refreshExpiredCredential = options.refreshExpiredCredential;
-  const events = options.events;
+  // The one observability sink: validated, fire-and-forget publishes to
+  // the events service; a failing publish never couples to what it
+  // observes.
+  const events: AiEventSink | undefined = options.deps.events
+    ? createAiEventSink(options.deps.events)
+    : undefined;
   const catalog = (options.models ?? []).map(deepFreeze);
   /** The catalog `type` a policy sees for one model, when it declares one. */
   const catalogTypeOf = (
@@ -493,7 +491,7 @@ export async function createAiServiceIntegration(
 
   const lease = await createKnexNamespaceLease({
     db,
-    ...(events ? { events } : {}),
+    ...(events ? { emit: events } : {}),
   });
   const recovery = await createAiRecovery({
     db,
@@ -527,7 +525,7 @@ export async function createAiServiceIntegration(
       : providerBase;
     const journal: AttemptJournal = createWiredAttemptJournal({
       db,
-      ...(events ? { events } : {}),
+      ...(events ? { emit: events } : {}),
       permissions: deps.permissions,
       providers: providerRegistry,
       mirror: {
@@ -593,7 +591,7 @@ export async function createAiServiceIntegration(
     const guard: ModelOperationGuard = createModelOperationGuard({
       providers: providerRegistry,
       transport: fetch,
-      ...(events ? { events } : {}),
+      ...(events ? { emit: events } : {}),
       recheck: async operation => {
         // Fresh permission check with the original caller credentials: one
         // conditional query per attempt on the permission that matches the
@@ -1005,7 +1003,7 @@ export async function createAiServiceIntegration(
         providers: providerRegistry,
         guard,
         journal,
-        ...(events ? { events } : {}),
+        ...(events ? { emit: events } : {}),
         resolve: makeResolve(input, fence, authority, admission.dispatch),
       });
       return {
@@ -1084,7 +1082,7 @@ export async function createAiServiceIntegration(
             providers: providerRegistry,
             guard,
             journal,
-            ...(events ? { events } : {}),
+            ...(events ? { emit: events } : {}),
             resolve: makeResolve(input, fence, authority, admission.dispatch),
           }),
         })
@@ -1459,7 +1457,7 @@ export async function createAiServiceIntegration(
       })
       .then(() => {
         // One failure per logical denial, observed after the durable row.
-        emitSafe(events, {
+        events?.({
           kind: 'denial',
           at: Date.now(),
           pluginId: input.namespace.pluginId,

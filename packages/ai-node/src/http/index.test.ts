@@ -106,6 +106,7 @@ describe.each<[string, string | undefined]>([
         lifecycle: {
           addShutdownHook: jest.fn(),
         } as unknown as LifecycleService,
+        events: mockServices.events(),
       };
       await runAiMigrations({ database, logger: deps.logger });
       const integration = await createAiServiceIntegration({ deps });

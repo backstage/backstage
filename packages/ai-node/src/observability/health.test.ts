@@ -15,20 +15,50 @@
  */
 
 import { createMetricsSubscriber, type AiHealthSnapshot } from './metrics';
+import { createAiEventSink } from './types';
 import { evaluateAiHealth } from './health';
 import type { AiObservabilityEvent } from './types';
 
-function snapshotOf(events: readonly AiObservabilityEvent[]): AiHealthSnapshot {
-  const subscriber = createMetricsSubscriber();
+async function snapshotOf(
+  events: readonly AiObservabilityEvent[],
+): Promise<AiHealthSnapshot> {
+  const { subscriber, emit } = await subscriberHarness();
   for (const event of events) {
-    subscriber.emit(event);
+    emit(event);
   }
   return subscriber.snapshot();
 }
 
+/**
+ * A synchronous bus double: the sink publishes, the subscriber receives,
+ * all in the same call stack — the real service's delivery discipline
+ * without its asynchronous hops.
+ */
+async function subscriberHarness(): Promise<{
+  subscriber: ReturnType<typeof createMetricsSubscriber>;
+  emit: (event: AiObservabilityEvent) => void;
+}> {
+  const subscriber = createMetricsSubscriber();
+  const handlers: Array<(params: { eventPayload: unknown }) => void> = [];
+  const bus = {
+    publish(params: { eventPayload: unknown }) {
+      for (const handler of handlers) handler(params);
+      return Promise.resolve();
+    },
+    async subscribe(options: { onEvent: (params: never) => void }) {
+      handlers.push(options.onEvent as never);
+    },
+  };
+  await subscriber.subscribe(bus);
+  return {
+    subscriber,
+    emit: createAiEventSink(bus),
+  };
+}
+
 describe('evaluateAiHealth', () => {
-  it('reports ok with detailed signals on an empty snapshot', () => {
-    const report = evaluateAiHealth(snapshotOf([]));
+  it('reports ok with detailed signals on an empty snapshot', async () => {
+    const report = evaluateAiHealth(await snapshotOf([]));
     expect(report.status).toBe('ok');
     expect(report.signals.map(signal => signal.name)).toEqual([
       'denialRate',
@@ -44,9 +74,9 @@ describe('evaluateAiHealth', () => {
     }
   });
 
-  it('derives each signal from the observed events', () => {
+  it('derives each signal from the observed events', async () => {
     const report = evaluateAiHealth(
-      snapshotOf([
+      await snapshotOf([
         {
           kind: 'journal',
           at: 1,
@@ -107,9 +137,9 @@ describe('evaluateAiHealth', () => {
     expect(byName.journalGrowth.value).toBe(3);
   });
 
-  it('marks a signal degraded when it crosses its threshold and degrades the report', () => {
+  it('marks a signal degraded when it crosses its threshold and degrades the report', async () => {
     const report = evaluateAiHealth(
-      snapshotOf([
+      await snapshotOf([
         {
           kind: 'journal',
           at: 1,
@@ -144,7 +174,7 @@ describe('evaluateAiHealth', () => {
     ).toBe(1);
   });
 
-  it('degrades on latency, contention, and growth at their thresholds', () => {
+  it('degrades on latency, contention, and growth at their thresholds', async () => {
     const base: AiObservabilityEvent[] = [
       {
         kind: 'dispatch',
@@ -161,7 +191,7 @@ describe('evaluateAiHealth', () => {
         action: 'contention',
       },
     ];
-    const latency = evaluateAiHealth(snapshotOf(base));
+    const latency = evaluateAiHealth(await snapshotOf(base));
     expect(
       latency.signals.find(s => s.name === 'dispatchLatencyMs')?.status,
     ).toBe('degraded');
@@ -179,10 +209,13 @@ describe('evaluateAiHealth', () => {
         durationMs: 1,
       });
     }
-    const growth = evaluateAiHealth(snapshotOf([...base, ...growthEvents]), {
-      journalGrowth: 25,
-      leaseContention: 0,
-    });
+    const growth = evaluateAiHealth(
+      await snapshotOf([...base, ...growthEvents]),
+      {
+        journalGrowth: 25,
+        leaseContention: 0,
+      },
+    );
     expect(growth.signals.find(s => s.name === 'journalGrowth')?.status).toBe(
       'degraded',
     );
@@ -191,8 +224,8 @@ describe('evaluateAiHealth', () => {
     );
   });
 
-  it('honors host thresholds over the defaults', () => {
-    const report = evaluateAiHealth(snapshotOf([]), {
+  it('honors host thresholds over the defaults', async () => {
+    const report = evaluateAiHealth(await snapshotOf([]), {
       denialRate: 0,
       leaseContention: 0,
       dispatchLatencyMs: 0,
@@ -202,7 +235,7 @@ describe('evaluateAiHealth', () => {
     // not above it, so the report stays ok — thresholds are exclusive.
     expect(report.status).toBe('ok');
     const strict = evaluateAiHealth(
-      snapshotOf([
+      await snapshotOf([
         {
           kind: 'lease',
           at: 1,
@@ -216,14 +249,14 @@ describe('evaluateAiHealth', () => {
     expect(strict.status).toBe('degraded');
   });
 
-  it('dispatch latency is one terminal observation per attempt, not sent-plus-terminal', () => {
+  it('dispatch latency is one terminal observation per attempt, not sent-plus-terminal', async () => {
     // The reviewer's exact shape: a dispatch sent after 100 ms, then the
     // same attempt settling with a terminal duration of 1000 ms measured
     // from the sent timestamp. The sent timing is throughput; the latency
     // signal must report the terminal observation alone — not 550 (the
     // old mean over both events) and not 1100 (their sum).
     const report = evaluateAiHealth(
-      snapshotOf([
+      await snapshotOf([
         {
           kind: 'dispatch',
           at: 1,
@@ -252,15 +285,17 @@ describe('evaluateAiHealth', () => {
     expect(report.status).toBe('degraded');
   });
 
-  it('reset clears the terminal-dispatch count with the durations: a second window stands alone', () => {
+  it('reset clears the terminal-dispatch count with the durations: a second window stands alone', async () => {
     // The reviewer's shape: a first window with many settled attempts,
     // a reset, then a fresh window with one slow attempt. The second
     // window's mean must come from the second window's observations
     // alone — a stale count from the first window would divide the fresh
     // terminal duration down and suppress the alert.
-    const subscriber = createMetricsSubscriber();
+    const harness = await subscriberHarness();
+    const subscriber = harness.subscriber;
+    const subscriberEmit = harness.emit;
     for (let i = 0; i < 401; i += 1) {
-      subscriber.emit({
+      subscriberEmit({
         kind: 'dispatch',
         at: i,
         operation: 'models.stream',
@@ -276,14 +311,14 @@ describe('evaluateAiHealth', () => {
       first.signals.find(s => s.name === 'dispatchLatencyMs')?.status,
     ).toBe('ok');
 
-    subscriber.emit({
+    subscriberEmit({
       kind: 'dispatch',
       at: 1000,
       operation: 'models.stream',
       outcome: 'sent',
       durationMs: 5,
     });
-    subscriber.emit({
+    subscriberEmit({
       kind: 'dispatch',
       at: 1001,
       operation: 'models.stream',
@@ -303,25 +338,26 @@ describe('evaluateAiHealth', () => {
     expect(latency?.detail).toContain('1 settled attempts');
   });
 
-  it('a journal event without durationMs does not poison the durations', () => {
+  it('a journal event without durationMs does not poison the durations', async () => {
     // A journal event lacking durationMs (the type allows it at runtime)
     // must leave durations.journal unset, not NaN: a NaN would serialize
     // as null in the snapshot and skew every derived latency signal.
-    const subscriber = createMetricsSubscriber();
-    subscriber.emit({
+    const journalHarness = await subscriberHarness();
+    const journalSubscriber = journalHarness.subscriber;
+    journalHarness.emit({
       kind: 'journal',
       at: 1,
       action: 'decision',
       decision: 'allow',
     } as Partial<AiObservabilityEvent> as AiObservabilityEvent);
-    subscriber.emit({
+    journalHarness.emit({
       kind: 'journal',
       at: 2,
       action: 'decision',
       decision: 'deny',
       durationMs: 5,
     });
-    const snapshot = subscriber.snapshot();
+    const snapshot = journalSubscriber.snapshot();
     expect(snapshot.durations.journal).toBe(5);
     expect(JSON.stringify(snapshot)).not.toContain('null');
     expect(JSON.stringify(snapshot)).not.toContain('NaN');

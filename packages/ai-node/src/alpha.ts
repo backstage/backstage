@@ -151,7 +151,9 @@ export type {
   AiMetricsSubscriber,
   MetricSeries,
 } from './observability/metrics';
-export type {
-  AiEventEmitter,
-  AiObservabilityEvent,
+export {
+  AI_OBSERVABILITY_TOPICS,
+  aiObservabilityTopic,
+  createAiEventSink,
 } from './observability/types';
+export type { AiEventSink, AiObservabilityEvent } from './observability/types';

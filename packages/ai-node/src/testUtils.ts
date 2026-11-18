@@ -41,10 +41,8 @@ export type {
   AuditQuery,
   RecoveryEvent,
 } from './journal/types';
-export type {
-  AiEventEmitter,
-  AiObservabilityEvent,
-} from './observability/types';
+export { createAiEventSink } from './observability/types';
+export type { AiEventSink, AiObservabilityEvent } from './observability/types';
 export type { Fence, Namespace } from './contracts';
 export type { CredentialScope } from './credentials/types';
 export type {

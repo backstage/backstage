@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import {
   coreServices,
   createBackendModule,
@@ -47,6 +48,7 @@ export const scaffolderModuleAi = createBackendModule({
         auditor: coreServices.auditor,
         lifecycle: coreServices.lifecycle,
         pluginMetadata: coreServices.pluginMetadata,
+        events: eventsServiceRef,
       },
       async init({
         scaffolder,
@@ -58,6 +60,7 @@ export const scaffolderModuleAi = createBackendModule({
         auditor,
         lifecycle,
         pluginMetadata,
+        events,
       }) {
         const ai = await createPrivateAiService({
           deps: {
@@ -68,6 +71,7 @@ export const scaffolderModuleAi = createBackendModule({
             auditor,
             lifecycle,
             pluginMetadata,
+            events,
           },
           config,
           providerModules: [

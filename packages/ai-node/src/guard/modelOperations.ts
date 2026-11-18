@@ -26,8 +26,7 @@ import {
 } from '@earendil-works/pi-ai';
 import { emptyProviderRegistry } from '../providers/registry';
 import type { AiProviderRegistry } from '../providers/registry';
-import { emitSafe } from '../observability/types';
-import type { AiEventEmitter } from '../observability/types';
+import type { AiEventSink } from '../observability/types';
 import type { AttemptJournal } from '../journal/types';
 import { assertRedactedText } from '../journal/redaction';
 import type {
@@ -130,7 +129,7 @@ export function createGuardedModelOperations(options: {
     operation: ModelOperation,
   ): GuardedModelBinding | Promise<GuardedModelBinding>;
   /** Observability sink for local policy denials; no-op when absent. */
-  events?: AiEventEmitter;
+  emit?: AiEventSink;
 }): ModelRequests {
   const providers = options.providers ?? emptyProviderRegistry;
   class PolicyRejection extends Error {}
@@ -151,7 +150,7 @@ export function createGuardedModelOperations(options: {
     // Same discipline as the guard: the denial observation follows the durable
     // journal row, carries the internal reason and never caller text.
     const observe = () =>
-      emitSafe(options.events, {
+      options.emit?.({
         kind: 'denial',
         at: Date.now(),
         pluginId: op.fence.namespace.pluginId,

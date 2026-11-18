@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { emitSafe } from '../observability/types';
-import type { AiEventEmitter } from '../observability/types';
+import type { AiEventSink } from '../observability/types';
 import type {
   AttemptDecision,
   AttemptId,
@@ -98,12 +97,12 @@ export function createModelOperationGuard(options: {
   journal: AttemptJournal;
   providers?: AiProviderRegistry;
   /** Observability sink; no-op when absent. */
-  events?: AiEventEmitter;
+  emit?: AiEventSink;
 }): ModelOperationGuard {
   const providers = options.providers ?? emptyProviderRegistry;
   const transport = options.transport;
   const journal = options.journal;
-  const events = options.events;
+  const emit = options.emit;
   return {
     bind(operation): GuardedOperation {
       let ordinal = 0;
@@ -152,7 +151,7 @@ export function createModelOperationGuard(options: {
         // the journal has committed the outcome, and a failed write is
         // observed as unknown rather than as the outcome that was attempted.
         const observe = (status: AttemptOutcome['status']) =>
-          emitSafe(events, {
+          emit?.({
             kind: 'dispatch',
             at: Date.now(),
             pluginId: operation.fence.namespace.pluginId,
@@ -347,7 +346,7 @@ export function createModelOperationGuard(options: {
                     cause: journalError,
                   });
                 }
-                emitSafe(events, {
+                emit?.({
                   kind: 'denial',
                   at: Date.now(),
                   pluginId: operation.fence.namespace.pluginId,
@@ -405,7 +404,7 @@ export function createModelOperationGuard(options: {
             }
             attempt.httpStatus = response.status;
             attempt.sentAt = Date.now();
-            emitSafe(events, {
+            emit?.({
               kind: 'dispatch',
               at: Date.now(),
               pluginId: operation.fence.namespace.pluginId,

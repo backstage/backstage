@@ -15,7 +15,7 @@
  */
 
 import type { Knex } from 'knex';
-import type { AiEventEmitter } from '../observability/types';
+import type { AiEventSink } from '../observability/types';
 import { pruneAiJournal, type JournalPruneResult } from './retention';
 
 /**
@@ -42,7 +42,7 @@ export interface AiJournalPruneRunnerOptions {
   /** Warns about failed passes; a failing pass never stops the runner. */
   readonly logger?: AiPruneRunnerLogger;
   /** Observability sink for prune outcomes; no-op when absent. */
-  readonly events?: AiEventEmitter;
+  readonly emit?: AiEventSink;
   /** Wall clock for tests; defaults to a fresh `Date` per pass. */
   readonly now?: () => Date;
 }
@@ -85,7 +85,7 @@ export interface AiJournalPruneRunner {
 export function startAiJournalPruneRunner(
   options: AiJournalPruneRunnerOptions,
 ): AiJournalPruneRunner {
-  const { db, retentionMs, intervalMs, events } = options;
+  const { db, retentionMs, intervalMs, emit } = options;
   const logger = options.logger;
   const now = options.now ?? (() => new Date());
   // A throwing logger is a broken observation channel, not a broken
@@ -122,7 +122,7 @@ export function startAiJournalPruneRunner(
         }
         return pruneAiJournal(db, {
           retentionMs,
-          events,
+          emit,
           now: now(),
         });
       })

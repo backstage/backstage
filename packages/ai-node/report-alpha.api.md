@@ -16,6 +16,7 @@ import type { Context } from '@earendil-works/chord/context';
 import type { Credential as Credential_2 } from '@earendil-works/pi-ai';
 import type { CredentialStore } from '@earendil-works/pi-ai';
 import type { DatabaseService } from '@backstage/backend-plugin-api';
+import type { EventsService } from '@backstage/plugin-events-node';
 import { Extension } from '@earendil-works/pi-durable';
 import type { Harness } from '@earendil-works/pi-durable';
 import type { JsonValue } from '@backstage/config';
@@ -37,6 +38,14 @@ import type { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha
 export const AI_INSTALLATION_CONFIG_PATH = 'ai';
+
+// @alpha
+export const AI_OBSERVABILITY_TOPICS: readonly [
+  'ai.observability.denial',
+  'ai.observability.dispatch',
+  'ai.observability.lease',
+  'ai.observability.journal',
+];
 
 // @alpha
 export type AiCodemodeOptions = Readonly<{
@@ -69,10 +78,7 @@ export interface AiCredentialStores {
 }
 
 // @alpha
-export interface AiEventEmitter {
-  // (undocumented)
-  emit(event: AiObservabilityEvent): void | Promise<void>;
-}
+export type AiEventSink = (event: AiObservabilityEvent) => void;
 
 // @alpha
 export type AiHealthReport = Readonly<{
@@ -186,7 +192,7 @@ export interface AiJournalPruneRunner {
 export interface AiJournalPruneRunnerOptions {
   // (undocumented)
   readonly db: Knex;
-  readonly events?: AiEventEmitter;
+  readonly emit?: AiEventSink;
   readonly intervalMs: number;
   readonly logger?: AiPruneRunnerLogger;
   readonly now?: () => Date;
@@ -194,11 +200,12 @@ export interface AiJournalPruneRunnerOptions {
 }
 
 // @alpha
-export interface AiMetricsSubscriber extends AiEventEmitter {
+export interface AiMetricsSubscriber {
   // (undocumented)
   reset(): void;
   // (undocumented)
   snapshot(): AiHealthSnapshot;
+  subscribe(events: Pick<EventsService, 'subscribe'>): Promise<void>;
 }
 
 // @alpha
@@ -356,6 +363,11 @@ export type AiObservabilityEvent =
       durationMs: number;
       pruned?: number;
     }>;
+
+// @alpha
+export function aiObservabilityTopic(
+  event: AiObservabilityEvent,
+): (typeof AI_OBSERVABILITY_TOPICS)[number];
 
 // @alpha
 export type AiPermissionRule<TResource> = Readonly<{
@@ -639,6 +651,11 @@ export type ConfiguredAiInstallation = Readonly<{
 }>;
 
 // @alpha
+export function createAiEventSink(events: {
+  publish(params: unknown): unknown;
+}): AiEventSink;
+
+// @alpha
 export function createAiHttpSupport(
   options: AiHttpSupportOptions,
 ): Promise<AiHttpSupport>;
@@ -718,6 +735,7 @@ export interface DefaultAiServiceDeps {
   readonly auth: AuthService;
   // (undocumented)
   readonly database: DatabaseService;
+  readonly events: EventsService;
   // (undocumented)
   readonly lifecycle: LifecycleService;
   // (undocumented)

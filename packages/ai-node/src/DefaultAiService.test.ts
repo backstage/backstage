@@ -231,6 +231,7 @@ function makeDeps(captured?: {
       },
     } as unknown as LifecycleService,
     pluginMetadata: { getId: () => 'test-plugin' } as PluginMetadataService,
+    events: mockServices.events(),
   };
 }
 
