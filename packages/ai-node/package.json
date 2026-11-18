@@ -63,6 +63,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@earendil-works/chord": "1.5.2",
     "@earendil-works/pi-ai": "1.5.2",
     "@earendil-works/pi-durable": "1.5.2",

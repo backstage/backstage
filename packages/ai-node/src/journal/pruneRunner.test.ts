@@ -19,11 +19,38 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import knex, { type Knex } from 'knex';
+import type { SchedulerService } from '@backstage/backend-plugin-api';
 import { createAttemptJournal, JOURNAL_EVENTS_TABLE } from './knex';
 import { JOURNAL_UNCERTAINTY_TABLE, pruneAiJournal } from './retention';
-import { startAiJournalPruneRunner } from './pruneRunner';
+import { scheduleAiJournalPrune } from './pruneRunner';
 import type { AttemptDecision, AttemptId } from './types';
 import type { AiObservabilityEvent } from '../observability/types';
+
+type ScheduledTask = {
+  id: string;
+  frequency: { milliseconds: number };
+  timeout: { milliseconds: number };
+  fn: () => Promise<unknown>;
+  signal: AbortSignal;
+};
+
+/**
+ * A scheduler double: scheduleTask records the invocation and resolves;
+ * the test fires the captured task function to stand in for the
+ * scheduler's cadence, awaiting the pass result exactly as the real
+ * scheduler awaits its task runs.
+ */
+function mockScheduler() {
+  const tasks: ScheduledTask[] = [];
+  return {
+    tasks,
+    service: {
+      scheduleTask: async (task: ScheduledTask) => {
+        tasks.push(task);
+      },
+    } as unknown as Pick<SchedulerService, 'scheduleTask'>,
+  };
+}
 
 const storageMigration = require('../../migrations/1000_storage');
 const journalMigration = require('../../migrations/4000_journal');
@@ -149,14 +176,27 @@ for (const dialect of ['sqlite', 'pg'] as const) {
         const clock = new TestClock();
 
         const events: AiObservabilityEvent[] = [];
-        const runner = startAiJournalPruneRunner({
+        const { tasks, service } = mockScheduler();
+        const controller = new AbortController();
+        await scheduleAiJournalPrune({
+          scheduler: service,
           db: f.db,
           retentionMs: HOUR_MS,
-          intervalMs: 10_000,
+          frequency: { milliseconds: 10_000 },
           events: { emit: event => void events.push(event) },
           now: clock.now,
+          signal: controller.signal,
         });
         try {
+          // The schedule is registered with the catalog maintenance
+          // shape: the given frequency, its timeout at 80%, and the
+          // caller's abort signal.
+          expect(tasks).toHaveLength(1);
+          expect(tasks[0].id).toBe('ai_journal_prune');
+          expect(tasks[0].frequency).toEqual({ milliseconds: 10_000 });
+          expect(tasks[0].timeout).toEqual({ milliseconds: 8_000 });
+          expect(tasks[0].signal).toBe(controller.signal);
+
           // The start pass runs before the window has passed: nothing is
           // pruned yet.
           await wait(() => events.length > 0);
@@ -164,16 +204,18 @@ for (const dialect of ['sqlite', 'pg'] as const) {
             Number((await f.db(JOURNAL_EVENTS_TABLE).count('id as n'))[0].n),
           ).toBe(2);
 
-          // Past the window, the next pass prunes the settled denial and
-          // documents the unresolved intent, exactly as pruneAiJournal
-          // would — the runner adds no retention semantics of its own.
+          // Past the window, the next scheduled pass prunes the settled
+          // denial and documents the unresolved intent, exactly as
+          // pruneAiJournal would — the schedule adds no retention
+          // semantics of its own.
           clock.advance(YEAR_MS);
-          const result = await runner.pruneNow();
-          expect(result.prunedEvents).toBe(1);
-          expect(result.uncertaintyRecords).toBeGreaterThanOrEqual(1);
+          await tasks[0].fn();
           const remaining = await f
             .db(JOURNAL_EVENTS_TABLE)
             .select(f.db.raw('CAST(id AS TEXT) AS id'));
+          // The settled denial was pruned; only the unresolved intent
+          // remains, with its uncertainty record documented.
+          expect(remaining).toHaveLength(1);
           expect(remaining.map(row => String(row.id))).toContain(
             String(unresolved),
           );
@@ -181,7 +223,7 @@ for (const dialect of ['sqlite', 'pg'] as const) {
             [],
           );
         } finally {
-          await runner.stop();
+          controller.abort();
         }
       } finally {
         await f.cleanup();
@@ -195,26 +237,33 @@ for (const dialect of ['sqlite', 'pg'] as const) {
         const clock = new TestClock();
         clock.advance(YEAR_MS);
         let passes = 0;
-        const runner = startAiJournalPruneRunner({
+        const { tasks, service } = mockScheduler();
+        const controller = new AbortController();
+        await scheduleAiJournalPrune({
+          scheduler: service,
           db: f.db,
           retentionMs: HOUR_MS,
-          intervalMs: 50,
+          frequency: { milliseconds: 50 },
           now: clock.now,
+          signal: controller.signal,
         });
         try {
-          // The interval fires repeatedly while the window stays open.
+          // The scheduled cadence fires repeatedly while the window
+          // stays open: each task run is one serialized pass.
           await wait(async () => {
-            const rows = await f.db(JOURNAL_EVENTS_TABLE).count('id as n');
+            await tasks[0].fn();
             passes += 1;
+            const rows = await f.db(JOURNAL_EVENTS_TABLE).count('id as n');
             return Number(rows[0].n) === 0;
           });
           expect(passes).toBeGreaterThan(0);
         } finally {
-          await runner.stop();
+          controller.abort();
         }
-        // After stop, the interval is gone: the database stays as the
-        // last pass left it, with no further passes or rejections.
-        await new Promise(resolve => setTimeout(resolve, 120));
+        // After the abort, a task run is a no-op that resolves without
+        // touching the database — the real scheduler stops invoking the
+        // task, and a straggler run never rejects.
+        await tasks[0].fn();
         expect(
           Number((await f.db(JOURNAL_EVENTS_TABLE).count('id as n'))[0].n),
         ).toBe(0);
@@ -239,10 +288,13 @@ for (const dialect of ['sqlite', 'pg'] as const) {
               ? { host: '127.0.0.1', port: 9, database: 'x', user: 'x' }
               : { filename: '/nonexistent-dir/journal.sqlite' },
         });
-        const runner = startAiJournalPruneRunner({
+        const { tasks: syncTasks, service: syncService } = mockScheduler();
+        const syncController = new AbortController();
+        await scheduleAiJournalPrune({
+          scheduler: syncService,
           db: broken,
           retentionMs: HOUR_MS,
-          intervalMs: 30,
+          frequency: { milliseconds: 30 },
           // The logger throws on every warn: a broken observation channel
           // must not turn a failed pass into a rejection.
           logger: {
@@ -252,18 +304,20 @@ for (const dialect of ['sqlite', 'pg'] as const) {
             },
           },
           now: clock.now,
+          signal: syncController.signal,
         });
         try {
           // The start pass fails against the broken database, the logger
-          // throws while reporting it, and pruneNow still resolves zeros.
-          const result = await runner.pruneNow();
-          expect(result).toEqual({ prunedEvents: 0, uncertaintyRecords: 0 });
-          // Scheduled passes keep running with the throwing logger and
-          // leave no unhandled rejection behind.
+          // throws while reporting it, and a task run still settles
+          // without rejecting.
+          await syncTasks[0].fn();
+          // Further scheduled passes keep running with the throwing
+          // logger and leave no unhandled rejection behind.
+          await syncTasks[0].fn();
           await new Promise(resolve => setTimeout(resolve, 120));
           expect(unhandled).toEqual([]);
         } finally {
-          await runner.stop();
+          syncController.abort();
           await broken.destroy().catch(() => {});
           process.off('unhandledRejection', onUnhandled);
         }
@@ -288,23 +342,24 @@ for (const dialect of ['sqlite', 'pg'] as const) {
           fn.then = rejecting.then.bind(rejecting);
           return fn as unknown as () => unknown;
         })();
-        const callableRunner = startAiJournalPruneRunner({
+        const { tasks: callableTasks, service: callableService } =
+          mockScheduler();
+        const callableController = new AbortController();
+        await scheduleAiJournalPrune({
+          scheduler: callableService,
           db: f.db,
           retentionMs: 0,
-          intervalMs: 30,
+          frequency: { milliseconds: 30 },
           logger: { info: () => {}, warn: callableWarn },
           now: clock.now,
+          signal: callableController.signal,
         });
         try {
-          const callableResult = await callableRunner.pruneNow();
-          expect(callableResult).toEqual({
-            prunedEvents: 0,
-            uncertaintyRecords: 0,
-          });
+          await callableTasks[0].fn();
           await new Promise(resolve => setTimeout(resolve, 120));
           expect(unhandled).toEqual([]);
         } finally {
-          await callableRunner.stop();
+          callableController.abort();
           process.off('unhandledRejection', onUnhandledCallable);
         }
         expect(unhandled).toEqual([]);
@@ -322,10 +377,13 @@ for (const dialect of ['sqlite', 'pg'] as const) {
         const onUnhandledAsync = (reason: unknown) =>
           void unhandled.push(reason);
         process.on('unhandledRejection', onUnhandledAsync);
-        const asyncRunner = startAiJournalPruneRunner({
+        const { tasks: asyncTasks, service: asyncService } = mockScheduler();
+        const asyncController = new AbortController();
+        await scheduleAiJournalPrune({
+          scheduler: asyncService,
           db: asyncBroken,
           retentionMs: HOUR_MS,
-          intervalMs: 30,
+          frequency: { milliseconds: 30 },
           logger: {
             info: () => {},
             warn: async () => {
@@ -333,17 +391,14 @@ for (const dialect of ['sqlite', 'pg'] as const) {
             },
           },
           now: clock.now,
+          signal: asyncController.signal,
         });
         try {
-          const asyncResult = await asyncRunner.pruneNow();
-          expect(asyncResult).toEqual({
-            prunedEvents: 0,
-            uncertaintyRecords: 0,
-          });
+          await asyncTasks[0].fn();
           await new Promise(resolve => setTimeout(resolve, 120));
           expect(unhandled).toEqual([]);
         } finally {
-          await asyncRunner.stop();
+          asyncController.abort();
           await asyncBroken.destroy().catch(() => {});
           process.off('unhandledRejection', onUnhandledAsync);
         }
@@ -373,26 +428,31 @@ for (const dialect of ['sqlite', 'pg'] as const) {
               ? { host: '127.0.0.1', port: 9, database: 'x', user: 'x' }
               : { filename: '/nonexistent-dir/journal.sqlite' },
         });
-        const runner = startAiJournalPruneRunner({
+        const { tasks, service } = mockScheduler();
+        const controller = new AbortController();
+        await scheduleAiJournalPrune({
+          scheduler: service,
           db: broken,
           retentionMs: HOUR_MS,
-          intervalMs: 30,
+          frequency: { milliseconds: 30 },
           logger: {
             info: () => {},
             warn: message => void warnings.push(message),
           },
           now: clock.now,
+          signal: controller.signal,
         });
         try {
-          // pruneNow resolves with a zero result instead of rejecting.
-          const result = await runner.pruneNow();
-          expect(result).toEqual({ prunedEvents: 0, uncertaintyRecords: 0 });
+          // A task run settles with zeros instead of rejecting: two
+          // failed passes, two warnings, nothing thrown.
+          await tasks[0].fn();
+          await tasks[0].fn();
           await wait(() => warnings.length >= 2);
           failures = warnings.length;
           expect(failures).toBeGreaterThan(0);
           expect(warnings[0]).toContain('prune pass failed');
         } finally {
-          await runner.stop();
+          controller.abort();
           await broken.destroy().catch(() => {});
         }
         // The real database was untouched by the failing runner.

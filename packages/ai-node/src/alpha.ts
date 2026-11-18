@@ -119,10 +119,9 @@ export type {
   ProviderEnvelope,
 } from './providers/types';
 export type { JournalPruneResult } from './journal/retention';
-export { startAiJournalPruneRunner } from './journal/pruneRunner';
+export { scheduleAiJournalPrune } from './journal/pruneRunner';
 export type {
-  AiJournalPruneRunner,
-  AiJournalPruneRunnerOptions,
+  AiJournalPruneScheduleOptions,
   AiPruneRunnerLogger,
 } from './journal/pruneRunner';
 export { evaluateAiHealth } from './observability/health';
