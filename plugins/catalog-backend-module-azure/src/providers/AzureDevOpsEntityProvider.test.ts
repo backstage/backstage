@@ -20,6 +20,7 @@ import {
   SchedulerServiceTaskInvocationDefinition,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
+import { getAzureFileFetchUrl } from '@backstage/integration';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { CodeSearchResultItem } from '../lib';
 import { AzureDevOpsEntityProvider } from './AzureDevOpsEntityProvider';
@@ -208,6 +209,97 @@ describe('AzureDevOpsEntityProvider', () => {
         'myrepo?path=/catalog-info.yaml':
           'generated-589e8cc47341987c7a34f5291791151fa64f7754',
       },
+    );
+  });
+
+  it('encodes file paths that carry URL query structure', async () => {
+    const config = new ConfigReader({
+      integrations: {
+        azure: [],
+      },
+      catalog: {
+        providers: {
+          azureDevOps: {
+            encoding: {
+              organization: 'myorganization',
+              project: 'myproject',
+              branch: 'mybranch',
+            },
+          },
+        },
+      },
+    });
+
+    mockCodeSearch.mockResolvedValueOnce([
+      {
+        fileName: 'catalog-info.yaml',
+        path: '/catalog-info.yaml&version=GBattacker',
+        repository: {
+          name: 'myrepo',
+        },
+        project: {
+          name: 'myproject',
+        },
+        branch: 'mybranch',
+      },
+      {
+        fileName: 'read me.yaml',
+        path: '/sub dir/read me#x=y.yaml',
+        repository: {
+          name: 'myrepo',
+        },
+        project: {
+          name: 'myproject',
+        },
+        branch: 'mybranch',
+      },
+    ]);
+
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+
+    const provider = AzureDevOpsEntityProvider.fromConfig(config, {
+      schedule,
+      logger,
+    })[0];
+    await provider.connect(entityProviderConnection);
+    await (schedule.getTasks()[0].fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    const mutation = (entityProviderConnection.applyMutation as jest.Mock).mock
+      .calls[0][0];
+    const targets = mutation.entities.map(
+      (item: { entity: { spec: { target: string } } }) =>
+        item.entity.spec.target,
+    );
+
+    // A `&`, `#`, or `=` inside a discovered path becomes inert text in the
+    // `path` parameter value: it can no longer inject or truncate query
+    // parameters, so the configured branch cannot be overridden by a file
+    // name. Ordinary paths, including spaces, keep their historical encoding.
+    expect(targets).toEqual([
+      'https://dev.azure.com/myorganization/myproject/_git/myrepo?path=/catalog-info.yaml%26version%3DGBattacker&version=GBmybranch',
+      'https://dev.azure.com/myorganization/myproject/_git/myrepo?path=/sub%20dir/read%20me%23x%3Dy.yaml&version=GBmybranch',
+    ]);
+
+    for (const [target, path] of [
+      [targets[0], '/catalog-info.yaml&version=GBattacker'],
+      [targets[1], '/sub dir/read me#x=y.yaml'],
+    ]) {
+      const url = new URL(target);
+      expect(url.searchParams.getAll('path')).toEqual([path]);
+      expect(url.searchParams.getAll('version')).toEqual(['GBmybranch']);
+      // Downstream, the Azure URL readers resolve these locations against
+      // the configured branch rather than anything inside the path
+      expect(getAzureFileFetchUrl(target)).toContain(
+        'versionDescriptor.version=mybranch',
+      );
+    }
+    expect(getAzureFileFetchUrl(targets[0])).not.toContain(
+      'versionDescriptor.version=attacker',
     );
   });
 

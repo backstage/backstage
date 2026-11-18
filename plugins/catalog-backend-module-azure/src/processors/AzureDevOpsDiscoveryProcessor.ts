@@ -28,6 +28,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { codeSearch } from '../lib';
+import { toCatalogLocationUrl } from '../lib/catalogLocationUrl';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
@@ -114,16 +115,14 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
     );
 
     for (const file of files) {
-      let target = `${baseUrl}/${org}/${project}/_git/${file.repository.name}?path=${file.path}`;
-
-      if (branch) {
-        target += `&version=GB${branch}`;
-      }
-
       emit(
         processingResult.location({
           type: 'url',
-          target,
+          target: toCatalogLocationUrl({
+            repoUrl: `${baseUrl}/${org}/${project}/_git/${file.repository.name}`,
+            path: file.path,
+            branch,
+          }),
           // Not all locations may actually exist, since the user defined them as a wildcard pattern.
           // Thus, we emit them as optional and let the downstream processor find them while not outputting
           // an error if it couldn't.
