@@ -1178,6 +1178,63 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     ).toHaveBeenCalledTimes(2);
   });
 
+  it('should share cached tokens and allowlist refreshes across different owner casings', async () => {
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: { etag: '123' },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'selected',
+          account: { login: 'backstage' },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    octokit.apps.createInstallationAccessToken
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'initial_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response'])
+      .mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'refreshed_token',
+          repository_selection: 'selected',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+    octokit.apps.listReposAccessibleToInstallation
+      .mockResolvedValueOnce({
+        data: { repositories: [{ name: 'existing-repo' }] },
+      } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response'])
+      .mockResolvedValueOnce({
+        data: {
+          repositories: [{ name: 'existing-repo' }, { name: 'new-repo' }],
+        },
+      } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
+
+    await github.getCredentials({
+      url: 'https://github.com/Backstage/existing-repo',
+    });
+    await github.getCredentials({
+      url: 'https://github.com/backstage/existing-repo',
+    });
+    expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(1);
+
+    const first = await github.getCredentials({
+      url: 'https://github.com/Backstage/new-repo',
+    });
+    const second = await github.getCredentials({
+      url: 'https://github.com/backstage/new-repo',
+    });
+    expect(first.token).toEqual('refreshed_token');
+    expect(second.token).toEqual('refreshed_token');
+    expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(2);
+  });
+
   describe('public access', () => {
     it('should use an installation token when public access is enabled and owner is not in allowed list', async () => {
       const githubProvider = SingleInstanceGithubCredentialsProvider.create({

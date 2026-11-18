@@ -64,7 +64,8 @@ class Cache {
     supplier: () => Promise<InstallationTokenData>,
     options?: { refreshOnRepoMiss?: boolean },
   ): Promise<{ accessToken: string }> {
-    const cached = this.tokenCache.get(owner);
+    const ownerKey = owner.toLowerCase();
+    const cached = this.tokenCache.get(ownerKey);
     const servedFromCache = Boolean(
       cached && !this.isExpired(cached.expiresAt),
     );
@@ -75,7 +76,7 @@ class Cache {
 
     if (!this.appliesToRepo(existingInstallationData, repo)) {
       if (servedFromCache && repo) {
-        const pendingRefresh = this.pendingFetches.get(owner.toLowerCase());
+        const pendingRefresh = this.pendingFetches.get(ownerKey);
         if (pendingRefresh) {
           if (options?.refreshOnRepoMiss === false) {
             throw this.createRepoAccessError(owner, repo, true);
@@ -127,7 +128,7 @@ class Cache {
         .then(data => {
           // Allow 10 minutes grace to account for clock skew
           data.expiresAt = data.expiresAt.minus({ minutes: 10 });
-          this.tokenCache.set(owner, data);
+          this.tokenCache.set(key, data);
           return data;
         })
         .finally(() => {
