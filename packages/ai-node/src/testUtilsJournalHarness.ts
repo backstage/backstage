@@ -106,22 +106,29 @@ export async function createJournalHarness(
     // connections are destroyed and the schema dropped, so a failed
     // setup leaves nothing behind.
     const cleanup = async () => {
+      // Each step is attempted independently, so one failure never
+      // skips the rest; a successful setup's cleanup then surfaces the
+      // first failure, so callers can detect a leaked schema. The
+      // failed-setup unwind calls this with suppression, preserving the
+      // original setup error.
+      const failures: unknown[] = [];
       try {
-        try {
-          await db?.destroy();
-        } catch {
-          /* the connection may already be gone */
-        }
-        try {
-          await admin.raw(`drop schema if exists "${schema}" cascade`);
-        } catch {
-          /* the schema may never have been created, or the drop may
-             fail on a dead connection; the destroy below still runs. */
-        }
-      } finally {
-        // Runs regardless of the drop result: a failed create or drop
-        // must not leak the admin connection.
+        await db?.destroy();
+      } catch (error) {
+        failures.push(error);
+      }
+      try {
+        await admin.raw(`drop schema if exists "${schema}" cascade`);
+      } catch (error) {
+        failures.push(error);
+      }
+      try {
         await admin.destroy();
+      } catch (error) {
+        failures.push(error);
+      }
+      if (failures.length > 0) {
+        throw failures[0];
       }
     };
     try {
@@ -195,12 +202,23 @@ export async function createJournalHarness(
       fence,
       credentials,
       cleanup: async () => {
+        // The same contract as the PostgreSQL branch: every step is
+        // attempted independently and the first failure is reported
+        // after all attempts, so a rejected destroy cannot skip the
+        // directory removal — or hide behind it.
+        const failures: unknown[] = [];
         try {
           await connection.destroy();
-        } finally {
-          // Runs regardless of the destroy result: a rejected destroy
-          // must not leak the directory.
+        } catch (error) {
+          failures.push(error);
+        }
+        try {
           await rm(directory, { recursive: true, force: true });
+        } catch (error) {
+          failures.push(error);
+        }
+        if (failures.length > 0) {
+          throw failures[0];
         }
       },
     };

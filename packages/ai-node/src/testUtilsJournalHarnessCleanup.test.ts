@@ -38,8 +38,12 @@ type MockState = {
   failCreateSchema: boolean;
   failDropSchema: boolean;
   failDestroy: boolean;
+  failDbDestroy: boolean;
   failConstructor: boolean;
-  destroys: number;
+  /** Destroys of admin connections (PostgreSQL, no searchPath). */
+  adminDestroys: number;
+  /** Destroys of everything else, including the schema connection. */
+  dbDestroys: number;
   createAttempts: number;
   dropAttempts: number;
 };
@@ -52,8 +56,10 @@ jest.mock('knex', () => {
     failCreateSchema: false,
     failDropSchema: false,
     failDestroy: false,
+    failDbDestroy: false,
     failConstructor: false,
-    destroys: 0,
+    adminDestroys: 0,
+    dbDestroys: 0,
     createAttempts: 0,
     dropAttempts: 0,
   };
@@ -93,9 +99,18 @@ jest.mock('knex', () => {
         }
         if (prop === 'destroy') {
           const destroy = (value as () => Promise<void>).bind(target);
+          const isAdmin =
+            config.client === 'pg' && config.searchPath === undefined;
           return async () => {
-            mockState.destroys += 1;
-            if (mockState.failDestroy) {
+            if (isAdmin) {
+              mockState.adminDestroys += 1;
+            } else {
+              mockState.dbDestroys += 1;
+            }
+            if (
+              mockState.failDestroy ||
+              (mockState.failDbDestroy && !isAdmin)
+            ) {
               throw new Error('injected destroy failure');
             }
             return destroy();
@@ -126,13 +141,32 @@ function resetState() {
   knexMock.failCreateSchema = false;
   knexMock.failDropSchema = false;
   knexMock.failDestroy = false;
+  knexMock.failDbDestroy = false;
   knexMock.failConstructor = false;
-  knexMock.destroys = 0;
+  knexMock.adminDestroys = 0;
+  knexMock.dbDestroys = 0;
   knexMock.createAttempts = 0;
   knexMock.dropAttempts = 0;
 }
 
 const pgUrl = process.env.AI_TEST_POSTGRES_URL;
+
+/** Drops journal_harness_% schemas an injected failure left behind. */
+async function dropLeftoverHarnessSchemas(): Promise<void> {
+  if (!pgUrl) return;
+  const actual = jest.requireActual('knex') as typeof import('knex');
+  const admin = actual({ client: 'pg', connection: pgUrl });
+  try {
+    const leftovers = (await admin.raw(
+      `select schema_name from information_schema.schemata where schema_name like 'journal_harness_%'`,
+    )) as { rows: Array<{ schema_name: string }> };
+    for (const row of leftovers.rows) {
+      await admin.raw(`drop schema if exists "${row.schema_name}" cascade`);
+    }
+  } finally {
+    await admin.destroy();
+  }
+}
 
 describe('createJournalHarness cleanup discipline', () => {
   // The PostgreSQL cells need a real server; the literal it() callbacks
@@ -148,11 +182,12 @@ describe('createJournalHarness cleanup discipline', () => {
         }),
       ).rejects.toThrow('injected create-schema failure');
       expect(knexMock.createAttempts).toBe(1);
-      // The drop on the dead connection may fail; the destroy still ran.
-      expect(knexMock.destroys).toBeGreaterThan(0);
+      // The drop on the failed connection may itself fail; the admin
+      // connection is still destroyed.
+      expect(knexMock.adminDestroys).toBe(1);
     });
 
-    it('destroys the admin connection when DROP SCHEMA fails during cleanup', async () => {
+    it('reports a failed DROP SCHEMA after still destroying both connections', async () => {
       resetState();
       const store = await createJournalHarness({
         providers: createProviderRegistry([]),
@@ -160,11 +195,32 @@ describe('createJournalHarness cleanup discipline', () => {
       });
       expect(knexMock.dropAttempts).toBe(0);
       knexMock.failDropSchema = true;
-      // The rejected drop must not surface: cleanup resolves and the
-      // admin connection is still destroyed.
-      await expect(store.cleanup()).resolves.toBeUndefined();
+      // A successful setup's cleanup surfaces the drop failure — the
+      // caller can detect the leaked schema — after attempting every
+      // step: both connections are still destroyed.
+      await expect(store.cleanup()).rejects.toThrow(
+        'injected drop-schema failure',
+      );
       expect(knexMock.dropAttempts).toBe(1);
-      expect(knexMock.destroys).toBeGreaterThan(0);
+      expect(knexMock.dbDestroys).toBe(1);
+      expect(knexMock.adminDestroys).toBe(1);
+      // The injected drop never ran, so the schema is really still
+      // there; remove it so the test leaves the server clean.
+      await dropLeftoverHarnessSchemas();
+    });
+
+    it('reports a rejected db destroy after still dropping the schema and destroying the admin connection', async () => {
+      resetState();
+      const store = await createJournalHarness({
+        providers: createProviderRegistry([]),
+        dialect: 'pg',
+      });
+      knexMock.failDbDestroy = true;
+      // The db destroy failure surfaces after every other step ran: the
+      // schema was dropped and the admin connection destroyed.
+      await expect(store.cleanup()).rejects.toThrow('injected destroy failure');
+      expect(knexMock.dropAttempts).toBe(1);
+      expect(knexMock.adminDestroys).toBe(1);
     });
   });
 
