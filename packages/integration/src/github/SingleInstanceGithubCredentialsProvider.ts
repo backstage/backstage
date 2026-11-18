@@ -245,7 +245,22 @@ class GithubAppManager {
   }
 
   async getInstallations(): Promise<Installations> {
-    return lodash.cloneDeep(await this.getCachedInstallations());
+    const installations = await this.getCachedInstallations();
+    const allowedOwners = this.allowedInstallationOwners;
+    if (!allowedOwners) {
+      return lodash.cloneDeep(installations);
+    }
+
+    // Only installations whose owner is within the allow list of this app
+    // are exposed through installation enumeration
+    return lodash.cloneDeep(
+      installations.filter(
+        installation =>
+          installation.account &&
+          'login' in installation.account &&
+          allowedOwners.includes(installation.account.login?.toLowerCase()),
+      ),
+    );
   }
 
   private async getCachedInstallations(
