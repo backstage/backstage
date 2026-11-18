@@ -48,12 +48,15 @@ import {
   type CredentialRefreshHook,
 } from '../../integration';
 import { runAiMigrations } from '../../migrations';
+import { createPrivateAiService } from '../../service';
+import { EncryptedUserCredentialStore } from '../../credentials/EncryptedUserCredentialStore';
 import { createProviderRegistry } from '../registry';
 import type { AiProviderModule } from '../types';
 import { createAuthOperationGuard } from './guard';
 import { formAuthModule } from './formModuleFixture';
 import { jsonAuthModule } from './jsonModuleFixture';
 import { createAuthModuleRegistry } from './modules';
+import type { AiAuthModule } from './types';
 
 /** Core registry: remaining built-ins plus the local fixture modules. */
 const jsonAuthModules = createAuthModuleRegistry([
@@ -77,7 +80,10 @@ const pluginId = 'test-plugin';
  * guarded transport and completes. It exists so the generation-level path can
  * be asserted without a provider SDK.
  */
-function probeAdapter(record: (headers: Headers) => void): AiProviderModule {
+function probeAdapter(
+  record: (headers: Headers) => void,
+  authModule?: AiAuthModule,
+): AiProviderModule {
   const message = (model: AnyModel): AssistantMessage => ({
     role: 'assistant',
     content: [{ type: 'text', text: 'ok' }],
@@ -146,6 +152,7 @@ function probeAdapter(record: (headers: Headers) => void): AiProviderModule {
     destinationTemplates: [[{ literal: '/v1/complete' }]],
     destination: model => `${model.baseUrl.replace(/\/+$/, '')}/complete`,
     validateEnvelope: async () => 'model',
+    ...(authModule === undefined ? {} : { authModule }),
   };
 }
 
@@ -322,7 +329,12 @@ describe.each(engines)(
             ai: {
               credentials: {
                 encryptionKey: Buffer.alloc(32, 6).toString('base64'),
-                tokenEndpoints: { openai: tokenProbe.endpoint },
+                tokenEndpoints: {
+                  openai: {
+                    url: tokenProbe.endpoint,
+                    clientId: 'client-id',
+                  },
+                },
               },
               models: [
                 {
@@ -367,7 +379,6 @@ describe.each(engines)(
         stores: configured.credentialStores!,
         modules: jsonAuthModules,
         tokenEndpoints: configured.credentialTokenEndpoints,
-        clientIds: { openai: 'client-id' },
       });
       const hook: CredentialRefreshHook = async input => {
         await authOperations.refresh({
@@ -445,6 +456,186 @@ describe.each(engines)(
       // Neither token value is durable.
       expect(JSON.stringify(rows)).not.toContain(NEW_ACCESS);
       expect(JSON.stringify(rows)).not.toContain(OLD_REFRESH);
+    }, 30000);
+
+    /**
+     * The stock factory path: installation configuration plus registered provider
+     * modules, with no hand-built integration and no hand-built hook. The
+     * family's auth module travels on the provider module, so the service wires
+     * pre-dispatch refresh itself.
+     */
+    async function managedByFactory(options: {
+      authModule?: AiAuthModule;
+      tokenEndpoints?: boolean;
+      hook?: CredentialRefreshHook;
+      /** Milliseconds until the seeded credential expires; negative is expired. */
+      expiresInMs?: number;
+    }) {
+      const config = new ConfigReader({
+        ai: {
+          credentials: {
+            encryptionKey: Buffer.alloc(32, 6).toString('base64'),
+            ...(options.tokenEndpoints === false
+              ? {}
+              : {
+                  tokenEndpoints: {
+                    openai: {
+                      url: tokenProbe.endpoint,
+                      clientId: 'client-id',
+                    },
+                  },
+                }),
+          },
+          models: [
+            {
+              provider: 'openai',
+              modelId: 'probe-model',
+              api: 'tauth-probe',
+              baseUrl: modelProbe.endpoint.replace(/\/complete$/, ''),
+              contextWindow: 100_000,
+              maxTokens: 4_000,
+            },
+          ],
+        },
+      });
+      // Personal credentials live in the encrypted store the factory reads, so
+      // seed it with the same key material the configuration declares.
+      const userStore = new EncryptedUserCredentialStore({
+        db: f.db,
+        encryptionKey: Buffer.alloc(32, 6),
+        scopeKey: 'user:user:default/alice',
+      });
+      await userStore.modify('openai', async () => ({
+        type: 'oauth',
+        refresh: OLD_REFRESH,
+        access: OLD_ACCESS,
+        expires: Date.now() + (options.expiresInMs ?? 5_000),
+      }));
+      const service = await createPrivateAiService({
+        deps: f.deps,
+        config,
+        providerModules: [
+          probeAdapter(headers => {
+            sentHeaders.push(headers.get('authorization') ?? '');
+          }, options.authModule),
+        ],
+        ...(options.hook === undefined
+          ? {}
+          : { refreshExpiredCredential: options.hook }),
+      });
+      return service;
+    }
+
+    it('auto-wires refresh from configuration through the stock factory', async () => {
+      tokenProbe.respondWith(200, {
+        access_token: NEW_ACCESS,
+        refresh_token: NEW_REFRESH,
+        expires_in: 3_600,
+      });
+      const service = await managedByFactory({ authModule: formAuthModule });
+      const handle = await service.openHarness(openOptions('e2e-auto'));
+      f.handles.push(handle);
+      const conversation = await handle.harness.root(handle.context);
+      await conversation.submit(
+        { type: 'input', content: 'hello' },
+        handle.context,
+      );
+      await waitFor(() => sentHeaders.length > 0);
+      await conversation.abort(handle.context);
+
+      // Refreshed without any host wiring, then dispatched on the rotated token.
+      expect(tokenProbe.requests).toHaveLength(1);
+      expect(tokenProbe.requests[0].body).toContain(OLD_REFRESH);
+      expect(sentHeaders[0]).toContain(NEW_ACCESS);
+      const rows = await journalRows(f.db);
+      expect(
+        rows.find(
+          row => row.operation === 'auth.token' && row.decision === 'allow',
+        ),
+      ).toMatchObject({ destination: tokenProbe.endpoint });
+      expect(
+        rows.find(
+          row =>
+            String(row.operation).startsWith('models.') &&
+            row.decision === 'allow',
+        ),
+      ).toBeDefined();
+    }, 30000);
+
+    it('lets an explicit hook override the configuration-driven default', async () => {
+      const calls: string[] = [];
+      const service = await managedByFactory({
+        authModule: formAuthModule,
+        hook: async input => {
+          calls.push(input.provider);
+          throw new Error('host hook refuses');
+        },
+      });
+      const handle = await service.openHarness(openOptions('e2e-override'));
+      f.handles.push(handle);
+      const conversation = await handle.harness.root(handle.context);
+      await conversation.submit(
+        { type: 'input', content: 'hello' },
+        handle.context,
+      );
+      await waitFor(() => calls.length > 0);
+      await conversation.abort(handle.context);
+
+      // The host hook ran instead of the auto-wired machinery, and its refusal
+      // is the journaled denial — no token request, no model send.
+      expect(calls).toEqual(['openai']);
+      expect(tokenProbe.requests).toHaveLength(0);
+      expect(modelProbe.requests).toHaveLength(0);
+    }, 30000);
+
+    /** One unwired run: expired credential, dispatch, journaled denial. */
+    async function expectUnwiredDenial(options: {
+      authModule?: AiAuthModule;
+      tokenEndpoints?: boolean;
+      sessionId: string;
+    }): Promise<void> {
+      const service = await managedByFactory({
+        ...options,
+        expiresInMs: -1_000,
+      });
+      const handle = await service.openHarness(openOptions(options.sessionId));
+      f.handles.push(handle);
+      const conversation = await handle.harness.root(handle.context);
+      await conversation.submit(
+        { type: 'input', content: 'hello' },
+        handle.context,
+      );
+      const db = f.db;
+      await waitFor(async () =>
+        (
+          await journalRows(db)
+        ).some(row => row.kind === 'decision' && row.decision === 'deny'),
+      );
+      await conversation.abort(handle.context);
+      await handle.release();
+    }
+
+    it('keeps the fail-closed denial when refresh cannot be auto-wired', async () => {
+      // No token endpoint configured.
+      await expectUnwiredDenial({
+        authModule: formAuthModule,
+        tokenEndpoints: false,
+        sessionId: 'e2e-unwired-no-endpoint',
+      });
+      // An endpoint, but no registered family carries an auth module for it.
+      await expectUnwiredDenial({
+        tokenEndpoints: true,
+        sessionId: 'e2e-unwired-no-module',
+      });
+      // Nothing refreshed and nothing dispatched in either case.
+      expect(tokenProbe.requests).toHaveLength(0);
+      expect(modelProbe.requests).toHaveLength(0);
+      const denials = (await journalRows(f.db)).filter(
+        row => row.kind === 'decision' && row.decision === 'deny',
+      );
+      expect(JSON.stringify(denials)).toContain(
+        'credential expired; re-authentication required',
+      );
     }, 30000);
 
     it('denies without sending when the refresh fails', async () => {

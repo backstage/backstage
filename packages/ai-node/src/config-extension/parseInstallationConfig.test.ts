@@ -321,22 +321,36 @@ describe('parseAiInstallationConfig', () => {
   });
 
   it('accepts only reserved, secret-free token endpoints keyed by provider', () => {
+    const entry = (url: string, clientId = 'public-client-id') => ({
+      url,
+      clientId,
+    });
     const parsed = parse({
       ai: {
         credentials: credentialsSection({
           tokenEndpoints: {
-            anthropic: 'https://api.anthropic.com/v1/oauth/token',
-            openai: 'https://auth.openai.com/oauth/token',
-            'openai-azure': 'https://azure.example/oauth/token',
+            anthropic: entry('https://api.anthropic.com/v1/oauth/token'),
+            openai: entry('https://auth.openai.com/oauth/token', 'openai-id'),
+            'openai-azure': entry('https://azure.example/oauth/token'),
           },
         }),
       },
     });
-    // Two providers may share a token route: the map is keyed by provider.
+    // Two providers may share a token route: the map is keyed by provider, and
+    // each entry carries its family's public client ID beside the URL.
     expect(parsed.credentials!.tokenEndpoints).toEqual({
-      anthropic: 'https://api.anthropic.com/v1/oauth/token',
-      openai: 'https://auth.openai.com/oauth/token',
-      'openai-azure': 'https://azure.example/oauth/token',
+      anthropic: {
+        url: 'https://api.anthropic.com/v1/oauth/token',
+        clientId: 'public-client-id',
+      },
+      openai: {
+        url: 'https://auth.openai.com/oauth/token',
+        clientId: 'openai-id',
+      },
+      'openai-azure': {
+        url: 'https://azure.example/oauth/token',
+        clientId: 'public-client-id',
+      },
     });
 
     // Omitted means no guarded auth operations.
@@ -348,25 +362,45 @@ describe('parseAiInstallationConfig', () => {
     const invalid: Array<[unknown, RegExp]> = [
       [{}, /at least one provider endpoint/],
       [
-        { anthropic: 'https://api.anthropic.com/oauth/token?tenant=1' },
+        { anthropic: entry('https://api.anthropic.com/oauth/token?tenant=1') },
         /without query/,
       ],
       [
-        { anthropic: 'https://api.anthropic.com/authorize' },
+        { anthropic: entry('https://api.anthropic.com/authorize') },
         /reserved token route/,
       ],
       [
-        { anthropic: 'http://api.anthropic.com/v1/oauth/token' },
+        { anthropic: entry('http://api.anthropic.com/v1/oauth/token') },
         /absolute https/,
       ],
       [
-        { anthropic: 'https://user:pass@api.anthropic.com/oauth/token' },
+        { anthropic: entry('https://user:pass@api.anthropic.com/oauth/token') },
         /without query/,
       ],
       [
+        // The public client ID is required: an entry without one is unusable.
+        { anthropic: { url: 'https://api.anthropic.com/v1/oauth/token' } },
+        /clientId/,
+      ],
+      [
         {
-          anthropic: 'https://api.anthropic.com/v1/oauth/token',
-          other: 'https://api.anthropic.com/v1/oauth/token',
+          anthropic: {
+            url: 'https://api.anthropic.com/v1/oauth/token',
+            clientId: '',
+          },
+        },
+        /clientId/,
+      ],
+      [
+        // The bare-URL shape of the previous unpublished schema is refused by
+        // the config reader before the schema sees it.
+        { anthropic: 'https://api.anthropic.com/v1/oauth/token' },
+        /Invalid type in config/,
+      ],
+      [
+        {
+          anthropic: entry('https://api.anthropic.com/v1/oauth/token'),
+          other: entry('https://api.anthropic.com/v1/oauth/token'),
         },
         /more than one provider/,
       ],

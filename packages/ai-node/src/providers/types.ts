@@ -20,6 +20,7 @@ import type {
   Credential,
 } from '@earendil-works/pi-ai';
 import type { CredentialScope } from '../credentials/types';
+import type { AiAuthModule } from './auth/types';
 import type { DestinationTemplate } from './templates';
 
 /**
@@ -140,6 +141,18 @@ export type AiProviderModule = Readonly<{
   classifyRequest?(url: string): 'model' | 'auth.token-exchange';
   /** The only allowed special transport requested at the pinned SDK boundary. */
   transport?: 'sse';
+  /**
+   * The family's OAuth auth module, when it has one.
+   *
+   * @remarks
+   * Carried by the provider module so the auth path travels with the family
+   * that needs it: registering a family's modules registers its OAuth refresh
+   * with it, through the same `providerModules` surface every consumer already
+   * uses. The auth module is consulted only for that family's OAuth refresh and
+   * is part of the family's trust surface — it is trusted in-process code with
+   * access to the guarded token transport, exactly like the dispatch module.
+   */
+  authModule?: AiAuthModule;
   /**
    * The scoped-store key this module's credentials live under. Tool servers
    * key under the reserved `mcp:` prefix; modules without this hook use the

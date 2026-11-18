@@ -101,6 +101,7 @@ export type AiProviderModule = Readonly<{
   ): Promise<'model' | 'auth.token-exchange'>;
   classifyRequest?(url: string): 'model' | 'auth.token-exchange';
   transport?: 'sse';
+  authModule?: AiAuthModule;
   credentialKey?(providerId: string): string;
   interpretCredential?(
     scope: CredentialScope,

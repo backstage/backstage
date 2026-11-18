@@ -70,6 +70,8 @@ import {
   type ConfiguredCredentialKind,
 } from './credentials/configCredentialKinds';
 import { aiModelUsePermission } from '@backstage/plugin-ai-common';
+import { createCredentialRefreshHook } from './credentials/refreshHook';
+import type { AiTokenEndpoint } from './config-extension/types';
 import { createGuardedToolOperations } from './tools/mediation';
 import { composeWithToolRegistry, createToolRegistry } from './tools/registry';
 import type { ToolModule } from './tools/types';
@@ -128,9 +130,11 @@ const LEASE_KEEPALIVE_INTERVAL_MS = 15_000;
  *
  * Structures exactly the trusted context an auth operation needs, so a host can
  * bind it to `createAuthOperations().refresh` without reconstructing authority
- * from caller data.
+ * from caller data. The fields are the verified dispatch context: actor,
+ * caller credentials, fence, provenance and the config/definition versions —
+ * never anything caller-supplied beyond the request that triggered them.
  *
- * @internal
+ * @alpha
  */
 export interface CredentialRefreshInput {
   readonly provider: string;
@@ -158,7 +162,7 @@ export interface CredentialRefreshInput {
  * absent, an expired OAuth credential is denied exactly as before: with a
  * journaled `credential expired; re-authentication required` reason.
  *
- * @internal
+ * @alpha
  */
 export type CredentialRefreshHook = (
   input: CredentialRefreshInput,
@@ -211,8 +215,22 @@ export interface AiServiceIntegrationOptions {
    */
   readonly credentialPrecedence?: AiCredentialsPrecedence;
   /**
+   * Trusted OAuth refresh endpoints per provider from installation
+   * configuration, each with the family's public client ID.
+   *
+   * @remarks
+   * When {@link AiServiceIntegrationOptions.refreshExpiredCredential} is absent
+   * and these endpoints line up with registered provider modules that carry an
+   * auth module, the integration wires pre-dispatch refresh itself — the
+   * config-driven default for adopters who configure `ai.credentials`. Without
+   * it (no endpoint, or no registered family with an auth module) an expired
+   * OAuth credential keeps failing closed with its actionable denial.
+   */
+  readonly credentialTokenEndpoints?: Readonly<Record<string, AiTokenEndpoint>>;
+  /**
    * Guarded refresh for expiring OAuth credentials, invoked before dispatch.
-   * Absent means no automatic refresh: an expired credential denies.
+   * An explicit hook here overrides the config-driven auto-wiring; absent, and
+   * without usable token endpoints, an expired credential denies.
    */
   readonly refreshExpiredCredential?: CredentialRefreshHook;
 
@@ -395,6 +413,12 @@ type NativeAdmission = {
 /** The authority context a dispatch binds to: the admission's view. */
 type DispatchContext = {
   readonly providers: AiProviderRegistry;
+  /**
+   * The refresh hook for this module snapshot: an explicit host hook wins,
+   * otherwise the config-driven default built from the snapshot's provider
+   * modules and the configured token endpoints.
+   */
+  readonly refreshExpiredCredential: CredentialRefreshHook | undefined;
   readonly tools: ReturnType<typeof createToolRegistry> | undefined;
   readonly guard: ModelOperationGuard;
   readonly journal: AttemptJournal;
@@ -485,7 +509,8 @@ export async function createAiServiceIntegration(
   const { deps } = options;
   const credentialStores = options.credentialStores;
   const credentialPrecedence = options.credentialPrecedence ?? 'user-first';
-  const refreshExpiredCredential = options.refreshExpiredCredential;
+  const explicitRefreshHook = options.refreshExpiredCredential;
+  const credentialTokenEndpoints = options.credentialTokenEndpoints ?? {};
   // The one observability sink: validated, fire-and-forget publishes to
   // the events service; a failing publish never couples to what it
   // observes.
@@ -567,6 +592,25 @@ export async function createAiServiceIntegration(
       },
     });
 
+    // Config-driven refresh, per module snapshot: an explicit hook always wins,
+    // and otherwise the installation's token endpoints are paired with the
+    // auth modules the registered families carry. Either half missing leaves
+    // the hook undefined, so an expired OAuth credential keeps its existing
+    // fail-closed denial.
+    const refreshExpiredCredential =
+      explicitRefreshHook ??
+      (credentialStores === undefined
+        ? undefined
+        : createCredentialRefreshHook({
+            providerModules: [
+              ...(options.providerModules ?? []),
+              ...(dynamic?.providerModules ?? []),
+            ],
+            tokenEndpoints: credentialTokenEndpoints,
+            stores: credentialStores,
+            journal,
+            ...(events === undefined ? {} : { emit: events }),
+          }));
     /**
      * Resolves the authority for a dispatch, or undefined. One generic path for
      * models and tool servers: the module (looked up by its api id) carries the
@@ -676,6 +720,7 @@ export async function createAiServiceIntegration(
     });
     return {
       providers: providerRegistry,
+      refreshExpiredCredential,
       tools: toolRegistry,
       guard,
       journal,
@@ -1206,7 +1251,11 @@ export async function createAiServiceIntegration(
     operation: ModelOperation,
   ) => Promise<GuardedModelBinding> {
     const sessionRef = `${input.namespace.pluginId}/${input.namespace.sessionId}`;
-    const { providers: providerRegistry, resolveAuthority } = dispatchContext;
+    const {
+      providers: providerRegistry,
+      resolveAuthority,
+      refreshExpiredCredential,
+    } = dispatchContext;
     let callOrdinal = 0;
     return async (model, operation) => {
       const dispatchModule = providerRegistry.get(

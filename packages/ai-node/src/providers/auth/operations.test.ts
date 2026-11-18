@@ -132,7 +132,9 @@ async function fixture(
   dialect: 'sqlite' | 'pg',
   endpoint: string,
   options: {
-    tokenEndpoints?: Readonly<Record<string, string>>;
+    tokenEndpoints?: Readonly<
+      Record<string, { url: string; clientId: string }>
+    >;
     modules?: AuthModuleLookup;
   } = {},
 ): Promise<Fixture> {
@@ -196,11 +198,8 @@ async function fixture(
       journal,
       stores,
       modules: options.modules ?? jsonAuthModules,
-      tokenEndpoints: options.tokenEndpoints ?? { anthropic: endpoint },
-      clientIds: {
-        anthropic: 'client-id',
-        openai: 'client-id',
-        'openai-secondary': 'client-id',
+      tokenEndpoints: options.tokenEndpoints ?? {
+        anthropic: { url: endpoint, clientId: 'client-id' },
       },
     });
     const context: AuthOperationContext = {
@@ -250,7 +249,9 @@ const engines: [
   (
     endpoint: string,
     options?: {
-      tokenEndpoints?: Readonly<Record<string, string>>;
+      tokenEndpoints?: Readonly<
+        Record<string, { url: string; clientId: string }>
+      >;
       modules?: AuthModuleLookup;
     },
   ) => Promise<Fixture>,
@@ -476,8 +477,11 @@ describe.each(engines)('%s auth operations', (_engine, make) => {
       const configured = await make(first.endpoint, {
         modules,
         tokenEndpoints: {
-          openai: first.endpoint,
-          'openai-secondary': second.endpoint,
+          openai: { url: first.endpoint, clientId: 'client-id' },
+          'openai-secondary': {
+            url: second.endpoint,
+            clientId: 'client-id',
+          },
         },
       });
       for (const [providerId, marker] of [
@@ -609,28 +613,29 @@ describe('auth operation construction', () => {
       journal: {} as AttemptJournal,
       stores: {} as AiCredentialStores,
       modules: jsonAuthModules,
-      clientIds: {
-        anthropic: 'client-id',
-        openai: 'client-id',
-        'openai-secondary': 'client-id',
-      },
     };
-    const invalidEndpoints: Array<Readonly<Record<string, string>>> = [
+    const entry = (url: string, clientId = 'client-id') => ({
+      url,
+      clientId,
+    });
+    const invalidEndpoints: Array<Readonly<Record<string, unknown>>> = [
       {},
-      { openai: 'https://token.example/oauth/token?tenant=1' },
-      { openai: 'https://token.example/authorize' },
-      { openai: 'ftp://token.example/oauth/token' },
-      { openai: '' },
+      { openai: entry('https://token.example/oauth/token?tenant=1') },
+      { openai: entry('https://token.example/authorize') },
+      { openai: entry('ftp://token.example/oauth/token') },
+      { openai: entry('') },
+      // A url without the public client ID is an unusable entry.
+      { openai: { url: 'https://token.example/oauth/token' } },
     ];
     for (const tokenEndpoints of invalidEndpoints) {
-      expect(() => createAuthOperations({ ...common, tokenEndpoints })).toThrow(
-        AuthOperationError,
-      );
+      expect(() =>
+        createAuthOperations({ ...common, tokenEndpoints } as never),
+      ).toThrow(AuthOperationError);
     }
     expect(() =>
       createAuthOperations({
         ...common,
-        tokenEndpoints: { openai: 'https://token.example/oauth/token' },
+        tokenEndpoints: { openai: entry('https://token.example/oauth/token') },
       }),
     ).not.toThrow();
   });
