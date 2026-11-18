@@ -17,11 +17,17 @@
 import type { Credential } from '@earendil-works/pi-ai';
 import { registerAuthCertification } from './certification';
 import { createAuthOperationGuard } from './guard';
-import {
-  anthropicAuthModule,
-  builtinAuthModuleRegistry,
-  createAuthModuleRegistry,
-} from './modules';
+import { builtinAuthModules, createAuthModuleRegistry } from './modules';
+import { formAuthModule } from './formModuleFixture';
+import { jsonAuthModule } from './jsonModuleFixture';
+
+/** The moved families joined to the remaining core modules as fixtures. */
+const jsonAuthRegistry = createAuthModuleRegistry([
+  jsonAuthModule,
+  formAuthModule,
+  ...builtinAuthModules,
+]);
+
 import type { AiAuthModule } from './types';
 
 const tokenEndpoints = [
@@ -117,14 +123,14 @@ for (const [name, provider] of [
   registerAuthCertification({
     name,
     operation: 'auth.token',
-    modules: builtinAuthModuleRegistry,
+    modules: jsonAuthRegistry,
     createOperation: () => operation(provider, 'auth.token'),
     request: (_op, options) => requestFor(provider, 'auth.token', options),
   });
   registerAuthCertification({
     name: `${name} login exchange`,
     operation: 'auth.token-exchange',
-    modules: builtinAuthModuleRegistry,
+    modules: jsonAuthRegistry,
     createOperation: () => operation(provider, 'auth.token-exchange'),
     request: (_op, options) =>
       requestFor(provider, 'auth.token-exchange', options),
@@ -133,7 +139,7 @@ for (const [name, provider] of [
 
 describe('auth module registration', () => {
   it('rejects unsupported routes, bodies and duplicates', () => {
-    const base = anthropicAuthModule as unknown as AiAuthModule;
+    const base = jsonAuthModule as unknown as AiAuthModule;
     expect(() =>
       createAuthModuleRegistry([{ ...base, tokenPath: '/token' as never }]),
     ).toThrow(/Invalid auth module registration/);
@@ -154,7 +160,7 @@ describe('auth module registration', () => {
   });
 
   it('requires the token route to match the module and the body to match its encoding', async () => {
-    const registry = builtinAuthModuleRegistry;
+    const registry = jsonAuthRegistry;
     const module = registry.get('anthropic')!;
     // A form-encoded body on a JSON module is rejected.
     await expect(
@@ -220,7 +226,7 @@ describe('auth module registration', () => {
     // A module that accepts any token request must fail the substitution case
     // the certification suite runs; this is the red half of the harness.
     const lax: AiAuthModule = {
-      ...anthropicAuthModule,
+      ...jsonAuthModule,
       validateTokenRequest: async () => {},
     };
     const spikeEvents: string[] = [];

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { builtinProviderRegistry } from '../providers/builtins';
+import { emptyProviderRegistry } from '../providers/registry';
 import type { AiProviderRegistry } from '../providers/registry';
 import type { Fence } from '../contracts';
 import type { AttemptOutcome, RecoveryEvent } from './types';
@@ -180,7 +180,7 @@ function assertNoKnownFormats(text: string, field: string): void {
  */
 export function assertOperation(
   value: unknown,
-  registry: AiProviderRegistry = builtinProviderRegistry,
+  registry: AiProviderRegistry = emptyProviderRegistry,
 ): string {
   if (
     typeof value !== 'string' ||
@@ -204,7 +204,7 @@ export function assertDestination(
   value: unknown,
   operation: string,
   field = 'destination',
-  registry: AiProviderRegistry = builtinProviderRegistry,
+  registry: AiProviderRegistry = emptyProviderRegistry,
 ): string | undefined {
   if (value === undefined) return undefined;
   if (
@@ -365,7 +365,7 @@ export type ParsedDecision = {
 
 export function parseDecision(
   event: unknown,
-  registry: AiProviderRegistry = builtinProviderRegistry,
+  registry: AiProviderRegistry = emptyProviderRegistry,
 ): ParsedDecision {
   assertShape(
     event,

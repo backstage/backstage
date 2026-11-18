@@ -33,13 +33,33 @@ import { streamSimple as completionsStream } from '@earendil-works/pi-ai/api/ope
 import { streamSimple as anthropicStream } from '@earendil-works/pi-ai/api/anthropic-messages';
 import { streamSimple as codexStream } from '@earendil-works/pi-ai/api/openai-codex-responses';
 import { streamSimple as azureStream } from '@earendil-works/pi-ai/api/azure-openai-responses';
-import { createAttemptJournal } from '../journal/knex';
-import { createModelOperationGuard } from './createModelOperationGuard';
+import { createAttemptJournal as createAttemptJournalBase } from '../journal/knex';
+import { createModelOperationGuard as createModelOperationGuardBase } from './createModelOperationGuard';
 import {
-  createGuardedModelOperations,
+  createGuardedModelOperations as createGuardedModelOperationsBase,
   GuardedResolutionError,
 } from './modelOperations';
 import type { TrustedOperation } from './types';
+import { builtinProviderRegistry } from '../providers/testFixtures';
+
+const createAttemptJournal = (
+  options: Parameters<typeof createAttemptJournalBase>[0],
+) =>
+  createAttemptJournalBase({ providers: builtinProviderRegistry, ...options });
+const createModelOperationGuard = (
+  options: Parameters<typeof createModelOperationGuardBase>[0],
+) =>
+  createModelOperationGuardBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
+const createGuardedModelOperations = (
+  options: Parameters<typeof createGuardedModelOperationsBase>[0],
+) =>
+  createGuardedModelOperationsBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
 
 const storageMigration = require('../../migrations/1000_storage');
 const journalMigration = require('../../migrations/4000_journal');

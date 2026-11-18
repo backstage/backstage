@@ -15,7 +15,14 @@
  */
 
 import { zstdCompressSync } from 'node:zlib';
-import { validateRequest } from './validateRequest';
+import { validateRequest as validateRequestBase } from './validateRequest';
+import { builtinProviderRegistry } from '../providers/testFixtures';
+
+const validateRequest = (
+  operation: Parameters<typeof validateRequestBase>[0],
+  input: Parameters<typeof validateRequestBase>[1],
+  registry = builtinProviderRegistry,
+) => validateRequestBase(operation, input, registry);
 import type { TrustedOperation } from './types';
 
 const operation = {

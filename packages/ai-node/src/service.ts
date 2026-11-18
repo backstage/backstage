@@ -22,7 +22,14 @@ import {
 import type { ServiceRef } from '@backstage/backend-plugin-api';
 import { DefaultAiService } from './DefaultAiService';
 import type { AiService } from './contracts';
-import { createAiServiceIntegration } from './integration';
+import type { Config } from '@backstage/config';
+import type { DefaultAiServiceDeps } from './DefaultAiService';
+import type { AiProviderModule } from './providers/types';
+import type { AiModuleRegistry } from './moduleRegistry';
+import {
+  createAiServiceIntegration,
+  type AiCodemodeOptions,
+} from './integration';
 import type { ToolModule } from './tools/types';
 import { runAiMigrations } from './migrations';
 import {
@@ -61,16 +68,91 @@ export type AiServiceFactoryOptions = Readonly<{
    * default factory registers none.
    */
   toolModules?: readonly ToolModule[];
+  /** Trusted provider modules available to new harness admissions. */
+  providerModules?: readonly AiProviderModule[];
+  /**
+   * Opt-in code mode for every harness this service opens. The
+   * `createExtension` callback builds the extension; the default
+   * construction is `createBoundedCodemodeExtension` from
+   * `@backstage/ai-node-codemode`.
+   */
+  codemode?: AiCodemodeOptions;
 }>;
 
 /**
- * Creates an AI service factory, optionally registering tool server modules.
- * This is the code-level override seam for {@link aiServiceRef}: the default
- * factory is `createAiServiceFactory()` with no options.
+ * Creates an AI service factory with explicit provider and tool modules.
+ * This override does not consume AI backend extension-point registrations.
  *
  * @alpha
  */
 export function createAiServiceFactory(options: AiServiceFactoryOptions = {}) {
+  return makeAiServiceFactory(options, false);
+}
+
+const dynamicRegistries = new WeakMap<
+  AiService,
+  { current?: AiModuleRegistry }
+>();
+
+/** Binds backend module registrations to the default AI service. @alpha */
+export function bindAiModuleRegistry(
+  service: AiService,
+  registry: AiModuleRegistry,
+): void {
+  const slot = dynamicRegistries.get(service);
+  if (slot) slot.current = registry;
+}
+
+/** Creates a private plugin-scoped AI service with explicit modules. @alpha */
+export async function createPrivateAiService(
+  options: AiServiceFactoryOptions & {
+    deps: DefaultAiServiceDeps;
+    config: Config;
+  },
+): Promise<AiService> {
+  return createConfiguredService(options.deps, options.config, options, false);
+}
+
+async function createConfiguredService(
+  deps: DefaultAiServiceDeps,
+  config: Config,
+  options: AiServiceFactoryOptions,
+  dynamic: boolean,
+): Promise<AiService> {
+  await runAiMigrations({ database: deps.database, logger: deps.logger });
+  const installation = configureAiInstallation({
+    source: { root: config, path: AI_INSTALLATION_CONFIG_PATH },
+    db: await deps.database.getClient(),
+  });
+  const slot: { current?: AiModuleRegistry } = {};
+  const integration = await createAiServiceIntegration({
+    deps,
+    providerModules: options.providerModules ?? [],
+    toolModules: options.toolModules ?? [],
+    ...(options.codemode === undefined ? {} : { codemode: options.codemode }),
+    ...(dynamic
+      ? {
+          moduleSource: () =>
+            slot.current?.snapshot() ?? {
+              providerModules: [],
+              toolModules: [],
+            },
+        }
+      : {}),
+    ...installation,
+  });
+  const service = DefaultAiService.create({ deps, integration });
+  integration.onNamespaceInvalidated(namespace =>
+    service.invalidateNamespace(namespace),
+  );
+  if (dynamic) dynamicRegistries.set(service, slot);
+  return service;
+}
+
+function makeAiServiceFactory(
+  options: AiServiceFactoryOptions,
+  dynamic: boolean,
+) {
   return <TService extends AiService>(
     service: ServiceRef<TService, 'plugin'>,
   ) =>
@@ -88,31 +170,12 @@ export function createAiServiceFactory(options: AiServiceFactoryOptions = {}) {
       },
       initialization: 'always',
       async factory(deps) {
-        await runAiMigrations({
-          database: deps.database,
-          logger: deps.logger,
-        });
-        // Installation-scoped configuration supplies the canonical model
-        // catalog, the read-only org/service credential stores and the
-        // credential precedence. Without it, the integration keeps its
-        // fail-closed default: every dispatch is denied with an actionable
-        // reason.
-        const installation = configureAiInstallation({
-          source: { root: deps.config, path: AI_INSTALLATION_CONFIG_PATH },
-          db: await deps.database.getClient(),
-        });
-        const integration = await createAiServiceIntegration({
+        return (await createConfiguredService(
           deps,
-          ...(options.toolModules?.length
-            ? { toolModules: options.toolModules }
-            : {}),
-          ...installation,
-        });
-        const managedService = DefaultAiService.create({ deps, integration });
-        integration.onNamespaceInvalidated(namespace =>
-          managedService.invalidateNamespace(namespace),
-        );
-        return managedService as unknown as TService;
+          deps.config,
+          options,
+          dynamic,
+        )) as TService;
       },
     });
 }
@@ -127,5 +190,5 @@ export function createAiServiceFactory(options: AiServiceFactoryOptions = {}) {
 export const aiServiceRef = createServiceRef<AiService>({
   id: 'ai',
   scope: 'plugin',
-  defaultFactory: async service => createAiServiceFactory()(service),
+  defaultFactory: async service => makeAiServiceFactory({}, true)(service),
 });

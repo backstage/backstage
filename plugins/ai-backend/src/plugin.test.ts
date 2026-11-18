@@ -30,10 +30,21 @@ import {
 import {
   coreServices,
   createServiceFactory,
+  createBackendModule,
   type PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
+import { aiBackendProviderModules } from './providerModules';
+import { aiServiceRef } from '@backstage/ai-node/alpha';
+import type { AiService, ToolModule } from '@backstage/ai-node/alpha';
+import { ConfigReader } from '@backstage/config';
+import { createRegistry } from '@earendil-works/pi-durable';
 import plugin from './index';
+import { aiModulesExtensionPoint } from '@backstage/plugin-ai-backend/alpha';
+
+const completions = aiBackendProviderModules.find(
+  module => module.id === 'openai-completions',
+)!;
 
 async function database(pgUrl?: string) {
   const directory = pgUrl
@@ -124,13 +135,72 @@ describe.each<[string, string | undefined]>([
     const port = (provider.address() as { port: number }).port;
     const db = await database(pgUrl);
     const { knex } = db;
+    const providerModule = createBackendModule({
+      pluginId: 'ai',
+      moduleId: 'test-provider',
+      register(env) {
+        env.registerInit({
+          deps: { modules: aiModulesExtensionPoint, ai: aiServiceRef },
+          async init({ modules, ai }) {
+            const early = await ai.openHarness({
+              sessionId: 'before-registration',
+              config: {
+                root: new ConfigReader({
+                  assistant: {
+                    mode: 'service',
+                    model: { provider: 'openai', modelId: 'example' },
+                  },
+                }),
+                path: 'assistant',
+              },
+              credentials: mockCredentials.user('user:default/alice'),
+              registry: createRegistry(),
+              registryVersion: 'v1',
+            });
+            try {
+              const conversation = await early.harness.root(early.context);
+              await conversation.submit(
+                { type: 'input', content: 'before registration' },
+                early.context,
+              );
+              let reasons: Array<{ reason: string }> = [];
+              for (let i = 0; i < 100 && reasons.length === 0; i += 1) {
+                reasons = await knex('ai_journal_events')
+                  .where({
+                    session_id: 'before-registration',
+                    decision: 'deny',
+                  })
+                  .select('reason');
+                if (!reasons.length)
+                  await new Promise(resolve => setTimeout(resolve, 20));
+              }
+              expect(
+                reasons.some(row =>
+                  row.reason.includes('aiModulesExtensionPoint'),
+                ),
+              ).toBe(true);
+              expect(providerRequests).toBe(0);
+              await conversation.abort(early.context);
+            } finally {
+              await early.release();
+            }
+            expect(() =>
+              modules.registerProviderModules([completions]),
+            ).toThrow();
+            modules.registerProviderModules([
+              { ...completions, id: 'registered-completions' },
+            ]);
+          },
+        });
+      },
+    });
     const data = {
       ai: {
         models: [
           {
             provider: 'openai',
             modelId: 'example',
-            api: 'openai-completions',
+            api: 'registered-completions',
             baseUrl: `http://127.0.0.1:${port}/v1`,
             contextWindow: 10000,
             maxTokens: 1000,
@@ -145,6 +215,7 @@ describe.each<[string, string | undefined]>([
     const backend = await startTestBackend({
       features: [
         plugin,
+        providerModule,
         httpRouterServiceFactory,
         mockServices.database.factory({ knex }),
         mockServices.rootConfig.factory({ data }),
@@ -375,6 +446,154 @@ describe.each<[string, string | undefined]>([
       provider.close();
     }
   }, 20000);
+  it('registers a tool module through the backend extension point', async () => {
+    const requests: Array<{ authorization?: string; body: string }> = [];
+    const server = createServer((req, res) => {
+      const chunks: Buffer[] = [];
+      req.on('data', chunk => chunks.push(chunk));
+      req.on('end', () => {
+        requests.push({
+          authorization: req.headers.authorization,
+          body: Buffer.concat(chunks).toString(),
+        });
+        res.writeHead(200, { 'content-type': 'application/json' });
+        res.end(JSON.stringify({ result: 'registered-tool' }));
+      });
+    });
+    server.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    const origin = `http://127.0.0.1:${
+      (server.address() as { port: number }).port
+    }`;
+    const tool: ToolModule = {
+      id: 'registered-tools',
+      tools: [{ name: 'search' }],
+      destination: name => `${origin}/mcp/registered-tools/tools/${name}`,
+      destinationTemplates: [
+        [
+          { literal: '/mcp/' },
+          { digest: 'server' },
+          { literal: '/tools/' },
+          { digest: 'tool' },
+        ],
+      ],
+      async validateToolCall(operation, toolRequest) {
+        const body = await toolRequest.json();
+        if (
+          toolRequest.url !== operation.destination ||
+          toolRequest.method !== 'POST' ||
+          body.tool !== operation.toolName ||
+          typeof body.arguments !== 'object' ||
+          !body.arguments
+        ) {
+          throw new Error('Invalid tool request');
+        }
+      },
+      adapter: {
+        kind: 'tool',
+        async invoke({ tool: declaration, arguments: args, options }) {
+          const response = await (options.fetch as typeof fetch)(
+            `${origin}/mcp/registered-tools/tools/${declaration.name}`,
+            {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json',
+                ...(options.headers as Record<string, string>),
+              },
+              body: JSON.stringify({ tool: declaration.name, arguments: args }),
+            },
+          );
+          return { value: await response.json(), outcome: 'completed' };
+        },
+      },
+    };
+    const db = await database(pgUrl);
+    let service: AiService | undefined;
+    const dynamic = createBackendModule({
+      pluginId: 'ai',
+      moduleId: 'test-tool',
+      register(env) {
+        env.registerInit({
+          deps: { modules: aiModulesExtensionPoint, ai: aiServiceRef },
+          async init({ modules, ai }) {
+            modules.registerToolModules([tool]);
+            service = ai;
+          },
+        });
+      },
+    });
+    const backend = await startTestBackend({
+      features: [
+        plugin,
+        dynamic,
+        mockServices.database.factory({ knex: db.knex }),
+        mockServices.rootConfig.factory({
+          data: {
+            ai: {
+              credentials: {
+                encryptionKey: Buffer.alloc(32, 9).toString('base64'),
+                scopes: {
+                  org: {
+                    'mcp:registered-tools': {
+                      type: 'api_key',
+                      key: 'tool-key',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }),
+        mockServices.permissions.factory({ result: 'ALLOW' }),
+      ],
+    });
+    try {
+      const credentials = mockCredentials.user('user:default/alice');
+      const handle = await service!.openHarness({
+        sessionId: 'tool-session',
+        config: {
+          root: new ConfigReader({ assistant: { mode: 'interactive' } }),
+          path: 'assistant',
+        },
+        credentials,
+        registry: createRegistry(),
+        registryVersion: 'v1',
+      });
+      try {
+        await expect(
+          handle.tools!.callTool({
+            serverId: 'registered-tools',
+            toolName: 'search',
+            arguments: { query: 'x' },
+            credentials,
+          }),
+        ).resolves.toEqual({ result: 'registered-tool' });
+        expect(requests).toEqual([
+          {
+            authorization: 'Bearer tool-key',
+            body: JSON.stringify({ tool: 'search', arguments: { query: 'x' } }),
+          },
+        ]);
+        expect(
+          await db
+            .knex('ai_journal_events')
+            .where({ session_id: 'tool-session' })
+            .select('kind', 'decision', 'status'),
+        ).toMatchObject([
+          { kind: 'decision', decision: 'allow' },
+          { kind: 'outcome', status: 'completed' },
+        ]);
+      } finally {
+        await handle.release();
+      }
+    } finally {
+      await backend.stop();
+      await db.close();
+      server.closeAllConnections();
+      server.close();
+    }
+  }, 20000);
+
   it('enforces authenticated ownership through the backend wiring', async () => {
     const db = await database(pgUrl);
     const { knex } = db;

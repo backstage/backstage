@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-ai-node-tools
+  title: '@backstage/ai-node-tools'
+  description: Tool permission composition for the Backstage managed AI service
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: framework-maintainers

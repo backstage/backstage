@@ -61,10 +61,20 @@ import {
   type DefaultAiServiceDeps,
 } from './DefaultAiService';
 import {
-  createAiServiceIntegration,
+  createAiServiceIntegration as createAiServiceIntegrationBase,
   type ProductionAiServiceIntegration,
 } from './integration';
 import { runAiMigrations } from './migrations';
+import { builtinProviderRegistry } from './providers/testFixtures';
+import { createBoundedCodemodeExtension } from '@backstage/ai-node-codemode/alpha';
+
+const createAiServiceIntegration = (
+  options: Parameters<typeof createAiServiceIntegrationBase>[0],
+) =>
+  createAiServiceIntegrationBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
 
 // Jest runs this suite in a VM context, but Node's global `structuredClone`
 // (used by pi-ai's tool-argument validation) deserializes into the host
@@ -168,7 +178,14 @@ async function managed(
     deps: f.deps,
     credentialStores: options.credentialStores ?? STAND_IN_STORES,
     models: options.models,
-    ...(options.codemode === undefined ? {} : { codemode: options.codemode }),
+    ...(options.codemode === undefined
+      ? {}
+      : {
+          codemode: {
+            ...options.codemode,
+            createExtension: createBoundedCodemodeExtension,
+          },
+        }),
   });
   const service = DefaultAiService.create({ deps: f.deps, integration });
   integration.onNamespaceInvalidated(namespace =>

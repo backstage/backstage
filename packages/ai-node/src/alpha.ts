@@ -53,15 +53,24 @@ export type {
   ConfiguredAiInstallation,
 } from './config-extension/index';
 
-export { aiServiceRef, createAiServiceFactory } from './service';
+export {
+  aiServiceRef,
+  createAiServiceFactory,
+  createPrivateAiService,
+  bindAiModuleRegistry,
+} from './service';
+export { createAiModuleRegistry } from './moduleRegistry';
+export type { AiModuleRegistry, AiModules } from './moduleRegistry';
 export type { AiServiceFactoryOptions } from './service';
+export type { AiCodemodeOptions } from './integration';
+export type { DefaultAiServiceDeps } from './DefaultAiService';
 export type {
   ToolCallResult,
   ToolDeclaration,
   ToolDispatchInput,
   ToolModule,
 } from './tools/types';
-export { createToolPermissions, toolPermissionName } from './tools/registry';
+export { toolPermissionName } from './tools/registry';
 export type { ToolIdentity } from './tools/registry';
 export { createGuardedToolOperations } from './tools/mediation';
 export type {

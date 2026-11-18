@@ -20,7 +20,7 @@ import type { Fence } from '../contracts';
 import { emitSafe } from '../observability/types';
 import type { AiEventEmitter } from '../observability/types';
 import { bigintText, dbNow, fencedTransaction } from '../storage/dialect-kit';
-import { builtinProviderRegistry } from '../providers/builtins';
+import { emptyProviderRegistry } from '../providers/registry';
 import type { AiProviderRegistry } from '../providers/registry';
 import {
   assertPrincipalRef,
@@ -139,7 +139,7 @@ class KnexAttemptJournal implements AttemptJournal {
 
   constructor(options: AttemptJournalOptions) {
     this.#db = options.db;
-    this.#providers = options.providers ?? builtinProviderRegistry;
+    this.#providers = options.providers ?? emptyProviderRegistry;
     this.#authorizer = options.authorizer;
     this.#mirror = options.mirror;
     this.#events = options.events;

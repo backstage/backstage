@@ -22,17 +22,14 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import knex from 'knex';
 import { mockCredentials } from '@backstage/backend-test-utils';
-import { openaiProvider } from '@earendil-works/pi-ai/providers/openai';
-import { anthropicProvider } from '@earendil-works/pi-ai/providers/anthropic';
-import { openaiCodexProvider } from '@earendil-works/pi-ai/providers/openai-codex';
-import { azureProvider } from '@earendil-works/pi-ai/providers/azure';
-import { normalizeContext } from '@earendil-works/pi-ai/utils/transcript';
 import { createAttemptJournal } from '../journal/knex';
 import { createModelOperationGuard } from '../guard/createModelOperationGuard';
 import type { TrustedOperation } from '../guard/types';
-import { builtinProviderModules } from './builtins';
-import { registerProviderCertification } from './certification';
-import { createProviderRegistry } from './registry';
+import { builtinProviderModules } from '../modules';
+import {
+  registerProviderCertification,
+  createProviderRegistry,
+} from '@backstage/ai-node/testUtils';
 import { validateHttpEnvelope } from './httpEnvelope';
 
 const storageMigration = require('../../migrations/1000_storage');
@@ -41,12 +38,9 @@ const journalMigration = require('../../migrations/4000_journal');
 const namespace = { pluginId: 'test', sessionId: 'session' };
 const fence = { namespace, owner: 'owner', token: '1' };
 const credentials = mockCredentials.user('user:default/alice');
+// Every provider family's certification lives in its own package; the
+// synthetic classifier below certifies the harness itself.
 const paths = {
-  'openai-responses': '/v1/responses',
-  'openai-completions': '/v1/chat/completions',
-  'azure-openai-responses': '/openai/v1/responses?api-version=v1',
-  'openai-codex-responses': '/backend-api/codex/responses',
-  'anthropic-messages': '/v1/messages',
   'test-classifier': '/v1/classify',
 };
 const providers = createProviderRegistry([
@@ -84,7 +78,7 @@ function operation(id: Id, origin: string): TrustedOperation {
     provider: id,
     modelId: 'gpt',
     resolvedModel: 'gpt',
-    operation: id === 'test-classifier' ? 'classify' : 'streamSimple',
+    operation: 'classify',
     api: id,
     destination: `${origin}${paths[id]}`,
     credentialScope: { kind: 'user', id: 'user:default/alice' },
@@ -98,7 +92,6 @@ function request(
   substituteQuery = false,
 ): Request {
   const url = new URL(op.destination);
-  if (op.api === 'anthropic-messages') url.searchParams.set('beta', 'true');
   if (substituteQuery) url.searchParams.set('unexpected', 'true');
   return new Request(url, {
     method: 'POST',
@@ -126,73 +119,13 @@ if (process.env.AI_PROVIDER_CERT_WORKER === '1') {
       const id = process.env.AI_PROVIDER_CERT_ID as Id;
       const origin = process.env.AI_PROVIDER_CERT_ORIGIN!;
       const op = operation(id, origin);
-      const module = providers.get(id)!;
-      if (id === 'test-classifier') {
-        const guard = createModelOperationGuard({
-          providers,
-          journal: journal(db),
-          recheck: async () => true,
-          transport: globalThis.fetch,
-        }).bind(op);
-        await guard.fetch(request(op));
-      } else {
-        const factory = {
-          'openai-responses': openaiProvider,
-          'openai-completions': openaiProvider,
-          'azure-openai-responses': azureProvider,
-          'openai-codex-responses': openaiCodexProvider,
-          'anthropic-messages': anthropicProvider,
-        }[id];
-        const prefix = {
-          'openai-responses': '/v1',
-          'openai-completions': '/v1',
-          'azure-openai-responses': '/openai/v1',
-          'openai-codex-responses': '/backend-api',
-          'anthropic-messages': '',
-        }[id];
-        const model = {
-          ...factory().getModels()[0],
-          api: id,
-          baseUrl: `${origin}${prefix}`,
-        };
-        const sdkOperation: TrustedOperation = {
-          ...op,
-          provider: model.provider,
-          modelId: model.id,
-          resolvedModel: model.id,
-          operation: 'streamSimple',
-        };
-        const guard = createModelOperationGuard({
-          providers,
-          journal: journal(db),
-          recheck: async () => true,
-          transport: globalThis.fetch,
-        }).bind(sdkOperation);
-        if (module.adapter.kind !== 'stream')
-          throw new Error('Expected pinned stream adapter');
-        const apiKey =
-          id === 'openai-codex-responses'
-            ? `x.${Buffer.from(
-                JSON.stringify({
-                  'https://api.openai.com/auth': {
-                    chatgpt_account_id: 'account',
-                  },
-                }),
-              ).toString('base64url')}.x`
-            : 'test-key';
-        await module.adapter
-          .streamSimple(
-            model as never,
-            normalizeContext({ messages: [] }) as never,
-            {
-              apiKey,
-              transport: 'sse',
-              fetch: guard.fetch,
-              maxRetries: 0,
-            } as never,
-          )
-          .result();
-      }
+      const guard = createModelOperationGuard({
+        providers,
+        journal: journal(db),
+        recheck: async () => true,
+        transport: globalThis.fetch,
+      }).bind(op);
+      await guard.fetch(request(op));
     } finally {
       await db.destroy();
     }
@@ -291,7 +224,7 @@ if (process.env.AI_PROVIDER_CERT_WORKER === '1') {
   for (const id of Object.keys(paths) as Id[]) {
     registerProviderCertification({
       name: id,
-      operation: id === 'test-classifier' ? 'classify' : 'streamSimple',
+      operation: 'classify',
       providers,
       createOperation: () => operation(id, 'https://provider.example'),
       request,

@@ -25,8 +25,17 @@ import { normalizeContext } from '@earendil-works/pi-ai/utils/transcript';
 import { streamSimple } from '@earendil-works/pi-ai/api/anthropic-messages';
 import type { Fence } from '../contracts';
 import type { AttemptDecision } from '../journal/types';
-import { createModelOperationGuard } from './createModelOperationGuard';
+import { createModelOperationGuard as createModelOperationGuardBase } from './createModelOperationGuard';
 import type { TrustedOperation } from './types';
+import { builtinProviderRegistry } from '../providers/testFixtures';
+
+const createModelOperationGuard = (
+  options: Parameters<typeof createModelOperationGuardBase>[0],
+) =>
+  createModelOperationGuardBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
 
 describe('Anthropic federation', () => {
   it('classifies and denies the uncertified token exchange without sending secrets', async () => {

@@ -32,11 +32,16 @@ import { createAttemptJournal } from '../../journal/knex';
 import type { AttemptJournal } from '../../journal/types';
 import { createAuthOperationGuard, type AuthModuleLookup } from './guard';
 import { AuthTokenRejection } from './guard';
-import {
-  builtinAuthModuleRegistry,
-  createAuthModuleRegistry,
-  openaiAuthModule,
-} from './modules';
+import { builtinAuthModules, createAuthModuleRegistry } from './modules';
+import { formAuthModule } from './formModuleFixture';
+import { jsonAuthModule } from './jsonModuleFixture';
+
+/** Core registry: the remaining built-ins plus the local JSON-bodied module. */
+const jsonAuthModules = createAuthModuleRegistry([
+  jsonAuthModule,
+  ...builtinAuthModules,
+]);
+
 import {
   AuthOperationError,
   createAuthOperations,
@@ -187,13 +192,13 @@ async function fixture(
       transport: fetch,
       recheck: async () => true,
       journal,
-      modules: options.modules ?? builtinAuthModuleRegistry,
+      modules: options.modules ?? jsonAuthModules,
     });
     const operations = createAuthOperations({
       guard,
       journal,
       stores,
-      modules: options.modules ?? builtinAuthModuleRegistry,
+      modules: options.modules ?? jsonAuthModules,
       tokenEndpoints: options.tokenEndpoints ?? { anthropic: endpoint },
       clientIds: {
         anthropic: 'client-id',
@@ -467,8 +472,8 @@ describe.each(engines)('%s auth operations', (_engine, make) => {
     server = first;
     const second = await tokenServer('/oauth/token');
     const modules = createAuthModuleRegistry([
-      openaiAuthModule,
-      { ...openaiAuthModule, id: 'openai-secondary' },
+      formAuthModule,
+      { ...formAuthModule, id: 'openai-secondary' },
     ]);
     try {
       const configured = await make(first.endpoint, {
@@ -606,7 +611,7 @@ describe('auth operation construction', () => {
       guard: {} as never,
       journal: {} as AttemptJournal,
       stores: {} as AiCredentialStores,
-      modules: builtinAuthModuleRegistry,
+      modules: jsonAuthModules,
       clientIds: {
         anthropic: 'client-id',
         openai: 'client-id',

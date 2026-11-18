@@ -18,10 +18,21 @@
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "files": [
     "dist",
     "config.d.ts"
@@ -39,6 +50,13 @@
   },
   "dependencies": {
     "@backstage/ai-node": "workspace:^",
+    "@backstage/ai-node-provider-anthropic": "workspace:^",
+    "@backstage/ai-node-provider-azure": "workspace:^",
+    "@backstage/ai-node-provider-google": "workspace:^",
+    "@backstage/ai-node-provider-openai": "workspace:^",
+    "@backstage/ai-node-provider-openrouter": "workspace:^",
+    "@backstage/ai-node-provider-typesafe": "workspace:^",
+    "@backstage/ai-node-tools": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",

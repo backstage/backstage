@@ -18,13 +18,37 @@ import {
   createBackendPlugin,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { aiServiceRef, createAiHttpSupport } from '@backstage/ai-node/alpha';
+import {
+  aiServiceRef,
+  bindAiModuleRegistry,
+  createAiHttpSupport,
+  createAiModuleRegistry,
+} from '@backstage/ai-node/alpha';
+import { aiBackendProviderModules } from './providerModules';
+import { createToolPermissions } from '@backstage/ai-node-tools/alpha';
+import { aiModulesExtensionPoint } from './extensions';
 import { createRouter } from './router';
 
 /** Backend plugin exposing managed AI sessions to authenticated users. @public */
 export default createBackendPlugin({
   pluginId: 'ai',
   register(env) {
+    const modules = createAiModuleRegistry({
+      providerModules: aiBackendProviderModules,
+      toolModules: [],
+    });
+    let toolPermissions:
+      | ((
+          registrations: ReturnType<typeof modules.snapshot>['toolModules'],
+        ) => void)
+      | undefined;
+    env.registerExtensionPoint(aiModulesExtensionPoint, {
+      registerProviderModules: modules.registerProviderModules,
+      registerToolModules(registrations) {
+        modules.registerToolModules(registrations);
+        toolPermissions?.(registrations);
+      },
+    });
     env.registerInit({
       deps: {
         ai: aiServiceRef,
@@ -48,6 +72,20 @@ export default createBackendPlugin({
         pluginMetadata,
         config,
       }) {
+        toolPermissions = registrations => {
+          createToolPermissions({
+            tools: registrations.flatMap(module =>
+              module.tools.map(tool => ({
+                serverId: module.id,
+                toolName: tool.name,
+              })),
+            ),
+            authorizer: permissions,
+            registry: permissionsRegistry,
+          });
+        };
+        toolPermissions(modules.snapshot().toolModules);
+        bindAiModuleRegistry(ai, modules);
         const support = await createAiHttpSupport({
           database,
           auth,

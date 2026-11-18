@@ -16,14 +16,18 @@
 
 import { createHash } from 'node:crypto';
 import { assertDestination, assertOperation } from '../journal/redaction';
-import { openaiResponses } from './builtins';
+import { fixtureProviderModules } from './testFixtures';
+
+const azureResponses = fixtureProviderModules.find(
+  module => module.id === 'azure-openai-responses',
+)!;
 import { createProviderRegistry } from './registry';
 import type { AiProviderModule } from './types';
 
 describe('provider registration', () => {
   it('registers new operations and digest-only routes without editing the journal', () => {
     const module: AiProviderModule = {
-      ...openaiResponses,
+      ...azureResponses,
       id: 'example-classifier',
       certifiedOperations: ['classify', 'rerankV2'],
       destinationTemplates: [
@@ -74,12 +78,12 @@ describe('provider registration', () => {
 
   it('never lets an overlapping static route reveal a dynamic value', () => {
     const staticModule: AiProviderModule = {
-      ...openaiResponses,
+      ...azureResponses,
       id: 'static-route',
       destinationTemplates: [[{ literal: '/v1/projects/private/predict' }]],
     };
     const dynamicModule: AiProviderModule = {
-      ...openaiResponses,
+      ...azureResponses,
       id: 'dynamic-route',
       destinationTemplates: [
         [
@@ -126,11 +130,11 @@ describe('provider registration', () => {
     ]) {
       expect(() =>
         createProviderRegistry([
-          { ...openaiResponses, destinationTemplates: [template] },
+          { ...azureResponses, destinationTemplates: [template] },
         ]),
       ).toThrow('reserved authentication route');
     }
-    const registry = createProviderRegistry([openaiResponses]);
+    const registry = createProviderRegistry([azureResponses]);
     expect(
       assertDestination(
         'https://auth.example/v1/oauth/token',
@@ -150,7 +154,7 @@ describe('provider registration', () => {
     expect(() =>
       createProviderRegistry([
         {
-          ...openaiResponses,
+          ...azureResponses,
           destinationTemplates: [
             [{ literal: '/v1/authorize' }],
             [{ literal: '/oauth/' }, { digest: 'name' }],
@@ -171,14 +175,14 @@ describe('provider registration', () => {
       expect(() =>
         createProviderRegistry([
           {
-            ...openaiResponses,
+            ...azureResponses,
             destinationTemplates: [template],
           } as unknown as AiProviderModule,
         ]),
       ).toThrow('Invalid destination template');
     }
     expect(() =>
-      createProviderRegistry([openaiResponses, openaiResponses]),
+      createProviderRegistry([azureResponses, azureResponses]),
     ).toThrow('duplicate');
   });
 });

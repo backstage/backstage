@@ -29,7 +29,7 @@ import type {
 } from './types';
 import { hasTrustedOperationContext } from './types';
 import { validateRequest } from './validateRequest';
-import { builtinProviderRegistry } from '../providers/builtins';
+import { emptyProviderRegistry } from '../providers/registry';
 import type { AiProviderRegistry } from '../providers/registry';
 
 type PendingAttempt = {
@@ -83,6 +83,13 @@ function raceRecheckAbort(
   });
 }
 
+/**
+ * Creates the guard that mediates provider dispatches: per-attempt envelope
+ * validation, permission rechecks, durable journal-before-send ordering and
+ * the revocation latch.
+ *
+ * @alpha
+ */
 export function createModelOperationGuard(options: {
   /** Captured real transport, never the guarded fetch itself. */
   transport: typeof fetch;
@@ -93,7 +100,7 @@ export function createModelOperationGuard(options: {
   /** Observability sink; no-op when absent. */
   events?: AiEventEmitter;
 }): ModelOperationGuard {
-  const providers = options.providers ?? builtinProviderRegistry;
+  const providers = options.providers ?? emptyProviderRegistry;
   const transport = options.transport;
   const journal = options.journal;
   const events = options.events;

@@ -38,10 +38,19 @@ import {
 } from '../DefaultAiService';
 import type { AnyModel, Credential } from '@earendil-works/pi-ai';
 import type { AiCredentialStores, CredentialScope } from '../credentials/types';
-import { createAiServiceIntegration } from '../integration';
+import { createAiServiceIntegration as createAiServiceIntegrationBase } from '../integration';
 import { runAiMigrations } from '../migrations';
 import { configureAiInstallation } from './configureAiInstallation';
 import { createMetricsSubscriber } from '../observability/metrics';
+import { builtinProviderRegistry } from '../providers/testFixtures';
+
+const createAiServiceIntegration = (
+  options: Parameters<typeof createAiServiceIntegrationBase>[0],
+) =>
+  createAiServiceIntegrationBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
 
 const pgUrl = process.env.AI_TEST_POSTGRES_URL;
 

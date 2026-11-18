@@ -39,7 +39,7 @@ const EXCHANGE_FIELDS = [
  * Validates registrations once and refuses duplicates and unsupported token
  * routes.
  *
- * @internal
+ * @alpha
  */
 export function createAuthModuleRegistry(
   modules: readonly AiAuthModule[],
@@ -67,7 +67,27 @@ export function createAuthModuleRegistry(
   return Object.freeze({ get: (id: string) => byId.get(id) });
 }
 
-async function assertTokenRequest(
+/**
+ * Validates one token request envelope against a module's declaration.
+ *
+ * @remarks
+ * The checks are structural and fail closed on anything unexpected: the method
+ * must be `POST`, the URL must be exactly the operation destination with
+ * `tokenPath` as its pathname, the content type must match `body`, the payload
+ * must be under the 8 KiB cap, and the fields must be exactly the allowlisted
+ * grant fields for the operation kind. A module calls this from its
+ * `validateTokenRequest`, which the auth guard runs before it journals the
+ * intent and sends.
+ *
+ * @param input - The operation kind, the trusted endpoint and the request clone.
+ * @param body - Encoding the module declares: `json` or `form`.
+ * @param tokenPath - The module's reserved token route, e.g. `/v1/oauth/token`.
+ * @throws Error when the envelope differs in method, endpoint, encoding, size,
+ * field set or grant type, so no secret material is ever forwarded by mistake.
+ *
+ * @alpha
+ */
+export async function assertTokenRequest(
   input: {
     operation: AuthOperationKind;
     endpoint: string;
@@ -133,8 +153,22 @@ async function assertTokenRequest(
   }
 }
 
-/** Validates the token response and builds the credential. */
-function parseTokenResponse(
+/**
+ * Validates a token response and builds the credential to persist.
+ *
+ * @remarks
+ * Only declared fields survive: the access token, the refresh token (falling
+ * back to the previous one) and the module's `extraFields`. Anything else in
+ * the response body is discarded, so an unexpected field cannot be stored.
+ *
+ * @param input - The parsed body, the credential being replaced, and the clock.
+ * @param extraFields - Non-secret fields the module declares, e.g. `account`.
+ * @throws Error when the body shape, access token, refresh token or expiry is
+ * unusable, so a partial rotation is never committed.
+ *
+ * @alpha
+ */
+export function parseOAuthTokenResponse(
   input: {
     body: unknown;
     previous?: OAuthCredential;
@@ -181,7 +215,26 @@ function parseTokenResponse(
   ) as OAuthCredential;
 }
 
-function tokenRequest(
+/**
+ * Builds one token request for a module's `refreshRequest` or
+ * `exchangeRequest`.
+ *
+ * @remarks
+ * Only fields the caller passes are encoded — a `client_secret` is not part of
+ * the allowlist and cannot appear — and the request is a plain `POST` whose
+ * content type matches `body`. Callers supply the public client ID from the
+ * host configuration and the grant fields that belong to the operation kind;
+ * the auth guard then validates the envelope again before sending.
+ *
+ * @param endpoint - The trusted token endpoint the host configured.
+ * @param body - Encoding to use: `json` for an `application/json` body, `form`
+ * for `application/x-www-form-urlencoded`.
+ * @param fields - Grant fields to encode; values must be non-empty strings.
+ * @returns A `Request` ready for `assertTokenRequest` to validate.
+ *
+ * @alpha
+ */
+export function createTokenRequest(
   endpoint: string,
   body: 'json' | 'form',
   fields: Record<string, string>,
@@ -203,73 +256,17 @@ function tokenRequest(
 }
 
 /**
- * Anthropic (Claude subscription) OAuth: JSON token requests on the reserved
- * `/v1/oauth/token` route.
- *
- * @internal
- */
-export const anthropicAuthModule: AiAuthModule = {
-  id: 'anthropic',
-  tokenPath: '/v1/oauth/token',
-  body: 'json',
-  refreshRequest: ({ endpoint, clientId, credential }) =>
-    tokenRequest(endpoint, 'json', {
-      grant_type: 'refresh_token',
-      refresh_token: credential.refresh,
-      client_id: clientId,
-    }),
-  exchangeRequest: ({ endpoint, clientId, code, codeVerifier, redirectUri }) =>
-    tokenRequest(endpoint, 'json', {
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: redirectUri,
-      client_id: clientId,
-      code_verifier: codeVerifier,
-    }),
-  validateTokenRequest: input =>
-    assertTokenRequest(input, 'json', '/v1/oauth/token'),
-  parseTokenResponse: input =>
-    parseTokenResponse(input, ['account', 'account_id']),
-  extraFields: ['account', 'account_id'],
-};
-
-/**
  * OpenAI (ChatGPT subscription) OAuth: form-encoded token requests on the
  * reserved `/oauth/token` route.
  *
  * @internal
  */
-export const openaiAuthModule: AiAuthModule = {
-  id: 'openai',
-  tokenPath: '/oauth/token',
-  body: 'form',
-  refreshRequest: ({ endpoint, clientId, credential }) =>
-    tokenRequest(endpoint, 'form', {
-      grant_type: 'refresh_token',
-      refresh_token: credential.refresh,
-      client_id: clientId,
-    }),
-  exchangeRequest: ({ endpoint, clientId, code, codeVerifier, redirectUri }) =>
-    tokenRequest(endpoint, 'form', {
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: redirectUri,
-      client_id: clientId,
-      code_verifier: codeVerifier,
-    }),
-  validateTokenRequest: input =>
-    assertTokenRequest(input, 'form', '/oauth/token'),
-  parseTokenResponse: input =>
-    parseTokenResponse(input, ['account_id', 'chatgpt_account_id']),
-  extraFields: ['account_id', 'chatgpt_account_id'],
-};
+/** Host registration: add another trusted auth module here to enable it.
+ *
+ * @alpha
+ */
+export const builtinAuthModules: readonly AiAuthModule[] = Object.freeze([]);
 
-/** Host registration: add another trusted auth module here to enable it. */
-export const builtinAuthModules = Object.freeze([
-  anthropicAuthModule,
-  openaiAuthModule,
-]);
-
-/** @internal */
+/** @alpha */
 export const builtinAuthModuleRegistry =
   createAuthModuleRegistry(builtinAuthModules);

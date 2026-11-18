@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { builtinProviderRegistry } from '../providers/builtins';
+import { emptyProviderRegistry } from '../providers/registry';
 import type { AiProviderRegistry } from '../providers/registry';
 import type { GuardedOperation, TrustedOperation } from './types';
 
@@ -23,7 +23,7 @@ export function guardedRequestOptions(
   operation: TrustedOperation,
   guarded: GuardedOperation,
   options: Record<string, unknown> = {},
-  registry: AiProviderRegistry = builtinProviderRegistry,
+  registry: AiProviderRegistry = emptyProviderRegistry,
 ): Record<string, unknown> {
   const module = registry.get(operation.api);
   if (!module || !module.certifiedOperations.includes(operation.operation)) {

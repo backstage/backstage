@@ -22,8 +22,17 @@ import { streamSimple } from '@earendil-works/pi-ai/api/anthropic-messages';
 import { normalizeContext } from '@earendil-works/pi-ai/utils/transcript';
 import type { Fence } from '../contracts';
 import type { AttemptDecision, AttemptOutcome } from '../journal/types';
-import { createModelOperationGuard } from './createModelOperationGuard';
+import { createModelOperationGuard as createModelOperationGuardBase } from './createModelOperationGuard';
 import type { TrustedOperation } from './types';
+import { builtinProviderRegistry } from '../providers/testFixtures';
+
+const createModelOperationGuard = (
+  options: Parameters<typeof createModelOperationGuardBase>[0],
+) =>
+  createModelOperationGuardBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
 
 describe('Anthropic protocol fallbacks', () => {
   it('gates full-thread and strict-tool rebuilds as distinct attempts', async () => {

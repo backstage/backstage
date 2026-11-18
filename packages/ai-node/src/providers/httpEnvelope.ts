@@ -18,6 +18,18 @@ import { zstdDecompressSync } from 'node:zlib';
 import type { ProviderEnvelope } from './types';
 
 const MAX_BODY = 16 * 1024 * 1024;
+/**
+ * Rules a provider module declares for its request envelope.
+ *
+ * @remarks
+ * The validator compares the final SDK-produced request against the trusted
+ * destination, so a module only states what is specific to its route: the
+ * endpoint label used in errors, SDK query parameters the transport adds, an
+ * optional `zstd` body, the federation token route, and an optional structural
+ * inspection of the parsed payload. Anything not declared is rejected.
+ *
+ * @alpha
+ */
 export type HttpEnvelopeRules = Readonly<{
   endpoint: string;
   sdkQueryParams?: Readonly<Record<string, string>>;
@@ -78,7 +90,11 @@ export async function readBody(request: Request): Promise<Buffer> {
   return Buffer.concat(chunks, size);
 }
 
-/** Validate the final SDK-produced envelope, not the original Model object. */
+/**
+ * Validate the final SDK-produced envelope, not the original Model object.
+ *
+ * @alpha
+ */
 export async function validateHttpEnvelope(
   rules: HttpEnvelopeRules,
   operation: ProviderEnvelope,

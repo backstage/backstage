@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-import type {
-  BackstageCredentials,
-  PermissionsRegistryService,
-  PermissionsService,
-} from '@backstage/backend-plugin-api';
 import {
   interpretMcpCredential,
   mcpCredentialGeneration,
@@ -103,11 +98,6 @@ function toolModuleWithResolution(module: ToolModule): AiProviderModule {
  * @alpha
  */
 export type ToolIdentity = Readonly<{ serverId: string; toolName: string }>;
-
-type BasicPermission = Extract<
-  Parameters<PermissionsRegistryService['addPermissions']>[0][number],
-  { type: 'basic' }
->;
 
 /**
  * `ai.tool.<server>.<tool>.use`, following the model permission encoding.
@@ -231,57 +221,4 @@ export function composeWithToolRegistry(
     canonicalPath: path =>
       toolView.canonicalPath(path) ?? modelRegistry.canonicalPath(path),
   });
-}
-
-/**
- * Registers one basic permission per declared tool, mirroring model
- * permissions.
- *
- * @alpha
- */
-export function createToolPermissions(options: {
-  tools: readonly ToolIdentity[];
-  authorizer: Pick<PermissionsService, 'authorize'>;
-  registry: Pick<PermissionsRegistryService, 'addPermissions'>;
-}) {
-  const byName = new Map<
-    string,
-    { identity: ToolIdentity; permission: BasicPermission }
-  >();
-  for (const identity of options.tools) {
-    const name = toolPermissionName(identity);
-    if (!byName.has(name)) {
-      byName.set(name, {
-        identity: Object.freeze({ ...identity }),
-        permission: Object.freeze({
-          type: 'basic',
-          name,
-          attributes: Object.freeze({}),
-        }),
-      });
-    }
-  }
-  options.registry.addPermissions([...byName.values()].map(p => p.permission));
-
-  async function authorize(
-    credentials: BackstageCredentials,
-    identities: readonly ToolIdentity[],
-  ) {
-    const requests = identities
-      .map(identity => byName.get(toolPermissionName(identity)))
-      .filter(
-        (
-          entry,
-        ): entry is { identity: ToolIdentity; permission: BasicPermission } =>
-          !!entry,
-      )
-      .map(({ permission }) => ({
-        permission,
-        credentials,
-      }));
-    if (requests.length === 0) return [] as Array<{ result: string }>;
-    return options.authorizer.authorize(requests, { credentials });
-  }
-
-  return { authorize, toolPermissionName };
 }

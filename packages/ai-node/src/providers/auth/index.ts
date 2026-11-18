@@ -22,11 +22,9 @@ export {
 } from './guard';
 export type { AuthModuleLookup } from './guard';
 export {
-  anthropicAuthModule,
   builtinAuthModuleRegistry,
   builtinAuthModules,
   createAuthModuleRegistry,
-  openaiAuthModule,
 } from './modules';
 export { AuthOperationError, createAuthOperations } from './operations';
 export type {

@@ -19,18 +19,38 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import knex, { type Knex } from 'knex';
 import { mockCredentials } from '@backstage/backend-test-utils';
-import { createModelOperationGuard } from '../guard/createModelOperationGuard';
+import { createModelOperationGuard as createModelOperationGuardBase } from '../guard/createModelOperationGuard';
 import type { TrustedOperation } from '../guard/types';
-import { createAttemptJournal } from '../journal/knex';
+import { createAttemptJournal as createAttemptJournalBase } from '../journal/knex';
 import { pruneAiJournal } from '../journal/retention';
 import { createKnexNamespaceLease } from '../ownership/KnexNamespaceLease';
 import { createMetricsSubscriber } from './metrics';
 import {
   GuardedResolutionError,
-  createGuardedModelOperations,
+  createGuardedModelOperations as createGuardedModelOperationsBase,
 } from '../guard/modelOperations';
 import { emitSafe, assertObservableEvent } from './types';
 import type { AiObservabilityEvent } from './types';
+import { builtinProviderRegistry } from '../providers/testFixtures';
+
+const createModelOperationGuard = (
+  options: Parameters<typeof createModelOperationGuardBase>[0],
+) =>
+  createModelOperationGuardBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
+const createAttemptJournal = (
+  options: Parameters<typeof createAttemptJournalBase>[0],
+) =>
+  createAttemptJournalBase({ providers: builtinProviderRegistry, ...options });
+const createGuardedModelOperations = (
+  options: Parameters<typeof createGuardedModelOperationsBase>[0],
+) =>
+  createGuardedModelOperationsBase({
+    providers: builtinProviderRegistry,
+    ...options,
+  });
 
 const storageMigration = require('../../migrations/1000_storage');
 const journalMigration = require('../../migrations/4000_journal');
@@ -854,7 +874,7 @@ describe('observability seam', () => {
     const recorded: unknown[] = [];
     const { createAuthOperationGuard } = require('../providers/auth/guard');
     const { createAuthModuleRegistry } = require('../providers/auth/modules');
-    const { anthropicAuthModule } = require('../providers/auth/modules');
+    const { jsonAuthModule } = require('../providers/auth/jsonModuleFixture');
     const guard = createAuthOperationGuard({
       transport: (async () => new Response('{}', { status: 200 })) as never,
       recheck: async () => true,
@@ -865,7 +885,9 @@ describe('observability seam', () => {
         },
         recordOutcome: async () => undefined,
       },
-      modules: createAuthModuleRegistry([anthropicAuthModule]),
+      modules: createAuthModuleRegistry([
+        { ...jsonAuthModule, id: 'anthropic' },
+      ]),
       events: metrics,
     }).bind({
       actor: 'user:default/alice',
@@ -913,7 +935,12 @@ describe('observability seam', () => {
     const { createAuthOperations } = require('../providers/auth/operations');
     const { createAuthOperationGuard } = require('../providers/auth/guard');
     const modules = require('../providers/auth/modules');
-    const { builtinProviderRegistry } = require('../providers/builtins');
+    const { jsonAuthModule } = require('../providers/auth/jsonModuleFixture');
+    /** The extracted anthropic auth module stands in as a local fixture. */
+    const denyProbeModules = modules.createAuthModuleRegistry([
+      jsonAuthModule,
+      ...modules.builtinAuthModules,
+    ]);
     try {
       await credentialsMigration.up(db);
       const lease = await createKnexNamespaceLease({ db });
@@ -942,7 +969,7 @@ describe('observability seam', () => {
           recheck: async () => true,
           journal,
           events: metrics,
-          modules: modules.builtinAuthModuleRegistry,
+          modules: denyProbeModules,
         }),
         journal,
         stores: createCredentialStores({
@@ -951,7 +978,7 @@ describe('observability seam', () => {
           configCredentials: new Map(),
         }),
         events: metrics,
-        modules: modules.builtinAuthModuleRegistry,
+        modules: denyProbeModules,
         tokenEndpoints: { anthropic: 'https://token.example/v1/oauth/token' },
         clientIds: { anthropic: 'client-id' },
       });
@@ -1099,7 +1126,7 @@ describe('observability seam', () => {
         }),
         journal,
         events: recorder,
-        providers: require('../providers/builtins').builtinProviderRegistry,
+        providers: builtinProviderRegistry,
         // A genuine, trusted binding: only the message is host-controlled.
         resolve: async () => {
           throw new GuardedResolutionError(

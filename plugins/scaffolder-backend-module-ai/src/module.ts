@@ -18,7 +18,14 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { aiServiceRef } from '@backstage/ai-node/alpha';
+import { createPrivateAiService } from '@backstage/ai-node/alpha';
+import { builtinProviderModules } from '@backstage/ai-node/modules';
+import { googleProviderModules } from '@backstage/ai-node-provider-google/alpha';
+import { openaiProviderModules } from '@backstage/ai-node-provider-openai/alpha';
+import { anthropicProviderModules } from '@backstage/ai-node-provider-anthropic';
+import { azureProviderModules } from '@backstage/ai-node-provider-azure';
+import { typesafeProviderModules } from '@backstage/ai-node-provider-typesafe';
+import { openrouterProviderModules } from '@backstage/ai-node-provider-openrouter';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
 import { createAiGenerateAction, createAiTransformAction } from './actions';
 
@@ -32,12 +39,48 @@ export const scaffolderModuleAi = createBackendModule({
   register(reg) {
     reg.registerInit({
       deps: {
-        ai: aiServiceRef,
         scaffolder: scaffolderActionsExtensionPoint,
         config: coreServices.rootConfig,
         permissions: coreServices.permissions,
+        database: coreServices.database,
+        auth: coreServices.auth,
+        logger: coreServices.logger,
+        auditor: coreServices.auditor,
+        lifecycle: coreServices.lifecycle,
+        pluginMetadata: coreServices.pluginMetadata,
       },
-      async init({ ai, scaffolder, config, permissions }) {
+      async init({
+        scaffolder,
+        config,
+        permissions,
+        database,
+        auth,
+        logger,
+        auditor,
+        lifecycle,
+        pluginMetadata,
+      }) {
+        const ai = await createPrivateAiService({
+          deps: {
+            database,
+            auth,
+            permissions,
+            logger,
+            auditor,
+            lifecycle,
+            pluginMetadata,
+          },
+          config,
+          providerModules: [
+            ...googleProviderModules,
+            ...openaiProviderModules,
+            ...builtinProviderModules,
+            ...anthropicProviderModules,
+            ...azureProviderModules,
+            ...typesafeProviderModules,
+            ...openrouterProviderModules,
+          ],
+        });
         const options = { ai, config, permissions };
         scaffolder.addActions(
           createAiTransformAction(options),
