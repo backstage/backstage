@@ -28,6 +28,7 @@
  * The PostgreSQL cells run when AI_TEST_POSTGRES_URL is set; the SQLite
  * cells always run.
  */
+import { randomUUID } from 'node:crypto';
 import { readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { createProviderRegistry } from './providers/registry';
@@ -46,6 +47,8 @@ type MockState = {
   dbDestroys: number;
   createAttempts: number;
   dropAttempts: number;
+  /** The exact schema names the intercepted CREATE SCHEMA statements made. */
+  createdSchemas: string[];
 };
 
 jest.mock('knex', () => {
@@ -62,6 +65,7 @@ jest.mock('knex', () => {
     dbDestroys: 0,
     createAttempts: 0,
     dropAttempts: 0,
+    createdSchemas: [],
   };
   const wrap = (config: KnexConfig) => {
     if (mockState.failConstructor && config.client === 'better-sqlite3') {
@@ -84,6 +88,10 @@ jest.mock('knex', () => {
           return (sql: string) => {
             if (sql.includes('create schema')) {
               mockState.createAttempts += 1;
+              const name = /"([^"]+)"/.exec(sql)?.[1];
+              if (name) {
+                mockState.createdSchemas.push(name);
+              }
               if (mockState.failCreateSchema) {
                 throw new Error('injected create-schema failure');
               }
@@ -147,22 +155,62 @@ function resetState() {
   knexMock.dbDestroys = 0;
   knexMock.createAttempts = 0;
   knexMock.dropAttempts = 0;
+  knexMock.createdSchemas = [];
 }
 
 const pgUrl = process.env.AI_TEST_POSTGRES_URL;
 
-/** Drops journal_harness_% schemas an injected failure left behind. */
-async function dropLeftoverHarnessSchemas(): Promise<void> {
-  if (!pgUrl) return;
+/**
+ * Drops only the schemas THIS test's harness created, captured from the
+ * intercepted CREATE SCHEMA statements: the shared AI_TEST_POSTGRES_URL
+ * may carry live schemas of concurrent tests, which a wildcard drop
+ * would destroy.
+ */
+async function dropCreatedSchemas(): Promise<void> {
+  if (!pgUrl || knexMock.createdSchemas.length === 0) return;
   const actual = jest.requireActual('knex') as typeof import('knex');
   const admin = actual({ client: 'pg', connection: pgUrl });
   try {
-    const leftovers = (await admin.raw(
-      `select schema_name from information_schema.schemata where schema_name like 'journal_harness_%'`,
-    )) as { rows: Array<{ schema_name: string }> };
-    for (const row of leftovers.rows) {
-      await admin.raw(`drop schema if exists "${row.schema_name}" cascade`);
+    for (const name of knexMock.createdSchemas) {
+      await admin.raw(`drop schema if exists "${name}" cascade`);
     }
+  } finally {
+    await admin.destroy();
+  }
+}
+
+/** A foreign journal_harness_% schema standing in for a concurrent test. */
+async function createDecoySchema(): Promise<string> {
+  const name = `journal_harness_decoy_${randomUUID().replace(/-/g, '')}`;
+  const actual = jest.requireActual('knex') as typeof import('knex');
+  const admin = actual({ client: 'pg', connection: pgUrl! });
+  try {
+    await admin.raw(`create schema "${name}"`);
+  } finally {
+    await admin.destroy();
+  }
+  return name;
+}
+
+async function schemaExists(name: string): Promise<boolean> {
+  const actual = jest.requireActual('knex') as typeof import('knex');
+  const admin = actual({ client: 'pg', connection: pgUrl! });
+  try {
+    const rows = (await admin.raw(
+      `select 1 from information_schema.schemata where schema_name = ?`,
+      [name],
+    )) as { rows: unknown[] };
+    return rows.rows.length > 0;
+  } finally {
+    await admin.destroy();
+  }
+}
+
+async function dropSchema(name: string): Promise<void> {
+  const actual = jest.requireActual('knex') as typeof import('knex');
+  const admin = actual({ client: 'pg', connection: pgUrl! });
+  try {
+    await admin.raw(`drop schema if exists "${name}" cascade`);
   } finally {
     await admin.destroy();
   }
@@ -194,19 +242,36 @@ describe('createJournalHarness cleanup discipline', () => {
         dialect: 'pg',
       });
       expect(knexMock.dropAttempts).toBe(0);
-      knexMock.failDropSchema = true;
-      // A successful setup's cleanup surfaces the drop failure — the
-      // caller can detect the leaked schema — after attempting every
-      // step: both connections are still destroyed.
-      await expect(store.cleanup()).rejects.toThrow(
-        'injected drop-schema failure',
-      );
-      expect(knexMock.dropAttempts).toBe(1);
-      expect(knexMock.dbDestroys).toBe(1);
-      expect(knexMock.adminDestroys).toBe(1);
-      // The injected drop never ran, so the schema is really still
-      // there; remove it so the test leaves the server clean.
-      await dropLeftoverHarnessSchemas();
+      // A decoy stands in for a concurrent test's live schema: this
+      // cell must never touch anything but its own.
+      const decoy = await createDecoySchema();
+      try {
+        try {
+          knexMock.failDropSchema = true;
+          // A successful setup's cleanup surfaces the drop failure —
+          // the caller can detect the leaked schema — after attempting
+          // every step: both connections are still destroyed.
+          await expect(store.cleanup()).rejects.toThrow(
+            'injected drop-schema failure',
+          );
+          expect(knexMock.dropAttempts).toBe(1);
+          expect(knexMock.dbDestroys).toBe(1);
+          expect(knexMock.adminDestroys).toBe(1);
+          // The decoy survived the cleanup: only this cell's own schema
+          // is ever touched, on the shared test server.
+          await expect(schemaExists(decoy)).resolves.toBe(true);
+        } finally {
+          // The injected drop never ran, so this store's own schema is
+          // really still there; remove exactly it — never a wildcard —
+          // even when an assertion above failed.
+          await dropCreatedSchemas();
+        }
+        // The decoy survived the removal helper too: it dropped only
+        // the schema this cell created, nothing matching a wildcard.
+        await expect(schemaExists(decoy)).resolves.toBe(true);
+      } finally {
+        await dropSchema(decoy);
+      }
     });
 
     it('reports a rejected db destroy after still dropping the schema and destroying the admin connection', async () => {
@@ -216,11 +281,20 @@ describe('createJournalHarness cleanup discipline', () => {
         dialect: 'pg',
       });
       knexMock.failDbDestroy = true;
-      // The db destroy failure surfaces after every other step ran: the
-      // schema was dropped and the admin connection destroyed.
-      await expect(store.cleanup()).rejects.toThrow('injected destroy failure');
-      expect(knexMock.dropAttempts).toBe(1);
-      expect(knexMock.adminDestroys).toBe(1);
+      try {
+        // The db destroy failure surfaces after every other step ran:
+        // the schema was dropped and the admin connection destroyed.
+        await expect(store.cleanup()).rejects.toThrow(
+          'injected destroy failure',
+        );
+        expect(knexMock.dropAttempts).toBe(1);
+        expect(knexMock.adminDestroys).toBe(1);
+      } finally {
+        // The injected destroy threw before the real one ran, so the
+        // schema connection's pool is still alive; close it for real.
+        knexMock.failDbDestroy = false;
+        await store.db.destroy();
+      }
     });
   });
 
@@ -248,7 +322,14 @@ describe('createJournalHarness cleanup discipline', () => {
     });
     expect(await harnessDirectories()).toBe(before + 1);
     knexMock.failDestroy = true;
-    await expect(store.cleanup()).rejects.toThrow('injected destroy failure');
-    expect(await harnessDirectories()).toBe(before);
+    try {
+      await expect(store.cleanup()).rejects.toThrow('injected destroy failure');
+      expect(await harnessDirectories()).toBe(before);
+    } finally {
+      // The injected destroy threw before the real one ran, so the
+      // SQLite pool is still alive; close it for real.
+      knexMock.failDestroy = false;
+      await store.db.destroy();
+    }
   });
 });
