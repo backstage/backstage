@@ -27,10 +27,7 @@ describe('Oidc Database', () => {
     const knex = await databases.init(databaseId);
 
     await knex.migrate.latest({
-      directory: resolvePackagePath(
-        '@backstage/plugin-auth-backend',
-        'migrations',
-      ),
+      directory: resolvePackagePath(import.meta.url, 'migrations'),
     });
 
     return {
@@ -43,74 +40,13 @@ describe('Oidc Database', () => {
   }
 
   describe.each(databases.eachSupportedId())('%p', databaseId => {
-    describe('Clients', () => {
-      it('should create and return a client', async () => {
-        const { oidc } = await createOidcDatabase(databaseId);
-
-        await expect(
-          oidc.createClient({
-            clientId: 'test-client',
-            clientName: 'Test Client',
-            clientSecret: 'test-secret',
-            redirectUris: ['https://example.com/callback'],
-            responseTypes: ['code'],
-            grantTypes: ['authorization_code'],
-          }),
-        ).resolves.toEqual({
-          clientId: 'test-client',
-          clientName: 'Test Client',
-          clientSecret: 'test-secret',
-          redirectUris: ['https://example.com/callback'],
-          responseTypes: ['code'],
-          grantTypes: ['authorization_code'],
-          scope: undefined,
-          expiresAt: undefined,
-          metadata: undefined,
-        });
-      });
-
-      it('should return the client thats created in a list', async () => {
-        const { oidc } = await createOidcDatabase(databaseId);
-
-        const client = await oidc.createClient({
-          clientId: 'test-client',
-          clientName: 'Test Client',
-          clientSecret: 'test-secret',
-          redirectUris: ['https://example.com/callback'],
-          responseTypes: ['code'],
-          grantTypes: ['authorization_code'],
-        });
-
-        await expect(
-          oidc.getClient({ clientId: 'test-client' }),
-        ).resolves.toEqual(client);
-      });
-
-      it('should return null if the client does not exist', async () => {
-        const { oidc } = await createOidcDatabase(databaseId);
-
-        await expect(
-          oidc.getClient({ clientId: 'test-client' }),
-        ).resolves.toBeNull();
-      });
-    });
-
     describe('Authorization Sessions', () => {
       it('should create and return an authorization session', async () => {
         const { oidc } = await createOidcDatabase(databaseId);
 
-        const client = await oidc.createClient({
-          clientId: 'test-client',
-          clientName: 'Test Client',
-          clientSecret: 'test-secret',
-          redirectUris: ['https://example.com/callback'],
-          responseTypes: ['code'],
-          grantTypes: ['authorization_code'],
-        });
-
         const session = await oidc.createAuthorizationSession({
           id: 'test-session',
-          clientId: client.clientId,
+          clientId: 'https://example.com/client.json',
           userEntityRef: 'user:default/blam',
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -125,7 +61,7 @@ describe('Oidc Database', () => {
         expect(session).toEqual(
           expect.objectContaining({
             id: 'test-session',
-            clientId: client.clientId,
+            clientId: 'https://example.com/client.json',
             userEntityRef: 'user:default/blam',
             redirectUri: 'https://example.com/callback',
             responseType: 'code',
@@ -143,18 +79,9 @@ describe('Oidc Database', () => {
       it('should allow updating the authorization session', async () => {
         const { oidc } = await createOidcDatabase(databaseId);
 
-        const client = await oidc.createClient({
-          clientId: 'test-client',
-          clientName: 'Test Client',
-          clientSecret: 'test-secret',
-          redirectUris: ['https://example.com/callback'],
-          responseTypes: ['code'],
-          grantTypes: ['authorization_code'],
-        });
-
         const session = await oidc.createAuthorizationSession({
           id: 'test-session',
-          clientId: client.clientId,
+          clientId: 'https://example.com/client.json',
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
           expiresAt: new Date('2025-01-01T00:00:00Z'),
@@ -178,18 +105,9 @@ describe('Oidc Database', () => {
       it('should create and return an authorization code', async () => {
         const { oidc } = await createOidcDatabase(databaseId);
 
-        const client = await oidc.createClient({
-          clientId: 'test-client',
-          clientName: 'Test Client',
-          clientSecret: 'test-secret',
-          redirectUris: ['https://example.com/callback'],
-          responseTypes: ['code'],
-          grantTypes: ['authorization_code'],
-        });
-
         const session = await oidc.createAuthorizationSession({
           id: 'test-session',
-          clientId: client.clientId,
+          clientId: 'https://example.com/client.json',
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
           expiresAt: new Date('2025-01-01T00:00:00Z'),
@@ -213,18 +131,9 @@ describe('Oidc Database', () => {
       it('should return authorization code with session data', async () => {
         const { oidc } = await createOidcDatabase(databaseId);
 
-        const client = await oidc.createClient({
-          clientId: 'test-client',
-          clientName: 'Test Client',
-          clientSecret: 'test-secret',
-          redirectUris: ['https://example.com/callback'],
-          responseTypes: ['code'],
-          grantTypes: ['authorization_code'],
-        });
-
         const session = await oidc.createAuthorizationSession({
           id: 'test-session',
-          clientId: client.clientId,
+          clientId: 'https://example.com/client.json',
           userEntityRef: 'user:default/blam',
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
@@ -255,18 +164,9 @@ describe('Oidc Database', () => {
       it('should allow updating the authorization code', async () => {
         const { oidc } = await createOidcDatabase(databaseId);
 
-        const client = await oidc.createClient({
-          clientId: 'test-client',
-          clientName: 'Test Client',
-          clientSecret: 'test-secret',
-          redirectUris: ['https://example.com/callback'],
-          responseTypes: ['code'],
-          grantTypes: ['authorization_code'],
-        });
-
         const session = await oidc.createAuthorizationSession({
           id: 'test-session',
-          clientId: client.clientId,
+          clientId: 'https://example.com/client.json',
           redirectUri: 'https://example.com/callback',
           responseType: 'code',
           expiresAt: new Date('2025-01-01T00:00:00Z'),

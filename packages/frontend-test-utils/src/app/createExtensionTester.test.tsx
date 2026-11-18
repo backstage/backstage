@@ -17,6 +17,7 @@
 import {
   analyticsApiRef,
   coreExtensionData,
+  createApiRef,
   createExtension,
   createExtensionDataRef,
   createExtensionInput,
@@ -31,6 +32,63 @@ const stringDataRef = createExtensionDataRef<string>().with({
 });
 
 describe('createExtensionTester', () => {
+  it('should pass synchronous partial mocks for promise-valued refs through unchanged', () => {
+    const ref = createApiRef<
+      Promise<{ value: string; unused(): number }>
+    >().with({
+      id: 'plugin.test.client',
+    });
+    const mock = { value: 'Mock ready' };
+    const subject = createExtension({
+      attachTo: { id: 'ignored', input: 'ignored' },
+      output: [stringDataRef],
+      factory: ({ apis }) => {
+        expect(apis.get(ref)).toBe(mock);
+        return [stringDataRef(mock.value)];
+      },
+    });
+    expect(
+      createExtensionTester(subject, { apis: [[ref, mock]] }).get(
+        stringDataRef,
+      ),
+    ).toBe('Mock ready');
+  });
+
+  describe('with an extension tree error', () => {
+    const subject = createExtension({
+      name: 'subject',
+      attachTo: { id: 'ignored', input: 'ignored' },
+      inputs: { items: createExtensionInput([stringDataRef]) },
+      output: [stringDataRef],
+      factory: ({ inputs }) => [
+        stringDataRef(inputs.items.map(i => i.get(stringDataRef)).join(',')),
+      ],
+    });
+    const child = createExtension({
+      name: 'child',
+      attachTo: { id: 'subject', input: 'items' },
+      output: [stringDataRef],
+      factory: () => [stringDataRef('child')],
+    });
+
+    it('should throw by default', () => {
+      expect(() =>
+        createExtensionTester(subject).add(child).add(child).get(stringDataRef),
+      ).toThrow(/error\.code === 'EXTENSION_IGNORED'/);
+    });
+
+    it('should not throw for an expected error', () => {
+      expect(
+        createExtensionTester(subject, {
+          isExpectedError: error => error.code === 'EXTENSION_IGNORED',
+        })
+          .add(child)
+          .add(child)
+          .get(stringDataRef),
+      ).toBe('child');
+    });
+  });
+
   it('should return the correct dataRef when called', () => {
     const extension = createExtension({
       attachTo: { id: 'ignored', input: 'ignored' },

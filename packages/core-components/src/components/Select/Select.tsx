@@ -34,7 +34,11 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link Select} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type SelectInputBaseClassKey = 'root' | 'input';
 
 const BootstrapInput = withStyles(
@@ -65,7 +69,11 @@ const BootstrapInput = withStyles(
   { name: 'BackstageSelectInputBase' },
 )(InputBase);
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link Select} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type SelectClassKey =
   | 'formControl'
   | 'label'
@@ -117,15 +125,27 @@ const useStyles = makeStyles(
   { name: 'BackstageSelect' },
 );
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link Select} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type SelectItem = {
   label: string;
   value: string | number;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link Select} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type SelectedItems = string | string[] | number | number[];
 
+/**
+ * @deprecated Use the replacement described in {@link Select} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type SelectProps = {
   multiple?: boolean;
   items: SelectItem[];
@@ -140,7 +160,14 @@ export type SelectProps = {
   'data-testid'?: string;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use `Select` from `@backstage/ui` instead. Convert `items` to
+ * `options` with string `id` fields, use `value` and `onChange` for selection,
+ * and replace `multiple` with `selectionMode="multiple"` for multiple
+ * selection. Adapt selected values and callbacks to the BUI contract;
+ * the props are not interchangeable.
+ */
 export function SelectComponent(props: SelectProps) {
   const {
     multiple,

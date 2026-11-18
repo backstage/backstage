@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  ErrorDisplayProps,
-  NotFoundErrorPageProps,
-  ProgressProps,
-} from '../types';
+import { ErrorDisplayProps, NotFoundErrorPageProps } from '../types';
 import { createSwappableComponent } from './createSwappableComponent';
 
 /**
  * @public
  */
-export const Progress = createSwappableComponent<ProgressProps>({
+export const Progress = createSwappableComponent<{}>({
   id: 'core-progress',
 });
 

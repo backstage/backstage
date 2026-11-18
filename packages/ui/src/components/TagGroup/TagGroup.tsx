@@ -86,7 +86,7 @@ export const Tag = forwardRef<HTMLDivElement, TagProps>((props, ref) => {
       textValue={textValue}
       className={classes.root}
       {...dataAttributes}
-      {...restProps}
+      {...(restProps as React.ComponentProps<typeof ReactAriaTag>)}
       onPress={handlePress}
     >
       {({ allowsRemoving }) => (

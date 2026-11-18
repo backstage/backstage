@@ -1208,6 +1208,53 @@ describe('createRouter readonly disabled', () => {
       });
     });
 
+    describe('entity with location annotations', () => {
+      it('does not let the entity override the server-assigned location annotations', async () => {
+        const entity: Entity = {
+          apiVersion: 'a',
+          kind: 'b',
+          metadata: {
+            name: 'n',
+            annotations: {
+              [ANNOTATION_LOCATION]: 'file:/etc/some-file',
+              [ANNOTATION_ORIGIN_LOCATION]: 'file:/etc/some-file',
+              'example.com/annotation': 'value',
+            },
+          },
+        };
+
+        orchestrator.process.mockResolvedValueOnce({
+          ok: true,
+          state: {},
+          completedEntity: entity,
+          deferredEntities: [],
+          refreshKeys: [],
+          relations: [],
+          errors: [],
+        });
+
+        const response = await request(app)
+          .post('/validate-entity')
+          .send({ entity, location: 'url:validate-entity' });
+
+        expect(response.status).toEqual(200);
+        expect(orchestrator.process).toHaveBeenCalledWith({
+          entity: {
+            apiVersion: 'a',
+            kind: 'b',
+            metadata: {
+              name: 'n',
+              annotations: {
+                'example.com/annotation': 'value',
+                [ANNOTATION_LOCATION]: 'url:validate-entity',
+                [ANNOTATION_ORIGIN_LOCATION]: 'url:validate-entity',
+              },
+            },
+          },
+        });
+      });
+    });
+
     describe('invalid entity', () => {
       it('returns 400', async () => {
         const entity: Entity = {

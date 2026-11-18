@@ -38,6 +38,8 @@ const useStyles = makeStyles<Theme>(
 
 /**
  * @public
+ * @deprecated Use the replacement described in {@link FavoriteToggleIcon} instead.
+ * BUI components use their own props and styling contracts.
  */
 export type FavoriteToggleIconClassKey = 'icon' | 'iconBorder';
 
@@ -47,6 +49,9 @@ export type FavoriteToggleIconClassKey = 'icon' | 'iconBorder';
  * Can be used independently, useful when used as {@link @material-table/core#MaterialTableProps.actions} in {@link @material-table/core#MaterialTable}
  *
  * @public
+ * @deprecated Render filled or outlined star icons according to favorite
+ * state. For an interactive control, compose them with `ToggleButton` from
+ * `@backstage/ui` and provide an accessible label.
  */
 export function FavoriteToggleIcon(props: { isFavorite: boolean }) {
   const { isFavorite } = props;
@@ -66,6 +71,8 @@ export function FavoriteToggleIcon(props: { isFavorite: boolean }) {
  * Props for the {@link FavoriteToggle} component.
  *
  * @public
+ * @deprecated Use the replacement described in {@link FavoriteToggle} instead.
+ * BUI components use their own props and styling contracts.
  */
 export type FavoriteToggleProps = ComponentProps<typeof IconButton> & {
   id: string;
@@ -81,6 +88,9 @@ export type FavoriteToggleProps = ComponentProps<typeof IconButton> & {
  * This component can only be used in as a controlled toggle and does not keep internal state.
  *
  * @public
+ * @deprecated Use `ToggleButton` from `@backstage/ui` with star icons instead.
+ * Map `isFavorite` to `isSelected` and `onToggle` to `onChange`, provide an
+ * accessible label, and compose a BUI tooltip if needed.
  */
 export function FavoriteToggle(props: FavoriteToggleProps) {
   const {

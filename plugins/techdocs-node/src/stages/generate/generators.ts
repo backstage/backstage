@@ -16,7 +16,6 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { getGeneratorKey } from './helpers';
 import { TechdocsGenerator } from './techdocs';
 import {
   GeneratorBase,
@@ -25,6 +24,15 @@ import {
 } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { TechDocsContainerRunner } from './types';
+import { TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY } from '../../techdocsTypes';
+
+/**
+ * 'techdocs' was the generator key before engines were introduced, and is
+ * kept as an alias of 'mkdocs' so that existing registrations keep working.
+ */
+function normalizeGeneratorKey(key: SupportedGeneratorKey): string {
+  return key === 'techdocs' ? 'mkdocs' : key;
+}
 
 /**
  * Collection of docs generators
@@ -32,6 +40,7 @@ import { TechDocsContainerRunner } from './types';
  */
 export class Generators implements GeneratorBuilder {
   private generatorMap = new Map<SupportedGeneratorKey, GeneratorBase>();
+  private defaultEngine: SupportedGeneratorKey = 'mkdocs';
 
   /**
    * Returns a generators instance containing a generator for TechDocs
@@ -43,14 +52,20 @@ export class Generators implements GeneratorBuilder {
     options: {
       logger: LoggerService;
       containerRunner?: TechDocsContainerRunner;
-      customGenerator?: TechdocsGenerator;
+      customGenerator?: GeneratorBase;
     },
   ): Promise<GeneratorBuilder> {
     const generators = new Generators();
+    const defaultEngine =
+      config.getOptionalString('techdocs.generator.defaultEngine') ?? 'mkdocs';
 
-    const techdocsGenerator =
+    generators.defaultEngine = defaultEngine;
+
+    options.logger.info(`TechDocs generator defaultEngine: ${defaultEngine}`);
+
+    const mkdocsGenerator =
       options.customGenerator ?? TechdocsGenerator.fromConfig(config, options);
-    generators.register('techdocs', techdocsGenerator);
+    generators.register('mkdocs', mkdocsGenerator);
 
     return generators;
   }
@@ -61,7 +76,7 @@ export class Generators implements GeneratorBuilder {
    * @param generator - The generator instance to register
    */
   register(generatorKey: SupportedGeneratorKey, generator: GeneratorBase) {
-    this.generatorMap.set(generatorKey, generator);
+    this.generatorMap.set(normalizeGeneratorKey(generatorKey), generator);
   }
 
   /**
@@ -69,11 +84,25 @@ export class Generators implements GeneratorBuilder {
    * @param entity - A TechDocs entity instance
    */
   get(entity: Entity): GeneratorBase {
-    const generatorKey = getGeneratorKey(entity);
+    if (!entity) {
+      throw new Error('No entity provided');
+    }
+
+    const annotatedEngine =
+      entity.metadata?.annotations?.[TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY];
+    const generatorKey = normalizeGeneratorKey(
+      annotatedEngine ?? this.defaultEngine,
+    );
     const generator = this.generatorMap.get(generatorKey);
 
     if (!generator) {
-      throw new Error(`No generator registered for entity: "${generatorKey}"`);
+      const source = annotatedEngine
+        ? `the ${TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY} annotation`
+        : 'techdocs.generator.defaultEngine';
+      throw new Error(
+        `No TechDocs generator registered for engine "${generatorKey}" (from ${source}). ` +
+          `Registered engines: ${[...this.generatorMap.keys()].join(', ')}`,
+      );
     }
 
     return generator;

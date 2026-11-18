@@ -21,5 +21,9 @@ export {
   type ExtensionSnapshotNode,
 } from './createExtensionTester';
 
-export { renderInTestApp, type TestAppOptions } from './renderInTestApp';
+export {
+  renderInTestApp,
+  type TestAppOptions,
+  type TestAppRenderResult,
+} from './renderInTestApp';
 export { renderTestApp, type RenderTestAppOptions } from './renderTestApp';

@@ -19,6 +19,8 @@ import {
   coreExtensionData,
   createExtension,
   iconsApiRef,
+  createApiRef,
+  IconsApi,
   useRouteRef as useNewRouteRef,
   createRouteRef as createNewRouteRef,
   useApi,
@@ -33,10 +35,12 @@ import {
 import { screen } from '@testing-library/react';
 import { compatWrapper } from './compatWrapper';
 import {
+  IconComponent,
   useApp,
   useRouteRef as useOldRouteRef,
   createRouteRef as createOldRouteRef,
 } from '@backstage/core-plugin-api';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 import { renderInTestApp as renderInOldTestApp } from '@backstage/test-utils';
 
@@ -83,6 +87,7 @@ describe('BackwardsCompatProvider', () => {
                   {app
                     .getPlugins()
                     .map(p => p.getId())
+                    .sort()
                     .join(', ')}
                   {'\n'}
                   components: {Object.keys(app.getComponents()).join(', ')}
@@ -101,7 +106,7 @@ describe('BackwardsCompatProvider', () => {
     );
 
     expect(screen.getByTestId('ctx').textContent).toMatchInlineSnapshot(`
-      "plugins: test, app
+      "plugins: app, test
       components: NotFoundErrorPage, BootErrorPage, Progress, Router, ErrorBoundaryFallback
       icons: brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, user, warning, star, unstarred, externalLink"
     `);
@@ -115,9 +120,14 @@ describe('BackwardsCompatProvider', () => {
       return <div>link: {link()}</div>;
     }
 
-    renderInNewTestApp(compatWrapper(<Component />), {
-      mountedRoutes: { '/test': convertLegacyRouteRef(routeRef) },
-    });
+    renderInNewTestApp(
+      <ReactRouterV6PageRouter>
+        {compatWrapper(<Component />)}
+      </ReactRouterV6PageRouter>,
+      {
+        mountedRoutes: { '/test': convertLegacyRouteRef(routeRef) },
+      },
+    );
 
     expect(screen.getByText('link: /test')).toBeInTheDocument();
   });
@@ -155,6 +165,36 @@ describe('ForwardsCompatProvider', () => {
       "components: progress=true, notFoundErrorPage=true, errorDisplay=true
       icons: kind:api, kind:component, kind:domain, kind:group, kind:location, kind:system, kind:user, kind:resource, kind:template, brokenImage, catalog, scaffolder, techdocs, search, chat, dashboard, docs, email, github, group, help, user, warning, star, unstarred"
     `);
+  });
+
+  it('should provide both icons API versions in old-system apps', async () => {
+    const legacyIconsApiRef = createApiRef<
+      IconsApi & { getIcon(key: string): IconComponent | undefined }
+    >({ id: 'core.icons' });
+    const CustomIcon = () => <svg aria-label="Custom icon" />;
+
+    function Component() {
+      const icons = useApi(iconsApiRef);
+      const legacyIcons = useApi(legacyIconsApiRef);
+      expect(legacyIcons.getIcon('custom')).toBe(CustomIcon);
+      expect(legacyIcons.getIcon('missing')).toBeUndefined();
+      expect(icons.icon('missing')).toBeUndefined();
+      expect(legacyIcons.listIconKeys()).toEqual(icons.listIconKeys());
+      expect(icons.listIconKeys()).toContain('custom');
+      const LegacyIcon = legacyIcons.getIcon('custom')!;
+      return (
+        <>
+          <LegacyIcon />
+          {legacyIcons.icon('custom')}
+          {icons.icon('custom')}
+        </>
+      );
+    }
+
+    await renderInOldTestApp(compatWrapper(<Component />), {
+      icons: { custom: CustomIcon },
+    });
+    expect(await screen.findAllByLabelText('Custom icon')).toHaveLength(3);
   });
 
   it('should convert the routing context', async () => {

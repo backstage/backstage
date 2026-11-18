@@ -11,6 +11,7 @@ on:
       - 'mkdocs.yml'
       - 'mkdocs-ci.yml'
       - 'docs/**'
+      - '.agents/skills/**'
 
 permissions:
   contents: read
@@ -22,7 +23,7 @@ jobs:
     name: Microsite
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 

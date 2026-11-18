@@ -38,7 +38,6 @@ export {
   type CreateFrontendPluginOptions,
   type FrontendPlugin,
   type OverridableFrontendPlugin,
-  type PluginOptions,
   type FrontendPluginInfo,
   type FrontendPluginInfoOptions,
 } from './createFrontendPlugin';
@@ -52,14 +51,10 @@ export {
   type FrontendFeatureLoader,
   type CreateFrontendFeatureLoaderOptions,
 } from './createFrontendFeatureLoader';
-export {
-  type Extension,
-  type ExtensionAttachTo,
-} from './resolveExtensionDefinition';
+export { type Extension } from './resolveExtensionDefinition';
 export {
   type ExtensionDataContainer,
   type FeatureFlagConfig,
-  type ExtensionFactoryMiddleware,
   type FrontendFeature,
 } from './types';
 export {

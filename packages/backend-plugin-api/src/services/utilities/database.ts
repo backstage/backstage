@@ -19,12 +19,25 @@ import { isError } from '@backstage/errors';
 /**
  * Tries to deduce whether a thrown error is a database conflict.
  *
+ * PostgreSQL unique constraint violations are detected by their SQLSTATE code,
+ * since PostgreSQL localizes error messages based on the database
+ * configuration.
+ *
  * @public
  * @param e - A thrown error
  * @returns True if the error looks like it was a conflict error thrown by a
  *          known database engine
  */
 export function isDatabaseConflictError(e: unknown) {
+  const code =
+    typeof e === 'object' && e !== null
+      ? (e as { code?: unknown }).code
+      : undefined;
+
+  if (typeof code === 'string' && code === '23505') {
+    return true;
+  }
+
   const message = isError(e) ? e.message : undefined;
 
   return (

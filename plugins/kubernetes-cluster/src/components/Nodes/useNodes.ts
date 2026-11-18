@@ -17,7 +17,7 @@ import useAsync from 'react-use/esm/useAsync';
 
 import { useApi } from '@backstage/core-plugin-api';
 import { kubernetesApiRef } from '@backstage/plugin-kubernetes-react';
-import { NodeList } from 'kubernetes-models/v1';
+import type { NodeList } from 'kubernetes-models/v1';
 
 /**
  * Arguments for useApiResources

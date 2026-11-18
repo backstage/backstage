@@ -94,7 +94,7 @@ are separated out into their own folder, see further down.
 - [`catalog-model/`](https://github.com/backstage/backstage/tree/master/packages/catalog-model) -
   You can consider this to be a library for working with the catalog of sorts.
   It contains the definition of an
-  [Entity](https://backstage.io/docs/features/software-catalog/references#docsNav),
+  [Entity](https://backstage.io/docs/features/software-catalog/descriptor-format),
   as well as validation and other logic related to it. This package can be used
   in both the frontend and the backend.
 

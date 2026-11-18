@@ -19,6 +19,7 @@ import {
   getBitbucketCloudOAuthToken,
 } from '@backstage/integration';
 import fetch, { Request } from 'cross-fetch';
+import { CodeSearch } from './codeSearch';
 import { Models } from './models';
 import { WithPagination } from './pagination';
 import {
@@ -26,6 +27,49 @@ import {
   PartialResponseOptions,
   RequestOptions,
 } from './types';
+
+/**
+ * A file or directory returned by the Bitbucket Cloud source API.
+ *
+ * @public
+ */
+export interface BitbucketCloudSourceEntry {
+  /** Path from the repository root. */
+  path: string;
+  /** `commit_file` or `commit_directory`. */
+  type: string;
+}
+
+/**
+ * Error for a Bitbucket Cloud response other than the expected success.
+ *
+ * `status` is the HTTP status. Workspace code search answers `403` when the
+ * credential does not identify a user or an API token is missing
+ * `read:workspace:bitbucket`, `404` when code search is not enabled, and the
+ * removed code search API answers `410`.
+ *
+ * @public
+ */
+export class BitbucketCloudApiError extends Error {
+  /** HTTP status code of the response. */
+  readonly status: number;
+
+  constructor(method: string, url: string, status: number, statusText: string) {
+    super(
+      `Unexpected response for ${method} ${url}. Expected 200 but got ${status} - ${statusText}`,
+    );
+    this.name = 'BitbucketCloudApiError';
+    this.status = status;
+  }
+}
+
+function encodeRepositoryPath(path: string): string {
+  return path
+    .split('/')
+    .filter(segment => segment.length > 0)
+    .map(segment => encodeURIComponent(segment))
+    .join('/');
+}
 
 /** @public */
 export class BitbucketCloudClient {
@@ -39,6 +83,11 @@ export class BitbucketCloudClient {
     private readonly config: BitbucketCloudIntegrationConfig,
   ) {}
 
+  /**
+   * @deprecated Bitbucket Cloud removes the endpoint
+   * `GET /2.0/workspaces/{workspace}/search/code` on 2026-11-15.
+   * Use {@link BitbucketCloudClient.searchWorkspaceCode} instead.
+   */
   searchCode(
     workspace: string,
     query: string,
@@ -56,6 +105,137 @@ export class BitbucketCloudClient {
       url => this.getTypeMapped(url),
       pagelen,
     );
+  }
+
+  /**
+   * Searches code in all repositories of a workspace with the endpoint
+   * `POST /2.0/workspaces/{workspace}/codesearch`, and yields each page of
+   * results.
+   *
+   * The endpoint needs a credential that identifies a user, with the scopes
+   * `read:repository:bitbucket` and `read:workspace:bitbucket`.
+   * Bitbucket Cloud rejects app passwords, legacy OAuth consumers, and API
+   * keys for this endpoint with {@link BitbucketCloudApiError} status `403`.
+   * An API token without `read:workspace:bitbucket` is rejected with the same
+   * status. Adding that scope makes workspace code search available again.
+   *
+   * @param workspace - The workspace slug or UUID.
+   * @param query - The search term and the optional filters.
+   * @param options - `maxResults` sets the number of results per page (1 to 100).
+   */
+  async *searchWorkspaceCode(
+    workspace: string,
+    query: CodeSearch.Query,
+    options?: { maxResults?: number },
+  ): AsyncGenerator<CodeSearch.ResultPage, void> {
+    const workspaceEnc = encodeURIComponent(workspace);
+    const url = this.createUrl(`/workspaces/${workspaceEnc}/codesearch`);
+    const config = options?.maxResults
+      ? { max_results: options.maxResults }
+      : undefined;
+
+    let pagination:
+      | { request_id: string; pagination: { next_cursor: string } }
+      | undefined;
+    do {
+      const page: CodeSearch.ResultPage = await this.post(url, {
+        query,
+        config,
+        ...pagination,
+      }).then(response => response.json());
+      yield page;
+
+      const nextCursor = page.pagination?.next_cursor;
+      pagination =
+        page.pagination?.has_more && nextCursor
+          ? { request_id: page.id, pagination: { next_cursor: nextCursor } }
+          : undefined;
+    } while (pagination);
+  }
+
+  /**
+   * Returns whether a file exists at `filePath` on `commit`.
+   *
+   * Calls `GET /2.0/repositories/{workspace}/{repo_slug}/src/{commit}/{path}?format=meta`.
+   * A missing path answers 404 and this method returns `false`. A directory
+   * at that path also returns `false`.
+   *
+   * @param workspace - The workspace slug or UUID.
+   * @param repoSlug - The repository slug.
+   * @param commit - A branch name, tag, or commit hash. This is one path
+   * segment. A branch name that contains `/` has to be that branch's commit
+   * hash, because the source API reads only the first segment as the commit.
+   * @param filePath - The file path from the repository root.
+   */
+  async repositorySourceFileExists(
+    workspace: string,
+    repoSlug: string,
+    commit: string,
+    filePath: string,
+  ): Promise<boolean> {
+    const url = this.sourceUrl(workspace, repoSlug, commit, filePath, {
+      format: 'meta',
+    });
+    const response = await this.request(new Request(url.toString()), {
+      allowedStatuses: [404],
+    });
+    if (response.status === 404) {
+      await response.arrayBuffer().catch(() => undefined);
+      return false;
+    }
+    const body = (await response.json()) as { type?: string };
+    return body.type === 'commit_file';
+  }
+
+  /**
+   * Lists the files and directories inside one directory.
+   *
+   * Calls `GET /2.0/repositories/{workspace}/{repo_slug}/src/{commit}/{path}`
+   * and follows `next`. The repository root is an empty `directoryPath`; the
+   * source API requires a trailing slash for that listing. A missing path
+   * yields no entries.
+   *
+   * @param workspace - The workspace slug or UUID.
+   * @param repoSlug - The repository slug.
+   * @param commit - A branch name, tag, or commit hash. This is one path
+   * segment. A branch name that contains `/` has to be that branch's commit
+   * hash, because the source API reads only the first segment as the commit.
+   * @param directoryPath - The directory path from the repository root.
+   */
+  async *listRepositorySource(
+    workspace: string,
+    repoSlug: string,
+    commit: string,
+    directoryPath = '',
+  ): AsyncGenerator<BitbucketCloudSourceEntry, void> {
+    const url = this.sourceUrl(workspace, repoSlug, commit, directoryPath, {
+      pagelen: 100,
+    });
+    // A directory listing, including the repository root, needs a trailing slash.
+    if (!url.pathname.endsWith('/')) {
+      url.pathname = `${url.pathname}/`;
+    }
+
+    let next: string | undefined = url.toString();
+    while (next) {
+      const response = await this.request(new Request(next), {
+        allowedStatuses: [404],
+      });
+      if (response.status === 404) {
+        await response.arrayBuffer().catch(() => undefined);
+        return;
+      }
+      const page = (await response.json()) as {
+        values?: BitbucketCloudSourceEntry[];
+        next?: string;
+      };
+      for (const entry of page.values ?? []) {
+        if (entry.path && entry.type) {
+          yield { path: entry.path, type: entry.type };
+        }
+      }
+      next = page.next;
+    }
   }
 
   listRepositoriesByWorkspace(
@@ -137,16 +317,66 @@ export class BitbucketCloudClient {
     );
   }
 
+  private sourceUrl(
+    workspace: string,
+    repoSlug: string,
+    commit: string,
+    path: string,
+    options?: RequestOptions,
+  ): URL {
+    // `{commit}` is one path segment. Splitting `release/x` would select the
+    // branch `release` and the path `x/...`, and `%2F` does not fix that.
+    // Callers resolve a branch that contains `/` to its commit hash.
+    // `.` and `..` would escape the `/src/{commit}` segment.
+    if (!commit || commit === '.' || commit === '..') {
+      throw new Error(
+        `Invalid Bitbucket Cloud commit or branch name '${commit}'`,
+      );
+    }
+    const encodedPath = path ? `/${encodeRepositoryPath(path)}` : '';
+    return this.createUrl(
+      `/repositories/${encodeURIComponent(workspace)}/${encodeURIComponent(
+        repoSlug,
+      )}/src/${encodeURIComponent(commit)}${encodedPath}`,
+      options,
+    );
+  }
+
   private async get(url: URL): Promise<Response> {
     return this.request(new Request(url.toString(), { method: 'GET' }));
   }
 
-  private async request(req: Request): Promise<Response> {
-    const headers = await this.getAuthHeaders();
+  private async post(url: URL, body: unknown): Promise<Response> {
+    return this.request(
+      new Request(url.toString(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }),
+    );
+  }
+
+  private async request(
+    req: Request,
+    options?: { allowedStatuses?: number[] },
+  ): Promise<Response> {
+    // The headers passed to fetch replace the headers of the request,
+    // so keep the request headers and add the auth headers to them.
+    const headers: Record<string, string> = {};
+    req.headers.forEach((value, key) => {
+      headers[key] = value;
+    });
+    Object.assign(headers, await this.getAuthHeaders());
     return fetch(req, { headers }).then((response: Response) => {
-      if (!response.ok) {
-        throw new Error(
-          `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`,
+      if (
+        !response.ok &&
+        !options?.allowedStatuses?.includes(response.status)
+      ) {
+        throw new BitbucketCloudApiError(
+          req.method,
+          req.url,
+          response.status,
+          response.statusText,
         );
       }
 

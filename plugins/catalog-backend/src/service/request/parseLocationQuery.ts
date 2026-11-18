@@ -32,20 +32,6 @@ const locationCursorParser = z.object({
   query: filterPredicateSchema.optional(),
 });
 
-function isSupportedFilterPredicateRoot(
-  value: FilterPredicate | undefined,
-): boolean {
-  if (value === undefined) {
-    return true;
-  }
-
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    return false;
-  }
-
-  return true;
-}
-
 export function parseLocationQuery(
   request: Readonly<GetLocationsByQueryRequest>,
 ): {
@@ -72,10 +58,6 @@ export function parseLocationQuery(
     }
 
     const { query, limit, afterId } = result.data;
-    if (!isSupportedFilterPredicateRoot(query)) {
-      throw new InputError('Query must be an object');
-    }
-
     return {
       limit,
       afterId,
@@ -93,10 +75,6 @@ export function parseLocationQuery(
     const result = filterPredicateSchema.safeParse(request.query);
     if (!result.success) {
       throw new InputError(`Invalid query: ${fromZodError(result.error)}`);
-    }
-
-    if (!isSupportedFilterPredicateRoot(result.data)) {
-      throw new InputError('Query must be an object');
     }
 
     query = result.data;

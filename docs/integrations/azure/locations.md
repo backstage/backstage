@@ -36,6 +36,20 @@ integrations:
 
 See the Azure DevOps documentation on how to grant access to the [service principal](https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/service-principal-managed-identity).
 
+### Using a service principal with a client certificate
+
+A service principal can also authenticate with a certificate instead of a client secret. Provide the PEM-encoded certificate including its private key, either inline via `clientCertificate` or as a file via `clientCertificatePath`:
+
+```yaml
+integrations:
+  azure:
+    - host: dev.azure.com
+      credentials:
+        - clientId: ${AZURE_CLIENT_ID}
+          clientCertificatePath: /path/to/cert.pem # or clientCertificate: ${AZURE_CLIENT_CERTIFICATE}
+          tenantId: ${AZURE_TENANT_ID}
+```
+
 #### Using a system-assigned managed identity
 
 A system-assigned [managed identity](https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/overview) is an Entra ID identity that is tied to a specific Azure resource and managed by Azure. In contrast to a user-assigned managed identity, a system-assigned managed identity shares the lifecycle of the resource to which it is assigned and Azure guarantees that the identity can only be used by the specific resource.
@@ -69,6 +83,32 @@ integrations:
 See the Azure DevOps documentation on how to grant access to the [managed identity](https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/service-principal-managed-identity).
 
 ### Using a personal access token (PAT)
+
+:::caution[Deprecated for Azure DevOps Services]
+
+Personal access tokens are deprecated for Azure DevOps Services (`dev.azure.com` and `*.visualstudio.com`). Microsoft [retires global personal access tokens](https://devblogs.microsoft.com/devops/retirement-of-global-personal-access-tokens-in-azure-devops/), which work across all organizations you can access, on January 27, 2027. Organization-scoped personal access tokens keep working, but Microsoft recommends Microsoft Entra ID credentials over all personal access tokens. Backstage logs a warning at startup when a personal access token is configured for Azure DevOps Services, unless `NODE_ENV` is `development`.
+
+- In production, use a [service principal](#using-a-service-principal-with-a-client-secret) or a [managed identity](#using-a-system-assigned-managed-identity).
+- Microsoft Entra ID credentials only work with the `dev.azure.com` host. If your integration uses a legacy `*.visualstudio.com` host, change the integration `host` and your repository URLs, such as catalog locations, to `dev.azure.com` before switching credentials. Otherwise Backstage fails to start.
+- For local development, sign in with the Azure CLI (`az login`) and leave out `credentials` for `dev.azure.com`. Backstage then falls back to [`DefaultAzureCredential`](https://learn.microsoft.com/en-us/javascript/api/@azure/identity/defaultazurecredential), which picks up your Azure CLI sign-in.
+
+Personal access tokens are still supported for Azure DevOps Server.
+
+:::
+
+If you still need a personal access token for Azure DevOps Services, create an organization-scoped token instead of a global one, and limit it to that organization with `organizations`:
+
+```yaml
+integrations:
+  azure:
+    - host: dev.azure.com
+      credentials:
+        - organizations:
+            - my-org
+          personalAccessToken: ${PERSONAL_ACCESS_TOKEN}
+```
+
+If Azure DevOps rejects a personal access token, for example because it has expired or is a retired global token, reading from Azure DevOps fails with an error saying the credentials were rejected.
 
 A personal access token (PAT) is a token you generate with a specific scope and expiration date. It allows Backstage to authenticate against Azure DevOps on your behalf.
 
@@ -247,6 +287,7 @@ The configuration is a structure with these elements:
 
 - `credentials`: (optional): must be one of the following:
   - A service principal using a client secret
+  - A service principal using a client certificate
   - A service principal using a managed identity client assertion
   - A managed identity
   - A personal access token
@@ -256,6 +297,10 @@ The `credentials` element is an array where each entry is a structure with exact
 - For a service principal with client secret:
   - `clientId`: The client ID of the service principal
   - `clientSecret`: The client secret of the service principal
+  - `tenantId`: The tenant ID of the service principal
+- For a service principal with client certificate:
+  - `clientId`: The client ID of the service principal
+  - `clientCertificate` or `clientCertificatePath` (exactly one): The PEM-encoded certificate including its private key, or the path to a file containing it
   - `tenantId`: The tenant ID of the service principal
 - For a service principal with managed identity client assertion:
   - `clientId`: The client ID of the service principal

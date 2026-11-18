@@ -1,5 +1,71 @@
 # @backstage/plugin-devtools
 
+## 0.1.45
+
+### Patch Changes
+
+- ca1165d: Fixed an issue in `ScheduledTasksContent` where actual backend error messages (such as network or authorization errors) were discarded in favor of a hardcoded "No scheduled tasks found" message, and ensured the loading indicator is displayed while switching plugins.
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/core-components@0.18.16
+  - @backstage/errors@1.4.0
+  - @backstage/core-compat-api@0.6.0
+  - @backstage/ui@0.20.0
+  - @backstage/plugin-permission-react@0.5.7
+  - @backstage/plugin-devtools-common@0.1.28
+
+## 0.1.45-next.2
+
+### Patch Changes
+
+- ca1165d: Fixed an issue in `ScheduledTasksContent` where actual backend error messages (such as network or authorization errors) were discarded in favor of a hardcoded "No scheduled tasks found" message, and ensured the loading indicator is displayed while switching plugins.
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/core-compat-api@0.6.0-next.2
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/plugin-permission-react@0.5.7-next.1
+  - @backstage/plugin-devtools-common@0.1.28-next.0
+
+## 0.1.45-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.17-next.1
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+
+## 0.1.45-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-compat-api@0.5.17-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/core-components@0.18.16-next.0
+  - @backstage/plugin-permission-react@0.5.7-next.0
+
+## 0.1.44
+
+### Patch Changes
+
+- cde2e67: Migrated `InfoContent` component from Material UI to Backstage UI (BUI).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/core-compat-api@0.5.16
+  - @backstage/errors@1.3.2
+  - @backstage/core-components@0.18.15
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-devtools-common@0.1.27
+  - @backstage/plugin-permission-react@0.5.6
+
 ## 0.1.44-next.1
 
 ### Patch Changes

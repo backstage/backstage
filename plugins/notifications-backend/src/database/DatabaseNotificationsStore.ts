@@ -33,10 +33,7 @@ import { Knex } from 'knex';
 import crypto from 'node:crypto';
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-notifications-backend',
-  'migrations',
-);
+const migrationsDir = resolvePackagePath(import.meta.url, 'migrations');
 
 const NOTIFICATION_COLUMNS = [
   'id',
@@ -521,7 +518,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
             })),
           )
           .onConflict(['broadcast_id', 'user'])
-          .merge(['read', 'saved']);
+          .merge({ read, saved });
       } else {
         // SQLite does not support upsert so fall back to this (mostly for tests and local dev)
         for (const b of broadcasts) {

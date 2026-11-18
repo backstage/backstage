@@ -238,7 +238,7 @@ export async function getFileAction(
   target: { repoID: string; branch: string },
   api: InstanceType<typeof Gitlab>,
   logger: LoggerService,
-  remoteFiles: RepositoryTreeSchema[],
+  remoteFiles: RepositoryTreeSchema[] | undefined,
   defaultCommitAction:
     | 'create'
     | 'delete'
@@ -248,6 +248,24 @@ export async function getFileAction(
 ): Promise<'create' | 'delete' | 'update' | 'skip'> {
   if (defaultCommitAction === 'auto') {
     const filePath = path.join(fileInfo.targetPath ?? '', fileInfo.file.path);
+
+    if (!remoteFiles) {
+      try {
+        const targetFile = await api.RepositoryFiles.show(
+          target.repoID,
+          filePath,
+          target.branch,
+        );
+        return computeSha256(fileInfo.file) === targetFile.content_sha256
+          ? 'skip'
+          : 'update';
+      } catch (error) {
+        if (error.cause?.response?.status === 404) {
+          return 'create';
+        }
+        throw error;
+      }
+    }
 
     const remoteFile = remoteFiles?.find(entry => entry.path === filePath);
 

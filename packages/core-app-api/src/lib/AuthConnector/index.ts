@@ -16,4 +16,5 @@
 
 export { DefaultAuthConnector } from './DefaultAuthConnector';
 export { DirectAuthConnector } from './DirectAuthConnector';
+export { AuthConnectionError, isAuthConnectionError } from './errors';
 export * from './types';

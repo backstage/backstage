@@ -16,7 +16,7 @@
 
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { NotFoundError, toError } from '@backstage/errors';
+import { InputError, NotFoundError, toError } from '@backstage/errors';
 import { Octokit } from 'octokit';
 import { promises as fsPromises, Dirent } from 'node:fs';
 
@@ -621,4 +621,15 @@ export function getGitCommitMessage(
   return gitCommitMessage
     ? gitCommitMessage
     : config.getOptionalString('scaffolder.defaultCommitMessage');
+}
+
+export function assertValidTargetPath(
+  targetPath: string,
+  inputName = 'targetPath',
+) {
+  if (targetPath.startsWith('/') || targetPath.split('/').includes('..')) {
+    throw new InputError(
+      `Invalid ${inputName} '${targetPath}': must be a relative path within the target repository, without '..' segments`,
+    );
+  }
 }

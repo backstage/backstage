@@ -1,5 +1,72 @@
 # @backstage/plugin-notifications
 
+## 0.6.2
+
+### Patch Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- 555d6ff: Updated custom notification icons to use the element-based icons API. Missing icons still fall back to the notification severity icon.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/core-components@0.18.16
+  - @backstage/errors@1.4.0
+  - @backstage/ui@0.20.0
+  - @backstage/plugin-home-react@0.1.44
+  - @backstage/plugin-signals-react@0.0.28
+  - @backstage/theme@0.7.4
+  - @backstage/plugin-notifications-common@0.2.6
+
+## 0.6.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/plugin-home-react@0.1.44-next.2
+  - @backstage/plugin-notifications-common@0.2.6-next.0
+
+## 0.6.2-next.1
+
+### Patch Changes
+
+- 555d6ff: Updated custom notification icons to use the element-based icons API. Missing icons still fall back to the notification severity icon.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-home-react@0.1.44-next.1
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-home-react@0.1.44-next.0
+  - @backstage/core-components@0.18.16-next.0
+  - @backstage/plugin-signals-react@0.0.28-next.0
+
+## 0.6.1
+
+### Patch Changes
+
+- 4e7a710: Updated React Aria dependencies to the October 2026 release.
+- 298f908: Replaced the unmaintained `react-relative-time` dependency with an internal component based on `luxon`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/errors@1.3.2
+  - @backstage/core-components@0.18.15
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-home-react@0.1.43
+  - @backstage/plugin-notifications-common@0.2.5
+  - @backstage/plugin-signals-react@0.0.27
+
 ## 0.6.1-next.1
 
 ### Patch Changes

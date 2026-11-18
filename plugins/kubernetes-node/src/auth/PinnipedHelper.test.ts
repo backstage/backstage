@@ -37,10 +37,19 @@ import https from 'node:https';
 import { http, HttpResponse, passthrough } from 'msw';
 import { setupServer } from 'msw/node';
 import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
+import { generate } from 'selfsigned';
 
 jest.setTimeout(60_000);
 
 describe('Pinniped - tokenCredentialRequest', () => {
+  // msw 3 hands the agent options to a real TLS socket, which needs a
+  // parseable client certificate and key
+  let clientCert: { cert: string; key: string };
+  beforeAll(async () => {
+    const pems = await generate();
+    clientCert = { cert: pems.cert, key: pems.private };
+  });
+
   let app: ExtendedHttpServer;
   const logger = mockServices.logger.mock();
   const worker = setupServer();
@@ -157,8 +166,8 @@ describe('Pinniped - tokenCredentialRequest', () => {
         }),
       );
 
-      const myCert = 'MOCKCert';
-      const myKey = 'MOCKKey';
+      const myCert = clientCert.cert;
+      const myKey = clientCert.key;
 
       worker.use(
         http.post(
@@ -221,8 +230,8 @@ describe('Pinniped - tokenCredentialRequest', () => {
         }),
       );
 
-      const myCert = 'MOCKCert2';
-      const myKey = 'MOCKKey2';
+      const myCert = clientCert.cert;
+      const myKey = clientCert.key;
 
       worker.use(
         http.post(

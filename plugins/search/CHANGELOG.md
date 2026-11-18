@@ -1,5 +1,78 @@
 # @backstage/plugin-search
 
+## 1.8.0
+
+### Minor Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/core-components@0.18.16
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-catalog-react@4.0.0
+  - @backstage/ui@0.20.0
+  - @backstage/plugin-home-react@0.1.44
+  - @backstage/plugin-search-react@1.12.0
+  - @backstage/version-bridge@1.1.0
+  - @backstage/plugin-search-common@1.2.27
+
+## 1.7.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/plugin-catalog-react@4.0.0-next.2
+  - @backstage/plugin-home-react@0.1.44-next.2
+  - @backstage/plugin-search-common@1.2.27-next.0
+  - @backstage/plugin-search-react@1.11.10-next.2
+
+## 1.7.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-search-react@1.11.10-next.1
+  - @backstage/plugin-catalog-react@4.0.0-next.1
+  - @backstage/plugin-home-react@0.1.44-next.1
+
+## 1.7.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/plugin-home-react@0.1.44-next.0
+  - @backstage/plugin-search-react@1.11.10-next.0
+  - @backstage/core-components@0.18.16-next.0
+
+## 1.7.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/ui@0.19.0
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/errors@1.3.2
+  - @backstage/core-components@0.18.15
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-home-react@0.1.43
+  - @backstage/plugin-search-common@1.2.26
+  - @backstage/plugin-search-react@1.11.9
+
 ## 1.7.9-next.1
 
 ### Patch Changes

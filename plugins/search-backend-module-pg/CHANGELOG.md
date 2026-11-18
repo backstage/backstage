@@ -1,5 +1,47 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.61
+
+### Patch Changes
+
+- 6a0de59: Backend plugins now locate their database migrations relative to their own package directory, without requiring the package to be resolvable by name.
+- 39cda0c: Avoid recomputing full-text search `tsvector` data for unchanged documents during indexing.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/config@1.3.11
+  - @backstage/plugin-search-backend-node@1.4.10
+  - @backstage/plugin-search-common@1.2.27
+
+## 0.5.61-next.1
+
+### Patch Changes
+
+- 39cda0c: Avoid recomputing full-text search `tsvector` data for unchanged documents during indexing.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/plugin-search-backend-node@1.4.10-next.1
+  - @backstage/config@1.3.11-next.0
+  - @backstage/plugin-search-common@1.2.27-next.0
+
+## 0.5.61-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.10-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+
+## 0.5.60
+
+### Patch Changes
+
+- 7535616: Fixed PostgreSQL search highlighting when configured delimiters or selection tags contain punctuation that requires quoting.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/plugin-search-backend-node@1.4.9
+  - @backstage/plugin-search-common@1.2.26
+
 ## 0.5.60-next.1
 
 ### Patch Changes

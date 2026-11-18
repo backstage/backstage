@@ -56,3 +56,11 @@ export interface TechDocsDocument extends IndexableDocument {
 export interface DocsBuildStrategy {
   shouldBuild(params: { entity: Entity }): Promise<boolean>;
 }
+
+/**
+ * A catalog annotation key indicating which TechDoc Generation Engine to use
+ *
+ * @public
+ */
+export const TECHDOCS_ENGINE_CATALOG_ANNOTATION_KEY =
+  'backstage.io/techdocs-engine';

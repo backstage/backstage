@@ -41,8 +41,10 @@ export type RunBackendOptions = {
   inspectEnabled?: boolean | string;
   /** Whether to forward the --inspect-brk flag to the node process */
   inspectBrkEnabled?: boolean | string;
-  /** Additional module to require via the --require flag to the node process */
-  require?: string | string[];
+  /** Additional modules to require via the --require flag to the node process */
+  require?: string[];
+  /** Additional modules to import via the --import flag to the node process */
+  import?: string[];
   /** An external linked workspace to override module resolution towards */
   linkedWorkspace?: string;
   /** Config file paths from --config flags */
@@ -189,9 +191,13 @@ export async function runBackend(options: RunBackendOptions) {
       optionArgs.push(inspect);
     }
     if (options.require) {
-      const requires = [options.require].flat();
-      for (const r of requires) {
+      for (const r of options.require) {
         optionArgs.push(`--require=${r}`);
+      }
+    }
+    if (options.import) {
+      for (const i of options.import) {
+        optionArgs.push(`--import=${i}`);
       }
     }
 

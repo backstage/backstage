@@ -12,15 +12,18 @@ npx skills add https://backstage.io
 
 ## Skills
 
+### Plugin Development
+
+- `frontend-plugin-development`: Reference for building, wiring, running, and testing frontend plugins on the new frontend system. Covers plugin packaging, app integration, entity page content, dev apps, tests, and troubleshooting plugins that do not show up or fail at startup.
+- `backend-plugin-development`: Reference for developing backend plugins and modules on the new backend system. Currently covers testing with `@backstage/backend-test-utils`, including mocking core services and credentials, and testing against real databases, caches, the filesystem, and remote services.
+
 ### Frontend System Migration
 
-- `app-frontend-system-migration`: Migrate a Backstage app from the old frontend system to the new one. Covers the hybrid migration phase and the full migration of routes, sidebar, plugins, APIs, themes, and other app-level concerns.
-- `plugin-new-frontend-system-support`: Add new frontend system support to an existing Backstage plugin while keeping the old system working. Use this for published or shared plugins that need to work in both old and new frontend system apps.
-- `plugin-full-frontend-system-migration`: Fully migrate a Backstage plugin to the new frontend system, dropping all old system support. Use this for internal plugins that only need to run in a single app, or when you are ready to remove backward compatibility entirely.
+- `new-frontend-system-migration`: Migrate a Backstage app, its frontend plugins, or both from the old frontend system to the new one. Covers the hybrid and full app migration, plugins that keep old-system support and plugins that drop it, and the order to follow when a repository has both an app and plugins.
 
 ### UI Migration
 
-- `mui-to-bui-migration`: Migrate Backstage plugins from Material UI (MUI) to Backstage UI (BUI). Covers component mapping, import updates, and styling pattern replacements.
+- `mui-to-bui-migration`: Migrate Backstage plugins from Material UI (MUI) to Backstage UI (BUI), either by running the `@backstage/mui4-to-bui-migration-recipe` codemod and finishing what it leaves, or with standalone guidance. Covers component mapping, import updates, and styling pattern replacements.
 
 ### Instrumentation
 

@@ -1,5 +1,107 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.3.0
+
+### Minor Changes
+
+- ff0ef74: Added support for `when` conditions on parameter steps. Steps whose condition evaluates to false are skipped during validation, and their values are removed before the task runs. Also updated Nunjitsu to 0.7.0, with no change to existing templating behavior.
+
+### Patch Changes
+
+- 6a0de59: Backend plugins now locate their database migrations relative to their own package directory, without requiring the package to be resolvable by name.
+- 2fac95b: Group the Software Templates API documentation by functionality instead of placing all endpoints under "Untagged".
+- eda8ede: Check the host that relative fetch URLs resolve to when user credentials are required.
+
+  When `scaffolder.requireScmUserCredentials` is enabled, the fetch actions now apply the user-credential requirement to the host that the fetch URL resolves to, rather than the host of the template location. This makes the requirement effective also for fetch URLs that are not parseable as absolute URLs on their own.
+
+- e318672: Fixed matching of action input values in scaffolder permission policies, including identifiers that are provided either as numbers or as strings.
+- be5074c: Preserve public task log values when rendering without secrets omits an earlier object field, while continuing to redact secret-derived keys and values.
+- 62eaba9: Fixed custom task permission rules registered by backend modules being ignored when authorizing task access and filtering task lists.
+- Updated dependencies
+  - @backstage/integration@2.2.0
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/backend-openapi-utils@0.7.4
+  - @backstage/plugin-scaffolder-common@2.4.0
+  - @backstage/plugin-events-node@0.5.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-node@3.0.0
+  - @backstage/plugin-permission-common@0.9.13
+  - @backstage/plugin-permission-node@0.11.6
+  - @backstage/plugin-scaffolder-node@1.0.0
+
+## 4.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.1
+  - @backstage/plugin-permission-node@0.11.6-next.1
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/plugin-scaffolder-node@1.0.0-next.2
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/plugin-permission-common@0.9.13-next.0
+  - @backstage/plugin-scaffolder-common@2.4.0-next.1
+
+## 4.3.0-next.1
+
+### Minor Changes
+
+- ff0ef74: Added support for `when` conditions on parameter steps. Steps whose condition evaluates to false are skipped during validation, and their values are removed before the task runs. Also updated Nunjitsu to 0.7.0, with no change to existing templating behavior.
+
+### Patch Changes
+
+- 2fac95b: Group the Software Templates API documentation by functionality instead of placing all endpoints under "Untagged".
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@2.4.0-next.0
+  - @backstage/plugin-events-node@0.5.0-next.1
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+  - @backstage/plugin-scaffolder-node@0.13.9-next.1
+
+## 4.2.2-next.0
+
+### Patch Changes
+
+- be5074c: Preserve public task log values when rendering without secrets omits an earlier object field, while continuing to redact secret-derived keys and values.
+- 62eaba9: Fixed custom task permission rules registered by backend modules being ignored when authorizing task access and filtering task lists.
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.11.6-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+  - @backstage/plugin-scaffolder-node@0.13.9-next.0
+  - @backstage/backend-openapi-utils@0.7.4-next.0
+
+## 4.2.1
+
+### Patch Changes
+
+- 6e08d65: Fixes a regression where scaffolder step values consisting of a singular template statement block (ex. `if: "{% if parameters.foo == 'bar' %}true{% else %}false{% endif %}"`), were rendered as the strings `"true"` and `"false"` instead of their boolean values. This caused steps with `if` conditions to always run.
+
+  Step values with a single statement block that renders nothing, such as `{% if false %}x{% endif %}`, are once again left out of the action input instead of being passed as an empty string.
+
+  Updated `nunjitsu` to `^0.6.2`.
+
+- Updated dependencies
+  - @backstage/integration@2.1.3
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/backend-openapi-utils@0.7.3
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-node@2.2.6
+  - @backstage/plugin-events-node@0.4.27
+  - @backstage/plugin-permission-common@0.9.12
+  - @backstage/plugin-permission-node@0.11.5
+  - @backstage/plugin-scaffolder-common@2.3.1
+  - @backstage/plugin-scaffolder-node@0.13.8
+
 ## 4.2.1-next.1
 
 ### Patch Changes

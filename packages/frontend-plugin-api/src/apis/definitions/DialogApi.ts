@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * A handle for an open dialog that can be used to interact with it.
@@ -118,46 +122,15 @@ export interface DialogApi {
       | JSX.Element
       | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
   ): DialogApiDialog<TResult>;
-
-  /**
-   * Opens a dialog with built-in dialog chrome and returns a handle to it.
-   *
-   * @deprecated Use {@link DialogApi.open} instead. The `open` method does not
-   * render any dialog chrome, giving the caller full control over the dialog
-   * presentation. This avoids focus trap conflicts across design libraries.
-   *
-   * @param elementOrComponent - The element or component to render in the dialog. If a component is provided, it will be provided with a `dialog` prop that contains the dialog handle.
-   */
-  show<TResult = void>(
-    elementOrComponent:
-      | JSX.Element
-      | ((props: {
-          dialog: DialogApiDialog<TResult | undefined>;
-        }) => JSX.Element),
-  ): DialogApiDialog<TResult | undefined>;
-
-  /**
-   * Opens a modal dialog with built-in dialog chrome and returns a handle to it.
-   *
-   * @deprecated Use {@link DialogApi.open} instead. The `open` method does not
-   * render any dialog chrome, giving the caller full control over the dialog
-   * presentation. This avoids focus trap conflicts across design libraries.
-   *
-   * @param elementOrComponent - The element or component to render in the dialog. If a component is provided, it will be provided with a `dialog` prop that contains the dialog handle.
-   */
-  showModal<TResult = void>(
-    elementOrComponent:
-      | JSX.Element
-      | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),
-  ): DialogApiDialog<TResult>;
 }
 
 /**
  * The `ApiRef` of {@link DialogApi}.
  *
  * @public
+ * @deprecated Use {@link CoreApis.dialog | coreApis.dialog} instead.
  */
 export const dialogApiRef = createApiRef<DialogApi>().with({
-  id: 'core.dialog',
+  id: 'core.dialog.v2',
   pluginId: 'app',
 });

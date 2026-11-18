@@ -1,5 +1,83 @@
 # @backstage/plugin-home
 
+## 0.9.12
+
+### Patch Changes
+
+- 0f93c60: The World Clock home page widget now uses Backstage UI components and styles instead of Material UI.
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/catalog-client@1.16.4
+  - @backstage/core-components@0.18.16
+  - @backstage/plugin-catalog-react@4.0.0
+  - @backstage/core-compat-api@0.6.0
+  - @backstage/ui@0.20.0
+  - @backstage/core-app-api@1.20.7
+  - @backstage/plugin-home-react@0.1.44
+  - @backstage/theme@0.7.4
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+
+## 0.9.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/core-app-api@1.20.7-next.2
+  - @backstage/core-compat-api@0.6.0-next.2
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/catalog-client@1.16.4-next.1
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/plugin-catalog-react@4.0.0-next.2
+  - @backstage/plugin-home-react@0.1.44-next.2
+
+## 0.9.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.4-next.0
+  - @backstage/core-compat-api@0.5.17-next.1
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/core-app-api@1.20.7-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-catalog-react@4.0.0-next.1
+  - @backstage/plugin-home-react@0.1.44-next.1
+
+## 0.9.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-compat-api@0.5.17-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/plugin-home-react@0.1.44-next.0
+  - @backstage/core-app-api@1.20.7-next.0
+  - @backstage/core-components@0.18.16-next.0
+
+## 0.9.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/catalog-client@1.16.3
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/config@1.3.10
+  - @backstage/core-compat-api@0.5.16
+  - @backstage/core-components@0.18.15
+  - @backstage/catalog-model@1.10.2
+  - @backstage/core-app-api@1.20.6
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/plugin-home-react@0.1.43
+
 ## 0.9.11-next.1
 
 ### Patch Changes

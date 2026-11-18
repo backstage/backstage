@@ -18,6 +18,11 @@ import { ReactNode } from 'react';
 import { makeStyles, Theme, ThemeProvider } from '@material-ui/core/styles';
 import classNames from 'classnames';
 
+/**
+ * Style keys for {@link Page}.
+ * @public
+ * @deprecated Legacy Page styling. See {@link Page} for migration guidance.
+ */
 export type PageClassKey = 'root';
 
 const useStyles = makeStyles(
@@ -49,6 +54,15 @@ type Props = {
   children?: ReactNode;
 };
 
+/**
+ * A themed legacy page layout.
+ * @public
+ * @deprecated Legacy page layout, superseded for new frontend development. Use
+ * `PageBlueprint` from `@backstage/frontend-plugin-api` for framework-managed
+ * pages, or its `PageLayout` for a custom page shell. For standalone layouts,
+ * compose components from `@backstage/ui`. These APIs do not reproduce legacy
+ * page themes; migrate theme styling explicitly.
+ */
 export function Page(props: Props) {
   const { themeId, className, children } = props;
   const classes = useStyles();

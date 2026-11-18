@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { TestRouter } from '../../testUtils/TestRouter';
 import preview from '../../../../../.storybook/preview';
 import { Checkbox } from './Checkbox';
 import { Flex } from '../Flex';
 import { Link } from '../Link';
-import { MemoryRouter } from 'react-router-dom';
 
 const meta = preview.meta({
   title: 'Backstage UI/Checkbox',
@@ -55,9 +55,9 @@ export const WithLongText = Default.extend({
   },
   decorators: [
     Story => (
-      <MemoryRouter>
+      <TestRouter>
         <Story />
-      </MemoryRouter>
+      </TestRouter>
     ),
   ],
 });

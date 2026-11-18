@@ -89,6 +89,11 @@ class MockTokenFactory {
   }
 }
 
+// msw 3 answers requests through process.nextTick, so leave that real
+function useFakeClock(now: number) {
+  jest.useFakeTimers({ now, doNotFake: ['nextTick'] });
+}
+
 describe('helpers', () => {
   const tokenFactory = new MockTokenFactory();
   const cache = mockServices.cache.mock();
@@ -131,9 +136,7 @@ describe('helpers', () => {
   });
 
   it('rejects tokens issued for a different application audience', async () => {
-    jest.useFakeTimers({
-      now: 1600000004000,
-    });
+    useFakeClock(1600000004000);
 
     const helper = AuthHelper.fromConfig(
       new ConfigReader({
@@ -153,9 +156,7 @@ describe('helpers', () => {
   });
 
   it('rejects tokens without an application audience', async () => {
-    jest.useFakeTimers({
-      now: 1600000004000,
-    });
+    useFakeClock(1600000004000);
 
     const helper = AuthHelper.fromConfig(
       new ConfigReader({
@@ -175,9 +176,7 @@ describe('helpers', () => {
   });
 
   it('works for regular tokens, through header auth', async () => {
-    jest.useFakeTimers({
-      now: 1600000004000,
-    });
+    useFakeClock(1600000004000);
 
     const helper = AuthHelper.fromConfig(
       new ConfigReader({
@@ -221,9 +220,7 @@ describe('helpers', () => {
   });
 
   it('works for regular tokens, through cookie auth', async () => {
-    jest.useFakeTimers({
-      now: 1600000004000,
-    });
+    useFakeClock(1600000004000);
 
     const helper = AuthHelper.fromConfig(
       new ConfigReader({
@@ -262,9 +259,7 @@ describe('helpers', () => {
   });
 
   it('works for service tokens, through header auth', async () => {
-    jest.useFakeTimers({
-      now: 1600000004000,
-    });
+    useFakeClock(1600000004000);
 
     const helper = AuthHelper.fromConfig(
       new ConfigReader({
@@ -305,9 +300,7 @@ describe('helpers', () => {
   });
 
   it('works for regular tokens, through jwtHeaderName header', async () => {
-    jest.useFakeTimers({
-      now: 1600000004000,
-    });
+    useFakeClock(1600000004000);
 
     const helper = AuthHelper.fromConfig(
       new ConfigReader({
@@ -352,9 +345,7 @@ describe('helpers', () => {
   });
 
   it('works for regular tokens, through authorizationCookieName cookie name', async () => {
-    jest.useFakeTimers({
-      now: 1600000004000,
-    });
+    useFakeClock(1600000004000);
 
     const helper = AuthHelper.fromConfig(
       new ConfigReader({

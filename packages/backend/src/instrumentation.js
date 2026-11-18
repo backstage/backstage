@@ -28,12 +28,19 @@ const { PrometheusExporter } = require('@opentelemetry/exporter-prometheus');
 // Expose opentelemetry metrics using a Prometheus exporter on
 // http://localhost:9464/metrics. See packages/backend/prometheus.yml for
 // more information on how to scrape it.
-const prometheus = new PrometheusExporter();
+const prometheus = new PrometheusExporter({ host: '0.0.0.0' });
 
 const sdk = new NodeSDK({
   // traceExporter: ...,
-  metricReader: prometheus,
-  instrumentations: [getNodeAutoInstrumentations()],
+  metricReaders: [prometheus],
+  instrumentations: [
+    getNodeAutoInstrumentations({
+      // The knex instrumentation creates spans without a name for SQLite
+      // connections without a filename, such as the in-memory database used
+      // here, which makes the OTLP trace exporter throw.
+      '@opentelemetry/instrumentation-knex': { enabled: false },
+    }),
+  ],
 });
 
 sdk.start();

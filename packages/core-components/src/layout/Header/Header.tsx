@@ -26,7 +26,11 @@ import { Link } from '../../components/Link';
 import { Breadcrumbs } from '../Breadcrumbs';
 import { useContent } from '../Sidebar';
 
-/** @public */
+/**
+ * Style keys for {@link Header}.
+ * @public
+ * @deprecated Legacy Header styling. See {@link Header} for migration guidance.
+ */
 export type HeaderClassKey =
   | 'header'
   | 'leftItemsBox'
@@ -204,7 +208,12 @@ const SubtitleFragment = ({ classes, subtitle }: SubtitleFragmentProps) => {
  * Backstage main header with abstract color background in multiple variants
  *
  * @public
- *
+ * @deprecated Legacy header, superseded for new frontend development. Use
+ * `PageBlueprint` and `PageLayout` from `@backstage/frontend-plugin-api` for
+ * framework-managed page headers. For standalone composition, use `PluginHeader`
+ * or `Header` from `@backstage/ui`. Migrate legacy theme styling, arbitrary header
+ * content, document titles, and focus handling explicitly; these APIs are not
+ * prop-for-prop replacements.
  */
 export function Header(props: PropsWithChildren<Props>) {
   const {

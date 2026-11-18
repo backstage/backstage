@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-api-docs-module-protoc-gen-doc",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Additional functionalities for the api-docs plugin that renders the output of the protoc-gen-doc",
   "backstage": {
     "role": "frontend-plugin-module",
@@ -48,9 +48,9 @@
     "react-router-dom": "^6.30.2"
   },
   "peerDependencies": {
-    "@types/react": "^17.0.0 || ^18.0.0",
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {

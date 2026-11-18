@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef, ApiRef } from '../system';
 import { ReactNode } from 'react';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * Link item for toast notifications.
@@ -103,6 +107,7 @@ export type ToastApi = {
  * The {@link ApiRef} of {@link ToastApi}.
  *
  * @public
+ * @deprecated Use {@link CoreApis.toast | coreApis.toast} instead.
  */
 export const toastApiRef: ApiRef<ToastApi> = createApiRef({
   id: 'core.toast',

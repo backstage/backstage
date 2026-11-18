@@ -325,3 +325,430 @@ the readable plan discards about 626,000 earlier search entries across three
 processes and performs 52,427 final-entity and dataset-filter lookups.
 Its warm sub-second runtime therefore still hides substantial buffer work.
 Retain both the plan and the timing when comparing future query shapes.
+
+## Conditional permission additions (2026-10-29)
+
+Scenarios 15-19 were measured on a production-scale staging read replica
+running PostgreSQL 18.6, with `work_mem = 32MB` and then with `work_mem = 4MB`
+set for the session. JIT was not available on this server. These additions do
+not replace the earlier measurements for scenarios 1-14, and they measure the
+query builder as of this date.
+
+The catalog had 708,061 non-null final entities, including 46,059 components,
+207,168 APIs, 99,405 resources, 221,199 subcomponents and 18 templates. The
+planner estimated 720,304 rows in `final_entities` and 20,777,516 rows in
+`search`. These are snapshots of a live catalog, not one fixed snapshot shared
+by all runs.
+
+The readers key was a real annotation present on 878 entities, none of whose
+values matched the claims. Scenario 17 used the same key as its rare facet.
+The claims came from one real user. The 40-claim list is that user's actual
+sign-in claims, whose ownership covers 433 entities. The 173-claim list is the
+same user's unfiltered group memberships, covering 435 entities. The two lists
+therefore differ mainly in length, not in what they match. Claim lists are
+redacted in the plans.
+
+Each 32MB median uses three warm runs after one warm-up, with a 30-second
+statement timeout. The 4MB figures are single warm runs after one warm-up.
+Readable plans for the 40-claim, 32MB runs are retained in
+[`plans.md`](./plans.md), and the final JSON samples in
+[`plans.json`](./plans.json).
+
+| Query                          | 40 claims: warm runs      | Median  | Shared buffer hits | 173 claims: median | 40 claims at 4MB | 173 claims at 4MB |
+| ------------------------------ | ------------------------- | ------- | ------------------ | ------------------ | ---------------- | ----------------- |
+| 15 permission kind facets      | 21.94 s, 21.52 s, 21.28 s | 21.52 s | 10,571,889         | > 30 s (timeout)   | 10.49 s          | 10.58 s           |
+| 15 permission list page        | 3.2 ms, 3.0 ms, 3.1 ms    | 3.1 ms  | 890                | 26.2 ms            | 2.9 ms           | 25.2 ms           |
+| 15 permission list count       | 24.46 s, 25.08 s, 24.51 s | 24.51 s | 10,283,627         | > 30 s (timeout)   | 23.43 s          | > 30 s (timeout)  |
+| 16 permission component facets | 2.01 s, 1.98 s, 1.99 s    | 1.99 s  | 959,836            | > 30 s (timeout)   | 2.71 s           | > 30 s (timeout)  |
+| 16 permission component page   | 4.5 ms, 4.6 ms, 4.4 ms    | 4.5 ms  | 1,485              | > 30 s (timeout)   | 4.5 ms           | 53.1 ms           |
+| 16 permission component count  | 1.92 s, 1.96 s, 1.93 s    | 1.93 s  | 956,095            | > 30 s (timeout)   | 1.92 s           | > 30 s (timeout)  |
+| 17 permission rare facet       | 29.4 ms, 30.0 ms, 29.4 ms | 29.4 ms | 13,676             | 1.01 s             | 33.5 ms          | 1.02 s            |
+| 18 negated disjunction facets  | 14.84 s, 15.65 s, 15.15 s | 15.15 s | 7,034,031          | > 30 s (timeout)   | 10.49 s          | 10.24 s           |
+| 18 negated disjunction count   | 17.76 s, 17.88 s, 17.98 s | 17.88 s | 6,745,777          | > 30 s (timeout)   | 17.06 s          | > 30 s (timeout)  |
+| 19 large in under or page      | 2.8 ms, 2.7 ms, 2.7 ms    | 2.7 ms  | 891                | 15.5 ms            | 2.5 ms           | 15.6 ms           |
+
+Buffer hits count accesses, not distinct blocks or bytes transferred. None of
+the JSON samples read shared buffers from disk. The 15 list count and the 18
+count wrote temporary blocks at both settings. The 15 kind facets and 18 facets
+queries also did at 4MB.
+
+### Scenarios 15 and 18: per-entity SubPlans
+
+The facets and count queries in scenarios 15 and 18 take 15-25 seconds with 40
+claims and exceed the timeout with 173 claims at `work_mem = 32MB`. Each one
+performs 7-11 million buffer hits. In the plans, the filter is attached to a
+`final_entities_pkey` lookup under a Nested Loop, where the planner expects one
+row per loop. Some `EXISTS` / `NOT EXISTS` conditions are therefore kept as
+correlated SubPlans, which run about 708,000 times each. In scenario 18,
+PostgreSQL pushed the negation through the `OR`, but the resulting
+`NOT EXISTS` still ran as a per-row SubPlan rather than an anti-join. The list
+page in scenario 15 stays at a few milliseconds because LIMIT stops early.
+
+### Scenario 16: claim-dependent cost behind a selective request filter
+
+With 40 claims, the `kind = 'component'` facets and count queries take about 2
+seconds, and the page takes 4.5 ms. With 173 claims and `work_mem = 32MB`, all
+three exceed the timeout. The `kind` semi-join drives a Nested Loop into the filtered entities,
+so the `= ANY(:claims)` probe runs once per component. Each probe sorts the
+claims array again. At 4MB the planner happened to choose a different plan for
+the page (53.1 ms), but not for the facets or count queries.
+
+### Scenario 17: rare facet key
+
+The rare facet stays fast with 40 claims (29.4 ms) but takes about a second
+with 173 claims, with similar buffer work (13,676 against 17,656 hits). The
+difference is CPU time in per-row `= ANY(:claims)` probes, not I/O. In
+experiments on the same replica, query shapes that build the whole filtered
+entity set before joining it to the few facet rows took over a second here,
+regardless of the number of claims.
+
+### Scenario 19: LIMIT short-circuiting under a broad `$any`
+
+The page takes 2.7 ms with 40 claims and 15.5 ms with 173 claims, at both
+`work_mem` settings. This is the reference for future changes to how `$in` is
+compiled. Compiling the broad `kind` branch into a pre-built set would prevent
+LIMIT from stopping early.
+
+## Set operations for facets and counts (2026-10-30)
+
+On PostgreSQL, facets and count queries now compile filters that contain a
+disjunction or a negation, after negations are pushed down, into set
+operations on entity IDs. Each field condition is a set of `search.entity_id`
+values under `COLLATE "C"`, so sorting IDs and removing duplicates is a byte
+comparison, and the set is joined back under the default collation so that
+the `entity_id` indexes can be used. Paginated queries and filters without a
+disjunction or negation keep their SQL.
+
+### Staging replica
+
+Measured on the staging replica described above (PostgreSQL 18.6, about 710k
+entities, 17.5M `search` rows) with SQL captured from `DefaultEntitiesCatalog`.
+Medians of three warm runs at `work_mem = 32MB`; master was a single run after
+a warm-up in the same session. Within a single `REPEATABLE READ` snapshot, every
+changed facets and count query returned the same result as master, except
+where master did not finish. No query timed out at 32MB or 4MB.
+
+| Query                                               | master           | this change      |
+| --------------------------------------------------- | ---------------- | ---------------- |
+| 15 kind facets, 40 claims                           | 10.7 s           | 1.58 s \*        |
+| 15 lifecycle facets, 40 / 173 claims                | 15.2 s / >30 s   | 1.28 / 1.28 s \* |
+| 15 count, 40 / 173 claims                           | 24.1 s / >30 s   | 1.45 / 1.45 s \* |
+| 16 component facets, 40 / 173 claims                | 2.10 s / >30 s   | 1.03 / 1.00 s \* |
+| 16 component count, 40 / 173 claims                 | 1.95 s / >30 s   | 1.02 / 1.01 s \* |
+| 17 rare facet, 40 / 173 claims                      | 30.5 ms / 1.07 s | 5.8 / 10.6 ms \* |
+| 18 negated facets, 40 claims                        | 10.8 s           | 0.60 s \*        |
+| 18 negated count, 40 / 173 claims                   | 17.7 s / >30 s   | 1.61 / 1.66 s \* |
+| 19 large `$in` under `$any`, count, 40 / 173 claims | 18.6 s / >30 s   | 2.69 / 2.64 s    |
+| permission + `kind=template` facets, 40 claims      | 0.4 ms           | 3.5 ms           |
+| permission + owned by claims facets, 40 claims      | 17.4 ms          | 15.9 ms          |
+| `$not` of `kind $in` (subcomponent, api), facets    | 0.90 s           | 0.83 s \*        |
+| `$not` of a two-field condition, count              | 2.25 s           | 1.47 s \*        |
+| scenario 12's `$any` filter, with `totalItems`      | 6.50 s           | 0.81 s           |
+
+\* Measured with leaf sets built from `search` before the collation change was
+added. With the collation change, these stayed within run-to-run variation.
+
+With a claim for a group that owns 116k entities, broad facets and counts take
+1.5-2.9 s, where master took 7 s or timed out. Selective queries pay for
+building that group's set: permission + `kind=template` facets and the rare
+facet take about 145 ms. Scenario 18's facets with 173 claims take 1.6 s
+because of a different join order. Scenario 19's count for that user took
+6.8 s in one run at 32MB, from the existing sort-key `EXISTS` in the count
+query rather than from the set.
+
+Readable plans for the facets and count queries of scenarios 15-19 with this
+change, using the 40-claim sign-in at 32MB and 4MB, are retained in
+[`plans.md`](./plans.md), and the exact JSON output in
+[`plans.json`](./plans.json). At 32MB only scenario 19's count writes
+temporary files (about 79MB). At 4MB every set-based query except the rare
+facet spills, by 67-181MB, with execution times within about 25% of 32MB.
+
+### Local synthetic catalog
+
+These measurements come from a synthetic catalog in a local PostgreSQL 17.11
+Docker container: 75,100 entities and 1,308,204 `search` rows. 1,479 entities
+have the readers annotation, which scenario 17 also uses as its rare facet
+key. The 40 claims match 3,182 owned entities. JIT was disabled. Each figure is
+the median of three warm runs after one warm-up, shown as master / this change.
+
+| Query                                      | 32MB: time      | 32MB: shared hits | 4MB: time        | 4MB: shared hits |
+| ------------------------------------------ | --------------- | ----------------- | ---------------- | ---------------- |
+| 15 permission kind facets                  | 417.7 / 57.6 ms | 588,815 / 8,857   | 397.8 / 56.2 ms  | 588,815 / 8,857  |
+| 15 permission list page                    | 1.2 / 1.2 ms    | 434 / 434         | 1.1 / 1.2 ms     | 434 / 434        |
+| 15 permission list count                   | 525.4 / 69.9 ms | 589,349 / 9,391   | 506.8 / 75.5 ms  | 589,349 / 9,391  |
+| 16 permission component facets             | 365.6 / 57.5 ms | 536,549 / 9,296   | 375.2 / 66.0 ms  | 536,549 / 9,296  |
+| 16 permission component page               | 64.0 / 61.6 ms  | 80,875 / 80,875   | 67.7 / 69.3 ms   | 80,875 / 80,875  |
+| 16 permission component count              | 208.0 / 78.0 ms | 353,349 / 9,769   | 210.9 / 81.8 ms  | 353,349 / 9,769  |
+| 17 permission rare facet                   | 10.3 / 3.3 ms   | 11,759 / 704      | 11.6 / 3.2 ms    | 11,759 / 704     |
+| 18 negated disjunction facets              | 380.2 / 58.3 ms | 601,866 / 8,767   | 370.0 / 50.4 ms  | 601,866 / 8,767  |
+| 18 negated disjunction count               | 485.7 / 30.9 ms | 602,400 / 9,752   | 520.7 / 29.8 ms  | 602,400 / 9,751  |
+| 19 large in under or page                  | 0.2 / 0.1 ms    | 174 / 174         | 0.1 / 0.1 ms     | 174 / 174        |
+| 19 large in under or count                 | 513.1 / 63.9 ms | 602,400 / 12,074  | 469.5 / 115.3 ms | 602,400 / 10,075 |
+| permission + `kind=template` facets        | 1.4 / 3.4 ms    | 1,258 / 537       | 1.5 / 3.5 ms     | 1,258 / 537      |
+| `$not` of `kind $in` (system, api), facets | 49.3 / 50.8 ms  | 8,805 / 8,805     | 52.2 / 51.9 ms   | 8,805 / 8,805    |
+
+The page queries run the same SQL before and after, so their timing
+differences are run-to-run variation.
+
+## Long `$in` lists (2026-11-12)
+
+On PostgreSQL, a long `$in` list on a field other than `kind`,
+`metadata.namespace`, `spec.type` and `spec.lifecycle` can be matched as a set
+of entity IDs computed once per query, instead of a per-row `= ANY(array)`
+probe. The rule, from `src/service/request/longInLists.ts`:
+
+- A list that is a direct condition of the filter, reached from the root
+  through `$all` only, is a set from 10 values. It is an IN set when a
+  narrower condition is next to it, and joined otherwise. This is the shape of
+  the owned entities page.
+- A list inside an `$any` or a `$not`, such as the claims of the conditional
+  permission policy in scenarios 15-19, is a set only from 100 values, and not
+  on a first page of up to 100 entities. It is an IN set, or joined when
+  negated, so that it can be anti-joined.
+- A list that is joined for one condition reuses that set where the same list
+  appears again.
+- Lookups by entity ref, facets and counts of filters with a disjunction or a
+  negation, and lists shorter than 10 values keep the SQL they had before.
+
+### Setup
+
+- Beta read replica of a production-like catalog: PostgreSQL 18.6, 745,776
+  entities, `work_mem = 32MB`. The largest group owns 117,449 entities. This
+  is not production, so compare ratios and plan shapes rather than absolute
+  timings.
+- Master is `175375aebc2f`. Master and this change ran interleaved in the
+  same session, case by case.
+- `EXPLAIN (ANALYZE, BUFFERS)` of the SQL captured from `DefaultEntitiesCatalog`,
+  median of three runs after one warm-up, with a 30 s statement timeout.
+  Streams are paged `queryEntities` calls ordered by entity ID, 10,000 per
+  page, timed by wall clock, one run each (two for the unfiltered stream).
+- Claim lists of 3, 10 and 40 claims, and one of 174 that includes the
+  largest group. Every case returned the same entities as master.
+- Not measured: scenarios 9 and 11, whose SQL this change does not touch, and
+  `work_mem = 4MB`.
+
+### Same SQL as master
+
+- Every scenario without permissions, and every 3-claim variant.
+- All facets and counts: scenarios 2, 4, 5, 10, and the facets and counts of
+  15-18.
+- Lookups by entity ref (scenario 6), with 1 and with 1,000 refs.
+- Scenario 21, whose lists are on `spec.type`.
+- Every first page with permissions: scenarios 1, 3, 7, 15, 16, 18 and 19 at
+  all claim counts, including scenario 1 with a namespace condition.
+- Every 10- and 40-claim variant of scenarios 12, 13, 14 and 20.
+
+### Different SQL
+
+| Query                           | Claims |        master | this change |
+| ------------------------------- | -----: | ------------: | ----------: |
+| Owned page                      |     10 |         72 ms |       34 ms |
+| Owned page                      |     40 |        3.40 s |      359 ms |
+| Owned page                      |    174 |        6.60 s |      3.67 s |
+| Owned page, namespace           |     40 |        3.44 s |      400 ms |
+| Owned page, namespace           |    174 |        6.66 s |      3.72 s |
+| 12 ordered selective OR         |    174 |        5.41 s |      2.98 s |
+| 13 deep dataset ID              |    174 |        572 ms |      589 ms |
+| 14 deep dataset name            |    174 |         >30 s |      5.01 s |
+| 20 late group page              |    174 |       18.27 s |      1.68 s |
+| 20 late component page          |    174 |        527 ms |      2.42 s |
+| Component stream, total / worst |    174 | 40.0 / 10.3 s | 9.0 / 2.6 s |
+| Group stream, total / worst     |    174 |  18.3 / 9.3 s | 5.0 / 2.6 s |
+| Unfiltered stream, total        |    174 |   60.5-66.7 s | 58.6-61.2 s |
+
+The component and group streams at 40 claims, and the unfiltered stream at 40
+claims, have the same SQL as master and took the same time (8.2-8.4 s, 4.9-5.2
+s and 49-53 s).
+
+The one regression is scenario 20 for components with 174 claims. On master,
+the page walks the names from the cursor and checks each of the 85 candidates
+per row. With the hashed set, the planner instead filters all entities up
+front, materializes the 45,872 permitted components, and scans that again for
+each of the 85 candidates (3.9 million rows removed by the join filter). The
+same page for groups, where master checks far more candidates, goes from
+18.3 s to 1.7 s.
+
+### Rules that were measured and not used
+
+All on the same replica and claim lists, against master:
+
+- Every long list as a set from 10 values, JOIN or IN chosen from the
+  siblings (the first version of this change). Every permissioned first page
+  became slower, up to 15-30 times with 174 claims (scenario 15: 20 ms to
+  617 ms). Scenario 14 with 40 claims went from 2.6 s to 25 s: the planner
+  estimated the joined set at 653 rows instead of 17,787, chose a nested loop,
+  and scanned the materialized set again for each of the 10,001 rows.
+- The same with a threshold of 40: the same results at 40 and 174 claims,
+  including the 25 s case.
+- The same with a threshold of 100: no regressions at 10 and 40 claims, but
+  first pages with 174 claims stayed at 0.6-0.8 s.
+- The chosen rule with JOIN instead of IN for lists inside an `$any`: faster
+  for late pages (scenario 20 for groups 1.07 s, for components 1.11 s) but
+  slower for scenarios 13 (1.08 s) and 14 (6.3 s) and the streams, and exposed
+  to the misestimate above.
+
+## Hashed per-row probes (2026-11-12)
+
+A per-row probe of a long list now compares `(value || '') = ANY(list)` in a
+subquery with `OFFSET 0`, instead of `value = ANY(list)`. As an index
+condition, the list is sorted again by every probe, about 0.43 ms for 99
+values. As an expression, it is checked against a hash that PostgreSQL builds
+once per query: about 0.012 ms per probe, whatever the list length. The
+`OFFSET 0` keeps PostgreSQL from turning the probe into an uncorrelated hashed
+set, which would then read every row of the key, since the list is no longer
+in the index condition.
+
+The hashed probe is used from 100 values, and on pages of up to 100 entities
+from 10 values. Pages of up to 100 entities now also count as small when they
+have a cursor, so long lists inside an `$any` or a `$not` stay per row on late
+pages too.
+
+### Setup
+
+- The same beta replica as above, now 752,912 entities, with `work_mem` at
+  32MB. Master is `33ee6b59f2bc`, which includes the change above. Master and
+  this change ran interleaved in the same session, case by case, with medians
+  of three runs.
+- Claim lists of 3, 10, 40 and 99 claims, 99 claims that include the largest
+  group (117,501 entities), and 174 claims that include it.
+- Measured: every scenario in the harness with every claim list, with and
+  without permissions, including facets, counts, by-ref lookups, the
+  namespace variants, the owned entities pages and the component, group,
+  unfiltered, owned and scenario 21 streams. Scenarios 9 and 11 are not in
+  the harness and do not compile `$in` filters. Every query case returned the
+  same entities as master. Five streams over most of the catalog differed in
+  checksum, by one to a few dozen entities, from changes to the replica
+  between the two runs.
+
+### Results
+
+| Query                                 | Claims   | master | this change |
+| ------------------------------------- | -------- | -----: | ----------: |
+| 1 component page                      | 40       |  22 ms |        3 ms |
+| 1 component page                      | 174      |  43 ms |        3 ms |
+| 1 component page in a namespace       | 10       |   5 ms |       13 ms |
+| 1 component page in a namespace       | 99       |  48 ms |       13 ms |
+| 3 unfiltered page                     | 40       |  19 ms |        1 ms |
+| 3 unfiltered page                     | 174      | 157 ms |        1 ms |
+| 3 unfiltered page                     | 99 large | 174 ms |        1 ms |
+| 15 list page                          | 99       |  46 ms |        2 ms |
+| 16 component page                     | 99       |  48 ms |        4 ms |
+| 18 negated page                       | 99       |  47 ms |        1 ms |
+| 19 with permission page               | 99       |  93 ms |        3 ms |
+| 6 by ref, 1,000 refs                  | 174      | 196 ms |       57 ms |
+| 20 late group page                    | 99       | 1.43 s |      469 ms |
+| 20 late group page                    | 99 large | 9.67 s |      465 ms |
+| 20 late group page                    | 174      | 1.76 s |      465 ms |
+| 20 late component page                | 174      | 2.54 s |      465 ms |
+| Owned page, with permission           | 99 large | 4.86 s |      681 ms |
+| Owned page, with permission           | 174      | 4.13 s |      612 ms |
+| Owned page in a namespace, permission | 174      | 4.19 s |      3.31 s |
+
+Everything else measured within noise of master: scenarios 7, 12, 13 and 14
+at all claim counts, facets and counts, which use the set compiler, by-ref
+lookups below 100 claims, scenario 21, the owned pages without permissions,
+and all streams. This removes the scenario 20 regression of the change above.
+
+The one slower case is the component page in a namespace with 10 claims,
+from 5 ms to 13 ms. It is the shortest list that is hashed, and the hashed
+probe costs a little more than the plain one there. Every longer list on
+that page got faster.
+
+Scenario 14 with 99 claims that include the largest group is still as slow
+as on master, 24 s on both. It is a page of 10,000 entities with fewer than
+100 values, so it keeps the plain probe.
+
+### Rules that were measured and not used
+
+- The hashed probe without `OFFSET 0`, from 9 values everywhere. Where the
+  planner turned the probe into a hashed set, it read the whole key instead:
+  scenario 3 with 40 claims went from 20 ms to 260 ms, scenario 12 at 10-99
+  claims from 3.5 s to 5.7 s, and scenario 21 with broad types from 0.67 s
+  to 1.16 s.
+- The hashed probe with `OFFSET 0`, from 9 values everywhere. It fixed the
+  above, and scenario 14 with 99 claims including the largest group (23.8 s
+  to 3.4 s), but deep scans with shorter lists got slower, since PostgreSQL
+  could no longer build the matching set from the index: scenario 12 at
+  10-99 claims from 3.6 s to 5.7 s, scenario 13 from 0.43 s to 1.1 s, and
+  scenario 14 from 2.6 s to 3.5 s.
+- Either of those without sets for lists inside an `$any` or a `$not`. The
+  same, and scenario 12 with 174 claims went from 3.0 s to 5.7 s.
+- Sorting the list before sending it. PostgreSQL sorts it again on every
+  probe, which is cheap only if the list is already in the column's collation
+  order. A JavaScript sort does not match the `en_US` collation of the database (6 of 99 claims
+  out of place) and saved only a quarter of the time. Sorting in the query,
+  with `ANY(ARRAY(SELECT ... ORDER BY))`, saved 70% per probe, but hid the
+  values from the planner: scenario 14 with 99 claims went from 2.6 s to
+  14 s.
+
+## Sorting after matching (2026-11-13)
+
+On PostgreSQL, a sorted query whose filter has a long list as a direct
+condition, such as the owned entities page, now orders by
+`(value || '')` instead of `value`. The index of the sort field cannot
+provide that order, so PostgreSQL builds the set of entity IDs first, hash
+joins it with the sort field, and sorts the matches. Before, it could instead
+walk the index of the sort field and compare each row against the whole
+materialized set, expecting to fill the page after a few rows.
+
+### Why the plan changed between runs
+
+With `LIMIT 21`, the planner costs the walk as if the owned entities were
+spread evenly in name order. On the beta replica the claims own about 18% of
+the catalog, but only about 40 of the first 5,600 names, so the walk compared
+5,600 rows against 136,000 IDs (254 million rows removed by the join filter).
+Whether the planner picks the walk or the set-first plan depends on its row
+estimates, which change whenever the table is analyzed: on the same day the
+174-claim page took 0.53 s in one run and 47.9 s in the next, with the same
+SQL. The new ordering takes that choice away.
+
+Related, and not changed here: a per-row probe inside an `$any` is an
+alternative to a hashed set, and PostgreSQL picks one when planning, as the
+cheaper of `startup + num_exec * per_call`, where `num_exec` is twice the
+estimated rows of the node that evaluates it. On the inner side of a nested
+loop that estimate is per loop, about 2, even when the probe runs tens of
+thousands of times. A claim list whose owners are estimated well, such as one
+that includes a group among the most common values of `search.value`, then
+gets the per-row probe, which re-sorts the list on every row. Scenario 14
+with 40 claims took 9 s in one run and 2.6 s an hour later, and with 99
+claims including the largest group 23 s to 100 s across runs. PostgreSQL 17
+and 18 behave the same here.
+
+### Setup
+
+- The beta replica, PostgreSQL 18.6, 759,742 entities, `work_mem` at 32MB.
+  The largest group owns 117,514 entities. Master and this change ran
+  interleaved, median of three runs, with a 120 s statement timeout so that
+  the slow plan could finish.
+- Measured: all owned entities pages (with and without permissions, any
+  kind, by namespace, legacy entities, counts and facets), scenarios 1, 3, 7,
+  12, 14, 15, 16, 18, 19 and 20, and all streams, with every claim list.
+  Every query case returned the same entities as master. Streams are not
+  sorted by a field, so their SQL is unchanged.
+
+### Results
+
+| Owned page, any kind, no permissions | master | this change |
+| ------------------------------------ | -----: | ----------: |
+| 3 claims                             |  12 ms |       13 ms |
+| 10 claims                            |  50 ms |       52 ms |
+| 40 claims                            | 439 ms |      443 ms |
+| 99 claims                            | 1.02 s |      1.03 s |
+| 99 claims with the largest group     | 16.7 s |      575 ms |
+| 174 claims                           | 47.4 s |      521 ms |
+
+Every other owned page, and every other scenario and stream, measured within
+noise of master: those plans already built the set first.
+
+### Rules that were measured and not used
+
+- Matching direct lists in the IN form instead of the JOIN form. PostgreSQL
+  then walked the names with a per-row probe of the list, 2.5 s at 174
+  claims, and most owned pages got 1.5 to 6 times slower.
+- Walking the sort field with a hashed per-row probe. It took 13-68 ms with
+  the battery's claim lists, but 19 s with 10 claims that own 73 entities
+  whose names sort last, since the walk then reads almost every name.
+- Matching lists inside an `$any` as an IN set from 10 values on pages of
+  more than 100 entities. It fixed scenario 14 with 99 claims including the
+  largest group (22.9 s to 5.0 s), but scenario 14 with 40 or 99 claims went
+  from 2.6 s to 4.8 s and scenario 12 from 3.5 s to 4.3 s.

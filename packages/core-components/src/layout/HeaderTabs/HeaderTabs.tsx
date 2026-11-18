@@ -28,7 +28,11 @@ import {
 // TODO(blam): Remove this implementation when the Tabs are ready
 // This is just a temporary solution to implementing tabs for now
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use the replacement described in {@link HeaderTabs} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type HeaderTabsClassKey =
   | 'tabsWrapper'
   | 'defaultTab'
@@ -63,6 +67,10 @@ const useStyles = makeStyles(
   { name: 'BackstageHeaderTabs' },
 );
 
+/**
+ * @deprecated Use the replacement described in {@link HeaderTabs} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type Tab = {
   id: string;
   label: string;
@@ -80,6 +88,9 @@ type HeaderTabsProps = {
  *
  * @public
  *
+ * @deprecated Use `Tabs`, `TabList`, `Tab`, and `TabPanel` from `@backstage/ui`
+ * for content tabs, or `PluginHeader` tabs for navigation. Adapt index-based
+ * selection to tab keys and `onSelectionChange`; navigation tabs use `href`.
  */
 export function HeaderTabs(props: HeaderTabsProps) {
   const { tabs, onChange, selectedIndex } = props;

@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [22.x, 24.x]
+        node-version: [24.x, 26.x]
 
     env:
       CI: true
@@ -30,32 +30,32 @@ jobs:
     name: Install ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 
       # Store the PR number for the Sync Pull Requests workflow
       - name: Save PR context
-        if: matrix.node-version == '22.x'
+        if: matrix.node-version == '24.x'
         run: |
           mkdir -p ./context
           echo "${{ github.event.pull_request.number }}" > ./context/pr-number
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: matrix.node-version == '22.x'
+      - uses: actions/upload-artifact@v7
+        if: matrix.node-version == '24.x'
         with:
           name: pr-context
           path: context/
 
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        uses: actions/setup-node@v7
         with:
-          node-version: ${{ matrix.node-version == '24.x' && '24.19.0' || matrix.node-version }}
+          node-version: ${{ matrix.node-version == '26.x' && '26.13.0' || '24.22.1' }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
+        uses: backstage/actions/yarn-install@v0.7.13
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -69,7 +69,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [22.x, 24.x]
+        node-version: [24.x, 26.x]
 
     env:
       CI: true
@@ -78,20 +78,20 @@ jobs:
     name: Verify ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        uses: actions/setup-node@v7
         with:
-          node-version: ${{ matrix.node-version == '24.x' && '24.19.0' || matrix.node-version }}
+          node-version: ${{ matrix.node-version == '26.x' && '26.13.0' || '24.22.1' }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
+        uses: backstage/actions/yarn-install@v0.7.13
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -137,6 +137,9 @@ jobs:
 
       - name: verify plugin directory
         run: node scripts/verify-plugin-directory.js
+
+      - name: verify agent skills
+        run: node scripts/verify-skills.js
 
       - name: test release scripts
         run: yarn node --test scripts/*.test.js
@@ -187,14 +190,14 @@ jobs:
     name: Spell Check
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@ccd8616d44fd3846e67624a50d5aad6d37bf2d25 # v2.22.1
+        uses: step-security/harden-runner@v2
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7
 
       - name: check for typos
-        uses: crate-ci/typos@7f9d0819ca1c008ade73f4b41fa9d258d48f605b # v1.51.1
+        uses: crate-ci/typos@v1.52.2
         with:
           config: typos.toml
 
@@ -208,7 +211,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [22.x, 24.x]
+        node-version: [24.x, 26.x]
 
     name: Test ${{ matrix.node-version }}
     services:
@@ -235,7 +238,7 @@ jobs:
         ports:
           - 5432/tcp
       mysql8:
-        image: mysql:8.4@sha256:24989179f58856db763f418010c1169fecc944e3ec1ea7e921572d83eb070f70
+        image: mysql:8.4@sha256:a81d043930e51745522bd5c430961cf8286f0a23f0a9a2a6e0108f7ea71b0902
         env:
           MYSQL_ROOT_PASSWORD: root
         options: >-
@@ -264,7 +267,7 @@ jobs:
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7
 
         # Only trees and paths are needed here, to check the release and to scope
         # linting and testing to changed packages, so skip historical blob
@@ -278,13 +281,13 @@ jobs:
         run: git fetch --filter=blob:none origin ${{ github.event.pull_request.base.ref }}
 
       - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        uses: actions/setup-node@v7
         with:
-          node-version: ${{ matrix.node-version == '24.x' && '24.19.0' || matrix.node-version }}
+          node-version: ${{ matrix.node-version == '26.x' && '26.13.0' || '24.22.1' }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
+        uses: backstage/actions/yarn-install@v0.7.13
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
@@ -294,7 +297,7 @@ jobs:
 
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore backstage-cli cache
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        uses: actions/cache/restore@v6
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
@@ -319,7 +322,7 @@ jobs:
 
       # Save successful test results even if other tests failed
       - name: save backstage-cli cache
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        uses: actions/cache/save@v6
         if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
         with:
           path: .cache/backstage-cli

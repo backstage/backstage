@@ -24,7 +24,11 @@ import {
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
 import { CommitAction } from '@gitbeaker/rest';
-import { createGitlabApi, getErrorMessage } from './helpers';
+import {
+  assertValidTargetPath,
+  createGitlabApi,
+  getErrorMessage,
+} from './helpers';
 import { examples } from './gitlabRepoPush.examples';
 import { getFileAction } from '../util';
 import { SerializedFile } from '@backstage/plugin-scaffolder-node';
@@ -120,6 +124,10 @@ export const createGitlabRepoPushAction = (options: {
         allowEmpty,
       } = ctx.input;
 
+      if (targetPath) {
+        assertValidTargetPath(targetPath);
+      }
+
       const { owner, repo, project } = parseRepoUrl(repoUrl, integrations);
       const repoID = project ? project : `${owner}/${repo}`;
 
@@ -141,7 +149,7 @@ export const createGitlabRepoPushAction = (options: {
         gitignore: true,
       });
 
-      let remoteFiles: RepositoryTreeSchema[] = [];
+      let remoteFiles: RepositoryTreeSchema[] | undefined = [];
       if ((ctx.input.commitAction ?? 'auto') === 'auto') {
         try {
           remoteFiles = await api.Repositories.allRepositoryTrees(repoID, {
@@ -157,6 +165,9 @@ export const createGitlabRepoPushAction = (options: {
               e,
             )}`,
           );
+          if (e.cause?.response?.status !== 404) {
+            remoteFiles = undefined;
+          }
         }
       }
 

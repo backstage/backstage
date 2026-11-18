@@ -17,10 +17,7 @@
 import { RiCheckLine } from '@remixicon/react';
 import { ListBoxItem, Text } from 'react-aria-components';
 import { Avatar } from '../Avatar';
-import {
-  useDefinition,
-  type UseDefinitionResult,
-} from '../../hooks/useDefinition';
+import { useDefinition } from '../../hooks/useDefinition';
 import {
   SelectItemDefinition,
   SelectItemProfileDefinition,
@@ -31,26 +28,24 @@ import type {
   SelectItemProps,
   SelectItemTextProps,
 } from './types';
-import {
-  getReactAriaAnchorProps,
-  type AnchorNavigation,
-} from '../../navigation/useNavigation';
 
-type SelectItemViewProps = {
-  definitionResult: UseDefinitionResult<
-    typeof SelectItemDefinition,
-    SelectItemProps
-  >;
-  navigation: AnchorNavigation;
-};
-
-function SelectItemView({ definitionResult, navigation }: SelectItemViewProps) {
+/**
+ * A low-level Select item wrapper for custom item content.
+ *
+ * @public
+ */
+export function SelectItem<T extends object = object>(
+  props: SelectItemProps<T>,
+) {
+  const definitionResult = useDefinition(SelectItemDefinition, props);
   const { ownProps, restProps } = definitionResult;
   const { classes, children, showSelectionIndicator } = ownProps;
-  const navigationProps = getReactAriaAnchorProps(navigation, restProps);
 
   return (
-    <ListBoxItem className={classes.root} {...restProps} {...navigationProps}>
+    <ListBoxItem
+      className={classes.root}
+      {...(restProps as React.ComponentProps<typeof ListBoxItem>)}
+    >
       {values => {
         const content =
           typeof children === 'function' ? children(values) : children;
@@ -69,26 +64,6 @@ function SelectItemView({ definitionResult, navigation }: SelectItemViewProps) {
         );
       }}
     </ListBoxItem>
-  );
-}
-
-/**
- * A low-level Select item wrapper for custom item content.
- *
- * @public
- */
-export function SelectItem<T extends object = object>(
-  props: SelectItemProps<T>,
-) {
-  const definitionResult = useDefinition(SelectItemDefinition, props);
-  const Navigation = definitionResult.navigation;
-
-  return (
-    <Navigation
-      props={definitionResult.restProps}
-      view={SelectItemView}
-      viewProps={{ definitionResult }}
-    />
   );
 }
 

@@ -1,5 +1,85 @@
 # @backstage/plugin-catalog-import
 
+## 0.13.20
+
+### Patch Changes
+
+- 63d6533: The pull request preview card in the import flow now uses Backstage UI components.
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+- Updated dependencies
+  - @backstage/frontend-plugin-api@1.0.0
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/integration@2.2.0
+  - @backstage/catalog-client@1.16.4
+  - @backstage/core-components@0.18.16
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-catalog-react@4.0.0
+  - @backstage/ui@0.20.0
+  - @backstage/integration-react@1.3.0
+  - @backstage/plugin-permission-react@0.5.7
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-common@1.2.2
+
+## 0.13.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.2
+  - @backstage/catalog-client@1.16.4-next.1
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/plugin-catalog-react@4.0.0-next.2
+  - @backstage/integration-react@1.2.24-next.1
+  - @backstage/plugin-catalog-common@1.2.2-next.0
+  - @backstage/plugin-permission-react@0.5.7-next.1
+
+## 0.13.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.4-next.0
+  - @backstage/core-plugin-api@1.12.12-next.1
+  - @backstage/frontend-plugin-api@0.19.0-next.1
+  - @backstage/plugin-catalog-react@4.0.0-next.1
+
+## 0.13.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/core-components@0.18.16-next.0
+  - @backstage/integration-react@1.2.24-next.0
+  - @backstage/plugin-permission-react@0.5.7-next.0
+
+## 0.13.19
+
+### Patch Changes
+
+- 3a0ac14: The catalog import page in the new frontend system no longer renders its own legacy header, and instead uses the page header provided by the app. Apps that use the old frontend system are not affected.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.2
+  - @backstage/integration@2.1.3
+  - @backstage/catalog-client@1.16.3
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/core-components@0.18.15
+  - @backstage/catalog-model@1.10.2
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/integration-react@1.2.23
+  - @backstage/plugin-catalog-common@1.2.1
+  - @backstage/plugin-permission-react@0.5.6
+
 ## 0.13.19-next.1
 
 ### Patch Changes

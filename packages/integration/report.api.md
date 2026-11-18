@@ -117,6 +117,15 @@ export const AzureBlobStorageIntergation: typeof AzureBlobStorageIntegration;
 export type AzureBlobStorageIntergation = AzureBlobStorageIntegration;
 
 // @public
+export type AzureClientCertificateCredential = AzureCredentialBase & {
+  kind: 'ClientCertificate';
+  tenantId: string;
+  clientId: string;
+  clientCertificate?: string;
+  clientCertificatePath?: string;
+};
+
+// @public
 export type AzureClientSecretCredential = AzureCredentialBase & {
   kind: 'ClientSecret';
   tenantId: string;
@@ -143,6 +152,7 @@ export interface AzureCredentialsManager {
 // @public
 export type AzureDevOpsCredential =
   | AzureClientSecretCredential
+  | AzureClientCertificateCredential
   | AzureManagedIdentityClientAssertionCredential
   | AzureManagedIdentityCredential
   | PersonalAccessTokenCredential;
@@ -151,12 +161,14 @@ export type AzureDevOpsCredential =
 export type AzureDevOpsCredentialKind =
   | 'PersonalAccessToken'
   | 'ClientSecret'
+  | 'ClientCertificate'
   | 'ManagedIdentity'
   | 'ManagedIdentityClientAssertion';
 
 // @public
 export type AzureDevOpsCredentialLike = Omit<
   Partial<AzureClientSecretCredential> &
+    Partial<AzureClientCertificateCredential> &
     Partial<AzureManagedIdentityClientAssertionCredential> &
     Partial<AzureManagedIdentityCredential> &
     Partial<PersonalAccessTokenCredential>,

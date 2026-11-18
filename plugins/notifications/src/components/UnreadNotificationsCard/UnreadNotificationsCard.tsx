@@ -16,8 +16,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import throttle from 'lodash/throttle';
-// @ts-ignore
-import RelativeTime from 'react-relative-time';
 import { RiCheckDoubleLine, RiRssFill } from '@remixicon/react';
 import { Notification } from '@backstage/plugin-notifications-common';
 import {
@@ -38,6 +36,7 @@ import { getNotificationsPageLink } from '../../utils/notificationLinks';
 import { truncateText } from '../../utils/plainText';
 import { BulkActions } from '../NotificationsTable/BulkActions';
 import { NotificationIcon } from '../NotificationsTable/NotificationIcon';
+import { RelativeTime } from '../RelativeTime/RelativeTime';
 import styles from './UnreadNotificationsCard.module.css';
 
 const ThrottleDelayMs = 2000;

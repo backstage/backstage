@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-react",
-  "version": "2.1.1-next.1",
+  "version": "3.0.0",
   "description": "A frontend library that helps other Backstage plugins interact with the Scaffolder",
   "backstage": {
     "role": "web-library",
@@ -122,9 +122,9 @@
   },
   "peerDependencies": {
     "@backstage/frontend-test-utils": "workspace:^",
-    "@types/react": "^17.0.0 || ^18.0.0",
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-router": "^6.30.3",
     "react-router-dom": "^6.30.2"
   },

@@ -10,7 +10,7 @@ Sometimes you have to run Backstage with no direct access to the public internet
 
 ## Using Node.js built-in proxy support
 
-Starting with Node.js 22.21.0 and 24.5.0, Node.js has built-in support for proxy environment variables. When enabled, native `fetch()`, `node:http`, and `node:https` all respect the standard `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY` environment variables without any additional packages. See the [Node.js enterprise network configuration docs](https://nodejs.org/en/learn/http/enterprise-network-configuration#proxy-configuration) for full details.
+Node.js has built-in support for proxy environment variables. When enabled, native `fetch()`, `node:http`, and `node:https` all respect the standard `HTTP_PROXY`, `HTTPS_PROXY`, and `NO_PROXY` environment variables without any additional packages. See the [Node.js enterprise network configuration docs](https://nodejs.org/en/learn/http/enterprise-network-configuration#proxy-configuration) for full details.
 
 To enable the built-in proxy support, set the `NODE_USE_ENV_PROXY` environment variable along with your proxy settings:
 

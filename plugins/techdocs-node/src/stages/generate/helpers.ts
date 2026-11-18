@@ -15,7 +15,6 @@
  */
 
 import { isChildPath, LoggerService } from '@backstage/backend-plugin-api';
-import { Entity } from '@backstage/catalog-model';
 import { ForwardedError, NotAllowedError, toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio, spawn } from 'node:child_process';
@@ -32,18 +31,10 @@ import {
 import path, { resolve as resolvePath } from 'node:path';
 import { PassThrough, Writable } from 'node:stream';
 import { ParsedLocationAnnotation } from '../../helpers';
-import { DefaultMkdocsContent, SupportedGeneratorKey } from './types';
+import { DefaultMkdocsContent } from './types';
 import { getFileTreeRecursively } from '../publish/helpers';
 
-// TODO: Implement proper support for more generators.
-export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
-  if (!entity) {
-    throw new Error('No entity provided');
-  }
-
-  return 'techdocs';
-}
-
+/** @alpha */
 export type RunCommandOptions = {
   /** command to run */
   command: string;
@@ -57,6 +48,7 @@ export type RunCommandOptions = {
 
 /**
  * Run a command in a sub-process, normally a shell command.
+ * @alpha
  */
 export const runCommand = async ({
   command,
@@ -181,7 +173,11 @@ export class UnknownTag {
   }
 }
 
-/** Preserve YAML merge keys and MkDocs-specific tags while inspecting config. */
+/**
+ * Preserve YAML merge keys and MkDocs-specific tags while inspecting config.
+ *
+ * @alpha
+ */
 export const MKDOCS_SCHEMA = YAML11_SCHEMA.withTags(
   defineScalarTag('', {
     matchByTagPrefix: true,
@@ -393,6 +389,7 @@ export const ALLOWED_THEME_KEYS = new Set([
  * @param mkdocsYmlFileString - The string contents of the loaded
  *   mkdocs.yml or equivalent of a docs site
  * @returns the parsed docs_dir or undefined
+ * @alpha
  */
 export const validateMkdocsYaml = async (
   inputDir: string,
@@ -429,6 +426,7 @@ export const validateMkdocsYaml = async (
  * because MkDocs extensions can read files from anywhere in the input directory.
  *
  * @param inputDir - The input directory to validate (absolute path)
+ * @alpha
  */
 export const validateInputDirectory = async (
   inputDir: string,
@@ -458,6 +456,7 @@ export const validateInputDirectory = async (
  * Update docs/index.md file before TechDocs generator uses it to generate docs site,
  * falling back to docs/README.md or README.md in case a default docs/index.md
  * is not provided.
+ * @alpha
  */
 export const patchIndexPreBuild = async ({
   inputDir,
@@ -516,10 +515,12 @@ export const patchIndexPreBuild = async ({
  * - The list of files generated
  *
  * @param techdocsMetadataPath - File path to techdocs_metadata.json
+ * @alpha
  */
 export const createOrUpdateMetadata = async (
   techdocsMetadataPath: string,
   logger: LoggerService,
+  engine?: string,
 ): Promise<void> => {
   const techdocsMetadataDir = techdocsMetadataPath
     .split(path.sep)
@@ -545,6 +546,9 @@ export const createOrUpdateMetadata = async (
   }
 
   json.build_timestamp = Date.now();
+  if (engine) {
+    json.engine = engine;
+  }
 
   // Get and write generated files to the metadata JSON. Each file string is in
   // a form appropriate for invalidating the associated object from cache.
@@ -570,6 +574,7 @@ export const createOrUpdateMetadata = async (
  *
  * @param techdocsMetadataPath - File path to techdocs_metadata.json
  * @param etag - The ETag to use
+ * @alpha
  */
 export const storeEtagMetadata = async (
   techdocsMetadataPath: string,

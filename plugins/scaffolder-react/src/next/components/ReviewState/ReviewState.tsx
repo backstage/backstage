@@ -15,7 +15,7 @@
  */
 import { StructuredMetadataTable } from '@backstage/core-components';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { Draft07 as JSONSchema } from 'json-schema-library';
+import { Draft07 as JSONSchema, JsonSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 import { isJsonObject, formatKey, findSchemaForKey } from './util';
 
@@ -26,7 +26,84 @@ import { isJsonObject, formatKey, findSchemaForKey } from './util';
 export type ReviewStateProps = {
   schemas: ParsedTemplateSchema[];
   formState: JsonObject;
+  /**
+   * The complete form state, used to resolve conditional schemas such as
+   * `dependencies` so that review masks still apply when `formState` has had
+   * values removed. Defaults to `formState`.
+   */
+  schemaFormState?: JsonObject;
 };
+
+type ReviewOverride = { kind: 'hide' } | { kind: 'mask'; value: string };
+
+function getReviewOverride(
+  definition: JsonSchema | undefined,
+): ReviewOverride | undefined {
+  const reviewOptions = definition?.['ui:backstage']?.review;
+  if (reviewOptions?.mask) {
+    return { kind: 'mask', value: reviewOptions.mask };
+  }
+  if (reviewOptions?.show === false) {
+    return { kind: 'hide' };
+  }
+  if (
+    definition?.['ui:widget'] === 'password' ||
+    definition?.['ui:field']?.toLowerCase() === 'secret'
+  ) {
+    return { kind: 'mask', value: '******' };
+  }
+  return undefined;
+}
+
+/**
+ * Applies review masks and `show: false` to the items and fields nested in
+ * an array or unexploded object, as these are rendered as a single value.
+ */
+function maskNestedValue(
+  key: string,
+  value: JsonValue,
+  parsedSchema: JSONSchema,
+  formState: JsonObject,
+): JsonValue {
+  const maskChild = (
+    pointer: string,
+    child: JsonValue,
+  ): JsonValue | undefined => {
+    const override = getReviewOverride(
+      parsedSchema.getSchema({ pointer: `#/${pointer}`, data: formState }),
+    );
+    if (override?.kind === 'hide') {
+      return undefined;
+    }
+    if (override?.kind === 'mask') {
+      return override.value;
+    }
+    return maskNestedValue(pointer, child, parsedSchema, formState);
+  };
+
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) => {
+      const masked = maskChild(`${key}/${index}`, item);
+      return masked === undefined ? [] : [masked];
+    });
+  }
+
+  if (!isJsonObject(value)) {
+    return value;
+  }
+
+  const result: JsonObject = {};
+  for (const [nestedKey, nestedValue] of Object.entries(value)) {
+    if (nestedValue === undefined) {
+      continue;
+    }
+    const masked = maskChild(`${key}/${nestedKey}`, nestedValue);
+    if (masked !== undefined) {
+      result[nestedKey] = masked;
+    }
+  }
+  return result;
+}
 
 function processSchema(
   key: string,
@@ -47,20 +124,12 @@ function processSchema(
 
   if (definitionInSchema) {
     const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
-    if (backstageReviewOptions) {
-      if (backstageReviewOptions.mask) {
-        return [[name, backstageReviewOptions.mask]];
-      }
-      if (backstageReviewOptions.show === false) {
-        return [];
-      }
+    const override = getReviewOverride(definitionInSchema);
+    if (override?.kind === 'mask') {
+      return [[name, override.value]];
     }
-
-    if (
-      definitionInSchema['ui:widget'] === 'password' ||
-      definitionInSchema['ui:field']?.toLowerCase() === 'secret'
-    ) {
-      return [[name, '******']];
+    if (override?.kind === 'hide') {
+      return [];
     }
 
     if (definitionInSchema.enum && definitionInSchema.enumNames) {
@@ -82,6 +151,10 @@ function processSchema(
     }
   }
 
+  if (Array.isArray(value) || isJsonObject(value)) {
+    return [[name, maskNestedValue(key, value, parsedSchema, formState)]];
+  }
+
   return [[name, value]];
 }
 
@@ -90,12 +163,13 @@ function processSchema(
  * @alpha
  */
 export const ReviewState = (props: ReviewStateProps) => {
+  const schemaFormState = props.schemaFormState ?? props.formState;
   const reviewData = Object.fromEntries(
     Object.entries(props.formState)
       .flatMap(([key, value]) => {
-        const schema = findSchemaForKey(key, props.schemas, props.formState);
+        const schema = findSchemaForKey(key, props.schemas, schemaFormState);
         return schema
-          ? processSchema(key, value, schema, props.formState)
+          ? processSchema(key, value, schema, schemaFormState)
           : [[formatKey(key), value]];
       })
       .filter(prop => prop.length > 0),

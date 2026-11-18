@@ -239,6 +239,12 @@ async next(
 }
 ```
 
+Each page should contain any given entity at most once. If a page contains more
+than one entity with the same reference, only the last one is kept and a warning
+is logged. When the duplicates differ and their order is not stable between
+runs, the entity can change on every run, so remove duplicates in your provider.
+The same applies to the entities that an event handler returns.
+
 ## Installing the incremental entity provider
 
 After completing the [installation](#installation) step, create a backend
