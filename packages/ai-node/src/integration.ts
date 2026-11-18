@@ -56,19 +56,11 @@ import type {
   ModelOperationGuard,
   TrustedOperation,
 } from './guard/types';
+import { MCP_RESERVED_PREFIX } from './credentials/identifiers';
 import { modelPermissionName } from './permissions/modelPermissions';
 import { createGuardedToolOperations } from './tools/mediation';
-import {
-  composeWithToolRegistry,
-  createToolRegistry,
-  toolPermissionName,
-} from './tools/registry';
+import { composeWithToolRegistry, createToolRegistry } from './tools/registry';
 import type { ToolModule } from './tools/types';
-import {
-  interpretMcpCredential,
-  mcpCredentialGeneration,
-  mcpCredentialId,
-} from './credentials/mcp';
 import {
   createAiRecovery,
   createKnexNamespaceLease,
@@ -349,7 +341,7 @@ type ResolvedAuthority = {
   readonly generation: string;
   readonly authority: GuardedModelBinding['authority'];
   /** Provider-scoped environment from the credential, e.g. Azure overrides. */
-  readonly env: Record<string, string> | undefined;
+  readonly env?: Record<string, string> | undefined;
 };
 
 /**
@@ -467,7 +459,7 @@ export async function createAiServiceIntegration(
   const providerRegistry = toolRegistry
     ? composeWithToolRegistry(
         options.providers ?? builtinProviderRegistry,
-        toolRegistry.providerRegistry,
+        toolRegistry,
       )
     : options.providers ?? builtinProviderRegistry;
   const credentialStores = options.credentialStores;
@@ -510,79 +502,49 @@ export async function createAiServiceIntegration(
     },
   });
 
-  /** Resolves the provider authority for a dispatch, or undefined. */
+  /**
+   * Resolves the authority for a dispatch, or undefined. One generic path for
+   * models and tool servers: the module (looked up by its api id) carries the
+   * credential key and interpretation when it has its own — tool servers —
+   * and the shared model-provider semantics apply otherwise.
+   */
   const resolveAuthority = async (
+    api: string,
     providerId: string,
     credentials: BackstageCredentials,
   ): Promise<ResolvedAuthority | undefined> => {
     if (credentialStores === undefined) {
       return undefined;
     }
+    const module = providerRegistry.get(api);
+    if (
+      module?.credentialKey === undefined &&
+      providerId.startsWith(MCP_RESERVED_PREFIX)
+    ) {
+      // The reserved namespace is never model authority: a stored MCP tool
+      // server credential cannot be reached through a model provider id.
+      return undefined;
+    }
+    const key = module?.credentialKey
+      ? module.credentialKey(providerId)
+      : providerId;
     const principal = principalOf(deps, credentials);
     // Personal and installation credentials in the configured order; absence
     // falls through, a read failure does not.
-    const scopes = credentialScopesFor(principal, credentialPrecedence);
-    for (const scope of scopes) {
-      const credential = await credentialStores
-        .forScope(scope)
-        .read(providerId);
-      if (credential === undefined) {
-        continue;
-      }
-      return authorityOf(scope, credential);
-    }
-    return undefined;
-  };
-
-  /** A resolved MCP tool server authority and its identity for recheck. */
-  type ResolvedToolAuthority = Readonly<{
-    scope: CredentialScope;
-    generation: string;
-    authority:
-      | { kind: 'apiKey'; apiKey?: string; headers: Record<string, string> }
-      | {
-          kind: 'oauth';
-          headers: Record<string, string>;
-          expiresAt: number;
-        };
-  }>;
-
-  /** Resolves the scoped MCP credential for one tool server, or undefined. */
-  const resolveToolAuthority = async (
-    serverId: string,
-    credentials: BackstageCredentials,
-  ): Promise<ResolvedToolAuthority | undefined> => {
-    if (credentialStores === undefined || toolRegistry === undefined) {
-      return undefined;
-    }
-    const principal = principalOf(deps, credentials);
-    const key = mcpCredentialId(serverId);
     const scopes = credentialScopesFor(principal, credentialPrecedence);
     for (const scope of scopes) {
       const credential = await credentialStores.forScope(scope).read(key);
       if (credential === undefined) {
         continue;
       }
-      const interpreted = interpretMcpCredential(credential);
-      const secret =
-        credential.type === 'api_key' ? credential.key : credential.access;
-      const generation = mcpCredentialGeneration(scope, secret ?? '');
-      if (interpreted.expiresAt === undefined) {
-        return {
+      if (module?.interpretCredential) {
+        const { authority, generation } = module.interpretCredential(
           scope,
-          generation,
-          authority: { kind: 'apiKey', headers: interpreted.headers },
-        };
+          credential,
+        );
+        return { scope, generation, authority };
       }
-      return {
-        scope,
-        generation,
-        authority: {
-          kind: 'oauth',
-          headers: interpreted.headers,
-          expiresAt: interpreted.expiresAt,
-        },
-      };
+      return authorityOf(scope, credential);
     }
     return undefined;
   };
@@ -592,47 +554,22 @@ export async function createAiServiceIntegration(
     transport: fetch,
     ...(events ? { events } : {}),
     recheck: async operation => {
-      if (operation.operation === 'toolCall') {
-        // Tool calls recheck the tool permission and the scoped MCP
-        // credential generation — the same per-attempt discipline as model
-        // dispatch, with no host-supplied wiring.
-        const decisions = await deps.permissions.authorize(
-          [
-            {
-              permission: {
-                type: 'basic',
-                name: toolPermissionName({
-                  serverId: operation.provider,
-                  toolName: operation.modelId,
-                }),
-                attributes: {},
-              },
-            },
-          ],
-          { credentials: operation.credentials },
-        );
-        if (decisions[0]?.result !== 'ALLOW') {
-          return false;
-        }
-        if (!(await lease.renew(operation.fence))) {
-          return false;
-        }
-        const resolved = await resolveToolAuthority(
-          operation.provider,
-          operation.credentials,
-        );
-        return resolved?.generation === operation.credentialGeneration;
-      }
-      // Fresh permission check with the original caller credentials.
+      // Fresh permission check with the original caller credentials. The
+      // permission name comes from the module when it carries its own (tool
+      // servers); the shared model encoder applies otherwise.
+      const module = providerRegistry.get(operation.api);
+      const permissionName = module?.permissionName
+        ? module.permissionName(operation.provider, operation.modelId)
+        : modelPermissionName({
+            provider: operation.provider,
+            modelId: operation.modelId,
+          });
       const decisions = await deps.permissions.authorize(
         [
           {
             permission: {
               type: 'basic',
-              name: modelPermissionName({
-                provider: operation.provider,
-                modelId: operation.modelId,
-              }),
+              name: permissionName,
               attributes: {},
             },
           },
@@ -648,6 +585,7 @@ export async function createAiServiceIntegration(
       }
       // Credential generation: the resolved credential must be unchanged.
       const resolved = await resolveAuthority(
+        operation.api,
         operation.provider,
         operation.credentials,
       );
@@ -683,7 +621,11 @@ export async function createAiServiceIntegration(
     }
     const authorities = new Map<string, ResolvedAuthority>();
     for (const providerId of providers) {
-      const resolved = await resolveAuthority(providerId, binding.credentials);
+      const resolved = await resolveAuthority(
+        providerId,
+        providerId,
+        binding.credentials,
+      );
       if (resolved !== undefined) {
         authorities.set(providerId, resolved);
       }
@@ -1165,21 +1107,23 @@ export async function createAiServiceIntegration(
     const sessionRef = `${input.namespace.pluginId}/${input.namespace.sessionId}`;
     let callOrdinal = 0;
     return async (model, operation) => {
-      if (operation === 'toolCall') {
-        // Tool dispatch: the tool name rides the model identity and the
-        // server id the provider; the binding resolves the declared tool
-        // and the scoped MCP credential with the same fail-closed shape as
-        // model resolution.
-        const sessionToolRef = `${input.namespace.pluginId}/${input.namespace.sessionId}`;
+      const dispatchModule = providerRegistry.get(
+        model.api as TrustedOperation['api'],
+      );
+      if (dispatchModule?.resolveDispatch !== undefined) {
+        // Module-carried binding resolution — tool servers today — through
+        // the same generic seam provider modules use: the module supplies
+        // the dispatch facts and consumes the credential resolution, the
+        // host builds the trusted operation. No per-module branches.
         const current = authority();
         const trusted: TrustedOperation = {
           actor: input.owner,
           credentials: current.credentials,
           provenance: {
             origin: 'verified' as const,
-            conversationId: sessionToolRef,
-            taskId: sessionToolRef,
-            callId: `${sessionToolRef}#tool-${(callOrdinal += 1)}`,
+            conversationId: sessionRef,
+            taskId: sessionRef,
+            callId: `${sessionRef}#${(callOrdinal += 1)}`,
           },
           fence,
           definitionVersion: input.registryVersion,
@@ -1188,53 +1132,39 @@ export async function createAiServiceIntegration(
           modelId: model.id,
           resolvedModel: model.id,
           operation,
-          api: model.api,
-          destination: 'unresolved://tool',
+          api: model.api as TrustedOperation['api'],
+          destination: 'unresolved://dispatch',
           credentialScope: { kind: 'org' },
           credentialGeneration: 'unresolved',
           controller: new AbortController(),
         };
-        const unresolvedBinding = () => ({
-          operation: trusted,
-          model: model as GuardedModelBinding['model'],
-          authority: { kind: 'apiKey' as const },
-        });
-        if (toolRegistry === undefined) {
-          throw new GuardedResolutionError(
-            unresolvedBinding(),
-            'tool dispatch is not configured for this installation',
-          );
-        }
-        const declared = toolRegistry.resolve({
-          serverId: model.provider,
-          toolName: model.id,
-        });
-        if (declared === undefined) {
-          throw new GuardedResolutionError(
-            unresolvedBinding(),
-            `tool not registered: '${model.provider}/${model.id}' is not a declared tool of this installation`,
-          );
-        }
-        const resolvedTool = await resolveToolAuthority(
-          model.provider,
-          current.credentials,
+        const dispatch = await dispatchModule.resolveDispatch(model, () =>
+          resolveAuthority(
+            dispatchModule.id,
+            model.provider,
+            current.credentials,
+          ),
         );
-        if (resolvedTool === undefined) {
+        if (!dispatch.resolved) {
           throw new GuardedResolutionError(
-            unresolvedBinding(),
-            `MCP server credentials are not configured for tool server '${model.provider}'`,
+            {
+              operation: trusted,
+              model: model as GuardedModelBinding['model'],
+              authority: { kind: 'apiKey' as const },
+            },
+            dispatch.reason,
           );
         }
         return {
           operation: {
             ...trusted,
-            api: declared.module.id,
-            destination: declared.module.destination(model.id),
-            credentialScope: resolvedTool.scope,
-            credentialGeneration: resolvedTool.generation,
+            api: dispatch.api,
+            destination: dispatch.destination,
+            credentialScope: dispatch.credentialScope,
+            credentialGeneration: dispatch.credentialGeneration,
           },
           model: model as GuardedModelBinding['model'],
-          authority: resolvedTool.authority,
+          authority: dispatch.authority,
         };
       }
       const canonical = catalog.find(

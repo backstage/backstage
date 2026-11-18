@@ -21,70 +21,37 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import knex, { type Knex } from 'knex';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
-import type {
-  AuthService,
-  BackstageCredentials,
-  DatabaseService,
-  LifecycleService,
-  PermissionsService,
-  PluginMetadataService,
-} from '@backstage/backend-plugin-api';
+import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import type { Credential, CredentialStore } from '@earendil-works/pi-ai';
+import type { Credential } from '@earendil-works/pi-ai';
 import { createRegistry } from '@earendil-works/pi-durable';
-import { DefaultAiService } from '../DefaultAiService';
-import type { DefaultAiServiceDeps } from '../DefaultAiService';
-import { createAiServiceIntegration } from '../integration';
-import { runAiMigrations } from '../migrations';
 import { EncryptedUserCredentialStore } from '../credentials/EncryptedUserCredentialStore';
-import { mcpCredentialGeneration, mcpCredentialId } from '../credentials/mcp';
-import type { AiCredentialStores, CredentialScope } from '../credentials/types';
+import { mcpCredentialId } from '../credentials/mcp';
+import { aiServiceRef, createAiServiceFactory } from '../service';
+import type { AiService } from '../contracts';
 import { validateToolCallEnvelope } from './envelope';
 import type { ToolModule } from './types';
 
-const ENCRYPTION_KEY = new Uint8Array(32).fill(7);
 const credentials = mockCredentials.user('user:default/alice');
-const scope: CredentialScope = { kind: 'user', id: 'user:default/alice' };
-
-function makeDeps(
-  db: Knex,
-  authorize: (
-    credentials: BackstageCredentials,
-    name: string,
-  ) => Promise<{ result: string }>,
-): DefaultAiServiceDeps {
-  return {
-    database: { getClient: async () => db } as DatabaseService,
-    auth: {
-      isPrincipal: (value: BackstageCredentials, type: 'user' | 'service') =>
-        (value.principal as { type: string }).type === type,
-    } as unknown as AuthService,
-    permissions: {
-      authorize: async (
-        requests: Array<{ permission: { name: string } }>,
-        options: { credentials: BackstageCredentials },
-      ) =>
-        Promise.all(
-          requests.map(request =>
-            authorize(options.credentials, request.permission.name),
-          ),
-        ),
-    } as unknown as PermissionsService,
-    logger: mockServices.logger.mock(),
-    auditor: mockServices.auditor.mock(),
-    lifecycle: { addShutdownHook: jest.fn() } as unknown as LifecycleService,
-    pluginMetadata: { getId: () => 'test-plugin' } as PluginMetadataService,
-  };
-}
+const ENCRYPTION_KEY_BYTES = new Uint8Array(32).fill(7);
+const ENCRYPTION_KEY_BASE64 =
+  Buffer.from(ENCRYPTION_KEY_BYTES).toString('base64');
 
 function toolServerModule(
+  id: string,
   origin: string,
-  hooks: { rotateAfterFirstSend: () => boolean; rotate: () => Promise<void> },
+  hooks: {
+    rotateAfterFirstSend: () => boolean;
+    rotate: () => Promise<void>;
+  } = {
+    rotateAfterFirstSend: () => false,
+    rotate: async () => {},
+  },
 ): ToolModule {
   return {
-    id: 'stock-tools',
+    id,
     tools: [{ name: 'search', description: 'Search the index' }],
-    destination: toolName => `${origin}/mcp/stock-tools/tools/${toolName}`,
+    destination: toolName => `${origin}/mcp/${id}/tools/${toolName}`,
     destinationTemplates: [
       [
         { literal: '/mcp/' },
@@ -100,7 +67,7 @@ function toolServerModule(
         const fetch = options.fetch as typeof globalThis.fetch;
         const headers = (options.headers ?? {}) as Record<string, string>;
         const send = () =>
-          fetch(`${origin}/mcp/stock-tools/tools/${tool.name}`, {
+          fetch(`${origin}/mcp/${id}/tools/${tool.name}`, {
             method: 'POST',
             headers: { 'content-type': 'application/json', ...headers },
             body: JSON.stringify({ tool: tool.name, arguments: args }),
@@ -133,27 +100,93 @@ function toolServerModule(
   };
 }
 
-describe('stock integration tool mediation', () => {
+describe('stock service tool mediation', () => {
   let directory: string;
   let db: Knex;
 
   beforeAll(async () => {
-    directory = await mkdtemp(join(tmpdir(), 'ai-node-tool-integration-'));
+    directory = await mkdtemp(join(tmpdir(), 'ai-node-tool-stock-'));
     db = knex({
       client: 'better-sqlite3',
       connection: { filename: join(directory, 'ai.sqlite') },
       useNullAsDefault: true,
       pool: { min: 1, max: 1 },
     });
-    await runAiMigrations({
-      database: { getClient: async () => db },
-      logger: mockServices.logger.mock(),
-    });
   });
 
   afterAll(async () => {
     await db.destroy();
     await rm(directory, { recursive: true, force: true });
+  });
+
+  function makeDeps(
+    root: ConfigReader,
+    authorize: (
+      credentials: BackstageCredentials,
+      name: string,
+    ) => Promise<{ result: string }>,
+  ) {
+    return {
+      database: { getClient: async () => db },
+      config: root,
+      auth: {
+        isPrincipal: (value: BackstageCredentials, type: 'user' | 'service') =>
+          (value.principal as { type: string }).type === type,
+        getOwnServiceCredentials: async () => mockCredentials.service(),
+      } as never,
+      permissions: {
+        authorize: async (
+          requests: Array<{ permission: { name: string } }>,
+          options: { credentials: BackstageCredentials },
+        ) =>
+          Promise.all(
+            requests.map(request =>
+              authorize(options.credentials, request.permission.name),
+            ),
+          ),
+      },
+      logger: mockServices.logger.mock(),
+      auditor: mockServices.auditor.mock(),
+      lifecycle: mockServices.lifecycle.mock(),
+      pluginMetadata: {
+        getId: () => 'test-plugin',
+      },
+    };
+  }
+
+  async function buildService(
+    root: ConfigReader,
+    toolModules: readonly ToolModule[],
+    authorize: (
+      credentials: BackstageCredentials,
+      name: string,
+    ) => Promise<{ result: string }>,
+  ): Promise<AiService> {
+    const factory = createAiServiceFactory({ toolModules })(aiServiceRef);
+    const create = (
+      factory as unknown as {
+        factory(deps: unknown): Promise<AiService>;
+      }
+    ).factory;
+    return create(makeDeps(root, authorize));
+  }
+
+  it('registers no tools through the default factory', async () => {
+    const service = await buildService(new ConfigReader({}), [], async () => ({
+      result: 'ALLOW',
+    }));
+    const handle = await service.openHarness({
+      sessionId: 'plain-session',
+      config: {
+        root: new ConfigReader({ assistant: { mode: 'interactive' } }),
+        path: 'assistant',
+      },
+      credentials,
+      registry: createRegistry(),
+      registryVersion: 'v1',
+    });
+    expect(handle.tools).toBeUndefined();
+    await handle.release();
   });
 
   it('mediates tool calls through the stock service with no host wiring', async () => {
@@ -181,37 +214,26 @@ describe('stock integration tool mediation', () => {
     if (!address || typeof address === 'string') throw new Error('no port');
     const origin = `http://127.0.0.1:${address.port}`;
     try {
-      // The scoped MCP credential in the encrypted user store, under the
-      // reserved tool-server key.
+      // Installation config carries the org-scoped MCP credential for the
+      // second tool server; the user store carries the first one's. Two
+      // registered tool modules, zero integration wiring per module.
+      const root = new ConfigReader({
+        ai: {
+          credentials: {
+            encryptionKey: ENCRYPTION_KEY_BASE64,
+            scopes: {
+              org: {
+                'mcp:org-tools': { type: 'api_key', key: 'org-tool-token' },
+              },
+            },
+          },
+        },
+      });
       const userStore = new EncryptedUserCredentialStore({
         db,
-        encryptionKey: ENCRYPTION_KEY,
+        encryptionKey: ENCRYPTION_KEY_BYTES,
         scopeKey: 'user:user:default/alice',
       });
-      const stores: AiCredentialStores = {
-        forScope(forScope: CredentialScope) {
-          if (forScope.kind !== 'user') {
-            const empty: CredentialStore = {
-              read: async () => undefined,
-              list: async () => [],
-              modify: async () => undefined,
-              delete: async () => {},
-            };
-            return empty;
-          }
-          return userStore;
-        },
-      };
-      await userStore.modify(
-        mcpCredentialId('stock-tools'),
-        async () =>
-          ({
-            type: 'api_key',
-            key: 'stock-tool-token',
-          } satisfies Credential),
-      );
-
-      let allowed = true;
       let rotateAfterFirstSend = false;
       const rotate = async () => {
         await userStore.modify(
@@ -223,24 +245,35 @@ describe('stock integration tool mediation', () => {
             } satisfies Credential),
         );
       };
-      const deps = makeDeps(db, async (_credentials, name) => {
-        if (name === 'ai.tool.stock-tools.search.use') {
-          return { result: allowed ? 'ALLOW' : 'DENY' };
-        }
-        return { result: 'ALLOW' };
-      });
-      const integration = await createAiServiceIntegration({
-        deps,
-        credentialStores: stores,
-        toolModules: [
-          toolServerModule(origin, {
+
+      let allowed = true;
+      const service = await buildService(
+        root,
+        [
+          toolServerModule('stock-tools', origin, {
             rotateAfterFirstSend: () => rotateAfterFirstSend,
             rotate,
           }),
+          toolServerModule('org-tools', origin),
         ],
-      });
-      const service = DefaultAiService.create({ deps, integration });
-      const open = async () =>
+        async (_credentials, name) => {
+          if (name === 'ai.tool.stock-tools.search.use') {
+            return { result: allowed ? 'ALLOW' : 'DENY' };
+          }
+          return { result: 'ALLOW' };
+        },
+      );
+      // The factory has run the migrations; the user-scoped MCP credential
+      // is written directly to the encrypted store, as the login flow would.
+      await userStore.modify(
+        mcpCredentialId('stock-tools'),
+        async () =>
+          ({
+            type: 'api_key',
+            key: 'stock-tool-token',
+          } satisfies Credential),
+      );
+      const open = () =>
         service.openHarness({
           sessionId: 'tool-session',
           config: {
@@ -284,6 +317,20 @@ describe('stock integration tool mediation', () => {
         { kind: 'outcome', status: 'completed' },
       ]);
 
+      // The org-scoped installation credential serves the second module with
+      // no user-store entry: the precedence walk reaches it.
+      await expect(
+        handle.tools!.callTool({
+          serverId: 'org-tools',
+          toolName: 'search',
+          arguments: { query: 'y' },
+          credentials,
+        }),
+      ).resolves.toEqual({ result: 'stock-tool-output' });
+      expect(requests).toHaveLength(2);
+      expect(requests[1].pathname).toBe('/mcp/org-tools/tools/search');
+      expect(requests[1].authorization).toBe('Bearer org-tool-token');
+
       // Permission denial: the tool permission is refused before any send.
       allowed = false;
       requests.length = 0;
@@ -299,8 +346,8 @@ describe('stock integration tool mediation', () => {
       });
       expect(requests).toHaveLength(0);
 
-      // Credential rotation mid-call: the recheck re-resolves the scoped
-      // MCP credential and rejects the retry when the generation changed.
+      // Credential rotation mid-call: the recheck re-resolves the scoped MCP
+      // credential and rejects the retry when the generation changed.
       allowed = true;
       rotateAfterFirstSend = true;
       requests.length = 0;
@@ -331,12 +378,50 @@ describe('stock integration tool mediation', () => {
       ).resolves.toEqual({ result: 'stock-tool-output' });
       expect(requests).toHaveLength(1);
       expect(requests[0].authorization).toBe('Bearer rotated-tool-token');
-      await reopened.release();
 
-      // The generation identity is scoped and rotation-sensitive.
-      expect(mcpCredentialGeneration(scope, 'stock-tool-token')).not.toBe(
-        mcpCredentialGeneration(scope, 'rotated-tool-token'),
-      );
+      // Handle lifecycle: a second handle on the live session keeps working
+      // after the first is released, and the released handle (including a
+      // method captured from it) fails closed with no sends.
+      const second = await open();
+      const captured = second.tools!.callTool;
+      requests.length = 0;
+      await expect(
+        handle.tools!.callTool({
+          serverId: 'stock-tools',
+          toolName: 'search',
+          arguments: { query: 'x' },
+          credentials,
+        }),
+      ).rejects.toThrow(/released/);
+      await expect(
+        captured({
+          serverId: 'stock-tools',
+          toolName: 'search',
+          arguments: { query: 'x' },
+          credentials,
+        }),
+      ).resolves.toEqual({ result: 'stock-tool-output' });
+      expect(requests).toHaveLength(1);
+      await second.release();
+      requests.length = 0;
+      await expect(
+        captured({
+          serverId: 'stock-tools',
+          toolName: 'search',
+          arguments: { query: 'x' },
+          credentials,
+        }),
+      ).rejects.toThrow(/released/);
+      await expect(
+        second.tools!.callTool({
+          serverId: 'stock-tools',
+          toolName: 'search',
+          arguments: { query: 'x' },
+          credentials,
+        }),
+      ).rejects.toThrow(/released/);
+      expect(requests).toHaveLength(0);
+      await reopened.release();
     } finally {
       server.closeAllConnections();
       await new Promise<void>(resolve => server.close(() => resolve()));

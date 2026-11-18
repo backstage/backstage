@@ -18,7 +18,11 @@ import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { AnyModel } from '@earendil-works/pi-ai';
 import type { ToolRegistry } from './registry';
 
-/** The guarded dispatch entry tool calls route through. */
+/**
+ * The guarded dispatch entry tool calls route through.
+ *
+ * @alpha
+ */
 export type GuardedToolDispatch = Readonly<{
   callTool(
     model: AnyModel,
@@ -88,7 +92,11 @@ export function createGuardedToolOperations(options: {
   };
 }
 
-/** The guarded tool facade produced by {@link createGuardedToolOperations}. */
+/**
+ * The guarded tool facade produced by {@link createGuardedToolOperations}.
+ *
+ * @alpha
+ */
 export type GuardedToolOperations = ReturnType<
   typeof createGuardedToolOperations
 >;

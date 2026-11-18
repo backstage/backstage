@@ -17,6 +17,7 @@
 import type { Config, JsonValue } from '@backstage/config';
 import type { AnyModel, ModelInputModality } from '@earendil-works/pi-ai';
 import type { ConfigAtPath } from '../contracts';
+import { MCP_RESERVED_PREFIX } from '../credentials/identifiers';
 import type {
   AiConfigCredentialScopes,
   AiCredentialsPrecedence,
@@ -376,6 +377,13 @@ function parseModels(section: Config, path: string): readonly AnyModel[] {
       entryPath,
       'provider',
     );
+    if (provider.startsWith(MCP_RESERVED_PREFIX)) {
+      throw fieldError(
+        entryPath,
+        'provider',
+        `the '${MCP_RESERVED_PREFIX}' prefix is reserved for MCP tool server credentials and can never be a model provider id; configure an actual model provider`,
+      );
+    }
     const modelId = assertIdentifier(
       requireString(entry, 'modelId', entryPath),
       entryPath,

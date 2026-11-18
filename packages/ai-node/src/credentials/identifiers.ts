@@ -173,12 +173,11 @@ export function parseConfigCredentials(
     }
     const providers = new Map<string, Credential>();
     for (const [providerId, credential] of entries) {
+      // The mcp: prefix is a legitimate key here: installation config is
+      // also where org/service-scoped MCP tool server credentials live.
+      // Model-side reservation is enforced at every model provider intake
+      // (catalog and default-model parsing) instead.
       const id = assertIdentifier(providerId, 'provider ID');
-      if (id.startsWith(MCP_RESERVED_PREFIX)) {
-        throw new Error(
-          `Invalid provider ID in config: ${key}/${id} is reserved for MCP tool server credentials`,
-        );
-      }
       if (providers.has(id)) {
         throw new Error(`Duplicate provider ID in config: ${key}/${id}`);
       }

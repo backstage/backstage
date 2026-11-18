@@ -19,12 +19,79 @@ import type {
   PermissionsRegistryService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
+import {
+  interpretMcpCredential,
+  mcpCredentialGeneration,
+  mcpCredentialId,
+} from '../credentials/mcp';
 import { createProviderRegistry } from '../providers/registry';
 import type { AiProviderRegistry } from '../providers/registry';
+import type { AiProviderModule } from '../providers/types';
 import type { DestinationTemplate } from '../providers/templates';
 import { toolModuleAsProviderModule } from './types';
 import type { ToolDeclaration, ToolModule } from './types';
 
+/**
+ * Presents one tool module through the generic module resolution seam: the
+ * credential key, interpretation and generation for its scoped MCP
+ * credential, the tool permission name, and the `toolCall` binding facts.
+ * The integration consumes these hooks generically — the same seam provider
+ * modules use — so adding a tool module requires no integration changes.
+ */
+function toolModuleWithResolution(module: ToolModule): AiProviderModule {
+  return {
+    ...toolModuleAsProviderModule(module),
+    credentialKey: providerId => mcpCredentialId(providerId),
+    interpretCredential: (scope, credential) => {
+      const interpreted = interpretMcpCredential(credential);
+      const secret =
+        credential.type === 'api_key' ? credential.key : credential.access;
+      return {
+        authority:
+          interpreted.expiresAt === undefined
+            ? { kind: 'apiKey', headers: interpreted.headers }
+            : {
+                kind: 'oauth',
+                headers: interpreted.headers,
+                expiresAt: interpreted.expiresAt,
+              },
+        generation: mcpCredentialGeneration(scope, secret ?? ''),
+      };
+    },
+    permissionName: (providerId, modelId) =>
+      toolPermissionName({ serverId: providerId, toolName: modelId }),
+    resolveDispatch: async (model, resolveCredential) => {
+      const tool = module.tools.find(entry => entry.name === model.id);
+      if (tool === undefined) {
+        return {
+          resolved: false as const,
+          reason: `tool not registered: '${model.provider}/${model.id}' is not a declared tool of this installation`,
+        };
+      }
+      const credential = await resolveCredential();
+      if (credential === undefined) {
+        return {
+          resolved: false as const,
+          reason: `MCP server credentials are not configured for tool server '${module.id}'`,
+        };
+      }
+      return {
+        resolved: true as const,
+        api: module.id,
+        destination: module.destination(model.id),
+        authority: credential.authority,
+        credentialScope: credential.scope,
+        credentialGeneration: credential.generation,
+      };
+    },
+  };
+}
+
+/**
+ * Identifies one declared tool: its server and its name.
+ *
+ * @alpha
+ */
 export type ToolIdentity = Readonly<{ serverId: string; toolName: string }>;
 
 type BasicPermission = Extract<
@@ -32,7 +99,11 @@ type BasicPermission = Extract<
   { type: 'basic' }
 >;
 
-/** `ai.tool.<server>.<tool>.use`, following the model permission encoding. */
+/**
+ * `ai.tool.<server>.<tool>.use`, following the model permission encoding.
+ *
+ * @alpha
+ */
 export function toolPermissionName({
   serverId,
   toolName,
@@ -59,6 +130,8 @@ export type ToolRegistry = Readonly<{
   resolve(
     identity: ToolIdentity,
   ): { module: ToolModule; tool: ToolDeclaration } | undefined;
+  /** The validated tool modules, in registration order. */
+  readonly modules: readonly ToolModule[];
 }>;
 
 /**
@@ -109,10 +182,11 @@ export function createToolRegistry(
     byId.set(module.id, module);
   }
   const providerRegistry = createProviderRegistry(
-    modules.map(toolModuleAsProviderModule),
+    modules.map(toolModuleWithResolution),
   );
   return Object.freeze({
     providerRegistry,
+    modules: Object.freeze([...byId.values()]),
     resolve: ({ serverId, toolName }) => {
       const module = byId.get(serverId);
       const tool = module?.tools.find(entry => entry.name === toolName);
@@ -123,24 +197,38 @@ export function createToolRegistry(
 
 /**
  * Composes a model provider registry with a tool registry's provider view:
- * the guard and journal consume one registry, with tool modules taking
- * precedence for their ids. Tool route templates and operations flow
- * through the existing seams unchanged.
+ * the guard and journal consume one registry. Id collisions between tool
+ * modules and provider modules are rejected at composition — never silently
+ * shadowed in either direction, since the losing side would silently lose
+ * its dispatch semantics.
  */
 export function composeWithToolRegistry(
   modelRegistry: AiProviderRegistry,
-  tools: AiProviderRegistry,
+  tools: ToolRegistry,
 ): AiProviderRegistry {
+  for (const module of tools.modules) {
+    if (modelRegistry.get(module.id) !== undefined) {
+      throw new Error(
+        `Module id collision: the tool module '${module.id}' matches a registered provider module. Tool module ids must be distinct from provider module ids so neither side silently loses its dispatch`,
+      );
+    }
+  }
+  const toolView = tools.providerRegistry;
   return Object.freeze({
-    get: id => tools.get(id) ?? modelRegistry.get(id),
+    get: id => toolView.get(id) ?? modelRegistry.get(id),
     hasOperation: operation =>
-      tools.hasOperation(operation) || modelRegistry.hasOperation(operation),
+      toolView.hasOperation(operation) || modelRegistry.hasOperation(operation),
     canonicalPath: path =>
-      tools.canonicalPath(path) ?? modelRegistry.canonicalPath(path),
+      toolView.canonicalPath(path) ?? modelRegistry.canonicalPath(path),
   });
 }
 
-/** Registers one basic permission per declared tool, mirroring model permissions. */
+/**
+ * Registers one basic permission per declared tool, mirroring model
+ * permissions.
+ *
+ * @alpha
+ */
 export function createToolPermissions(options: {
   tools: readonly ToolIdentity[];
   authorizer: Pick<PermissionsService, 'authorize'>;

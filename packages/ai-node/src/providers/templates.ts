@@ -17,6 +17,12 @@
 import { createHash } from 'node:crypto';
 
 /** A literal path fragment or a dynamic value that must be digested. */
+/**
+ * One segment of a destination route template: a literal path part or a
+ * digested identifier part.
+ *
+ * @alpha
+ */
 export type DestinationTemplatePart =
   | Readonly<{ literal: string }>
   | Readonly<{ digest: string }>;
@@ -24,6 +30,12 @@ export type DestinationTemplatePart =
 /**
  * A route's static skeleton and its explicitly redacted dynamic values.
  * Host names are bound by the trusted producer, not by the template.
+ */
+/**
+ * The approved route shape for one provider or tool module, as the journal
+ * consumes it.
+ *
+ * @alpha
  */
 export type DestinationTemplate = readonly DestinationTemplatePart[];
 

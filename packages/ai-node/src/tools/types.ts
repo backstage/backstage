@@ -18,19 +18,32 @@ import type { AnyModel } from '@earendil-works/pi-ai';
 import type { DestinationTemplate } from '../providers/templates';
 import type { AiProviderModule } from '../providers/types';
 
-/** One tool a server exposes, as declared for registration. */
+/**
+ * One tool a server exposes, as declared for registration.
+ *
+ * @alpha
+ */
 export type ToolDeclaration = Readonly<{
   name: string;
   description?: string;
 }>;
 
-/** The result of one mediated tool dispatch. */
+/**
+ * The result of one mediated tool dispatch.
+ *
+ * @alpha
+ */
 export type ToolCallResult = Readonly<{
   value: unknown;
   outcome: 'completed' | 'failed' | 'cancelled';
 }>;
 
-/** Provider-visible tool-call envelope metadata, without authorization state. */
+/**
+ * Provider-visible tool-call envelope metadata, without authorization
+ * state.
+ *
+ * @alpha
+ */
 export type ToolCallEnvelope = Readonly<{
   /** The registered tool module (server) identifier. */
   serverId: string;
@@ -40,7 +53,11 @@ export type ToolCallEnvelope = Readonly<{
   destination: string;
 }>;
 
-/** The input a tool adapter dispatch receives. */
+/**
+ * The input a tool adapter dispatch receives.
+ *
+ * @alpha
+ */
 export type ToolDispatchInput = Readonly<{
   tool: ToolDeclaration;
   arguments: unknown;

@@ -168,22 +168,19 @@ describe('MCP server credentials in the scoped encrypted stores', () => {
     expect(first).toMatch(/^[0-9a-f]{16}$/);
   });
 
-  it('reserves the mcp: prefix against model provider identifiers', () => {
-    // A model provider using the reserved prefix is rejected by config
-    // validation and by config credential parsing, so tool server keys are
-    // unreachable as model credentials.
-    const parse = (
-      entries: ReadonlyMap<string, ReadonlyMap<string, Credential>>,
-    ) => parseConfigCredentials(entries);
+  it('keeps the mcp: prefix a tool-credential namespace, not a model one', () => {
+    // Org/service config credential maps legitimately hold mcp: keys: that
+    // is where installation-scoped tool server credentials live.
     expect(() =>
-      parse(
+      parseConfigCredentials(
         new Map([
           ['org', new Map([['mcp:server', { type: 'api_key', key: 'x' }]])],
         ]),
       ),
-    ).toThrow('reserved for MCP tool server credentials');
-    // The reverse direction: a tool credential is stored under the reserved
-    // key and a model provider of that name can never be configured.
+    ).not.toThrow();
+    // The reservation is by usage, not raw key shape: every model provider
+    // intake rejects the prefix, so a model named after a tool credential
+    // key can never be configured and reach it.
     expect(mcpCredentialId('server')).toBe('mcp:server');
     expect(() => mcpCredentialId('mcp:server')).not.toThrow();
   });

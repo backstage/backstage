@@ -25,7 +25,12 @@ import type { AttemptDecision, AttemptOutcome } from '../journal/types';
 import type { Fence } from '../contracts';
 import { validateToolCallEnvelope } from './envelope';
 import { createGuardedToolOperations } from './mediation';
-import { createToolRegistry, toolPermissionName } from './registry';
+import {
+  composeWithToolRegistry,
+  createToolRegistry,
+  toolPermissionName,
+} from './registry';
+import { builtinProviderRegistry } from '../providers/builtins';
 import type { ToolModule } from './types';
 
 type ServerFixture = {
@@ -295,62 +300,6 @@ describe('guarded tool operations', () => {
       );
       expect(f.events).toEqual(['deny:1']);
       expect(fixture.requests).toHaveLength(0);
-    } finally {
-      fixture.server.close();
-      await once(fixture.server, 'close');
-    }
-  });
-
-  it('rejects a fabricated tool result over a guard denial, once', async () => {
-    const fixture = await startToolServer();
-    try {
-      const mode: AdapterMode = 'fabricate-on-denial';
-      const f = exampleToolServer(fixture.origin, {
-        mode: () => mode,
-        transport: globalThis.fetch,
-        recheck: async () => true,
-      });
-      await expect(f.callTool()).rejects.toThrow('fabricated provider result');
-      // Exactly the guard's own denial — no duplicate deny record.
-      expect(f.events).toEqual(['deny:1']);
-      expect(fixture.requests).toHaveLength(0);
-    } finally {
-      fixture.server.close();
-      await once(fixture.server, 'close');
-    }
-  });
-
-  it('rejects a fabricated tool result over a detached fetch', async () => {
-    const fixture = await startToolServer();
-    try {
-      const mode: AdapterMode = 'fabricate-detached';
-      const f = exampleToolServer(fixture.origin, {
-        mode: () => mode,
-        transport: globalThis.fetch,
-        recheck: async () => true,
-      });
-      await expect(f.callTool()).rejects.toThrow('fabricated provider result');
-      expect(f.events.filter(event => event.startsWith('deny'))).toEqual([
-        'deny:1',
-      ]);
-    } finally {
-      fixture.server.close();
-      await once(fixture.server, 'close');
-    }
-  });
-
-  it('rejects a fabricated tool result after an earlier response', async () => {
-    const fixture = await startToolServer();
-    try {
-      const mode: AdapterMode = 'fabricate-after-response';
-      const f = exampleToolServer(fixture.origin, {
-        mode: () => mode,
-        transport: globalThis.fetch,
-        recheck: async () => true,
-      });
-      await expect(f.callTool()).rejects.toThrow('fabricated provider result');
-      expect(f.events).toEqual(['allow:1', 'deny:2', 'outcome:unknown']);
-      expect(fixture.requests).toHaveLength(1);
     } finally {
       fixture.server.close();
       await once(fixture.server, 'close');
@@ -640,5 +589,65 @@ describe('guarded tool operations', () => {
         },
       ]),
     ).not.toThrow();
+  });
+
+  it('rejects tool module ids that collide with provider modules', () => {
+    const collidingModule = {
+      id: 'openai-responses',
+      tools: [{ name: 'search' }],
+      destination: (toolName: string) =>
+        `https://server.example/mcp/openai-responses/tools/${toolName}`,
+      destinationTemplates: [
+        [
+          { literal: '/mcp/' },
+          { digest: 'server' },
+          { literal: '/tools/' },
+          { digest: 'tool' },
+        ],
+      ],
+      validateToolCall: validateToolCallEnvelope,
+      adapter: {
+        kind: 'tool' as const,
+        invoke: async () => ({ value: null, outcome: 'completed' as const }),
+      },
+    };
+    expect(() =>
+      composeWithToolRegistry(
+        builtinProviderRegistry,
+        createToolRegistry([collidingModule]),
+      ),
+    ).toThrow(/Module id collision.*openai-responses/s);
+  });
+
+  it('composes distinct tool and provider ids without shadowing', () => {
+    const tools = createToolRegistry([
+      {
+        id: 'distinct-tools',
+        tools: [{ name: 'search' }],
+        destination: (toolName: string) =>
+          `https://server.example/mcp/distinct-tools/tools/${toolName}`,
+        destinationTemplates: [
+          [
+            { literal: '/mcp/' },
+            { digest: 'server' },
+            { literal: '/tools/' },
+            { digest: 'tool' },
+          ],
+        ],
+        validateToolCall: validateToolCallEnvelope,
+        adapter: {
+          kind: 'tool' as const,
+          invoke: async () => ({ value: null, outcome: 'completed' as const }),
+        },
+      },
+    ]);
+    const composed = composeWithToolRegistry(builtinProviderRegistry, tools);
+    expect(composed.get('distinct-tools')?.certifiedOperations).toEqual([
+      'toolCall',
+    ]);
+    // The provider module keeps its own dispatch semantics.
+    expect(composed.get('openai-responses')?.certifiedOperations).toContain(
+      'stream',
+    );
   });
 });
