@@ -101,14 +101,26 @@ export async function createJournalHarness(
     if (!pgUrl) throw new Error('AI_TEST_POSTGRES_URL is not set');
     const schema = `journal_harness_${randomUUID().replace(/-/g, '')}`;
     const admin = knex({ client: 'pg', connection: pgUrl });
-    await admin.raw(`create schema "${schema}"`);
-    await admin.destroy();
-    const db = knex({
-      client: 'pg',
-      connection: pgUrl,
-      searchPath: [schema],
-    });
+    let db: Knex | undefined;
+    // Every failure path releases what the steps before it took: the
+    // connections are destroyed and the schema dropped, so a failed
+    // setup leaves nothing behind.
+    const cleanup = async () => {
+      try {
+        await db?.destroy();
+      } catch {
+        /* the connection may already be gone */
+      }
+      await admin.raw(`drop schema if exists "${schema}" cascade`);
+      await admin.destroy();
+    };
     try {
+      await admin.raw(`create schema "${schema}"`);
+      db = knex({
+        client: 'pg',
+        connection: pgUrl,
+        searchPath: [schema],
+      });
       await storageMigration.up(db);
       await journalMigration.up(db);
       await db('ai_namespace_leases').insert({
@@ -118,28 +130,24 @@ export async function createJournalHarness(
         token: fence.token,
         expires_at: db.raw("statement_timestamp() + interval '60 seconds'"),
       });
+      const journal = createAttemptJournal({
+        db,
+        providers: options.providers,
+        authorizer: { authorizeAuditRead: async () => true },
+      });
+      return {
+        journal,
+        db,
+        namespace,
+        fence,
+        credentials,
+        cleanup,
+      };
     } catch (error) {
-      await db.destroy();
+      // Cleanup must not mask the setup failure it is reporting.
+      await cleanup().catch(() => undefined);
       throw error;
     }
-    const journal = createAttemptJournal({
-      db,
-      providers: options.providers,
-      authorizer: { authorizeAuditRead: async () => true },
-    });
-    return {
-      journal,
-      db,
-      namespace,
-      fence,
-      credentials,
-      cleanup: async () => {
-        await db.destroy();
-        const drop = knex({ client: 'pg', connection: pgUrl });
-        await drop.raw(`drop schema if exists "${schema}" cascade`);
-        await drop.destroy();
-      },
-    };
   }
 
   const directory = await mkdtemp(join(tmpdir(), 'ai-journal-harness-'));
@@ -160,7 +168,10 @@ export async function createJournalHarness(
       expires_at: db.raw("(julianday('now') - 2440587.5) * 86400000 + 60000"),
     });
   } catch (error) {
-    await db.destroy();
+    await db.destroy().catch(() => undefined);
+    await rm(directory, { recursive: true, force: true }).catch(
+      () => undefined,
+    );
     throw error;
   }
   const journal = createAttemptJournal({
