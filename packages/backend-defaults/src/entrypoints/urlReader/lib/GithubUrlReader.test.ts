@@ -419,6 +419,33 @@ describe('GithubUrlReader', () => {
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
+    it('rejects repository URLs whose repository path contains encoded traversal', async () => {
+      // The encoded repository path decodes to `backstage/../mock`, which
+      // URL normalization would resolve to a different repository. The
+      // request must be rejected before any credentialed API request is made.
+      const retargeted = jest.fn();
+      worker.use(
+        http.get(
+          'https://api.github.com/repos/mock/commits/main/status',
+          () => {
+            retargeted();
+            return HttpResponse.json(commitStatusGithubResponse, {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            });
+          },
+        ),
+      );
+
+      await expect(
+        githubProcessor.readTree(
+          'https://github.com/backstage/..%2Fmock/tree/main',
+        ),
+      ).rejects.toThrow('path traversal');
+
+      expect(retargeted).not.toHaveBeenCalled();
+    });
+
     it('creates a directory with the wanted files', async () => {
       const response = await githubProcessor.readTree(
         'https://github.com/backstage/mock',
