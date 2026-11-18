@@ -676,6 +676,109 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(1);
   });
 
+  it('should not enumerate installations outside the allowedInstallationOwners list', async () => {
+    const mux = new GithubAppCredentialsMux({
+      host: 'github.com',
+      apps: [
+        {
+          appId: 1,
+          privateKey: 'privateKey',
+          webhookSecret: '123',
+          clientId: 'CLIENT_ID',
+          clientSecret: 'CLIENT_SECRET',
+          allowedInstallationOwners: ['ORG-A', 'org-b'],
+        },
+      ],
+    });
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: { etag: '123' },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'all',
+          account: { login: 'Org-A' },
+        },
+        {
+          id: 2,
+          repository_selection: 'all',
+          account: { login: 'ORG-B' },
+        },
+        {
+          id: 3,
+          repository_selection: 'all',
+          account: { login: 'org-c' },
+        },
+        {
+          id: 4,
+          repository_selection: 'all',
+          account: null,
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    const installations = await mux.getAllInstallations();
+
+    // Owners within the allow list are enumerated regardless of casing on
+    // either side, while all other installations are left out
+    expect(installations).toHaveLength(2);
+    expect(installations[0].account).toMatchObject({ login: 'Org-A' });
+    expect(installations[1].account).toMatchObject({ login: 'ORG-B' });
+  });
+
+  it('should enumerate all installations for apps without an allowedInstallationOwners list', async () => {
+    const mux = new GithubAppCredentialsMux({
+      host: 'github.com',
+      apps: [
+        {
+          appId: 1,
+          privateKey: 'privateKey',
+          webhookSecret: '123',
+          clientId: 'CLIENT_ID',
+          clientSecret: 'CLIENT_SECRET',
+          allowedInstallationOwners: ['org-a'],
+        },
+        {
+          appId: 2,
+          privateKey: 'privateKey2',
+          webhookSecret: '456',
+          clientId: 'CLIENT_ID_2',
+          clientSecret: 'CLIENT_SECRET',
+        },
+      ],
+    });
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: { etag: '123' },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'all',
+          account: { login: 'org-a' },
+        },
+        {
+          id: 2,
+          repository_selection: 'all',
+          account: { login: 'org-b' },
+        },
+        {
+          id: 3,
+          repository_selection: 'all',
+          account: null,
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    const installations = await mux.getAllInstallations();
+
+    // Each app applies its own allow list: the first app only contributes
+    // org-a, while the second one without a list contributes everything
+    expect(installations).toHaveLength(4);
+    expect(
+      installations.map(
+        i => (i.account as { login?: string } | null)?.login ?? null,
+      ),
+    ).toEqual(['org-a', 'org-a', 'org-b', null]);
+  });
+
   it('should de-duplicate concurrent installation lookups', async () => {
     let resolveListInstallations!: (value: unknown) => void;
     octokit.apps.listInstallations.mockReturnValue(
