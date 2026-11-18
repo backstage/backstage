@@ -130,20 +130,25 @@ async function detectPatchVersions(repo, release, ref) {
 
   // Only the package.json files that changed on the branch are read, which
   // keeps this fast even with many patch branches and a partial clone.
+  const diffArgs = [
+    '--no-renames',
+    '--diff-filter=AM',
+    `v${release}`,
+    ref,
+    '--',
+    ':(glob)**/package.json',
+  ];
   const { stdout: diffStr } = await execFile(
     'git',
-    [
-      'diff',
-      '--name-status',
-      '--no-renames',
-      '--diff-filter=AM',
-      `v${release}`,
-      ref,
-      '--',
-      ':(glob)**/package.json',
-    ],
+    ['diff', '--name-status', ...diffArgs],
     { cwd: repo.root.dir },
   );
+
+  // In a partial clone, each read below would otherwise fetch its blob from
+  // the remote one by one. Diffing the contents fetches them all in one batch.
+  await execFile('git', ['diff', '--numstat', ...diffArgs], {
+    cwd: repo.root.dir,
+  });
 
   const readPackageJson = async (rev, pkgJsonPath) => {
     const args = ['show', `${rev}:${pkgJsonPath}`];
