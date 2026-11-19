@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getHostLookupIdentity } from '../system/getHostLookupIdentity';
+import { withBaseUrl } from '../system/withBaseUrl';
 import { createConnectionType } from '../system/createConnectionType';
 import { z } from 'zod/v4';
 
 /** @public */
 export const GoogleGcsConnectionType = createConnectionType({
-  getLookupIdentity: getHostLookupIdentity,
   type: 'google-gcs',
   title: 'Google Cloud Storage',
-  configSchema: z.object({
-    host: z.string(),
-  }),
+  ...withBaseUrl(z.object({})),
   authMethods: [
     {
       method: 'none',

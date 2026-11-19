@@ -24,7 +24,7 @@ It defines:
 - Optional authentication selection and whole-connection validation logic.
 
 For example, the `github` type is a multi-instance, host-based type. Its
-connection fields include `host`, `apiBaseUrl`, and `rawBaseUrl`. Its
+connection fields include `baseUrl`, `apiBaseUrl`, and `rawBaseUrl`. Its
 authentication methods are `none`, `token`, and `app`.
 
 The exported `ConnectionType` descriptor contains runtime metadata such as
@@ -42,7 +42,7 @@ type:
 connections:
   - type: github
     title: GitHub production
-    host: github.com
+    baseUrl: https://github.com/
     auth:
       - method: token
         token: ${GITHUB_TOKEN}
@@ -58,8 +58,9 @@ The framework owns these connection-level fields:
 | `match` | No       | Restricts the complete connection to named plugin IDs.  |
 
 All other fields come from the selected type's connection schema. For a
-host-based type, this normally includes `host` and may include API or content
-base URLs.
+URL-based type, this includes a required `baseUrl` and may include API or
+content base URLs. The base URL is returned with a trailing slash; `host` is not
+a configured or returned field.
 
 ## Cardinality
 
@@ -69,8 +70,8 @@ configured instance with a unique identity. A `singleton` type allows one
 entry of that type.
 
 The connection type's [lookup strategy](#lookup-strategies) determines the
-identity field. For host-based types the identity is `host`, so two GitHub
-connections are valid as long as their hosts differ. The AWS type is a
+identity field. For URL-based types the identity is the host parsed from
+`baseUrl`, so two GitHub connections are valid as long as their hosts differ. The AWS type is a
 singleton, so identity is not derived from a connection field — individual
 accounts are instead represented as authentication entries within one
 connection.
@@ -113,7 +114,7 @@ The built-in strategies are:
 
 | Strategy | Query                                  | Selection behavior                                                                              |
 | -------- | -------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `host`   | `{ url: string }`                      | Parses the URL and selects the connection whose `host` matches the URL host.                    |
+| `host`   | `{ url: string }`                      | Parses the URL and selects the connection whose `baseUrl` host matches the URL host.            |
 | `aws`    | `{ accountId?: string; arn?: string }` | Uses the singleton AWS connection and lets the AWS type select an account authentication entry. |
 
 ## Lookup queries
@@ -182,7 +183,7 @@ with the same host.
 connections:
   - type: github
     title: GitHub.com
-    host: github.com
+    baseUrl: https://github.com/
     apiBaseUrl: https://api.github.com
     rawBaseUrl: https://raw.githubusercontent.com
     auth:
@@ -209,7 +210,7 @@ const connection = await connections.find({
 {
   type: 'github',
   title: 'GitHub.com',
-  host: 'github.com',
+  baseUrl: 'https://github.com/',
   apiBaseUrl: 'https://api.github.com',
   rawBaseUrl: 'https://raw.githubusercontent.com',
   auth: {

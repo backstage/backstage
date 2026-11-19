@@ -39,7 +39,7 @@ const connection = (
 ): ConfiguredConnection =>
   ({
     type,
-    host,
+    baseUrl: `https://${host}/`,
     auth,
     ...extras,
   } as unknown as ConfiguredConnection);
@@ -107,8 +107,8 @@ describe('combineConnectionSources', () => {
     const result = combineConnectionSources(legacy, fromConfig, logger);
 
     expect(result).toHaveLength(1);
-    expect((result[0] as unknown as { host: string }).host).toBe(
-      'config.example.com',
+    expect((result[0] as unknown as { baseUrl: string }).baseUrl).toBe(
+      'https://config.example.com/',
     );
   });
 
@@ -141,7 +141,9 @@ describe('combineConnectionSources', () => {
 
     expect(result.map(c => c.type).sort()).toEqual(['github', 'gitlab']);
     const gitlab = result.find(c => c.type === 'gitlab');
-    expect((gitlab as unknown as { host: string }).host).toBe('gitlab.com');
+    expect((gitlab as unknown as { baseUrl: string }).baseUrl).toBe(
+      'https://gitlab.com/',
+    );
     expect(logger.warn).toHaveBeenCalledTimes(1);
     expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('github'));
   });

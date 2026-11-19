@@ -35,7 +35,7 @@ describe('connectionsServiceFactory', () => {
             connections: [
               {
                 type: 'github',
-                host: 'github.com',
+                baseUrl: 'https://github.com/',
                 auth: [
                   {
                     method: 'token',
@@ -60,7 +60,7 @@ describe('connectionsServiceFactory', () => {
         authMethods: ['token'],
       }),
     ).resolves.toMatchObject({
-      host: 'github.com',
+      baseUrl: 'https://github.com/',
       auth: { method: 'token', token: 'catalog-token' },
     });
     await expect(

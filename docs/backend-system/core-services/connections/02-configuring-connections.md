@@ -23,7 +23,7 @@ GitHub:
 connections:
   - type: github
     title: GitHub production
-    host: github.com
+    baseUrl: https://github.com/
     auth:
       - method: token
         token: ${GITHUB_TOKEN}
@@ -49,7 +49,7 @@ supports unauthenticated access, use the `none` method:
 ```yaml title="app-config.yaml"
 connections:
   - type: gitlab
-    host: gitlab.com
+    baseUrl: https://gitlab.com/
     auth:
       - method: none
 ```
@@ -68,14 +68,14 @@ each entry has a different host:
 connections:
   - type: github
     title: Public GitHub
-    host: github.com
+    baseUrl: https://github.com/
     auth:
       - method: token
         token: ${GITHUB_TOKEN}
 
   - type: github
     title: Company GitHub
-    host: github.example.com
+    baseUrl: https://github.example.com/
     apiBaseUrl: https://github.example.com/api/v3
     rawBaseUrl: https://github.example.com/raw
     auth:
@@ -84,7 +84,11 @@ connections:
 ```
 
 For host-based types, `ConnectionsService.find` parses the consumer's URL and
-matches its host exactly. Do not include a scheme or path in `host`.
+matches its host against the host parsed from `baseUrl`. Include the HTTP(S)
+scheme and any instance path in `baseUrl`. The parsed value has a trailing slash
+so relative paths preserve that instance path. Queries, fragments and embedded
+credentials are rejected. Instances on the same host with different paths
+cannot be distinguished and are rejected as duplicates.
 
 The default connection title is the connection type's title. When more than
 one connection has the same type, the default includes the host, such as
@@ -108,7 +112,7 @@ authentication entry to make it visible only to the listed plugin IDs:
 ```yaml title="app-config.yaml"
 connections:
   - type: github
-    host: github.com
+    baseUrl: https://github.com/
     auth:
       - method: token
         title: Catalog token
@@ -130,7 +134,7 @@ You can also restrict the complete connection:
 ```yaml title="app-config.yaml"
 connections:
   - type: harness
-    host: app.harness.io
+    baseUrl: https://app.harness.io/
     match:
       plugins:
         - harness
@@ -155,7 +159,7 @@ organization. It prefers an app whose `orgs` list contains that organization:
 ```yaml title="app-config.yaml"
 connections:
   - type: github
-    host: github.com
+    baseUrl: https://github.com/
     auth:
       - method: app
         title: Backstage organization app
@@ -235,7 +239,22 @@ the higher-priority array replaces the lower-priority array. Include the full
 environment-specific connection list in the overriding source, or use config
 includes and environment variable substitution to keep values organized.
 
+## Migrate host-based connection configuration
+
+For every built-in type except `aws`, replace `host` in explicit `connections`
+entries with `baseUrl`, including the HTTP(S) scheme and any instance path.
+For example, replace `host: github.com` with `baseUrl: https://github.com/`.
+Remove `host` even when the entry already has a `baseUrl`.
+
+Consumers receive `baseUrl` instead of `host`. Use `new URL(connection.baseUrl).host`
+when an API needs the host and port. The `aws` configuration and returned fields
+are unchanged.
+
 ## Migrate from legacy integrations
+
+Legacy `integrations` entries are converted to URL-based connections automatically.
+Configured base URLs and endpoint URLs are preserved; host-only entries receive
+an HTTPS base URL. Lookup uses the host from the resulting base URL.
 
 At backend startup, the default connection service automatically reads both
 explicit `connections` configuration and supported legacy `integrations`
@@ -267,7 +286,7 @@ integrations:
 # Explicit connection configuration
 connections:
   - type: gitlab
-    host: gitlab.com
+    baseUrl: https://gitlab.com/
     auth:
       - method: token
         token: ${GITLAB_TOKEN}
@@ -295,7 +314,7 @@ integrations:
 
 connections:
   - type: github
-    host: github.example.com
+    baseUrl: https://github.example.com/
     auth:
       - method: token
         token: ${GITHUB_ENTERPRISE_CONNECTION_TOKEN}

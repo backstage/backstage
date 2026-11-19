@@ -13,7 +13,6 @@ It has [multiton cardinality](../01-concepts.md#cardinality) and uses the `host`
 ```yaml title="app-config.yaml"
 connections:
   - type: gitlab
-    host: gitlab.example.com
     baseUrl: https://gitlab.example.com
     apiBaseUrl: https://gitlab.example.com/api/v4
     auth:
@@ -23,11 +22,10 @@ connections:
 
 ## Connection fields
 
-| Field        | Type     | Required | Description                                              |
-| ------------ | -------- | -------- | -------------------------------------------------------- |
-| `host`       | `string` | Yes      | GitLab host matched against the consumer's resource URL. |
-| `apiBaseUrl` | `string` | No       | Base URL for the GitLab API.                             |
-| `baseUrl`    | `string` | No       | Base URL of the GitLab instance.                         |
+| Field        | Type     | Required | Description                      |
+| ------------ | -------- | -------- | -------------------------------- |
+| `apiBaseUrl` | `string` | No       | Base URL for the GitLab API.     |
+| `baseUrl`    | `string` | Yes      | Base URL of the GitLab instance. |
 
 ## Authentication methods
 
@@ -41,7 +39,7 @@ Use `none` explicitly when the consumer only needs public GitLab content.
 ## Lookup and selection
 
 The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
-a GitLab URL. The service selects the connection whose `host` matches the
+a GitLab URL. The service selects the connection whose `baseUrl` host matches the
 parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
@@ -59,6 +57,7 @@ const connection = await connections.find({
   authMethods: ['token', 'none'],
 });
 
+connection.baseUrl; // string
 connection.apiBaseUrl; // string | undefined
 
 if (connection.auth.method === 'token') {

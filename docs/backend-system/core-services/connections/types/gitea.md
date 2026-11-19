@@ -13,7 +13,6 @@ The `gitea` connection type represents a Gitea host. It has
 ```yaml title="app-config.yaml"
 connections:
   - type: gitea
-    host: gitea.example.com
     baseUrl: https://gitea.example.com
     auth:
       - method: basic
@@ -23,10 +22,9 @@ connections:
 
 ## Connection fields
 
-| Field     | Type     | Required | Description                                             |
-| --------- | -------- | -------- | ------------------------------------------------------- |
-| `host`    | `string` | Yes      | Gitea host matched against the consumer's resource URL. |
-| `baseUrl` | `string` | No       | Base URL of the Gitea instance.                         |
+| Field     | Type     | Required | Description                     |
+| --------- | -------- | -------- | ------------------------------- |
+| `baseUrl` | `string` | Yes      | Base URL of the Gitea instance. |
 
 ## Authentication methods
 
@@ -41,7 +39,7 @@ Use `none` explicitly when the target permits unauthenticated access.
 ## Lookup and selection
 
 The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
-a Gitea URL. The service selects the connection whose `host` matches the
+a Gitea URL. The service selects the connection whose `baseUrl` host matches the
 parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
@@ -59,7 +57,7 @@ const connection = await connections.find({
   authMethods: ['basic', 'none'],
 });
 
-connection.baseUrl; // string | undefined
+connection.baseUrl; // string
 
 if (connection.auth.method === 'basic') {
   connection.auth.username; // string

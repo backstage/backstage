@@ -78,7 +78,7 @@ function convertGithub(entries: Config[]): JsonObject[] {
     return omitUndefined({
       type: 'github',
       // The legacy reader defaults the host in the same way
-      host: entry.getOptionalString('host') ?? 'github.com',
+      baseUrl: baseUrlFromHost(entry.getOptionalString('host') ?? 'github.com'),
       apiBaseUrl: entry.getOptionalString('apiBaseUrl'),
       rawBaseUrl: entry.getOptionalString('rawBaseUrl'),
       auth: withNoneAuthFallback(auth),
@@ -97,9 +97,10 @@ function convertGitlab(entries: Config[]): JsonObject[] {
 
     return omitUndefined({
       type: 'gitlab',
-      host: entry.getOptionalString('host'),
+      baseUrl:
+        entry.getOptionalString('baseUrl') ??
+        baseUrlFromHost(entry.getOptionalString('host')),
       apiBaseUrl: entry.getOptionalString('apiBaseUrl'),
-      baseUrl: entry.getOptionalString('baseUrl'),
       auth: withNoneAuthFallback(auth),
     });
   });
@@ -132,7 +133,9 @@ function convertAzure(entries: Config[]): JsonObject[] {
     return omitUndefined({
       type: 'azure',
       // The legacy reader defaults the host in the same way
-      host: entry.getOptionalString('host') ?? 'dev.azure.com',
+      baseUrl: baseUrlFromHost(
+        entry.getOptionalString('host') ?? 'dev.azure.com',
+      ),
       auth: withNoneAuthFallback(auth),
     });
   });
@@ -201,7 +204,7 @@ function convertBitbucketCloud(entries: Config[]): JsonObject[] {
 
     return {
       type: 'bitbucket-cloud',
-      host: 'bitbucket.org',
+      baseUrl: 'https://bitbucket.org/',
       auth: withNoneAuthFallback(auth),
     };
   });
@@ -224,7 +227,7 @@ function convertBitbucketServer(entries: Config[]): JsonObject[] {
 
     return omitUndefined({
       type: 'bitbucket-server',
-      host: entry.getOptionalString('host'),
+      baseUrl: baseUrlFromHost(entry.getOptionalString('host')),
       apiBaseUrl: entry.getOptionalString('apiBaseUrl'),
       auth: withNoneAuthFallback(auth),
     });
@@ -243,8 +246,9 @@ function convertGerrit(entries: Config[]): JsonObject[] {
 
     return omitUndefined({
       type: 'gerrit',
-      host: entry.getOptionalString('host'),
-      baseUrl: entry.getOptionalString('baseUrl'),
+      baseUrl:
+        entry.getOptionalString('baseUrl') ??
+        baseUrlFromHost(entry.getOptionalString('host')),
       gitilesBaseUrl: entry.getOptionalString('gitilesBaseUrl'),
       cloneUrl: entry.getOptionalString('cloneUrl'),
       auth: withNoneAuthFallback(auth),
@@ -264,8 +268,9 @@ function convertGitea(entries: Config[]): JsonObject[] {
 
     return omitUndefined({
       type: 'gitea',
-      host: entry.getOptionalString('host'),
-      baseUrl: entry.getOptionalString('baseUrl'),
+      baseUrl:
+        entry.getOptionalString('baseUrl') ??
+        baseUrlFromHost(entry.getOptionalString('host')),
       auth: withNoneAuthFallback(auth),
     });
   });
@@ -286,7 +291,7 @@ function convertHarness(entries: Config[]): JsonObject[] {
     return [
       omitUndefined({
         type: 'harness',
-        host: entry.getOptionalString('host'),
+        baseUrl: baseUrlFromHost(entry.getOptionalString('host')),
         auth: [omitUndefined({ method: 'token', token, apiKey })],
       }),
     ];
@@ -379,7 +384,12 @@ function convertAwsCodeCommit(entries: Config[]): JsonObject[] {
     const host =
       entry.getOptionalString('host') ?? `${region}.console.aws.amazon.com`;
 
-    return { type: 'aws-codecommit', host, region, auth };
+    return {
+      type: 'aws-codecommit',
+      baseUrl: baseUrlFromHost(host),
+      region,
+      auth,
+    };
   });
 }
 
@@ -405,13 +415,13 @@ function convertAwsS3(entries: Config[]): JsonObject[] {
     }
 
     const endpoint = entry.getOptionalString('endpoint');
-    const host = endpoint
-      ? parseEndpointHost(endpoint, 'integrations.awsS3')
-      : 'amazonaws.com';
+    const baseUrl = endpoint
+      ? parseEndpointBaseUrl(endpoint, 'integrations.awsS3')
+      : 'https://amazonaws.com/';
 
     return omitUndefined({
       type: 'aws-s3',
-      host,
+      baseUrl,
       endpoint,
       s3ForcePathStyle: entry.getOptionalBoolean('s3ForcePathStyle'),
       auth: withNoneAuthFallback(auth),
@@ -448,13 +458,15 @@ function convertAzureBlobStorage(entries: Config[]): JsonObject[] {
     }
 
     const endpoint = entry.getOptionalString('endpoint');
-    const host = endpoint
-      ? parseEndpointHost(endpoint, 'integrations.azureBlobStorage')
-      : entry.getOptionalString('host') ?? 'blob.core.windows.net';
+    const baseUrl = endpoint
+      ? parseEndpointBaseUrl(endpoint, 'integrations.azureBlobStorage')
+      : baseUrlFromHost(
+          entry.getOptionalString('host') ?? 'blob.core.windows.net',
+        );
 
     return omitUndefined({
       type: 'azure-blob-storage',
-      host,
+      baseUrl,
       accountName: entry.getOptionalString('accountName'),
       endpoint,
       endpointSuffix: entry.getOptionalString('endpointSuffix'),
@@ -487,7 +499,7 @@ function convertGoogleGcs(gcs: Config | undefined): JsonObject[] {
   return [
     {
       type: 'google-gcs',
-      host: 'storage.cloud.google.com',
+      baseUrl: 'https://storage.cloud.google.com/',
       auth: withNoneAuthFallback(auth),
     },
   ];
@@ -497,12 +509,15 @@ function withNoneAuthFallback(auth: JsonObject[]): JsonObject[] {
   return auth.length > 0 ? auth : [{ method: 'none' }];
 }
 
-function parseEndpointHost(endpoint: string, key: string): string {
-  try {
-    return new URL(endpoint).host;
-  } catch {
+function baseUrlFromHost(host: string | undefined): string | undefined {
+  return host === undefined ? undefined : `https://${host}/`;
+}
+
+function parseEndpointBaseUrl(endpoint: string, key: string): string {
+  if (!URL.canParse(endpoint)) {
     throw new InputError(`Invalid endpoint URL "${endpoint}" in ${key} config`);
   }
+  return endpoint;
 }
 
 function omitUndefined(

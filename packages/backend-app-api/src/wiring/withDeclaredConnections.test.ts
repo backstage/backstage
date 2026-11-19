@@ -23,13 +23,13 @@ const mockConnectionsConfig = (connections: JsonArray) =>
 
 const githubConnection = {
   type: 'github' as const,
-  host: 'github.com',
+  baseUrl: 'https://github.com/',
   auth: [{ method: 'token' as const, token: 'test-token' }],
 };
 
 const gitlabConnection = {
   type: 'gitlab' as const,
-  host: 'gitlab.com',
+  baseUrl: 'https://gitlab.com/',
   auth: [{ method: 'token' as const, token: 'gl-token' }],
 };
 
@@ -50,7 +50,7 @@ describe('withDeclaredConnections', () => {
       authMethods: ['token'],
     });
 
-    expect(connection.host).toBe('github.com');
+    expect(connection.baseUrl).toBe('https://github.com/');
     expect(connection.auth.method).toBe('token');
   });
 
@@ -95,7 +95,7 @@ describe('withDeclaredConnections', () => {
         query: { url: 'https://github.com/my-org/my-repo' },
         authMethods: ['token'],
       }),
-    ).resolves.toMatchObject({ host: 'github.com' });
+    ).resolves.toMatchObject({ baseUrl: 'https://github.com/' });
 
     await expect(
       moduleA.find({
@@ -111,7 +111,7 @@ describe('withDeclaredConnections', () => {
         query: { url: 'https://gitlab.com/my-org/my-repo' },
         authMethods: ['token'],
       }),
-    ).resolves.toMatchObject({ host: 'gitlab.com' });
+    ).resolves.toMatchObject({ baseUrl: 'https://gitlab.com/' });
 
     await expect(
       moduleB.find({

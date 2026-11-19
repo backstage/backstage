@@ -23,8 +23,8 @@ jest.mock('@backstage/connections/config', () => ({
   buildConnectionsFromConfig: jest.fn(),
 }));
 
-// Configuration parsing is covered in connections. This service fixture models
-// URL-based data without changing the registered GitHub schema.
+// Configuration parsing is covered in connections; these fixtures exercise
+// URL-based data returned by the service.
 const query = { url: 'https://PUBLIC.EXAMPLE.COM:443/other-path/items' };
 const fixture = {
   type: 'github' as const,
@@ -83,21 +83,6 @@ describe('URL identity service lookup', () => {
         authMethods: ['token'],
       }),
     ).rejects.toThrow('Connection not found');
-  });
-
-  it('preserves an existing explicit host even when the base URL differs', async () => {
-    const existing = { ...fixture, host: 'existing.example.com' };
-    jest.mocked(buildConnectionsFromConfig).mockReturnValue([existing]);
-    const catalog = service().forPlugin('catalog');
-    expect(
-      await catalog.find({
-        type: 'github',
-        query: { url: 'https://existing.example.com/items' },
-      }),
-    ).toMatchObject({ host: 'existing.example.com', baseUrl: fixture.baseUrl });
-    await expect(catalog.find({ type: 'github', query })).rejects.toThrow(
-      'Connection not found',
-    );
   });
 
   it('uses parsed instance host canonicalisation and scheme-sensitive ports', async () => {

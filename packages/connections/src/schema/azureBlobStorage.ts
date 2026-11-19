@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getHostLookupIdentity } from '../system/getHostLookupIdentity';
+import { withBaseUrl } from '../system/withBaseUrl';
 import { createConnectionType } from '../system/createConnectionType';
 import { z } from 'zod/v4';
 
 /** @public */
 export const AzureBlobStorageConnectionType = createConnectionType({
-  getLookupIdentity: getHostLookupIdentity,
   type: 'azure-blob-storage',
   title: 'Azure Blob Storage',
-  configSchema: z.object({
-    host: z.string(),
-    accountName: z.string().optional(),
-    endpoint: z.string().optional(),
-    endpointSuffix: z.string().optional(),
-  }),
+  ...withBaseUrl(
+    z.object({
+      accountName: z.string().optional(),
+      endpoint: z.string().optional(),
+      endpointSuffix: z.string().optional(),
+    }),
+  ),
   authMethods: [
     {
       method: 'none',

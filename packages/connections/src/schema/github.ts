@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getHostLookupIdentity } from '../system/getHostLookupIdentity';
+import { withBaseUrl } from '../system/withBaseUrl';
 import { createConnectionType } from '../system/createConnectionType';
 import { z } from 'zod/v4';
 
 /** @public */
 export const GithubConnectionType = createConnectionType({
-  getLookupIdentity: getHostLookupIdentity,
   type: 'github',
   title: 'GitHub',
-  configSchema: z.object({
-    host: z.string(),
-    apiBaseUrl: z.string().optional(),
-    rawBaseUrl: z.string().optional(),
-  }),
+  ...withBaseUrl(
+    z.object({
+      apiBaseUrl: z.string().optional(),
+      rawBaseUrl: z.string().optional(),
+    }),
+  ),
   authMethods: [
     {
       method: 'none',
