@@ -277,6 +277,47 @@ describe('scaffolder router', () => {
     jest.clearAllMocks();
   });
 
+  describe('stale task janitor', () => {
+    it('stops closing stale tasks when the abort signal fires', async () => {
+      const staleTasks = [{ taskId: 'task-1' }, { taskId: 'task-2' }];
+      jest
+        .spyOn(DatabaseTaskStore.prototype, 'listStaleTasks')
+        .mockResolvedValue({ tasks: staleTasks });
+      const controller = new AbortController();
+      const shutdownTask = jest
+        .spyOn(DatabaseTaskStore.prototype, 'shutdownTask')
+        .mockImplementation(async () => controller.abort());
+      const scheduler = mockServices.scheduler.mock();
+      const permissionIntegrationRouter = createPermissionIntegrationRouter();
+
+      await createRouter({
+        logger: mockServices.logger.mock(),
+        config: new ConfigReader({}),
+        database: createDatabase(),
+        catalog: catalogServiceMock(),
+        permissions: mockServices.permissions(),
+        permissionsRegistry: mockServices.permissionsRegistry.mock({
+          getPermissionRuleset:
+            permissionIntegrationRouter.getPermissionRuleset,
+        }),
+        auth: mockServices.auth(),
+        httpAuth: mockServices.httpAuth(),
+        events: mockServices.events(),
+        actionsRegistry: actionsRegistryServiceMock(),
+        metrics: metricsServiceMock.mock(),
+        concurrentTasksLimit: 0,
+        scheduler,
+      });
+
+      const { fn } = scheduler.scheduleTask.mock.calls[0][0];
+      await expect(fn(controller.signal)).rejects.toMatchObject({
+        name: 'AbortError',
+      });
+      expect(shutdownTask).toHaveBeenCalledTimes(1);
+      expect(shutdownTask).toHaveBeenCalledWith(staleTasks[0]);
+    });
+  });
+
   describe('GET /v2/actions', () => {
     it('lists available actions', async () => {
       const { router } = await createTestRouter();
