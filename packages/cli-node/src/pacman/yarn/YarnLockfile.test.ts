@@ -320,6 +320,12 @@ d@^1:
       });
     });
 
+    it('should refuse to diff with another kind of lockfile', () => {
+      expect(() => lockfileLegacyA.diff({} as unknown as YarnLockfile)).toThrow(
+        'A yarn.lock file can only be diffed with another one',
+      );
+    });
+
     it('should handle workspace ranges', async () => {
       const lockfile = `${MODERN_HEADER}
 "@backstage/app-defaults@workspace:^, @backstage/app-defaults@workspace:packages/app-defaults":
