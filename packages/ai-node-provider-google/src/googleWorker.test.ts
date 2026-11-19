@@ -215,7 +215,7 @@ describe('Google guarded worker transport', () => {
       const model = geminiModel(origin);
       const op = operation(
         model,
-        googleGenerativeAi.destination(model as never, undefined),
+        googleGenerativeAi.destination!(model as never, undefined),
         'user:default/alice',
       );
       const guard = createModelOperationGuard({
@@ -267,7 +267,7 @@ describe('Google guarded worker transport', () => {
       const model = vertexModel(origin);
       const op = operation(
         model,
-        googleVertex.destination(model as never, undefined),
+        googleVertex.destination!(model as never, undefined),
         'user:default/alice',
       );
       const guard = createModelOperationGuard({
@@ -303,7 +303,7 @@ describe('Google guarded worker transport', () => {
     });
     try {
       const model = geminiModel(origin);
-      const destination = googleGenerativeAi.destination(
+      const destination = googleGenerativeAi.destination!(
         model as never,
         undefined,
       );
@@ -380,7 +380,7 @@ describe('Google guarded worker transport', () => {
       const model = geminiModel(origin);
       const op = operation(
         model,
-        googleGenerativeAi.destination(model as never, undefined),
+        googleGenerativeAi.destination!(model as never, undefined),
         'user:default/alice',
       );
       const guard = createModelOperationGuard({
@@ -443,12 +443,12 @@ describe('Google guarded worker transport', () => {
       const recB = recording();
       const opA = operation(
         modelA,
-        googleGenerativeAi.destination(modelA as never, undefined),
+        googleGenerativeAi.destination!(modelA as never, undefined),
         'user:default/alice',
       );
       const opB = operation(
         modelB,
-        googleGenerativeAi.destination(modelB as never, undefined),
+        googleGenerativeAi.destination!(modelB as never, undefined),
         'user:default/bob',
       );
       const guardFor = (op: TrustedOperation, rec: Recording) =>
@@ -514,7 +514,7 @@ describe('Google guarded worker transport', () => {
       const model = geminiModel(origin);
       const op = operation(
         model,
-        googleGenerativeAi.destination(model as never, undefined),
+        googleGenerativeAi.destination!(model as never, undefined),
         'user:default/alice',
       );
       const rec = recording();
@@ -567,7 +567,7 @@ describe('Google guarded worker transport', () => {
       const model = geminiModel(origin);
       const op = operation(
         model,
-        googleGenerativeAi.destination(model as never, undefined),
+        googleGenerativeAi.destination!(model as never, undefined),
         'user:default/alice',
       );
       const rec = recording();
@@ -625,7 +625,7 @@ describe('Google guarded worker transport', () => {
       const model = geminiModel(origin);
       const op = operation(
         model,
-        googleGenerativeAi.destination(model as never, undefined),
+        googleGenerativeAi.destination!(model as never, undefined),
         'user:default/alice',
       );
       const rec = recording();
@@ -674,7 +674,7 @@ describe('Google guarded worker transport', () => {
       const model = geminiModel(origin);
       const op = operation(
         model,
-        googleGenerativeAi.destination(model as never, undefined),
+        googleGenerativeAi.destination!(model as never, undefined),
         'user:default/alice',
       );
       const rec = recording();
@@ -719,7 +719,7 @@ describe('Google guarded worker transport', () => {
       const model = geminiModel(origin);
       const op = operation(
         model,
-        googleGenerativeAi.destination(model as never, undefined),
+        googleGenerativeAi.destination!(model as never, undefined),
         'user:default/alice',
       );
       const rec = recording();
@@ -756,7 +756,7 @@ describe('Google guarded worker transport', () => {
         const op2 = {
           ...operation(
             heldModel,
-            googleGenerativeAi.destination(heldModel as never, undefined),
+            googleGenerativeAi.destination!(heldModel as never, undefined),
             'user:default/alice',
           ),
         };

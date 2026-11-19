@@ -56,9 +56,11 @@ export function createProviderRegistry(
     ) {
       throw new Error('Invalid or duplicate provider module id');
     }
+    const isLocal = module.adapter?.kind === 'local';
     if (
       !Array.isArray(module.credentialKinds) ||
-      module.credentialKinds.length === 0 ||
+      // A local module interprets no credential, so it declares none.
+      (module.credentialKinds.length === 0 && !isLocal) ||
       module.credentialKinds.some(
         kind => kind !== 'api_key' && kind !== 'oauth',
       ) ||
@@ -68,14 +70,17 @@ export function createProviderRegistry(
     }
     if (
       !Array.isArray(module.certifiedOperations) ||
-      !Array.isArray(module.destinationTemplates) ||
-      module.destinationTemplates.length === 0 ||
-      typeof module.destination !== 'function' ||
-      typeof module.validateEnvelope !== 'function' ||
+      // Local modules have no transport surface to declare: no templates, no
+      // destination and no envelope validator, because nothing is sent.
+      (!isLocal &&
+        (!Array.isArray(module.destinationTemplates) ||
+          module.destinationTemplates.length === 0 ||
+          typeof module.destination !== 'function' ||
+          typeof module.validateEnvelope !== 'function')) ||
       (module.classifyRequest !== undefined &&
         typeof module.classifyRequest !== 'function') ||
       !module.adapter ||
-      !['stream', 'custom'].includes(module.adapter.kind)
+      !['stream', 'custom', 'local'].includes(module.adapter.kind)
     ) {
       throw new Error(`Invalid provider module: ${module.id}`);
     }
@@ -95,6 +100,12 @@ export function createProviderRegistry(
     ) {
       throw new Error(`Invalid provider adapter: ${module.id}`);
     }
+    if (
+      module.adapter.kind === 'local' &&
+      typeof module.adapter.run !== 'function'
+    ) {
+      throw new Error(`Invalid provider adapter: ${module.id}`);
+    }
     const certified = [...module.certifiedOperations];
     for (const operation of certified) {
       if (
@@ -105,7 +116,7 @@ export function createProviderRegistry(
       }
       operations.add(`models.${operation}`);
     }
-    const destinationTemplates = module.destinationTemplates.map(
+    const destinationTemplates = (module.destinationTemplates ?? []).map(
       (template: DestinationTemplate) => {
         const match = compileDestinationTemplate(template);
         if (template.every(part => 'literal' in part)) {

@@ -45,6 +45,14 @@ export async function validateRequest(
   if (!module || !module.certifiedOperations.includes(operation.operation)) {
     throw new Error('Unverified model operation or transport');
   }
+  if (module.adapter.kind === 'local') {
+    // A local module has no destination and no HTTP request to validate: its
+    // dispatch never reaches this transport boundary.
+    throw new Error('Local module operations are not validated as requests');
+  }
+  if (operation.destination === undefined) {
+    throw new Error('Unverified model operation or transport');
+  }
   await enforceBodyLimit(request);
   const envelope = Object.freeze({
     api: operation.api,
@@ -60,7 +68,11 @@ export async function validateRequest(
         }
       : {}),
   });
-  const kind = await module.validateEnvelope(envelope, request.clone());
+  const validateEnvelope = module.validateEnvelope;
+  if (validateEnvelope === undefined) {
+    throw new Error('Unverified model operation or transport');
+  }
+  const kind = await validateEnvelope(envelope, request.clone());
   if (kind !== 'model' && kind !== 'auth.token-exchange') {
     throw new Error('Unverified request classification');
   }

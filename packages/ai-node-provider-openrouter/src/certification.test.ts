@@ -63,7 +63,7 @@ function operation(origin: string): TrustedOperation {
 }
 
 function request(op: TrustedOperation, substitute = false, query = false) {
-  const url = new URL(op.destination);
+  const url = new URL(op.destination!);
   if (query) url.searchParams.set('unexpected', 'true');
   // Image generation travels as a non-streaming chat-completions request with
   // a well-formed base64 image reference; the envelope check inspects it.

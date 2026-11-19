@@ -65,7 +65,7 @@ function operation(origin: string): TrustedOperation {
 }
 
 function request(op: TrustedOperation, substitute = false, query = false) {
-  const url = new URL(op.destination);
+  const url = new URL(op.destination!);
   if (query) url.searchParams.set('unexpected', 'true');
   return new Request(url, {
     method: 'POST',

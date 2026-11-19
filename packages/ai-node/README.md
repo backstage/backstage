@@ -483,6 +483,28 @@ allowed to use, each with its catalog fields (adapter, type, context
 window, output limit). A model outside the canonical `ai.models` catalog
 never resolves and no policy can make it dispatchable.
 
+## Local tool servers
+
+The tool seam carries two kinds of server. An HTTP server mediates a guarded
+fetch with a scoped credential, a pinned destination and a route template —
+an MCP tool server is this kind. A **local** server
+declares `run(input)` instead, and the guard's local branch dispatches it: the
+decision, the fence check and the per-attempt `ai.tool.use` recheck happen
+before the function runs, and the outcome is journaled, but there is no send
+to account for and no envelope to validate — the function runs with the
+backend process's own privileges.
+
+That narrowing is deliberate and it is the reason a local server has to be
+registered on purpose: the guard cannot see or constrain what such a function
+does. `@backstage/ai-node-shell` is the reference example (an unsandboxed
+`run` command tool, with its audit-boundary trade-off documented in that
+package's README); the shipped tool servers stay HTTP-mediated.
+
+Local dispatches are journaled by identity: the tool identity, session,
+principal, decision and outcome are recorded, and the journal row has no
+destination because nothing was sent. Command arguments never reach the
+journal, exactly like prompts and payloads.
+
 ## Harness features
 
 A harness exposes features, and a plugin declares the ones it needs when it

@@ -44,7 +44,11 @@ import { guardedRequestOptions } from './requestOptions';
  * @alpha
  */
 export type ProviderAuthority = Readonly<{
-  kind: 'apiKey' | 'oauth' | 'federation';
+  /**
+   * `local` carries no credential at all: it is the authority of a module
+   * whose adapter runs host code in process instead of sending a request.
+   */
+  kind: 'apiKey' | 'oauth' | 'federation' | 'local';
   apiKey?: string;
   headers?: ProviderHeaders;
   env?: Record<string, string>;
@@ -269,6 +273,11 @@ export function createGuardedModelOperations(options: {
     operation: ModelOperation,
   ) => {
     const binding = await resolveBinding(model, operation);
+    // Registry truth, never the binding's own claim: a local dispatch is one
+    // whose REGISTERED module declares the local adapter. An HTTP-shaped
+    // module cannot reach the local branch no matter what its binding says.
+    const registeredModule = providers.get(binding.operation.api);
+    const localDispatch = registeredModule?.adapter.kind === 'local';
     const op: TrustedOperation = {
       ...binding.operation,
       ...(binding.authority.kind === 'oauth'
@@ -285,7 +294,10 @@ export function createGuardedModelOperations(options: {
         'unverified model operation',
       );
     }
-    if (!['apiKey', 'oauth', 'federation'].includes(binding.authority.kind)) {
+    if (
+      !localDispatch &&
+      !['apiKey', 'oauth', 'federation'].includes(binding.authority.kind)
+    ) {
       await reject(binding, 'auth.token', 'unsupported provider credentials');
     }
     // Pi can discover federation credentials from the process environment.
@@ -307,7 +319,7 @@ export function createGuardedModelOperations(options: {
           typeof value === 'string' &&
           !!value.trim(),
       );
-    if (!hasAuth) {
+    if (!localDispatch && !hasAuth) {
       await reject(binding, 'auth.token', 'provider credentials required');
     }
     if (
@@ -324,11 +336,21 @@ export function createGuardedModelOperations(options: {
     }
     const guarded = options.guard.bind(op);
     let requestOptions: Record<string, unknown>;
-    try {
-      requestOptions = guardedRequestOptions(op, guarded, caller, providers);
-    } catch {
-      await reject(binding, `models.${operation}`, 'unsupported model options');
-      throw new Error('unreachable');
+    if (localDispatch) {
+      // A local dispatch has no transport, no credential and no caller
+      // options it may forward: everything it needs arrives as `context`.
+      requestOptions = Object.freeze({});
+    } else {
+      try {
+        requestOptions = guardedRequestOptions(op, guarded, caller, providers);
+      } catch {
+        await reject(
+          binding,
+          `models.${operation}`,
+          'unsupported model options',
+        );
+        throw new Error('unreachable');
+      }
     }
     const module = providers.get(op.api);
     if (!module) {
@@ -365,37 +387,40 @@ export function createGuardedModelOperations(options: {
     let respondedInvocation: number | null = null;
     let rejectedInvocation: number | null = null;
     const pendingFetches = new Set<Promise<unknown>>();
-    const callOptions = {
-      ...requestOptions,
-      apiKey: binding.authority.apiKey,
-      headers: binding.authority.headers,
-      env: binding.authority.env,
-      // No trusted or caller options may displace the enforcement boundary.
-      fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
-        guardAttempted = true;
-        const invocation = ++invocationCount;
-        const attempt = (async () => {
-          try {
-            const response = await guarded.fetch(input, init);
-            respondedInvocation = invocation;
-            return response;
-          } catch (error) {
-            rejectedInvocation = invocation;
-            throw error;
-          }
-        })();
-        pendingFetches.add(attempt);
-        try {
-          return await attempt;
-        } finally {
-          pendingFetches.delete(attempt);
-        }
-      },
-    };
+    const callOptions: Record<string, unknown> = localDispatch
+      ? Object.freeze({})
+      : {
+          ...requestOptions,
+          apiKey: binding.authority.apiKey,
+          headers: binding.authority.headers,
+          env: binding.authority.env,
+          // No trusted or caller options may displace the enforcement boundary.
+          fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
+            guardAttempted = true;
+            const invocation = ++invocationCount;
+            const attempt = (async () => {
+              try {
+                const response = await guarded.fetch(input, init);
+                respondedInvocation = invocation;
+                return response;
+              } catch (error) {
+                rejectedInvocation = invocation;
+                throw error;
+              }
+            })();
+            pendingFetches.add(attempt);
+            try {
+              return await attempt;
+            } finally {
+              pendingFetches.delete(attempt);
+            }
+          },
+        };
     return {
       binding,
       guarded,
       adapter: module.adapter,
+      localDispatch,
       callOptions,
       // A guarded send is USED from the moment the guarded fetch is invoked,
       // not from response headers: a transport that ran and then threw has
@@ -510,7 +535,7 @@ export function createGuardedModelOperations(options: {
     const module = providers.get(model.api);
     if (
       !module ||
-      module.adapter.kind !== 'custom' ||
+      (module.adapter.kind !== 'custom' && module.adapter.kind !== 'local') ||
       !module.certifiedOperations.includes(operation)
     ) {
       return unsupported(model, operation);
@@ -519,6 +544,7 @@ export function createGuardedModelOperations(options: {
       binding,
       guarded,
       adapter,
+      localDispatch,
       callOptions,
       usedGuard,
       attemptedGuard,
@@ -526,6 +552,58 @@ export function createGuardedModelOperations(options: {
       guardFetchRejected,
       settleGuardedFetches,
     } = await prepare(model, caller, operation);
+    if (localDispatch) {
+      // Local dispatch: the registered module runs host code under the guard's
+      // decision, fence and per-attempt permission recheck. There is no
+      // guarded send to account for, so transport accounting and the
+      // fabricated-result check do not apply — the outcome `run` settles is
+      // journaled as-is. Reaching here with an HTTP-shaped adapter would mean
+      // the registry and the binding disagreed, which fails loudly.
+      if (adapter.kind !== 'local' || guarded.begin === undefined) {
+        throw new Error('Local dispatch resolved a non-local adapter');
+      }
+      try {
+        // Authorize and journal BEFORE the host function runs: a denial means
+        // the host function never executes. The guard has already journaled
+        // that denial, so the boundary reports the closed-vocabulary reason as
+        // a failed settlement, exactly as the HTTP tool modules report a
+        // refused send — no execution, no second denial, no send.
+        try {
+          await guarded.begin();
+        } catch (error) {
+          return {
+            value: {
+              errorMessage:
+                error instanceof Error
+                  ? error.message
+                  : 'Model authority revoked',
+            },
+            outcome: 'failed' as const,
+          };
+        }
+        const result = await adapter.run({
+          operation,
+          model: binding.model,
+          context,
+          options: callOptions,
+        });
+        if (
+          !result ||
+          !['completed', 'failed', 'cancelled'].includes(result.outcome)
+        ) {
+          throw new Error('Invalid provider outcome');
+        }
+        await guarded.finish(result.outcome);
+        return { value: result.value, outcome: result.outcome };
+      } catch (error) {
+        try {
+          await guarded.finish('failed');
+        } catch {
+          /* already settled or uncertain */
+        }
+        throw error;
+      }
+    }
     if (adapter.kind !== 'custom')
       throw new Error('Unsupported model transport');
     try {

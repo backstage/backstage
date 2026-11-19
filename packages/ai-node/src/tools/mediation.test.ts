@@ -199,7 +199,7 @@ function exampleToolServer(
     resolvedModel: toolName,
     operation: 'toolCall',
     api: 'example-tools',
-    destination: module.destination(toolName),
+    destination: module.destination!(toolName),
     credentialScope: { kind: 'user', id: 'user:default/alice' },
     credentialGeneration: '1',
     controller: new AbortController(),
@@ -492,9 +492,10 @@ describe('guarded tool operations', () => {
         recheck: async () => true,
         transport: globalThis.fetch,
       });
-      const destination = base
-        .resolve({ serverId: 'example-tools', toolName: 'search' })!
-        .module.destination('search');
+      const destination = base.resolve({
+        serverId: 'example-tools',
+        toolName: 'search',
+      })!.module.destination!('search');
       const models = createGuardedModelOperations({
         providers: base.providerRegistry,
         guard,

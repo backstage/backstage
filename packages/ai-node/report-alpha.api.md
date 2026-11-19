@@ -495,9 +495,12 @@ export type AiProviderModule = Readonly<{
   adapter: ProviderAdapter;
   credentialKinds: readonly AiCredentialKind[];
   certifiedOperations: readonly string[];
-  destinationTemplates: readonly DestinationTemplate[];
-  destination(model: AnyModel, env: Record<string, string> | undefined): string;
-  validateEnvelope(
+  destinationTemplates?: readonly DestinationTemplate[];
+  destination?(
+    model: AnyModel,
+    env: Record<string, string> | undefined,
+  ): string;
+  validateEnvelope?(
     operation: ProviderEnvelope,
     request: Request,
   ): Promise<'model' | 'auth.token-exchange'>;
@@ -523,7 +526,7 @@ export type AiProviderModule = Readonly<{
     | {
         resolved: true;
         api: string;
-        destination: string;
+        destination?: string;
         authority: ModuleAuthority['authority'];
         credentialScope: CredentialScope;
         credentialGeneration: string;
@@ -1224,7 +1227,7 @@ export type ModelPair = Readonly<{
 // @alpha
 export type ModuleAuthority = Readonly<{
   authority: Readonly<{
-    kind: 'apiKey' | 'oauth' | 'federation';
+    kind: 'apiKey' | 'oauth' | 'federation' | 'local';
     apiKey?: string;
     headers?: Record<string, string | null>;
     env?: Record<string, string>;
@@ -1293,6 +1296,22 @@ export type ProviderAdapter =
   | Readonly<{
       kind: 'custom';
       invoke(
+        input: Readonly<{
+          operation: string;
+          model: AnyModel;
+          context: unknown;
+          options: Readonly<Record<string, unknown>>;
+        }>,
+      ): Promise<
+        Readonly<{
+          value: unknown;
+          outcome: 'completed' | 'failed' | 'cancelled';
+        }>
+      >;
+    }>
+  | Readonly<{
+      kind: 'local';
+      run(
         input: Readonly<{
           operation: string;
           model: AnyModel;
@@ -1374,16 +1393,17 @@ export type ToolIdentity = Readonly<{
 export type ToolModule = Readonly<{
   id: string;
   tools: readonly ToolDeclaration[];
-  destination(toolName: string): string;
-  destinationTemplates: readonly DestinationTemplate[];
-  validateToolCall(
+  destination?(toolName: string): string;
+  destinationTemplates?: readonly DestinationTemplate[];
+  validateToolCall?(
     operation: ToolCallEnvelope,
     request: Request,
   ): Promise<void>;
-  adapter: Readonly<{
+  adapter?: Readonly<{
     kind: 'tool';
     invoke(input: ToolDispatchInput): Promise<ToolCallResult>;
   }>;
+  run?(input: ToolDispatchInput): Promise<ToolCallResult>;
 }>;
 
 // @alpha

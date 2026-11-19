@@ -344,7 +344,7 @@ async function mediationHarness(options: {
     serverId: options.id,
     toolName: certified[options.id].toolName,
   })!;
-  const destination = resolved.module.destination(
+  const destination = resolved.module.destination!(
     certified[options.id].toolName,
   );
   const models = createGuardedModelOperations({
@@ -370,7 +370,7 @@ async function mediationHarness(options: {
         resolvedModel: view.id,
         operation: 'toolCall',
         api: options.id,
-        destination: resolved.module.destination(view.id),
+        destination: resolved.module.destination!(view.id),
         credentialScope: { kind: 'user', id: 'user:default/alice' },
         credentialGeneration: '1',
         controller: new AbortController(),
