@@ -10,6 +10,20 @@ import { ResourcePermission } from '@backstage/plugin-permission-common';
 export const aiAuditReadPermission: BasicPermission;
 
 // @public
+export type AiFeaturePermission = ResourcePermission<
+  typeof RESOURCE_TYPE_AI_FEATURE
+>;
+
+// @public
+export type AiFeatureResource = Readonly<{
+  pluginId: string;
+  feature: string;
+}>;
+
+// @public
+export const aiFeatureUsePermission: ResourcePermission<'ai-feature'>;
+
+// @public
 export type AiModelPermission = ResourcePermission<
   typeof RESOURCE_TYPE_AI_MODEL
 >;
@@ -34,10 +48,14 @@ export type AiToolPermission = ResourcePermission<typeof RESOURCE_TYPE_AI_TOOL>;
 export type AiToolResource = Readonly<{
   serverId: string;
   toolName: string;
+  pluginId: string;
 }>;
 
 // @public
 export const aiToolUsePermission: ResourcePermission<'ai-tool'>;
+
+// @public
+export const RESOURCE_TYPE_AI_FEATURE = 'ai-feature';
 
 // @public
 export const RESOURCE_TYPE_AI_MODEL = 'ai-model';

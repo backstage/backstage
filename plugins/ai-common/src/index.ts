@@ -20,9 +20,10 @@
  *
  * @remarks
  * Names are plain strings with no encoding and no per-resource construction:
- * `ai.model.use`, `ai.tool.use`, `ai.session.use` and `ai.audit.read`. Which
- * model or tool a decision applies to is expressed by the conditions a policy
- * attaches, using the rules each backend package exports.
+ * `ai.model.use`, `ai.tool.use`, `ai.feature.use`, `ai.session.use` and
+ * `ai.audit.read`. Which model, tool or harness feature a decision applies to
+ * is expressed by the conditions a policy attaches, using the rules each
+ * backend package exports.
  *
  * @packageDocumentation
  * @public
@@ -30,13 +31,17 @@
 
 export {
   aiAuditReadPermission,
+  aiFeatureUsePermission,
   aiModelUsePermission,
   aiSessionUsePermission,
   aiToolUsePermission,
+  RESOURCE_TYPE_AI_FEATURE,
   RESOURCE_TYPE_AI_MODEL,
   RESOURCE_TYPE_AI_TOOL,
 } from './permissions';
 export type {
+  AiFeaturePermission,
+  AiFeatureResource,
   AiModelPermission,
   AiModelResource,
   AiToolPermission,

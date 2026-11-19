@@ -264,6 +264,11 @@ export async function runManagedCompletion(options: {
     credentials: options.credentials,
     registry: createRegistry(),
     registryVersion: REGISTRY_VERSION,
+    // The actions generate text: they need no tool surface and no code-mode
+    // sandbox, so they request no features. A feature the actions later start
+    // using is declared here, and `ai.feature.use` decides whether this plugin
+    // gets it.
+    features: [],
   });
   try {
     const conversation = await handle.harness.root(handle.context);

@@ -40,6 +40,7 @@ import {
   type AiServiceModel,
 } from './config';
 import type {
+  AiFeatureName,
   AiService,
   ConfigAtPath,
   ManagedHarness,
@@ -48,6 +49,15 @@ import type {
   OpenHarnessOptions,
 } from './contracts';
 import type { GuardedToolOperations } from './tools/mediation';
+import {
+  aiFeaturePermissionRules,
+  allowsConditional,
+  authorizeConditionalDecision,
+} from './permissions/rules';
+import {
+  aiFeatureUsePermission,
+  RESOURCE_TYPE_AI_FEATURE,
+} from '@backstage/plugin-ai-common';
 
 /**
  * A process-local native harness opened by the service integration.
@@ -87,6 +97,14 @@ export interface AcquisitionBinding {
   readonly registryVersion: string;
   /** The configured model, when the plugin's configuration selected one. */
   readonly model?: AiServiceModel;
+  /**
+   * The features granted to this acquisition, already authorized and
+   * intersected with what the integration registers. The integration wires
+   * only these, so the surface is fixed at admission. Absent means none: a
+   * caller that does not declare features gets a harness with no feature
+   * surface.
+   */
+  readonly features?: readonly AiFeatureName[];
 }
 
 /** Input to {@link AiServiceIntegration.openNativeHarness}. */
@@ -121,6 +139,14 @@ export interface OpenNativeHarnessInput extends AcquisitionBinding {
  * @internal
  */
 export interface AiServiceIntegration {
+  /**
+   * The features this integration can expose at all: `tools` when tool
+   * servers are registered and `codemode` when a code-mode extension is
+   * configured. A requested feature outside this set is a wiring error and
+   * fails closed, never a silent omission.
+   */
+  readonly registeredFeatures: readonly AiFeatureName[];
+
   /**
    * Atomically returns the owner of the session's namespace, creating the
    * session record with the acquisition's verified principal when it does not
@@ -189,8 +215,43 @@ type LiveNamespace = {
   readonly handle: NativeHarnessHandle;
   readonly registryVersion: string;
   readonly configKey: string;
+  /** The feature snapshot this admission was opened with. */
+  readonly features: readonly AiFeatureName[];
   readonly references: Set<ManagedHarnessHandle>;
 };
+
+/** Whether two feature snapshots are the same set. */
+function sameFeatures(
+  a: readonly AiFeatureName[],
+  b: readonly AiFeatureName[],
+): boolean {
+  return a.length === b.length && a.every(feature => b.includes(feature));
+}
+
+/**
+ * Normalizes a feature declaration, preserving order and dropping repeats.
+ * Returns undefined for anything that is not a list of feature names.
+ */
+function dedupeFeatures(
+  features: OpenHarnessOptions['features'],
+): AiFeatureName[] | undefined {
+  if (features === undefined) {
+    return [];
+  }
+  if (!Array.isArray(features)) {
+    return undefined;
+  }
+  const result: AiFeatureName[] = [];
+  for (const feature of features) {
+    if (feature !== 'tools' && feature !== 'codemode') {
+      return undefined;
+    }
+    if (!result.includes(feature)) {
+      result.push(feature);
+    }
+  }
+  return result;
+}
 
 function namespaceKey(namespace: Namespace): string {
   return JSON.stringify([namespace.pluginId, namespace.sessionId]);
@@ -463,7 +524,7 @@ class ManagedHarnessHandle implements ManagedHarness {
     this.#live = live;
     this.context = live.handle.context;
     this.harness = createManagedNativeHarness(live.handle.harness, this.#state);
-    if (live.handle.tools !== undefined) {
+    if (live.handle.tools !== undefined && live.features.includes('tools')) {
       // The shared tools facade is never handed out raw: each handle gets a
       // mediated view that fails closed after release, so a released handle
       // (or a method captured from it) can never dispatch a tool call — the
@@ -583,12 +644,14 @@ export class DefaultAiService implements AiService {
 
     const parsedConfig = parseAiServiceConfig(options.config, pluginId);
     const owner = this.ownerKeyOf(options.credentials);
+    const features = await this.#resolveFeatures(pluginId, options);
     const binding: AcquisitionBinding = {
       namespace: { pluginId, sessionId: options.sessionId },
       owner,
       credentials: options.credentials,
       registry: options.registry,
       registryVersion: options.registryVersion,
+      features,
       ...(parsedConfig.model === undefined
         ? {}
         : { model: parsedConfig.model }),
@@ -616,6 +679,17 @@ export class DefaultAiService implements AiService {
         if (live.registryVersion !== options.registryVersion) {
           throw new Error(
             `The AI session '${options.sessionId}' of the '${pluginId}' plugin is open with registry version '${live.registryVersion}' and cannot be reopened with '${options.registryVersion}'. A changed registry under a live handle is rejected rather than silently replacing running definitions; release the existing handles first or keep one stable registry version`,
+          );
+        }
+        if (!sameFeatures(live.features, features)) {
+          throw new Error(
+            `The AI session '${
+              options.sessionId
+            }' of the '${pluginId}' plugin is open with features [${live.features.join(
+              ', ',
+            )}] and cannot be reopened requesting [${features.join(
+              ', ',
+            )}]. Feature availability is snapshotted at admission, so a changed surface under a live handle is rejected rather than silently swapped; release the existing handles first`,
           );
         }
         if (live.configKey !== configKey) {
@@ -655,6 +729,7 @@ export class DefaultAiService implements AiService {
         handle: nativeHandle,
         registryVersion: options.registryVersion,
         configKey,
+        features,
         references: new Set<ManagedHarnessHandle>(),
       };
       const handle = new ManagedHarnessHandle(this, newLive);
@@ -662,6 +737,67 @@ export class DefaultAiService implements AiService {
       this.#live.set(key, newLive);
       return handle;
     });
+  }
+
+  /**
+   * Authorizes the features one open requested, returning the snapshot.
+   *
+   * @remarks
+   * Two separate failures, deliberately kept apart: a feature the integration
+   * does not register is a wiring error (nothing exists to expose, so no
+   * policy could grant it), while a registered feature the policy denies is a
+   * policy decision. Both reject the open, and neither ever degrades to a
+   * harness missing a piece the caller asked for.
+   *
+   * The query carries the caller's own credentials and only the permission
+   * identity; the `{ pluginId, feature }` attributes stay in process, where
+   * the policy's conditions are evaluated by the same fail-closed evaluator
+   * model and tool decisions use. No policy configured means the framework's
+   * default allow, so a registered feature is available unless a policy
+   * denies it.
+   */
+  async #resolveFeatures(
+    pluginId: string,
+    options: OpenHarnessOptions,
+  ): Promise<readonly AiFeatureName[]> {
+    const requested = dedupeFeatures(options.features);
+    if (requested === undefined) {
+      throw new Error(
+        `Invalid openHarness call in the '${pluginId}' plugin: 'features' must be a list of the harness features this plugin requests`,
+      );
+    }
+    if (requested.length === 0) {
+      return [];
+    }
+    const registered = this.#integration!.registeredFeatures;
+    const granted: AiFeatureName[] = [];
+    for (const feature of requested) {
+      if (!registered.includes(feature)) {
+        throw new Error(
+          `The '${pluginId}' plugin requested the AI harness feature '${feature}', which this service does not provide. Registered features: [${
+            registered.length === 0 ? 'none' : registered.join(', ')
+          }]. This is wiring, not policy: the feature has nothing to expose until the deployment registers it, so the open fails closed rather than handing back a harness without it`,
+        );
+      }
+      const decision = await authorizeConditionalDecision(
+        this.#deps.permissions,
+        aiFeatureUsePermission,
+        options.credentials,
+      );
+      const allowed = allowsConditional({
+        decision,
+        resourceType: RESOURCE_TYPE_AI_FEATURE,
+        rules: Object.values(aiFeaturePermissionRules),
+        resource: { pluginId, feature },
+      });
+      if (!allowed) {
+        throw new Error(
+          `Access denied: the AI harness feature '${feature}' is not available to the '${pluginId}' plugin under the 'ai.feature.use' permission. Ask an administrator to grant it, or open the harness without that feature`,
+        );
+      }
+      granted.push(feature);
+    }
+    return granted;
   }
 
   private assertNotClosed(pluginId: string, sessionId: string): void {

@@ -91,7 +91,7 @@ import type {
   NativeHarnessHandle,
   OpenNativeHarnessInput,
 } from './DefaultAiService';
-import type { Fence, Namespace } from './contracts';
+import type { AiFeatureName, Fence, Namespace } from './contracts';
 
 /** Deeply freezes the host-supplied canonical catalog at integration time. */
 function deepFreeze<T>(value: T): T {
@@ -681,6 +681,11 @@ export async function createAiServiceIntegration(
                 resource: {
                   serverId: operation.provider,
                   toolName: operation.modelId,
+                  // The requesting plugin rides the fence namespace: the
+                  // namespace whose harness dispatches this call. Policies
+                  // scope tools per plugin with it, so it is never derived
+                  // from caller-supplied data.
+                  pluginId: operation.fence.namespace.pluginId,
                 },
               })
             : allowsConditional({
@@ -1163,7 +1168,11 @@ export async function createAiServiceIntegration(
     // closed with this open's harness.
     let codemodeSandbox: { close(): Promise<void> } | undefined;
     let harnessRegistry: RegistryReader = input.registry;
-    if (options.codemode !== undefined) {
+    const grantedFeatures = input.features ?? [];
+    if (
+      options.codemode !== undefined &&
+      grantedFeatures.includes('codemode')
+    ) {
       const codemodeBuilt = options.codemode.createExtension({
         timeoutMs: options.codemode.timeoutMs ?? 300_000,
         ...(options.codemode.memoryLimitBytes === undefined
@@ -1571,9 +1580,30 @@ export async function createAiServiceIntegration(
       });
   }
 
+  /**
+   * What this deployment can expose at all, read per open so a module
+   * registered after the service was created still counts. The service
+   * authorizes each requested feature and hands the granted set back per
+   * admission, so this is the outer bound — a feature absent here is a wiring
+   * error, never a silent omission.
+   */
+  function registeredFeaturesOf(): readonly AiFeatureName[] {
+    const dynamic = options.moduleSource?.();
+    const hasTools =
+      (options.toolModules?.length ?? 0) > 0 ||
+      (dynamic?.toolModules.length ?? 0) > 0;
+    return [
+      ...(hasTools ? (['tools'] as const) : []),
+      ...(options.codemode === undefined ? [] : (['codemode'] as const)),
+    ];
+  }
+
   const integration: ProductionAiServiceIntegration = {
     recovery,
     guard: initialDispatch.guard,
+    get registeredFeatures() {
+      return registeredFeaturesOf();
+    },
 
     onNamespaceInvalidated(callback) {
       invalidationCallbacks.push(callback);
