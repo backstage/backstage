@@ -219,12 +219,14 @@ describe('bump', () => {
     });
 
     // When every dependency with a new version refers to a catalog, nothing
-    // is bumped, and backstage.json is left alone
+    // is bumped, and backstage.json and the Yarn plugin are left alone
     await fs.writeJson(mockDir.resolve('packages/b/package.json'), {
       name: 'b',
       dependencies: { '@backstage/theme': 'catalog:next' },
     });
     await fs.writeJson(mockDir.resolve('backstage.json'), { version: '1.0.0' });
+    await fs.writeFile(mockDir.resolve('.yarnrc.yml'), yarnRcMock);
+    jest.mocked(runObj.run).mockClear();
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
       await bump({ args: ['--release', 'main', '--skip-migrate'], info });
     });
@@ -234,6 +236,7 @@ describe('bump', () => {
     await expect(
       fs.readJson(mockDir.resolve('backstage.json')),
     ).resolves.toEqual({ version: '1.0.0' });
+    expect(runObj.run).not.toHaveBeenCalled();
   });
 
   it('should bump backstage dependencies', async () => {
@@ -1355,6 +1358,12 @@ catalogs:
   });
 
   it('should warn about overrides that pin the bumped packages', async () => {
+    // The root refers to the named catalog, which only --catalog bumps
+    await fs.writeJson(mockDir.resolve('package.json'), {
+      name: 'root',
+      packageManager: 'pnpm@12.7.0',
+      devDependencies: { '@backstage/theme': 'catalog:backstage-next' },
+    });
     await fs.writeFile(
       mockDir.resolve('pnpm-workspace.yaml'),
       `${workspaceYaml}
@@ -1363,6 +1372,8 @@ overrides:
   a>@backstage/theme@^1: 1.0.0
   '@backstage/theme@1>lodash': 4.0.0
   '@backstage/theme': $@backstage/theme
+  'a>@backstage/core': 'catalog:'
+  'b>@backstage/theme': 'catalog:backstage-next'
   '@backstage/plugin-x': 'catalog:'
   '@backstage/plugin-y': '-'
   '@backstage/theme@>=1.0.0': 1.0.0
@@ -1379,7 +1390,25 @@ overrides:
     expect(
       warnings.filter(warning => warning.startsWith('The workspace overrides')),
     ).toEqual([
-      'The workspace overrides @backstage/core, a>@backstage/theme@^1, @backstage/theme@>=1.0.0, b@>=1>@backstage/core@<2, c> @backstage/core. Overrides take precedence over package.json and the catalogs, so these packages keep the versions that the overrides set. Update or remove the overrides to bump them.',
+      'The workspace overrides @backstage/core, a>@backstage/theme@^1, @backstage/theme, b>@backstage/theme, @backstage/plugin-x, @backstage/theme@>=1.0.0, b@>=1>@backstage/core@<2, c> @backstage/core. Overrides take precedence over package.json and the catalogs, so these packages keep the versions that the overrides set. Update or remove the overrides to bump them.',
+    ]);
+
+    // An override that refers to a catalog follows the bump of its entry
+    const { warn: catalogWarnings } = await withLogCollector(
+      ['log', 'warn'],
+      async () => {
+        await bump({
+          args: ['--dry-run', '--catalog', 'backstage-next'],
+          info,
+        });
+      },
+    );
+    expect(
+      catalogWarnings.filter(warning =>
+        warning.startsWith('The workspace overrides'),
+      ),
+    ).toEqual([
+      'The workspace overrides @backstage/core, a>@backstage/theme@^1, a>@backstage/core, @backstage/plugin-x, @backstage/theme@>=1.0.0, b@>=1>@backstage/core@<2, c> @backstage/core. Overrides take precedence over package.json and the catalogs, so these packages keep the versions that the overrides set. Update or remove the overrides to bump them.',
     ]);
   });
 

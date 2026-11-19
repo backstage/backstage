@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-// The catalog that a `catalog:` or `catalog:<name>` range refers to
+// The catalog that a `catalog:` or `catalog:<name>` range refers to. Like
+// pnpm, the name is trimmed, and an empty name refers to the default catalog.
 export function getCatalogName(range: string): string | undefined {
   if (!range.startsWith('catalog:')) {
     return undefined;
   }
-  return range.slice('catalog:'.length) || 'default';
+  return range.slice('catalog:'.length).trim() || 'default';
 }
 
 /**

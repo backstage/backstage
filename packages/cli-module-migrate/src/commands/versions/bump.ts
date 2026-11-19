@@ -210,21 +210,6 @@ export default async ({ args, info }: CliCommandContext) => {
     });
   }
 
-  if (yarnPluginEnabled && !dryRun) {
-    console.log();
-    console.log(
-      `Updating yarn plugin to v${releaseManifest.releaseVersion}...`,
-    );
-    console.log();
-
-    const yarnPluginUrl = env.BACKSTAGE_VERSIONS_BASE_URL
-      ? `${env.BACKSTAGE_VERSIONS_BASE_URL}/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`
-      : `https://versions.backstage.io/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`;
-
-    await packageManager.run(['plugin', 'import', yarnPluginUrl]);
-    console.log();
-  }
-
   // First we discover all Backstage dependencies within this installation
   const dependencyMap = await mapDependencies(targetPaths.dir, pattern, {
     withinDir: targetPaths.installationRootDir,
@@ -264,7 +249,68 @@ export default async ({ args, info }: CliCommandContext) => {
     },
   });
 
-  warnAboutOverrides(await packageManager.readOverrides?.(), pattern);
+  // The catalog entries that the bump updates, by catalog. An override that
+  // refers to one of them follows the bump.
+  const bumpedCatalogEntries = new Map<string, Set<string>>();
+  if (catalogs) {
+    for (const [name, pkgs] of dependencyMap) {
+      if (!targetVersions.has(name)) {
+        continue;
+      }
+      for (const pkg of pkgs) {
+        const catalogName = getCatalogName(pkg.range);
+        if (catalogName && isBumpedRange(pkg.range, catalogFlag, true)) {
+          const names = bumpedCatalogEntries.get(catalogName) ?? new Set();
+          names.add(name);
+          bumpedCatalogEntries.set(catalogName, names);
+        }
+      }
+    }
+  }
+  // pnpm resolves an override such as `$name` from the dependencies of the
+  // package.json of the workspace root, which the bump only updates when the
+  // workspace root is the root of the installation
+  const rootPkg = await fs
+    .readJson(targetPaths.resolveWorkspaceRoot('package.json'))
+    .catch(() => undefined);
+  const rootDependencies = new Map<string, string>();
+  for (const depType of [
+    'dependencies',
+    'devDependencies',
+    'optionalDependencies',
+  ]) {
+    for (const [name, range] of Object.entries(rootPkg?.[depType] ?? {})) {
+      if (typeof range === 'string') {
+        rootDependencies.set(name, range);
+      }
+    }
+  }
+  const rootIsBumped =
+    targetPaths.workspaceRootDir === targetPaths.installationRootDir;
+  const followsBump = (name: string, value: string) => {
+    if (value.startsWith('$')) {
+      const range = rootDependencies.get(value.slice(1));
+      // pnpm fails on a reference to a dependency that the root doesn't have
+      if (range === undefined) {
+        return true;
+      }
+      return (
+        rootIsBumped &&
+        targetVersions.has(value.slice(1)) &&
+        !(!catalogs && getCatalogName(range)) &&
+        isBumpedRange(range, catalogFlag, Boolean(catalogs))
+      );
+    }
+    const catalogName = getCatalogName(value);
+    return Boolean(
+      catalogName && bumpedCatalogEntries.get(catalogName)?.has(name),
+    );
+  };
+  warnAboutOverrides(
+    await packageManager.readOverrides?.(),
+    pattern,
+    followsBump,
+  );
 
   if (json) {
     const versions = Object.fromEntries(
@@ -435,7 +481,7 @@ export default async ({ args, info }: CliCommandContext) => {
       let message =
         'All dependencies refer to named catalogs, so nothing was bumped. Use --catalog to bump the entries of a catalog.';
       if (catalogFlag) {
-        message = `No dependencies refer to the ${catalogFlag} catalog, so nothing was bumped`;
+        message = `No dependencies refer to the ${catalogFlag} catalog, so nothing was bumped.`;
       } else if (!catalogs) {
         message = 'All dependencies refer to catalogs, so nothing was bumped.';
       }
@@ -458,6 +504,23 @@ export default async ({ args, info }: CliCommandContext) => {
     // on the contents of a file. The writes are not atomic, so if a later
     // write fails, the catalogs stay bumped.
     if (!dryRun) {
+      // The Yarn plugin is only updated together with the dependencies, so
+      // that it stays on the release of backstage.json and the lockfile
+      if (yarnPluginEnabled) {
+        console.log();
+        console.log(
+          `Updating yarn plugin to v${releaseManifest.releaseVersion}...`,
+        );
+        console.log();
+
+        const yarnPluginUrl = env.BACKSTAGE_VERSIONS_BASE_URL
+          ? `${env.BACKSTAGE_VERSIONS_BASE_URL}/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`
+          : `https://versions.backstage.io/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`;
+
+        await packageManager.run(['plugin', 'import', yarnPluginUrl]);
+        console.log();
+      }
+
       if (catalogUpdates.size > 0) {
         await packageManager.updateCatalogs!(
           Object.fromEntries(
@@ -553,12 +616,15 @@ export default async ({ args, info }: CliCommandContext) => {
 /**
  * Overrides take precedence over both version ranges and catalogs, so the
  * packages that they pin keep their versions however they are bumped.
- * Overrides that refer to a version range or a catalog follow the bump, and
- * those that remove a dependency don't pin anything.
+ * Overrides that refer to a dependency of the root package.json or to a
+ * catalog entry follow the bump when the bump updates what they refer to,
+ * which `followsBump` tells. Overrides that remove a dependency don't pin
+ * anything.
  */
 function warnAboutOverrides(
   overrides: Record<string, string> | undefined,
   pattern: string,
+  followsBump: (name: string, value: string) => boolean,
 ) {
   const pinned = Object.entries(overrides ?? {})
     .filter(([selector, value]) => {
@@ -573,10 +639,7 @@ function warnAboutOverrides(
       const versionAt = target.indexOf('@', 1);
       const name = versionAt === -1 ? target : target.slice(0, versionAt);
       return (
-        minimatch(name, pattern) &&
-        !value.startsWith('$') &&
-        !value.startsWith('catalog:') &&
-        value !== '-'
+        minimatch(name, pattern) && value !== '-' && !followsBump(name, value)
       );
     })
     .map(([selector]) => selector);

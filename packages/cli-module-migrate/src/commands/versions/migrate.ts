@@ -98,13 +98,25 @@ export async function migrateMovedPackages(options?: {
 
   for (const pkg of packages) {
     const pkgName = pkg.packageJson.name;
-    let didPackageChange = false;
-    const movedPackages = new Map<string, string>();
+    // The source code of a package is migrated as a whole, so a moved package
+    // is only migrated when each of its declarations in the package is.
+    // Otherwise the code could import the new name while only a development
+    // dependency declares it.
+    const leftAlone = new Set<string>();
+    const moves = new Array<{
+      depsObj: Record<string, string>;
+      depType: string;
+      depName: string;
+      depVersion: string;
+      movedPackageName: string;
+      catalogEntry?: { catalogName: string; version: string };
+    }>();
 
     for (const depType of [
       'dependencies',
       'devDependencies',
       'peerDependencies',
+      'optionalDependencies',
     ] as const) {
       const depsObj = pkg.packageJson[depType];
       if (!depsObj) {
@@ -125,6 +137,7 @@ export async function migrateMovedPackages(options?: {
               Boolean(catalogs),
             ))
         ) {
+          leftAlone.add(depName);
           continue;
         }
         let packageInfo: BackstagePackageJson;
@@ -135,50 +148,80 @@ export async function migrateMovedPackages(options?: {
             }),
           );
         } catch (ex) {
-          console.warn(
-            chalk.yellow(
-              `Could not find package.json for ${depName}@${depVersion} in ${pkgName} (${depType})`,
-            ),
-          );
+          // An optional dependency is often not installed, for example one
+          // for another platform
+          if (depType !== 'optionalDependencies') {
+            console.warn(
+              chalk.yellow(
+                `Could not find package.json for ${depName}@${depVersion} in ${pkgName} (${depType})`,
+              ),
+            );
+          }
           continue;
         }
 
         const movedPackageName = packageInfo.backstage?.moved;
-
-        if (movedPackageName) {
-          const catalogName = catalogs ? getCatalogName(depVersion) : undefined;
-          const catalog = catalogName ? catalogs?.[catalogName] : undefined;
-          if (catalogName && catalog?.[movedPackageName] === undefined) {
-            // Without a version to copy, the new name would refer to nothing
-            if (catalog?.[depName] === undefined) {
-              console.warn(
-                chalk.yellow(
-                  `Skipping the moved package ${depName} in ${pkgName} (${depType}), since the ${catalogName} catalog has no entry for it`,
-                ),
-              );
-              continue;
-            }
-            const entries = catalogUpdates.get(catalogName) ?? new Map();
-            entries.set(movedPackageName, catalog[depName]);
-            catalogUpdates.set(catalogName, entries);
-          }
-
-          movedPackages.set(depName, movedPackageName);
-          console.log(
-            chalk.yellow(
-              `Found a moved package ${depName}@${depVersion} -> ${movedPackageName} in ${pkgName} (${depType})`,
-            ),
-          );
-
-          didPackageChange = true;
-
-          depsObj[movedPackageName] = depsObj[depName];
-          delete depsObj[depName];
+        if (!movedPackageName) {
+          continue;
         }
+
+        const catalogName = catalogs ? getCatalogName(depVersion) : undefined;
+        const catalog = catalogName ? catalogs?.[catalogName] : undefined;
+        let catalogEntry: { catalogName: string; version: string } | undefined;
+        if (catalogName && catalog?.[movedPackageName] === undefined) {
+          // Without a version to copy, the new name would refer to nothing
+          if (catalog?.[depName] === undefined) {
+            console.warn(
+              chalk.yellow(
+                `Skipping the moved package ${depName} in ${pkgName} (${depType}), since the ${catalogName} catalog has no entry for it`,
+              ),
+            );
+            leftAlone.add(depName);
+            continue;
+          }
+          catalogEntry = { catalogName, version: catalog[depName] };
+        }
+        moves.push({
+          depsObj,
+          depType,
+          depName,
+          depVersion,
+          movedPackageName,
+          catalogEntry,
+        });
       }
     }
 
-    if (didPackageChange) {
+    const movedPackages = new Map<string, string>();
+    for (const move of moves) {
+      const { depsObj, depType, depName, depVersion, movedPackageName } = move;
+      if (leftAlone.has(depName)) {
+        console.warn(
+          chalk.yellow(
+            `Skipping the moved package ${depName} in ${pkgName} (${depType}), since another declaration of it in ${pkgName} is left as it is`,
+          ),
+        );
+        continue;
+      }
+      if (move.catalogEntry) {
+        const { catalogName, version } = move.catalogEntry;
+        const entries = catalogUpdates.get(catalogName) ?? new Map();
+        entries.set(movedPackageName, version);
+        catalogUpdates.set(catalogName, entries);
+      }
+
+      movedPackages.set(depName, movedPackageName);
+      console.log(
+        chalk.yellow(
+          `Found a moved package ${depName}@${depVersion} -> ${movedPackageName} in ${pkgName} (${depType})`,
+        ),
+      );
+
+      depsObj[movedPackageName] = depsObj[depName];
+      delete depsObj[depName];
+    }
+
+    if (movedPackages.size > 0) {
       changedPackages.push({ pkg, movedPackages });
     }
   }
