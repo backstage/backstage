@@ -27,16 +27,23 @@ export type { AiModulesExtensionPoint } from './extensions';
  * rules of its own.
  */
 export {
+  aiFeatureConditions,
+  aiFeaturePermissionRules,
+  aiFeatureResourceRef,
   aiModelConditions,
   aiModelPermissionRules,
   aiModelResourceRef,
   aiToolConditions,
   aiToolPermissionRules,
   aiToolResourceRef,
+  createAiFeatureConditionalDecision,
   createAiModelConditionalDecision,
   createAiToolConditionalDecision,
+  isFeature,
+  isFeaturePlugin,
   isModel,
   isModelType,
+  isPlugin,
   isProvider,
   isServer,
   isTool,

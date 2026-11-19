@@ -30,12 +30,12 @@
  * lists, certified adapter identifiers, and reserved token routes; this
  * schema mirrors that contract without loosening it.
  *
- * `ai.credentials.tokenEndpoints` lists, per provider, the absolute `https`
- * URL of the OAuth token route guarded auth operations may use for
- * credential refresh (`/oauth/token` or `/v1/oauth/token` on the provider's
- * own origin). Providers without an entry cannot refresh OAuth credentials;
- * the currently supported auth providers are Anthropic and OpenAI token
- * endpoints.
+ * `ai.credentials.tokenEndpoints` declares, per provider, the absolute
+ * `https` URL of the OAuth token route guarded auth operations may use
+ * for credential refresh (`/oauth/token` or `/v1/oauth/token` on the
+ * provider's own origin) and the public client id. Providers without an
+ * entry cannot refresh OAuth credentials; the currently supported auth
+ * providers are Anthropic and OpenAI token endpoints.
  *
  * Each consuming plugin additionally chooses its own agent configuration
  * path and passes the root config plus that path to `openHarness` — there is
@@ -113,14 +113,19 @@ export interface Config {
         };
       };
       /**
-       * Trusted OAuth token routes per provider for guarded auth operations,
-       * as absolute `https` URLs on the provider's origin ending in the
-       * reserved `/oauth/token` or `/v1/oauth/token` route. Providers
-       * without an entry cannot refresh OAuth credentials; the supported
-       * auth providers are Anthropic and OpenAI token endpoints.
+       * Trusted OAuth token routes per provider for guarded auth operations.
+       * Each entry declares the absolute `https` URL of the token route on
+       * the provider's own origin (`/oauth/token` or `/v1/oauth/token`) and
+       * the public client id. Providers without an entry cannot refresh
+       * OAuth credentials; the supported auth providers are Anthropic and
+       * OpenAI token endpoints.
        */
       tokenEndpoints?: {
-        [providerId: string]: string;
+        [providerId: string]: {
+          url: string;
+          /** Public OAuth client id; not a secret. */
+          clientId: string;
+        };
       };
     };
     /**
