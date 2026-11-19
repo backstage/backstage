@@ -201,17 +201,15 @@ function checkTypes(pkg: Package) {
  */
 function findTypesPackage(dep: string, pkg: Package) {
   // Resolve subpath specifiers (e.g. foo/sub) to their package root, so that
-  // the @types lookup checks @types/foo rather than @types/foo/sub
+  // the node_modules fallback below can find the installed package
   const segments = dep.split('/');
   const packageName = segments[0].startsWith('@')
     ? segments.slice(0, 2).join('/')
     : segments[0];
 
   try {
-    require.resolve(`@types/${packageName}/package.json`, {
-      paths: [pkg.dir],
-    });
-    return `@types/${packageName}`;
+    require.resolve(`@types/${dep}/package.json`, { paths: [pkg.dir] });
+    return `@types/${dep}`;
   } catch {
     try {
       require.resolve(dep, { paths: [pkg.dir] });
