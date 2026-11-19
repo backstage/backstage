@@ -92,10 +92,7 @@ export function extractRouteInfoFromAppNode(
         path: routePath,
         routeRefs: new Set<RouteRef>(),
         caseSensitive: false,
-        children:
-          current.instance?.getData(coreExtensionData.routePath) === '/'
-            ? []
-            : [MATCH_ALL_ROUTE],
+        children: [],
         appNode: current,
       };
       parentChildren.push(currentObj);
@@ -149,6 +146,16 @@ export function extractRouteInfoFromAppNode(
           currentObj,
         );
       }
+    }
+
+    // The catch-all child is added after all other children. Route ranking
+    // treats it as equal to the splat of an empty-path child, so it has to
+    // come last for that child to own the deeper paths under its parent.
+    if (
+      routePath !== undefined &&
+      current.instance?.getData(coreExtensionData.routePath) !== '/'
+    ) {
+      currentObj!.children!.push(MATCH_ALL_ROUTE);
     }
   }
 
