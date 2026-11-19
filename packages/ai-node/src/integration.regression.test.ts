@@ -1737,7 +1737,7 @@ describe('integration regressions', () => {
       };
 
       await expect(
-        integration.guard.bind(operation).fetch(operation.destination, {
+        integration.guard.bind(operation).fetch(operation.destination!, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: '{"model":"gpt-review"}',

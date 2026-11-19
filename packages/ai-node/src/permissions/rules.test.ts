@@ -23,11 +23,14 @@ import type {
 import {
   aiModelUsePermission,
   aiToolUsePermission,
+  RESOURCE_TYPE_AI_FEATURE,
   RESOURCE_TYPE_AI_MODEL,
   RESOURCE_TYPE_AI_TOOL,
 } from '@backstage/plugin-ai-common';
 import { createModelAccess, type ModelDescriptor } from './modelAccess';
 import {
+  aiFeatureConditions,
+  aiFeaturePermissionRules,
   aiModelConditions,
   aiModelPermissionRules,
   aiToolConditions,
@@ -520,7 +523,7 @@ describe('model access under conditional policies', () => {
 });
 
 describe('tool access under conditional policies', () => {
-  const tool = { serverId: 'files', toolName: 'read' };
+  const tool = { serverId: 'files', toolName: 'read', pluginId: 'ai' };
 
   it('grants one tool, one server, or every tool', async () => {
     const toolEnvelope = (conditions: unknown, overrides = {}) => ({
@@ -562,10 +565,95 @@ describe('tool access under conditional policies', () => {
           decision,
           resourceType: RESOURCE_TYPE_AI_TOOL,
           rules,
-          resource: { serverId: 'files', toolName: 'write' },
+          resource: {
+            serverId: 'files',
+            toolName: 'write',
+            pluginId: 'ai',
+          },
         }),
       ).toBe(write);
       expect(authorizeConditional).toHaveBeenCalledTimes(1);
     }
+  });
+});
+
+describe('feature and plugin scoping', () => {
+  const rules = Object.values(aiFeaturePermissionRules);
+  const evaluate = (criteria: unknown, resource: unknown) =>
+    evaluatePermissionCriteria({
+      criteria: criteria as PermissionCriteria<PermissionCondition>,
+      resourceType: RESOURCE_TYPE_AI_FEATURE,
+      rules,
+      resource: resource as { pluginId: string; feature: string },
+    });
+  const codemode = { pluginId: 'scaffolder', feature: 'codemode' };
+
+  it('scopes a grant to one feature or one plugin', () => {
+    expect(
+      evaluate(
+        aiFeatureConditions.isFeature({ feature: 'codemode' }),
+        codemode,
+      ),
+    ).toBe(true);
+    expect(
+      evaluate(aiFeatureConditions.isFeature({ feature: 'tools' }), codemode),
+    ).toBe(false);
+    expect(
+      evaluate(
+        aiFeatureConditions.isPlugin({ pluginId: 'scaffolder' }),
+        codemode,
+      ),
+    ).toBe(true);
+    expect(
+      evaluate(
+        {
+          allOf: [
+            aiFeatureConditions.isPlugin({ pluginId: 'scaffolder' }),
+            aiFeatureConditions.isFeature({ feature: 'tools' }),
+          ],
+        },
+        codemode,
+      ),
+    ).toBe(false);
+  });
+
+  it('never satisfies a feature rule with a tool-shaped attribute set', () => {
+    // The same rule name over the wrong resource type cannot be smuggled in:
+    // the envelope's resource type must be the queried one.
+    expect(
+      evaluatePermissionCriteria({
+        criteria: aiFeatureConditions.isFeature({
+          feature: 'codemode',
+        }) as unknown as PermissionCriteria<PermissionCondition>,
+        resourceType: RESOURCE_TYPE_AI_TOOL,
+        rules: Object.values(aiToolPermissionRules),
+        resource: { serverId: 'files', toolName: 'read', pluginId: 'ai' },
+      }),
+    ).toBe(false);
+  });
+
+  it('scopes tools to the requesting plugin', () => {
+    const tool = {
+      serverId: 'files',
+      toolName: 'read',
+      pluginId: 'scaffolder',
+    };
+    const toolRules = Object.values(aiToolPermissionRules);
+    const allows = (criteria: unknown) =>
+      evaluatePermissionCriteria({
+        criteria: criteria as PermissionCriteria<PermissionCondition>,
+        resourceType: RESOURCE_TYPE_AI_TOOL,
+        rules: toolRules,
+        resource: tool,
+      });
+    expect(allows(aiToolConditions.isPlugin({ pluginId: 'scaffolder' }))).toBe(
+      true,
+    );
+    expect(allows(aiToolConditions.isPlugin({ pluginId: 'ai' }))).toBe(false);
+    // Denying one plugin leaves every other plugin alone, so "the scaffolder
+    // harness never sees a shell tool" is one rule and not a per-plugin setup.
+    expect(allows({ not: aiToolConditions.isPlugin({ pluginId: 'ai' }) })).toBe(
+      true,
+    );
   });
 });

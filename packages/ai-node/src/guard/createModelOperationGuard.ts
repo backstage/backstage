@@ -117,6 +117,24 @@ export function createModelOperationGuard(options: {
         blocked = true;
         operation.controller.abort();
       };
+      // A dispatch whose outcome could not be settled is recovery evidence:
+      // one unknown-dispatch row per attempt, written fail-open so a second
+      // journal failure never masks the uncertainty it documents.
+      const recordUnknownDispatch = (detail: string) => {
+        if (!journal) return;
+        void journal
+          .recordRecovery(operation.fence, {
+            actor: operation.actor,
+            kind: 'unknown-dispatch',
+            conversationId: operation.provenance?.conversationId,
+            taskId: operation.provenance?.taskId,
+            callId: operation.provenance?.callId,
+            definitionVersion: operation.definitionVersion,
+            configVersion: operation.configVersion,
+            detail,
+          })
+          .catch(() => undefined);
+      };
       const decision = (
         attempt: number,
         value: 'allow' | 'deny',
@@ -177,6 +195,7 @@ export function createModelOperationGuard(options: {
             uncertain = true;
             block();
             observe('unknown');
+            recordUnknownDispatch('journal failed');
             throw new Error(
               'Model dispatch outcome is uncertain: journal failed',
               { cause: error },
@@ -433,9 +452,13 @@ export function createModelOperationGuard(options: {
             try {
               response = await transport(request);
             } catch (error) {
-              await record(attempt, {
-                status: request.signal.aborted ? 'cancelled' : 'unknown',
-              });
+              const status = request.signal.aborted ? 'cancelled' : 'unknown';
+              // The outcome row settles first; the recovery evidence follows,
+              // in the same deterministic order as every other write.
+              await record(attempt, { status });
+              if (status === 'unknown') {
+                recordUnknownDispatch('transport failed');
+              }
               throw error;
             }
             attempt.httpStatus = response.status;
@@ -477,6 +500,81 @@ export function createModelOperationGuard(options: {
           );
           return result;
         },
+        /**
+         * Opens the attempt for a dispatch that sends nothing: a local
+         * module's host function. It performs exactly the pre-execution work
+         * the guarded fetch performs — trusted context, the per-attempt
+         * permission recheck, fence currency, the allow decision and its
+         * intent row — so a local dispatch is authorized and journaled like
+         * any other. Only the send and its response accounting are absent,
+         * because there is no request. The attempt is marked as ended so
+         * `finish` records the host function's own settlement rather than an
+         * unknown one.
+         */
+        async begin() {
+          const n = ++ordinal;
+          if (blocked || finished) {
+            throw new Error('Model operation is blocked');
+          }
+          await Promise.all(outcomeWrites);
+          if (!journal || !hasTrustedOperationContext(operation)) {
+            throw new Error('Unverified model operation');
+          }
+          try {
+            if (
+              !(await raceRecheckAbort(
+                options.recheck(operation),
+                operation.controller.signal,
+              )) ||
+              operation.controller.signal.aborted ||
+              blocked ||
+              finished
+            ) {
+              throw new Error('Model authority revoked');
+            }
+          } catch (error) {
+            block();
+            try {
+              await journal.recordDecisionAndIntent(
+                operation.fence,
+                decision(
+                  n,
+                  'deny',
+                  'model',
+                  undefined,
+                  'model operation denied',
+                ),
+              );
+            } catch (journalError) {
+              throw new Error('Model denial journal failed', {
+                cause: journalError,
+              });
+            }
+            emit?.({
+              kind: 'denial',
+              at: Date.now(),
+              pluginId: operation.fence.namespace.pluginId,
+              sessionId: operation.fence.namespace.sessionId,
+              provider: operation.provider,
+              modelId: operation.modelId,
+              operation: `models.${operation.operation}`,
+              reason: 'model operation denied',
+              attempt: n,
+            });
+            throw error;
+          }
+          const id = await journal.recordDecisionAndIntent(
+            operation.fence,
+            decision(n, 'allow', 'model'),
+          );
+          attempts.push({
+            id,
+            startedAt: Date.now(),
+            streamEnded: true,
+            streamCancelled: false,
+            settled: false,
+          });
+        },
         async finish(outcome) {
           if (finished) throw new Error('Model operation already finished');
           finished = true;
@@ -506,6 +604,7 @@ export function createModelOperationGuard(options: {
             });
             if (status === 'unknown') {
               block();
+              recordUnknownDispatch('stream unfinished');
               throw new Error(
                 'Model dispatch outcome is uncertain: stream unfinished',
               );

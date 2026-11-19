@@ -147,7 +147,10 @@ async function fixture(): Promise<Fixture> {
   };
 }
 
-function openOptions(sessionId: string) {
+function openOptions(
+  sessionId: string,
+  features: Array<'tools' | 'codemode'> = [],
+) {
   return {
     sessionId,
     config: {
@@ -162,6 +165,9 @@ function openOptions(sessionId: string) {
     credentials: mockCredentials.user('user:default/alice'),
     registry: createRegistry(),
     registryVersion: 'v1',
+    // Code mode is a gated feature: only the harnesses that ask for it get
+    // the sandbox globals.
+    features,
   };
 }
 
@@ -352,7 +358,9 @@ async function runScript(
       models: models(port),
       codemode,
     });
-    const handle = await service.openHarness(openOptions(sessionId));
+    const handle = await service.openHarness(
+      openOptions(sessionId, ['codemode']),
+    );
     try {
       const conversation = await handle.harness.root(handle.context);
       const submission = await conversation.submit(
@@ -372,6 +380,39 @@ async function runScript(
 }
 
 describe('opt-in code mode wiring', () => {
+  it('is withheld from a harness that does not request it', async () => {
+    const f = await fixture();
+    const probe = await modelServer(undefined);
+    try {
+      const port = (probe.server.address() as { port: number }).port;
+      // Code mode IS configured for this deployment, but this harness does not
+      // declare the feature: the gate is the declaration, not the wiring.
+      const { service } = await managed(f, {
+        models: models(port),
+        codemode: { timeoutMs: 5_000 },
+      });
+      const handle = await service.openHarness(
+        openOptions('codemode-not-requested'),
+      );
+      try {
+        const conversation = await handle.harness.root(handle.context);
+        const submission = await conversation.submit(
+          { type: 'input', content: 'hello' },
+          handle.context,
+        );
+        const settled = await submission.wait(handle.context);
+        expect((settled as { status?: string }).status).toBe('done');
+        expect(probe.bodies.length).toBe(1);
+        expect(probe.bodies[0]).not.toContain('codemode');
+      } finally {
+        await handle.release();
+      }
+    } finally {
+      await probe.close();
+      await f.close();
+    }
+  }, 30000);
+
   it('is off by default: the codemode tool is not offered to the model', async () => {
     const f = await fixture();
     const probe = await modelServer(undefined);
@@ -542,7 +583,9 @@ describe('opt-in code mode wiring', () => {
         codemode: {},
         credentialStores: SELECTIVE_STORES,
       });
-      const handle = await service.openHarness(openOptions('classify-routing'));
+      const handle = await service.openHarness(
+        openOptions('classify-routing', ['codemode']),
+      );
       let bodies: string[];
       try {
         const conversation = await handle.harness.root(handle.context);

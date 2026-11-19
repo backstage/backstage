@@ -74,7 +74,7 @@ function operation(id: Id, origin: string): TrustedOperation {
     resolvedModel: model.id,
     operation: 'streamSimple',
     api: id,
-    destination: module.destination(model as never, undefined),
+    destination: module.destination!(model as never, undefined),
     credentialScope: { kind: 'user', id: 'user:default/alice' },
     credentialGeneration: '1',
     controller: new AbortController(),
@@ -86,7 +86,7 @@ function request(
   substitute = false,
   substituteQuery = false,
 ): Request {
-  const url = new URL(op.destination);
+  const url = new URL(op.destination!);
   if (substitute) {
     url.pathname = url.pathname.replace(
       `/models/${op.modelId}:`,
@@ -119,7 +119,7 @@ if (process.env[CRASH_TEST_CHILD_ENV] === '1') {
           resolvedModel: model.id,
           operation: 'streamSimple',
           api: id,
-          destination: module.destination(model as never, undefined),
+          destination: module.destination!(model as never, undefined),
         });
         if (module.adapter.kind !== 'stream')
           throw new Error('Expected pinned stream adapter');

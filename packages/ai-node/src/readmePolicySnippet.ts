@@ -29,12 +29,15 @@ import type {
   PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 import {
+  aiFeatureConditions,
   aiModelConditions,
   aiToolConditions,
+  createAiFeatureConditionalDecision,
   createAiModelConditionalDecision,
   createAiToolConditionalDecision,
 } from '@backstage/ai-node/alpha';
 import {
+  aiFeatureUsePermission,
   aiModelUsePermission,
   aiToolUsePermission,
 } from '@backstage/plugin-ai-common';
@@ -54,9 +57,17 @@ export class AiPolicy implements PermissionPolicy {
       });
     }
     if (isPermission(request.permission, aiToolUsePermission)) {
-      return createAiToolConditionalDecision(
+      return createAiToolConditionalDecision(request.permission, {
+        allOf: [
+          aiToolConditions.isServer({ serverId: 'files' }),
+          aiToolConditions.isPlugin({ pluginId: 'scaffolder' }),
+        ],
+      });
+    }
+    if (isPermission(request.permission, aiFeatureUsePermission)) {
+      return createAiFeatureConditionalDecision(
         request.permission,
-        aiToolConditions.isServer({ serverId: 'files' }),
+        aiFeatureConditions.isPlugin({ pluginId: 'scaffolder' }),
       );
     }
     if (user === undefined) {

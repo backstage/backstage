@@ -91,7 +91,7 @@ import type {
   NativeHarnessHandle,
   OpenNativeHarnessInput,
 } from './DefaultAiService';
-import type { Fence, Namespace } from './contracts';
+import type { AiFeatureName, Fence, Namespace } from './contracts';
 
 /** Deeply freezes the host-supplied canonical catalog at integration time. */
 function deepFreeze<T>(value: T): T {
@@ -681,6 +681,11 @@ export async function createAiServiceIntegration(
                 resource: {
                   serverId: operation.provider,
                   toolName: operation.modelId,
+                  // The requesting plugin rides the fence namespace: the
+                  // namespace whose harness dispatches this call. Policies
+                  // scope tools per plugin with it, so it is never derived
+                  // from caller-supplied data.
+                  pluginId: operation.fence.namespace.pluginId,
                 },
               })
             : allowsConditional({
@@ -707,6 +712,12 @@ export async function createAiServiceIntegration(
         // Fence currency: a rejected renewal means this generation is stale.
         if (!(await lease.renew(operation.fence))) {
           return false;
+        }
+        // A local module interprets no credential, so there is no generation
+        // to compare: permission and fence currency above are its whole
+        // pre-execution contract.
+        if (providerRegistry.get(operation.api)?.adapter.kind === 'local') {
+          return true;
         }
         // Credential generation: the resolved credential must be unchanged.
         const resolved = await resolveAuthority(
@@ -1163,7 +1174,11 @@ export async function createAiServiceIntegration(
     // closed with this open's harness.
     let codemodeSandbox: { close(): Promise<void> } | undefined;
     let harnessRegistry: RegistryReader = input.registry;
-    if (options.codemode !== undefined) {
+    const grantedFeatures = input.features ?? [];
+    if (
+      options.codemode !== undefined &&
+      grantedFeatures.includes('codemode')
+    ) {
       const codemodeBuilt = options.codemode.createExtension({
         timeoutMs: options.codemode.timeoutMs ?? 300_000,
         ...(options.codemode.memoryLimitBytes === undefined
@@ -1496,7 +1511,8 @@ export async function createAiServiceIntegration(
       }
       const api = canonical.api as TrustedOperation['api'];
       const module = providerRegistry.get(api);
-      if (!module) {
+      const destination = module?.destination;
+      if (!module || destination === undefined) {
         throw new GuardedResolutionError(
           {
             operation: trusted,
@@ -1511,7 +1527,7 @@ export async function createAiServiceIntegration(
           ...trusted,
           api,
           resolvedModel: canonical.id,
-          destination: module!.destination(canonical, resolved.env),
+          destination: destination(canonical, resolved.env),
           ...resolvedAuthorityFields(resolved),
         },
         model: canonical as GuardedModelBinding['model'],
@@ -1571,9 +1587,30 @@ export async function createAiServiceIntegration(
       });
   }
 
+  /**
+   * What this deployment can expose at all, read per open so a module
+   * registered after the service was created still counts. The service
+   * authorizes each requested feature and hands the granted set back per
+   * admission, so this is the outer bound — a feature absent here is a wiring
+   * error, never a silent omission.
+   */
+  function registeredFeaturesOf(): readonly AiFeatureName[] {
+    const dynamic = options.moduleSource?.();
+    const hasTools =
+      (options.toolModules?.length ?? 0) > 0 ||
+      (dynamic?.toolModules.length ?? 0) > 0;
+    return [
+      ...(hasTools ? (['tools'] as const) : []),
+      ...(options.codemode === undefined ? [] : (['codemode'] as const)),
+    ];
+  }
+
   const integration: ProductionAiServiceIntegration = {
     recovery,
     guard: initialDispatch.guard,
+    get registeredFeatures() {
+      return registeredFeaturesOf();
+    },
 
     onNamespaceInvalidated(callback) {
       invalidationCallbacks.push(callback);
@@ -1861,8 +1898,12 @@ function resolvedAuthorityFields(resolved: ResolvedAuthority): {
 function unsupportedCredentialKindReason(
   module: AiProviderModule | undefined,
   providerId: string,
-  kind: 'apiKey' | 'oauth' | 'federation',
+  kind: 'apiKey' | 'oauth' | 'federation' | 'local',
 ): string | undefined {
+  // A local dispatch carries no credential, so no configured kind can clash.
+  if (kind === 'local') {
+    return undefined;
+  }
   const credentialKind = kind === 'apiKey' ? 'api_key' : kind;
   if (
     module === undefined ||

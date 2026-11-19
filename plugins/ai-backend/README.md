@@ -62,7 +62,21 @@ Routes require Backstage user bearer credentials and the `ai.session.use` permis
 - `POST /sessions/:sessionId/conversations/:conversationId/messages` accepts `{ "content": "..." }` and returns an SSE stream. `partial` events contain text snapshots, `answer` contains the final answer, and `settled` reports the submission status, not an individual provider attempt outcome.
 - `GET /sessions/:sessionId/audit` returns a session-scoped journal page. Pass `nextCursor` as `cursor` to continue; malformed cursors return 400.
 
-Live output follows the submission; durable outcome observation requires the audit-read entitlement. A disconnected client stops receiving SSE; the admitted submission continues and settles. Reconnection without audit permission and selective cancellation of an already placed submission are not supported. Journal outcomes are session-scoped and cannot yet be attributed to individual submissions.
+Live output follows the submission; durable outcome observation requires the audit-read entitlement.
+
+## Signals: live observation by the session owner
+
+Every event the SSE stream of `POST .../messages` carries — `submission`, `partial`, `answer`, `settled` — is also published through the Backstage signals service, so the session owner's other connections (another tab, another device, a frontend component signed in as the owner) can follow a submission they did not place through the standard signals client. The channel is `ai.session.<sessionId>.<conversationId>`; the message body is `{ "event": "...", "data": { ... } }` with the same payloads as the inline stream.
+
+The submitter's inline SSE response is unchanged — request-scoped HTTP streaming that works across replicas because the POST lands on the running instance.
+
+Delivery is gated publish-side: every published signal is addressed to the session owner alone. This repo's signals version has no channel-level authorization — any authenticated user may subscribe to any channel name — but a signal only reaches connections whose user matches the published recipients, so a different user subscribed to a session channel receives nothing and the session data never leaves the fan-out. `ai.session.use` remains the HTTP-route permission and plays no role in signals delivery. If the platform gains channel authorization, the gate can tighten without changing the channel scheme.
+
+Signals is live-only, with no replay: a reconnecting observer sees the future, not the past. Durable outcome observation remains the audit journal (`ai.audit.read`).
+
+## Settlement notifications
+
+A submission that settles after its SSE client is gone no longer disappears silently: the plugin sends the owner a notification through the Backstage notifications service (`topic: "ai"`, a link to the session, and the settlement status) when the settlement lands on a disconnected stream. A client that is still streaming receives `settled` inline and gets no duplicate notification. Selective cancellation of an already placed submission is not supported, and journal outcomes are session-scoped and cannot yet be attributed to individual submissions.
 
 The backend's managed service and database are plugin-scoped. Other
 consuming plugins use their own instances; installation configuration

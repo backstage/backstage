@@ -35,6 +35,13 @@ export const RESOURCE_TYPE_AI_MODEL = 'ai-model';
 export const RESOURCE_TYPE_AI_TOOL = 'ai-tool';
 
 /**
+ * Permission resource type which corresponds to one harness feature.
+ *
+ * @public
+ */
+export const RESOURCE_TYPE_AI_FEATURE = 'ai-feature';
+
+/**
  * The attributes a policy sees for one model: the identity pair plus the
  * catalog type when the installation declares one.
  *
@@ -49,11 +56,28 @@ export type AiModelResource = Readonly<{
 /**
  * The attributes a policy sees for one tool.
  *
+ * @remarks
+ * `pluginId` is the plugin whose harness is dispatching the call, so a policy
+ * can scope tools per plugin — a scaffolder harness never reaching a shell
+ * tool is a rule, not a convention.
+ *
  * @public
  */
 export type AiToolResource = Readonly<{
   serverId: string;
   toolName: string;
+  pluginId: string;
+}>;
+
+/**
+ * The attributes a policy sees for one harness feature: which plugin requests
+ * it and which feature it is.
+ *
+ * @public
+ */
+export type AiFeatureResource = Readonly<{
+  pluginId: string;
+  feature: string;
 }>;
 
 /** Convenience type for model use permissions. @public */
@@ -63,6 +87,11 @@ export type AiModelPermission = ResourcePermission<
 
 /** Convenience type for tool use permissions. @public */
 export type AiToolPermission = ResourcePermission<typeof RESOURCE_TYPE_AI_TOOL>;
+
+/** Convenience type for feature use permissions. @public */
+export type AiFeaturePermission = ResourcePermission<
+  typeof RESOURCE_TYPE_AI_FEATURE
+>;
 
 /**
  * Permission required to use a model from the installation catalog.
@@ -95,6 +124,24 @@ export const aiToolUsePermission = createPermission({
   name: 'ai.tool.use',
   attributes: {},
   resourceType: RESOURCE_TYPE_AI_TOOL,
+});
+
+/**
+ * Permission required to expose a harness feature to a plugin.
+ *
+ * @remarks
+ * One permission covers every feature and granularity comes from the feature
+ * rules (`isFeature`, `isPlugin`). No policy means the permission framework's
+ * default: the feature is available when the service registers it, so a
+ * deployment that wants to restrict features must write a DENY policy — the
+ * same sharp edge as the blanket ALLOW on model and tool use.
+ *
+ * @public
+ */
+export const aiFeatureUsePermission = createPermission({
+  name: 'ai.feature.use',
+  attributes: {},
+  resourceType: RESOURCE_TYPE_AI_FEATURE,
 });
 
 /**

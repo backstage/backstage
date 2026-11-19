@@ -136,7 +136,7 @@ function harness(model: AnyModel, operation: ModelOperation) {
     resolvedModel: model.id,
     operation,
     api: model.api,
-    destination: providers.get(model.api)!.destination(model, undefined),
+    destination: providers.get(model.api)!.destination!(model, undefined),
     credentialScope: { kind: 'user', id: 'user:default/alice' },
     credentialGeneration: '1',
     controller: new AbortController(),
@@ -161,7 +161,7 @@ function harness(model: AnyModel, operation: ModelOperation) {
     }),
   });
   // Denials latch the operation, so every probe gets a fresh binding.
-  const probe = async (body: unknown, url: URL | string = op.destination) => {
+  const probe = async (body: unknown, url: URL | string = op.destination!) => {
     const fresh = guard.bind({
       ...op,
       controller: new AbortController(),
@@ -199,7 +199,7 @@ function trustedOperation(
     resolvedModel: model.id,
     operation,
     api: model.api,
-    destination: providers.get(model.api)!.destination(model, undefined),
+    destination: providers.get(model.api)!.destination!(model, undefined),
     credentialScope: { kind: 'user', id: 'user:default/alice' },
     credentialGeneration: '1',
     controller: new AbortController(),
@@ -253,10 +253,10 @@ describe('OpenAI Decisions module', () => {
     } as AnyModel;
     const f = harness(model, 'classify');
     await f.probe({ model: 'other', state: {}, questions: {} });
-    const wrong = new URL(f.op.destination);
+    const wrong = new URL(f.op.destination!);
     wrong.pathname = '/v1/other';
     await f.probe({ model: model.id }, wrong);
-    const query = new URL(f.op.destination);
+    const query = new URL(f.op.destination!);
     query.searchParams.set('unexpected', 'true');
     await f.probe({ model: model.id }, query);
     expect(f.events).toEqual(['deny:1', 'deny:1', 'deny:1']);
@@ -337,7 +337,7 @@ describe('OpenAI Decisions module', () => {
           'classify',
         ),
         api: module.id,
-        destination: module.destination(model, undefined),
+        destination: module.destination!(model, undefined),
       };
       const send = jest.fn(async () => new Response('{}'));
       const guard = createModelOperationGuard({
@@ -392,7 +392,7 @@ describe('OpenAI Decisions module', () => {
         recheck: async () => true,
         transport: send as unknown as typeof fetch,
       }).bind(op);
-      await guard.fetch(op.destination, {
+      await guard.fetch(op.destination!, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ model: model.id }),

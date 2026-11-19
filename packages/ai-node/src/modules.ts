@@ -24,7 +24,8 @@
  * and the certification and guard-construction machinery module authors use
  * to certify their modules against the real guard — the provider
  * certification registrar, the provider registry, the guard constructors and
- * the journal constructor they drive.
+ * the journal constructor they drive, and the event sink that publishes
+ * the service's observability events.
  * It is alpha-grade: the shapes are stable enough to author against, but they
  * may change in a minor release as the extraction of provider packages
  * completes, and they are not yet covered by the stable `@public` surface.
@@ -44,6 +45,8 @@ export type {
   DestinationTemplatePart,
 } from './providers/templates';
 export { validateHttpEnvelope } from './providers/httpEnvelope';
+export { wrapProviderModule } from './providers/wrapProviderModule';
+export type { WrapProviderModuleOptions } from './providers/wrapProviderModule';
 export type { HttpEnvelopeRules } from './providers/httpEnvelope';
 export {
   assertTokenRequest,

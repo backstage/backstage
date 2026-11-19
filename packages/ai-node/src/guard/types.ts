@@ -51,8 +51,11 @@ export type TrustedOperation = Readonly<{
   operation: ModelOperation;
   /** Registered provider module identifier. */
   api: string;
-  /** Exact host-constructed URL, including any provider query string. */
-  destination: string;
+  /**
+   * Exact host-constructed URL, including any provider query string. Absent
+   * for a local module's operation, which never leaves the process.
+   */
+  destination?: string;
   /** Host-configured Anthropic federation token endpoints, not caller options. */
   authTokenDestinations?: readonly string[];
   credentialScope: CredentialScope;
@@ -101,11 +104,34 @@ export function hasTrustedOperationContext(
  */
 export interface GuardedOperation {
   fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
+  /**
+   * Opens the attempt for a dispatch that sends nothing — a local module's
+   * host function — performing the trusted-context check, the per-attempt
+   * permission recheck, the fence check and the allow decision with its
+   * intent row. Never called by an HTTP dispatch, whose guarded fetch does
+   * the same work when it is invoked.
+   */
+  begin?(): Promise<void>;
   finish(outcome: 'completed' | 'failed' | 'cancelled'): Promise<void>;
 }
 
 /**
  * The guard that mediates provider dispatches.
+ *
+ * @remarks
+ * For every dispatch the guard writes the decision and its intent before the
+ * send, rechecks the caller's permission and the credential generation with
+ * the caller's own credentials, enforces fence currency, validates the final
+ * envelope against the module's approved routes, and records the outcome.
+ *
+ * A module whose adapter is `local` narrows that guarantee deliberately: the
+ * decision, the fence check and the per-attempt permission recheck still
+ * happen BEFORE the host function runs, and the outcome is journaled, but
+ * there is no send to account for and no envelope to validate — the host
+ * function executes with the backend process's own privileges and the guard
+ * cannot see or constrain what it does. That is the same class of documented
+ * narrowing as a host-supplied code-mode extension factory, and it is why a
+ * local module has to be registered on purpose.
  *
  * @alpha
  */

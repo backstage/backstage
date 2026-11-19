@@ -344,7 +344,7 @@ async function mediationHarness(options: {
     serverId: options.id,
     toolName: certified[options.id].toolName,
   })!;
-  const destination = resolved.module.destination(
+  const destination = resolved.module.destination!(
     certified[options.id].toolName,
   );
   const models = createGuardedModelOperations({
@@ -370,7 +370,7 @@ async function mediationHarness(options: {
         resolvedModel: view.id,
         operation: 'toolCall',
         api: options.id,
-        destination: resolved.module.destination(view.id),
+        destination: resolved.module.destination!(view.id),
         credentialScope: { kind: 'user', id: 'user:default/alice' },
         credentialGeneration: '1',
         controller: new AbortController(),
@@ -398,7 +398,14 @@ async function mediationHarness(options: {
     await options
       .db('ai_journal_events')
       .orderBy('id')
-      .select('kind', 'decision', 'attempt', 'status', 'reason');
+      .select(
+        'kind',
+        'decision',
+        'attempt',
+        'status',
+        'reason',
+        'recovery_kind as recoveryKind',
+      );
   return { call, rows, destination, journal };
 }
 
@@ -624,6 +631,8 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
             expect(await harness.rows()).toMatchObject([
               { kind: 'decision', decision: 'allow', attempt: 1 },
               { kind: 'outcome', status: 'unknown' },
+              // The uncertainty is recovery evidence, like model dispatches.
+              { kind: 'recovery', recoveryKind: 'unknown-dispatch' },
             ]);
           } finally {
             await store.cleanup();

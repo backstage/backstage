@@ -127,23 +127,60 @@ ai:
       maxTokens: 64000
 ```
 
-Gateway base URLs that re-root the API under their own path do **not** match
-the certified routes, and fail closed with nothing sent. Both path-prefixed
-entries in pi's catalog are in that position today:
+Gateway base URLs that re-root the API under their own path do **not**
+match the certified routes as-is — both path-prefixed entries in pi's
+catalog are in that position:
 
-| Gateway entry (pi catalog)                                                                                               | Certified destination path                      | Module templates                     | Result               |
+| Gateway entry (pi catalog)                                                                                               | Certified destination path                      | Module templates                     | Bare result          |
 | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- | ------------------------------------ | -------------------- |
 | `vercel-ai-gateway`, `anthropic-messages`, base `https://ai-gateway.vercel.sh`                                           | `/v1/messages`                                  | `/v1/messages`                       | dispatches           |
 | `cloudflare-ai-gateway`, `anthropic-messages`, base `https://gateway.ai.cloudflare.com/v1/{ACCOUNT}/{GATEWAY}/anthropic` | `/v1/{ACCOUNT}/{GATEWAY}/anthropic/v1/messages` | `/v1/messages`                       | denied, nothing sent |
 | `vercel-ai-gateway`, `typesafe-system-one`, base `https://ai-gateway.vercel.sh/typesafe/v1`                              | `/typesafe/v1/systemone`                        | `/v1/systemone`, `/api/v1/systemone` | denied, nothing sent |
 
-Certifying a gateway path prefix would need route templates that describe a
-prefix with digested segments and a per-module mapping from base URL to
-route — machinery this package does not have yet. Until then, point a gateway
-entry at a base URL that keeps the module's certified path, or front the
-gateway so the certified paths are preserved. OAuth through a gateway is out
-of scope as well: a family without an OAuth module refuses an `oauth`
-credential and names `api_key` as the supported kind.
+For those, wrap the certified module with `wrapProviderModule` from
+`@backstage/ai-node/modules`. The wrapper takes a certified module and the
+gateway's base URL and, at construction, composes the gateway's path prefix
+onto the module's certified route templates — the journal's route-template
+check is unchanged and now certifies `gateway base + route`. The wrapped
+module's adapter, envelope validation and certification carry over; the
+wrapper contributes only the base and the credential interpretation, which
+defaults to `api_key` keyed by the gateway's own provider id. A module
+without certified destinations (a local tool module) is rejected at
+construction — there is no route to compose the gateway base onto. A
+wrapped module replaces the direct module for its `api` in the registry it
+is registered into — both declare the same module id, so register one or
+the other, never both:
+
+```ts
+import { wrapProviderModule } from '@backstage/ai-node/modules';
+import { anthropicMessages } from '@backstage/ai-node-provider-anthropic/alpha';
+import { createAiServiceFactory } from '@backstage/ai-node/alpha';
+
+const anthropicThroughCloudflare = wrapProviderModule(anthropicMessages, {
+  // The gateway re-roots the API under its own path.
+  baseUrl:
+    'https://gateway.ai.cloudflare.com/v1/my-account/my-gateway/anthropic',
+});
+
+// Registered instead of the direct anthropicMessages module:
+const ai = createAiServiceFactory({
+  providerModules: [anthropicThroughCloudflare /* ...otherProviderModules */],
+});
+```
+
+With that registration, the `cloudflare-ai-gateway` catalog entry above
+dispatches: its destination `/v1/my-account/my-gateway/anthropic/v1/messages`
+now matches the composed template. The same wrapper handles the
+path-prefixed TypeSafe entry (`baseUrl:
+'https://ai-gateway.vercel.sh/typesafe/v1'` over the `typesafe-system-one`
+module). The composition aligns itself to the route the module actually
+appends — a family whose certified template carries the provider's own base
+path (TypeSafe's `/v1`) composes differently from one whose template is the
+bare route (Anthropic's `/v1/messages`) — and a template that cannot be
+aligned falls back to the plain prefix join, which fails closed at dispatch
+if it does not match. OAuth through a gateway is out of scope: the wrapper
+refuses an `oauth` credential kind with guidance, so store an API key for
+the gateway instead.
 
 ## Usage
 
@@ -374,28 +411,33 @@ is available to integrations and maintenance tooling that already own one; a
 public maintenance or admin fence surface is future work. It does not grant
 access to other plugins' databases or return personal credentials.
 
-## Model and tool permissions
+## Model, tool and feature permissions
 
 Every dispatch is checked against one fixed permission, so policy authors
 write rules rather than per-model names. `@backstage/plugin-ai-common`
 carries the names and resource types; `@backstage/ai-node/alpha` carries
 the rules and the helpers that produce conditional decisions.
 
-| Permission     | Resource type | Rules                                  |
-| -------------- | ------------- | -------------------------------------- |
-| `ai.model.use` | `ai-model`    | `isModel`, `isProvider`, `isModelType` |
-| `ai.tool.use`  | `ai-tool`     | `isTool`, `isServer`                   |
+| Permission       | Resource type | Rules                                       |
+| ---------------- | ------------- | ------------------------------------------- |
+| `ai.model.use`   | `ai-model`    | `isModel`, `isProvider`, `isModelType`      |
+| `ai.tool.use`    | `ai-tool`     | `isTool`, `isServer`, `isPlugin`            |
+| `ai.feature.use` | `ai-feature`  | `isFeature`, `isPlugin` (`isFeaturePlugin`) |
 
 The service asks the permission backend for a conditional decision with
 the caller's own credentials on every attempt — the guard's recheck for
-model dispatch, and the guarded tool operations before a tool call is
-journaled or sent. The policy's conditions are then evaluated in process
-against the attributes the service already holds: `{ provider, modelId,
-type? }` for a model, `{ serverId, toolName }` for a tool. Anything that
-is not a positive evaluation — `DENY`, no decision, a condition naming an
-unknown rule, a rule of another resource type, or parameters the rule
-rejects — denies, and a denial during dispatch is journaled like any
-other.
+model dispatch, the guarded tool operations before a tool call is
+journaled or sent, and the feature check when a harness opens. The
+policy's conditions are then evaluated in process against the attributes
+the service already holds: `{ provider, modelId, type? }` for a model,
+`{ serverId, toolName, pluginId }` for a tool, and `{ pluginId, feature }`
+for a feature. Anything that is not a positive evaluation — `DENY`, no
+decision, a condition naming an unknown rule, a rule of another resource
+type, or parameters the rule rejects — denies, and a denial during dispatch
+is journaled like any other. A tool's `pluginId` is the plugin whose
+harness dispatched it, taken from the session namespace, never from the
+call's payload, so `isPlugin` scopes tools per plugin: a scaffolder
+harness never reaching a shell tool is one rule.
 
 > **A blanket `ALLOW` grants everything.** Because there is one permission
 > per resource kind, a policy that returns `ALLOW` for `ai.model.use`
@@ -416,12 +458,15 @@ import type {
   PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 import {
+  aiFeatureConditions,
   aiModelConditions,
   aiToolConditions,
+  createAiFeatureConditionalDecision,
   createAiModelConditionalDecision,
   createAiToolConditionalDecision,
 } from '@backstage/ai-node/alpha';
 import {
+  aiFeatureUsePermission,
   aiModelUsePermission,
   aiToolUsePermission,
 } from '@backstage/plugin-ai-common';
@@ -441,9 +486,17 @@ export class AiPolicy implements PermissionPolicy {
       });
     }
     if (isPermission(request.permission, aiToolUsePermission)) {
-      return createAiToolConditionalDecision(
+      return createAiToolConditionalDecision(request.permission, {
+        allOf: [
+          aiToolConditions.isServer({ serverId: 'files' }),
+          aiToolConditions.isPlugin({ pluginId: 'scaffolder' }),
+        ],
+      });
+    }
+    if (isPermission(request.permission, aiFeatureUsePermission)) {
+      return createAiFeatureConditionalDecision(
         request.permission,
-        aiToolConditions.isServer({ serverId: 'files' }),
+        aiFeatureConditions.isPlugin({ pluginId: 'scaffolder' }),
       );
     }
     if (user === undefined) {
@@ -456,8 +509,8 @@ export class AiPolicy implements PermissionPolicy {
 
 The conditional-decision helper takes the permission and the criteria
 directly; conditions come from the matching conditions object
-(`aiModelConditions`, `aiToolConditions`) and compose with `anyOf`, `allOf`
-and `not`. The caller's identity is the optional second `user` argument of
+(`aiModelConditions`, `aiToolConditions`, `aiFeatureConditions`) and compose
+with `anyOf`, `allOf` and `not`. The caller's identity is the optional second `user` argument of
 `handle`, never part of the query.
 
 Discovery
@@ -466,6 +519,73 @@ pair, so it reports exactly the pairs the caller's own credentials are
 allowed to use, each with its catalog fields (adapter, type, context
 window, output limit). A model outside the canonical `ai.models` catalog
 never resolves and no policy can make it dispatchable.
+
+## Local tool servers
+
+The tool seam carries two kinds of server. An HTTP server mediates a guarded
+fetch with a scoped credential, a pinned destination and a route template —
+an MCP tool server is this kind. A **local** server
+declares `run(input)` instead, and the guard's local branch dispatches it: the
+decision, the fence check and the per-attempt `ai.tool.use` recheck happen
+before the function runs, and the outcome is journaled, but there is no send
+to account for and no envelope to validate — the function runs with the
+backend process's own privileges.
+
+That narrowing is deliberate and it is the reason a local server has to be
+registered on purpose: the guard cannot see or constrain what such a function
+does. `@backstage/ai-node-shell` is the reference example (an unsandboxed
+`run` command tool, with its audit-boundary trade-off documented in that
+package's README); the shipped tool servers stay HTTP-mediated.
+
+Local dispatches are journaled by identity: the tool identity, session,
+principal, decision and outcome are recorded, and the journal row has no
+destination because nothing was sent. Command arguments never reach the
+journal, exactly like prompts and payloads.
+
+## Harness features
+
+A harness exposes features, and a plugin declares the ones it needs when it
+opens the harness:
+
+| Feature    | What it exposes                                   |
+| ---------- | ------------------------------------------------- |
+| `tools`    | the guarded tool operations on the managed handle |
+| `codemode` | the code-mode sandbox and its `models.*` globals  |
+
+A feature is available when three things hold: the service registers it
+(no registered tool server means the `tools` feature does not exist, no
+configured code-mode extension means `codemode` does not), the plugin
+requests it for that harness, and `ai.feature.use` allows it for that
+plugin and feature. A denied feature rejects the open with a reason naming
+the feature and the plugin; a feature the service does not register rejects
+with a registration reason, because that is wiring and not policy.
+
+Availability is snapshotted at admission, exactly like module
+registrations: a live harness keeps its features until its last handle
+releases, a fresh open evaluates again, and re-opening a live session with a
+different declaration is rejected rather than silently changing the surface
+under running work. A plugin that requests nothing gets a harness with no
+feature surface at all — no tool operations, no code-mode globals.
+
+```ts
+const handle = await ai.openHarness({
+  sessionId: 'triage',
+  config: { root: config, path: 'triage' },
+  credentials,
+  registry,
+  registryVersion: 'v1',
+  features: ['tools'],
+});
+```
+
+> **No policy means the feature is available.** The permission framework's
+> default is allow, so a registered feature reaches every plugin that
+> requests it until a policy denies it. That is the same sharp edge as the
+> blanket `ALLOW` on model and tool use, stated plainly: restricting
+> features is something a deployment must do deliberately, by denying
+> `ai.feature.use` with `not(isFeature({ feature: 'codemode' }))` or by
+> naming the plugins that may have it with
+> `isPlugin({ pluginId: 'scaffolder' })`.
 
 ## Semantics of the managed handle
 

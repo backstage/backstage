@@ -29,6 +29,7 @@ import { EncryptedUserCredentialStore } from '../credentials/EncryptedUserCreden
 import { mcpCredentialId } from '../credentials/mcp';
 import { aiServiceRef, createAiServiceFactory } from '../service';
 import type { AiService } from '../contracts';
+import { aiToolConditions } from '../permissions/rules';
 import { validateToolCallEnvelope } from './envelope';
 import type { ToolModule } from './types';
 
@@ -257,6 +258,8 @@ describe('stock service tool mediation', () => {
 
       let allowed = true;
       let foreignEnvelope = false;
+      // When set, the policy grants tools only to this plugin id.
+      let pluginScoped: string | undefined;
       const service = await buildService(
         root,
         [
@@ -268,6 +271,16 @@ describe('stock service tool mediation', () => {
         ],
         async (_credentials, name) => {
           if (name === 'ai.tool.use') {
+            if (pluginScoped) {
+              return {
+                result: 'CONDITIONAL',
+                pluginId: 'ai',
+                resourceType: 'ai-tool',
+                conditions: aiToolConditions.isPlugin({
+                  pluginId: pluginScoped,
+                }),
+              };
+            }
             if (foreignEnvelope) {
               // A conditional answer whose envelope describes another plugin's
               // resource type while its criteria happen to carry a matching
@@ -308,6 +321,7 @@ describe('stock service tool mediation', () => {
           credentials,
           registry: createRegistry(),
           registryVersion: 'v1',
+          features: ['tools'],
         });
       const handle = await open();
       expect(handle.tools).toBeDefined();
@@ -423,6 +437,45 @@ describe('stock service tool mediation', () => {
         }),
       ]);
       foreignEnvelope = false;
+
+      // Plugin scoping is a policy rule over the same attributes: the tool
+      // resource carries the requesting plugin id from the fence namespace, so
+      // a grant naming another plugin denies and a grant naming this one
+      // allows — end to end through the real dispatch path.
+      requests.length = 0;
+      pluginScoped = 'scaffolder';
+      await expect(
+        handle.tools!.callTool({
+          serverId: 'stock-tools',
+          toolName: 'search',
+          arguments: { query: 'x' },
+          credentials,
+        }),
+      ).resolves.toMatchObject({
+        errorMessage: expect.stringContaining('stock-tools/search'),
+      });
+      expect(requests).toHaveLength(0);
+      expect(
+        await db('ai_journal_events')
+          .where({ decision: 'deny' })
+          .orderBy('id', 'desc')
+          .first('operation', 'provider', 'model'),
+      ).toMatchObject({
+        operation: 'models.toolCall',
+        provider: 'stock-tools',
+        model: 'search',
+      });
+      pluginScoped = 'test-plugin';
+      await expect(
+        handle.tools!.callTool({
+          serverId: 'stock-tools',
+          toolName: 'search',
+          arguments: { query: 'x' },
+          credentials,
+        }),
+      ).resolves.toEqual({ result: 'stock-tool-output' });
+      expect(requests).toHaveLength(1);
+      pluginScoped = undefined;
       allowed = true;
 
       // Credential rotation mid-call: the recheck re-resolves the scoped MCP

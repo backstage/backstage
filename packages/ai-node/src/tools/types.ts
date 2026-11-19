@@ -66,7 +66,17 @@ export type ToolDispatchInput = Readonly<{
 
 /**
  * A host-trusted tool server registration, mirroring the provider module
- * seam. Modules are not sandboxed; register only code trusted as your own
+ * seam. Two kinds share the seam:
+ *
+ * - an **HTTP tool server** (MCP today) mediates a guarded fetch to the
+ *   server, with a scoped credential, a pinned destination and a route
+ *   template;
+ * - a **local tool server** runs a host function in process. It declares no
+ *   credential, no destination and no envelope validator, because nothing
+ *   leaves the process: `run` executes arbitrary host code under the guard's
+ *   decision, fence and per-attempt permission recheck, and the outcome is
+ *   journaled by identity. The guard's guarantee narrows there — it cannot
+ *   see or constrain what that function does. Modules are not sandboxed; register only code trusted as your own
  * plugin. Dispatch goes through the guarded transport the host injects via
  * `options.fetch`; the mediation fails a call closed when a dispatch
  * completes without a guarded send, exactly as fabricated provider results
@@ -79,22 +89,38 @@ export type ToolDispatchInput = Readonly<{
  * @alpha
  */
 export type ToolModule = Readonly<{
-  /** Server identifier; also the credential key namespace via `mcpCredentialId`. */
   id: string;
   tools: readonly ToolDeclaration[];
-  /** Exact tool endpoint URL for one declared tool. */
-  destination(toolName: string): string;
-  /** Approved route shapes for the journal, covering every destination. */
-  destinationTemplates: readonly DestinationTemplate[];
-  /** Validates the final adapter-produced tool-call envelope. */
-  validateToolCall(
+  /**
+   * Exact tool endpoint URL for one declared tool. Required for an HTTP tool
+   * server; a local one has no destination.
+   */
+  destination?(toolName: string): string;
+  /** Approved route shapes for the journal. HTTP tool servers only. */
+  destinationTemplates?: readonly DestinationTemplate[];
+  /** Validates the final adapter-produced tool-call envelope. HTTP only. */
+  validateToolCall?(
     operation: ToolCallEnvelope,
     request: Request,
   ): Promise<void>;
-  adapter: Readonly<{
+  /** The adapter of an HTTP tool server, the guarded-fetch kind. */
+  adapter?: Readonly<{
     kind: 'tool';
     invoke(input: ToolDispatchInput): Promise<ToolCallResult>;
   }>;
+  /**
+   * Runs one tool call on the backend host, in process — the local tool kind.
+   *
+   * @remarks
+   * UNSANDBOXED BY DESIGN: this is host code with the backend's own
+   * privileges, so a tool here can read files, spawn processes and open
+   * sockets. The guard authorizes the attempt, checks the fence and the
+   * per-attempt permission with the caller's credentials before this runs,
+   * and journals the decision and the outcome by identity; it does not
+   * constrain what the function does. Register a local tool server only when
+   * the deployment deliberately wants that.
+   */
+  run?(input: ToolDispatchInput): Promise<ToolCallResult>;
 }>;
 
 /**
@@ -107,16 +133,37 @@ export type ToolModule = Readonly<{
 export function toolModuleAsProviderModule(
   module: ToolModule,
 ): AiProviderModule {
+  if (module.run !== undefined) {
+    // Local tool server: host code in process. No credential is interpreted
+    // and no destination exists, so the module registers with no credential
+    // kinds and the guard takes its local branch for the `toolCall` operation.
+    return {
+      id: module.id,
+      credentialKinds: [],
+      certifiedOperations: ['toolCall'],
+      adapter: {
+        kind: 'local',
+        run: async ({ model, context }) => {
+          const input = context as { arguments?: unknown } | undefined;
+          return module.run!({
+            tool: { name: model.id },
+            arguments: input?.arguments,
+            options: {},
+          });
+        },
+      },
+    };
+  }
   return {
     id: module.id,
     // MCP servers take either an API key or an OAuth access token; the
     // interpretation below decides from the stored credential's shape.
     credentialKinds: ['api_key', 'oauth'],
     certifiedOperations: ['toolCall'],
-    destinationTemplates: module.destinationTemplates,
-    destination: (model: AnyModel) => module.destination(model.id),
+    destinationTemplates: module.destinationTemplates ?? [],
+    destination: (model: AnyModel) => module.destination!(model.id),
     validateEnvelope: async (envelope, request) => {
-      await module.validateToolCall(
+      await module.validateToolCall!(
         {
           serverId: envelope.api,
           toolName: envelope.modelId,
@@ -130,7 +177,7 @@ export function toolModuleAsProviderModule(
       kind: 'custom',
       invoke: async ({ model, context, options }) => {
         const input = context as { arguments?: unknown } | undefined;
-        return module.adapter.invoke({
+        return module.adapter!.invoke({
           tool: { name: model.id },
           arguments: input?.arguments,
           options,

@@ -30,8 +30,10 @@ import type {
   ResourcePermission,
 } from '@backstage/plugin-permission-common';
 import {
+  RESOURCE_TYPE_AI_FEATURE,
   RESOURCE_TYPE_AI_MODEL,
   RESOURCE_TYPE_AI_TOOL,
+  type AiFeatureResource,
   type AiModelResource,
   type AiToolResource,
 } from '@backstage/plugin-ai-common';
@@ -154,6 +156,28 @@ export const isServer = createToolRule({
 });
 
 /**
+ * Matches every tool dispatched from one plugin's harness.
+ *
+ * @remarks
+ * The tool resource carries the requesting plugin id, so tool scoping is a
+ * policy rule: a scaffolder harness reaching a shell tool is denied by
+ * `not(isPlugin({ pluginId: 'scaffolder' }))` on that server, without any
+ * per-plugin wiring.
+ *
+ * @alpha
+ */
+export const isPlugin = createToolRule({
+  name: 'IS_PLUGIN',
+  resourceType: RESOURCE_TYPE_AI_TOOL,
+  description: 'Match every tool dispatched from the given plugin',
+  paramsSchema: z.object({
+    pluginId: z.string().describe('Plugin id, e.g. `scaffolder`'),
+  }),
+  apply: (resource, { pluginId }) => resource.pluginId === pluginId,
+  toQuery: ({ pluginId }) => ({ pluginId }),
+});
+
+/**
  * The model permission rules, for registration with the permission backend.
  *
  * @alpha
@@ -165,7 +189,7 @@ export const aiModelPermissionRules = { isModel, isProvider, isModelType };
  *
  * @alpha
  */
-export const aiToolPermissionRules = { isTool, isServer };
+export const aiToolPermissionRules = { isTool, isServer, isPlugin };
 
 const modelExports = createConditionExports({
   resourceRef: aiModelResourceRef,
@@ -176,6 +200,92 @@ const toolExports = createConditionExports({
   resourceRef: aiToolResourceRef,
   rules: aiToolPermissionRules,
 });
+
+/**
+ * Resource reference for one harness feature.
+ *
+ * @alpha
+ */
+export const aiFeatureResourceRef = createPermissionResourceRef<
+  AiFeatureResource,
+  {}
+>().with({ pluginId: 'ai', resourceType: RESOURCE_TYPE_AI_FEATURE });
+
+const createFeatureRule = makeCreatePermissionRule<
+  AiFeatureResource,
+  {},
+  typeof RESOURCE_TYPE_AI_FEATURE
+>();
+
+/**
+ * Matches exactly one harness feature.
+ *
+ * @alpha
+ */
+export const isFeature = createFeatureRule({
+  name: 'IS_FEATURE',
+  resourceType: RESOURCE_TYPE_AI_FEATURE,
+  description: 'Match a harness feature by name',
+  paramsSchema: z.object({
+    feature: z.string().describe('Feature name, e.g. `tools` or `codemode`'),
+  }),
+  apply: (resource, { feature }) => resource.feature === feature,
+  toQuery: ({ feature }) => ({ feature }),
+});
+
+/**
+ * Matches every harness feature requested by one plugin.
+ *
+ * @remarks
+ * The feature resource carries the requesting plugin id, so availability is a
+ * policy rule per plugin rather than a per-plugin configuration entry.
+ *
+ * @alpha
+ */
+export const isFeaturePlugin = createFeatureRule({
+  name: 'IS_PLUGIN',
+  resourceType: RESOURCE_TYPE_AI_FEATURE,
+  description: 'Match every harness feature requested by the given plugin',
+  paramsSchema: z.object({
+    pluginId: z.string().describe('Plugin id, e.g. `scaffolder`'),
+  }),
+  apply: (resource, { pluginId }) => resource.pluginId === pluginId,
+  toQuery: ({ pluginId }) => ({ pluginId }),
+});
+
+/**
+ * The feature permission rules, for registration with the permission backend.
+ *
+ * @alpha
+ */
+export const aiFeaturePermissionRules = {
+  isFeature,
+  isPlugin: isFeaturePlugin,
+};
+
+const featureExports = createConditionExports({
+  resourceRef: aiFeatureResourceRef,
+  rules: aiFeaturePermissionRules,
+});
+
+/**
+ * Conditions policy authors use for feature decisions.
+ *
+ * @remarks
+ * `isFeature` matches one feature name; `isPlugin` matches every feature the
+ * given plugin requests.
+ *
+ * @alpha
+ */
+export const aiFeatureConditions = featureExports.conditions;
+
+/**
+ * Builds a conditional decision for `ai.feature.use`.
+ *
+ * @alpha
+ */
+export const createAiFeatureConditionalDecision =
+  featureExports.createConditionalDecision;
 
 /**
  * Conditions policy authors use for model decisions.
@@ -202,7 +312,8 @@ export const createAiModelConditionalDecision =
  *
  * @remarks
  * `isTool` matches one server and tool name; `isServer` matches every tool
- * served by one tool server.
+ * served by one tool server; `isPlugin` matches every tool dispatched from one
+ * plugin's harness.
  *
  * @alpha
  */

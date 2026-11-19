@@ -107,6 +107,72 @@ export interface AiCredentialStores {
 export type AiEventSink = (event: AiObservabilityEvent) => void;
 
 // @alpha
+export const aiFeatureConditions: Conditions<{
+  isFeature: PermissionRule<
+    Readonly<{
+      pluginId: string;
+      feature: string;
+    }>,
+    {},
+    'ai-feature',
+    {
+      feature: string;
+    }
+  >;
+  isPlugin: PermissionRule<
+    Readonly<{
+      pluginId: string;
+      feature: string;
+    }>,
+    {},
+    'ai-feature',
+    {
+      pluginId: string;
+    }
+  >;
+}>;
+
+// @alpha
+export type AiFeatureName = 'tools' | 'codemode';
+
+// @alpha
+export const aiFeaturePermissionRules: {
+  isFeature: PermissionRule<
+    Readonly<{
+      pluginId: string;
+      feature: string;
+    }>,
+    {},
+    'ai-feature',
+    {
+      feature: string;
+    }
+  >;
+  isPlugin: PermissionRule<
+    Readonly<{
+      pluginId: string;
+      feature: string;
+    }>,
+    {},
+    'ai-feature',
+    {
+      pluginId: string;
+    }
+  >;
+};
+
+// @alpha
+export const aiFeatureResourceRef: PermissionResourceRef<
+  Readonly<{
+    pluginId: string;
+    feature: string;
+  }>,
+  {},
+  'ai-feature',
+  'ai'
+>;
+
+// @alpha
 export type AiHealthReport = Readonly<{
   readonly status: 'ok' | 'degraded';
   readonly signals: readonly AiHealthSignal[];
@@ -429,9 +495,12 @@ export type AiProviderModule = Readonly<{
   adapter: ProviderAdapter;
   credentialKinds: readonly AiCredentialKind[];
   certifiedOperations: readonly string[];
-  destinationTemplates: readonly DestinationTemplate[];
-  destination(model: AnyModel, env: Record<string, string> | undefined): string;
-  validateEnvelope(
+  destinationTemplates?: readonly DestinationTemplate[];
+  destination?(
+    model: AnyModel,
+    env: Record<string, string> | undefined,
+  ): string;
+  validateEnvelope?(
     operation: ProviderEnvelope,
     request: Request,
   ): Promise<'model' | 'auth.token-exchange'>;
@@ -457,7 +526,7 @@ export type AiProviderModule = Readonly<{
     | {
         resolved: true;
         api: string;
-        destination: string;
+        destination?: string;
         authority: ModuleAuthority['authority'];
         credentialScope: CredentialScope;
         credentialGeneration: string;
@@ -516,6 +585,7 @@ export const aiToolConditions: Conditions<{
     Readonly<{
       serverId: string;
       toolName: string;
+      pluginId: string;
     }>,
     {},
     'ai-tool',
@@ -528,11 +598,24 @@ export const aiToolConditions: Conditions<{
     Readonly<{
       serverId: string;
       toolName: string;
+      pluginId: string;
     }>,
     {},
     'ai-tool',
     {
       serverId: string;
+    }
+  >;
+  isPlugin: PermissionRule<
+    Readonly<{
+      serverId: string;
+      toolName: string;
+      pluginId: string;
+    }>,
+    {},
+    'ai-tool',
+    {
+      pluginId: string;
     }
   >;
 }>;
@@ -543,6 +626,7 @@ export const aiToolPermissionRules: {
     Readonly<{
       serverId: string;
       toolName: string;
+      pluginId: string;
     }>,
     {},
     'ai-tool',
@@ -555,11 +639,24 @@ export const aiToolPermissionRules: {
     Readonly<{
       serverId: string;
       toolName: string;
+      pluginId: string;
     }>,
     {},
     'ai-tool',
     {
       serverId: string;
+    }
+  >;
+  isPlugin: PermissionRule<
+    Readonly<{
+      serverId: string;
+      toolName: string;
+      pluginId: string;
+    }>,
+    {},
+    'ai-tool',
+    {
+      pluginId: string;
     }
   >;
 };
@@ -569,6 +666,7 @@ export const aiToolResourceRef: PermissionResourceRef<
   Readonly<{
     serverId: string;
     toolName: string;
+    pluginId: string;
   }>,
   {},
   'ai-tool',
@@ -779,6 +877,12 @@ export function createAiEventSink(events: {
 }): AiEventSink;
 
 // @alpha
+export const createAiFeatureConditionalDecision: (
+  permission: ResourcePermission<'ai-feature'>,
+  conditions: PermissionCriteria<PermissionCondition<'ai-feature'>>,
+) => ConditionalPolicyDecision;
+
+// @alpha
 export function createAiHttpSupport(
   options: AiHttpSupportOptions,
 ): Promise<AiHttpSupport>;
@@ -963,6 +1067,32 @@ export type GuardedToolOperations = ReturnType<
 >;
 
 // @alpha
+export const isFeature: PermissionRule<
+  Readonly<{
+    pluginId: string;
+    feature: string;
+  }>,
+  {},
+  'ai-feature',
+  {
+    feature: string;
+  }
+>;
+
+// @alpha
+export const isFeaturePlugin: PermissionRule<
+  Readonly<{
+    pluginId: string;
+    feature: string;
+  }>,
+  {},
+  'ai-feature',
+  {
+    pluginId: string;
+  }
+>;
+
+// @alpha
 export const isModel: PermissionRule<
   Readonly<{
     provider: string;
@@ -992,6 +1122,20 @@ export const isModelType: PermissionRule<
 >;
 
 // @alpha
+export const isPlugin: PermissionRule<
+  Readonly<{
+    serverId: string;
+    toolName: string;
+    pluginId: string;
+  }>,
+  {},
+  'ai-tool',
+  {
+    pluginId: string;
+  }
+>;
+
+// @alpha
 export const isProvider: PermissionRule<
   Readonly<{
     provider: string;
@@ -1010,6 +1154,7 @@ export const isServer: PermissionRule<
   Readonly<{
     serverId: string;
     toolName: string;
+    pluginId: string;
   }>,
   {},
   'ai-tool',
@@ -1023,6 +1168,7 @@ export const isTool: PermissionRule<
   Readonly<{
     serverId: string;
     toolName: string;
+    pluginId: string;
   }>,
   {},
   'ai-tool',
@@ -1081,7 +1227,7 @@ export type ModelPair = Readonly<{
 // @alpha
 export type ModuleAuthority = Readonly<{
   authority: Readonly<{
-    kind: 'apiKey' | 'oauth' | 'federation';
+    kind: 'apiKey' | 'oauth' | 'federation' | 'local';
     apiKey?: string;
     headers?: Record<string, string | null>;
     env?: Record<string, string>;
@@ -1117,6 +1263,7 @@ export type OpenHarnessOptions = Readonly<{
   credentials: BackstageCredentials;
   registry: RegistryReader;
   registryVersion: string;
+  features?: readonly AiFeatureName[];
 }>;
 
 // @alpha
@@ -1149,6 +1296,22 @@ export type ProviderAdapter =
   | Readonly<{
       kind: 'custom';
       invoke(
+        input: Readonly<{
+          operation: string;
+          model: AnyModel;
+          context: unknown;
+          options: Readonly<Record<string, unknown>>;
+        }>,
+      ): Promise<
+        Readonly<{
+          value: unknown;
+          outcome: 'completed' | 'failed' | 'cancelled';
+        }>
+      >;
+    }>
+  | Readonly<{
+      kind: 'local';
+      run(
         input: Readonly<{
           operation: string;
           model: AnyModel;
@@ -1230,16 +1393,17 @@ export type ToolIdentity = Readonly<{
 export type ToolModule = Readonly<{
   id: string;
   tools: readonly ToolDeclaration[];
-  destination(toolName: string): string;
-  destinationTemplates: readonly DestinationTemplate[];
-  validateToolCall(
+  destination?(toolName: string): string;
+  destinationTemplates?: readonly DestinationTemplate[];
+  validateToolCall?(
     operation: ToolCallEnvelope,
     request: Request,
   ): Promise<void>;
-  adapter: Readonly<{
+  adapter?: Readonly<{
     kind: 'tool';
     invoke(input: ToolDispatchInput): Promise<ToolCallResult>;
   }>;
+  run?(input: ToolDispatchInput): Promise<ToolCallResult>;
 }>;
 
 // @alpha

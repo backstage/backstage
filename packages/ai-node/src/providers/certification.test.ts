@@ -90,7 +90,7 @@ function request(
   substitute = false,
   substituteQuery = false,
 ): Request {
-  const url = new URL(op.destination);
+  const url = new URL(op.destination!);
   if (substituteQuery) url.searchParams.set('unexpected', 'true');
   return new Request(url, {
     method: 'POST',
