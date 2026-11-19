@@ -123,7 +123,7 @@ function setup(
     resolvedModel: model.id,
     operation: 'completeSimple',
     api: model.api as TrustedOperation['api'],
-    destination: googleGenerativeAi.destination(model, undefined),
+    destination: googleGenerativeAi.destination!(model, undefined),
     credentialScope: { kind: 'user', id: 'user:default/alice' },
     credentialGeneration: '1',
     controller: new AbortController(),
@@ -1313,7 +1313,7 @@ it('matches the SDK URL for an unversioned custom Gemini base', async () => {
       },
       true,
     ).result();
-    expect(observed).toBe(f.op.destination);
+    expect(observed).toBe(f.op.destination!);
     expect(f.events).toContain('allow:1');
   } finally {
     server.closeAllConnections();
@@ -1420,7 +1420,7 @@ it('blocks ADC credential traffic outside the guarded transport', async () => {
       resolvedModel: model.id,
       operation: 'completeSimple',
       api: 'google-vertex',
-      destination: googleVertex.destination(model, env),
+      destination: googleVertex.destination!(model, env),
       credentialScope: { kind: 'user', id: 'user:default/alice' },
       credentialGeneration: '1',
       controller: new AbortController(),

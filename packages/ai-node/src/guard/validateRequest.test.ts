@@ -34,7 +34,7 @@ const operation = {
 
 function request(
   body: BodyInit,
-  url = operation.destination,
+  url = operation.destination!,
   extra: HeadersInit = {},
 ) {
   return new Request(url, {

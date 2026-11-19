@@ -87,7 +87,7 @@ function fixture() {
     transport: transport as unknown as typeof globalThis.fetch,
   }).bind(operation);
   const fetch = (body = '{"model":"gpt"}') =>
-    guard.fetch(operation.destination, {
+    guard.fetch(operation.destination!, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body,
@@ -160,7 +160,7 @@ describe('model operation guard', () => {
       provenance: { ...unverified.operation.provenance, origin: 'unverified' },
     });
     await expect(
-      guard.fetch(unverified.operation.destination),
+      guard.fetch(unverified.operation.destination!),
     ).rejects.toThrow();
     expect(unverified.transport).not.toHaveBeenCalled();
     const failed = fixture();
@@ -205,7 +205,7 @@ describe('model operation guard', () => {
         transport: expired.transport as unknown as typeof globalThis.fetch,
       }).bind(op);
       await expect(
-        guard.fetch(op.destination, {
+        guard.fetch(op.destination!, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: '{"model":"gpt"}',

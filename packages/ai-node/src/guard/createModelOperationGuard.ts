@@ -477,6 +477,81 @@ export function createModelOperationGuard(options: {
           );
           return result;
         },
+        /**
+         * Opens the attempt for a dispatch that sends nothing: a local
+         * module's host function. It performs exactly the pre-execution work
+         * the guarded fetch performs — trusted context, the per-attempt
+         * permission recheck, fence currency, the allow decision and its
+         * intent row — so a local dispatch is authorized and journaled like
+         * any other. Only the send and its response accounting are absent,
+         * because there is no request. The attempt is marked as ended so
+         * `finish` records the host function's own settlement rather than an
+         * unknown one.
+         */
+        async begin() {
+          const n = ++ordinal;
+          if (blocked || finished) {
+            throw new Error('Model operation is blocked');
+          }
+          await Promise.all(outcomeWrites);
+          if (!journal || !hasTrustedOperationContext(operation)) {
+            throw new Error('Unverified model operation');
+          }
+          try {
+            if (
+              !(await raceRecheckAbort(
+                options.recheck(operation),
+                operation.controller.signal,
+              )) ||
+              operation.controller.signal.aborted ||
+              blocked ||
+              finished
+            ) {
+              throw new Error('Model authority revoked');
+            }
+          } catch (error) {
+            block();
+            try {
+              await journal.recordDecisionAndIntent(
+                operation.fence,
+                decision(
+                  n,
+                  'deny',
+                  'model',
+                  undefined,
+                  'model operation denied',
+                ),
+              );
+            } catch (journalError) {
+              throw new Error('Model denial journal failed', {
+                cause: journalError,
+              });
+            }
+            emit?.({
+              kind: 'denial',
+              at: Date.now(),
+              pluginId: operation.fence.namespace.pluginId,
+              sessionId: operation.fence.namespace.sessionId,
+              provider: operation.provider,
+              modelId: operation.modelId,
+              operation: `models.${operation.operation}`,
+              reason: 'model operation denied',
+              attempt: n,
+            });
+            throw error;
+          }
+          const id = await journal.recordDecisionAndIntent(
+            operation.fence,
+            decision(n, 'allow', 'model'),
+          );
+          attempts.push({
+            id,
+            startedAt: Date.now(),
+            streamEnded: true,
+            streamCancelled: false,
+            settled: false,
+          });
+        },
         async finish(outcome) {
           if (finished) throw new Error('Model operation already finished');
           finished = true;

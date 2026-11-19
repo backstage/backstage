@@ -36,6 +36,35 @@ import type { ToolDeclaration, ToolModule } from './types';
  * modules use — so adding a tool module requires no integration changes.
  */
 function toolModuleWithResolution(module: ToolModule): AiProviderModule {
+  if (module.run !== undefined) {
+    // Local tool server: no credential key, no interpretation, no destination.
+    // The dispatch facts are the module identity plus the local authority, and
+    // the guard journals the call by identity with no destination at all.
+    return {
+      ...toolModuleAsProviderModule(module),
+      resolveDispatch: async model => {
+        if (model.provider !== module.id) {
+          return {
+            resolved: false as const,
+            reason: `tool dispatch does not match the registered tool server: '${model.provider}' is not '${module.id}'`,
+          };
+        }
+        if (!module.tools.some(entry => entry.name === model.id)) {
+          return {
+            resolved: false as const,
+            reason: `tool not registered: '${model.provider}/${model.id}' is not a declared tool of this installation`,
+          };
+        }
+        return {
+          resolved: true as const,
+          api: module.id,
+          authority: { kind: 'local' as const },
+          credentialScope: { kind: 'org' as const },
+          credentialGeneration: 'local',
+        };
+      },
+    };
+  }
   return {
     ...toolModuleAsProviderModule(module),
     credentialKey: providerId => mcpCredentialId(providerId),
@@ -83,7 +112,7 @@ function toolModuleWithResolution(module: ToolModule): AiProviderModule {
       return {
         resolved: true as const,
         api: module.id,
-        destination: module.destination(model.id),
+        destination: module.destination!(model.id),
         authority: credential.authority,
         credentialScope: credential.scope,
         credentialGeneration: credential.generation,
@@ -144,13 +173,23 @@ export function createToolRegistry(
     if (byId.has(module.id)) {
       throw new Error(`Duplicate tool module id: ${module.id}`);
     }
+    // A local tool server sends nothing, so it declares no route: the /mcp
+    // template check applies only to the HTTP kind.
     if (
-      module.destinationTemplates.length !== 1 ||
-      !isRequiredToolTemplate(module.destinationTemplates[0])
+      module.run === undefined &&
+      (module.destinationTemplates?.length !== 1 ||
+        !isRequiredToolTemplate(module.destinationTemplates[0]))
     ) {
       throw new Error(
         `Invalid tool module route template: ${module.id} must declare exactly the digested /mcp/{server}/tools/{tool} route`,
       );
+    }
+    if (
+      module.run === undefined &&
+      (module.adapter === undefined ||
+        typeof module.adapter.invoke !== 'function')
+    ) {
+      throw new Error(`Invalid tool module adapter: ${module.id}`);
     }
     for (const tool of module.tools) {
       if (

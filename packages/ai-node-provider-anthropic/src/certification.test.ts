@@ -69,7 +69,7 @@ function operation(origin: string): TrustedOperation {
 }
 
 function request(op: TrustedOperation, substitute = false, query = false) {
-  const url = new URL(op.destination);
+  const url = new URL(op.destination!);
   if (query) url.searchParams.set('unexpected', 'true');
   return new Request(url, {
     method: 'POST',
@@ -95,7 +95,10 @@ if (process.env[CRASH_TEST_CHILD_ENV] === '1') {
           resolvedModel: model.id,
           operation: 'streamSimple',
           api: API,
-          destination: anthropicMessages.destination(model as never, undefined),
+          destination: anthropicMessages.destination!(
+            model as never,
+            undefined,
+          ),
         });
         const adapter = anthropicMessages.adapter;
         if (adapter.kind !== 'stream')

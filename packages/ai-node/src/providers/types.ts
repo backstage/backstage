@@ -32,7 +32,8 @@ import type { DestinationTemplate } from './templates';
  */
 export type ModuleAuthority = Readonly<{
   authority: Readonly<{
-    kind: 'apiKey' | 'oauth' | 'federation';
+    /** `local` carries no credential: the module runs host code in process. */
+    kind: 'apiKey' | 'oauth' | 'federation' | 'local';
     apiKey?: string;
     headers?: Record<string, string | null>;
     env?: Record<string, string>;
@@ -89,6 +90,37 @@ export type ProviderAdapter =
           outcome: 'completed' | 'failed' | 'cancelled';
         }>
       >;
+    }>
+  | Readonly<{
+      /**
+       * Dispatch that runs HOST CODE instead of an HTTP mediation: the
+       * adapter's `run` executes in this process with no transport, no
+       * credential and no destination.
+       *
+       * @remarks
+       * The guard's local branch applies only to modules whose registered
+       * adapter is this kind, and narrows deliberately: the decision, the
+       * fence and the per-attempt permission recheck happen before `run`, and
+       * the outcome is journaled by identity, but what `run` does is
+       * host-trusted code the guard cannot see — it may touch the filesystem,
+       * spawn processes or open sockets directly. Transport accounting and
+       * the fabricated-result check do not apply because there is no guarded
+       * send to account for. Register such a module only when you mean it.
+       */
+      kind: 'local';
+      run(
+        input: Readonly<{
+          operation: string;
+          model: AnyModel;
+          context: unknown;
+          options: Readonly<Record<string, unknown>>;
+        }>,
+      ): Promise<
+        Readonly<{
+          value: unknown;
+          outcome: 'completed' | 'failed' | 'cancelled';
+        }>
+      >;
     }>;
 
 /** A credential kind a provider module consumes. @alpha */
@@ -131,9 +163,22 @@ export type AiProviderModule = Readonly<{
    */
   credentialKinds: readonly AiCredentialKind[];
   certifiedOperations: readonly string[];
-  destinationTemplates: readonly DestinationTemplate[];
-  destination(model: AnyModel, env: Record<string, string> | undefined): string;
-  validateEnvelope(
+  /**
+   * Approved route shapes for the journal. Required for every module that
+   * dispatches over HTTP; a local module declares none, because nothing leaves
+   * the process.
+   */
+  destinationTemplates?: readonly DestinationTemplate[];
+  /** The host-constructed destination. Absent for a local module. */
+  destination?(
+    model: AnyModel,
+    env: Record<string, string> | undefined,
+  ): string;
+  /**
+   * Validates the final request envelope before it is sent. Absent for a local
+   * module, which has no request to validate.
+   */
+  validateEnvelope?(
     operation: ProviderEnvelope,
     request: Request,
   ): Promise<'model' | 'auth.token-exchange'>;
@@ -195,7 +240,12 @@ export type AiProviderModule = Readonly<{
     | {
         resolved: true;
         api: string;
-        destination: string;
+        /**
+         * The exact host-constructed URL for an HTTP dispatch. Absent for a
+         * local module, which has no destination: the journal row is then the
+         * identity, and no route template or envelope validator is involved.
+         */
+        destination?: string;
         authority: ModuleAuthority['authority'];
         credentialScope: CredentialScope;
         credentialGeneration: string;

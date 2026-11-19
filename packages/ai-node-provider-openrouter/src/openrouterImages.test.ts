@@ -128,7 +128,7 @@ function harness(model: AnyModel) {
     resolvedModel: model.id,
     operation: 'generateImages',
     api: model.api,
-    destination: providers.get(model.api)!.destination(model, undefined),
+    destination: providers.get(model.api)!.destination!(model, undefined),
     credentialScope: { kind: 'user', id: 'user:default/alice' },
     credentialGeneration: '1',
     controller: new AbortController(),
@@ -153,7 +153,7 @@ function harness(model: AnyModel) {
     }),
   });
   // Denials latch the operation, so every probe gets a fresh binding.
-  const probe = async (body: unknown, url: URL | string = op.destination) => {
+  const probe = async (body: unknown, url: URL | string = op.destination!) => {
     const fresh = guard.bind({
       ...op,
       controller: new AbortController(),
@@ -190,7 +190,7 @@ function trustedOperation(model: AnyModel, fence: Fence): TrustedOperation {
     resolvedModel: model.id,
     operation: 'generateImages',
     api: model.api,
-    destination: providers.get(model.api)!.destination(model, undefined),
+    destination: providers.get(model.api)!.destination!(model, undefined),
     credentialScope: { kind: 'user', id: 'user:default/alice' },
     credentialGeneration: '1',
     controller: new AbortController(),
@@ -395,7 +395,7 @@ describe('openrouter images', () => {
           },
         ],
       });
-      const wrong = new URL(f.op.destination);
+      const wrong = new URL(f.op.destination!);
       wrong.pathname = '/v1/elsewhere';
       await f.probe(validBody, wrong);
       expect(f.events).toEqual(Array(13).fill('deny:1'));
@@ -472,7 +472,7 @@ describe('openrouter images', () => {
         recheck: async () => true,
         transport: send as unknown as typeof fetch,
       }).bind(op);
-      await guard.fetch(op.destination, {
+      await guard.fetch(op.destination!, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({

@@ -713,6 +713,12 @@ export async function createAiServiceIntegration(
         if (!(await lease.renew(operation.fence))) {
           return false;
         }
+        // A local module interprets no credential, so there is no generation
+        // to compare: permission and fence currency above are its whole
+        // pre-execution contract.
+        if (providerRegistry.get(operation.api)?.adapter.kind === 'local') {
+          return true;
+        }
         // Credential generation: the resolved credential must be unchanged.
         const resolved = await resolveAuthority(
           operation.api,
@@ -1505,7 +1511,8 @@ export async function createAiServiceIntegration(
       }
       const api = canonical.api as TrustedOperation['api'];
       const module = providerRegistry.get(api);
-      if (!module) {
+      const destination = module?.destination;
+      if (!module || destination === undefined) {
         throw new GuardedResolutionError(
           {
             operation: trusted,
@@ -1520,7 +1527,7 @@ export async function createAiServiceIntegration(
           ...trusted,
           api,
           resolvedModel: canonical.id,
-          destination: module!.destination(canonical, resolved.env),
+          destination: destination(canonical, resolved.env),
           ...resolvedAuthorityFields(resolved),
         },
         model: canonical as GuardedModelBinding['model'],
@@ -1891,8 +1898,12 @@ function resolvedAuthorityFields(resolved: ResolvedAuthority): {
 function unsupportedCredentialKindReason(
   module: AiProviderModule | undefined,
   providerId: string,
-  kind: 'apiKey' | 'oauth' | 'federation',
+  kind: 'apiKey' | 'oauth' | 'federation' | 'local',
 ): string | undefined {
+  // A local dispatch carries no credential, so no configured kind can clash.
+  if (kind === 'local') {
+    return undefined;
+  }
   const credentialKind = kind === 'apiKey' ? 'api_key' : kind;
   if (
     module === undefined ||
