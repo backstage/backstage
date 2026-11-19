@@ -16,6 +16,7 @@ This provider is useful if you want to import users and groups from Entra Id (fo
 
    - `GroupMember.Read.All`
    - `User.Read.All`
+   - `Organization.Read.All` (required to read the tenant organization and build the root Group entity)
 
 1. Configure the entity provider:
 
