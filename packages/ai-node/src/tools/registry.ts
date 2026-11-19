@@ -87,7 +87,7 @@ function toolModuleWithResolution(module: ToolModule): AiProviderModule {
     resolveDispatch: async (model, resolveCredential) => {
       // Identity binding: the caller's provider string must name this
       // module. Cross-server dispatch facts — a forged model or a
-      // mis-registered module — fail closed here, and the credential below
+      // incorrectly registered module — fail closed here, and the credential below
       // is always resolved through the module's own identity.
       if (model.provider !== module.id) {
         return {

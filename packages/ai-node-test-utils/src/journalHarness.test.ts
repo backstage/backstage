@@ -34,10 +34,14 @@ import { createProviderRegistry } from '@backstage/ai-node/modules';
 import { createJournalHarness } from './journalHarness';
 
 // The injected failure: the first setup step that touches the database.
-jest.mock('@backstage/ai-node/migrations/1000_storage', () => ({
-  up: async () => {
-    throw new Error('injected setup failure');
-  },
+jest.mock('./aiMigrations', () => ({
+  loadAiMigration: (name: string) => ({
+    up: async () => {
+      if (name === '1000_storage') {
+        throw new Error('injected setup failure');
+      }
+    },
+  }),
 }));
 
 // knex is wrapped only to record the schema names this test's harness

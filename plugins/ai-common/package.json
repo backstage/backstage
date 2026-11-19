@@ -1,9 +1,14 @@
 {
   "name": "@backstage/plugin-ai-common",
-  "description": "Common permission and resource definitions for the Backstage managed AI service",
   "version": "0.1.0",
+  "description": "Common permission and resource definitions for the Backstage managed AI service",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "pluginId": "ai",
+    "pluginPackages": [
+      "@backstage/plugin-ai-backend",
+      "@backstage/plugin-ai-common"
+    ]
   },
   "publishConfig": {
     "access": "public"
@@ -18,6 +23,7 @@
     "directory": "plugins/ai-common"
   },
   "license": "Apache-2.0",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./package.json": "./package.json"

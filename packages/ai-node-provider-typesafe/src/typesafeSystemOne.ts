@@ -21,7 +21,13 @@ import type {
 } from '@backstage/ai-node/modules';
 import { validateHttpEnvelope } from '@backstage/ai-node/modules';
 
-const base = (url: string | undefined) => (url ?? '').replace(/\/+$/, '');
+const base = (url: string | undefined) => {
+  let value = url ?? '';
+  while (value.endsWith('/')) {
+    value = value.slice(0, -1);
+  }
+  return value;
+};
 
 function outcomeForResult(
   stopReason: 'stop' | 'error' | 'aborted',

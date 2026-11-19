@@ -67,8 +67,12 @@ function assertModelId(model: AnyModel): string {
 
 function trimBase(url: unknown): string | undefined {
   if (typeof url !== 'string') return undefined;
-  const trimmed = url.trim();
-  return trimmed ? trimmed.replace(/\/+$/, '') : undefined;
+  let trimmed = url.trim();
+  if (!trimmed) return undefined;
+  while (trimmed.endsWith('/')) {
+    trimmed = trimmed.slice(0, -1);
+  }
+  return trimmed;
 }
 
 /** Mirrors the pinned adapters' version-in-base-URL detection. */

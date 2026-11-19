@@ -43,11 +43,10 @@ import { createAttemptJournal } from '@backstage/ai-node/modules';
 import type { AttemptJournal } from '@backstage/ai-node/modules';
 import type { Fence, Namespace } from '@backstage/ai-node/modules';
 import type { AiProviderRegistry } from '@backstage/ai-node/modules';
+import { loadAiMigration } from './aiMigrations';
 
-// eslint-disable-next-line @backstage/no-undeclared-imports
-const storageMigration = require('@backstage/ai-node/migrations/1000_storage');
-// eslint-disable-next-line @backstage/no-undeclared-imports
-const journalMigration = require('@backstage/ai-node/migrations/4000_journal');
+const storageMigration = loadAiMigration('1000_storage');
+const journalMigration = loadAiMigration('4000_journal');
 
 /** The harness a behavior test drives. @alpha */
 export interface JournalHarness {

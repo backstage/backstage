@@ -462,7 +462,7 @@ describe.each(engines)('%s installation config end to end', (_engine, make) => {
       });
       const service = DefaultAiService.create({ deps: f.deps, integration });
 
-      const handle = await service.openHarness(openOptions('uncatalogued'));
+      const handle = await service.openHarness(openOptions('uncataloged'));
       f.handles.push(handle);
       const conversation = await handle.harness.root(handle.context);
       await conversation.submit(
@@ -473,7 +473,7 @@ describe.each(engines)('%s installation config end to end', (_engine, make) => {
       await waitFor(async () => {
         const rows = await f
           .db('ai_journal_events')
-          .where({ session_id: 'uncatalogued', decision: 'deny' })
+          .where({ session_id: 'uncataloged', decision: 'deny' })
           .select('reason');
         return rows.some((row: { reason: string }) =>
           row.reason.includes('not in the canonical catalog'),

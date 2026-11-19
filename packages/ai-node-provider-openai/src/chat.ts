@@ -35,7 +35,13 @@ const streamAdapter = (adapter: unknown): ProviderAdapter => {
   };
 };
 
-const base = (url: string | undefined) => (url ?? '').replace(/\/+$/, '');
+const base = (url: string | undefined) => {
+  let value = url ?? '';
+  while (value.endsWith('/')) {
+    value = value.slice(0, -1);
+  }
+  return value;
+};
 
 /** OpenAI Responses API (`POST {base}/responses`). @alpha */
 export const openaiResponses: AiProviderModule = {

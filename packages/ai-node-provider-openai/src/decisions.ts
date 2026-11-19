@@ -21,7 +21,13 @@ import type {
   ProviderAdapter,
 } from '@backstage/ai-node/modules';
 
-const base = (url: string | undefined) => (url ?? '').replace(/\/+$/, '');
+const base = (url: string | undefined) => {
+  let value = url ?? '';
+  while (value.endsWith('/')) {
+    value = value.slice(0, -1);
+  }
+  return value;
+};
 
 /**
  * Non-chat dispatch through the pinned pi-ai adapter module. The adapter

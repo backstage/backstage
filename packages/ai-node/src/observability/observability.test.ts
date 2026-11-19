@@ -825,7 +825,7 @@ describe('observability seam', () => {
     }
   }, 20000);
 
-  it('drops mis-typed identifiers from the real lease producer', async () => {
+  it('drops wrongly typed identifiers from the real lease producer', async () => {
     const harness = await subscriberHarness();
     const { db, cleanup } = await memoryDb();
     const metrics = harness.subscriber;
@@ -839,7 +839,7 @@ describe('observability seam', () => {
       ).rejects.toThrow(/Invalid namespace/);
       expect(metrics.snapshot()).toEqual(before);
 
-      // A mis-typed field on an otherwise valid namespace is dropped by the
+      // A wrongly typed field on an otherwise valid namespace is dropped by the
       // seam rather than reaching a subscriber (see the validator cell); the
       // lease itself keeps working.
       const held = await lease.acquire(fence_namespace, 'owner');

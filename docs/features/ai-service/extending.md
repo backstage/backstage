@@ -79,7 +79,7 @@ const gatewayModule = wrapProviderModule(anthropicMessages, {
 
 The wrapper composes the gateway's base URL onto the module's certified
 routes at construction, so the journal's route certification is untouched
-and remains the single authority — a mis-composed destination fails
+and remains the single authority — a wrongly composed destination fails
 closed at dispatch. The wrapped module keeps its certified adapter and
 envelope validation, gains the gateway's provider id for credential
 lookup, and replaces the direct module for its adapter (registering both

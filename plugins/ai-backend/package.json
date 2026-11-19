@@ -4,7 +4,11 @@
   "description": "HTTP backend for the managed AI service",
   "backstage": {
     "role": "backend-plugin",
-    "pluginId": "ai"
+    "pluginId": "ai",
+    "pluginPackages": [
+      "@backstage/plugin-ai-backend",
+      "@backstage/plugin-ai-common"
+    ]
   },
   "publishConfig": {
     "access": "public"

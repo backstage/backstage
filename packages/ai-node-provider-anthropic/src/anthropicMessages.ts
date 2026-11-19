@@ -32,7 +32,13 @@ const streamAdapter = (adapter: unknown): ProviderAdapter => {
     streamSimple: pinned.streamSimple,
   };
 };
-const base = (url: string | undefined) => (url ?? '').replace(/\/+$/, '');
+const base = (url: string | undefined) => {
+  let value = url ?? '';
+  while (value.endsWith('/')) {
+    value = value.slice(0, -1);
+  }
+  return value;
+};
 
 /**
  * Anthropic's Messages API: chat dispatch on `POST {base}/v1/messages`, plus

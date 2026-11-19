@@ -31,9 +31,10 @@ import type {
 } from '@backstage/ai-node/modules';
 import type { AiProviderRegistry } from '@backstage/ai-node/modules';
 import { builtinProviderRegistry } from './providerFixtures';
+import { loadAiMigration } from './aiMigrations';
 
-const storageMigration = require('@backstage/ai-node/migrations/1000_storage');
-const journalMigration = require('@backstage/ai-node/migrations/4000_journal');
+const storageMigration = loadAiMigration('1000_storage');
+const journalMigration = loadAiMigration('4000_journal');
 
 /** Environment flag the child branch of a crash test runs under. @alpha */
 export const CRASH_TEST_CHILD_ENV = 'AI_CRASH_TEST_CHILD';
