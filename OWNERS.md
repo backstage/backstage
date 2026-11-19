@@ -57,7 +57,6 @@ Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugi
 | Name                 | Organization  | GitHub                                          | Discord      |
 | -------------------- | ------------- | ----------------------------------------------- | ------------ |
 | André Wanlin         | Spotify       | [awanlin](https://github.com/awanlin)           | `ahhhndre`   |
-| Bethany Griggs       | Red Hat       | [BethGriggs](https://github.com/BethGriggs)     | `bethgriggs` |
 | Hope Hadfield        | Red Hat       | [hopehadfield](https://github.com/hopehadfield) | `hh0p3`      |
 | Kashish Mittal       | Red Hat       | [04kash](https://github.com/04kash)             | `kashh._.`   |
 | Peter Macdonald      | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)     | `parsifal`   |
@@ -332,7 +331,8 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 
 ## Emeritus Project Area Maintainers
 
-| Maintainer    | Organization   | GitHub                                          | Discord             |
-| ------------- | -------------- | ----------------------------------------------- | ------------------- |
-| Paul Cowan    | frontendrescue | [dagda1](https://github.com/dagda1)             | `dagda1`            |
-| Jamie Klassen | VMware         | [jamieklassen](https://github.com/jamieklassen) | `jamieklassen#3047` |
+| Maintainer     | Organization   | GitHub                                          | Discord             |
+| -------------- | -------------- | ----------------------------------------------- | ------------------- |
+| Bethany Griggs | Red Hat        | [BethGriggs](https://github.com/BethGriggs)     | `bethgriggs`        |
+| Jamie Klassen  | VMware         | [jamieklassen](https://github.com/jamieklassen) | `jamieklassen#3047` |
+| Paul Cowan     | frontendrescue | [dagda1](https://github.com/dagda1)             | `dagda1`            |
