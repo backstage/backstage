@@ -176,7 +176,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({
         id: taskId,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.logger.child({
             class: GitlabDiscoveryEntityProvider.prototype.constructor.name,
             taskId,
@@ -184,7 +184,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
           });
 
           try {
-            await this.refresh(logger);
+            await this.refreshInternal(logger, signal);
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
@@ -202,6 +202,13 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
    * @param logger - The logger instance for logging.
    */
   async refresh(logger: LoggerService): Promise<void> {
+    return this.refreshInternal(logger);
+  }
+
+  private async refreshInternal(
+    logger: LoggerService,
+    signal?: AbortSignal,
+  ): Promise<void> {
     if (!this.connection) {
       throw new Error(
         `Gitlab discovery connection not initialized for ${this.getProviderName()}`,
@@ -215,9 +222,10 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     );
 
     const locations = this.config.useSearch
-      ? await this.searchEntities()
-      : await this.getEntities();
+      ? await this.searchEntities(signal)
+      : await this.getEntities(signal);
 
+    signal?.throwIfAborted();
     await this.connection.applyMutation({
       type: 'full',
       entities: locations.map(location => ({
@@ -235,7 +243,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
    *
    * @returns A list of location to be ingested
    */
-  private async searchEntities() {
+  private async searchEntities(signal?: AbortSignal) {
     const locations: LocationSpec[] = [];
     let foundProjects = 0;
 
@@ -252,6 +260,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     );
 
     for await (const foundFile of foundFiles) {
+      signal?.throwIfAborted();
       const project = await this.gitLabClient.getProjectById(
         foundFile.project_id,
       );
@@ -284,7 +293,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
    *
    * @returns A list of location to be ingested
    */
-  private async getEntities() {
+  private async getEntities(signal?: AbortSignal) {
     let res: Result = {
       scanned: 0,
       matches: [],
@@ -316,6 +325,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       );
 
       for await (const group of groups) {
+        signal?.throwIfAborted();
         if (
           groupFilters.some(groupFilter => groupFilter.test(group.full_path)) &&
           !groupToProcess.has(group.full_path)
@@ -325,7 +335,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       }
 
       for (const group of groupToProcess.values()) {
-        const tmpRes = await this.getProjectsToProcess(group.full_path);
+        const tmpRes = await this.getProjectsToProcess(group.full_path, signal);
         res.scanned += tmpRes.scanned;
         // merge both arrays safely
         for (const project of tmpRes.matches) {
@@ -333,7 +343,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         }
       }
     } else {
-      res = await this.getProjectsToProcess(this.config.group);
+      res = await this.getProjectsToProcess(this.config.group, signal);
     }
 
     const locations = this.deduplicateProjects(res.matches).map(p =>
@@ -369,7 +379,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
    * @param group - a full path of a GitLab group, can be empty
    * @returns An array of project to be processed and the number of project scanned
    */
-  private async getProjectsToProcess(group: string) {
+  private async getProjectsToProcess(group: string, signal?: AbortSignal) {
     const res: Result = {
       scanned: 0,
       matches: [],
@@ -393,6 +403,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     );
 
     for await (const project of projects) {
+      signal?.throwIfAborted();
       res.scanned++;
 
       if (await this.shouldProcessProject(project, this.gitLabClient)) {

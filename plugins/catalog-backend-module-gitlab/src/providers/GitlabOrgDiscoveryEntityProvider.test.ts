@@ -207,6 +207,35 @@ describe('GitlabOrgDiscoveryEntityProvider - refresh', () => {
     });
   });
 
+  it('should not apply the full update when the scheduled task is aborted', async () => {
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(
+      new ConfigReader(mock.config_org_integration),
+      { logger, schedule },
+    )[0];
+    const controller = new AbortController();
+    const shouldProcessUser = jest
+      .spyOn(provider as any, 'shouldProcessUser')
+      .mockImplementationOnce(() => {
+        controller.abort();
+        return true;
+      });
+
+    await provider.connect(entityProviderConnection);
+    const fn = schedule.getTasks()[0].fn;
+
+    await fn(controller.signal);
+    expect(shouldProcessUser).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+
+    await fn(new AbortController().signal);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+  });
+
   it('should exclude inactive user', async () => {
     const config = new ConfigReader(mock.config_org_integration);
     const schedule = new PersistingTaskRunner();
