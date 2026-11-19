@@ -127,23 +127,58 @@ ai:
       maxTokens: 64000
 ```
 
-Gateway base URLs that re-root the API under their own path do **not** match
-the certified routes, and fail closed with nothing sent. Both path-prefixed
-entries in pi's catalog are in that position today:
+Gateway base URLs that re-root the API under their own path do **not**
+match the certified routes as-is — both path-prefixed entries in pi's
+catalog are in that position:
 
-| Gateway entry (pi catalog)                                                                                               | Certified destination path                      | Module templates                     | Result               |
+| Gateway entry (pi catalog)                                                                                               | Certified destination path                      | Module templates                     | Bare result          |
 | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- | ------------------------------------ | -------------------- |
 | `vercel-ai-gateway`, `anthropic-messages`, base `https://ai-gateway.vercel.sh`                                           | `/v1/messages`                                  | `/v1/messages`                       | dispatches           |
 | `cloudflare-ai-gateway`, `anthropic-messages`, base `https://gateway.ai.cloudflare.com/v1/{ACCOUNT}/{GATEWAY}/anthropic` | `/v1/{ACCOUNT}/{GATEWAY}/anthropic/v1/messages` | `/v1/messages`                       | denied, nothing sent |
 | `vercel-ai-gateway`, `typesafe-system-one`, base `https://ai-gateway.vercel.sh/typesafe/v1`                              | `/typesafe/v1/systemone`                        | `/v1/systemone`, `/api/v1/systemone` | denied, nothing sent |
 
-Certifying a gateway path prefix would need route templates that describe a
-prefix with digested segments and a per-module mapping from base URL to
-route — machinery this package does not have yet. Until then, point a gateway
-entry at a base URL that keeps the module's certified path, or front the
-gateway so the certified paths are preserved. OAuth through a gateway is out
-of scope as well: a family without an OAuth module refuses an `oauth`
-credential and names `api_key` as the supported kind.
+For those, wrap the certified module with `wrapProviderModule` from
+`@backstage/ai-node/modules`. The wrapper takes a certified module and the
+gateway's base URL and, at construction, composes the gateway's path prefix
+onto the module's certified route templates — the journal's route-template
+check is unchanged and now certifies `gateway base + route`. The wrapped
+module's adapter, envelope validation and certification carry over; the
+wrapper contributes only the base and the credential interpretation, which
+defaults to `api_key` keyed by the gateway's own provider id. A wrapped
+module replaces the direct module for its `api` in the registry it is
+registered into — both declare the same module id, so register one or the
+other, never both:
+
+```ts
+import { wrapProviderModule } from '@backstage/ai-node/modules';
+import { anthropicMessages } from '@backstage/ai-node-provider-anthropic/alpha';
+import { createAiServiceFactory } from '@backstage/ai-node/alpha';
+
+const anthropicThroughCloudflare = wrapProviderModule(anthropicMessages, {
+  // The gateway re-roots the API under its own path.
+  baseUrl:
+    'https://gateway.ai.cloudflare.com/v1/my-account/my-gateway/anthropic',
+});
+
+// Registered instead of the direct anthropicMessages module:
+const ai = createAiServiceFactory({
+  providerModules: [anthropicThroughCloudflare /* ...otherProviderModules */],
+});
+```
+
+With that registration, the `cloudflare-ai-gateway` catalog entry above
+dispatches: its destination `/v1/my-account/my-gateway/anthropic/v1/messages`
+now matches the composed template. The same wrapper handles the
+path-prefixed TypeSafe entry (`baseUrl:
+'https://ai-gateway.vercel.sh/typesafe/v1'` over the `typesafe-system-one`
+module). The composition aligns itself to the route the module actually
+appends — a family whose certified template carries the provider's own base
+path (TypeSafe's `/v1`) composes differently from one whose template is the
+bare route (Anthropic's `/v1/messages`) — and a template that cannot be
+aligned falls back to the plain prefix join, which fails closed at dispatch
+if it does not match. OAuth through a gateway is out of scope: the wrapper
+refuses an `oauth` credential kind with guidance, so store an API key for
+the gateway instead.
 
 ## Usage
 

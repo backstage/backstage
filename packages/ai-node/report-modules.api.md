@@ -627,4 +627,16 @@ export function validateHttpEnvelope(
   operation: ProviderEnvelope,
   request: Request,
 ): Promise<'model' | 'auth.token-exchange'>;
+
+// @alpha
+export function wrapProviderModule(
+  module: AiProviderModule,
+  options: WrapProviderModuleOptions,
+): AiProviderModule;
+
+// @alpha
+export type WrapProviderModuleOptions = Readonly<{
+  baseUrl: string;
+  credentialKinds?: readonly AiCredentialKind[];
+}>;
 ```
