@@ -17,7 +17,7 @@
 import { ReactNode } from 'react';
 import { ErrorPanel } from '@backstage/core-components';
 import { useApp } from '@backstage/core-plugin-api';
-import Button from '@material-ui/core/Button';
+import { Button } from '@backstage/ui';
 import { useCookieAuthRefresh } from '../../hooks';
 
 /**
@@ -51,7 +51,7 @@ export function CookieAuthRefreshProvider(
   if (result.status === 'error') {
     return (
       <ErrorPanel error={result.error}>
-        <Button variant="outlined" onClick={result.retry}>
+        <Button variant="secondary" size="medium" onPress={result.retry}>
           Retry
         </Button>
       </ErrorPanel>
