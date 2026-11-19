@@ -20,5 +20,4 @@ yarn --cwd plugins/<your-plugin> add @backstage/plugin-events-node
 ## Documentation
 
 See [Events Service](https://backstage.io/docs/backend-system/core-services/events)
-for usage, configuration, how to replace the service implementation, and legacy
-backend system setup.
+for usage, configuration, and how to replace the service implementation.

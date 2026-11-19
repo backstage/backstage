@@ -103,24 +103,3 @@ Then install it in your backend:
 ```ts title="packages/backend/src/index.ts"
 backend.add(customEventsServiceFactory);
 ```
-
-## Legacy backend system
-
-If you are still using the legacy backend system, create an `EventsService` instance and add it to the plugin environment:
-
-```ts title="packages/backend/src/index.ts"
-import { DefaultEventsService } from '@backstage/plugin-events-node';
-
-function makeCreateEnv(config: Config) {
-  // ...
-  const eventsService = DefaultEventsService.create({ logger: root, config });
-  return (plugin: string): PluginEnvironment => {
-    return {
-      // ...
-      events: eventsService,
-    };
-  };
-}
-```
-
-You can then use `env.events` in your plugin setup, for example in `packages/backend/src/plugins/events.ts`.
