@@ -62,18 +62,24 @@ export type TargetPaths = {
   /**
    * The root directory of the package manager workspace that contains the
    * target directory. This is the nearest directory with a
-   * `pnpm-workspace.yaml` file, or with a `package.json` that has a
-   * `workspaces` field. pnpm ignores the `workspaces` field, so a directory
-   * with one is part of a pnpm workspace above it when the `packages`
-   * patterns of that workspace include the directory or a directory inside
-   * it, and a workspace of its own otherwise. For example, `apps/*` and
-   * `apps/backstage/packages/*` both include `apps/backstage`. A Yarn project
-   * is always a workspace of its own: its `packageManager` field names Yarn,
-   * or it has no `packageManager` field and `devEngines.packageManager` names
-   * Yarn, or neither names Yarn or pnpm and it has a `yarn.lock` file but no
-   * `pnpm-lock.yaml`. The lockfile
-   * and the package manager configuration live here, and installs act on
-   * everything inside it.
+   * `pnpm-workspace.yaml` file that has a `packages` field, or with a
+   * `package.json` that has a `workspaces` field. A `pnpm-workspace.yaml`
+   * file with only settings belongs to a single package. pnpm ignores the
+   * `workspaces` field, so a directory with one is part of a pnpm workspace
+   * above it when the `packages` patterns of that workspace include the
+   * directory or a directory inside it, and a workspace of its own otherwise.
+   * For example, `apps/*` and `apps/backstage/packages/*` both include
+   * `apps/backstage`.
+   *
+   * A Yarn project is never part of a pnpm workspace. One with a `workspaces`
+   * field is always a workspace of its own, and above one without that field
+   * only the `workspaces` field counts. A Yarn project is a directory whose
+   * `packageManager` field names Yarn, or that has no `packageManager` field
+   * and a `devEngines.packageManager` that names Yarn, or where neither names
+   * Yarn or pnpm and there is a `yarn.lock` file but no `pnpm-lock.yaml`.
+   *
+   * The lockfile and the package manager configuration live in the workspace
+   * root, and installs act on everything inside it.
    *
    * Falls back to the target directory when it is not inside a workspace.
    */
@@ -317,8 +323,9 @@ function hasWorkspacesField(dir: string): boolean {
 }
 
 /**
- * Returns true if `dir` is the root of a Yarn project. The
- * `packageManager` field decides when it names Yarn or pnpm. Without that
+ * Returns true if `dir` is the root of a Yarn project, which needs a
+ * `package.json` file. The `packageManager` field decides when it names Yarn
+ * or pnpm. Without that
  * field, `devEngines.packageManager` decides, where the first of Yarn and
  * pnpm counts. That way a lockfile left behind after a migration does not
  * count. Otherwise the lockfiles decide, and `pnpm-lock.yaml` wins over
@@ -326,13 +333,16 @@ function hasWorkspacesField(dir: string): boolean {
  */
 function isYarnProject(dir: string): boolean {
   const data = readPackageJson(dir);
-  const devEngines = data?.devEngines as { packageManager?: unknown };
+  if (!data) {
+    return false;
+  }
+  const devEngines = data.devEngines as { packageManager?: unknown };
   const devEngineNames = [devEngines?.packageManager].flat().flatMap(entry => {
     const name = (entry as { name?: unknown } | undefined)?.name;
     return typeof name === 'string' ? [name] : [];
   });
   const declared =
-    typeof data?.packageManager === 'string'
+    typeof data.packageManager === 'string'
       ? data.packageManager.split('@')[0]
       : devEngineNames.find(name => name === 'yarn' || name === 'pnpm');
   if (declared === 'yarn' || declared === 'pnpm') {
@@ -348,25 +358,38 @@ function hasPnpmWorkspaceFile(dir: string): boolean {
   return fs.existsSync(resolvePath(dir, 'pnpm-workspace.yaml'));
 }
 
-function readPnpmWorkspacePatterns(dir: string): string[] {
+function isPnpmWorkspaceRoot(dir: string): boolean {
+  return (
+    hasPnpmWorkspaceFile(dir) && readPnpmWorkspacePatterns(dir) !== undefined
+  );
+}
+
+/**
+ * Reads the `packages` field of the `pnpm-workspace.yaml` file in `dir`.
+ * Returns undefined when the file only holds settings, which makes it the
+ * configuration of a single package rather than of a workspace. A file that
+ * can't be parsed counts as a workspace that includes every directory inside
+ * it, like `isMonoRepo` of `@backstage/cli-node` treats it, and pnpm reports
+ * the error when it runs.
+ */
+function readPnpmWorkspacePatterns(dir: string): string[] | undefined {
   const path = resolvePath(dir, 'pnpm-workspace.yaml');
+  let data;
   try {
-    const data = yaml.parse(fs.readFileSync(path, 'utf8'));
-    return Array.isArray(data?.packages) ? data.packages.map(String) : [];
-  } catch (error) {
-    throw new Error(
-      `Failed to parse '${path}' while searching for root, ${error}`,
-    );
+    data = yaml.parse(fs.readFileSync(path, 'utf8'));
+  } catch {
+    return ['**'];
   }
+  return Array.isArray(data?.packages) ? data.packages.map(String) : undefined;
 }
 
 /**
  * Returns true if the nearest `pnpm-workspace.yaml` above `dir` includes
  * `dir` or a directory inside it in its `packages` field. Without a
  * `packages` field, a pnpm workspace only includes its root. A negated
- * pattern leaves out `dir` when it matches `dir` and everything inside it,
- * or when it matches `dir` and no positive pattern reaches inside it.
- * Negated patterns that only match the directories inside `dir` are not
+ * pattern leaves out `dir` when it matches `dir` and no positive pattern
+ * reaches inside it, or when it ends in `**` after `dir` or a directory above
+ * it. Other negated patterns that match directories inside `dir` are not
  * checked against the positive ones, since that would need the file system,
  * so `dir` then still counts as included.
  */
@@ -380,7 +403,7 @@ function isInPnpmWorkspace(dir: string): boolean {
     return false;
   }
   const relDir = relativePath(pnpmRootDir, dir).split(sep).join('/');
-  const matchers = readPnpmWorkspacePatterns(pnpmRootDir).map(
+  const matchers = (readPnpmWorkspacePatterns(pnpmRootDir) ?? []).map(
     pattern => new Minimatch(pattern.replace(/^(!?)\.\//, '$1')),
   );
   const positives = matchers.filter(m => !m.negate);
@@ -392,9 +415,10 @@ function isInPnpmWorkspace(dir: string): boolean {
   // pnpm applies a negated pattern to each package directory on its own, so
   // `!apps/backstage` leaves out the directory but keeps the packages inside
   // it that a longer pattern such as `apps/**` includes. Only a negation that
-  // also matches a path deep inside it, such as `!apps/backstage/**`, leaves
-  // out everything.
-  const depth = relDir.split('/').length;
+  // ends in `**` after `dir` or a directory above it, such as
+  // `!apps/backstage/**` or `!apps/**/*`, leaves out everything inside it.
+  const segments = relDir.split('/');
+  const depth = segments.length;
   const reachesInside = positives.some(m =>
     m.globParts.some(
       parts =>
@@ -402,10 +426,23 @@ function isInPnpmWorkspace(dir: string): boolean {
         new Minimatch(parts.join('/')).match(relDir, true),
     ),
   );
-  return (
-    includesDir ||
-    (reachesInside && !negations.some(m => !m.match(`${relDir}/x/x`)))
+  const dirAndAncestors = segments.map((_, index) =>
+    segments.slice(0, index + 1).join('/'),
   );
+  const leavesOutInside = negations.some(m =>
+    m.globParts.some(parts => {
+      const rest = parts.at(-1) === '*' ? parts.slice(0, -1) : parts;
+      if (rest.at(-1) !== '**') {
+        return false;
+      }
+      if (rest.length === 1) {
+        return true;
+      }
+      const prefix = new Minimatch(rest.slice(0, -1).join('/'));
+      return dirAndAncestors.some(path => prefix.match(path));
+    }),
+  );
+  return includesDir || (reachesInside && !leavesOutInside);
 }
 
 /**
@@ -433,19 +470,32 @@ function findAncestorDir(
 
 /**
  * Finds the root of the Yarn, npm, or pnpm workspace that contains `dir`.
- * pnpm reads its workspace packages from `pnpm-workspace.yaml` and ignores
- * the `workspaces` field, so that field only starts a workspace of its own
- * when no pnpm workspace above includes the directory. A Yarn project is
- * always a workspace of its own, whatever pnpm workspace is above it.
+ * pnpm reads its workspace packages from the `packages` field of
+ * `pnpm-workspace.yaml` and ignores the `workspaces` field, so that field
+ * only starts a workspace of its own when no pnpm workspace above includes
+ * the directory. A `pnpm-workspace.yaml` file with only settings belongs to
+ * a single package and starts no workspace.
+ *
+ * A Yarn project is never part of a pnpm workspace, and a
+ * `pnpm-workspace.yaml` file in a Yarn project is not read. One with a
+ * `workspaces` field is always a workspace of its own. In and above one
+ * without that field, only the `workspaces` field counts, as it did before
+ * pnpm was supported.
  */
 function findWorkspaceRootDir(dir: string): string | undefined {
-  return findAncestorDir(
-    dir,
-    path =>
-      hasPnpmWorkspaceFile(path) ||
-      (hasWorkspacesField(path) &&
-        (isYarnProject(path) || !isInPnpmWorkspace(path))),
-  );
+  let inYarnProject = false;
+  return findAncestorDir(dir, path => {
+    if (!inYarnProject && isYarnProject(path)) {
+      inYarnProject = true;
+    }
+    if (inYarnProject) {
+      return hasWorkspacesField(path);
+    }
+    if (isPnpmWorkspaceRoot(path)) {
+      return true;
+    }
+    return hasWorkspacesField(path) && !isInPnpmWorkspace(path);
+  });
 }
 
 class TargetPathsImpl implements TargetPaths {
