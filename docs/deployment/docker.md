@@ -210,7 +210,7 @@ skeleton has no `.npmrc` file, so settings that are only in the `.npmrc` of the
 project, such as registry and proxy settings, must be in the secret too, and a
 `cafile` must point to a file in the image. The `npm install -g pnpm` step
 mounts the same secret as the `.npmrc` of the `root` user, so it downloads pnpm
-from the registry in the secret. A build without the secret works as before.
+from the registry in the secret. The build also works without the secret.
 
 ## Multi-stage Build
 
