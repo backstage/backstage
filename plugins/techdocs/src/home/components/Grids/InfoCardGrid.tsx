@@ -29,7 +29,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { makeStyles } from '@material-ui/core/styles';
 import { rootDocsRouteRef } from '../../../routes';
-import { toLowerMaybe } from '../../../helpers';
+import { getEntityDocsRoute } from '../../../helpers';
 
 /** @public */
 export type InfoCardGridClassKey = 'linkSpacer' | 'readMoreLink';
@@ -74,11 +74,7 @@ export const InfoCardGrid = (props: InfoCardGridProps) => {
         return destination;
       }
     }
-    return getRouteToReaderPageFor({
-      namespace: toLowerMaybe(entity.metadata.namespace ?? 'default', config),
-      kind: toLowerMaybe(entity.kind, config),
-      name: toLowerMaybe(entity.metadata.name, config),
-    });
+    return getEntityDocsRoute(entity, getRouteToReaderPageFor, config);
   };
   const entityPresentationApi = useApi(entityPresentationApiRef);
   const { value: entityRefToPresentation, loading } = useAsync(async () => {

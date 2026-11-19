@@ -147,4 +147,39 @@ describe('Entity Docs Card Grid', () => {
     );
     expect(await screen.findByText('TestTitle')).toBeInTheDocument();
   });
+
+  it('should link techdocs-entity cards to the referenced entity docs path', async () => {
+    await renderInTestApp(
+      <DocsCardGrid
+        entities={[
+          {
+            apiVersion: 'version',
+            kind: 'Component',
+            metadata: {
+              name: 'feature-1',
+              namespace: 'example-1',
+              annotations: {
+                'backstage.io/techdocs-entity':
+                  'component:example-1/my-component-1',
+                'backstage.io/techdocs-entity-path': '/feature-1/',
+              },
+            },
+            spec: {
+              owner: 'techdocs@example.com',
+            },
+          },
+        ]}
+      />,
+      {
+        mountedRoutes: {
+          '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
+        },
+      },
+    );
+
+    const button = await screen.findByRole('button');
+    expect(button.getAttribute('href')).toContain(
+      '/docs/example-1/component/my-component-1/feature-1/',
+    );
+  });
 });

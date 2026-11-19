@@ -15,7 +15,7 @@
  */
 
 import { rootDocsRouteRef } from '../../../routes';
-import { toLowerMaybe } from '../../../helpers';
+import { getEntityDocsRoute } from '../../../helpers';
 import { Entity } from '@backstage/catalog-model';
 import { useApi, useRouteRef, configApiRef } from '@backstage/core-plugin-api';
 import {
@@ -62,14 +62,11 @@ export const DocsCardGrid = (props: DocsCardGridProps) => {
               <CardContent>{entity.metadata.description}</CardContent>
               <CardActions>
                 <LinkButton
-                  to={getRouteToReaderPageFor({
-                    namespace: toLowerMaybe(
-                      entity.metadata.namespace ?? 'default',
-                      config,
-                    ),
-                    kind: toLowerMaybe(entity.kind, config),
-                    name: toLowerMaybe(entity.metadata.name, config),
-                  })}
+                  to={getEntityDocsRoute(
+                    entity,
+                    getRouteToReaderPageFor,
+                    config,
+                  )}
                   color="primary"
                   data-testid="read_docs"
                 >
