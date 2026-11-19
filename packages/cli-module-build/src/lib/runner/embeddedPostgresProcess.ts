@@ -80,7 +80,6 @@ export function embeddedPostgresProcess(modulePath: string) {
       setTimeout(() => terminateWorker(process.pid), 2000).unref();
       stop!();
     });
-    setInterval(() => {}, 60_000);
     async function startPostgres() {
       const [options] = (await workerOnce(process, 'message')) as [
         EmbeddedDbConnectionConfig,
