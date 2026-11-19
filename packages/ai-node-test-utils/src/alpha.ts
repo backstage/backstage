@@ -60,7 +60,7 @@ export type {
   AuthTokenRequestBase,
   OAuthLoginExchangeInput,
   OAuthRefreshInput,
-} from './providers/auth/types';
+} from '@backstage/ai-node/modules';
 export type {
   AiCredentialKind,
   AiProviderModule,

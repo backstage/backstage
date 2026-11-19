@@ -93,7 +93,5 @@ export type {
   JournalAuditorMirror,
   RecoveryEvent,
 } from './journal/types';
-export type {
-  AiEventEmitter,
-  AiObservabilityEvent,
-} from './observability/types';
+export { createAiEventSink } from './observability/types';
+export type { AiEventSink, AiObservabilityEvent } from './observability/types';

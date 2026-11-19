@@ -15,6 +15,11 @@
  */
 
 import type { Knex } from 'knex';
+import {
+  TRANSIENT_SQL_CODES,
+  leaseClock,
+  leaseLiveSql,
+} from '../storage/dialect-kit';
 
 /**
  * Database-clock expressions shared by the lease and recovery adapters.
@@ -40,15 +45,13 @@ export function dialectOf(db: Knex): Dialect {
 
 /** The single source of truth for "this lease row is currently live". */
 export function liveCondition(dialect: Dialect): string {
-  return dialect === 'sqlite'
-    ? "CASE WHEN typeof(expires_at) IN ('integer', 'real') THEN expires_at > (julianday('now') - 2440587.5) * 86400000 ELSE julianday(expires_at) > julianday('now') END"
-    : 'expires_at > statement_timestamp()';
+  return leaseLiveSql(dialect);
 }
 
 /** An `expires_at` value at the current database time plus `ms`. */
 export function expiryFromNow(
   db: Knex,
-  dialect: Dialect,
+  _dialect: Dialect,
   ms: number,
 ): Knex.Raw {
   if (!Number.isSafeInteger(ms) || ms <= 0) {
@@ -56,16 +59,12 @@ export function expiryFromNow(
       'Lease lifetime must be a positive integer of milliseconds',
     );
   }
-  return dialect === 'sqlite'
-    ? db.raw("(julianday('now') - 2440587.5) * 86400000 + ?", [ms])
-    : db.raw("statement_timestamp() + (? * interval '1 millisecond')", [ms]);
+  return leaseClock(db, ms);
 }
 
 /** An `expires_at` value at the current database time (already expired). */
-export function expiredNow(db: Knex, dialect: Dialect): Knex.Raw {
-  return dialect === 'sqlite'
-    ? db.raw("(julianday('now') - 2440587.5) * 86400000")
-    : db.raw('statement_timestamp()');
+export function expiredNow(db: Knex, _dialect: Dialect): Knex.Raw {
+  return leaseClock(db);
 }
 
 const TOKEN_PATTERN = /^(0|[1-9][0-9]*)$/;
@@ -85,8 +84,6 @@ export function nextToken(token: string): string {
   assertToken(token);
   return (BigInt(token) + 1n).toString();
 }
-
-const TRANSIENT_CODES = ['SQLITE_BUSY', 'SQLITE_LOCKED', '40001', '40P01'];
 
 /**
  * Runs one unit of work in its own transaction, retrying only before any
@@ -125,7 +122,7 @@ export async function inTransaction<T>(
         !mutated &&
         rolledBack &&
         attempt < attempts - 1 &&
-        TRANSIENT_CODES.includes(code ?? '')
+        TRANSIENT_SQL_CODES.includes(code ?? '')
       ) {
         await new Promise(resolve => setTimeout(resolve, 25 * 2 ** attempt));
         continue;

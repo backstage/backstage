@@ -18,7 +18,7 @@ import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import type { Fence } from '../contracts';
 import type { AiTokenEndpoint } from '../config-extension/types';
 import type { AttemptJournal } from '../journal/types';
-import type { AiEventEmitter } from '../observability/types';
+import type { AiEventSink } from '../observability/types';
 import type { AiProviderModule } from '../providers/types';
 import { createAuthOperationGuard } from '../providers/auth/guard';
 import { createAuthModuleRegistry } from '../providers/auth/modules';
@@ -47,7 +47,7 @@ export interface CreateCredentialRefreshHookOptions {
   /** Network transport for the guarded token request. Defaults to `fetch`. */
   transport?: typeof fetch;
   /** Observability sink for local denials; no-op when absent. */
-  events?: AiEventEmitter;
+  emit?: AiEventSink;
 }
 
 /**
@@ -98,14 +98,14 @@ export function createCredentialRefreshHook(
       transport: options.transport ?? fetch,
       recheck: async () => true,
       journal: options.journal,
-      ...(options.events === undefined ? {} : { events: options.events }),
+      ...(options.emit === undefined ? {} : { emit: options.emit }),
       modules,
     }),
     journal: options.journal,
     stores: options.stores,
     modules,
     tokenEndpoints: endpoints,
-    ...(options.events === undefined ? {} : { events: options.events }),
+    ...(options.emit === undefined ? {} : { emit: options.emit }),
   });
   return async (input: CredentialRefreshInput) =>
     refreshWith(operations, input);

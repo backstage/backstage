@@ -18,6 +18,58 @@ import type { Knex } from 'knex';
 
 const isSqlite = (db: Knex) => db.client.config.client === 'better-sqlite3';
 
+/**
+ * The single definition of "this lease row is currently live".
+ *
+ * @remarks
+ * Lease expiry is stored per dialect (millisecond epoch on SQLite, a timestamp
+ * on PostgreSQL), so the liveness predicate itself is dialect-specific.
+ *
+ * @internal
+ */
+export const LEASE_LIVE_SQL: Readonly<Record<'sqlite' | 'pg', string>> =
+  Object.freeze({
+    sqlite:
+      "CASE WHEN typeof(expires_at) IN ('integer', 'real') THEN expires_at > (julianday('now') - 2440587.5) * 86400000 ELSE julianday(expires_at) > julianday('now') END",
+    pg: 'expires_at > statement_timestamp()',
+  });
+
+/** Live-lease predicate for one dialect. */
+export function leaseLiveSql(dialect: 'sqlite' | 'pg'): string {
+  return LEASE_LIVE_SQL[dialect];
+}
+
+/**
+ * The lease clock: database time plus an optional millisecond offset, in the
+ * representation `LEASE_LIVE_SQL` compares against.
+ *
+ * @internal
+ */
+export function leaseClock(db: Knex, offsetMs = 0): Knex.Raw {
+  if (isSqlite(db)) {
+    return offsetMs === 0
+      ? db.raw("(julianday('now') - 2440587.5) * 86400000")
+      : db.raw("(julianday('now') - 2440587.5) * 86400000 + ?", [offsetMs]);
+  }
+  return offsetMs === 0
+    ? db.raw('statement_timestamp()')
+    : db.raw("statement_timestamp() + (? * interval '1 millisecond')", [
+        offsetMs,
+      ]);
+}
+
+/**
+ * Error codes that are worth retrying: the transaction lost no durable effect.
+ *
+ * @internal
+ */
+export const TRANSIENT_SQL_CODES: readonly string[] = Object.freeze([
+  'SQLITE_BUSY',
+  'SQLITE_LOCKED',
+  '40001',
+  '40P01',
+]);
+
 type LeaseKey = { plugin_id: string; session_id: string };
 
 /** Lock first; PostgreSQL's statement clock must be read in a later query. */
@@ -27,9 +79,7 @@ export async function checkFence(
   fence: { owner: string; token: string },
   error: string,
 ): Promise<void> {
-  const expiry = isSqlite(trx)
-    ? "CASE WHEN typeof(expires_at) IN ('integer', 'real') THEN expires_at > (julianday('now') - 2440587.5) * 86400000 ELSE julianday(expires_at) > julianday('now') END"
-    : 'expires_at > statement_timestamp()';
+  const expiry = leaseLiveSql(isSqlite(trx) ? 'sqlite' : 'pg');
   const row = await trx('ai_namespace_leases')
     .where(key)
     .where({ owner_id: fence.owner, token: fence.token })
@@ -85,7 +135,7 @@ export async function fencedTransaction<T, P>(
         !locked &&
         rolledBack &&
         attempt < 3 &&
-        ['SQLITE_BUSY', 'SQLITE_LOCKED', '40001', '40P01'].includes(code ?? '')
+        TRANSIENT_SQL_CODES.includes(code ?? '')
       ) {
         await new Promise(resolve => setTimeout(resolve, 50 * 2 ** attempt));
         continue;
