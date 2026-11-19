@@ -22,7 +22,7 @@ import fs from 'fs-extra';
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import { join as joinPath } from 'node:path';
-import { parse as parseYaml } from 'yaml';
+import { parse as parseYaml, parseAllDocuments } from 'yaml';
 
 import { targetPaths } from '@backstage/cli-common';
 import {
@@ -795,6 +795,7 @@ registries:
       - '@decl'
 catalog:
   react: ^18.0.0
+injectWorkspacePackages: true
 customSetting: true
 `;
 
@@ -855,7 +856,6 @@ customSetting: true
           ),
         ).toEqual({
           nodeLinker: 'hoisted',
-          storeDir: joinPath(mockDir.path, '.pnpm-store'),
           minimumReleaseAge: 4320,
           pmOnFail: 'ignore',
           // Credentials are left out like in the .npmrc, and so are the
@@ -874,9 +874,13 @@ customSetting: true
             },
           },
           catalog: { react: '^18.0.0' },
+          // Recorded in the lockfile, which pnpm checks against the settings
+          injectWorkspacePackages: true,
           patchedDependencies: {
             'patched-dep@2.0.0': 'patches/patched-dep.patch',
           },
+          // A patch of the workspace may be for a package of another project
+          allowUnusedPatches: true,
           // A reference to a root dependency is resolved, since the bundle
           // doesn't have that dependency
           overrides: { 'some-dep': '1.0.0', 'ref-dep': '^3.1.0' },
@@ -902,6 +906,11 @@ customSetting: true
         expect(pkg.packageManager).toBe('pnpm@12.7.0');
         expect(pkg.bundleDependencies).toBe(true);
 
+        // The offline steps use the store of the project, which is a path on
+        // this machine, so it is passed to them rather than written
+        const storeEnv = {
+          pnpm_config_store_dir: joinPath(mockDir.path, '.pnpm-store'),
+        };
         expect(mockRun).toHaveBeenCalledWith(
           [
             'pnpm',
@@ -910,11 +919,17 @@ customSetting: true
             '--no-frozen-lockfile',
             '--offline',
           ],
-          expect.objectContaining({ cwd: ctx.targetDir }),
+          expect.objectContaining({
+            cwd: ctx.targetDir,
+            env: expect.objectContaining(storeEnv),
+          }),
         );
         expect(mockRun).toHaveBeenCalledWith(
           ['pnpm', 'install', '--frozen-lockfile', '--offline'],
-          expect.objectContaining({ cwd: ctx.targetDir }),
+          expect.objectContaining({
+            cwd: ctx.targetDir,
+            env: expect.objectContaining(storeEnv),
+          }),
         );
         expect(console.warn).toHaveBeenCalledWith(
           expect.stringContaining(
@@ -958,12 +973,21 @@ customSetting: true
           cwd: mockDir.path,
           env: { pnpm_config_lockfile: 'false' },
         });
-        expect((await readBundleWorkspace()).storeDir).toBe('/store/v10');
+        const pnpmInstallEnvs = () =>
+          mockRun.mock.calls
+            .filter(([args]) => args[0] === 'pnpm' && args[1] === 'install')
+            .map(([, options]) => options.env);
+        expect(pnpmInstallEnvs()).toEqual([
+          expect.objectContaining({ pnpm_config_store_dir: '/store/v10' }),
+          expect.objectContaining({ pnpm_config_store_dir: '/store/v10' }),
+        ]);
+        expect(await readBundleWorkspace()).not.toHaveProperty('storeDir');
         const pkg = await fs.readJson(joinPath(ctx.targetDir, 'package.json'));
         expect(pkg.packageManager).toBeUndefined();
         expect(pkg.devEngines).toEqual(devEngines);
 
-        // When pnpm can't tell, the bundle keeps the default store
+        // When pnpm can't tell, the offline steps use the default store
+        mockRun.mockClear();
         mockRunOutput.mockImplementation(async (args: string[]) => {
           const command = args.join(' ');
           if (command === 'pnpm store path') {
@@ -972,7 +996,80 @@ customSetting: true
           return command === 'pnpm --version' ? '12.7.0\n' : '/mock-cache';
         });
         await bundleCommand(defaultOpts);
-        expect(await readBundleWorkspace()).not.toHaveProperty('storeDir');
+        for (const env of pnpmInstallEnvs()) {
+          expect(env).not.toHaveProperty('pnpm_config_store_dir');
+        }
+
+        // A signal stops the bundle rather than falling back
+        mockRunOutput.mockImplementation(async (args: string[]) => {
+          const command = args.join(' ');
+          if (command === 'pnpm store path') {
+            throw Object.assign(new Error('ended by SIGINT'), {
+              signal: 'SIGINT',
+            });
+          }
+          return command === 'pnpm --version' ? '12.7.0\n' : '/mock-cache';
+        });
+        await expect(bundleCommand(defaultOpts)).rejects.toThrow(
+          'ended by SIGINT',
+        );
+      });
+
+      it('should resolve the bundle from the lockfile entry of the plugin', async () => {
+        const importer = (version: string) =>
+          `    dependencies:\n      ms:\n        specifier: ^2.1.0\n        version: ${version}\n`;
+        mockDir.addContent({
+          'pnpm-lock.yaml': `---
+lockfileVersion: '9.0'
+
+importers:
+
+  .:
+    packageManagerDependencies:
+      pnpm:
+        specifier: 12.7.0
+        version: 12.7.0
+
+---
+lockfileVersion: '9.0'
+
+importers:
+
+  .:
+${importer('2.1.3')}
+  ${backendPluginDir}:
+${importer('2.1.2')}
+  plugins/other:
+${importer('2.1.3')}
+packages:
+
+  ms@2.1.2:
+    resolution: {integrity: sha512-a}
+
+  ms@2.1.3:
+    resolution: {integrity: sha512-b}
+`,
+        });
+
+        await bundleCommand(defaultOpts);
+
+        const docs = parseAllDocuments(
+          await fs.readFile(joinPath(ctx.targetDir, 'pnpm-lock.yaml'), 'utf8'),
+        ).map(doc => doc.toJS());
+        // The document of the package manager itself is left alone
+        expect(docs[0].importers).toEqual({
+          '.': {
+            packageManagerDependencies: {
+              pnpm: { specifier: '12.7.0', version: '12.7.0' },
+            },
+          },
+        });
+        expect(docs[1].importers).toEqual({
+          '.': {
+            dependencies: { ms: { specifier: '^2.1.0', version: '2.1.2' } },
+          },
+        });
+        expect(Object.keys(docs[1].packages)).toEqual(['ms@2.1.2', 'ms@2.1.3']);
       });
 
       it('should replace files that an earlier bundle left behind', async () => {
@@ -1068,6 +1165,44 @@ customSetting: true
             react: '^18.0.0',
             'left-pad': '^1.3.0',
             other: '^1.0.0',
+          },
+        });
+
+        // The embedded packages get the versions that the lockfile of the
+        // project has for them, from the registry, since their lockfile
+        // entries don't carry over to the bundle
+        mockDir.addContent({
+          'pnpm-lock.yaml': `lockfileVersion: '9.0'
+
+importers:
+
+  .: {}
+
+  ${commonRelDir}:
+    dependencies:
+      left-pad:
+        specifier: catalog:named
+        version: 1.3.0
+      other:
+        specifier: ^1.0.0
+        version: 1.4.2(peer-only@2.0.0)
+      react:
+        specifier: ^17.0.0
+        version: 17.0.2
+`,
+        });
+        await bundleCommand(defaultOpts);
+        await expect(
+          fs.readJson(
+            joinPath(ctx.targetDir, 'embedded', commonRelDir, 'package.json'),
+          ),
+        ).resolves.toEqual({
+          ...embeddedCommon,
+          dependencies: {
+            // The range of the package is not the one that was locked
+            react: '^18.0.0',
+            'left-pad': '1.3.0',
+            other: '1.4.2',
           },
         });
 

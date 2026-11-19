@@ -23,7 +23,13 @@ import {
   join as joinPath,
   resolve as resolvePath,
 } from 'node:path';
-import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
+import {
+  Document,
+  isMap,
+  parse as parseYaml,
+  parseAllDocuments,
+  stringify as stringifyYaml,
+} from 'yaml';
 import { copyPnpmWorkspaceFiles } from '../../../lib/pnpmWorkspaceFiles';
 import { createStepLogger, showLogOnError } from './stepLogger';
 
@@ -86,6 +92,11 @@ export interface BundlePackageManagerSteps {
   pruneLockfile(options: {
     targetDir: string;
     rootDir: string;
+    /**
+     * The directory of the plugin relative to the directory of the seeded
+     * lockfile, with forward slashes, or `.` when it is the same directory.
+     */
+    pluginImporter: string;
     verbose: boolean;
   }): Promise<void>;
 
@@ -95,6 +106,7 @@ export interface BundlePackageManagerSteps {
    */
   installDependencies(options: {
     targetDir: string;
+    rootDir: string;
     verbose: boolean;
   }): Promise<void>;
 
@@ -228,13 +240,11 @@ const yarnSteps: BundlePackageManagerSteps = {
 /**
  * Settings of the source `pnpm-workspace.yaml` that the bundle copies.
  *
- * The first group makes the offline steps work. pnpm's store and metadata
- * cache are global on the machine, and the offline steps rely on both having
- * been filled by the install in the source project, so the bundle looks in
- * the same place. The metadata cache is kept per registry, and
- * `minimumReleaseAge` and `resolutionMode` select between separate metadata
- * caches, and `allowBuilds` builds the same native dependencies as the source
- * project. `pmOnFail` decides what pnpm does when it isn't the version that
+ * The first group makes the offline steps work. The offline steps rely on the
+ * metadata cache that the install in the source project filled, which is
+ * kept per registry, and `minimumReleaseAge` and `resolutionMode` select
+ * between separate metadata caches, and `allowBuilds` builds the same native
+ * dependencies as the source project. `pmOnFail` decides what pnpm does when it isn't the version that
  * the bundle `package.json` pins, which offline environments often set to
  * keep pnpm from downloading that version.
  *
@@ -243,8 +253,6 @@ const yarnSteps: BundlePackageManagerSteps = {
  * it does without an error, so a bundle built without them is quietly wrong.
  */
 const PNPM_SETTINGS_TO_COPY = [
-  'storeDir',
-  'cacheDir',
   'registry',
   'registries',
   'namedRegistries',
@@ -260,11 +268,10 @@ const PNPM_SETTINGS_TO_COPY = [
   'autoInstallPeers',
   'excludeLinksFromLockfile',
   'dedupePeerDependents',
+  'injectWorkspacePackages',
   'catalog',
   'catalogs',
 ];
-
-const PNPM_PATH_SETTINGS = new Set(['storeDir', 'cacheDir']);
 
 // Settings with registry URLs, which may hold credentials
 const PNPM_REGISTRY_SETTINGS = new Set([
@@ -284,6 +291,12 @@ const PNPM_SETTINGS_SET_BY_BUNDLE = new Set([
   // Copied together with the files they point at
   'patchedDependencies',
   'pnpmfile',
+  // Set when there are patches, since a patch may be for another package
+  'allowUnusedPatches',
+  // Passed to the offline steps rather than written into the bundle, since
+  // they are paths on the machine that builds it
+  'storeDir',
+  'cacheDir',
 ]);
 
 /**
@@ -306,7 +319,6 @@ const PNPM_SETTINGS_WITHOUT_EFFECT_ON_BUNDLE = new Set([
   'linkWorkspacePackages',
   'preferWorkspacePackages',
   'saveWorkspaceProtocol',
-  'injectWorkspacePackages',
   'ignoreWorkspaceRootCheck',
   'recursiveInstall',
   'strictPeerDependencies',
@@ -466,7 +478,8 @@ async function resolveEmbeddedCatalogRanges(
       if (typeof range !== 'string' || !range.startsWith('catalog:')) {
         continue;
       }
-      const catalogName = range.slice('catalog:'.length) || 'default';
+      // Like pnpm, the name is trimmed, and an empty name is the default
+      const catalogName = range.slice('catalog:'.length).trim() || 'default';
       const catalog =
         catalogName === 'default'
           ? (rootConfig.catalog as Record<string, unknown> | undefined) ??
@@ -504,9 +517,167 @@ async function readPnpmStorePath(rootDir: string): Promise<string | undefined> {
       })
     ).trim();
     return storePath || undefined;
-  } catch {
+  } catch (error) {
+    // A signal, for example from Ctrl+C, stops the bundle
+    if ((error as { signal?: unknown }).signal) {
+      throw error;
+    }
     return undefined;
   }
+}
+
+/**
+ * Returns the environment that points the offline steps at the store and the
+ * metadata cache of the source project, which its install filled. Without a
+ * storeDir setting, pnpm uses a store on the disk of the project, so a bundle
+ * on another disk would look in another store. These are paths on the
+ * machine that builds the bundle, so they are not written into the bundle,
+ * where pnpm would create them on another machine.
+ */
+async function readPnpmCacheEnv(
+  rootDir: string,
+): Promise<Record<string, string>> {
+  const rootConfig = await readPnpmWorkspaceConfig(rootDir);
+  // Relative paths are relative to the source project root
+  const resolveSetting = (value: unknown) =>
+    typeof value === 'string' && !isAbsolute(value) && !value.startsWith('~')
+      ? resolvePath(rootDir, value)
+      : value;
+  const storeDir =
+    resolveSetting(rootConfig.storeDir) ?? (await readPnpmStorePath(rootDir));
+  const cacheDir = resolveSetting(rootConfig.cacheDir);
+  return {
+    ...(typeof storeDir === 'string' && { pnpm_config_store_dir: storeDir }),
+    ...(typeof cacheDir === 'string' && { pnpm_config_cache_dir: cacheDir }),
+  };
+}
+
+// A version from the registry, without the peer dependencies that pnpm
+// appends to it in parentheses
+const PLAIN_VERSION_PATTERN = /^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.+-]+)?$/;
+
+/**
+ * Pins the dependencies of the embedded packages to the versions that the
+ * lockfile of the project has for them. The embedded packages are directory
+ * dependencies of the bundle rather than projects of a workspace, so their
+ * lockfile entries don't carry over, and pnpm would resolve their ranges
+ * again, possibly to other versions than the project installed for them.
+ * Only versions from the registry are pinned, and only when the lockfile
+ * entry was resolved from the same range or from a catalog.
+ */
+async function pinEmbeddedPackageVersions(targetDir: string): Promise<void> {
+  const { overrides } = await readPnpmWorkspaceConfig(targetDir);
+  const embeddedDirs = Object.values(overrides ?? {}).flatMap(value =>
+    typeof value === 'string' && value.startsWith('file:./embedded/')
+      ? [value.slice('file:./embedded/'.length)]
+      : [],
+  );
+  if (embeddedDirs.length === 0) {
+    return;
+  }
+
+  const importers: Record<string, Record<string, unknown>> = {};
+  for (const doc of parseAllDocuments(
+    await fs.readFile(joinPath(targetDir, 'pnpm-lock.yaml'), 'utf8'),
+  )) {
+    if (doc instanceof Document) {
+      Object.assign(importers, doc.toJS()?.importers);
+    }
+  }
+
+  for (const dir of embeddedDirs) {
+    const importer = importers[dir.split(/[\\/]/).join('/')];
+    if (!importer) {
+      continue;
+    }
+    const packageJsonPath = joinPath(
+      targetDir,
+      'embedded',
+      dir,
+      'package.json',
+    );
+    const packageJson = await fs.readJson(packageJsonPath);
+    let changed = false;
+    for (const field of ['dependencies', 'optionalDependencies']) {
+      const ranges = packageJson[field] as Record<string, unknown> | undefined;
+      const locked = importer[field] as
+        | Record<string, { specifier?: unknown; version?: unknown }>
+        | undefined;
+      for (const [name, range] of Object.entries(ranges ?? {})) {
+        const entry = locked?.[name];
+        const version =
+          typeof entry?.version === 'string'
+            ? entry.version.split('(')[0]
+            : undefined;
+        const specifier = String(entry?.specifier ?? '');
+        if (
+          version &&
+          PLAIN_VERSION_PATTERN.test(version) &&
+          typeof range === 'string' &&
+          (specifier === range || specifier.startsWith('catalog:'))
+        ) {
+          ranges![name] = version;
+          changed = true;
+        }
+      }
+    }
+    if (changed) {
+      await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
+    }
+  }
+}
+
+/**
+ * Makes the lockfile entry of the plugin the entry of the root project `.`,
+ * and removes the entries of the other projects. pnpm resolves the
+ * dependencies of the bundle from the entry of `.`, which in a lockfile of a
+ * workspace describes the workspace root, so a dependency that both declare
+ * with the same range would get the version of the root rather than the one
+ * of the plugin. The entries of local packages are resolved again, since the
+ * bundle refers to the embedded copies through overrides.
+ */
+async function useLockfileEntryOfPlugin(
+  lockfilePath: string,
+  pluginImporter: string,
+): Promise<void> {
+  if (pluginImporter === '.') {
+    return;
+  }
+  // A lockfile can have a separate document for the package manager itself
+  const docs = parseAllDocuments(await fs.readFile(lockfilePath, 'utf8'));
+  let found = false;
+  for (const doc of docs) {
+    if (!(doc instanceof Document)) {
+      continue;
+    }
+    const importers = doc.get('importers');
+    if (!isMap(importers) || !importers.has(pluginImporter)) {
+      continue;
+    }
+    const entry = importers.get(pluginImporter, true);
+    for (const item of [...importers.items]) {
+      importers.delete(item.key);
+    }
+    importers.set('.', entry);
+    found = true;
+  }
+  if (!found) {
+    console.warn(
+      chalk.yellow(
+        `The ${chalk.cyan(
+          'pnpm-lock.yaml',
+        )} of the project has no entry for ${pluginImporter}, so the bundle may get other versions of the dependencies than the plugin. Install the project to update its lockfile.`,
+      ),
+    );
+    return;
+  }
+  await fs.writeFile(
+    lockfilePath,
+    // pnpm separates the documents with an empty line
+    docs
+      .map(doc => doc.toString({ lineWidth: 0, flowCollectionPadding: false }))
+      .join('\n'),
+  );
 }
 
 /**
@@ -693,26 +864,15 @@ const pnpmSteps: BundlePackageManagerSteps = {
       };
     }
 
-    // Without a storeDir setting, pnpm uses a store on the disk of the
-    // project, so a bundle on another disk would look in another store than
-    // the one that the install of the project filled.
-    const storeDir = rootConfig.storeDir ?? (await readPnpmStorePath(rootDir));
-
     // Establish the bundle directory as its own pnpm workspace root, with the
     // same flat node_modules layout that Yarn produces.
     const config: Record<string, unknown> = { nodeLinker: 'hoisted' };
     for (const key of PNPM_SETTINGS_TO_COPY) {
-      const value = key === 'storeDir' ? storeDir : rootConfig[key];
+      const value = rootConfig[key];
       if (value === undefined) {
         continue;
       }
-      if (PNPM_PATH_SETTINGS.has(key) && typeof value === 'string') {
-        // Relative paths are relative to the source project root
-        config[key] =
-          isAbsolute(value) || value.startsWith('~')
-            ? value
-            : resolvePath(rootDir, value);
-      } else if (PNPM_REGISTRY_SETTINGS.has(key)) {
+      if (PNPM_REGISTRY_SETTINGS.has(key)) {
         // Like in the .npmrc, the credentials are left out, and pnpm keeps
         // its metadata cache of a registry without them
         const stripped = stripUrlCredentials(value);
@@ -746,6 +906,9 @@ const pnpmSteps: BundlePackageManagerSteps = {
     }
     if (Object.keys(copied.patchedDependencies).length > 0) {
       config.patchedDependencies = copied.patchedDependencies;
+      // The patches of the workspace may be for packages that only other
+      // projects of it use, and pnpm fails on unused patches when it resolves
+      config.allowUnusedPatches = true;
     }
     if (copied.pnpmfile !== undefined) {
       config.pnpmfile = copied.pnpmfile;
@@ -795,7 +958,15 @@ const pnpmSteps: BundlePackageManagerSteps = {
     );
   },
 
-  async pruneLockfile({ targetDir, verbose }) {
+  async pruneLockfile({ targetDir, rootDir, pluginImporter, verbose }) {
+    // The lockfile entries of the embedded packages are read before the
+    // entry of the plugin replaces all others
+    await pinEmbeddedPackageVersions(targetDir);
+    await useLockfileEntryOfPlugin(
+      joinPath(targetDir, 'pnpm-lock.yaml'),
+      pluginImporter,
+    );
+    const env = await readPnpmCacheEnv(rootDir);
     const pnpm = await Pnpm.create({ workspaceRootDir: targetDir });
     await runLoggedStep(
       joinPath(targetDir, 'lockfile-prune.log'),
@@ -808,14 +979,15 @@ const pnpmSteps: BundlePackageManagerSteps = {
           // lockfile, such as in CI.
           await pnpm.run(
             ['install', '--lockfile-only', '--no-frozen-lockfile', '--offline'],
-            output,
+            { env, ...output },
           );
         });
       },
     );
   },
 
-  async installDependencies({ targetDir, verbose }) {
+  async installDependencies({ targetDir, rootDir, verbose }) {
+    const env = await readPnpmCacheEnv(rootDir);
     const pnpm = await Pnpm.create({ workspaceRootDir: targetDir });
     await runLoggedStep(
       joinPath(targetDir, 'pnpm-install.log'),
@@ -823,7 +995,12 @@ const pnpmSteps: BundlePackageManagerSteps = {
       '[pnpm-install] ',
       async installLog => {
         await runOfflinePnpmStep(installLog, 'install', async output => {
-          await pnpm.install({ immutable: true, offline: true, ...output });
+          await pnpm.install({
+            immutable: true,
+            offline: true,
+            env,
+            ...output,
+          });
         });
       },
     );
