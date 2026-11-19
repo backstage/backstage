@@ -21,7 +21,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
 import { KubernetesContent } from './KubernetesContent';
-import Button from '@material-ui/core/Button';
+import { ButtonLink } from '@backstage/ui';
 import {
   KUBERNETES_ANNOTATION,
   KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION,
@@ -68,13 +68,13 @@ export const Router = (props: { refreshIntervalMs?: number }) => {
         Or use a label selector query, which takes precedence over the previous
         annotation.
       </h1>
-      <Button
-        variant="contained"
-        color="primary"
+      <ButtonLink
+        variant="primary"
+        size="medium"
         href="https://backstage.io/docs/features/kubernetes/configuration#surfacing-your-kubernetes-components-as-part-of-an-entity"
       >
         Read Kubernetes Plugin Docs
-      </Button>
+      </ButtonLink>
     </>
   );
 };
