@@ -24,6 +24,7 @@ import type { Fence } from '../contracts';
 import { validateHttpEnvelope } from './httpEnvelope';
 import { createProviderRegistry } from './registry';
 import type { AiProviderModule } from './types';
+import { testTransport } from '@backstage/ai-node-test-utils/alpha';
 
 it('registers and enforces non-chat modules without guard or journal edits', async () => {
   const events: string[] = [];
@@ -99,7 +100,7 @@ it('registers and enforces non-chat modules without guard or journal edits', asy
       events.push('recheck');
       return true;
     },
-    transport: transport as unknown as typeof fetch,
+    transport: testTransport(transport),
   });
   const operations = createGuardedModelOperations({
     providers,
@@ -332,7 +333,7 @@ it('rejects fabricated completions while preserving honest error settlements', a
       if (mode === 'multi-revoked') return checkCount < 2;
       return !denyPermission;
     },
-    transport: transport as unknown as typeof fetch,
+    transport: testTransport(transport),
   });
   const operations = createGuardedModelOperations({
     providers,
@@ -543,7 +544,7 @@ it('aborts a detached later fetch promptly after an earlier fetch failed', async
       }
       return true;
     },
-    transport: transport as unknown as typeof fetch,
+    transport: testTransport(transport),
   });
   const operations = createGuardedModelOperations({
     providers,

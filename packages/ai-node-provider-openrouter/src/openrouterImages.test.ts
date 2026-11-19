@@ -33,6 +33,7 @@ import {
   createJournalHarness,
   createModelOperationGuard,
   createProviderRegistry,
+  testTransport,
 } from '@backstage/ai-node-test-utils/alpha';
 import type {
   AttemptDecision,
@@ -140,7 +141,7 @@ function harness(model: AnyModel) {
       events.push('check');
       return true;
     },
-    transport: transport as unknown as typeof fetch,
+    transport: testTransport(transport),
   });
   const facade = createGuardedModelOperations({
     providers,
@@ -423,7 +424,7 @@ describe('openrouter images', () => {
         providers,
         journal: store.journal,
         recheck: async () => true,
-        transport: send as unknown as typeof fetch,
+        transport: testTransport(send),
       });
       const facade = createGuardedModelOperations({
         providers,
@@ -479,7 +480,7 @@ describe('openrouter images', () => {
         providers,
         journal: store.journal,
         recheck: async () => true,
-        transport: send as unknown as typeof fetch,
+        transport: testTransport(send),
       }).bind(op);
       await guard.fetch(op.destination!, {
         method: 'POST',

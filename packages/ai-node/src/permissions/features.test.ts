@@ -18,16 +18,20 @@ import { ConfigReader, type JsonObject } from '@backstage/config';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import type {
   AuditorService,
-  AuthService,
   BackstageCredentials,
   DatabaseService,
-  LifecycleService,
-  PermissionsService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
+import {
+  allowDecision,
+  createAuthServiceDouble,
+  createLifecycleServiceDouble,
+  createPermissionsServiceDouble,
+} from '@backstage/ai-node-test-utils/alpha';
 import type {
   PermissionCondition,
   PermissionCriteria,
+  QueryPermissionResponse,
 } from '@backstage/plugin-permission-common';
 import type { Context } from '@earendil-works/chord/context';
 import type { Harness, RegistryReader } from '@earendil-works/pi-durable';
@@ -89,36 +93,26 @@ function makeDeps(
 ): DefaultAiServiceDeps {
   return {
     database: {} as DatabaseService,
-    auth: {
-      isPrincipal: (
-        credentials: BackstageCredentials,
-        type: 'user' | 'service',
-      ) => (credentials.principal as { type: string }).type === type,
-    } as unknown as AuthService,
-    permissions: {
-      authorize: async (requests: Array<{ permission: { name: string } }>) => {
+    auth: createAuthServiceDouble(),
+    permissions: createPermissionsServiceDouble({
+      authorize: request => {
         calls.push({
-          permission: requests[0].permission.name,
+          permission: request.permission.name,
           credentials: undefined as unknown as BackstageCredentials,
         });
-        return [{ result: 'ALLOW' }];
+        return allowDecision;
       },
-      authorizeConditional: async (
-        requests: Array<{ permission: { name: string } }>,
-        options?: { credentials?: BackstageCredentials },
-      ) => {
+      query: (request, credentials) => {
         calls.push({
-          permission: requests[0].permission.name,
-          credentials: options?.credentials as BackstageCredentials,
+          permission: request.permission.name,
+          credentials: credentials as BackstageCredentials,
         });
-        return [decide()];
+        return decide() as QueryPermissionResponse;
       },
-    } as unknown as PermissionsService,
+    }),
     logger: mockServices.logger.mock(),
     auditor: {} as AuditorService,
-    lifecycle: {
-      addShutdownHook: () => {},
-    } as unknown as LifecycleService,
+    lifecycle: createLifecycleServiceDouble(),
     pluginMetadata: { getId: () => 'scaffolder' } as PluginMetadataService,
     events: mockServices.events(),
   };

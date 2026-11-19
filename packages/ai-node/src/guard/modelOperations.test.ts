@@ -26,6 +26,7 @@ import {
 } from './modelOperations';
 import type { ModelOperation, TrustedOperation } from './types';
 import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
+import { testTransport } from '@backstage/ai-node-test-utils/alpha';
 
 const createModelOperationGuard = (
   options: Parameters<typeof createModelOperationGuardBase>[0],
@@ -57,7 +58,7 @@ describe('guarded model operations', () => {
     const guard = createModelOperationGuard({
       journal,
       recheck: async () => true,
-      transport: transport as unknown as typeof fetch,
+      transport: testTransport(transport),
     });
     let failure:
       | 'valid'
@@ -220,7 +221,7 @@ describe('guarded model operations', () => {
     const guard = createModelOperationGuard({
       journal,
       recheck: async () => true,
-      transport: transport as unknown as typeof fetch,
+      transport: testTransport(transport),
     });
     let expired = false;
     let verified = true;

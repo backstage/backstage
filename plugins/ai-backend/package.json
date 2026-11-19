@@ -74,6 +74,7 @@
     "express-promise-router": "^4.1.1"
   },
   "devDependencies": {
+    "@backstage/ai-node-test-utils": "workspace:^",
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",

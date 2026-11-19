@@ -32,8 +32,12 @@ import {
   coreServices,
   createServiceFactory,
   createBackendModule,
-  type PermissionsService,
 } from '@backstage/backend-plugin-api';
+import {
+  allowDecision,
+  createPermissionsServiceDouble,
+  denyDecision,
+} from '@backstage/ai-node-test-utils/alpha';
 import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
 import { aiBackendProviderModules } from './providerModules';
 import { aiServiceRef } from '@backstage/ai-node/alpha';
@@ -101,20 +105,12 @@ describe.each<[string, string | undefined]>([
     let breakStream = false;
     let failRequest = false;
     const deniedPermissions = new Set<string>();
-    const permissionService = {
-      authorize: async (
-        requests: Parameters<PermissionsService['authorize']>[0],
-      ) =>
-        requests.map(({ permission }) => ({
-          result: deniedPermissions.has(permission.name) ? 'DENY' : 'ALLOW',
-        })),
-      authorizeConditional: async (
-        requests: Parameters<PermissionsService['authorizeConditional']>[0],
-      ) =>
-        requests.map(({ permission }) => ({
-          result: deniedPermissions.has(permission.name) ? 'DENY' : 'ALLOW',
-        })),
-    } as unknown as PermissionsService;
+    const decide = (name: string) =>
+      deniedPermissions.has(name) ? denyDecision : allowDecision;
+    const permissionService = createPermissionsServiceDouble({
+      authorize: ({ permission }) => decide(permission.name),
+      query: ({ permission }) => decide(permission.name),
+    });
     const provider = createServer((req, res) => {
       providerRequests += 1;
       req.resume();

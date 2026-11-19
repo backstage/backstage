@@ -31,6 +31,7 @@ import { validateToolCallEnvelope } from './envelope';
 import { createGuardedToolOperations } from './mediation';
 import { createToolRegistry } from './registry';
 import type { ToolModule } from './types';
+import { testTransport } from '@backstage/ai-node-test-utils/alpha';
 
 const storageMigration = require('../../migrations/1000_storage');
 const journalMigration = require('../../migrations/4000_journal');
@@ -531,7 +532,7 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
               id,
               origin: 'https://provider.example',
               db: store.db,
-              transport: transport as unknown as typeof fetch,
+              transport: testTransport(transport),
               recheck: async () => true,
             });
             await expect(harness.call()).resolves.toEqual({ result: 'ok' });
@@ -564,7 +565,7 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
               id,
               origin: 'https://provider.example',
               db: store.db,
-              transport: transport as unknown as typeof fetch,
+              transport: testTransport(transport),
               recheck: async () => !revoked,
             });
             revoked = true;
@@ -588,7 +589,7 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
               id,
               origin: 'https://provider.example',
               db: store.db,
-              transport: transport as unknown as typeof fetch,
+              transport: testTransport(transport),
               recheck: async () => {
                 await new Promise(resolve => setTimeout(resolve, 150));
                 return true;
@@ -621,7 +622,7 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
               id,
               origin: 'https://provider.example',
               db: store.db,
-              transport: transport as unknown as typeof fetch,
+              transport: testTransport(transport),
               recheck: async () => true,
             });
             await expect(harness.call()).resolves.toMatchObject({
@@ -650,7 +651,7 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
               id,
               origin: 'https://provider.example',
               db: store.db,
-              transport: transport as unknown as typeof fetch,
+              transport: testTransport(transport),
               recheck: async () => true,
               module: {
                 ...realToolModule(id, 'https://provider.example'),
@@ -714,7 +715,7 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
               id,
               origin: 'https://provider.example',
               db: store.db,
-              transport: transport as unknown as typeof fetch,
+              transport: testTransport(transport),
               recheck: async () => !revoked,
               module: retryingToolModule(id),
             });
@@ -750,7 +751,7 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
                 id,
                 origin: 'https://provider.example',
                 db: store.db,
-                transport: transport as unknown as typeof fetch,
+                transport: testTransport(transport),
                 recheck: async () => true,
                 module: substitutingToolModule(id, substitution),
               });
@@ -786,7 +787,7 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
               id,
               origin: 'https://provider.example',
               db: store.db,
-              transport: transport as unknown as typeof fetch,
+              transport: testTransport(transport),
               recheck: async () => true,
             });
             await expect(harness.call()).resolves.toMatchObject({
@@ -816,7 +817,7 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
               id,
               origin: 'https://provider.example',
               db: store.db,
-              transport: transport as unknown as typeof fetch,
+              transport: testTransport(transport),
               recheck: async () => true,
               module: retryingToolModule(id),
             });
@@ -860,7 +861,7 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
               id,
               origin: 'https://provider.example',
               db: store.db,
-              transport: transport as unknown as typeof fetch,
+              transport: testTransport(transport),
               recheck: async () => true,
               module: disciplineToolModule(id, 'skip-guard'),
             });
@@ -884,7 +885,7 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
               id,
               origin: 'https://provider.example',
               db: store.db,
-              transport: transport as unknown as typeof fetch,
+              transport: testTransport(transport),
               recheck: async () => true,
               module: disciplineToolModule(id, 'fabricate-on-denial'),
             });
@@ -907,7 +908,7 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
               id,
               origin: 'https://provider.example',
               db: store.db,
-              transport: transport as unknown as typeof fetch,
+              transport: testTransport(transport),
               recheck: async () => true,
               module: disciplineToolModule(id, 'fabricate-detached'),
             });
@@ -934,7 +935,7 @@ if (process.env.AI_TOOL_CERT_WORKER === '1') {
               id,
               origin: 'https://provider.example',
               db: store.db,
-              transport: transport as unknown as typeof fetch,
+              transport: testTransport(transport),
               recheck: async () => true,
               module: disciplineToolModule(id, 'fabricate-after-response'),
             });
