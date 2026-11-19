@@ -228,6 +228,28 @@ function findTypesPackage(dep: string, pkg: Package) {
           ) {
             return undefined;
           }
+          // ESM-only packages may expose no "require" or "default" export
+          // condition, so require.resolve fails even though the dependency
+          // is installed and its types work. Look for the package itself in
+          // the node_modules chain as a last resort, resolving subpath
+          // specifiers to their package root first.
+          const segments = dep.split('/');
+          const packageName = segments[0].startsWith('@')
+            ? segments.slice(0, 2).join('/')
+            : segments[0];
+          for (
+            let dir = pkg.dir;
+            dir !== resolvePath(dir, '..');
+            dir = resolvePath(dir, '..')
+          ) {
+            if (
+              fs.existsSync(
+                resolvePath(dir, `node_modules/${packageName}/package.json`),
+              )
+            ) {
+              return undefined;
+            }
+          }
           throw mkErr('MissingDepError', `No types for ${dep}`, { dep });
         }
       }

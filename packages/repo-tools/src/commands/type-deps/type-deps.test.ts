@@ -77,4 +77,56 @@ describe('type-deps', () => {
     expect(error).not.toHaveBeenCalled();
     expect(exit).not.toHaveBeenCalled();
   });
+
+  it('accepts ESM-only dependencies whose exports lack a require condition', async () => {
+    const exit = jest
+      .spyOn(process, 'exit')
+      .mockImplementation((() => {}) as () => never);
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    fs.writeFileSync(
+      joinPath(tmpDir, 'package.json'),
+      JSON.stringify({ name: 'root', private: true, workspaces: ['pkg'] }),
+    );
+    fs.writeFileSync(joinPath(tmpDir, 'yarn.lock'), '');
+    fs.mkdirSync(joinPath(tmpDir, 'pkg/dist'), { recursive: true });
+    fs.writeFileSync(
+      joinPath(tmpDir, 'pkg/package.json'),
+      JSON.stringify({
+        name: 'pkg',
+        version: '1.0.0',
+        main: 'dist/index.js',
+        types: 'dist/index.d.ts',
+        dependencies: {
+          '@fake/esm-only': '1.0.0',
+        },
+      }),
+    );
+    fs.writeFileSync(
+      joinPath(tmpDir, 'pkg/dist/index.d.ts'),
+      "import type { Ctx } from '@fake/esm-only/context';\nexport type { Ctx };\n",
+    );
+    // Installed, but ESM-only: no "require" or "default" export condition,
+    // so require.resolve cannot see it and only the node_modules lookup finds it.
+    fs.mkdirSync(joinPath(tmpDir, 'node_modules/@fake/esm-only'), {
+      recursive: true,
+    });
+    fs.writeFileSync(
+      joinPath(tmpDir, 'node_modules/@fake/esm-only/package.json'),
+      JSON.stringify({
+        name: '@fake/esm-only',
+        version: '1.0.0',
+        type: 'module',
+        exports: {
+          '.': { import: './dist/index.js' },
+          './context': { import: './dist/context.js' },
+        },
+      }),
+    );
+
+    await typeDeps();
+
+    expect(error).not.toHaveBeenCalled();
+    expect(exit).not.toHaveBeenCalled();
+  });
 });
