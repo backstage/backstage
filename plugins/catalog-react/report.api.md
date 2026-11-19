@@ -485,6 +485,7 @@ export type EntityListContextProps<
   setOffset?: (offset: number) => void;
   paginationMode: PaginationMode;
   refresh?: () => void;
+  textFilterFields?: TextFilterFieldsConfig;
 };
 
 // @public (undocumented)
@@ -508,6 +509,7 @@ export const EntityListProvider: <EntityFilters extends DefaultEntityFilters>(
 // @public (undocumented)
 export type EntityListProviderProps = PropsWithChildren<{
   pagination?: EntityListPagination;
+  textFilterFields?: TextFilterFieldsConfig;
 }>;
 
 // @public (undocumented)
@@ -788,7 +790,11 @@ export type EntityTagPickerProps = {
 
 // @public
 export class EntityTextFilter implements EntityFilter {
-  constructor(value: string);
+  constructor(value: string, fields?: string[]);
+  // (undocumented)
+  static readonly DEFAULT_FIELDS: string[];
+  // (undocumented)
+  readonly fields?: string[];
   // (undocumented)
   filterEntity(entity: Entity): boolean;
   // (undocumented)
@@ -933,6 +939,9 @@ export interface StarredEntitiesApi {
 
 // @public
 export const starredEntitiesApiRef: ApiRef_2<StarredEntitiesApi>;
+
+// @public
+export type TextFilterFieldsConfig = string[] | Record<string, string[]>;
 
 // @public (undocumented)
 export const UnregisterEntityDialog: (

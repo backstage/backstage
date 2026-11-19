@@ -53,7 +53,11 @@ import {
   EntityUserFilter,
   UserListFilter,
 } from '../filters';
-import { EntityFilter, EntityListPagination } from '../types';
+import {
+  EntityFilter,
+  EntityListPagination,
+  TextFilterFieldsConfig,
+} from '../types';
 import {
   reduceBackendCatalogFilters,
   reduceCatalogFilters,
@@ -132,6 +136,8 @@ export type EntityListContextProps<
    * Trigger refresh of entities and entity totals.
    */
   refresh?: () => void;
+
+  textFilterFields?: TextFilterFieldsConfig;
 };
 
 // This context has support for multiple concurrent versions of this package.
@@ -159,6 +165,7 @@ type BackendState = {
  */
 export type EntityListProviderProps = PropsWithChildren<{
   pagination?: EntityListPagination;
+  textFilterFields?: TextFilterFieldsConfig;
 }>;
 
 /**
@@ -519,6 +526,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       setOffset,
       paginationMode,
       refresh: triggerRefresh,
+      textFilterFields: props.textFilterFields,
     }),
     [
       requestedFilters,
@@ -537,6 +545,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       setLimit,
       setOffset,
       triggerRefresh,
+      props.textFilterFields,
     ],
   );
 
