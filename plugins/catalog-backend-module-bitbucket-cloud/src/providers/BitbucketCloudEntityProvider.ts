@@ -155,7 +155,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       const taskId = this.getTaskId();
       return schedule.run({
         id: taskId,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.logger.child({
             class: BitbucketCloudEntityProvider.prototype.constructor.name,
             taskId,
@@ -163,7 +163,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
           });
 
           try {
-            await this.refresh(logger);
+            await this.refreshWithSignal(logger, signal);
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
@@ -208,15 +208,20 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
   }
 
   async refresh(logger: LoggerService) {
+    await this.refreshWithSignal(logger);
+  }
+
+  private async refreshWithSignal(logger: LoggerService, signal?: AbortSignal) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
 
     logger.info('Discovering catalog files in Bitbucket Cloud repositories');
 
-    const targets = await this.findCatalogFiles();
+    const targets = await this.findCatalogFiles(undefined, signal);
     const entities = this.toDeferredEntities(targets);
 
+    signal?.throwIfAborted();
     await this.connection.applyMutation({
       type: 'full',
       entities: entities,
@@ -365,24 +370,26 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
   private async findCatalogFiles(
     repoSlug?: string,
+    signal?: AbortSignal,
   ): Promise<IngestionTarget[]> {
     // The code search results do not hold the main branch and the project of
     // a repository. Load them from the repository list instead, and only
     // search projects that still have a repository after `filters`.
-    const repositories = (await this.findRepositories(repoSlug)).filter(
+    const repositories = (await this.findRepositories(repoSlug, signal)).filter(
       repository => this.matchesFilters(repository),
     );
 
     // A rejected workspace search stays rejected for the cooldown. Scheduled
     // refreshes and repo:push / repo:updated events skip the failing request.
     if (Date.now() < this.codeSearchUnavailableUntil) {
-      return this.findCatalogFilesBySource(repositories);
+      return this.findCatalogFilesBySource(repositories, signal);
     }
 
     try {
       const targets = await this.findCatalogFilesByCodeSearch(
         repositories,
         repoSlug,
+        signal,
       );
       this.codeSearchUnavailableUntil = 0;
       this.codeSearchUnavailableWarned = false;
@@ -410,13 +417,14 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
         this.logger.warn(message);
         this.codeSearchUnavailableWarned = true;
       }
-      return this.findCatalogFilesBySource(repositories);
+      return this.findCatalogFilesBySource(repositories, signal);
     }
   }
 
   private async findCatalogFilesByCodeSearch(
     repositories: Models.Repository[],
     repoSlug?: string,
+    signal?: AbortSignal,
   ): Promise<IngestionTarget[]> {
     const workspace = this.config.workspace;
     const repositoriesByProject = new Map<string, Models.Repository[]>();
@@ -433,6 +441,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
     let results: IngestionTarget[] = [];
     for (const [projectKey, projectRepositories] of repositoriesByProject) {
+      signal?.throwIfAborted();
       const scopeFilter: CodeSearch.Filter = repoSlug
         ? { attribute: 'repository', eq: repoSlug }
         : { attribute: 'project', eq: projectKey };
@@ -449,6 +458,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
   private async findCatalogFilesBySource(
     repositories: Models.Repository[],
+    signal?: AbortSignal,
   ): Promise<IngestionTarget[]> {
     const pattern = BitbucketCloudEntityProvider.toPathPattern(
       this.config.catalogPath,
@@ -460,7 +470,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       repositories,
       SOURCE_REPOSITORY_CONCURRENCY,
       repository =>
-        this.catalogTargetsInRepository(repository, pattern, exactFile),
+        this.catalogTargetsInRepository(repository, pattern, exactFile, signal),
     );
     return located.flat();
   }
@@ -469,7 +479,9 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     repository: Models.Repository,
     pattern: RegExp,
     exactFile: string | undefined,
+    signal?: AbortSignal,
   ): Promise<IngestionTarget[]> {
+    signal?.throwIfAborted();
     const slug = repository.slug;
     const repoUrl = repository.links?.html?.href;
     if (!slug || !repoUrl) {
@@ -632,6 +644,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
   private async findRepositories(
     repoSlug?: string,
+    signal?: AbortSignal,
   ): Promise<Models.Repository[]> {
     const fields = [
       'next',
@@ -647,6 +660,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     for await (const repository of this.client
       .listRepositoriesByWorkspace(this.config.workspace, { fields, q })
       .iterateResults()) {
+      signal?.throwIfAborted();
       repositories.push(repository);
     }
 

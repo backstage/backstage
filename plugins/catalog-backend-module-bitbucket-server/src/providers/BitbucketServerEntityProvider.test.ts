@@ -418,6 +418,63 @@ describe('BitbucketServerEntityProvider', () => {
     });
   });
 
+  it('does not apply a full update when the scheduled task is aborted', async () => {
+    const config = new ConfigReader({
+      integrations: { bitbucketServer: [{ host }] },
+      catalog: {
+        providers: { bitbucketServer: { mainProvider: { host } } },
+      },
+    });
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = BitbucketServerEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+    const controller = new AbortController();
+    let onListRepos = () => {};
+    server.use(
+      http.get(`https://${host}/rest/api/1.0/projects`, () =>
+        HttpResponse.json(pagedResponse([{ key: 'PROJ' }])),
+      ),
+      http.get(`https://${host}/rest/api/1.0/projects/PROJ/repos`, () => {
+        onListRepos();
+        return HttpResponse.json(
+          pagedResponse([
+            {
+              slug: 'repo1',
+              links: {
+                self: [
+                  {
+                    href: `https://${host}/projects/PROJ/repos/repo1/browse`,
+                  },
+                ],
+              },
+              archived: false,
+              defaultBranch: 'master',
+            },
+          ]),
+        );
+      }),
+    );
+    await provider.connect(entityProviderConnection);
+    const runTask = (signal: AbortSignal) =>
+      (schedule.getTasks()[0].fn as (signal: AbortSignal) => Promise<void>)(
+        signal,
+      );
+
+    await runTask(AbortSignal.abort());
+    onListRepos = () => controller.abort();
+    await runTask(controller.signal);
+    expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+
+    await runTask(new AbortController().signal);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+  });
+
   it('apply full update on scheduled execution without filters', async () => {
     const config = new ConfigReader({
       integrations: {
