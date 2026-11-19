@@ -146,4 +146,100 @@ describe('type-deps', () => {
     );
     expect(exit).toHaveBeenCalledWith(2);
   });
+
+  it('resolves scoped subpath specifiers through the package root', async () => {
+    const exit = jest
+      .spyOn(process, 'exit')
+      .mockImplementation((() => {}) as () => never);
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    fs.writeFileSync(
+      joinPath(tmpDir, 'package.json'),
+      JSON.stringify({ name: 'root', private: true, workspaces: ['pkg'] }),
+    );
+    fs.writeFileSync(joinPath(tmpDir, 'yarn.lock'), '');
+    fs.mkdirSync(joinPath(tmpDir, 'pkg/dist'), { recursive: true });
+    fs.writeFileSync(
+      joinPath(tmpDir, 'pkg/package.json'),
+      JSON.stringify({
+        name: 'pkg',
+        version: '1.0.0',
+        main: 'dist/index.js',
+        types: 'dist/index.d.ts',
+        dependencies: {
+          '@fake/esm-only': '1.0.0',
+        },
+      }),
+    );
+    fs.writeFileSync(
+      joinPath(tmpDir, 'pkg/dist/index.d.ts'),
+      "import type { Ctx } from '@fake/esm-only/sub';\nexport type { Ctx };\n",
+    );
+    fs.mkdirSync(joinPath(tmpDir, 'node_modules/@fake/esm-only'), {
+      recursive: true,
+    });
+    fs.writeFileSync(
+      joinPath(tmpDir, 'node_modules/@fake/esm-only/package.json'),
+      JSON.stringify({
+        name: '@fake/esm-only',
+        version: '1.0.0',
+        type: 'module',
+        exports: {
+          '.': { import: './dist/index.js' },
+          './sub': { import: './dist/sub.js' },
+        },
+      }),
+    );
+
+    // Scoped subpath specifier: the fallback must find the package via its
+    // root name, @fake/esm-only, rather than the full specifier
+    await typeDeps();
+
+    expect(error).not.toHaveBeenCalled();
+    expect(exit).not.toHaveBeenCalled();
+  });
+
+  it('targets the package root for @types lookups of scoped subpath specifiers', async () => {
+    const exit = jest
+      .spyOn(process, 'exit')
+      .mockImplementation((() => {}) as () => never);
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    fs.writeFileSync(
+      joinPath(tmpDir, 'package.json'),
+      JSON.stringify({ name: 'root', private: true, workspaces: ['pkg'] }),
+    );
+    fs.writeFileSync(joinPath(tmpDir, 'yarn.lock'), '');
+    fs.mkdirSync(joinPath(tmpDir, 'pkg/dist'), { recursive: true });
+    // The package itself is not installed; only an @types package named
+    // after the package root (not the subpath) can satisfy the check
+    fs.writeFileSync(
+      joinPath(tmpDir, 'pkg/package.json'),
+      JSON.stringify({
+        name: 'pkg',
+        version: '1.0.0',
+        main: 'dist/index.js',
+        types: 'dist/index.d.ts',
+        dependencies: {
+          '@types/@fake/scoped': '1.0.0',
+        },
+      }),
+    );
+    fs.writeFileSync(
+      joinPath(tmpDir, 'pkg/dist/index.d.ts'),
+      "import type { Ctx } from '@fake/scoped/sub';\nexport type { Ctx };\n",
+    );
+    fs.mkdirSync(joinPath(tmpDir, 'node_modules/@types/@fake/scoped'), {
+      recursive: true,
+    });
+    fs.writeFileSync(
+      joinPath(tmpDir, 'node_modules/@types/@fake/scoped/package.json'),
+      JSON.stringify({ version: '1.0.0' }),
+    );
+
+    await typeDeps();
+
+    expect(error).not.toHaveBeenCalled();
+    expect(exit).not.toHaveBeenCalled();
+  });
 });

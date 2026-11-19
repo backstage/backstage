@@ -227,20 +227,8 @@ function findTypesPackage(dep: string, pkg: Package) {
           require.resolve(`${dep}.d.ts`, { paths: [pkg.dir] });
           return undefined;
         } catch {
-          // And finally a naive lookup of the file directly, in case `require.resolve` fails us due to "exports"
-          if (fs.existsSync(resolvePath(pkg.dir, `node_modules/${dep}.d.ts`))) {
-            return undefined;
-          }
-          if (
-            fs.existsSync(
-              resolvePath(pkg.dir, `../../node_modules/${dep}.d.ts`),
-            )
-          ) {
-            return undefined;
-          }
-          // ESM-only packages may expose no "require" or "default" export
-          // condition, so require.resolve fails even though the dependency
-          // is installed and its types work. As a last resort, check the
+          // And finally a naive lookup of the files directly, in case
+          // `require.resolve` fails us due to "exports". Search the
           // node_modules directories that Node itself would search for the
           // package, minus the exports gate.
           const searchPaths =
@@ -248,9 +236,17 @@ function findTypesPackage(dep: string, pkg: Package) {
               packageName,
             ) || [];
           for (const dir of searchPaths) {
+            // ESM-only packages may expose no "require" or "default" export
+            // condition, so require.resolve fails even though the dependency
+            // is installed and its types work.
             if (
               fs.existsSync(resolvePath(dir, `${packageName}/package.json`))
             ) {
+              return undefined;
+            }
+            // Some type-only modules ship a bare .d.ts file next to the
+            // specifier path, which the exports gate can also hide.
+            if (fs.existsSync(resolvePath(dir, `${dep}.d.ts`))) {
               return undefined;
             }
           }
