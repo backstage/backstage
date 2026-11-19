@@ -12,8 +12,7 @@ plugin may request are all permission queries — there is no allowlist in
 `app-config.yaml` for them.
 
 When no policy is configured, the framework's default applies: every
-permission is allowed. See [the default and its sharp
-edge](#the-default-and-its-sharp-edge).
+permission is allowed. See [the default and its sharp edge](#the-default-and-its-sharp-edge).
 
 ## The permissions
 

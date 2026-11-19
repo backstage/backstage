@@ -362,8 +362,8 @@ actionable denial recorded in the journal, never a fallback.
 - **Permissions** are one fixed permission per resource kind:
   `ai.model.use` for every dispatch, with the model pair travelling as
   the resource the service already holds. Granularity lives in the
-  policy's rules, not in permission names — see [Model and tool
-  permissions](#model-and-tool-permissions).
+  policy's rules, not in permission names — see
+  [Model, tool and feature permissions](#model-tool-and-feature-permissions).
 - **Fail-closed validation**: unknown fields, duplicate models, unusable
   adapter identifiers, non-http(s) destinations and malformed scope keys all
   reject with the exact configuration path, the offending field, and
