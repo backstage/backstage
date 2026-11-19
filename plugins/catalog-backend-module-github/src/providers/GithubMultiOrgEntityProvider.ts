@@ -357,6 +357,13 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
    * manual scheduling.
    */
   async read(options?: { logger?: LoggerService }) {
+    return this.readInternal(options);
+  }
+
+  private async readInternal(options?: {
+    logger?: LoggerService;
+    signal?: AbortSignal;
+  }) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -372,6 +379,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       : await this.getAllOrgs(this.options.gitHubConfig);
 
     for (const org of orgsToProcess) {
+      options?.signal?.throwIfAborted();
       let credentials: GithubCredentials;
       try {
         credentials =
@@ -424,6 +432,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         this.options.fetchEmailForGithubApps,
       );
 
+      options?.signal?.throwIfAborted();
       const { teams } = await getOrganizationTeams(
         client,
         org,
@@ -479,6 +488,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       return 0;
     });
 
+    options?.signal?.throwIfAborted();
     await this.connection.applyMutation({
       type: 'full',
       entities: allEntities,
@@ -1030,7 +1040,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       const id = `${this.getProviderName()}:refresh`;
       await schedule.run({
         id,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.options.logger.child({
             class: GithubMultiOrgEntityProvider.prototype.constructor.name,
             taskId: id,
@@ -1038,7 +1048,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           });
 
           try {
-            await this.read({ logger });
+            await this.readInternal({ logger, signal });
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,

@@ -185,14 +185,14 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({
         id: taskId,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.logger.child({
             class: GithubEntityProvider.prototype.constructor.name,
             taskId,
             taskInstanceId: randomUUID(),
           });
           try {
-            await this.refresh(logger);
+            await this.refreshInternal(logger, signal);
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
@@ -205,14 +205,19 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   async refresh(logger: LoggerService) {
+    return this.refreshInternal(logger);
+  }
+
+  private async refreshInternal(logger: LoggerService, signal?: AbortSignal) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
 
-    const targets = await this.findCatalogFiles();
+    const targets = await this.findCatalogFiles(signal);
     const matchingTargets = this.matchesFilters(targets);
     const entities = this.toDeferredEntitiesFromRepos(matchingTargets);
 
+    signal?.throwIfAborted();
     await this.connection.applyMutation({
       type: 'full',
       entities,
@@ -257,12 +262,13 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   // go to the server and get all repositories
-  private async findCatalogFiles(): Promise<Repository[]> {
+  private async findCatalogFiles(signal?: AbortSignal): Promise<Repository[]> {
     const organizations = await this.getOrganizations();
     const catalogPath = this.config.catalogPath;
 
     let repositories: Repository[] = [];
     for (const organization of organizations) {
+      signal?.throwIfAborted();
       const client = await this.createGraphqlClient(organization);
 
       const pageSizes: GithubPageSizes = {

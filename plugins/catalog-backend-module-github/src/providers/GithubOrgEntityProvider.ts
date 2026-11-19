@@ -315,6 +315,13 @@ export class GithubOrgEntityProvider implements EntityProvider {
    * manual scheduling.
    */
   async read(options?: { logger?: LoggerService }) {
+    return this.readInternal(options);
+  }
+
+  private async readInternal(options?: {
+    logger?: LoggerService;
+    signal?: AbortSignal;
+  }) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -336,6 +343,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
     const { org } = parseGithubOrgUrl(this.options.orgUrl);
     const pageSizes = this.getPageSizes();
 
+    options?.signal?.throwIfAborted();
     const { users } = await getOrganizationUsers(
       client,
       org,
@@ -346,6 +354,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       this.useRestSuspendedCheck ? this.getRestClient() : undefined,
       this.options.fetchEmailForGithubApps,
     );
+    options?.signal?.throwIfAborted();
     const { teams } = await getOrganizationTeams(
       client,
       org,
@@ -362,6 +371,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
 
     const { markCommitComplete } = markReadComplete({ users, teams });
 
+    options?.signal?.throwIfAborted();
     await this.connection.applyMutation({
       type: 'full',
       entities: [...users, ...teams].map(entity => ({
@@ -752,7 +762,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       const id = `${this.getProviderName()}:refresh`;
       await schedule.run({
         id,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.options.logger.child({
             class: GithubOrgEntityProvider.prototype.constructor.name,
             taskId: id,
@@ -760,7 +770,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
           });
 
           try {
-            await this.read({ logger });
+            await this.readInternal({ logger, signal });
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
