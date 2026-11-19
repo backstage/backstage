@@ -15,6 +15,8 @@
  */
 
 import ShareIcon from '@material-ui/icons/Share';
+import Typography from '@material-ui/core/Typography';
+import { CSSProperties } from 'react';
 import { DocsTableRow } from './types';
 import { FavoriteToggleIcon } from '@backstage/core-components';
 import type { TranslationFunction } from '@backstage/core-plugin-api/alpha';
@@ -23,6 +25,24 @@ import type { techdocsTranslationRef } from '../../../translation';
 type InternalTranslationFunctionType = TranslationFunction<
   typeof techdocsTranslationRef extends { T: infer T } ? T : never
 >;
+
+// Matches the visually-hidden pattern used by CatalogTable action icons so
+// material-table IconButtons get an accessible name from their content.
+const visuallyHidden: CSSProperties = {
+  border: 0,
+  clip: 'rect(0 0 0 0)',
+  height: '1px',
+  margin: '-1px',
+  overflow: 'hidden',
+  padding: 0,
+  position: 'absolute',
+  whiteSpace: 'nowrap',
+  width: '1px',
+};
+
+function entityLabel(row: DocsTableRow): string {
+  return row.entity.metadata.title || row.entity.metadata.name;
+}
 
 /**
  * Not directly exported, but through DocsTable.actions and EntityListDocsTable.actions
@@ -35,11 +55,18 @@ export const actionFactories = {
     t?: InternalTranslationFunctionType,
   ) {
     return (row: DocsTableRow) => {
+      const name = entityLabel(row);
+      const tooltip =
+        t?.('table.actions.copyDocsUrl', { entityName: name }) ??
+        `Copy link to ${name} documentation`;
       return {
-        icon: () => <ShareIcon fontSize="small" />,
-        tooltip:
-          t?.('table.actions.copyDocsUrl', {}) ??
-          'Click to copy documentation link to clipboard',
+        icon: () => (
+          <>
+            <Typography style={visuallyHidden}>{tooltip}</Typography>
+            <ShareIcon fontSize="small" />
+          </>
+        ),
+        tooltip,
         onClick: () =>
           copyToClipboard(`${window.location.origin}${row.resolved.docsUrl}`),
       };
@@ -52,14 +79,21 @@ export const actionFactories = {
   ) {
     return (row: DocsTableRow) => {
       const entity = row.entity;
+      const name = entityLabel(row);
       const isStarred = isStarredEntity(entity);
       const tooltip = isStarred
-        ? t?.('table.actions.removeFromFavorites', {}) ??
-          'Remove from favorites'
-        : t?.('table.actions.addToFavorites', {}) ?? 'Add to favorites';
+        ? t?.('table.actions.removeFromFavorites', { entityName: name }) ??
+          `Remove ${name} from favorites`
+        : t?.('table.actions.addToFavorites', { entityName: name }) ??
+          `Add ${name} to favorites`;
       return {
         cellStyle: { paddingLeft: '1em' },
-        icon: () => <FavoriteToggleIcon isFavorite={isStarred} />,
+        icon: () => (
+          <>
+            <Typography style={visuallyHidden}>{tooltip}</Typography>
+            <FavoriteToggleIcon isFavorite={isStarred} />
+          </>
+        ),
         tooltip,
         onClick: () => toggleStarredEntity(entity),
       };
