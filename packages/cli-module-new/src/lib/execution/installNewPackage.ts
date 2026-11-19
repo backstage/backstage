@@ -72,7 +72,7 @@ async function addDependency(input: PortableTemplateInput, path: string) {
       [input.packageName]: `workspace:^`,
     };
 
-    await fs.writeJson(path, pkgJson, { spaces: 2 });
+    await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
   } catch (error) {
     throw new Error(`Failed to add package dependencies, ${error}`);
   }
