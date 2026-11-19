@@ -175,7 +175,7 @@ describe('wrapProviderModule dispatch through the durable journal', () => {
       resolvedModel: model.id,
       operation,
       api: model.api,
-      destination: providers.get(model.api)!.destination(model, undefined),
+      destination: providers.get(model.api)!.destination!(model, undefined),
       credentialScope: { kind: 'user', id: 'user:default/alice' },
       credentialGeneration: '1',
       controller: new AbortController(),
@@ -226,7 +226,7 @@ describe('wrapProviderModule dispatch through the durable journal', () => {
         transport: fetch,
       });
       const guarded = guard.bind(op);
-      const response = await guarded.fetch(op.destination, {
+      const response = await guarded.fetch(op.destination!, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
@@ -291,7 +291,7 @@ describe('wrapProviderModule dispatch through the durable journal', () => {
         recheck: async () => true,
         transport: fetch,
       });
-      const response = await guard.bind(op).fetch(op.destination, {
+      const response = await guard.bind(op).fetch(op.destination!, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({

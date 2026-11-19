@@ -87,6 +87,16 @@ export function wrapProviderModule(
       'Gateway base path must contain only route-literal characters',
     );
   }
+  // A module without certified destinations (a local tool module, for
+  // example) cannot be re-rooted onto a gateway: there is no route to
+  // compose the base onto.
+  if (!module.destination || !module.destinationTemplates) {
+    throw new Error(
+      `Cannot wrap module '${module.id}' for a gateway: it declares no certified destinations`,
+    );
+  }
+  const innerDestination = module.destination;
+  const innerTemplates = module.destinationTemplates;
   const kinds = options.credentialKinds ?? ['api_key'];
   if (kinds.includes('oauth')) {
     throw new Error(
@@ -102,10 +112,7 @@ export function wrapProviderModule(
   let probePath: string | undefined;
   try {
     const probe = new URL(
-      module.destination(
-        { baseUrl: options.baseUrl } as unknown as AnyModel,
-        undefined,
-      ),
+      innerDestination({ baseUrl: options.baseUrl } as unknown as AnyModel, undefined),
     );
     probePath = probe.pathname;
   } catch {
@@ -114,7 +121,7 @@ export function wrapProviderModule(
   return {
     ...module,
     credentialKinds: [...kinds],
-    destinationTemplates: module.destinationTemplates.map(template => {
+    destinationTemplates: innerTemplates.map(template => {
       const [first, ...rest] = template;
       if (!first || !('literal' in first)) {
         throw new Error(
@@ -136,7 +143,7 @@ export function wrapProviderModule(
       return [{ literal: `${prefix}${first.literal}` }, ...rest];
     }),
     destination: (model: AnyModel, env: Record<string, string> | undefined) => {
-      const target = new URL(module.destination(model, env));
+      const target = new URL(innerDestination(model, env));
       // The route the module appends beyond its model's own base path,
       // re-rooted onto the gateway base: a model pinned at the gateway
       // passes through unchanged, and one still pinned at the provider's
