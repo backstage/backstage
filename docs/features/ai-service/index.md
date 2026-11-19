@@ -68,7 +68,7 @@ code-mode sandbox, and a harness that requests nothing dispatches nothing.
   credentials.
 - [Configuration](./configuration.md) — the full `ai` configuration
   surface.
-- [Permissions](./permissions.md) — the four permissions and their
+- [Permissions](./permissions.md) — the five permissions and their
   resource rules.
 - [Using the service](./using-the-service.md) — opening a harness from a
   backend plugin, streaming, signals.

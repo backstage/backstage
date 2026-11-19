@@ -10,7 +10,7 @@ to a state where plugins can open sessions and dispatch models.
 
 ## Prerequisites
 
-- A Backstage backend following the [new backend system](../../backend-system/index.md). The events and signals services, which the plugin consumes, are registered by default in a `backend-defaults` backend.
+- A Backstage backend following the [new backend system](../../backend-system/index.md). The events, signals, and notifications services, which the plugin consumes, are registered by default in a `backend-defaults` backend.
 - A PostgreSQL database (the journal and credential stores use Knex migrations; SQLite is supported for tests).
 
 ## Install the plugin

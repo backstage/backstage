@@ -6,7 +6,7 @@ description: The AI service permissions, their resource rules, and how policies 
 ---
 
 The AI service moves all permission-relevant control into the Backstage
-[permission framework](../permissions/overview.md). Which models a caller
+[permission framework](../../permissions/overview.md). Which models a caller
 may dispatch, which tools a plugin may use, and which service features a
 plugin may request are all permission queries — there is no allowlist in
 `app-config.yaml` for them.
@@ -36,7 +36,7 @@ on the plugin.
 Each resource permission carries attributes that rules match against:
 
 - `ai-model`: `provider`, `modelId`, `type`
-- `ai-tool`: `server`, `tool`, `pluginId` (the dispatching plugin)
+- `ai-tool`: `serverId`, `toolName`, `pluginId` (the dispatching plugin)
 - `ai-feature`: `pluginId`, `feature`
 
 The rules:
