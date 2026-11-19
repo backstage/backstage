@@ -71,8 +71,13 @@ export function CatalogKindHeader(props: CatalogKindHeaderProps) {
     [kindParameter],
   );
 
+  // Prefer the live filter over query parameters. EntityListProvider syncs
+  // filters to the URL with replaceState, which does not update react-router's
+  // location, so queryParameters can be stale after the user changes kind.
+  // Remounting this header with a stale query param would fight the live
+  // filter and oscillate between kinds.
   const [selectedKind, setSelectedKind] = useState(
-    queryParamKind ?? filters.kind?.value ?? initialFilter,
+    filters.kind?.value ?? queryParamKind ?? initialFilter,
   );
 
   // Set selected kinds on query parameter updates; this happens at initial page load and from
