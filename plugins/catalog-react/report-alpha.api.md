@@ -83,9 +83,9 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'inspectEntityDialog.overviewPage.metadata.title': 'Metadata';
     readonly 'inspectEntityDialog.overviewPage.labels': 'Labels';
     readonly 'inspectEntityDialog.overviewPage.status.title': 'Status';
-    readonly 'inspectEntityDialog.overviewPage.identity.title': 'Identity';
     readonly 'inspectEntityDialog.overviewPage.tags': 'Tags';
     readonly 'inspectEntityDialog.overviewPage.annotations': 'Annotations';
+    readonly 'inspectEntityDialog.overviewPage.identity.title': 'Identity';
     readonly 'inspectEntityDialog.overviewPage.relation.title': 'Relations';
     readonly 'inspectEntityDialog.overviewPage.copyAriaLabel': 'Copy {{label}}';
     readonly 'inspectEntityDialog.overviewPage.copiedStatus': 'Copied';
@@ -124,11 +124,11 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityTableColumnTitle.description': 'Description';
     readonly 'entityTableColumnTitle.system': 'System';
     readonly 'entityTableColumnTitle.namespace': 'Namespace';
-    readonly 'entityTableColumnTitle.tags': 'Tags';
     readonly 'entityTableColumnTitle.domain': 'Domain';
-    readonly 'entityTableColumnTitle.owner': 'Owner';
     readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
+    readonly 'entityTableColumnTitle.tags': 'Tags';
     readonly 'entityTableColumnTitle.targets': 'Targets';
+    readonly 'entityTableColumnTitle.owner': 'Owner';
     readonly 'entityRelationCard.emptyHelpLinkTitle': 'Learn how to change this.';
     readonly 'missingAnnotationEmptyState.title': 'Missing Annotation';
     readonly 'missingAnnotationEmptyState.readMore': 'Read more';
@@ -759,13 +759,13 @@ export const EntityTableColumnTitle: (
   input: EntityTableColumnTitleProps,
 ) =>
   | 'System'
-  | 'Title'
+  | 'Type'
   | 'Domain'
+  | 'Tags'
+  | 'Title'
   | 'Lifecycle'
   | 'Namespace'
   | 'Owner'
-  | 'Tags'
-  | 'Type'
   | 'Name'
   | 'Description'
   | 'Targets'

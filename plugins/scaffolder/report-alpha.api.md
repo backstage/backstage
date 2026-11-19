@@ -868,8 +868,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'listTaskPage.content.emptyState.description': 'There are no tasks or there was an issue communicating with backend.';
     readonly 'listTaskPage.content.tableCell.template': 'Template';
     readonly 'listTaskPage.content.tableCell.status': 'Status';
-    readonly 'listTaskPage.content.tableCell.owner': 'Owner';
     readonly 'listTaskPage.content.tableCell.created': 'Created';
+    readonly 'listTaskPage.content.tableCell.owner': 'Owner';
     readonly 'listTaskPage.content.tableCell.taskID': 'Task ID';
     readonly 'listTaskPage.content.tableTitle': 'Tasks';
     readonly 'listTaskPage.title': 'List template tasks';
@@ -904,6 +904,12 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'renderSchema.tableCell.description': 'Description';
     readonly 'templatingExtensions.content.values.title': 'Values';
     readonly 'templatingExtensions.content.values.notAvailable': 'There are no global template values defined.';
+    readonly 'templatingExtensions.content.functions.title': 'Functions';
+    readonly 'templatingExtensions.content.functions.schema.output': 'Output';
+    readonly 'templatingExtensions.content.functions.schema.arguments': 'Arguments';
+    readonly 'templatingExtensions.content.functions.examples': 'Examples';
+    readonly 'templatingExtensions.content.functions.notAvailable': 'There are no global template functions defined.';
+    readonly 'templatingExtensions.content.functions.metadataAbsent': 'Function metadata unavailable';
     readonly 'templatingExtensions.content.emptyState.title': 'No information to display';
     readonly 'templatingExtensions.content.emptyState.description': 'There are no templating extensions available or there was an issue communicating with the backend.';
     readonly 'templatingExtensions.content.filters.title': 'Filters';
@@ -913,12 +919,6 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templatingExtensions.content.filters.examples': 'Examples';
     readonly 'templatingExtensions.content.filters.notAvailable': 'There are no template filters defined.';
     readonly 'templatingExtensions.content.filters.metadataAbsent': 'Filter metadata unavailable';
-    readonly 'templatingExtensions.content.functions.title': 'Functions';
-    readonly 'templatingExtensions.content.functions.schema.output': 'Output';
-    readonly 'templatingExtensions.content.functions.schema.arguments': 'Arguments';
-    readonly 'templatingExtensions.content.functions.examples': 'Examples';
-    readonly 'templatingExtensions.content.functions.notAvailable': 'There are no global template functions defined.';
-    readonly 'templatingExtensions.content.functions.metadataAbsent': 'Function metadata unavailable';
     readonly 'templatingExtensions.content.searchFieldPlaceholder': 'Search for an extension';
     readonly 'templatingExtensions.title': 'Templating Extensions';
     readonly 'templatingExtensions.subtitle': 'This is the collection of available templating extensions';
