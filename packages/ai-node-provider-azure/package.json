@@ -47,6 +47,7 @@
     "test": "backstage-cli package test"
   },
   "jest": {
+    "id": "backstage_ai_jest__backstage_ai_node_provider_azure",
     "resolver": "<rootDir>/../../ai-node/jestResolver.js"
   },
   "dependencies": {

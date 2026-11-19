@@ -46,6 +46,10 @@
     "postpack": "backstage-cli package postpack",
     "test": "backstage-cli package test"
   },
+  "jest": {
+    "id": "backstage_ai_jest__backstage_ai_node_shell",
+    "resolver": "<rootDir>/../../ai-node/jestResolver.js"
+  },
   "dependencies": {
     "@backstage/ai-node": "workspace:^"
   },
@@ -56,8 +60,5 @@
     "@earendil-works/pi-durable": "1.5.2",
     "jest": "^30.5.0",
     "knex": "^3.1.0"
-  },
-  "jest": {
-    "resolver": "<rootDir>/../../ai-node/jestResolver.js"
   }
 }

@@ -53,6 +53,7 @@
     "test": "backstage-cli package test"
   },
   "jest": {
+    "id": "backstage_ai_jest__backstage_ai_node",
     "resolver": "<rootDir>/../jestResolver.js"
   },
   "dependencies": {

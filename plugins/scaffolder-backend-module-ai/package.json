@@ -33,6 +33,7 @@
     "test": "backstage-cli package test"
   },
   "jest": {
+    "id": "backstage_ai_jest__backstage_plugin_scaffolder_backend_module_ai",
     "resolver": "<rootDir>/../jestResolver.js"
   },
   "dependencies": {

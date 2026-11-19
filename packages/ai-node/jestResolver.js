@@ -31,7 +31,9 @@
  *
  * It is referenced from the "jest" key of each family package's
  * package.json (as `<rootDir>/../../ai-node/jestResolver.js`), which the
- * Backstage CLI merges into the generated per-package Jest config.
+ * Backstage CLI merges into the generated per-package Jest config. Each package
+ * also needs a unique Jest id: Jest's parallel runner shares resolvers by id,
+ * while the CLI otherwise gives projects with the same transform the same id.
  */
 
 const PI_SPECIFIER = /(?:^|\/)@earendil-works\//;
