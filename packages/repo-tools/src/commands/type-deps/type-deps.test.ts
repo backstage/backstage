@@ -128,5 +128,22 @@ describe('type-deps', () => {
 
     expect(error).not.toHaveBeenCalled();
     expect(exit).not.toHaveBeenCalled();
+
+    // The fallback is not a blanket pass: if the dependency is not actually
+    // installed anywhere Node would look for it, it is still an error.
+    fs.rmSync(joinPath(tmpDir, 'node_modules/@fake'), {
+      recursive: true,
+      force: true,
+    });
+
+    exit.mockClear();
+    error.mockClear();
+
+    await typeDeps();
+
+    expect(error).toHaveBeenCalledWith(
+      expect.stringContaining('Missing a type dependency: @fake/esm-only'),
+    );
+    expect(exit).toHaveBeenCalledWith(2);
   });
 });

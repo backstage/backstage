@@ -15,6 +15,7 @@
  */
 
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import { resolve as resolvePath } from 'node:path';
 // Cba polluting root package.json, we'll have this
 // eslint-disable-next-line @backstage/no-undeclared-imports
@@ -199,9 +200,18 @@ function checkTypes(pkg: Package) {
  * can be resolved, it doesn't do any checking of presence of types inside the dep.
  */
 function findTypesPackage(dep: string, pkg: Package) {
+  // Resolve subpath specifiers (e.g. foo/sub) to their package root, so that
+  // the @types lookup checks @types/foo rather than @types/foo/sub
+  const segments = dep.split('/');
+  const packageName = segments[0].startsWith('@')
+    ? segments.slice(0, 2).join('/')
+    : segments[0];
+
   try {
-    require.resolve(`@types/${dep}/package.json`, { paths: [pkg.dir] });
-    return `@types/${dep}`;
+    require.resolve(`@types/${packageName}/package.json`, {
+      paths: [pkg.dir],
+    });
+    return `@types/${packageName}`;
   } catch {
     try {
       require.resolve(dep, { paths: [pkg.dir] });
@@ -230,22 +240,16 @@ function findTypesPackage(dep: string, pkg: Package) {
           }
           // ESM-only packages may expose no "require" or "default" export
           // condition, so require.resolve fails even though the dependency
-          // is installed and its types work. Look for the package itself in
-          // the node_modules chain as a last resort, resolving subpath
-          // specifiers to their package root first.
-          const segments = dep.split('/');
-          const packageName = segments[0].startsWith('@')
-            ? segments.slice(0, 2).join('/')
-            : segments[0];
-          for (
-            let dir = pkg.dir;
-            dir !== resolvePath(dir, '..');
-            dir = resolvePath(dir, '..')
-          ) {
+          // is installed and its types work. As a last resort, check the
+          // node_modules directories that Node itself would search for the
+          // package, minus the exports gate.
+          const searchPaths =
+            createRequire(resolvePath(pkg.dir, 'package.json')).resolve.paths(
+              packageName,
+            ) || [];
+          for (const dir of searchPaths) {
             if (
-              fs.existsSync(
-                resolvePath(dir, `node_modules/${packageName}/package.json`),
-              )
+              fs.existsSync(resolvePath(dir, `${packageName}/package.json`))
             ) {
               return undefined;
             }
