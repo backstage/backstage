@@ -286,6 +286,19 @@ describe('model operation guard', () => {
     await expect(failed.guard.finish('completed')).rejects.toThrow('uncertain');
     await expect(failed.fetch()).rejects.toThrow('blocked');
     expect(failed.transport).toHaveBeenCalledTimes(1);
+    // Site 1: the outcome write itself failed, so the uncertainty is
+    // recovery evidence with the journal-failure detail and the attempt
+    // identity.
+    expect(failed.journal.recordRecovery).toHaveBeenCalledTimes(1);
+    expect(failed.journal.recordRecovery).toHaveBeenCalledWith(
+      failed.operation.fence,
+      expect.objectContaining({
+        actor: failed.operation.actor,
+        kind: 'unknown-dispatch',
+        callId: failed.operation.provenance.callId,
+        detail: 'journal failed',
+      }),
+    );
   });
 
   it('records pre-header transport uncertainty and refuses completion before the stream ends', async () => {
@@ -293,6 +306,18 @@ describe('model operation guard', () => {
     f.transport.mockRejectedValueOnce(new Error('socket disconnected'));
     await expect(f.fetch()).rejects.toThrow('socket disconnected');
     expect(f.events).toEqual(['check', 'allow:1', 'unknown:1']);
+    // The uncertainty is also recovery evidence: one unknown-dispatch row
+    // carrying the attempt identity, written fail-open.
+    expect(f.journal.recordRecovery).toHaveBeenCalledTimes(1);
+    expect(f.journal.recordRecovery).toHaveBeenCalledWith(
+      f.operation.fence,
+      expect.objectContaining({
+        actor: f.operation.actor,
+        kind: 'unknown-dispatch',
+        callId: f.operation.provenance.callId,
+        detail: 'transport failed',
+      }),
+    );
     const response = await f.fetch();
     expect(response.status).toBe(200);
     expect(f.journal.recordOutcome).toHaveBeenCalledTimes(1);
@@ -303,6 +328,50 @@ describe('model operation guard', () => {
       { status: 'unknown', httpStatus: 200 },
     );
     await expect(f.fetch()).rejects.toThrow('blocked');
+    // Site 3: the stream never finished, so the second uncertainty is also
+    // recovery evidence — and the outcome row settles before the recovery
+    // row, the same deterministic order as every other write.
+    const outcomeOrder =
+      f.journal.recordOutcome.mock.invocationCallOrder.at(-1);
+    const recoveryCalls = (
+      f.journal.recordRecovery.mock.calls as unknown as Array<
+        [Fence, { detail?: string }]
+      >
+    ).filter(([, event]) => event.detail === 'stream unfinished');
+    expect(recoveryCalls).toHaveLength(1);
+    expect(recoveryCalls[0][0]).toBe(f.operation.fence);
+    expect(recoveryCalls[0][1]).toMatchObject({
+      actor: f.operation.actor,
+      kind: 'unknown-dispatch',
+      callId: f.operation.provenance.callId,
+      detail: 'stream unfinished',
+    });
+    const recoveryOrder =
+      f.journal.recordRecovery.mock.invocationCallOrder.at(-1);
+    expect(outcomeOrder).toBeDefined();
+    expect(recoveryOrder).toBeDefined();
+    expect(outcomeOrder!).toBeLessThan(recoveryOrder!);
+  });
+
+  it('keeps a failing recovery write fail-open with no unhandled rejection', async () => {
+    const f = fixture();
+    f.journal.recordRecovery.mockRejectedValueOnce(
+      new Error('recovery journal down'),
+    );
+    const unhandled: unknown[] = [];
+    const onRejection = (reason: unknown) => unhandled.push(reason);
+    process.on('unhandledRejection', onRejection);
+    try {
+      f.transport.mockRejectedValueOnce(new Error('socket disconnected'));
+      // The dispatch outcome is the transport failure, undisturbed by the
+      // recovery write's own rejection.
+      await expect(f.fetch()).rejects.toThrow('socket disconnected');
+      await new Promise(resolve => setImmediate(resolve));
+      expect(unhandled).toEqual([]);
+      expect(f.events).toEqual(['check', 'allow:1', 'unknown:1']);
+    } finally {
+      process.off('unhandledRejection', onRejection);
+    }
   });
 
   it('settles aborts and logical failures after headers without reporting success', async () => {

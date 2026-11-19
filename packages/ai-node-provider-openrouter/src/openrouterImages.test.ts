@@ -446,12 +446,21 @@ describe('openrouter images', () => {
       const rows = await store
         .db('ai_journal_events')
         .orderBy('id')
-        .select('kind', 'decision', 'attempt', 'status', 'reason');
+        .select(
+          'kind',
+          'decision',
+          'attempt',
+          'status',
+          'reason',
+          'recovery_kind',
+        );
       expect(rows).toMatchObject([
         { kind: 'decision', decision: 'allow', attempt: 1 },
         { kind: 'outcome', status: 'unknown' },
+        // The uncertainty is recovery evidence, like every model dispatch.
+        { kind: 'recovery', recovery_kind: 'unknown-dispatch' },
       ]);
-      expect(rows).toHaveLength(2);
+      expect(rows).toHaveLength(3);
     } finally {
       await store.cleanup();
     }

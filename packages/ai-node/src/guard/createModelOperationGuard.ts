@@ -117,6 +117,24 @@ export function createModelOperationGuard(options: {
         blocked = true;
         operation.controller.abort();
       };
+      // A dispatch whose outcome could not be settled is recovery evidence:
+      // one unknown-dispatch row per attempt, written fail-open so a second
+      // journal failure never masks the uncertainty it documents.
+      const recordUnknownDispatch = (detail: string) => {
+        if (!journal) return;
+        void journal
+          .recordRecovery(operation.fence, {
+            actor: operation.actor,
+            kind: 'unknown-dispatch',
+            conversationId: operation.provenance?.conversationId,
+            taskId: operation.provenance?.taskId,
+            callId: operation.provenance?.callId,
+            definitionVersion: operation.definitionVersion,
+            configVersion: operation.configVersion,
+            detail,
+          })
+          .catch(() => undefined);
+      };
       const decision = (
         attempt: number,
         value: 'allow' | 'deny',
@@ -177,6 +195,7 @@ export function createModelOperationGuard(options: {
             uncertain = true;
             block();
             observe('unknown');
+            recordUnknownDispatch('journal failed');
             throw new Error(
               'Model dispatch outcome is uncertain: journal failed',
               { cause: error },
@@ -433,9 +452,13 @@ export function createModelOperationGuard(options: {
             try {
               response = await transport(request);
             } catch (error) {
-              await record(attempt, {
-                status: request.signal.aborted ? 'cancelled' : 'unknown',
-              });
+              const status = request.signal.aborted ? 'cancelled' : 'unknown';
+              // The outcome row settles first; the recovery evidence follows,
+              // in the same deterministic order as every other write.
+              await record(attempt, { status });
+              if (status === 'unknown') {
+                recordUnknownDispatch('transport failed');
+              }
               throw error;
             }
             attempt.httpStatus = response.status;
@@ -581,6 +604,7 @@ export function createModelOperationGuard(options: {
             });
             if (status === 'unknown') {
               block();
+              recordUnknownDispatch('stream unfinished');
               throw new Error(
                 'Model dispatch outcome is uncertain: stream unfinished',
               );
