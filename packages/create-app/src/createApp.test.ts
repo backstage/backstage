@@ -40,6 +40,7 @@ const checkPathExistsMock = jest.spyOn(tasks, 'checkPathExistsTask');
 const templatingMock = jest.spyOn(tasks, 'templatingTask');
 const checkAppExistsMock = jest.spyOn(tasks, 'checkAppExistsTask');
 const tryInitGitRepositoryMock = jest.spyOn(tasks, 'tryInitGitRepository');
+const tryAddToInitialCommitMock = jest.spyOn(tasks, 'tryAddToInitialCommit');
 const readGitConfig = jest.spyOn(tasks, 'readGitConfig');
 const moveAppMock = jest.spyOn(tasks, 'moveAppTask');
 const buildAppMock = jest.spyOn(tasks, 'buildAppTask');
@@ -185,6 +186,7 @@ describe('command entrypoint', () => {
     expect(exclude('package.json.hbs')).toBe(false);
     expect(fetchYarnLockSeedMock).toHaveBeenCalled();
     expect(buildAppMock).toHaveBeenCalledWith(expect.any(String), 'yarn');
+    expect(tryAddToInitialCommitMock).not.toHaveBeenCalled();
   });
 
   it('should create a pnpm app when `--package-manager pnpm` is supplied', async () => {
@@ -194,6 +196,8 @@ describe('command entrypoint', () => {
       }
       return { version: '3.12.4', error: undefined };
     });
+    tryInitGitRepositoryMock.mockResolvedValue(true);
+    tryAddToInitialCommitMock.mockResolvedValue(true);
     const cmd = { packageManager: 'pnpm' } as unknown as Command;
     await createApp(cmd);
     expect(tryCommandForVersionMock).toHaveBeenCalledWith('pnpm -v', {
@@ -214,6 +218,24 @@ describe('command entrypoint', () => {
     expect(exclude('package.json.hbs')).toBe(false);
     expect(fetchYarnLockSeedMock).not.toHaveBeenCalled();
     expect(buildAppMock).toHaveBeenCalledWith(expect.any(String), 'pnpm');
+    // The lockfile that the install creates goes into the initial commit
+    const appDir = buildAppMock.mock.lastCall?.[0];
+    expect(tryAddToInitialCommitMock).toHaveBeenCalledWith(
+      appDir,
+      'pnpm-lock.yaml',
+    );
+    expect(
+      tryAddToInitialCommitMock.mock.invocationCallOrder[0],
+    ).toBeGreaterThan(buildAppMock.mock.invocationCallOrder[0]);
+
+    // Without an install, there is no lockfile to commit yet
+    tryAddToInitialCommitMock.mockClear();
+    promptMock.mockResolvedValueOnce({ name: 'MyApp' });
+    await createApp({
+      packageManager: 'pnpm',
+      skipInstall: true,
+    } as unknown as Command);
+    expect(tryAddToInitialCommitMock).not.toHaveBeenCalled();
   });
 
   it('should pick the package manager from the npm user agent unless an option is supplied', async () => {

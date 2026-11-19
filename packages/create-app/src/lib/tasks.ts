@@ -323,6 +323,24 @@ export async function tryInitGitRepository(dir: string) {
 }
 
 /**
+ * Adds a file to the initial commit that {@link tryInitGitRepository} made,
+ * such as the lockfile that the install created afterwards.
+ *
+ * @param dir - path of the git repository
+ * @param file - path of the file, relative to the repository
+ * @returns true if the file was added to the commit
+ */
+export async function tryAddToInitialCommit(dir: string, file: string) {
+  try {
+    await exec(`git add -- ${JSON.stringify(file)}`, { cwd: dir });
+    await exec('git commit --amend --no-edit', { cwd: dir });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * This fetches the yarn.lock seed file at https://github.com/backstage/backstage/blob/master/packages/create-app/seed-yarn.lock
  * Its purpose is to lock individual dependencies with broken releases to known working versions.
  * This flow is decoupled from the release of the create-app package in order to avoid

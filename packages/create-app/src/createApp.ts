@@ -28,6 +28,7 @@ import {
   checkPathExistsTask,
   moveAppTask,
   templatingTask,
+  tryAddToInitialCommit,
   tryInitGitRepository,
   readGitConfig,
   fetchYarnLockSeedTask,
@@ -302,17 +303,32 @@ export default async (opts: OptionValues): Promise<void> => {
     const fetchedYarnLockSeed =
       packageManager === 'yarn' ? await fetchYarnLockSeedTask(appDir) : true;
 
+    let initializedGit = false;
     if (gitConfig) {
       if (await tryInitGitRepository(appDir)) {
+        initializedGit = true;
         // Since we don't know whether we were able to init git before we
         // try, we can't track the actual task execution
         Task.forItem('init', 'git repository', async () => {});
       }
     }
 
+    // A pnpm app gets no seed lockfile, so its initial commit would have no
+    // lockfile, and the frozen install of the generated CI workflow would
+    // fail on it
+    let lockfileCommitted = packageManager !== 'pnpm' || !initializedGit;
     if (!opts.skipInstall) {
       Task.section('Installing dependencies');
       await buildAppTask(appDir, packageManager);
+      if (!lockfileCommitted) {
+        lockfileCommitted = await tryAddToInitialCommit(
+          appDir,
+          'pnpm-lock.yaml',
+        );
+        if (lockfileCommitted) {
+          Task.forItem('commit', 'pnpm-lock.yaml', async () => {});
+        }
+      }
     }
 
     Task.log();
@@ -339,6 +355,15 @@ export default async (opts: OptionValues): Promise<void> => {
       Task.log(
         `  Install the dependencies: ${chalk.cyan(
           `cd ${opts.path ?? answers.name} && ${packageManager} install`,
+        )}`,
+      );
+    }
+    if (!lockfileCommitted) {
+      Task.log(
+        `  Commit the lockfile before you push the app: ${chalk.cyan(
+          `cd ${
+            opts.path ?? answers.name
+          } && git add pnpm-lock.yaml && git commit -m "Add pnpm-lock.yaml"`,
         )}`,
       );
     }
