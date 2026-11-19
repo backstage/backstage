@@ -66,6 +66,10 @@ describe('withConnectionBaseUrl', () => {
       baseUrl: 'https://jira.example.com/site/',
       apiBaseUrl: 'https://api.atlassian.com/ex/jira/cloud%2Fid/',
     });
+    expect(options.getLookupIdentity(parsed)).toEqual({
+      key: 'host',
+      value: 'jira.example.com',
+    });
     expect(new URL('rest/api/3/issues', parsed.apiBaseUrl).href).toBe(
       'https://api.atlassian.com/ex/jira/cloud%2Fid/rest/api/3/issues',
     );

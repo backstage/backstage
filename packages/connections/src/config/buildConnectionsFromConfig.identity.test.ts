@@ -28,9 +28,13 @@ jest.mock('../definitions/types', () => {
   const { connectionBaseUrlSchema } = jest.requireActual<
     typeof import('../system/connectionBaseUrlSchema')
   >('../system/connectionBaseUrlSchema');
+  const { getHostLookupIdentity } = jest.requireActual<
+    typeof import('../system/getHostLookupIdentity')
+  >('../system/getHostLookupIdentity');
   return {
     connectionTypes: {
       legacy: createConnectionType({
+        getLookupIdentity: getHostLookupIdentity,
         configSchema: z.object({
           host: z.string(),
           baseUrl: z.string().optional(),
@@ -205,7 +209,7 @@ describe('URL-based connection identity', () => {
     });
     expect(connections[0]).not.toHaveProperty('host');
     expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining('instance example.com'),
+      expect.stringContaining('instance host example.com'),
     );
   });
 });

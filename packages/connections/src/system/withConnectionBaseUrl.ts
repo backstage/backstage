@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import { z } from 'zod/v4';
+import type { ConnectionLookupIdentity } from '../api/ConnectionType';
 import { connectionBaseUrlSchema } from './connectionBaseUrlSchema';
 
 /**
- * Defines URL-based connection data for the existing host lookup strategy.
+ * Defines URL-based connection data with host identity derived from the instance URL.
  * Spread the result into createConnectionType. The API root defaults to the
  * instance root; explicit API overrides may use an internal endpoint.
  */
@@ -90,6 +91,11 @@ export function withConnectionBaseUrl<
   });
   return {
     configSchema,
-    lookupStrategy: 'host' as const,
+    getLookupIdentity: (config: {
+      baseUrl: string;
+    }): ConnectionLookupIdentity => ({
+      key: 'host',
+      value: new URL(config.baseUrl).host,
+    }),
   };
 }

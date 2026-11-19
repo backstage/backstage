@@ -18,8 +18,7 @@ import { InputError } from '@backstage/errors';
 import type { Expand, JsonObject } from '@backstage/types';
 import type {
   ConnectionTypeDefinition,
-  ConnectionLookupStrategy,
-  LookupStrategyQuery,
+  ConnectionLookupIdentity,
   PortableSchema,
   WithoutReservedAuthMethods,
   WithoutReservedFields,
@@ -87,14 +86,14 @@ export function createConnectionType<
   TType extends string,
   TConfigSchema extends ConnectionConfigSchema,
   const TAuthMethods extends readonly ConnectionAuthMethodSchema[],
-  TLookupStrategy extends ConnectionLookupStrategy = 'host',
+  TQuery extends object = { url: string },
   TCardinality extends 'singleton' | 'multiton' = 'multiton',
 >({
   configSchema,
   type,
   title,
   cardinality,
-  lookupStrategy,
+  getLookupIdentity,
   authMethods,
   matchAuth,
   validate,
@@ -102,7 +101,9 @@ export function createConnectionType<
   type: TType;
   title: string;
   cardinality?: TCardinality;
-  lookupStrategy?: TLookupStrategy;
+  getLookupIdentity: (
+    config: ConfigFromSchema<TConfigSchema>,
+  ) => ConnectionLookupIdentity | undefined;
   configSchema: WithoutReservedFields<TConfigSchema>;
   authMethods: WithoutReservedAuthMethods<TAuthMethods>;
   matchAuth?: (
@@ -111,7 +112,7 @@ export function createConnectionType<
         title: string;
       }
     >[],
-    query: LookupStrategyQuery[TLookupStrategy],
+    query: TQuery,
   ) =>
     | Expand<
         ConfiguredConnectionAuthFromSchema<TAuthMethods[number]> & {
@@ -134,8 +135,7 @@ export function createConnectionType<
 }): ConnectionTypeDefinition<{
   type: TType;
   cardinality: TCardinality;
-  lookupStrategy: TLookupStrategy;
-  query: LookupStrategyQuery[TLookupStrategy];
+  query: TQuery;
   configSchema: ConfigFromSchema<TConfigSchema>;
   auth: readonly ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>[];
 }> {
@@ -161,7 +161,7 @@ export function createConnectionType<
     type,
     title,
     cardinality: cardinality ?? 'multiton',
-    lookupStrategy: lookupStrategy ?? 'host',
+    getLookupIdentity,
     authMethods: validatedAuthMethods.map(
       ({ method, title: authTitle, configSchema: authConfigSchema }) => ({
         method,
@@ -178,8 +178,7 @@ export function createConnectionType<
   } as unknown as ConnectionTypeDefinition<{
     type: TType;
     cardinality: TCardinality;
-    lookupStrategy: TLookupStrategy;
-    query: LookupStrategyQuery[TLookupStrategy];
+    query: TQuery;
     configSchema: ConfigFromSchema<TConfigSchema>;
     auth: readonly ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>[];
   }>;

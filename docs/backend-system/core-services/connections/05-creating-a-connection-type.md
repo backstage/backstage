@@ -105,10 +105,21 @@ export const AcmeConnectionType = createConnectionType({
 });
 ```
 
-`cardinality` defaults to `multiton`, and `lookupStrategy` defaults to `host`.
-Host lookup and duplicate validation use a configured `host` when present,
-otherwise the host from `baseUrl`. The helper does not add `host` to returned
-connection data. Existing types keep their current behavior.
+`cardinality` defaults to `multiton`. Each definition supplies
+`getLookupIdentity(config)`, returning a key and value for matching, duplicate
+validation and default titles:
+
+```ts
+getLookupIdentity: config => ({
+  key: 'host',
+  value: new URL(config.baseUrl).host,
+}),
+```
+
+The URL helper supplies this callback without adding `host` to returned data.
+The framework compares a `host` identity with the host parsed from the query's
+`url`. Existing types keep using their configured host. AWS returns `undefined`
+to select its singleton connection before choosing account credentials.
 
 Each type must declare at least one authentication method. Add `none` only
 when consumers can use the system without authentication. An empty method

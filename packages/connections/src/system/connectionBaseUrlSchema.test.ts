@@ -16,6 +16,7 @@
 import { z } from 'zod/v4';
 import { InputError } from '@backstage/errors';
 import { connectionBaseUrlSchema } from './connectionBaseUrlSchema';
+import { getHostLookupIdentity } from './getHostLookupIdentity';
 import { createConnectionType } from './createConnectionType';
 
 describe('connectionBaseUrlSchema', () => {
@@ -99,6 +100,7 @@ describe('connectionBaseUrlSchema', () => {
 
   it('exports input JSON Schema while returning normalised portable-schema output', () => {
     const connectionType = createConnectionType({
+      getLookupIdentity: getHostLookupIdentity,
       type: 'base-url-test',
       title: 'Base URL test',
       configSchema: z.object({

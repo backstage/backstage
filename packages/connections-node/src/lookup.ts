@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { InputError } from '@backstage/errors';
 import {
   LookupConnectionType,
   ConnectionType,
+  ConnectionLookupIdentity,
   connectionTypes,
 } from '@backstage/connections';
 
@@ -33,4 +35,27 @@ export function isConnectionType(
   if (!value) return false;
 
   return connectionTypesMap.has(value);
+}
+
+// The identity key selects how the caller's query is compared with a connection.
+export function lookupIdentityFromQuery(
+  key: ConnectionLookupIdentity['key'],
+  query: unknown,
+): string {
+  switch (key) {
+    case 'host': {
+      const { url } = query as { url: string };
+      try {
+        return new URL(url).host;
+      } catch {
+        throw new InputError(
+          `Invalid url "${url}" passed to ConnectionsService.find`,
+        );
+      }
+    }
+    default:
+      throw new InputError(
+        `Unsupported connection lookup identity key "${key}"`,
+      );
+  }
 }

@@ -147,7 +147,7 @@ describe('buildConnectionsFromConfig', () => {
       },
     ]);
     expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('github ghe.acme.com'),
+      expect.stringContaining('github host ghe.acme.com'),
     );
   });
 

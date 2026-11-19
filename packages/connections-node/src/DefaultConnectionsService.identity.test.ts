@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { connectionTypes } from '@backstage/connections';
 import { mockServices } from '@backstage/backend-test-utils';
 import { buildConnectionsFromConfig } from '@backstage/connections/config';
 import { DefaultConnectionsService } from './DefaultConnectionsService';
@@ -115,6 +116,33 @@ describe('URL identity service lookup', () => {
       await expect(
         catalog.find({ type: 'github', query: { url: fixture.apiBaseUrl } }),
       ).rejects.toThrow('Connection not found');
+    }
+  });
+
+  it('uses the returned identity value rather than reading a host field', async () => {
+    const identity = jest
+      .spyOn(connectionTypes.github, 'getLookupIdentity')
+      .mockReturnValue({ key: 'host', value: 'identity.example.com' });
+    try {
+      const catalog = service().forPlugin('catalog');
+      const info = await catalog.find({
+        type: 'github',
+        query: { url: 'https://identity.example.com/items' },
+      });
+      expect(info).toMatchObject({
+        baseUrl: fixture.baseUrl,
+        apiBaseUrl: fixture.apiBaseUrl,
+      });
+      expect(info).not.toHaveProperty('host');
+      expect(info).not.toHaveProperty('getLookupIdentity');
+      expect(identity).toHaveBeenCalledWith(
+        expect.objectContaining({ baseUrl: fixture.baseUrl }),
+      );
+      await expect(catalog.find({ type: 'github', query })).rejects.toThrow(
+        'Connection not found',
+      );
+    } finally {
+      identity.mockRestore();
     }
   });
 
