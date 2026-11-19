@@ -96,12 +96,12 @@ Custom exporters use **async generators** to enable streaming downloads.
 The data is written to disk as it's generated, without buffering the entire export in memory in supported browsers.
 
 ```tsx title="packages/app/src/App.tsx"
+import { CatalogIndexPage } from '@backstage/plugin-catalog';
 import {
-  CatalogIndexPage,
+  catalogApiRef,
   CatalogExporter,
   CatalogExporterConfig,
-} from '@backstage/plugin-catalog';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+} from '@backstage/plugin-catalog-react';
 
 // Custom exporter using async generator for streaming
 const xmlExporter: CatalogExporter = ({ apis, columns, streamRequest }) => {
@@ -211,6 +211,24 @@ Here's an example combining all customization options:
   }}
 />
 ```
+
+### Using the export button in a custom catalog page
+
+If you build a [fully custom catalog index page](#advanced-customization), you can add the export button by rendering `CatalogExportButton` from `@backstage/plugin-catalog-react` inside the `EntityListProvider`. It accepts the same options as `exportSettings` through its `settings` prop, except `enabled`, which only applies to the default page:
+
+```tsx title="packages/app/src/components/catalog/CustomCatalogIndex.tsx"
+import {
+  CatalogExportButton,
+  EntityListProvider,
+} from '@backstage/plugin-catalog-react';
+
+<EntityListProvider pagination>
+  <CatalogExportButton settings={{ columns: customColumns }} />
+  {/* ... filters and table */}
+</EntityListProvider>;
+```
+
+The button's texts can be translated through the `catalogExportButton.*` keys of `catalogReactTranslationRef`.
 
 ## Initially Selected Filter
 

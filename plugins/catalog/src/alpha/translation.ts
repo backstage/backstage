@@ -151,6 +151,8 @@ export const catalogTranslationRef = createTranslationRef({
         'This entity is not referenced by any location and is therefore not receiving updates.',
       actionButtonTitle: 'Delete entity',
     },
+    // Kept for compatibility with existing overrides; the export button now
+    // reads these keys from catalogReactTranslationRef in plugin-catalog-react.
     catalogExportButton: {
       triggerButtonTitle: 'Export selection',
       dialogTitle: 'Export catalog selection',

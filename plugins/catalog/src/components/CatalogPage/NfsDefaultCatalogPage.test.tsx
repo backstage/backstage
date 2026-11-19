@@ -27,7 +27,7 @@ import {
 import { screen, waitFor } from '@testing-library/react';
 import { SWRConfig } from 'swr';
 import { createComponentRouteRef } from '../../routes';
-import type { CatalogExportSettings } from '../CatalogExportButton';
+import type { CatalogExportSettings } from '@backstage/plugin-catalog-react';
 import { NfsBaseCatalogPage } from './DefaultCatalogPage';
 
 const configApi = mockApis.config({

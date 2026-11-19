@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import { toStreamRequest } from './toStreamRequest';
+import type { DefaultEntityFilters } from '../../../hooks';
 import {
-  DefaultEntityFilters,
   EntityKindFilter,
   EntityTextFilter,
   EntityOrderFilter,
-} from '@backstage/plugin-catalog-react';
+} from '../../../filters';
 
 describe('toStreamRequest', () => {
   describe('with no filters', () => {

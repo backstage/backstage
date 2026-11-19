@@ -185,5 +185,16 @@ export const catalogReactTranslationRef = createTranslationRef({
       generateDescription_other:
         'The annotations {{annotations}} are missing. You need to add the annotations to your {{entityKind}} if you want to enable this tool.',
     },
+    catalogExportButton: {
+      triggerButtonTitle: 'Export selection',
+      dialogTitle: 'Export catalog selection',
+      formatLabel: 'Format',
+      columnsLabel: 'Columns',
+      cancelButtonTitle: 'Cancel',
+      confirmButtonTitle: 'Confirm',
+      exportingButtonTitle: 'Exporting…',
+      successMessage: 'Catalog exported successfully',
+      errorMessage: 'Failed to export catalog: {{errorMessage}}',
+    },
   },
 });

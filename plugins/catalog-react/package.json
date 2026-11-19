@@ -82,6 +82,7 @@
     "@react-hookz/web": "^24.0.0",
     "@remixicon/react": ">=4.6.0 <4.9.0",
     "classnames": "^2.2.6",
+    "csv-stringify": "^5.6.5",
     "lodash": "^4.17.21",
     "material-ui-popup-state": "^5.3.6",
     "qs": "^6.15.2",

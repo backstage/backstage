@@ -5,7 +5,10 @@
 ```ts
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
-import { ApiHolder } from '@backstage/core-plugin-api';
+import type { CatalogExporter as CatalogExporter_2 } from '@backstage/plugin-catalog-react';
+import type { CatalogExporterConfig as CatalogExporterConfig_2 } from '@backstage/plugin-catalog-react';
+import { CatalogExportSettings as CatalogExportSettings_2 } from '@backstage/plugin-catalog-react';
+import type { CatalogExportSettingsColumn as CatalogExportSettingsColumn_2 } from '@backstage/plugin-catalog-react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
@@ -38,7 +41,6 @@ import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
-import type { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { TableColumn } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
@@ -49,17 +51,17 @@ import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 export const CatalogExportConfigBlueprint: ExtensionBlueprint<{
   kind: 'catalog-export-config';
   params: {
-    exporters?: CatalogExportSettings['exporters'];
-    columns?: CatalogExportSettings['columns'];
-    onSuccess?: CatalogExportSettings['onSuccess'];
-    onError?: CatalogExportSettings['onError'];
+    exporters?: CatalogExportSettings_2['exporters'];
+    columns?: CatalogExportSettings_2['columns'];
+    onSuccess?: CatalogExportSettings_2['onSuccess'];
+    onError?: CatalogExportSettings_2['onError'];
   };
   output: ExtensionDataRef<
     {
-      exporters?: CatalogExportSettings['exporters'];
-      columns?: CatalogExportSettings['columns'];
-      onSuccess?: CatalogExportSettings['onSuccess'];
-      onError?: CatalogExportSettings['onError'];
+      exporters?: CatalogExportSettings_2['exporters'];
+      columns?: CatalogExportSettings_2['columns'];
+      onSuccess?: CatalogExportSettings_2['onSuccess'];
+      onError?: CatalogExportSettings_2['onError'];
     },
     'catalog.export-customization',
     {}
@@ -70,37 +72,17 @@ export const CatalogExportConfigBlueprint: ExtensionBlueprint<{
   dataRefs: never;
 }>;
 
-// @public
-export type CatalogExporter = (options: {
-  apis: ApiHolder;
-  columns: CatalogExportSettingsColumn[];
-  streamRequest?: StreamEntitiesRequest;
-}) => {
-  generator: AsyncGenerator<string, void, unknown>;
-  contentType: string;
-};
+// @public @deprecated (undocumented)
+export type CatalogExporter = CatalogExporter_2;
 
-// @public
-export interface CatalogExporterConfig {
-  exporter: CatalogExporter;
-  label?: string;
-}
+// @public @deprecated (undocumented)
+export type CatalogExporterConfig = CatalogExporterConfig_2;
 
-// @public
-export interface CatalogExportSettings {
-  columns?: CatalogExportSettingsColumn[];
-  disableBuiltinExporters?: boolean;
-  enabled?: boolean;
-  exporters?: Record<string, CatalogExporterConfig>;
-  onError?: (options: { error: Error }) => void;
-  onSuccess?: () => void;
-}
+// @public @deprecated (undocumented)
+export type CatalogExportSettings = CatalogExportSettings_2;
 
-// @public
-export interface CatalogExportSettingsColumn {
-  entityFilterKey: string;
-  title?: string;
-}
+// @public @deprecated (undocumented)
+export type CatalogExportSettingsColumn = CatalogExportSettingsColumn_2;
 
 // @public (undocumented)
 export function CatalogIndexPage(props: CatalogIndexPageProps): JSX_3.Element;
@@ -114,7 +96,7 @@ export interface CatalogIndexPageProps {
   // (undocumented)
   emptyContent?: ReactNode;
   // (undocumented)
-  exportSettings?: CatalogExportSettings;
+  exportSettings?: CatalogExportSettings_2;
   // (undocumented)
   filters?: ReactNode;
   // (undocumented)
@@ -155,6 +137,15 @@ export interface CatalogTableRow {
 export const catalogTranslationRef: TranslationRef<
   'catalog',
   {
+    readonly 'catalogExportButton.errorMessage': 'Failed to export catalog: {{errorMessage}}';
+    readonly 'catalogExportButton.cancelButtonTitle': 'Cancel';
+    readonly 'catalogExportButton.triggerButtonTitle': 'Export selection';
+    readonly 'catalogExportButton.dialogTitle': 'Export catalog selection';
+    readonly 'catalogExportButton.formatLabel': 'Format';
+    readonly 'catalogExportButton.columnsLabel': 'Columns';
+    readonly 'catalogExportButton.confirmButtonTitle': 'Confirm';
+    readonly 'catalogExportButton.exportingButtonTitle': 'Exporting…';
+    readonly 'catalogExportButton.successMessage': 'Catalog exported successfully';
     readonly 'deleteEntity.description': 'This entity is not referenced by any location and is therefore not receiving updates.';
     readonly 'deleteEntity.cancelButtonTitle': 'Cancel';
     readonly 'deleteEntity.deleteButtonTitle': 'Delete';
@@ -232,15 +223,6 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityNotFound.description': 'Want to help us build this? Check out our Getting Started documentation.';
     readonly 'entityNotFound.docButtonTitle': 'DOCS';
     readonly 'entityTabs.tabsAriaLabel': 'Tabs';
-    readonly 'catalogExportButton.errorMessage': 'Failed to export catalog: {{errorMessage}}';
-    readonly 'catalogExportButton.cancelButtonTitle': 'Cancel';
-    readonly 'catalogExportButton.dialogTitle': 'Export catalog selection';
-    readonly 'catalogExportButton.triggerButtonTitle': 'Export selection';
-    readonly 'catalogExportButton.formatLabel': 'Format';
-    readonly 'catalogExportButton.columnsLabel': 'Columns';
-    readonly 'catalogExportButton.confirmButtonTitle': 'Confirm';
-    readonly 'catalogExportButton.exportingButtonTitle': 'Exporting…';
-    readonly 'catalogExportButton.successMessage': 'Catalog exported successfully';
     readonly entityProcessingErrorsDescription: 'The error below originates from';
     readonly entityRelationWarningDescription: "This entity has relations to other entities, which can't be found in the catalog.\n Entities not found are: ";
     readonly 'hasComponentsCard.title': 'Has components';
@@ -1237,10 +1219,10 @@ const _default: OverridableFrontendPlugin<
         exportConfig: ExtensionInput<
           ConfigurableExtensionDataRef<
             {
-              exporters?: CatalogExportSettings['exporters'];
-              columns?: CatalogExportSettings['columns'];
-              onSuccess?: CatalogExportSettings['onSuccess'];
-              onError?: CatalogExportSettings['onError'];
+              exporters?: CatalogExportSettings_2['exporters'];
+              columns?: CatalogExportSettings_2['columns'];
+              onSuccess?: CatalogExportSettings_2['onSuccess'];
+              onError?: CatalogExportSettings_2['onError'];
             },
             'catalog.export-customization',
             {

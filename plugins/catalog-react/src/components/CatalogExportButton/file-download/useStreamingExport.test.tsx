@@ -16,11 +16,11 @@
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
-import { EntityListProvider } from '@backstage/plugin-catalog-react';
+import { EntityListProvider } from '../../../hooks';
 import { MemoryRouter } from 'react-router-dom';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '../../../api';
 import { useStreamingExport } from './useStreamingExport';
-import { CatalogExportType } from '../CatalogExportButton';
+import { CatalogExportType } from '../CatalogExportType';
 import * as downloadBlobModule from './downloadFile';
 
 // Store collected content for test assertions
