@@ -22,9 +22,45 @@ import {
   PassportOAuthDoneCallback,
   PassportProfile,
 } from '@backstage/plugin-auth-node';
+import { readFileSync } from 'node:fs';
+import {
+  ClientCertificate,
+  parseClientCertificate,
+  useClientAssertion,
+} from './clientAssertion';
 import { ExtendedMicrosoftStrategy } from './strategy';
 
 const GRAPH_PROFILE_SCOPE = 'openid email User.Read offline_access';
+
+/**
+ * Reads the client credential, which must be exactly one of `clientSecret`,
+ * `clientCertificate` or `clientCertificatePath`.
+ */
+function readClientCredential(config: {
+  getOptionalString(key: string): string | undefined;
+}): {
+  clientSecret?: string;
+  clientCertificate?: ClientCertificate;
+} {
+  const clientSecret = config.getOptionalString('clientSecret');
+  const certificatePem = config.getOptionalString('clientCertificate');
+  const certificatePath = config.getOptionalString('clientCertificatePath');
+
+  const configured = [clientSecret, certificatePem, certificatePath].filter(
+    value => value !== undefined,
+  );
+  if (configured.length !== 1) {
+    throw new Error(
+      'The Microsoft auth provider requires exactly one of clientSecret, clientCertificate or clientCertificatePath to be configured',
+    );
+  }
+
+  if (clientSecret !== undefined) {
+    return { clientSecret };
+  }
+  const pem = certificatePem ?? readFileSync(certificatePath!, 'utf8');
+  return { clientCertificate: parseClientCertificate(pem) };
+}
 
 /**
  * When the acquired access token targets a non-Graph resource, it can't be
@@ -83,7 +119,7 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
   },
   initialize({ callbackUrl, config }) {
     const clientId = config.getString('clientId');
-    const clientSecret = config.getString('clientSecret');
+    const { clientSecret, clientCertificate } = readClientCredential(config);
     const tenantId = config.getString('tenantId');
     const domainHint = config.getOptionalString('domainHint');
     const skipUserProfile =
@@ -92,7 +128,7 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
     const strategy = new ExtendedMicrosoftStrategy(
       {
         clientID: clientId,
-        clientSecret: clientSecret,
+        clientSecret: clientSecret ?? '',
         callbackURL: callbackUrl,
         tenant: tenantId,
       },
@@ -107,6 +143,9 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
       },
     );
 
+    if (clientCertificate) {
+      useClientAssertion(strategy, clientCertificate);
+    }
     strategy.setSkipUserProfile(skipUserProfile);
     const helper = PassportOAuthAuthenticatorHelper.from(strategy);
 
