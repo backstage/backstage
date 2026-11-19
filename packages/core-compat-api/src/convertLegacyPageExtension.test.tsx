@@ -53,6 +53,11 @@ describe('convertLegacyPageExtension', () => {
     expect(tester.query(converted).node.spec.id).toBe('page:example');
 
     await renderInTestApp(tester.reactElement(), {
+      // Says where the converted page is mounted. The converter declares a
+      // React Router v6 adapter for it — a legacy page always had one — and an
+      // adapter scopes itself to the page's mount, so without this the page
+      // under test is nowhere and the adapter has nothing to scope to.
+      mountPath: '/',
       mountedRoutes: {
         '/': convertLegacyRouteRef(routeRef),
       },
@@ -83,6 +88,11 @@ describe('convertLegacyPageExtension', () => {
     expect(tester.query(converted).node.spec.id).toBe('page:other');
 
     await renderInTestApp(tester.reactElement(), {
+      // Says where the converted page is mounted. The converter declares a
+      // React Router v6 adapter for it — a legacy page always had one — and an
+      // adapter scopes itself to the page's mount, so without this the page
+      // under test is nowhere and the adapter has nothing to scope to.
+      mountPath: '/',
       mountedRoutes: {
         '/': convertLegacyRouteRef(routeRef),
       },

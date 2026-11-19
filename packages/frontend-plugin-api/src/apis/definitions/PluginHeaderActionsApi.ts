@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import type { InternalCoreApis } from './coreApis';
 import { JSX } from 'react';
 import { createApiRef } from '../system';
+
+// Retain documentation link targets in declarations.
+export type { InternalCoreApis };
 
 /**
  * API for retrieving plugin-scoped header actions.
@@ -39,6 +43,7 @@ export type PluginHeaderActionsApi = {
  * The `ApiRef` of {@link PluginHeaderActionsApi}.
  *
  * @public
+ * @deprecated Use {@link InternalCoreApis.pluginHeaderActions | coreApis.internal.pluginHeaderActions} instead.
  */
 export const pluginHeaderActionsApiRef =
   createApiRef<PluginHeaderActionsApi>().with({

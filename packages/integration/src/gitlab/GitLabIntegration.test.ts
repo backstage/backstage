@@ -76,7 +76,7 @@ describe('GitLabIntegration', () => {
     registerMswTestHooks(worker);
 
     beforeAll(() => {
-      jest.useFakeTimers();
+      jest.useFakeTimers({ doNotFake: ['nextTick'] });
     });
     afterAll(() => {
       jest.useRealTimers();
@@ -386,7 +386,7 @@ describe('GitLabIntegration', () => {
 
 describe('sleep', () => {
   beforeAll(() => {
-    jest.useFakeTimers();
+    jest.useFakeTimers({ doNotFake: ['nextTick'] });
   });
   afterAll(() => {
     jest.useRealTimers();

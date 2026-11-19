@@ -515,6 +515,7 @@ export class BackendInitializer {
                     pluginId,
                     moduleId,
                   );
+                  resultCollector.onPluginModuleInitBegin(pluginId, moduleId);
                   await moduleInit.init.func(moduleDeps);
                   resultCollector.onPluginModuleResult(pluginId, moduleId);
                 } catch (error: unknown) {
@@ -534,6 +535,7 @@ export class BackendInitializer {
               resultCollector,
               pluginId,
             );
+            resultCollector.onPluginInitBegin(pluginId);
             await pluginInit.init.func(pluginDeps);
           }
 

@@ -29,7 +29,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [{ method: 'token', token: 'public-token' }],
           },
         ]),
@@ -41,7 +41,7 @@ describe('DefaultConnectionsService', () => {
         authMethods: ['token'],
       });
 
-      expect(connection.host).toBe('github.com');
+      expect(connection.baseUrl).toBe('https://github.com/');
       expect(connection.auth.method).toBe('token');
       expect(connection.auth.token).toBe('public-token');
     });
@@ -52,7 +52,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'enterprise.example.com',
+            baseUrl: 'https://enterprise.example.com/',
             match: { plugins: ['scaffolder'] },
             auth: [
               {
@@ -82,7 +82,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'enterprise.example.com',
+            baseUrl: 'https://enterprise.example.com/',
             match: { plugins: ['scaffolder'] },
             auth: [
               {
@@ -103,7 +103,7 @@ describe('DefaultConnectionsService', () => {
         authMethods: ['app'],
       });
 
-      expect(connection?.host).toBe('enterprise.example.com');
+      expect(connection?.baseUrl).toBe('https://enterprise.example.com/');
       expect(connection?.auth.method).toBe('app');
     });
 
@@ -113,7 +113,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'split.example.com',
+            baseUrl: 'https://split.example.com/',
             auth: [
               {
                 method: 'token',
@@ -154,7 +154,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [{ method: 'token', token: 'public-token' }],
           },
         ]),
@@ -177,7 +177,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'specific.example.com',
+            baseUrl: 'https://specific.example.com/',
             auth: [
               { method: 'token', token: 'general-token' },
               {
@@ -208,7 +208,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'specific.example.com',
+            baseUrl: 'https://specific.example.com/',
             auth: [
               {
                 method: 'token',
@@ -238,7 +238,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'gitlab',
-            host: 'gitlab.com',
+            baseUrl: 'https://gitlab.com/',
             auth: [
               { method: 'token', token: 'first-token' },
               { method: 'token', token: 'second-token' },
@@ -263,7 +263,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'gitlab',
-            host: 'gitlab.com',
+            baseUrl: 'https://gitlab.com/',
             auth: [
               {
                 method: 'token',
@@ -327,7 +327,7 @@ describe('DefaultConnectionsService', () => {
             connections: [
               {
                 type: 'gitlab',
-                host: 'gitlab.com',
+                baseUrl: 'https://gitlab.com/',
                 auth: [{ method: 'token', token: 'connections-gl-token' }],
               },
             ],
@@ -343,7 +343,7 @@ describe('DefaultConnectionsService', () => {
       });
       // matchAuth's priority chain prefers `app` over `token` when an app
       // is available.
-      expect(gh?.host).toBe('enterprise.example.com');
+      expect(gh?.baseUrl).toBe('https://enterprise.example.com/');
       expect(gh?.apiBaseUrl).toBe('https://enterprise.example.com/api/v3');
       expect(gh?.auth.method).toBe('app');
 
@@ -352,7 +352,7 @@ describe('DefaultConnectionsService', () => {
         query: { url: 'https://gitlab.com/foo' },
         authMethods: ['token'],
       });
-      expect(gl?.host).toBe('gitlab.com');
+      expect(gl?.baseUrl).toBe('https://gitlab.com/');
       expect((gl?.auth as { token: string }).token).toBe(
         'connections-gl-token',
       );
@@ -376,7 +376,7 @@ describe('DefaultConnectionsService', () => {
             connections: [
               {
                 type: 'github',
-                host: 'config.example.com',
+                baseUrl: 'https://config.example.com/',
                 auth: [{ method: 'token', token: 'config-token' }],
               },
             ],
@@ -404,7 +404,7 @@ describe('DefaultConnectionsService', () => {
         query: { url: 'https://config.example.com/foo' },
         authMethods: ['token'],
       });
-      expect(kept?.host).toBe('config.example.com');
+      expect(kept?.baseUrl).toBe('https://config.example.com/');
       expect((kept?.auth as { token: string }).token).toBe('config-token');
 
       expect(logger.warn).toHaveBeenCalledTimes(1);
@@ -436,7 +436,7 @@ describe('DefaultConnectionsService', () => {
         query: { url: 'https://bitbucket.org/my-workspace/my-repo' },
         authMethods: ['appPassword', 'oauth'],
       });
-      expect(connection?.host).toBe('bitbucket.org');
+      expect(connection?.baseUrl).toBe('https://bitbucket.org/');
       expect(connection?.auth).toMatchObject({
         method: 'appPassword',
         username: 'ci-bot',
@@ -516,7 +516,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'public.example.com',
+            baseUrl: 'https://public.example.com/',
             auth: [{ method: 'none' }],
           },
         ]),
@@ -527,7 +527,7 @@ describe('DefaultConnectionsService', () => {
         query: { url: 'https://public.example.com/foo' },
         authMethods: ['none'],
       });
-      expect(connection?.host).toBe('public.example.com');
+      expect(connection?.baseUrl).toBe('https://public.example.com/');
       expect(connection?.auth.method).toBe('none');
     });
 
@@ -537,7 +537,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'shared.example.com',
+            baseUrl: 'https://shared.example.com/',
             auth: [
               { method: 'token', token: 'shared-token' },
               {
@@ -567,7 +567,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [{ method: 'token', token: 'public-token' }],
           },
         ]),
@@ -590,7 +590,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'split.example.com',
+            baseUrl: 'https://split.example.com/',
             auth: [
               {
                 method: 'token',
@@ -631,7 +631,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [{ method: 'token', token: 'public-token' }],
           },
         ]),
@@ -909,7 +909,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             title: 'GitHub Production',
             auth: [{ method: 'token', token: 'my-token' }],
           },
@@ -931,7 +931,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [{ method: 'token', token: 'my-token' }],
           },
         ]),
@@ -952,12 +952,12 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [{ method: 'token', token: 'public-token' }],
           },
           {
             type: 'github',
-            host: 'ghe.acme.com',
+            baseUrl: 'https://ghe.acme.com/',
             auth: [{ method: 'token', token: 'enterprise-token' }],
           },
         ]),
@@ -984,13 +984,13 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             title: 'Public GitHub',
             auth: [{ method: 'token', token: 'public-token' }],
           },
           {
             type: 'github',
-            host: 'ghe.acme.com',
+            baseUrl: 'https://ghe.acme.com/',
             auth: [{ method: 'token', token: 'enterprise-token' }],
           },
         ]),
@@ -1019,7 +1019,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [
               {
                 method: 'token',
@@ -1046,7 +1046,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [
               {
                 method: 'token',
@@ -1072,7 +1072,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [
               {
                 method: 'token',
@@ -1112,7 +1112,7 @@ describe('DefaultConnectionsService', () => {
           config: mockConnectionsConfig([
             {
               type: 'github',
-              host: 'github.com',
+              baseUrl: 'https://github.com/',
               auth: [],
             },
           ]),
@@ -1129,7 +1129,7 @@ describe('DefaultConnectionsService', () => {
           config: mockConnectionsConfig([
             {
               type: 'github',
-              host: 'github.com',
+              baseUrl: 'https://github.com/',
               // Token auth is missing the required `token` field.
               auth: [{ method: 'token' }],
             },
@@ -1145,7 +1145,7 @@ describe('DefaultConnectionsService', () => {
           config: mockConnectionsConfig([
             {
               type: 'github',
-              host: 'github.com',
+              baseUrl: 'https://github.com/',
               host2: 'github.com',
               auth: [{ method: 'token', token: 'abc' }],
             },
@@ -1164,7 +1164,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [{ method: 'token', token: 'secret-token' }],
           },
         ]),
@@ -1176,7 +1176,7 @@ describe('DefaultConnectionsService', () => {
       });
 
       expect(info.type).toBe('github');
-      expect(info.host).toBe('github.com');
+      expect(info.baseUrl).toBe('https://github.com/');
       expect(info.title).toBe('GitHub');
       expect('auth' in info).toBe(false);
     });
@@ -1187,7 +1187,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [
               {
                 method: 'token',
@@ -1204,7 +1204,7 @@ describe('DefaultConnectionsService', () => {
         query: { url: 'https://github.com/foo' },
       });
 
-      expect(info.host).toBe('github.com');
+      expect(info.baseUrl).toBe('https://github.com/');
       expect('auth' in info).toBe(false);
     });
 
@@ -1214,7 +1214,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [{ method: 'token', token: 'abc' }],
           },
         ]),
@@ -1234,7 +1234,7 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'enterprise.example.com',
+            baseUrl: 'https://enterprise.example.com/',
             match: { plugins: ['scaffolder'] },
             auth: [{ method: 'token', token: 'enterprise-token' }],
           },
@@ -1279,12 +1279,12 @@ describe('DefaultConnectionsService', () => {
         config: mockConnectionsConfig([
           {
             type: 'github',
-            host: 'github.com',
+            baseUrl: 'https://github.com/',
             auth: [{ method: 'token', token: 'public' }],
           },
           {
             type: 'github',
-            host: 'ghe.acme.com',
+            baseUrl: 'https://ghe.acme.com/',
             auth: [{ method: 'token', token: 'enterprise' }],
           },
         ]),
@@ -1299,12 +1299,12 @@ describe('DefaultConnectionsService', () => {
           config: mockConnectionsConfig([
             {
               type: 'github',
-              host: 'github.com',
+              baseUrl: 'https://github.com/',
               auth: [{ method: 'token', token: 'first' }],
             },
             {
               type: 'github',
-              host: 'github.com',
+              baseUrl: 'https://github.com/',
               auth: [{ method: 'token', token: 'second' }],
             },
           ]),

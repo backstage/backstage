@@ -270,7 +270,7 @@ the `supportedSubmitMethods` parameter.
 
 ### Custom Resolvers for AsyncApi
 
-You can override the default http/https resolvers, for example to add authentication to requests to internal schema registries by providing the `resolvers` prop to the `AsyncApiDefinitionWidget`. This is an example:
+External references in AsyncAPI definitions are not resolved by default, since definitions are provided by catalog entity content. References to whole external documents still render, with a placeholder naming the document that was not loaded; references that point into an external document (using a `#` fragment) fail to render with an error naming the reference. To opt in to resolving external references — for example to reach internal schema registries that require authentication — provide the `resolvers` prop to the `AsyncApiDefinitionWidget`. This is an example:
 
 ```tsx
 ...

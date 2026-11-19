@@ -17,6 +17,7 @@ import { CachedAzureDevOpsCredentialsProvider } from './CachedAzureDevOpsCredent
 import {
   AccessToken,
   ClientAssertionCredential,
+  ClientCertificateCredential,
   ClientSecretCredential,
   ManagedIdentityCredential,
 } from '@azure/identity';
@@ -24,6 +25,11 @@ import {
 const MockedClientSecretCredential = ClientSecretCredential as jest.MockedClass<
   typeof ClientSecretCredential
 >;
+
+const MockedClientCertificateCredential =
+  ClientCertificateCredential as jest.MockedClass<
+    typeof ClientCertificateCredential
+  >;
 
 const MockedClientAssertionCredential =
   ClientAssertionCredential as jest.MockedClass<
@@ -50,6 +56,14 @@ describe('CachedAzureDevOpsCredentialsProvider', () => {
         expiresOnTimestamp: Date.now() + hours(8),
         token: 'fake-client-secret-token',
       } as AccessToken),
+    );
+
+    MockedClientCertificateCredential.prototype.getToken.mockImplementation(
+      () =>
+        Promise.resolve({
+          expiresOnTimestamp: Date.now() + hours(8),
+          token: 'fake-client-certificate-token',
+        } as AccessToken),
     );
 
     MockedClientAssertionCredential.prototype.getToken.mockImplementation(() =>
@@ -100,6 +114,44 @@ describe('CachedAzureDevOpsCredentialsProvider', () => {
 
     expect(type).toBe('bearer');
     expect(token).toBe('fake-client-secret-token');
+  });
+
+  it('Should return a bearer credential when a client certificate is configured', async () => {
+    const manager =
+      CachedAzureDevOpsCredentialsProvider.fromAzureDevOpsCredential({
+        kind: 'ClientCertificate',
+        clientId: 'id',
+        clientCertificate: 'pem',
+        tenantId: 'tenantId',
+      });
+
+    const { headers, type, token } = await manager.getCredentials();
+
+    expect(MockedClientCertificateCredential).toHaveBeenCalledWith(
+      'tenantId',
+      'id',
+      { certificate: 'pem' },
+    );
+    expect(headers).toStrictEqual({
+      Authorization: `Bearer fake-client-certificate-token`,
+    });
+    expect(type).toBe('bearer');
+    expect(token).toBe('fake-client-certificate-token');
+  });
+
+  it('Should pass the certificate path when a client certificate path is configured', async () => {
+    CachedAzureDevOpsCredentialsProvider.fromAzureDevOpsCredential({
+      kind: 'ClientCertificate',
+      clientId: 'id',
+      clientCertificatePath: '/path/to/cert.pem',
+      tenantId: 'tenantId',
+    });
+
+    expect(MockedClientCertificateCredential).toHaveBeenCalledWith(
+      'tenantId',
+      'id',
+      { certificatePath: '/path/to/cert.pem' },
+    );
   });
 
   it('Should return a bearer credential when a managed identity client assertion is configured', async () => {

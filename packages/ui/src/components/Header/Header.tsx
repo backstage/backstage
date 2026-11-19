@@ -16,8 +16,9 @@
 
 import type { HeaderProps } from './types';
 import { Text } from '../Text';
-import { RiArrowRightSLine } from '@remixicon/react';
+import { RiArrowLeftSLine, RiArrowRightSLine } from '@remixicon/react';
 import { HeaderNav } from './HeaderNav';
+import { useTabsOverflow } from './useTabsOverflow';
 import { useDefinition } from '../../hooks/useDefinition';
 import { HeaderDefinition } from './definition';
 import { sanitizeUrl } from '@braintree/sanitize-url';
@@ -104,6 +105,8 @@ export const Header = (props: HeaderProps) => {
   // The sentinel sits directly before the sticky content and leaves the
   // viewport when the content becomes stuck, letting us toggle stuck styling.
   const stickySentinelRef = useRef<HTMLDivElement>(null);
+  const tabsWrapperRef = useRef<HTMLDivElement>(null);
+  const tabsOverflow = useTabsOverflow(tabsWrapperRef, Boolean(tabs));
   const [isStuck, setIsStuck] = useState(false);
 
   useEffect(() => {
@@ -281,8 +284,44 @@ export const Header = (props: HeaderProps) => {
           </dl>
         )}
         {tabs && (
-          <div className={classes.tabsWrapper}>
-            <HeaderNav tabs={tabs} activeTabId={activeTabId} />
+          <div className={classes.tabsRow}>
+            <div
+              ref={tabsWrapperRef}
+              className={classes.tabsWrapper}
+              data-overflow-start={tabsOverflow.hasMoreStart || undefined}
+              data-overflow-end={tabsOverflow.hasMoreEnd || undefined}
+            >
+              <HeaderNav tabs={tabs} activeTabId={activeTabId} />
+            </div>
+            {/*
+             * The scroll buttons are a pointer convenience only. Every tab stays
+             * in the accessibility tree and in the tab order, and focusing a tab
+             * scrolls it into view, so the buttons would only add noise.
+             */}
+            {tabsOverflow.hasMoreStart && (
+              <button
+                type="button"
+                tabIndex={-1}
+                aria-hidden="true"
+                className={classes.tabsScrollButton}
+                data-side="start"
+                onClick={() => tabsOverflow.scrollTowards('start')}
+              >
+                <RiArrowLeftSLine size={16} />
+              </button>
+            )}
+            {tabsOverflow.hasMoreEnd && (
+              <button
+                type="button"
+                tabIndex={-1}
+                aria-hidden="true"
+                className={classes.tabsScrollButton}
+                data-side="end"
+                onClick={() => tabsOverflow.scrollTowards('end')}
+              >
+                <RiArrowRightSLine size={16} />
+              </button>
+            )}
           </div>
         )}
       </Container>

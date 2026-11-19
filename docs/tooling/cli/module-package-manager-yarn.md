@@ -17,6 +17,33 @@ The command verifies Yarn's native `patch:` protocol, available in Yarn 2 and
 later. It does not inspect patches managed by tools such as `patch-package` in
 Yarn Classic repositories.
 
+:::caution
+
+The Yarn dependencies of this module (`@yarnpkg/cli`, `@yarnpkg/core`, and
+`@yarnpkg/plugin-patch`) are temporarily optional, because
+`@yarnpkg/core@4.9.2` was published with a broken dependency on `got` that
+makes installation fail. To use `pm verify-patches` until this is fixed
+upstream, add the packages and a resolution for the broken dependency to your
+root `package.json`:
+
+```json
+{
+  "devDependencies": {
+    "@yarnpkg/cli": "^4.7.0",
+    "@yarnpkg/core": "^4.9.1",
+    "@yarnpkg/plugin-patch": "^4.0.2"
+  },
+  "resolutions": {
+    "@yarnpkg/core/got": "npm:^11.8.6"
+  }
+}
+```
+
+Remove them again once a fixed `@yarnpkg/core` is published and this module
+depends on it directly.
+
+:::
+
 ## pm verify-patches
 
 Run this command from the root of a Yarn repository:

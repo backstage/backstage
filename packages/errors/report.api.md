@@ -10,12 +10,14 @@ export function assertError(value: unknown): asserts value is ErrorLike;
 
 // @public
 export class AuthenticationError extends CustomErrorBase {
+  static is(value: unknown): value is AuthenticationError;
   // (undocumented)
   name: 'AuthenticationError';
 }
 
 // @public
 export class ConflictError extends CustomErrorBase {
+  static is(value: unknown): value is ConflictError;
   // (undocumented)
   name: 'ConflictError';
 }
@@ -80,6 +82,7 @@ export class ForwardedError extends CustomErrorBase {
 
 // @public
 export class InputError extends CustomErrorBase {
+  static is(value: unknown): value is InputError;
   // (undocumented)
   name: 'InputError';
 }
@@ -88,25 +91,38 @@ export class InputError extends CustomErrorBase {
 export function isError(value: unknown): value is ErrorLike;
 
 // @public
+export function isErrorWithName<TName extends string>(
+  value: unknown,
+  name: TName,
+): value is ErrorLike & {
+  name: TName;
+  cause?: ErrorLike;
+};
+
+// @public
 export class NotAllowedError extends CustomErrorBase {
+  static is(value: unknown): value is NotAllowedError;
   // (undocumented)
   name: 'NotAllowedError';
 }
 
 // @public
 export class NotFoundError extends CustomErrorBase {
+  static is(value: unknown): value is NotFoundError;
   // (undocumented)
   name: 'NotFoundError';
 }
 
 // @public
 export class NotImplementedError extends CustomErrorBase {
+  static is(value: unknown): value is NotImplementedError;
   // (undocumented)
   name: 'NotImplementedError';
 }
 
 // @public
 export class NotModifiedError extends CustomErrorBase {
+  static is(value: unknown): value is NotModifiedError;
   // (undocumented)
   name: 'NotModifiedError';
 }
@@ -127,6 +143,7 @@ export class ResponseError extends Error {
       text(): Promise<string>;
     },
   ): Promise<ResponseError>;
+  static is(value: unknown): value is ResponseError;
   readonly response: ConsumedResponse;
   // (undocumented)
   readonly statusCode: number;
@@ -152,6 +169,7 @@ export function serializeError(
 
 // @public
 export class ServiceUnavailableError extends CustomErrorBase {
+  static is(value: unknown): value is ServiceUnavailableError;
   // (undocumented)
   name: 'ServiceUnavailableError';
 }

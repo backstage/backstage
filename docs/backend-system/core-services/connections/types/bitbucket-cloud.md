@@ -13,7 +13,7 @@ The `bitbucket-cloud` connection type represents a Bitbucket Cloud host. It has
 ```yaml title="app-config.yaml"
 connections:
   - type: bitbucket-cloud
-    host: bitbucket.org
+    baseUrl: https://bitbucket.org/
     auth:
       - method: appPassword
         username: ${BITBUCKET_USERNAME}
@@ -22,9 +22,9 @@ connections:
 
 ## Connection fields
 
-| Field  | Type     | Required | Description                                                       |
-| ------ | -------- | -------- | ----------------------------------------------------------------- |
-| `host` | `string` | Yes      | Bitbucket Cloud host matched against the consumer's resource URL. |
+| Field     | Type     | Required | Description                                                    |
+| --------- | -------- | -------- | -------------------------------------------------------------- |
+| `baseUrl` | `string` | Yes      | HTTP(S) base URL of the instance. Its host is used for lookup. |
 
 ## Authentication methods
 
@@ -46,7 +46,7 @@ Use `none` explicitly when the consumer only needs public Bitbucket content.
 ## Lookup and selection
 
 The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
-a Bitbucket URL. The service selects the connection whose `host` matches the
+a Bitbucket URL. The service selects the connection whose `baseUrl` host matches the
 parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the

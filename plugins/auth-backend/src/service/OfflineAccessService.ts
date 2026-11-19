@@ -33,6 +33,7 @@ import {
   verifyRefreshToken,
 } from '../lib/refreshToken';
 import { TokenIssuer } from '../identity/types';
+import { OidcError } from './OidcError';
 
 /**
  * Service for managing offline access (refresh tokens)
@@ -204,8 +205,14 @@ export class OfflineAccessService {
     refreshToken: string;
     tokenIssuer: TokenIssuer;
     clientId?: string;
+    isClientAuthenticationRequired?: (oidcClientId: string) => boolean;
   }): Promise<{ accessToken: string; refreshToken: string }> {
-    const { refreshToken, tokenIssuer, clientId } = options;
+    const {
+      refreshToken,
+      tokenIssuer,
+      clientId,
+      isClientAuthenticationRequired,
+    } = options;
 
     let sessionId: string;
     try {
@@ -228,6 +235,17 @@ export class OfflineAccessService {
     if (clientId && session.oidcClientId && clientId !== session.oidcClientId) {
       throw new AuthenticationError(
         'Refresh token was not issued to this client',
+      );
+    }
+
+    if (
+      session.oidcClientId &&
+      isClientAuthenticationRequired?.(session.oidcClientId)
+    ) {
+      throw new OidcError(
+        'invalid_client',
+        'Client authentication required',
+        401,
       );
     }
 
@@ -307,14 +325,17 @@ export class OfflineAccessService {
 
   /**
    * Revoke all refresh tokens for a user
+   *
+   * @returns The number of revoked refresh tokens
    */
   async revokeRefreshTokensByUserEntityRef(
     userEntityRef: string,
-  ): Promise<void> {
+  ): Promise<number> {
     const deletedCount =
       await this.#offlineSessionDb.deleteSessionsByUserEntityRef(userEntityRef);
     this.#logger.debug(
       `Revoked ${deletedCount} refresh tokens for user ${userEntityRef}`,
     );
+    return deletedCount;
   }
 }

@@ -8,4 +8,5 @@ documentation: https://github.com/cortexapps/backstage-plugin
 iconUrl: /img/cortex.png
 npmPackageName: '@cortexapps/backstage-plugin'
 addedDate: '2021-06-03'
-status: active
+status: inactive
+staleSince: '2026-11-04'

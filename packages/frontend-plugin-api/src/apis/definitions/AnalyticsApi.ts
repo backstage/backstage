@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import type { CoreApis } from './coreApis';
 import { createApiRef } from '../system';
 import { AnalyticsContextValue } from '../../analytics/types';
+
+// Retain documentation link targets in declarations.
+export type { CoreApis };
 
 /**
  * Represents an event worth tracking in an analytics system that could inform
@@ -103,26 +107,6 @@ export type AnalyticsTracker = {
 };
 
 /**
- * Analytics implementations are used to track user behavior in a Backstage
- * instance.
- *
- * @remarks
- *
- * To instrument your App or Plugin, retrieve an analytics tracker using the
- * `useAnalytics()` hook. This will return a pre-configured `AnalyticsTracker`
- * with relevant methods for instrumentation.
- *
- * @public
- */
-export type AnalyticsImplementation = {
-  /**
-   * Primary event handler responsible for compiling and forwarding events to
-   * an analytics system.
-   */
-  captureEvent(event: AnalyticsEvent): void;
-};
-
-/**
  * The Analytics API is used to track user behavior in a Backstage instance.
  *
  * @remarks
@@ -147,9 +131,10 @@ export type AnalyticsApi = {
  * @remarks
  *
  * To define a concrete Analytics Implementation, use
- * {@link AnalyticsImplementationBlueprint} instead.
+ * {@link @backstage/plugin-app-react#AnalyticsImplementationBlueprint}.
  *
  * @public
+ * @deprecated Use {@link CoreApis.analytics | coreApis.analytics} instead.
  */
 export const analyticsApiRef = createApiRef<AnalyticsApi>().with({
   id: 'core.analytics',

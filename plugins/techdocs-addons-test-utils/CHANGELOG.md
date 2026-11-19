@@ -1,5 +1,54 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 2.1.0
+
+### Minor Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/plugin-catalog@2.1.0
+  - @backstage/plugin-catalog-react@4.0.0
+  - @backstage/test-utils@1.8.0
+  - @backstage/core-app-api@1.20.7
+  - @backstage/integration-react@1.3.0
+  - @backstage/plugin-search-react@1.12.0
+  - @backstage/plugin-techdocs@1.20.0
+  - @backstage/plugin-techdocs-react@1.5.0
+
+## 2.0.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.19.1-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog@2.0.11-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/plugin-search-react@1.11.10-next.0
+  - @backstage/plugin-techdocs-react@1.4.1-next.0
+  - @backstage/core-app-api@1.20.7-next.0
+  - @backstage/integration-react@1.2.24-next.0
+  - @backstage/test-utils@1.7.24-next.0
+
+## 2.0.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-react@1.4.0
+  - @backstage/plugin-catalog@2.0.10
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/plugin-techdocs@1.19.0
+  - @backstage/core-app-api@1.20.6
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/integration-react@1.2.23
+  - @backstage/test-utils@1.7.23
+  - @backstage/plugin-search-react@1.11.9
+
 ## 2.0.10-next.1
 
 ### Patch Changes

@@ -17,10 +17,11 @@ import { Config } from '@backstage/config';
 import { InputError, toError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { z } from 'zod/v4';
+import type { ConnectionTypeDefinition } from '../api/ConnectionType';
 import type { ConnectionType } from '../definitions/types';
 import { combineConnectionSources } from './combineConnectionSources';
 import { getLegacyIntegrations } from './getLegacyIntegrations';
-import { getConnectionType, identityFields, isConnectionType } from './lookup';
+import { getConnectionType, isConnectionType } from './lookup';
 import type { ConfiguredConnection } from './types';
 
 function describeError(error: unknown): string {
@@ -35,19 +36,6 @@ function describeError(error: unknown): string {
     }
   }
   return e.message;
-}
-
-// The identity field name is only known at runtime, so the typed connection
-// object cannot be indexed directly; this helper contains the erased read.
-function connectionIdentityOf(
-  identityField: string | undefined,
-  connection: object,
-): string | undefined {
-  if (!identityField) {
-    return undefined;
-  }
-  const value = (connection as Record<string, unknown>)[identityField];
-  return typeof value === 'string' ? value : undefined;
 }
 
 function validateConnection(connection: JsonObject): ConfiguredConnection {
@@ -154,19 +142,18 @@ function dedupeLegacy(
   const result: ConfiguredConnection[] = [];
 
   for (const connection of legacy) {
-    const connectionType = getConnectionType(connection.type as ConnectionType);
+    const connectionType: ConnectionTypeDefinition = getConnectionType(
+      connection.type as ConnectionType,
+    );
 
     let key = connection.type as string;
     if (connectionType.cardinality !== 'singleton') {
-      const identity = connectionIdentityOf(
-        identityFields[connectionType.lookupStrategy],
-        connection,
-      );
+      const identity = connectionType.getLookupIdentity(connection);
       if (identity === undefined) {
         result.push(connection);
         continue;
       }
-      key = `${connection.type} ${identity}`;
+      key = `${connection.type} ${identity.key} ${identity.value}`;
     }
 
     if (seen.has(key)) {
@@ -191,15 +178,12 @@ function assignDefaultTitles(connections: ConfiguredConnection[]): void {
   for (const c of connections) {
     if (!c.title) {
       const type = c.type as ConnectionType;
-      const connectionType = getConnectionType(type);
+      const connectionType: ConnectionTypeDefinition = getConnectionType(type);
       const displayName = connectionType.title;
-      const identity = connectionIdentityOf(
-        identityFields[connectionType.lookupStrategy],
-        c,
-      );
+      const identity = connectionType.getLookupIdentity(c);
       (c as { title?: string }).title =
         typeCounts.get(type)! > 1 && identity
-          ? `${displayName} (${identity})`
+          ? `${displayName} (${identity.value})`
           : displayName;
     }
   }
@@ -300,7 +284,9 @@ export function buildConnectionsFromConfig(options: {
   const singletonsSeen = new Set<string>();
   const identitiesSeen = new Set<string>();
   for (const c of connections) {
-    const connectionType = getConnectionType(c.type as ConnectionType);
+    const connectionType: ConnectionTypeDefinition = getConnectionType(
+      c.type as ConnectionType,
+    );
 
     if (connectionType.cardinality === 'singleton') {
       if (singletonsSeen.has(c.type)) {
@@ -310,13 +296,12 @@ export function buildConnectionsFromConfig(options: {
       }
       singletonsSeen.add(c.type);
     } else {
-      const identityField = identityFields[connectionType.lookupStrategy];
-      const identity = connectionIdentityOf(identityField, c);
+      const identity = connectionType.getLookupIdentity(c);
       if (identity !== undefined) {
-        const key = `${c.type} ${identity}`;
+        const key = `${c.type} ${identity.key} ${identity.value}`;
         if (identitiesSeen.has(key)) {
           throw new InputError(
-            `Duplicate connection of type "${c.type}" for ${identityField} "${identity}"`,
+            `Duplicate connection of type "${c.type}" for ${identity.key} "${identity.value}"`,
           );
         }
         identitiesSeen.add(key);

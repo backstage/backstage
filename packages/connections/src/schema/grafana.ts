@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InputError } from '@backstage/errors';
 import { z } from 'zod/v4';
 import { createConnectionType } from '../system/createConnectionType';
+import { connectionBaseUrlSchema } from '../system/connectionBaseUrlSchema';
+import { withBaseUrl } from '../system/withBaseUrl';
 
 /** @public */
 export const GrafanaConnectionType = createConnectionType({
   type: 'grafana',
   title: 'Grafana',
-  configSchema: z.object({
-    host: z.string().min(1),
-    baseUrl: z.url({ protocol: /^https?$/ }).refine(value => {
-      try {
-        const url = new URL(value);
-        return !url.username && !url.password && !/[?#]/.test(value);
-      } catch {
-        return false;
-      }
-    }, 'baseUrl must not contain credentials, a query, or a fragment'),
-  }),
+  ...withBaseUrl(
+    z.object({
+      apiBaseUrl: connectionBaseUrlSchema.optional(),
+    }),
+  ),
   authMethods: [
     {
       method: 'token',
@@ -53,21 +48,4 @@ export const GrafanaConnectionType = createConnectionType({
       }),
     },
   ],
-  validate({ config }) {
-    // The lookup strategy compares against URL.host, including non-default ports.
-    try {
-      if (
-        ['http', 'https'].some(
-          scheme => new URL(`${scheme}://${config.host}`).host === config.host,
-        )
-      ) {
-        return;
-      }
-    } catch {
-      // Report the same rule for malformed URLs and hosts containing URL parts.
-    }
-    throw new InputError(
-      'host must be a lowercase URL host, with an optional port and no scheme or path',
-    );
-  },
 });

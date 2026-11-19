@@ -17,7 +17,10 @@ import { mockServices } from '@backstage/backend-test-utils';
 import type { Connection, ConnectionsService } from '@backstage/connections';
 import { DefaultConnectionsService } from './DefaultConnectionsService';
 
-function createService(baseUrl = 'http://grafana.internal:3000/grafana') {
+function createService(
+  baseUrl = 'https://monitoring.example.com:8443/grafana',
+  apiBaseUrl?: string,
+) {
   return DefaultConnectionsService.create({
     logger: mockServices.logger.mock(),
     config: mockServices.rootConfig({
@@ -25,8 +28,8 @@ function createService(baseUrl = 'http://grafana.internal:3000/grafana') {
         connections: [
           {
             type: 'grafana',
-            host: 'monitoring.example.com:8443',
             baseUrl,
+            apiBaseUrl,
             auth: [
               {
                 method: 'token',
@@ -49,7 +52,6 @@ function createService(baseUrl = 'http://grafana.internal:3000/grafana') {
           },
           {
             type: 'grafana',
-            host: 'example.grafana.net',
             baseUrl: 'https://example.grafana.net',
             auth: [{ method: 'token', token: 'dummy-cloud-token' }],
           },
@@ -61,7 +63,10 @@ function createService(baseUrl = 'http://grafana.internal:3000/grafana') {
 
 describe('Grafana connections', () => {
   it('looks up exact hosts and ports without selecting by path or organization query', async () => {
-    const service = createService().forPlugin('grafana');
+    const service = createService(
+      undefined,
+      'http://grafana.internal:3000/grafana/api',
+    ).forPlugin('grafana');
     const find = (url: string) =>
       service.find({
         type: 'grafana',
@@ -71,7 +76,12 @@ describe('Grafana connections', () => {
     const connection = await find(
       'https://monitoring.example.com:8443/grafana/d/example?orgId=2',
     );
-    expect(connection.baseUrl).toBe('http://grafana.internal:3000/grafana');
+    expect(connection.baseUrl).toBe(
+      'https://monitoring.example.com:8443/grafana/',
+    );
+    expect(connection.apiBaseUrl).toBe(
+      'http://grafana.internal:3000/grafana/api/',
+    );
     expect(connection.auth.token).toBe('dummy-default-token');
     expect(
       await find(
@@ -151,13 +161,43 @@ describe('Grafana connections', () => {
   });
 
   it.each([
-    'http://grafana.internal:3000/grafana',
-    'http://grafana.internal:3000/grafana/',
+    {
+      baseUrl: 'https://monitoring.example.com:8443/grafana',
+      apiBaseUrl: undefined,
+      expectedUrl:
+        'https://monitoring.example.com:8443/grafana/api/search?type=dash-db',
+    },
+    {
+      baseUrl: 'https://monitoring.example.com:8443/grafana/',
+      apiBaseUrl: undefined,
+      expectedUrl:
+        'https://monitoring.example.com:8443/grafana/api/search?type=dash-db',
+    },
+    {
+      baseUrl: 'https://monitoring.example.com:8443/grafana',
+      apiBaseUrl: 'http://grafana.internal:3000/grafana/api',
+      expectedUrl:
+        'http://grafana.internal:3000/grafana/api/search?type=dash-db',
+    },
+    {
+      baseUrl: 'https://monitoring.example.com:8443/grafana/',
+      apiBaseUrl: 'http://grafana.internal:3000/grafana/api/',
+      expectedUrl:
+        'http://grafana.internal:3000/grafana/api/search?type=dash-db',
+    },
+    {
+      baseUrl: 'https://monitoring.example.com:8443/grafana',
+      apiBaseUrl: 'http://grafana.internal:3000/grafana%3F%23/api',
+      expectedUrl:
+        'http://grafana.internal:3000/grafana%3F%23/api/search?type=dash-db',
+    },
   ])(
-    'preserves subpaths when consuming %s with a typed token request',
-    async baseUrl => {
-      const connections: ConnectionsService =
-        createService(baseUrl).forPlugin('grafana');
+    'resolves typed API requests using $baseUrl and $apiBaseUrl',
+    async ({ baseUrl, apiBaseUrl, expectedUrl }) => {
+      const connections: ConnectionsService = createService(
+        baseUrl,
+        apiBaseUrl,
+      ).forPlugin('grafana');
       const connection: Connection<'grafana', 'token'> = await connections.find(
         {
           type: 'grafana',
@@ -167,15 +207,18 @@ describe('Grafana connections', () => {
           authMethods: ['token'],
         },
       );
-      const url = new URL(
-        'api/search?type=dash-db',
-        `${connection.baseUrl.replace(/\/$/, '')}/`,
-      );
+      const apiRoot =
+        connection.apiBaseUrl ?? new URL('api/', connection.baseUrl);
+      const url = new URL('search?type=dash-db', apiRoot);
       const headers = { Authorization: `Bearer ${connection.auth.token}` };
-      expect(url.href).toBe(
-        'http://grafana.internal:3000/grafana/api/search?type=dash-db',
-      );
+      expect(url.href).toBe(expectedUrl);
       expect(headers.Authorization).toBe('Bearer dummy-default-token');
+      expect(connection.baseUrl).toBe(
+        'https://monitoring.example.com:8443/grafana/',
+      );
+      expect(connection.apiBaseUrl).toBe(
+        apiBaseUrl ? new URL('.', expectedUrl).href : undefined,
+      );
     },
   );
 
@@ -187,7 +230,6 @@ describe('Grafana connections', () => {
           data: {
             connections: ['first', 'second'].map(path => ({
               type: 'grafana',
-              host: 'monitoring.example.com',
               baseUrl: `https://monitoring.example.com/${path}`,
               auth: [{ method: 'token', token: 'dummy-token' }],
             })),

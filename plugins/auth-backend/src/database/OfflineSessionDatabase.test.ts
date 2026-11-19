@@ -31,20 +31,7 @@ describe('OfflineSessionDatabase', () => {
     const knex = await databases.init(databaseId);
 
     await knex.migrate.latest({
-      directory: resolvePackagePath(
-        '@backstage/plugin-auth-backend',
-        'migrations',
-      ),
-    });
-
-    // Create an OIDC client for testing foreign key relationships
-    await knex('oidc_clients').insert({
-      client_id: 'test-client',
-      client_name: 'Test Client',
-      client_secret: 'test-secret',
-      response_types: JSON.stringify(['code']),
-      grant_types: JSON.stringify(['authorization_code']),
-      redirect_uris: JSON.stringify(['http://localhost']),
+      directory: resolvePackagePath(import.meta.url, 'migrations'),
     });
 
     return {

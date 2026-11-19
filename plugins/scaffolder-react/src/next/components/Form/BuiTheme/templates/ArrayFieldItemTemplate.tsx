@@ -57,13 +57,13 @@ export default function ArrayFieldItemTemplate<
   onReorderClick,
   readonly,
   schema,
+  uiSchema,
 }: ArrayFieldTemplateItemType<T, S, F>) {
   const [isOpen, setIsOpen] = useState(true);
 
-  const itemSchema = schema?.items as S | undefined;
-  const itemTitle = itemSchema?.title
-    ? `${itemSchema.title} ${index + 1}`
-    : `Item ${index + 1}`;
+  const itemTitle =
+    uiSchema?.['ui:title'] ||
+    (schema.title ? `${schema.title} ${index + 1}` : `Item ${index + 1}`);
 
   return (
     <Box mb="4">
@@ -86,19 +86,19 @@ export default function ArrayFieldItemTemplate<
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
+                          gap: '8px',
                           color: 'var(--bui-fg-secondary)',
                         }}
-                        aria-label={isExpanded ? 'Collapse' : 'Expand'}
                       >
                         {isExpanded ? (
                           <RiArrowDownSLine size={18} />
                         ) : (
                           <RiArrowRightSLine size={18} />
                         )}
+                        <Text variant="body-medium" weight="bold">
+                          {itemTitle}
+                        </Text>
                       </Button>
-                      <Text variant="body-medium" weight="bold">
-                        {itemTitle}
-                      </Text>
                     </Flex>
                     {hasToolbar && (
                       <Flex align="center" gap="1">
@@ -109,7 +109,7 @@ export default function ArrayFieldItemTemplate<
                               size="small"
                               isDisabled={disabled || readonly || !hasMoveUp}
                               onClick={onReorderClick(index, index - 1)}
-                              aria-label="Move up"
+                              aria-label={`Move up ${itemTitle}`}
                               icon={<RiArrowUpSLine size={18} />}
                             />
                             <ButtonIcon
@@ -117,7 +117,7 @@ export default function ArrayFieldItemTemplate<
                               size="small"
                               isDisabled={disabled || readonly || !hasMoveDown}
                               onClick={onReorderClick(index, index + 1)}
-                              aria-label="Move down"
+                              aria-label={`Move down ${itemTitle}`}
                               icon={<RiArrowDownSLine size={18} />}
                             />
                           </>
@@ -128,7 +128,7 @@ export default function ArrayFieldItemTemplate<
                             size="small"
                             isDisabled={disabled || readonly}
                             onClick={onCopyIndexClick(index)}
-                            aria-label="Duplicate"
+                            aria-label={`Duplicate ${itemTitle}`}
                             icon={<RiAddLine size={18} />}
                           />
                         )}
@@ -138,7 +138,7 @@ export default function ArrayFieldItemTemplate<
                             size="small"
                             isDisabled={disabled || readonly}
                             onClick={onDropIndexClick(index)}
-                            aria-label="Remove"
+                            aria-label={`Remove ${itemTitle}`}
                             icon={<RiDeleteBinLine size={18} />}
                           />
                         )}

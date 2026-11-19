@@ -52,6 +52,11 @@
       matchManagers: ['github-actions'],
       pinDigests: true,
     },
+    // React Router majors are blocked until the routing system rewrite lands
+    {
+      matchPackageNames: ['react-router', 'react-router-dom'],
+      allowedVersions: '<7.0.0',
+    },
     // ESM only majors, that we're not ready for yet
     {
       matchPackageNames: ['node-fetch'],

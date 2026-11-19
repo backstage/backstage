@@ -13,7 +13,7 @@ The `azure` connection type represents an Azure DevOps host. It has
 ```yaml title="app-config.yaml"
 connections:
   - type: azure
-    host: dev.azure.com
+    baseUrl: https://dev.azure.com/
     auth:
       - method: pat
         personalAccessToken: ${AZURE_DEVOPS_TOKEN}
@@ -23,9 +23,9 @@ connections:
 
 ## Connection fields
 
-| Field  | Type     | Required | Description                                                    |
-| ------ | -------- | -------- | -------------------------------------------------------------- |
-| `host` | `string` | Yes      | Azure DevOps host matched against the consumer's resource URL. |
+| Field     | Type     | Required | Description                                                    |
+| --------- | -------- | -------- | -------------------------------------------------------------- |
+| `baseUrl` | `string` | Yes      | HTTP(S) base URL of the instance. Its host is used for lookup. |
 
 ## Authentication methods
 
@@ -54,7 +54,7 @@ authentication.
 ## Lookup and selection
 
 The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
-an Azure DevOps URL. The service selects the connection whose `host` matches
+an Azure DevOps URL. The service selects the connection whose `baseUrl` host matches
 the parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the

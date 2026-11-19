@@ -21,8 +21,7 @@ import { GrafanaConnectionType } from './grafana';
 
 const connection = {
   type: 'grafana',
-  host: 'example.grafana.net',
-  baseUrl: 'https://example.grafana.net',
+  baseUrl: 'https://example.grafana.net/',
   auth: [{ method: 'token', token: 'dummy-service-account-token' }],
 };
 
@@ -38,35 +37,52 @@ describe('GrafanaConnectionType', () => {
   it('registers portable schemas and validates Cloud and self-hosted configuration', () => {
     expect(connectionTypes.grafana).toBe(GrafanaConnectionType);
     expect(GrafanaConnectionType.cardinality).toBe('multiton');
-    expect(GrafanaConnectionType.lookupStrategy).toBe('host');
     expect(configure()).toMatchObject([connection]);
+    expect(configure()[0]).not.toHaveProperty('apiBaseUrl');
     expect(
       configure({
-        host: 'monitoring.example.com:3000',
-        baseUrl: 'http://grafana.internal:3000/grafana/',
+        baseUrl: 'https://monitoring.example.com:8443/grafana',
+        apiBaseUrl: 'http://grafana.internal:3000/grafana/api',
         auth: [
           { method: 'basic', username: 'reader', password: 'dummy', orgId: 2 },
         ],
       }),
     ).toMatchObject([
       {
-        host: 'monitoring.example.com:3000',
-        baseUrl: 'http://grafana.internal:3000/grafana/',
+        baseUrl: 'https://monitoring.example.com:8443/grafana/',
+        apiBaseUrl: 'http://grafana.internal:3000/grafana/api/',
         auth: [{ method: 'basic', orgId: 2 }],
       },
     ]);
-    expect(configure({ host: '[::1]:3000' })).toHaveLength(1);
+    expect(configure({ baseUrl: 'http://[::1]:3000/grafana' })).toMatchObject([
+      { baseUrl: 'http://[::1]:3000/grafana/' },
+    ]);
+    expect(
+      GrafanaConnectionType.getLookupIdentity({
+        baseUrl: 'https://MONITORING.example.com:8443/grafana/',
+        apiBaseUrl: 'http://grafana.internal:3000/grafana/api/',
+      }),
+    ).toEqual({ key: 'host', value: 'monitoring.example.com:8443' });
     for (const baseUrl of [
       'https://grafana.example.com/grafana',
       'https://grafana.example.com/grafana/',
       'https://grafana.example.com/grafana%3F%23',
       'https://grafana.example.com/grafana%3F%23/',
     ]) {
-      expect(configure({ baseUrl })).toMatchObject([{ baseUrl }]);
+      const normalized = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+      expect(configure({ baseUrl })).toMatchObject([{ baseUrl: normalized }]);
+      expect(configure({ apiBaseUrl: baseUrl })).toMatchObject([
+        { apiBaseUrl: normalized },
+      ]);
     }
     expect(GrafanaConnectionType.configSchema.schema().schema).toMatchObject({
       type: 'object',
-      required: ['host', 'baseUrl'],
+      required: ['baseUrl'],
+      additionalProperties: false,
+      properties: {
+        baseUrl: { type: 'string', format: 'uri' },
+        apiBaseUrl: { type: 'string', format: 'uri' },
+      },
     });
     expect(
       GrafanaConnectionType.authMethods.map(({ method, configSchema }) => ({
@@ -79,7 +95,7 @@ describe('GrafanaConnectionType', () => {
     ]);
   });
 
-  it('rejects invalid endpoints and host identities with configuration context', () => {
+  it('rejects invalid base URLs and obsolete host configuration', () => {
     for (const baseUrl of [
       '',
       '/grafana',
@@ -91,18 +107,10 @@ describe('GrafanaConnectionType', () => {
       'https://grafana.example.com/grafana?',
       'https://grafana.example.com/grafana#',
     ]) {
-      expect(() => configure({ baseUrl })).toThrow(/grafana.*|baseUrl/);
+      expect(() => configure({ baseUrl })).toThrow(/baseUrl/);
+      expect(() => configure({ apiBaseUrl: baseUrl })).toThrow(/apiBaseUrl/);
     }
-    for (const host of [
-      '',
-      'https://grafana.example.com',
-      'grafana.example.com/path',
-      'user@grafana.example.com',
-      'Grafana.example.com',
-      'grafana.example.com?orgId=2',
-    ]) {
-      expect(() => configure({ host })).toThrow(/host/);
-    }
+    expect(() => configure({ host: 'example.grafana.net' })).toThrow(/host/);
     expect(() => configure({ baseUrl: undefined })).toThrow(/baseUrl/);
   });
 

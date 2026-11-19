@@ -6,10 +6,12 @@
 import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
+import type { Duplex } from 'node:stream';
 import { Duration } from 'luxon';
 import { EvaluatorRequestOptions } from '@backstage/plugin-permission-common';
 import type { Handler } from 'express';
 import { HumanDuration } from '@backstage/types';
+import type { IncomingMessage } from 'node:http';
 import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -211,46 +213,53 @@ export type CacheServiceSetOptions = {
 };
 
 // @public
-export namespace coreServices {
-  const auth: ServiceRef<AuthService, 'plugin', 'singleton'>;
-  const userInfo: ServiceRef<UserInfoService, 'plugin', 'singleton'>;
-  const cache: ServiceRef<CacheService, 'plugin', 'singleton'>;
-  const rootConfig: ServiceRef<RootConfigService, 'root', 'singleton'>;
-  const database: ServiceRef<DatabaseService, 'plugin', 'singleton'>;
-  const discovery: ServiceRef<DiscoveryService, 'plugin', 'singleton'>;
-  const rootHealth: ServiceRef<RootHealthService, 'root', 'singleton'>;
-  const httpAuth: ServiceRef<HttpAuthService, 'plugin', 'singleton'>;
-  const httpRouter: ServiceRef<HttpRouterService, 'plugin', 'singleton'>;
-  const lifecycle: ServiceRef<LifecycleService, 'plugin', 'singleton'>;
-  const logger: ServiceRef<LoggerService, 'plugin', 'singleton'>;
-  const auditor: ServiceRef<AuditorService, 'plugin', 'singleton'>;
-  const permissions: ServiceRef<PermissionsService, 'plugin', 'singleton'>;
-  const permissionsRegistry: ServiceRef<
+export interface CoreServices {
+  readonly auditor: ServiceRef<AuditorService, 'plugin', 'singleton'>;
+  readonly auth: ServiceRef<AuthService, 'plugin', 'singleton'>;
+  readonly cache: ServiceRef<CacheService, 'plugin', 'singleton'>;
+  readonly database: ServiceRef<DatabaseService, 'plugin', 'singleton'>;
+  readonly discovery: ServiceRef<DiscoveryService, 'plugin', 'singleton'>;
+  readonly httpAuth: ServiceRef<HttpAuthService, 'plugin', 'singleton'>;
+  readonly httpRouter: ServiceRef<HttpRouterService, 'plugin', 'singleton'>;
+  readonly lifecycle: ServiceRef<LifecycleService, 'plugin', 'singleton'>;
+  readonly logger: ServiceRef<LoggerService, 'plugin', 'singleton'>;
+  readonly permissions: ServiceRef<PermissionsService, 'plugin', 'singleton'>;
+  readonly permissionsRegistry: ServiceRef<
     PermissionsRegistryService,
     'plugin',
     'singleton'
   >;
-  const pluginMetadata: ServiceRef<
+  readonly pluginMetadata: ServiceRef<
     PluginMetadataService,
     'plugin',
     'singleton'
   >;
-  const rootHttpRouter: ServiceRef<RootHttpRouterService, 'root', 'singleton'>;
-  const rootLifecycle: ServiceRef<RootLifecycleService, 'root', 'singleton'>;
-  const rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
-  const scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
-  const urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
-  const rootInstanceMetadata: ServiceRef<
+  readonly rootConfig: ServiceRef<RootConfigService, 'root', 'singleton'>;
+  readonly rootHealth: ServiceRef<RootHealthService, 'root', 'singleton'>;
+  readonly rootHttpRouter: ServiceRef<
+    RootHttpRouterService,
+    'root',
+    'singleton'
+  >;
+  readonly rootInstanceMetadata: ServiceRef<
     RootInstanceMetadataService,
     'root',
     'singleton'
   >;
-  const rootSystemMetadata: ServiceRef<
+  readonly rootLifecycle: ServiceRef<RootLifecycleService, 'root', 'singleton'>;
+  readonly rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
+  readonly rootSystemMetadata: ServiceRef<
     RootSystemMetadataService,
     'root',
     'singleton'
   >;
+  readonly scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
+  readonly urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
+  readonly userInfo: ServiceRef<UserInfoService, 'plugin', 'singleton'>;
 }
+
+// @public
+export const coreServices: CoreServices;
 
 // @public
 export function createBackendFeatureLoader<
@@ -428,6 +437,7 @@ export interface HttpAuthService {
 // @public
 export interface HttpRouterService {
   addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void;
+  addWebSocketHandler(options: HttpRouterServiceWebSocketHandler): void;
   use(handler: Handler): void;
 }
 
@@ -436,6 +446,26 @@ export interface HttpRouterServiceAuthPolicy {
   // (undocumented)
   allow: 'unauthenticated' | 'user-cookie';
   // (undocumented)
+  path: string;
+}
+
+// @public
+export interface HttpRouterServiceWebSocketContext {
+  authProtocol?: string;
+  // (undocumented)
+  credentials: BackstageCredentials;
+  // (undocumented)
+  head: Buffer;
+  // (undocumented)
+  request: IncomingMessage;
+  // (undocumented)
+  socket: Duplex;
+}
+
+// @public
+export interface HttpRouterServiceWebSocketHandler {
+  authPolicy?: 'unauthenticated';
+  handler(context: HttpRouterServiceWebSocketContext): void | Promise<void>;
   path: string;
 }
 
@@ -598,7 +628,20 @@ export interface RootHealthService {
 
 // @public
 export interface RootHttpRouterService {
+  addWebSocketHandler(options: RootHttpRouterServiceWebSocketHandler): void;
   use(path: string, handler: Handler): void;
+}
+
+// @public
+export interface RootHttpRouterServiceWebSocketHandler {
+  // (undocumented)
+  handler(context: {
+    request: IncomingMessage;
+    socket: Duplex;
+    head: Buffer;
+  }): void | Promise<void>;
+  // (undocumented)
+  path: string;
 }
 
 // @public (undocumented)

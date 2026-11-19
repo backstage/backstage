@@ -32,7 +32,11 @@ import path from 'node:path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
-import { createGitlabApi, getErrorMessage } from './helpers';
+import {
+  assertValidTargetPath,
+  createGitlabApi,
+  getErrorMessage,
+} from './helpers';
 import { examples } from './gitlabMergeRequest.examples';
 
 import { getFileAction } from '../util';
@@ -220,6 +224,10 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
         autoMerge,
       } = ctx.input;
 
+      if (targetPath) {
+        assertValidTargetPath(targetPath);
+      }
+
       const { owner, repo, project } = parseRepoUrl(repoUrl, integrations);
       const repoID = project ? project : `${owner}/${repo}`;
 
@@ -294,7 +302,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
         targetBranch = defaultBranch;
       }
 
-      let remoteFiles: RepositoryTreeSchema[] = [];
+      let remoteFiles: RepositoryTreeSchema[] | undefined = [];
       if ((ctx.input.commitAction ?? 'auto') === 'auto') {
         try {
           remoteFiles = await api.Repositories.allRepositoryTrees(repoID, {
@@ -310,6 +318,9 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
               e,
             )}`,
           );
+          if (e.cause?.response?.status !== 404) {
+            remoteFiles = undefined;
+          }
         }
       }
       const actions: CommitAction[] =

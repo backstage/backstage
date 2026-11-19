@@ -93,6 +93,17 @@ function getDefaultCredentialsChain(
 }
 
 /**
+ * Returns the ARN of the role that will be assumed for the given account config, if any
+ */
+function getRoleArn(config: AwsIntegrationAccountConfig): string | undefined {
+  if (!config.roleName) {
+    return undefined;
+  }
+  const partition = config.partition ?? 'aws';
+  return `arn:${partition}:iam::${config.accountId}:role/${config.roleName}`;
+}
+
+/**
  * Constructs the credential provider needed by the AWS SDK from the given account config
  *
  * Order of precedence:
@@ -107,10 +118,9 @@ function getSdkCredentialProvider(
   config: AwsIntegrationAccountConfig,
   mainAccountCredProvider: AwsCredentialIdentityProvider,
 ): AwsCredentialIdentityProvider {
-  if (config.roleName) {
+  const roleArn = getRoleArn(config);
+  if (roleArn) {
     const region = config.region ?? 'us-east-1';
-    const partition = config.partition ?? 'aws';
-    const roleArn = `arn:${partition}:iam::${config.accountId}:role/${config.roleName}`;
 
     if (config.webIdentityTokenFile) {
       // Defensive: same combinations the parser rejects.
@@ -243,6 +253,7 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
       accountCredProviders.set(accountConfig.accountId, {
         accountId: accountConfig.accountId,
         stsRegion: accountConfig.region,
+        roleArn: getRoleArn(accountConfig),
         sdkCredentialProvider,
       });
     }
@@ -357,6 +368,7 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
       );
       const credProvider: AwsCredentialProvider = {
         accountId,
+        roleArn: getRoleArn(config),
         sdkCredentialProvider,
       };
       this.accountCredentialProviders.set(accountId, credProvider);
@@ -427,11 +439,13 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
 
     // An entry matched by account ID is used exactly as written
     if (connection && connection.auth.accountId === accountId) {
+      const accountConfig = { ...connection.auth, accountId };
       const credProvider: AwsCredentialProvider = {
         accountId,
         stsRegion: connection.auth.region,
+        roleArn: getRoleArn(accountConfig),
         sdkCredentialProvider: getSdkCredentialProvider(
-          { ...connection.auth, accountId },
+          accountConfig,
           mainProvider.sdkCredentialProvider,
         ),
       };
@@ -442,19 +456,21 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
     // The connection-level roleName is the role to assume in any account
     // without an entry of its own, using main account credentials
     if (connection?.roleName) {
+      const accountConfig: AwsIntegrationAccountConfig = {
+        accountId,
+        roleName: connection.roleName,
+        partition: connection.partition,
+        region: connection.region,
+        externalId: connection.externalId,
+        webIdentityTokenFile: connection.webIdentityTokenFile,
+      };
       const sdkCredentialProvider = getSdkCredentialProvider(
-        {
-          accountId,
-          roleName: connection.roleName,
-          partition: connection.partition,
-          region: connection.region,
-          externalId: connection.externalId,
-          webIdentityTokenFile: connection.webIdentityTokenFile,
-        },
+        accountConfig,
         mainProvider.sdkCredentialProvider,
       );
       const credProvider: AwsCredentialProvider = {
         accountId,
+        roleArn: getRoleArn(accountConfig),
         sdkCredentialProvider,
       };
       this.accountCredentialProviders.set(accountId, credProvider);

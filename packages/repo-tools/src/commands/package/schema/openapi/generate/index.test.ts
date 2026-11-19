@@ -55,6 +55,11 @@ describe('generateOpenApiSchema', () => {
       loadAndValidateOpenApiYaml: jest.fn(),
     }));
   });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('should handle watch mode', async () => {
     const generateClientMock = jest.fn();
     const generateServerMock = jest.fn();
@@ -107,5 +112,85 @@ describe('generateOpenApiSchema', () => {
       actions(),
       command({ watch: true, clientPackage: 'test123' }),
     ]);
+  });
+
+  it('should exit with a non-zero code once all generators have settled if any of them fail', async () => {
+    jest.resetModules();
+    let serverFinished = false;
+    const generateClientMock = jest
+      .fn()
+      .mockRejectedValue(new Error('OpenAPI client generation failed.'));
+    const generateServerMock = jest.fn(async () => {
+      await new Promise(r => setTimeout(r, 50));
+      serverFinished = true;
+    });
+    jest.doMock('./client', () => ({ command: generateClientMock }));
+    jest.doMock('./server', () => ({ command: generateServerMock }));
+    jest.doMock('../../../../../lib/openapi/helpers', () => ({
+      getPathToCurrentOpenApiSpec: jest.fn(() =>
+        Promise.resolve(path.join(inputDir.path, 'openapi.yaml')),
+      ),
+      loadAndValidateOpenApiYaml: jest.fn(),
+    }));
+
+    let serverFinishedAtExit = false;
+    const exitSpy = jest.spyOn(process, 'exit').mockImplementation((() => {
+      serverFinishedAtExit = serverFinished;
+    }) as any);
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const {
+      default: { command },
+    } = (await import('./index')) as unknown as {
+      default: typeof import('./index');
+    };
+
+    await command({ clientPackage: 'test123', server: true });
+
+    expect(generateClientMock).toHaveBeenCalledTimes(1);
+    expect(generateServerMock).toHaveBeenCalledTimes(1);
+    expect(serverFinishedAtExit).toBe(true);
+    expect(exitSpy).toHaveBeenCalledWith(1);
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('OpenAPI client generation failed.'),
+    );
+  });
+
+  it('should report all failures when both client and server generation fail', async () => {
+    jest.resetModules();
+    const generateClientMock = jest
+      .fn()
+      .mockRejectedValue(new Error('OpenAPI client generation failed'));
+    const generateServerMock = jest
+      .fn()
+      .mockRejectedValue(new Error('OpenAPI server stub generation failed'));
+    jest.doMock('./client', () => ({ command: generateClientMock }));
+    jest.doMock('./server', () => ({ command: generateServerMock }));
+    jest.doMock('../../../../../lib/openapi/helpers', () => ({
+      getPathToCurrentOpenApiSpec: jest.fn(() =>
+        Promise.resolve(path.join(inputDir.path, 'openapi.yaml')),
+      ),
+      loadAndValidateOpenApiYaml: jest.fn(),
+    }));
+
+    const exitSpy = jest
+      .spyOn(process, 'exit')
+      .mockImplementation((() => {}) as any);
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const {
+      default: { command },
+    } = (await import('./index')) as unknown as {
+      default: typeof import('./index');
+    };
+
+    await command({ clientPackage: 'test123', server: true });
+
+    expect(exitSpy).toHaveBeenCalledWith(1);
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.stringMatching(
+        /OpenAPI client generation failed[\s\S]*OpenAPI server stub generation failed/,
+      ),
+    );
   });
 });

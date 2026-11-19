@@ -29,6 +29,7 @@ import {
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesConnection } from './KubernetesConnection';
+import { FetchError } from 'node-fetch';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import {
@@ -1224,7 +1225,6 @@ describe('KubernetesFanOutHandler', () => {
           http.get('https://works/api/v1/services', () =>
             HttpResponse.json({ items: services }),
           ),
-          http.get('https://fails/api/v1/pods', () => HttpResponse.error()),
           http.get('https://fails/api/v1/services', () =>
             HttpResponse.json({ items: services }),
           ),
@@ -1254,12 +1254,32 @@ describe('KubernetesFanOutHandler', () => {
             }),
         };
         const logger = mockServices.logger.mock();
+        // Fail the pods request with node-fetch's own error rather than with
+        // msw's HttpResponse.error(), which emits the error on a mocked socket
+        // and occasionally crashes the test as an unhandled error event
+        const connection = new KubernetesConnection({ logger });
+        const fetchWithConnection =
+          connection.fetchWithConnection.bind(connection);
+        jest
+          .spyOn(connection, 'fetchWithConnection')
+          .mockImplementation(async (clusterDetails, credential, ...rest) => {
+            const [resourcePath, labelSelector] = rest;
+            if (
+              clusterDetails.name === 'fails' &&
+              resourcePath === '/api/v1/pods'
+            ) {
+              throw new FetchError(
+                `request to https://fails/api/v1/pods?labelSelector=${encodeURIComponent(
+                  labelSelector ?? '',
+                )} failed, reason: Network error`,
+                'system',
+              );
+            }
+            return fetchWithConnection(clusterDetails, credential, ...rest);
+          });
         const kubernetesFanOutHandler = new KubernetesFanOutHandler({
           logger,
-          fetcher: new KubernetesClientBasedFetcher({
-            logger,
-            connection: new KubernetesConnection({ logger }),
-          }),
+          fetcher: new KubernetesClientBasedFetcher({ logger, connection }),
           serviceLocator: fleet,
           customResources: [],
           objectTypesToFetch: [

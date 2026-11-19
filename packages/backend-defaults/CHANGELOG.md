@@ -1,5 +1,119 @@
 # @backstage/backend-defaults
 
+## 0.19.0
+
+### Minor Changes
+
+- 250e4c3: Add support for the new WebSocket routing APIs.
+
+  Existing server upgrade listeners can coexist during migration and receive unmatched upgrades. Multiple listeners produce a warning; migrate custom upgrade handling to the router API to avoid handling the same socket twice. Installing a plugin that registers a WebSocket route, such as signals, activates the server-level upgrade listener. Upgrades handled only through Express, such as the Kubernetes proxy, must migrate to this API; otherwise, unmatched upgrades receive 404 responses when this is the only server-level listener.
+
+- 3beb656: **BREAKING**: Request logs from the root HTTP router no longer include a `date` field, and no longer repeat the date at the start of the message. JSON logs, used when `NODE_ENV` is `production`, now include a `timestamp` field on every log line instead. Update any log pipelines or dashboards that read `date` or parse the date out of the message to use `timestamp`.
+
+  If you override the root logger with a custom JSON format, use `format.combine(format.timestamp(), format.json())` to keep the `timestamp` field.
+
+### Patch Changes
+
+- f81ca4e: The AWS S3 URL reader no longer assumes the configured `roleArn` a second time when the matching account under `aws.accounts` already provides credentials for that exact role, for example through a web identity token file. Previously the role had to trust itself for this setup to work. The role is still assumed explicitly when the integration sets an `externalId`.
+- 392710f: The Azure DevOps URL reader now warns at startup when a personal access token is configured for Azure DevOps Services. Global personal access tokens [stop working on January 27, 2027](https://devblogs.microsoft.com/devops/retirement-of-global-personal-access-tokens-in-azure-devops/), and organization-scoped tokens are now deprecated in favor of Microsoft Entra ID credentials. Errors from rejected credentials are also clearer.
+- 80cc892: Removed the runtime dependency on `@backstage/cli-node`, which was only used for types. Backends no longer install the CLI tooling packages through `@backstage/backend-defaults`.
+- 5eb2381: Updated a documentation link for `DefaultRootHttpRouter` to point to the `coreServices.rootHttpRouter` service reference.
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- fbd2535: Fixed a connection and memory leak in the GitHub URL reader, where every failed request with a large error response body, such as the error pages served during a GitHub Enterprise outage, left its connection open indefinitely.
+- da22423: Ensures that the limited user cookie issued for a request always represents the user authenticated on that request. A previously issued cookie belonging to a different user is now replaced during the cookie refresh, instead of being reused.
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- 9fc68ae: Fixed the `valkey` cache store sharing keys between plugins. Two plugins that cached a value under the same key could read and overwrite each other's entries. Keys are now stored under the plugin namespace, the same way the `redis` store does it. Cache entries now use new key names, so existing entries are no longer read and are rebuilt as plugins write new values. Old entries stay in Valkey until their TTL expires. Entries without a TTL, and the per-plugin key index sets that the old layout created, stay until you remove them manually.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.4
+  - @backstage/integration@2.2.0
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/backend-app-api@1.9.0
+  - @backstage/plugin-events-node@0.5.0
+  - @backstage/plugin-auth-node@0.7.8
+  - @backstage/config@1.3.11
+  - @backstage/config-loader@1.11.5
+  - @backstage/connections@0.4.2
+  - @backstage/plugin-permission-common@0.9.13
+  - @backstage/plugin-permission-node@0.11.6
+
+## 0.19.0-next.2
+
+### Minor Changes
+
+- 250e4c3: Add support for the new WebSocket routing APIs.
+
+  Existing server upgrade listeners can coexist during migration and receive unmatched upgrades. Multiple listeners produce a warning; migrate custom upgrade handling to the router API to avoid handling the same socket twice. Installing a plugin that registers a WebSocket route, such as signals, activates the server-level upgrade listener. Upgrades handled only through Express, such as the Kubernetes proxy, must migrate to this API; otherwise, unmatched upgrades receive 404 responses when this is the only server-level listener.
+
+### Patch Changes
+
+- 5eb2381: Updated a documentation link for `DefaultRootHttpRouter` to point to the `coreServices.rootHttpRouter` service reference.
+- 1892d2f: chore(deps): bump `minimatch` from 10.2.6 to 11.0.1
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/backend-app-api@1.9.0-next.1
+  - @backstage/plugin-auth-node@0.7.8-next.2
+  - @backstage/plugin-permission-node@0.11.6-next.1
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/config@1.3.11-next.0
+  - @backstage/config-loader@1.11.5-next.0
+  - @backstage/connections@0.4.2-next.0
+  - @backstage/integration-aws-node@0.2.4-next.1
+  - @backstage/plugin-permission-common@0.9.13-next.0
+
+## 0.18.2-next.1
+
+### Patch Changes
+
+- f81ca4e: The AWS S3 URL reader no longer assumes the configured `roleArn` a second time when the matching account under `aws.accounts` already provides credentials for that exact role, for example through a web identity token file. Previously the role had to trust itself for this setup to work. The role is still assumed explicitly when the integration sets an `externalId`.
+- 9fc68ae: Fixed the `valkey` cache store sharing keys between plugins. Two plugins that cached a value under the same key could read and overwrite each other's entries. Keys are now stored under the plugin namespace, the same way the `redis` store does it. Cache entries now use new key names, so existing entries are no longer read and are rebuilt as plugins write new values. Old entries stay in Valkey until their TTL expires. Entries without a TTL, and the per-plugin key index sets that the old layout created, stay until you remove them manually.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.2.4-next.0
+  - @backstage/plugin-events-node@0.5.0-next.1
+  - @backstage/plugin-auth-node@0.7.8-next.1
+
+## 0.18.2-next.0
+
+### Patch Changes
+
+- 80cc892: Removed the runtime dependency on `@backstage/cli-node`, which was only used for types. Backends no longer install the CLI tooling packages through `@backstage/backend-defaults`.
+- 918ca98: Updated dependency `jose` to `^6.1.0`. Existing ES256 token issuance and verification are unchanged. ML-DSA algorithms can be used when the runtime supports them.
+- Updated dependencies
+  - @backstage/backend-app-api@1.9.0-next.0
+  - @backstage/plugin-auth-node@0.7.8-next.0
+  - @backstage/plugin-permission-node@0.11.6-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+
+## 0.18.1
+
+### Patch Changes
+
+- c478470: Added a service-authenticated action registry status endpoint that reports whether a plugin provides actions without exposing action metadata.
+- f6054ac: Backends created with `createBackend` now provide the experimental connections service by default. Custom backends can install `connectionsServiceFactory` from `@backstage/backend-defaults/alpha`.
+- e956084: Added an `instanceId` option to `createBackend`, allowing deployments to use an externally provided backend instance identifier. Each backend instance uses a random UUID by default.
+- 1939ded: Added bounded retries for transient failures while initializing Cloud SQL database connections.
+- a6bc5e4: Stopped issuing periodic per-plugin database keepalive queries by default and changed the default minimum PostgreSQL and MySQL connection pool size to zero. Idle connections can now be retired after the configured timeout, while explicitly configured pool minimums are preserved. Set `backend.database.keepalive: true` to continue issuing the periodic queries.
+- bd1ff39: Fixed AWS RDS IAM authentication tokens being reused after their signing credentials expire, which could cause database connection failures when using temporary AWS credentials.
+- 6887ecc: Updated dependency `infinispan` to `^0.16.0`.
+- 495ef24: Added support for `backend.logger.redactAllowlist` configuration option, which allows specific secret values to pass through log redaction when they are known to be safe to log.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5
+  - @backstage/integration@2.1.3
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/backend-app-api@1.8.0
+  - @backstage/config-loader@1.11.4
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/connections@0.4.1
+  - @backstage/plugin-auth-node@0.7.7
+  - @backstage/integration-aws-node@0.2.3
+  - @backstage/plugin-events-node@0.4.27
+  - @backstage/plugin-permission-common@0.9.12
+  - @backstage/plugin-permission-node@0.11.5
+
 ## 0.18.1-next.3
 
 ### Patch Changes

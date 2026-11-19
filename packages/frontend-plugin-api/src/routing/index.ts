@@ -23,3 +23,22 @@ export {
 } from './ExternalRouteRef';
 export { useRouteRef } from './useRouteRef';
 export { useRouteRefParams } from './useRouteRefParams';
+export type { AppLocation } from './AppLocation';
+export type { AppNavigate } from './useAppNavigate';
+export type {
+  AppHistoryApi,
+  AppHistoryAction,
+  AppHistoryEntry,
+  AppHistorySnapshot,
+} from './AppHistoryApi';
+export { useAppNavigate } from './useAppNavigate';
+export { useAppHref } from './useAppHref';
+
+export { useAppLocation } from './useAppLocation';
+export {
+  useAppSearchParams,
+  type AppSearchParamsInit,
+  type SetAppSearchParams,
+} from './useAppSearchParams';
+
+export { RouterLink, type RouterLinkProps } from './RouterLink';

@@ -14,21 +14,441 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useState } from 'react';
-import { screen, fireEvent } from '@testing-library/react';
+import {
+  Component,
+  PropsWithChildren,
+  Suspense,
+  lazy,
+  useCallback,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from 'react';
+import { act, screen, fireEvent } from '@testing-library/react';
+import { withLogCollector } from '@backstage/test-utils';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
   useAnalytics,
   createRouteRef,
   createExternalRouteRef,
   useRouteRef,
+  useRouteRefParams,
   identityApiRef,
   useApi,
+  coreApis,
+  ApiBlueprint,
+  PageBlueprint,
+  createApiRef,
+  createFrontendModule,
+  createFrontendPlugin,
+  type FrontendFeature,
+  coreExtensionData,
+  createExtension,
+  type StorageApi,
+  useAppHref,
 } from '@backstage/frontend-plugin-api';
-import { Routes, Route } from 'react-router-dom';
+import { useRouteMatches } from '@internal/frontend';
+import type { AppError } from '@backstage/frontend-app-api';
 import { renderInTestApp } from './renderInTestApp';
+import { renderTestApp } from './renderTestApp';
+import { AnalyticsImplementationBlueprint } from '@backstage/plugin-app-react';
+
+/**
+ * The current path, read from the app's own navigation rather than from a
+ * routing library — which is what content that declares no router has.
+ */
+function PathProbe() {
+  const appHistory = useApi(coreApis.appHistory);
+  const { location } = useSyncExternalStore(
+    appHistory.subscribe,
+    appHistory.getSnapshot,
+  );
+  return <span>Path: {location.pathname}</span>;
+}
+
+function HrefProbe(props: { to: string }) {
+  return (
+    <a data-testid="probe" href={useAppHref(props.to)}>
+      probe
+    </a>
+  );
+}
 
 describe('renderInTestApp', () => {
+  it('should render lazy APIs with a plugin named test in both test helpers', async () => {
+    const apiRef = createApiRef<
+      Promise<{
+        getString(key: string): string;
+        getOptionalString(key: string): string | undefined;
+      }>
+    >().with({
+      id: 'plugin.test.client',
+    });
+    const load = jest.fn(async () => {
+      const { ConfigReader } = await import('@backstage/config');
+      return new ConfigReader({ message: 'Lazy API loaded' });
+    });
+    function Consumer() {
+      return <div>{useApi(apiRef).getString('message')}</div>;
+    }
+    const plugin = createFrontendPlugin({
+      pluginId: 'test',
+      extensions: [
+        ApiBlueprint.make({
+          params: defineParams =>
+            defineParams({
+              api: apiRef,
+              deps: { config: coreApis.config },
+              factory: ({ config }) => {
+                expect(config.getString('app.baseUrl')).toBe(
+                  'http://localhost:3000',
+                );
+                return load();
+              },
+            }),
+        }),
+        PageBlueprint.make({
+          params: { path: '/lazy', loader: async () => <Consumer /> },
+        }),
+      ],
+    });
+    expect(load).not.toHaveBeenCalled();
+    const rendered = renderTestApp({
+      features: [plugin],
+      initialRouteEntries: ['/lazy'],
+    });
+    expect(await screen.findByText('Lazy API loaded')).toBeInTheDocument();
+    expect(load).toHaveBeenCalledTimes(1);
+    rendered.unmount();
+
+    const second = renderTestApp({
+      features: [plugin],
+      initialRouteEntries: ['/lazy'],
+    });
+    expect(await screen.findByText('Lazy API loaded')).toBeInTheDocument();
+    expect(load).toHaveBeenCalledTimes(2);
+    second.unmount();
+
+    for (const renderAs of ['page', 'chrome'] as const) {
+      const result = renderInTestApp(<Consumer />, {
+        features: [plugin],
+        renderAs,
+      });
+      expect(await screen.findByText('Lazy API loaded')).toBeInTheDocument();
+      result.unmount();
+    }
+    expect(load).toHaveBeenCalledTimes(4);
+
+    const mock = Promise.resolve({ getString: () => 'Partial API mock' });
+    const mockedApp = renderTestApp({
+      features: [plugin],
+      initialRouteEntries: ['/lazy'],
+      apis: [[apiRef, mock]],
+    });
+    expect(await screen.findByText('Partial API mock')).toBeInTheDocument();
+    mockedApp.unmount();
+
+    for (const renderAs of ['page', 'chrome'] as const) {
+      const result = renderInTestApp(<Consumer />, {
+        apis: [[apiRef, mock]],
+        renderAs,
+      });
+      expect(await screen.findByText('Partial API mock')).toBeInTheDocument();
+      result.unmount();
+    }
+    expect(load).toHaveBeenCalledTimes(4);
+
+    const synchronousMock = { getString: () => 'Synchronous API mock' };
+    const synchronousApp = renderTestApp({
+      features: [plugin],
+      initialRouteEntries: ['/lazy'],
+      apis: [[apiRef, synchronousMock]],
+    });
+    expect(await screen.findByText('Synchronous API mock')).toBeInTheDocument();
+    synchronousApp.unmount();
+
+    for (const renderAs of ['page', 'chrome'] as const) {
+      const result = renderInTestApp(<Consumer />, {
+        apis: [[apiRef, synchronousMock]],
+        renderAs,
+      });
+      expect(screen.getByText('Synchronous API mock')).toBeInTheDocument();
+      result.unmount();
+    }
+    expect(load).toHaveBeenCalledTimes(4);
+  });
+
+  it('should preserve synchronous rendering and custom Suspense fallbacks', async () => {
+    const apiRef = createApiRef<{ label: string }>().with({
+      id: 'plugin.test.sync',
+    });
+    function SynchronousConsumer() {
+      return <button>{useApi(apiRef).label}</button>;
+    }
+    const rendered = renderInTestApp(<SynchronousConsumer />, {
+      apis: [[apiRef, { label: 'Ready' }]],
+    });
+    expect(screen.getByRole('button', { name: 'Ready' })).toBeInTheDocument();
+    rendered.unmount();
+
+    for (const withInnerBoundary of [false, true]) {
+      const LazyContent = lazy(async () => ({
+        default: () => <div>Loaded content</div>,
+      }));
+      const result = renderInTestApp(
+        <>
+          <span>Synchronous sibling</span>
+          {withInnerBoundary ? (
+            <Suspense fallback="Custom loading state">
+              <LazyContent />
+            </Suspense>
+          ) : (
+            <LazyContent />
+          )}
+        </>,
+      );
+      expect(Boolean(screen.queryByText('Synchronous sibling'))).toBe(
+        withInnerBoundary,
+      );
+      expect(Boolean(screen.queryByText('Custom loading state'))).toBe(
+        withInnerBoundary,
+      );
+      expect(await screen.findByText('Loaded content')).toBeInTheDocument();
+      expect(screen.getByText('Synchronous sibling')).toBeInTheDocument();
+      expect(
+        screen.queryByText('Custom loading state'),
+      ).not.toBeInTheDocument();
+      result.unmount();
+    }
+  });
+
+  it('should propagate rejected API initialization to the supplied error boundary', async () => {
+    class ErrorBoundary extends Component<
+      PropsWithChildren,
+      { error?: Error }
+    > {
+      static getDerivedStateFromError(error: Error) {
+        return { error };
+      }
+
+      state: { error?: Error } = {};
+
+      render() {
+        return this.state.error ? (
+          <div role="alert">{this.state.error.message}</div>
+        ) : (
+          this.props.children
+        );
+      }
+    }
+    const apiRef = createApiRef<Promise<string>>().with({
+      id: 'plugin.test.rejected',
+    });
+    let reject!: (error: Error) => void;
+    const promise = new Promise<string>((_, r) => {
+      reject = r;
+    });
+    function Consumer() {
+      return <div>{useApi(apiRef)}</div>;
+    }
+    await withLogCollector(['error'], async () => {
+      renderInTestApp(
+        <ErrorBoundary>
+          <Consumer />
+        </ErrorBoundary>,
+        {
+          features: [
+            createFrontendModule({
+              pluginId: 'app',
+              extensions: [
+                ApiBlueprint.make({
+                  params: defineParams =>
+                    defineParams({
+                      api: apiRef,
+                      deps: {},
+                      factory: () => promise,
+                    }),
+                }),
+              ],
+            }),
+          ],
+        },
+      );
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      await act(async () => {
+        reject(new Error('API initialization failed'));
+        await promise.catch(() => {});
+      });
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'API initialization failed',
+      );
+    });
+  });
+
+  it('should throw for app errors that would show the error page', () => {
+    const conflictingPlugin = createFrontendPlugin({
+      pluginId: 'conflict',
+      extensions: [
+        ApiBlueprint.make({
+          name: 'discovery',
+          params: defineParams =>
+            defineParams({
+              api: coreApis.discovery,
+              deps: {},
+              factory: () => ({ getBaseUrl: async () => '' }),
+            }),
+        }),
+      ],
+    });
+
+    expect(() =>
+      renderInTestApp(<div />, { features: [conflictingPlugin] }),
+    ).toThrow(
+      /API 'core.discovery' is already provided by plugin 'app'[^]*error\.code === 'API_FACTORY_CONFLICT'/,
+    );
+  });
+
+  describe('with an app warning', () => {
+    const pluginWithInvalidFlag = createFrontendPlugin({
+      pluginId: 'flags',
+      featureFlags: [{ name: 'Invalid_Flag' }],
+    });
+
+    it('should throw by default', () => {
+      expect(() =>
+        renderInTestApp(<div />, { features: [pluginWithInvalidFlag] }),
+      ).toThrow(
+        /declared invalid feature flag 'Invalid_Flag'[^]*error => error\.code === 'FEATURE_FLAG_INVALID'/,
+      );
+    });
+
+    it('should not throw for an expected error code', () => {
+      renderInTestApp(<div>rendered</div>, {
+        features: [pluginWithInvalidFlag],
+        isExpectedError: error => error.code === 'FEATURE_FLAG_INVALID',
+      });
+
+      expect(screen.getByText('rendered')).toBeInTheDocument();
+    });
+
+    it('should not throw for an error matched by its context', () => {
+      const isExpectedError = (error: AppError) =>
+        error.code === 'FEATURE_FLAG_INVALID' &&
+        error.context.pluginId === 'flags';
+
+      renderInTestApp(<div>rendered</div>, {
+        features: [pluginWithInvalidFlag],
+        isExpectedError,
+      });
+
+      expect(screen.getByText('rendered')).toBeInTheDocument();
+    });
+  });
+
+  it.each(['component', 'extensions'])(
+    'exposes the app APIs with isolated defaults and explicit overrides for %s rendering',
+    async mode => {
+      let toast: ReturnType<typeof mockApis.toast>;
+      let storage: StorageApi;
+      function Probe() {
+        toast = useApi(coreApis.toast) as ReturnType<typeof mockApis.toast>;
+        storage = useApi(coreApis.storage);
+        const analytics = useAnalytics();
+        return (
+          <button
+            onClick={() => {
+              toast.post({ title: 'Saved' });
+              analytics.captureEvent('click', 'Save');
+            }}
+          >
+            Save
+          </button>
+        );
+      }
+      function renderProbe(
+        apis: Array<ReturnType<typeof mockApis.toast.mock>> = [],
+        features: FrontendFeature[] = [],
+      ) {
+        if (mode === 'component') {
+          return renderInTestApp(<Probe />, { apis, features });
+        }
+        return renderTestApp({
+          extensions: [
+            createExtension({
+              name: 'probe',
+              attachTo: { id: 'app/root', input: 'elements' },
+              output: [coreExtensionData.reactElement],
+              factory: () => [coreExtensionData.reactElement(<Probe />)],
+            }),
+          ],
+          apis,
+          features,
+        });
+      }
+
+      const first = renderProbe();
+      expect(
+        first.apis.get(coreApis.internal.appLifecycle)?.isFinalized(),
+      ).toBe(true);
+      const firstToast = first.apis.get(coreApis.toast);
+      fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+      expect(firstToast).toBe(toast!);
+      expect(first.apis.get(coreApis.storage)).toBe(storage!);
+      expect(toast!.getToasts()).toEqual([{ title: 'Saved' }]);
+      expect(screen.queryByText('Saved')).not.toBeInTheDocument();
+      await storage!.set('saved', true);
+      expect(storage!.snapshot('saved').value).toBe(true);
+      first.unmount();
+
+      const second = renderProbe();
+      await screen.findByRole('button', { name: 'Save' });
+      expect(second.apis.get(coreApis.toast)).toBe(toast!);
+      expect(second.apis.get(coreApis.toast)).not.toBe(firstToast);
+      expect(toast!.getToasts()).toEqual([]);
+      expect(storage!.snapshot('saved').value).toBeUndefined();
+      second.unmount();
+
+      const captureEvent = jest.fn();
+      const featureToast = mockApis.toast.mock();
+      const feature = createFrontendModule({
+        pluginId: 'app',
+        extensions: [
+          ApiBlueprint.make({
+            name: 'toast',
+            params: defineParams =>
+              defineParams({
+                api: coreApis.toast,
+                deps: {},
+                factory: () => featureToast,
+              }),
+          }),
+          AnalyticsImplementationBlueprint.make({
+            name: 'test',
+            params: defineParams =>
+              defineParams({ deps: {}, factory: () => ({ captureEvent }) }),
+          }),
+        ],
+      });
+      const third = renderProbe([], [feature]);
+      fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+      expect(third.apis.get(coreApis.toast)).toBe(featureToast);
+      expect(toast!).toBe(featureToast);
+      expect(featureToast.post).toHaveBeenCalledTimes(1);
+      expect(captureEvent).toHaveBeenCalledWith(
+        expect.objectContaining({ action: 'click', subject: 'Save' }),
+      );
+      third.unmount();
+
+      const override = mockApis.toast.mock();
+      const fourth = renderProbe([override], [feature]);
+      expect(fourth.apis.get(coreApis.toast)).toBe(override);
+      fireEvent.click(await screen.findByRole('button', { name: 'Save' }));
+      expect(toast!).toBe(override);
+      expect(override.post).toHaveBeenCalledWith({ title: 'Saved' });
+      expect(featureToast.post).toHaveBeenCalledTimes(1);
+    },
+  );
+
   it('should render the given component in a page', async () => {
     const IndexPage = () => <div>Index Page</div>;
     renderInTestApp(<IndexPage />);
@@ -72,17 +492,13 @@ describe('renderInTestApp', () => {
   });
 
   it('should support setting different locations in the history stack', async () => {
-    renderInTestApp(
-      <Routes>
-        <Route path="/" element={<h1>Index Page</h1>} />
-        <Route path="/second-page" element={<h1>Second Page</h1>} />
-      </Routes>,
-      {
-        initialRouteEntries: ['/second-page'],
-      },
-    );
+    const { apis } = renderInTestApp(<PathProbe />, {
+      initialRouteEntries: ['/second-page'],
+    });
+    const appHistory = apis.get(coreApis.appHistory)!;
 
-    expect(screen.getByText('Second Page')).toBeInTheDocument();
+    expect(screen.getByText('Path: /second-page')).toBeInTheDocument();
+    expect(appHistory.getSnapshot().location.pathname).toBe('/second-page');
   });
 
   it('should support API overrides via options', async () => {
@@ -200,5 +616,304 @@ describe('renderInTestApp', () => {
       await screen.findByText('user:default/i-just-made-this-up');
       expect(screen.queryByText('user:default/guest')).not.toBeInTheDocument();
     });
+  });
+
+  it.each(['component', 'app'])(
+    'honors explicit history overrides in %s rendering',
+    async mode => {
+      const history = mockApis.appHistory({ initialLocation: '/custom' });
+      function Probe() {
+        const activeHistory = useApi(coreApis.appHistory);
+        expect(activeHistory).toBe(history);
+        return <div>Custom history</div>;
+      }
+      const apis = [[coreApis.appHistory, history] as const];
+      const result =
+        mode === 'component'
+          ? renderInTestApp(<Probe />, { apis })
+          : renderTestApp({
+              apis,
+              extensions: [
+                createExtension({
+                  name: 'history-probe',
+                  attachTo: { id: 'app/root', input: 'elements' },
+                  output: [coreExtensionData.reactElement],
+                  factory: () => [coreExtensionData.reactElement(<Probe />)],
+                }),
+              ],
+            });
+      expect(await screen.findByText('Custom history')).toBeInTheDocument();
+      expect(result.apis.get(coreApis.appHistory)).toBe(history);
+    },
+  );
+
+  it('should drive navigation through the in-memory app history', async () => {
+    const LocationProbe = () => {
+      const navigation = useApi(coreApis.appHistory);
+      return (
+        <div>
+          <PathProbe />
+          <button type="button" onClick={() => navigation.navigate('/next')}>
+            Go next
+          </button>
+        </div>
+      );
+    };
+
+    const { apis } = renderInTestApp(<LocationProbe />, {
+      initialRouteEntries: ['/start'],
+    });
+    const appHistory = apis.get(coreApis.appHistory)!;
+
+    expect(screen.getByText('Path: /start')).toBeInTheDocument();
+
+    const locations: string[] = [];
+    appHistory.subscribe(() =>
+      locations.push(appHistory.getSnapshot().location.pathname),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Go next' }));
+
+    expect(await screen.findByText('Path: /next')).toBeInTheDocument();
+    expect(locations).toContain('/next');
+  });
+
+  it('should resolve locations under an app basename', async () => {
+    const LocationProbe = () => (
+      <div>
+        <PathProbe />
+        <HrefProbe to="/catalog" />
+      </div>
+    );
+
+    const { apis } = renderInTestApp(<LocationProbe />, {
+      initialRouteEntries: ['/start'],
+      config: {
+        app: { baseUrl: 'http://localhost:3000/backstage' },
+        backend: { baseUrl: 'http://localhost:7007' },
+      },
+    });
+    const appHistory = apis.get(coreApis.appHistory)!;
+
+    expect(screen.getByText('Path: /start')).toBeInTheDocument();
+    expect(screen.getByTestId('probe')).toHaveAttribute(
+      'href',
+      '/backstage/catalog',
+    );
+
+    // Driving the store from outside React, so the resulting re-render has to
+    // be wrapped or React warns that state was updated outside act().
+    act(() => {
+      appHistory.navigate('/catalog');
+    });
+    expect(await screen.findByText('Path: /catalog')).toBeInTheDocument();
+  });
+
+  // A framework page mount binds route params, but app hrefs remain absolute.
+  // Page-relative targets belong to a page router adapter.
+  describe('mountPath', () => {
+    it.each([
+      ['an app-absolute target', '/techdocs', '/techdocs'],
+      [
+        'a query-only target',
+        '?tab=readme',
+        '/catalog/default/component/foo?tab=readme',
+      ],
+      ['an absolute target', '/settings', '/settings'],
+    ])('resolves %s against the mount', async (_name, to, expected) => {
+      renderInTestApp(<HrefProbe to={to} />, {
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: ['/catalog/default/component/foo'],
+      });
+
+      expect(screen.getByTestId('probe')).toHaveAttribute('href', expected);
+    });
+
+    it('tracks mounted page params and visibility through framework navigation', async () => {
+      const ref = createRouteRef({ params: ['name'] });
+      function Page() {
+        const { name } = useRouteRefParams(ref);
+        const matches = useRouteMatches();
+        return (
+          <span>
+            Page: {name} at {matches.at(-1)?.basePath}
+          </span>
+        );
+      }
+      const { apis } = renderInTestApp(<Page />, {
+        mountPath: '/items/:name',
+        initialRouteEntries: ['/items/first/details'],
+        mountedRoutes: { '/elsewhere': createRouteRef() },
+        config: {
+          app: { baseUrl: 'http://localhost:3000/backstage' },
+          backend: { baseUrl: 'http://localhost:7007' },
+        },
+      });
+      const appHistory = apis.get(coreApis.appHistory)!;
+      expect(
+        await screen.findByText('Page: first at /items/first'),
+      ).toBeInTheDocument();
+      act(() => appHistory.navigate('/ITEMS/second?tab=info'));
+      expect(
+        await screen.findByText('Page: second at /ITEMS/second'),
+      ).toBeInTheDocument();
+      act(() => appHistory.navigate('/elsewhere'));
+      expect(screen.queryByText(/^Page:/)).not.toBeInTheDocument();
+      act(() => appHistory.navigate(-1));
+      expect(
+        await screen.findByText('Page: second at /ITEMS/second'),
+      ).toBeInTheDocument();
+    });
+
+    it('unmounts page errors off-route and recovers when returning', async () => {
+      const consoleError = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+      let shouldThrow = true;
+      function Page() {
+        if (shouldThrow) {
+          throw new Error('Page failed to render');
+        }
+        return <span>Recovered page</span>;
+      }
+      try {
+        const { apis } = renderInTestApp(<Page />, {
+          mountPath: '/items',
+          initialRouteEntries: ['/items'],
+        });
+        const appHistory = apis.get(coreApis.appHistory)!;
+        expect(
+          await screen.findByText('Page failed to render'),
+        ).toBeInTheDocument();
+        act(() => appHistory.navigate('/elsewhere'));
+        expect(
+          screen.queryByText('Page failed to render'),
+        ).not.toBeInTheDocument();
+        shouldThrow = false;
+        act(() => appHistory.navigate(-1));
+        expect(await screen.findByText('Recovered page')).toBeInTheDocument();
+        expect(
+          screen.queryByText('Page failed to render'),
+        ).not.toBeInTheDocument();
+      } finally {
+        consoleError.mockRestore();
+      }
+    });
+
+    it('leaves the mount unpublished when the location does not reach it', async () => {
+      renderInTestApp(<HrefProbe to="/techdocs" />, {
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: ['/somewhere-else'],
+      });
+
+      expect(screen.queryByTestId('probe')).not.toBeInTheDocument();
+    });
+
+    // Both spellings of the app root must also match deeper locations.
+    it.each(['/', '/*'])(
+      'hosts a deeper location when mounted at the app root with %s',
+      async mountPath => {
+        function Content() {
+          const mount = useRouteMatches().at(-1);
+          return (
+            <>
+              <span>Mount: {mount?.basePath ?? 'none'}</span>
+              <HrefProbe to="/techdocs" />
+            </>
+          );
+        }
+        renderInTestApp(<Content />, {
+          mountPath,
+          initialRouteEntries: ['/deeper/path'],
+          mountedRoutes: { '/deeper/path': createRouteRef() },
+        });
+        expect(screen.getByText('Mount: /')).toBeInTheDocument();
+
+        expect(screen.getByTestId('probe')).toHaveAttribute(
+          'href',
+          '/techdocs',
+        );
+      },
+    );
+  });
+
+  describe('without a page adapter', () => {
+    it('leaves framework routing working', async () => {
+      const routeRef = createRouteRef({ params: ['name'] });
+
+      function FrameworkProbe() {
+        const link = useRouteRef(routeRef);
+        const params = useRouteRefParams(routeRef);
+        return (
+          <div>
+            <span>Link: {link?.({ name: 'test-name' }) ?? 'none'}</span>
+            <span>Name: {params.name ?? 'none'}</span>
+            <HrefProbe to="/techdocs" />
+          </div>
+        );
+      }
+
+      renderInTestApp(<FrameworkProbe />, {
+        mountedRoutes: { '/test-path/:name': routeRef },
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: ['/catalog/default/component/foo'],
+      });
+
+      expect(
+        screen.getByText('Link: /test-path/test-name'),
+      ).toBeInTheDocument();
+      // Bound from the pattern the page is mounted at, which is where params
+      // come from once React Router is not the one answering.
+      expect(screen.getByText('Name: foo')).toBeInTheDocument();
+      expect(screen.getByTestId('probe')).toHaveAttribute('href', '/techdocs');
+    });
+  });
+
+  // Chrome is not a page and must not be tested as one: it renders above every
+  // page, inside the app's own root React Router projection, so it has a router
+  // in a real app and keeps one here.
+  describe("renderAs: 'chrome'", () => {
+    it('renders app-wide elements independently of the page mount', async () => {
+      function ChromeProbe() {
+        const href = useAppHref('/catalog');
+        return (
+          <div>
+            <PathProbe />
+            <a href={href}>Catalog</a>
+          </div>
+        );
+      }
+
+      renderInTestApp(<ChromeProbe />, {
+        renderAs: 'chrome',
+        mountPath: '/another-page',
+        initialRouteEntries: ['/catalog/default/component/foo'],
+      });
+
+      expect(
+        await screen.findByText('Path: /catalog/default/component/foo'),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Catalog' })).toHaveAttribute(
+        'href',
+        '/catalog',
+      );
+    });
+  });
+
+  it('should expose the app history through the API holder to drive the app', async () => {
+    const { apis } = renderInTestApp(<PathProbe />, {
+      initialRouteEntries: ['/start'],
+    });
+    const appHistory = apis.get(coreApis.appHistory)!;
+
+    expect(appHistory.getSnapshot().location.pathname).toBe('/start');
+    expect(appHistory.createHref('/catalog?q=1')).toBe('/catalog?q=1');
+
+    act(() => {
+      appHistory.navigate('/elsewhere');
+    });
+
+    expect(await screen.findByText('Path: /elsewhere')).toBeInTheDocument();
+    expect(appHistory.getSnapshot().location.pathname).toBe('/elsewhere');
   });
 });

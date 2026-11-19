@@ -23,6 +23,13 @@ import { InputError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { whereInArray } from '../../database/util';
 import { searchExists, SEARCH_FLT_ALIAS as S } from './searchSubquery';
+import {
+  findLongInLists,
+  hashedProbeMinValues,
+  isLongInList,
+  LongInForm,
+  longInListId,
+} from './longInLists';
 
 function isPrimitive(value: unknown): value is FilterPredicatePrimitive {
   return (
@@ -32,8 +39,113 @@ function isPrimitive(value: unknown): value is FilterPredicatePrimitive {
   );
 }
 
-function isObject(value: unknown): value is Record<string, unknown> {
+export function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Rejects primitives, and operator objects that are not exactly one of
+ * `{ $all: [...] }`, `{ $any: [...] }` or `{ $not: ... }`.
+ */
+export function assertObjectPredicate(filter: FilterPredicate): void {
+  if (!isObject(filter)) {
+    const actual = JSON.stringify(filter);
+    throw new InputError(
+      `Invalid filter predicate: top-level primitive values are not supported. Wrap the value in a field expression, e.g. { "kind": ${actual} }`,
+    );
+  }
+
+  const entries = Object.entries(filter);
+  if (entries.some(([key]) => key.startsWith('$'))) {
+    const [[key, value]] = entries;
+    const valid =
+      entries.length === 1 &&
+      (key === '$not' ||
+        ((key === '$all' || key === '$any') && Array.isArray(value)));
+    if (!valid) {
+      throw new InputError(
+        `Invalid filter predicate: operators must be a single $all or $any with an array, or $not, but got ${JSON.stringify(
+          filter,
+        )}`,
+      );
+    }
+  }
+}
+
+// Counts the sets joined onto each root query, to keep their aliases unique
+const inSetCounts = new WeakMap<Knex.QueryBuilder, number>();
+
+/**
+ * The long `$in` lists of a filter that are matched as sets, see
+ * `longInLists.ts`.
+ */
+type InSets = {
+  /** The joined set alias per distinct list */
+  aliases: Map<string, string>;
+  /** The form per key of the field expressions whose lists are sets */
+  forms: WeakMap<object, Map<string, LongInForm>>;
+  /**
+   * The number of values from which a list that is probed per row is hashed,
+   * see `hashedProbeMinValues`
+   */
+  hashFrom: number;
+};
+
+const NO_IN_SETS: InSets = {
+  aliases: new Map(),
+  forms: new WeakMap(),
+  hashFrom: hashedProbeMinValues({ smallPage: false }),
+};
+
+/**
+ * Finds the long `$in` lists of a filter that are matched as sets, and joins
+ * one set of entity IDs per distinct list in the JOIN form onto the root
+ * query, as a derived table that is joined with a LEFT JOIN onto the
+ * candidate rows. This happens up front, since knex compiles the joins before
+ * it runs the where clause callbacks.
+ */
+function joinLongInSets(options: {
+  filter: FilterPredicate;
+  rootQuery: Knex.QueryBuilder;
+  onEntityIdField: string;
+  knex: Knex;
+  smallPage: boolean;
+}): InSets {
+  const { rootQuery, onEntityIdField, knex, smallPage } = options;
+  const inSets: InSets = {
+    aliases: new Map(),
+    forms: new WeakMap(),
+    hashFrom: hashedProbeMinValues({ smallPage }),
+  };
+
+  for (const { filter, keyAnyCase, value, form } of findLongInLists(
+    options.filter,
+    { smallPage },
+  )) {
+    const forms = inSets.forms.get(filter) ?? new Map<string, LongInForm>();
+    forms.set(keyAnyCase, form);
+    inSets.forms.set(filter, forms);
+
+    const key = keyAnyCase.toLowerCase();
+    const id = longInListId(key, value);
+    if (form === 'join' && !inSets.aliases.has(id)) {
+      const index = (inSetCounts.get(rootQuery) ?? 0) + 1;
+      inSetCounts.set(rootQuery, index);
+      const alias = `in_set_${index}`;
+      const setQuery = knex(`search as ${S}`)
+        .distinct(`${S}.entity_id`)
+        .whereNotNull(`${S}.entity_id`);
+      applyFieldCondition(setQuery, key, value);
+      rootQuery.leftJoin(
+        setQuery.as(alias),
+        `${alias}.entity_id`,
+        onEntityIdField,
+      );
+      inSets.aliases.set(id, alias);
+    }
+  }
+
+  return inSets;
 }
 
 export function applyPredicateEntityFilterToQuery(options: {
@@ -41,16 +153,39 @@ export function applyPredicateEntityFilterToQuery(options: {
   targetQuery: Knex.QueryBuilder;
   onEntityIdField: string;
   knex: Knex;
+  /**
+   * The sets for long `$in` lists. Computed by the outermost call and passed
+   * along to the nested ones. Only PostgreSQL matches long lists as sets;
+   * other databases always match per row.
+   */
+  inSets?: InSets;
+  /**
+   * Match long `$in` lists per row even on PostgreSQL. Use when the query is
+   * already narrowed to a few rows, where building the sets would only add
+   * work.
+   */
+  matchLongInListsPerRow?: boolean;
+  /**
+   * Whether the query is a small page, which can stop early. Lists that are
+   * not direct conditions of the filter are then probed per row, and even
+   * shorter long lists are hashed in those probes, see `longInLists.ts`.
+   */
+  smallPage?: boolean;
 }): Knex.QueryBuilder {
   const { filter, targetQuery, onEntityIdField, knex } = options;
+  const inSets =
+    options.inSets ??
+    (knex.client.config.client === 'pg' && !options.matchLongInListsPerRow
+      ? joinLongInSets({
+          filter,
+          rootQuery: targetQuery,
+          onEntityIdField,
+          knex,
+          smallPage: Boolean(options.smallPage),
+        })
+      : NO_IN_SETS);
 
-  // We do not support top-level primitives; all matching happens through objects
-  if (!isObject(filter)) {
-    const actual = JSON.stringify(filter);
-    throw new InputError(
-      `Invalid filter predicate: top-level primitive values are not supported. Wrap the value in a field expression, e.g. { "kind": ${actual} }`,
-    );
-  }
+  assertObjectPredicate(filter);
 
   if ('$not' in filter) {
     return targetQuery.andWhereNot(inner =>
@@ -59,6 +194,7 @@ export function applyPredicateEntityFilterToQuery(options: {
         targetQuery: inner,
         onEntityIdField,
         knex,
+        inSets,
       }),
     );
   }
@@ -75,6 +211,7 @@ export function applyPredicateEntityFilterToQuery(options: {
             targetQuery: inner,
             onEntityIdField,
             knex,
+            inSets,
           }),
         );
       }
@@ -93,6 +230,7 @@ export function applyPredicateEntityFilterToQuery(options: {
             targetQuery: inner,
             onEntityIdField,
             knex,
+            inSets,
           }),
         );
       }
@@ -105,69 +243,83 @@ export function applyPredicateEntityFilterToQuery(options: {
   }
   return targetQuery.andWhere(inner => {
     for (const [keyAnyCase, value] of Object.entries(filter)) {
-      applyFieldCondition({
-        key: keyAnyCase.toLowerCase(),
-        value,
-        targetQuery: inner,
-        onEntityIdField,
-        knex,
-      });
+      const alias =
+        isLongInList(keyAnyCase, value) &&
+        inSets.aliases.get(longInListId(keyAnyCase.toLowerCase(), value));
+      if (alias) {
+        // A long list whose set of entity IDs was joined onto the candidate
+        // rows up front, see `joinLongInSets`. A list that is joined for one
+        // condition reuses that set wherever else it appears, which costs
+        // nothing more.
+        inner.whereNotNull(`${alias}.entity_id`);
+        continue;
+      }
+      if (inSets.forms.get(filter)?.get(keyAnyCase) === 'in') {
+        // A long list in the IN form: an uncorrelated set that is computed
+        // once per query and hashed, instead of probing the list once per
+        // candidate row. See `longInLists.ts` for when each form is used.
+        const subquery = knex(`search as ${S}`)
+          .select(`${S}.entity_id`)
+          .whereNotNull(`${S}.entity_id`);
+        applyFieldCondition(subquery, keyAnyCase.toLowerCase(), value);
+        inner.whereIn(onEntityIdField, subquery);
+        continue;
+      }
+      const subquery = searchExists(knex, onEntityIdField);
+      if (
+        applyFieldCondition(
+          subquery,
+          keyAnyCase.toLowerCase(),
+          value,
+          inSets.hashFrom,
+        )
+      ) {
+        inner.whereExists(subquery);
+      } else {
+        inner.whereNotExists(subquery);
+      }
     }
   });
 }
 
 /**
- * Applies a single { key: value } filter to the target query.
+ * Applies a single { key: value } filter to a query on the search table,
+ * aliased as `SEARCH_FLT_ALIAS`. Returns false if the matching entities are
+ * those without such rows.
  */
-function applyFieldCondition(options: {
-  key: string;
-  value: FilterPredicateValue;
-  targetQuery: Knex.QueryBuilder;
-  onEntityIdField: string;
-  knex: Knex;
-}): Knex.QueryBuilder {
-  const { key, value, targetQuery, onEntityIdField, knex } = options;
-
+export function applyFieldCondition(
+  searchQuery: Knex.QueryBuilder,
+  key: string,
+  value: FilterPredicateValue,
+  hashFrom: number = Infinity,
+): boolean {
   if (isPrimitive(value)) {
-    return targetQuery.whereExists(
-      searchExists(knex, onEntityIdField)
-        .where(`${S}.key`, key)
-        .where(`${S}.value`, String(value).toLowerCase()),
-    );
+    searchQuery
+      .where(`${S}.key`, key)
+      .where(`${S}.value`, String(value).toLowerCase());
+    return true;
   }
 
   if (isObject(value)) {
     if ('$exists' in value) {
-      const subquery = searchExists(knex, onEntityIdField).where(
-        `${S}.key`,
-        key,
-      );
-      return value.$exists
-        ? targetQuery.whereExists(subquery)
-        : targetQuery.whereNotExists(subquery);
+      searchQuery.where(`${S}.key`, key);
+      return Boolean(value.$exists);
     }
 
     if ('$in' in value) {
       const values = value.$in.map(v => String(v).toLowerCase());
-      return targetQuery.whereExists(
-        searchExists(knex, onEntityIdField)
-          .where(`${S}.key`, key)
-          .where(whereInArray(`${S}.value`, values)),
-      );
+      searchQuery.where(`${S}.key`, key);
+      whereValueIn(searchQuery, values, hashFrom);
+      return true;
     }
 
     if ('$hasPrefix' in value) {
       const prefix = value.$hasPrefix.toLowerCase();
       const escaped = prefix.replace(/[%_\\]/g, c => `\\${c}`);
-      return targetQuery.whereExists(
-        searchExists(knex, onEntityIdField)
-          .where(`${S}.key`, key)
-          .andWhereRaw('?? like ? escape ?', [
-            `${S}.value`,
-            `${escaped}%`,
-            '\\',
-          ]),
-      );
+      searchQuery
+        .where(`${S}.key`, key)
+        .andWhereRaw('?? like ? escape ?', [`${S}.value`, `${escaped}%`, '\\']);
+      return true;
     }
 
     if ('$contains' in value) {
@@ -184,11 +336,10 @@ function applyFieldCondition(options: {
       // "b" key with a primitive value. We'll consider that an acceptable
       // tradeoff though.
       if (isPrimitive(target)) {
-        return targetQuery.whereExists(
-          searchExists(knex, onEntityIdField)
-            .where(`${S}.key`, key)
-            .where(`${S}.value`, String(target).toLowerCase()),
-        );
+        searchQuery
+          .where(`${S}.key`, key)
+          .where(`${S}.value`, String(target).toLowerCase());
+        return true;
       }
 
       // Object form of $contains - currently only supports relation-style
@@ -199,12 +350,8 @@ function applyFieldCondition(options: {
       // TO:   search for key = "relations.ownedby" AND value = "group:default/team-a"
       if (isObject(target)) {
         if (key === 'relations') {
-          return applyContainsRelation({
-            target,
-            targetQuery,
-            onEntityIdField,
-            knex,
-          });
+          applyContainsRelation(searchQuery, target, hashFrom);
+          return true;
         }
 
         throw new InputError(
@@ -247,14 +394,11 @@ function applyFieldCondition(options: {
  * relation of that type. The "targetRef" value can be a string or an `$in`
  * array.
  */
-function applyContainsRelation(options: {
-  target: Record<string, unknown>;
-  targetQuery: Knex.QueryBuilder;
-  onEntityIdField: string;
-  knex: Knex;
-}): Knex.QueryBuilder {
-  const { target: rawTarget, targetQuery, onEntityIdField, knex } = options;
-
+function applyContainsRelation(
+  searchQuery: Knex.QueryBuilder,
+  rawTarget: Record<string, unknown>,
+  hashFrom: number = Infinity,
+): void {
   function parseStringOrIn(value: unknown): string[] {
     if (typeof value === 'string') {
       return [value.toLowerCase()];
@@ -317,14 +461,41 @@ function applyContainsRelation(options: {
     );
   }
 
-  const subquery = searchExists(knex, onEntityIdField).where(
-    `${S}.key`,
-    `relations.${type.toLowerCase()}`,
-  );
+  searchQuery.where(`${S}.key`, `relations.${type.toLowerCase()}`);
 
   if (targetRef) {
-    subquery.where(whereInArray(`${S}.value`, targetRef));
+    whereValueIn(searchQuery, targetRef, hashFrom);
   }
+}
 
-  return targetQuery.whereExists(subquery);
+/**
+ * Matches the value of the search rows against a list.
+ *
+ * A list of at least `hashFrom` values is matched in a form that only applies
+ * to a per-row probe, that is a correlated subquery on the search table. As an
+ * index condition, `value = ANY(list)` makes each probe sort the list again,
+ * which costs about 0.4 ms for 100 values and multiplies by the number of
+ * candidate rows. Comparing an expression instead keeps the list out of the
+ * index condition, so the probe looks up the rows of the entity by key and
+ * checks their values against a hash of the list that PostgreSQL builds once
+ * per query.
+ *
+ * The `OFFSET 0` keeps PostgreSQL from turning the probe into an uncorrelated
+ * hashed set of entity IDs, which it may do for an `EXISTS` inside an `OR`.
+ * Such a set could not use the index on the values, and would read every row
+ * of the key instead.
+ */
+function whereValueIn(
+  searchQuery: Knex.QueryBuilder,
+  values: string[],
+  hashFrom: number,
+) {
+  const client = (searchQuery as any).client;
+  if (values.length >= hashFrom && client.config.client === 'pg') {
+    searchQuery
+      .whereRaw("(?? || '') = ANY(?::text[])", [`${S}.value`, values])
+      .offset(client.raw('0'));
+  } else {
+    searchQuery.where(whereInArray(`${S}.value`, values));
+  }
 }

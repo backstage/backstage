@@ -50,6 +50,13 @@ export * from './RouteResolutionApi';
 export * from './StorageApi';
 export * from './AnalyticsApi';
 export * from './ToastApi';
-export * from './TranslationApi';
+export {
+  type TranslationApi,
+  type TranslationFunction,
+  type TranslationSnapshot,
+  translationApiRef,
+} from './TranslationApi';
 export * from './PluginHeaderActionsApi';
 export * from './PluginWrapperApi';
+
+export { coreApis, type CoreApis, type InternalCoreApis } from './coreApis';

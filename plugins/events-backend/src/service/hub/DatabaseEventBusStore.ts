@@ -27,6 +27,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ForwardedError, NotFoundError } from '@backstage/errors';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
+import { ROOT_CONTEXT, context } from '@opentelemetry/api';
 
 const WINDOW_MAX_COUNT_DEFAULT = 10_000;
 const WINDOW_MIN_AGE_DEFAULT = { minutes: 10 };
@@ -67,10 +68,7 @@ function creatorId(
   return `service=${credentials.principal.subject}`;
 }
 
-const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-events-backend',
-  'migrations',
-);
+const migrationsDir = resolvePackagePath(import.meta.url, 'migrations');
 
 interface InternalDbClient {
   acquireRawConnection(): Promise<InternalDbConnection>;
@@ -224,7 +222,9 @@ class DatabaseEventBusListener {
       await this.#connPromise;
       return;
     }
-    this.#connPromise = Promise.resolve().then(async () => {
+    // Connect in the root context, so that keepalive queries on this long-lived
+    // connection are not attached to the trace of the request that opened it.
+    const connect = context.bind(ROOT_CONTEXT, async () => {
       const conn = await this.#client.acquireRawConnection();
 
       try {
@@ -263,6 +263,7 @@ class DatabaseEventBusListener {
         throw error;
       }
     });
+    this.#connPromise = Promise.resolve().then(connect);
     try {
       await this.#connPromise;
     } catch (error) {

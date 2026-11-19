@@ -918,9 +918,9 @@ export async function createRouter(
             metadata: {
               ...entity.metadata,
               annotations: {
+                ...entity.metadata.annotations,
                 [ANNOTATION_LOCATION]: body.location,
                 [ANNOTATION_ORIGIN_LOCATION]: body.location,
-                ...entity.metadata.annotations,
               },
             },
           },
@@ -936,7 +936,7 @@ export async function createRouter(
           error: (AggregateError as any)(errors, 'Could not validate entity'),
         });
 
-        res.status(400).json({
+        return res.status(400).json({
           errors,
         });
       }

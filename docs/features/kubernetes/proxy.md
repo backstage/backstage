@@ -5,7 +5,7 @@ sidebar_label: Proxy
 description: Interacting with the Kubernetes API in Backstage plugins
 ---
 
-[Contributors](https://backstage.io/docs/overview/glossary#backstage-user-profiles) wanting to
+[Contributors](https://backstage.io/docs/references/glossary#contributor) wanting to
 create developer portal experiences based on data from Kubernetes (e.g. for
 interacting with [Custom Resources](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)
 beyond the default behaviors of the existing Kubernetes plugin) can leverage the
@@ -39,6 +39,7 @@ Overall, the only changes to each request are:
 
 - the endpoint's base URL prefix is stripped.
 - the `Backstage-Kubernetes-Authorization` header becomes the `Authorization` header that is used when forwarding the request.
+- the caller's `Authorization` and `Cookie` headers are removed, so they are never forwarded to the target cluster.
 
 The proxy expects a `KubernetesAuthTranslator` to be provided that is used to decorate all requests with `Auth` by default. It does this by supplying a `serviceAccountToken` field into `clusterDetails` using the defined `authProvider` in `clusterDetails`.
 

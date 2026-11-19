@@ -865,6 +865,65 @@ describe.each(databases.eachSupportedId())(
         );
       });
 
+      it('should keep the last copy of duplicate entities during a full update', async () => {
+        const fakeLogger = mockServices.logger.mock();
+        const { knex, db } = await createDatabase(fakeLogger);
+
+        await db.transaction(async tx => {
+          await db.replaceUnprocessedEntities(tx, {
+            type: 'full',
+            sourceKey: 'lols',
+            items: [
+              {
+                entity: {
+                  apiVersion: '1',
+                  kind: 'Component',
+                  metadata: { name: 'duplicate' },
+                  spec: { marker: 'FIRST_COPY' },
+                } as Entity,
+                locationKey: 'bitbucketServer-provider:test',
+              },
+              {
+                entity: {
+                  apiVersion: '1',
+                  kind: 'Component',
+                  metadata: { name: 'duplicate' },
+                  spec: { marker: 'SECOND_COPY' },
+                } as Entity,
+                locationKey: 'bitbucketServer-provider:test',
+              },
+            ],
+          });
+        });
+
+        expect(fakeLogger.debug).toHaveBeenCalledWith(
+          expect.stringMatching(
+            /Fast insert path failed, falling back to slow path/,
+          ),
+        );
+
+        const state = await knex<DbRefreshStateRow>('refresh_state').select();
+        expect(state).toHaveLength(1);
+        expect(state[0]).toEqual(
+          expect.objectContaining({
+            entity_ref: 'component:default/duplicate',
+            location_key: 'bitbucketServer-provider:test',
+            unprocessed_entity: expect.stringContaining('SECOND_COPY'),
+          }),
+        );
+
+        const references = await knex<DbRefreshStateReferencesRow>(
+          'refresh_state_references',
+        ).select();
+        expect(references).toHaveLength(1);
+        expect(references[0]).toEqual(
+          expect.objectContaining({
+            source_key: 'lols',
+            target_entity_ref: 'component:default/duplicate',
+          }),
+        );
+      });
+
       it('should gracefully handle accidental duplicate refresh state references when deletion happens during a full sync', async () => {
         const fakeLogger = mockServices.logger.mock();
         const { knex, db } = await createDatabase(fakeLogger);

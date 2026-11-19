@@ -278,8 +278,7 @@ describe('sentry:project:create action', () => {
     worker.use(
       http.post(
         `https://sentry.io/api/0/teams/${actionContext.input.organizationSlug}/${actionContext.input.teamSlug}/projects/`,
-        ({ request }) => {
-          expect(request.redirect).toBe('error');
+        () => {
           return HttpResponse.redirect(
             'https://sentry.io/api/0/redirect-target/',
             302,

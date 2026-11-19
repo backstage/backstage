@@ -17,6 +17,7 @@
 import { ComponentType } from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
 import { Entity } from '@backstage/catalog-model';
 import {
   AsyncEntityProvider,
@@ -52,32 +53,34 @@ async function renderLayout(options: {
   HeaderComponent?: ComponentType<EntityHeaderLayoutProps>;
 }) {
   return renderInTestApp(
-    <AsyncEntityProvider
-      entity={options.entity}
-      loading={options.loading ?? false}
-      error={options.error}
-    >
-      <EntityLayoutBui
-        routes={[
-          {
-            path: '/overview',
-            title: 'Overview',
-            children: <div>Overview content</div>,
-          },
-          {
-            path: '/hidden',
-            title: 'Hidden',
-            children: <div>Hidden content</div>,
-            if: () => false,
-          },
-        ]}
-        groupDefinitions={defaultEntityContentGroupDefinitions}
-        defaultContentOrder="title"
-        contextMenuItems={[]}
-        NotFoundComponent={options.NotFoundComponent}
-        HeaderComponent={options.HeaderComponent}
-      />
-    </AsyncEntityProvider>,
+    <ReactRouterV6PageRouter>
+      <AsyncEntityProvider
+        entity={options.entity}
+        loading={options.loading ?? false}
+        error={options.error}
+      >
+        <EntityLayoutBui
+          routes={[
+            {
+              path: '/overview',
+              title: 'Overview',
+              children: <div>Overview content</div>,
+            },
+            {
+              path: '/hidden',
+              title: 'Hidden',
+              children: <div>Hidden content</div>,
+              if: () => false,
+            },
+          ]}
+          groupDefinitions={defaultEntityContentGroupDefinitions}
+          defaultContentOrder="title"
+          contextMenuItems={[]}
+          NotFoundComponent={options.NotFoundComponent}
+          HeaderComponent={options.HeaderComponent}
+        />
+      </AsyncEntityProvider>
+    </ReactRouterV6PageRouter>,
     {
       apis: [
         catalogApiMock({ entities: options.entity ? [options.entity] : [] }),

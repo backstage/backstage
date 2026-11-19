@@ -25,7 +25,7 @@ describe('matchAuth', () => {
           connections: [
             {
               type: 'github',
-              host: 'matchauth.example.com',
+              baseUrl: 'https://matchauth.example.com/',
               auth: [
                 {
                   method: 'app',
@@ -74,7 +74,7 @@ describe('matchAuth', () => {
           connections: [
             {
               type: 'github',
-              host: 'matchauth.example.com',
+              baseUrl: 'https://matchauth.example.com/',
               auth: [
                 {
                   method: 'app',
@@ -115,7 +115,7 @@ describe('matchAuth', () => {
           connections: [
             {
               type: 'github',
-              host: 'matchauth.example.com',
+              baseUrl: 'https://matchauth.example.com/',
               auth: [
                 {
                   method: 'app',
@@ -149,7 +149,7 @@ describe('matchAuth', () => {
           connections: [
             {
               type: 'github',
-              host: 'matchauth.example.com',
+              baseUrl: 'https://matchauth.example.com/',
               auth: [
                 {
                   method: 'app',

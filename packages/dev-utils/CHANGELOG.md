@@ -1,5 +1,63 @@
 # @backstage/dev-utils
 
+## 1.2.0
+
+### Minor Changes
+
+- 4bbc7a9: Removed explicit support for React 17: the peer dependency range for `react`, `react-dom` and `@types/react` is now `^18.0.0`. React 17 is no longer tested or guaranteed to work, although it may continue to work in some cases. See the [migration guide](https://backstage.io/docs/frontend-system/architecture/migrations#157).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/core-components@0.18.16
+  - @backstage/plugin-catalog-react@4.0.0
+  - @backstage/ui@0.20.0
+  - @backstage/core-app-api@1.20.7
+  - @backstage/integration-react@1.3.0
+  - @backstage/app-defaults@1.8.0
+  - @backstage/theme@0.7.4
+  - @backstage/catalog-model@1.10.3
+
+## 1.1.29-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.16-next.1
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/core-app-api@1.20.7-next.2
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+  - @backstage/plugin-catalog-react@4.0.0-next.2
+  - @backstage/integration-react@1.2.24-next.1
+
+## 1.1.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/app-defaults@1.7.14-next.0
+  - @backstage/core-plugin-api@1.12.12-next.0
+  - @backstage/plugin-catalog-react@4.0.0-next.0
+  - @backstage/core-app-api@1.20.7-next.0
+  - @backstage/core-components@0.18.16-next.0
+  - @backstage/integration-react@1.2.24-next.0
+
+## 1.1.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.19.0
+  - @backstage/plugin-catalog-react@3.3.0
+  - @backstage/core-components@0.18.15
+  - @backstage/catalog-model@1.10.2
+  - @backstage/app-defaults@1.7.13
+  - @backstage/core-app-api@1.20.6
+  - @backstage/core-plugin-api@1.12.11
+  - @backstage/integration-react@1.2.23
+
 ## 1.1.28-next.1
 
 ### Patch Changes

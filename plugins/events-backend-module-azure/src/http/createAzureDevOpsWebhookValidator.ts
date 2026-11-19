@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import {
   RequestDetails,
   RequestValidationContext,
   RequestValidator,
 } from '@backstage/plugin-events-node';
-import { timingSafeEqual } from 'crypto';
+import { timingSafeEqual } from 'node:crypto';
 
 /**
  * Validates incoming Azure DevOps webhook requests
@@ -31,17 +32,42 @@ import { timingSafeEqual } from 'crypto';
  * at `events.modules.azureDevOps.webhookSecret`.
  *
  * @param config - root config
+ * @param logger - logger used to report the module's authentication setup at startup
  * @public
  */
 export function createAzureDevOpsWebhookValidator(
   config: Config,
-): RequestValidator | undefined {
+  logger: LoggerService,
+): RequestValidator {
   const secret = config.getOptionalString(
     'events.modules.azureDevOps.webhookSecret',
   );
 
+  const dangerouslyAllowUnauthenticatedEvents =
+    config.getOptionalBoolean(
+      'events.modules.azureDevOps.dangerouslyAllowUnauthenticatedEvents',
+    ) ?? false;
+
   if (!secret) {
-    return undefined;
+    if (dangerouslyAllowUnauthenticatedEvents) {
+      logger.warn(
+        'dangerouslyAllowUnauthenticatedEvents is enabled for the Azure DevOps events module; incoming webhook events will be accepted without authentication',
+      );
+      return async () => {};
+    }
+
+    logger.warn(
+      "No webhook secret is configured for the Azure DevOps events module; incoming webhook events will be rejected with 403. Set 'events.modules.azureDevOps.webhookSecret' to enable authentication, or set 'events.modules.azureDevOps.dangerouslyAllowUnauthenticatedEvents' to true to accept unauthenticated events",
+    );
+    return async (
+      _request: RequestDetails,
+      context: RequestValidationContext,
+    ): Promise<void> => {
+      context.reject({
+        status: 403,
+        payload: { message: 'webhook secret not configured' },
+      });
+    };
   }
 
   const secretBuffer = Buffer.from(secret);

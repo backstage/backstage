@@ -58,7 +58,7 @@ framework-owned `type`, `title`, `match`, and `auth` fields. Every
 Most built-in types have [multiton cardinality](./01-concepts.md#cardinality) and
 use the `host` [lookup strategy](./01-concepts.md#lookup-strategies). Their
 consumers pass `query: { url }`, and the service selects the connection whose
-configured `host` matches the parsed URL host.
+`baseUrl` host matches the parsed query URL host.
 
 AWS is the exception. It is a singleton that accepts `accountId` or `arn` in
 its [lookup query](./01-concepts.md#lookup-queries) and selects an account

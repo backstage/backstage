@@ -169,8 +169,11 @@ describe('GitlabDiscoveryProcessor', () => {
   registerMswTestHooks(server);
 
   beforeAll(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date(SERVER_TIME));
+    // msw 3 answers requests through process.nextTick, so leave that real
+    jest.useFakeTimers({
+      now: new Date(SERVER_TIME),
+      doNotFake: ['nextTick'],
+    });
   });
 
   afterAll(() => {

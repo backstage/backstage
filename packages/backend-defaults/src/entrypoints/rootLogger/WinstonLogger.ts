@@ -64,7 +64,7 @@ export class WinstonLogger implements RootLoggerService {
 
     const defaultFormatter =
       process.env.NODE_ENV === 'production'
-        ? format.json()
+        ? format.combine(format.timestamp(), format.json())
         : WinstonLogger.colorFormat();
 
     let logger = createLogger({

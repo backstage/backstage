@@ -1,5 +1,57 @@
 # @backstage/core-components
 
+## 0.18.16
+
+### Patch Changes
+
+- 1c75912: Deprecated components with Backstage UI replacements or compositions: `Avatar`, `Link`, `LinkButton`, `Select`, `Content`, `BottomLink`, `HeaderActionMenu`, `HeaderLabel`, `HeaderTabs`, `ItemCardGrid`, `ItemCardHeader`, `TabbedCard`, `CardTab`, `SubvalueCell`, `CreateButton`, `ContentHeader`, `FavoriteToggle`, `FavoriteToggleIcon`, `HeaderIconLinkRow`, `IconLinkVertical`, and `OverflowTooltip`, along with their associated public types.
+
+  Use the replacements from `@backstage/ui` described in each component's deprecation notice. These migrations require adapting props and composition, including external-link presentation, selection callbacks, document titles, and error boundaries where applicable. Existing exports and runtime behavior are unchanged.
+
+- cac9654: `MarkdownContent` now loads `react-markdown` and its `remark` and `rehype` plugins the first time it renders, instead of with the app. This keeps them out of the app's startup bundle. Markdown appears once the renderer has loaded, so tests that look for rendered markdown right after a synchronous `render` may need to use `findBy*` queries instead.
+- 7890ec2: Deprecated legacy page shells (`Page`, `PageWithHeader`, `Header`), routed tabs (`TabbedLayout`, `TabbedLayout.Route`, `RoutedTabs`), `AlertDisplay`, `AppIcon`, the named icon wrappers, and their associated public types for new frontend development. Existing exports and behavior remain available, including in migrated plugins.
+
+  Use page and sub-page extensions and `PageLayout` from `@backstage/frontend-plugin-api` for framework-managed pages, or compose `@backstage/ui` headers and tabs with explicit routing for standalone layouts. Legacy themes, arbitrary header content, document titles, and focus behavior need deliberate migration. Rely on the new frontend app's existing alert/toast display. For app-customizable icons, use `useApi(coreApis.icons).icon(key)` from `@backstage/frontend-plugin-api` and render the returned element, handling missing icons as needed.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.13.0
+  - @backstage/errors@1.4.0
+  - @backstage/ui@0.20.0
+  - @backstage/theme@0.7.4
+  - @backstage/version-bridge@1.1.0
+  - @backstage/config@1.3.11
+
+## 0.18.16-next.1
+
+### Patch Changes
+
+- cac9654: `MarkdownContent` now loads `react-markdown` and its `remark` and `rehype` plugins the first time it renders, instead of with the app. This keeps them out of the app's startup bundle. Markdown appears once the renderer has loaded, so tests that look for rendered markdown right after a synchronous `render` may need to use `findBy*` queries instead.
+- Updated dependencies
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/ui@0.20.0-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/core-plugin-api@1.12.12-next.2
+
+## 0.18.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.12-next.0
+
+## 0.18.15
+
+### Patch Changes
+
+- e415488: Stop clearing the selected provider from `localStorage` when a sign-in loader is cancelled. Only clear it when the loader actually fails. Memoize `getSignInProviders` so it does not recreate the providers object on every render.
+- 76ac6ed: Updated dependency `js-yaml` to `^5.0.0`.
+- e859c29: Added `defaultCloseDelayMs` option to `SubmenuOptions` to configure a delay before a submenu closes.
+- Updated dependencies
+  - @backstage/ui@0.19.0
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/core-plugin-api@1.12.11
+
 ## 0.18.15-next.3
 
 ### Patch Changes

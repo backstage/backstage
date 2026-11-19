@@ -4,6 +4,13 @@ Welcome to the Gitlab Module for Scaffolder.
 
 Here you can find all Gitlab related features to improve your scaffolder:
 
+For `publish:gitlab:merge-request` and `gitlab:repo:push`, `commitAction: auto`
+checks files individually if the repository file listing fails, except for a 404
+response. Individual checks skip unchanged files, update changed files, and create
+missing files; other errors stop the action before committing. A 404 listing
+response continues to treat all files as new, including when pushing to a new
+branch.
+
 ## Getting started
 
 ## From your Backstage root directory

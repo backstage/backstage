@@ -253,6 +253,15 @@ export class KubernetesProxy {
       ca: bufferFromFileOrString(cluster.caFile, cluster.caData)?.toString(),
     };
 
+    // The inbound Authorization header carries the user's Backstage identity
+    // token, and the Cookie header carries their Backstage session in
+    // deployments that use cookie-based auth. Neither is a credential for the
+    // target cluster, and the proxy would otherwise forward them to it, so
+    // they are removed here and only ever set again below, with cluster
+    // credentials.
+    delete req.headers.authorization;
+    delete req.headers.cookie;
+
     const authHeader = req.headers[HEADER_KUBERNETES_AUTH.toLowerCase()];
     if (typeof authHeader === 'string') {
       req.headers.authorization = authHeader;

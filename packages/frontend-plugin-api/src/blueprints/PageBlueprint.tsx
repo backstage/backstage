@@ -14,22 +14,56 @@
  * limitations under the License.
  */
 
-import { JSX } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { JSX, ReactNode, lazy, useEffect } from 'react';
+import { appLanguageApiRef, errorApiRef, translationApiRef } from '../apis';
+import { TranslationRefTuple } from '../translation/TranslationRef';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
+import {
+  joinRoutePath,
+  useAppHistoryLocation,
+  useTranslatedTitles,
+} from '@internal/frontend';
 import {
   coreExtensionData,
   createExtensionBlueprint,
   createExtensionInput,
 } from '../wiring';
-import { ExtensionBoundary, PageLayout, PageLayoutTab } from '../components';
-import { useApi } from '../apis/system';
+import { ExtensionBoundary, PageLayout, Progress } from '../components';
 import { BreadcrumbEntry } from '../breadcrumbs';
-import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
+import { useApi, useApiHolder } from '../apis/system';
+import type { AppNode } from '../apis';
+import {
+  routeResolutionApiRef,
+  RouteResolutionApi,
+  type RouteResolutionMatch,
+} from '../apis/definitions/RouteResolutionApi';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
-import { RouteResolutionApi } from '../apis/definitions/RouteResolutionApi';
+
 import { optionalStringSchema } from '../schema/optionalStringSchema';
+import { appHistoryApiRef, type AppHistoryApi } from '../routing/AppHistoryApi';
+import type { AppLocation } from '../routing/AppLocation';
+
+/**
+ * One sub-page of a page, as the page itself sees it: a tab to show in the
+ * chrome, and the content to render when that tab is the one selected.
+ *
+ * Deliberately not part of any public contract — sub-pages are ordinary routes
+ * one level below the page, and nothing outside this blueprint needs to know
+ * that the page is composed from them.
+ */
+interface PageSubPage {
+  node: AppNode;
+  /** The sub-page path exactly as its author wrote it, e.g. `overview`. */
+  path: string;
+  /** The sub-page's tab label, defaulting to {@link PageSubPage.path}. */
+  label: string;
+  titleTranslation?: TranslationRefTuple<undefined>;
+  /** The sub-page's tab icon, if the author supplied one. */
+  icon?: IconElement;
+  /** The sub-page content, including its extension boundary. */
+  element: ReactNode;
+}
 
 function resolveTitleLink(
   routeResolutionApi: RouteResolutionApi,
@@ -46,8 +80,174 @@ function resolveTitleLink(
   }
 }
 
+/** Parent-owned selection from the same matched branch as the app route. */
+function PageContent(props: {
+  subPages?: readonly PageSubPage[];
+  pageMount?: RouteResolutionMatch;
+  matches?: readonly RouteResolutionMatch[];
+  history?: AppHistoryApi;
+  location?: AppLocation;
+  children?: ReactNode;
+}) {
+  const { subPages, pageMount, matches, history, location, children } = props;
+  const selectedMatch = matches?.find(match =>
+    subPages?.some(page => page.node === match.node),
+  );
+  const selected = subPages?.find(page => page.node === selectedMatch?.node);
+  const firstPath = subPages?.[0]?.path;
+  useEffect(() => {
+    if (
+      matches &&
+      firstPath &&
+      pageMount &&
+      location &&
+      location.pathname.replace(/\/$/, '') ===
+        pageMount.basePath.replace(/\/$/, '')
+    ) {
+      const target = joinRoutePath(pageMount.basePath, firstPath);
+      if (target !== pageMount.basePath) {
+        history?.navigate(`${target}${location.search}${location.hash}`, {
+          replace: true,
+        });
+      }
+    }
+  }, [matches, firstPath, pageMount, location, history]);
+  return selected && selectedMatch ? (
+    <BreadcrumbEntry
+      entry={{ label: selected.label, href: selectedMatch.basePath }}
+    >
+      {selected.element}
+    </BreadcrumbEntry>
+  ) : (
+    <>{children}</>
+  );
+}
+
+function PluginPageShell(props: {
+  node: AppNode;
+  title: string;
+  titleTranslation?: TranslationRefTuple<undefined>;
+  icon?: IconElement;
+  noHeader?: boolean;
+  subPages?: readonly PageSubPage[];
+  titleRouteRef?: RouteRef;
+  pluginId: string;
+  children?: ReactNode;
+}) {
+  const {
+    node,
+    title,
+    titleTranslation,
+    icon,
+    noHeader,
+    subPages,
+    titleRouteRef,
+    pluginId,
+    children,
+  } = props;
+  const titles = useTranslatedTitles({
+    translationApi: useApi(translationApiRef),
+    languageApi: useApi(appLanguageApiRef),
+    errorApi: useApi(errorApiRef),
+    selections: [
+      titleTranslation,
+      ...(subPages?.map(page => page.titleTranslation) ?? []),
+    ],
+  });
+  const translatedSubPages = subPages?.map((page, index) => ({
+    ...page,
+    label: titles?.[index + 1] ?? page.label,
+  }));
+  const routeResolutionApi = useApi(routeResolutionApiRef);
+  const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
+  const history = useApiHolder().get(appHistoryApiRef);
+  const location = useAppHistoryLocation(history);
+  const mount =
+    location &&
+    routeResolutionApi
+      .resolvePath({ pathname: location.pathname, node })
+      .matches.at(-1);
+  const matches =
+    location &&
+    routeResolutionApi.resolvePath({ pathname: location.pathname }).matches;
+  const tabs =
+    mount &&
+    translatedSubPages?.map(({ path, label, icon: tabIcon }) => ({
+      id: path,
+      label,
+      icon: tabIcon,
+      href: joinRoutePath(mount.basePath, path),
+    }));
+  const headerActionsApi = useApi(pluginHeaderActionsApiRef);
+  const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+
+  if (!titles) {
+    return <Progress />;
+  }
+  return (
+    <PageLayout
+      title={titles[0] ?? title}
+      icon={icon}
+      noHeader={noHeader}
+      tabs={tabs}
+      titleLink={titleLink}
+      headerActions={headerActions}
+    >
+      <ExtensionBoundary node={node}>
+        <PageContent
+          subPages={translatedSubPages}
+          pageMount={mount}
+          matches={matches}
+          history={history}
+          location={location}
+        >
+          {children}
+        </PageContent>
+      </ExtensionBoundary>
+    </PageLayout>
+  );
+}
+
 /**
  * Creates extensions that are routable React page components.
+ *
+ * Existing pages retain implicit React Router v6 matches for compatibility.
+ * Development warnings identify consumers of that fallback. Pages can migrate
+ * independently by rendering an explicit adapter inside their lazily loaded component:
+ *
+ * ```tsx
+ * PageBlueprint.make({
+ *   params: {
+ *     path: '/catalog',
+ *     loader: () => import('./Page').then(m => <m.Page />),
+ *   },
+ * });
+ * ```
+ *
+ * In the lazy component module:
+ * ```tsx
+ * import { ReactRouterV6PageRouter } from '@backstage/frontend-adapter-react-router-v6';
+ *
+ * export const Page = () => (
+ *   <ReactRouterV6PageRouter>
+ *     <PageContent />
+ *   </ReactRouterV6PageRouter>
+ * );
+ * ```
+ *
+ * Adapters are added rather than selected, so they nest: a sub-page written
+ * with one routing library works under a page written with another, and
+ * neither has to know about the other.
+ *
+ * Sub-pages attached to the `pages` input (e.g. via `SubPageBlueprint`) are
+ * ordinary route-bearing extensions. The page renders the child selected by
+ * the app's matched extension branch and redirects its index to the first
+ * sub-page. The app scopes each route-bearing extension's complete element
+ * output to its matched ancestry, including its header. The page retains
+ * ownership of its shell and child rendering.
+ * The content has one extension boundary for plugin providers, analytics,
+ * loading, and errors. The page header stays visible while content loads or
+ * displays an error.
  *
  * @public
  */
@@ -60,6 +260,7 @@ export const PageBlueprint = createExtensionBlueprint({
       coreExtensionData.routeRef.optional(),
       coreExtensionData.reactElement,
       coreExtensionData.title.optional(),
+      coreExtensionData.titleTranslation.optional(),
       coreExtensionData.icon.optional(),
     ]),
   },
@@ -68,6 +269,7 @@ export const PageBlueprint = createExtensionBlueprint({
     coreExtensionData.reactElement,
     coreExtensionData.routeRef.optional(),
     coreExtensionData.title.optional(),
+    coreExtensionData.titleTranslation.optional(),
     coreExtensionData.icon.optional(),
   ],
   configSchema: {
@@ -77,7 +279,8 @@ export const PageBlueprint = createExtensionBlueprint({
   *factory(
     params: {
       path: string;
-      title?: string;
+      /** A plain title or a message reference resolved using the translation API. */
+      title?: string | TranslationRefTuple<undefined>;
       icon?: IconElement;
       loader?: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
@@ -86,9 +289,26 @@ export const PageBlueprint = createExtensionBlueprint({
        */
       noHeader?: boolean;
     },
-    { config, node, inputs },
+    { config, node, inputs, apis },
   ) {
-    const title = config.title ?? params.title;
+    const translation =
+      typeof params.title === 'object' ? params.title : undefined;
+    const translationApi =
+      translation && config.title === undefined
+        ? apis.get(translationApiRef)
+        : undefined;
+    if (translation && config.title === undefined && !translationApi) {
+      throw new Error(
+        `Translation API (core.translation) is required to resolve title '${translation.ref.id}:${translation.key}'`,
+      );
+    }
+    const title =
+      config.title ??
+      (typeof params.title === 'object'
+        ? translationApi!
+            .getTranslation<Record<string, string>>(params.title.ref)
+            .t(params.title.key)
+        : params.title);
     const icon = params.icon;
     const pluginId = node.spec.plugin.pluginId;
     const noHeader = params.noHeader ?? false;
@@ -97,106 +317,28 @@ export const PageBlueprint = createExtensionBlueprint({
     const resolvedIcon = icon ?? node.spec.plugin.icon;
     const titleRouteRef =
       (node.spec.plugin.routes as { root?: RouteRef }).root ?? params.routeRef;
+    const routePath = config.path ?? params.path;
+    // A page written around a `loader` owns its whole content region, so
+    // anything attached to its `pages` input has nothing to be shown in.
+    const subPages = params.loader ? [] : collectSubPages(inputs.pages);
 
-    yield coreExtensionData.routePath(config.path ?? params.path);
-    if (params.loader) {
-      const loader = params.loader;
-      const PageContent = () => {
-        const routeResolutionApi = useApi(routeResolutionApiRef);
-        const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
-        const headerActionsApi = useApi(pluginHeaderActionsApiRef);
-        const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
-
-        return (
-          <PageLayout
-            title={resolvedTitle}
-            icon={resolvedIcon}
-            noHeader={noHeader}
-            titleLink={titleLink}
-            headerActions={headerActions}
-          >
-            {ExtensionBoundary.lazy(node, loader)}
-          </PageLayout>
-        );
-      };
-      yield coreExtensionData.reactElement(<PageContent />);
-    } else if (inputs.pages.length > 0) {
-      // Parent page with sub-pages - render header with tabs
-      const tabs: PageLayoutTab[] = inputs.pages.map(page => {
-        const path = page.get(coreExtensionData.routePath);
-        const tabTitle = page.get(coreExtensionData.title);
-        const tabIcon = page.get(coreExtensionData.icon);
-        return {
-          id: path,
-          label: tabTitle || path,
-          icon: tabIcon,
-          href: path,
-        };
-      });
-
-      const PageContent = () => {
-        const firstPagePath = inputs.pages[0]?.get(coreExtensionData.routePath);
-        const routeResolutionApi = useApi(routeResolutionApiRef);
-        const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
-
-        const headerActionsApi = useApi(pluginHeaderActionsApiRef);
-        const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
-        return (
-          <PageLayout
-            title={resolvedTitle}
-            icon={resolvedIcon}
-            tabs={tabs}
-            titleLink={titleLink}
-            headerActions={headerActions}
-          >
-            <Routes>
-              {firstPagePath && (
-                <Route
-                  index
-                  element={<Navigate to={firstPagePath} replace />}
-                />
-              )}
-              {inputs.pages.map((page, index) => {
-                const path = page.get(coreExtensionData.routePath);
-                const tabTitle = page.get(coreExtensionData.title);
-                const element = page.get(coreExtensionData.reactElement);
-                return (
-                  <Route
-                    key={index}
-                    path={`${path}/*`}
-                    element={
-                      <BreadcrumbEntry
-                        entry={{ label: tabTitle || path, href: path }}
-                      >
-                        {element}
-                      </BreadcrumbEntry>
-                    }
-                  />
-                );
-              })}
-            </Routes>
-          </PageLayout>
-        );
-      };
-
-      yield coreExtensionData.reactElement(<PageContent />);
-    } else {
-      const PageContent = () => {
-        const routeResolutionApi = useApi(routeResolutionApiRef);
-        const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
-        const headerActionsApi = useApi(pluginHeaderActionsApiRef);
-        const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
-        return (
-          <PageLayout
-            title={resolvedTitle}
-            icon={resolvedIcon}
-            titleLink={titleLink}
-            headerActions={headerActions}
-          />
-        );
-      };
-      yield coreExtensionData.reactElement(<PageContent />);
+    if (translation) {
+      yield coreExtensionData.titleTranslation(translation);
     }
+    yield coreExtensionData.routePath(routePath);
+    yield coreExtensionData.reactElement(
+      createPageElement({
+        node,
+        resolvedTitle,
+        titleTranslation: translation,
+        resolvedIcon,
+        titleRouteRef,
+        pluginId,
+        noHeader,
+        loader: params.loader,
+        subPages,
+      }),
+    );
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);
     }
@@ -208,3 +350,71 @@ export const PageBlueprint = createExtensionBlueprint({
     }
   },
 });
+
+/**
+ * Reads the `pages` input into the shape the page itself works in.
+ *
+ * One pass serves both consumers: the page chrome (tabs) and content selection.
+ */
+function collectSubPages(
+  pages: readonly {
+    node: AppNode;
+    get(ref: any): any;
+  }[],
+): PageSubPage[] {
+  return pages.map(page => {
+    const path = page.get(coreExtensionData.routePath);
+    const label = page.get(coreExtensionData.title) || path;
+    return {
+      node: page.node,
+      path,
+      label,
+      titleTranslation: page.get(coreExtensionData.titleTranslation),
+      icon: page.get(coreExtensionData.icon),
+      element: page.get(coreExtensionData.reactElement),
+    };
+  });
+}
+
+function createPageElement(options: {
+  node: AppNode;
+  resolvedTitle: string;
+  titleTranslation?: TranslationRefTuple<undefined>;
+  resolvedIcon?: IconElement;
+  titleRouteRef?: RouteRef;
+  pluginId: string;
+  noHeader: boolean;
+  loader?: () => Promise<JSX.Element>;
+  subPages: readonly PageSubPage[];
+}): JSX.Element {
+  const {
+    node,
+    resolvedTitle,
+    titleTranslation,
+    resolvedIcon,
+    titleRouteRef,
+    pluginId,
+    noHeader,
+    loader,
+    subPages,
+  } = options;
+
+  const Content = loader
+    ? lazy(() => loader().then(element => ({ default: () => element })))
+    : undefined;
+
+  return (
+    <PluginPageShell
+      node={node}
+      title={resolvedTitle}
+      titleTranslation={titleTranslation}
+      icon={resolvedIcon}
+      noHeader={noHeader}
+      subPages={subPages}
+      titleRouteRef={titleRouteRef}
+      pluginId={pluginId}
+    >
+      {Content && <Content />}
+    </PluginPageShell>
+  );
+}

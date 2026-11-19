@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { withBaseUrl } from '../system/withBaseUrl';
 import { createConnectionType } from '../system/createConnectionType';
 import { z } from 'zod/v4';
 
@@ -20,10 +21,11 @@ import { z } from 'zod/v4';
 export const AwsCodeCommitConnectionType = createConnectionType({
   type: 'aws-codecommit',
   title: 'AWS CodeCommit',
-  configSchema: z.object({
-    host: z.string(),
-    region: z.string(),
-  }),
+  ...withBaseUrl(
+    z.object({
+      region: z.string(),
+    }),
+  ),
   authMethods: [
     {
       method: 'accessKey',

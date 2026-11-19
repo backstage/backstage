@@ -18,6 +18,10 @@ import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import { ReactNode } from 'react';
 
+/**
+ * @deprecated Use the replacement described in {@link SubvalueCell} instead.
+ * BUI components use their own props and styling contracts.
+ */
 export type SubvalueCellClassKey = 'value' | 'subvalue';
 
 const useSubvalueCellStyles = makeStyles(
@@ -38,6 +42,12 @@ type SubvalueCellProps = {
   subvalue: ReactNode;
 };
 
+/**
+ * @deprecated Use `CellText` from `@backstage/ui` in a BUI table instead,
+ * with string `title` and `description` props. It renders a complete table
+ * cell, rather than content for an existing cell. For custom React content,
+ * compose BUI `Cell` and `Text` instead.
+ */
 export function SubvalueCell(props: SubvalueCellProps) {
   const { value, subvalue } = props;
   const classes = useSubvalueCellStyles();

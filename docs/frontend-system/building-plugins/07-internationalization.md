@@ -211,15 +211,26 @@ const catalogTranslations = TranslationBlueprint.make({
 });
 ```
 
-Then install it as a feature in your app:
+Register the extension in an app module, then add the module to your app's existing features:
 
 ```ts
 import { createApp } from '@backstage/frontend-defaults';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+
+const appModuleTranslations = createFrontendModule({
+  pluginId: 'app',
+  extensions: [catalogTranslations],
+});
 
 const app = createApp({
-  features: [catalogTranslations],
+  features: [
+    // ...your existing features
+    appModuleTranslations,
+  ],
 });
 ```
+
+The examples in this guide define modules inline for simplicity. You can also place a frontend module in a separate package in your workspace.
 
 You only need to include the keys you want to override — any missing keys fall back to the plugin's defaults.
 
@@ -283,13 +294,22 @@ export default {
 };
 ```
 
-Install the translation extension in your app:
+Register the translation extension in an app module. If you already have an app module for translations, add it to that module's `extensions` array instead:
 
 ```ts
 import { createApp } from '@backstage/frontend-defaults';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+
+const appModuleTranslations = createFrontendModule({
+  pluginId: 'app',
+  extensions: [userSettingsTranslations],
+});
 
 const app = createApp({
-  features: [userSettingsTranslations],
+  features: [
+    // ...your existing features
+    appModuleTranslations,
+  ],
 });
 ```
 
@@ -311,6 +331,91 @@ app:
 The `availableLanguages` array controls which languages appear as options in the Settings page. The `defaultLanguage` sets the language used before the user makes a selection, and defaults to `en` if not specified. If you configure `availableLanguages`, the `defaultLanguage` must be one of those entries — if you omit `defaultLanguage`, make sure `en` is included in `availableLanguages`, otherwise the app can fail to start.
 
 Go to the Settings page — you should see a language select dropdown. Switch languages to verify your translations are loaded correctly.
+
+### Translating page titles
+
+Page and sub-page blueprints accept either a plain title string or a message
+reference. To enable a translated title, select a message from your plugin's
+existing translation ref:
+
+```tsx
+PageBlueprint.make({
+  params: {
+    path: '/my-plugin',
+    title: myPluginTranslationRef('indexPage.title'),
+    loader: () => import('./MyPage').then(m => <m.MyPage />),
+  },
+});
+```
+
+`SubPageBlueprint` accepts the same title form for its tab and breadcrumb label.
+`EntityContentBlueprint` from `@backstage/plugin-catalog-react/alpha` also accepts
+message references for entity content titles:
+
+```tsx
+EntityContentBlueprint.make({
+  name: 'overview',
+  params: {
+    path: '/overview',
+    title: myPluginTranslationRef('entityPage.overview'),
+    loader: () => import('./EntityOverview').then(m => <m.EntityOverview />),
+  },
+});
+```
+
+Both catalog entity page layouts update tab labels, grouped tab ordering, and the
+active content's document title when the language changes, preserving mounted
+content and form state.
+
+Install translations using the existing `TranslationBlueprint` and translation
+resources described above. No additional title bundles or APIs are required.
+Existing string title parameters keep their behavior.
+
+Translated title groups wait until their selected-language resources are ready
+before first rendering, showing the app's loading indicator in the meantime.
+Their resolved values take precedence over configured and plain titles, including
+when the translation API resolves to a default-language message for a missing
+translation. Existing language fallbacks remain unchanged.
+During later language changes, each group updates together once all of its
+translation resources are ready. Until then, the previous resolved titles remain
+visible without remounting page content. Hidden entity tabs and pages excluded
+from navigation do not delay the corresponding visible titles.
+
+If a title resource fails to load, previously resolved titles remain visible.
+A group without resolved titles uses the translation API's available fallback
+messages instead. Failures are reported without replacing the page or navigation
+with an error screen. Selecting another language resumes normal loading.
+
+When an entity refresh changes the available tabs, existing visible tabs keep
+their resolved titles and form state. Newly visible translated tabs wait until
+the replacement title group is ready. Opening a pending tab directly shows the
+loading indicator until that group is ready.
+
+TypeScript checks the selected key and rejects title messages that require
+replacement values or a plural count. Nested messages are supported when none
+of the referenced messages require values.
+
+### Consuming title translations
+
+Extensions can provide `coreExtensionData.titleTranslation` alongside their static
+title. It contains a `TranslationRefTuple<undefined>` with a `ref` and `key`,
+selecting a message that needs no formatting values.
+
+To render the translated title in React, pass the ref to `useTranslationRef` and
+translate the selected key. The hook uses the app translation API and waits for
+the selected language's resources:
+
+```tsx
+import {
+  TranslationRefTuple,
+  useTranslationRef,
+} from '@backstage/frontend-plugin-api';
+
+function TranslatedTitle({ title }: { title: TranslationRefTuple<undefined> }) {
+  const { t } = useTranslationRef(title.ref);
+  return <>{t(title.key)}</>;
+}
+```
 
 ### Using the CLI for full translation workflows
 
@@ -364,7 +469,7 @@ Once you have translated files in place, run:
 yarn backstage-cli translations import
 ```
 
-This generates a TypeScript module at `src/translations/resources.ts` that wires everything together:
+This generates a TypeScript module at `src/translations/resources.ts` that exports an array of translation resources with lazy-loaded message files:
 
 ```ts
 // This file is auto-generated by backstage-cli translations import
@@ -383,16 +488,35 @@ export default [
 ];
 ```
 
-Install the generated resources as features in your app:
+Create a `TranslationBlueprint` extension for each resource and register the extensions in a module for the `app` plugin. Use each resource's `id` as its extension name so the names are unique within the module:
 
 ```ts
 import { createApp } from '@backstage/frontend-defaults';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { TranslationBlueprint } from '@backstage/plugin-app-react';
 import translationResources from './translations/resources';
 
+const appModuleTranslations = createFrontendModule({
+  pluginId: 'app',
+  extensions: translationResources.map(resource =>
+    TranslationBlueprint.make({
+      name: resource.id,
+      params: { resource },
+    }),
+  ),
+});
+
 const app = createApp({
-  features: translationResources,
+  features: [
+    // ...your existing features
+    appModuleTranslations,
+  ],
 });
 ```
+
+Keep this registration outside the generated file so it is preserved when you rerun `translations import`.
+
+To make the imported languages selectable, also [declare the available languages](#declaring-available-languages).
 
 #### Custom file patterns
 

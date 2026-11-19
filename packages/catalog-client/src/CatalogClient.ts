@@ -244,6 +244,8 @@ export class CatalogClient implements CatalogApi {
     // query-parameter behavior for backward compatibility.
     let filterPredicate: FilterPredicate | undefined;
     if (query !== undefined) {
+      // The types forbid primitives at the root, but callers that were built
+      // against older versions of the filter predicate types may still pass them
       if (typeof query !== 'object' || query === null || Array.isArray(query)) {
         throw new InputError('Query must be an object');
       }
@@ -398,6 +400,8 @@ export class CatalogClient implements CatalogApi {
 
       let filterPredicate: FilterPredicate | undefined;
       if (query !== undefined) {
+        // The types forbid primitives at the root, but callers that were built
+        // against older versions of the filter predicate types may still pass them
         if (
           typeof query !== 'object' ||
           query === null ||
@@ -545,6 +549,8 @@ export class CatalogClient implements CatalogApi {
 
     let filterPredicate: FilterPredicate | undefined;
     if (query !== undefined) {
+      // The types forbid primitives at the root, but callers that were built
+      // against older versions of the filter predicate types may still pass them
       if (typeof query !== 'object' || query === null || Array.isArray(query)) {
         throw new InputError('Query must be an object');
       }

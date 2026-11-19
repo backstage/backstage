@@ -20,6 +20,7 @@ import { rspack, Configuration } from '@rspack/core';
 
 import { BundlingPaths } from './paths';
 import { Config } from '@backstage/config';
+import browserslist from 'browserslist';
 import ESLintRspackPlugin from 'eslint-rspack-plugin';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -139,20 +140,24 @@ export async function createConfig(
       options.moduleFederationRemote,
     );
 
-    const refreshOptions = {
-      overlay: {
-        sockProtocol: 'ws',
-        sockHost: host,
-        sockPort: port,
-      },
-    } as const;
-
     if (webpack) {
       const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-      plugins.push(new ReactRefreshPlugin(refreshOptions));
+      plugins.push(
+        new ReactRefreshPlugin({
+          overlay: {
+            sockProtocol: 'ws',
+            sockHost: host,
+            sockPort: port,
+          },
+        }),
+      );
     } else {
-      const RspackReactRefreshPlugin = require('@rspack/plugin-react-refresh');
-      plugins.push(new RspackReactRefreshPlugin(refreshOptions));
+      // The plugin is a named export, and unlike the WebPack one above it
+      // takes no overlay options.
+      const {
+        ReactRefreshRspackPlugin,
+      } = require('@rspack/plugin-react-refresh');
+      plugins.push(new ReactRefreshRspackPlugin());
     }
   }
 
@@ -313,9 +318,32 @@ export async function createConfig(
   const mode = isDev ? 'development' : 'production';
   const optimization = optimizationConfig(options);
 
+  // WebPack takes this under `experiments`, Rspack at the top level, and each
+  // rejects the other's shape. The config is typed with Rspack's types, hence
+  // the cast for WebPack.
+  const lazyCompilation = yn(process.env.EXPERIMENTAL_LAZY_COMPILATION);
+  const lazyCompilationConfig = webpack
+    ? ({ experiments: { lazyCompilation } } as Configuration)
+    : // Rspack's client sends its requests to the page's origin, which for a
+      // module federation remote is the host app, so remotes don't use it.
+      { lazyCompilation: lazyCompilation && !moduleFederationRemote };
+
+  // Rspack targets the app's browserslist config when there is one, and picks
+  // its environment by NODE_ENV, which can change during the process, for
+  // example when postcss-load-config sets it in package builds. Name the
+  // environment for production builds, so they always minify JavaScript and
+  // CSS for the same browsers.
+  const browserslistTarget =
+    !isDev && !webpack && browserslist.findConfig(paths.targetPath)
+      ? {
+          target: `browserslist:${
+            process.env.BROWSERSLIST_ENV || 'production'
+          }` as const,
+        }
+      : {};
+
   return {
     mode,
-    profile: false,
     ...(isDev
       ? {
           watchOptions: {
@@ -330,6 +358,7 @@ export async function createConfig(
     },
     devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
+    ...browserslistTarget,
     entry: [
       /* eslint-disable-next-line no-restricted-syntax */
       findOwnPaths(__dirname).resolve('config/webpack-public-path'),
@@ -340,6 +369,9 @@ export async function createConfig(
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
       mainFields: ['browser', 'module', 'main'],
+      // Rspack defaults this to an empty list, which stops root-absolute
+      // imports from resolving. The value matches WebPack's own default.
+      roots: [paths.targetPath],
       fallback: {
         ...pickBy(require('node-stdlib-browser')),
         module: false,
@@ -369,6 +401,17 @@ export async function createConfig(
     },
     module: {
       rules: loaders,
+      // Pinned, as the Rspack defaults fail the build on otherwise valid app
+      // code: `exportsPresence` errors on missing exports, and renamed
+      // `require` calls are left unbundled. WebPack has no `requireAlias`.
+      ...(!webpack && {
+        parser: {
+          javascript: {
+            exportsPresence: 'auto' as const,
+            requireAlias: true,
+          },
+        },
+      }),
     },
     output: {
       uniqueName: options.moduleFederationRemote?.name,
@@ -390,13 +433,7 @@ export async function createConfig(
           }
         : {}),
     },
-    experiments: {
-      lazyCompilation: yn(process.env.EXPERIMENTAL_LAZY_COMPILATION),
-      ...(!webpack && {
-        // We're still using `style-loader` for custom `insert` option
-        css: false,
-      }),
-    },
+    ...lazyCompilationConfig,
     plugins,
     ignoreWarnings: [
       // @protobufjs/inquire uses require(moduleName) with a dynamic argument.

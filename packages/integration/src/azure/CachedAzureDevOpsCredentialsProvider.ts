@@ -16,6 +16,7 @@
 import { AzureDevOpsCredential, PersonalAccessTokenCredential } from './config';
 import {
   ClientAssertionCredential,
+  ClientCertificateCredential,
   ClientSecretCredential,
   ManagedIdentityCredential,
   TokenCredential,
@@ -60,6 +61,21 @@ export class CachedAzureDevOpsCredentialsProvider
             credential.clientId,
             credential.clientSecret,
           ),
+        );
+
+      case 'ClientCertificate':
+        return CachedAzureDevOpsCredentialsProvider.fromTokenCredential(
+          credential.clientCertificate !== undefined
+            ? new ClientCertificateCredential(
+                credential.tenantId,
+                credential.clientId,
+                { certificate: credential.clientCertificate },
+              )
+            : new ClientCertificateCredential(
+                credential.tenantId,
+                credential.clientId,
+                { certificatePath: credential.clientCertificatePath! },
+              ),
         );
 
       case 'ManagedIdentityClientAssertion': {

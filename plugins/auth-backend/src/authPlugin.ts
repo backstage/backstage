@@ -70,6 +70,7 @@ export const authPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
+        auditor: coreServices.auditor,
         lifecycle: coreServices.lifecycle,
         catalog: catalogServiceRef,
         actionsRegistry: actionsRegistryServiceRef,
@@ -83,6 +84,7 @@ export const authPlugin = createBackendPlugin({
         discovery,
         auth,
         httpAuth,
+        auditor,
         lifecycle,
         catalog,
         actionsRegistry,
@@ -113,6 +115,7 @@ export const authPlugin = createBackendPlugin({
           providerFactories: Object.fromEntries(providers),
           ownershipResolver,
           httpAuth,
+          auditor,
           offlineAccess,
         });
         httpRouter.addAuthPolicy({

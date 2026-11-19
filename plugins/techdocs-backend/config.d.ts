@@ -63,7 +63,8 @@ export interface Config {
       defaultEngine?: string;
 
       /**
-       * Override behavior specific to mkdocs.
+       * Override behavior for mkdocs.yml-based builds. Unless noted otherwise,
+       * these settings apply to the MkDocs engine only.
        */
       mkdocs?: {
         /**
@@ -72,6 +73,8 @@ export interface Config {
          * or README.md in case a default <docs-dir>/index.md is not provided.
          * Note that https://www.mkdocs.org/user-guide/configuration/#edit_uri behavior
          * will be broken in these scenarios.
+         *
+         * Also applies to the Zensical engine.
          */
         legacyCopyReadmeMdToIndexMd?: boolean;
 
@@ -88,6 +91,9 @@ export interface Config {
          * 'hooks' key allows running arbitrary Python code during documentation generation.
          * Only use this in trusted environments where all mkdocs.yml files are audited.
          *
+         * Also applies to the Zensical engine, which reads the same mkdocs.yml, so
+         * this configuration will affect both.
+         *
          * @see https://www.mkdocs.org/user-guide/configuration/#hooks
          */
         dangerouslyAllowAdditionalKeys?: string[];
@@ -101,8 +107,27 @@ export interface Config {
          * arbitrary code during documentation generation. Only allow plugins that
          * have been audited for use in your environment, including the configuration
          * options that documentation authors can supply.
+         *
+         * Also applies to the Zensical engine, which reads the same mkdocs.yml, so
+         * this configuration will affect both.
          */
         dangerouslyAllowAdditionalPlugins?: string[];
+
+        /**
+         * List of additional MkDocs markdown extensions to allow beyond the
+         * default set. Extensions not in this list or the default set will
+         * be removed from mkdocs.yml before documentation generation.
+         *
+         * WARNING: Some markdown extensions execute code or load files from
+         * the documentation input directory during documentation generation.
+         * Only allow extensions that have been audited for use in your
+         * environment, including the configuration options that documentation
+         * authors can supply.
+         *
+         * Also applies to the Zensical engine, which reads the same mkdocs.yml,
+         * so this configuration will affect both.
+         */
+        dangerouslyAllowAdditionalExtensions?: string[];
 
         /**
          * Disable external fonts for all TechDocs sites.

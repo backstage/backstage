@@ -1,7 +1,3 @@
----
-alwaysApply: true
----
-
 Backstage is an open platform for building developer portals. This is a TypeScript monorepo using Yarn workspaces.
 
 ## Key Directories
@@ -18,6 +14,8 @@ Packages prefixed with `core-` (e.g., `@backstage/core-plugin-api`) are part of 
 ## Writing Standards
 
 Changes to the docs should follow the documentation style guide at `/docs/contribute/doc-style-guide.md`.
+
+Write documentation, including `/docs` and root and package READMEs, for its intended audience. Focus on public behavior, APIs, configuration, usage, concepts, and rationale relevant to that reader. Avoid narrating internal code mechanics, transient implementation choices, or how a particular change was implemented. Keep useful implementation-specific explanations close to the code, such as in comments. Include implementation details in architecture or contributor documentation when they help the intended reader understand or work on the system.
 
 ## Code Standards
 
@@ -60,6 +58,8 @@ Each changeset message should be relevant to every package it names and written 
 
 Changes that introduce new features or modify existing behavior must include documentation updates. Documentation should be placed in [TSDoc](https://tsdoc.org) comments, the package README, or within the `/docs` folder, whichever is most appropriate. Documentation should follow the style guide at `/docs/contribute/doc-style-guide.md`.
 
+Core feature concepts, usage and configuration guides, and behavior spanning multiple packages should generally live in the appropriate `/docs` section, such as `/docs/features`, `/docs/frontend-system`, `/docs/backend-system`, or `/docs/conf`. Keep package READMEs focused on package-specific overviews and setup information, linking to canonical documentation rather than duplicating these guides.
+
 Before creating a pull request, check whether there is already an open PR for the same change to avoid duplicating effort.
 
 When creating pull requests, use the template at `/.github/PULL_REQUEST_TEMPLATE.md`. Do NOT erase or replace the template — fill it in and only check items on the checklist that have actually been completed. PR descriptions should be short and concise. If there are extensive details to share (design rationale, migration context, investigation notes), suggest opening a GitHub issue and linking to it from the PR instead. If the PR is related to an existing issue, link to it in the PR description.
@@ -71,3 +71,9 @@ Never make changes to the release notes in `/docs/releases` unless explicitly as
 ## Repository Structure
 
 See `/docs/contribute/project-structure.md` for a detailed description of the repository structure.
+
+## Skills
+
+Agent skills live in `/.agents/skills` (also linked as `/.claude/skills`), each in a `<name>/SKILL.md` file. Only the skills listed in `/.agents/skills/index.json` are published to adopters. See `/docs/ai/skills.md` before adding or changing a skill.
+
+Update a skill only when it misled you during the task: its guidance was wrong, out of date, or missed a trap you hit, and you confirmed the correct behavior. Keep the fix to the smallest change that would have prevented the mistake, and mention it in the pull request description. Don't add notes about the task itself, restate what the docs already cover, or touch skills that worked as written.

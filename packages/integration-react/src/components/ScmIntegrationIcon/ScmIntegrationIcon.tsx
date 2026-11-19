@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import CodeIcon from '@material-ui/icons/Code';
+import { RiCodeLine } from '@remixicon/react';
 import { useApp } from '@backstage/core-plugin-api';
 
 /**
@@ -30,13 +30,14 @@ export type ScmIntegrationIconProps = {
 
 /**
  * An icon that represents a certain SCM integration.
+ * Uses the app's registered system icon for the integration type, or a generic
+ * code icon when no matching icon is registered.
  *
  * @public
  */
 export const ScmIntegrationIcon = (props: ScmIntegrationIconProps) => {
   const { type } = props;
   const app = useApp();
-  const DefaultIcon = CodeIcon;
-  const Icon = type ? app.getSystemIcon(type) ?? DefaultIcon : DefaultIcon;
+  const Icon = (type ? app.getSystemIcon(type) : undefined) ?? RiCodeLine;
   return <Icon />;
 };

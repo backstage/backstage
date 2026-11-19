@@ -1,0 +1,47 @@
+{
+  "skills": [
+    {
+      "name": "mui-to-bui-migration",
+      "description": "Migrate Material-UI (MUI) to Backstage UI (BUI) with a codemod or standalone guidance. Use this skill when migrating MUI components and styles, running `@backstage/mui4-to-bui-migration-recipe`, or resolving `TODO(backstage-codemod)` comments after a BUI migration.",
+      "files": [
+        "SKILL.md",
+        "references/standalone-migration.md",
+        "references/out-of-scope.md",
+        "references/leftover-cleanup.md"
+      ]
+    },
+    {
+      "name": "new-frontend-system-migration",
+      "description": "Migrate a Backstage app, its frontend plugins, or both from the old frontend system to the new one. Use this skill when moving an app to the new `createApp`, adding new frontend system support to a plugin while keeping the old system working, or moving a plugin to the new frontend system entirely.",
+      "files": ["SKILL.md", "references/app.md", "references/plugin.md"]
+    },
+    {
+      "name": "frontend-plugin-development",
+      "description": "Reference for building, wiring, running, and testing Backstage frontend plugins on the new frontend system. Use this skill when writing or changing a plugin built with `createFrontendPlugin`, adding entity page content, setting up a plugin's dev app or tests, wiring a plugin into an app, or debugging why a plugin, page, tab, API, or feature flag does not show up or fails at startup.",
+      "files": [
+        "SKILL.md",
+        "references/plugin-packaging.md",
+        "references/app-integration.md",
+        "references/entity-content.md",
+        "references/dev-app.md",
+        "references/testing.md",
+        "references/troubleshooting.md"
+      ]
+    },
+    {
+      "name": "plugin-analytics-instrumentation",
+      "description": "Instrument a Backstage frontend plugin with analytics events using the Backstage Analytics API. Use this skill when adding, reviewing, or extending event capture (`captureEvent`, `AnalyticsContext`) in plugin components, deciding whether an interaction warrants an event, or writing tests for analytics behavior.",
+      "files": ["SKILL.md"]
+    },
+    {
+      "name": "onboard-to-openapi-server",
+      "description": "Migrate a Backstage backend plugin's hand-written Express router to the typed OpenAPI tooling, and optionally generate a typed client and validate router tests against the spec. Use this skill when moving a backend plugin to `createOpenApiRouter` or adding an OpenAPI spec to an existing router.",
+      "files": ["SKILL.md"]
+    },
+    {
+      "name": "backend-plugin-development",
+      "description": "Reference for developing Backstage backend plugins and modules on the new backend system. Use this skill when writing or changing tests for a backend plugin, module, service, or router, including mocking core services and credentials and testing against real databases, caches, the filesystem, or remote services.",
+      "files": ["SKILL.md", "references/testing.md"]
+    }
+  ]
+}

@@ -140,7 +140,7 @@ describe('parseEntityQuery', () => {
 
     it('throws when query root is not an object', () => {
       expect(() => parseEntityQuery({ query: 'bad' as any })).toThrow(
-        /Query must be an object/,
+        /Invalid query/,
       );
     });
 

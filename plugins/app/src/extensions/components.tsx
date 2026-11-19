@@ -20,6 +20,7 @@ import {
   PageLayout as SwappablePageLayout,
   type PageLayoutProps,
 } from '@backstage/frontend-plugin-api';
+import { useRouteMatches, normalizeBasePath } from '@internal/frontend';
 import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import {
   ErrorPage,
@@ -30,10 +31,10 @@ import {
   BreadcrumbEntry,
   useBreadcrumbEntries,
 } from '@backstage/frontend-plugin-api';
+
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 import { useMemo } from 'react';
-import { useResolvedPath } from 'react-router-dom';
 
 export const Progress = SwappableComponentBlueprint.make({
   name: 'core-progress',
@@ -61,7 +62,7 @@ export const ErrorDisplay = SwappableComponentBlueprint.make({
       component: SwappableErrorDisplay,
       loader: () => props => {
         const { plugin, error, resetError } = props;
-        const title = `Error in ${plugin?.id}`;
+        const title = `Error in ${plugin?.pluginId}`;
         return (
           <ErrorPanel title={title} error={error} defaultExpanded>
             <Button variant="outlined" onClick={resetError}>
@@ -88,18 +89,22 @@ export const PageLayout = SwappableComponentBlueprint.make({
           tabs,
           children,
         } = props;
-        // TODO(Rugvip): Different solution to this path handling would be good
-        const parentPath = useResolvedPath('.').pathname.replace(/\/$/, '');
-        const resolvedTabs = useMemo(
+        // Breadcrumbs fall back to the framework-owned page mount.
+        const pageMount = useRouteMatches().at(-1);
+        const parentPath = normalizeBasePath(pageMount?.basePath ?? '');
+        // Empty string titleLink is treated as unset (same as undefined) so the
+        // breadcrumb still points at the page mount path rather than "".
+        const breadcrumbHref =
+          titleLink !== undefined && titleLink !== ''
+            ? titleLink
+            : parentPath || '/';
+        const headerTabs = useMemo(
           () =>
             tabs?.map(tab => ({
               ...tab,
-              href: tab.href.startsWith('/')
-                ? tab.href
-                : `${parentPath}/${tab.href}`.replace(/\/{2,}/g, '/'),
               matchStrategy: 'prefix' as const,
             })),
-          [tabs, parentPath],
+          [tabs],
         );
 
         const { items: breadcrumbs } = useBreadcrumbEntries();
@@ -108,30 +113,19 @@ export const PageLayout = SwappableComponentBlueprint.make({
           return <>{children}</>;
         }
 
-        const content = (
-          <>
+        return (
+          <BreadcrumbEntry
+            entry={title ? { label: title, href: breadcrumbHref } : undefined}
+          >
             <PluginHeader
               title={title}
               icon={icon}
               titleLink={titleLink}
               breadcrumbs={breadcrumbs}
-              tabs={resolvedTabs}
+              tabs={headerTabs}
               customActions={headerActions}
             />
             {children}
-          </>
-        );
-
-        // in practice title is always provided by PageBlueprint (falls back to pluginId).
-        if (!title) {
-          return content;
-        }
-
-        return (
-          <BreadcrumbEntry
-            entry={{ label: title, href: titleLink ?? (parentPath || '/') }}
-          >
-            {content}
           </BreadcrumbEntry>
         );
       },

@@ -1655,6 +1655,144 @@ markdown_extensions:
       );
     });
 
+    it('should remove markdown extensions that are not allowed by name', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - zensical.extensions.links
+  - zensical.extensions.macros
+  - some.unknown.extension
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Array<string | Record<string, unknown>>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual([
+        'admonition',
+        'pymdownx.superfences',
+        'zensical.extensions.links',
+      ]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('zensical.extensions.macros'),
+      );
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('some.unknown.extension'),
+      );
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('dangerouslyAllowAdditionalExtensions'),
+      );
+    });
+
+    it('should remove disallowed extension names in the mapping form', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  admonition: {}
+  zensical.extensions.links: {}
+  zensical.extensions.macros:
+    render_by_default: true
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Record<string, unknown>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual({
+        admonition: {},
+        'zensical.extensions.links': {},
+      });
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('zensical.extensions.macros'),
+      );
+    });
+
+    it('should allow additional markdown extensions when configured', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - zensical.extensions.macros
+`,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs.yml'),
+        mockLogger,
+        undefined,
+        undefined,
+        ['zensical.extensions.macros'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Array<string>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual([
+        'zensical.extensions.macros',
+      ]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'DANGEROUS: Allowing additional MkDocs markdown extensions',
+        ),
+      );
+    });
+
+    it('should allow built-in extensions written with their full module path', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - markdown.extensions.admonition
+  - markdown.extensions.notarealextension
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Array<string | Record<string, unknown>>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual([
+        'markdown.extensions.admonition',
+      ]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('markdown.extensions.notarealextension'),
+      );
+    });
+
+    it('should allow built-in extensions with full module paths in the mapping form', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  markdown.extensions.toc:
+    permalink: true
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Record<string, unknown>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual({
+        'markdown.extensions.toc': { permalink: true },
+      });
+    });
+
     it('should remove dynamically configured extension declarations', async () => {
       mockDir.setContent({
         'mkdocs.yml': `site_name: Test
@@ -1898,7 +2036,7 @@ markdown_extensions:
 
       expect(warn).toHaveBeenCalledWith(
         expect.stringContaining(
-          'Removed the following dangerous entries from markdown_extensions in mkdocs.yml: plantuml_cmd',
+          'Removed the following dangerous or unsupported entries from markdown_extensions in mkdocs.yml: plantuml_cmd',
         ),
       );
     });

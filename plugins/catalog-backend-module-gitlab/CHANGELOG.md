@@ -1,5 +1,78 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.8.11
+
+### Patch Changes
+
+- d586214: GitLab discovery entity provider: catalog locations and refresh keys resulting from push events are now derived from the project record fetched from the GitLab API, instead of fields of the event payload. Committed file paths that do not resolve within the project itself are ignored.
+- ca14116: Moved `@gitbeaker/rest` to dev dependencies, since it is only used for types.
+- Updated dependencies
+  - @backstage/backend-defaults@0.19.0
+  - @backstage/integration@2.2.0
+  - @backstage/backend-plugin-api@1.12.0
+  - @backstage/errors@1.4.0
+  - @backstage/plugin-events-node@0.5.0
+  - @backstage/catalog-model@1.10.3
+  - @backstage/config@1.3.11
+  - @backstage/plugin-catalog-common@1.2.2
+  - @backstage/plugin-catalog-node@3.0.0
+
+## 0.8.11-next.2
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
+## 0.8.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.19.0-next.2
+  - @backstage/backend-plugin-api@1.12.0-next.1
+  - @backstage/errors@1.4.0-next.0
+  - @backstage/integration@2.1.4-next.0
+  - @backstage/plugin-catalog-node@3.0.0-next.2
+  - @backstage/plugin-events-node@0.5.0-next.2
+  - @backstage/catalog-model@1.10.3-next.0
+  - @backstage/config@1.3.11-next.0
+  - @backstage/plugin-catalog-common@1.2.2-next.0
+
+## 0.8.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.2-next.1
+  - @backstage/plugin-events-node@0.5.0-next.1
+  - @backstage/plugin-catalog-node@2.2.7-next.1
+
+## 0.8.10-next.0
+
+### Patch Changes
+
+- ca14116: Moved `@gitbeaker/rest` to dev dependencies, since it is only used for types.
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.2-next.0
+  - @backstage/backend-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-node@2.2.7-next.0
+  - @backstage/plugin-events-node@0.4.28-next.0
+
+## 0.8.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3
+  - @backstage/backend-plugin-api@1.11.0
+  - @backstage/backend-defaults@0.18.1
+  - @backstage/config@1.3.10
+  - @backstage/errors@1.3.2
+  - @backstage/catalog-model@1.10.2
+  - @backstage/plugin-catalog-common@1.2.1
+  - @backstage/plugin-catalog-node@2.2.6
+  - @backstage/plugin-events-node@0.4.27
+
 ## 0.8.9-next.1
 
 ### Patch Changes

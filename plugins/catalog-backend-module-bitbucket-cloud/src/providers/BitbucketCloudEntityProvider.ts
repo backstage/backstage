@@ -28,6 +28,7 @@ import {
 } from '@backstage/integration';
 import {
   BitbucketCloudClient,
+  CodeSearch,
   Events,
   Models,
 } from '@backstage/plugin-bitbucket-cloud-common';
@@ -49,6 +50,8 @@ import { randomUUID } from 'node:crypto';
 const DEFAULT_BRANCH = 'master';
 const TOPIC_REPO_PUSH = 'bitbucketCloud.repo:push';
 const TOPIC_REPO_UPDATED = 'bitbucketCloud.repo:updated';
+const CODE_SEARCH_RETRY_INTERVAL_MS = 60 * 60 * 1000;
+const SOURCE_REPOSITORY_CONCURRENCY = 5;
 
 /** @public */
 export const ANNOTATION_BITBUCKET_CLOUD_REPO_URL = 'bitbucket.org/repo-url';
@@ -76,6 +79,8 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
   private readonly scheduleFn: () => Promise<void>;
 
   private connection?: EntityProviderConnection;
+  private codeSearchUnavailableUntil = 0;
+  private codeSearchUnavailableWarned = false;
 
   static fromConfig(
     config: Config,
@@ -361,78 +366,387 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
   private async findCatalogFiles(
     repoSlug?: string,
   ): Promise<IngestionTarget[]> {
-    const workspace = this.config.workspace;
-    const catalogPath = this.config.catalogPath;
-
-    const catalogFilename = catalogPath.substring(
-      catalogPath.lastIndexOf('/') + 1,
+    // The code search results do not hold the main branch and the project of
+    // a repository. Load them from the repository list instead, and only
+    // search projects that still have a repository after `filters`.
+    const repositories = (await this.findRepositories(repoSlug)).filter(
+      repository => this.matchesFilters(repository),
     );
 
-    const optRepoFilter = repoSlug ? ` repo:${repoSlug}` : '';
-    const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
+    // A rejected workspace search stays rejected for the cooldown. Scheduled
+    // refreshes and repo:push / repo:updated events skip the failing request.
+    if (Date.now() < this.codeSearchUnavailableUntil) {
+      return this.findCatalogFilesBySource(repositories);
+    }
 
-    if (repoSlug) return this.processQuery(workspace, query);
+    try {
+      const targets = await this.findCatalogFilesByCodeSearch(
+        repositories,
+        repoSlug,
+      );
+      this.codeSearchUnavailableUntil = 0;
+      this.codeSearchUnavailableWarned = false;
+      return targets;
+    } catch (error) {
+      // Code search answers 403 for credentials that do not identify a user
+      // (the OAuth consumer from bitbucket.org/site/oauth2, app passwords,
+      // API keys, and an API token without read:workspace:bitbucket), 404
+      // when the feature is disabled, and 410 when the endpoint is gone.
+      // Those credentials can still read source files.
+      if (!isUnavailableCodeSearch(error)) {
+        throw error;
+      }
+      this.codeSearchUnavailableUntil =
+        Date.now() + CODE_SEARCH_RETRY_INTERVAL_MS;
+      // 403 is a credential or missing-scope rejection. 404 and 410 mean code
+      // search is disabled or removed, and adding a scope does not enable it.
+      const message =
+        error.status === 403
+          ? 'Workspace code search answered 403; falling back to the source API. Use an API token with the read:workspace:bitbucket scope for faster discovery.'
+          : `Workspace code search answered ${error.status}; falling back to the source API.`;
+      if (this.codeSearchUnavailableWarned) {
+        this.logger.debug(message);
+      } else {
+        this.logger.warn(message);
+        this.codeSearchUnavailableWarned = true;
+      }
+      return this.findCatalogFilesBySource(repositories);
+    }
+  }
 
-    const projects = this.client
-      .listProjectsByWorkspace(workspace)
-      .iterateResults();
+  private async findCatalogFilesByCodeSearch(
+    repositories: Models.Repository[],
+    repoSlug?: string,
+  ): Promise<IngestionTarget[]> {
+    const workspace = this.config.workspace;
+    const repositoriesByProject = new Map<string, Models.Repository[]>();
+    for (const repository of repositories) {
+      const projectKey = repository.project!.key!;
+      const projectRepositories = repositoriesByProject.get(projectKey) ?? [];
+      projectRepositories.push(repository);
+      repositoriesByProject.set(projectKey, projectRepositories);
+    }
+
+    const pathFilter = BitbucketCloudEntityProvider.toPathFilter(
+      this.config.catalogPath,
+    );
 
     let results: IngestionTarget[] = [];
-
-    for await (const project of projects) {
-      const projectQuery = `${query} project:${project.key}`;
-      const result = await this.processQuery(workspace, projectQuery);
+    for (const [projectKey, projectRepositories] of repositoriesByProject) {
+      const scopeFilter: CodeSearch.Filter = repoSlug
+        ? { attribute: 'repository', eq: repoSlug }
+        : { attribute: 'project', eq: projectKey };
+      const result = await this.processQuery(
+        workspace,
+        { and: [pathFilter, scopeFilter] },
+        projectRepositories,
+      );
       results = results.concat(result);
     }
 
     return results;
   }
 
-  private async processQuery(
-    workspace: string,
-    query: string,
+  private async findCatalogFilesBySource(
+    repositories: Models.Repository[],
   ): Promise<IngestionTarget[]> {
-    // load all fields relevant for creating refs later, but not more
-    const fields = [
-      // exclude code/content match details
-      '-values.content_matches',
-      // include/add relevant repository details
-      '+values.file.commit.repository.mainbranch.name',
-      '+values.file.commit.repository.project.key',
-      '+values.file.commit.repository.slug',
-      // remove irrelevant links
-      '-values.*.links',
-      '-values.*.*.links',
-      '-values.*.*.*.links',
-      // ...except the one we need
-      '+values.file.commit.repository.links.html.href',
-    ].join(',');
+    const pattern = BitbucketCloudEntityProvider.toPathPattern(
+      this.config.catalogPath,
+    );
+    const exactFile = BitbucketCloudEntityProvider.toExactSourcePath(
+      this.config.catalogPath,
+    );
+    const located = await mapWithConcurrency(
+      repositories,
+      SOURCE_REPOSITORY_CONCURRENCY,
+      repository =>
+        this.catalogTargetsInRepository(repository, pattern, exactFile),
+    );
+    return located.flat();
+  }
 
-    const searchResults = this.client
-      .searchCode(workspace, query, { fields }, this.config.pagelen)
-      .iterateResults();
+  private async catalogTargetsInRepository(
+    repository: Models.Repository,
+    pattern: RegExp,
+    exactFile: string | undefined,
+  ): Promise<IngestionTarget[]> {
+    const slug = repository.slug;
+    const repoUrl = repository.links?.html?.href;
+    if (!slug || !repoUrl) {
+      return [];
+    }
+    const commit = await this.resolveSourceCommit(repository, slug);
+    if (!commit) {
+      return [];
+    }
+    let paths: string[];
+    if (!exactFile) {
+      paths = await this.matchingSourcePaths(slug, commit, pattern);
+    } else if (
+      await this.client.repositorySourceFileExists(
+        this.config.workspace,
+        slug,
+        commit,
+        exactFile,
+      )
+    ) {
+      paths = [exactFile];
+    } else {
+      paths = [];
+    }
 
-    const result: IngestionTarget[] = [];
+    return paths.map(path => ({
+      fileUrl: BitbucketCloudEntityProvider.toUrl(repository, path),
+      repoUrl,
+    }));
+  }
 
-    for await (const searchResult of searchResults) {
-      // not a file match, but a code match
-      if (searchResult.path_matches!.length === 0) {
+  /**
+   * Commit to pass to `/src/{commit}`.
+   *
+   * A repository list that already has `mainbranch.target.hash` uses that
+   * hash. A branch name without `/` is itself a single path segment. A name
+   * such as `release/x` is not: the source API would read the branch
+   * `release` and the path `x/...`. Look the hash up from the branch list,
+   * and skip the repository when that lookup has no hash.
+   */
+  private async resolveSourceCommit(
+    repository: Models.Repository,
+    slug: string,
+  ): Promise<string | undefined> {
+    const hash = repository.mainbranch?.target?.hash;
+    if (hash) {
+      return hash;
+    }
+    const branch = repository.mainbranch?.name ?? DEFAULT_BRANCH;
+    if (!branch.includes('/')) {
+      return branch;
+    }
+
+    const q = `name="${branch}"`;
+    const fields = 'next,values.name,values.target.hash';
+    for await (const listed of this.client
+      .listBranchesByRepository(slug, this.config.workspace, { q, fields })
+      .iterateResults()) {
+      if (listed.name === branch) {
+        return listed.target?.hash;
+      }
+    }
+    return undefined;
+  }
+
+  private async matchingSourcePaths(
+    repoSlug: string,
+    commit: string,
+    pattern: RegExp,
+  ): Promise<string[]> {
+    const matches: string[] = [];
+    // A directory listing can repeat a path on a later page.
+    const matched = new Set<string>();
+    const pending = [
+      BitbucketCloudEntityProvider.toSourceScanRoot(this.config.catalogPath),
+    ];
+    const seen = new Set<string>();
+
+    while (pending.length > 0) {
+      const directory = pending.pop()!;
+      if (seen.has(directory)) {
         continue;
       }
+      seen.add(directory);
 
-      const repository = searchResult.file!.commit!.repository!;
-      if (this.matchesFilters(repository)) {
-        result.push({
-          fileUrl: BitbucketCloudEntityProvider.toUrl(
-            repository,
-            searchResult.file!.path!,
-          ),
+      for await (const entry of this.client.listRepositorySource(
+        this.config.workspace,
+        repoSlug,
+        commit,
+        directory,
+      )) {
+        if (
+          entry.type === 'commit_file' &&
+          pattern.test(entry.path) &&
+          !matched.has(entry.path)
+        ) {
+          matched.add(entry.path);
+          matches.push(entry.path);
+        } else if (entry.type === 'commit_directory' && !seen.has(entry.path)) {
+          pending.push(entry.path);
+        }
+      }
+    }
+
+    return matches;
+  }
+
+  /**
+   * Directory where a source walk starts.
+   *
+   * An absolute catalog path starts at the longest directory prefix that
+   * contains no wildcard. A path anchored under `services` does not list
+   * sibling trees. A relative path, or a wildcard in the first segment,
+   * starts at the repository root. An empty segment from a double slash or
+   * a trailing slash ends the prefix. Listing a missing prefix, or a file
+   * at that prefix, uses a trailing slash; the source API answers 404 and
+   * the walk finds nothing.
+   */
+  private static toSourceScanRoot(catalogPath: string): string {
+    if (!catalogPath.startsWith('/')) {
+      return '';
+    }
+
+    // toPathPattern removes one leading slash. `//foo` is not a repo path.
+    const relative = catalogPath.slice(1);
+    const slash = relative.lastIndexOf('/');
+    if (slash < 0) {
+      return '';
+    }
+
+    const literal: string[] = [];
+    for (const segment of relative.slice(0, slash).split('/')) {
+      if (
+        segment.length === 0 ||
+        segment.includes('*') ||
+        segment.includes('?')
+      ) {
+        break;
+      }
+      literal.push(segment);
+    }
+    return literal.join('/');
+  }
+
+  /**
+   * An absolute catalog path without wildcards is one file. Any other path
+   * can match in more than one directory, so discovery has to walk the tree.
+   */
+  private static toExactSourcePath(catalogPath: string): string | undefined {
+    if (
+      !catalogPath.startsWith('/') ||
+      catalogPath.startsWith('//') ||
+      /[*?]/.test(catalogPath)
+    ) {
+      return undefined;
+    }
+    const path = catalogPath.substring(1);
+    return path.length > 0 ? path : undefined;
+  }
+
+  private async findRepositories(
+    repoSlug?: string,
+  ): Promise<Models.Repository[]> {
+    const fields = [
+      'next',
+      'values.slug',
+      'values.project.key',
+      'values.mainbranch.name',
+      'values.mainbranch.target.hash',
+      'values.links.html.href',
+    ].join(',');
+    const q = repoSlug ? `slug="${repoSlug}"` : undefined;
+
+    const repositories: Models.Repository[] = [];
+    for await (const repository of this.client
+      .listRepositoriesByWorkspace(this.config.workspace, { fields, q })
+      .iterateResults()) {
+      repositories.push(repository);
+    }
+
+    return repositories;
+  }
+
+  private async processQuery(
+    workspace: string,
+    filters: CodeSearch.Filter,
+    repositories: Models.Repository[],
+  ): Promise<IngestionTarget[]> {
+    const catalogPath = this.config.catalogPath;
+    const catalogFilename = catalogPath.substring(
+      catalogPath.lastIndexOf('/') + 1,
+    );
+
+    const pathPattern = BitbucketCloudEntityProvider.toPathPattern(catalogPath);
+
+    const pages = this.client.searchWorkspaceCode(
+      workspace,
+      { search_term: catalogFilename, filters },
+      { maxResults: this.config.pagelen ?? 100 },
+    );
+
+    // The code search can return the same file on more than one page.
+    const result = new Map<string, IngestionTarget>();
+
+    for await (const page of pages) {
+      for (const file of page.matched_files ?? []) {
+        if (!pathPattern.test(file.path)) {
+          continue;
+        }
+
+        const repository = repositories.find(repo =>
+          file.url.startsWith(`${repo.links!.html!.href!}/`),
+        );
+        if (!repository) {
+          continue;
+        }
+
+        const fileUrl = BitbucketCloudEntityProvider.toUrl(
+          repository,
+          file.path,
+        );
+        result.set(fileUrl, {
+          fileUrl,
           repoUrl: repository.links!.html!.href!,
         });
       }
     }
 
-    return result;
+    return [...result.values()];
+  }
+
+  /**
+   * Creates the code search filter for the configured catalog path.
+   *
+   * The code search can return files at other paths than the filter
+   * describes, so the filter only reduces the results and
+   * `toPathPattern` decides which files match.
+   */
+  private static toPathFilter(catalogPath: string): CodeSearch.Filter {
+    const path = catalogPath.replace(/^\//, '');
+    if (!/[*?]/.test(path)) {
+      // matches the path at the root and in any folder
+      return { attribute: 'path', eq: path };
+    }
+
+    if (catalogPath.startsWith('/')) {
+      return { attribute: 'path', wildcard: path };
+    }
+
+    return {
+      or: [
+        { attribute: 'path', wildcard: path },
+        { attribute: 'path', wildcard: `*/${path}` },
+      ],
+    };
+  }
+
+  /**
+   * Creates the pattern that a file path must match.
+   *
+   * A catalog path that starts with `/` matches from the repository root.
+   * Any other catalog path matches at the root and in any folder.
+   * In the catalog path, `*` matches any characters and `?` matches one character.
+   */
+  private static toPathPattern(catalogPath: string): RegExp {
+    const absolute = catalogPath.startsWith('/');
+    const pattern = catalogPath
+      .replace(/^\//, '')
+      .split('')
+      .map(char => {
+        if (char === '*') return '.*';
+        if (char === '?') return '.';
+        return char.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+      })
+      .join('');
+
+    return new RegExp(absolute ? `^${pattern}$` : `^(.*/)?${pattern}$`);
   }
 
   private matchesFilters(repository: Models.Repository): boolean {
@@ -483,4 +797,45 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       presence: 'required',
     };
   }
+}
+
+function isUnavailableCodeSearch(error: unknown): error is { status: number } {
+  if (typeof error !== 'object' || error === null) {
+    return false;
+  }
+  const name = (error as { name?: unknown }).name;
+  const status = (error as { status?: unknown }).status;
+  return (
+    name === 'BitbucketCloudApiError' &&
+    typeof status === 'number' &&
+    (status === 403 || status === 404 || status === 410)
+  );
+}
+
+async function mapWithConcurrency<T, R>(
+  items: readonly T[],
+  concurrency: number,
+  mapper: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let nextIndex = 0;
+  // A rejected read, such as 429 or 500, must not claim repositories that
+  // have not started. Reads already in flight finish, then the error propagates.
+  let failed = false;
+  const workers = Math.min(concurrency, items.length);
+  await Promise.all(
+    Array.from({ length: workers }, async () => {
+      while (!failed && nextIndex < items.length) {
+        const index = nextIndex;
+        nextIndex += 1;
+        try {
+          results[index] = await mapper(items[index]);
+        } catch (error) {
+          failed = true;
+          throw error;
+        }
+      }
+    }),
+  );
+  return results;
 }
