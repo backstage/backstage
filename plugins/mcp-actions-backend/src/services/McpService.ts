@@ -321,7 +321,7 @@ export class McpService {
               span.setAttribute('error.type', 'tool_error');
               span.setStatus({ code: 'error', message: 'tool_error' });
               const errorDescription =
-                (result as { errorDescription?: string })?.errorDescription ??
+                describeToolError(result) ??
                 `Tool "${params.name}" reported isError=true`;
 
               await auditorEvent.fail({
@@ -413,4 +413,24 @@ export class McpService {
 
     return true;
   }
+}
+
+/**
+ * The text an erroring tool result carries — what `handleErrors` sent to the
+ * client, e.g. `NotFoundError: Action "x" not found` — so that the audit
+ * event records the same cause instead of a generic message.
+ */
+function describeToolError(result: unknown): string | undefined {
+  const content = (result as { content?: unknown })?.content;
+  if (!Array.isArray(content)) {
+    return undefined;
+  }
+  const text = content
+    .filter(
+      (part): part is { type: 'text'; text: string } =>
+        part?.type === 'text' && typeof part.text === 'string',
+    )
+    .map(part => part.text)
+    .join('\n');
+  return text || undefined;
 }
