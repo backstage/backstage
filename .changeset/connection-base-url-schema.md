@@ -2,8 +2,8 @@
 '@backstage/connections': minor
 ---
 
-Added opt-in support for URL-based connection definitions with a required instance URL and an optional API URL that defaults to the instance URL. Explicit API destinations are preserved, and both roots retain context paths and receive a trailing slash for resolving relative paths.
+All URL-based connection types now require `baseUrl` instead of `host`. Base URLs must use HTTP(S), retain context paths, and receive a trailing slash for resolving relative paths. Lookup and duplicate validation use the host parsed from `baseUrl`, including non-default ports. Update explicit `connections` configuration to use a full base URL; legacy `integrations` configuration is converted automatically, preserving configured base URLs and endpoints.
 
-These definitions derive host identity internally for lookup and duplicate validation without exposing it in returned connection data. Existing connection types retain their current configuration and returned fields.
+Returned URL-based connections expose `baseUrl` instead of `host`. The singleton `aws` connection type and its account-based lookup are unchanged. Provider-specific API URL fields remain optional and do not receive an automatic fallback.
 
-Replaced `lookupStrategy` and `ConnectionLookupStrategy` with `getLookupIdentity` on connection type definitions. The callback returns `{ key: 'host', value }` for host matching, or `undefined` for type-only selection. Existing host-based and AWS queries and returned data are unchanged.
+Replaced `lookupStrategy` and `ConnectionLookupStrategy` with `getLookupIdentity` on connection type definitions. The callback returns `{ key: 'host', value }` for host matching, or `undefined` for type-only selection. Host-based and AWS query shapes are unchanged.

@@ -112,7 +112,7 @@ getLookupIdentity: config => ({
 
 The URL helper supplies this callback without adding `host` to returned data.
 The framework compares a `host` identity with the host parsed from the query's
-`url`. Existing types keep using their configured host. AWS returns `undefined`
+`url`. URL-based types derive their host identity from `baseUrl`. AWS returns `undefined`
 to select its singleton connection before choosing account credentials.
 
 Each type must declare at least one authentication method. Add `none` only

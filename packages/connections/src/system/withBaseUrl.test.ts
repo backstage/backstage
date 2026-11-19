@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 import { z } from 'zod/v4';
+import { connectionTypes } from '../definitions/types';
+import type { ConnectionTypeDefinition } from '../api/ConnectionType';
 import { InputError } from '@backstage/errors';
 import { createConnectionType } from './createConnectionType';
 import { getHostLookupIdentity } from './getHostLookupIdentity';
@@ -69,6 +71,44 @@ describe('withBaseUrl', () => {
       },
     ]) {
       expect(() => definition.configSchema.parse(input)).toThrow(InputError);
+    }
+  });
+
+  it('requires a base URL for every URL-based type while keeping AWS account-based', () => {
+    expect(connectionTypes.aws.configSchema.parse({})).toEqual({});
+    expect(connectionTypes.aws.getLookupIdentity({})).toBeUndefined();
+    const definitions: ConnectionTypeDefinition[] = Object.values(
+      connectionTypes,
+    ).filter(definition => definition.type !== 'aws');
+    for (const definition of definitions) {
+      const fields = {
+        ...(definition.type === 'gerrit'
+          ? { gitilesBaseUrl: 'https://gitiles.example.com/' }
+          : {}),
+        ...(definition.type === 'aws-codecommit'
+          ? { region: 'us-east-1' }
+          : {}),
+      };
+      const parsed = definition.configSchema.parse({
+        ...fields,
+        baseUrl: 'https://EXAMPLE.COM:8443/context',
+      });
+      expect(parsed).toEqual({
+        ...fields,
+        baseUrl: 'https://EXAMPLE.COM:8443/context/',
+      });
+      expect(definition.getLookupIdentity(parsed)).toEqual({
+        key: 'host',
+        value: 'example.com:8443',
+      });
+      expect(() => definition.configSchema.parse(fields)).toThrow(InputError);
+      expect(() =>
+        definition.configSchema.parse({
+          ...fields,
+          baseUrl: 'https://example.com/',
+          host: 'example.com',
+        }),
+      ).toThrow(InputError);
     }
   });
 });

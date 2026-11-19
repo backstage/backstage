@@ -13,7 +13,6 @@ uses the `host` [lookup strategy](../01-concepts.md#lookup-strategies).
 ```yaml title="app-config.yaml"
 connections:
   - type: gerrit
-    host: gerrit.example.com
     baseUrl: https://gerrit.example.com
     gitilesBaseUrl: https://gerrit.example.com/plugins/gitiles
     auth:
@@ -24,12 +23,11 @@ connections:
 
 ## Connection fields
 
-| Field            | Type     | Required | Description                                              |
-| ---------------- | -------- | -------- | -------------------------------------------------------- |
-| `host`           | `string` | Yes      | Gerrit host matched against the consumer's resource URL. |
-| `baseUrl`        | `string` | No       | Base URL of the Gerrit instance.                         |
-| `gitilesBaseUrl` | `string` | Yes      | Base URL used to access repositories through Gitiles.    |
-| `cloneUrl`       | `string` | No       | Alternative base URL used to clone repositories.         |
+| Field            | Type     | Required | Description                                           |
+| ---------------- | -------- | -------- | ----------------------------------------------------- |
+| `baseUrl`        | `string` | Yes      | Base URL of the Gerrit instance.                      |
+| `gitilesBaseUrl` | `string` | Yes      | Base URL used to access repositories through Gitiles. |
+| `cloneUrl`       | `string` | No       | Alternative base URL used to clone repositories.      |
 
 ## Authentication methods
 
@@ -44,7 +42,7 @@ Use `none` explicitly when Gerrit and Gitiles permit unauthenticated access.
 ## Lookup and selection
 
 The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
-a Gerrit URL. The service selects the connection whose `host` matches the
+a Gerrit URL. The service selects the connection whose `baseUrl` host matches the
 parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
@@ -62,6 +60,7 @@ const connection = await connections.find({
   authMethods: ['basic', 'none'],
 });
 
+connection.baseUrl; // string
 connection.gitilesBaseUrl; // string
 connection.cloneUrl; // string | undefined
 ```

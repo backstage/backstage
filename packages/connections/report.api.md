@@ -165,8 +165,8 @@ export const connectionTypes: {
       url: string;
     };
     configSchema: {
-      host: string;
       region: string;
+      baseUrl: string;
     };
     auth: readonly (
       | {
@@ -188,7 +188,7 @@ export const connectionTypes: {
       url: string;
     };
     configSchema: {
-      host: string;
+      baseUrl: string;
       endpoint?: string | undefined;
       s3ForcePathStyle?: boolean | undefined;
     };
@@ -215,7 +215,7 @@ export const connectionTypes: {
       url: string;
     };
     configSchema: {
-      host: string;
+      baseUrl: string;
       accountName?: string | undefined;
       endpoint?: string | undefined;
       endpointSuffix?: string | undefined;
@@ -251,7 +251,7 @@ export const connectionTypes: {
       url: string;
     };
     configSchema: {
-      host: string;
+      baseUrl: string;
     };
     auth: readonly (
       | {
@@ -285,7 +285,7 @@ export const connectionTypes: {
       url: string;
     };
     configSchema: {
-      host: string;
+      baseUrl: string;
     };
     auth: readonly (
       | {
@@ -315,7 +315,7 @@ export const connectionTypes: {
       url: string;
     };
     configSchema: {
-      host: string;
+      baseUrl: string;
       apiBaseUrl?: string | undefined;
     };
     auth: readonly (
@@ -340,9 +340,8 @@ export const connectionTypes: {
       url: string;
     };
     configSchema: {
-      host: string;
       gitilesBaseUrl: string;
-      baseUrl?: string | undefined;
+      baseUrl: string;
       cloneUrl?: string | undefined;
     };
     auth: readonly (
@@ -363,8 +362,7 @@ export const connectionTypes: {
       url: string;
     };
     configSchema: {
-      host: string;
-      baseUrl?: string | undefined;
+      baseUrl: string;
     };
     auth: readonly (
       | {
@@ -384,7 +382,7 @@ export const connectionTypes: {
       url: string;
     };
     configSchema: {
-      host: string;
+      baseUrl: string;
       apiBaseUrl?: string | undefined;
       rawBaseUrl?: string | undefined;
     };
@@ -415,9 +413,8 @@ export const connectionTypes: {
       url: string;
     };
     configSchema: {
-      host: string;
+      baseUrl: string;
       apiBaseUrl?: string | undefined;
-      baseUrl?: string | undefined;
     };
     auth: readonly (
       | {
@@ -436,7 +433,7 @@ export const connectionTypes: {
       url: string;
     };
     configSchema: {
-      host: string;
+      baseUrl: string;
     };
     auth: readonly (
       | {
@@ -456,7 +453,7 @@ export const connectionTypes: {
       url: string;
     };
     configSchema: {
-      host: string;
+      baseUrl: string;
     };
     auth: readonly {
       method: 'token';

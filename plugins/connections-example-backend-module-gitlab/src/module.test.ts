@@ -30,12 +30,12 @@ describe('connections-example-backend-module-gitlab', () => {
       connections: [
         {
           type: 'gitlab',
-          host: 'gitlab.com',
+          baseUrl: 'https://gitlab.com/',
           auth: [{ method: 'token', token: 'gl-test-token' }],
         },
         {
           type: 'github',
-          host: 'github.com',
+          baseUrl: 'https://github.com/',
           auth: [{ method: 'token', token: 'gh-test-token' }],
         },
       ],
@@ -60,7 +60,7 @@ describe('connections-example-backend-module-gitlab', () => {
               query: { url: 'https://gitlab.com/my-org/my-repo' },
               authMethods: ['token'],
             });
-            expect(conn.host).toBe('gitlab.com');
+            expect(conn.baseUrl).toBe('https://gitlab.com/');
             expect(conn.auth.method).toBe('token');
           },
         });
@@ -137,7 +137,7 @@ describe('connections-example-backend-module-gitlab', () => {
               query: { url: 'https://github.com/my-org/my-repo' },
               authMethods: ['token'],
             });
-            expect(gh.host).toBe('github.com');
+            expect(gh.baseUrl).toBe('https://github.com/');
 
             await expect(
               connections.find({
@@ -166,7 +166,7 @@ describe('connections-example-backend-module-gitlab', () => {
               query: { url: 'https://gitlab.com/my-org/my-repo' },
               authMethods: ['token'],
             });
-            expect(conn.host).toBe('gitlab.com');
+            expect(conn.baseUrl).toBe('https://gitlab.com/');
 
             await expect(
               connections.find({

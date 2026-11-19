@@ -97,7 +97,7 @@ describe('DefaultGithubCredentialsProvider tests', () => {
       const find = jest.fn().mockResolvedValue({
         type: 'github',
         title: 'GitHub',
-        host: 'github.com',
+        baseUrl: 'https://github.com/',
         apiBaseUrl: 'https://api.github.com',
         rawBaseUrl: 'https://raw.githubusercontent.com',
         auth: {
@@ -155,7 +155,7 @@ describe('DefaultGithubCredentialsProvider tests', () => {
       const find = jest.fn().mockResolvedValue({
         type: 'github',
         title: 'GitHub Enterprise',
-        host: 'github.example.com',
+        baseUrl: 'https://github.example.com/',
         auth: {
           method: 'token',
           token: 'connection-token',
@@ -185,7 +185,7 @@ describe('DefaultGithubCredentialsProvider tests', () => {
         const find = jest.fn().mockResolvedValue({
           type: 'github',
           title: 'GitHub',
-          host: 'github.com',
+          baseUrl: 'https://github.com/',
           auth: {
             method: 'app',
             appId,
@@ -216,7 +216,7 @@ describe('DefaultGithubCredentialsProvider tests', () => {
       const connection = {
         type: 'github',
         title: 'GitHub',
-        host: 'github.com',
+        baseUrl: 'https://github.com/',
         auth: {
           method: 'app',
           appId: '123',
@@ -268,7 +268,7 @@ describe('DefaultGithubCredentialsProvider tests', () => {
       const connection = {
         type: 'github',
         title: 'GitHub',
-        host: 'github.com',
+        baseUrl: 'https://github.com/',
         auth: {
           method: 'token',
           token: 'first-token',

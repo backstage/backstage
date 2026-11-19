@@ -14,7 +14,7 @@ Bitbucket Data Center host. It has
 ```yaml title="app-config.yaml"
 connections:
   - type: bitbucket-server
-    host: bitbucket.example.com
+    baseUrl: https://bitbucket.example.com/
     apiBaseUrl: https://bitbucket.example.com/rest/api/1.0
     auth:
       - method: token
@@ -23,10 +23,10 @@ connections:
 
 ## Connection fields
 
-| Field        | Type     | Required | Description                                                 |
-| ------------ | -------- | -------- | ----------------------------------------------------------- |
-| `host`       | `string` | Yes      | Bitbucket host matched against the consumer's resource URL. |
-| `apiBaseUrl` | `string` | No       | Base URL for Bitbucket's REST API.                          |
+| Field        | Type     | Required | Description                                                    |
+| ------------ | -------- | -------- | -------------------------------------------------------------- |
+| `baseUrl`    | `string` | Yes      | HTTP(S) base URL of the instance. Its host is used for lookup. |
+| `apiBaseUrl` | `string` | No       | Base URL for Bitbucket's REST API.                             |
 
 ## Authentication methods
 
@@ -42,7 +42,7 @@ Use `none` explicitly for unauthenticated access to public content.
 ## Lookup and selection
 
 The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
-a repository or content URL. The service selects the connection whose `host`
+a repository or content URL. The service selects the connection whose `baseUrl` host
 matches the parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
@@ -60,6 +60,7 @@ const connection = await connections.find({
   authMethods: ['token', 'basic', 'none'],
 });
 
+connection.baseUrl; // string
 connection.apiBaseUrl; // string | undefined
 
 if (connection.auth.method === 'token') {
