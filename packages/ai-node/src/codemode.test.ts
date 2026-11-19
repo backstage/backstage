@@ -37,11 +37,7 @@
  */
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import {
-  AuthService,
-  BackstageCredentials,
   DatabaseService,
-  LifecycleService,
-  PermissionsService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
@@ -65,7 +61,12 @@ import {
   type ProductionAiServiceIntegration,
 } from './integration';
 import { runAiMigrations } from './migrations';
-import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
+import {
+  builtinProviderRegistry,
+  createAuthServiceDouble,
+  createLifecycleServiceDouble,
+  createPermissionsServiceDouble,
+} from '@backstage/ai-node-test-utils/alpha';
 import { createBoundedCodemodeExtension } from '@backstage/ai-node-codemode/alpha';
 
 const createAiServiceIntegration = (
@@ -121,19 +122,11 @@ async function fixture(): Promise<Fixture> {
   });
   const deps: DefaultAiServiceDeps = {
     database: { getClient: async () => db } as DatabaseService,
-    auth: {
-      isPrincipal: (
-        credentials: BackstageCredentials,
-        type: 'user' | 'service',
-      ) => (credentials.principal as { type: string }).type === type,
-    } as unknown as AuthService,
-    permissions: {
-      authorize: async () => [{ result: 'ALLOW' }],
-      authorizeConditional: async () => [{ result: 'ALLOW' }],
-    } as unknown as PermissionsService,
+    auth: createAuthServiceDouble(),
+    permissions: createPermissionsServiceDouble(),
     logger: mockServices.logger.mock(),
     auditor: mockServices.auditor.mock(),
-    lifecycle: { addShutdownHook: jest.fn() } as unknown as LifecycleService,
+    lifecycle: createLifecycleServiceDouble(),
     pluginMetadata: { getId: () => 'test-plugin' } as PluginMetadataService,
     events: mockServices.events(),
   };

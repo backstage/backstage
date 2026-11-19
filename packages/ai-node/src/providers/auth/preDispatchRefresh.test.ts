@@ -25,6 +25,7 @@ import {
 } from '../../guard/modelOperations';
 import type { TrustedOperation } from '../../guard/types';
 import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
+import { testTransport } from '@backstage/ai-node-test-utils/alpha';
 
 const createModelOperationGuard = (
   options: Parameters<typeof createModelOperationGuardBase>[0],
@@ -82,7 +83,7 @@ describe('awaited resolution before dispatch', () => {
     const guard = createModelOperationGuard({
       journal: journal as never,
       recheck,
-      transport: transport as unknown as typeof fetch,
+      transport: testTransport(transport),
     });
     const operation = (): TrustedOperation => ({
       actor: 'user:default/alice',

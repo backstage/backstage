@@ -20,6 +20,7 @@ import type { TrustedOperation } from './types';
 import type { AttemptDecision, AttemptOutcome } from '../journal/types';
 import type { Fence } from '../contracts';
 import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
+import { testTransport } from '@backstage/ai-node-test-utils/alpha';
 
 const createModelOperationGuard = (
   options: Parameters<typeof createModelOperationGuardBase>[0],
@@ -84,7 +85,7 @@ function fixture() {
   const guard = createModelOperationGuard({
     journal,
     recheck,
-    transport: transport as unknown as typeof globalThis.fetch,
+    transport: testTransport(transport),
   }).bind(operation);
   const fetch = (body = '{"model":"gpt"}') =>
     guard.fetch(operation.destination!, {
@@ -154,7 +155,7 @@ describe('model operation guard', () => {
     const guard = createModelOperationGuard({
       journal: unverified.journal,
       recheck: unverified.recheck,
-      transport: unverified.transport as unknown as typeof globalThis.fetch,
+      transport: testTransport(unverified.transport),
     }).bind({
       ...unverified.operation,
       provenance: { ...unverified.operation.provenance, origin: 'unverified' },
@@ -202,7 +203,7 @@ describe('model operation guard', () => {
       const guard = createModelOperationGuard({
         journal: expired.journal,
         recheck: expired.recheck,
-        transport: expired.transport as unknown as typeof globalThis.fetch,
+        transport: testTransport(expired.transport),
       }).bind(op);
       await expect(
         guard.fetch(op.destination!, {

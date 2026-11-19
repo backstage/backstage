@@ -32,6 +32,7 @@ import {
 import { assertObservableEvent, createAiEventSink } from './types';
 import type { AiObservabilityEvent } from './types';
 import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
+import { testTransport } from '@backstage/ai-node-test-utils/alpha';
 
 const createModelOperationGuard = (
   options: Parameters<typeof createModelOperationGuardBase>[0],
@@ -563,8 +564,9 @@ describe('observability seam', () => {
       const guard = createModelOperationGuard({
         journal,
         recheck: async () => true,
-        transport: (async () =>
-          new Response('ok', { status: 200 })) as unknown as typeof fetch,
+        transport: testTransport(
+          async () => new Response('ok', { status: 200 }),
+        ),
         emit: harness.emit,
       }).bind({
         actor: 'user:default/alice',
@@ -599,8 +601,7 @@ describe('observability seam', () => {
       const denied = createModelOperationGuard({
         journal,
         recheck: async () => false,
-        transport: (async () =>
-          new Response('nope')) as unknown as typeof fetch,
+        transport: testTransport(async () => new Response('nope')),
         emit: harness.emit,
       }).bind({
         actor: 'user:default/alice',

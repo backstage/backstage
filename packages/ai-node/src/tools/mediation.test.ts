@@ -28,6 +28,7 @@ import { createGuardedToolOperations } from './mediation';
 import { composeWithToolRegistry, createToolRegistry } from './registry';
 import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
 import type { ToolModule } from './types';
+import { testTransport } from '@backstage/ai-node-test-utils/alpha';
 
 type ServerFixture = {
   server: Server;
@@ -337,9 +338,9 @@ describe('guarded tool operations', () => {
       const mode: AdapterMode = 'honest-error';
       const f = exampleToolServer(fixture.origin, {
         mode: () => mode,
-        transport: (async () => {
+        transport: testTransport(async () => {
           throw new Error('network disconnected');
-        }) as unknown as typeof fetch,
+        }),
         recheck: async () => true,
       });
       await expect(f.callTool()).resolves.toMatchObject({

@@ -15,7 +15,15 @@
  */
 
 import { mockCredentials } from '@backstage/backend-test-utils';
-import type { PermissionsService } from '@backstage/backend-plugin-api';
+import type { BackstageCredentials } from '@backstage/backend-plugin-api';
+import {
+  conditionalDecision,
+  createPermissionsServiceDouble,
+} from '@backstage/ai-node-test-utils/alpha';
+import type {
+  QueryPermissionRequest,
+  QueryPermissionResponse,
+} from '@backstage/plugin-permission-common';
 import type {
   PermissionCriteria,
   PermissionCondition,
@@ -82,11 +90,19 @@ function envelope(
 
 /** An authorizer whose single conditional answer the test controls. */
 function policy(answer: unknown) {
-  const authorizeConditional = jest.fn(async () => [answer]);
-  return {
-    authorizeConditional,
-    permissions: { authorizeConditional } as unknown as PermissionsService,
-  };
+  const queries: Array<{
+    requests: QueryPermissionRequest[];
+    credentials?: BackstageCredentials;
+  }> = [];
+  const permissions = createPermissionsServiceDouble({
+    // The answer may deliberately be malformed or missing: the evaluator
+    // must tolerate both, so the cast stands for the probe it carries.
+    query: async (request, callerCredentials) => {
+      queries.push({ requests: [request], credentials: callerCredentials });
+      return answer as QueryPermissionResponse;
+    },
+  });
+  return { permissions, queries };
 }
 
 describe('permission rule evaluation', () => {
@@ -358,7 +374,7 @@ describe('permission rule evaluation', () => {
   });
 
   it('asks for one conditional decision on the fixed permission with caller credentials', async () => {
-    const { permissions, authorizeConditional } = policy({ result: 'ALLOW' });
+    const { permissions, queries } = policy({ result: 'ALLOW' });
     await expect(
       authorizeConditionalDecision(
         permissions,
@@ -366,10 +382,9 @@ describe('permission rule evaluation', () => {
         credentials,
       ),
     ).resolves.toEqual({ result: 'ALLOW' });
-    expect(authorizeConditional).toHaveBeenCalledWith(
-      [{ permission: aiModelUsePermission }],
-      { credentials },
-    );
+    expect(queries).toEqual([
+      { requests: [{ permission: aiModelUsePermission }], credentials },
+    ]);
 
     // A missing decision denies instead of allowing, and a response that is
     // not a decision list at all is a contract violation.
@@ -391,6 +406,30 @@ describe('permission rule evaluation', () => {
 });
 
 describe('model access under conditional policies', () => {
+  it('grants through a well-formed conditional envelope built by the typed helper', async () => {
+    // The round-2 envelope shape, constructed through the published builder:
+    // pluginId and resourceType as siblings of result, conditions alongside.
+    const decision = conditionalDecision({
+      pluginId: 'ai',
+      resourceType: RESOURCE_TYPE_AI_MODEL,
+      conditions: aiModelConditions.isModel({
+        provider: 'openai',
+        modelId: 'first',
+      }),
+    });
+    const { permissions } = policy(decision);
+    const access = createModelAccess({ models, authorizer: permissions });
+    expect(await access.listModels(credentials)).toEqual([
+      { provider: 'openai', modelId: 'first', type: 'chat' },
+    ]);
+    expect(
+      await access.canUse(
+        { provider: 'openai', modelId: 'first' },
+        credentials,
+      ),
+    ).toBe(true);
+  });
+
   it('grants one model pair and denies the others', async () => {
     const granted = aiModelConditions.isModel({
       provider: 'openai',
@@ -482,7 +521,7 @@ describe('model access under conditional policies', () => {
       { result: 'CONDITIONAL', conditions: { allOf: [] } },
     ];
     for (const answer of malformed) {
-      const { permissions, authorizeConditional } = policy(answer);
+      const { permissions, queries } = policy(answer);
       const access = createModelAccess({ models, authorizer: permissions });
       expect(await access.listModels(credentials)).toEqual([]);
       expect(await access.listProviders(credentials)).toEqual([]);
@@ -494,10 +533,10 @@ describe('model access under conditional policies', () => {
       ).toBe(false);
       // One query per check, with the caller's own credentials and no
       // resource attributes leaving the process.
-      expect(authorizeConditional).toHaveBeenCalledWith(
-        [{ permission: aiModelUsePermission }],
-        { credentials },
-      );
+      for (const query of queries) {
+        expect(query.requests).toEqual([{ permission: aiModelUsePermission }]);
+        expect(query.credentials).toBe(credentials);
+      }
     }
   });
 
@@ -545,7 +584,7 @@ describe('tool access under conditional policies', () => {
       [toolEnvelope({ rule: 'UNKNOWN_RULE' }), false, false],
     ];
     for (const [answer, read, write] of cases) {
-      const { permissions, authorizeConditional } = policy(answer);
+      const { permissions, queries } = policy(answer);
       const decision = await authorizeConditionalDecision(
         permissions,
         aiToolUsePermission,
@@ -572,7 +611,7 @@ describe('tool access under conditional policies', () => {
           },
         }),
       ).toBe(write);
-      expect(authorizeConditional).toHaveBeenCalledTimes(1);
+      expect(queries).toHaveLength(1);
     }
   });
 });

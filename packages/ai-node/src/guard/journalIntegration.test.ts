@@ -41,6 +41,11 @@ import {
 } from './modelOperations';
 import type { TrustedOperation } from './types';
 import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
+import {
+  createJsonResponse,
+  jsonTransport,
+  testTransport,
+} from '@backstage/ai-node-test-utils/alpha';
 
 const createAttemptJournal = (
   options: Parameters<typeof createAttemptJournalBase>[0],
@@ -338,7 +343,7 @@ if (worker) {
         const j = journal(f.db);
         const destination = 'https://provider.example/v1/responses';
         const transport = jest.fn(
-          async () => new Response('retry', { status: 429 }),
+          jsonTransport(429, { error: 'rate limited' }),
         );
         const recheck = jest
           .fn()
@@ -347,7 +352,7 @@ if (worker) {
         const guard = createModelOperationGuard({
           journal: j,
           recheck,
-          transport: transport as unknown as typeof fetch,
+          transport,
         }).bind(operation(destination));
         await (await request(guard, destination)).text();
         await expect(request(guard, destination)).rejects.toThrow('revoked');
@@ -355,7 +360,7 @@ if (worker) {
         const expired = createModelOperationGuard({
           journal: j,
           recheck,
-          transport: transport as unknown as typeof fetch,
+          transport,
         }).bind({ ...operation(destination), providerCredentialExpiresAt: 1 });
         await expect(request(expired, destination)).rejects.toThrow(
           'credential expired',
@@ -393,7 +398,7 @@ if (worker) {
               clock.mockReturnValue(102);
               return true;
             },
-            transport: transport as unknown as typeof fetch,
+            transport: testTransport(transport),
           }).bind({
             ...operation(destination),
             providerCredentialExpiresAt: 101,
@@ -429,7 +434,7 @@ if (worker) {
           guard: createModelOperationGuard({
             journal: j,
             recheck: async () => true,
-            transport: transport as unknown as typeof fetch,
+            transport: testTransport(transport),
           }),
           resolve: (_model, method) => {
             throw new GuardedResolutionError(
@@ -493,7 +498,7 @@ if (worker) {
             read: j.read.bind(j),
           },
           recheck: async () => true,
-          transport: transport as unknown as typeof fetch,
+          transport: testTransport(transport),
         }).bind(op);
         await expect(request(guard, destination)).rejects.toThrow(
           'revoked before send',
@@ -519,15 +524,21 @@ if (worker) {
       const f = await fixture(dialect);
       try {
         const j = journal(f.db);
-        const transport = jest.fn(async () => new Response('ok'));
+        const transport = jest.fn(async () =>
+          createJsonResponse(200, { status: 'ok' }),
+        );
         const destination = 'https://provider.example/v1/responses';
         const op = operation(destination);
         const guard = createModelOperationGuard({
           journal: j,
           recheck: async () => true,
-          transport: transport as unknown as typeof fetch,
+          transport: testTransport(transport),
         }).bind(op);
-        expect(await (await request(guard, destination)).text()).toBe('ok');
+        // The guarded fetch returns the helper's genuine Response; the body
+        // is read and parsed back through the real path.
+        expect(await (await request(guard, destination)).json()).toEqual({
+          status: 'ok',
+        });
         await guard.finish('completed');
         const page = await j.read(credentials, namespace);
         expect(page.items.map(e => e.kind)).toEqual(['decision', 'outcome']);
@@ -543,7 +554,7 @@ if (worker) {
         });
         const stale = createModelOperationGuard({
           journal: j,
-          transport: transport as unknown as typeof fetch,
+          transport: testTransport(transport),
           recheck: async () => {
             await f
               .db('ai_namespace_leases')
@@ -564,7 +575,7 @@ if (worker) {
         const failed = createModelOperationGuard({
           journal: j,
           recheck: async () => true,
-          transport: transport as unknown as typeof fetch,
+          transport: testTransport(transport),
         }).bind(operation(destination));
         // Jest's isError is realm-sensitive: better-sqlite3 builds its
         // SqliteError constructor once per addon binding, so this raw driver

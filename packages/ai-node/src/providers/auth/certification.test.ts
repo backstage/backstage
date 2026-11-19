@@ -28,6 +28,7 @@ const jsonAuthRegistry = createAuthModuleRegistry([
 ]);
 
 import type { AiAuthModule } from './types';
+import { testTransport } from '@backstage/ai-node-test-utils/alpha';
 
 const tokenEndpoints = [
   'https://token.example/oauth/token',
@@ -242,7 +243,7 @@ describe('auth module registration', () => {
         read: async () => ({ items: [] }),
       } as never,
       recheck: async () => true,
-      transport: transport as unknown as typeof fetch,
+      transport: testTransport(transport),
     });
     const op = operation('anthropic', 'auth.token');
     const guarded = guard.bind(op);

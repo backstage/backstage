@@ -18,6 +18,9 @@ import { AuditEventView } from '@backstage/ai-node/modules';
 import { AuditPage } from '@backstage/ai-node/modules';
 import { AuditQuery } from '@backstage/ai-node/modules';
 import { AuthOperationKind } from '@backstage/ai-node/modules';
+import type { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
+import type { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
+import type { AuthService } from '@backstage/backend-plugin-api';
 import { AuthTokenRequestBase } from '@backstage/ai-node/modules';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { createAiEventSink } from '@backstage/ai-node/modules';
@@ -33,6 +36,7 @@ import { GuardedModelBinding } from '@backstage/ai-node/modules';
 import { GuardedOperation } from '@backstage/ai-node/modules';
 import { HttpEnvelopeRules } from '@backstage/ai-node/modules';
 import { Knex } from 'knex';
+import type { LifecycleService } from '@backstage/backend-plugin-api';
 import { ModelOperation } from '@backstage/ai-node/modules';
 import { ModelOperationGuard } from '@backstage/ai-node/modules';
 import { ModelRequests } from '@backstage/ai-node/modules';
@@ -40,9 +44,14 @@ import { ModuleAuthority } from '@backstage/ai-node/modules';
 import { Namespace } from '@backstage/ai-node/modules';
 import { OAuthLoginExchangeInput } from '@backstage/ai-node/modules';
 import { OAuthRefreshInput } from '@backstage/ai-node/modules';
+import type { PermissionCondition } from '@backstage/plugin-permission-common';
+import type { PermissionCriteria } from '@backstage/plugin-permission-common';
+import type { PermissionsService } from '@backstage/backend-plugin-api';
 import { ProviderAdapter } from '@backstage/ai-node/modules';
 import { ProviderAuthority } from '@backstage/ai-node/modules';
 import { ProviderEnvelope } from '@backstage/ai-node/modules';
+import type { QueryPermissionRequest } from '@backstage/plugin-permission-common';
+import type { QueryPermissionResponse } from '@backstage/plugin-permission-common';
 import { RecoveryEvent } from '@backstage/ai-node/modules';
 import { registerProviderCertification } from '@backstage/ai-node/modules';
 import { TrustedOperation } from '@backstage/ai-node/modules';
@@ -59,6 +68,9 @@ export { AiObservabilityEvent };
 export { AiProviderModule };
 
 export { AiProviderRegistry };
+
+// @alpha
+export const allowDecision: AuthorizePermissionResponse;
 
 export { AttemptDecision };
 
@@ -86,6 +98,13 @@ export const builtinProviderRegistry: Readonly<{
   hasOperation(operation: string): boolean;
   canonicalPath(path: string): string | undefined;
 }>;
+
+// @alpha
+export function conditionalDecision(input: {
+  pluginId: string;
+  resourceType: string;
+  conditions: PermissionCriteria<PermissionCondition>;
+}): QueryPermissionResponse;
 
 // @alpha
 export const CRASH_TEST_CHILD_ENV = 'AI_CRASH_TEST_CHILD';
@@ -159,6 +178,9 @@ export { createAiEventSink };
 export { createAttemptJournal };
 
 // @alpha
+export function createAuthServiceDouble(): AuthService;
+
+// @alpha
 export function createCrashTestFixture(
   options: CrashTestFixtureOptions,
 ): Promise<CrashTestFixture>;
@@ -170,11 +192,46 @@ export function createJournalHarness(
   options: JournalHarnessOptions,
 ): Promise<JournalHarness>;
 
+// @alpha
+export function createJsonResponse(
+  status: number,
+  body: unknown,
+  headers?: Readonly<Record<string, string>>,
+): Response;
+
+// @alpha
+export function createLifecycleServiceDouble(): LifecycleService & {
+  shutdownHooks: Array<() => void | Promise<void>>;
+  startupHooks: Array<() => void | Promise<void>>;
+};
+
 export { createModelOperationGuard };
+
+// @alpha
+export function createPermissionsServiceDouble(options?: {
+  authorize?: (
+    request: AuthorizePermissionRequest,
+    credentials: BackstageCredentials,
+  ) => AuthorizePermissionResponse | Promise<AuthorizePermissionResponse>;
+  query?: (
+    request: QueryPermissionRequest,
+    credentials: BackstageCredentials | undefined,
+  ) => QueryPermissionResponse | Promise<QueryPermissionResponse>;
+}): PermissionsService;
 
 export { createProviderRegistry };
 
+// @alpha
+export function createSseResponse(
+  status: number,
+  events: readonly string[],
+  headers?: Readonly<Record<string, string>>,
+): Response;
+
 export { CredentialScope };
+
+// @alpha
+export const denyDecision: AuthorizePermissionResponse;
 
 export { DestinationTemplate };
 
@@ -207,6 +264,13 @@ export interface JournalHarnessOptions {
   readonly providers: AiProviderRegistry;
 }
 
+// @alpha
+export function jsonTransport(
+  status: number,
+  body: unknown,
+  headers?: Readonly<Record<string, string>>,
+): typeof fetch;
+
 export { ModelOperation };
 
 export { ModelOperationGuard };
@@ -236,6 +300,14 @@ export function runCrashChild(options: {
   providers: AiProviderRegistry;
   dispatch(context: CrashChildContext): Promise<void>;
 }): Promise<void>;
+
+// @alpha
+export function testTransport(
+  handle: (
+    request: Request,
+    init?: RequestInit,
+  ) => Response | Promise<Response>,
+): typeof fetch;
 
 export { TrustedOperation };
 

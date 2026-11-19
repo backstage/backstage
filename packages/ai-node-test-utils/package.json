@@ -43,6 +43,7 @@
     "@backstage/ai-node": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
     "@earendil-works/pi-ai": "1.5.2",
     "knex": "^3.0.0"
   },

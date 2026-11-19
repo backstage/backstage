@@ -20,6 +20,7 @@ import type { TrustedOperation } from '@backstage/ai-node-test-utils/alpha';
 import {
   createGuardedModelOperations,
   createModelOperationGuard,
+  testTransport,
 } from '@backstage/ai-node-test-utils/alpha';
 import { createServer } from 'node:http';
 import { Worker } from 'node:worker_threads';
@@ -1333,7 +1334,7 @@ it('denies the SDK ADC sentinel before accessing credentials', async () => {
     context(),
     {
       apiKey: 'gcp-vertex-credentials',
-      fetch: guardedFetch as unknown as typeof fetch,
+      fetch: testTransport(guardedFetch),
       maxRetries: 0,
       env: {
         GOOGLE_CLOUD_PROJECT: 'test-project',
@@ -1447,7 +1448,7 @@ it('blocks ADC credential traffic outside the guarded transport', async () => {
     const guard = createModelOperationGuard({
       providers,
       journal: journal as never,
-      transport: guardedFetch as unknown as typeof fetch,
+      transport: testTransport(guardedFetch),
       recheck: async () => true,
     });
     const facade = createGuardedModelOperations({

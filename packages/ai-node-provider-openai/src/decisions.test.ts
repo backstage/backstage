@@ -18,6 +18,7 @@ import { once } from 'node:events';
 import {
   createGuardedModelOperations,
   createModelOperationGuard,
+  testTransport,
 } from '@backstage/ai-node-test-utils/alpha';
 import type {
   AttemptDecision,
@@ -148,7 +149,7 @@ function harness(model: AnyModel, operation: ModelOperation) {
       events.push('check');
       return true;
     },
-    transport: transport as unknown as typeof fetch,
+    transport: testTransport(transport),
   });
   const facade = createGuardedModelOperations({
     providers,
@@ -344,7 +345,7 @@ describe('OpenAI Decisions module', () => {
         providers: multiProviders,
         journal: storeMulti.journal,
         recheck: async () => true,
-        transport: send as unknown as typeof fetch,
+        transport: testTransport(send),
       });
       const facade = createGuardedModelOperations({
         providers: multiProviders,
@@ -390,7 +391,7 @@ describe('OpenAI Decisions module', () => {
         providers,
         journal: store.journal,
         recheck: async () => true,
-        transport: send as unknown as typeof fetch,
+        transport: testTransport(send),
       }).bind(op);
       await guard.fetch(op.destination!, {
         method: 'POST',

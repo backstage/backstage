@@ -81,6 +81,18 @@ export {
   type JournalHarnessOptions,
 } from './journalHarness';
 export {
+  allowDecision,
+  conditionalDecision,
+  createAuthServiceDouble,
+  createJsonResponse,
+  createLifecycleServiceDouble,
+  createPermissionsServiceDouble,
+  createSseResponse,
+  denyDecision,
+  jsonTransport,
+  testTransport,
+} from './typedDoubles';
+export {
   CRASH_TEST_CHILD_ENV,
   CRASH_TEST_DB_ENV,
   CRASH_TEST_FENCE_ENV,
