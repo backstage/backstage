@@ -150,6 +150,9 @@ export async function createDistWorkspace(
 ) {
   const logger = options.logger ?? { log: console.log, warn: console.warn };
   const packageManager = await detectPackageManager();
+  // Checked before anything is built, since a missing lockfile fails it
+  const files: FileEntry[] =
+    options.files ?? (await getDefaultWorkspaceFiles(packageManager));
 
   const targetDir =
     options.targetDir ??
@@ -253,9 +256,6 @@ export async function createDistWorkspace(
     Boolean(options.enableFeatureDetection),
     logger,
   );
-
-  const files: FileEntry[] =
-    options.files ?? (await getDefaultWorkspaceFiles(packageManager));
 
   for (const file of files) {
     const src = typeof file === 'string' ? file : file.src;
