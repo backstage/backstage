@@ -206,7 +206,7 @@ export const GroupProfileCard = (props: { showLinks?: boolean }) => {
                     defaultKind="Group"
                   />
                 ) : (
-                  'N/A'
+                  t('groupProfileCard.listItemValue.notAvailable')
                 )
               }
               secondary={t('groupProfileCard.listItemTitle.parentGroup')}
@@ -226,7 +226,7 @@ export const GroupProfileCard = (props: { showLinks?: boolean }) => {
                     defaultKind="Group"
                   />
                 ) : (
-                  'N/A'
+                  t('groupProfileCard.listItemValue.notAvailable')
                 )
               }
               secondary={t('groupProfileCard.listItemTitle.childGroups')}

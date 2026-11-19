@@ -214,6 +214,7 @@ export const orgTranslationRef: TranslationRef<
     readonly 'groupProfileCard.listItemTitle.entityRef': 'Entity Ref';
     readonly 'groupProfileCard.listItemTitle.parentGroup': 'Parent Group';
     readonly 'groupProfileCard.listItemTitle.childGroups': 'Child Groups';
+    readonly 'groupProfileCard.listItemValue.notAvailable': 'N/A';
     readonly 'membersListCard.title': '{{groupName}} members';
     readonly 'membersListCard.cardLabel': 'User page for {{memberName}}';
     readonly 'membersListCard.noMembersDescription': 'This group has no members.';
