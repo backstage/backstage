@@ -31,6 +31,17 @@ import { DiagnosticSeverity } from '@stoplight/types';
 import { pretty } from '@stoplight/spectral-formatters';
 import { getPathToOpenApiSpec } from '../../../../lib/openapi/helpers';
 
+/** @internal */
+export const allowReservedRule = {
+  given: '$.paths..parameters[?(@.in == "query")]',
+  then: {
+    field: 'allowReserved',
+    function: truthy,
+  },
+  severity: 'error',
+  message: 'Query parameters must set allowReserved: true',
+} as const;
+
 async function lint(directoryPath: string, config?: { strict: boolean }) {
   const { strict } = config ?? {};
   let openapiPath = '';
@@ -49,16 +60,7 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
     {
       extends: [oas, ruleset],
       rules: {
-        'allow-reserved-in-query-params': {
-          given: '$.paths..parameters[?(@.in == "query")]',
-          then: {
-            field: 'allowReserved',
-            function: truthy,
-          },
-          severity: 'error',
-          message:
-            'Query parameters must specify allowReserved (true or false)',
-        },
+        'allow-reserved-in-query-params': allowReservedRule,
       },
       overrides: [
         {
