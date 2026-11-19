@@ -71,13 +71,13 @@ export async function resolvePackagePaths(
   }
 
   if (exclude) {
-    packages = packages.filter(pkg =>
-      exclude.some(
-        pattern =>
-          !new Minimatch(pattern).match(
+    packages = packages.filter(
+      pkg =>
+        !exclude.some(pattern =>
+          new Minimatch(pattern).match(
             relativePath(targetPaths.rootDir, pkg.dir),
           ),
-      ),
+        ),
     );
   }
 
