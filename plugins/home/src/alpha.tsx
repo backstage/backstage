@@ -339,3 +339,9 @@ import { homeTranslationRef as _homeTranslationRef } from './translation';
  * @deprecated Import from `@backstage/plugin-home` instead.
  */
 export const homeTranslationRef = _homeTranslationRef;
+
+export { AddWidgetDialog } from './components/CustomHomepage/AddWidgetDialog';
+export type {
+  AddWidgetDialogProps,
+  AddWidgetDialogWidget,
+} from './components/CustomHomepage/AddWidgetDialog';

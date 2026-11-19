@@ -16,6 +16,7 @@
 
 import {
   isValidElement,
+  Suspense,
   useState,
   useCallback,
   useMemo,
@@ -31,7 +32,6 @@ import {
 } from '@backstage/core-plugin-api';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import Dialog from '@material-ui/core/Dialog';
 import {
   createStyles,
   makeStyles,
@@ -47,7 +47,7 @@ import {
 } from '@backstage/core-components';
 import Typography from '@material-ui/core/Typography';
 import { WidgetSettingsOverlay } from './WidgetSettingsOverlay';
-import { AddWidgetDialog } from './AddWidgetDialog';
+import { AddWidgetDialog, AddWidgetDialogWidget } from './AddWidgetDialog';
 import { CustomHomepageButtons } from './CustomHomepageButtons';
 import {
   CustomHomepageGridProps,
@@ -299,6 +299,13 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
     setAddWidgetDialogOpen(false);
   };
 
+  const handleAddFromDialog = ({ name }: AddWidgetDialogWidget) => {
+    const widget = getWidgetByName(name);
+    if (widget) {
+      handleAdd(widget);
+    }
+  };
+
   const handleRemove = (widgetId: string) => {
     setWidgets(widgets.filter(w => w.id !== widgetId));
   };
@@ -392,18 +399,14 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
           cancel={handleCancel}
         />
       </ContentHeader>
-      <Dialog
-        open={addWidgetDialogOpen}
-        onClose={() => setAddWidgetDialogOpen(false)}
-      >
-        {/* Only mount when open so the list does not update (e.g. remove the added widget) before the modal closes */}
-        {addWidgetDialogOpen && (
-          <AddWidgetDialog
-            widgets={getAvailableWidgets()}
-            handleAdd={handleAdd}
-          />
-        )}
-      </Dialog>
+      <Suspense fallback={null}>
+        <AddWidgetDialog
+          open={addWidgetDialogOpen}
+          onClose={() => setAddWidgetDialogOpen(false)}
+          widgets={getAvailableWidgets()}
+          handleAdd={handleAddFromDialog}
+        />
+      </Suspense>
       {!editMode && widgets.length === 0 && (
         <Typography variant="h5" align="center">
           {t('customHomepage.noWidgets')}
