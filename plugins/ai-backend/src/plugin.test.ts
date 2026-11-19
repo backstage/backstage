@@ -40,6 +40,7 @@ import { aiServiceRef } from '@backstage/ai-node/alpha';
 import type { AiService, ToolModule } from '@backstage/ai-node/alpha';
 import { ConfigReader } from '@backstage/config';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { signalsServiceRef } from '@backstage/plugin-signals-node';
 import {
   notificationService,
   type NotificationSendOptions,
@@ -818,7 +819,7 @@ describe.each<[string, string | undefined]>([
       res.write(chunk({ role: 'assistant', content: 'Hello' }, null));
       setTimeout(() => {
         res.end(`${chunk({}, 'stop')}data: [DONE]\n\n`);
-      }, 100);
+      }, 250);
     });
     provider.listen(0, '127.0.0.1');
     await once(provider, 'listening');
@@ -909,9 +910,11 @@ describe.each<[string, string | undefined]>([
         // the full sequence rather than racing individual deliveries.
         const eventOf = (signal: SignalPayload) =>
           (signal.message as { event?: string }).event;
+        // Bounded so the worst case (200 x 20ms = 4s) always fits inside
+        // the test's 30s timeout.
         for (
           let i = 0;
-          i < 250 &&
+          i < 200 &&
           !['submission', 'partial', 'answer', 'settled'].every(event =>
             published.some(signal => eventOf(signal) === event),
           );
@@ -957,7 +960,7 @@ describe.each<[string, string | undefined]>([
       provider.close();
       await once(provider, 'close');
     }
-  });
+  }, 30000);
 
   it('notifies the owner when a submission settles after its stream is gone', async () => {
     const provider = createServer((req, res) => {
@@ -1083,5 +1086,105 @@ describe.each<[string, string | undefined]>([
       provider.close();
       await once(provider, 'close');
     }
-  });
+  }, 30000);
+
+  it('publishes the mirror events in submission order at the signals seam', async () => {
+    const provider = createServer((req, res) => {
+      req.resume();
+      res.writeHead(200, { 'content-type': 'text/event-stream' });
+      const chunk = (delta: object, finish: string | null) =>
+        `data: ${JSON.stringify({
+          id: 'test',
+          object: 'chat.completion.chunk',
+          created: 1,
+          model: 'example',
+          choices: [{ index: 0, delta, finish_reason: finish }],
+        })}\n\n`;
+      res.write(chunk({ role: 'assistant', content: 'Hello' }, null));
+      setTimeout(() => {
+        res.end(`${chunk({}, 'stop')}data: [DONE]\n\n`);
+      }, 250);
+    });
+    provider.listen(0, '127.0.0.1');
+    await once(provider, 'listening');
+    const port = (provider.address() as { port: number }).port;
+    const { knex, close } = await database(pgUrl);
+    // The mocked publish seam: call order is deterministic there, so
+    // submission-before-settled is proven on the mirror itself.
+    const sent: SignalPayload[] = [];
+    const signals = createServiceFactory({
+      service: signalsServiceRef,
+      deps: {},
+      factory: async () => ({
+        publish: async (signal: SignalPayload) => {
+          sent.push(signal);
+        },
+      }),
+    });
+    try {
+      const backend = await startTestBackend({
+        features: [
+          plugin,
+          signals,
+          httpRouterServiceFactory,
+          mockServices.database.factory({ knex }),
+          mockServices.rootConfig.factory({
+            data: {
+              ai: {
+                models: [
+                  {
+                    provider: 'openai',
+                    modelId: 'example',
+                    api: 'openai-completions',
+                    baseUrl: `http://127.0.0.1:${port}/v1`,
+                    contextWindow: 10000,
+                    maxTokens: 1000,
+                  },
+                ],
+                credentials: {
+                  encryptionKey: Buffer.alloc(32, 9).toString('base64'),
+                  scopes: {
+                    org: { openai: { type: 'api_key', key: 'test-key' } },
+                  },
+                },
+              },
+            },
+          }),
+        ],
+      });
+      try {
+        const alice = mockCredentials.user.token('user:default/alice');
+        const created = await request(backend.server)
+          .post('/api/ai/v1/sessions')
+          .auth(alice, { type: 'bearer' })
+          .send({ model: { provider: 'openai', modelId: 'example' } });
+        const session = created.body.sessionId;
+        const result = await request(backend.server)
+          .post(
+            `/api/ai/v1/sessions/${session}/conversations/${created.body.conversationId}/messages`,
+          )
+          .auth(alice, { type: 'bearer' })
+          .send({ content: 'hello' });
+        expect(result.status).toBe(200);
+        expect(result.text).toContain('event: settled');
+        expect(
+          sent.map(signal => (signal.message as { event: string }).event),
+        ).toEqual(['submission', 'partial', 'answer', 'settled']);
+        const channel = `ai.session.${session}.${created.body.conversationId}`;
+        for (const signal of sent) {
+          expect(signal.channel).toBe(channel);
+          expect(signal.recipients).toEqual({
+            type: 'user',
+            entityRef: 'user:default/alice',
+          });
+        }
+      } finally {
+        await backend.stop();
+      }
+    } finally {
+      await close();
+      provider.close();
+      await once(provider, 'close');
+    }
+  }, 30000);
 });
