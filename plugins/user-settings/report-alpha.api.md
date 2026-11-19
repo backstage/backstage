@@ -273,8 +273,8 @@ export const userSettingsTranslationRef: TranslationRef<
     readonly 'featureFlags.emptyFlags.action.title': 'An example for how to add a feature flag is highlighted below:';
     readonly 'featureFlags.emptyFlags.action.readMoreButtonTitle': 'Read More';
     readonly 'featureFlags.emptyFlags.description': 'Feature Flags make it possible for plugins to register features in Backstage for users to opt into. You can use this to split out logic in your code for manual A/B testing, etc.';
-    readonly 'featureFlags.flagItem.title.disable': 'Disable';
     readonly 'featureFlags.flagItem.title.enable': 'Enable';
+    readonly 'featureFlags.flagItem.title.disable': 'Disable';
     readonly 'featureFlags.flagItem.subtitle.registeredInApplication': 'Registered in the application';
     readonly 'featureFlags.flagItem.subtitle.registeredInPlugin': 'Registered in {{pluginId}} plugin';
     readonly 'languageToggle.select': 'Select language {{language}}';
