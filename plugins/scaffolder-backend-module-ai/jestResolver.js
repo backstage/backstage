@@ -28,7 +28,9 @@
  * CommonJS dependencies in the graph (for example `pg`) are unaffected.
  *
  * It is referenced from the "jest" key of this package's package.json, which
- * the Backstage CLI merges into the generated per-package Jest config.
+ * the Backstage CLI merges into the generated per-package Jest config. Its
+ * unique Jest id prevents the parallel runner from reusing another project's
+ * resolver when the CLI assigns the same id to projects with equal transforms.
  */
 
 const PI_SPECIFIER = /(?:^|\/)@earendil-works\//;
