@@ -28,6 +28,7 @@ import {
   moveAppTask,
   templatingTask,
   tryInitGitRepository,
+  tryAddToInitialCommit,
   readGitConfig,
   fetchYarnLockSeedTask,
 } from './tasks';
@@ -682,6 +683,30 @@ describe('tasks', () => {
         { cwd: destinationDir },
         expect.any(Function),
       );
+    });
+  });
+
+  describe('tryAddToInitialCommit', () => {
+    it('should add the file to the initial commit, and report a failure', async () => {
+      const destinationDir = 'tmp/mockApp';
+      mockExec.mockImplementation((_command, _opts, callback) => {
+        callback(null, { stdout: '', stderr: '' });
+      });
+
+      await expect(
+        tryAddToInitialCommit(destinationDir, 'pnpm-lock.yaml'),
+      ).resolves.toBe(true);
+      expect(mockExec.mock.calls.map(([command]) => command)).toEqual([
+        'git add -- "pnpm-lock.yaml"',
+        'git commit --amend --no-edit',
+      ]);
+
+      mockExec.mockImplementation((_command, _opts, callback) => {
+        callback(new Error('no identity'), { stdout: '', stderr: '' });
+      });
+      await expect(
+        tryAddToInitialCommit(destinationDir, 'pnpm-lock.yaml'),
+      ).resolves.toBe(false);
     });
   });
 
