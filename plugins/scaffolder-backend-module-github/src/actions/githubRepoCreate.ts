@@ -124,7 +124,6 @@ export function createGithubRepoCreateAction(options: {
         token: providedToken,
         host,
         owner,
-        repo,
       });
       const client = new Octokit({
         ...octokitOptions,

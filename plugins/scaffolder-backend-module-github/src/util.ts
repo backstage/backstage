@@ -203,9 +203,9 @@ export async function getOctokitOptions(options: {
     );
   }
 
-  if (!owner || !repo) {
+  if (!owner) {
     throw new InputError(
-      `No owner and/or repo provided, which is required if a token is not provided`,
+      `No owner provided, which is required if a token is not provided`,
     );
   }
 
@@ -215,14 +215,17 @@ export async function getOctokitOptions(options: {
 
   const { token: credentialProviderToken } =
     await githubCredentialsProvider.getCredentials({
-      url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
-        repo,
-      )}`,
+      url: repo
+        ? `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
+            repo,
+          )}`
+        : `https://${host}/${encodeURIComponent(owner)}`,
     });
 
   if (!credentialProviderToken) {
+    const repoDetail = repo ? `, and repo ${repo}` : '';
     throw new InputError(
-      `No token available for host: ${host}, with owner ${owner}, and repo ${repo}. Make sure GitHub auth is configured correctly. See https://backstage.io/docs/auth/github/provider for more details.`,
+      `No token available for host: ${host}, with owner ${owner}${repoDetail}. Make sure GitHub auth is configured correctly. See https://backstage.io/docs/auth/github/provider for more details.`,
     );
   }
 

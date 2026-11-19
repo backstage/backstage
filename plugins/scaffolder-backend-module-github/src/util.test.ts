@@ -215,4 +215,32 @@ describe('getOctokitOptions', () => {
     );
     expect(getCredentials).not.toHaveBeenCalled();
   });
+
+  it('resolves organization-level credentials when repo is omitted and requires owner', async () => {
+    await expect(
+      getOctokitOptions({
+        integrations,
+        credentialsProvider,
+        host: 'github.com',
+        owner: 'backstage',
+      }),
+    ).resolves.toEqual({
+      auth: 'integration-token',
+      baseUrl: 'https://api.github.com',
+      previews: ['nebula-preview'],
+    });
+    expect(getCredentials).toHaveBeenCalledWith({
+      url: 'https://github.com/backstage',
+    });
+
+    await expect(
+      getOctokitOptions({
+        integrations,
+        credentialsProvider,
+        host: 'github.com',
+      }),
+    ).rejects.toThrow(
+      'No owner provided, which is required if a token is not provided',
+    );
+  });
 });
