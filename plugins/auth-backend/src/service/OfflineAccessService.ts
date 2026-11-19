@@ -299,6 +299,11 @@ export class OfflineAccessService {
     const { token: accessToken } = await tokenIssuer.issueToken({
       claims: {
         sub: rotatedSession.userEntityRef,
+        // Carried across refreshes, otherwise the claim would silently
+        // disappear from every token after the first one.
+        ...(rotatedSession.oidcClientId
+          ? { azp: rotatedSession.oidcClientId }
+          : {}),
       },
     });
 
