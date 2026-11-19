@@ -144,10 +144,12 @@ onto the module's certified route templates — the journal's route-template
 check is unchanged and now certifies `gateway base + route`. The wrapped
 module's adapter, envelope validation and certification carry over; the
 wrapper contributes only the base and the credential interpretation, which
-defaults to `api_key` keyed by the gateway's own provider id. A wrapped
-module replaces the direct module for its `api` in the registry it is
-registered into — both declare the same module id, so register one or the
-other, never both:
+defaults to `api_key` keyed by the gateway's own provider id. A module
+without certified destinations (a local tool module) is rejected at
+construction — there is no route to compose the gateway base onto. A
+wrapped module replaces the direct module for its `api` in the registry it
+is registered into — both declare the same module id, so register one or
+the other, never both:
 
 ```ts
 import { wrapProviderModule } from '@backstage/ai-node/modules';

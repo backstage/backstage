@@ -49,7 +49,10 @@ export type WrapProviderModuleOptions = Readonly<{
  * and authority interpretation carry over unchanged. The wrapper contributes
  * exactly two things: the gateway base, joined onto every certified route
  * template and destination at construction, and the credential
- * interpretation, keyed by the gateway's own provider id.
+ * interpretation, keyed by the gateway's own provider id. A module without
+ * certified destinations — a local tool module, for example — is rejected
+ * at construction, because there is no route to compose the gateway base
+ * onto.
  *
  * Route templates stay suffix-composed from the module's own certified
  * shapes — the journal's template check is untouched and now sees
@@ -112,7 +115,10 @@ export function wrapProviderModule(
   let probePath: string | undefined;
   try {
     const probe = new URL(
-      innerDestination({ baseUrl: options.baseUrl } as unknown as AnyModel, undefined),
+      innerDestination(
+        { baseUrl: options.baseUrl } as unknown as AnyModel,
+        undefined,
+      ),
     );
     probePath = probe.pathname;
   } catch {
