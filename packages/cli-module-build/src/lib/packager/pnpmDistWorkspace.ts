@@ -48,7 +48,12 @@ const STRINGIFY_OPTIONS = { lineWidth: 0, flowCollectionPadding: false };
  * - The lockfile entries of the workspace packages that are not copied into
  *   the dist workspace are removed. A frozen install fails on such an entry
  *   when its directory exists, as the root of a Backstage installation in a
- *   subdirectory does when its packages are copied.
+ *   subdirectory does when its packages are copied. The dist workspace holds
+ *   every local package that a copied one depends on outside of its
+ *   `devDependencies`, so only a development dependency or the root
+ *   `package.json` can still link to a removed one. pnpm installs such a
+ *   lockfile and creates that link to the missing directory, which a
+ *   production install leaves out.
  * - The patch files that `patchedDependencies` points at, and the pnpmfiles,
  *   are copied. Patch files outside of the workspace root are copied into
  *   `patches`, and pnpmfiles outside of it into the root of the dist

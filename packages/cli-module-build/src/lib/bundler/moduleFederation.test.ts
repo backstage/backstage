@@ -184,7 +184,7 @@ describe('resolveSharedDependencyVersions', () => {
       }),
     ).toEqual({ react: { ...sharedDep, version: '18.3.1' } });
     expect(log).toHaveBeenCalledWith(
-      "Skipping module federation shared dependency '@emotion/react' because the app does not depend on it.",
+      "Skipping module federation shared dependency '@emotion/react' because it is not installed where the app can import it.",
     );
     log.mockRestore();
   });
