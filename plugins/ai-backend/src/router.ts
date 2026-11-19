@@ -19,7 +19,13 @@ import express, { type Request } from 'express';
 import Router from 'express-promise-router';
 import { ConfigReader } from '@backstage/config';
 import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
-import type { HttpAuthService } from '@backstage/backend-plugin-api';
+import type {
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import type { JsonObject } from '@backstage/types';
+import type { SignalsService } from '@backstage/plugin-signals-node';
+import type { NotificationService } from '@backstage/plugin-notifications-node';
 import type {
   AiHealthReport,
   AiHttpSupport,
@@ -60,6 +66,11 @@ export function createRouter(options: {
   httpAuth: HttpAuthService;
   /** Fail-open health evaluation over the service's observability events. */
   health: () => AiHealthReport;
+  /** Live observation channel for session events; see the README. */
+  signals: SignalsService;
+  /** Platform nudge when a submission settles after its stream is gone. */
+  notifications: NotificationService;
+  logger: LoggerService;
 }): express.Router {
   const router = Router();
   router.use(express.json({ limit: '64kb' }));
@@ -258,7 +269,35 @@ export function createRouter(options: {
             });
             res.flushHeaders();
           }
+          // The owner this stream and every mirror is gated to: signals
+          // delivery is filtered to the publisher's recipients, and the
+          // notification goes to the same user.
+          const ownerRef = (actor.principal as { userEntityRef?: string })
+            .userEntityRef;
+          const channel = `ai.session.${req.params.sessionId}.${req.params.conversationId}`;
+          // No owner ref, no mirror: delivery is gated to the recipient,
+          // so a signal we cannot address is a signal we do not send.
+          const mirror = ownerRef
+            ? (event: string, value: unknown) => {
+                void options.signals
+                  .publish({
+                    recipients: { type: 'user', entityRef: ownerRef },
+                    channel,
+                    message: { event, data: value } as JsonObject,
+                  })
+                  .catch(error => {
+                    options.logger.warn(
+                      `AI session signal publish failed on ${channel}: ${error}`,
+                    );
+                  });
+              }
+            : undefined;
+          // Mirror of the inline stream: the submitter's direct SSE is
+          // unchanged; the same events also ride the signals channel for
+          // the owner's other connections. Fire-and-forget — observation
+          // can never break the dispatch it observes.
           const send = async (event: string, value: unknown) => {
+            mirror?.(event, value);
             if (disconnected || res.destroyed || res.writableEnded) return;
             if (
               !res.write(`event: ${event}\ndata: ${JSON.stringify(value)}\n\n`)
@@ -296,6 +335,27 @@ export function createRouter(options: {
             await send('partial', { text });
           });
           const settled = await submission.wait(handle.context);
+          if ((disconnected || res.destroyed) && ownerRef) {
+            // The stream is gone and the settlement arrived after it: the
+            // owner gets the platform nudge instead. A client that was
+            // still streaming received `settled` inline — no duplicate.
+            void options.notifications
+              .send({
+                recipients: { type: 'entity', entityRef: ownerRef },
+                payload: {
+                  title: 'Your AI submission has finished',
+                  description: `The submission settled with status '${settled.status}'.`,
+                  severity: 'normal',
+                  topic: 'ai',
+                  link: `/ai/sessions/${req.params.sessionId}`,
+                },
+              })
+              .catch(error => {
+                options.logger.warn(
+                  `AI settlement notification failed for ${ownerRef}: ${error}`,
+                );
+              });
+          }
           if (settled.status === 'done' && settled.answer !== undefined) {
             const page = await conversation.entries(
               { minEntryId: settled.answer, maxEntryId: settled.answer },
