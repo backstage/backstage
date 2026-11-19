@@ -124,6 +124,7 @@ export class DocsBuilder {
     }
 
     let preparedDir: string | undefined;
+    let cleanPreparedDir = false;
     let outputDir: string | undefined;
 
     try {
@@ -135,6 +136,9 @@ export class DocsBuilder {
         });
 
         preparedDir = preparerResponse.preparedDir;
+        cleanPreparedDir =
+          preparerResponse.shouldCleanPreparedDirectory ??
+          this.preparer.shouldCleanPreparedDirectory();
         newEtag = preparerResponse.etag;
       } catch (err) {
         if (isError(err) && err.name === 'NotModifiedError') {
@@ -216,10 +220,8 @@ export class DocsBuilder {
         await this.cache.invalidateMultiple(published.objects);
       }
     } finally {
-      // Remove Prepared directory since it is no longer needed.
-      // Caveat: Can not remove prepared directory in case of git preparer since the
-      // local git repository is used to get etag on subsequent requests.
-      if (preparedDir && this.preparer.shouldCleanPreparedDirectory()) {
+      // Preparers can hand back the source itself rather than a copy, which must survive
+      if (preparedDir && cleanPreparedDir) {
         this.logger.debug(`Removing prepared directory ${preparedDir}`);
         try {
           // Not a blocker hence no need to await this.

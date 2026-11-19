@@ -60,8 +60,35 @@ describe('directory preparer', () => {
       [TECHDOCS_ANNOTATION]: 'dir:./our-documentation',
     });
 
-    const { preparedDir } = await directoryPreparer.prepare(mockEntity);
+    const { preparedDir, shouldCleanPreparedDirectory } =
+      await directoryPreparer.prepare(mockEntity);
     expect(normalizePath(preparedDir)).toEqual('/directory/our-documentation');
+    expect(shouldCleanPreparedDirectory).toBe(false);
+  });
+
+  it('should mark a tree downloaded from a url location for cleanup', async () => {
+    const directoryPreparer = DirectoryPreparer.fromConfig(mockConfig, {
+      logger,
+      reader: mockUrlReader,
+    });
+    mockUrlReader.readTree.mockResolvedValueOnce({
+      dir: async () => '/tmp/backstage-abc123',
+      etag: 'etag-1',
+      files: async () => [],
+      archive: async () => Buffer.from(''),
+    } as any);
+
+    const mockEntity = createMockEntity({
+      'backstage.io/managed-by-location':
+        'url:https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+      [TECHDOCS_ANNOTATION]: 'dir:.',
+    });
+
+    await expect(directoryPreparer.prepare(mockEntity)).resolves.toEqual({
+      preparedDir: '/tmp/backstage-abc123',
+      etag: 'etag-1',
+      shouldCleanPreparedDirectory: true,
+    });
   });
 
   it('should reject when techdocs-ref is absolute', async () => {

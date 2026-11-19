@@ -91,6 +91,7 @@ export class DirectoryPreparer implements PreparerBase {
         return {
           preparedDir,
           etag: response.etag,
+          shouldCleanPreparedDirectory: true,
         };
       }
 
@@ -100,6 +101,8 @@ export class DirectoryPreparer implements PreparerBase {
           preparedDir: target,
           // Instead of supporting caching on local sources, use techdocs-cli for local development and debugging.
           etag: '',
+          // The target is the source itself, not a copy
+          shouldCleanPreparedDirectory: false,
         };
       }
 
