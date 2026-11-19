@@ -26,13 +26,13 @@ export interface OverrideTargetPathsOptions {
   /** The target package directory. */
   dir: string;
   /**
-   * The target monorepo root directory, used as the default for
-   * `workspaceRootDir`. Defaults to `dir` if not provided.
+   * The target monorepo root directory, the older name of
+   * `workspaceRootDir`, which is used when that option is not given.
    */
   rootDir?: string;
   /**
    * The workspace root directory. Defaults to `rootDir`, or else
-   * `installationRootDir`.
+   * `installationRootDir`, or else `dir`.
    */
   workspaceRootDir?: string;
   /**

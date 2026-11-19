@@ -23,6 +23,7 @@ import * as url from 'node:url';
 import debounce from 'lodash/debounce';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ForwardedError } from '@backstage/errors';
+import { isChildPath } from '@backstage/cli-common';
 
 export interface DynamicPluginScannerOptions {
   config: Config;
@@ -122,9 +123,10 @@ export class PluginScanner {
     // The shared modules are installed in the workspace root, which plugins
     // inside of it reach through the normal node_modules lookup
     if (
-      !path
-        .dirname(dynamicPluginsRootPath)
-        .startsWith(path.resolve(this.workspaceRoot))
+      !isChildPath(
+        path.resolve(this.workspaceRoot),
+        path.dirname(dynamicPluginsRootPath),
+      )
     ) {
       const nodePath = process.env.NODE_PATH;
       const backstageNodeModules = path.resolve(

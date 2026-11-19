@@ -145,7 +145,7 @@ describe('targetPaths', () => {
       // which a workspaces field marks, and one backstage.json at the top
       'pnpm/package.json': '{}',
       'pnpm/pnpm-workspace.yaml':
-        "packages:\n  - apps/**\n  - '!apps/excluded/**'\n  - '!apps/kept'\n  - ./libs/*\n  - other/{lib-?,svc}\n  - nested/*/packages/*\n  - single/*\n  - '!single/left-out'\n",
+        "packages:\n  - apps/**\n  - '!apps/excluded/**'\n  - '!apps/kept'\n  - ./libs/*\n  - other/{lib-?,svc}\n  - nested/*/packages/*\n  - '!nested/backstage/x/x'\n  - single/*\n  - '!single/left-out'\n",
       'pnpm/backstage.json': '{}',
       'pnpm/apps/backstage/package.json': JSON.stringify({
         workspaces: ['packages/*'],
@@ -160,7 +160,8 @@ describe('targetPaths', () => {
       'pnpm/apps/second/backstage.json': '{}',
       'pnpm/apps/second/packages/app/package.json': '{}',
       'pnpm/libs/other/package.json': '{}',
-      // An installation that only a pattern for its packages includes
+      // An installation that only a pattern for its packages includes, with
+      // a negation that leaves out a single directory inside it
       'pnpm/nested/backstage/package.json': JSON.stringify({
         workspaces: ['packages/*'],
       }),
@@ -213,6 +214,9 @@ describe('targetPaths', () => {
       'yarn/package.json': JSON.stringify({ workspaces: ['packages/*'] }),
       'yarn/backstage.json': '{}',
       'yarn/packages/app/package.json': '{}',
+      // A fixture with a pnpm-workspace.yaml that only holds settings
+      'yarn/packages/app/fixture/pnpm-workspace.yaml': 'nodeLinker: hoisted\n',
+      'yarn/packages/app/fixture/package.json': '{}',
       // A package that is not part of any workspace
       'standalone/package.json': '{}',
       // Yarn projects inside a pnpm workspace that matches every directory
@@ -227,6 +231,15 @@ describe('targetPaths', () => {
         packageManager: 'yarn@4.18.1+sha512.abc',
       }),
       'pnpm-all/yarn-field/packages/a/package.json': '{}',
+      // A Yarn project without a workspaces field
+      'pnpm-all/yarn-single/package.json': JSON.stringify({
+        packageManager: 'yarn@4.18.1',
+      }),
+      'pnpm-all/yarn-single/yarn.lock': '',
+      'pnpm-all/yarn-single/src/index.ts': '',
+      // A package of the pnpm workspace
+      'pnpm-all/member/package.json': '{}',
+      'pnpm-all/member/src/index.ts': '',
       // A yarn.lock left behind after moving to pnpm doesn't count
       'pnpm-all/migrated/package.json': JSON.stringify({
         workspaces: ['packages/*'],
@@ -253,6 +266,27 @@ describe('targetPaths', () => {
       'pnpm-all/both-lockfiles/yarn.lock': '',
       'pnpm-all/both-lockfiles/pnpm-lock.yaml': '',
       'pnpm-all/both-lockfiles/packages/a/package.json': '{}',
+      // A pnpm-workspace.yaml in a Yarn project isn't read, even when it is
+      // broken or has packages
+      'yarn-leftover/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+        packageManager: 'yarn@4.18.1',
+      }),
+      'yarn-leftover/pnpm-workspace.yaml': 'packages: [\n',
+      'yarn-leftover/packages/a/package.json': '{}',
+      'yarn-single-leftover/package.json': JSON.stringify({
+        packageManager: 'yarn@4.18.1',
+      }),
+      'yarn-single-leftover/yarn.lock': '',
+      'yarn-single-leftover/pnpm-workspace.yaml': 'packages:\n  - packages/*\n',
+      'yarn-single-leftover/src/index.ts': '',
+      // A pnpm-workspace.yaml that can't be parsed counts as a workspace that
+      // includes everything inside it, and pnpm reports the error
+      'pnpm-broken/package.json': '{}',
+      'pnpm-broken/pnpm-workspace.yaml': 'packages: [\n',
+      'pnpm-broken/apps/backstage/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
       // A broken pnpm-workspace.yaml above a Yarn project isn't read
       'broken-pnpm/pnpm-workspace.yaml': 'packages: [\n',
       'broken-pnpm/yarn/package.json': JSON.stringify({
@@ -395,6 +429,13 @@ describe('targetPaths', () => {
       'pnpm-app/backstage.json',
     );
     expectRoots('yarn/packages/app', 'yarn', 'yarn', 'yarn/backstage.json');
+    // A pnpm-workspace.yaml without packages doesn't start a workspace
+    expectRoots(
+      'yarn/packages/app/fixture',
+      'yarn',
+      'yarn',
+      'yarn/backstage.json',
+    );
 
     // A Yarn project is a workspace of its own, even when the patterns of a
     // pnpm workspace above include it
@@ -409,6 +450,26 @@ describe('targetPaths', () => {
       'pnpm-all/yarn-field',
       'pnpm-all/yarn-field',
       'pnpm-all/yarn-field/backstage.json',
+    );
+    // Above a Yarn project without a workspaces field, the pnpm workspace
+    // doesn't count, so it is a package of its own as without pnpm
+    expectRoots(
+      'pnpm-all/yarn-single',
+      'pnpm-all/yarn-single',
+      'pnpm-all/yarn-single',
+      'pnpm-all/yarn-single/backstage.json',
+    );
+    expectRoots(
+      'pnpm-all/yarn-single/src',
+      'pnpm-all/yarn-single/src',
+      'pnpm-all/yarn-single/src',
+      'pnpm-all/yarn-single/src/backstage.json',
+    );
+    expectRoots(
+      'pnpm-all/member/src',
+      'pnpm-all',
+      'pnpm-all',
+      'pnpm-all/backstage.json',
     );
     expectRoots(
       'pnpm-all/migrated/packages/a',
@@ -433,6 +494,24 @@ describe('targetPaths', () => {
       'pnpm-all',
       'pnpm-all/both-lockfiles',
       'pnpm-all/both-lockfiles/backstage.json',
+    );
+    expectRoots(
+      'yarn-leftover/packages/a',
+      'yarn-leftover',
+      'yarn-leftover',
+      'yarn-leftover/backstage.json',
+    );
+    expectRoots(
+      'yarn-single-leftover/src',
+      'yarn-single-leftover/src',
+      'yarn-single-leftover/src',
+      'yarn-single-leftover/src/backstage.json',
+    );
+    expectRoots(
+      'pnpm-broken/apps/backstage',
+      'pnpm-broken',
+      'pnpm-broken/apps/backstage',
+      'pnpm-broken/apps/backstage/backstage.json',
     );
     expectRoots(
       'broken-pnpm/yarn/packages/a',

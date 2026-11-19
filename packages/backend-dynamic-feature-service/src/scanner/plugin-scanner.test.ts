@@ -176,6 +176,25 @@ Please add '${mockDir.resolve(
         )}'.`,
       },
       {
+        name: 'valid config with root directory path in a sibling of the workspace root with the same name prefix',
+        backstageRoot: mockDir.resolve('workspace'),
+        fileSystem: {
+          'workspace-plugins': {
+            'dist-dynamic': {},
+          },
+        },
+        config: {
+          dynamicPlugins: {
+            rootDirectory: mockDir.resolve('workspace-plugins/dist-dynamic'),
+          },
+        },
+        expectedError: `Dynamic plugins under '${mockDir.resolve(
+          'workspace-plugins/dist-dynamic',
+        )}' cannot access backstage modules in '${mockDir.resolve(
+          'workspace/node_modules',
+        )}'.`,
+      },
+      {
         name: 'invalid config: dynamicPlugins not an object',
         config: {
           dynamicPlugins: 1,

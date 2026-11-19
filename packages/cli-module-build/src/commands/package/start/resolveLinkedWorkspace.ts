@@ -39,10 +39,11 @@ export async function resolveLinkedWorkspace(
     });
 
   // pnpm declares workspace packages in pnpm-workspace.yaml rather than
-  // package.json. Without a packages field the file only holds settings.
+  // package.json. Without a packages field the file only holds settings. A
+  // workspaces field is enough, so a file that Yarn ignores isn't read.
   let isPnpmWorkspace = false;
   const pnpmWorkspacePath = resolvePath(dir, 'pnpm-workspace.yaml');
-  if (await fs.pathExists(pnpmWorkspacePath)) {
+  if (!pkgJson.workspaces && (await fs.pathExists(pnpmWorkspacePath))) {
     try {
       const data = yaml.parse(await fs.readFile(pnpmWorkspacePath, 'utf8'));
       isPnpmWorkspace = Array.isArray(data?.packages);

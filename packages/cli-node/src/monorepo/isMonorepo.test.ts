@@ -67,5 +67,51 @@ describe('isMonoRepo', () => {
       'pnpm-workspace.yaml': 'packages: [\n',
     });
     await expect(isMonoRepo()).resolves.toBe(true);
+
+    // A pnpm-workspace.yaml in a Yarn project isn't read, broken or not
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        name: 'foo',
+        packageManager: 'yarn@4.18.1',
+      }),
+      'pnpm-workspace.yaml': 'packages:\n  - packages/*\n',
+    });
+    await expect(isMonoRepo()).resolves.toBe(false);
+    mockDir.setContent({
+      'package.json': JSON.stringify({ name: 'foo' }),
+      'yarn.lock': '',
+      'pnpm-workspace.yaml': 'packages: [\n',
+    });
+    await expect(isMonoRepo()).resolves.toBe(false);
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        name: 'foo',
+        devEngines: { packageManager: [{ name: 'yarn' }, { name: 'pnpm' }] },
+      }),
+      'pnpm-workspace.yaml': 'packages:\n  - packages/*\n',
+    });
+    await expect(isMonoRepo()).resolves.toBe(false);
+    // pnpm-lock.yaml wins over a yarn.lock left behind after a migration
+    mockDir.setContent({
+      'package.json': JSON.stringify({ name: 'foo' }),
+      'yarn.lock': '',
+      'pnpm-lock.yaml': '',
+      'pnpm-workspace.yaml': 'packages:\n  - packages/*\n',
+    });
+    await expect(isMonoRepo()).resolves.toBe(true);
+    mockDir.setContent({
+      'package.json': JSON.stringify({ name: 'foo' }),
+      'pnpm-workspace.yaml': 'packages: [\n',
+    });
+
+    // Also when the roots come from the lookup rather than from an override
+    overrideTargetPaths(mockDir.path).restore();
+    const cwd = jest.spyOn(process, 'cwd').mockReturnValue(mockDir.path);
+    try {
+      await expect(isMonoRepo()).resolves.toBe(true);
+    } finally {
+      cwd.mockRestore();
+      overrideTargetPaths(mockDir.path);
+    }
   });
 });
