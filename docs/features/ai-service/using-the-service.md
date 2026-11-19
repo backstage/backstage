@@ -16,7 +16,7 @@ A plugin opens a _harness_ through the AI service. The harness is a
 process-local, reference-counted handle: model calls made through it run
 through the guarded path — permissions checked with the caller's own
 credentials, credentials resolved from the installation's stores, every
-decision journaled before dispatch.
+decision written to the journal before dispatch.
 
 ```ts
 import {

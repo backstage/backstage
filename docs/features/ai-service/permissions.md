@@ -128,13 +128,13 @@ evaluated in-process when the decision returns: the service validates the
 returned decision envelope and the entire condition tree before evaluating
 it, and any condition it cannot evaluate — an unknown rule, a foreign
 resource type, malformed parameters — denies, fail closed, with the reason
-journaled.
+recorded in the journal.
 
 ## The default and its sharp edge
 
 With no policy configured, the permission framework allows everything:
-every cataloged model is dispatchable, every tool usable, every feature
-grantable. This is the standard Backstage default and it composes with the
+every cataloged model can be dispatched, every tool used, every feature
+granted. This is the standard Backstage default and it composes with the
 community RBAC plugin the way other Backstage permissions do. The sharp
 edge is the same one every resource permission has: a blanket `ALLOW` on
 `ai.model.use` grants every cataloged model to every caller. If you run

@@ -5,7 +5,7 @@ Reference raw shell tool server for the Backstage managed AI service.
 The managed AI service (`@backstage/ai-node`) mediates tool dispatch through
 one seam: a registered tool server is authorized per attempt against
 `ai.tool.use` with the caller's own credentials, fenced to the session, and
-journaled. Most tool servers dispatch over HTTP; the seam also accepts a
+recorded in the journal. Most tool servers dispatch over HTTP; the seam also accepts a
 **local** server, whose dispatch runs a host function in process.
 
 This package is the reference local server: one `run` tool that executes a
@@ -46,7 +46,7 @@ process-level:
   the command starts;
 - the session fence and the credential generation are rechecked, so a revoked
   or superseded authority stops the next command;
-- the decision and the outcome are journaled, and a denial means nothing
+- the decision and the outcome are recorded in the journal, and a denial means nothing
   executes.
 
 `run` accepts `{ command, stdin? }`; a non-zero exit reports a `failed`
@@ -55,9 +55,11 @@ killed and reported as `cancelled`.
 
 ## The audit boundary: identity, not content
 
-Shell invocations are authorized, fenced and journaled **by identity** per
+Shell invocations are authorized, fenced, and recorded in the journal **by
+identity** per
 attempt — `serverId`/`toolName`, the session, the acting principal, the
-decision and the outcome — and **command content is never journaled**. Free
+decision and the outcome — and **command content never reaches the
+journal**. Free
 text cannot be proven secret-free, so it stays out of the journal entirely,
 the same discipline that keeps prompts and response payloads out: a command
 that echoes a token never puts that token in the audit trail. The journal row

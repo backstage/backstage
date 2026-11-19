@@ -68,7 +68,7 @@ Live output follows the submission; durable outcome observation requires the aud
 
 Every event the SSE stream of `POST .../messages` carries — `submission`, `partial`, `answer`, `settled` — is also published through the Backstage signals service, so the session owner's other connections (another tab, another device, a frontend component signed in as the owner) can follow a submission they did not place through the standard signals client. The channel is `ai.session.<sessionId>.<conversationId>`; the message body is `{ "event": "...", "data": { ... } }` with the same payloads as the inline stream.
 
-The submitter's inline SSE response is unchanged — request-scoped HTTP streaming that works across replicas because the POST lands on the running instance.
+The inline SSE response to the submitter is unchanged — request-scoped HTTP streaming that works across replicas because the POST lands on the running instance.
 
 Delivery is gated publish-side: every published signal is addressed to the session owner alone. This repo's signals version has no channel-level authorization — any authenticated user may subscribe to any channel name — but a signal only reaches connections whose user matches the published recipients, so a different user subscribed to a session channel receives nothing and the session data never leaves the fan-out. `ai.session.use` remains the HTTP-route permission and plays no role in signals delivery. If the platform gains channel authorization, the gate can tighten without changing the channel scheme.
 

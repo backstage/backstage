@@ -55,7 +55,7 @@ own sandbox's behavior.
   conversation's durable storage. That bookkeeping is separate from the
   AI audit journal: model calls made from inside scripts (the `models.*`
   globals) leave per-attempt AI audit rows — permission, fence, and
-  credential recheck, journaled before send — while script bookkeeping
+  credential recheck, recorded in the journal before send — while script bookkeeping
   itself does not.
 
 The long-form contract is the `AiCodemodeOptions` TSDoc in

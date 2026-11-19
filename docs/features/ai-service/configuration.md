@@ -8,7 +8,7 @@ description: The full ai configuration surface for the Backstage AI service
 The AI service reads installation-scoped configuration at the `ai` path.
 Both sections are optional and fail closed: without `ai.credentials` no
 credential stores are wired, and without `ai.models` no model resolves — a
-missing entry is a journaled, actionable denial, never a fallback.
+missing entry is an actionable denial recorded in the journal, never a fallback.
 
 A host that wires the service integration itself can pass any other
 configuration path to `configureAiInstallation`; the `ai` path is what the

@@ -57,7 +57,7 @@ Every action runs under the submitting user's credentials:
   the model pair evaluated against the policy's `isModel`, `isProvider`
   and `isModelType` conditions; the managed service re-checks it on every
   dispatch.
-- Every model dispatch is authorized, journaled, and fenced by the managed
+- Every model dispatch is authorized, recorded in the journal, and fenced by the managed
   AI service. Denials surface the recorded reason — for example, missing
   installation credentials or a model that is not in the installation's
   `ai.models` catalog — instead of falling back to another model.

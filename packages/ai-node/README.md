@@ -175,8 +175,8 @@ path-prefixed TypeSafe entry (`baseUrl:
 'https://ai-gateway.vercel.sh/typesafe/v1'` over the `typesafe-system-one`
 module). The composition aligns itself to the route the module actually
 appends — a family whose certified template carries the provider's own base
-path (TypeSafe's `/v1`) composes differently from one whose template is the
-bare route (Anthropic's `/v1/messages`) — and a template that cannot be
+path (the TypeSafe `/v1`) composes differently from one whose template is the
+bare route (the Anthropic `/v1/messages`) — and a template that cannot be
 aligned falls back to the plain prefix join, which fails closed at dispatch
 if it does not match. OAuth through a gateway is out of scope: the wrapper
 refuses an `oauth` credential kind with guidance, so store an API key for
@@ -289,7 +289,7 @@ ai:
 
 Both sections are optional. Without `ai.credentials` no credential stores are
 wired, and without `ai.models` no model resolves: a missing entry is always a
-journaled, actionable denial, never a fallback.
+actionable denial recorded in the journal, never a fallback.
 
 - **`encryptionKey`** is required whenever `ai.credentials` exists, because it
   encrypts personal credentials. Generate it with
@@ -313,12 +313,12 @@ journaled, actionable denial, never a fallback.
 - **`tokenEndpoints`** enables pre-dispatch OAuth refresh. Each entry holds
   the provider's `url` — an absolute `https` URL on its own origin ending in
   the reserved `/oauth/token` or `/v1/oauth/token` route, without query,
-  fragment or userinfo — and its `clientId`, the family's public OAuth client
+  fragment or `userinfo` — and its `clientId`, the family's public OAuth client
   ID (public by contract, never a secret, which is why it lives in
   configuration). When an entry names a provider whose registered family
   ships an auth module, the service wires the guarded refresh itself:
   a dispatch whose OAuth credential is at or inside the refresh window
-  performs one journaled `auth.token` operation, writes the rotated
+  performs one `auth.token` operation recorded in the journal, writes the rotated
   credential to the store it came from, re-reads the authority and only then
   sends. Both halves are required — an endpoint with no family auth module,
   or a family with no endpoint, keeps the fail-closed behavior and an expired
@@ -342,7 +342,7 @@ journaled, actionable denial, never a fallback.
   must be replaced: pass `refreshExpiredCredential` to
   `createAiServiceFactory` (or `createPrivateAiService`), and build it with
   `createCredentialRefreshHook` from `@backstage/ai-node/alpha` to keep the
-  guarded, journaled behavior while supplying your own modules or transport.
+  guarded, journal-recorded behavior while supplying your own modules or transport.
   An explicit hook always wins over the config-driven default.
 - **`precedence`** selects which credential scope wins when both a personal and
   an installation credential exist for a provider. The default `user-first`
@@ -427,14 +427,14 @@ the rules and the helpers that produce conditional decisions.
 The service asks the permission backend for a conditional decision with
 the caller's own credentials on every attempt — the guard's recheck for
 model dispatch, the guarded tool operations before a tool call is
-journaled or sent, and the feature check when a harness opens. The
+recorded or sent, and the feature check when a harness opens. The
 policy's conditions are then evaluated in process against the attributes
 the service already holds: `{ provider, modelId, type? }` for a model,
 `{ serverId, toolName, pluginId }` for a tool, and `{ pluginId, feature }`
 for a feature. Anything that is not a positive evaluation — `DENY`, no
 decision, a condition naming an unknown rule, a rule of another resource
 type, or parameters the rule rejects — denies, and a denial during dispatch
-is journaled like any other. A tool's `pluginId` is the plugin whose
+is recorded in the journal like any other. A tool's `pluginId` is the plugin whose
 harness dispatched it, taken from the session namespace, never from the
 call's payload, so `isPlugin` scopes tools per plugin: a scaffolder
 harness never reaching a shell tool is one rule.
@@ -518,7 +518,7 @@ Discovery
 pair, so it reports exactly the pairs the caller's own credentials are
 allowed to use, each with its catalog fields (adapter, type, context
 window, output limit). A model outside the canonical `ai.models` catalog
-never resolves and no policy can make it dispatchable.
+never resolves and no policy can dispatch it.
 
 ## Local tool servers
 
@@ -527,7 +527,7 @@ fetch with a scoped credential, a pinned destination and a route template —
 an MCP tool server is this kind. A **local** server
 declares `run(input)` instead, and the guard's local branch dispatches it: the
 decision, the fence check and the per-attempt `ai.tool.use` recheck happen
-before the function runs, and the outcome is journaled, but there is no send
+before the function runs, and the outcome is recorded, but there is no send
 to account for and no envelope to validate — the function runs with the
 backend process's own privileges.
 
@@ -537,7 +537,7 @@ does. `@backstage/ai-node-shell` is the reference example (an unsandboxed
 `run` command tool, with its audit-boundary trade-off documented in that
 package's README); the shipped tool servers stay HTTP-mediated.
 
-Local dispatches are journaled by identity: the tool identity, session,
+Local dispatches are recorded in the journal by identity: the tool identity, session,
 principal, decision and outcome are recorded, and the journal row has no
 destination because nothing was sent. Command arguments never reach the
 journal, exactly like prompts and payloads.
@@ -560,7 +560,7 @@ plugin and feature. A denied feature rejects the open with a reason naming
 the feature and the plugin; a feature the service does not register rejects
 with a registration reason, because that is wiring and not policy.
 
-Availability is snapshotted at admission, exactly like module
+Availability is captured at admission, exactly like module
 registrations: a live harness keeps its features until its last handle
 releases, a fresh open evaluates again, and re-opening a live session with a
 different declaration is rejected rather than silently changing the surface

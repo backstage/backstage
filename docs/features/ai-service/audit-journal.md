@@ -20,7 +20,7 @@ _uncertain_ with a recovery row documenting what was known when the
 process lost track of it — a transport that failed before headers, an
 outcome write that itself failed, or a stream that never finished.
 
-Denials are journaled too, with the reason expressed in a closed internal
+Denials are recorded in the journal too, with the reason expressed in a closed internal
 vocabulary — never with policy-derived text or caller-supplied content.
 Audit reads through `GET /sessions/:sessionId/audit` require both session
 ownership and the `ai.audit.read` permission, and are scoped to the
@@ -56,7 +56,8 @@ as evidence against a hostile database administrator.
 
 The deny-before-execute ordering is the core invariant: a decision row
 exists before the request is sent, so a process that dies mid-dispatch
-leaves an intent whose outcome is unknown, never an unjournaled send. On
+leaves an intent whose outcome is unknown, never a send without a journal
+record. On
 restart, unresolved intents are documented as uncertain outcomes with
 recovery rows; admitted durable work is never cancelled by a restart.
 Crash recovery is verified by test cells that kill worker processes
