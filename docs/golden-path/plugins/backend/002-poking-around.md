@@ -36,7 +36,7 @@ To start, let's make sure we're starting from a clean slate. You can list all ex
 curl http://localhost:7007/api/todo/todos
 ```
 
-To create a new TODO, you can send a POST request to the same endpoint. However, you will get a 401 error right now.
+To create a new TODO, you can send a POST request to the same endpoint. Depending on the plugin, you will get a 401 error right now.
 
 ```sh
 curl -X POST http://localhost:7007/api/todo/todos \
@@ -48,7 +48,7 @@ curl -X POST http://localhost:7007/api/todo/todos \
 EOF
 ```
 
-The 401 error is because we track the ID of the user that created each TODO. If you send a request to create a TODO but don't provide an `Authorization` header, you will see this failure. For plugins that have a frontend as well, this credential management should happen automatically. Let's try this:
+If you send a request to a plugin that need a Identity but don't provide an `Authorization` header, you will see this failure. For plugins that have a frontend as well, this credential management should happen automatically. Let's try this:
 
 ```sh
 curl -v -X POST http://localhost:7007/api/todo/todos \
@@ -67,4 +67,4 @@ We can then list all TODOs to see our new TODO!
 curl http://localhost:7007/api/todo/todos
 ```
 
-You'll notice that `createdBy` is `user:development/guest` which is the token we used to create the TODO. That's the `-H "Authorization: Bearer $(curl -s http://localhost:7007/api/auth/guest/refresh | jq -r '.backstageIdentity.token')"` part of the request.
+You'll notice that `createdBy` is `user:default/mock` which is the token we used to create the TODO. That's the `-H "Authorization: Bearer $(curl -s http://localhost:7007/api/auth/guest/refresh | jq -r '.backstageIdentity.token')"` part of the request.

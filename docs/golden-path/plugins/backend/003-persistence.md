@@ -67,7 +67,7 @@ export class TodoListService {
     catalog: typeof catalogServiceRef.T;
 +    database: DatabaseService;
   }) {
-     const knex = await options.database.getClient();
++    const knex = await options.database.getClient();
 -    return new TodoListService(options.logger, options.catalog);
 +    return new TodoListService(options.logger, options.catalog, knex);
   }
@@ -92,13 +92,13 @@ Unfortunately, without tables in our database, our `knex` client is not doing mu
 Let's get started. First, we need to install `knex` as a dependency so both its CLI and imported `Knex` types are available,
 
 ```bash
-yarn workspace @internal/plugin-todo-backend add knex
+yarn workspace @internal/backstage-plugin-todo-backend add knex
 ```
 
 Now, running this command will scaffold a file in that `migrations/` directory for us.
 
 ```bash
-yarn workspace @internal/plugin-todo-backend knex migrate:make init --migrations-directory ./migrations
+yarn workspace @internal/backstage-plugin-todo-backend knex migrate:make init --migrations-directory ./migrations
 ```
 
 This should spit out a message like
@@ -114,7 +114,7 @@ Let's open that file,
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = async function up(knex) {
+exports.up = function up(knex) {
   // await knex.schema...
 };
 
@@ -122,7 +122,7 @@ exports.up = async function up(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = async function down(knex) {
+exports.down = function down(knex) {
   // await knex.schema...
 };
 ```
@@ -132,7 +132,8 @@ You can see two functions, `up` and `down`. `up` is called to apply a migration 
 Let's create our table,
 
 ```diff
-exports.up = async function up(knex) {
+- exports.up = function up(knex) {
++ exports.up = async function up(knex) {
 +  await knex.schema.createTable('todo', table => {
 +    table.uuid('id').primary();
 +    table.string('created_by', 255).notNullable();
@@ -152,12 +153,13 @@ Let's make sure that we don't forget to add a `down` migration as well!
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = async function down(knex) {
+- exports.up = function up(knex) {
++ exports.down = async function down(knex) {
 +  await knex.schema.dropTable('todo');
 };
 ```
 
-Now, we need to actually tell our `knex` client to automatically apply these migrations. We'll add the `database` service to our plugin's `init` function,
+Now, we need to actually tell our `knex` client to automatically apply these migrations. We'll add the `database` service to our plugin's `init` function, in plugins/todo-backend/src/plugin.ts.
 
 ```diff file="src/plugin.ts"
 import {
@@ -183,7 +185,7 @@ import {
 +          logger.info('Running database migrations...');
 +
 +          const migrationsDir = resolvePackagePath(
-+            '@internal/plugin-todo-backend',
++            '@internal/backstage-plugin-todo-backend',
 +            'migrations',
 +          );
 +
@@ -206,7 +208,7 @@ Walking through what we've written -
 1. `const migrationsDir = resolvePackagePath` - ensure the correct migrations directory is passed regardless of environment.
 1. `await knex.migrate.latest(` - actually run the migration, calls our `up` method we wrote above.
 
-We also need to do 1 more thing,
+We also need to do 1 more thing, in plugins/todo-backend/package.json
 
 ```diff file="package.json"
 "files": [
@@ -222,7 +224,7 @@ For those who want more details, the full [Knex migration docs](https://knexjs.o
 
 ### Defining our types
 
-Now that we have our table, we need to add types for it to protect against runtime incompatibilities. For now, these are hand written.
+Now that we have our table, we need to add types for it to protect against runtime incompatibilities. For now, these are hand written. In plugins/todo-backend/src/services/TodoListService.ts
 
 ```diff title="src/services/TodoListService.ts"
 +export interface TodoDatabaseRow {
@@ -246,11 +248,11 @@ Notice the change to snake case as it has to match the database schema we have a
   private constructor(
     logger: LoggerService,
     catalog: typeof catalogServiceRef.T,
-+    database: Knex,
+    database: Knex,
   ) {
     this.#logger = logger;
     this.#catalog = catalog;
-+    this.#database = database;
+    this.#database = database;
   }
 
 +  private toDatabaseRow(todo: TodoItem): TodoDatabaseRow {
