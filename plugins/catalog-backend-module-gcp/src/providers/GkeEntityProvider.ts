@@ -215,9 +215,9 @@ export class GkeEntityProvider implements EntityProvider {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({
         id: taskId,
-        fn: async () => {
+        fn: async signal => {
           try {
-            await this.refresh();
+            await this.refreshWithSignal(signal);
           } catch (error) {
             this.logger.error(error);
           }
@@ -226,7 +226,7 @@ export class GkeEntityProvider implements EntityProvider {
     };
   }
 
-  private async getClusters(): Promise<DeferredEntity[]> {
+  private async getClusters(signal?: AbortSignal): Promise<DeferredEntity[]> {
     const clusters = await Promise.all(
       this.gkeParents.map(async parent => {
         const project = parent.split('/')[1];
@@ -236,6 +236,7 @@ export class GkeEntityProvider implements EntityProvider {
         const [response] = await this.clusterManagerClient.listClusters(
           request,
         );
+        signal?.throwIfAborted();
         return (
           response.clusters
             ?.filter(this.filterOutUndefinedCluster)
@@ -248,6 +249,10 @@ export class GkeEntityProvider implements EntityProvider {
   }
 
   async refresh() {
+    await this.refreshWithSignal();
+  }
+
+  private async refreshWithSignal(signal?: AbortSignal) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -257,8 +262,9 @@ export class GkeEntityProvider implements EntityProvider {
     let resources: DeferredEntity[];
 
     try {
-      resources = await this.getClusters();
+      resources = await this.getClusters(signal);
     } catch (e) {
+      signal?.throwIfAborted();
       this.logger.error('error fetching GKE clusters', e);
       return;
     }
@@ -269,6 +275,7 @@ export class GkeEntityProvider implements EntityProvider {
         .join(', ')}]`,
     );
 
+    signal?.throwIfAborted();
     await this.connection.applyMutation({
       type: 'full',
       entities: resources,
