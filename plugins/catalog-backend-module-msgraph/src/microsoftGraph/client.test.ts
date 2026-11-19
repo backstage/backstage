@@ -14,12 +14,100 @@
  * limitations under the License.
  */
 
-import { TokenCredential } from '@azure/identity';
+import {
+  ClientCertificateCredential,
+  ClientSecretCredential,
+  DefaultAzureCredential,
+  TokenCredential,
+} from '@azure/identity';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { getEventListeners } from 'node:events';
 import { MicrosoftGraphClient } from './client';
+
+jest.mock('@azure/identity', () => ({
+  ...jest.requireActual('@azure/identity'),
+  ClientCertificateCredential: jest.fn(),
+  ClientSecretCredential: jest.fn(),
+  DefaultAzureCredential: jest.fn(),
+}));
+
+describe('MicrosoftGraphClient.create', () => {
+  const baseConfig = {
+    id: 'default',
+    target: 'https://example.com',
+    authority: 'https://login.example.com',
+    tenantId: 'tenant-id',
+  };
+  const options = {
+    authorityHost: 'https://login.example.com',
+    tenantId: 'tenant-id',
+  };
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('uses a client secret credential when a client secret is configured', () => {
+    MicrosoftGraphClient.create({
+      ...baseConfig,
+      clientId: 'client-id',
+      clientSecret: 'secret',
+    });
+
+    expect(ClientSecretCredential).toHaveBeenCalledWith(
+      'tenant-id',
+      'client-id',
+      'secret',
+      options,
+    );
+    expect(ClientCertificateCredential).not.toHaveBeenCalled();
+    expect(DefaultAzureCredential).not.toHaveBeenCalled();
+  });
+
+  it('uses a client certificate credential when a client certificate is configured', () => {
+    MicrosoftGraphClient.create({
+      ...baseConfig,
+      clientId: 'client-id',
+      clientCertificate: 'pem',
+    });
+
+    expect(ClientCertificateCredential).toHaveBeenCalledWith(
+      'tenant-id',
+      'client-id',
+      { certificate: 'pem' },
+      options,
+    );
+    expect(ClientSecretCredential).not.toHaveBeenCalled();
+    expect(DefaultAzureCredential).not.toHaveBeenCalled();
+  });
+
+  it('uses a client certificate credential when a client certificate path is configured', () => {
+    MicrosoftGraphClient.create({
+      ...baseConfig,
+      clientId: 'client-id',
+      clientCertificatePath: '/path/to/cert.pem',
+    });
+
+    expect(ClientCertificateCredential).toHaveBeenCalledWith(
+      'tenant-id',
+      'client-id',
+      { certificatePath: '/path/to/cert.pem' },
+      options,
+    );
+    expect(ClientSecretCredential).not.toHaveBeenCalled();
+    expect(DefaultAzureCredential).not.toHaveBeenCalled();
+  });
+
+  it('falls back to the default credential chain when no client credentials are configured', () => {
+    MicrosoftGraphClient.create(baseConfig);
+
+    expect(DefaultAzureCredential).toHaveBeenCalledWith(options);
+    expect(ClientSecretCredential).not.toHaveBeenCalled();
+    expect(ClientCertificateCredential).not.toHaveBeenCalled();
+  });
+});
 
 describe('MicrosoftGraphClient', () => {
   const tokenCredential: jest.Mocked<TokenCredential> = {
