@@ -22,9 +22,11 @@ import fs from 'fs-extra';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import {
+  dirname,
   join as joinPath,
   resolve as resolvePath,
   relative as relativePath,
+  sep,
 } from 'node:path';
 
 import { loadConfigSchema } from '@backstage/config-loader';
@@ -494,7 +496,7 @@ export async function bundleCommand(opts: BundleOptions): Promise<void> {
   // Runs for backend plugins (always) and frontend plugins with
   // --pre-packed-dir (for SBOM lockfile generation).
   if (needsDependencies) {
-    await seedBundleLockfile(
+    const pluginImporter = await seedBundleLockfile(
       target,
       targetPaths.dir,
       targetPaths.workspaceRootDir,
@@ -511,6 +513,7 @@ export async function bundleCommand(opts: BundleOptions): Promise<void> {
     await steps.pruneLockfile({
       targetDir: target,
       rootDir: targetPaths.workspaceRootDir,
+      pluginImporter,
       verbose: opts.verbose,
     });
 
@@ -519,6 +522,7 @@ export async function bundleCommand(opts: BundleOptions): Promise<void> {
         console.log(chalk.blue('Installing private dependencies...'));
         await steps.installDependencies({
           targetDir: target,
+          rootDir: targetPaths.workspaceRootDir,
           verbose: opts.verbose,
         });
         await steps.cleanupAfterInstall(target);
@@ -646,14 +650,15 @@ export function postProcessBundlePackageJson(
 /**
  * Seeds the bundle lockfile from the source plugin or monorepo lockfile.
  * Looks first for a local lockfile in the plugin directory, then falls back
- * to the monorepo root.
+ * to the monorepo root. Returns the directory of the plugin relative to the
+ * lockfile, with forward slashes.
  */
 async function seedBundleLockfile(
   targetDir: string,
   pluginDir: string,
   monorepoRoot: string,
   lockfileName: string,
-): Promise<void> {
+): Promise<string> {
   let sourceLockfile: string | undefined;
   if (await fs.pathExists(joinPath(pluginDir, lockfileName))) {
     sourceLockfile = joinPath(pluginDir, lockfileName);
@@ -682,6 +687,9 @@ async function seedBundleLockfile(
   );
 
   await fs.copyFile(sourceLockfile, resolvePath(targetDir, lockfileName));
+  return (
+    relativePath(dirname(sourceLockfile), pluginDir).split(sep).join('/') || '.'
+  );
 }
 
 /**
