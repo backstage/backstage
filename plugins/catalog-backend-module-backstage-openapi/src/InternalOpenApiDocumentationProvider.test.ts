@@ -108,13 +108,16 @@ describe('InternalOpenApiDocumentationProvider', () => {
   function makeProvider(
     configData: Record<string, unknown>,
     systemMetadata: RootSystemMetadataService,
+    signal?: AbortSignal,
   ) {
     const config = new ConfigReader({
       backend: { baseUrl: 'http://localhost:7007' },
       ...configData,
     });
     const taskRunner = {
-      run: jest.fn(async ({ fn }: { fn: () => Promise<void> }) => fn()),
+      run: jest.fn(async ({ fn }: { fn: (s?: AbortSignal) => Promise<void> }) =>
+        fn(signal),
+      ),
     };
     const scheduler = {
       createScheduledTaskRunner: jest.fn().mockReturnValue(taskRunner),
@@ -127,6 +130,39 @@ describe('InternalOpenApiDocumentationProvider', () => {
       rootSystemMetadata: systemMetadata,
     });
   }
+
+  it('does not load specs or apply a mutation when the task is aborted', async () => {
+    const aborted = makeProvider(
+      {},
+      makeSystemMetadata(['catalog']),
+      AbortSignal.abort(),
+    );
+    await expect(aborted.connect(connection)).rejects.toThrow();
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(connection.applyMutation).not.toHaveBeenCalled();
+
+    const controller = new AbortController();
+    mockFetch.mockImplementationOnce(async () => {
+      controller.abort();
+      return { ok: true, json: async () => minimalSpec, status: 200 };
+    });
+    const midway = makeProvider(
+      {},
+      makeSystemMetadata(['catalog', 'scaffolder']),
+      controller.signal,
+    );
+    await expect(midway.connect(connection)).rejects.toThrow();
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(connection.applyMutation).not.toHaveBeenCalled();
+
+    const normal = makeProvider(
+      {},
+      makeSystemMetadata(['catalog']),
+      new AbortController().signal,
+    );
+    await normal.connect(connection);
+    expect(connection.applyMutation).toHaveBeenCalledTimes(1);
+  });
 
   describe('plugin discovery', () => {
     it('uses getInstalledPlugins() when no explicit plugins config is set', async () => {

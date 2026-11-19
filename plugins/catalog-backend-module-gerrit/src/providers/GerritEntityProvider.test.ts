@@ -269,6 +269,36 @@ describe('GerritEntityProvider', () => {
     expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
   });
 
+  it('does not apply a mutation when the task is aborted.', async () => {
+    const repoBuffer = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/listProjectsBody.txt'),
+    );
+    server.use(
+      http.get(
+        'https://g.com/gerrit/projects/',
+        () =>
+          new HttpResponse(repoBuffer, {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+      ),
+    );
+
+    const provider = GerritEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+    await provider.connect(entityProviderConnection);
+    const taskDef = schedule.getTasks()[0];
+    const fn = taskDef.fn as (signal: AbortSignal) => Promise<void>;
+
+    await fn(AbortSignal.abort());
+    expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+
+    await fn(new AbortController().signal);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+  });
+
   it('can create multiple providers from config.', async () => {
     const configTwoProviders = new ConfigReader({
       catalog: {

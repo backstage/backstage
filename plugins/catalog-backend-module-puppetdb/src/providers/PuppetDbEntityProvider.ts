@@ -141,14 +141,14 @@ export class PuppetDbEntityProvider implements EntityProvider {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({
         id: taskId,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.logger.child({
             class: PuppetDbEntityProvider.prototype.constructor.name,
             taskId,
             taskInstanceId: randomUUID(),
           });
           try {
-            await this.refresh(logger);
+            await this.refreshInternal(logger, signal);
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
@@ -166,6 +166,10 @@ export class PuppetDbEntityProvider implements EntityProvider {
    * @param logger - The instance of a Logger.
    */
   async refresh(logger: LoggerService) {
+    await this.refreshInternal(logger);
+  }
+
+  private async refreshInternal(logger: LoggerService, signal?: AbortSignal) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -174,9 +178,11 @@ export class PuppetDbEntityProvider implements EntityProvider {
     const entities = await readPuppetNodes(this.config, {
       logger,
       transformer: this.transformer,
+      signal,
     });
     const { markCommitComplete } = markReadComplete(entities);
 
+    signal?.throwIfAborted();
     await this.connection.applyMutation({
       type: 'full',
       entities: [...entities].map(entity => ({

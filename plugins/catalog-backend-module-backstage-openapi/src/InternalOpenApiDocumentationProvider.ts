@@ -116,15 +116,18 @@ const loadSpecs = async ({
   plugins,
   logger,
   auth,
+  signal,
 }: {
   baseUrl: string;
   plugins: string[];
   discovery: DiscoveryService;
   logger: LoggerService;
   auth: AuthService;
+  signal?: AbortSignal;
 }) => {
   const specs: OpenAPIObject[] = [];
   for (const pluginId of plugins) {
+    signal?.throwIfAborted();
     const url = await discovery.getBaseUrl(pluginId);
     const openApiUrl = getOpenApiSpecRoute(url);
     const { token } = await auth.getPluginRequestToken({
@@ -133,6 +136,7 @@ const loadSpecs = async ({
     });
     const response = await fetch(openApiUrl, {
       method: 'GET',
+      signal,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -239,20 +243,20 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({
         id: taskId,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.logger.child({
             class:
               InternalOpenApiDocumentationProvider.prototype.constructor.name,
             taskId,
             taskInstanceId: randomUUID(),
           });
-          await this.refresh(logger);
+          await this.refresh(logger, signal);
         },
       });
     };
   }
 
-  async refresh(logger: LoggerService) {
+  async refresh(logger: LoggerService, signal?: AbortSignal) {
     const explicitPlugins = this.config.getOptionalStringArray(
       'catalog.providers.backstageOpenapi.plugins',
     );
@@ -304,6 +308,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
             auth: this.auth,
             plugins: pluginsToMerge,
             logger,
+            signal,
           }),
           formatConfig,
         ),
@@ -319,6 +324,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       requiredConfig,
     ) as ApiEntity;
 
+    signal?.throwIfAborted();
     await this.connection?.applyMutation({
       type: 'full',
       entities: [

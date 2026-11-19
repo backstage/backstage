@@ -97,6 +97,29 @@ describe('PuppetEntityProvider', () => {
         entities: [],
       });
     });
+
+    it('does not apply a mutation when the task is aborted', async () => {
+      jest.spyOn(puppetFunctions, 'readPuppetNodes').mockResolvedValue([]);
+      const connection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+      const schedule = new PersistingTaskRunner();
+      const providers = PuppetDbEntityProvider.fromConfig(config, {
+        logger,
+        schedule,
+      });
+      await providers[0].connect(connection);
+      const fn = schedule.getTasks()[0].fn as (
+        signal: AbortSignal,
+      ) => Promise<void>;
+
+      await fn(AbortSignal.abort());
+      expect(connection.applyMutation).not.toHaveBeenCalled();
+
+      await fn(new AbortController().signal);
+      expect(connection.applyMutation).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('where there are nodes', () => {
