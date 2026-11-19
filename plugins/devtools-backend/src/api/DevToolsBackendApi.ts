@@ -29,6 +29,7 @@ import { targetPaths } from '@backstage/cli-common';
 import { getPackages } from '@manypkg/get-packages';
 import ping from 'ping';
 import os from 'node:os';
+import { resolve as resolvePath } from 'node:path';
 import fs from 'fs-extra';
 import { Lockfile } from '../util/Lockfile';
 import { PnpmLockfile } from '../util/PnpmLockfile';
@@ -151,8 +152,12 @@ export class DevToolsBackendApi {
   public async listConfig(): Promise<ConfigInfo> {
     const { packages } = await getPackages(targetPaths.dir);
     const schemaFunc = async () => {
+      // The packages are read from their own directories, since the isolated
+      // layout of pnpm doesn't make every package of the workspace resolvable
+      // by name. Without the schema of a package, its secrets would be shown.
       return await loadConfigSchema({
-        dependencies: packages.map(p => p.packageJson.name),
+        dependencies: [],
+        packagePaths: packages.map(p => resolvePath(p.dir, 'package.json')),
       });
     };
 

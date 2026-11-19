@@ -191,7 +191,7 @@ export function resolveSharedDependencyVersions(
         // a package that the app can't import could otherwise be found here
         if (!isInstalledFrom(targetPath, moduleName)) {
           console.log(
-            `Skipping module federation shared dependency '${importPath}' because the app does not depend on it.`,
+            `Skipping module federation shared dependency '${importPath}' because it is not installed where the app can import it.`,
           );
           return [];
         }
