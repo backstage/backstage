@@ -28,7 +28,7 @@ connection fields include `host`, `apiBaseUrl`, and `rawBaseUrl`. Its
 authentication methods are `none`, `token`, and `app`.
 
 The exported `ConnectionType` descriptor contains runtime metadata such as
-`lookupStrategy`, `configSchema`, and `authMethods`. The query and returned
+`getLookupIdentity`, `configSchema`, and `authMethods`. The query and returned
 authentication shapes are inferred through its generic definition; they are
 not runtime properties named `query` or `auth` on the descriptor.
 

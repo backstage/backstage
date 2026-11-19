@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { getHostLookupIdentity } from '../system/getHostLookupIdentity';
 import { createConnectionType } from '../system/createConnectionType';
 import { z } from 'zod/v4';
 
 /** @public */
 export const GiteaConnectionType = createConnectionType({
+  getLookupIdentity: getHostLookupIdentity,
   type: 'gitea',
   title: 'Gitea',
   configSchema: z.object({

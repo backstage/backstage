@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { getHostLookupIdentity } from '../system/getHostLookupIdentity';
 import { createConnectionType } from '../system/createConnectionType';
 import { z } from 'zod/v4';
 
 /** @public */
 export const AwsS3ConnectionType = createConnectionType({
+  getLookupIdentity: getHostLookupIdentity,
   type: 'aws-s3',
   title: 'AWS S3',
   configSchema: z.object({
