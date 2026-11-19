@@ -44,6 +44,8 @@ export type {
   DestinationTemplatePart,
 } from './providers/templates';
 export { validateHttpEnvelope } from './providers/httpEnvelope';
+export { wrapProviderModule } from './providers/wrapProviderModule';
+export type { WrapProviderModuleOptions } from './providers/wrapProviderModule';
 export type { HttpEnvelopeRules } from './providers/httpEnvelope';
 export {
   assertTokenRequest,
