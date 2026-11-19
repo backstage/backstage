@@ -16,7 +16,10 @@
 
 import { mockCredentials } from '@backstage/backend-test-utils';
 import type { BackstageCredentials } from '@backstage/backend-plugin-api';
-import { createPermissionsServiceDouble } from '@backstage/ai-node-test-utils/alpha';
+import {
+  conditionalDecision,
+  createPermissionsServiceDouble,
+} from '@backstage/ai-node-test-utils/alpha';
 import type {
   QueryPermissionRequest,
   QueryPermissionResponse,
@@ -403,6 +406,30 @@ describe('permission rule evaluation', () => {
 });
 
 describe('model access under conditional policies', () => {
+  it('grants through a well-formed conditional envelope built by the typed helper', async () => {
+    // The round-2 envelope shape, constructed through the published builder:
+    // pluginId and resourceType as siblings of result, conditions alongside.
+    const decision = conditionalDecision({
+      pluginId: 'ai',
+      resourceType: RESOURCE_TYPE_AI_MODEL,
+      conditions: aiModelConditions.isModel({
+        provider: 'openai',
+        modelId: 'first',
+      }),
+    });
+    const { permissions } = policy(decision);
+    const access = createModelAccess({ models, authorizer: permissions });
+    expect(await access.listModels(credentials)).toEqual([
+      { provider: 'openai', modelId: 'first', type: 'chat' },
+    ]);
+    expect(
+      await access.canUse(
+        { provider: 'openai', modelId: 'first' },
+        credentials,
+      ),
+    ).toBe(true);
+  });
+
   it('grants one model pair and denies the others', async () => {
     const granted = aiModelConditions.isModel({
       provider: 'openai',

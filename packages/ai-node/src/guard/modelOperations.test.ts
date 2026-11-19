@@ -26,7 +26,10 @@ import {
 } from './modelOperations';
 import type { ModelOperation, TrustedOperation } from './types';
 import { builtinProviderRegistry } from '@backstage/ai-node-test-utils/alpha';
-import { testTransport } from '@backstage/ai-node-test-utils/alpha';
+import {
+  createSseResponse,
+  testTransport,
+} from '@backstage/ai-node-test-utils/alpha';
 
 const createModelOperationGuard = (
   options: Parameters<typeof createModelOperationGuardBase>[0],
@@ -203,21 +206,21 @@ describe('guarded model operations', () => {
       recordRecovery: async () => {},
       read: async () => ({ items: [] }),
     };
-    const transport = jest.fn(
-      async (_request: Request) =>
-        new Response(
-          `data: ${JSON.stringify({
-            type: 'response.completed',
-            response: {
-              id: 'r',
-              status: 'completed',
-              output: [],
-              usage: { input_tokens: 1, output_tokens: 1, total_tokens: 2 },
-            },
-          })}\n\ndata: [DONE]\n\n`,
-          { headers: { 'content-type': 'text/event-stream' } },
-        ),
+    const transport = jest.fn(async (_request: Request) =>
+      createSseResponse(200, [
+        `data: ${JSON.stringify({
+          type: 'response.completed',
+          response: {
+            id: 'r',
+            status: 'completed',
+            output: [],
+            usage: { input_tokens: 1, output_tokens: 1, total_tokens: 2 },
+          },
+        })}\n\n`,
+        'data: [DONE]\n\n',
+      ]),
     );
+
     const guard = createModelOperationGuard({
       journal,
       recheck: async () => true,

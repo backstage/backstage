@@ -18,11 +18,8 @@ import { type JsonObject, ConfigReader } from '@backstage/config';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import type {
   AuditorService,
-  AuthService,
-  BackstageCredentials,
   DatabaseService,
   LifecycleService,
-  PermissionsService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
 import {
@@ -51,6 +48,11 @@ import {
   type OpenNativeHarnessInput,
 } from './DefaultAiService';
 import type { AiFeatureName, ConfigAtPath } from './contracts';
+import {
+  createAuthServiceDouble,
+  createLifecycleServiceDouble,
+  createPermissionsServiceDouble,
+} from '@backstage/ai-node-test-utils/alpha';
 
 /** NONPRODUCTION TEST STAND-IN for a native conversation handle. */
 class StandInConversation {
@@ -210,27 +212,16 @@ class StandInIntegration implements AiServiceIntegration {
   }
 }
 
-function makeDeps(captured?: {
-  shutdownHook?: () => Promise<void>;
-}): DefaultAiServiceDeps {
+function makeDeps(
+  lifecycle: LifecycleService = createLifecycleServiceDouble(),
+): DefaultAiServiceDeps {
   return {
     database: {} as DatabaseService,
-    auth: {
-      isPrincipal: (
-        credentials: BackstageCredentials,
-        type: 'user' | 'service',
-      ) => (credentials.principal as { type: string }).type === type,
-    } as unknown as AuthService,
-    permissions: {} as PermissionsService,
+    auth: createAuthServiceDouble(),
+    permissions: createPermissionsServiceDouble(),
     logger: mockServices.logger.mock(),
     auditor: {} as AuditorService,
-    lifecycle: {
-      addShutdownHook: (hook: () => Promise<void>) => {
-        if (captured) {
-          captured.shutdownHook = hook;
-        }
-      },
-    } as unknown as LifecycleService,
+    lifecycle,
     pluginMetadata: { getId: () => 'test-plugin' } as PluginMetadataService,
     events: mockServices.events(),
   };
@@ -810,9 +801,9 @@ describe('DefaultAiService', () => {
 
   it('rejects opens that lose a race with shutdown and cleans up', async () => {
     const integration = new StandInIntegration();
-    const captured: { shutdownHook?: () => Promise<void> } = {};
+    const lifecycle = createLifecycleServiceDouble();
     const service = DefaultAiService.create({
-      deps: makeDeps(captured),
+      deps: makeDeps(lifecycle),
       integration,
     });
     const options = {
@@ -857,7 +848,7 @@ describe('DefaultAiService', () => {
       poll();
     });
 
-    await captured.shutdownHook!();
+    await lifecycle.shutdownHooks.at(-1)!();
 
     resolveOpen!({
       harness: new StandInHarness(undefined) as unknown as Harness,
