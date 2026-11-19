@@ -12,7 +12,7 @@ git repository.
 
 There are several action modules that are available to be added:
 
-- [Azure DevOps](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-azure): `@backstage/plugin-scaffolder-backend-module-azure`
+- [Azure DevOps](../../integrations/azure/scaffolder.md): `@backstage/plugin-scaffolder-backend-module-azure`
 - [Bitbucket Cloud](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-bitbucket-cloud): `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud`
 - [Bitbucket Server](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-bitbucket-server): `@backstage/plugin-scaffolder-backend-module-bitbucket-server`
 - [Gerrit](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gerrit): `@backstage/plugin-scaffolder-backend-module-gerrit`
