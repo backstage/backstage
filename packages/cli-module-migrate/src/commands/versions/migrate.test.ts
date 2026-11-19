@@ -294,8 +294,29 @@ catalogs:
       },
       packages: {
         range: { 'package.json': packageJson('range', '^1.0.1') },
-        default: { 'package.json': packageJson('default', 'catalog:') },
-        next: { 'package.json': packageJson('next', 'catalog:next') },
+        default: { 'package.json': packageJson('default', 'catalog: ') },
+        next: { 'package.json': packageJson('next', 'catalog: next') },
+        // The source code of a package is migrated as a whole, so a package
+        // with only one of its declarations bumped is left alone
+        mixed: {
+          'package.json': JSON.stringify({
+            name: 'mixed',
+            dependencies: { '@backstage/custom': 'catalog:next' },
+            devDependencies: { '@backstage/custom': '^1.0.1' },
+          }),
+          src: { 'index.ts': "import '@backstage/custom';" },
+        },
+        'mixed-optional': {
+          'package.json': JSON.stringify({
+            name: 'mixed-optional',
+            devDependencies: { '@backstage/custom': '^1.0.1' },
+            optionalDependencies: {
+              '@backstage/custom': 'catalog:next',
+              // Not installed, as optional dependencies often aren't
+              'not-installed': '^1.0.0',
+            },
+          }),
+        },
       },
     });
     const readDependencies = async (name: string) =>
@@ -321,7 +342,7 @@ catalogs:
     ]);
 
     // Without it, the version ranges and the default catalog
-    await withLogCollector(async () => {
+    const { warn } = await withLogCollector(async () => {
       await expect(migrateMovedPackages({ onlyBumped: {} })).resolves.toBe(
         true,
       );
@@ -332,6 +353,31 @@ catalogs:
     await expect(readDependencies('default')).resolves.toEqual([
       '@backstage-community/custom',
     ]);
+
+    expect(warn).toEqual([
+      'Skipping the moved package @backstage/custom in mixed (devDependencies), since another declaration of it in mixed is left as it is',
+      'Skipping the moved package @backstage/custom in mixed-optional (devDependencies), since another declaration of it in mixed-optional is left as it is',
+    ]);
+    await expect(
+      fs.readJson(pnpmDir.resolve('packages/mixed-optional/package.json')),
+    ).resolves.toEqual({
+      name: 'mixed-optional',
+      devDependencies: { '@backstage/custom': '^1.0.1' },
+      optionalDependencies: {
+        '@backstage/custom': 'catalog:next',
+        'not-installed': '^1.0.0',
+      },
+    });
+    await expect(
+      fs.readJson(pnpmDir.resolve('packages/mixed/package.json')),
+    ).resolves.toEqual({
+      name: 'mixed',
+      dependencies: { '@backstage/custom': 'catalog:next' },
+      devDependencies: { '@backstage/custom': '^1.0.1' },
+    });
+    await expect(
+      fs.readFile(pnpmDir.resolve('packages/mixed/src/index.ts'), 'utf8'),
+    ).resolves.toBe("import '@backstage/custom';");
   });
 
   it('should replace the occurrences of the moved package in files inside the correct package', async () => {
