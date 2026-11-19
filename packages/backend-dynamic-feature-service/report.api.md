@@ -7,6 +7,7 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { Config } from '@backstage/config';
 import { ConfigSchema } from '@backstage/config-loader';
+import { DefaultRootLoggerServiceOptions } from '@backstage/backend-defaults/rootLogger';
 import { JsonObject } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PackagePlatform } from '@backstage/cli-node';
@@ -14,7 +15,6 @@ import { PackageRole } from '@backstage/cli-node';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { WinstonLoggerOptions } from '@backstage/backend-defaults/rootLogger';
 
 // @public (undocumented)
 export type AdditionalRemoteInfo = Omit<RemoteInfo, 'name' | 'entry'>;
@@ -162,7 +162,7 @@ export const dynamicPluginsFrontendServiceRef: ServiceRef<
 
 // @public (undocumented)
 export type DynamicPluginsRootLoggerFactoryOptions = Omit<
-  WinstonLoggerOptions,
+  DefaultRootLoggerServiceOptions,
   'meta'
 >;
 

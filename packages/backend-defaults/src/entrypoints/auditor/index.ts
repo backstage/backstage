@@ -26,3 +26,7 @@ export { DefaultAuditorService } from './DefaultAuditorService';
 export { auditorServiceFactory } from './auditorServiceFactory';
 export { WinstonRootAuditorService } from './WinstonRootAuditorService';
 export type { WinstonRootAuditorServiceOptions } from './WinstonRootAuditorService';
+export {
+  DefaultRootAuditorService,
+  type DefaultRootAuditorServiceOptions,
+} from './DefaultRootAuditorService';

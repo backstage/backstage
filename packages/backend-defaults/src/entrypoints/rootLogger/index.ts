@@ -20,3 +20,14 @@ export {
   type WinstonLoggerLevelOverride,
   type WinstonLoggerLevelOverrideMatchers,
 } from './types';
+export {
+  DefaultRootLoggerService,
+  type DefaultRootLoggerServiceOptions,
+} from './DefaultRootLoggerService';
+export type {
+  LoggerInfo,
+  LoggerFormat,
+  LoggerTransport,
+  LoggerLevelOverride,
+  LoggerLevelOverrideMatchers,
+} from './types';

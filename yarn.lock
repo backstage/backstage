@@ -1857,6 +1857,7 @@ __metadata:
     pg-format: "npm:^1.0.4"
     rate-limit-redis: "npm:^4.2.0"
     raw-body: "npm:^2.4.1"
+    safe-stable-stringify: "npm:^2.5.0"
     selfsigned: "npm:^2.0.0"
     supertest: "npm:^7.0.0"
     tar: "npm:^7.5.21"

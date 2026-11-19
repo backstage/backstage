@@ -17,8 +17,8 @@ import { RootConfigService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import {
   RootLoggerConfig,
-  winstonLevels,
-  WinstonLoggerLevelOverrideMatchers,
+  loggerLevels,
+  LoggerLevelOverrideMatchers,
 } from './types';
 
 export const getRootLoggerConfig = (
@@ -34,7 +34,7 @@ export const getRootLoggerConfig = (
   );
   const overrides = overridesConfig?.map((override, i) => {
     const overrideLevel = override.getString('level');
-    if (winstonLevels[overrideLevel] === undefined) {
+    if (loggerLevels[overrideLevel] === undefined) {
       throw new Error(
         `Invalid config at backend.logger.overrides[${i}].level, '${overrideLevel}' is not a valid logging level, must be one of 'error', 'warn', 'info' or 'debug'.`,
       );
@@ -42,7 +42,7 @@ export const getRootLoggerConfig = (
 
     const matchers = override
       .getConfig('matchers')
-      .get<WinstonLoggerLevelOverrideMatchers>();
+      .get<LoggerLevelOverrideMatchers>();
 
     return {
       matchers,
