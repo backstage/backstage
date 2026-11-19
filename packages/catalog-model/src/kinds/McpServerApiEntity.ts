@@ -17,7 +17,7 @@
 import { createCatalogModelLayer } from '../model/createCatalogModelLayer';
 import type { ApiEntityV1alpha1 } from './ApiEntityV1alpha1';
 import mcpServerSchema from '../schema/kinds/API.v1alpha1.mcp-server.schema.json';
-import { ajvCompiledJsonSchemaValidator } from './util';
+import { lazyKindSchemaValidator } from './util';
 
 /**
  * An MCP (Model Context Protocol) server represented as an API entity
@@ -51,7 +51,7 @@ export type McpServerRemote = {
  * @alpha
  */
 export const mcpServerApiEntityValidator =
-  ajvCompiledJsonSchemaValidator(mcpServerSchema);
+  lazyKindSchemaValidator(mcpServerSchema);
 
 /**
  * Type guard: narrows an entity to the MCP server API subtype.

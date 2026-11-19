@@ -47,10 +47,10 @@ import {
   createConditionAuthorizer,
   createConditionTransformer,
 } from '@backstage/plugin-permission-node';
+import { createAjvEntityValidators } from '@backstage/catalog-model/ajv';
 import {
   TaskSpec,
   TemplateEntityV1beta3,
-  templateEntityV1beta3Validator,
 } from '@backstage/plugin-scaffolder-common';
 import {
   resolveParameterSteps,
@@ -64,6 +64,7 @@ import {
   templateManagementPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
+  templateEntityV1beta3Schema,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import {
   TaskBroker,
@@ -274,6 +275,19 @@ function serializeTask(task: SerializedTask): SerializedTaskResponse {
 /**
  * A method to create a router for the scaffolder backend plugin.
  */
+let templateEntityValidator: ((data: unknown) => unknown) | undefined;
+
+// Uses the same ajv-based validation as the catalog, created on first use
+function validateTemplateEntity(data: unknown) {
+  if (!templateEntityValidator) {
+    templateEntityValidator =
+      createAjvEntityValidators().entityKindSchemaValidator(
+        templateEntityV1beta3Schema,
+      );
+  }
+  return templateEntityValidator(data);
+}
+
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -1079,7 +1093,7 @@ export async function createRouter(
         });
 
         const template = body.template as TemplateEntityV1beta3;
-        if (!(await templateEntityV1beta3Validator.check(template))) {
+        if (validateTemplateEntity(template) !== template) {
           throw new InputError('Input template is not a template');
         }
 

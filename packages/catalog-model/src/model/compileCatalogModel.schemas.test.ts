@@ -164,22 +164,24 @@ describe('compiled catalog model schemas', () => {
   });
 
   it('rejects kind declarations and updates with non-object roots', () => {
+    // Layers are built on first use, which is when compiling the model
+    const invalidLayer = createCatalogModelLayer({
+      layerId: 'example.com/invalid',
+      builder: model =>
+        model.addKind({
+          group: 'example.com',
+          names: { kind: 'Invalid', singular: 'invalid', plural: 'invalids' },
+          description: 'Invalid',
+          versions: [
+            {
+              name: 'v1',
+              schema: { jsonSchema: { type: 'string', properties: {} } },
+            },
+          ],
+        }),
+    });
     expect(() =>
-      createCatalogModelLayer({
-        layerId: 'example.com/invalid',
-        builder: model =>
-          model.addKind({
-            group: 'example.com',
-            names: { kind: 'Invalid', singular: 'invalid', plural: 'invalids' },
-            description: 'Invalid',
-            versions: [
-              {
-                name: 'v1',
-                schema: { jsonSchema: { type: 'string', properties: {} } },
-              },
-            ],
-          }),
-      }),
+      compileCatalogModel([defaultCatalogEntityModel, invalidLayer]),
     ).toThrow(/type.*object/);
     expect(() =>
       compileCatalogModel([
