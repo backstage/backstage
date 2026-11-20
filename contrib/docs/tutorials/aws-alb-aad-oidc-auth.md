@@ -212,10 +212,12 @@ auth:
   providers:
     awsalb:
       issuer: https://login.microsoftonline.com/<TENANT_ID>/v2.0
+      # this is the ARN of the ALB that signs the OIDC tokens
+      signer: arn:aws:elasticloadbalancing:<AWS_REGION>:<ACCOUNT_ID>:loadbalancer/app/<ALB_NAME>/<ALB_ID>
       region: <AWS_REGION>
 ```
 
-Replace `<TENANT_ID>` with the value of `Directory (tenant) ID` of the App Registration and `<AWS_REGION>` with the AWS region identifier where the ALB is deployed (for example: `eu-central-1`).
+Replace `<TENANT_ID>` with the value of `Directory (tenant) ID` of the App Registration, `<AWS_REGION>` with the AWS region identifier where the ALB is deployed (for example: `eu-central-1`), and `<ACCOUNT_ID>`, `<ALB_NAME>` and `<ALB_ID>` with the corresponding parts of the ARN of your ALB, available in the AWS console or via `aws elbv2 describe-load-balancers`. The provider fails to start if `signer` is not set, and sign-in attempts are rejected if it does not match the ALB that signed the tokens.
 
 ## Conclusion
 
