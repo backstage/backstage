@@ -47,8 +47,7 @@ function resolveSync(specifier, context, nextResolve) {
   const ext = extname(specifier);
 
   // Unless there's an explicit import attribute, JSON files are loaded with the
-  // native JSON format. The CommonJS workaround in the load hook is only needed
-  // for the asynchronous hooks.
+  // native JSON format.
   if (ext === '.json' && !context.importAttributes?.type) {
     return {
       ...nextResolve(specifier, context),
@@ -209,8 +208,8 @@ function resolveWithoutExtSync(specifier, context, nextResolve) {
 }
 
 /**
- * The load implementation is shared between the synchronous and asynchronous
- * hooks, as it only passes on the result of `nextLoad`.
+ * Loads a resolved module, transforming TypeScript and leaving everything else
+ * to the default loader.
  *
  * @type {import('module').LoadHookSync}
  */
@@ -218,27 +217,6 @@ function loadImpl(url, context, nextLoad) {
   // Non-file URLs are handled by the default loader
   if (!url.startsWith('file://')) {
     return nextLoad(url, context);
-  }
-
-  // JSON files loaded as CommonJS are handled by this custom loader, because
-  // the default one doesn't work. This is only used by the asynchronous hooks,
-  // the synchronous ones load JSON files using the native JSON format.
-  if (
-    context.format === 'commonjs' &&
-    context.importAttributes?.type === 'json'
-  ) {
-    try {
-      // TODO(Rugvip): Make sure this is valid JSON
-      const content = readFileSync(fileURLToPath(url), 'utf8');
-      return {
-        source: `module.exports = (${content})`,
-        format: 'commonjs',
-        shortCircuit: true,
-      };
-    } catch {
-      // Let the default loader generate the error
-      return nextLoad(url, context);
-    }
   }
 
   const ext = extname(url);
@@ -313,11 +291,11 @@ function loadImpl(url, context, nextLoad) {
 }
 
 /**
- * Synchronous hooks for use with `module.registerHooks()`.
+ * Hooks for `module.registerHooks()`.
  *
- * Unlike the asynchronous hooks, these also see `require()` calls. Those are
- * left to the default implementation, since CommonJS is transformed by the
- * `require` hooks in `nodeTransform.cjs`.
+ * These also see `require()` calls. Those are left to the default
+ * implementation, since CommonJS is transformed by the `require` hooks in
+ * `nodeTransform.cjs`.
  */
 export const syncHooks = {
   /** @type {import('module').ResolveHookSync} */
@@ -345,82 +323,4 @@ export const syncHooks = {
 function isRequire(context) {
   const conditions = context.conditions ?? [];
   return conditions.includes('require') && !conditions.includes('import');
-}
-
-/**
- * Asynchronous resolve hook for use with `module.register()`, on Node.js
- * versions that don't support `module.registerHooks()`. It mirrors
- * `resolveSync`, except that `nextResolve` returns a promise.
- *
- * Together with `load`, this is also re-exported as a public entry point by
- * `@backstage/cli/config/nodeTransformHooks.mjs`, so it needs to stay in
- * place even once all supported Node.js versions have `module.registerHooks()`.
- *
- * @type {import('module').ResolveHook}
- */
-export async function resolve(specifier, context, nextResolve) {
-  if (isBuiltin(specifier)) {
-    return nextResolve(specifier, context);
-  }
-
-  const ext = extname(specifier);
-
-  if (ext === '.json' && !context.importAttributes?.type) {
-    return {
-      ...(await nextResolve(specifier, context)),
-      format: 'commonjs',
-      importAttributes: { type: 'json' },
-    };
-  }
-
-  if (ext !== '' || !specifier.startsWith('.')) {
-    return withDetectedModuleType(await nextResolve(specifier, context));
-  }
-
-  try {
-    return await nextResolve(specifier, context);
-  } catch (error) {
-    if (error.code === 'ERR_UNSUPPORTED_DIR_IMPORT') {
-      const spec = `${specifier}${specifier.endsWith('/') ? '' : '/'}index`;
-      const resolved = await resolveWithoutExt(spec, context, nextResolve);
-      if (resolved) {
-        return withDetectedModuleType(resolved);
-      }
-    } else if (error.code === 'ERR_MODULE_NOT_FOUND') {
-      const resolved = await resolveWithoutExt(specifier, context, nextResolve);
-      if (resolved) {
-        return withDetectedModuleType(resolved);
-      }
-    }
-
-    throw error;
-  }
-}
-
-/** @type {import('module').ResolveHook} */
-async function resolveWithoutExt(specifier, context, nextResolve) {
-  for (const tryExt of SRC_EXTS) {
-    try {
-      const resolved = await nextResolve(specifier + tryExt, {
-        ...context,
-        format: 'commonjs',
-      });
-      return {
-        ...resolved,
-        format: moduleTypeTable[tryExt] ?? resolved.format,
-      };
-    } catch {
-      /* ignore */
-    }
-  }
-  return undefined;
-}
-
-/**
- * Asynchronous load hook for use with `module.register()`, see `resolve`.
- *
- * @type {import('module').LoadHook}
- */
-export async function load(url, context, nextLoad) {
-  return loadImpl(url, context, nextLoad);
 }

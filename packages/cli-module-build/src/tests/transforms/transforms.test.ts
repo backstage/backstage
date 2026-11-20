@@ -109,20 +109,11 @@ describe('node runtime module transforms', () => {
       require: { value: 'json' },
     };
     expect(loadFixture('json/print.mts')).toEqual(expected);
-    // Falls back to the asynchronous hooks when require(esm) is disabled
-    expect(
-      loadFixture('json/print.mts', ['--no-experimental-require-module']),
-    ).toEqual(expected);
   });
 
   it('should detect the format of JavaScript in typeless packages', async () => {
     const expected = { named: 'esm', plain: 'cjs' };
     expect(loadFixture('typeless-dep/print.mts')).toEqual(expected);
-    expect(
-      loadFixture('typeless-dep/print.mts', [
-        '--no-experimental-require-module',
-      ]),
-    ).toEqual(expected);
   });
 });
 
