@@ -16,7 +16,7 @@ There are several action modules that are available to be added:
 - [Bitbucket Cloud](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-bitbucket-cloud): `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud`
 - [Bitbucket Server](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-bitbucket-server): `@backstage/plugin-scaffolder-backend-module-bitbucket-server`
 - [Gerrit](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gerrit): `@backstage/plugin-scaffolder-backend-module-gerrit`
-- [Gitea](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gitea): `@backstage/plugin-scaffolder-backend-module-gitea`
+- [Gitea](../../integrations/gitea/scaffolder.md): `@backstage/plugin-scaffolder-backend-module-gitea`
 - [GitHub](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-github): `@backstage/plugin-scaffolder-backend-module-github`
 - [GitLab](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gitlab): `@backstage/plugin-scaffolder-backend-module-gitlab`
 - [Rails](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-rails): `@backstage/plugin-scaffolder-backend-module-rails`
