@@ -835,6 +835,74 @@ describe('dynamicFrontendFeaturesLoader', () => {
     ]);
   });
 
+  it('skips a remote whose default export throws without blocking other remotes', async () => {
+    server.use(
+      http.get(`${baseUrl}/.backstage/dynamic-features/remotes`, () =>
+        HttpResponse.json([
+          {
+            packageName: 'plugin-1',
+            exposedModules: ['.'],
+            remoteInfo: {
+              name: 'plugin_1',
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+            },
+          },
+          {
+            packageName: 'plugin-2',
+            exposedModules: ['.'],
+            remoteInfo: {
+              name: 'plugin_2',
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+            },
+          },
+        ]),
+      ),
+      ...['plugin-1', 'plugin-2'].map((name, index) =>
+        http.get(
+          `${baseUrl}/.backstage/dynamic-features/remotes/${name}/mf-manifest.json`,
+          () =>
+            HttpResponse.json({
+              name: `plugin_${index + 1}`,
+              ...manifestDummyData,
+              exposes: [
+                {
+                  id: `plugin_${index + 1}:.`,
+                  name: '.',
+                  path: '.',
+                  ...manifestExposedRemoteDummyData,
+                },
+              ],
+            }),
+        ),
+      ),
+    );
+
+    const brokenModule = Object.defineProperty({}, 'default', {
+      get: () => {
+        throw new ReferenceError("Cannot access 'v' before initialization");
+      },
+    });
+    mocks.federation.get.mockReturnValueOnce(brokenModule);
+    mocks.federation.get.mockReturnValueOnce({
+      default: createFrontendPlugin({ pluginId: 'plugin-2', extensions: [] }),
+    });
+
+    const features = await (
+      dynamicFrontendFeaturesLoader({
+        moduleFederation: { plugins: testModuleFederationPlugins },
+      }) as InternalFrontendFeatureLoader
+    ).loader({ config: mockDefaultConfig() });
+
+    expect(features).toMatchObject([
+      { $$type: '@backstage/FrontendPlugin', id: 'plugin-2', version: 'v1' },
+    ]);
+    expect(mocks.console.error.mock.calls.flatMap(call => call[0])).toEqual([
+      expect.stringContaining(
+        "Failed reading remote module 'plugin_1' of dynamic plugin 'plugin-1': ReferenceError: Cannot access 'v' before initialization",
+      ),
+    ]);
+  });
+
   it('should skip module without default export, but still load other remotes', async () => {
     server.use(
       http.get(`${baseUrl}/.backstage/dynamic-features/remotes`, () =>
