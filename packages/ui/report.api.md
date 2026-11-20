@@ -4163,8 +4163,10 @@ export const TablePaginationDefinition: {
     readonly totalCount: {};
     readonly hasNextPage: {};
     readonly hasPreviousPage: {};
+    readonly onFirstPage: {};
     readonly onNextPage: {};
     readonly onPreviousPage: {};
+    readonly onLastPage: {};
     readonly onPageSizeChange: {};
     readonly showPageSizeOptions: {
       readonly default: true;
@@ -4184,8 +4186,10 @@ export type TablePaginationOwnProps = {
   totalCount?: number;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
+  onFirstPage?: () => void;
   onNextPage: () => void;
   onPreviousPage: () => void;
+  onLastPage?: () => void;
   onPageSizeChange?: (size: number) => void;
   showPageSizeOptions?: boolean;
   getLabel?: (params: {

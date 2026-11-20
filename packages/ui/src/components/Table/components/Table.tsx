@@ -102,6 +102,7 @@ function useLiveRegionLabel(
 /**
  * A full-featured data table with built-in pagination, sorting, row selection, loading and error states, and optional virtualization.
  * Pair with `useTable` to manage data fetching and state, or pass `data`, `columnConfig`, and `pagination` directly for manual control.
+ * When the current page has loaded data and an error occurs, the error appears above the table.
  *
  * @public
  */
@@ -142,9 +143,9 @@ export function Table<T extends TableItem>({
 
   const isInitialLoading = pending && !data;
 
-  if (error) {
+  if (error && (!data || isStale)) {
     return (
-      <div className={classes.root} style={style}>
+      <div className={classes.root} style={style} role="alert">
         <Text variant="body-medium">Error: {error.message}</Text>
       </div>
     );
@@ -191,6 +192,11 @@ export function Table<T extends TableItem>({
 
   return (
     <div className={classes.root} style={style}>
+      {error && (
+        <div role="alert">
+          <Text variant="body-medium">Error: {error.message}</Text>
+        </div>
+      )}
       <VisuallyHidden aria-live="polite" id={liveRegionId}>
         {liveRegionLabel}
       </VisuallyHidden>
@@ -283,8 +289,10 @@ export function Table<T extends TableItem>({
           totalCount={pagination.totalCount}
           hasNextPage={pagination.hasNextPage}
           hasPreviousPage={pagination.hasPreviousPage}
+          onFirstPage={pagination.onFirstPage}
           onNextPage={pagination.onNextPage}
           onPreviousPage={pagination.onPreviousPage}
+          onLastPage={pagination.onLastPage}
           onPageSizeChange={pagination.onPageSizeChange}
           showPageSizeOptions={pagination.showPageSizeOptions}
           getLabel={pagination.getLabel}

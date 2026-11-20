@@ -197,6 +197,10 @@ export function useCompletePagination<T extends TableItem, TFilter>(
   const hasNextPage = !noPagination && effectiveOffset + pageSize < totalCount;
   const hasPreviousPage = !noPagination && effectiveOffset > 0;
 
+  const onFirstPage = useCallback(() => {
+    setOffset(0);
+  }, []);
+
   const onNextPage = useCallback(() => {
     if (effectiveOffset + pageSize < totalCount) {
       setOffset(effectiveOffset + pageSize);
@@ -208,6 +212,12 @@ export function useCompletePagination<T extends TableItem, TFilter>(
       setOffset(Math.max(0, effectiveOffset - pageSize));
     }
   }, [effectiveOffset, pageSize]);
+
+  const onLastPage = useCallback(() => {
+    if (!noPagination && totalCount > 0) {
+      setOffset(Math.floor((totalCount - 1) / pageSize) * pageSize);
+    }
+  }, [noPagination, totalCount, pageSize]);
 
   const onPageSizeChange = useCallback((newSize: number) => {
     setPageSize(newSize);
@@ -228,8 +238,10 @@ export function useCompletePagination<T extends TableItem, TFilter>(
     pageSize,
     hasNextPage,
     hasPreviousPage,
+    onFirstPage,
     onNextPage,
     onPreviousPage,
+    onLastPage,
     onPageSizeChange,
     reload,
   };

@@ -89,6 +89,43 @@ describe('useTable', () => {
     expect(result.current.tableProps.pagination).toMatchObject({ offset: 10 });
   });
 
+  it('jumps to the first and last pages in complete mode by default', () => {
+    const { result } = renderHook(() =>
+      useTable<Item>({
+        mode: 'complete',
+        data: items,
+        paginationOptions: { pageSize: 10 },
+      }),
+    );
+
+    expect(getPagination(result.current).onFirstPage).toEqual(
+      expect.any(Function),
+    );
+    expect(getPagination(result.current).onLastPage).toEqual(
+      expect.any(Function),
+    );
+
+    act(() => getPagination(result.current).onLastPage?.());
+    expect(getPagination(result.current)).toMatchObject({
+      offset: 20,
+      hasNextPage: false,
+      hasPreviousPage: true,
+    });
+    expect(result.current.tableProps.data?.map(item => item.id)).toEqual([
+      20, 21, 22, 23, 24,
+    ]);
+
+    act(() => getPagination(result.current).onFirstPage?.());
+    expect(getPagination(result.current)).toMatchObject({
+      offset: 0,
+      hasNextPage: true,
+      hasPreviousPage: false,
+    });
+    expect(result.current.tableProps.data?.map(item => item.id)).toEqual([
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    ]);
+  });
+
   it('reports retained controlled data as pending when data becomes undefined', () => {
     const { result, rerender } = renderHook(
       ({ data }: { data: Item[] | undefined }) =>
@@ -188,6 +225,45 @@ describe('useTable', () => {
     });
   });
 
+  it('jumps to the first and last pages with offset pagination', async () => {
+    const getData = createOffsetGetData(items);
+    const { result } = renderHook(() =>
+      useTable<Item>({
+        mode: 'offset',
+        getData,
+        paginationOptions: { pageSize: 10 },
+      }),
+    );
+
+    await waitFor(() =>
+      expect(result.current.tableProps.isPending).toBe(false),
+    );
+    act(() => getPagination(result.current).onLastPage?.());
+
+    await waitFor(() =>
+      expect(result.current.tableProps.data?.[0]?.id).toBe(20),
+    );
+    expect(getPagination(result.current)).toMatchObject({
+      offset: 20,
+      hasNextPage: false,
+      hasPreviousPage: true,
+    });
+    expect(getData).toHaveBeenLastCalledWith(
+      expect.objectContaining({ offset: 20 }),
+    );
+
+    act(() => getPagination(result.current).onFirstPage?.());
+    await waitFor(() =>
+      expect(result.current.tableProps.data?.[0]?.id).toBe(0),
+    );
+    expect(getPagination(result.current)).toMatchObject({
+      offset: 0,
+      hasNextPage: true,
+      hasPreviousPage: false,
+    });
+    expect(getData).toHaveBeenCalledTimes(2);
+  });
+
   it('navigates with an empty string cursor', async () => {
     const getData = jest.fn(async ({ cursor }: CursorParams<unknown>) => ({
       data: cursor === undefined ? items.slice(0, 10) : items.slice(10, 20),
@@ -201,6 +277,8 @@ describe('useTable', () => {
     await waitFor(() =>
       expect(result.current.tableProps.isPending).toBe(false),
     );
+    expect(getPagination(result.current).onFirstPage).toBeUndefined();
+    expect(getPagination(result.current).onLastPage).toBeUndefined();
     act(() => getPagination(result.current).onNextPage());
 
     await waitFor(() =>
@@ -260,9 +338,11 @@ describe('useTable', () => {
     await waitFor(() =>
       expect(result.current.tableProps.error?.message).toBe('page failed'),
     );
+    expect(result.current.tableProps.isStale).toBe(true);
 
     act(() => getPagination(result.current).onPreviousPage());
     expect(result.current.tableProps.error).toBeUndefined();
+    expect(result.current.tableProps.isStale).toBe(false);
     expect(result.current.tableProps.data?.[0]?.id).toBe(0);
 
     failSecondPage = false;

@@ -21,7 +21,12 @@ import { Select } from '../Select';
 import type { TablePaginationProps, PageSizeOption } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { TablePaginationDefinition } from './definition';
-import { RiArrowLeftSLine, RiArrowRightSLine } from '@remixicon/react';
+import {
+  RiArrowLeftSLine,
+  RiArrowRightSLine,
+  RiSkipBackLine,
+  RiSkipForwardLine,
+} from '@remixicon/react';
 import { useMemo } from 'react';
 
 function getOptionValue(option: number | PageSizeOption): number {
@@ -61,8 +66,10 @@ export function TablePagination(props: TablePaginationProps) {
     totalCount,
     hasNextPage,
     hasPreviousPage,
+    onFirstPage,
     onNextPage,
     onPreviousPage,
+    onLastPage,
     onPageSizeChange,
     showPageSizeOptions,
     getLabel,
@@ -106,7 +113,10 @@ export function TablePagination(props: TablePaginationProps) {
   }
 
   return (
-    <div className={classes.root}>
+    <div
+      className={classes.root}
+      data-has-first-last={onFirstPage || onLastPage ? 'true' : undefined}
+    >
       <div className={classes.left}>
         {showPageSizeOptions && normalizedOptions.length > 0 && (
           <Select
@@ -132,6 +142,17 @@ export function TablePagination(props: TablePaginationProps) {
             {label}
           </Text>
         )}
+        {onFirstPage && (
+          <ButtonIcon
+            variant="secondary"
+            size="small"
+            onClick={onFirstPage}
+            isDisabled={!hasPreviousPage}
+            icon={<RiSkipBackLine />}
+            aria-label="First table page"
+            aria-describedby={showLabel ? labelId : undefined}
+          />
+        )}
         <ButtonIcon
           variant="secondary"
           size="small"
@@ -150,6 +171,17 @@ export function TablePagination(props: TablePaginationProps) {
           aria-label="Next table page"
           aria-describedby={showLabel ? labelId : undefined}
         />
+        {onLastPage && (
+          <ButtonIcon
+            variant="secondary"
+            size="small"
+            onClick={onLastPage}
+            isDisabled={!hasNextPage}
+            icon={<RiSkipForwardLine />}
+            aria-label="Last table page"
+            aria-describedby={showLabel ? labelId : undefined}
+          />
+        )}
       </div>
     </div>
   );
