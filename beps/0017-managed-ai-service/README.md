@@ -24,6 +24,7 @@ creation-date: 2026-11-20
   - [Extension points and deployment boundaries](#extension-points-and-deployment-boundaries)
   - [Package layout](#package-layout)
 - [API Design](#api-design)
+  - [Service interface](#service-interface)
   - [Harness lifecycle](#harness-lifecycle)
   - [Dispatch of a single attempt](#dispatch-of-a-single-attempt)
   - [Module registration](#module-registration)
@@ -346,6 +347,95 @@ The service exposes five public contracts. Converging on these interfaces is
 the main decision for this BEP; internal storage, guard, and adapter code can
 evolve behind them without breaking callers.
 
+### Service interface
+
+This is the complete TypeScript API the platform would maintain. It ships from
+`packages/ai-node/src/contracts.ts` in the reference implementation:
+
+```ts
+// @backstage/ai-node (alpha)
+import type { BackstageCredentials } from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
+import type { Context } from '@earendil-works/chord/context';
+import type { Harness, RegistryReader } from '@earendil-works/pi-durable';
+
+/**
+ * The consumer's config root plus the path to its own section within it; a
+ * plugin never reads another plugin's config.
+ */
+export type ConfigAtPath = Readonly<{ root: Config; path: string }>;
+
+/**
+ * Low-level primitive for backend plugins. Every guarantee in this BEP runs
+ * behind `openHarness`.
+ */
+export interface AiService {
+  openHarness(options: OpenHarnessOptions): Promise<ManagedHarness>;
+}
+
+export type OpenHarnessOptions = Readonly<{
+  /** Stable session identity; namespaces are keyed by (trusted pluginId, sessionId). */
+  sessionId: string;
+  /**
+   * Config scoped to the plugin's own config path. There is no implicit or
+   * required `ai.*` path; configuration errors name the plugin, exact path,
+   * and offending field.
+   */
+  config: ConfigAtPath;
+  /**
+   * The original authenticated caller (user or service). Never substitute a
+   * service identity on a user's behalf.
+   */
+  credentials: BackstageCredentials;
+  /**
+   * Reproducible plugin definitions (models, tools, prompts), matched by
+   * version on reopen. Persisted sessions whose definitions cannot be
+   * reconstructed stay blocked instead of resuming under substituted ones.
+   */
+  registry: RegistryReader;
+  /** Version identifier for the registry above. */
+  registryVersion: string;
+  /**
+   * Requested features (for example 'tools' or 'codemode'), each authorized
+   * with `ai.feature.use` before the harness opens. When omitted, the harness
+   * exposes no tools and no code-mode globals.
+   */
+  features?: readonly AiFeatureName[];
+}>;
+
+/**
+ * Reference-counted session handle. `release()` is idempotent per acquisition
+ * and never cancels admitted durable work; calls on a released handle reject.
+ */
+export interface ManagedHarness {
+  /** Pi's session harness without `close`; see ManagedNativeHarness. */
+  readonly harness: ManagedNativeHarness;
+  /** Chord context bound to this admission. */
+  readonly context: Context;
+  /** Guarded tool operations, permission-checked on every attempt. */
+  readonly tools?: GuardedToolOperations;
+  release(): Promise<void>;
+}
+
+/**
+ * Guarded view of Pi's `Harness`: `close` is omitted, calls are checked
+ * against lease ownership and handle lifecycle, and raw engine capabilities
+ * (providers, auth, mutable registries) are withheld behind a compile-checked
+ * allowlist of permitted Pi APIs.
+ */
+export type ManagedNativeHarness = Omit<Harness, 'close'>;
+```
+
+Exposing a single `openHarness` method keeps the Backstage-owned API small. On
+the Pi side, `ManagedNativeHarness` exposes session operations minus `close`,
+backed by a compile-checked allowlist pinned to an exact Pi version so upstream
+type changes fail the build instead of shifting the API silently.
+
+Single-request consumers do not need a separate interface: the `ai:generate`
+and `ai:transform` scaffolder actions are single-shot calls built strictly on
+`openHarness`, and a plain request-response helper can sit on the same
+primitive without changing the guarded path.
+
 ### Harness lifecycle
 
 A plugin opens a harness once per session through `aiServiceRef` and receives a
@@ -356,8 +446,11 @@ const ai = ctx.ai; // @backstage/ai-node, plugin-scoped
 
 const { harness, context, release } = await ai.openHarness({
   sessionId,
+  config,
   credentials, // the original authenticated Backstage caller
-  // ... session/feature/definition inputs
+  registry,
+  registryVersion,
+  features,
 });
 
 try {
@@ -386,7 +479,7 @@ sequenceDiagram
     PL->>AI: native operations (submit, wait, watch, fork)
     Note over AI: every model/tool attempt runs guarded dispatch
     PL->>AI: release()
-    Note over AI: handles are reference-counted and admitted durable work continues<br/>further calls on a released handle are rejected
+    Note over AI: handles are reference-counted, admitted durable work continues,<br/>and further calls on a released handle are rejected
   end
 ```
 
@@ -487,8 +580,7 @@ the policy.
 The service always queries the injected Backstage permission evaluator with the
 original caller's credentials and restrictions intact; service callers receive
 no implicit bypass. Model discovery and listing run through the same permission
-evaluator so
-users only see models they are permitted to invoke.
+evaluator, so users only see models they are permitted to invoke.
 
 One adopter caveat: while the service fails closed on validation, missing
 configuration, and runtime errors, Backstage's own default permission policy is
@@ -539,7 +631,7 @@ in scoped stores:
   deletion, or in-place rotation).
 - `user:<id>` scopes are stored encrypted in the installation database using
   authenticated encryption with config-supplied key material, unique nonces, and
-  key/algorithm versioning. Missing or invalid keys, corrupted ciphertext,
+  key/algorithm versioning. Missing or invalid keys, corrupted ciphertext, and
   storage errors all fail closed.
 
 Personal and service accounts are required from day one. Backing per-user
@@ -554,14 +646,14 @@ The `org` and `service:<id>` scopes intentionally mirror the shape of
 [BEP-0014](../0014-connection-service/README.md) connection data, so a future
 connection-service adapter can feed these stores without changes to the guard
 or the credential kinds. What stays local is everything the connection service
-explicitly excludes: the encrypted per-user store and the guarded, recorded
-OAuth refresh, both of which must sit inside the dispatch path to enforce
-per-attempt authorization.
+explicitly excludes: the encrypted per-user store and guarded OAuth refresh
+recorded in the journal, both of which must sit inside the dispatch path to
+enforce per-attempt authorization.
 
-OAuth token refreshes run as guarded operations recorded in the journal under a
-cross-process
-`(scope, provider)` lock. Once a refresh starts, caller cancellation does not
-abort it, because losing the only valid refresh token is worse than completing
+OAuth token refreshes run as guarded operations recorded in the journal under
+a cross-process `(scope, provider)` lock. Once a refresh starts, caller
+cancellation does not abort it, because losing the only valid refresh token is
+worse than completing
 the write. Custom AI gateways and enterprise proxies (such as Cloudflare AI
 Gateway or OpenAI-compatible routers) are supported by wrapping certified
 provider modules onto path-prefixed base URLs without weakening route
@@ -579,8 +671,8 @@ provider only requires registering a module, with no edits to core packages.
 Before every send, the guard checks the final destination against the module's
 certified routes and rejects anything outside them. Because the transport shim
 is installed after caller options and requests that cannot be inspected fail
-closed,
-payload mutations, request overrides, or caller-supplied `fetch` implementations
+closed, so payload mutations, request overrides, or caller-supplied `fetch`
+implementations
 cannot redirect a provider call or bypass envelope validation.
 
 Transport coverage varies by provider family because Pi's underlying adapters
@@ -605,8 +697,8 @@ internally. Where a provider SDK lacks a request-scoped hook, the service
 isolates it at the runtime boundary (the Google provider runs in a worker with
 a global-fetch shim). Enforcing at the transport layer keeps provider retries
 enabled on all supported transports without letting a revoked grant ride a
-retry. Native Pi OAuth auto-refresh is blocked in favor of the guarded,
-recorded refresh path.
+retry. Native Pi OAuth auto-refresh is blocked in favor of the guarded refresh
+path recorded in the journal.
 
 ### Tool mediation
 
@@ -752,8 +844,7 @@ runtime packages are new, and the only planned change to an existing core
 package is declaring that experimental ref, so existing installations see no
 behavior change and rolling back means removing the new packages. Core
 guarantees (per-attempt enforcement, a durable decision journal, and crash
-recovery)
-ship in the initial release, subject to the boundaries in
+recovery) ship in the initial release, subject to the boundaries in
 [Limitations and Open Questions](#limitations-and-open-questions).
 
 All Pi-facing and new service exports ship under `/alpha` entry points, and the
@@ -851,12 +942,11 @@ It overlaps with this BEP where the community already agrees: centralized
 provider configuration, provider families registered as factories, and
 capabilities enabled only when configured. Its design stopped at stateless
 model access: tool execution, agent execution engines, and durable execution
-were
-explicitly excluded, and it defined no per-attempt authorization or pre-dispatch
-journal. Because this BEP requires crash recovery, per-attempt authorization,
-and pre-dispatch journal records across both models and tools, model access
-stays
-inside the guarded dispatch path instead of living in a standalone service.
+were explicitly excluded, and it defined no per-attempt authorization or
+pre-dispatch journal. Because this BEP requires crash recovery, per-attempt
+authorization, and pre-dispatch journal records across both models and tools,
+model access stays inside the guarded dispatch path instead of living in a
+standalone service.
 
 ### Command-based API instead of a harness
 
