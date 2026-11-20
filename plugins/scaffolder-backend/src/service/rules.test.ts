@@ -626,6 +626,7 @@ describe('integration identifier classification', () => {
     // gerrit identify repositories through parsed repoUrl strings, and the
     // remaining modules do not register source code hosting actions.
     const modulesWithoutIdentifierAliases = [
+      'scaffolder-backend-module-ai',
       'scaffolder-backend-module-azure',
       'scaffolder-backend-module-confluence-to-markdown',
       'scaffolder-backend-module-cookiecutter',

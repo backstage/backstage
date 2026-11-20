@@ -4,7 +4,11 @@ title: Overview
 description: An overview of the AI features in Backstage.
 ---
 
-Backstage includes support for AI coding assistants at several levels: the Software Catalog can model AI-related resources, the MCP Actions Backend exposes Backstage functionality as Model Context Protocol (MCP) tools, and published skills teach AI assistants how to perform common Backstage tasks.
+Backstage includes support for AI coding assistants at several levels: the Software Catalog can model AI-related resources, the MCP Actions Backend exposes Backstage functionality as Model Context Protocol (MCP) tools, published skills teach AI assistants how to perform common Backstage tasks, and the AI service gives backstage plugins a managed path for model calls.
+
+## The AI service
+
+The [AI service](../features/ai-service/index.md) is a backend plugin family that lets backstage plugins dispatch AI model calls through a guarded path: permissions are checked with the caller's own credentials, providers are certified, and every decision is recorded in an append-only journal before dispatch. See its [documentation](../features/ai-service/index.md) for installation, configuration, permissions, and extending it with custom providers, gateways, and tools.
 
 ## AI in the Software Catalog
 

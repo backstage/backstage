@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-ai-node-test-utils
+  title: '@backstage/ai-node-test-utils'
+  description: Test utilities for certifying modules against the managed AI service's guard
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: framework-maintainers

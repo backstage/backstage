@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-ai-common
+  title: '@backstage/plugin-ai-common'
+  description: >-
+    Fixed AI permissions and resource types for policy authors
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: maintainers

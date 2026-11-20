@@ -1,0 +1,61 @@
+{
+  "name": "@backstage/ai-node-codemode",
+  "version": "0.1.0",
+  "description": "Code mode extension construction for the Backstage managed AI service",
+  "backstage": {
+    "role": "node-library"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/ai-node-codemode"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "jest": {
+    "id": "backstage_ai_jest__backstage_ai_node_codemode",
+    "resolver": "<rootDir>/../../ai-node/jestResolver.js"
+  },
+  "dependencies": {
+    "@earendil-works/pi-codemode": "1.5.2",
+    "@earendil-works/pi-durable": "1.5.2"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "jest": "^30.5.0"
+  }
+}

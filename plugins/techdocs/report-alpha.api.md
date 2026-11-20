@@ -585,6 +585,7 @@ export const techdocsTranslationRef: TranslationRef<
     readonly 'table.emptyState.description': 'Create your own document. Check out our Getting Started Information';
     readonly 'table.emptyState.docsButton': 'DOCS';
     readonly 'home.supportButton': 'Discover documentation in your ecosystem.';
+    readonly 'reader.settings': 'Settings';
     readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'buildLogs.title': 'Build Details';
     readonly 'buildLogs.closeDrawer': 'Close the drawer';
@@ -597,12 +598,11 @@ export const techdocsTranslationRef: TranslationRef<
     readonly 'stateIndicator.contentStaleError.message': 'Building a newer version of this documentation failed.';
     readonly 'redirectNotification.redirectNow': 'Redirect now';
     readonly 'readerPageHeader.source': 'Source';
-    readonly 'readerPageHeader.owner': 'Owner';
     readonly 'readerPageHeader.lifecycle': 'Lifecycle';
+    readonly 'readerPageHeader.owner': 'Owner';
     readonly 'pageWrapper.title': 'Documentation';
     readonly 'pageWrapper.subtitle': 'Documentation available in {{orgName}}';
     readonly 'entityContent.title': 'TechDocs';
-    readonly 'reader.settings': 'Settings';
   }
 >;
 

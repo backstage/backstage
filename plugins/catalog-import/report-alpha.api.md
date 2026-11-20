@@ -37,6 +37,9 @@ export const catalogImportTranslationRef: TranslationRef<
     readonly 'importInfoCard.githubIntegration.label': 'GitHub only';
     readonly 'importInfoCard.githubIntegration.title': 'Link to a repository';
     readonly 'importStepper.finish.title': 'Finish';
+    readonly 'importStepper.prepare.title': 'Import Actions';
+    readonly 'importStepper.prepare.description': 'Optional';
+    readonly 'importStepper.review.title': 'Review';
     readonly 'importStepper.singleLocation.title': 'Select Locations';
     readonly 'importStepper.singleLocation.description': 'Discovered Locations: 1';
     readonly 'importStepper.multipleLocations.title': 'Select Locations';
@@ -57,9 +60,6 @@ export const catalogImportTranslationRef: TranslationRef<
     readonly 'importStepper.noLocation.createPr.ownerPlaceholder': 'my-group';
     readonly 'importStepper.noLocation.createPr.codeownersHelperText': 'WARNING: This may fail if no CODEOWNERS file is found at the target location.';
     readonly 'importStepper.analyze.title': 'Select URL';
-    readonly 'importStepper.prepare.title': 'Import Actions';
-    readonly 'importStepper.prepare.description': 'Optional';
-    readonly 'importStepper.review.title': 'Review';
     readonly 'stepFinishImportLocation.repository.title': 'The following Pull Request has been opened: ';
     readonly 'stepFinishImportLocation.repository.description': 'Your entities will be imported as soon as the Pull Request is merged.';
     readonly 'stepFinishImportLocation.locations.new': 'The following entities have been added to the catalog:';

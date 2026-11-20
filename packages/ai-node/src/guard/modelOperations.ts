@@ -1,0 +1,763 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+  createAssistantMessageEventStream,
+  normalizeContext,
+  type AnyModel,
+  type AssistantMessage,
+  type AssistantMessageEventStream,
+  type Context,
+  type Models,
+  type ProviderHeaders,
+} from '@earendil-works/pi-ai';
+import { emptyProviderRegistry } from '../providers/registry';
+import type { AiProviderRegistry } from '../providers/registry';
+import type { AiEventSink } from '../observability/types';
+import type { AttemptJournal } from '../journal/types';
+import { assertRedactedText } from '../journal/redaction';
+import type {
+  ModelOperation,
+  ModelOperationGuard,
+  TrustedOperation,
+} from './types';
+import { hasTrustedOperationContext } from './types';
+import { guardedRequestOptions } from './requestOptions';
+
+/** Host-resolved credentials. Never constructed from caller request options. */
+/**
+ * The dispatch authority a host resolve produces for one binding.
+ *
+ * @alpha
+ */
+export type ProviderAuthority = Readonly<{
+  /**
+   * `local` carries no credential at all: it is the authority of a module
+   * whose adapter runs host code in process instead of sending a request.
+   */
+  kind: 'apiKey' | 'oauth' | 'federation' | 'local';
+  apiKey?: string;
+  headers?: ProviderHeaders;
+  env?: Record<string, string>;
+  /** Required for OAuth; automatic refresh is not permitted here. */
+  expiresAt?: number;
+}>;
+
+/**
+ * One resolved dispatch binding: the trusted operation, the model and the
+ * authority the host produced for it.
+ *
+ * @alpha
+ */
+export type GuardedModelBinding = Readonly<{
+  operation: TrustedOperation;
+  model: AnyModel;
+  authority: ProviderAuthority;
+}>;
+
+/**
+ * Host resolution failed after a trusted binding was established.
+ * Untyped throws or invalid bindings still deny, but cannot be journaled:
+ * the host violated the resolve contract, and audit authority is never
+ * invented from caller-provided model data. The unjournaled deny is observable.
+ */
+export class GuardedResolutionError extends Error {
+  constructor(readonly binding: GuardedModelBinding, reason: string) {
+    super(reason);
+    this.name = 'GuardedResolutionError';
+  }
+}
+
+/**
+ * The guarded request surface the host invokes: the pinned provider
+ * operations plus the guarded tool dispatch entry.
+ *
+ * @alpha
+ */
+export type ModelRequests = Pick<
+  Models,
+  | 'stream'
+  | 'complete'
+  | 'streamSimple'
+  | 'completeSimple'
+  | 'streamDeferred'
+  | 'fetchDeferred'
+  | 'cancelDeferred'
+  | 'classify'
+  | 'generateImages'
+> & {
+  /**
+   * Guarded tool dispatch: routes through the same invokeCustom path as
+   * model operations, so every per-attempt invariant applies unchanged.
+   */
+  callTool(
+    model: AnyModel,
+    context: unknown,
+    caller?: Record<string, unknown>,
+  ): Promise<{
+    /** The adapter's payload, exactly as the tool returned it. */
+    value: unknown;
+    /** The adapter's own settlement, never inferred from the payload. */
+    outcome: 'completed' | 'failed' | 'cancelled';
+  }>;
+};
+
+/**
+ * One custom-adapter dispatch: the adapter's payload and its own settlement.
+ *
+ * @alpha
+ */
+export type CustomDispatchResult = Readonly<{
+  value: unknown;
+  outcome: 'completed' | 'failed' | 'cancelled';
+}>;
+
+/**
+ * Request-only facade. The host supplies verified, filtered catalog lookups
+ * separately; no provider, credential, mutation or administrative access escapes.
+ * Native Models.applyAuth is deliberately not used: it can refresh OAuth outside
+ * the guarded transport. Only the pinned provider adapters above may dispatch.
+ *
+ * @alpha
+ */
+export function createGuardedModelOperations(options: {
+  guard: ModelOperationGuard;
+  journal: AttemptJournal;
+  providers?: AiProviderRegistry;
+  /**
+   * Resolves the trusted binding for one operation. Returns a promise when the
+   * host performs work before dispatch (for example a guarded credential
+   * refresh); the guard's own recheck, intent and send ordering is unchanged
+   * either way, because every guarded fetch re-validates before it sends.
+   */
+  resolve(
+    model: AnyModel,
+    operation: ModelOperation,
+  ): GuardedModelBinding | Promise<GuardedModelBinding>;
+  /** Observability sink for local policy denials; no-op when absent. */
+  emit?: AiEventSink;
+}): ModelRequests {
+  const providers = options.providers ?? emptyProviderRegistry;
+  class PolicyRejection extends Error {}
+  class ResolveContractViolation extends Error {}
+  const reject = async (
+    binding: GuardedModelBinding,
+    operation: string,
+    reason: string,
+    /**
+     * The observed reason. Host-supplied text stays in the journal record,
+     * whose own redaction governs it; an event carries a fixed internal code.
+     */
+    eventReason = reason,
+  ) => {
+    const op = binding.operation;
+    op.controller.abort();
+    if (!options.journal) throw new Error('Attempt journal is not bound');
+    // Same discipline as the guard: the denial observation follows the durable
+    // journal row, carries the internal reason and never caller text.
+    const observe = () =>
+      options.emit?.({
+        kind: 'denial',
+        at: Date.now(),
+        pluginId: op.fence.namespace.pluginId,
+        sessionId: op.fence.namespace.sessionId,
+        provider: op.provider,
+        modelId: op.modelId,
+        operation,
+        reason: eventReason,
+        attempt: 1,
+      });
+    await options.journal.recordDecisionAndIntent(op.fence, {
+      actor: op.actor,
+      conversationId: op.provenance.conversationId,
+      taskId: op.provenance.taskId,
+      callId: op.provenance.callId,
+      definitionVersion: op.definitionVersion,
+      configVersion: op.configVersion,
+      provider: op.provider,
+      model: op.modelId,
+      operation,
+      attempt: 1,
+      decision: 'deny',
+      reason,
+    });
+    observe();
+    throw new PolicyRejection(reason);
+  };
+  const matches = (
+    binding: GuardedModelBinding,
+    model: AnyModel,
+    operation: ModelOperation,
+  ) => {
+    const op = binding.operation;
+    return (
+      op.operation === operation &&
+      op.provider === model.provider &&
+      op.modelId === model.id &&
+      binding.model?.provider === op.provider &&
+      binding.model?.id === op.modelId &&
+      binding.model?.api === op.api &&
+      model.api === op.api
+    );
+  };
+  const resolveBinding = async (model: AnyModel, operation: ModelOperation) => {
+    try {
+      return await options.resolve(model, operation);
+    } catch (error) {
+      if (
+        error instanceof GuardedResolutionError &&
+        error.binding &&
+        hasTrustedOperationContext(error.binding.operation) &&
+        matches(error.binding, model, operation)
+      ) {
+        // The callback's message is host-supplied text: the journal records it
+        // under its own redaction discipline, while the observation carries
+        // only a fixed code plus the identifiers the event already has.
+        let reason = 'unsupported operation';
+        try {
+          reason = assertRedactedText(error.message, 'reason', {
+            required: true,
+          })!;
+        } catch {
+          /* keep fixed reason */
+        }
+        return reject(
+          error.binding,
+          `models.${operation}`,
+          reason,
+          'model resolution failed',
+        );
+      }
+      throw new ResolveContractViolation(
+        'Model operation denied: resolve contract violation',
+      );
+    }
+  };
+  const errorMessage = (
+    model: AnyModel,
+    reason = 'Managed model operation denied or failed',
+  ): AssistantMessage => ({
+    role: 'assistant',
+    content: [],
+    api: model.api as AssistantMessage['api'],
+    provider: model.provider,
+    model: model.id,
+    usage: {
+      input: 0,
+      output: 0,
+      cacheRead: 0,
+      cacheWrite: 0,
+      totalTokens: 0,
+      cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
+    },
+    stopReason: 'error',
+    errorMessage: reason,
+    timestamp: Date.now(),
+  });
+  const prepare = async (
+    model: AnyModel,
+    caller: Record<string, unknown> | undefined,
+    operation: ModelOperation,
+  ) => {
+    const binding = await resolveBinding(model, operation);
+    // Registry truth, never the binding's own claim: a local dispatch is one
+    // whose REGISTERED module declares the local adapter. An HTTP-shaped
+    // module cannot reach the local branch no matter what its binding says.
+    const registeredModule = providers.get(binding.operation.api);
+    const localDispatch = registeredModule?.adapter.kind === 'local';
+    const op: TrustedOperation = {
+      ...binding.operation,
+      ...(binding.authority.kind === 'oauth'
+        ? { providerCredentialExpiresAt: binding.authority.expiresAt }
+        : {}),
+    };
+    if (
+      !hasTrustedOperationContext(op) ||
+      !matches(binding, model, operation)
+    ) {
+      await reject(
+        binding,
+        `models.${operation}`,
+        'unverified model operation',
+      );
+    }
+    if (
+      !localDispatch &&
+      !['apiKey', 'oauth', 'federation'].includes(binding.authority.kind)
+    ) {
+      await reject(binding, 'auth.token', 'unsupported provider credentials');
+    }
+    // Pi can discover federation credentials from the process environment.
+    // Do not permit that path under a static or OAuth authority binding.
+    if (binding.authority.kind === 'federation') {
+      await reject(
+        binding,
+        'auth.token-exchange',
+        'federation token exchange is not certified',
+      );
+    }
+    const hasAuth =
+      !!binding.authority.apiKey ||
+      Object.entries(binding.authority.headers ?? {}).some(
+        ([key, value]) =>
+          ['authorization', 'x-api-key', 'cf-aig-authorization'].includes(
+            key.toLowerCase(),
+          ) &&
+          typeof value === 'string' &&
+          !!value.trim(),
+      );
+    if (!localDispatch && !hasAuth) {
+      await reject(binding, 'auth.token', 'provider credentials required');
+    }
+    if (
+      binding.authority.kind === 'oauth' &&
+      (typeof binding.authority.expiresAt !== 'number' ||
+        !Number.isFinite(binding.authority.expiresAt) ||
+        binding.authority.expiresAt <= Date.now())
+    ) {
+      await reject(
+        binding,
+        'auth.token',
+        'credential expired; re-authentication required',
+      );
+    }
+    const guarded = options.guard.bind(op);
+    let requestOptions: Record<string, unknown>;
+    if (localDispatch) {
+      // A local dispatch has no transport, no credential and no caller
+      // options it may forward: everything it needs arrives as `context`.
+      requestOptions = Object.freeze({});
+    } else {
+      try {
+        requestOptions = guardedRequestOptions(op, guarded, caller, providers);
+      } catch {
+        await reject(
+          binding,
+          `models.${operation}`,
+          'unsupported model options',
+        );
+        throw new Error('unreachable');
+      }
+    }
+    const module = providers.get(op.api);
+    if (!module) {
+      await reject(
+        binding,
+        `models.${operation}`,
+        'unsupported model transport',
+      );
+      throw new Error('unreachable');
+    }
+    // Provider callbacks receive model objects. Never expose the host's
+    // canonical object to an extension that could mutate later headers.
+    for (const key of [
+      'onPayload',
+      'onResponse',
+      'onProviderStreamEvent',
+    ] as const) {
+      const callback = requestOptions[key];
+      if (typeof callback === 'function') {
+        requestOptions[key] = (value: unknown, callbackModel: AnyModel) =>
+          callback(value, structuredClone(callbackModel));
+      }
+    }
+    let guardAttempted = false;
+    // Per-attempt accounting: the invocation ordinal of the latest guarded
+    // fetch that received a response, and of the latest one that rejected.
+    // A completion is valid only when the LATEST invoked fetch is the one
+    // that responded — a response to an earlier request can never validate
+    // a completion claimed after a later one was denied — and a rejection
+    // from an earlier request must not be mistaken for the latest fetch
+    // having settled, which would skip the abort and pending-fetch
+    // settlement a detached later fetch still needs.
+    let invocationCount = 0;
+    let respondedInvocation: number | null = null;
+    let rejectedInvocation: number | null = null;
+    const pendingFetches = new Set<Promise<unknown>>();
+    const callOptions: Record<string, unknown> = localDispatch
+      ? Object.freeze({})
+      : {
+          ...requestOptions,
+          apiKey: binding.authority.apiKey,
+          headers: binding.authority.headers,
+          env: binding.authority.env,
+          // No trusted or caller options may displace the enforcement boundary.
+          fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
+            guardAttempted = true;
+            const invocation = ++invocationCount;
+            const attempt = (async () => {
+              try {
+                const response = await guarded.fetch(input, init);
+                respondedInvocation = invocation;
+                return response;
+              } catch (error) {
+                rejectedInvocation = invocation;
+                throw error;
+              }
+            })();
+            pendingFetches.add(attempt);
+            try {
+              return await attempt;
+            } finally {
+              pendingFetches.delete(attempt);
+            }
+          },
+        };
+    return {
+      binding,
+      guarded,
+      adapter: module.adapter,
+      localDispatch,
+      callOptions,
+      // A guarded send is USED from the moment the guarded fetch is invoked,
+      // not from response headers: a transport that ran and then threw has
+      // already been accounted for by the guard (an allow decision plus an
+      // uncertain outcome), so it must never produce a follow-on "did not
+      // use guarded transport" denial. Only a dispatch that never invoked
+      // the guarded fetch is rejected for bypassing it.
+      usedGuard: () => guardAttempted,
+      attemptedGuard: () => guardAttempted,
+      // Consulted only for COMPLETED settlements: a claimed success is
+      // valid solely when the LATEST guarded fetch received its own
+      // response, per the same per-attempt discipline as the guard.
+      receivedGuardedResponse: () => respondedInvocation === invocationCount,
+      // Whether the LATEST invoked guarded fetch rejected — the guard has
+      // then already journaled that attempt's denial, so a fabrication on
+      // top of it must not write a second deny record. A rejection of an
+      // EARLIER fetch does not count: the latest one may still be pending.
+      guardFetchRejected: () => rejectedInvocation === invocationCount,
+      // Wait for fetches the provider detached (fired without awaiting).
+      settleGuardedFetches: async () => {
+        await Promise.allSettled([...pendingFetches]);
+      },
+    };
+  };
+  function start(
+    model: AnyModel,
+    context: Context,
+    caller: Record<string, unknown> | undefined,
+    operation: ModelOperation,
+    simple: boolean,
+  ): AssistantMessageEventStream {
+    const output = createAssistantMessageEventStream();
+    void (async () => {
+      let guarded: ReturnType<ModelOperationGuard['bind']> | undefined;
+      try {
+        const prepared = await prepare(model, caller, operation);
+        guarded = prepared.guarded;
+        const { binding, adapter, callOptions } = prepared;
+        if (adapter.kind !== 'stream') {
+          await reject(
+            binding,
+            `models.${operation}`,
+            'unsupported model transport',
+          );
+          throw new Error('unreachable');
+        }
+        const input = normalizeContext(context);
+        const native = (simple ? adapter.streamSimple : adapter.stream)(
+          binding.model as never,
+          input as never,
+          callOptions as never,
+        );
+        let terminal: Parameters<typeof output.push>[0] | undefined;
+        for await (const event of native) {
+          if (event.type === 'done' || event.type === 'error') terminal = event;
+          else output.push(event);
+        }
+        const result = await native.result();
+        let outcome: 'cancelled' | 'failed' | 'completed' = 'completed';
+        if (result.stopReason === 'aborted') outcome = 'cancelled';
+        else if (result.stopReason === 'error') outcome = 'failed';
+        await guarded.finish(outcome);
+        if (!terminal) throw new Error('Missing model terminal event');
+        output.push(terminal);
+        output.end();
+      } catch (error) {
+        if (guarded) {
+          try {
+            await guarded.finish('failed');
+          } catch {
+            /* Already finished or uncertain. */
+          }
+        }
+        output.push({
+          type: 'error',
+          reason: 'error',
+          error: errorMessage(
+            model,
+            error instanceof PolicyRejection ||
+              error instanceof ResolveContractViolation
+              ? error.message
+              : undefined,
+          ),
+        });
+        output.end();
+      }
+    })();
+    return output;
+  }
+  const unsupported = async (
+    model: AnyModel,
+    operation: ModelOperation,
+  ): Promise<never> => {
+    const binding = await resolveBinding(model, operation);
+    return reject(
+      binding,
+      `models.${operation}`,
+      'unsupported model operation',
+    );
+  };
+  /**
+   * Custom-adapter dispatch that KEEPS the adapter's outcome alongside the
+   * value, so a caller that must distinguish a completed result from a denial
+   * never has to sniff the payload.
+   */
+  const invokeCustomResult = async (
+    model: AnyModel,
+    context: unknown,
+    caller: Record<string, unknown> | undefined,
+    operation: ModelOperation,
+  ): Promise<CustomDispatchResult> => {
+    const module = providers.get(model.api);
+    if (
+      !module ||
+      (module.adapter.kind !== 'custom' && module.adapter.kind !== 'local') ||
+      !module.certifiedOperations.includes(operation)
+    ) {
+      return unsupported(model, operation);
+    }
+    const {
+      binding,
+      guarded,
+      adapter,
+      localDispatch,
+      callOptions,
+      usedGuard,
+      attemptedGuard,
+      receivedGuardedResponse,
+      guardFetchRejected,
+      settleGuardedFetches,
+    } = await prepare(model, caller, operation);
+    if (localDispatch) {
+      // Local dispatch: the registered module runs host code under the guard's
+      // decision, fence and per-attempt permission recheck. There is no
+      // guarded send to account for, so transport accounting and the
+      // fabricated-result check do not apply — the outcome `run` settles is
+      // journaled as-is. Reaching here with an HTTP-shaped adapter would mean
+      // the registry and the binding disagreed, which fails loudly.
+      if (adapter.kind !== 'local' || guarded.begin === undefined) {
+        throw new Error('Local dispatch resolved a non-local adapter');
+      }
+      try {
+        // Authorize and journal BEFORE the host function runs: a denial means
+        // the host function never executes. The guard has already journaled
+        // that denial, so the boundary reports the closed-vocabulary reason as
+        // a failed settlement, exactly as the HTTP tool modules report a
+        // refused send — no execution, no second denial, no send.
+        try {
+          await guarded.begin();
+        } catch (error) {
+          return {
+            value: {
+              errorMessage:
+                error instanceof Error
+                  ? error.message
+                  : 'Model authority revoked',
+            },
+            outcome: 'failed' as const,
+          };
+        }
+        const result = await adapter.run({
+          operation,
+          model: binding.model,
+          context,
+          options: callOptions,
+        });
+        if (
+          !result ||
+          !['completed', 'failed', 'cancelled'].includes(result.outcome)
+        ) {
+          throw new Error('Invalid provider outcome');
+        }
+        await guarded.finish(result.outcome);
+        return { value: result.value, outcome: result.outcome };
+      } catch (error) {
+        try {
+          await guarded.finish('failed');
+        } catch {
+          /* already settled or uncertain */
+        }
+        throw error;
+      }
+    }
+    if (adapter.kind !== 'custom')
+      throw new Error('Unsupported model transport');
+    try {
+      const result = await adapter.invoke({
+        operation,
+        model: binding.model,
+        context,
+        options: Object.freeze(callOptions),
+      });
+      if (!usedGuard()) {
+        await reject(
+          binding,
+          `models.${operation}`,
+          'provider did not use guarded transport',
+        );
+      }
+      if (
+        !result ||
+        !['completed', 'failed', 'cancelled'].includes(result.outcome)
+      ) {
+        throw new Error('Invalid provider outcome');
+      }
+      // A claimed success is valid only when the guarded fetch actually
+      // received a response for it. Error and aborted settlements are
+      // satisfied by invocation (the guard has already accounted for the
+      // attempt), but a COMPLETED result without a guarded response is a
+      // fabrication — a provider that catches a denial (or never awaits
+      // its fetch) and reports success anyway. When the guard already
+      // denied and journaled the fetch, the fabrication is rejected
+      // without a second deny record.
+      if (result.outcome === 'completed' && !receivedGuardedResponse()) {
+        if (!guardFetchRejected()) {
+          // The fetch may still be in flight (the provider detached it):
+          // abort it and wait for the guard to settle — the guard's own
+          // denial becomes the journal record for the fabrication, so no
+          // second deny is written. The fallback reject covers a settled
+          // fetch that neither returned a response nor rejected, which
+          // the accounting above cannot produce.
+          binding.operation.controller.abort();
+          await settleGuardedFetches();
+        }
+        if (!guardFetchRejected()) {
+          await reject(
+            binding,
+            `models.${operation}`,
+            'fabricated provider result',
+          );
+        }
+        throw new PolicyRejection('fabricated provider result');
+      }
+      await guarded.finish(result.outcome);
+      return { value: result.value, outcome: result.outcome };
+    } catch (error) {
+      try {
+        await guarded.finish('failed');
+      } catch {
+        /* already settled or uncertain */
+      }
+      if (!attemptedGuard() && !(error instanceof PolicyRejection)) {
+        return reject(
+          binding,
+          `models.${operation}`,
+          'provider dispatch failed before guarded send',
+        );
+      }
+      throw error;
+    }
+  };
+  const invokeCustom = async (
+    model: AnyModel,
+    context: unknown,
+    caller: Record<string, unknown> | undefined,
+    operation: ModelOperation,
+  ): Promise<unknown> =>
+    (await invokeCustomResult(model, context, caller, operation)).value;
+  return {
+    stream: (model, context, caller) =>
+      start(model, context, caller as Record<string, unknown>, 'stream', false),
+    complete: (model, context, caller) =>
+      start(
+        model,
+        context,
+        caller as Record<string, unknown>,
+        'complete',
+        false,
+      ).result(),
+    streamSimple: (model, context, caller) =>
+      start(
+        model,
+        context,
+        caller as Record<string, unknown>,
+        'streamSimple',
+        true,
+      ),
+    completeSimple: (model, context, caller) =>
+      start(
+        model,
+        context,
+        caller as Record<string, unknown>,
+        'completeSimple',
+        true,
+      ).result(),
+    streamDeferred: model => {
+      const output = createAssistantMessageEventStream();
+      void unsupported(model, 'streamDeferred').catch(error => {
+        output.push({
+          type: 'error',
+          reason: 'error',
+          error: errorMessage(
+            model,
+            error instanceof PolicyRejection ||
+              error instanceof ResolveContractViolation
+              ? error.message
+              : undefined,
+          ),
+        });
+        output.end();
+      });
+      return output;
+    },
+    fetchDeferred: (model, handle, caller) =>
+      invokeCustom(
+        model,
+        handle,
+        caller as Record<string, unknown>,
+        'fetchDeferred',
+      ) as ReturnType<Models['fetchDeferred']>,
+    cancelDeferred: (model, handle, caller) =>
+      invokeCustom(
+        model,
+        handle,
+        caller as Record<string, unknown>,
+        'cancelDeferred',
+      ) as ReturnType<Models['cancelDeferred']>,
+    classify: (model, context, caller) =>
+      invokeCustom(
+        model,
+        context,
+        caller as Record<string, unknown>,
+        'classify',
+      ) as ReturnType<Models['classify']>,
+    generateImages: (model, context, caller) =>
+      invokeCustom(
+        model,
+        context,
+        caller as Record<string, unknown>,
+        'generateImages',
+      ) as ReturnType<Models['generateImages']>,
+    callTool: (model, context, caller) =>
+      invokeCustomResult(
+        model,
+        context,
+        caller as Record<string, unknown>,
+        'toolCall',
+      ) as Promise<CustomDispatchResult>,
+  };
+}

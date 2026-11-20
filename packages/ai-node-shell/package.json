@@ -1,0 +1,64 @@
+{
+  "name": "@backstage/ai-node-shell",
+  "version": "0.1.0",
+  "description": "Reference raw shell tool server for the Backstage managed AI service",
+  "backstage": {
+    "role": "node-library"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/ai-node-shell"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "jest": {
+    "id": "backstage_ai_jest__backstage_ai_node_shell",
+    "resolver": "<rootDir>/../../ai-node/jestResolver.js"
+  },
+  "dependencies": {
+    "@backstage/ai-node": "workspace:^"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@earendil-works/pi-durable": "1.5.2",
+    "jest": "^30.5.0",
+    "knex": "^3.1.0"
+  }
+}

@@ -70,15 +70,15 @@ export function createGithubBranchProtectionAction(options: {
     dismissStaleReviews?: boolean | undefined;
     bypassPullRequestAllowances?:
       | {
-          users?: string[] | undefined;
           apps?: string[] | undefined;
           teams?: string[] | undefined;
+          users?: string[] | undefined;
         }
       | undefined;
     restrictions?:
       | {
-          users: string[];
           teams: string[];
+          users: string[];
           apps?: string[] | undefined;
         }
       | undefined;
@@ -255,8 +255,8 @@ export function createGithubRepoCreateAction(options: {
               access: string;
             }
           | {
-              team: string;
               access: string;
+              team: string;
             }
         )[]
       | undefined;
@@ -308,16 +308,16 @@ export function createGithubRepoPushAction(options: {
     requiredStatusCheckContexts?: string[] | undefined;
     bypassPullRequestAllowances?:
       | {
-          users?: string[] | undefined;
           apps?: string[] | undefined;
           teams?: string[] | undefined;
+          users?: string[] | undefined;
         }
       | undefined;
     requiredApprovingReviewCount?: number | undefined;
     restrictions?:
       | {
-          users: string[];
           teams: string[];
+          users: string[];
           apps?: string[] | undefined;
         }
       | undefined;
@@ -422,16 +422,16 @@ export function createPublishGithubAction(options: {
     access?: string | undefined;
     bypassPullRequestAllowances?:
       | {
-          users?: string[] | undefined;
           apps?: string[] | undefined;
           teams?: string[] | undefined;
+          users?: string[] | undefined;
         }
       | undefined;
     requiredApprovingReviewCount?: number | undefined;
     restrictions?:
       | {
-          users: string[];
           teams: string[];
+          users: string[];
           apps?: string[] | undefined;
         }
       | undefined;
@@ -468,8 +468,8 @@ export function createPublishGithubAction(options: {
               access: string;
             }
           | {
-              team: string;
               access: string;
+              team: string;
             }
         )[]
       | undefined;

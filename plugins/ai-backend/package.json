@@ -1,0 +1,91 @@
+{
+  "name": "@backstage/plugin-ai-backend",
+  "version": "0.1.0",
+  "description": "HTTP backend for the managed AI service",
+  "backstage": {
+    "role": "backend-plugin",
+    "pluginId": "ai",
+    "pluginPackages": [
+      "@backstage/plugin-ai-backend",
+      "@backstage/plugin-ai-common"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/ai-backend"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "jest": {
+    "id": "backstage_ai_jest__backstage_plugin_ai_backend",
+    "resolver": "<rootDir>/../../../packages/ai-node/jestResolver.js"
+  },
+  "dependencies": {
+    "@backstage/ai-node": "workspace:^",
+    "@backstage/ai-node-provider-anthropic": "workspace:^",
+    "@backstage/ai-node-provider-azure": "workspace:^",
+    "@backstage/ai-node-provider-google": "workspace:^",
+    "@backstage/ai-node-provider-openai": "workspace:^",
+    "@backstage/ai-node-provider-openrouter": "workspace:^",
+    "@backstage/ai-node-provider-typesafe": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-ai-common": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/plugin-notifications-node": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
+    "@backstage/plugin-signals-node": "workspace:^",
+    "@earendil-works/pi-durable": "1.5.2",
+    "express": "^4.22.0",
+    "express-promise-router": "^4.1.1"
+  },
+  "devDependencies": {
+    "@backstage/ai-node-test-utils": "workspace:^",
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@types/express": "^4.17.6",
+    "@types/supertest": "^2.0.8",
+    "better-sqlite3": "^12.0.0",
+    "jest": "^30.5.0",
+    "knex": "^3.0.0",
+    "pg": "^8.11.3",
+    "supertest": "^7.0.0"
+  },
+  "configSchema": "config.d.ts"
+}

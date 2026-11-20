@@ -295,11 +295,11 @@ export const homeTranslationRef: TranslationRef<
     readonly 'addWidgetDialog.title': 'Add new widget to dashboard';
     readonly 'addWidgetDialog.noAvailableWidgets': 'All available widgets have been added to the dashboard.';
     readonly 'customHomepageButtons.cancel': 'Cancel';
-    readonly 'customHomepageButtons.clearAll': 'Clear all';
+    readonly 'customHomepageButtons.save': 'Save';
     readonly 'customHomepageButtons.edit': 'Edit';
+    readonly 'customHomepageButtons.clearAll': 'Clear all';
     readonly 'customHomepageButtons.restoreDefaults': 'Restore defaults';
     readonly 'customHomepageButtons.addWidget': 'Add widget';
-    readonly 'customHomepageButtons.save': 'Save';
     readonly 'customHomepage.noWidgets': "No widgets added. Start by clicking the 'Add widget' button.";
     readonly 'widgetSettingsOverlay.cancelButtonTitle': 'Cancel';
     readonly 'widgetSettingsOverlay.editSettingsTooltip': 'Edit settings';

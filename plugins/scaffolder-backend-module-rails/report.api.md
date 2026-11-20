@@ -48,11 +48,10 @@ export function createFetchRailsAction(options: {
       railsArguments?:
         | {
             template?: string | undefined;
-            api?: boolean | undefined;
             force?: boolean | undefined;
             database?:
-              | 'sqlite3'
               | 'mysql'
+              | 'sqlite3'
               | 'postgresql'
               | 'oracle'
               | 'sqlserver'
@@ -62,7 +61,8 @@ export function createFetchRailsAction(options: {
               | 'jdbc'
               | undefined;
             minimal?: boolean | undefined;
-            railsVersion?: 'edge' | 'master' | 'dev' | 'fromImage' | undefined;
+            api?: boolean | undefined;
+            railsVersion?: 'master' | 'dev' | 'edge' | 'fromImage' | undefined;
             skipActionCable?: boolean | undefined;
             skipActionMailbox?: boolean | undefined;
             skipActionMailer?: boolean | undefined;

@@ -294,8 +294,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
     readonly 'searchResultItem.type': 'Type';
     readonly 'searchResultItem.kind': 'Kind';
-    readonly 'searchResultItem.owner': 'Owner';
     readonly 'searchResultItem.lifecycle': 'Lifecycle';
+    readonly 'searchResultItem.owner': 'Owner';
     readonly 'catalogTable.allFilters': 'All';
     readonly 'catalogTable.warningPanelTitle': 'Could not fetch catalog entities.';
     readonly 'catalogTable.viewActionTitle': 'View';
@@ -356,9 +356,9 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'relatedEntitiesCard.emptyHelpLinkTitle': 'Learn how to change this.';
     readonly 'systemDiagramCard.title': 'System Diagram';
     readonly 'systemDiagramCard.description': 'Use pinch & zoom to move around the diagram.';
+    readonly 'systemDiagramCard.edgeLabels.provides': 'provides';
     readonly 'systemDiagramCard.edgeLabels.partOf': 'part of';
     readonly 'systemDiagramCard.edgeLabels.dependsOn': 'depends on';
-    readonly 'systemDiagramCard.edgeLabels.provides': 'provides';
   }
 >;
 

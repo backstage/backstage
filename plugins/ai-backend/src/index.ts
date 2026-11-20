@@ -1,0 +1,143 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+  createBackendPlugin,
+  coreServices,
+} from '@backstage/backend-plugin-api';
+import {
+  aiServiceRef,
+  bindAiModuleRegistry,
+  createAiHttpSupport,
+  createAiModuleRegistry,
+  createMetricsSubscriber,
+  evaluateAiHealth,
+} from '@backstage/ai-node/alpha';
+import { aiBackendProviderModules } from './providerModules';
+import {
+  aiModelPermissionRules,
+  aiModelResourceRef,
+  aiToolPermissionRules,
+  aiToolResourceRef,
+} from '@backstage/ai-node/alpha';
+import {
+  aiAuditReadPermission,
+  aiModelUsePermission,
+  aiSessionUsePermission,
+  aiToolUsePermission,
+} from '@backstage/plugin-ai-common';
+import { aiModulesExtensionPoint } from './extensions';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { signalsServiceRef } from '@backstage/plugin-signals-node';
+import { notificationService } from '@backstage/plugin-notifications-node';
+import { createRouter } from './router';
+
+/** Backend plugin exposing managed AI sessions to authenticated users. @public */
+export default createBackendPlugin({
+  pluginId: 'ai',
+  register(env) {
+    const modules = createAiModuleRegistry({
+      providerModules: aiBackendProviderModules,
+      toolModules: [],
+    });
+    let toolPermissions:
+      | ((
+          registrations: ReturnType<typeof modules.snapshot>['toolModules'],
+        ) => void)
+      | undefined;
+    env.registerExtensionPoint(aiModulesExtensionPoint, {
+      registerProviderModules: modules.registerProviderModules,
+      registerToolModules(registrations) {
+        modules.registerToolModules(registrations);
+        toolPermissions?.(registrations);
+      },
+    });
+    env.registerInit({
+      deps: {
+        ai: aiServiceRef,
+        database: coreServices.database,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
+        httpRouter: coreServices.httpRouter,
+        permissions: coreServices.permissions,
+        permissionsRegistry: coreServices.permissionsRegistry,
+        pluginMetadata: coreServices.pluginMetadata,
+        config: coreServices.rootConfig,
+        events: eventsServiceRef,
+        signals: signalsServiceRef,
+        notifications: notificationService,
+        logger: coreServices.logger,
+      },
+      async init({
+        ai,
+        database,
+        auth,
+        httpAuth,
+        httpRouter,
+        permissions,
+        permissionsRegistry,
+        pluginMetadata,
+        config,
+        events,
+        signals,
+        notifications,
+        logger,
+      }) {
+        // Fixed permissions and the rules that give them granularity are
+        // registered once; policy authors import the matching conditions.
+        permissionsRegistry.addPermissions([
+          aiModelUsePermission,
+          aiToolUsePermission,
+          aiSessionUsePermission,
+          aiAuditReadPermission,
+        ]);
+        permissionsRegistry.addResourceType({
+          resourceRef: aiModelResourceRef,
+          rules: Object.values(aiModelPermissionRules),
+        });
+        permissionsRegistry.addResourceType({
+          resourceRef: aiToolResourceRef,
+          rules: Object.values(aiToolPermissionRules),
+        });
+        bindAiModuleRegistry(ai, modules);
+        const support = await createAiHttpSupport({
+          database,
+          auth,
+          permissions,
+          permissionsRegistry,
+          pluginMetadata,
+          config,
+        });
+        // Health derives from the metrics subscriber over the events
+        // service: the same ai.observability.* events the service
+        // publishes, aggregated, evaluated fail-open.
+        const metrics = createMetricsSubscriber();
+        await metrics.subscribe(events);
+        httpRouter.use(
+          createRouter({
+            ai,
+            support,
+            httpAuth,
+            health: () => evaluateAiHealth(metrics.snapshot()),
+            signals,
+            notifications,
+            logger,
+          }),
+        );
+      },
+    });
+  },
+});

@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-ai-node
+  title: '@backstage/ai-node'
+  description: Managed AI service primitives for Backstage backend plugins
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: framework-maintainers

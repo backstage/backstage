@@ -1,0 +1,5 @@
+---
+'@backstage/plugin-scaffolder-backend-module-ai': minor
+---
+
+Added a new `@backstage/plugin-scaffolder-backend-module-ai` package: a scaffolder backend module with two template actions that run through the managed AI service. `ai:transform` fills structured parameter values from the submitting user's natural-language answers against a supplied JSON schema, and `ai:generate` produces content from a prompt and optional context, returning it or writing it to a path inside the task workspace. Every action runs under the submitting user's credentials — each scaffolder task owns an AI session keyed by its task id, the submitting user's access to the configured model is checked against the fixed `ai.model.use` permission before the session opens and rechecked on every dispatch, and denials surface their recorded reasons (missing model listing, missing installation credentials, or a revoked permission) instead of falling back to another model. Requests are cancelled with the scaffolder task, and generated content can only be written inside the task's workspace.
