@@ -91,7 +91,7 @@ The `--fix` mode requires Yarn 3 or later.
 The repair runs in the working checkout using the repository's configured Yarn
 binary, plugins, and registry settings, with dependency build scripts disabled.
 Run it in a clean, exclusive checkout. An abrupt interruption can leave a
-partial change behind.
+partial change behind, including deleted patch files.
 
 For an automated Backstage version bump, run the commands in this order:
 

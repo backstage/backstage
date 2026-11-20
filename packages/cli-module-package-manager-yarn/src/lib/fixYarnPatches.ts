@@ -251,13 +251,14 @@ async function defaultExtractPackage(options: {
 async function defaultIsPatchReverseApplicable(options: {
   patchPath: string;
   packageDir: string;
+  env: NodeJS.ProcessEnv | undefined;
 }): Promise<boolean> {
   // Stop git from discovering an enclosing repository, since paths would then
   // be resolved relative to that repository root rather than the package.
   const child = run(['git', 'apply', '--check', '-R', options.patchPath], {
     cwd: options.packageDir,
     env: {
-      ...process.env,
+      ...(options.env ?? process.env),
       GIT_CEILING_DIRECTORIES: path.dirname(options.packageDir),
     },
     stdio: 'ignore',
@@ -481,7 +482,8 @@ export async function fixYarnPatches(
         options.extractPackage ??
         (o => defaultExtractPackage({ ...o, env: options.env })),
       isPatchReverseApplicable:
-        options.isPatchReverseApplicable ?? defaultIsPatchReverseApplicable,
+        options.isPatchReverseApplicable ??
+        (o => defaultIsPatchReverseApplicable({ ...o, env: options.env })),
     });
     if (dropped.length === 0) {
       return restoreFailure(retargetFailure);
