@@ -150,6 +150,21 @@ export function parseNumberParam(
   });
 }
 
+export function parseDateParam(
+  value: unknown,
+  name: string,
+): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (typeof value !== 'string' || Number.isNaN(Date.parse(value))) {
+    throw new InputError(
+      `Invalid ${name} parameter, expected an ISO 8601 timestamp`,
+    );
+  }
+  return new Date(value).toISOString();
+}
+
 export function flattenParams<T>(...params: (undefined | T | T[])[]): T[] {
   return [...params].flat().filter(Boolean) as T[];
 }

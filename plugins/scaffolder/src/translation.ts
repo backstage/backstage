@@ -162,6 +162,22 @@ export const scaffolderTranslationRef = createTranslationRef({
         },
       },
     },
+    taskListFilters: {
+      createdBy: {
+        label: 'Created by',
+        placeholder: 'Search users',
+      },
+      template: {
+        label: 'Template',
+        placeholder: 'Search templates',
+      },
+      status: {
+        label: 'Status',
+      },
+      createdAfter: 'Created from',
+      createdBefore: 'Created until',
+      clear: 'Clear filters',
+    },
     ownerListPicker: {
       title: 'Task Owner',
       options: {

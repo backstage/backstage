@@ -40,6 +40,22 @@ components:
         type: array
         items:
           type: string
+    createdAfter:
+      name: createdAfter
+      in: query
+      description: Only return tasks created at or after this ISO 8601 timestamp.
+      required: false
+      allowReserved: true
+      schema:
+        type: string
+    createdBefore:
+      name: createdBefore
+      in: query
+      description: Only return tasks created at or before this ISO 8601 timestamp.
+      required: false
+      allowReserved: true
+      schema:
+        type: string
     eventsAfter:
       name: after
       in: query
@@ -88,6 +104,16 @@ components:
       name: order
       in: query
       description: Order
+      required: false
+      allowReserved: true
+      schema:
+        type: array
+        items:
+          type: string
+    templateRef:
+      name: templateRef
+      in: query
+      description: Entity refs of the templates that the tasks were created from.
       required: false
       allowReserved: true
       schema:
@@ -584,7 +610,7 @@ paths:
       operationId: ListTasks
       tags:
         - Tasks
-      description: Returns a list of tasks, filtering by ownership and/or status if given.
+      description: Returns a list of tasks, filtering by owner, status, template and/or creation time if given.
       responses:
         '200':
           description: Ok
@@ -599,10 +625,13 @@ paths:
         - JWT: []
       parameters:
         - $ref: '#/components/parameters/createdBy'
+        - $ref: '#/components/parameters/createdAfter'
+        - $ref: '#/components/parameters/createdBefore'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/offset'
         - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/status'
+        - $ref: '#/components/parameters/templateRef'
     post:
       operationId: Scaffold
       tags:

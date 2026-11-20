@@ -292,9 +292,29 @@ export interface ScaffolderApi {
     options?: ScaffolderRequestOptions,
   ): Promise<{ id: string }>;
 
+  /**
+   * Lists tasks, optionally filtered. All given filters are combined, and
+   * multiple values within a single filter match any of them.
+   *
+   * @remarks
+   *
+   * `filterByOwnership` limits the tasks to the ones created by the current
+   * user (`owned`) or does not limit them (`all`). `createdBy` takes precedence
+   * over it. `createdAfter` and `createdBefore` are inclusive, and `order`
+   * defaults to newest first.
+   */
   listTasks(
     request: {
       filterByOwnership: 'owned' | 'all';
+      createdBy?: string[];
+      status?: ScaffolderTaskStatus[];
+      templateRef?: string[];
+      createdAfter?: Date;
+      createdBefore?: Date;
+      order?: {
+        field: 'created_at' | 'status' | 'created_by' | 'template_ref';
+        order: 'asc' | 'desc';
+      }[];
       limit?: number;
       offset?: number;
     },

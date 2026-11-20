@@ -109,6 +109,7 @@ import {
   findTemplate,
   getEntityBaseUrl,
   getWorkingDirectory,
+  parseDateParam,
   parseStringsParam,
 } from './helpers';
 
@@ -192,7 +193,12 @@ const readDuration = (
   return defaultValue;
 };
 
-const taskOrderFields = new Set(['created_at', 'status', 'created_by']);
+const taskOrderFields = new Set([
+  'created_at',
+  'status',
+  'created_by',
+  'template_ref',
+]);
 
 function formatSecretsValidationErrors(result: ValidatorResult) {
   return result.errors.map(err => {
@@ -708,6 +714,23 @@ export async function createRouter(
 
         const createdBy = parseStringsParam(req.query.createdBy, 'createdBy');
         const status = parseStringsParam(req.query.status, 'status');
+        const templateRef = parseStringsParam(
+          req.query.templateRef,
+          'templateRef',
+        );
+        const createdAfter = parseDateParam(
+          req.query.createdAfter,
+          'createdAfter',
+        );
+        const createdBefore = parseDateParam(
+          req.query.createdBefore,
+          'createdBefore',
+        );
+        if (createdAfter && createdBefore && createdAfter > createdBefore) {
+          throw new InputError(
+            'The createdAfter parameter must not be later than createdBefore',
+          );
+        }
 
         const order = parseStringsParam(req.query.order, 'order')?.map(item => {
           const match = item.match(/^(asc|desc):(.+)$/);
@@ -740,6 +763,9 @@ export async function createRouter(
           filters: {
             createdBy,
             status: status ? (status as TaskStatus[]) : undefined,
+            templateRef,
+            createdAfter,
+            createdBefore,
           },
           order,
           pagination: {

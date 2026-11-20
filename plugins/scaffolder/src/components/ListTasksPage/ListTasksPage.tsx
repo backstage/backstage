@@ -28,10 +28,15 @@ import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/esm/useAsync';
 import { useState } from 'react';
 import {
+  ScaffolderApi,
   scaffolderApiRef,
   ScaffolderTask,
 } from '@backstage/plugin-scaffolder-react';
-import { OwnerListPicker } from './OwnerListPicker';
+import {
+  emptyTaskListFilters,
+  TaskListFilterValues,
+  TaskListFilters,
+} from './TaskListFilters';
 import {
   CreatedAtColumn,
   OwnerEntityColumn,
@@ -59,6 +64,21 @@ export interface MyTaskPageProps {
   };
 }
 
+type TaskOrder = NonNullable<
+  Parameters<ScaffolderApi['listTasks']>[0]['order']
+>;
+
+// Table column index to the task field that the backend can order by
+const orderFields: Record<number, TaskOrder[number]['field'] | undefined> = {
+  1: 'template_ref',
+  2: 'created_at',
+  3: 'created_by',
+  4: 'status',
+};
+
+const startOfDay = (date: string) => new Date(`${date}T00:00:00`);
+const endOfDay = (date: string) => new Date(`${date}T23:59:59.999`);
+
 export const ListTaskPageContent = (props: MyTaskPageProps) => {
   const { initiallySelectedFilter = 'owned' } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
@@ -69,10 +89,26 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
   const rootLink = useRouteRef(rootRouteRef);
 
   const [ownerFilter, setOwnerFilter] = useState(initiallySelectedFilter);
+  const [filters, setFilters] =
+    useState<TaskListFilterValues>(emptyTaskListFilters);
+  const [order, setOrder] = useState<TaskOrder>();
+
   const { value, loading, error } = useAsync(() => {
     if (scaffolderApi.listTasks) {
       return scaffolderApi.listTasks?.({
         filterByOwnership: ownerFilter,
+        createdBy: filters.createdBy.length ? filters.createdBy : undefined,
+        templateRef: filters.templateRef.length
+          ? filters.templateRef
+          : undefined,
+        status: filters.status.length ? filters.status : undefined,
+        createdAfter: filters.createdAfter
+          ? startOfDay(filters.createdAfter)
+          : undefined,
+        createdBefore: filters.createdBefore
+          ? endOfDay(filters.createdBefore)
+          : undefined,
+        order,
         limit,
         offset: page * limit,
       });
@@ -84,89 +120,99 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
     );
 
     return Promise.resolve({ tasks: [], totalTasks: 0 });
-  }, [scaffolderApi, ownerFilter, limit, page]);
-
-  if (loading) {
-    return <Progress />;
-  }
-
-  if (error) {
-    return (
-      <CatalogFilterLayout>
-        <CatalogFilterLayout.Filters>
-          <OwnerListPicker
-            filter={ownerFilter}
-            onSelectOwner={id => setOwnerFilter(id)}
-          />
-        </CatalogFilterLayout.Filters>
-        <CatalogFilterLayout.Content>
-          <ErrorPanel error={error} />
-          <EmptyState
-            missing="info"
-            title={t('listTaskPage.content.emptyState.title')}
-            description={t('listTaskPage.content.emptyState.description')}
-          />
-        </CatalogFilterLayout.Content>
-      </CatalogFilterLayout>
-    );
-  }
+  }, [scaffolderApi, ownerFilter, filters, order, limit, page]);
 
   return (
     <CatalogFilterLayout>
       <CatalogFilterLayout.Filters>
-        <OwnerListPicker
-          filter={ownerFilter}
-          onSelectOwner={id => setOwnerFilter(id)}
+        <TaskListFilters
+          ownerFilter={ownerFilter}
+          onOwnerFilterChange={newOwnerFilter => {
+            setPage(0);
+            setOwnerFilter(newOwnerFilter);
+          }}
+          value={filters}
+          onChange={newFilters => {
+            setPage(0);
+            setFilters(newFilters);
+          }}
         />
       </CatalogFilterLayout.Filters>
       <CatalogFilterLayout.Content>
-        <Table<ScaffolderTask>
-          onRowsPerPageChange={pageSize => {
-            setPage(0);
-            setLimit(pageSize);
-          }}
-          onPageChange={newPage => setPage(newPage)}
-          options={{ pageSize: limit, emptyRowsWhenPaging: false }}
-          data={value?.tasks ?? []}
-          page={page}
-          totalCount={value?.totalTasks ?? 0}
-          title={t('listTaskPage.content.tableTitle')}
-          columns={[
-            {
-              title: t('listTaskPage.content.tableCell.taskID'),
-              field: 'id',
-              render: row => (
-                <Link to={`${rootLink()}/tasks/${row.id}`}>{row.id}</Link>
-              ),
-            },
-            {
-              title: t('listTaskPage.content.tableCell.template'),
-              field: 'spec.templateInfo.entity.metadata.title',
-              render: row => (
-                <TemplateTitleColumn
-                  entityRef={row.spec.templateInfo?.entityRef}
-                />
-              ),
-            },
-            {
-              title: t('listTaskPage.content.tableCell.created'),
-              field: 'createdAt',
-              render: row => <CreatedAtColumn createdAt={row.createdAt} />,
-            },
-            {
-              title: t('listTaskPage.content.tableCell.owner'),
-              field: 'createdBy',
-              render: row => (
-                <OwnerEntityColumn entityRef={row.spec?.user?.ref} />
-              ),
-            },
-            {
-              title: t('listTaskPage.content.tableCell.status'),
-              field: 'status',
-              render: row => <TaskStatusColumn status={row.status} />,
-            },
-          ]}
-        />
+        {error && (
+          <>
+            <ErrorPanel error={error} />
+            <EmptyState
+              missing="info"
+              title={t('listTaskPage.content.emptyState.title')}
+              description={t('listTaskPage.content.emptyState.description')}
+            />
+          </>
+        )}
+        {!error && loading && <Progress />}
+        {!error && !loading && (
+          <Table<ScaffolderTask>
+            onRowsPerPageChange={pageSize => {
+              setPage(0);
+              setLimit(pageSize);
+            }}
+            onPageChange={newPage => setPage(newPage)}
+            onOrderChange={(orderBy, orderDirection) => {
+              const field = orderFields[orderBy];
+              setPage(0);
+              setOrder(field ? [{ field, order: orderDirection }] : undefined);
+            }}
+            options={{
+              pageSize: limit,
+              pageSizeOptions: [5, 10, 20, 50, 100],
+              emptyRowsWhenPaging: false,
+            }}
+            data={value?.tasks ?? []}
+            page={page}
+            totalCount={value?.totalTasks ?? 0}
+            title={t('listTaskPage.content.tableTitle')}
+            columns={[
+              {
+                title: t('listTaskPage.content.tableCell.taskID'),
+                field: 'id',
+                sorting: false,
+                render: row => (
+                  <Link to={`${rootLink()}/tasks/${row.id}`}>{row.id}</Link>
+                ),
+              },
+              {
+                title: t('listTaskPage.content.tableCell.template'),
+                field: 'spec.templateInfo.entity.metadata.title',
+                customSort: () => 0,
+                render: row => (
+                  <TemplateTitleColumn
+                    entityRef={row.spec.templateInfo?.entityRef}
+                  />
+                ),
+              },
+              {
+                title: t('listTaskPage.content.tableCell.created'),
+                field: 'createdAt',
+                customSort: () => 0,
+                render: row => <CreatedAtColumn createdAt={row.createdAt} />,
+              },
+              {
+                title: t('listTaskPage.content.tableCell.owner'),
+                field: 'createdBy',
+                customSort: () => 0,
+                render: row => (
+                  <OwnerEntityColumn entityRef={row.spec?.user?.ref} />
+                ),
+              },
+              {
+                title: t('listTaskPage.content.tableCell.status'),
+                field: 'status',
+                customSort: () => 0,
+                render: row => <TaskStatusColumn status={row.status} />,
+              },
+            ]}
+          />
+        )}
       </CatalogFilterLayout.Content>
     </CatalogFilterLayout>
   );
