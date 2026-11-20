@@ -28,7 +28,7 @@ Out of the box, TechDocs is configured in `app-config.yaml` as:
 techdocs:
   builder: 'local' # Alternatives - 'external'
   generator:
-    runIn: 'docker' # Alternatives - 'local'
+    runIn: 'docker' # Alternatives - 'local', 'kubernetes'
   publisher:
     type: 'local' # Alternatives include 'googleGcs', 'awsS3', and other supported publishers. See configuration documentation for the full list.
 ```
@@ -70,6 +70,8 @@ techdocs:
 You can skip this if your `techdocs.builder` is set to `'external'`.
 
 The TechDocs Backend plugin runs a docker container with mkdocs installed to generate the frontend of the docs from source files (Markdown). If you are deploying Backstage using Docker, this will mean that your Backstage Docker container will try to run another Docker container for TechDocs Backend.
+
+If you deploy Backstage to Kubernetes, you can instead run each build as a Kubernetes Job. See [How to run TechDocs builds as Kubernetes Jobs](./how-to-guides.md#how-to-run-techdocs-builds-as-kubernetes-jobs).
 
 To avoid this problem, we have a configuration available. You can set a value in your `app-config.yaml` that tells the techdocs generator if it should run the `local` mkdocs or run it from `docker`. This defaults to running as `docker` if no config is provided.
 
