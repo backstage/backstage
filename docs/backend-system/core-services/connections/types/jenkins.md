@@ -4,9 +4,23 @@ title: Jenkins connections
 description: Configure and consume Jenkins connections
 ---
 
-Use a `jenkins` connection to access a controller with an API token or explicit anonymous access.
+Use a `jenkins` connection to read a controller's API with a user API token
+or anonymous access.
 
 ## Configuring
+
+### Configure a Jenkins API token
+
+Create an API token for a Jenkins user with permission to read the jobs your
+plugin needs. Follow Jenkins' guide to
+[authenticating scripted clients](https://www.jenkins.io/doc/book/system-administration/authenticating-scripted-clients/),
+then configure the username, token and controller address.
+
+Use `apiToken` with a nonempty username and API token. The username cannot contain
+colons because requests send `username:apiToken` with HTTP Basic authentication.
+For public reads, configure `none` only when the controller permits anonymous
+access. API tokens do not require a crumb on supported Jenkins versions; this
+connection does not manage other authentication or CSRF workflows.
 
 ```yaml title="app-config.yaml"
 connections:
@@ -18,33 +32,33 @@ connections:
         apiToken: ${JENKINS_API_TOKEN}
 ```
 
-Include the controller's [context path](https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-troubleshooting/#context-path)
-in `baseUrl`. Optional `apiBaseUrl` is a separate controller root for backend
-requests, with the same path convention. It stays unset when omitted; consumers
-use `baseUrl`. Both HTTP and HTTPS are accepted. Use HTTPS across untrusted
-networks to protect credentials.
+### Choose the controller address
 
-The `apiToken` method requires a nonempty username without colons and a nonempty
-API token. Send them as HTTP Basic credentials; this is not a Bearer token.
-The `none` method allows explicitly configured anonymous reads where Jenkins
-permissions permit them. API-token-authenticated requests do not require a crumb
-on supported Jenkins versions; other authentication methods and CSRF workflows
-are outside this connection type. See [authenticating scripted clients](https://www.jenkins.io/doc/book/system-administration/authenticating-scripted-clients/).
+Include the controller's
+[context path](https://www.jenkins.io/doc/book/system-administration/reverse-proxy-configuration-troubleshooting/#context-path)
+in `baseUrl`, such as `https://ci.example.com/jenkins/`. If your backend uses an
+internal address, set `apiBaseUrl` to that controller root, including its context
+path. Leave job routes and `api/json` out of both roots. Without an override,
+the consumer uses `baseUrl`.
 
-URL roots reject credentials, query and fragment delimiters, preserve context
-paths and encoded characters, and receive a trailing slash. API overrides are
-not filled automatically.
+Both roots accept HTTP and HTTPS without credentials, queries or fragments.
+Use HTTPS when sending credentials across untrusted networks. The connection
+keeps paths and encoded characters and adds a trailing slash, allowing the
+consumer to append a job route without losing `/jenkins/`.
 
-Lookup uses the host and non-default port from `baseUrl`, not the API override
-or URL path. Two installations under the same host cannot have separate
-connections. Use the shared [plugin-scoping rules](../01-concepts.md#plugin-scoping)
-when plugins need different credentials for the same instance.
+The host and non-default port of `baseUrl` identify the controller during lookup.
+The API override is only a request address. Controllers under different paths on
+one host cannot have separate connections; use
+[plugin scoping](../01-concepts.md#plugin-scoping) when plugins need different
+credentials for one controller.
 
 ## Consuming
 
-Declare the connection and resolve the service using the shared
-[backend consumption guide](../03-consuming-connections.md#declare-and-resolve-the-connection).
-Append relative paths without a leading slash so the configured context survives.
+### Read a job
+
+[Declare a connection dependency](../03-consuming-connections.md#declare-and-resolve-the-connection)
+and look up the controller URL. This example supports both `apiToken` and `none`:
+it sends Basic credentials only when the selected method is `apiToken`.
 
 ```ts
 import type { ConnectionsService } from '@backstage/connections';
@@ -77,7 +91,12 @@ export async function readJenkinsJob(
 }
 ```
 
-The examples keep credentials on the backend, reject redirects and check HTTP
-errors before reading JSON. The provider checks permissions and token validity
-when it receives a request. See the shared
-[credential-handling guidance](../03-consuming-connections.md#keep-connection-data-on-the-backend).
+With this configuration, the example reads
+`https://ci.example.com/jenkins/job/example/api/json`. Keep the job route relative
+to preserve the controller's context path.
+
+Jenkins decides whether the selected user or anonymous caller can read the job.
+Check failed responses before reading JSON and reject redirects when sending
+credentials, as the example does. See the shared
+[credential-handling guidance](../03-consuming-connections.md#keep-connection-data-on-the-backend)
+for keeping the API token in your backend.

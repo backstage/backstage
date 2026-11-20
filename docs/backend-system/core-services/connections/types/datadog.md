@@ -4,9 +4,22 @@ title: Datadog connections
 description: Configure and consume Datadog connections
 ---
 
-Use a `datadog` connection to give a backend plugin paired API and application keys for a regional API.
+Use a `datadog` connection to access a regional API with an API key and an
+application key.
 
 ## Configuring
+
+### Configure API and application keys
+
+Create an API key and an application key for the Datadog organization your plugin
+needs to read. Give the application key the permissions required by those APIs.
+Follow Datadog's
+[API authentication guide](https://docs.datadoghq.com/api/latest/authentication/)
+and configure both keys with the API address for your region.
+
+The `apiKey` method requires both keys to be nonempty and contain no whitespace.
+It sends them in the `DD-API-KEY` and `DD-APPLICATION-KEY` headers. Every connection
+needs this pair of keys; OAuth and anonymous access are not supported.
 
 ```yaml title="app-config.yaml"
 connections:
@@ -18,33 +31,34 @@ connections:
         applicationKey: ${DATADOG_APPLICATION_KEY}
 ```
 
-Use an explicit HTTPS API root for the organization's [Datadog site](https://docs.datadoghq.com/getting_started/site/),
-for example `https://api.datadoghq.com/` or `https://api.datadoghq.eu/`. Browser
-hosts and SDK site names are not translated into regional API addresses.
-Optional `apiBaseUrl` can name an independent HTTPS destination; when absent,
-consumers use `baseUrl` directly. Include any proxy context path in the root.
+### Choose the regional API address
 
-The `apiKey` method requires both nonempty keys without whitespace. Read APIs
-require an application key with the appropriate permissions in addition to the
-API key. No OAuth exchange or unauthenticated method is provided. See
-[API authentication](https://docs.datadoghq.com/api/latest/authentication/).
-Multiple organizations sharing one API host need plugin-scoped key pairs; URL
-paths do not select an organization.
+Set `baseUrl` to the HTTPS API root for your organization's
+[Datadog site](https://docs.datadoghq.com/getting_started/site/), such as
+`https://api.datadoghq.com/` or `https://api.datadoghq.eu/`. Supply the API address
+directly; the connection does not translate browser hosts or SDK site names.
 
-URL roots reject credentials, query and fragment delimiters, preserve context
-paths and encoded characters, and receive a trailing slash. API overrides are
-not filled automatically.
+If your backend reaches that API through a proxy, set `apiBaseUrl` to the proxy's
+HTTPS root, including any context path. Otherwise, leave it out and use `baseUrl`
+for requests. Keep `api/v2/` out of these roots: the consumer appends the API route.
+The addresses cannot contain credentials, queries or fragments. Installation
+paths and encoded characters are preserved, with a trailing slash for joining
+relative routes.
 
-Lookup uses the host and non-default port from `baseUrl`, not the API override
-or URL path. Two installations under the same host cannot have separate
-connections. Use the shared [plugin-scoping rules](../01-concepts.md#plugin-scoping)
-when plugins need different credentials for the same instance.
+Lookup uses the host and non-default port from `baseUrl`. The proxy address and
+URL paths do not select another connection or organization. Connections on the
+same host would be duplicates, so use
+[plugin-scoped key pairs](../01-concepts.md#plugin-scoping) when different plugins
+need access to different organizations sharing an API host.
 
 ## Consuming
 
-Declare the connection and resolve the service using the shared
-[backend consumption guide](../03-consuming-connections.md#declare-and-resolve-the-connection).
-Append relative paths without a leading slash so the configured context survives.
+### Read the service catalog
+
+[Declare a connection dependency](../03-consuming-connections.md#declare-and-resolve-the-connection)
+and pass your regional API URL to lookup. Request `apiKey` authentication so both
+keys are available. This example reads catalog entities using the configured
+proxy root when present, otherwise the regional API root.
 
 ```ts
 import type { ConnectionsService } from '@backstage/connections';
@@ -78,7 +92,11 @@ export async function readDatadogCatalog(
 }
 ```
 
-The examples keep credentials on the backend, reject redirects and check HTTP
-errors before reading JSON. The provider checks permissions and token validity
-when it receives a request. See the shared
+For the configuration above, the request goes to
+`https://api.datadoghq.com/api/v2/catalog/entity`. Append routes without a leading
+slash so a proxy's context path survives.
+
+Datadog checks that the keys are valid and have access to the requested API.
+The example checks HTTP errors and rejects redirects before reading JSON.
+Keep both keys in your backend, following the shared
 [credential-handling guidance](../03-consuming-connections.md#keep-connection-data-on-the-backend).

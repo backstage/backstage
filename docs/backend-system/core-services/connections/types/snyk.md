@@ -4,9 +4,20 @@ title: Snyk connections
 description: Configure and consume Snyk connections
 ---
 
-Use a `snyk` connection to access the regional REST and V1 APIs with a configured API token.
+Use a `snyk` connection to read the regional REST or V1 API with an API token.
 
 ## Configuring
+
+### Configure an API token
+
+Create an API token for the Snyk account your plugin uses, following the
+[API authentication guide](https://docs.snyk.io/developer-tools/snyk-api/authentication-for-api).
+Check that the account's plan and token permissions allow the APIs you need,
+then configure the token with your region's API address.
+
+The `token` method requires a nonempty token without whitespace and sends
+`Authorization: token ...`. Every connection needs a token. Supply a token you manage; the connection does
+not exchange or refresh tokens.
 
 ```yaml title="app-config.yaml"
 connections:
@@ -17,34 +28,35 @@ connections:
         token: ${SNYK_TOKEN}
 ```
 
-Use the HTTPS API root for your region: `https://api.snyk.io/`,
+### Choose the regional API root
+
+Set `baseUrl` to the HTTPS root for your region: `https://api.snyk.io/`,
 `https://api.us.snyk.io/`, `https://api.eu.snyk.io/` or `https://api.au.snyk.io/`.
-No region is inferred from browser URLs. Optional `apiBaseUrl` can name an
-independent HTTPS API destination; otherwise consumers use `baseUrl`. Both roots
-can preserve a proxy context path. See [REST API URLs](https://docs.snyk.io/developer-tools/snyk-api/rest-api/about-the-rest-api#api-urls)
+Use an API address directly; browser URLs do not select a region. See the
+[REST API URLs](https://docs.snyk.io/developer-tools/snyk-api/rest-api/about-the-rest-api#api-urls)
 and [V1 API URLs](https://docs.snyk.io/developer-tools/snyk-api/v1-api#api-urls).
 
-The `token` method accepts a nonempty token without whitespace and sends
-`Authorization: token ...`. Token permissions and API availability depend on the
-account and plan. No token exchange, refresh or unauthenticated method is
-provided. See [API authentication](https://docs.snyk.io/developer-tools/snyk-api/authentication-for-api).
-Organization selection and the REST version parameter belong to each request,
-not connection lookup.
+If your backend uses an API proxy, set `apiBaseUrl` to its HTTPS root. Otherwise,
+the consumer uses `baseUrl`. Include any proxy context path, but leave `rest/`
+and `v1/` out of these roots so callers can choose the API for each request.
+Both roots reject embedded credentials, queries and fragments. The connection
+preserves paths and encoded characters and adds a trailing slash for appending
+relative routes.
 
-URL roots reject credentials, query and fragment delimiters, preserve context
-paths and encoded characters, and receive a trailing slash. API overrides are
-not filled automatically.
-
-Lookup uses the host and non-default port from `baseUrl`, not the API override
-or URL path. Two installations under the same host cannot have separate
-connections. Use the shared [plugin-scoping rules](../01-concepts.md#plugin-scoping)
-when plugins need different credentials for the same instance.
+The host and non-default port from `baseUrl` identify the connection. Neither an
+API override nor an organization in the request path adds a lookup identity.
+Connections sharing that host would be duplicates. Use
+[plugin scoping](../01-concepts.md#plugin-scoping) when plugins need different
+tokens for organizations on the same regional API.
 
 ## Consuming
 
-Declare the connection and resolve the service using the shared
-[backend consumption guide](../03-consuming-connections.md#declare-and-resolve-the-connection).
-Append relative paths without a leading slash so the configured context survives.
+### List an organization's projects
+
+[Declare a connection dependency](../03-consuming-connections.md#declare-and-resolve-the-connection)
+and look up the regional API URL with `token` authentication. Pass the
+organization ID and supported REST API version to this function; both belong to
+the request, not lookup. It sends requests through `apiBaseUrl` when configured.
 
 ```ts
 import type { ConnectionsService } from '@backstage/connections';
@@ -77,7 +89,12 @@ export async function readSnykProjects(
 }
 ```
 
-The examples keep credentials on the backend, reject redirects and check HTTP
-errors before reading JSON. The provider checks permissions and token validity
-when it receives a request. See the shared
+For the EU configuration, the request starts at
+`https://api.eu.snyk.io/rest/orgs/`, followed by the organization ID and `projects`.
+The `version` query parameter selects the REST API version. Append relative
+routes so a configured proxy path remains part of the request.
+
+Snyk checks API availability and the token's permissions when it handles the
+request. The example checks unsuccessful responses and rejects redirects.
+Keep the token on the backend; see the shared
 [credential-handling guidance](../03-consuming-connections.md#keep-connection-data-on-the-backend).

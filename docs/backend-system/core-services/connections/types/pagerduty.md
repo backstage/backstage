@@ -4,9 +4,20 @@ title: PagerDuty connections
 description: Configure and consume PagerDuty connections
 ---
 
-Use a `pagerduty` connection to select account-specific REST credentials, even when several accounts share a regional endpoint.
+Use a `pagerduty` connection to access an account's REST API. Accounts sharing a
+regional API endpoint can keep separate credentials.
 
 ## Configuring
+
+### Configure a REST API token
+
+Create a REST API token for the PagerDuty account your plugin needs to access,
+following the [REST authentication guide](https://docs.pagerduty.com/developer/authentication).
+Configure the token with the account's web address and regional API endpoint.
+
+Use `token` with a raw, nonempty REST API token without whitespace. Requests send
+it as `Token token=...`. OAuth Bearer tokens and Events API routing keys use
+different authentication and cannot be used here.
 
 ```yaml title="app-config.yaml"
 connections:
@@ -18,30 +29,34 @@ connections:
         token: ${PAGERDUTY_REST_TOKEN}
 ```
 
-`baseUrl` is the account web URL used to identify credentials. `apiBaseUrl` is
-required and independent: choose `https://api.pagerduty.com/` for US accounts or
-`https://api.eu.pagerduty.com/` for EU accounts. The account URL does not determine
-the region, and no regional endpoint is inferred. HTTPS proxy roots with context
-paths are supported. See PagerDuty's [service regions](https://docs.pagerduty.com/get-started/service-regions).
+### Choose the account and region
 
-Both roots require HTTPS. The `token` method accepts a raw, nonempty REST API token
-without whitespace. It uses `Token token=...` authorization. OAuth Bearer tokens
-and Events API routing keys use different protocols and are not supported here.
-See [REST authentication](https://docs.pagerduty.com/developer/authentication).
+Set `baseUrl` to the account web address, such as
+`https://example.pagerduty.com/`. Set the required `apiBaseUrl` to
+`https://api.pagerduty.com/` for a US account or `https://api.eu.pagerduty.com/` for
+an EU account. Choose it from your account's
+[service region](https://docs.pagerduty.com/get-started/service-regions);
+the account web address does not tell the connection which region to use.
 
-URL roots reject credentials, query and fragment delimiters, preserve context
-paths and encoded characters, and receive a trailing slash. Regional API destinations must be configured explicitly.
+Both roots require HTTPS and cannot contain credentials, queries or fragments.
+A proxy root may include a context path. The connection preserves that path and
+encoded characters and adds a trailing slash, so appending `services/...` keeps
+requests under the configured API root.
 
-Lookup uses the host and non-default port from `baseUrl`, not the API override
-or URL path. Two installations under the same host cannot have separate
-connections. Use the shared [plugin-scoping rules](../01-concepts.md#plugin-scoping)
-when plugins need different credentials for the same instance.
+Lookup matches the account host and non-default port in `baseUrl`. Several
+accounts can therefore share `apiBaseUrl` while selecting their own tokens.
+Different paths on the same account host cannot identify separate connections.
+For different plugin credentials on one account, use
+[plugin scoping](../01-concepts.md#plugin-scoping).
 
 ## Consuming
 
-Declare the connection and resolve the service using the shared
-[backend consumption guide](../03-consuming-connections.md#declare-and-resolve-the-connection).
-Append relative paths without a leading slash so the configured context survives.
+### Read a service
+
+[Declare a connection dependency](../03-consuming-connections.md#declare-and-resolve-the-connection)
+and pass an account resource URL to lookup. Use the account URL even though the
+request goes to the regional API: the shared API host cannot identify an account.
+The example requests `token` authentication and reads a service by its ID.
 
 ```ts
 import type { ConnectionsService } from '@backstage/connections';
@@ -75,7 +90,11 @@ export async function readPagerDutyService(
 }
 ```
 
-The examples keep credentials on the backend, reject redirects and check HTTP
-errors before reading JSON. The provider checks permissions and token validity
-when it receives a request. See the shared
+For the configured EU endpoint and service ID `P123456`, the request goes to
+`https://api.eu.pagerduty.com/services/P123456`. Keep the service route relative
+so an API proxy's context path is preserved.
+
+PagerDuty checks the REST token's validity and permissions. Keep it in the
+backend and send it to the configured regional API. The example rejects
+redirects and checks unsuccessful responses; see the shared
 [credential-handling guidance](../03-consuming-connections.md#keep-connection-data-on-the-backend).

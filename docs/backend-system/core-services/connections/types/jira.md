@@ -4,9 +4,25 @@ title: Jira connections
 description: Configure and consume Jira connections
 ---
 
-Use a `jira` connection for a Cloud site or Data Center installation, preserving an independent API gateway when required.
+Use a `jira` connection to access a Jira Cloud site or Data Center installation.
+Cloud API requests can use a separate gateway address when the token requires it.
 
 ## Configuring
+
+### Configure credentials for your deployment
+
+Set `deployment` to `cloud` or `datacenter`. For Cloud, create an API token and
+configure it with the account's email using `apiToken`, following the
+[Cloud Basic authentication guide](https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/).
+For Data Center, create a
+[personal access token](https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html)
+and use `pat`. Both token methods require a nonempty token without whitespace;
+`apiToken` also requires a valid email address.
+
+Cloud requests send the email and token with HTTP Basic authentication. Data
+Center requests send the personal access token as a Bearer token. The service
+rejects a method for the wrong deployment, including plugin-scoped credentials.
+Use `none` only for public reads that your Jira installation permits.
 
 ```yaml title="app-config.yaml"
 connections:
@@ -20,39 +36,37 @@ connections:
         token: ${JIRA_API_TOKEN}
 ```
 
-`deployment` is required: `cloud` or `datacenter`. `baseUrl` is the site root,
-including a Data Center installation path such as `/jira/`. Optional `apiBaseUrl`
-is an independent API root. Keep `/rest` out of both roots; consumers append the
-appropriate REST path. HTTP and HTTPS are accepted; use HTTPS across untrusted
-networks.
+### Choose the site and API addresses
 
-Scoped Cloud tokens require an explicit gateway root of the form
-`https://api.atlassian.com/ex/jira/<cloudId>/`. The connection cannot infer the
-cloud ID or token scopes. For non-scoped Cloud tokens and Data Center, consumers
-can use `baseUrl` when no API override is configured. The gateway does not become
-a lookup alias for the site.
+Set `baseUrl` to the site root, such as `https://example.atlassian.net/`. For Data
+Center, include the installation path, such as `/jira/`. Keep `/rest` out of both
+`baseUrl` and `apiBaseUrl`; the consumer appends the REST path for your deployment.
+Both addresses accept HTTP or HTTPS without credentials, queries or fragments.
+Use HTTPS across untrusted networks. Paths and encoded characters are preserved,
+and a trailing slash keeps relative REST routes under the installation root.
 
-Cloud's `apiToken` method requires a valid `email` and a nonempty token without
-whitespace; send them with HTTP Basic authentication. Data Center's `pat` method
-requires a token and sends Bearer authentication. The service rejects either
-method with the wrong deployment, including plugin-scoped entries. `none` is
-available for explicitly permitted public reads. See [Cloud Basic authentication](https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/)
-and [Data Center PATs](https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html).
+Scoped Cloud tokens need `apiBaseUrl` set to
+`https://api.atlassian.com/ex/jira/<cloudId>/`, using your site's cloud ID.
+The YAML example shows that gateway form. You must supply the cloud ID and
+choose the address for your token's scopes; the connection cannot determine
+them from the site URL. For non-scoped Cloud tokens or Data Center, you can
+leave it out when the backend uses the same address as the site.
 
-URL roots reject credentials, query and fragment delimiters, preserve context
-paths and encoded characters, and receive a trailing slash. API overrides are
-not filled automatically.
-
-Lookup uses the host and non-default port from `baseUrl`, not the API override
-or URL path. Two installations under the same host cannot have separate
-connections. Use the shared [plugin-scoping rules](../01-concepts.md#plugin-scoping)
-when plugins need different credentials for the same instance.
+Lookup uses the site's host and non-default port from `baseUrl`. The gateway
+address does not identify the site, and different installation paths on one host
+cannot have separate connections. Use
+[plugin scoping](../01-concepts.md#plugin-scoping) if plugins need different
+credentials for the same site.
 
 ## Consuming
 
-Declare the connection and resolve the service using the shared
-[backend consumption guide](../03-consuming-connections.md#declare-and-resolve-the-connection).
-Append relative paths without a leading slash so the configured context survives.
+### Read the authenticated user's profile
+
+[Declare a connection dependency](../03-consuming-connections.md#declare-and-resolve-the-connection)
+and pass the Jira site URL to lookup, even when requests go through a Cloud
+gateway. The example requests both supported token methods, uses Basic or Bearer
+authentication to match the selected credential, and chooses REST API version 3
+for Cloud or version 2 for Data Center.
 
 ```ts
 import type { ConnectionsService } from '@backstage/connections';
@@ -89,7 +103,13 @@ export async function readJiraProfile(
 }
 ```
 
-The examples keep credentials on the backend, reject redirects and check HTTP
-errors before reading JSON. The provider checks permissions and token validity
-when it receives a request. See the shared
+With the gateway in the configuration, the request goes to
+`https://api.atlassian.com/ex/jira/00000000-0000-4000-8000-000000000000/rest/api/3/myself`.
+Without an override, a Cloud site uses
+`https://example.atlassian.net/rest/api/3/myself`. Append REST paths without a
+leading slash to retain a Data Center installation path or Cloud gateway prefix.
+
+Jira checks the token's validity, scopes and permissions. The example rejects
+redirects and checks the response before reading JSON. Keep the email and token
+in your backend, following the shared
 [credential-handling guidance](../03-consuming-connections.md#keep-connection-data-on-the-backend).
