@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useContext, useState } from 'react';
+import { ReactNode, useContext, useState } from 'react';
 import { resolvePath, useLocation, useResolvedPath } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -39,7 +39,8 @@ export type SidebarSubmenuItemClassKey =
   | 'dropdownArrow'
   | 'dropdown'
   | 'dropdownItem'
-  | 'textContent';
+  | 'textContent'
+  | 'secondaryAction';
 
 const useStyles = makeStyles(
   theme => ({
@@ -83,17 +84,29 @@ const useStyles = makeStyles(
       'text-overflow': 'ellipsis',
     },
     dropdownArrow: {
-      position: 'absolute',
-      right: 21,
+      flexShrink: 0,
+      marginLeft: 'auto',
+    },
+    labelWithDropdown: {
+      flex: '1 1 auto',
+      minWidth: 0,
+      textAlign: 'left',
+      marginTop: 0,
+      marginBottom: 0,
+      marginRight: 0,
     },
     dropdown: {
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'end',
+      alignItems: 'stretch',
+      width: '100%',
     },
     dropdownItem: {
       width: '100%',
       padding: '10px 0 10px 0',
+      display: 'flex',
+      alignItems: 'center',
+      color: theme.palette.navigation.color,
       '&:hover': {
         background:
           theme.palette.navigation.navItem?.hoverBackground || '#6f6f6f',
@@ -102,16 +115,35 @@ const useStyles = makeStyles(
     },
     dropdownButton: {
       textTransform: 'none',
+      width: '100%',
       justifyContent: 'flex-start',
     },
     textContent: {
-      color: theme.palette.navigation.color,
+      color: 'inherit',
+      flex: '1 1 auto',
+      minWidth: 0,
       paddingLeft: theme.spacing(4),
       paddingRight: theme.spacing(1),
       fontSize: theme.typography.body2.fontSize,
       whiteSpace: 'nowrap',
       overflow: 'hidden',
-      'text-overflow': 'ellipsis',
+      textOverflow: 'ellipsis',
+    },
+    secondaryAction: {
+      flexShrink: 0,
+      marginLeft: 'auto',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingRight: theme.spacing(1),
+      color: 'inherit',
+      '& svg': {
+        fontSize: theme.typography.body2.fontSize,
+        width: '1.25em',
+        height: '1.25em',
+        color: 'inherit',
+        fill: 'currentColor',
+      },
     },
   }),
   { name: 'BackstageSidebarSubmenuItem' },
@@ -121,12 +153,15 @@ const useStyles = makeStyles(
  * Clickable item displayed when submenu item is clicked.
  * title: Text content of item
  * to: Path to navigate to when item is clicked
+ * secondaryAction: Optional content rendered on the right side of the item, for
+ * example an external link icon.
  *
  * @public
  */
 export type SidebarSubmenuItemDropdownItem = {
   title: string;
   to: string;
+  secondaryAction?: ReactNode;
 };
 /**
  * Holds submenu item content.
@@ -137,6 +172,10 @@ export type SidebarSubmenuItemDropdownItem = {
  * to: Path to navigate to when item is clicked
  * icon: Icon displayed on the left of text content
  * dropdownItems: Optional array of dropdown items displayed when submenu item is clicked.
+ * children: Optional content rendered on the right side of link-style submenu items, for
+ * example an external link icon. Mirrors the secondary action slot on `SidebarItem`. Not
+ * rendered when `dropdownItems` is set; use `secondaryAction` on individual dropdown entries
+ * instead.
  *
  * @public
  */
@@ -148,6 +187,7 @@ export type SidebarSubmenuItemProps = {
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
   exact?: boolean;
   initialShowDropdown?: boolean;
+  children?: ReactNode;
 };
 
 /**
@@ -156,7 +196,15 @@ export type SidebarSubmenuItemProps = {
  * @public
  */
 export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
-  const { title, subtitle, to, icon: Icon, dropdownItems, exact } = props;
+  const {
+    title,
+    subtitle,
+    to,
+    icon: Icon,
+    dropdownItems,
+    exact,
+    children,
+  } = props;
   const classes = useStyles();
   const { setIsHoveredOn } = useContext(SidebarItemWithSubmenuContext);
   const closeSubmenu = () => {
@@ -172,6 +220,11 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const handleClickDropdown = () => {
     setShowDropDown(!showDropDown);
   };
+
+  const secondaryAction = children ? (
+    <div className={classes.secondaryAction}>{children}</div>
+  ) : null;
+
   if (dropdownItems !== undefined) {
     dropdownItems.some(item => {
       const resolvedPath = resolvePath(item.to);
@@ -195,19 +248,21 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
             <Typography
               variant="subtitle1"
               component="span"
-              className={classes.label}
+              className={classnames(classes.label, classes.labelWithDropdown)}
             >
               {title}
-              <br />
-              {subtitle && (
-                <Typography
-                  variant="caption"
-                  component="span"
-                  className={classes.subtitle}
-                >
-                  {subtitle}
-                </Typography>
-              )}
+              {subtitle ? (
+                <>
+                  <br />
+                  <Typography
+                    variant="caption"
+                    component="span"
+                    className={classes.subtitle}
+                  >
+                    {subtitle}
+                  </Typography>
+                </>
+              ) : null}
             </Typography>
             {showDropDown ? (
               <ArrowDropUpIcon className={classes.dropdownArrow} />
@@ -235,6 +290,11 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
                   <Typography component="span" className={classes.textContent}>
                     {object.title}
                   </Typography>
+                  {object.secondaryAction ? (
+                    <div className={classes.secondaryAction}>
+                      {object.secondaryAction}
+                    </div>
+                  ) : null}
                 </Link>
               </Tooltip>
             ))}
@@ -275,6 +335,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
               </Typography>
             )}
           </Typography>
+          {secondaryAction}
         </Link>
       </Tooltip>
     </Box>
