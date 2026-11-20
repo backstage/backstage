@@ -27,6 +27,8 @@ import { cli, command } from 'cleye';
 import type { Renderers } from 'cleye';
 import { CommandGraph } from './CommandGraph';
 import type { CliCommand, CliModule } from './types';
+import { createRunCommand, mergeRunTargets } from './repoCommand/runTargets';
+import type { RegisteredRunTarget } from './repoCommand/runTargets';
 
 interface HelpNode {
   id?: string;
@@ -396,6 +398,8 @@ export async function runCli(options: {
 }): Promise<void> {
   const { modules, name, version } = options;
   const graph = new CommandGraph();
+  const runTargets = new Array<RegisteredRunTarget>();
+  let runTargetModule: CliModule | undefined;
 
   for (const module of modules) {
     if (!OpaqueCliModule.isType(module)) {
@@ -408,6 +412,24 @@ export async function runCli(options: {
       .commands) {
       graph.add(commandToAdd, module);
     }
+    const internal = OpaqueCliModule.toInternal(module);
+    for (const {
+      name: targetName,
+      options: targetOptions,
+    } of await internal.runTargets) {
+      runTargetModule ??= module;
+      runTargets.push({
+        name: targetName,
+        options: targetOptions,
+        moduleName: internal.packageName,
+      });
+    }
+  }
+
+  if (runTargetModule) {
+    // Only added when some module provides a target, so that `repo run` does
+    // not show up in CLIs that have nothing to run.
+    graph.add(createRunCommand(mergeRunTargets(runTargets)), runTargetModule);
   }
 
   if (

@@ -154,10 +154,11 @@ help [command]                                 display help for command
 
 ### [Test Module](./module-test.md)
 
-| Command        | Description                    |
-| -------------- | ------------------------------ |
-| `repo test`    | Run tests across the project   |
-| `package test` | Run tests for a single package |
+| Command         | Description                              |
+| --------------- | ---------------------------------------- |
+| `repo test`     | Run tests across the project             |
+| `repo run test` | Run the tests of each package separately |
+| `package test`  | Run tests for a single package           |
 
 ### [Translations Module](./module-translations.md)
 

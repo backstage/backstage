@@ -132,6 +132,15 @@ export interface CliModule {
 }
 
 // @public
+export interface CliRunTargetOptions {
+  description: string;
+  includeDependents?: boolean;
+  packageArgs?: string[];
+  packageCommand: string[];
+  scriptName?: string;
+}
+
+// @public
 export type ConcurrentTasksOptions<TItem> = {
   concurrencyFactor?: number;
   items: Iterable<TItem>;
@@ -145,6 +154,7 @@ export function createCliModule(options: {
   };
   init: (registry: {
     addCommand: (command: CliCommand) => void;
+    addRunTarget: (name: string, options: CliRunTargetOptions) => void;
   }) => Promise<void>;
 }): CliModule;
 

@@ -39,11 +39,13 @@
     "@yarnpkg/lockfile": "^1.1.0",
     "@yarnpkg/parsers": "^3.0.0",
     "chalk": "^4.0.0",
+    "chokidar": "^3.3.1",
     "cleye": "^2.6.0",
     "fs-extra": "^11.2.0",
     "pirates": "^4.0.6",
     "proper-lockfile": "^4.1.2",
     "semver": "^7.5.3",
+    "shell-quote": "^1.9.0",
     "yaml": "^2.0.0",
     "zod": "^3.25.76 || ^4.0.0"
   },
@@ -52,6 +54,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@types/proper-lockfile": "^4",
+    "@types/shell-quote": "^1.7.5",
     "@types/yarnpkg__lockfile": "^1.1.4"
   },
   "peerDependencies": {
