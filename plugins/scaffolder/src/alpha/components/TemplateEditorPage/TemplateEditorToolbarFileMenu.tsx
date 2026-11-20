@@ -28,10 +28,16 @@ export function TemplateEditorToolbarFileMenu(props: {
   onOpenDirectory?: () => void;
   onCreateDirectory?: () => void;
   onCloseDirectory?: () => void;
+  disabled?: boolean;
 }) {
-  const { onOpenDirectory, onCreateDirectory, onCloseDirectory } = props;
+  const { onOpenDirectory, onCreateDirectory, onCloseDirectory, disabled } =
+    props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const isOpenDisabled = !onOpenDirectory || Boolean(disabled);
+  const isCreateDisabled = !onCreateDirectory || Boolean(disabled);
+  const isCloseDisabled = !onCloseDirectory || Boolean(disabled);
 
   const handleOpenMenu = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
@@ -45,19 +51,28 @@ export function TemplateEditorToolbarFileMenu(props: {
   }, [setAnchorEl]);
 
   const handleOpenDirectory = useCallback(() => {
+    if (isOpenDisabled) {
+      return;
+    }
     handleCloseMenu();
     onOpenDirectory?.();
-  }, [handleCloseMenu, onOpenDirectory]);
+  }, [handleCloseMenu, onOpenDirectory, isOpenDisabled]);
 
   const handleCreateDirectory = useCallback(() => {
+    if (isCreateDisabled) {
+      return;
+    }
     handleCloseMenu();
     onCreateDirectory?.();
-  }, [handleCloseMenu, onCreateDirectory]);
+  }, [handleCloseMenu, onCreateDirectory, isCreateDisabled]);
 
   const handleCloseEditor = useCallback(() => {
+    if (isCloseDisabled) {
+      return;
+    }
     handleCloseMenu();
     onCloseDirectory?.();
-  }, [handleCloseMenu, onCloseDirectory]);
+  }, [handleCloseMenu, onCloseDirectory, isCloseDisabled]);
 
   return (
     <>
@@ -83,17 +98,17 @@ export function TemplateEditorToolbarFileMenu(props: {
           horizontal: 'left',
         }}
       >
-        <MenuItem onClick={handleOpenDirectory} disabled={!onOpenDirectory}>
+        <MenuItem onClick={handleOpenDirectory} disabled={isOpenDisabled}>
           {t('templateEditorToolbarFileMenu.options.openDirectory')}
         </MenuItem>
         <MenuItem
           onClick={handleCreateDirectory}
-          disabled={!onCreateDirectory}
+          disabled={isCreateDisabled}
           divider
         >
           {t('templateEditorToolbarFileMenu.options.createDirectory')}
         </MenuItem>
-        <MenuItem onClick={handleCloseEditor} disabled={!onCloseDirectory}>
+        <MenuItem onClick={handleCloseEditor} disabled={isCloseDisabled}>
           {t('templateEditorToolbarFileMenu.options.closeEditor')}
         </MenuItem>
       </Menu>
