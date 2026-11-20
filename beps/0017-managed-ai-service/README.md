@@ -24,6 +24,8 @@ creation-date: 2026-11-20
   - [Extension points and deployment boundaries](#extension-points-and-deployment-boundaries)
   - [Package layout](#package-layout)
 - [API Design](#api-design)
+  - [Service interface](#service-interface)
+  - [Consumer examples](#consumer-examples)
   - [Harness lifecycle](#harness-lifecycle)
   - [Dispatch of a single attempt](#dispatch-of-a-single-attempt)
   - [Module registration](#module-registration)
@@ -67,10 +69,10 @@ certified provider route, and writes the decision to an append-only journal
 before anything leaves the process.
 
 Under the hood, the service wraps
-[Pi Durable](https://www.npmjs.com/package/@earendil-works/pi-durable). Plugins
-keep Pi's native conversation, task, and streaming APIs, while Backstage owns
-identity, permissions, credentials, storage, multi-instance ownership, and
-audit. Everything the service controls fails closed: missing configuration,
+[Pi Durable](https://www.npmjs.com/package/@earendil-works/pi-durable).
+Conversation, task, and streaming operations ship as Backstage-owned types in
+`@backstage/ai-node` backed by Pi Durable, while the service handles identity,
+permissions, credentials, storage, multi-instance ownership, and audit. Everything the service controls fails closed: missing configuration,
 uncertified routes, requests that cannot be inspected, and authorization or
 storage errors
 all block dispatch before reaching a provider. (Backstage's own default
@@ -123,9 +125,9 @@ policy-enforced runtime layer to build on.
 - Record every allow and deny decision in an append-only durable journal before
   execution, with crash recovery and configurable retention, without storing
   prompts or completions.
-- Preserve native Pi Durable semantics for plugins that need low-level control
-  (conversations, tasks, forks, streaming), while allowing higher-level helpers
-  to build solely on the public API.
+- Expose conversation, task, fork, and streaming operations through
+  Backstage-owned types, with no third-party types in the service interface,
+  while allowing higher-level helpers to build solely on the public API.
 - Support multiple providers through certified provider modules whose routes and
   response envelopes are validated, with custom gateways layered on top.
 - Recover durably across backend restarts using the installation's existing
@@ -140,8 +142,9 @@ policy-enforced runtime layer to build on.
 
 - Product UIs and workflows (chat interfaces, notebooks, RAG pipelines, agent
   visualizations). Those belong in consuming plugins.
-- A new agent framework. Pi Durable is the execution engine; we do not
-  reimplement or normalize its abstractions.
+- A new agent framework. Pi Durable remains the execution engine; the
+  Backstage-owned types declare a guarded subset of its operations without
+  reimplementing them.
 - Model aliases or capability tiers. Plugins reference actual provider and
   model identifiers along with native reasoning settings.
 - In-process plugin sandboxing. Backstage plugins share a process, so the
@@ -346,23 +349,239 @@ The service exposes five public contracts. Converging on these interfaces is
 the main decision for this BEP; internal storage, guard, and adapter code can
 evolve behind them without breaking callers.
 
+### Service interface
+
+This is the complete TypeScript API the platform would maintain. It ships from
+`packages/ai-node/src/contracts.ts` in the reference implementation. The
+interface is Backstage-owned end to end: no third-party types appear in it.
+Core services that leaked implementation libraries before (the database service
+exposes Knex, the HTTP router exposes Express) turned every upstream major bump
+into an ecosystem-wide breaking change, so Pi Durable types stay inside
+`@backstage/ai-node`. This constrains the service interface, not consumers: a
+plugin that explicitly depends on Pi Durable may still use it directly, like
+any other library, with the service's guarantees covering its managed paths
+only.
+
+```ts
+// @backstage/ai-node (alpha)
+import type { BackstageCredentials } from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
+
+/**
+ * Low-level primitive for backend plugins. Every guarantee in this BEP runs
+ * behind `openHarness`.
+ */
+export interface AiService {
+  openHarness(options: OpenHarnessOptions): Promise<ManagedHarness>;
+}
+
+/**
+ * The consumer's config root plus the path to its own section within it; a
+ * plugin never reads another plugin's config.
+ */
+export type ConfigAtPath = Readonly<{ root: Config; path: string }>;
+
+export type OpenHarnessOptions = Readonly<{
+  /** Stable session identity; namespaces are keyed by (trusted pluginId, sessionId). */
+  sessionId: string;
+  /**
+   * Config scoped to the plugin's own config path. There is no implicit or
+   * required `ai.*` path; configuration errors name the plugin, exact path,
+   * and offending field.
+   */
+  config: ConfigAtPath;
+  /**
+   * The original authenticated caller (user or service). Never substitute a
+   * service identity on a user's behalf.
+   */
+  credentials: BackstageCredentials;
+  /**
+   * Reproducible plugin definitions (models, tools, prompts), matched by
+   * version on reopen. Persisted sessions whose definitions cannot be
+   * reconstructed stay blocked instead of resuming under substituted ones.
+   */
+  registry: AiRegistry;
+  /** Version identifier for the registry above. */
+  registryVersion: string;
+  /**
+   * Requested features (for example 'tools' or 'codemode'), each authorized
+   * with `ai.feature.use` before the harness opens. When omitted, the harness
+   * exposes no tools and no code-mode globals.
+   */
+  features?: readonly AiFeatureName[];
+}>;
+
+/**
+ * Reference-counted session handle. `release()` is idempotent per acquisition
+ * and never cancels admitted durable work; calls on a released handle reject.
+ */
+export interface ManagedHarness {
+  /** Conversation operations: submit, wait, watch, fork. */
+  readonly conversation: AiConversation;
+  /** Context bound to this admission, passed to conversation operations. */
+  readonly context: AiContext;
+  /** Guarded tool operations, permission-checked on every attempt. */
+  readonly tools?: GuardedToolOperations;
+  release(): Promise<void>;
+}
+```
+
+The types a consumer needs for custom work are Backstage-owned declarations of
+the guarded operation subset. Pi Durable implements them underneath through an
+internal adapter behind the compile-checked allowlist of permitted Pi APIs,
+pinned to an exact version, so upstream type changes break our adapter at
+compile time instead of shifting adopter-facing types:
+
+```ts
+/** Plugin-supplied definitions: models, tools, prompts, extensions. */
+export interface AiRegistry {
+  install(module: AiModule): void;
+  uninstall(module: AiModule): void;
+  snapshot(): AiRegistrySnapshot;
+  subscribe(listener: () => void): () => void;
+}
+
+/** A durable conversation. */
+export interface AiConversation {
+  readonly id: AiConversationId;
+  submit(draft: AiSubmissionDraft, context: AiContext): Promise<AiSubmission>;
+  fork(
+    at: AiEntryId,
+    options: AiConversationOptions,
+    context: AiContext,
+  ): Promise<AiConversation>;
+  watch(
+    context: AiContext,
+    window?: AiConversationWindow,
+  ): Promise<AiConversationWatch>;
+  abort(context: AiContext): Promise<void>;
+  waitForIdle(context: AiContext): Promise<void>;
+  configure(change: AiAgentChange, context: AiContext): Promise<void>;
+  // plus reset, compact, commit, entries, and context-view operations
+}
+
+/** What a plugin submits: prompt input, model selection, settings. */
+export type AiSubmissionDraft = Readonly<{
+  prompt: AiPromptInput;
+  model?: AiModelRef;
+  thinkingLevel?: AiThinkingLevel;
+}>;
+
+/** Guarded tool calls, present when the tools feature was granted. */
+export interface GuardedToolOperations {
+  callTool(input: {
+    serverId: string;
+    toolName: string;
+    arguments: unknown;
+    credentials: BackstageCredentials;
+    caller?: Record<string, unknown>;
+  }): Promise<unknown>;
+}
+```
+
+The exact signatures are what the alpha period settles; the operation set they
+cover is fixed, and every operation below is already mediated by the guard:
+
+- Session and documents: `commit`, `snapshot`, `snapshotAsOf`, `watchDoc`,
+  `observeDoc`, `observeCommits`, `subscribeClose`, `closed`
+- Conversations: `root`, `conversation`, `createConversation`, `submit`,
+  `fork`, `watch`, `observeConversation`, `abort`
+- Tasks and submissions: `getTask`, `waitForTask`, `abortTask`,
+  `watchTaskGraph`, `observeTaskGraph`, `submission`, `abortSubmission`,
+  `waitForIdle`
+- Session lifecycle: `resume`, `wake`, `inspect`, `usage`
+
+The `Ai`-prefixed data types (`AiSubmission`, `AiConversationWatch`, task and
+entry types) are owned declarations of the same shapes, and the `Tx`-style
+transaction overloads on `submit` and `commit` carry over behind the same
+adapter.
+
+Owning the types also decouples consumer API stability from upstream Pi
+breaking changes, so Pi can be upgraded or replaced behind the adapter once
+the Backstage-owned types settle. The cost is the translation layer itself and
+the discipline of keeping the owned API small. Single-request consumers such
+as the `ai:generate` and `ai:transform` scaffolder actions stay single-shot
+calls on the same primitive, and a plain request-response helper can sit on it
+without changing the guarded path.
+
+### Consumer examples
+
+A catalog-assistant plugin exercising each capability a consumer touches:
+
+```ts
+// Declare what this plugin uses. Tool modules and prompt libraries install
+// into the registry; it is matched by version when a session reopens.
+const registry = createAiRegistry();
+registry.install(shellTools);
+registry.install(catalogPrompts);
+
+const { conversation, context, tools, release } = await ai.openHarness({
+  sessionId,
+  config,
+  credentials, // the original authenticated caller
+  registry,
+  registryVersion: '1',
+  features: ['tools'],
+});
+
+try {
+  // Submit a prompt; the guard journals the intent before any send.
+  const submission = await conversation.submit(
+    { prompt: { text: 'Summarize this catalog entity' } },
+    context,
+  );
+
+  // Stream the conversation while the turn runs.
+  const watch = await conversation.watch(context);
+  for await (const view of watch) {
+    publish(view.messages.at(-1));
+  }
+
+  // Fork before a risky follow-up, keeping the original untouched.
+  const scratch = await conversation.fork(entryId, {}, context);
+  await scratch.submit({ prompt: { text: 'Now draft action items' } }, context);
+
+  // Point the conversation at a different model.
+  await conversation.configure(
+    { model: { provider: 'anthropic', modelId: 'claude-sonnet-4.5' } },
+    context,
+  );
+
+  // Call a registered tool through the guarded path (ai.tool.use per attempt).
+  const hits = await tools?.callTool({
+    serverId: 'docs',
+    toolName: 'search',
+    arguments: { query: 'bucket policy' },
+    credentials,
+  });
+
+  // Cancel what is in flight; committed work stays committed.
+  await conversation.abort(context);
+} finally {
+  // Ends the handle; admitted durable work keeps running.
+  await release();
+}
+```
+
 ### Harness lifecycle
 
 A plugin opens a harness once per session through `aiServiceRef` and receives a
-restricted native Pi view plus an explicit release function:
+Backstage-owned conversation surface plus an explicit release function:
 
 ```ts
 const ai = ctx.ai; // @backstage/ai-node, plugin-scoped
 
-const { harness, context, release } = await ai.openHarness({
+const { conversation, context, release } = await ai.openHarness({
   sessionId,
+  config,
   credentials, // the original authenticated Backstage caller
-  // ... session/feature/definition inputs
+  registry,
+  registryVersion,
+  features,
 });
 
 try {
-  const conversation = await harness.root(context);
-  // native conversation operations: submit, wait, watch, fork ...
+  // conversation operations: submit, wait, watch, fork ...
 } finally {
   await release(); // explicit release; ending the request does not stop durable work
 }
@@ -382,11 +601,11 @@ sequenceDiagram
     AI-->>PL: reject: no harness, nothing admitted
   else admitted
     AI->>DB: acquire namespace lease (fence token)
-    AI-->>PL: { harness, context, release }
-    PL->>AI: native operations (submit, wait, watch, fork)
+    AI-->>PL: { conversation, context, tools, release }
+    PL->>AI: conversation operations (submit, wait, watch, fork)
     Note over AI: every model/tool attempt runs guarded dispatch
     PL->>AI: release()
-    Note over AI: handles are reference-counted and admitted durable work continues<br/>further calls on a released handle are rejected
+    Note over AI: handles are reference-counted, admitted durable work continues,<br/>and further calls on a released handle are rejected
   end
 ```
 
@@ -403,7 +622,7 @@ request:
 
 ```mermaid
 sequenceDiagram
-  participant H as Harness (native operation)
+  participant H as Harness (conversation operation)
   participant G as Operation guard
   participant PF as Permission framework
   participant J as Decision journal
@@ -458,13 +677,13 @@ Adding a provider requires only module registration. A module ships only if
 its conformance suite passes; routes outside its certified set are rejected
 before dispatch.
 
-| Interface                 | Contract                                                                              | Primary consumer            |
-| :------------------------ | :------------------------------------------------------------------------------------ | :-------------------------- |
-| `openHarness`             | Single entry point; admission checks, lease, restricted native view, explicit release | Consuming plugins           |
-| Native harness operations | Pi conversation/task/fork/stream semantics, unchanged                                 | Consuming plugins           |
-| Module registration       | Certified routes, envelope validation, pinned adapter, tools, conformance suite       | Module authors              |
-| Scoped credential stores  | `org`/`service` read-only from config, `user` encrypted in the database               | Adopters and administrators |
-| Journal read              | `ai.audit.read` plus session ownership; redacted, identity-only rows                  | Auditors and tooling        |
+| Interface                | Contract                                                                                     | Primary consumer            |
+| :----------------------- | :------------------------------------------------------------------------------------------- | :-------------------------- |
+| `openHarness`            | Single entry point; admission checks, lease, guarded conversation surface, explicit release  | Consuming plugins           |
+| Conversation operations  | Backstage-owned conversation, task, fork, and stream types; Pi Durable implements underneath | Consuming plugins           |
+| Module registration      | Certified routes, envelope validation, pinned adapter, tools, conformance suite              | Module authors              |
+| Scoped credential stores | `org`/`service` read-only from config, `user` encrypted in the database                      | Adopters and administrators |
+| Journal read             | `ai.audit.read` plus session ownership; redacted, identity-only rows                         | Auditors and tooling        |
 
 ## Design Details
 
@@ -487,8 +706,7 @@ the policy.
 The service always queries the injected Backstage permission evaluator with the
 original caller's credentials and restrictions intact; service callers receive
 no implicit bypass. Model discovery and listing run through the same permission
-evaluator so
-users only see models they are permitted to invoke.
+evaluator, so users only see models they are permitted to invoke.
 
 One adopter caveat: while the service fails closed on validation, missing
 configuration, and runtime errors, Backstage's own default permission policy is
@@ -539,7 +757,7 @@ in scoped stores:
   deletion, or in-place rotation).
 - `user:<id>` scopes are stored encrypted in the installation database using
   authenticated encryption with config-supplied key material, unique nonces, and
-  key/algorithm versioning. Missing or invalid keys, corrupted ciphertext,
+  key/algorithm versioning. Missing or invalid keys, corrupted ciphertext, and
   storage errors all fail closed.
 
 Personal and service accounts are required from day one. Backing per-user
@@ -554,14 +772,14 @@ The `org` and `service:<id>` scopes intentionally mirror the shape of
 [BEP-0014](../0014-connection-service/README.md) connection data, so a future
 connection-service adapter can feed these stores without changes to the guard
 or the credential kinds. What stays local is everything the connection service
-explicitly excludes: the encrypted per-user store and the guarded, recorded
-OAuth refresh, both of which must sit inside the dispatch path to enforce
-per-attempt authorization.
+explicitly excludes: the encrypted per-user store and guarded OAuth refresh
+recorded in the journal, both of which must sit inside the dispatch path to
+enforce per-attempt authorization.
 
-OAuth token refreshes run as guarded operations recorded in the journal under a
-cross-process
-`(scope, provider)` lock. Once a refresh starts, caller cancellation does not
-abort it, because losing the only valid refresh token is worse than completing
+OAuth token refreshes run as guarded operations recorded in the journal under
+a cross-process `(scope, provider)` lock. Once a refresh starts, caller
+cancellation does not abort it, because losing the only valid refresh token is
+worse than completing
 the write. Custom AI gateways and enterprise proxies (such as Cloudflare AI
 Gateway or OpenAI-compatible routers) are supported by wrapping certified
 provider modules onto path-prefixed base URLs without weakening route
@@ -579,9 +797,8 @@ provider only requires registering a module, with no edits to core packages.
 Before every send, the guard checks the final destination against the module's
 certified routes and rejects anything outside them. Because the transport shim
 is installed after caller options and requests that cannot be inspected fail
-closed,
-payload mutations, request overrides, or caller-supplied `fetch` implementations
-cannot redirect a provider call or bypass envelope validation.
+closed, payload mutations, request overrides, or caller-supplied `fetch`
+implementations cannot redirect a provider call or bypass envelope validation.
 
 Transport coverage varies by provider family because Pi's underlying adapters
 differ in what interception hooks they expose:
@@ -605,8 +822,8 @@ internally. Where a provider SDK lacks a request-scoped hook, the service
 isolates it at the runtime boundary (the Google provider runs in a worker with
 a global-fetch shim). Enforcing at the transport layer keeps provider retries
 enabled on all supported transports without letting a revoked grant ride a
-retry. Native Pi OAuth auto-refresh is blocked in favor of the guarded,
-recorded refresh path.
+retry. Native Pi OAuth auto-refresh is blocked in favor of the guarded refresh
+path recorded in the journal.
 
 ### Tool mediation
 
@@ -716,9 +933,9 @@ before graduation:
    invalidate the old refresh token and the process can crash before the new
    token commits. Uncertain rotations surface a re-login-required state; we do
    not promise lossless or exactly-once refresh.
-1. The guarded native surface is still alpha. Restricting Pi's raw provider,
-   auth, and mutable-model capabilities behind a private guarded wrapper works,
-   but the exact allowed subset may evolve while the API is in alpha.
+1. The guarded operation surface is still alpha. Declaring the operation
+   subset as Backstage-owned types works, but the exact allowed subset may
+   evolve while the API is in alpha.
 1. No cross-plugin routing interface yet. The generic backend's plugin-scoped
    database cannot automatically inspect another plugin's sessions or personal
    credentials. Generic endpoints do not claim cross-plugin discovery or session
@@ -752,16 +969,14 @@ runtime packages are new, and the only planned change to an existing core
 package is declaring that experimental ref, so existing installations see no
 behavior change and rolling back means removing the new packages. Core
 guarantees (per-attempt enforcement, a durable decision journal, and crash
-recovery)
-ship in the initial release, subject to the boundaries in
+recovery) ship in the initial release, subject to the boundaries in
 [Limitations and Open Questions](#limitations-and-open-questions).
 
-All Pi-facing and new service exports ship under `/alpha` entry points, and the
-Pi Durable dependency is pinned to an exact version while upstream Pi remains
-experimental. The service stays experimental until Pi Durable ships a stable
-release and either establishes an upstream compatibility policy or we freeze
-our wrapped subset. Keeping the exposed native API small makes that freeze
-practical.
+All new service exports ship under `/alpha` entry points, and the Pi Durable
+dependency is pinned to an exact version while upstream Pi remains
+experimental. Because Pi Durable is the runtime engine underneath, the service
+stays experimental until Pi Durable reaches a stable release and the
+Backstage-owned operation types have settled.
 
 The reference implementation in
 [#36983](https://github.com/backstage/backstage/pull/36983) already includes the
@@ -781,8 +996,8 @@ Remaining work before graduation:
   stays denied in the dispatch matrix until it passes the per-module conformance
   suite with per-attempt enforcement verified.
 - Graduate `/alpha` exports and promote the service ref out of the experimental
-  namespace once Pi Durable is no longer experimental and either upstream
-  establishes a compatibility policy or our wrapped native subset is frozen.
+  namespace once Pi Durable is no longer experimental and the Backstage-owned
+  operation types have settled.
 
 ## Dependencies
 
@@ -815,7 +1030,7 @@ normalized model abstractions, our own conversation/task state machine, and
 custom provider adapters. That would shift maintenance effort toward re-solving
 streaming, retries, forks, and replay (problems Pi Durable already solves)
 instead of focusing on identity, permissions, credentials, durability, and
-audit. Wrapping Pi keeps native semantics and upstream improvements. A
+audit. Wrapping Pi keeps upstream improvements behind Backstage-owned types. A
 compile-checked allowlist of permitted Pi APIs, pinned to an exact version,
 makes upstream drift fail the build instead of changing behavior silently.
 
@@ -851,22 +1066,23 @@ It overlaps with this BEP where the community already agrees: centralized
 provider configuration, provider families registered as factories, and
 capabilities enabled only when configured. Its design stopped at stateless
 model access: tool execution, agent execution engines, and durable execution
-were
-explicitly excluded, and it defined no per-attempt authorization or pre-dispatch
-journal. Because this BEP requires crash recovery, per-attempt authorization,
-and pre-dispatch journal records across both models and tools, model access
-stays
-inside the guarded dispatch path instead of living in a standalone service.
+were explicitly excluded, and it defined no per-attempt authorization or
+pre-dispatch journal. Because this BEP requires crash recovery, per-attempt
+authorization, and pre-dispatch journal records across both models and tools,
+model access stays inside the guarded dispatch path instead of living in a
+standalone service.
 
 ### Command-based API instead of a harness
 
-Instead of `openHarness` returning native operations, every interaction could go
+Instead of `openHarness` returning conversation operations, every interaction
+could go
 through a typed command interface (`execute({ command })`). Representing
 transactions, streaming, typed documents, and extensions as serializable
 commands would duplicate the entire engine surface and introduce new
-serialization and unknown-command failure modes. Keeping the harness native does
-not prevent an HTTP layer from exposing a command-oriented API on top, which is
-what `@backstage/plugin-ai-backend` already does.
+serialization and unknown-command failure modes. Exposing direct conversation
+operations on the harness does not prevent an HTTP layer from providing a
+command-oriented API on top, which is what `@backstage/plugin-ai-backend`
+already does.
 
 ### A request-shaped credential vault
 
