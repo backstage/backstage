@@ -182,7 +182,7 @@ Two boundaries keep the harness safe:
 
 Higher-level helpers, such as the `ai:generate` and `ai:transform` scaffolder
 actions in `@backstage/plugin-scaffolder-backend-module-ai`, are built strictly
-on `openHarness` with no private bypass paths.
+on `openHarness` with no private backdoors.
 
 ### Guarded dispatch
 
@@ -539,7 +539,7 @@ in scoped stores:
   deletion, or in-place rotation).
 - `user:<id>` scopes are stored encrypted in the installation database using
   authenticated encryption with config-supplied key material, unique nonces, and
-  key/algorithm versioning. Missing or invalid keys, corrupted encrypted data,
+  key/algorithm versioning. Missing or invalid keys, corrupted ciphertext,
   storage errors all fail closed.
 
 Personal and service accounts are required from day one. Backing per-user
@@ -591,7 +591,7 @@ differ in what interception hooks they expose:
 | OpenAI Responses/Completions (HTTP) | Yes               | Injected request-scoped `fetch`                                                                 |
 | OpenAI Codex SSE                    | Yes               | Injected `fetch` per retry iteration                                                            |
 | OpenAI Codex WebSocket              | No (fails closed) | No pre-send async hook on reused sockets                                                        |
-| Anthropic HTTP                      | Yes               | Injected `fetch`, incl. thread and strict-tool repeat sends                                     |
+| Anthropic HTTP                      | Yes               | Injected `fetch`, incl. thread/strict-tool resends                                              |
 | Google Gemini/Vertex (HTTP)         | Yes, via worker   | Worker-backed modules with a lifetime global-fetch shim; verified by pinned-SDK isolation tests |
 | Amazon Bedrock                      | No (fails closed) | No request-handler hook to inject in the Pi adapter                                             |
 
