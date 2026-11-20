@@ -121,6 +121,7 @@ describe('SnykConnectionType', () => {
       expect(() => parse({ baseUrl })).toThrow();
     }
     for (const apiBaseUrl of [
+      'ftp://example.com/',
       'https://example.com?',
       'https://example.com#',
       'https://user:secret@example.com',
@@ -158,20 +159,33 @@ describe('SnykConnectionType', () => {
       expect(() => parse({ auth })).toThrow();
     }
   });
-  it('retains HTTPS-only provider destinations', () => {
-    expect(() =>
-      SnykConnectionType.configSchema.parse({
+  it('accepts HTTP roots and IP hosts for proxy deployments', () => {
+    for (const baseUrl of [
+      'http://127.0.0.1:8080/context%2Fname',
+      'http://[::1]:8080/context%2Fname',
+    ]) {
+      const input = {
         ...fixtureConfig(),
-        baseUrl: 'http://example.com/',
-      }),
-    ).toThrow(/HTTPS/);
-    expect(() => parse({ baseUrl: 'http://example.com/' })).toThrow(/HTTPS/);
-    expect(() =>
-      parse({ apiBaseUrl: 'http://internal.example.com/api/' }),
-    ).toThrow(/HTTPS/);
-    expect(() => parse({ baseUrl: 'https://api..example.com/' })).toThrow(
-      /hostname/,
-    );
+        baseUrl,
+        apiBaseUrl: 'http://api.internal:9000/gateway%2Froot',
+      };
+      const parsed = SnykConnectionType.configSchema.parse(input);
+      expect(parsed.baseUrl).toBe(`${baseUrl}/`);
+      expect(parsed.apiBaseUrl).toBe(
+        'http://api.internal:9000/gateway%2Froot/',
+      );
+      expect(parse(input)[0]).toMatchObject(parsed);
+      expect(SnykConnectionType.getLookupIdentity(parsed)).toEqual({
+        key: 'host',
+        value: new URL(baseUrl).host,
+      });
+      expect(new URL('resource', parsed.baseUrl).href).toBe(
+        `${baseUrl}/resource`,
+      );
+      expect(new URL('resource', parsed.apiBaseUrl).href).toBe(
+        'http://api.internal:9000/gateway%2Froot/resource',
+      );
+    }
   });
 });
 

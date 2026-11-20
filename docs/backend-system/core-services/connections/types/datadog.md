@@ -33,15 +33,16 @@ connections:
 
 ### Choose the regional API address
 
-Set `baseUrl` to the HTTPS API root for your organization's
+Set `baseUrl` to the API root for your organization's
 [Datadog site](https://docs.datadoghq.com/getting_started/site/), such as
 `https://api.datadoghq.com/` or `https://api.datadoghq.eu/`. Supply the API address
 directly; the connection does not translate browser hosts or SDK site names.
 
 If your backend reaches that API through a proxy, set `apiBaseUrl` to the proxy's
-HTTPS root, including any context path. Otherwise, leave it out and use `baseUrl`
+root, including any context path. Otherwise, leave it out and use `baseUrl`
 for requests. Keep `api/v2/` out of these roots: the consumer appends the API route.
-The addresses cannot contain credentials, queries or fragments. Installation
+Both roots accept HTTP or HTTPS without credentials, queries or fragments. Use
+HTTPS across untrusted networks to protect the keys. Installation
 paths and encoded characters are preserved, with a trailing slash for joining
 relative routes.
 

@@ -18,29 +18,15 @@ import { connectionBaseUrlSchema } from '../system/connectionBaseUrlSchema';
 import { withBaseUrl } from '../system/withBaseUrl';
 import { createConnectionType } from '../system/createConnectionType';
 
-const urlOptions = withBaseUrl(
-  z.object({
-    apiBaseUrl: connectionBaseUrlSchema.refine(
-      value => new URL(value).protocol === 'https:',
-      'API base URL must use HTTPS',
-    ),
-  }),
-);
-
 /** @public */
 export const PagerDutyConnectionType = createConnectionType({
   type: 'pagerduty',
   title: 'PagerDuty',
-  ...urlOptions,
-  configSchema: urlOptions.configSchema.extend({
-    baseUrl: connectionBaseUrlSchema.refine(value => {
-      const url = new URL(value);
-      return (
-        url.protocol === 'https:' &&
-        z.hostname().safeParse(url.hostname).success
-      );
-    }, 'The base URL must use HTTPS and a valid hostname'),
-  }),
+  ...withBaseUrl(
+    z.object({
+      apiBaseUrl: connectionBaseUrlSchema,
+    }),
+  ),
   authMethods: [
     {
       method: 'token',

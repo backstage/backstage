@@ -30,16 +30,17 @@ connections:
 
 ### Choose the regional API root
 
-Set `baseUrl` to the HTTPS root for your region: `https://api.snyk.io/`,
+Set `baseUrl` to the API root for your region: `https://api.snyk.io/`,
 `https://api.us.snyk.io/`, `https://api.eu.snyk.io/` or `https://api.au.snyk.io/`.
 Use an API address directly; browser URLs do not select a region. See the
 [REST API URLs](https://docs.snyk.io/developer-tools/snyk-api/rest-api/about-the-rest-api#api-urls)
 and [V1 API URLs](https://docs.snyk.io/developer-tools/snyk-api/v1-api#api-urls).
 
-If your backend uses an API proxy, set `apiBaseUrl` to its HTTPS root. Otherwise,
+If your backend uses an API proxy, set `apiBaseUrl` to its root. Otherwise,
 the consumer uses `baseUrl`. Include any proxy context path, but leave `rest/`
 and `v1/` out of these roots so callers can choose the API for each request.
-Both roots reject embedded credentials, queries and fragments. The connection
+Both roots accept HTTP or HTTPS without credentials, queries or fragments. Use
+HTTPS over untrusted networks to protect the token. The connection
 preserves paths and encoded characters and adds a trailing slash for appending
 relative routes.
 

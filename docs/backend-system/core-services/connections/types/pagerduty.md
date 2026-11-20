@@ -38,7 +38,8 @@ an EU account. Choose it from your account's
 [service region](https://docs.pagerduty.com/get-started/service-regions);
 the account web address does not tell the connection which region to use.
 
-Both roots require HTTPS and cannot contain credentials, queries or fragments.
+Both roots accept HTTP or HTTPS without credentials, queries or fragments. Use
+HTTPS over untrusted networks to protect the REST token.
 A proxy root may include a context path. The connection preserves that path and
 encoded characters and adds a trailing slash, so appending `services/...` keeps
 requests under the configured API root.
