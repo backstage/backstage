@@ -15,7 +15,13 @@
  */
 
 import fs from 'node:fs';
-import { resolve as resolvePath } from 'node:path';
+import { createRequire } from 'node:module';
+import {
+  isAbsolute,
+  relative as relativePath,
+  resolve as resolvePath,
+  sep,
+} from 'node:path';
 // Cba polluting root package.json, we'll have this
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import chalk from 'chalk';
@@ -23,7 +29,7 @@ import { getPackages, Package } from '@manypkg/get-packages';
 import { getPackageExportDetails } from '../../lib/getPackageExportDetails';
 
 export default async () => {
-  const { packages } = await getPackages(resolvePath('.'));
+  const { packages, root } = await getPackages(resolvePath('.'));
 
   let hadErrors = false;
   let checkedCount = 0;
@@ -33,7 +39,7 @@ export default async () => {
       continue;
     }
     checkedCount += 1;
-    const { errors } = await checkTypes(pkg);
+    const { errors } = await checkTypes(pkg, root.dir);
     if (errors.length) {
       hadErrors = true;
       console.error(
@@ -166,7 +172,7 @@ function findAllDeps(declSrc: string) {
  * Scan index.d.ts for imports and return errors for any dependency that's
  * missing or incorrect in package.json
  */
-function checkTypes(pkg: Package) {
+function checkTypes(pkg: Package, root: string) {
   const allDeps = getPackageExportDetails(pkg.packageJson).flatMap(exp => {
     const entryPath = resolvePath(pkg.dir, 'dist', exp.distPath);
     return collectDeclSources(entryPath).flatMap(src => findAllDeps(src));
@@ -180,7 +186,7 @@ function checkTypes(pkg: Package) {
       dep = dep.slice(0, -2);
     }
     try {
-      const typeDep = findTypesPackage(dep, pkg);
+      const typeDep = findTypesPackage(dep, pkg, root);
       if (typeDep) {
         typeDeps.push(typeDep);
       }
@@ -198,7 +204,14 @@ function checkTypes(pkg: Package) {
  * Find the package used for types. This assumes that types are working is a package
  * can be resolved, it doesn't do any checking of presence of types inside the dep.
  */
-function findTypesPackage(dep: string, pkg: Package) {
+function findTypesPackage(dep: string, pkg: Package, root: string) {
+  // Resolve subpath specifiers (e.g. foo/sub) to their package root, so that
+  // the node_modules fallback below can find the installed package
+  const segments = dep.split('/');
+  const packageName = segments[0].startsWith('@')
+    ? segments.slice(0, 2).join('/')
+    : segments[0];
+
   try {
     require.resolve(`@types/${dep}/package.json`, { paths: [pkg.dir] });
     return `@types/${dep}`;
@@ -217,22 +230,136 @@ function findTypesPackage(dep: string, pkg: Package) {
           require.resolve(`${dep}.d.ts`, { paths: [pkg.dir] });
           return undefined;
         } catch {
-          // And finally a naive lookup of the file directly, in case `require.resolve` fails us due to "exports"
-          if (fs.existsSync(resolvePath(pkg.dir, `node_modules/${dep}.d.ts`))) {
-            return undefined;
-          }
-          if (
-            fs.existsSync(
-              resolvePath(pkg.dir, `../../node_modules/${dep}.d.ts`),
-            )
-          ) {
-            return undefined;
+          // And finally a naive lookup of the files directly, in case
+          // `require.resolve` fails us due to "exports". ESM-only packages
+          // may expose no "require" or "default" export condition, so
+          // require.resolve fails even though the dependency is installed
+          // and its types work. Search the node_modules directories that
+          // Node itself would search for the package, minus the exports
+          // gate, limited to the repo root so that packages installed
+          // outside the repo can't mask a missing dependency.
+          const searchPaths =
+            createRequire(resolvePath(pkg.dir, 'package.json')).resolve.paths(
+              packageName,
+            ) || [];
+          for (const searchDir of searchPaths) {
+            const relDir = relativePath(root, searchDir);
+            if (
+              relDir === '..' ||
+              relDir.startsWith(`..${sep}`) ||
+              isAbsolute(relDir)
+            ) {
+              continue;
+            }
+            // Some type-only modules ship a bare .d.ts file next to the
+            // specifier path, which the exports gate can also hide.
+            if (fs.existsSync(resolvePath(searchDir, `${dep}.d.ts`))) {
+              return undefined;
+            }
+            // Only accept the installed package when the specifier is a
+            // real export of it and it provides type declarations, so a
+            // typo'd or stale subpath import still fails the check.
+            const manifestPath = resolvePath(
+              searchDir,
+              `${packageName}/package.json`,
+            );
+            if (
+              fs.existsSync(manifestPath) &&
+              packageProvidesTypes(manifestPath, dep, packageName)
+            ) {
+              return undefined;
+            }
           }
           throw mkErr('MissingDepError', `No types for ${dep}`, { dep });
         }
       }
     }
   }
+}
+
+/**
+ * Check whether an installed package provides type declarations for the given
+ * specifier, looking past the "exports" gate that require.resolve applies.
+ * The specifier must be a real export of the package, and the package must
+ * declare types for it, either through a "types"/"typings" field or a "types"
+ * condition in its exports map.
+ */
+function packageProvidesTypes(
+  manifestPath: string,
+  dep: string,
+  packageName: string,
+): boolean {
+  let manifest: { types?: unknown; typings?: unknown; exports?: unknown };
+  try {
+    manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  } catch {
+    return false;
+  }
+
+  const hasTypesCondition = (value: unknown): boolean => {
+    if (typeof value === 'string') {
+      return false;
+    }
+    if (Array.isArray(value)) {
+      return value.some(hasTypesCondition);
+    }
+    if (value && typeof value === 'object') {
+      return Object.entries(value).some(
+        ([condition, target]) =>
+          // A "types" condition may carry a TypeScript version range,
+          // e.g. "types@>=5.0"
+          condition === 'types' ||
+          condition.startsWith('types@') ||
+          hasTypesCondition(target),
+      );
+    }
+    return false;
+  };
+
+  if (dep === packageName) {
+    return (
+      Boolean(manifest.types || manifest.typings) ||
+      hasTypesCondition(manifest.exports)
+    );
+  }
+
+  // Subpath specifiers must be defined by the exports map, and the matching
+  // entry must point at type declarations
+  const subpath = `./${dep.slice(packageName.length + 1)}`;
+  const exports = manifest.exports;
+  if (!exports || typeof exports !== 'object' || Array.isArray(exports)) {
+    return false;
+  }
+  const providesTypes = (value: unknown): boolean =>
+    (typeof value === 'string' && value.endsWith('.d.ts')) ||
+    hasTypesCondition(value);
+  // Follow Node's export pattern rules: exact keys win, and keys like
+  // './sub/*.js' match subpaths with the same prefix and trailer
+  const matchesSubpath = (key: string): boolean => {
+    if (key === subpath) {
+      return true;
+    }
+    const star = key.indexOf('*');
+    if (star === -1) {
+      return false;
+    }
+    const prefix = key.slice(0, star);
+    const trailer = key.slice(star + 1);
+    return (
+      subpath.length > prefix.length + trailer.length &&
+      subpath.startsWith(prefix) &&
+      subpath.endsWith(trailer)
+    );
+  };
+  const entries = Object.entries(exports);
+  if (entries.some(([key]) => key === subpath)) {
+    return entries.some(
+      ([key, value]) => key === subpath && providesTypes(value),
+    );
+  }
+  return entries.some(
+    ([key, value]) => matchesSubpath(key) && providesTypes(value),
+  );
 }
 
 /**
