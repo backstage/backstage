@@ -1,0 +1,5 @@
+---
+'@backstage/plugin-catalog-graph': patch
+---
+
+Moved setup, configuration, and customization documentation to backstage.io and trimmed package README.
