@@ -14,14 +14,27 @@
  * limitations under the License.
  */
 
-import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
+import {
+  createServiceFactory,
+  SchedulerServiceTaskScheduleDefinition,
+} from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { catalogModuleGerritEntityProvider } from './catalogModuleGerritEntityProvider';
 import { GerritEntityProvider } from '../providers/GerritEntityProvider';
 
 describe('catalogModuleGerritEntityProvider', () => {
   it('should register provider at the catalog extension point', async () => {
+    const events = new TestEventsService();
+    const eventsServiceFactory = createServiceFactory({
+      service: eventsServiceRef,
+      deps: {},
+      async factory({}) {
+        return events;
+      },
+    });
     let addedProviders: Array<GerritEntityProvider> | undefined;
     let usedSchedule: SchedulerServiceTaskScheduleDefinition | undefined;
 
@@ -68,6 +81,7 @@ describe('catalogModuleGerritEntityProvider', () => {
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
+        eventsServiceFactory,
         catalogModuleGerritEntityProvider,
         mockServices.rootConfig.factory({ data: config }),
         mockServices.logger.factory(),
@@ -82,5 +96,8 @@ describe('catalogModuleGerritEntityProvider', () => {
       'gerrit-provider:test',
     );
     expect(runner).not.toHaveBeenCalled();
+    expect(events.subscribed.map(s => s.id)).toEqual([
+      'catalog-gerrit-scm-events-bridge',
+    ]);
   });
 });

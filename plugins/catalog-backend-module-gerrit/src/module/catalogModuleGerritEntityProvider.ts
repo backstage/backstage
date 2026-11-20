@@ -19,7 +19,10 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogScmEventsServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { GerritEntityProvider } from '../providers/GerritEntityProvider';
+import { GerritScmEventsBridge } from '../events/GerritScmEventsBridge';
 
 /**
  * @public
@@ -34,14 +37,38 @@ export const catalogModuleGerritEntityProvider = createBackendModule({
         config: coreServices.rootConfig,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
+        events: eventsServiceRef,
+        catalogScmEvents: catalogScmEventsServiceRef,
+        lifecycle: coreServices.lifecycle,
       },
-      async init({ catalog, config, logger, scheduler }) {
+      async init({
+        catalog,
+        config,
+        logger,
+        scheduler,
+        events,
+        catalogScmEvents,
+        lifecycle,
+      }) {
         const providers = GerritEntityProvider.fromConfig(config, {
           logger,
           scheduler,
         });
 
         catalog.addEntityProvider(providers);
+
+        const bridge = new GerritScmEventsBridge({
+          logger,
+          config,
+          events,
+          catalogScmEvents,
+        });
+        lifecycle.addStartupHook(async () => {
+          await bridge.start();
+        });
+        lifecycle.addShutdownHook(async () => {
+          await bridge.stop();
+        });
       },
     });
   },
