@@ -125,6 +125,51 @@ describe('github core', () => {
       );
     });
 
+    describe('when the branch name contains special characters', () => {
+      const apiConfig: GithubIntegrationConfig = {
+        host: 'github.com',
+        apiBaseUrl: 'https://api.github.com',
+      };
+      const rawConfig: GithubIntegrationConfig = {
+        host: 'github.com',
+        rawBaseUrl: 'https://raw.githubusercontent.com',
+      };
+
+      it.each([
+        ['foo&bar', 'foo%26bar'],
+        ['foo%26bar', 'foo%26bar'],
+        ['foo+bar', 'foo%2Bbar'],
+        ['my%20branch', 'my%20branch'],
+        ['100%25', '100%25'],
+      ])('encodes the ref %s in the api query string', (branch, encoded) => {
+        expect(
+          getGithubFileFetchUrl(
+            `https://github.com/a/b/blob/${branch}/path/to/c.yaml`,
+            apiConfig,
+            tokenCredentials,
+          ),
+        ).toEqual(
+          `https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=${encoded}`,
+        );
+      });
+
+      it.each([
+        ['foo&bar', 'foo%26bar'],
+        ['my%20branch', 'my%20branch'],
+        ['100%25', '100%25'],
+      ])('encodes the ref %s in the raw path', (branch, encoded) => {
+        expect(
+          getGithubFileFetchUrl(
+            `https://github.com/a/b/blob/${branch}/path/to/c.yaml`,
+            rawConfig,
+            tokenCredentials,
+          ),
+        ).toEqual(
+          `https://raw.githubusercontent.com/a/b/${encoded}/path/to/c.yaml`,
+        );
+      });
+    });
+
     it('happy path for github raw', () => {
       const config: GithubIntegrationConfig = {
         host: 'github.com',

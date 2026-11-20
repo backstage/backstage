@@ -54,10 +54,17 @@ export function getGithubFileFetchUrl(
     }
 
     const pathWithoutSlash = filepath.replace(/^\//, '');
+    // git-url-parse returns the ref decoded, so encode it again before
+    // putting it into the URL
     if (chooseEndpoint(config, credentials) === 'api') {
-      return `${config.apiBaseUrl}/repos/${owner}/${name}/contents/${pathWithoutSlash}?ref=${ref}`;
+      return `${
+        config.apiBaseUrl
+      }/repos/${owner}/${name}/contents/${pathWithoutSlash}?ref=${encodeURIComponent(
+        ref,
+      )}`;
     }
-    return `${config.rawBaseUrl}/${owner}/${name}/${ref}/${pathWithoutSlash}`;
+    const encodedRef = ref.split('/').map(encodeURIComponent).join('/');
+    return `${config.rawBaseUrl}/${owner}/${name}/${encodedRef}/${pathWithoutSlash}`;
   } catch (e) {
     throw new Error(`Incorrect URL: ${url}, ${e}`);
   }
