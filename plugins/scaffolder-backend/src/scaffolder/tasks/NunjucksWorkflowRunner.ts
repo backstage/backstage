@@ -818,7 +818,6 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       return updatedPreparedContext;
     } catch (cause) {
       const err = taskLogger.redactError(cause);
-      await taskTrack.markFailed(step, err);
       await stepTrack.markFailed();
       throw err;
     } finally {
@@ -995,6 +994,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
 
       if (firstError) {
+        // Task-level failure is counted once per task run, regardless of how
+        // many steps failed (e.g. via `if: ${{ always() }}`/`if: ${{ failure() }}`
+        // steps that keep running after the first failure).
+        await taskTrack.markFailed(allErrors[0].step, firstError);
+
         // If there were multiple errors, add context to the first error
         if (allErrors.length > 1) {
           const additionalErrorSummary = allErrors
