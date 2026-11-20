@@ -55,7 +55,7 @@ export const PendingEntities = () => {
     {
       title: <Text>Kind</Text>,
       sorting: true,
-      field: 'kind',
+      field: 'unprocessed_entity.kind',
       render: (rowData: UnprocessedEntity | {}) =>
         (rowData as UnprocessedEntity).unprocessed_entity.kind,
     },
