@@ -290,6 +290,8 @@ We recommend you read [Setting up authentication](./authentication.md) next.
 
 If you want to read more about the database configuration, here are some helpful links:
 
+- [Database](../../database/index.md) for how Backstage uses a database and which database systems you can choose from.
+- [Database maintenance](../../database/maintenance.md) for backups, restores, upgrades, and connection tuning.
 - [Configuring Plugin Databases](../../tutorials/configuring-plugin-databases.md#privileges)
 - [Manual Knex Rollback](../../tutorials/manual-knex-rollback.md)
 - [Read more about Knex](http://knexjs.org/), the database wrapper that we use.
