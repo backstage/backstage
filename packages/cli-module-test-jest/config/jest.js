@@ -272,8 +272,13 @@ async function getProjectConfig(targetPath, extraConfig, extraOptions) {
     ...getRoleConfig(pkgJson.backstage?.role, pkgJson),
   };
 
-  // Copy the array, since it may be shared with other projects through the root config
+  // Copy the arrays, since they may be shared with other projects through the root config
+  options.setupFiles = [...(options.setupFiles ?? [])];
   options.setupFilesAfterEnv = [...(options.setupFilesAfterEnv ?? [])];
+
+  // Does nothing in environments that have a `window`, so it's safe to add for all
+  // roles. That also covers tests that select the Node.js environment themselves.
+  options.setupFiles.unshift(require.resolve('./jestNodeLocalStorage.js'));
 
   if (
     extraOptions.rejectFrontendNetworkRequests &&
