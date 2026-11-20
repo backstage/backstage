@@ -22,7 +22,6 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { Grid } from '@backstage/ui';
-import { useSignal } from '@backstage/plugin-signals-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -40,7 +39,7 @@ const TableTitleKeys = {
 } as const;
 
 import { NotificationsTable } from '../NotificationsTable';
-import { useNotificationsApi } from '../../hooks';
+import { useNotificationsApi, useNotificationsRefresh } from '../../hooks';
 import {
   CreatedAfterOptions,
   NotificationsFilters,
@@ -83,9 +82,7 @@ function NotificationsPageContent(
   } = props;
 
   const [refresh, setRefresh] = useState(false);
-  // TODO: Reuse useNotificationsRefresh instead of duplicating signals +
-  // polling refresh logic here.
-  const { lastSignal } = useSignal('notifications');
+  const { lastSignal, pollTick } = useNotificationsRefresh();
   const [searchParams] = useSearchParams();
   const highlightedNotificationId = searchParams.get('id') || undefined;
   const [highlightedNotification, setHighlightedNotification] = useState<
@@ -150,22 +147,34 @@ function NotificationsPageContent(
   );
 
   const throttledSetRefresh = useMemo(
-    () => throttle(setRefresh, ThrottleDelayMs),
-    [setRefresh],
+    () => throttle(() => setRefresh(true), ThrottleDelayMs),
+    [],
   );
+
+  useEffect(() => {
+    return () => {
+      throttledSetRefresh.cancel();
+    };
+  }, [throttledSetRefresh]);
 
   useEffect(() => {
     if (refresh && !loading) {
       retry();
       setRefresh(false);
     }
-  }, [refresh, setRefresh, retry, loading]);
+  }, [refresh, retry, loading]);
 
   useEffect(() => {
-    if (lastSignal && lastSignal.action) {
-      throttledSetRefresh(true);
+    if (lastSignal?.action) {
+      throttledSetRefresh();
     }
   }, [lastSignal, throttledSetRefresh]);
+
+  useEffect(() => {
+    if (pollTick > 0) {
+      throttledSetRefresh();
+    }
+  }, [pollTick, throttledSetRefresh]);
 
   useEffect(() => {
     if (!highlightedNotificationId) {
@@ -200,7 +209,7 @@ function NotificationsPageContent(
   }, [fetchedHighlightedNotification]);
 
   const onUpdate = () => {
-    throttledSetRefresh(true);
+    throttledSetRefresh();
   };
 
   const notifications = value?.[0]?.notifications;

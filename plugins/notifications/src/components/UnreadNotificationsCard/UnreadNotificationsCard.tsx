@@ -16,7 +16,12 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import throttle from 'lodash/throttle';
-import { RiCheckDoubleLine, RiRssFill } from '@remixicon/react';
+import {
+  RiArrowDownSLine,
+  RiArrowUpSLine,
+  RiCheckDoubleLine,
+  RiRssFill,
+} from '@remixicon/react';
 import { Notification } from '@backstage/plugin-notifications-common';
 import {
   ErrorPanel,
@@ -175,6 +180,7 @@ export const UnreadNotificationsCard = ({
   const resolvedMaxMessages = resolveMaxMessages({ maxMessages, initialCount });
   const resolvedCharLimit = resolveCharLimit({ charLimit, maxChars });
   const [refresh, setRefresh] = useState(false);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const { lastSignal, pollTick } = useNotificationsRefresh();
   const notificationsApi = useApi(notificationsApiRef);
 
@@ -184,10 +190,14 @@ export const UnreadNotificationsCard = ({
         limit: resolvedMaxMessages,
         read: false,
         sort: 'created',
-        sortOrder: 'desc',
+        sortOrder,
       }),
-    [resolvedMaxMessages],
+    [resolvedMaxMessages, sortOrder],
   );
+
+  const onToggleSortOrder = useCallback(() => {
+    setSortOrder(current => (current === 'desc' ? 'asc' : 'desc'));
+  }, []);
 
   const throttledSetRefresh = useMemo(
     () => throttle(() => setRefresh(true), ThrottleDelayMs),
@@ -281,6 +291,8 @@ export const UnreadNotificationsCard = ({
         </LinkButton>
       }
       variant="gridItem"
+      divider={false}
+      cardClassName={styles.cardContent}
     >
       <div className={styles.content}>
         {loading && <Progress />}
@@ -300,11 +312,35 @@ export const UnreadNotificationsCard = ({
             ) : (
               <>
                 <div className={styles.columnHeader}>
-                  <Text variant="body-x-small" color="secondary">
-                    {t('unreadCard.columnNotification')}
-                  </Text>
+                  <button
+                    type="button"
+                    className={styles.columnSortButton}
+                    onClick={onToggleSortOrder}
+                    aria-label={
+                      sortOrder === 'desc'
+                        ? t('unreadCard.sortNewest')
+                        : t('unreadCard.sortOldest')
+                    }
+                  >
+                    <Text variant="body-medium" color="secondary">
+                      {t('unreadCard.columnNotification')}
+                    </Text>
+                    {sortOrder === 'desc' ? (
+                      <RiArrowDownSLine
+                        size={16}
+                        className={styles.columnSortIcon}
+                        aria-hidden
+                      />
+                    ) : (
+                      <RiArrowUpSLine
+                        size={16}
+                        className={styles.columnSortIcon}
+                        aria-hidden
+                      />
+                    )}
+                  </button>
                   <Text
-                    variant="body-x-small"
+                    variant="body-medium"
                     color="secondary"
                     className={styles.columnHeaderActions}
                   >
