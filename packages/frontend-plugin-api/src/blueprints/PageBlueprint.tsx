@@ -43,6 +43,8 @@ import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActio
 import { optionalStringSchema } from '../schema/optionalStringSchema';
 import { appHistoryApiRef, type AppHistoryApi } from '../routing/AppHistoryApi';
 import type { AppLocation } from '../routing/AppLocation';
+import { configApiRef } from '../apis';
+import { Helmet } from 'react-helmet';
 
 /**
  * One sub-page of a page, as the page itself sees it: a tab to show in the
@@ -113,11 +115,14 @@ function PageContent(props: {
     }
   }, [matches, firstPath, pageMount, location, history]);
   return selected && selectedMatch ? (
-    <BreadcrumbEntry
-      entry={{ label: selected.label, href: selectedMatch.basePath }}
-    >
-      {selected.element}
-    </BreadcrumbEntry>
+    <>
+      <Helmet title={selected.label} />
+      <BreadcrumbEntry
+        entry={{ label: selected.label, href: selectedMatch.basePath }}
+      >
+        {selected.element}
+      </BreadcrumbEntry>
+    </>
   ) : (
     <>{children}</>
   );
@@ -162,6 +167,10 @@ function PluginPageShell(props: {
   const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
   const history = useApiHolder().get(appHistoryApiRef);
   const location = useAppHistoryLocation(history);
+  const configApi = useApi(configApiRef);
+  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
+  const titleTemplate = `${titles?.[0] ?? title} | %s | ${appTitle}`;
+  const defaultTitle = `${titles?.[0] ?? title} | ${appTitle}`;
   const mount =
     location &&
     routeResolutionApi
@@ -185,26 +194,29 @@ function PluginPageShell(props: {
     return <Progress />;
   }
   return (
-    <PageLayout
-      title={titles[0] ?? title}
-      icon={icon}
-      noHeader={noHeader}
-      tabs={tabs}
-      titleLink={titleLink}
-      headerActions={headerActions}
-    >
-      <ExtensionBoundary node={node}>
-        <PageContent
-          subPages={translatedSubPages}
-          pageMount={mount}
-          matches={matches}
-          history={history}
-          location={location}
-        >
-          {children}
-        </PageContent>
-      </ExtensionBoundary>
-    </PageLayout>
+    <>
+      <Helmet titleTemplate={titleTemplate} defaultTitle={defaultTitle} />
+      <PageLayout
+        title={titles[0] ?? title}
+        icon={icon}
+        noHeader={noHeader}
+        tabs={tabs}
+        titleLink={titleLink}
+        headerActions={headerActions}
+      >
+        <ExtensionBoundary node={node}>
+          <PageContent
+            subPages={translatedSubPages}
+            pageMount={mount}
+            matches={matches}
+            history={history}
+            location={location}
+          >
+            {children}
+          </PageContent>
+        </ExtensionBoundary>
+      </PageLayout>
+    </>
   );
 }
 

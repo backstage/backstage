@@ -764,4 +764,38 @@ describe('PageBlueprint', () => {
     expect(await screen.findByTestId('plain-page')).toBeInTheDocument();
     expect(appHistory.getSnapshot().location.pathname).toBe('/plain/deeper');
   });
+
+  it('should set the title template for a sub-page on initial load', async () => {
+    const parentPage = PageBlueprint.make({
+      name: 'parent-page',
+      params: {
+        path: '/parent',
+        title: 'Parent',
+      },
+    });
+    const subPage = SubPageBlueprint.make({
+      name: 'sub-page',
+      attachTo: { id: 'page:parent-page', input: 'pages' },
+      params: {
+        loader: () =>
+          Promise.resolve(
+            <div data-testid="sub-page-content">Sub-page content</div>,
+          ),
+        path: 'sub-page',
+        title: 'Sub-page',
+      },
+    });
+    const tester = createExtensionTester(parentPage).add(subPage);
+
+    const { findByTestId } = renderInTestApp(tester.reactElement(), {
+      mountPath: '/parent',
+      initialRouteEntries: ['/parent/sub-page'],
+    });
+
+    await findByTestId('sub-page-content');
+
+    await waitFor(() =>
+      expect(document.title).toBe('Parent | Sub-page | Backstage'),
+    );
+  });
 });

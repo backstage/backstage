@@ -623,11 +623,11 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'errorReporting.title': 'Error Reporting';
     readonly 'podLogs.title': 'No logs emitted';
     readonly 'podLogs.description': 'No logs were emitted by the container';
-    readonly 'podLogs.buttonText': 'Logs';
     readonly 'podLogs.titleTemplate': '{{podName}} - {{containerName}} logs on cluster {{clusterName}}';
+    readonly 'podLogs.buttonText': 'Logs';
     readonly 'podLogs.buttonAriaLabel': 'get logs';
-    readonly 'podExecTerminal.buttonText': 'Terminal';
     readonly 'podExecTerminal.titleTemplate': '{{podName}} - {{containerName}} terminal shell on cluster {{clusterName}}';
+    readonly 'podExecTerminal.buttonText': 'Terminal';
     readonly 'podExecTerminal.buttonAriaLabel': 'open terminal';
     readonly 'kubernetesDrawer.yaml': 'YAML';
     readonly 'kubernetesDrawer.closeDrawer': 'Close the drawer';
