@@ -26,6 +26,9 @@ const mockGitlabClient = {
     show: jest.fn(),
     create: jest.fn(),
   },
+  Namespaces: {
+    show: jest.fn(),
+  },
 };
 
 jest.mock('@gitbeaker/rest', () => ({
@@ -41,6 +44,9 @@ describe('gitlab:group:ensureExists', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGitlabClient.Namespaces.show.mockRejectedValue({
+      cause: { response: { status: 404 } },
+    });
   });
 
   it(`Should ${examples[0].description}`, async () => {
@@ -283,5 +289,40 @@ describe('gitlab:group:ensureExists', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 4);
+  });
+
+  it(`Should ${examples[6].description}`, async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockResolvedValueOnce({
+      id: 42,
+      kind: 'user',
+    });
+
+    const config = mockServices.rootConfig({
+      data: {
+        integrations: {
+          gitlab: [
+            {
+              host: 'gitlab.com',
+              token: 'tokenlols',
+              apiBaseUrl: 'https://api.gitlab.com',
+            },
+          ],
+        },
+      },
+    });
+    const integrations = ScmIntegrations.fromConfig(config);
+
+    const action = createGitlabGroupEnsureExistsAction({ integrations });
+
+    await action.handler({
+      ...mockContext,
+      input: yaml.parse(examples[6].example).steps[0].input,
+    });
+
+    expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 42);
   });
 });
