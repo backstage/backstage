@@ -23,131 +23,38 @@ import { FetchApi } from '../types/fetch';
 import crossFetch from 'cross-fetch';
 import { pluginId } from '../pluginId';
 import * as parser from 'uri-template';
+import { RequestOptions, TypedResponse } from './Api.types';
 import { Action } from '../models/Action.model';
+import { ListActions } from './Api.types';
 import { Autocomplete200Response } from '../models/Autocomplete200Response.model';
-import { AutocompleteRequest } from '../models/AutocompleteRequest.model';
+import { Autocomplete } from './Api.types';
 import { CancelTask200Response } from '../models/CancelTask200Response.model';
-import { DryRun200Response } from '../models/DryRun200Response.model';
-import { DryRunRequest } from '../models/DryRunRequest.model';
 import { ListTasksResponse } from '../models/ListTasksResponse.model';
-import { ListTemplatingExtensionsResponse } from '../models/ListTemplatingExtensionsResponse.model';
-import { RetryRequest } from '../models/RetryRequest.model';
 import { Scaffold201Response } from '../models/Scaffold201Response.model';
-import { ScaffolderScaffoldOptions } from '../models/ScaffolderScaffoldOptions.model';
 import { SerializedTask } from '../models/SerializedTask.model';
 import { SerializedTaskEvent } from '../models/SerializedTaskEvent.model';
+import {
+  CancelTask,
+  GetTask,
+  ListTasks,
+  Retry,
+  Scaffold,
+  StreamLogsPolling,
+} from './Api.types';
+import { DryRun200Response } from '../models/DryRun200Response.model';
 import { TemplateParameterSchema } from '../models/TemplateParameterSchema.model';
+import { DryRun, GetTemplateParameterSchema } from './Api.types';
+import { ListTemplatingExtensionsResponse } from '../models/ListTemplatingExtensionsResponse.model';
+import { ListTemplatingExtensions } from './Api.types';
 
 /**
- * Wraps the Response type to convey a type on the json call.
+ * A client that works in both the frontend and the backend. It resolves the
+ * base URL through discovery, and only authenticates when a token is passed in
+ * the request options.
  *
  * @public
  */
-export type TypedResponse<T> = Omit<Response, 'json'> & {
-  json: () => Promise<T>;
-};
-
-/**
- * Options you can pass into a request for additional information.
- *
- * @public
- */
-export interface RequestOptions {
-  token?: string;
-}
-/**
- * @public
- */
-export type Autocomplete = {
-  path: {
-    provider: string;
-    resource: string;
-  };
-  body: AutocompleteRequest;
-};
-/**
- * @public
- */
-export type CancelTask = {
-  path: {
-    taskId: string;
-  };
-};
-/**
- * @public
- */
-export type DryRun = {
-  body: DryRunRequest;
-};
-/**
- * @public
- */
-export type GetTask = {
-  path: {
-    taskId: string;
-  };
-};
-/**
- * @public
- */
-export type GetTemplateParameterSchema = {
-  path: {
-    namespace: string;
-    kind: string;
-    name: string;
-  };
-};
-/**
- * @public
- */
-export type ListActions = {};
-/**
- * @public
- */
-export type ListTasks = {
-  query: {
-    createdBy?: Array<string>;
-    limit?: number;
-    offset?: number;
-    order?: Array<string>;
-    status?: Array<string>;
-  };
-};
-/**
- * @public
- */
-export type ListTemplatingExtensions = {};
-/**
- * @public
- */
-export type Retry = {
-  path: {
-    taskId: string;
-  };
-  body: RetryRequest;
-};
-/**
- * @public
- */
-export type Scaffold = {
-  body: ScaffolderScaffoldOptions;
-};
-/**
- * @public
- */
-export type StreamLogsPolling = {
-  path: {
-    taskId: string;
-  };
-  query: {
-    after?: number;
-  };
-};
-
-/**
- * @public
- */
-export class DefaultApiClient {
+export class ScaffolderClient {
   private readonly discoveryApi: DiscoveryApi;
   private readonly fetchApi: FetchApi;
 
@@ -160,18 +67,43 @@ export class DefaultApiClient {
   }
 
   /**
+   * Returns a list of all installed actions.
+   */
+  public async listActions(
+    _request: ListActions,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<Array<Action>>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const token = options?.token;
+    const uriTemplate = `/v2/actions`;
+
+    const uri = parser.parse(uriTemplate).expand({});
+
+    const init: RequestInit = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      method: 'GET',
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+  }
+
+  /**
    * Perform an autocomplete for the given provider and resource.
    * @param provider -
    * @param resource -
    * @param autocompleteRequest -
    */
   public async autocomplete(
-    // @ts-ignore
     request: Autocomplete,
     options?: RequestOptions,
   ): Promise<TypedResponse<Autocomplete200Response>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/v2/autocomplete/{provider}/{resource}`;
 
     const uri = parser.parse(uriTemplate).expand({
@@ -179,14 +111,16 @@ export class DefaultApiClient {
       resource: request.path.resource,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'POST',
       body: JSON.stringify(request.body),
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -194,50 +128,27 @@ export class DefaultApiClient {
    * @param taskId -
    */
   public async cancelTask(
-    // @ts-ignore
     request: CancelTask,
     options?: RequestOptions,
   ): Promise<TypedResponse<CancelTask200Response>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/v2/tasks/{taskId}/cancel`;
 
     const uri = parser.parse(uriTemplate).expand({
       taskId: request.path.taskId,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'POST',
-    });
-  }
+    };
 
-  /**
-   * Perform a dry-run of a template
-   * @param dryRunRequest -
-   */
-  public async dryRun(
-    // @ts-ignore
-    request: DryRun,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<DryRun200Response>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/v2/dry-run`;
-
-    const uri = parser.parse(uriTemplate).expand({});
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    });
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -245,78 +156,27 @@ export class DefaultApiClient {
    * @param taskId -
    */
   public async getTask(
-    // @ts-ignore
     request: GetTask,
     options?: RequestOptions,
   ): Promise<TypedResponse<SerializedTask>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/v2/tasks/{taskId}`;
 
     const uri = parser.parse(uriTemplate).expand({
       taskId: request.path.taskId,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'GET',
-    });
-  }
+    };
 
-  /**
-   * Get template parameter schema.
-   * @param namespace -
-   * @param kind -
-   * @param name -
-   */
-  public async getTemplateParameterSchema(
-    // @ts-ignore
-    request: GetTemplateParameterSchema,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<TemplateParameterSchema>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/v2/templates/{namespace}/{kind}/{name}/parameter-schema`;
-
-    const uri = parser.parse(uriTemplate).expand({
-      namespace: request.path.namespace,
-      kind: request.path.kind,
-      name: request.path.name,
-    });
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'GET',
-    });
-  }
-
-  /**
-   * Returns a list of all installed actions.
-   */
-  public async listActions(
-    // @ts-ignore
-    request: ListActions,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<Array<Action>>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/v2/actions`;
-
-    const uri = parser.parse(uriTemplate).expand({});
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'GET',
-    });
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -328,48 +188,27 @@ export class DefaultApiClient {
    * @param status - Status
    */
   public async listTasks(
-    // @ts-ignore
     request: ListTasks,
     options?: RequestOptions,
   ): Promise<TypedResponse<ListTasksResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/v2/tasks{?createdBy*,limit,offset,order*,status*}`;
 
     const uri = parser.parse(uriTemplate).expand({
       ...request.query,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'GET',
-    });
-  }
+    };
 
-  /**
-   * Returns a structure describing the available templating extensions.
-   */
-  public async listTemplatingExtensions(
-    // @ts-ignore
-    request: ListTemplatingExtensions,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<ListTemplatingExtensionsResponse>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/v2/templating-extensions`;
-
-    const uri = parser.parse(uriTemplate).expand({});
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'GET',
-    });
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -378,26 +217,28 @@ export class DefaultApiClient {
    * @param retryRequest -
    */
   public async retry(
-    // @ts-ignore
     request: Retry,
     options?: RequestOptions,
   ): Promise<TypedResponse<Scaffold201Response>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/v2/tasks/{taskId}/retry`;
 
     const uri = parser.parse(uriTemplate).expand({
       taskId: request.path.taskId,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'POST',
       body: JSON.stringify(request.body),
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -405,24 +246,26 @@ export class DefaultApiClient {
    * @param scaffolderScaffoldOptions -
    */
   public async scaffold(
-    // @ts-ignore
     request: Scaffold,
     options?: RequestOptions,
   ): Promise<TypedResponse<Scaffold201Response>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/v2/tasks`;
 
     const uri = parser.parse(uriTemplate).expand({});
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'POST',
       body: JSON.stringify(request.body),
-    });
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 
   /**
@@ -431,12 +274,12 @@ export class DefaultApiClient {
    * @param after - Offset event ID to stream events after.
    */
   public async streamLogsPolling(
-    // @ts-ignore
     request: StreamLogsPolling,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<SerializedTaskEvent>>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
+    const token = options?.token;
     const uriTemplate = `/v2/tasks/{taskId}/events{?after}`;
 
     const uri = parser.parse(uriTemplate).expand({
@@ -444,12 +287,98 @@ export class DefaultApiClient {
       ...request.query,
     });
 
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+    const init: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       method: 'GET',
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+  }
+
+  /**
+   * Perform a dry-run of a template
+   * @param dryRunRequest -
+   */
+  public async dryRun(
+    request: DryRun,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<DryRun200Response>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const token = options?.token;
+    const uriTemplate = `/v2/dry-run`;
+
+    const uri = parser.parse(uriTemplate).expand({});
+
+    const init: RequestInit = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(request.body),
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+  }
+
+  /**
+   * Get template parameter schema.
+   * @param namespace -
+   * @param kind -
+   * @param name -
+   */
+  public async getTemplateParameterSchema(
+    request: GetTemplateParameterSchema,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<TemplateParameterSchema>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const token = options?.token;
+    const uriTemplate = `/v2/templates/{namespace}/{kind}/{name}/parameter-schema`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      namespace: request.path.namespace,
+      kind: request.path.kind,
+      name: request.path.name,
     });
+
+    const init: RequestInit = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      method: 'GET',
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
+  }
+
+  /**
+   * Returns a structure describing the available templating extensions.
+   */
+  public async listTemplatingExtensions(
+    _request: ListTemplatingExtensions,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<ListTemplatingExtensionsResponse>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const token = options?.token;
+    const uriTemplate = `/v2/templating-extensions`;
+
+    const uri = parser.parse(uriTemplate).expand({});
+
+    const init: RequestInit = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      method: 'GET',
+    };
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, init);
   }
 }
