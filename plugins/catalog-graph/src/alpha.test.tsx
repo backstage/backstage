@@ -214,6 +214,61 @@ describe('catalog-graph alpha plugin', () => {
       ).toBeInTheDocument();
     });
 
+    it('should hide entities that do not match the configured entityFilter', async () => {
+      const makeComponent = (name: string, lifecycle: string): Entity => ({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name, namespace: 'default' },
+        spec: { type: 'service', lifecycle, owner: 'team-a' },
+        relations: [],
+      });
+      const root: Entity = {
+        ...makeComponent('root', 'production'),
+        relations: [
+          { type: 'dependsOn', targetRef: 'component:default/prod-dep' },
+          { type: 'dependsOn', targetRef: 'component:default/old-dep' },
+        ],
+      };
+      const prodDep = makeComponent('prod-dep', 'production');
+      const oldDep = makeComponent('old-dep', 'deprecated');
+
+      renderTestApp({
+        extensions: [
+          createTestEntityPage({ entity: root }),
+          CatalogGraphApi,
+          CatalogGraphEntityCard,
+        ],
+        mountedRoutes: {
+          '/catalog-graph': catalogGraphRouteRef,
+        },
+        apis: [
+          catalogApiMock({ entities: [root, prodDep, oldDep] }),
+          [catalogGraphApiRef, new DefaultCatalogGraphApi()],
+        ],
+        config: {
+          app: {
+            extensions: [
+              {
+                'entity-card:catalog-graph/relations': {
+                  config: {
+                    entityFilter: {
+                      $not: { 'spec.lifecycle': 'deprecated' },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      });
+
+      expect(
+        await screen.findByText('prod-dep', {}, { timeout: 5_000 }),
+      ).toBeInTheDocument();
+      expect(screen.getByText('root')).toBeInTheDocument();
+      expect(screen.queryByText('old-dep')).not.toBeInTheDocument();
+    });
+
     it('should render the View graph link', async () => {
       const entity: ComponentEntity = {
         apiVersion: 'backstage.io/v1alpha1',

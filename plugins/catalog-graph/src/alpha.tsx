@@ -20,6 +20,11 @@ import {
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { z } from 'zod/v4';
+import {
+  createZodV4FilterPredicateSchema,
+  filterPredicateToFilterFunction,
+} from '@backstage/filter-predicates';
+import { Entity } from '@backstage/catalog-model';
 import { RiMindMap } from '@remixicon/react';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { catalogGraphRouteRef, catalogEntityRouteRef } from './routes';
@@ -46,12 +51,17 @@ const CatalogGraphEntityCard = EntityCardBlueprint.makeWithOverrides({
     // For more details, see this comment: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
     title: z.string().optional(),
     height: z.number().optional(),
+    entityFilter: createZodV4FilterPredicateSchema().optional(),
   },
   factory(originalFactory, { config }) {
+    const { entityFilter, ...cardConfig } = config;
+    const entityFilterFn = entityFilter
+      ? filterPredicateToFilterFunction<Entity>(entityFilter)
+      : undefined;
     return originalFactory({
       loader: async () =>
         import('./components/CatalogGraphCard').then(m => (
-          <m.CatalogGraphCard {...config} />
+          <m.CatalogGraphCard {...cardConfig} entityFilter={entityFilterFn} />
         )),
     });
   },
@@ -73,14 +83,23 @@ const CatalogGraphPage = PageBlueprint.makeWithOverrides({
     relations: z.array(z.string()).optional(),
     relationPairs: z.array(z.tuple([z.string(), z.string()])).optional(),
     zoom: z.enum(['enabled', 'disabled', 'enable-on-click']).optional(),
+    entityFilter: createZodV4FilterPredicateSchema().optional(),
   },
   factory(originalFactory, { config }) {
+    const { entityFilter, ...pageConfig } = config;
+    const entityFilterFn = entityFilter
+      ? filterPredicateToFilterFunction<Entity>(entityFilter)
+      : undefined;
     return originalFactory({
       path: '/catalog-graph',
       routeRef: catalogGraphRouteRef,
       loader: () =>
         import('./components/CatalogGraphPage/CatalogGraphPage').then(m => (
-          <m.NfsCatalogGraphPage {...config} initialState={config} />
+          <m.NfsCatalogGraphPage
+            {...pageConfig}
+            initialState={pageConfig}
+            entityFilter={entityFilterFn}
+          />
         )),
     });
   },
