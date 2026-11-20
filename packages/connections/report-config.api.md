@@ -419,6 +419,29 @@ export const connectionTypes: {
         }
     )[];
   }>;
+  readonly grafana: ConnectionTypeDefinition<{
+    type: 'grafana';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly (
+      | {
+          method: 'token';
+          token: string;
+        }
+      | {
+          method: 'basic';
+          username: string;
+          password: string;
+          orgId?: number | undefined;
+        }
+    )[];
+  }>;
   readonly harness: ConnectionTypeDefinition<{
     type: 'harness';
     cardinality: 'multiton';

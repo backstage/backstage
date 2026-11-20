@@ -24,6 +24,7 @@ export { GerritConnectionType } from '../schema/gerrit';
 export { GiteaConnectionType } from '../schema/gitea';
 export { GithubConnectionType } from '../schema/github';
 export { GitlabConnectionType } from '../schema/gitlab';
+export { GrafanaConnectionType } from '../schema/grafana';
 export { GoogleGcsConnectionType } from '../schema/googleGcs';
 export { HarnessConnectionType } from '../schema/harness';
 export * from './types';
