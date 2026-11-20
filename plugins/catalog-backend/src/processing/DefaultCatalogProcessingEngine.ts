@@ -25,7 +25,11 @@ import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
 import { trace } from '@opentelemetry/api';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
-import { createCounterMetric, createSummaryMetric } from '../util/metrics';
+import {
+  createCounterMetric,
+  createSummaryMetric,
+  secondsHistogramBuckets,
+} from '../util/metrics';
 import { CatalogProcessingOrchestrator, EntityProcessingResult } from './types';
 import { startTaskPipeline } from './TaskPipeline';
 import { Config } from '@backstage/config';
@@ -410,6 +414,9 @@ function progressTracker(metrics: MetricsService) {
     {
       description: 'Time spent executing the full processing flow',
       unit: 'seconds',
+      advice: {
+        explicitBucketBoundaries: secondsHistogramBuckets,
+      },
     },
   );
 
@@ -418,6 +425,9 @@ function progressTracker(metrics: MetricsService) {
     {
       description: 'Time spent executing catalog processors',
       unit: 'seconds',
+      advice: {
+        explicitBucketBoundaries: secondsHistogramBuckets,
+      },
     },
   );
 
@@ -427,6 +437,9 @@ function progressTracker(metrics: MetricsService) {
       description:
         'The amount of delay between being scheduled for processing, and the start of actually being processed',
       unit: 'seconds',
+      advice: {
+        explicitBucketBoundaries: secondsHistogramBuckets,
+      },
     },
   );
 

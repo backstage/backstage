@@ -80,6 +80,14 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
       {
         description: 'Histogram of task run durations',
         unit: 'seconds',
+        advice: {
+          // OpenTelemetry default boundaries up to 1000, with extra
+          // sub-five-second boundaries, so that existing `le` labels stay valid.
+          explicitBucketBoundaries: [
+            0, 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 75, 100, 250,
+            500, 750, 1000,
+          ],
+        },
       },
     );
     this.lastStarted = metrics.createGauge('backend_tasks.task.runs.started', {
