@@ -532,10 +532,8 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
 
     octokit.apps.listReposAccessibleToInstallation.mockReturnValue({
-      data: {
-        repositories: [{ name: repoName }],
-      },
-    } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
+      data: [{ name: repoName }],
+    } as unknown as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
 
     await expect(
       github.getCredentials({
