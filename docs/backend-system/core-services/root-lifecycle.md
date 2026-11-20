@@ -5,12 +5,9 @@ sidebar_label: Root Lifecycle
 description: Documentation for the Root Lifecycle service
 ---
 
-This service is the same as the lifecycle service, but should only be used by the root services. This is also where the implementation for the actual lifecycle hooks are collected and executed, so if you want to override the implementation of how those are processed, you should override this service.
+The backend shuts down on `SIGTERM`, `SIGINT`, or when the Node.js process emits `beforeExit`.
 
-The backend shuts down on `SIGTERM`, `SIGINT`, or when the Node.js process emits
-`beforeExit`. Repeated events during shutdown do not interrupt cleanup or run
-lifecycle hooks again. If `backend.stop()` is already in progress, process shutdown
-waits for it to finish before exiting.
+This service is the same as the lifecycle service, but should only be used by the root services. This is also where the implementation for the actual lifecycle hooks are collected and executed, so if you want to override the implementation of how those are processed, you should override this service.
 
 ## Configure the service
 
