@@ -42,7 +42,7 @@ import { VirtualizedListbox } from './VirtualizedListbox';
 import { withStyles } from '@material-ui/core/styles';
 import { useEntityPresentation } from '../../apis';
 import { catalogReactTranslationRef } from '../../translation';
-import { useApiHolder } from '@backstage/core-plugin-api';
+import { useAnalytics, useApiHolder } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogAutocomplete } from '../CatalogAutocomplete';
 
@@ -139,6 +139,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
   const classes = useStyles();
   const { mode = 'owners-only' } = props || {};
   const apis = useApiHolder();
+  const analytics = useAnalytics();
   const entityPresentationApi = apis.get(entityPresentationApiRef);
   const {
     updateFilters,
@@ -236,17 +237,22 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
         }}
         onChange={(_: object, owners) => {
           setText('');
-          setSelectedOwners(
-            owners.map(e => {
-              const entityRef =
-                typeof e === 'string' ? e : stringifyEntityRef(e);
+          const ownerRefs = owners.map(e => {
+            const entityRef = typeof e === 'string' ? e : stringifyEntityRef(e);
 
-              if (typeof e !== 'string') {
-                cache.setEntity(e);
-              }
-              return entityRef;
-            }),
-          );
+            if (typeof e !== 'string') {
+              cache.setEntity(e);
+            }
+            return entityRef;
+          });
+          ownerRefs
+            .filter(ref => !selectedOwners.includes(ref))
+            .forEach(ref =>
+              analytics.captureEvent('filter', ref, {
+                attributes: { filter: 'owners' },
+              }),
+            );
+          setSelectedOwners(ownerRefs);
         }}
         filterOptions={x => x}
         renderOption={(entity, { selected }) => {
