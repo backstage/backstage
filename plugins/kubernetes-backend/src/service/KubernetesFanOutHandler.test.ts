@@ -1211,6 +1211,89 @@ describe('KubernetesFanOutHandler', () => {
       await expect(result).rejects.toThrow(nonFetchError);
     });
 
+    it('reports a credential error for one cluster and still returns objects from the others', async () => {
+      getClustersByEntity.mockResolvedValue({
+        clusters: [
+          {
+            name: 'test-cluster',
+            url: '',
+            authMetadata: {},
+            skipMetricsLookup: true,
+          },
+          {
+            name: 'no-credentials-cluster',
+            url: '',
+            authMetadata: {},
+            skipMetricsLookup: true,
+          },
+        ],
+      });
+      const getCredential = jest.fn<
+        Promise<KubernetesCredential>,
+        [ClusterDetails, KubernetesRequestAuth]
+      >(async clusterDetails => {
+        if (clusterDetails.name === 'no-credentials-cluster') {
+          throw new Error('unable to get credentials');
+        }
+        return { type: 'anonymous' };
+      });
+
+      sut = new KubernetesFanOutHandler({
+        logger: mockServices.logger.mock(),
+        fetcher: {
+          fetchObjectsForService,
+          fetchPodMetricsByNamespaces,
+        },
+        serviceLocator: {
+          getClustersByEntity,
+        },
+        customResources: [],
+        authStrategy: {
+          getCredential,
+          validateCluster: jest.fn().mockReturnValue([]),
+          presentAuthMetadata: jest.fn(),
+        },
+        config,
+      });
+
+      const result = await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {},
+        },
+        { credentials: mockCredentials },
+      );
+
+      expect(getCredential).toHaveBeenCalledTimes(2);
+      expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
+      expect(fetchObjectsForService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          clusterDetails: expect.objectContaining({ name: 'test-cluster' }),
+        }),
+      );
+      expect(result).toStrictEqual<ObjectsByEntityResponse>({
+        items: [
+          {
+            cluster: { name: 'test-cluster' },
+            errors: [],
+            podMetrics: [],
+            resources: mockClusterResourceMap['test-cluster'],
+          },
+          {
+            cluster: { name: 'no-credentials-cluster' },
+            errors: [
+              {
+                errorType: 'FETCH_ERROR',
+                message: expect.stringContaining('unable to get credentials'),
+              },
+            ],
+            podMetrics: [],
+            resources: [],
+          },
+        ],
+      });
+    });
+
     describe('with a real fetcher', () => {
       const worker = setupServer();
       registerMswTestHooks(worker);
