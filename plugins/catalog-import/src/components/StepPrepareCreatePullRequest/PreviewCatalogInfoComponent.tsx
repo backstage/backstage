@@ -15,9 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
+import { Card, CardBody, CardHeader, Text } from '@backstage/ui';
 import YAML from 'yaml';
 import { CodeSnippet } from '@backstage/core-components';
 import { trimEnd } from 'lodash';
@@ -46,14 +44,14 @@ export const PreviewCatalogInfoComponent = (
   const catalogFilename = useCatalogFilename();
 
   return (
-    <Card variant="outlined" className={classes?.card}>
-      <CardHeader
-        title={
+    <Card className={classes?.card}>
+      <CardHeader>
+        <Text as="h3" variant="title-small" weight="bold">
           <code>{`${trimEnd(repositoryUrl, '/')}/${catalogFilename}`}</code>
-        }
-      />
+        </Text>
+      </CardHeader>
 
-      <CardContent className={classes?.cardContent}>
+      <CardBody className={classes?.cardContent}>
         <CodeSnippet
           text={entities
             .map(e => YAML.stringify(e))
@@ -61,7 +59,7 @@ export const PreviewCatalogInfoComponent = (
             .trim()}
           language="yaml"
         />
-      </CardContent>
+      </CardBody>
     </Card>
   );
 };
