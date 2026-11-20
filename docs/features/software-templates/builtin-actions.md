@@ -22,7 +22,7 @@ There are several action modules that are available to be added:
 - [Rails](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-rails): `@backstage/plugin-scaffolder-backend-module-rails`
 - [Yeoman](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-yeoman): `@backstage/plugin-scaffolder-backend-module-yeoman`
 - [Sentry](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-sentry): `@backstage/plugin-scaffolder-backend-module-sentry`
-- [Cookiecutter](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-cookiecutter): `@backstage/plugin-scaffolder-backend-module-cookiecutter`
+- [Cookiecutter](./cookiecutter.md): `@backstage/plugin-scaffolder-backend-module-cookiecutter`
 
 ## Installing Action Modules
 
