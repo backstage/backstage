@@ -21,7 +21,7 @@ creation-date: 2026-11-20
   - [Guarded dispatch](#guarded-dispatch)
   - [Separation of responsibilities](#separation-of-responsibilities)
   - [System overview](#system-overview)
-  - [Pluggability and deployment boundaries](#pluggability-and-deployment-boundaries)
+  - [Extension points and deployment boundaries](#extension-points-and-deployment-boundaries)
   - [Package layout](#package-layout)
 - [API Design](#api-design)
   - [Harness lifecycle](#harness-lifecycle)
@@ -71,7 +71,8 @@ Under the hood, the service wraps
 keep Pi's native conversation, task, and streaming APIs, while Backstage owns
 identity, permissions, credentials, storage, multi-instance ownership, and
 audit. Everything the service controls fails closed: missing configuration,
-uncertified routes, uninspectable requests, and authorization or storage errors
+uncertified routes, requests that cannot be inspected, and authorization or
+storage errors
 all block dispatch before reaching a provider. (Backstage's own default
 permission policy remains under adopter control; see
 [Permissions and access control](#permissions-and-access-control).)
@@ -181,7 +182,7 @@ Two boundaries keep the harness safe:
 
 Higher-level helpers, such as the `ai:generate` and `ai:transform` scaffolder
 actions in `@backstage/plugin-scaffolder-backend-module-ai`, are built strictly
-on `openHarness` with no private backdoors.
+on `openHarness` with no private bypass paths.
 
 ### Guarded dispatch
 
@@ -197,8 +198,8 @@ sequence on every network attempt through host-owned transport shims installed
 after any caller-supplied options:
 
 1. Validate the final request: verify the canonical destination, operation, and
-   resolved model selection (including transformed payloads). Uninspectable
-   requests fail closed.
+   resolved model selection (including transformed payloads). Requests that
+   cannot be inspected fail closed.
 1. Recheck live permissions and credential generation for this attempt, so a
    grant revoked mid-flight stops subsequent retries.
 1. Commit the decision and send intent to the durable journal. If authorization
@@ -272,7 +273,7 @@ flowchart LR
   TSR --> EXT
 ```
 
-### Pluggability and deployment boundaries
+### Extension points and deployment boundaries
 
 The guard, decision journal, storage adapter, and lease fencing are fixed core
 invariants that every module is certified against. Providers, tools, extensions,
@@ -483,9 +484,10 @@ including `isModel`, `isProvider`, `isTool`, `isPlugin`, and `isFeature`. The
 service registers permissions and enforces checks at dispatch. Installations own
 the policy.
 
-The service always queries the injected Backstage authorizer with the original
-caller's credentials and restrictions intact; service callers receive no
-implicit bypass. Model discovery and listing run through the same authorizer so
+The service always queries the injected Backstage permission evaluator with the
+original caller's credentials and restrictions intact; service callers receive
+no implicit bypass. Model discovery and listing run through the same permission
+evaluator so
 users only see models they are permitted to invoke.
 
 One adopter caveat: while the service fails closed on validation, missing
@@ -537,7 +539,7 @@ in scoped stores:
   deletion, or in-place rotation).
 - `user:<id>` scopes are stored encrypted in the installation database using
   authenticated encryption with config-supplied key material, unique nonces, and
-  key/algorithm versioning. Missing or invalid keys, corrupted ciphertext, and
+  key/algorithm versioning. Missing or invalid keys, corrupted encrypted data,
   storage errors all fail closed.
 
 Personal and service accounts are required from day one. Backing per-user
@@ -552,11 +554,12 @@ The `org` and `service:<id>` scopes intentionally mirror the shape of
 [BEP-0014](../0014-connection-service/README.md) connection data, so a future
 connection-service adapter can feed these stores without changes to the guard
 or the credential kinds. What stays local is everything the connection service
-explicitly excludes: the encrypted per-user store and the guarded, journaled
+explicitly excludes: the encrypted per-user store and the guarded, recorded
 OAuth refresh, both of which must sit inside the dispatch path to enforce
 per-attempt authorization.
 
-OAuth token refreshes run as guarded, journaled operations under a cross-process
+OAuth token refreshes run as guarded operations recorded in the journal under a
+cross-process
 `(scope, provider)` lock. Once a refresh starts, caller cancellation does not
 abort it, because losing the only valid refresh token is worse than completing
 the write. Custom AI gateways and enterprise proxies (such as Cloudflare AI
@@ -575,7 +578,8 @@ provider only requires registering a module, with no edits to core packages.
 
 Before every send, the guard checks the final destination against the module's
 certified routes and rejects anything outside them. Because the transport shim
-is installed after caller options and uninspectable requests fail closed,
+is installed after caller options and requests that cannot be inspected fail
+closed,
 payload mutations, request overrides, or caller-supplied `fetch` implementations
 cannot redirect a provider call or bypass envelope validation.
 
@@ -587,9 +591,9 @@ differ in what interception hooks they expose:
 | OpenAI Responses/Completions (HTTP) | Yes               | Injected request-scoped `fetch`                                                                 |
 | OpenAI Codex SSE                    | Yes               | Injected `fetch` per retry iteration                                                            |
 | OpenAI Codex WebSocket              | No (fails closed) | No pre-send async hook on reused sockets                                                        |
-| Anthropic HTTP                      | Yes               | Injected `fetch`, incl. thread/strict-tool resends                                              |
+| Anthropic HTTP                      | Yes               | Injected `fetch`, incl. thread and strict-tool repeat sends                                     |
 | Google Gemini/Vertex (HTTP)         | Yes, via worker   | Worker-backed modules with a lifetime global-fetch shim; verified by pinned-SDK isolation tests |
-| Amazon Bedrock                      | No (fails closed) | No injectable request-handler hook in the Pi adapter                                            |
+| Amazon Bedrock                      | No (fails closed) | No request-handler hook to inject in the Pi adapter                                             |
 
 The remaining shipped families, Azure and OpenAI-compatible routers such as
 OpenRouter and custom gateways via `ai-node-provider-typesafe`, are plain HTTP
@@ -602,7 +606,7 @@ isolates it at the runtime boundary (the Google provider runs in a worker with
 a global-fetch shim). Enforcing at the transport layer keeps provider retries
 enabled on all supported transports without letting a revoked grant ride a
 retry. Native Pi OAuth auto-refresh is blocked in favor of the guarded,
-journaled refresh path.
+recorded refresh path.
 
 ### Tool mediation
 
@@ -719,7 +723,7 @@ before graduation:
    database cannot automatically inspect another plugin's sessions or personal
    credentials. Generic endpoints do not claim cross-plugin discovery or session
    status until an explicitly authorized routing interface is designed.
-1. Startup recovery cannot yet rescan consuming plugins' registries. Persisted
+1. Startup recovery cannot yet re-read consuming plugins' registries. Persisted
    state cannot reconstruct closures or injected dependencies, and the default
    integration keeps the startup resolver set empty so recovery marks persisted
    sessions as blocked instead of resuming them under substituted definitions.
@@ -747,7 +751,8 @@ frontend system groups platform-adjacent APIs under `coreApis.internal`. All
 runtime packages are new, and the only planned change to an existing core
 package is declaring that experimental ref, so existing installations see no
 behavior change and rolling back means removing the new packages. Core
-guarantees (per-attempt enforcement, durable journaling, and crash recovery)
+guarantees (per-attempt enforcement, a durable decision journal, and crash
+recovery)
 ship in the initial release, subject to the boundaries in
 [Limitations and Open Questions](#limitations-and-open-questions).
 
@@ -845,10 +850,12 @@ through a multiton factory ref, and all provider configuration under a single
 It overlaps with this BEP where the community already agrees: centralized
 provider configuration, provider families registered as factories, and
 capabilities enabled only when configured. Its design stopped at stateless
-model access: tool execution, agent runtimes, and durable execution were
+model access: tool execution, agent execution engines, and durable execution
+were
 explicitly excluded, and it defined no per-attempt authorization or pre-dispatch
 journal. Because this BEP requires crash recovery, per-attempt authorization,
-and pre-dispatch journaling across both models and tools, model access stays
+and pre-dispatch journal records across both models and tools, model access
+stays
 inside the guarded dispatch path instead of living in a standalone service.
 
 ### Command-based API instead of a harness

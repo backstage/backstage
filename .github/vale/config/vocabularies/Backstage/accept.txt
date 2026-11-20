@@ -616,6 +616,8 @@ VMware
 Vodafone
 VPCs
 VSCode
+Vercel
+Vercel's
 walkthrough
 walkthroughs
 Wayfair
