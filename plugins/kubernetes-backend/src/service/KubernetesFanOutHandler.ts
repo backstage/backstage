@@ -55,6 +55,7 @@ import {
   BackstageCredentials,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+import { toError } from '@backstage/errors';
 
 /**
  *
@@ -307,10 +308,26 @@ export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
 
     return Promise.all(
       clusters.map(async clusterDetails => {
-        const credential = await this.authStrategy.getCredential(
-          clusterDetails,
-          auth,
-        );
+        let credential: KubernetesCredential;
+        try {
+          credential = await this.authStrategy.getCredential(
+            clusterDetails,
+            auth,
+          );
+        } catch (e) {
+          const error = toError(e);
+          this.logger.warn(
+            `Failed to get credentials for cluster "${clusterDetails.name}"`,
+            error,
+          );
+          return this.toClusterObjects(clusterDetails, [
+            {
+              errors: [{ errorType: 'FETCH_ERROR', message: error.message }],
+              responses: [],
+            },
+            [],
+          ]);
+        }
         return this.fetcher
           .fetchObjectsForService({
             serviceId: entityName,
