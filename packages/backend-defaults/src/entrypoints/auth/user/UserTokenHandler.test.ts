@@ -28,6 +28,7 @@ import {
   GeneralSign,
   importJWK,
   base64url,
+  decodeJwt,
   exportJWK,
   generateKeyPair,
 } from 'jose';
@@ -339,7 +340,9 @@ describe('UserTokenHandler', () => {
         header: { alg: 'ES256' },
         payload: {},
       });
-      const result = userTokenHandler.createLimitedUserToken(backstageToken);
+      const result = await userTokenHandler.createLimitedUserToken(
+        backstageToken,
+      );
       expect(result).toEqual({
         token: backstageToken,
         expiresAt: expect.any(Date),
@@ -352,7 +355,9 @@ describe('UserTokenHandler', () => {
         payload: { sub: 'mock', uip: 'proof' },
         signature: 'some-signature',
       });
-      const result = userTokenHandler.createLimitedUserToken(backstageToken);
+      const result = await userTokenHandler.createLimitedUserToken(
+        backstageToken,
+      );
       expect(result).toEqual({
         token: await createToken({
           header: { typ: 'vnd.backstage.limited-user', alg: 'ES256' },
@@ -369,9 +374,9 @@ describe('UserTokenHandler', () => {
         payload: {},
       });
 
-      expect(() => {
-        userTokenHandler.createLimitedUserToken(backstageToken);
-      }).toThrow(
+      await expect(
+        userTokenHandler.createLimitedUserToken(backstageToken),
+      ).rejects.toThrow(
         new AuthenticationError(
           'Failed to create limited user token, invalid token type',
         ),
@@ -390,9 +395,9 @@ describe('UserTokenHandler', () => {
         },
       });
 
-      expect(() =>
+      await expect(
         userTokenHandler.createLimitedUserToken(backstageToken),
-      ).toThrow(
+      ).rejects.toThrow(
         new AuthenticationError(
           'Failed to create limited user token, missing user identity proof',
         ),
@@ -413,7 +418,9 @@ describe('UserTokenHandler', () => {
         signature: 'sig',
       });
 
-      const result = userTokenHandler.createLimitedUserToken(backstageToken);
+      const result = await userTokenHandler.createLimitedUserToken(
+        backstageToken,
+      );
       expect(result).toEqual({
         token: await createToken({
           header: { typ: 'vnd.backstage.limited-user', alg: 'ES256' },
@@ -473,12 +480,63 @@ describe('UserTokenHandler', () => {
       parts.payload.uip = uip;
       const token = await createToken(parts);
 
-      const result = userTokenHandler.createLimitedUserToken(token);
+      const result = await userTokenHandler.createLimitedUserToken(token);
       await expect(userTokenHandler.verifyToken(result.token)).resolves.toEqual(
         {
           userEntityRef: 'user:development/guest',
         },
       );
+    });
+
+    it('should create limited tokens from proofs signed with or without the issuer', async () => {
+      jest.useFakeTimers({
+        doNotFake: ['nextTick'],
+        now: 1712071714 * 1000 + 600_000,
+      });
+      const header = {
+        typ: 'vnd.backstage.user',
+        alg: 'ES256',
+        kid: mockPublicKey.kid,
+      };
+      const claims = {
+        sub: 'user:development/guest',
+        iat: 1712071714,
+        exp: 1712075314,
+      };
+      const iss = 'http://localhost:7007/api/auth';
+
+      async function createUserToken(proofPayload: JsonObject) {
+        const {
+          signatures: [{ signature: uip }],
+        } = await new GeneralSign(
+          new TextEncoder().encode(JSON.stringify(proofPayload)),
+        )
+          .addSignature(await importJWK(mockPrivateKey))
+          .setProtectedHeader({ ...header, typ: 'vnd.backstage.limited-user' })
+          .done()
+          .sign();
+        return createToken({
+          header,
+          payload: { iss, ...claims, aud: 'backstage', ent: [], uip },
+          signature: 'sig',
+        });
+      }
+
+      const withIssuer = await userTokenHandler.createLimitedUserToken(
+        await createUserToken({ ...claims, iss }),
+      );
+      expect(decodeJwt(withIssuer.token)).toEqual({ ...claims, iss });
+      await expect(
+        userTokenHandler.verifyToken(withIssuer.token),
+      ).resolves.toEqual({ userEntityRef: 'user:development/guest' });
+
+      const withoutIssuer = await userTokenHandler.createLimitedUserToken(
+        await createUserToken(claims),
+      );
+      expect(decodeJwt(withoutIssuer.token)).toEqual(claims);
+      await expect(
+        userTokenHandler.verifyToken(withoutIssuer.token),
+      ).resolves.toEqual({ userEntityRef: 'user:development/guest' });
     });
   });
 });

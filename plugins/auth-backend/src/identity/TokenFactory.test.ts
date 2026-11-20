@@ -119,6 +119,50 @@ describe('TokenFactory', () => {
     );
   });
 
+  it('should include the issuer in the user identity proof when enabled', async () => {
+    const factory = new TokenFactory({
+      issuer: 'my-issuer',
+      keyStore: new MemoryKeyStore(),
+      keyDurationSeconds: 5,
+      logger,
+      includeIssuerInProof: true,
+    });
+
+    const { token } = await factory.issueToken({
+      claims: { sub: entityRef, ent: [entityRef] },
+    });
+    const keyStore = createLocalJWKSet(await factory.listPublicKeys());
+    const { payload, protectedHeader } = await jwtVerify(token, keyStore);
+
+    // Emulate the reconstruction of a limited user token
+    const limitedUserToken = [
+      base64url.encode(
+        JSON.stringify({
+          typ: tokenTypes.limitedUser.typParam,
+          alg: protectedHeader.alg,
+          kid: protectedHeader.kid!,
+        }),
+      ),
+      base64url.encode(
+        JSON.stringify({
+          sub: payload.sub,
+          iat: payload.iat,
+          exp: payload.exp,
+          iss: payload.iss,
+        }),
+      ),
+      payload.uip,
+    ].join('.');
+
+    const verifyProofResult = await jwtVerify(limitedUserToken, keyStore);
+    expect(verifyProofResult.payload).toEqual({
+      sub: entityRef,
+      iat: expect.any(Number),
+      exp: expect.any(Number),
+      iss: 'my-issuer',
+    });
+  });
+
   it('should generate new signing keys when the current one expires', async () => {
     const fixedTime = Date.now();
     jest.spyOn(Date, 'now').mockImplementation(() => fixedTime);

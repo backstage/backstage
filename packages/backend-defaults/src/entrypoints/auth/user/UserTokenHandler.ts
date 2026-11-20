@@ -19,6 +19,7 @@ import { AuthenticationError } from '@backstage/errors';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import {
   base64url,
+  compactVerify,
   decodeJwt,
   decodeProtectedHeader,
   jwtVerify,
@@ -108,7 +109,7 @@ export class UserTokenHandler {
     return undefined;
   }
 
-  createLimitedUserToken(backstageToken: string) {
+  async createLimitedUserToken(backstageToken: string) {
     const [headerRaw, payloadRaw] = backstageToken.split('.');
     const header = JSON.parse(
       new TextDecoder().decode(base64url.decode(headerRaw)),
@@ -139,7 +140,7 @@ export class UserTokenHandler {
     }
 
     // NOTE: The order and properties in both the header and payload must match
-    //       the usage in plugins/auth-backend/src/identity/TokenFactory.ts
+    //       the usage in plugins/auth-backend/src/identity/issueUserToken.ts
     const limitedUserToken = [
       base64url.encode(
         JSON.stringify({
@@ -153,12 +154,44 @@ export class UserTokenHandler {
           sub: payload.sub,
           iat: payload.iat,
           exp: payload.exp,
+          iss: payload.iss,
         }),
       ),
       payload.uip,
     ].join('.');
 
+    // TODO: Remove this fallback along with `backend.auth.experimentalIssuerClaims`.
+    // Auth backends without the flag enabled sign the user identity proof
+    // without the issuer, in which case we need to omit it as well.
+    if (payload.iss && !(await this.#hasValidSignature(limitedUserToken))) {
+      const [limitedHeader, , signature] = limitedUserToken.split('.');
+      const legacyLimitedUserToken = [
+        limitedHeader,
+        base64url.encode(
+          JSON.stringify({
+            sub: payload.sub,
+            iat: payload.iat,
+            exp: payload.exp,
+          }),
+        ),
+        signature,
+      ].join('.');
+      return {
+        token: legacyLimitedUserToken,
+        expiresAt: new Date(payload.exp * 1000),
+      };
+    }
+
     return { token: limitedUserToken, expiresAt: new Date(payload.exp * 1000) };
+  }
+
+  async #hasValidSignature(token: string): Promise<boolean> {
+    try {
+      await compactVerify(token, this.jwksClient.getKey);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   isLimitedUserToken(token: string): boolean {
