@@ -22,6 +22,7 @@ import { resolve } from 'node:path';
 import { exec } from '../../../../../lib/exec';
 import {
   OPENAPI_IGNORE_FILES,
+  OPENAPI_NORMALIZER_RULES,
   OUTPUT_PATH,
 } from '../../../../../lib/openapi/constants';
 import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
@@ -72,6 +73,7 @@ async function generate(
       ),
       '--generator-key',
       generatorKey,
+      `--openapi-normalizer=${OPENAPI_NORMALIZER_RULES.join(',')}`,
       additionalProperties
         ? `--additional-properties=${additionalProperties}`
         : '',
