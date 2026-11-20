@@ -5,3 +5,4 @@ Portions of this software were developed by third-party software vendors:
 
 - Tech Radar Plugin (https://opensource.zalando.com/tech-radar/), Copyright (c) 2017 Zalando SE
 - [OpenAPI Generator Templates](./packages/repo-tools/templates), Copyright 2018 OpenAPI-Generator Contributors (https://openapi-generator.tech) Copyright 2018 SmartBear Software
+- [Random Joke widget jokes](./plugins/home/src/homePageComponents/RandomJoke/jokes.json), from official_joke_api (https://github.com/15Dkatz/official_joke_api), Copyright (c) 2022 David Katz

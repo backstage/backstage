@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  useState,
-  useCallback,
-  useEffect,
-  useContext,
-  createContext,
-} from 'react';
+import { useState, useContext, createContext } from 'react';
+import jokes from './jokes.json';
 
 export type JokeType = 'any' | 'programming';
 
@@ -30,7 +25,6 @@ type Joke = {
 };
 
 type RandomJokeContextValue = {
-  loading: boolean;
   joke: Joke;
   type: JokeType;
   rerollJoke: Function;
@@ -39,14 +33,15 @@ type RandomJokeContextValue = {
 
 const Context = createContext<RandomJokeContextValue | undefined>(undefined);
 
-const getNewJoke = (type: string): Promise<Joke> =>
-  fetch(
-    `https://official-joke-api.appspot.com/jokes${
-      type !== 'any' ? `/${type}` : ''
-    }/random`,
-  )
-    .then(res => res.json())
-    .then(data => (Array.isArray(data) ? data[0] : data));
+const pickJoke = (type: string, current?: Joke): Joke => {
+  const ofType = jokes.filter(joke => joke.type === type);
+  // No joke has the type 'any', so it draws from every joke. So does a
+  // category with no jokes, such as 'dad' from settings saved before that
+  // category was removed.
+  const pool = ofType.length > 0 ? ofType : jokes;
+  const candidates = pool.filter(joke => joke.setup !== current?.setup);
+  return candidates[Math.floor(Math.random() * candidates.length)];
+};
 
 export const ContextProvider = (props: {
   children: JSX.Element;
@@ -54,34 +49,21 @@ export const ContextProvider = (props: {
 }) => {
   const { children, defaultCategory } = props;
 
-  const [loading, setLoading] = useState(true);
-  const [joke, setJoke] = useState<Joke>({
-    setup: '',
-    punchline: '',
-  });
   const [type, setType] = useState<JokeType>(
     defaultCategory || ('programming' as JokeType),
   );
+  const [joke, setJoke] = useState<Joke>(() => pickJoke(type));
 
-  const rerollJoke = useCallback(() => {
-    setLoading(true);
-    getNewJoke(type).then(newJoke => setJoke(newJoke));
-  }, [type]);
+  const rerollJoke = () => {
+    setJoke(current => pickJoke(type, current));
+  };
 
   const handleChangeType = (newType: JokeType) => {
     setType(newType);
+    setJoke(current => pickJoke(newType, current));
   };
 
-  useEffect(() => {
-    setLoading(false);
-  }, [joke]);
-
-  useEffect(() => {
-    rerollJoke();
-  }, [rerollJoke]);
-
   const value: RandomJokeContextValue = {
-    loading,
     joke,
     type,
     rerollJoke,
