@@ -65,7 +65,10 @@ export function dynamicFrontendFeaturesLoader(
         // eslint-disable-next-line no-console
         console.error(
           `${message}: ${
-            err instanceof Error ? err.toString() : JSON.stringify(err)
+            err instanceof Error ||
+            (err !== null && typeof err === 'object' && 'message' in err)
+              ? String(err)
+              : JSON.stringify(err)
           }`,
         );
       }
@@ -183,15 +186,23 @@ export function dynamicFrontendFeaturesLoader(
                 console.info(
                   `Remote module '${remoteModuleName}' of dynamic plugin '${remote.packageName}' loaded from ${remote.remoteInfo.entry}`,
                 );
-                const defaultEntry = module.default;
-                if (!isLoadable(defaultEntry)) {
-                  // eslint-disable-next-line no-console
-                  console.debug(
-                    `Skipping dynamic plugin remote module '${remoteModuleName}' since it doesn't export a new 'FrontendFeature' or 'FrontendFeatureLoader' as default export.`,
+                try {
+                  const defaultEntry = module.default;
+                  if (!isLoadable(defaultEntry)) {
+                    // eslint-disable-next-line no-console
+                    console.debug(
+                      `Skipping dynamic plugin remote module '${remoteModuleName}' since it doesn't export a new 'FrontendFeature' or 'FrontendFeatureLoader' as default export.`,
+                    );
+                    return undefined;
+                  }
+                  return defaultEntry;
+                } catch (err) {
+                  error(
+                    `Failed reading remote module '${remoteModuleName}' of dynamic plugin '${remote.packageName}'`,
+                    err,
                   );
                   return undefined;
                 }
-                return defaultEntry;
               }),
             );
             return moduleFeatures;

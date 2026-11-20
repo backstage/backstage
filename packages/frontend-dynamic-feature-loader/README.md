@@ -31,7 +31,8 @@ A dynamically loaded frontend plugin can expose either a `FrontendFeature` or a
 `FrontendFeatureLoader` is exported, this package returns it to the application's
 frontend feature resolution. The application framework invokes the loader with
 the `ConfigApi` and resolves its returned features, including nested feature
-loaders.
+loaders. If reading a remote's default export fails, the loader logs the
+plugin and module name and skips that module so other plugins can still load.
 
 This allows a plugin to select or configure its frontend features using the
 application configuration while keeping that selection logic within the plugin.
