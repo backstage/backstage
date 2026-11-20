@@ -16,7 +16,9 @@ enforce pinning or update generated files the CLI doesn't know about.
 The command reads the release manifest for the target version, updates all
 `@backstage/*` versions in `package.json`, writes the new release to
 `backstage.json`, runs `yarn install` to update the lockfile, and runs
-`versions:migrate` for moved packages unless `--skipMigrate` is set.
+`versions:migrate` for moved packages unless `--skipMigrate` is set. It skips the
+`backstage.json` update when a custom `--pattern` doesn't cover `@backstage/*`,
+so check that file after using one.
 
 ### Flags
 
@@ -40,8 +42,9 @@ should be left alone.
 If the repository uses `"backstage:^"` versions, the Backstage yarn plugin is
 installed. It resolves `@backstage/*` versions from `backstage.json`, requires
 yarn 4.1.1 or greater, and needs `backstage.json` to reach CI and container
-builds. `versions:bump` detects the plugin and migrates dependency declarations
-across the workspace to `backstage:^`.
+builds. `versions:bump` detects the plugin, updates it to the target release with
+`yarn plugin import`, and migrates dependency declarations across the workspace
+to `backstage:^`. Expect plugin file changes in the diff.
 
 To adopt the plugin during an upgrade, on yarn 4.1.1 or greater:
 

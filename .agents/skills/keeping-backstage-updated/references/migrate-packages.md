@@ -16,7 +16,9 @@ yarn backstage-cli versions:migrate
 
 The command detects `@backstage/*` packages that carry a `backstage.moved`
 pointer to their new name, updates `package.json` dependencies to the new
-names, and rewrites source imports to match.
+names, and rewrites source imports to match. It may print warnings about
+missing `package.json` files for unrelated dev dependencies; these are
+harmless.
 
 | Flag                       | Effect                                                      |
 | -------------------------- | ----------------------------------------------------------- |

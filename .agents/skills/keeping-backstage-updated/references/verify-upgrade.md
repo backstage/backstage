@@ -8,13 +8,15 @@ Prefer the scripts the repository defines for type checking, building, linting,
 and testing — they encode that repository's expectations. A fresh
 `create-backstage-app` repository defines `yarn tsc` and `yarn tsc:full` at the
 root, `yarn lint` and `yarn test` across the repo, and `yarn build` in each
-package:
+package. Run the tests with `CI=true`, using `test:all` for the full suite:
+plain `yarn test` starts jest in watch mode when it doesn't detect CI, which
+never exits and is useless outside an interactive terminal.
 
 ```bash
 yarn tsc
 yarn build
 yarn lint
-yarn test
+CI=true yarn test:all
 ```
 
 In monorepos the root commands usually cover every workspace package.
@@ -45,7 +47,7 @@ Confirm that every `@backstage/*` dependency is on the target release and that
 the dependency range style matches what was recorded before the bump:
 
 ```bash
-git grep '"@backstage/' -- '**/package.json'
+git grep '"@backstage/' -- 'package.json' '**/package.json'
 ```
 
 If any package is out of sync, rerun `versions:bump`; if the range style

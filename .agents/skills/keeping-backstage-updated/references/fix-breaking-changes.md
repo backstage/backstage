@@ -23,7 +23,7 @@ For each breaking change:
 2. Search the repository for the affected API before editing anything:
    `git grep '<old API name>'`. Many changes won't apply to this repository at
    all.
-3. Apply the fix following the changelog's migration guidance.
+3. Apply the fix following the migration guidance in the changelog.
 4. Type-check after each fix, e.g. `yarn tsc`, to confirm it resolved.
 
 ## Common patterns

@@ -3,8 +3,8 @@
 ## When to run them
 
 After the package bump and the create-app template changes, run the _versioned_
-codemod recipe for the target release. Recipes are ordered sets of source
-transforms published from the
+codemod recipe for each release the upgrade crosses. Recipes are ordered sets of
+source transforms published from the
 [Backstage codemods repository](https://github.com/backstage/codemods) to the
 [Codemod Registry](https://go.codemod.com/backstage), run with the
 [Codemod CLI](https://docs.codemod.com/cli). They fix the mechanical breakage of
@@ -24,9 +24,13 @@ yarn dlx codemod run @backstage/v1-52-0-migration-recipe --target . --dry-run
 yarn dlx codemod run @backstage/v1-52-0-migration-recipe --target .
 ```
 
-Dry-run first, review the output, then apply. Skip this step if no recipe exists
-for the target version; published recipes are listed in the
-[codemods README](https://github.com/backstage/codemods).
+When the upgrade crosses several releases, run the recipe for each crossed
+release that has one — a recipe fixes the breakage of its own release, and the
+newest release may not have a recipe yet. Dry-run first, review the output, then
+apply. Skip releases without a recipe; published recipes are listed in the
+[codemods README](https://github.com/backstage/codemods). The CLI asks for
+confirmations on a terminal, so pass `--no-interactive` when there is none, and
+it refuses to run on a dirty tree, so commit or stash the bump first.
 
 ## After a recipe runs
 
