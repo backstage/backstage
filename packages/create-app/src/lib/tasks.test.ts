@@ -16,8 +16,10 @@
 
 import fs from 'fs-extra';
 import child_process from 'node:child_process';
-import { resolve as resolvePath } from 'node:path';
+import { resolve as resolvePath, relative as relativePath } from 'node:path';
 import os from 'node:os';
+import recursive from 'recursive-readdir';
+import { isTemplateFileExcluded } from '../createApp';
 import {
   Task,
   buildAppTask,
@@ -26,6 +28,7 @@ import {
   moveAppTask,
   templatingTask,
   tryInitGitRepository,
+  tryAddToInitialCommit,
   readGitConfig,
   fetchYarnLockSeedTask,
 } from './tasks';
@@ -243,6 +246,26 @@ describe('tasks', () => {
       );
     });
 
+    it('should run `pnpm install` and `pnpm tsc` for pnpm apps', async () => {
+      mockExec.mockImplementation((_command, callback) => {
+        callback(null, { stdout: 'standard out', stderr: 'standard error' });
+      });
+
+      const appDir = 'projects/dir';
+      await expect(buildAppTask(appDir, 'pnpm')).resolves.not.toThrow();
+      expect(mockExec).toHaveBeenCalledTimes(2);
+      expect(mockExec).toHaveBeenNthCalledWith(
+        1,
+        'pnpm install',
+        expect.any(Function),
+      );
+      expect(mockExec).toHaveBeenNthCalledWith(
+        2,
+        'pnpm tsc',
+        expect.any(Function),
+      );
+    });
+
     it('should fail if project directory does not exist', async () => {
       const appDir = 'projects/missingProject';
       await expect(buildAppTask(appDir)).rejects.toThrow(
@@ -332,6 +355,228 @@ describe('tasks', () => {
             '@yarnpkg/core': '4.9.1',
           },
         });
+      },
+    );
+
+    it('should generate a project for the selected package manager', async () => {
+      const templateDir = resolvePath(__dirname, '../../templates/default-app');
+
+      // Reads every text file of the generated app, keyed by relative path
+      const readTextFiles = async (dir: string, ignore: string[]) => {
+        const files = await recursive(dir, ignore);
+        const entries = await Promise.all(
+          files
+            .filter(file => !/\.(png|ico)$/.test(file))
+            .map(async file => [
+              relativePath(dir, file),
+              await fs.readFile(file, 'utf-8'),
+            ]),
+        );
+        return Object.fromEntries(entries) as Record<string, string>;
+      };
+
+      await templatingTask(
+        templateDir,
+        'yarnApp',
+        { name: 'my-app', packageManager: 'yarn', pnpm: false },
+        { exclude: file => isTemplateFileExcluded('yarn', file) },
+      );
+
+      expect(fs.existsSync('yarnApp/pnpm-workspace.yaml')).toBe(false);
+      expect(fs.existsSync('yarnApp/.yarnrc.yml')).toBe(true);
+      expect(fs.existsSync('yarnApp/.yarn/releases/yarn-4.13.0.cjs')).toBe(
+        true,
+      );
+      expect(fs.existsSync('yarnApp/yarn.lock')).toBe(true);
+      await expect(fs.readJson('yarnApp/package.json')).resolves.toEqual(
+        expect.objectContaining({
+          engines: { node: '^24.15.0 || ^26.13.0' },
+          workspaces: ['packages/*', 'plugins/*'],
+          resolutions: {
+            '@yarnpkg/core': '4.9.1',
+            '@types/react': '^18',
+            '@types/react-dom': '^18',
+          },
+          packageManager: 'yarn@4.13.0',
+          scripts: expect.objectContaining({
+            'build:backend': 'yarn workspace backend build',
+            'build-image': 'yarn workspace backend build-image',
+          }),
+        }),
+      );
+      // The bundled Yarn release mentions pnpm, all other files must not
+      const yarnFiles = await readTextFiles('yarnApp', ['.yarn']);
+      expect(Object.keys(yarnFiles).filter(f => /pnpm/i.test(f))).toEqual([]);
+      expect(
+        Object.entries(yarnFiles)
+          .filter(([, content]) => /pnpm/i.test(content))
+          .map(([file]) => file),
+      ).toEqual([]);
+      expect(yarnFiles['packages/backend/Dockerfile']).toContain(
+        'COPY --chown=node:node yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./',
+      );
+      expect(yarnFiles['packages/backend/Dockerfile']).toContain(
+        'yarn workspaces focus --all --production',
+      );
+      expect(yarnFiles['.github/workflows/ci.yml']).toContain(
+        'group: ${{ github.workflow }}-${{ github.ref }}',
+      );
+      expect(yarnFiles['.github/workflows/ci.yml']).toContain(
+        "key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}",
+      );
+      expect(yarnFiles['.github/workflows/ci.yml']).toContain(
+        'run: yarn install --immutable',
+      );
+      expect(yarnFiles['README.md']).toContain('yarn install\nyarn start');
+      expect(yarnFiles['.gitignore']).toContain(
+        '# Yarn files\n.pnp.*\n.yarn/*',
+      );
+      expect(yarnFiles['.dockerignore']).toContain('.yarn/cache');
+      expect(yarnFiles['playwright.config.ts']).toContain("'yarn start app'");
+
+      await templatingTask(
+        templateDir,
+        'pnpmApp',
+        {
+          name: 'my-app',
+          packageManager: 'pnpm',
+          pnpm: true,
+          pnpmVersion: '12.14.0',
+        },
+        { exclude: file => isTemplateFileExcluded('pnpm', file) },
+      );
+
+      expect(fs.existsSync('pnpmApp/.yarnrc.yml')).toBe(false);
+      expect(fs.existsSync('pnpmApp/.yarn')).toBe(false);
+      expect(fs.existsSync('pnpmApp/yarn.lock')).toBe(false);
+      const pnpmPkg = await fs.readJson('pnpmApp/package.json');
+      expect(pnpmPkg).not.toHaveProperty('workspaces');
+      expect(pnpmPkg).not.toHaveProperty('resolutions');
+      expect(pnpmPkg).toEqual(
+        expect.objectContaining({
+          engines: { node: '^24.15.0 || ^26.13.0' },
+          packageManager: 'pnpm@12.14.0',
+          // TypeScript only finds the types of the root tsconfig.json from the
+          // root, which the isolated linker does not hoist them into
+          devDependencies: expect.objectContaining({
+            '@types/node': expect.any(String),
+            '@types/react': expect.any(String),
+            '@types/webpack-env': expect.any(String),
+          }),
+          scripts: expect.objectContaining({
+            'build:backend': 'pnpm --filter backend build',
+            'build-image': 'pnpm --filter backend build-image',
+          }),
+        }),
+      );
+      const pnpmFiles = await readTextFiles('pnpmApp', []);
+      expect(Object.keys(pnpmFiles).filter(f => /yarn/i.test(f))).toEqual([]);
+      expect(
+        Object.entries(pnpmFiles)
+          .filter(([, content]) => /yarn/i.test(content))
+          .map(([file]) => file),
+      ).toEqual([]);
+      const workspace = pnpmFiles['pnpm-workspace.yaml'];
+      expect(workspace).toContain('packages:\n  - packages/*\n  - plugins/*');
+      expect(workspace).toContain('nodeLinker: hoisted');
+      expect(workspace).toContain('minimumReleaseAge: 4320');
+      expect(workspace).toContain(
+        "minimumReleaseAgeExclude:\n  - '@backstage/*'",
+      );
+      expect(workspace).toContain(
+        "overrides:\n  '@types/react': ^18\n  '@types/react-dom': ^18\n",
+      );
+      expect(workspace).toMatch(
+        /allowBuilds:\n( {2}.*\n)* {2}better-sqlite3: true/,
+      );
+      // The lockfile and the workspace file come from the skeleton
+      expect(pnpmFiles['packages/backend/Dockerfile']).toContain(
+        'COPY --chown=node:node package.json packages/backend/dist/skeleton.tar.gz ./',
+      );
+      expect(pnpmFiles['packages/backend/Dockerfile']).not.toContain(
+        'pnpm-lock.yaml ',
+      );
+      // pnpm only uses the cache mount when the store is set to it
+      expect(pnpmFiles['packages/backend/Dockerfile']).toContain(
+        'pnpm install --frozen-lockfile --prod --store-dir /home/node/.local/share/pnpm/store\n',
+      );
+      // Registry settings and tokens for the install come from a build secret
+      expect(pnpmFiles['packages/backend/Dockerfile']).toContain(
+        'RUN --mount=type=secret,id=npmrc,target=/home/node/.npmrc,uid=1000 \\\n',
+      );
+      // Renovate updates the pinned commit
+      expect(pnpmFiles['.github/workflows/ci.yml']).toMatch(
+        /uses: pnpm\/action-setup@[0-9a-f]{40} # v\d+/,
+      );
+      expect(pnpmFiles['packages/backend/Dockerfile']).toContain(
+        'RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \\\n    npm install -g pnpm@12.14.0\n',
+      );
+      expect(pnpmFiles['.github/workflows/ci.yml']).toContain(
+        'run: pnpm install --frozen-lockfile',
+      );
+      expect(pnpmFiles['.github/workflows/ci.yml']).toContain(
+        'run: pnpm tsc:full',
+      );
+      expect(pnpmFiles['README.md']).toContain('pnpm install\npnpm start');
+      expect(pnpmFiles['playwright.config.ts']).toContain("'pnpm start app'");
+    });
+
+    it.each(['default-app', 'legacy-app'])(
+      'should leave out the other package manager in the %s template',
+      async templateName => {
+        const templateDir = resolvePath(
+          __dirname,
+          `../../templates/${templateName}`,
+        );
+        const findMentions = async (dir: string, pattern: RegExp) => {
+          // The bundled Yarn release mentions pnpm
+          const files = await recursive(dir, ['.yarn', '*.png', '*.ico']);
+          const mentions = await Promise.all(
+            files.map(async file =>
+              pattern.test(file) ||
+              pattern.test(await fs.readFile(file, 'utf-8'))
+                ? [relativePath(dir, file)]
+                : [],
+            ),
+          );
+          return mentions.flat();
+        };
+
+        await templatingTask(
+          templateDir,
+          `${templateName}-yarn`,
+          { name: 'my-app', packageManager: 'yarn', pnpm: false },
+          { exclude: file => isTemplateFileExcluded('yarn', file) },
+        );
+        await expect(
+          findMentions(`${templateName}-yarn`, /pnpm/i),
+        ).resolves.toEqual([]);
+
+        await templatingTask(
+          templateDir,
+          `${templateName}-pnpm`,
+          {
+            name: 'my-app',
+            packageManager: 'pnpm',
+            pnpm: true,
+            pnpmVersion: '12.14.0',
+          },
+          { exclude: file => isTemplateFileExcluded('pnpm', file) },
+        );
+        await expect(
+          findMentions(`${templateName}-pnpm`, /yarn/i),
+        ).resolves.toEqual([]);
+        await expect(
+          fs.readJson(`${templateName}-pnpm/package.json`),
+        ).resolves.toEqual(
+          expect.objectContaining({
+            packageManager: 'pnpm@12.14.0',
+            // Matches the Node.js versions in the engines field
+            devDependencies: expect.objectContaining({
+              '@types/node': '^24.0.0',
+            }),
+          }),
+        );
       },
     );
   });
@@ -438,6 +683,30 @@ describe('tasks', () => {
         { cwd: destinationDir },
         expect.any(Function),
       );
+    });
+  });
+
+  describe('tryAddToInitialCommit', () => {
+    it('should add the file to the initial commit, and report a failure', async () => {
+      const destinationDir = 'tmp/mockApp';
+      mockExec.mockImplementation((_command, _opts, callback) => {
+        callback(null, { stdout: '', stderr: '' });
+      });
+
+      await expect(
+        tryAddToInitialCommit(destinationDir, 'pnpm-lock.yaml'),
+      ).resolves.toBe(true);
+      expect(mockExec.mock.calls.map(([command]) => command)).toEqual([
+        'git add -- "pnpm-lock.yaml"',
+        'git commit --amend --no-edit',
+      ]);
+
+      mockExec.mockImplementation((_command, _opts, callback) => {
+        callback(new Error('no identity'), { stdout: '', stderr: '' });
+      });
+      await expect(
+        tryAddToInitialCommit(destinationDir, 'pnpm-lock.yaml'),
+      ).resolves.toBe(false);
     });
   });
 
