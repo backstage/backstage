@@ -127,22 +127,41 @@ whole; `sourcePath` identifies the specific plugin by pointing at its own
 verifies the file exists in that tag's tree before reporting a fresh
 snapshot.
 
+### Config schema
+
+When a package declares a JSON `configSchema` in its `package.json`, the audit
+reads it from the published tarball and stores a sanitized copy as the
+package's `configSchema`. The plugin detail page renders its configuration form
+from this stored copy and never fetches package contents in the browser.
+
+The audit removes `pattern`, `patternProperties`, `format`, `$id`, and every
+`$ref` that does not start with `#/`. Property names that match one of these
+keywords are kept. The audit stores no schema that is nested deeper than 32
+levels or larger than 64 KiB once sanitized. It also refuses tarballs larger
+than 10 MiB, or 64 MiB once unpacked, and tarball URLs outside
+`registry.npmjs.org`. When a read fails, the audit keeps the previously stored
+schema and prints a warning. These warnings are not stored in the snapshot.
+
 ## Warning reason codes
 
 The audit prints warnings after processing all manifests. A warning records the
 plugin, source, and reason code. Valid remote failures remain warnings and are
 stored in the snapshot.
 
-| Source    | Reason                         | Condition                                                                                                                           |
-| --------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| npm       | `npm-not-found`                | The npm registry returns `404`.                                                                                                     |
-| npm       | `npm-invalid-response`         | The registry request fails, the response is malformed, or required `latest` release data is missing.                                |
-| npm       | `npm-request-failed`           | The npm source operation throws before returning a snapshot.                                                                        |
-| Backstage | `npm-data-unavailable`         | No valid npm release data or previous Backstage snapshot is available.                                                              |
-| Backstage | `repository-unsupported`       | npm metadata does not contain a supported GitHub repository location.                                                               |
-| Backstage | `repository-directory-invalid` | The npm package directory is absolute or contains a parent traversal.                                                               |
-| Backstage | `github-invalid-response`      | GitHub repository metadata, tree data, or file content cannot be fetched completely.                                                |
-| Backstage | `github-request-failed`        | The GitHub source operation throws before returning a snapshot.                                                                     |
-| Backstage | `backstage-json-not-found`     | No applicable `backstage.json` exists.                                                                                              |
-| Backstage | `backstage-json-invalid`       | The selected file is not valid JSON with a nonempty string `version`.                                                               |
-| Backstage | `backstage-tag-not-found`      | No `v<major>.<minor>.<patch>` tag exists for `backstage/backstage`, or the plugin's `package.json` is missing from that tag's tree. |
+| Source        | Reason                         | Condition                                                                                                                           |
+| ------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| npm           | `npm-not-found`                | The npm registry returns `404`.                                                                                                     |
+| npm           | `npm-invalid-response`         | The registry request fails, the response is malformed, or required `latest` release data is missing.                                |
+| npm           | `npm-request-failed`           | The npm source operation throws before returning a snapshot.                                                                        |
+| Backstage     | `npm-data-unavailable`         | No valid npm release data or previous Backstage snapshot is available.                                                              |
+| Backstage     | `repository-unsupported`       | npm metadata does not contain a supported GitHub repository location.                                                               |
+| Backstage     | `repository-directory-invalid` | The npm package directory is absolute or contains a parent traversal.                                                               |
+| Backstage     | `github-invalid-response`      | GitHub repository metadata, tree data, or file content cannot be fetched completely.                                                |
+| Backstage     | `github-request-failed`        | The GitHub source operation throws before returning a snapshot.                                                                     |
+| Backstage     | `backstage-json-not-found`     | No applicable `backstage.json` exists.                                                                                              |
+| Backstage     | `backstage-json-invalid`       | The selected file is not valid JSON with a nonempty string `version`.                                                               |
+| Backstage     | `backstage-tag-not-found`      | No `v<major>.<minor>.<patch>` tag exists for `backstage/backstage`, or the plugin's `package.json` is missing from that tag's tree. |
+| Config schema | `config-schema-fetch-failed`   | The tarball cannot be downloaded or unpacked within the size limits.                                                                |
+| Config schema | `config-schema-invalid`        | The declared schema file is not a JSON object.                                                                                      |
+| Config schema | `config-schema-too-large`      | The schema exceeds the size limit.                                                                                                  |
+| Config schema | `config-schema-too-deep`       | The schema exceeds the nesting limit.                                                                                               |

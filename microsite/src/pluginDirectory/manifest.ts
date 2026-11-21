@@ -113,10 +113,13 @@ const packageSnapshotSchema = z.strictObject({
   sourcePath: z.string().min(1).optional(),
   // Subset of this package's npm dependencyNames that are other packages of
   // this same plugin's snapshot.packages, used to group related packages'
-  // config schemas together in the UI. Config schemas themselves are
-  // resolved client-side on demand (see npmRegistryClient.ts) rather than
-  // stored here.
+  // config schemas together in the UI.
   internalDependencies: z.array(z.string().min(1)).optional(),
+  // The JSON config schema this package declares through the `configSchema`
+  // field of its package.json, sanitized by the audit (no `pattern`,
+  // `patternProperties`, `format`, `$id` or external `$ref`, and bounded
+  // in size and depth) so the UI can render it without trusting npm content.
+  configSchema: z.record(z.string(), z.unknown()).optional(),
   npm: npmSnapshotSchema,
 });
 

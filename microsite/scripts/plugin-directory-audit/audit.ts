@@ -25,10 +25,13 @@ import type {
   GitHubSnapshotClient,
   RepositoryLocation,
 } from './githubClient';
+import type { fetchConfigSchema } from './configSchemaClient';
 import { fetchNpmSnapshot } from './npmClient';
 
 export interface AuditDependencies {
   fetchNpm: typeof fetchNpmSnapshot;
+  /** Reads each package's sanitized config schema; skipped when omitted. */
+  fetchConfigSchema?: typeof fetchConfigSchema;
   github: GitHubSnapshotClient;
   now: () => Date;
 }
@@ -226,12 +229,30 @@ async function collectPackageSnapshots(
           )
         : undefined;
 
+    let configSchema = previousPackage?.configSchema;
+    if (dependencies.fetchConfigSchema && fetchedNpm.status === 'fresh') {
+      const result = await dependencies
+        .fetchConfigSchema(member.npmPackageName, fetchedNpm.latestVersion)
+        .catch(() => ({
+          status: 'unavailable' as const,
+          reason: 'config-schema-fetch-failed',
+        }));
+      if (result.status === 'fresh') {
+        configSchema = result.schema;
+      } else {
+        warnings.push(
+          `${manifest.title}: config schema unavailable for ${member.npmPackageName} (${result.reason})`,
+        );
+      }
+    }
+
     packageSnapshots.push({
       npmPackageName: member.npmPackageName,
       ...(member.sourcePath ? { sourcePath: member.sourcePath } : {}),
       ...(internalDependencies && internalDependencies.length > 0
         ? { internalDependencies }
         : {}),
+      ...(configSchema ? { configSchema } : {}),
       npm,
     });
   }

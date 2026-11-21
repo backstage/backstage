@@ -944,3 +944,90 @@ describe('runAuditCommand', () => {
     );
   });
 });
+
+describe('auditManifest config schema', () => {
+  const storedSchema = {
+    type: 'object',
+    properties: { endpoint: { type: 'string' } },
+  };
+
+  it('stores the config schema fetched for the latest published version', async () => {
+    const requested: [string, string][] = [];
+
+    const result = await auditManifest(manifest('active'), {
+      ...dependencies(freshNpm('2026-07-01T00:00:00.000Z')),
+      fetchConfigSchema: async (packageName, version) => {
+        requested.push([packageName, version]);
+        return { status: 'fresh', schema: storedSchema };
+      },
+    });
+
+    assert.deepEqual(requested, [['@example/plugin-example', '1.2.3']]);
+    assert.deepEqual(
+      primaryPackage(result.manifest)?.configSchema,
+      storedSchema,
+    );
+    assert.deepEqual(result.warnings, []);
+  });
+
+  it('drops a stored schema once the package no longer declares one', async () => {
+    const previous = manifest('active', {
+      snapshot: {
+        backstage: freshBackstage(),
+        packages: [
+          {
+            npmPackageName: '@example/plugin-example',
+            npm: freshNpm('2026-07-01T00:00:00.000Z'),
+            configSchema: storedSchema,
+          },
+        ],
+      },
+    });
+
+    const result = await auditManifest(previous, {
+      ...dependencies(freshNpm('2026-07-01T00:00:00.000Z')),
+      fetchConfigSchema: async () => ({ status: 'fresh', schema: undefined }),
+    });
+
+    assert.equal(primaryPackage(result.manifest)?.configSchema, undefined);
+  });
+
+  it('keeps the previous schema and warns when the schema cannot be read', async () => {
+    const previous = manifest('active', {
+      snapshot: {
+        backstage: freshBackstage(),
+        packages: [
+          {
+            npmPackageName: '@example/plugin-example',
+            npm: freshNpm('2026-07-01T00:00:00.000Z'),
+            configSchema: storedSchema,
+          },
+        ],
+      },
+    });
+
+    for (const fetchConfigSchema of [
+      async () => ({
+        status: 'unavailable' as const,
+        reason: 'config-schema-too-large',
+      }),
+      async (): Promise<never> => {
+        throw new Error('boom');
+      },
+    ]) {
+      const result = await auditManifest(previous, {
+        ...dependencies(freshNpm('2026-07-01T00:00:00.000Z')),
+        fetchConfigSchema,
+      });
+
+      assert.deepEqual(
+        primaryPackage(result.manifest)?.configSchema,
+        storedSchema,
+      );
+      assert.match(
+        result.warnings.join('\n'),
+        /Example Plugin: config schema unavailable for @example\/plugin-example \(config-schema-/,
+      );
+    }
+  });
+});
