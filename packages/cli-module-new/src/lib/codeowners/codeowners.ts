@@ -76,13 +76,13 @@ export async function addCodeownersEntry(
 
   let filePath = codeownersFilePath;
   if (!filePath) {
-    filePath = await getCodeownersFilePath(targetPaths.rootDir);
+    filePath = await getCodeownersFilePath(targetPaths.workspaceRootDir);
     if (!filePath) {
       return false;
     }
   }
 
-  const rootDir = targetPaths.rootDir;
+  const rootDir = targetPaths.workspaceRootDir;
   const relativePath = path.isAbsolute(ownedPath)
     ? path.relative(rootDir, ownedPath)
     : ownedPath;
