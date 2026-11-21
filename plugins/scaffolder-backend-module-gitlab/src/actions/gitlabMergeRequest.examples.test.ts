@@ -394,4 +394,31 @@ describe('createGitLabMergeRequest', () => {
       );
     });
   });
+
+  describe('createGitLabMergeRequestWithSquash', () => {
+    it(`Should ${examples[7].description}`, async () => {
+      const input = yaml.parse(examples[7].example).steps[0].input;
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+          irrelevant: { 'bar.txt': 'Nothing to see here' },
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'This MR is really good',
+          removeSourceBranch: false,
+          squash: true,
+        },
+      );
+    });
+  });
 });

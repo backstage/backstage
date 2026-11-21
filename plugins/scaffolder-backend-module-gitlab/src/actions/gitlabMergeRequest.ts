@@ -166,6 +166,13 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
             .describe(
               'Option to delete source branch once the MR has been merged. Default: `false`',
             ),
+        squash: z =>
+          z
+            .boolean()
+            .optional()
+            .describe(
+              'Squash commits when the merge request is merged. If omitted, the squash setting of the GitLab project is respected. Leave unset if the project requires or disallows squashing.',
+            ),
         assignee: z =>
           z
             .string()
@@ -222,6 +229,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
         token,
         labels,
         autoMerge,
+        squash,
       } = ctx.input;
 
       if (targetPath) {
@@ -441,6 +449,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
                 assigneeId,
                 reviewerIds,
                 labels,
+                ...(squash !== undefined && { squash }),
               },
             );
             return {
