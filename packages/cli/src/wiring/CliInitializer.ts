@@ -15,7 +15,6 @@
  */
 
 import { OpaqueCliModule, unwrapCliCommand } from '@internal/cli';
-import type { CliCommandRegistration } from '@internal/cli';
 import { runCli } from '@backstage/cli-node';
 import type { CliModule } from '@backstage/cli-node';
 import { version } from './version';
