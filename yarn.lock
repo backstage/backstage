@@ -9052,8 +9052,8 @@ __metadata:
   linkType: hard
 
 "@google-cloud/pubsub@npm:^6.3.2":
-  version: 6.3.2
-  resolution: "@google-cloud/pubsub@npm:6.3.2"
+  version: 6.4.1
+  resolution: "@google-cloud/pubsub@npm:6.4.1"
   dependencies:
     "@google-cloud/paginator": "npm:^7.2.0"
     "@google-cloud/precise-date": "npm:^6.2.0"
@@ -9073,7 +9073,7 @@ __metadata:
     lodash.snakecase: "npm:^4.1.1"
     long: "npm:^5.3.1"
     p-defer: "npm:^3.0.0"
-  checksum: 10/0420c61aec7194b00bee51fda21db5b118c47cc3c5ef7fa67a9da6b0539922867aabf054007f998c30baf449e53808911514323b4f2d8e4ecb0fb5f16ed64397
+  checksum: 10/5200dd3cd7b2edadb6bca8e5cba0cbce96950f7c26551fe9c93ff889d093e4fbdc33c0b914fd82f84598a567118f55554530817e1eef14d2b7e74034f590c9f3
   languageName: node
   linkType: hard
 
