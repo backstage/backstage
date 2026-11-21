@@ -59,6 +59,8 @@ describe.each([
     let maxActiveDropCount = 0;
     let blockDrops = true;
 
+    // Typed as what the knex factory returns (`Knex<{}, unknown>`), since a
+    // plain `Knex` isn't assignable to it in TypeScript 7.1 and later.
     const adminConnection = {
       raw: jest.fn(async (query: string) => {
         if (query === 'CREATE DATABASE ??') {
@@ -81,10 +83,10 @@ describe.each([
         }
       }),
       destroy: jest.fn().mockResolvedValue(undefined),
-    } as unknown as Knex;
+    } as unknown as ReturnType<typeof knexFactory>;
     const databaseConnection = {
       destroy: jest.fn().mockResolvedValue(undefined),
-    } as unknown as Knex;
+    } as unknown as ReturnType<typeof knexFactory>;
 
     mockKnexFactory.mockImplementation(config => {
       const connection = (config as Knex.Config).connection as
