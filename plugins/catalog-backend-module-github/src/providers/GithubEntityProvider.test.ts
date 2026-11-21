@@ -238,6 +238,39 @@ describe('GithubEntityProvider', () => {
     });
   });
 
+  it('does not apply the full update when the scheduled task is aborted', async () => {
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GithubEntityProvider.fromConfig(
+      createSingleProviderConfig(),
+      { logger, schedule },
+    )[0];
+    const controller = new AbortController();
+    jest
+      .spyOn(helpers, 'getOrganizationRepositories')
+      .mockImplementation(async () => {
+        controller.abort();
+        return { repositories: [] };
+      });
+
+    await provider.connect(entityProviderConnection);
+    const fn = schedule.getTasks()[0].fn;
+
+    await fn(AbortSignal.abort());
+    expect(helpers.getOrganizationRepositories).not.toHaveBeenCalled();
+    expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+
+    await fn(controller.signal);
+    expect(helpers.getOrganizationRepositories).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+
+    await fn(new AbortController().signal);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+  });
+
   it('apply full update on scheduled execution with topic exclusion', async () => {
     const config = new ConfigReader({
       catalog: {

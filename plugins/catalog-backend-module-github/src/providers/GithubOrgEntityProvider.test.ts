@@ -15,6 +15,7 @@
  */
 
 import { mockServices } from '@backstage/backend-test-utils';
+import { ConfigReader } from '@backstage/config';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import {
   GithubCredentialsProvider,
@@ -200,6 +201,47 @@ describe('GithubOrgEntityProvider', () => {
       await expect(entityProvider.read()).rejects.toThrow('Network error');
 
       expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+    });
+
+    it('should not apply mutation if the scheduled task is aborted', async () => {
+      let taskFn: ((signal: AbortSignal) => void | Promise<void>) | undefined;
+      const provider = GithubOrgEntityProvider.fromConfig(
+        new ConfigReader({
+          integrations: { github: [{ host: 'github.com', token: 'blah' }] },
+        }),
+        {
+          id: 'my-id',
+          orgUrl: 'https://github.com/backstage',
+          logger: mockServices.logger.mock(),
+          schedule: {
+            run: async task => {
+              taskFn = task.fn;
+            },
+          },
+        },
+      );
+      await provider.connect(entityProviderConnection);
+
+      const controller = new AbortController();
+      setupMocks(() => {
+        controller.abort();
+        return Promise.resolve({
+          organization: {
+            membersWithRole: { pageInfo: { hasNextPage: false }, nodes: [] },
+            teams: { pageInfo: { hasNextPage: false }, nodes: [] },
+          },
+        });
+      });
+
+      await taskFn!(AbortSignal.abort());
+      expect(mockClient).not.toHaveBeenCalled();
+
+      await taskFn!(controller.signal);
+      expect(mockClient).toHaveBeenCalledTimes(1);
+      expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+
+      await taskFn!(new AbortController().signal);
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     });
   });
 
