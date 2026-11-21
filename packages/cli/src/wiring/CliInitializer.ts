@@ -28,11 +28,12 @@ type UninitializedFeature =
 interface TaggedFeature {
   feature: CliModule;
   /**
-   * Whether this module is a default, i.e. it was sourced from an array such
-   * as `cli-defaults`. Defaults are a lower-priority layer that installed
-   * modules override, see {@link applyOverrides}.
+   * Where the module came from. `installed` modules were added individually,
+   * while `bundle` modules were sourced from an array such as `cli-defaults`.
+   * Bundled modules are a lower-priority layer that installed modules
+   * override, see {@link applyOverrides}.
    */
-  isDefault: boolean;
+  source: 'installed' | 'bundle';
 }
 
 interface Overrides {
@@ -61,12 +62,12 @@ async function collectOverrides(installed: CliModule[]): Promise<Overrides> {
 }
 
 /**
- * Applies the overrides of installed modules to a default module. The rules
+ * Applies the overrides of installed modules to a bundled module. The rules
  * are:
  *
- * 1. A default module whose package name matches an installed module is
+ * 1. A bundled module whose package name matches an installed module is
  *    dropped, since it would otherwise register its commands twice.
- * 2. A default command without `if` is dropped when an installed module
+ * 2. A bundled command without `if` is dropped when an installed module
  *    registers the same path without `if`.
  * 3. Everything else is kept. Commands with `if` are never dropped, and which
  *    one runs is decided when the command is invoked, falling back to the
@@ -109,18 +110,18 @@ export class CliInitializer {
         feature.then(f => {
           const unwrapped = unwrapFeature(f.default);
           if (Array.isArray(unwrapped)) {
-            return unwrapped.map(m => ({ feature: m, isDefault: true }));
+            return unwrapped.map(m => ({ feature: m, source: 'bundle' }));
           }
-          return [{ feature: unwrapped, isDefault: false }];
+          return [{ feature: unwrapped, source: 'installed' }];
         }),
       );
     } else if (Array.isArray(feature)) {
       this.#uninitiazedFeatures.push(
-        Promise.resolve(feature.map(m => ({ feature: m, isDefault: true }))),
+        Promise.resolve(feature.map(m => ({ feature: m, source: 'bundle' }))),
       );
     } else {
       this.#uninitiazedFeatures.push(
-        Promise.resolve([{ feature, isDefault: false }]),
+        Promise.resolve([{ feature, source: 'installed' }]),
       );
     }
   }
@@ -135,19 +136,23 @@ export class CliInitializer {
       }
     }
 
-    // All installed modules are known before the defaults are filtered, so
+    // All installed modules are known before the bundled ones are filtered, so
     // the order in which modules were added does not matter.
-    const installed = features.filter(f => !f.isDefault).map(f => f.feature);
-    const defaults = features.filter(f => f.isDefault).map(f => f.feature);
+    const installed = features
+      .filter(f => f.source === 'installed')
+      .map(f => f.feature);
+    const bundled = features
+      .filter(f => f.source === 'bundle')
+      .map(f => f.feature);
 
     const overrides = await collectOverrides(installed);
-    const keptDefaults = await Promise.all(
-      defaults.map(module => applyOverrides(module, overrides)),
+    const keptBundled = await Promise.all(
+      bundled.map(module => applyOverrides(module, overrides)),
     );
 
     return [
       ...installed,
-      ...keptDefaults.filter((m): m is CliModule => m !== undefined),
+      ...keptBundled.filter((m): m is CliModule => m !== undefined),
     ];
   }
 
