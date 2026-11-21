@@ -110,6 +110,17 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef;
         noHeader?: boolean;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#PageBlueprint';
+        params: {
+          path: '/lazy-demo';
+        };
+        paramKeys: 'path' | 'routeRef' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'page:lazy-demo/details': OverridableExtensionDefinition<{
       kind: 'page';
@@ -200,7 +211,24 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef;
         noHeader?: boolean;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#PageBlueprint';
+        params: {
+          path: '/lazy-demo/details';
+        };
+        paramKeys: 'path' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
+  },
+  {
+    pluginId: 'lazy-demo';
+    title: 'Lazy Demo';
+    if: undefined;
+    extensionIds: ['page:lazy-demo', 'page:lazy-demo/details'];
   }
 >;
 export default _default;

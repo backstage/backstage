@@ -108,7 +108,24 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef;
         noHeader?: boolean;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#PageBlueprint';
+        params: {
+          path: '/lazy-package-demo';
+        };
+        paramKeys: 'path' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
+  },
+  {
+    pluginId: 'lazy-package-demo';
+    title: 'Lazy Package Demo';
+    if: undefined;
+    extensionIds: ['page:lazy-package-demo'];
   }
 >;
 export default _default;
