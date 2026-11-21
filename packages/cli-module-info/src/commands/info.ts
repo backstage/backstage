@@ -17,6 +17,7 @@
 import { cli } from 'cleye';
 import { version as infoModuleVersion } from '../../package.json';
 import os from 'node:os';
+import chalk from 'chalk';
 import { runOutput, targetPaths, findOwnPaths } from '@backstage/cli-common';
 import {
   BackstagePackageJson,
@@ -26,6 +27,7 @@ import {
 import { minimatch } from 'minimatch';
 import fs from 'fs-extra';
 import type { CliCommandContext } from '@backstage/cli-node';
+import { buildReleaseMap, ReleaseMapResult } from '../lib/releaseMap';
 
 /**
  * Attempts to read package.json from node_modules for a given package name.
@@ -54,7 +56,7 @@ function hasBackstageField(packageName: string, targetPath: string): boolean {
 
 export default async ({ args, info }: CliCommandContext) => {
   const {
-    flags: { include, format },
+    flags: { include, format, 'release-map': releaseMap },
   } = cli(
     {
       name: info.usage,
@@ -70,15 +72,25 @@ export default async ({ args, info }: CliCommandContext) => {
           description: 'Output format (text or json)',
           default: 'text',
         },
+        'release-map': {
+          type: Boolean,
+          description:
+            'Map installed @backstage/* package versions to the earliest Backstage release containing them',
+          default: false,
+        },
       },
     },
     undefined,
     args,
   );
 
-  const options = { include, format: format as 'text' | 'json' };
+  const options = {
+    include,
+    format: format as 'text' | 'json',
+    releaseMap: Boolean(releaseMap),
+  };
 
-  await new Promise(async () => {
+  await new Promise<void>(async resolve => {
     const yarnVersion = await runOutput(['yarn', '--version']);
     /* eslint-disable-next-line no-restricted-syntax */
     const isLocal = fs.existsSync(findOwnPaths(__dirname).resolve('./src'));
@@ -200,22 +212,80 @@ export default async ({ args, info }: CliCommandContext) => {
     const sortedInstalled = [...installedDeps].sort();
     const sortedLocal = [...localDeps].sort();
 
+    let releaseMapResult: ReleaseMapResult | undefined;
+    if (options.releaseMap) {
+      try {
+        const backstagePkgs = sortedInstalled
+          .filter(dep => dep.startsWith('@backstage/'))
+          .map(dep => ({
+            name: dep,
+            versions: getVersions(dep)
+              .map(v => v.version)
+              .filter(v => v !== 'unknown'),
+          }));
+
+        releaseMapResult = await buildReleaseMap(backstagePkgs, {
+          backstageVersion:
+            backstageVersion !== 'N/A' ? backstageVersion : undefined,
+        });
+      } catch (error) {
+        if (options.format !== 'json') {
+          console.warn(
+            chalk.yellow(
+              `Failed to fetch Backstage release manifests: ${
+                (error as Error).message || error
+              }`,
+            ),
+          );
+          console.log();
+        }
+      }
+    }
+
     // If format is json, output JSON to stdout
     if (options.format === 'json') {
+      const dependencies = Object.fromEntries(
+        sortedInstalled.map(dep => {
+          const versions = getVersions(dep);
+          if (options.releaseMap && releaseMapResult) {
+            const pkgInfos = releaseMapResult.packageReleases.get(dep);
+            return [
+              dep,
+              versions.map(v => {
+                const relInfo = pkgInfos?.find(i => i.version === v.version);
+                return {
+                  version: v.version,
+                  ...(relInfo?.release ? { release: relInfo.release } : {}),
+                  ...(relInfo?.isNewer ? { isNewer: true } : {}),
+                };
+              }),
+            ];
+          }
+          return [dep, versions];
+        }),
+      );
+
       const output = {
         system: systemInfo,
-        dependencies: Object.fromEntries(
-          sortedInstalled.map(dep => [dep, getVersions(dep)]),
-        ),
+        dependencies,
         local: Object.fromEntries(
           sortedLocal.map(dep => [
             dep,
             [{ version: workspacePackages.get(dep) ?? 'unknown' }],
           ]),
         ),
+        ...(options.releaseMap && releaseMapResult
+          ? {
+              releaseMap: {
+                mostCommonRelease: releaseMapResult.mostCommonRelease,
+                newerPackages: releaseMapResult.newerPackages,
+              },
+            }
+          : {}),
       };
 
       process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
+      resolve();
       return;
     }
 
@@ -235,10 +305,48 @@ export default async ({ args, info }: CliCommandContext) => {
     if (sortedInstalled.length > 0) {
       const maxLength = Math.max(...sortedInstalled.map(d => d.length));
       for (const dep of sortedInstalled) {
-        const versions = getVersions(dep)
-          .map(v => v.version)
-          .join(', ');
+        let versions: string;
+        if (options.releaseMap && releaseMapResult) {
+          const infos = releaseMapResult.packageReleases.get(dep);
+          versions = getVersions(dep)
+            .map(v => {
+              const relInfo = infos?.find(i => i.version === v.version);
+              if (relInfo?.release) {
+                if (relInfo.isNewer) {
+                  return chalk.yellow(
+                    `${v.version} (release ${relInfo.release}) *`,
+                  );
+                }
+                return `${v.version} (release ${relInfo.release})`;
+              }
+              if (dep.startsWith('@backstage/')) {
+                return `${v.version} (not in scanned releases)`;
+              }
+              return v.version;
+            })
+            .join(', ');
+        } else {
+          versions = getVersions(dep)
+            .map(v => v.version)
+            .join(', ');
+        }
         console.log(`  ${dep.padEnd(maxLength)} ${versions}`);
+      }
+
+      if (releaseMapResult?.newerPackages.length) {
+        console.log();
+        console.log(
+          chalk.yellow(
+            `* The following package(s) belong to a newer release than the baseline (${releaseMapResult.mostCommonRelease}):`,
+          ),
+        );
+        for (const pkg of releaseMapResult.newerPackages) {
+          console.log(
+            chalk.yellow(
+              `  - ${pkg.name}@${pkg.version} (from release ${pkg.release})`,
+            ),
+          );
+        }
       }
     } else {
       console.log('  (no installed Backstage packages found)');
@@ -254,5 +362,7 @@ export default async ({ args, info }: CliCommandContext) => {
         console.log(`  ${dep.padEnd(maxLength)} ${version}`);
       }
     }
+
+    resolve();
   });
 };

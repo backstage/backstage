@@ -2297,10 +2297,16 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/cli-node": "workspace:^"
+    "@backstage/release-manifests": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
     "@types/fs-extra": "npm:^11.0.0"
+    "@types/semver": "npm:^7"
+    chalk: "npm:^4.0.0"
     cleye: "npm:^2.6.0"
     fs-extra: "npm:^11.2.0"
     minimatch: "npm:^11.0.1"
+    msw: "npm:^3.0.4"
+    semver: "npm:^7.5.3"
   bin:
     cli-module-info: bin/backstage-cli-module-info
   languageName: unknown

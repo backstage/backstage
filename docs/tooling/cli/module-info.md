@@ -25,6 +25,8 @@ Options:
   --include <patterns...>  Glob patterns for additional packages to include
                            (e.g., @mycompany/backstage-*)
   --format <text|json>     Output format (default: text)
+  --release-map            Map installed @backstage/* package versions to the
+                           earliest Backstage release containing them
   -h, --help               display help for command
 ```
 
@@ -34,6 +36,12 @@ Output debug information to the console:
 
 ```bash
 yarn backstage-cli info
+```
+
+Map package versions to their Backstage release:
+
+```bash
+yarn backstage-cli info --release-map
 ```
 
 Include additional packages matching a glob pattern:

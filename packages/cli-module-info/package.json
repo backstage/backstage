@@ -35,12 +35,18 @@
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
+    "@backstage/release-manifests": "workspace:^",
+    "chalk": "^4.0.0",
     "cleye": "^2.6.0",
     "fs-extra": "^11.2.0",
-    "minimatch": "^11.0.1"
+    "minimatch": "^11.0.1",
+    "semver": "^7.5.3"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@types/fs-extra": "^11.0.0"
+    "@backstage/test-utils": "workspace:^",
+    "@types/fs-extra": "^11.0.0",
+    "@types/semver": "^7",
+    "msw": "^3.0.4"
   }
 }

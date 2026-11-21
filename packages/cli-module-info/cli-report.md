@@ -24,5 +24,6 @@ Usage: @backstage/cli-module-info info [flags...]
 Options:
   --format <string>
   --include <string>
+  --release-map
   -h, --help
 ```

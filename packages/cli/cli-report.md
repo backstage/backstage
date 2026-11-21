@@ -421,6 +421,7 @@ Usage: backstage-cli info [flags...]
 Options:
   --format <string>
   --include <string>
+  --release-map
   -h, --help
 ```
 
