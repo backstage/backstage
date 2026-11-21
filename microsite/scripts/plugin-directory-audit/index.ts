@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import { resolve } from 'node:path';
-import type { NpmSnapshot, PluginManifest } from '../manifest';
+import type { NpmSnapshot, PluginManifest } from '../../../scripts/plugin-directory/manifest';
 import { auditManifest, type AuditDependencies } from './audit';
 import { GitHubSnapshotClient } from './githubClient';
 import { writeLatestBackstageVersionFile } from './latestBackstageVersionStore';
@@ -271,10 +271,10 @@ export async function runAuditCommand(
 
 async function main(args: readonly string[]): Promise<void> {
   await runAuditCommand(args, {
-    directory: resolve(__dirname, '../../../microsite/data/plugins'),
+    directory: resolve(__dirname, '../../data/plugins'),
     latestBackstageVersionPath: resolve(
       __dirname,
-      '../../../microsite/data/latest-backstage-version.yaml',
+      '../../data/latest-backstage-version.yaml',
     ),
     dependencies: {
       fetchNpm: fetchNpmSnapshot,

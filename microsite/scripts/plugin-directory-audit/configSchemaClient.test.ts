@@ -21,22 +21,21 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
-import { gzip } from 'pako';
 import { create } from 'tar';
 import { fetchConfigSchema } from './configSchemaClient';
 
 const tarballUrl = 'https://registry.npmjs.org/example/-/example-1.0.0.tgz';
 
-async function buildTarball(files: Record<string, string>) {
+async function buildTarball(files: Record<string, string | Uint8Array>) {
   const root = await mkdtemp(join(tmpdir(), 'config-schema-fixture-'));
   try {
     await mkdir(join(root, 'package'));
     for (const [name, contents] of Object.entries(files)) {
-      await writeFile(join(root, 'package', name), contents, 'utf8');
+      await writeFile(join(root, 'package', name), contents);
     }
-    const tarPath = join(root, 'package.tar');
-    await create({ cwd: root, file: tarPath }, ['package']);
-    return gzip(await readFile(tarPath));
+    const tarPath = join(root, 'package.tgz');
+    await create({ cwd: root, file: tarPath, gzip: true }, ['package']);
+    return new Uint8Array(await readFile(tarPath));
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -116,8 +115,24 @@ describe('fetchConfigSchema', () => {
       await fetchConfigSchema('example', '1.0.0', registry(invalid).fetchImpl),
       { status: 'unavailable', reason: 'config-schema-invalid' },
     );
+    const sourceTooLarge = await buildTarball({
+      'package.json': JSON.stringify({ configSchema: 'config.json' }),
+      'config.json': JSON.stringify({
+        type: 'string',
+        description: 'x'.repeat(2 * 1024 * 1024),
+      }),
+    });
+
     assert.deepEqual(
       await fetchConfigSchema('example', '1.0.0', registry(tooLarge).fetchImpl),
+      { status: 'unavailable', reason: 'config-schema-too-large' },
+    );
+    assert.deepEqual(
+      await fetchConfigSchema(
+        'example',
+        '1.0.0',
+        registry(sourceTooLarge).fetchImpl,
+      ),
       { status: 'unavailable', reason: 'config-schema-too-large' },
     );
     assert.deepEqual(
@@ -131,7 +146,10 @@ describe('fetchConfigSchema', () => {
   });
 
   it('stops unpacking a tarball that expands past the size limit', async () => {
-    const bomb = gzip(new Uint8Array(65 * 1024 * 1024));
+    const bomb = await buildTarball({
+      'package.json': JSON.stringify({ configSchema: 'config.json' }),
+      'padding.bin': new Uint8Array(65 * 1024 * 1024),
+    });
 
     assert.deepEqual(
       await fetchConfigSchema('example', '1.0.0', registry(bomb).fetchImpl),

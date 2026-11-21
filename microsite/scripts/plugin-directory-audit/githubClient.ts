@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { BackstageSnapshot } from '../manifest';
+import type { BackstageSnapshot } from '../../../scripts/plugin-directory/manifest';
 
 export interface RepositoryLocation {
   owner: string;

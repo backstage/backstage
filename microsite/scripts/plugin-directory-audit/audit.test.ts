@@ -25,7 +25,7 @@ import type {
   BackstageSnapshot,
   NpmSnapshot,
   PluginManifest,
-} from '../manifest';
+} from '../../../scripts/plugin-directory/manifest';
 import type { GitHubSnapshotClient } from './githubClient';
 import { auditManifest, type AuditDependencies } from './audit';
 import { runAuditCommand, type AuditOutput } from './index';
