@@ -22,6 +22,7 @@ import { auditManifest, type AuditDependencies } from './audit';
 import { GitHubSnapshotClient } from './githubClient';
 import { writeLatestBackstageVersionFile } from './latestBackstageVersionStore';
 import { readManifestFiles, writeManifestFile } from './manifestStore';
+import { fetchConfigSchema } from './configSchemaClient';
 import { fetchNpmSnapshot } from './npmClient';
 
 export interface AuditOutput {
@@ -279,6 +280,7 @@ async function main(args: readonly string[]): Promise<void> {
     ),
     dependencies: {
       fetchNpm: fetchNpmSnapshot,
+      fetchConfigSchema,
       github: new GitHubSnapshotClient({ token: process.env.GITHUB_TOKEN }),
       now: () => new Date(),
     },
