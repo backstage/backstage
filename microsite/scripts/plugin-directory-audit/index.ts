@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 import { resolve } from 'node:path';
-import type { NpmSnapshot, PluginManifest } from '../../../scripts/plugin-directory/manifest';
+import type {
+  NpmSnapshot,
+  PluginManifest,
+} from '../../../scripts/plugin-directory/manifest';
 import { auditManifest, type AuditDependencies } from './audit';
 import { GitHubSnapshotClient } from './githubClient';
 import { writeLatestBackstageVersionFile } from './latestBackstageVersionStore';
