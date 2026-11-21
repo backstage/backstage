@@ -194,7 +194,7 @@ app:
 
 A plugin that you pass to `createApp` in the `features` option is used instead of a deferred plugin with the same plugin ID. If you pass a module for a deferred plugin, that plugin is loaded before the app starts so that the module applies to it.
 
-The stand-in of an element of a deferred plugin applies the config in `app.extensions` that the factory of its blueprint outputs as is, such as the `filter` and `type` of an entity card, and config that only affects the element is applied once the plugin is loaded. If you have any other config for an element of a deferred plugin, the plugin is loaded right after the app has started, since the config can only be applied once the plugin is loaded. Config for the pages of a plugin is applied to their stand-ins. A deferred plugin that provides utility APIs is loaded the first time one of its APIs is used.
+The stand-ins of the pages of a deferred plugin apply the `path` and `title` config in `app.extensions`, and so do the stand-ins of its sub-pages. If you have any other config for an element of a deferred plugin, the plugin is loaded right after the app has started, since the config can only be applied once the plugin is loaded. A deferred plugin that provides utility APIs is loaded the first time one of its APIs is used.
 
 ## Default Shared Dependencies
 

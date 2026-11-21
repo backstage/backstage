@@ -220,28 +220,9 @@ If you are publishing a plugin, the extension creators should always be exported
 Deferred loading is experimental, and the details described here may change.
 :::
 
-An app can [defer loading a plugin](../building-plugins/01-index.md#deferred-loading) until one of its elements is rendered. Until then, the app uses a stand-in for each extension of the plugin, which is built from a manifest that the CLI creates by analyzing the source code of the plugin without running it. The stand-in must output the same data as the real extension, apart from the React element. The CLI finds that data by evaluating the factory of the blueprint with the params of each extension, without running it, so you don't need to do anything to support deferred loading in your blueprint. For example, the stand-in of an extension made with the following blueprint outputs the `title` param, or the `title` config when it is set:
+An app can [defer loading a plugin](../building-plugins/01-index.md#deferred-loading) until one of its elements is rendered. Until then, the app uses a stand-in for each extension of the plugin, which is built from a manifest that the CLI creates by analyzing the source code of the plugin without running it. The stand-in must output the same data as the real extension, apart from the React element. The CLI reads that data from the params of each extension, so only the following blueprints from `@backstage/frontend-plugin-api` can be deferred:
 
-```tsx
-export const MyWidgetBlueprint = createExtensionBlueprint({
-  kind: 'my-widget',
-  attachTo: { id: 'page:my-plugin', input: 'widgets' },
-  output: [coreExtensionData.reactElement, widgetTitleRef],
-  configSchema: {
-    title: z.string().optional(),
-  },
-  *factory(
-    params: { title: string; loader: () => Promise<JSX.Element> },
-    { node, config },
-  ) {
-    yield coreExtensionData.reactElement(
-      ExtensionBoundary.lazy(node, params.loader),
-    );
-    yield widgetTitleRef(config.title ?? params.title);
-  },
-});
-```
+- `PageBlueprint` and `SubPageBlueprint`. The `path` and `title` params must be literal values, and a `routeRef` must be one of the route refs of the plugin. The stand-ins of pages and sub-pages apply the `path` and `title` config from `app.extensions`.
+- `ApiBlueprint`. Utility APIs are loaded the first time they are used.
 
-The value that is passed to the React element output is never evaluated, so params and config that are only used to create the element can be anything. The factory is evaluated once without config, and once with a value for each config key on its own. A config key that doesn't change the other outputs is applied once the plugin has loaded, while a config key that sets an output to its value is applied by the stand-in.
-
-Only a small part of the language is evaluated: constants, property access, `typeof`, comparisons, the `&&`, `||`, `??`, `!` and conditional operators, `if` statements, `yield`, and `yield*` of other generator functions in the same package. Function calls are not evaluated, so their results can only be used to create the element. Any other statement or value in the path to an output, such as a loop, a call, or a param that isn't a literal value, makes the plugin load together with the app, and the manifest records the reason. The factory of `PageBlueprint`, `SubPageBlueprint`, `EntityCardBlueprint` and `EntityContentBlueprint` can be evaluated, so keep the factory of your blueprint just as simple if you want its extensions to be deferred.
+An extension made with any other blueprint, including a blueprint of your own, prevents the plugin from being deferred. So does an extension made with `makeWithOverrides`, and any param that isn't a literal value, such as an `icon`. Params that are only used to create the React element, such as `loader`, can be anything. The manifest records the reason that a plugin can't be deferred.

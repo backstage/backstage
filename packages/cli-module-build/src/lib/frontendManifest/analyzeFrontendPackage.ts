@@ -27,38 +27,23 @@ import {
   FRONTEND_MANIFEST_VERSION,
   FrontendExtensionManifest,
   FrontendFeatureManifest,
-  ManifestValueType,
 } from './types';
 import {
-  AnalysisError,
-  ELEMENT_VALUE,
-  FactoryEvaluator,
-  FactoryOutputs,
-  FactoryValue,
-  describeValue,
-  isSameValue,
-} from './evaluateFactory';
+  APP_ROUTES,
+  CORE_BLUEPRINTS,
+  CORE_BLUEPRINTS_PACKAGE,
+  CoreBlueprint,
+  ReadBlueprintParams,
+} from './coreBlueprints';
+
+/** An error for a plugin that can't be analyzed, which can't be deferred. */
+export class AnalysisError extends Error {
+  name = 'AnalysisError';
+}
 
 const FRONTEND_PLUGIN_API = '@backstage/frontend-plugin-api';
 
 type AttachTo = { id: string; input: string };
-
-/** The parts of a blueprint that are read from its source code. */
-type BlueprintInfo = {
-  kind: string;
-  attachTo: unknown;
-  /** The factory of the blueprint, which is evaluated for each extension */
-  factory?: ts.FunctionLikeDeclaration;
-  /** The keys of the config schema of the blueprint, if they can be read */
-  configKeys: string[];
-  /** The analyzer of the program that the blueprint is part of */
-  analyzer: PackageAnalyzer;
-};
-
-/** How the config of an extension maps to the outputs of its stand-in. */
-type ConfigMapping = {
-  [configKey: string]: { dataRefId: string; type: ManifestValueType };
-};
 
 /** Resolves an import of another package to a file. */
 export type ModuleResolver = (
@@ -66,40 +51,7 @@ export type ModuleResolver = (
   fromDir: string,
 ) => string | undefined;
 
-const ROUTE_REF_DATA_ID = 'core.routing.ref';
-const ROUTE_PATH_DATA_ID = 'core.routing.path';
-const TITLE_DATA_ID = 'core.title';
-const ELEMENT_DATA_ID = 'core.reactElement';
-const APP_ROUTES = { id: 'app/routes', input: 'routes' };
-
-// The config that the stand-in of a page applies, since the app creates it
-// with PageBlueprint, keyed by the output that each key maps to
-const PAGE_CONFIG: { [dataRefId: string]: string } = {
-  [ROUTE_PATH_DATA_ID]: 'path',
-  [TITLE_DATA_ID]: 'title',
-};
-
-// The values of the context that a factory is called with, other than the
-// config. They are only known when the app runs.
-const FACTORY_CONTEXT: { [key: string]: FactoryValue } = {
-  node: { type: 'opaque', reason: 'the app node', typeOf: 'object' },
-  inputs: { type: 'opaque', reason: 'the inputs of the extension' },
-  apis: { type: 'opaque', reason: 'the APIs of the app', typeOf: 'object' },
-};
-
 const MAKE_OPTIONS = ['name', 'attachTo', 'disabled', 'if', 'params'];
-
-// The options of makeWithOverrides that can be deferred. A config schema
-// only adds config that is applied once the plugin has loaded, while inputs
-// and outputs would change what the stand-in of the extension provides.
-const MAKE_WITH_OVERRIDES_OPTIONS = [
-  'name',
-  'attachTo',
-  'disabled',
-  'if',
-  'configSchema',
-  'factory',
-];
 
 const API_MAKE_OPTIONS = ['name', 'disabled', 'params'];
 const API_PARAMS = ['api', 'deps', 'factory'];
@@ -591,50 +543,6 @@ class PackageAnalyzer {
   }
 
   /**
-   * Reads the options of makeWithOverrides, where the factory may be a
-   * method. Any other function-valued option is left for the caller to
-   * reject by name.
-   */
-  #readOverrideOptions(expr: ts.Expression): Map<string, ts.Expression> {
-    const target = this.#resolve(expr);
-    if (target.type !== 'node' || !ts.isObjectLiteralExpression(target.node)) {
-      this.#fail('the extension options must be an object literal', expr);
-    }
-    const options = new Map<string, ts.Expression>();
-    for (const property of target.node.properties) {
-      if (
-        ts.isMethodDeclaration(property) &&
-        ts.isIdentifier(property.name) &&
-        property.name.text === 'factory'
-      ) {
-        if (property.asteriskToken) {
-          this.#fail(
-            'the factory must return the result of originalFactory, not yield it',
-            property,
-          );
-        }
-        // The method is treated like a function expression with the same
-        // parameters and body
-        options.set('factory', property as unknown as ts.Expression);
-        continue;
-      }
-      if (ts.isPropertyAssignment(property) && ts.isIdentifier(property.name)) {
-        options.set(property.name.text, property.initializer);
-        continue;
-      }
-      if (ts.isShorthandPropertyAssignment(property)) {
-        options.set(property.name.text, property.name);
-        continue;
-      }
-      this.#fail(
-        'the extension options must only have plain properties',
-        property,
-      );
-    }
-    return options;
-  }
-
-  /**
    * Reads the params that a makeWithOverrides factory passes to the original
    * factory. The factory must do nothing but return
    * `originalFactory({ ... })`, so that the params are all that it adds.
@@ -921,15 +829,6 @@ class PackageAnalyzer {
     return this.#resolveSymbol(symbol, sourceFile, 0);
   }
 
-  /** Reads a blueprint that another package exports. */
-  readExportedBlueprint(file: string, name: string, from: ts.Node) {
-    const target = this.#resolveExport(file, name, from);
-    if (target.type === 'external') {
-      return this.#readBlueprint(target, name);
-    }
-    return this.#readBlueprintCall(target.node, name);
-  }
-
   /** Reads the ID of an API ref that another package exports. */
   readExportedApiRefId(file: string, name: string, from: ts.Node) {
     const target = this.#resolveExport(file, name, from);
@@ -948,213 +847,6 @@ class PackageAnalyzer {
       );
     }
     return imported;
-  }
-
-  /**
-   * Follows identifiers, imports of other packages and properties of object
-   * literals to the expression that a value is created with, along with the
-   * analyzer of the program that the expression is part of.
-   */
-  #resolveAcross(
-    expr: ts.Expression,
-    depth = 0,
-  ): { analyzer: PackageAnalyzer; node: ts.Expression } {
-    if (depth > 20) {
-      this.#fail('the value is too deeply nested to be read', expr);
-    }
-    return this.#resolveTargetAcross(this.#resolve(expr), depth);
-  }
-
-  #resolveTargetAcross(
-    target: Target,
-    depth: number,
-  ): { analyzer: PackageAnalyzer; node: ts.Expression } {
-    if (target.type === 'external') {
-      const { analyzer, file } = this.#forImport(target, `'${target.name}'`);
-      return analyzer.#resolveTargetAcross(
-        analyzer.#resolveExport(file, target.name, target.from),
-        depth + 1,
-      );
-    }
-    const node = target.node;
-    if (ts.isPropertyAccessExpression(node)) {
-      const object = this.#resolveAcross(node.expression, depth + 1);
-      if (ts.isObjectLiteralExpression(object.node)) {
-        const value = object.analyzer
-          .#readObject(object.node, `'${node.expression.getText()}'`)
-          .get(node.name.text);
-        if (value) {
-          return object.analyzer.#resolveAcross(value, depth + 1);
-        }
-      }
-    }
-    return { analyzer: this, node };
-  }
-
-  #readBlueprint(target: Target, name: string): BlueprintInfo {
-    if (target.type === 'node') {
-      return this.#readBlueprintCall(target.node, name);
-    }
-    const { analyzer, file } = this.#forImport(
-      target,
-      `the '${name}' blueprint`,
-    );
-    return analyzer.readExportedBlueprint(file, target.name, target.from);
-  }
-
-  /**
-   * Reads the kind, default attachment point, config keys and factory of a
-   * blueprint from the options of its createExtensionBlueprint call.
-   */
-  #readBlueprintCall(node: ts.Node, name: string): BlueprintInfo {
-    const call = ts.isCallExpression(node) ? node : undefined;
-    const callee = call && unwrap(call.expression);
-    let calleeName: string | undefined;
-    if (callee && ts.isIdentifier(callee)) {
-      calleeName = callee.text;
-    } else if (callee && ts.isPropertyAccessExpression(callee)) {
-      calleeName = callee.name.text;
-    }
-    if (!call || calleeName !== 'createExtensionBlueprint') {
-      this.#fail(
-        `the '${name}' blueprint is not created by a call to createExtensionBlueprint`,
-        node,
-      );
-    }
-    const [optionsArg] = call.arguments;
-    const options = optionsArg && this.#resolve(optionsArg);
-    if (
-      !options ||
-      options.type !== 'node' ||
-      !ts.isObjectLiteralExpression(options.node)
-    ) {
-      this.#fail(
-        `the options of the '${name}' blueprint must be an object literal`,
-        call,
-      );
-    }
-    const properties = new Map<string, ts.Expression>();
-    let factory: ts.FunctionLikeDeclaration | undefined;
-    for (const property of options.node.properties) {
-      if (ts.isSpreadAssignment(property)) {
-        this.#fail(
-          `the options of the '${name}' blueprint must not use spread syntax`,
-          property,
-        );
-      }
-      if (
-        ts.isMethodDeclaration(property) &&
-        ts.isIdentifier(property.name) &&
-        property.name.text === 'factory'
-      ) {
-        factory = property;
-      } else if (
-        ts.isPropertyAssignment(property) &&
-        (ts.isIdentifier(property.name) ||
-          ts.isStringLiteralLike(property.name))
-      ) {
-        properties.set(property.name.text, property.initializer);
-      } else if (ts.isShorthandPropertyAssignment(property)) {
-        properties.set(property.name.text, property.name);
-      }
-    }
-    const factoryExpr = properties.get('factory');
-    if (factoryExpr) {
-      const resolved = this.#resolve(factoryExpr);
-      if (
-        resolved.type === 'node' &&
-        (ts.isFunctionExpression(resolved.node) ||
-          ts.isArrowFunction(resolved.node))
-      ) {
-        factory = resolved.node;
-      }
-    }
-
-    // The keys of the config schema are read if it is an object literal.
-    // Config with other keys loads the plugin when the app starts.
-    let configKeys = new Array<string>();
-    const configSchemaExpr = properties.get('configSchema');
-    const configSchema = configSchemaExpr && this.#resolve(configSchemaExpr);
-    if (
-      configSchema?.type === 'node' &&
-      ts.isObjectLiteralExpression(configSchema.node)
-    ) {
-      configKeys = configSchema.node.properties.flatMap(property =>
-        property.name &&
-        (ts.isIdentifier(property.name) ||
-          ts.isStringLiteralLike(property.name))
-          ? [property.name.text]
-          : [],
-      );
-    }
-
-    const kindExpr = properties.get('kind');
-    const attachToExpr = properties.get('attachTo');
-    if (!kindExpr || !attachToExpr) {
-      this.#fail(`the '${name}' blueprint has no kind or attachTo`, call);
-    }
-    return {
-      kind: this.#evaluateString(
-        kindExpr,
-        `the kind of the '${name}' blueprint`,
-      ),
-      attachTo: this.#evaluate(
-        attachToExpr,
-        `the attachment point of the '${name}' blueprint`,
-      ),
-      factory,
-      configKeys,
-      analyzer: this,
-    };
-  }
-
-  /** Runs the factory of a blueprint of this program without running it. */
-  evaluateFactory(factory: ts.FunctionLikeDeclaration, args: FactoryValue[]) {
-    return FactoryEvaluator.run(
-      {
-        location: node => this.#location(node),
-        readDataRefId: callee => {
-          const { analyzer, node } = this.#resolveAcross(callee);
-          return analyzer.#readRefCall(
-            node,
-            `'${callee.getText()}'`,
-            'an extension data ref',
-          );
-        },
-        resolveGenerator: callee => this.#resolveGenerator(callee),
-      },
-      factory,
-      args,
-    );
-  }
-
-  /** Finds the generator function that a factory delegates to. */
-  #resolveGenerator(callee: ts.Expression): ts.FunctionLikeDeclaration {
-    const node = unwrap(callee);
-    let symbol = ts.isIdentifier(node)
-      ? this.#checker.getSymbolAtLocation(node)
-      : undefined;
-    for (let i = 0; symbol && symbol.flags & ts.SymbolFlags.Alias; i++) {
-      const next = this.#checker.getImmediateAliasedSymbol(symbol);
-      symbol = i > 50 || !next?.declarations?.length ? undefined : next;
-    }
-    const declaration = symbol?.valueDeclaration;
-    let fn: ts.Node | undefined = declaration;
-    if (declaration && ts.isVariableDeclaration(declaration)) {
-      fn = declaration.initializer && unwrap(declaration.initializer);
-    }
-    if (
-      fn &&
-      (ts.isFunctionDeclaration(fn) || ts.isFunctionExpression(fn)) &&
-      fn.asteriskToken &&
-      fn.body
-    ) {
-      return fn;
-    }
-    return this.#fail(
-      `the factory delegates to '${callee.getText()}', which is not a generator function that can be read`,
-      callee,
-    );
   }
 
   #readApiRefId(target: Target, what: string): string {
@@ -1234,7 +926,7 @@ class PackageAnalyzer {
    */
   #readApiExtension(
     options: Map<string, ts.Expression>,
-    blueprint: BlueprintInfo,
+    blueprint: Extract<CoreBlueprint, { type: 'api' }>,
     info: FeatureInfo,
     call: ts.Node,
   ): FrontendExtensionManifest {
@@ -1286,404 +978,102 @@ class PackageAnalyzer {
     };
   }
 
-  /**
-   * Reads the value of a param. A param that isn't a literal is still
-   * passed to the factory, since it might only be used for the element.
-   */
-  #readParam(key: string, expr: ts.Expression): FactoryValue {
-    try {
-      return {
-        type: 'known',
-        value: this.#evaluate(expr, `the '${key}' param`),
-      };
-    } catch (error) {
-      if (!(error instanceof AnalysisError)) {
-        throw error;
-      }
-      return {
-        type: 'opaque',
-        reason: error.message,
-        typeOf: this.#typeOfParam(expr),
-        source: expr,
-      };
-    }
-  }
-
-  /** Finds what `typeof` returns for a param, if it can be known. */
-  #typeOfParam(expr: ts.Expression): string | undefined {
-    let node: ts.Expression = unwrap(expr);
-    try {
-      const target = this.#resolve(expr);
-      if (target.type === 'node') {
-        node = target.node;
-      }
-    } catch (error) {
-      if (!(error instanceof AnalysisError)) {
-        throw error;
-      }
-    }
-    if (ts.isArrowFunction(node) || ts.isFunctionExpression(node)) {
-      return 'function';
-    }
-    if (
-      ts.isObjectLiteralExpression(node) ||
-      ts.isArrayLiteralExpression(node) ||
-      ts.isJsxElement(node) ||
-      ts.isJsxSelfClosingElement(node) ||
-      ts.isJsxFragment(node)
-    ) {
-      return 'object';
-    }
-    const type = this.#checker.getTypeAtLocation(expr);
-    if (type.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) {
-      return undefined;
-    }
-    if (type.getCallSignatures().length > 0) {
-      return 'function';
-    }
-    if (type.flags & ts.TypeFlags.StringLike) {
-      return 'string';
-    }
-    if (type.flags & ts.TypeFlags.NumberLike) {
-      return 'number';
-    }
-    if (type.flags & ts.TypeFlags.BooleanLike) {
-      return 'boolean';
-    }
-    if (type.flags & ts.TypeFlags.Object) {
-      return 'object';
-    }
-    return undefined;
-  }
-
-  /**
-   * Finds the outputs of an extension by evaluating the factory of its
-   * blueprint with its params, first without config, and then with a value
-   * of each config key on its own. A key that doesn't change the outputs is
-   * only used for the element, and a key that sets one output to its value
-   * is applied by the stand-in of the extension. Config with any other key
-   * loads the plugin when the app starts.
-   */
-  #readOutputs(
-    blueprint: BlueprintInfo,
-    blueprintName: string,
-    params: FactoryValue,
-    extraConfigKeys: string[],
-  ) {
-    const factory = blueprint.factory;
-    if (!factory) {
-      throw new AnalysisError(
-        `the factory of the '${blueprintName}' blueprint can't be read`,
-      );
-    }
-    const readKeys = new Set<string>();
-    const run = (config: Map<string, FactoryValue>) => {
-      const configValue: FactoryValue = {
-        type: 'record',
-        get: key => {
-          readKeys.add(key);
-          return config.get(key) ?? { type: 'known', value: undefined };
-        },
-      };
-      const context: FactoryValue = {
-        type: 'record',
-        get: key =>
-          key === 'config'
-            ? configValue
-            : FACTORY_CONTEXT[key] ?? {
-                type: 'unknown',
-                reason: `the '${key}' value of the factory context`,
-              },
-      };
-      return blueprint.analyzer.evaluateFactory(factory, [params, context]);
-    };
-    const changes = (
-      base: FactoryOutputs,
-      outputs: FactoryOutputs,
-    ): Array<[string, FactoryValue | undefined]> =>
-      Array.from(new Set([...base.keys(), ...outputs.keys()]))
-        .filter(id => {
-          const a = base.get(id);
-          const b = outputs.get(id);
-          return !a || !b || !isSameValue(a, b);
-        })
-        .map(id => [id, outputs.get(id)]);
-
-    const base = run(new Map());
-    if ('failure' in base) {
-      throw new AnalysisError(
-        `the factory of the '${blueprintName}' blueprint can't be read for the extension: ${base.failure}`,
-      );
-    }
-
-    const configOutputs: ConfigMapping = {};
-    const loadedConfig = new Array<string>();
-    const keys = new Set([
-      ...blueprint.configKeys,
-      ...readKeys,
-      ...extraConfigKeys,
-    ]);
-    for (const key of keys) {
-      const values: Array<[FactoryValue, ManifestValueType?]> = [
-        [{ type: 'config', key, valueType: 'string' }, 'string'],
-        [{ type: 'config', key, valueType: 'number' }, 'number'],
-        [{ type: 'config', key, valueType: 'object' }],
-        [{ type: 'known', value: true }],
-        [{ type: 'known', value: false }],
-      ];
-      let loaded = true;
-      const mappings = new Array<{
-        dataRefId: string;
-        type: ManifestValueType;
-      }>();
-      for (const [value, type] of values) {
-        const result = run(new Map([[key, value]]));
-        const changed =
-          'failure' in result ? [] : changes(base.outputs, result.outputs);
-        if ('failure' in result || changed.length > 0) {
-          loaded = false;
-        }
-        const [change] = changed;
-        if (
-          type &&
-          changed.length === 1 &&
-          change[1] &&
-          isSameValue(change[1], value)
-        ) {
-          mappings.push({ dataRefId: change[0], type });
-        }
-      }
-      if (loaded) {
-        loadedConfig.push(key);
-        continue;
-      }
-      // A key can map to an output for values of more than one type, in
-      // which case the type of the output without config is preferred
-      const [first] = mappings;
-      if (first) {
-        const output = base.outputs.get(first.dataRefId);
-        const outputType =
-          output?.type === 'known' ? typeof output.value : undefined;
-        configOutputs[key] =
-          mappings.find(
-            m => m.dataRefId === first.dataRefId && m.type === outputType,
-          ) ?? first;
-      }
-    }
-
-    // The keys are evaluated one at a time, so the keys that the stand-in
-    // applies are checked together as well
-    const mapped = Object.entries(configOutputs);
-    if (mapped.length > 1) {
-      const combined = run(
-        new Map(
-          mapped.map(([key, { type }]) => [
-            key,
-            { type: 'config', key, valueType: type as 'string' | 'number' },
-          ]),
-        ),
-      );
-      const expected = new Map(base.outputs);
-      for (const [key, { dataRefId, type }] of mapped) {
-        expected.set(dataRefId, {
-          type: 'config',
-          key,
-          valueType: type as 'string' | 'number',
-        });
-      }
-      if (
-        'failure' in combined ||
-        changes(expected, combined.outputs).length > 0
-      ) {
-        for (const [key] of mapped) {
-          delete configOutputs[key];
-        }
-      }
-    }
-
-    return { outputs: base.outputs, configOutputs, loadedConfig };
-  }
-
   /** Reads an extension of a plugin that is to be deferred. */
   #readExtension(
     extension: FeatureInfo['extensions'][number],
     info: FeatureInfo,
   ): FrontendExtensionManifest {
     const { pluginId } = info;
-    const { method, blueprint, blueprintName, optionsArg, readOptions, call } =
+    const { method, blueprint, blueprintName, readOptions, call } =
       this.#readExtensionCall(extension.node);
-    if (!method || !['make', 'makeWithOverrides'].includes(method)) {
+    if (method !== 'make') {
       this.#fail(
         `the extension is created with '${blueprintName}${
           method ? `.${method}` : ''
-        }', but only extensions made with the make or makeWithOverrides method of a blueprint can be deferred`,
+        }', but only extensions made with the make method of a blueprint can be deferred`,
         call,
       );
     }
-    const blueprintInfo = this.#readBlueprint(blueprint, blueprintName);
-
-    if (
+    const supported =
       blueprint.type === 'external' &&
-      blueprint.module === FRONTEND_PLUGIN_API &&
-      blueprint.name === 'ApiBlueprint'
-    ) {
-      if (method !== 'make') {
-        this.#fail(
-          `the API is created with 'ApiBlueprint.${method}', but only 'ApiBlueprint.make' can be deferred`,
-          call,
-        );
-      }
-      return this.#readApiExtension(readOptions(), blueprintInfo, info, call);
+      blueprint.module === CORE_BLUEPRINTS_PACKAGE &&
+      Object.hasOwn(CORE_BLUEPRINTS, blueprint.name)
+        ? CORE_BLUEPRINTS[blueprint.name]
+        : undefined;
+    if (!supported) {
+      this.#fail(
+        `the '${blueprintName}' blueprint is not supported for deferred loading`,
+        call,
+      );
     }
 
-    const withOverrides = method === 'makeWithOverrides';
-    const options = withOverrides
-      ? this.#readOverrideOptions(optionsArg)
-      : readOptions();
-    const { name, disabled } = this.#readCommonOptions(
-      options,
-      withOverrides ? MAKE_WITH_OVERRIDES_OPTIONS : MAKE_OPTIONS,
-    );
+    if (supported.type === 'api') {
+      return this.#readApiExtension(readOptions(), supported, info, call);
+    }
+
+    const options = readOptions();
+    const { name, disabled } = this.#readCommonOptions(options, MAKE_OPTIONS);
     const attachToExpr = options.get('attachTo');
     const attachTo = this.#readAttachTo(
       attachToExpr
         ? this.#evaluate(attachToExpr, 'the attachment point')
-        : blueprintInfo.attachTo,
+        : supported.attachTo,
       pluginId,
       attachToExpr ?? call,
     );
-
-    const overrideConfigKeys = new Array<string>();
-    const configSchemaExpr = options.get('configSchema');
-    if (configSchemaExpr) {
-      overrideConfigKeys.push(
-        ...this.#resolveObject(configSchemaExpr, 'the config schema').keys(),
+    if (supported.type === 'page' && !isAttachedTo(attachTo, APP_ROUTES)) {
+      this.#fail(
+        `the page is not attached to ${APP_ROUTES.id}, so it can't be deferred`,
+        attachToExpr ?? call,
       );
     }
 
-    const factoryExpr = options.get('factory');
-    const paramsExpr = withOverrides
-      ? factoryExpr && this.#readOriginalFactoryParams(factoryExpr)
-      : options.get('params');
+    const paramsExpr = options.get('params');
     if (!paramsExpr) {
-      this.#fail(
-        withOverrides
-          ? 'the extension has no factory'
-          : 'the extension has no params',
-        call,
-      );
+      this.#fail('the extension has no params', call);
     }
-    const paramValues = new Map<string, FactoryValue>();
-    for (const [key, value] of this.#resolveObject(
-      paramsExpr,
-      'the extension params',
-    )) {
-      paramValues.set(key, this.#readParam(key, value));
-    }
-    const { outputs, configOutputs, loadedConfig } = this.#readOutputs(
-      blueprintInfo,
-      blueprintName,
-      {
-        type: 'record',
-        get: key => paramValues.get(key) ?? { type: 'known', value: undefined },
-      },
-      overrideConfigKeys,
-    );
-
-    if (outputs.get(ELEMENT_DATA_ID) !== ELEMENT_VALUE) {
-      this.#fail(
-        `the extension doesn't output an element that would load the plugin`,
-        call,
-      );
-    }
-    const isPage = isAttachedTo(attachTo, APP_ROUTES);
-    const data: { [dataRefId: string]: unknown } = {};
-    let routeRefName: string | undefined;
-    for (const [id, value] of outputs) {
-      if (id === ELEMENT_DATA_ID) {
-        continue;
-      }
-      if (
-        id === ROUTE_REF_DATA_ID &&
-        value.type === 'opaque' &&
-        value.source &&
-        ts.isExpression(value.source as ts.Node)
-      ) {
-        const key = this.#keyOfValue(value.source as ts.Expression);
-        routeRefName = Array.from(info.routes).find(
-          ([, routeKey]) => routeKey === key,
-        )?.[0];
-        // A page can use a route ref that isn't one of the plugin routes,
-        // which the stub then doesn't output.
-        if (!routeRefName && !isPage) {
-          this.#fail(
-            `the route ref of the extension is not one of the plugin routes`,
-            value.source as ts.Node,
-          );
-        }
-        continue;
-      }
-      if (value.type !== 'known') {
-        throw new AnalysisError(
-          `the '${id}' output of the extension can't be read without running it: ${describeValue(
-            value,
-          )}`,
+    const params: ReadBlueprintParams = {};
+    const paramExprs = this.#resolveObject(paramsExpr, 'the extension params');
+    for (const [key, value] of paramExprs) {
+      const spec = Object.hasOwn(supported.params, key)
+        ? supported.params[key]
+        : undefined;
+      if (!spec) {
+        this.#fail(
+          `the '${key}' param of the '${blueprintName}' blueprint is not supported for deferred loading`,
+          value,
         );
       }
-      if (value.value !== undefined) {
-        data[id] = value.value;
+      if (spec.type === 'string') {
+        params[key as 'path' | 'title'] = this.#evaluateString(
+          value,
+          `the '${key}' param`,
+        );
+      } else if (spec.type === 'routeRef') {
+        const refKey = this.#keyOfValue(value);
+        params.routeRefName = Array.from(info.routes).find(
+          ([, routeKey]) => routeKey === refKey,
+        )?.[0];
+        if (!params.routeRefName && supported.routeRefIsPluginRoute) {
+          this.#fail(
+            `the route ref of the extension is not one of the plugin routes`,
+            value,
+          );
+        }
       }
     }
-
-    const result: FrontendExtensionManifest = {
-      id: extensionId(blueprintInfo.kind, pluginId, name),
-      kind: blueprintInfo.kind,
-      attachTo,
-      disabled,
-    };
-
-    // Pages that attach to app/routes are created with PageBlueprint by the
-    // app, which applies their path and title config.
-    if (isPage) {
-      const path = data[ROUTE_PATH_DATA_ID];
-      const title = data[TITLE_DATA_ID];
-      if (typeof path !== 'string') {
-        this.#fail('the page has no path', paramsExpr);
+    for (const [key, spec] of Object.entries(supported.params)) {
+      if (spec.required && !paramExprs.has(key)) {
+        this.#fail(`the extension has no '${key}' param`, paramsExpr);
       }
-      for (const id of Object.keys(data)) {
-        if (!PAGE_CONFIG[id]) {
-          this.#fail(
-            `the page outputs '${id}', which the stand-in of the page can't output`,
-            call,
-          );
-        }
-      }
-      for (const [key, output] of Object.entries(configOutputs)) {
-        if (PAGE_CONFIG[output.dataRefId] !== key) {
-          this.#fail(
-            `the '${key}' config of the page sets its '${output.dataRefId}' output, which the stand-in of the page can't do`,
-            call,
-          );
-        }
-      }
-      return {
-        ...result,
-        page: {
-          path,
-          ...(typeof title === 'string' ? { title } : {}),
-          ...(routeRefName ? { routeRefName } : {}),
-        },
-      };
     }
 
     return {
-      ...result,
-      element: {
-        data,
-        ...(routeRefName ? { routeRefName } : {}),
-        ...(Object.keys(configOutputs).length > 0 ? { configOutputs } : {}),
-        ...(loadedConfig.length > 0 ? { loadedConfig } : {}),
-      },
+      id: extensionId(supported.kind, pluginId, name),
+      kind: supported.kind,
+      attachTo,
+      disabled,
+      ...supported.createManifest(params),
     };
   }
 
