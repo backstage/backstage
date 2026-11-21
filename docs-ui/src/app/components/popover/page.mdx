@@ -31,6 +31,24 @@ export const reactAriaUrls = {
 
 <CodeBlock code={popoverUsageSnippet} />
 
+### Hover previews
+
+Use `PreviewTrigger` instead of `DialogTrigger` to open an interactive popover on
+hover, keyboard focus, or long press. Set `delay` and `closeDelay` to control its
+opening and closing delays. Keyboard users can press Tab to enter the preview
+and Escape to dismiss it.
+
+```tsx
+import { Button, Popover, PreviewTrigger, Text } from '@backstage/ui';
+
+<PreviewTrigger delay={500}>
+  <Button>Preview</Button>
+  <Popover placement="bottom" aria-label="Preview details">
+    <Text>Preview content</Text>
+  </Popover>
+</PreviewTrigger>;
+```
+
 ## API reference
 
 ### DialogTrigger

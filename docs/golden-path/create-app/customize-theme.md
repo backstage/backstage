@@ -535,7 +535,3 @@ In the new frontend system, the sidebar is managed by the built-in `app/nav` ext
 
 In addition to a custom theme, a custom logo, you can also customize the
 homepage of your app. Read the full guide on the [next page](../../getting-started/homepage.md).
-
-## Migrating to Material UI v5
-
-We now support Material UI v5 in Backstage. Check out our [migration guide](../../tutorials/migrate-to-mui5.md) to get started.
