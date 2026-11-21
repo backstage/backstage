@@ -81,7 +81,7 @@ const packages = getPackagePresentations(plugin);
 
 function workspace(
   packageIndex: number,
-  selectedTab: 'readme' | 'install',
+  selectedTab: 'readme' | 'install' | 'configure',
   onSelectTab = jest.fn(),
 ) {
   return (

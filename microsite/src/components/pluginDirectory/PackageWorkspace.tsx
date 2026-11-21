@@ -15,6 +15,7 @@
  */
 import type { PluginData } from '../../pluginDirectory/plugin';
 import React, { useEffect, useRef, useState } from 'react';
+import { ConfigureGuide } from './ConfigureGuide';
 import { InstallGuide } from './InstallGuide';
 import type { PackagePresentation } from './packagePresentation';
 import { PackageContext } from './PackageContext';
@@ -35,6 +36,7 @@ interface PackageWorkspaceProps {
 const tabs: ReadonlyArray<{ id: PackageTab; label: string }> = [
   { id: 'readme', label: 'README' },
   { id: 'install', label: 'Install' },
+  { id: 'configure', label: 'Configure' },
 ];
 
 export function PackageWorkspace({
@@ -45,6 +47,7 @@ export function PackageWorkspace({
   onSelectPackage,
   onSelectTab,
 }: PackageWorkspaceProps) {
+  const packageSnapshots = packages.map(entry => entry.snapshot);
   const [visitedTabs, setVisitedTabs] = useState<ReadonlySet<PackageTab>>(
     () => new Set([selectedTab]),
   );
@@ -126,6 +129,13 @@ export function PackageWorkspace({
               {tab.id === 'install' && (
                 <InstallGuide
                   packageSnapshot={packagePresentation.snapshot}
+                  primaryNpmPackageName={plugin.npmPackageName}
+                />
+              )}
+              {tab.id === 'configure' && (
+                <ConfigureGuide
+                  packageSnapshot={packagePresentation.snapshot}
+                  packages={packageSnapshots}
                   primaryNpmPackageName={plugin.npmPackageName}
                 />
               )}

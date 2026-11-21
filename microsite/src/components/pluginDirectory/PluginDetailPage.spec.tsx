@@ -41,6 +41,14 @@ const mockFetchPackageReadme = fetchPackageReadme as jest.MockedFunction<
   typeof fetchPackageReadme
 >;
 
+const endpointSchema = {
+  type: 'object',
+  properties: {
+    endpoint: { type: 'string' },
+  },
+  required: ['endpoint'],
+};
+
 const plugin: PluginData = {
   title: 'Example Plugin',
   author: 'Example Maintainers',
@@ -62,6 +70,7 @@ const plugin: PluginData = {
     packages: [
       {
         npmPackageName: '@example/plugin-example',
+        configSchema: endpointSchema,
         npm: {
           status: 'fresh',
           lastAttemptAt: '2026-08-03T12:00:00.000Z',
@@ -72,6 +81,7 @@ const plugin: PluginData = {
       },
       {
         npmPackageName: '@example/plugin-example-backend',
+        configSchema: endpointSchema,
         npm: {
           status: 'fresh',
           lastAttemptAt: '2026-08-03T12:00:00.000Z',
@@ -154,27 +164,20 @@ describe('PluginDetailPage', () => {
     ).toBeVisible();
   });
 
-  it('switches tabs through the URL', async () => {
+  it('keeps configuration values while URL-driven tabs change', async () => {
     const user = userEvent.setup();
     mockUseLocation.mockReturnValue(
       location('?package=%40example%2Fplugin-example&tab=readme'),
     );
     const view = renderPage();
 
-    expect(screen.getByRole('tab', { name: 'README' })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
-    expect(screen.queryByRole('tab', { name: 'Configure' })).toBeNull();
+    expect(
+      await screen.findByText('README for @example/plugin-example'),
+    ).toBeVisible();
 
-    await user.click(screen.getByRole('tab', { name: 'Install' }));
-    expect(mockPush).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        search: '?package=%40example%2Fplugin-example&tab=install',
-      }),
-    );
+    await user.click(screen.getByRole('tab', { name: 'Configure' }));
     mockUseLocation.mockReturnValue(
-      location('?package=%40example%2Fplugin-example&tab=install'),
+      location('?package=%40example%2Fplugin-example&tab=configure'),
     );
     view.rerender(
       <PluginDetailPage
@@ -182,10 +185,34 @@ describe('PluginDetailPage', () => {
         latestBackstageVersion={{ version: null }}
       />,
     );
-    expect(screen.getByRole('tab', { name: 'Install' })).toHaveAttribute(
-      'aria-selected',
-      'true',
+    await user.type(
+      await screen.findByLabelText(/^endpoint/),
+      'https://api.example.com',
     );
-    expect(screen.getByText('yarn add @example/plugin-example')).toBeVisible();
+
+    await user.click(screen.getByRole('tab', { name: 'README' }));
+    mockUseLocation.mockReturnValue(
+      location('?package=%40example%2Fplugin-example&tab=readme'),
+    );
+    view.rerender(
+      <PluginDetailPage
+        plugin={plugin}
+        latestBackstageVersion={{ version: null }}
+      />,
+    );
+    await user.click(screen.getByRole('tab', { name: 'Configure' }));
+    mockUseLocation.mockReturnValue(
+      location('?package=%40example%2Fplugin-example&tab=configure'),
+    );
+    view.rerender(
+      <PluginDetailPage
+        plugin={plugin}
+        latestBackstageVersion={{ version: null }}
+      />,
+    );
+
+    expect(screen.getByLabelText(/^endpoint/)).toHaveValue(
+      'https://api.example.com',
+    );
   });
 });

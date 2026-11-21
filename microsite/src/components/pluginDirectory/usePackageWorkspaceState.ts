@@ -16,7 +16,7 @@
 import { useHistory, useLocation } from '@docusaurus/router';
 import { useCallback } from 'react';
 
-export type PackageTab = 'readme' | 'install';
+export type PackageTab = 'readme' | 'install' | 'configure';
 
 export interface PackageWorkspaceState {
   selectedPackageName: string | undefined;
@@ -26,7 +26,7 @@ export interface PackageWorkspaceState {
 }
 
 function isPackageTab(value: string | null): value is PackageTab {
-  return value === 'readme' || value === 'install';
+  return value === 'readme' || value === 'install' || value === 'configure';
 }
 
 export function usePackageWorkspaceState(

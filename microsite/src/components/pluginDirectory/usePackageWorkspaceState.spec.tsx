@@ -101,10 +101,10 @@ describe('usePackageWorkspaceState', () => {
       location('?package=%40backstage%2Fplugin-catalog&tab=readme', '#details'),
     );
     rerender();
-    act(() => result.current.selectTab('install'));
+    act(() => result.current.selectTab('configure'));
     expect(mockPush).toHaveBeenLastCalledWith({
       pathname: '/plugins/backstage-software-catalog',
-      search: '?package=%40backstage%2Fplugin-catalog&tab=install',
+      search: '?package=%40backstage%2Fplugin-catalog&tab=configure',
       hash: '#details',
     });
   });
