@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "kind": "client",
+  "spec": {
+    "path": "../../../../../events-backend/src/schema/openapi.yaml",
+    "sha256": "2f6a63cf2cd0773fa7fcd8a7a2cd2655d60bceb771665c884c689ad1d2f24cc4"
+  },
+  "generator": {
+    "openapiGenerator": "7.18.0",
+    "templateSha256": "967b3b2ecb864084a2f33f757853c3ee4e2b66624955bfec33248b645540967b"
+  },
+  "additionalProperties": null,
+  "filesSha256": "480f1d3edda5dcbeb47ecbbe663b1ea8a4dd106e4aa163f2db57613da35d067c"
+}

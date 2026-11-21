@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "kind": "client",
+  "spec": {
+    "path": "../../../../../../plugins/catalog-backend/src/schema/openapi.yaml",
+    "sha256": "9677e5aa82d080ba4433480db913d1b0f3eb12dd1fc2e03146e67cdeba720d02"
+  },
+  "generator": {
+    "openapiGenerator": "7.18.0",
+    "templateSha256": "967b3b2ecb864084a2f33f757853c3ee4e2b66624955bfec33248b645540967b"
+  },
+  "additionalProperties": null,
+  "filesSha256": "9417c617a603a21baf0e8980205517f9227dc06841005fb7b26a7df7ee39ae48"
+}

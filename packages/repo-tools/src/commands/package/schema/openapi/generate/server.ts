@@ -35,6 +35,7 @@ import {
   getRelativePathToFile,
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
+import { writeManifest } from '../../../../../lib/openapi/manifest';
 
 async function generateSpecFile() {
   const openapiPath = await getPathToCurrentOpenApiSpec();
@@ -157,6 +158,13 @@ async function generate(
   });
 
   await generateSpecFile();
+
+  await writeManifest({
+    kind: 'server',
+    generatedDir: resolvedOutputDirectory,
+    specPath: resolvedOpenapiPath,
+    additionalProperties,
+  });
 }
 
 export async function command(

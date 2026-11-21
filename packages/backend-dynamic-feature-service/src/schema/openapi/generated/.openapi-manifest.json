@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "kind": "server",
+  "spec": {
+    "path": "../../openapi.yaml",
+    "sha256": "47416094f1c80133cdf23307f54d747b36a33f7048d0b40940cc0243877261de"
+  },
+  "generator": {
+    "openapiGenerator": "7.18.0",
+    "templateSha256": "814d20f564aa3eec55604f4d153bc112cd72d18662d0749e727145b29e0be8bc"
+  },
+  "additionalProperties": null,
+  "filesSha256": "3dc02ab1fb3a3ee9bb09488dbba032ddd7f8cbc49131665d8c586c94a57e3997"
+}

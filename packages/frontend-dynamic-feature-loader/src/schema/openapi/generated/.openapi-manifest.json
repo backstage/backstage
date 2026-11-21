@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "kind": "client",
+  "spec": {
+    "path": "../../../../../backend-dynamic-feature-service/src/schema/openapi.yaml",
+    "sha256": "47416094f1c80133cdf23307f54d747b36a33f7048d0b40940cc0243877261de"
+  },
+  "generator": {
+    "openapiGenerator": "7.18.0",
+    "templateSha256": "967b3b2ecb864084a2f33f757853c3ee4e2b66624955bfec33248b645540967b"
+  },
+  "additionalProperties": null,
+  "filesSha256": "b0709d52d63b7a4b48f3272a336a2b8461d61a1f0d6f6e30fbc2be2d452b9666"
+}
