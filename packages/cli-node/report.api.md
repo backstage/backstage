@@ -133,8 +133,8 @@ export interface CliModule {
 
 // @public
 export interface CliPackageCommand extends Omit<CliCommand, 'path'> {
-  path: string[];
   if?: (context: CliPackageContext) => boolean | Promise<boolean>;
+  path: string[];
 }
 
 // @public
