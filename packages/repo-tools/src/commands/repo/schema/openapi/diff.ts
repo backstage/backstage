@@ -24,7 +24,13 @@ import {
 } from '../../../../lib/openapi/constants';
 import { ensureOasdiffInstalled } from '../../../util';
 import chalk from 'chalk';
-import { relative as relativePath, join, sep, posix } from 'node:path';
+import {
+  relative as relativePath,
+  resolve as resolvePath,
+  join,
+  sep,
+  posix,
+} from 'node:path';
 import { pathExists } from 'fs-extra';
 
 export async function command(opts: OptionValues) {
@@ -36,20 +42,21 @@ export async function command(opts: OptionValues) {
   if (opts.since) {
     const { stdout: sinceRaw } = await exec('git', ['rev-parse', opts.since]);
     since = sinceRaw.toString().trim();
-    const { stdout: changedFilesRaw } = await exec('git', [
-      'diff',
-      '--name-only',
-      since,
-    ]);
+    // Lists the changed files relative to the installation root
+    const { stdout: changedFilesRaw } = await exec(
+      'git',
+      ['diff', '--name-only', '--relative', since],
+      { cwd: targetPaths.installationRootDir },
+    );
     const changedFiles = changedFilesRaw.toString().trim();
 
     const changedOpenApiSpecs = changedFiles
       .split('\n')
       .filter(e => e.endsWith(YAML_SCHEMA_PATH))
-      .map(e => targetPaths.resolve(e));
+      .map(e => resolvePath(targetPaths.installationRootDir, e));
 
     packages = packages.filter(pkg =>
-      changedOpenApiSpecs.some(e => e.startsWith(`${pkg.dir}/`)),
+      changedOpenApiSpecs.some(e => e.startsWith(`${pkg.dir}${sep}`)),
     );
   }
 
@@ -66,6 +73,15 @@ export async function command(opts: OptionValues) {
     return;
   }
 
+  // Paths at git refs are relative to the root of the repository, so they
+  // get the path of the installation inside the repository in front
+  const { stdout: gitPrefixRaw } = await exec(
+    'git',
+    ['rev-parse', '--show-prefix'],
+    { cwd: targetPaths.installationRootDir },
+  );
+  const gitPrefix = gitPrefixRaw.toString().trim();
+
   const { stdout: currentSha } = await exec('git', ['rev-parse', 'HEAD']);
   const sha = currentSha.toString().trim();
 
@@ -80,14 +96,17 @@ export async function command(opts: OptionValues) {
 
   for (const pkg of packagesWithSpecs) {
     const specPath = join(pkg.dir, YAML_SCHEMA_PATH);
-    const relativeSpecPath = relativePath(targetPaths.rootDir, specPath)
+    const relativeSpecPath = relativePath(
+      targetPaths.installationRootDir,
+      specPath,
+    )
       .split(sep)
       .join(posix.sep);
-    const pkgName = relativePath(targetPaths.rootDir, pkg.dir)
+    const pkgName = relativePath(targetPaths.installationRootDir, pkg.dir)
       .split(sep)
       .join(posix.sep);
     const baseRef = since || DEFAULT_BASE_REF;
-    const baseSpec = `${baseRef}:${relativeSpecPath}`;
+    const baseSpec = `${baseRef}:${gitPrefix}${relativeSpecPath}`;
 
     try {
       const { stdout } = await exec(
@@ -101,7 +120,7 @@ export async function command(opts: OptionValues) {
           '--template',
           templatePath,
         ],
-        { cwd: targetPaths.rootDir },
+        { cwd: targetPaths.installationRootDir },
       );
       const output = stdout.toString().trim();
       if (output) {
