@@ -15,6 +15,7 @@
  */
 
 import { OpaqueCliModule, unwrapCliCommand } from '@internal/cli';
+import type { CliCommandRegistration } from '@internal/cli';
 import { runCli } from '@backstage/cli-node';
 import type { CliModule } from '@backstage/cli-node';
 import { version } from './version';
@@ -29,8 +30,8 @@ interface TaggedFeature {
   feature: CliModule;
   /**
    * Whether this module was sourced from an array (e.g. cli-defaults).
-   * Array-sourced modules are silently skipped when any of their commands
-   * overlap with an individually-added module, allowing explicit module
+   * Array-sourced modules silently lose the commands that overlap with an
+   * individually-added module, allowing explicit module
    * additions to take precedence without causing conflicts.
    *
    * Toggleable commands, i.e. those with `if`, do not count as
@@ -92,14 +93,25 @@ export class CliInitializer {
       }
 
       if (fromArray) {
-        const cmds = await OpaqueCliModule.toInternal(feature).commands;
-        if (
-          cmds.some(registration =>
-            individualPaths.has(
+        const { packageName, commands } = OpaqueCliModule.toInternal(feature);
+        const kept = (await commands).filter(
+          registration =>
+            !individualPaths.has(
               unwrapCliCommand(registration).command.path.join(' '),
             ),
-          )
-        ) {
+        );
+        if (kept.length === 0) {
+          continue;
+        }
+        if (kept.length < (await commands).length) {
+          // Only drop the overlapping commands, so that other commands of the
+          // module, such as fallbacks for toggled commands, stay available.
+          modules.push(
+            OpaqueCliModule.createInstance('v1', {
+              packageName,
+              commands: Promise.resolve(kept),
+            }),
+          );
           continue;
         }
       }

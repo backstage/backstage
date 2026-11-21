@@ -60,4 +60,13 @@ describe('createCliModule', () => {
     ]);
     expect(commands[0].if).toBeUndefined();
   });
+
+  it('unwraps plain commands from modules created by older versions', () => {
+    const command = {
+      path: ['repo', 'test'],
+      description: 'Test the repository',
+      execute: async () => {},
+    };
+    expect(unwrapCliCommand(command)).toEqual({ command });
+  });
 });

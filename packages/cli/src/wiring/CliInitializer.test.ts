@@ -373,6 +373,68 @@ describe('CliInitializer', () => {
     expect(process.exit).toHaveBeenNthCalledWith(2, 0);
   });
 
+  it('should keep the non-overlapping commands of an array-sourced module', async () => {
+    const calls: string[] = [];
+    const individualModule = createCliModule({
+      packageJson: { name: '@backstage/individual' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['repo', 'lint'],
+          description: 'individual repo lint',
+          execute: async () => {
+            calls.push('individual repo lint');
+          },
+        });
+        reg.addPackageCommand({
+          path: ['lint'],
+          description: 'toggled package lint',
+          if: () => false,
+          execute: async () => {
+            calls.push('toggled package lint');
+          },
+        });
+      },
+    });
+    const defaultModule = createCliModule({
+      packageJson: { name: '@backstage/default' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['repo', 'lint'],
+          description: 'default repo lint',
+          execute: async () => {
+            calls.push('default repo lint');
+          },
+        });
+        reg.addCommand({
+          path: ['package', 'lint'],
+          description: 'default package lint',
+          execute: async () => {
+            calls.push('default package lint');
+          },
+        });
+      },
+    });
+    const cwdSpy = jest.spyOn(process, 'cwd');
+    const mockDir = createMockDirectory();
+    mockDir.setContent({
+      pkg: { 'package.json': JSON.stringify({ name: 'pkg', version: '0' }) },
+    });
+    cwdSpy.mockReturnValue(mockDir.resolve('pkg'));
+
+    for (const argv of [
+      ['repo', 'lint'],
+      ['package', 'lint'],
+    ]) {
+      process.argv = ['node', 'cli', ...argv];
+      const initializer = new CliInitializer();
+      initializer.add(individualModule);
+      initializer.add([defaultModule]);
+      await initializer.run();
+    }
+
+    expect(calls).toEqual(['individual repo lint', 'default package lint']);
+  });
+
   it('should error with package names when two individual modules conflict', async () => {
     const initializer = new CliInitializer();
 

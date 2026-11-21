@@ -55,8 +55,17 @@ export const OpaqueCliPackageCommand = OpaqueType.create<{
   versions: ['v1'],
 });
 
+/**
+ * Modules created by older versions of `@backstage/cli-node` hold plain
+ * `CliCommand` objects instead of opaque entries.
+ */
+type LegacyCliCommand = CliCommand & { readonly $$type?: undefined };
+
 /** @internal */
-export type CliCommandRegistration = CliCommandEntry | CliPackageCommandEntry;
+export type CliCommandRegistration =
+  | CliCommandEntry
+  | CliPackageCommandEntry
+  | LegacyCliCommand;
 
 /**
  * Unwraps a registered command into its command definition and the optional
@@ -71,7 +80,10 @@ export function unwrapCliCommand(entry: CliCommandRegistration): {
       OpaqueCliPackageCommand.toInternal(entry);
     return { command, if: condition };
   }
-  return { command: OpaqueCliCommand.toInternal(entry).command };
+  if (OpaqueCliCommand.isType(entry)) {
+    return { command: OpaqueCliCommand.toInternal(entry).command };
+  }
+  return { command: entry };
 }
 
 export const OpaqueCliModule = OpaqueType.create<{
