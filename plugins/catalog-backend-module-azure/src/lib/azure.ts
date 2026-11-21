@@ -69,6 +69,7 @@ export async function codeSearch(
   repo: string,
   path: string,
   branch: string,
+  signal?: AbortSignal,
 ): Promise<CodeSearchResultItem[]> {
   const searchBaseUrl = isCloud(azureConfig.host)
     ? 'https://almsearch.dev.azure.com'
@@ -110,6 +111,7 @@ export async function codeSearch(
       },
       method: 'POST',
       body: JSON.stringify(searchRequestBody),
+      signal,
     });
 
     if (response.status !== 200) {
