@@ -11792,7 +11792,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@msw/url@npm:^0.1.2":
+"@msw/url@npm:^0.1.3":
   version: 0.1.3
   resolution: "@msw/url@npm:0.1.3"
   checksum: 10/71535287611d49677ab77bf1bc9e0d511d8ecd87e02c13bef621b4db85de22dc9ca9cddff0abb058a51c541676cb276df5511f2c0a17a995e9d38e462cfa8809
@@ -35635,11 +35635,11 @@ __metadata:
   linkType: hard
 
 "msw@npm:^3.0.4":
-  version: 3.0.6
-  resolution: "msw@npm:3.0.6"
+  version: 3.0.7
+  resolution: "msw@npm:3.0.7"
   dependencies:
     "@inquirer/confirm": "npm:^6.0.11"
-    "@msw/url": "npm:^0.1.2"
+    "@msw/url": "npm:^0.1.3"
     "@mswjs/interceptors": "npm:^0.45.11"
     cookie: "npm:^2.0.1"
     headers-polyfill: "npm:^5.0.1"
@@ -35663,7 +35663,7 @@ __metadata:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 10/a7bbcea29c21820fab573c744cb572488ae794155f072348b6700877bd94dd58875bcbbd7c06c1d80f5dc00505e40fc2db3bad067549c9296d67c655f82ea9ed
+  checksum: 10/b0c1582851415bef730904923ca85db3731b9755c15774943761c20fff6f4d0337414d91987c89b030ca51d5246b8882ab38613bca1cda641a65deff96309f5c
   languageName: node
   linkType: hard
 
