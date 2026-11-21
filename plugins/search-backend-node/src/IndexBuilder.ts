@@ -18,7 +18,8 @@ import {
   DocumentDecoratorFactory,
   DocumentTypeInfo,
 } from '@backstage/plugin-search-common';
-import { pipeline, Transform } from 'node:stream';
+import { Transform } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import { Scheduler } from './Scheduler';
 import {
   IndexBuilderOptions,
@@ -116,7 +117,9 @@ export class IndexBuilder {
       scheduler.addToSchedule({
         id: `search_index_${type.replace('-', '_').toLowerCase()}`,
         scheduledRunner: this.collators[type].schedule,
-        task: async () => {
+        task: async signal => {
+          signal.throwIfAborted();
+
           // Instantiate the collator.
           const collator = await this.collators[type].factory.getCollator();
           taskLogger.info(
@@ -140,23 +143,17 @@ export class IndexBuilder {
           const indexer = await this.searchEngine.getIndexer(type);
 
           // Compose collator/decorators/indexer into a pipeline
-          return new Promise<void>((resolve, reject) => {
-            pipeline(
-              [collator, ...decorators, indexer],
-              (error: NodeJS.ErrnoException | null) => {
-                if (error) {
-                  taskLogger.error(
-                    `Collating documents for ${type} failed: ${error}`,
-                  );
-                  reject(error);
-                } else {
-                  // Signal index pipeline completion!
-                  taskLogger.info(`Collating documents for ${type} succeeded`);
-                  resolve();
-                }
-              },
+          try {
+            await pipeline([collator, ...decorators, indexer], { signal });
+          } catch (error) {
+            taskLogger.error(
+              `Collating documents for ${type} failed: ${error}`,
             );
-          });
+            throw error;
+          }
+
+          // Signal index pipeline completion!
+          taskLogger.info(`Collating documents for ${type} succeeded`);
         },
       });
     });

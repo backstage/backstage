@@ -63,9 +63,11 @@ describe('IndexBuilder', () => {
     const logger = mockServices.logger.mock();
     testScheduledTaskRunner = {
       run: async (
-        task: SchedulerServiceTaskInvocationDefinition & { fn: () => void },
+        task: SchedulerServiceTaskInvocationDefinition & {
+          fn: (signal: AbortSignal) => void;
+        },
       ) => {
-        task.fn();
+        task.fn(new AbortController().signal);
       },
     };
     testSearchEngine = new LunrSearchEngine({ logger });
@@ -90,6 +92,45 @@ describe('IndexBuilder', () => {
       const { scheduler } = await testIndexBuilder.build();
       scheduler.start();
       expect(collatorSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('abort signal', () => {
+    it('stops the pipeline when aborted and does not start when already aborted', async () => {
+      const testCollatorFactory = new TestDocumentCollatorFactory();
+      const collator = await testCollatorFactory.getCollator();
+      const collatorSpy = jest
+        .spyOn(testCollatorFactory, 'getCollator')
+        .mockResolvedValue(collator);
+
+      let runTask: (
+        signal: AbortSignal,
+      ) => void | Promise<void> = async () => {};
+      testIndexBuilder.addCollator({
+        factory: testCollatorFactory,
+        schedule: {
+          run: async task => {
+            runTask = task.fn;
+          },
+        },
+      });
+      const { scheduler } = await testIndexBuilder.build();
+      scheduler.start();
+
+      const controller = new AbortController();
+      const running = runTask(controller.signal);
+      await new Promise(resolve => setImmediate(resolve));
+      expect(collatorSpy).toHaveBeenCalledTimes(1);
+      expect(collator.destroyed).toBe(false);
+
+      controller.abort();
+      await expect(running).rejects.toMatchObject({ name: 'AbortError' });
+      expect(collator.destroyed).toBe(true);
+
+      await expect(runTask(AbortSignal.abort())).rejects.toMatchObject({
+        name: 'AbortError',
+      });
+      expect(collatorSpy).toHaveBeenCalledTimes(1);
     });
   });
 
