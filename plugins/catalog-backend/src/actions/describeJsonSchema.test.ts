@@ -281,6 +281,24 @@ describe('describeJsonSchemaFields', () => {
     ]);
   });
 
+  it('keeps item constraints of schemas without a type', () => {
+    expect(
+      fieldLines({
+        letters: { items: { type: 'string', enum: ['a'] } },
+        pair: { prefixItems: [{ type: 'string' }, { type: 'number' }] },
+        closedList: { items: false },
+        plain: { items: true },
+        typed: { type: 'array', items: { type: 'string', enum: ['b'] } },
+      }),
+    ).toEqual([
+      '* "letters" (unknown, if an array: array of string [one of "a"])',
+      '* "pair" (unknown, if an array: tuple of [string, number])',
+      '* "closedList" (unknown, if an array: empty array)',
+      '* "plain" (unknown)',
+      '* "typed" (array of string [one of "b"])',
+    ]);
+  });
+
   it('marks keys and constraints that are not listed', () => {
     expect(
       fieldLines({

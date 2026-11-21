@@ -248,6 +248,14 @@ function describeType(schema: Schema): string {
   if (typeof schema.$ref === 'string') {
     parts.push(`reference to "${schema.$ref}"`);
   }
+  if (schema.type === undefined) {
+    // Without a type the value can be anything, but the item constraints still
+    // apply if it is an array, so they must not be lost
+    const array = describeArray(schema);
+    if (array !== 'array' && array !== 'array of unknown') {
+      parts.push(`${parts.length ? '' : 'unknown, '}if an array: ${array}`);
+    }
+  }
   return parts.length ? parts.join(', ') : 'unknown';
 }
 
