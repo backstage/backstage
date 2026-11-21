@@ -16,12 +16,12 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
-import { FrontendPackageAnalysis } from './analyzeFrontendPackage';
 import {
   BACKSTAGE_MANIFEST_FILE_NAME,
   BACKSTAGE_MANIFEST_VERSION,
   BackstageManifest,
   FRONTEND_MANIFEST_VERSION,
+  FrontendPackageAnalysis,
 } from './types';
 
 /**

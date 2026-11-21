@@ -260,7 +260,7 @@ describe('readFrontendManifestFromTypes', () => {
     );
   });
 
-  it('should reject what the analyzer rejects', () => {
+  it('should record why a plugin can not be deferred', () => {
     const one = (ext: string) => plugin({ 'page:demo': ext });
 
     // Params that are passed but can't be read
@@ -353,6 +353,14 @@ describe('readFrontendManifestFromTypes', () => {
     expect(
       reason(plugin({ 'page:demo': page() }, { extensionIds: 'never[]' })),
     ).toBe('skipped: the order of the plugin extensions is not known');
+    expect(
+      reason(`
+        declare const _default: ${API}.OverridableFrontendModule<'demo'>;
+        export default _default;
+      `),
+    ).toBe(
+      'skipped: the entry point is a module, and modules are never deferred',
+    );
     expect(
       reason(`
         declare const _default: ${API}.OverridableFrontendPlugin<{}, {}, {}>;

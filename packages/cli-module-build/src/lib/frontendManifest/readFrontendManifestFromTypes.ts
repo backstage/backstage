@@ -266,6 +266,19 @@ function readMembers<T>(
   return result;
 }
 
+const MODULE_TYPES = ['FrontendModule', 'OverridableFrontendModule'];
+
+/** The name of the type that a type reference or import type refers to. */
+function referencedTypeName(node: ts.TypeNode): string | undefined {
+  let name: ts.EntityName | undefined;
+  if (ts.isImportTypeNode(node)) {
+    name = node.qualifier;
+  } else if (ts.isTypeReferenceNode(node)) {
+    name = node.typeName;
+  }
+  return name && (ts.isIdentifier(name) ? name.text : name.right.text);
+}
+
 function typeArguments(node: ts.TypeNode): readonly ts.TypeNode[] {
   if (
     (ts.isImportTypeNode(node) || ts.isTypeReferenceNode(node)) &&
@@ -647,6 +660,12 @@ export function readFrontendManifestFromTypes(options: {
   }
   if (!declaration?.type) {
     return { skipped: 'the entry point has no default export with a type' };
+  }
+
+  if (MODULE_TYPES.includes(referencedTypeName(declaration.type) ?? '')) {
+    return {
+      skipped: 'the entry point is a module, and modules are never deferred',
+    };
   }
 
   let manifest: FrontendFeatureManifest;

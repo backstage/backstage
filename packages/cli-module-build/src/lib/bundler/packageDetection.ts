@@ -26,12 +26,12 @@ import {
   sep,
 } from 'node:path';
 import { targetPaths } from '@backstage/cli-common';
-import {
-  analyzeFrontendPackage,
-  FrontendPackageAnalysis,
-} from '../frontendManifest/analyzeFrontendPackage';
+import { readPackageDeclarations } from '../frontendManifest/readPackageDeclarations';
 import { readPackageManifest } from '../frontendManifest/readPackageManifest';
-import { FrontendFeatureManifest } from '../frontendManifest/types';
+import {
+  FrontendFeatureManifest,
+  FrontendPackageAnalysis,
+} from '../frontendManifest/types';
 import { readEntryPoints } from '../entryPoints';
 
 const DETECTED_MODULES_MODULE_NAME = '__backstage-autodetected-plugins__';
@@ -188,23 +188,24 @@ type PackageResolution =
     };
 
 /**
- * Reads the manifests of a package. Workspace packages are analyzed from
- * source, while other packages must ship the Backstage manifest that is
- * written when they are packed for publishing.
+ * Reads the manifests of a package. The manifests of workspace packages are
+ * read from the type declarations that `yarn tsc` emits to `dist-types`, while
+ * other packages must ship the Backstage manifest that is written when they
+ * are packed for publishing.
  */
 async function readManifests(
   pkg: DetectedPackage,
 ): Promise<FrontendPackageAnalysis | { skipped: string }> {
   if (isWorkspacePackage(pkg.dir)) {
     try {
-      return analyzeFrontendPackage({
+      return readPackageDeclarations({
         packageDir: pkg.dir,
         entryPoints: readEntryPoints(pkg.packageJson).filter(entry =>
           ['.', './alpha'].includes(entry.mount),
         ),
       });
     } catch (error) {
-      return { skipped: `the analysis of the package failed, ${error}` };
+      return { skipped: `the manifest of the package can't be read, ${error}` };
     }
   }
   return readPackageManifest(pkg.dir);

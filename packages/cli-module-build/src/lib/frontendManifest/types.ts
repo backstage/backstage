@@ -91,3 +91,16 @@ export interface BackstageManifest {
   role: string;
   frontend?: FrontendPackageManifest;
 }
+
+/** The result of reading one entry point of a package. */
+export type EntryPointAnalysis =
+  | { manifest: FrontendFeatureManifest }
+  | {
+      /** Why the entry point has no manifest. It is loaded with the app. */
+      skipped: string;
+    };
+
+/** The manifests of the entry points of a frontend plugin package. */
+export interface FrontendPackageAnalysis {
+  entryPoints: { [entryPoint: string]: EntryPointAnalysis };
+}

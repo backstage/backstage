@@ -30,7 +30,7 @@ export type BlueprintAttachTo =
   | { id: string; input: string }
   | { relative: { kind?: string; name?: string }; input: string };
 
-/** How a param of a blueprint is read from the source of an extension. */
+/** How a param of a blueprint is read from the types of an extension. */
 type ParamSpec = {
   /**
    * The type of the param. Params of the type `string` must be string
@@ -41,7 +41,7 @@ type ParamSpec = {
   required?: boolean;
 };
 
-/** The params of an extension that are read from its source. */
+/** The params of an extension that are read from its types. */
 export interface ReadBlueprintParams {
   path?: string;
   title?: string;

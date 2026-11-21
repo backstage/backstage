@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import fs from 'fs-extra';
 import os from 'node:os';
 import { join as joinPath } from 'node:path';
@@ -109,7 +110,9 @@ describe('createDetectedModulesEntryPoint', () => {
 
   beforeEach(async () => {
     logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    appDir = await fs.mkdtemp(joinPath(os.tmpdir(), 'package-detection-'));
+    appDir = await fs.realpath(
+      await fs.mkdtemp(joinPath(os.tmpdir(), 'package-detection-')),
+    );
     await fs.writeJson(joinPath(appDir, 'package.json'), {
       name: 'app',
       dependencies: Object.fromEntries(
@@ -261,49 +264,41 @@ describe('createDetectedModulesEntryPoint', () => {
     );
   });
 
-  it('analyzes workspace packages from source', async () => {
+  it('reads the manifests of workspace packages from type declarations', async () => {
+    overrideTargetPaths(appDir);
     // A workspace package is linked into node_modules
     const packageDir = joinPath(appDir, 'plugins', 'workspace');
     await writePackage(packageDir, { name: '@test/plugin-workspace' });
+    const api = 'import("@backstage/frontend-plugin-api")';
     await fs.outputFile(
-      joinPath(packageDir, 'src', 'index.ts'),
+      joinPath(appDir, 'dist-types/plugins/workspace/src/index.d.ts'),
       `
-        import { createFrontendPlugin, PageBlueprint } from '@backstage/frontend-plugin-api';
-        export default createFrontendPlugin({
-          pluginId: 'workspace',
-          extensions: [
-            PageBlueprint.make({ params: { path: '/workspace', loader: async () => null } }),
-          ],
-        });
+        declare const _default: ${api}.OverridableFrontendPlugin<{}, {}, {
+          "page:workspace": ${api}.OverridableExtensionDefinition<{
+            kind: "page";
+            name: undefined;
+            literals: {
+              blueprint: "@backstage/frontend-plugin-api#PageBlueprint";
+              params: { path: "/workspace" };
+              paramKeys: "path" | "loader";
+              paramsCallback: undefined;
+              attachTo: undefined;
+              disabled: undefined;
+              if: undefined;
+            };
+          }>;
+        }, {
+          pluginId: "workspace";
+          title: undefined;
+          if: undefined;
+          extensionIds: ["page:workspace"];
+        }>;
+        export default _default;
       `,
     );
     await fs.ensureSymlink(
       packageDir,
       joinPath(appDir, 'node_modules', '@test/plugin-workspace'),
-    );
-    // The blueprint is read from the installed package
-    const apiDir = joinPath(
-      appDir,
-      'node_modules/@backstage/frontend-plugin-api',
-    );
-    await writePackage(apiDir, {
-      name: '@backstage/frontend-plugin-api',
-      main: 'index.js',
-    });
-    await fs.outputFile(
-      joinPath(apiDir, 'index.js'),
-      `
-        const routePath = createExtensionDataRef().with({ id: 'core.routing.path' });
-        const reactElement = createExtensionDataRef().with({ id: 'core.reactElement' });
-        export const PageBlueprint = createExtensionBlueprint({
-          kind: 'page',
-          attachTo: { id: 'app/routes', input: 'routes' },
-          *factory(params, { config }) {
-            yield routePath(config.path ?? params.path);
-            yield reactElement(params.loader);
-          },
-        });
-      `,
     );
     await fs.writeJson(joinPath(appDir, 'package.json'), {
       name: 'app',
@@ -335,8 +330,8 @@ describe('createDetectedModulesEntryPoint', () => {
 
     // A package that can't be deferred is bundled with the app
     await fs.outputFile(
-      joinPath(packageDir, 'src', 'index.ts'),
-      'export const x = 1;',
+      joinPath(appDir, 'dist-types/plugins/workspace/src/index.d.ts'),
+      'export declare const x = 1;',
     );
     onDeferredPackages.mockClear();
     await createDetectedModulesEntryPoint({
@@ -349,7 +344,7 @@ describe('createDetectedModulesEntryPoint', () => {
       `default: require('@test/plugin-workspace').default }`,
     );
     expect(readReport()).toContain(
-      'eager     @test/plugin-workspace (the entry point has no default export)',
+      'eager     @test/plugin-workspace (the entry point has no default export with a type)',
     );
   });
 });

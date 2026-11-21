@@ -15,9 +15,8 @@
  */
 
 import fs from 'fs-extra';
-import { relative as relativePath, resolve as resolvePath } from 'node:path';
-import { targetPaths } from '@backstage/cli-common';
-import { readFrontendManifestFromTypes } from './readFrontendManifestFromTypes';
+import { resolve as resolvePath } from 'node:path';
+import { readPackageDeclarations } from './readPackageDeclarations';
 import {
   BACKSTAGE_MANIFEST_FILE_NAME,
   BACKSTAGE_MANIFEST_VERSION,
@@ -52,31 +51,19 @@ export async function writeBackstageManifest(options: {
    */
   declarationsDir?: string;
 }): Promise<void> {
-  const declarationsDir =
-    options.declarationsDir ??
-    targetPaths.resolveRoot(
-      'dist-types',
-      relativePath(targetPaths.rootDir, options.packageDir),
-    );
+  const analysis = readPackageDeclarations({
+    packageDir: options.packageDir,
+    entryPoints: Object.entries(options.exposes).map(([mount, path]) => ({
+      mount,
+      path,
+    })),
+    declarationsDir: options.declarationsDir,
+  });
 
   const frontend: FrontendPackageManifest = { exposedModules: {} };
-  for (const [name, sourcePath] of Object.entries(options.exposes)) {
-    if (!/\.tsx?$/.test(sourcePath)) {
-      continue;
-    }
-    // The source path of a remote can be absolute
-    const packageSourcePath = relativePath(
-      options.packageDir,
-      resolvePath(options.packageDir, sourcePath),
-    );
-    const result = readFrontendManifestFromTypes({
-      entryPoint: resolvePath(
-        declarationsDir,
-        packageSourcePath.replace(/\.tsx?$/, '.d.ts'),
-      ),
-    });
-    if ('manifest' in result) {
-      frontend.exposedModules[name] = result.manifest;
+  for (const [entryPoint, entry] of Object.entries(analysis.entryPoints)) {
+    if ('manifest' in entry) {
+      frontend.exposedModules[entryPoint] = entry.manifest;
     }
   }
 
