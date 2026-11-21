@@ -73,9 +73,12 @@ export class CliInitializer {
     // commands are excluded so that array-sourced modules remain available
     // as the fallback for packages where the toggled command is not enabled.
     const individualPaths = new Set<string>();
+    const individualPackages = new Set<string>();
     for (const { feature, fromArray } of allFeatures) {
       if (!fromArray && OpaqueCliModule.isType(feature)) {
-        const cmds = await OpaqueCliModule.toInternal(feature).commands;
+        const internal = OpaqueCliModule.toInternal(feature);
+        individualPackages.add(internal.packageName);
+        const cmds = await internal.commands;
         for (const registration of cmds) {
           const { command, if: condition } = unwrapCliCommand(registration);
           if (!condition) {
@@ -93,6 +96,11 @@ export class CliInitializer {
 
       if (fromArray) {
         const { packageName, commands } = OpaqueCliModule.toInternal(feature);
+        // A module that is also added individually would otherwise register
+        // its commands twice.
+        if (individualPackages.has(packageName)) {
+          continue;
+        }
         // Toggled commands are always kept, since they are only active for
         // some packages and can coexist with an individual fallback.
         const kept = (await commands).filter(registration => {

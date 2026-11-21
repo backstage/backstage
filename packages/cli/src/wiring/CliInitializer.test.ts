@@ -373,6 +373,38 @@ describe('CliInitializer', () => {
     expect(process.exit).toHaveBeenNthCalledWith(2, 0);
   });
 
+  it('should skip array-sourced modules that are also added individually', async () => {
+    const calls: string[] = [];
+    const createToggledModule = () =>
+      createCliModule({
+        packageJson: { name: '@backstage/toggled' },
+        init: async reg =>
+          reg.addPackageCommand({
+            path: ['test'],
+            description: 'toggled test',
+            if: () => true,
+            execute: async () => {
+              calls.push('toggled');
+            },
+          }),
+      });
+    const cwdSpy = jest.spyOn(process, 'cwd');
+    const mockDir = createMockDirectory();
+    mockDir.setContent({
+      'package.json': JSON.stringify({ name: 'pkg', version: '0' }),
+    });
+    cwdSpy.mockReturnValue(mockDir.path);
+
+    process.argv = ['node', 'cli', 'package', 'test'];
+    const initializer = new CliInitializer();
+    initializer.add(createToggledModule());
+    initializer.add([createToggledModule()]);
+    await initializer.run();
+
+    expect(calls).toEqual(['toggled']);
+    expect(process.exit).toHaveBeenCalledWith(0);
+  });
+
   it('should keep the non-overlapping commands of an array-sourced module', async () => {
     const calls: string[] = [];
     const individualModule = createCliModule({
