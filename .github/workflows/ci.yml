@@ -135,8 +135,17 @@ jobs:
       - name: validate openapi yaml file matches generated ts file
         run: yarn backstage-repo-tools repo schema openapi validate
 
+      - name: install microsite dependencies
+        working-directory: microsite
+        run: yarn install
+
       - name: verify plugin directory
-        run: node scripts/verify-plugin-directory.js
+        working-directory: microsite
+        run: yarn plugins:verify
+
+      - name: test plugin directory tooling
+        working-directory: microsite
+        run: yarn test:plugin-directory
 
       - name: verify agent skills
         run: node scripts/verify-skills.js
