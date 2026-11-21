@@ -31,11 +31,50 @@ function nested(levels: number): Record<string, unknown> {
   return schema;
 }
 
+// Every keyword and position that must never reach the stored schema.
+function containsKey(value: unknown, forbidden: Set<string>): boolean {
+  if (Array.isArray(value)) {
+    return value.some(item => containsKey(item, forbidden));
+  }
+  if (typeof value === 'object' && value !== null) {
+    return Object.entries(value).some(
+      ([key, item]) => forbidden.has(key) || containsKey(item, forbidden),
+    );
+  }
+  return false;
+}
+
 describe('sanitizeConfigSchema', () => {
-  it('removes regex, format and identifier keywords at every schema level', () => {
+  it('keeps the keywords a configuration form needs', () => {
+    const schema = {
+      type: 'object',
+      title: 'Example',
+      description: 'Example plugin settings.',
+      properties: {
+        endpoint: { type: 'string', minLength: 1, maxLength: 200 },
+        mode: { type: 'string', enum: ['a', 'b'], default: 'a' },
+        retries: { type: 'integer', minimum: 0, maximum: 10 },
+        tags: {
+          type: 'array',
+          items: { type: 'string' },
+          minItems: 1,
+          uniqueItems: true,
+        },
+        either: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+        extra: { type: 'object', additionalProperties: { type: 'string' } },
+        flag: { type: ['boolean', 'null'], default: false, deprecated: true },
+      },
+      required: ['endpoint'],
+    };
+
+    assert.deepEqual(sanitizeConfigSchema(schema), schema);
+  });
+
+  it('removes regex, format, identifier and meta keywords at every level', () => {
     const sanitized = sanitizeConfigSchema({
       $id: 'https://example.com/schema.json',
       $schema: 'http://json-schema.org/draft-07/schema#',
+      $comment: 'internal',
       type: 'object',
       properties: {
         name: { type: 'string', pattern: '^(a+)+$', format: 'email' },
@@ -53,7 +92,6 @@ describe('sanitizeConfigSchema', () => {
     });
 
     assert.deepEqual(sanitized, {
-      $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
       properties: {
         name: { type: 'string' },
@@ -65,23 +103,112 @@ describe('sanitizeConfigSchema', () => {
     });
   });
 
-  it('keeps only references that point inside the document', () => {
+  it('drops unlisted subschema keywords so nothing nested under them survives', () => {
+    const regex = { type: 'string', pattern: '^(a+)+$', format: 'email' };
+    const sanitized = sanitizeConfigSchema({
+      type: 'object',
+      properties: { kept: { type: 'string' } },
+      dependencies: { kept: { properties: { x: regex } } },
+      dependentSchemas: { kept: { properties: { x: regex } } },
+      prefixItems: [regex],
+      unevaluatedProperties: regex,
+      unevaluatedItems: regex,
+      contentSchema: regex,
+      contains: regex,
+      propertyNames: regex,
+      not: regex,
+      if: regex,
+      then: { patternProperties: { '^x': regex } },
+      else: regex,
+      additionalItems: regex,
+      items: { type: 'array', items: regex, contains: regex },
+      allOf: [
+        { dependencies: { a: regex }, type: 'object' },
+        { properties: { deep: { not: regex, type: 'string' } } },
+      ],
+      definitions: {
+        shared: { type: 'object', dependentSchemas: { a: regex } },
+      },
+      $defs: { other: { unevaluatedProperties: regex, type: 'string' } },
+    });
+
+    assert.deepEqual(sanitized, {
+      type: 'object',
+      properties: { kept: { type: 'string' } },
+      items: { type: 'array', items: { type: 'string' } },
+      allOf: [{ type: 'object' }, { properties: { deep: { type: 'string' } } }],
+      definitions: { shared: { type: 'object' } },
+      $defs: { other: { type: 'string' } },
+    });
+    assert.equal(
+      containsKey(
+        sanitized,
+        new Set(['pattern', 'format', 'patternProperties', 'dependencies']),
+      ),
+      false,
+    );
+  });
+
+  it('drops unknown and extension keywords instead of copying them', () => {
+    const sanitized = sanitizeConfigSchema({
+      type: 'object',
+      'x-ui': { pattern: '^(a+)+$' },
+      tsType: 'Foo',
+      visibility: 'secret',
+      properties: {
+        name: {
+          type: 'string',
+          $dynamicRef: '#meta',
+          $anchor: 'name',
+          contentEncoding: 'base64',
+          'x-custom': { format: 'email' },
+        },
+      },
+    });
+
+    assert.deepEqual(sanitized, {
+      type: 'object',
+      properties: { name: { type: 'string' } },
+    });
+  });
+
+  it('only allows references to definitions that are kept in the output', () => {
     const sanitized = sanitizeConfigSchema({
       type: 'object',
       properties: {
         local: { $ref: '#/definitions/shared' },
+        modern: { $ref: '#/$defs/modern' },
+        encoded: { $ref: '#/definitions/Record%3Cstring%2Cstring%3E' },
+        missing: { $ref: '#/definitions/missing' },
+        nested: { $ref: '#/definitions/shared/properties/a' },
+        pointer: { $ref: '#/properties/local' },
+        root: { $ref: '#' },
         remote: { $ref: 'https://example.com/other.json' },
         relative: { $ref: 'other.json#/definitions/x' },
-        root: { $ref: '#' },
+        file: { $ref: 'file:///etc/passwd' },
+        wrongMap: { $ref: '#/$defs/shared' },
+        notString: { $ref: { $ref: '#/definitions/shared' } },
       },
-      definitions: { shared: { type: 'string' } },
+      definitions: {
+        shared: { type: 'string' },
+        'Record<string,string>': { type: 'object' },
+      },
+      $defs: { modern: { type: 'number' } },
     });
 
     assert.deepEqual(sanitized.properties, {
       local: { $ref: '#/definitions/shared' },
+      modern: { $ref: '#/$defs/modern' },
+      encoded: { $ref: '#/definitions/Record%3Cstring%2Cstring%3E' },
+      missing: {},
+      nested: {},
+      pointer: {},
+      root: {},
       remote: {},
       relative: {},
-      root: {},
+      file: {},
+      wrongMap: {},
+      notString: {},
     });
   });
 
@@ -91,6 +218,7 @@ describe('sanitizeConfigSchema', () => {
       properties: {
         pattern: { type: 'string', default: 'a*' },
         format: { type: 'string', enum: ['json', 'yaml'] },
+        dependencies: { type: 'string' },
         $ref: { type: 'string' },
         example: { type: 'object', default: { pattern: 'keep', format: 'me' } },
       },
@@ -102,6 +230,7 @@ describe('sanitizeConfigSchema', () => {
       properties: {
         pattern: { type: 'string', default: 'a*' },
         format: { type: 'string', enum: ['json', 'yaml'] },
+        dependencies: { type: 'string' },
         $ref: { type: 'string' },
         example: { type: 'object', default: { pattern: 'keep', format: 'me' } },
       },
@@ -109,10 +238,25 @@ describe('sanitizeConfigSchema', () => {
     });
   });
 
+  it('drops keywords with values of the wrong type', () => {
+    const sanitized = sanitizeConfigSchema({
+      type: 'object',
+      title: { pattern: 'x' },
+      required: 'name',
+      minProperties: '1',
+      maxProperties: Infinity,
+      uniqueItems: 'yes',
+      properties: { bad: 'not a schema', worse: ['x'], ok: { type: 'bogus' } },
+      items: 'string',
+    });
+
+    assert.deepEqual(sanitized, { type: 'object', properties: { ok: {} } });
+  });
+
   it('treats a __proto__ key as data and does not touch the prototype', () => {
     const sanitized = sanitizeConfigSchema(
       JSON.parse(
-        '{"type":"object","properties":{"__proto__":{"type":"string"}}}',
+        '{"type":"object","properties":{"__proto__":{"type":"string"}},"default":{"__proto__":{"polluted":true}}}',
       ),
     );
 
@@ -121,7 +265,60 @@ describe('sanitizeConfigSchema', () => {
       Object.keys(sanitized.properties as Record<string, unknown>),
       ['__proto__'],
     );
-    assert.equal(({} as Record<string, unknown>).type, undefined);
+    assert.equal(({} as Record<string, unknown>).polluted, undefined);
+  });
+
+  it('rejects recursive references and reference fan-out', () => {
+    assert.throws(
+      () =>
+        sanitizeConfigSchema({
+          type: 'object',
+          properties: { tree: { $ref: '#/definitions/node' } },
+          definitions: {
+            node: {
+              type: 'object',
+              properties: { child: { $ref: '#/definitions/node' } },
+            },
+          },
+        }),
+      (error: unknown) =>
+        error instanceof ConfigSchemaLimitError &&
+        error.reason === 'config-schema-invalid',
+    );
+    assert.throws(
+      () =>
+        sanitizeConfigSchema({
+          definitions: {
+            a: { allOf: [{ $ref: '#/definitions/b' }] },
+            b: { allOf: [{ $ref: '#/definitions/a' }] },
+          },
+        }),
+      ConfigSchemaLimitError,
+    );
+
+    // Each level references the next one twice, so the expanded form doubles
+    // at every level even though the stored schema stays small.
+    const definitions: Record<string, unknown> = {};
+    for (let i = 0; i < 20; i++) {
+      definitions[`d${i}`] = {
+        allOf: [
+          { $ref: `#/definitions/d${i + 1}` },
+          { $ref: `#/definitions/d${i + 1}` },
+        ],
+      };
+    }
+    definitions.d20 = { type: 'string' };
+    assert.throws(
+      () =>
+        sanitizeConfigSchema({
+          type: 'object',
+          properties: { start: { $ref: '#/definitions/d0' } },
+          definitions,
+        }),
+      (error: unknown) =>
+        error instanceof ConfigSchemaLimitError &&
+        error.reason === 'config-schema-too-large',
+    );
   });
 
   it('rejects schemas that are nested too deeply', () => {
