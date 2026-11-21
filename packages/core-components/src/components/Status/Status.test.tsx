@@ -15,6 +15,7 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
+import { palettes } from '@backstage/theme';
 
 import {
   StatusOK,
@@ -54,22 +55,26 @@ describe('<StatusError />', () => {
 });
 
 describe('<StatusPending />', () => {
-  it('renders without exploding', async () => {
+  it('renders with the pending color from the theme', async () => {
     const { getByLabelText, getByTestId } = await renderInTestApp(
       <StatusPending />,
     );
     expect(getByLabelText('Status pending')).toBeInTheDocument();
-    expect(getByTestId('status-pending')).toBeInTheDocument();
+    expect(getByTestId('status-pending')).toHaveStyle({
+      fill: palettes.light.status.pending,
+    });
   });
 });
 
 describe('<StatusRunning />', () => {
-  it('renders without exploding', async () => {
+  it('renders with the running color from the theme', async () => {
     const { getByLabelText, getByTestId } = await renderInTestApp(
       <StatusRunning />,
     );
     expect(getByLabelText('Status running')).toBeInTheDocument();
-    expect(getByTestId('status-running')).toBeInTheDocument();
+    expect(getByTestId('status-running')).toHaveStyle({
+      fill: palettes.light.status.running,
+    });
   });
 });
 
