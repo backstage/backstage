@@ -134,13 +134,28 @@ reads it from the published tarball and stores a sanitized copy as the
 package's `configSchema`. The plugin detail page renders its configuration form
 from this stored copy and never fetches package contents in the browser.
 
-The audit removes `pattern`, `patternProperties`, `format`, `$id`, and every
-`$ref` that does not start with `#/`. Property names that match one of these
-keywords are kept. The audit stores no schema that is nested deeper than 32
-levels or larger than 64 KiB once sanitized. It also refuses tarballs larger
-than 10 MiB, or 64 MiB once unpacked, and tarball URLs outside
-`registry.npmjs.org`. When a read fails, the audit keeps the previously stored
-schema and prints a warning. These warnings are not stored in the snapshot.
+The audit keeps only the keywords that the configuration form needs and drops
+everything else, including anything nested under a dropped keyword:
+
+- Annotations and constraints: `type`, `title`, `description`, `default`,
+  `const`, `enum`, `required`, the numeric, string length, array and object
+  size limits, `uniqueItems`, `readOnly`, `writeOnly`, and `deprecated`.
+- Sub-schemas: `properties`, `items`, `additionalProperties`, `allOf`,
+  `anyOf`, `oneOf`, `definitions`, and `$defs`.
+- References: only `#/definitions/<name>` and `#/$defs/<name>` that name a kept
+  definition.
+
+Keywords such as `pattern`, `patternProperties`, `format`, `$id`, `$schema`,
+`dependencies`, `dependentSchemas`, `prefixItems`, `unevaluated*`, `if`,
+`then`, `else`, `not`, and `contentSchema` are removed. Property names that
+match one of these keywords are kept.
+
+The audit stores no schema that is nested deeper than 32 levels, is larger than
+64 KiB once sanitized, contains a recursive `$ref`, or expands to more than
+5,000 nodes once every `$ref` is followed. It also refuses tarballs larger than
+10 MiB, or 64 MiB once unpacked, and tarball URLs outside `registry.npmjs.org`.
+When a read fails, the audit keeps the previously stored schema and prints a
+warning. These warnings are not stored in the snapshot.
 
 ## Warning reason codes
 
@@ -162,6 +177,6 @@ stored in the snapshot.
 | Backstage     | `backstage-json-invalid`       | The selected file is not valid JSON with a nonempty string `version`.                                                               |
 | Backstage     | `backstage-tag-not-found`      | No `v<major>.<minor>.<patch>` tag exists for `backstage/backstage`, or the plugin's `package.json` is missing from that tag's tree. |
 | Config schema | `config-schema-fetch-failed`   | The tarball cannot be downloaded or unpacked within the size limits.                                                                |
-| Config schema | `config-schema-invalid`        | The declared schema file is not a JSON object.                                                                                      |
+| Config schema | `config-schema-invalid`        | The declared schema file is not a JSON object, or contains a recursive `$ref`.                                                      |
 | Config schema | `config-schema-too-large`      | The schema exceeds the size limit.                                                                                                  |
 | Config schema | `config-schema-too-deep`       | The schema exceeds the nesting limit.                                                                                               |
