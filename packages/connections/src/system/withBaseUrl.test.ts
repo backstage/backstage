@@ -82,6 +82,10 @@ describe('withBaseUrl', () => {
     ).filter(definition => definition.type !== 'aws');
     for (const definition of definitions) {
       const fields = {
+        ...(definition.type === 'pagerduty'
+          ? { apiBaseUrl: 'https://api.pagerduty.com/' }
+          : {}),
+        ...(definition.type === 'jira' ? { deployment: 'cloud' } : {}),
         ...(definition.type === 'gerrit'
           ? { gitilesBaseUrl: 'https://gitiles.example.com/' }
           : {}),

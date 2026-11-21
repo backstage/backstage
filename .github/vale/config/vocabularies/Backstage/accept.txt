@@ -6,6 +6,7 @@ addon
 addons
 ADRs
 airbrake
+argocd
 Airbrake
 Airbrakes
 ajv
