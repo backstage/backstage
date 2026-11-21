@@ -121,6 +121,8 @@ describe('UserSummary Test', () => {
       // clicking the button should open a dialog listing all groups
       await userEvent.click(screen.getByText('...More (2)'));
 
+      expect(screen.getByText("All Calum Leavy's groups:")).toBeInTheDocument();
+      expect(screen.getByText("All Calum Leavy's groups:")).toBeInTheDocument();
       expect(screen.getByText('team-d')).toBeInTheDocument();
       expect(screen.getByText('team-e')).toBeInTheDocument();
     });

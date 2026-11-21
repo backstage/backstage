@@ -135,6 +135,36 @@ describe('MemberTab Test', () => {
     expect(screen.getByText('team-d members (1 of 1)')).toBeInTheDocument();
   });
 
+  it('displays the presentation title in the card title', async () => {
+    const groupWithProfile: GroupEntity = {
+      ...groupEntity,
+      spec: {
+        ...groupEntity.spec,
+        profile: {
+          displayName: 'Team D Display Name',
+        },
+      },
+    };
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityProvider entity={groupWithProfile}>
+          <MembersListCard />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+        },
+      },
+    );
+
+    expect(
+      screen.getByText('Team D Display Name members (1 of 1)'),
+    ).toBeInTheDocument();
+  });
+
   it('renders UserAvatar for each member', async () => {
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>

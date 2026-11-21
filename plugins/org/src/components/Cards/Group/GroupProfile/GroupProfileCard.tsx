@@ -30,11 +30,13 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Tooltip from '@material-ui/core/Tooltip';
 import {
+  EntityDisplayName,
   EntityInfoCard,
   EntityRefLinks,
   catalogApiRef,
   getEntityRelations,
   useEntity,
+  useEntityPresentation,
 } from '@backstage/plugin-catalog-react';
 import { useCallback } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
@@ -68,17 +70,20 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const CardTitle = (props: { title: string; pictureSrc?: string }) => (
-  <Flex align="center" gap="2">
-    <Avatar
-      size="small"
-      purpose="decoration"
-      name={props.title}
-      src={props.pictureSrc || ''}
-    />
-    {props.title}
-  </Flex>
-);
+const CardTitle = (props: { entity: GroupEntity; pictureSrc?: string }) => {
+  const { primaryTitle } = useEntityPresentation(props.entity);
+  return (
+    <Flex align="center" gap="2">
+      <Avatar
+        size="small"
+        purpose="decoration"
+        name={primaryTitle}
+        src={props.pictureSrc || ''}
+      />
+      <EntityDisplayName entityRef={props.entity} hideIcon />
+    </Flex>
+  );
+};
 
 /** @public */
 export const GroupProfileCard = (props: { showLinks?: boolean }) => {
@@ -108,7 +113,7 @@ export const GroupProfileCard = (props: { showLinks?: boolean }) => {
   }
 
   const {
-    metadata: { name, description, title, annotations, links },
+    metadata: { description, annotations, links },
     spec: { profile },
   } = group;
 
@@ -126,7 +131,6 @@ export const GroupProfileCard = (props: { showLinks?: boolean }) => {
   const entityMetadataEditUrl =
     group.metadata.annotations?.[ANNOTATION_EDIT_URL];
 
-  const displayName = profile?.displayName ?? title ?? name;
   const emailHref = profile?.email ? `mailto:${profile.email}` : '#';
   const infoCardAction = entityMetadataEditUrl ? (
     <IconButton
@@ -149,7 +153,7 @@ export const GroupProfileCard = (props: { showLinks?: boolean }) => {
 
   return (
     <EntityInfoCard
-      title={<CardTitle title={displayName} pictureSrc={profile?.picture} />}
+      title={<CardTitle entity={group} pictureSrc={profile?.picture} />}
       headerActions={
         <>
           {allowRefresh && canRefresh && (

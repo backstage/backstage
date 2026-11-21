@@ -23,7 +23,9 @@ import {
 import {
   catalogApiRef,
   useEntity,
+  EntityDisplayName,
   EntityInfoCard,
+  useEntityPresentation,
   useEntityRefLink,
 } from '@backstage/plugin-catalog-react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -84,27 +86,27 @@ const MemberComponent = (props: { member: UserEntity }) => {
   const { t } = useTranslationRef(orgTranslationRef);
   const classes = useMemberStyles();
   const {
-    metadata: { name: metaName, description },
+    metadata: { description },
     spec: { profile },
   } = props.member;
-  const displayName = profile?.displayName ?? metaName;
+  const { primaryTitle } = useEntityPresentation(props.member);
   const entityLink = useEntityRefLink();
 
   return (
     <Card
       className={classes.card}
       href={entityLink(props.member)}
-      label={t('membersListCard.cardLabel', { memberName: displayName })}
+      label={t('membersListCard.cardLabel', { memberName: primaryTitle })}
     >
       <UserAvatar
         className={classes.avatar}
-        displayName={displayName}
+        displayName={primaryTitle}
         entity={props.member}
         size="x-large"
       />
       <Flex className={classes.cardTextContainer} direction="column" gap="1">
         <Text variant="body-large" as="h4">
-          {displayName}
+          <EntityDisplayName entityRef={props.member} hideIcon />
         </Text>
         {profile?.email && (
           <Link
@@ -167,15 +169,14 @@ export const MembersListCard = (props: {
 
   const { entity: groupEntity } = useEntity<GroupEntity>();
   const {
-    metadata: { name: groupName, namespace: grpNamespace, title: groupTitle },
-    spec: { profile },
+    metadata: { name: groupName, namespace: grpNamespace },
   } = groupEntity;
   const catalogApi = useApi(catalogApiRef);
+  const { primaryTitle: groupDisplayName } = useEntityPresentation(groupEntity);
 
-  const displayName = profile?.displayName ?? groupTitle ?? groupName;
   const cardTitle =
     memberDisplayTitle ??
-    t('membersListCard.title', { groupName: displayName });
+    t('membersListCard.title', { groupName: groupDisplayName });
 
   const groupNamespace = grpNamespace || DEFAULT_NAMESPACE;
 
