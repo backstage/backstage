@@ -186,6 +186,48 @@ GitHub authentication selection prefers, in order:
 
 The selected method must also appear in the consumer's `authMethods` list.
 
+### Give the Scaffolder backend its own GitHub credential
+
+The `@backstage/plugin-scaffolder-backend-module-github` module declares the
+`github` connection type and creates a credentials provider from the connections
+service. To run Scaffolder GitHub actions with credentials dedicated to
+Scaffolder, such as a GitHub App that is allowed to create repositories, scope an
+authentication entry to the Scaffolder plugin:
+
+```yaml title="app-config.yaml"
+connections:
+  - type: github
+    host: github.com
+    auth:
+      - method: app
+        title: Scaffolder app
+        appId: ${SCAFFOLDER_APP_ID}
+        privateKey: ${SCAFFOLDER_APP_PRIVATE_KEY}
+        clientId: ${SCAFFOLDER_APP_CLIENT_ID}
+        clientSecret: ${SCAFFOLDER_APP_CLIENT_SECRET}
+        match:
+          plugins:
+            - scaffolder
+      - method: app
+        title: Catalog app
+        appId: ${CATALOG_APP_ID}
+        privateKey: ${CATALOG_APP_PRIVATE_KEY}
+        clientId: ${CATALOG_APP_CLIENT_ID}
+        clientSecret: ${CATALOG_APP_CLIENT_SECRET}
+        match:
+          plugins:
+            - catalog
+```
+
+The Scaffolder module uses the authentication entry selected for the Scaffolder
+plugin to authenticate its GitHub actions. An explicit `token` input on a
+template step takes precedence over the resolved connection credential for that
+single execution.
+
+Keep using the `integrations` configuration for host metadata, such as the API
+base URL of a GitHub Enterprise Server, because the Scaffolder module reads host
+information from the integration registry.
+
 ## Configure AWS accounts
 
 The `aws` type is different from host-based types. One singleton connection

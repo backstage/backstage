@@ -19,7 +19,10 @@ import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import {
+  GithubCredentialsProvider,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
 import { getOctokitOptions } from '../util';
 import { Octokit } from 'octokit';
 import Sodium from 'libsodium-wrappers';
@@ -32,9 +35,11 @@ import { examples } from './githubDeployKey.examples';
  */
 export function createGithubDeployKeyAction(options: {
   integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
   requireScmUserCredentials?: boolean;
 }) {
-  const { integrations, requireScmUserCredentials } = options;
+  const { integrations, githubCredentialsProvider, requireScmUserCredentials } =
+    options;
   // For more information on how to define custom actions, see
   //   https://backstage.io/docs/features/software-templates/writing-custom-actions
   return createTemplateAction({
@@ -104,6 +109,7 @@ export function createGithubDeployKeyAction(options: {
 
       const octokitOptions = await getOctokitOptions({
         integrations,
+        credentialsProvider: githubCredentialsProvider,
         requireScmUserCredentials,
         token: providedToken,
         host,
