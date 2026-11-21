@@ -47,12 +47,18 @@ const extension = (
   };
 }>`;
 
+const routeRef = (id?: string) =>
+  `${API}.RouteRef<undefined>${id ? ` & { readonly I: "${id}"; }` : ''}`;
+
 const plugin = (
   extensions: { [id: string]: string },
   literals: { [key: string]: string } = {},
+  routes: { [name: string]: string } = { root: routeRef() },
 ) => `
   declare const _default: ${API}.OverridableFrontendPlugin<{
-    root: ${API}.RouteRef<undefined>;
+    ${Object.entries(routes)
+      .map(([name, type]) => `${name}: ${type};`)
+      .join('\n')}
   }, {
     ext: ${API}.ExternalRouteRef<undefined>;
   }, {
@@ -104,7 +110,8 @@ describe('readFrontendManifestFromTypes', () => {
         {
           'sub-page:demo/tab': extension('sub-page', '"tab"', {
             blueprint: SUB_PAGE,
-            params: '{ path: "tab"; title: "Tab" }',
+            params:
+              '{ path: "tab"; title: "Tab"; routeRef: { id: "demo.root" } }',
             paramKeys: '"path" | "title" | "loader" | "routeRef"',
             disabled: 'true',
           }),
@@ -121,6 +128,7 @@ describe('readFrontendManifestFromTypes', () => {
           }),
         },
         { title: '"Demo"' },
+        { root: routeRef('demo.root') },
       ),
     });
     expect(
@@ -144,6 +152,7 @@ describe('readFrontendManifestFromTypes', () => {
             disabled: true,
             element: {
               data: { 'core.routing.path': 'tab', 'core.title': 'Tab' },
+              routeRefName: 'root',
               configOutputs: {
                 path: { dataRefId: 'core.routing.path', type: 'string' },
                 title: { dataRefId: 'core.title', type: 'string' },
@@ -170,6 +179,85 @@ describe('readFrontendManifestFromTypes', () => {
         ],
       },
     });
+  });
+
+  it('should match route refs with the plugin routes by their IDs', () => {
+    const routes = {
+      root: routeRef('demo.root'),
+      other: routeRef('demo.other'),
+      untyped: routeRef(),
+    };
+    const manifestOf = (
+      extensions: { [id: string]: string },
+      pluginRoutes: { [name: string]: string } = routes,
+    ) => {
+      const result = read(plugin(extensions, {}, pluginRoutes));
+      if (!('manifest' in result)) {
+        throw new Error(result.skipped);
+      }
+      return result.manifest;
+    };
+    const withRef = (ref: string | undefined) =>
+      page({
+        params: ref
+          ? `{ path: "/demo"; routeRef: { id: "${ref}" } }`
+          : '{ path: "/demo" }',
+        paramKeys: '"path" | "routeRef"',
+      });
+    const subPage = (ref: string | undefined) =>
+      extension('sub-page', '"tab"', {
+        blueprint: SUB_PAGE,
+        params: ref
+          ? `{ path: "tab"; title: "Tab"; routeRef: { id: "${ref}" } }`
+          : '{ path: "tab"; title: "Tab" }',
+        paramKeys: '"path" | "title" | "routeRef" | "loader"',
+      });
+
+    const matched = manifestOf({
+      'page:demo': withRef('demo.other'),
+      'sub-page:demo/tab': subPage('demo.root'),
+    });
+    expect(matched.deferrable).toBe(true);
+    expect(matched.routes).toEqual(['root', 'other', 'untyped']);
+    expect(matched.extensions[0].page?.routeRefName).toBe('other');
+    expect(matched.extensions[1].element?.routeRefName).toBe('root');
+
+    // A page without a route ref ID is assumed to use the root route
+    expect(
+      manifestOf({ 'page:demo': withRef(undefined) }).extensions[0].page,
+    ).toEqual({ path: '/demo', routeRefName: 'root' });
+    // A page with a route ref that is not a plugin route is deferrable
+    expect(
+      manifestOf({ 'page:demo': withRef('demo.unknown') }).extensions[0].page,
+    ).toEqual({ path: '/demo' });
+    expect(
+      manifestOf({ 'page:demo': withRef(undefined) }, { other: routeRef('a') })
+        .extensions[0].page,
+    ).toEqual({ path: '/demo' });
+    // Pages without a route ref param have no route either
+    expect(manifestOf({ 'page:demo': page() }).extensions[0].page).toEqual({
+      path: '/demo',
+    });
+
+    // Sub-pages must have a route ref that is a plugin route
+    expect(
+      manifestOf({ 'sub-page:demo/tab': subPage('demo.unknown') })
+        .notDeferrableReason,
+    ).toBe('the route ref of the extension is not one of the plugin routes');
+    expect(
+      manifestOf({ 'sub-page:demo/tab': subPage(undefined) })
+        .notDeferrableReason,
+    ).toBe(
+      "the route ref of the extension has no ID, so it can't be matched with the plugin routes",
+    );
+    expect(
+      manifestOf(
+        { 'page:demo': withRef('demo.root') },
+        { root: routeRef('demo.root'), same: routeRef('demo.root') },
+      ).notDeferrableReason,
+    ).toBe(
+      "the route ref ID 'demo.root' is used by more than one plugin route",
+    );
   });
 
   it('should reject what the analyzer rejects', () => {

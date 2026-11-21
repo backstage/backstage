@@ -321,6 +321,64 @@ function readStringTuple(node: ts.TypeNode, what: string): string[] {
   });
 }
 
+/**
+ * Reads the ID that a route ref was created with, which `createRouteRef`
+ * records in the type of the route ref as an intersection with `{ I: "id" }`.
+ */
+function readRouteRefId(node: ts.TypeNode): string | undefined {
+  if (!ts.isIntersectionTypeNode(node)) {
+    return undefined;
+  }
+  for (const type of node.types) {
+    if (!ts.isTypeLiteralNode(type)) {
+      continue;
+    }
+    for (const member of type.members) {
+      if (memberName(member) === 'I' && ts.isPropertySignature(member)) {
+        const id = member.type && readLiteral(member.type);
+        return typeof id === 'string' ? id : undefined;
+      }
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Finds the name of the plugin route that a route ref param is, matching the
+ * ID that the route ref was created with to the IDs of the plugin routes. A
+ * page whose route ref has no ID is assumed to use the root route of the
+ * plugin, like the page itself does when it has one.
+ */
+function findRouteRefName(options: {
+  refId: string | undefined;
+  routeIds: { [name: string]: string | undefined };
+  blueprint: { type: string; routeRefIsPluginRoute?: boolean };
+}): string | undefined {
+  const { refId, routeIds, blueprint } = options;
+  let name: string | undefined;
+  if (refId !== undefined) {
+    const names = Object.keys(routeIds).filter(n => routeIds[n] === refId);
+    if (names.length > 1) {
+      throw new TypeReadError(
+        `the route ref ID '${refId}' is used by more than one plugin route`,
+      );
+    }
+    name = names[0];
+  } else if (blueprint.type === 'page') {
+    name = Object.hasOwn(routeIds, 'root') ? 'root' : undefined;
+  } else {
+    throw new TypeReadError(
+      `the route ref of the extension has no ID, so it can't be matched with the plugin routes`,
+    );
+  }
+  if (name === undefined && blueprint.routeRefIsPluginRoute) {
+    throw new TypeReadError(
+      `the route ref of the extension is not one of the plugin routes`,
+    );
+  }
+  return name;
+}
+
 function extensionId(
   kind: string | undefined,
   pluginId: string,
@@ -395,6 +453,7 @@ function readExtension(
   id: string,
   type: ts.TypeNode,
   pluginId: string,
+  routeIds: { [name: string]: string | undefined },
 ): FrontendExtensionManifest {
   // OverridableExtensionDefinition<{ kind, name, params, literals, ... }>
   const [definition] = typeArguments(type);
@@ -514,8 +573,14 @@ function readExtension(
       }
       params[key as 'path' | 'title'] = value;
     }
-    // The route ref of a param can't be matched with the plugin routes,
-    // since the types of route refs don't identify them.
+    if (spec.type === 'routeRef') {
+      const routeRef = literalParams[key] as { id?: unknown } | undefined;
+      params.routeRefName = findRouteRefName({
+        refId: typeof routeRef?.id === 'string' ? routeRef.id : undefined,
+        routeIds,
+        blueprint,
+      });
+    }
   }
   for (const [key, spec] of Object.entries(blueprint.params)) {
     if (spec.required && !paramKeys.includes(key)) {
@@ -553,9 +618,8 @@ function findNotDeferrableReason(
 /**
  * Reads the manifest of the plugin that is the default export of an entry
  * point declaration file. Everything comes from the types, using the
- * `literals` that plugins and extensions record, except for the plugin routes
- * that route refs are, which the types don't identify. A page or element
- * therefore never has a `routeRefName`.
+ * `literals` that plugins and extensions record. A route ref is matched with
+ * the plugin routes by the ID that it was created with.
  *
  * @throws If the declaration file of the entry point, or a file that it
  * imports, doesn't exist.
@@ -589,6 +653,7 @@ export function readFrontendManifestFromTypes(options: {
   let extensionIds: string[];
   let extensionTypes: { [id: string]: ts.TypeNode };
   let pluginIf: unknown;
+  let routeIds: { [name: string]: string | undefined };
   try {
     const [routes, externalRoutes, extensions, pluginLiterals] = typeArguments(
       declaration.type,
@@ -626,15 +691,14 @@ export function readFrontendManifestFromTypes(options: {
       asTypeLiteral(extensions, 'the extensions'),
       t => t,
     );
+    routeIds = readMembers(asTypeLiteral(routes, 'the routes'), readRouteRefId);
     manifest = {
       manifestVersion: FRONTEND_MANIFEST_VERSION,
       type: 'plugin',
       pluginId,
       ...(title !== undefined ? { title } : {}),
       deferrable: false,
-      routes: Object.keys(
-        readMembers(asTypeLiteral(routes, 'the routes'), t => t),
-      ),
+      routes: Object.keys(routeIds),
       externalRoutes: Object.keys(
         readMembers(
           asTypeLiteral(externalRoutes, 'the external routes'),
@@ -661,7 +725,7 @@ export function readFrontendManifestFromTypes(options: {
       if (!type) {
         throw new TypeReadError(`the type of the extension '${id}' is missing`);
       }
-      return readExtension(id, type, manifest.pluginId);
+      return readExtension(id, type, manifest.pluginId, routeIds);
     });
   } catch (error) {
     if (error instanceof TypeReadError) {
