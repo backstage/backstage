@@ -32,7 +32,12 @@ import {
   DynamicPlugin,
   NewBackendPluginInstaller,
 } from './types';
-import { ScannedPluginManifest, ScannedPluginPackage } from '../scanner/types';
+import {
+  BackstagePackageJson,
+  PackageRole,
+  ScannedPluginManifest,
+  ScannedPluginPackage,
+} from '../scanner/types';
 import { randomUUID } from 'node:crypto';
 import { createSpecializedBackend } from '@backstage/backend-app-api';
 import { ConfigSources } from '@backstage/config-loader';
@@ -41,7 +46,6 @@ import { PluginScanner } from '../scanner/plugin-scanner';
 import { targetPaths } from '@backstage/cli-common';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
-import { BackstagePackageJson, PackageRole } from '@backstage/cli-node';
 
 describe('backend-dynamic-feature-service', () => {
   const mockDir = createMockDirectory();
@@ -1010,7 +1014,7 @@ describe('backend-dynamic-feature-service', () => {
 
       mockDir.setContent({
         'package.json': fs.readFileSync(
-          targetPaths.resolveRoot('package.json'),
+          targetPaths.resolveWorkspaceRoot('package.json'),
         ),
         'dynamic-plugins-root': {},
         'dynamic-plugins-root/a-dynamic-plugin': ctx =>
@@ -1098,7 +1102,7 @@ describe('backend-dynamic-feature-service', () => {
         otherMockDir.resolve('a-dynamic-plugin'),
       );
       expect(mockedModuleLoader.bootstrap).toHaveBeenCalledWith(
-        targetPaths.rootDir,
+        targetPaths.workspaceRootDir,
         [realPath],
         new Map<string, ScannedPluginManifest>([
           [

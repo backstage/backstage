@@ -19,8 +19,10 @@ import { resolve as resolvePath, join as joinPath } from 'node:path';
 import { cli } from 'cleye';
 import { readJson, writeJson } from 'fs-extra';
 import { minimatch } from 'minimatch';
-import { runYarnInstall } from '../../lib/utils';
+import { runInstall } from '../../lib/utils';
+import { getCatalogName, isBumpedRange } from '../../lib/catalogs';
 import replace from 'replace-in-file';
+import { detectPackageManager } from '@backstage/cli-node/alpha';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 declare module 'replace-in-file' {
@@ -67,29 +69,54 @@ export default async ({ args, info }: CliCommandContext) => {
   });
 
   if (changed) {
-    await runYarnInstall();
+    await runInstall(await detectPackageManager());
   }
 };
 
 export async function migrateMovedPackages(options?: {
   pattern?: string;
   skipCodeChanges?: boolean;
+  /**
+   * Only migrates the dependencies that `versions:bump` updates, with or
+   * without `--catalog <catalog>`. Without this option all dependencies are
+   * migrated.
+   */
+  onlyBumped?: { catalog?: string };
 }) {
   console.log(
     'Checking for moved packages to the @backstage-community namespace...',
   );
   const packages = await PackageGraph.listTargetPackages();
-  let didAnythingChange = false;
+  const packageManager = await detectPackageManager();
+  const catalogs = await packageManager.readCatalogs?.();
+  // A moved package that refers to a catalog gets an entry in that catalog
+  const catalogUpdates = new Map<string, Map<string, string>>();
+  const changedPackages = new Array<{
+    pkg: (typeof packages)[number];
+    movedPackages: Map<string, string>;
+  }>();
 
   for (const pkg of packages) {
     const pkgName = pkg.packageJson.name;
-    let didPackageChange = false;
-    const movedPackages = new Map<string, string>();
+    // The source code of a package is migrated as a whole, so a moved package
+    // is only migrated when each of its declarations in the package is.
+    // Otherwise the code could import the new name while only a development
+    // dependency declares it.
+    const leftAlone = new Set<string>();
+    const moves = new Array<{
+      depsObj: Record<string, string>;
+      depType: string;
+      depName: string;
+      depVersion: string;
+      movedPackageName: string;
+      catalogEntry?: { catalogName: string; version: string };
+    }>();
 
     for (const depType of [
       'dependencies',
       'devDependencies',
       'peerDependencies',
+      'optionalDependencies',
     ] as const) {
       const depsObj = pkg.packageJson[depType];
       if (!depsObj) {
@@ -97,6 +124,20 @@ export async function migrateMovedPackages(options?: {
       }
       for (const [depName, depVersion] of Object.entries(depsObj)) {
         if (options?.pattern && !minimatch(depName, options.pattern)) {
+          continue;
+        }
+        // versions:bump leaves catalog references alone when the catalogs
+        // can't be read, so they are not migrated after a bump either
+        if (
+          options?.onlyBumped &&
+          ((!catalogs && getCatalogName(depVersion) !== undefined) ||
+            !isBumpedRange(
+              depVersion,
+              options.onlyBumped.catalog,
+              Boolean(catalogs),
+            ))
+        ) {
+          leftAlone.add(depName);
           continue;
         }
         let packageInfo: BackstagePackageJson;
@@ -107,66 +148,129 @@ export async function migrateMovedPackages(options?: {
             }),
           );
         } catch (ex) {
-          console.warn(
-            chalk.yellow(
-              `Could not find package.json for ${depName}@${depVersion} in ${pkgName} (${depType})`,
-            ),
-          );
+          // An optional dependency is often not installed, for example one
+          // for another platform
+          if (depType !== 'optionalDependencies') {
+            console.warn(
+              chalk.yellow(
+                `Could not find package.json for ${depName}@${depVersion} in ${pkgName} (${depType})`,
+              ),
+            );
+          }
           continue;
         }
 
         const movedPackageName = packageInfo.backstage?.moved;
-
-        if (movedPackageName) {
-          movedPackages.set(depName, movedPackageName);
-          console.log(
-            chalk.yellow(
-              `Found a moved package ${depName}@${depVersion} -> ${movedPackageName} in ${pkgName} (${depType})`,
-            ),
-          );
-
-          didPackageChange = true;
-          didAnythingChange = true;
-
-          depsObj[movedPackageName] = depsObj[depName];
-          delete depsObj[depName];
+        if (!movedPackageName) {
+          continue;
         }
+
+        const catalogName = catalogs ? getCatalogName(depVersion) : undefined;
+        const catalog = catalogName ? catalogs?.[catalogName] : undefined;
+        let catalogEntry: { catalogName: string; version: string } | undefined;
+        if (catalogName && catalog?.[movedPackageName] === undefined) {
+          // Without a version to copy, the new name would refer to nothing
+          if (catalog?.[depName] === undefined) {
+            console.warn(
+              chalk.yellow(
+                `Skipping the moved package ${depName} in ${pkgName} (${depType}), since the ${catalogName} catalog has no entry for it`,
+              ),
+            );
+            leftAlone.add(depName);
+            continue;
+          }
+          catalogEntry = { catalogName, version: catalog[depName] };
+        }
+        moves.push({
+          depsObj,
+          depType,
+          depName,
+          depVersion,
+          movedPackageName,
+          catalogEntry,
+        });
       }
     }
 
-    if (didPackageChange) {
-      await writeJson(resolvePath(pkg.dir, 'package.json'), pkg.packageJson, {
-        spaces: 2,
+    const movedPackages = new Map<string, string>();
+    for (const move of moves) {
+      const { depsObj, depType, depName, depVersion, movedPackageName } = move;
+      if (leftAlone.has(depName)) {
+        console.warn(
+          chalk.yellow(
+            `Skipping the moved package ${depName} in ${pkgName} (${depType}), since another declaration of it in ${pkgName} is left as it is`,
+          ),
+        );
+        continue;
+      }
+      if (move.catalogEntry) {
+        const { catalogName, version } = move.catalogEntry;
+        const entries = catalogUpdates.get(catalogName) ?? new Map();
+        entries.set(movedPackageName, version);
+        catalogUpdates.set(catalogName, entries);
+      }
+
+      movedPackages.set(depName, movedPackageName);
+      console.log(
+        chalk.yellow(
+          `Found a moved package ${depName}@${depVersion} -> ${movedPackageName} in ${pkgName} (${depType})`,
+        ),
+      );
+
+      depsObj[movedPackageName] = depsObj[depName];
+      delete depsObj[depName];
+    }
+
+    if (movedPackages.size > 0) {
+      changedPackages.push({ pkg, movedPackages });
+    }
+  }
+
+  // The catalogs are written first, so that a failure there leaves the
+  // package.json files as they were
+  if (catalogUpdates.size > 0) {
+    await packageManager.updateCatalogs!(
+      Object.fromEntries(
+        Array.from(catalogUpdates, ([catalogName, entries]) => [
+          catalogName,
+          Object.fromEntries(entries),
+        ]),
+      ),
+    );
+  }
+
+  for (const { pkg, movedPackages } of changedPackages) {
+    await writeJson(resolvePath(pkg.dir, 'package.json'), pkg.packageJson, {
+      spaces: 2,
+    });
+
+    if (!options?.skipCodeChanges) {
+      // Replace all occurrences of the old package names in the code.
+      const files = await replace({
+        files: joinPath(pkg.dir, 'src', '**'),
+        allowEmptyPaths: true,
+        processor: content => {
+          return Array.from(movedPackages.entries()).reduce(
+            (newContent, [oldName, newName]) => {
+              return newContent
+                .replace(new RegExp(`"${oldName}"`, 'g'), `"${newName}"`)
+                .replace(new RegExp(`'${oldName}'`, 'g'), `'${newName}'`)
+                .replace(new RegExp(`${oldName}/`, 'g'), `${newName}/`);
+            },
+            content,
+          );
+        },
       });
 
-      if (!options?.skipCodeChanges) {
-        // Replace all occurrences of the old package names in the code.
-        const files = await replace({
-          files: joinPath(pkg.dir, 'src', '**'),
-          allowEmptyPaths: true,
-          processor: content => {
-            return Array.from(movedPackages.entries()).reduce(
-              (newContent, [oldName, newName]) => {
-                return newContent
-                  .replace(new RegExp(`"${oldName}"`, 'g'), `"${newName}"`)
-                  .replace(new RegExp(`'${oldName}'`, 'g'), `'${newName}'`)
-                  .replace(new RegExp(`${oldName}/`, 'g'), `${newName}/`);
-              },
-              content,
-            );
-          },
-        });
-
-        if (files.length > 0) {
-          console.log(
-            chalk.green(
-              `Updated ${files.length} files in ${pkgName} to use the new package names`,
-            ),
-          );
-        }
+      if (files.length > 0) {
+        console.log(
+          chalk.green(
+            `Updated ${files.length} files in ${pkg.packageJson.name} to use the new package names`,
+          ),
+        );
       }
     }
   }
 
-  return didAnythingChange;
+  return changedPackages.length > 0;
 }
