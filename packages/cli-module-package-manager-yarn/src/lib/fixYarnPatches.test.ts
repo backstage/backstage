@@ -15,10 +15,16 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { run } from '@backstage/cli-common';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fixYarnPatches } from './fixYarnPatches';
 import { verifyYarnPatches } from './verifyYarnPatches';
+
+jest.mock('@backstage/cli-common', () => {
+  const actual = jest.requireActual('@backstage/cli-common');
+  return { ...actual, run: jest.fn(actual.run) };
+});
 
 const mockDir = createMockDirectory();
 
@@ -440,6 +446,9 @@ describe('fixYarnPatches', () => {
         rootDir: mockDir.path,
         fetch,
         verificationResult,
+        extractPackage: async () => {
+          throw new Error('not released');
+        },
         install: async rootDir => {
           const manifestPath = path.join(rootDir, 'package.json');
           const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
@@ -473,7 +482,7 @@ describe('fixYarnPatches', () => {
         },
         writeFile: async (filePath, content) => {
           writes += 1;
-          if (writes === 2) {
+          if (writes === 3) {
             throw new Error('restore failed');
           }
           await fs.writeFile(filePath, content);
@@ -660,5 +669,278 @@ if (process.argv.includes('--version')) {
     await expect(
       fs.readFile(mockDir.resolve('yarn.lock'), 'utf8'),
     ).resolves.toBe(originalLockfile);
+  });
+
+  describe('when a patch has been released upstream', () => {
+    const releasablePatch = `diff --git a/index.js b/index.js
+--- a/index.js
++++ b/index.js
+@@ -1 +1 @@
+-old
++new
+`;
+
+    function releasedLockfile() {
+      const content = singleUpdateRepository()['yarn.lock'];
+      const start = content.indexOf('"@backstage/example@patch');
+      const end = content.indexOf('"@backstage/other@patch');
+      return `${content.slice(0, start)}"@backstage/example@npm:1.0.1":
+  version: 1.0.1
+  resolution: "@backstage/example@npm:1.0.1"
+  languageName: node
+  linkType: hard
+
+${content.slice(end)}`;
+    }
+
+    function setup(extractedSource: string) {
+      mockDir.setContent({
+        ...repository(),
+        '.yarn': {
+          patches: {
+            'example.patch': releasablePatch,
+            'other.patch': 'other patch',
+          },
+        },
+        extracted: { 'index.js': extractedSource },
+      });
+      const install = jest.fn(async (rootDir: string) => {
+        const manifest = await fs.readFile(
+          path.join(rootDir, 'package.json'),
+          'utf8',
+        );
+        if (manifest.includes('patch:@backstage/example')) {
+          throw new Error('patch does not apply');
+        }
+        await fs.writeFile(path.join(rootDir, 'yarn.lock'), releasedLockfile());
+      });
+      const extractPackage = jest.fn(async () => mockDir.resolve('extracted'));
+      return { install, extractPackage };
+    }
+
+    it('removes a patch that reverse-applies to the target version', async () => {
+      const { install, extractPackage } = setup('new\n');
+
+      const result = await fixYarnPatches({
+        rootDir: mockDir.path,
+        fetch: fetchSingleUpdate,
+        install,
+        extractPackage,
+      });
+
+      expect(result).toEqual({
+        status: 'fixed',
+        message:
+          "Removed patch for '@backstage/example' because it is already included in version '1.0.1' (deleted '.yarn/patches/example.patch')",
+      });
+      expect(install).toHaveBeenCalledTimes(3);
+      expect(extractPackage).toHaveBeenCalledWith({
+        rootDir: mockDir.path,
+        packageName: '@backstage/example',
+        version: '1.0.1',
+      });
+      const manifest = JSON.parse(
+        await fs.readFile(mockDir.resolve('package.json'), 'utf8'),
+      );
+      expect(manifest.resolutions).toEqual({
+        '@backstage/other':
+          'patch:@backstage/other@npm%3A2.0.0#~/.yarn/patches/other.patch',
+      });
+      await expect(
+        fs.access(mockDir.resolve('.yarn/patches/example.patch')),
+      ).rejects.toThrow();
+      await expect(
+        verifyYarnPatches({ rootDir: mockDir.path, fetch: fetchSingleUpdate }),
+      ).resolves.toMatchObject({ errors: [] });
+    });
+
+    it('keeps a patch that does not fully reverse-apply', async () => {
+      const { install, extractPackage } = setup('different\n');
+      const originalManifest = await fs.readFile(
+        mockDir.resolve('package.json'),
+        'utf8',
+      );
+      const originalLockfile = await fs.readFile(
+        mockDir.resolve('yarn.lock'),
+        'utf8',
+      );
+
+      await expect(
+        fixYarnPatches({
+          rootDir: mockDir.path,
+          fetch: fetchSingleUpdate,
+          install,
+          extractPackage,
+        }),
+      ).resolves.toMatchObject({
+        status: 'not-fixable',
+        message: expect.stringContaining('patch does not apply'),
+      });
+      expect(install).toHaveBeenCalledTimes(2);
+      await expect(
+        fs.readFile(mockDir.resolve('package.json'), 'utf8'),
+      ).resolves.toBe(originalManifest);
+      await expect(
+        fs.readFile(mockDir.resolve('yarn.lock'), 'utf8'),
+      ).resolves.toBe(originalLockfile);
+      await expect(
+        fs.readFile(mockDir.resolve('.yarn/patches/example.patch'), 'utf8'),
+      ).resolves.toBe(releasablePatch);
+    });
+
+    it('restores removed patch files when final verification fails', async () => {
+      const { extractPackage } = setup('new\n');
+      let installs = 0;
+      const install = async (rootDir: string) => {
+        installs += 1;
+        if (installs === 1) {
+          throw new Error('patch does not apply');
+        }
+        if (installs === 3) {
+          await fs.rm(path.join(rootDir, '.yarn/patches/other.patch'));
+        }
+      };
+
+      await expect(
+        fixYarnPatches({
+          rootDir: mockDir.path,
+          fetch: fetchSingleUpdate,
+          install,
+          extractPackage,
+        }),
+      ).resolves.toMatchObject({
+        status: 'not-fixable',
+        message: expect.stringContaining(
+          'the original project files were restored',
+        ),
+      });
+      await expect(
+        fs.readFile(mockDir.resolve('.yarn/patches/example.patch'), 'utf8'),
+      ).resolves.toBe(releasablePatch);
+    });
+
+    it('removes released patches while retargeting the others', async () => {
+      const content = repository();
+      mockDir.setContent({
+        ...content,
+        'package.json': `${JSON.stringify(
+          JSON.parse(content['package.json']),
+          null,
+          4,
+        )}\n`,
+        '.yarn': {
+          patches: {
+            'example.patch': releasablePatch,
+            'other.patch': 'other patch',
+          },
+        },
+        extracted: { 'index.js': 'new\n' },
+      });
+      const target = repository({ target: true })['yarn.lock'];
+      const finalLockfile = `${LOCKFILE_HEADER}
+"@backstage/example@npm:1.0.1":
+  version: 1.0.1
+  resolution: "@backstage/example@npm:1.0.1"
+  languageName: node
+  linkType: hard
+
+${target.slice(target.indexOf('"@backstage/other@patch'))}`;
+      const install = jest.fn(async (rootDir: string) => {
+        const manifest = await fs.readFile(
+          path.join(rootDir, 'package.json'),
+          'utf8',
+        );
+        if (manifest.includes('patch:@backstage/example')) {
+          throw new Error('patch does not apply');
+        }
+        await fs.writeFile(path.join(rootDir, 'yarn.lock'), finalLockfile);
+      });
+      const extractPackage = jest.fn(async () => {
+        await fs.mkdir(mockDir.resolve('extracted'), { recursive: true });
+        await fs.writeFile(mockDir.resolve('extracted/index.js'), 'new\n');
+        return mockDir.resolve('extracted');
+      });
+
+      await expect(
+        fixYarnPatches({
+          rootDir: mockDir.path,
+          fetch: fetchRelease,
+          install,
+          extractPackage,
+        }),
+      ).resolves.toEqual({
+        status: 'fixed',
+        message:
+          "Retargeted patch for '@backstage/other' from '2.0.0' to '2.0.1'; Removed patch for '@backstage/example' because it is already included in version '1.0.1' (deleted '.yarn/patches/example.patch')",
+      });
+      expect(install).toHaveBeenCalledTimes(3);
+      expect(extractPackage).toHaveBeenCalledTimes(2);
+      await expect(fs.readFile(mockDir.resolve('package.json'), 'utf8'))
+        .resolves.toBe(`{
+    "name": "root",
+    "resolutions": {
+        "@backstage/other": "patch:@backstage/other@npm%3A2.0.1#~/.yarn/patches/other.patch"
+    }
+}
+`);
+      await expect(
+        fs.readFile(mockDir.resolve('.yarn/patches/other.patch'), 'utf8'),
+      ).resolves.toBe('other patch');
+      await expect(
+        verifyYarnPatches({ rootDir: mockDir.path, fetch: fetchRelease }),
+      ).resolves.toMatchObject({ errors: [] });
+    });
+
+    it('extracts packages with Yarn and checks them with git', async () => {
+      const { install } = setup('new\n');
+      const actual = jest.requireActual('@backstage/cli-common');
+      const yarnTemp = mockDir.resolve('yarn-temp');
+      jest.mocked(run).mockImplementation((args, runOptions) => {
+        if (args[0] === 'yarn' && args[1] === 'patch') {
+          return actual.run(
+            [
+              'node',
+              '-e',
+              `const fs = require('fs');
+               fs.mkdirSync(process.argv[1] + '/user', { recursive: true });
+               fs.writeFileSync(process.argv[1] + '/user/index.js', 'new\\n');
+               console.log('➤ YN0000: not json');
+               console.log(JSON.stringify({ locator: process.argv[2], path: process.argv[1] + '/user' }));`,
+              yarnTemp,
+              args[2],
+            ],
+            runOptions,
+          );
+        }
+        return actual.run(args, runOptions);
+      });
+
+      try {
+        await expect(
+          fixYarnPatches({
+            rootDir: mockDir.path,
+            fetch: fetchSingleUpdate,
+            install,
+          }),
+        ).resolves.toMatchObject({ status: 'fixed' });
+      } finally {
+        jest.mocked(run).mockImplementation(actual.run);
+      }
+      expect(run).toHaveBeenCalledWith(
+        ['yarn', 'patch', '@backstage/example@npm:1.0.1', '--json'],
+        expect.objectContaining({ cwd: mockDir.path }),
+      );
+      expect(run).toHaveBeenCalledWith(
+        [
+          'git',
+          'apply',
+          '--check',
+          '-R',
+          mockDir.resolve('.yarn/patches/example.patch'),
+        ],
+        expect.objectContaining({ cwd: path.join(yarnTemp, 'user') }),
+      );
+      await expect(fs.access(yarnTemp)).rejects.toThrow();
+    });
   });
 });
