@@ -60,6 +60,17 @@ const _default: OverridableFrontendPlugin<
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
+      literals: {
+        blueprint: undefined;
+        params: {
+          type: 'info';
+        };
+        paramKeys: 'filter' | 'type' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'entity-card:org/members-list': OverridableExtensionDefinition<{
       config: {
@@ -198,6 +209,17 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
+  },
+  {
+    pluginId: 'org';
+    title: 'Org';
+    if: undefined;
+    extensionIds: [
+      'entity-card:org/group-profile',
+      'entity-card:org/members-list',
+      'entity-card:org/ownership',
+      'entity-card:org/user-profile',
+    ];
   }
 >;
 export default _default;

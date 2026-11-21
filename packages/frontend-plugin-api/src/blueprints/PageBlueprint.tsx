@@ -43,6 +43,7 @@ import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActio
 import { optionalStringSchema } from '../schema/optionalStringSchema';
 import { appHistoryApiRef, type AppHistoryApi } from '../routing/AppHistoryApi';
 import type { AppLocation } from '../routing/AppLocation';
+import { withBlueprintIdentity } from '../wiring/withBlueprintIdentity';
 
 /**
  * One sub-page of a page, as the page itself sees it: a tab to show in the
@@ -251,105 +252,109 @@ function PluginPageShell(props: {
  *
  * @public
  */
-export const PageBlueprint = createExtensionBlueprint({
-  kind: 'page',
-  attachTo: { id: 'app/routes', input: 'routes' },
-  inputs: {
-    pages: createExtensionInput([
+export const PageBlueprint = withBlueprintIdentity(
+  '@backstage/frontend-plugin-api#PageBlueprint',
+  createExtensionBlueprint({
+    kind: 'page',
+    attachTo: { id: 'app/routes', input: 'routes' },
+    inputs: {
+      pages: createExtensionInput([
+        coreExtensionData.routePath,
+        coreExtensionData.routeRef.optional(),
+        coreExtensionData.reactElement,
+        coreExtensionData.title.optional(),
+        coreExtensionData.titleTranslation.optional(),
+        coreExtensionData.icon.optional(),
+      ]),
+    },
+    output: [
       coreExtensionData.routePath,
-      coreExtensionData.routeRef.optional(),
       coreExtensionData.reactElement,
+      coreExtensionData.routeRef.optional(),
       coreExtensionData.title.optional(),
       coreExtensionData.titleTranslation.optional(),
       coreExtensionData.icon.optional(),
-    ]),
-  },
-  output: [
-    coreExtensionData.routePath,
-    coreExtensionData.reactElement,
-    coreExtensionData.routeRef.optional(),
-    coreExtensionData.title.optional(),
-    coreExtensionData.titleTranslation.optional(),
-    coreExtensionData.icon.optional(),
-  ],
-  configSchema: {
-    path: optionalStringSchema,
-    title: optionalStringSchema,
-  },
-  *factory(
-    params: {
-      path: string;
-      /** A plain title or a message reference resolved using the translation API. */
-      title?: string | TranslationRefTuple<undefined>;
-      icon?: IconElement;
-      loader?: () => Promise<JSX.Element>;
-      routeRef?: RouteRef;
-      /**
-       * Hide the default plugin page header, making the page fill up all available space.
-       */
-      noHeader?: boolean;
+    ],
+    configSchema: {
+      path: optionalStringSchema,
+      title: optionalStringSchema,
     },
-    { config, node, inputs, apis },
-  ) {
-    const translation =
-      typeof params.title === 'object' ? params.title : undefined;
-    const translationApi =
-      translation && config.title === undefined
-        ? apis.get(translationApiRef)
-        : undefined;
-    if (translation && config.title === undefined && !translationApi) {
-      throw new Error(
-        `Translation API (core.translation) is required to resolve title '${translation.ref.id}:${translation.key}'`,
-      );
-    }
-    const title =
-      config.title ??
-      (typeof params.title === 'object'
-        ? translationApi!
-            .getTranslation<Record<string, string>>(params.title.ref)
-            .t(params.title.key)
-        : params.title);
-    const icon = params.icon;
-    const pluginId = node.spec.plugin.pluginId;
-    const noHeader = params.noHeader ?? false;
-    const resolvedTitle =
-      title ?? node.spec.plugin.title ?? node.spec.plugin.pluginId;
-    const resolvedIcon = icon ?? node.spec.plugin.icon;
-    const titleRouteRef =
-      (node.spec.plugin.routes as { root?: RouteRef }).root ?? params.routeRef;
-    const routePath = config.path ?? params.path;
-    // A page written around a `loader` owns its whole content region, so
-    // anything attached to its `pages` input has nothing to be shown in.
-    const subPages = params.loader ? [] : collectSubPages(inputs.pages);
+    *factory(
+      params: {
+        path: string;
+        /** A plain title or a message reference resolved using the translation API. */
+        title?: string | TranslationRefTuple<undefined>;
+        icon?: IconElement;
+        loader?: () => Promise<JSX.Element>;
+        routeRef?: RouteRef;
+        /**
+         * Hide the default plugin page header, making the page fill up all available space.
+         */
+        noHeader?: boolean;
+      },
+      { config, node, inputs, apis },
+    ) {
+      const translation =
+        typeof params.title === 'object' ? params.title : undefined;
+      const translationApi =
+        translation && config.title === undefined
+          ? apis.get(translationApiRef)
+          : undefined;
+      if (translation && config.title === undefined && !translationApi) {
+        throw new Error(
+          `Translation API (core.translation) is required to resolve title '${translation.ref.id}:${translation.key}'`,
+        );
+      }
+      const title =
+        config.title ??
+        (typeof params.title === 'object'
+          ? translationApi!
+              .getTranslation<Record<string, string>>(params.title.ref)
+              .t(params.title.key)
+          : params.title);
+      const icon = params.icon;
+      const pluginId = node.spec.plugin.pluginId;
+      const noHeader = params.noHeader ?? false;
+      const resolvedTitle =
+        title ?? node.spec.plugin.title ?? node.spec.plugin.pluginId;
+      const resolvedIcon = icon ?? node.spec.plugin.icon;
+      const titleRouteRef =
+        (node.spec.plugin.routes as { root?: RouteRef }).root ??
+        params.routeRef;
+      const routePath = config.path ?? params.path;
+      // A page written around a `loader` owns its whole content region, so
+      // anything attached to its `pages` input has nothing to be shown in.
+      const subPages = params.loader ? [] : collectSubPages(inputs.pages);
 
-    if (translation) {
-      yield coreExtensionData.titleTranslation(translation);
-    }
-    yield coreExtensionData.routePath(routePath);
-    yield coreExtensionData.reactElement(
-      createPageElement({
-        node,
-        resolvedTitle,
-        titleTranslation: translation,
-        resolvedIcon,
-        titleRouteRef,
-        pluginId,
-        noHeader,
-        loader: params.loader,
-        subPages,
-      }),
-    );
-    if (params.routeRef) {
-      yield coreExtensionData.routeRef(params.routeRef);
-    }
-    if (title) {
-      yield coreExtensionData.title(title);
-    }
-    if (icon) {
-      yield coreExtensionData.icon(icon);
-    }
-  },
-});
+      if (translation) {
+        yield coreExtensionData.titleTranslation(translation);
+      }
+      yield coreExtensionData.routePath(routePath);
+      yield coreExtensionData.reactElement(
+        createPageElement({
+          node,
+          resolvedTitle,
+          titleTranslation: translation,
+          resolvedIcon,
+          titleRouteRef,
+          pluginId,
+          noHeader,
+          loader: params.loader,
+          subPages,
+        }),
+      );
+      if (params.routeRef) {
+        yield coreExtensionData.routeRef(params.routeRef);
+      }
+      if (title) {
+        yield coreExtensionData.title(title);
+      }
+      if (icon) {
+        yield coreExtensionData.icon(icon);
+      }
+    },
+  }),
+);
 
 /**
  * Reads the `pages` input into the shape the page itself works in.

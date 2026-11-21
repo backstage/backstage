@@ -16,7 +16,11 @@
 
 import { ApiFactory } from '../apis/system';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
-import { createExtensionBlueprintParams } from '../wiring/createExtensionBlueprint';
+import {
+  createExtensionBlueprintParams,
+  ExtensionBlueprintParams,
+} from '../wiring/createExtensionBlueprint';
+import { withBlueprintIdentity } from '../wiring/withBlueprintIdentity';
 
 const factoryDataRef = createExtensionDataRef<ApiFactory>().with({
   id: 'core.api.factory',
@@ -27,21 +31,49 @@ const factoryDataRef = createExtensionDataRef<ApiFactory>().with({
  *
  * @public
  */
-export const ApiBlueprint = createExtensionBlueprint({
-  kind: 'api',
-  attachTo: { id: 'root', input: 'apis' },
-  output: [factoryDataRef],
-  dataRefs: {
-    factory: factoryDataRef,
-  },
-  defineParams: <
-    TApi,
-    TImpl extends TApi,
-    TDeps extends { [name in string]: unknown },
-  >(
-    params: ApiFactory<TApi, TImpl, TDeps>,
-  ) => createExtensionBlueprintParams(params as ApiFactory),
-  *factory(params) {
-    yield factoryDataRef(params);
-  },
-});
+export const ApiBlueprint = withBlueprintIdentity(
+  '@backstage/frontend-plugin-api#ApiBlueprint',
+  createExtensionBlueprint({
+    kind: 'api',
+    attachTo: { id: 'root', input: 'apis' },
+    output: [factoryDataRef],
+    dataRefs: {
+      factory: factoryDataRef,
+    },
+    defineParams: <
+      TApi,
+      TImpl extends TApi,
+      TDeps extends { [name in string]: unknown },
+      TApiRef extends { readonly id: string } = { readonly id: string },
+      TDepRefs extends { [name in string]: { readonly id: string } } = {
+        [name in string]: { readonly id: string };
+      },
+    >(
+      // The API ref and deps are also inferred on their own, so that the IDs
+      // of the refs are recorded in the literals of the extension
+      params: ApiFactory<TApi, TImpl, TDeps> & {
+        api: TApiRef;
+        deps: TDepRefs;
+      },
+    ) =>
+      createExtensionBlueprintParams(
+        params as ApiFactory,
+      ) as ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          // Whether the ref declares the API as a promise. It's a boolean for
+          // a ref with no declared type, so that it can be assigned from any ref
+          apiIsPromise: TApiRef extends { readonly T: infer TValue }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >,
+    *factory(params) {
+      yield factoryDataRef(params);
+    },
+  }),
+);

@@ -213,3 +213,16 @@ export const MyWidgetBlueprint = createExtensionBlueprint({
 ### Extension Blueprints in libraries
 
 If you are publishing a plugin, the extension creators should always be exported from frontend library packages (e.g. `*-react`) rather than plugin packages.
+
+### Deferred loading of blueprint extensions
+
+:::note
+Deferred loading is experimental, and the details described here may change.
+:::
+
+An app can [defer loading a plugin](../building-plugins/01-index.md#deferred-loading) until one of its elements is rendered. Until then, the app uses a stand-in for each extension of the plugin, which is built from a manifest that the CLI creates by analyzing the source code of the plugin without running it. The stand-in must output the same data as the real extension, apart from the React element. The CLI reads that data from the params of each extension, so only the following blueprints from `@backstage/frontend-plugin-api` can be deferred:
+
+- `PageBlueprint` and `SubPageBlueprint`. The `path` and `title` params must be literal values, and a `routeRef` must be one of the route refs of the plugin. The stand-ins of pages and sub-pages apply the `path` and `title` config from `app.extensions`.
+- `ApiBlueprint`. Utility APIs are loaded the first time they are used.
+
+An extension made with any other blueprint, including a blueprint of your own, prevents the plugin from being deferred. So does an extension made with `makeWithOverrides`, and any param that isn't a literal value, such as an `icon`. Params that are only used to create the React element, such as `loader`, can be anything. The manifest records the reason that a plugin can't be deferred.

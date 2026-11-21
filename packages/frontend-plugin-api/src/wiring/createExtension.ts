@@ -38,6 +38,7 @@ import { FrontendPlugin } from './createFrontendPlugin';
 import { FrontendModule } from './createFrontendModule';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { assertNoLegacyConfigSchema } from '../schema/assertNoLegacyConfigSchema';
+import { ExtensionDefinitionLiterals } from './ExtensionDefinitionLiterals';
 
 /**
  * This symbol is used to pass parameter overrides from the extension override to the blueprint factory
@@ -201,6 +202,7 @@ export type ExtensionDefinitionParameters = {
   output?: ExtensionDataRef;
   inputs?: { [KName in string]: ExtensionInput };
   params?: object | ExtensionBlueprintDefineParams;
+  literals?: ExtensionDefinitionLiterals;
 };
 
 /**

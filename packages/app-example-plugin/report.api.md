@@ -109,7 +109,24 @@ const examplePlugin: OverridableFrontendPlugin<
         routeRef?: RouteRef;
         noHeader?: boolean;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#PageBlueprint';
+        params: {
+          path: '/example';
+        };
+        paramKeys: 'path' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
+  },
+  {
+    pluginId: 'example';
+    title: undefined;
+    if: undefined;
+    extensionIds: ['page:example'];
   }
 >;
 export default examplePlugin;

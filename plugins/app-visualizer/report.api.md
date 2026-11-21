@@ -108,6 +108,18 @@ const visualizerPlugin: OverridableFrontendPlugin<
         routeRef?: RouteRef;
         noHeader?: boolean;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#PageBlueprint';
+        params: {
+          path: '/visualizer';
+          title: 'Visualizer';
+        };
+        paramKeys: 'title' | 'path' | 'icon' | 'routeRef';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'plugin-header-action:app-visualizer': OverridableExtensionDefinition<{
       kind: 'plugin-header-action';
@@ -118,6 +130,15 @@ const visualizerPlugin: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'sub-page:app-visualizer/details': OverridableExtensionDefinition<{
@@ -164,6 +185,18 @@ const visualizerPlugin: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
+        params: {
+          path: 'details';
+          title: 'Detailed';
+        };
+        paramKeys: 'title' | 'path' | 'routeRef' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'sub-page:app-visualizer/text': OverridableExtensionDefinition<{
       kind: 'sub-page';
@@ -208,6 +241,18 @@ const visualizerPlugin: OverridableFrontendPlugin<
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
+      };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
+        params: {
+          path: 'text';
+          title: 'Text';
+        };
+        paramKeys: 'title' | 'path' | 'routeRef' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'sub-page:app-visualizer/tree': OverridableExtensionDefinition<{
@@ -254,7 +299,31 @@ const visualizerPlugin: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
+        params: {
+          path: 'tree';
+          title: 'Tree';
+        };
+        paramKeys: 'title' | 'path' | 'routeRef' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
+  },
+  {
+    pluginId: 'app-visualizer';
+    title: 'App Visualizer';
+    if: undefined;
+    extensionIds: [
+      'page:app-visualizer',
+      'sub-page:app-visualizer/tree',
+      'sub-page:app-visualizer/details',
+      'sub-page:app-visualizer/text',
+      'plugin-header-action:app-visualizer',
+    ];
   }
 >;
 export default visualizerPlugin;

@@ -20,5 +20,6 @@ export {
   OpaqueExtensionInput,
   type ExtensionInputContext,
 } from './InternalExtensionInput';
+export { OpaqueFrontendModule } from './InternalFrontendModule';
 export { OpaqueFrontendPlugin } from './InternalFrontendPlugin';
 export { OpaqueSwappableComponentRef } from './InternalSwappableComponentRef';

@@ -25,10 +25,62 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#ApiBlueprint';
+        params: undefined;
+        paramKeys: undefined;
+        paramsCallback: {
+          apiRefId: string;
+          apiIsPromise: false;
+          deps: {
+            identity: 'core.identity';
+            discoveryApi: 'core.discovery';
+          };
+        };
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
+  },
+  {
+    pluginId: 'signals';
+    title: 'Signals';
+    if: undefined;
+    extensionIds: ['api:signals'];
   }
 >;
 export default _default;

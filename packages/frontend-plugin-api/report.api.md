@@ -121,9 +121,39 @@ export const ApiBlueprint: ExtensionBlueprint_2<{
     TApi,
     TImpl extends TApi,
     TDeps extends { [name in string]: unknown },
+    TApiRef extends {
+      readonly id: string;
+    } = {
+      readonly id: string;
+    },
+    TDepRefs extends {
+      [name in string]: {
+        readonly id: string;
+      };
+    } = {
+      [x: string]: {
+        readonly id: string;
+      };
+    },
   >(
-    params: ApiFactory<TApi, TImpl, TDeps>,
-  ) => ExtensionBlueprintParams_2<ApiFactory>;
+    params: ApiFactory<TApi, TImpl, TDeps> & {
+      api: TApiRef;
+      deps: TDepRefs;
+    },
+  ) => ExtensionBlueprintParams<
+    ApiFactory,
+    {
+      apiRefId: TApiRef['id'];
+      apiIsPromise: TApiRef extends {
+        readonly T: infer TValue;
+      }
+        ? [TValue] extends [PromiseLike<unknown>]
+          ? true
+          : false
+        : boolean;
+      deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+    }
+  >;
   output: ExtensionDataRef_2<ApiFactory, 'core.api.factory', {}>;
   inputs: {};
   config: {};
@@ -131,6 +161,7 @@ export const ApiBlueprint: ExtensionBlueprint_2<{
   dataRefs: {
     factory: ConfigurableExtensionDataRef_2<ApiFactory, 'core.api.factory', {}>;
   };
+  blueprint: '@backstage/frontend-plugin-api#ApiBlueprint';
 }>;
 
 // @public
@@ -860,24 +891,39 @@ export interface CreateFrontendModuleOptions<
 // @public
 export function createFrontendPlugin<
   TId extends string,
-  TExtensions extends readonly ExtensionDefinition[],
+  const TExtensions extends readonly ExtensionDefinition[],
   TRoutes extends {
     [name in string]: RouteRef | SubRouteRef;
   } = {},
   TExternalRoutes extends {
     [name in string]: ExternalRouteRef;
   } = {},
+  TTitle extends string | undefined = undefined,
+  const TIf extends FilterPredicate | undefined = undefined,
 >(
   options: CreateFrontendPluginOptions<
     TId,
     TRoutes,
     TExternalRoutes,
-    TExtensions
+    TExtensions,
+    TTitle,
+    TIf
   >,
 ): OverridableFrontendPlugin<
   TRoutes,
   TExternalRoutes,
-  MakeSortedExtensionsMap<TExtensions[number], TId>
+  MakeSortedExtensionsMap<TExtensions[number], TId>,
+  {
+    pluginId: TId;
+    title: TTitle;
+    if: TIf;
+    extensionIds: {
+      -readonly [K in keyof TExtensions]: ResolveExtensionId<
+        TExtensions[K],
+        TId
+      >;
+    };
+  }
 >;
 
 // @public
@@ -890,6 +936,8 @@ export interface CreateFrontendPluginOptions<
     [name in string]: ExternalRouteRef;
   },
   TExtensions extends readonly ExtensionDefinition[],
+  TTitle extends string | undefined = string | undefined,
+  TIf extends FilterPredicate | undefined = FilterPredicate | undefined,
 > {
   // (undocumented)
   extensions?: TExtensions;
@@ -899,14 +947,14 @@ export interface CreateFrontendPluginOptions<
   featureFlags?: FeatureFlagConfig[];
   icon?: IconElement;
   // (undocumented)
-  if?: FilterPredicate;
+  if?: TIf;
   // (undocumented)
   info?: FrontendPluginInfoOptions;
   // (undocumented)
   pluginId: TId;
   // (undocumented)
   routes?: TRoutes;
-  title?: string;
+  title?: TTitle;
 }
 
 // @public
@@ -1100,19 +1148,21 @@ export interface ExtensionBlueprint<
   // (undocumented)
   make<
     TName extends string | undefined,
-    TParamsInput extends AnyParamsInput_2<NonNullable<T['params']>>,
+    const TParamsInput extends AnyParamsInput_2<NonNullable<T['params']>>,
     UParentInputs extends ExtensionDataRef,
+    const TAttachTo extends
+      | ExtensionDefinitionAttachTo<UParentInputs>
+      | undefined = undefined,
+    TDisabled extends boolean | undefined = undefined,
+    const TIf extends FilterPredicate | undefined = undefined,
   >(args: {
     name?: TName;
-    attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
+    attachTo?: TAttachTo &
+      ExtensionDefinitionAttachTo<UParentInputs> &
       VerifyExtensionAttachTo<NonNullable<T['output']>, UParentInputs>;
-    disabled?: boolean;
-    if?: FilterPredicate;
-    params: TParamsInput extends ExtensionBlueprintDefineParams
-      ? TParamsInput
-      : T['params'] extends ExtensionBlueprintDefineParams
-      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `<blueprint>.make({ params: defineParams => defineParams(<params>) })`'
-      : T['params'];
+    disabled?: TDisabled;
+    if?: TIf;
+    params: TParamsInput & MakeParamsCheck<T['params'], TParamsInput>;
   }): OverridableExtensionDefinition<{
     kind: T['kind'];
     name: string | undefined extends TName ? undefined : TName;
@@ -1121,6 +1171,25 @@ export interface ExtensionBlueprint<
     output: T['output'];
     inputs: T['inputs'];
     params: T['params'];
+    literals: {
+      blueprint: T extends {
+        blueprint: infer IBlueprint extends string;
+      }
+        ? IBlueprint
+        : undefined;
+      params: [TParamsInput] extends [ExtensionBlueprintDefineParams]
+        ? undefined
+        : PickLiteralParams<TParamsInput>;
+      paramKeys: [TParamsInput] extends [ExtensionBlueprintDefineParams]
+        ? undefined
+        : keyof TParamsInput & string;
+      paramsCallback: [TParamsInput] extends [ExtensionBlueprintDefineParams]
+        ? PickCallbackLiterals<TParamsInput>
+        : undefined;
+      attachTo: PickLiteralAttachTo<TAttachTo>;
+      disabled: TDisabled;
+      if: TIf;
+    };
   }>;
   makeWithOverrides<
     TName extends string | undefined,
@@ -1217,6 +1286,7 @@ export type ExtensionBlueprintDefineParams<
 // @public (undocumented)
 export type ExtensionBlueprintParameters = {
   kind: string;
+  blueprint?: string;
   params?: object | ExtensionBlueprintDefineParams;
   configInput?: {
     [K in string]: any;
@@ -1234,9 +1304,13 @@ export type ExtensionBlueprintParameters = {
 };
 
 // @public
-export type ExtensionBlueprintParams<T extends object = object> = {
+export type ExtensionBlueprintParams<
+  T extends object = object,
+  TLiterals = unknown,
+> = {
   $$type: '@backstage/BlueprintParams';
   T: T;
+  literals?: TLiterals;
 };
 
 // @public (undocumented)
@@ -1340,6 +1414,17 @@ export type ExtensionDefinitionAttachTo<
     }
   | ExtensionInput<UParentInputs>;
 
+// @public
+export type ExtensionDefinitionLiterals = {
+  blueprint?: string;
+  params?: object;
+  paramKeys?: string;
+  paramsCallback?: unknown;
+  attachTo?: unknown;
+  disabled?: boolean;
+  if?: unknown;
+};
+
 // @public (undocumented)
 export type ExtensionDefinitionParameters = {
   kind?: string;
@@ -1355,6 +1440,7 @@ export type ExtensionDefinitionParameters = {
     [KName in string]: ExtensionInput;
   };
   params?: object | ExtensionBlueprintDefineParams;
+  literals?: ExtensionDefinitionLiterals;
 };
 
 // @public (undocumented)
@@ -1522,6 +1608,14 @@ export type FrontendPluginInfoOptions = {
     } & JsonObject
   >;
   manifest?: () => Promise<JsonObject>;
+};
+
+// @public
+export type FrontendPluginLiterals = {
+  pluginId?: unknown;
+  title?: unknown;
+  if?: unknown;
+  extensionIds?: unknown;
 };
 
 // @public
@@ -1819,11 +1913,13 @@ export interface OverridableFrontendPlugin<
   } = {
     [id in string]: ExtensionDefinition;
   },
+  TLiterals extends FrontendPluginLiterals = FrontendPluginLiterals,
 > extends FrontendPlugin<TRoutes, TExternalRoutes> {
   // (undocumented)
   getExtension<TId extends keyof TExtensionMap>(
     id: TId,
   ): OverridableExtensionDefinition<TExtensionMap[TId]['T']>;
+  readonly literals?: TLiterals;
   // (undocumented)
   withOverrides(options: {
     extensions?: Array<ExtensionDefinition>;
@@ -1924,6 +2020,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
     title?: string | undefined;
   };
   dataRefs: never;
+  blueprint: '@backstage/frontend-plugin-api#PageBlueprint';
 }>;
 
 // @public
@@ -2020,9 +2117,12 @@ export const PluginWrapperBlueprint: ExtensionBlueprint_2<{
   kind: 'plugin-wrapper';
   params: <TValue = never>(params: {
     loader: () => Promise<PluginWrapperDefinition<TValue>>;
-  }) => ExtensionBlueprintParams_2<{
-    loader: () => Promise<PluginWrapperDefinition>;
-  }>;
+  }) => ExtensionBlueprintParams_2<
+    {
+      loader: () => Promise<PluginWrapperDefinition>;
+    },
+    unknown
+  >;
   output: ExtensionDataRef_2<
     () => Promise<PluginWrapperDefinition>,
     'core.plugin-wrapper.loader',
@@ -2242,6 +2342,7 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
     title?: string | undefined;
   };
   dataRefs: never;
+  blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
 }>;
 
 // @public

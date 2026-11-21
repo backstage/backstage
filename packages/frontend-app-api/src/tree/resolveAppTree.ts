@@ -30,7 +30,7 @@ function indent(str: string) {
 }
 
 /** @internal */
-class SerializableAppNode implements AppNode {
+export class SerializableAppNode implements AppNode {
   public readonly spec: AppNodeSpec;
   public readonly edges = {
     attachedTo: undefined as { node: AppNode; input: string } | undefined,
@@ -229,4 +229,151 @@ export function resolveAppTree(
     nodes,
     orphans,
   };
+}
+
+/**
+ * Detaches a node from its parent, and returns where it was attached.
+ */
+function detachAppNode(
+  node: AppNode,
+): { parent: AppNode; input: string; index: number } | undefined {
+  const attachedTo = node.edges.attachedTo;
+  if (!attachedTo) {
+    return undefined;
+  }
+  const siblings = attachedTo.node.edges.attachments.get(attachedTo.input) as
+    | AppNode[]
+    | undefined;
+  const index = siblings?.indexOf(node) ?? -1;
+  if (!siblings || index === -1) {
+    return undefined;
+  }
+  siblings.splice(index, 1);
+  return { parent: attachedTo.node, input: attachedTo.input, index };
+}
+
+/** Removes a node and all of its attachments from the node index. */
+function removeAppNodeSubtree(nodes: Map<string, AppNode>, node: AppNode) {
+  if (nodes.get(node.spec.id) === node) {
+    nodes.delete(node.spec.id);
+  }
+  for (const children of node.edges.attachments.values()) {
+    for (const child of children) {
+      removeAppNodeSubtree(nodes, child);
+    }
+  }
+}
+
+function attachAppNode(
+  node: SerializableAppNode,
+  parent: AppNode,
+  input: string,
+  index?: number,
+) {
+  node.edges.attachedTo = { node: parent, input };
+
+  const attachments = parent.edges.attachments as Map<string, AppNode[]>;
+  const siblings = attachments.get(input);
+  if (!siblings) {
+    attachments.set(input, [node]);
+  } else if (index === undefined) {
+    siblings.push(node);
+  } else {
+    siblings.splice(index, 0, node);
+  }
+}
+
+/**
+ * Adds nodes for the given specs to an app tree that has already been
+ * resolved.
+ *
+ * @remarks
+ *
+ * A spec with the same ID as an existing node replaces that node. If the new
+ * node attaches to the same input as the node it replaces, it takes the same
+ * position among the attachments of that input. Existing attachments of the
+ * replaced node, for example extensions from modules, are moved over to the
+ * new node unless they are replaced as well or listed as stale. New nodes can attach to each
+ * other as well as to existing nodes.
+ *
+ * Existing node instances are left untouched, and the new nodes are not
+ * instantiated.
+ *
+ * @returns The new nodes, in the order of the specs.
+ * @internal
+ */
+export function graftAppTreeNodes(
+  tree: AppTree,
+  specs: AppNodeSpec[],
+  options?: {
+    /**
+     * IDs of existing nodes that are no longer provided, for example stub
+     * extensions that the loaded plugin doesn't have. Such attachments of a
+     * replaced node are removed from the tree along with their attachments,
+     * instead of being moved over to the new node.
+     */
+    staleIds?: ReadonlySet<string>;
+  },
+): AppNode[] {
+  const nodes = tree.nodes as Map<string, AppNode>;
+  const newNodes = new Map<string, SerializableAppNode>();
+
+  for (const spec of specs) {
+    if (Array.isArray(spec.attachTo)) {
+      throw new Error(
+        `Extension '${spec.id}' can't be added to an existing app tree because it uses multiple attachment points`,
+      );
+    }
+    if (!newNodes.has(spec.id)) {
+      newNodes.set(spec.id, new SerializableAppNode(spec));
+    }
+  }
+
+  for (const node of newNodes.values()) {
+    const attachTo = node.spec.attachTo as { id: string; input: string };
+
+    const replacedNode = nodes.get(node.spec.id);
+    const replacedPosition = replacedNode
+      ? detachAppNode(replacedNode)
+      : undefined;
+    if (replacedNode) {
+      for (const [input, children] of replacedNode.edges.attachments) {
+        for (const child of children) {
+          if (newNodes.has(child.spec.id)) {
+            continue;
+          }
+          if (options?.staleIds?.has(child.spec.id)) {
+            removeAppNodeSubtree(nodes, child);
+          } else {
+            // All nodes of a resolved tree are serializable nodes
+            attachAppNode(child as SerializableAppNode, node, input);
+          }
+        }
+      }
+    }
+
+    const parent = newNodes.get(attachTo.id) ?? nodes.get(attachTo.id);
+    if (!parent) {
+      if (Array.isArray(tree.orphans)) {
+        tree.orphans.push(node);
+      }
+      continue;
+    }
+
+    const keepsPosition =
+      replacedPosition?.parent === parent &&
+      replacedPosition.input === attachTo.input;
+    attachAppNode(
+      node,
+      parent,
+      attachTo.input,
+      keepsPosition ? replacedPosition.index : undefined,
+    );
+  }
+
+  for (const node of newNodes.values()) {
+    nodes.set(node.spec.id, node);
+  }
+
+  return Array.from(newNodes.values());
 }

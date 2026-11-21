@@ -35,9 +35,55 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#ApiBlueprint';
+        params: undefined;
+        paramKeys: undefined;
+        paramsCallback: {
+          apiRefId: string;
+          apiIsPromise: false;
+          deps: {
+            discoveryApi: 'core.discovery';
+            fetchApi: 'core.fetch';
+          };
+        };
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'page:devtools': OverridableExtensionDefinition<{
       config: {
@@ -173,6 +219,18 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
+        params: {
+          path: 'config';
+          title: 'Config';
+        };
+        paramKeys: 'title' | 'path' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'sub-page:devtools/info': OverridableExtensionDefinition<{
       kind: 'sub-page';
@@ -217,6 +275,18 @@ const _default: OverridableFrontendPlugin<
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
+      };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
+        params: {
+          path: 'info';
+          title: 'Info';
+        };
+        paramKeys: 'title' | 'path' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'sub-page:devtools/scheduled-tasks': OverridableExtensionDefinition<{
@@ -263,7 +333,31 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
+        params: {
+          path: 'scheduled-tasks';
+          title: 'Scheduled Tasks';
+        };
+        paramKeys: 'title' | 'path' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
+  },
+  {
+    pluginId: 'devtools';
+    title: 'DevTools';
+    if: undefined;
+    extensionIds: [
+      'api:devtools',
+      'page:devtools',
+      'sub-page:devtools/info',
+      'sub-page:devtools/config',
+      'sub-page:devtools/scheduled-tasks',
+    ];
   }
 >;
 export default _default;
