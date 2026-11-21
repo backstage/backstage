@@ -153,7 +153,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({
         id: taskId,
-        fn: async () => {
+        fn: async signal => {
           const logger = this.logger.child({
             class: BitbucketServerEntityProvider.prototype.constructor.name,
             taskId,
@@ -161,7 +161,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
           });
 
           try {
-            await this.refresh(logger);
+            await this.refreshWithSignal(logger, signal);
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
@@ -201,14 +201,19 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   }
 
   async refresh(logger: LoggerService) {
+    await this.refreshWithSignal(logger);
+  }
+
+  private async refreshWithSignal(logger: LoggerService, signal?: AbortSignal) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
 
     logger.info('Discovering catalog files in Bitbucket Server repositories');
 
-    const entities = await this.findEntities();
+    const entities = await this.findEntities(signal);
 
+    signal?.throwIfAborted();
     await this.connection.applyMutation({
       type: 'full',
       entities: entities.map(entity => ({
@@ -222,7 +227,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     );
   }
 
-  private async findEntities(): Promise<Entity[]> {
+  private async findEntities(signal?: AbortSignal): Promise<Entity[]> {
     const client = BitbucketServerClient.fromConfig({
       config: this.integration.config,
     });
@@ -231,6 +236,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     );
     const result: Entity[] = [];
     for await (const project of projects) {
+      signal?.throwIfAborted();
       if (!this.matchesRepositoryFilters({ projectKey: project.key })) {
         continue;
       }
@@ -241,6 +247,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
         }),
       );
       for await (const repository of repositories) {
+        signal?.throwIfAborted();
         if (
           !this.matchesRepositoryFilters({
             projectKey: project.key,
