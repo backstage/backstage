@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OpaqueCliModule } from '@internal/cli';
+import { OpaqueCliModule, unwrapCliCommand } from '@internal/cli';
 import { createCliModule } from './createCliModule';
 
 describe('createCliModule', () => {
@@ -42,12 +42,22 @@ describe('createCliModule', () => {
       },
     });
 
-    const commands = await OpaqueCliModule.toInternal(module).commands;
+    const commands = (await OpaqueCliModule.toInternal(module).commands).map(
+      unwrapCliCommand,
+    );
     expect(commands).toEqual([
-      expect.objectContaining({ path: ['repo', 'test'] }),
-      expect.objectContaining({ path: ['package', 'lint'], if: condition }),
-      expect.objectContaining({ path: ['package', 'test', 'unit'] }),
+      {
+        command: expect.objectContaining({ path: ['repo', 'test'] }),
+      },
+      {
+        command: expect.objectContaining({ path: ['package', 'lint'] }),
+        if: condition,
+      },
+      {
+        command: expect.objectContaining({ path: ['package', 'test', 'unit'] }),
+        if: undefined,
+      },
     ]);
-    expect(commands[1]).not.toHaveProperty('command');
+    expect(commands[0].if).toBeUndefined();
   });
 });

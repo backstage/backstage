@@ -21,7 +21,6 @@ import {
   findCliPackageContext,
   resolveCommandVariant,
 } from './resolveCommandVariant';
-import type { InternalCliCommand } from '@internal/cli';
 import type { CliPackageContext } from './types';
 
 const context: CliPackageContext = {
@@ -31,15 +30,15 @@ const context: CliPackageContext = {
 
 function variant(
   moduleName: string,
-  condition?: InternalCliCommand['if'],
+  condition?: CommandVariant['if'],
 ): CommandVariant {
   return {
     command: {
       path: ['package', 'test'],
       description: `Test from ${moduleName}`,
-      if: condition,
       execute: async () => {},
     },
+    if: condition,
     module: createCliModule({
       packageJson: { name: moduleName },
       init: async () => {},

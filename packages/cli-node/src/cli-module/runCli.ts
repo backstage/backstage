@@ -20,7 +20,7 @@ import {
   OpaqueCommandTreeNode,
   isCommandNodeHidden,
 } from '@internal/cli';
-import type { CommandNode, InternalCliCommand } from '@internal/cli';
+import type { CommandNode } from '@internal/cli';
 import { ForwardedError, isError, stringifyError } from '@backstage/errors';
 import chalk from 'chalk';
 import { cli, command } from 'cleye';
@@ -30,7 +30,7 @@ import {
   findCliPackageContext,
   resolveCommandVariant,
 } from './resolveCommandVariant';
-import type { CliModule, CliPackageCommand } from './types';
+import type { CliCommand, CliModule, CliPackageCommand } from './types';
 
 interface HelpNode {
   id?: string;
@@ -165,7 +165,7 @@ function createHelpOptions(options: {
     } else {
       const { name, variants } = OpaqueCommandLeafNode.toInternal(node);
       // The fallback is the default implementation, so it describes the command
-      const described = variants.find(v => !v.command.if) ?? variants[0];
+      const described = variants.find(v => !v.if) ?? variants[0];
       commandRows.push([name, described.command.description]);
     }
   }
@@ -218,7 +218,7 @@ function createHelpOptions(options: {
 }
 
 async function executeCommand(
-  commandToExecute: InternalCliCommand,
+  commandToExecute: CliCommand,
   args: string[],
   programName: string,
 ): Promise<void> {

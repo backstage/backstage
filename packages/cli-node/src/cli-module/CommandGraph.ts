@@ -18,8 +18,9 @@ import {
   OpaqueCliModule,
   OpaqueCommandLeafNode,
   OpaqueCommandTreeNode,
+  unwrapCliCommand,
 } from '@internal/cli';
-import type { CommandNode, InternalCliCommand } from '@internal/cli';
+import type { CommandNode, CliCommandRegistration } from '@internal/cli';
 import type { CliModule } from './types';
 
 export class CommandGraph {
@@ -29,15 +30,9 @@ export class CommandGraph {
     return this.#roots;
   }
 
-  add(command: InternalCliCommand, module: CliModule): void {
+  add(registration: CliCommandRegistration, module: CliModule): void {
+    const { command, if: condition } = unwrapCliCommand(registration);
     const { path } = command;
-    if (command.if && path[0] !== 'package') {
-      throw new Error(
-        `Command "${path.join(' ')}" from "${
-          OpaqueCliModule.toInternal(module).packageName
-        }" sets a condition, which is only supported for commands under "package"`,
-      );
-    }
     let current = this.#roots;
 
     for (let i = 0; i < path.length - 1; i++) {
@@ -66,9 +61,9 @@ export class CommandGraph {
         // Multiple variants of the same leaf are allowed as long as at most
         // one of them lacks an if predicate, which acts as the fallback.
         const { variants } = OpaqueCommandLeafNode.toInternal(existing);
-        const fallback = variants.find(v => !v.command.if);
-        if (command.if || !fallback) {
-          variants.push({ command, module });
+        const fallback = variants.find(v => !v.if);
+        if (condition || !fallback) {
+          variants.push({ command, if: condition, module });
           return;
         }
         throw new Error(formatConflictError(path, module, fallback.module));
@@ -81,7 +76,7 @@ export class CommandGraph {
     current.push(
       OpaqueCommandLeafNode.createInstance('v1', {
         name,
-        variants: [{ command, module }],
+        variants: [{ command, if: condition, module }],
       }),
     );
   }

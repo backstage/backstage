@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { CliModule } from '@backstage/cli-node';
-import type { InternalCliCommand } from './InternalCliModule';
+import { CliModule, CliCommand, CliPackageContext } from '@backstage/cli-node';
 import { OpaqueType } from '@internal/opaque';
 
 /** @internal */
@@ -47,7 +46,9 @@ export const OpaqueCommandTreeNode = OpaqueType.create<{
  * provided it.
  */
 export interface CommandLeafVariant {
-  readonly command: InternalCliCommand;
+  readonly command: CliCommand;
+  /** Only set for package commands registered with `if`. */
+  readonly if?: (context: CliPackageContext) => boolean | Promise<boolean>;
   readonly module?: CliModule;
 }
 

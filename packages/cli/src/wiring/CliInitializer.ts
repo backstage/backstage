@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OpaqueCliModule } from '@internal/cli';
+import { OpaqueCliModule, unwrapCliCommand } from '@internal/cli';
 import { runCli } from '@backstage/cli-node';
 import type { CliModule } from '@backstage/cli-node';
 import { version } from './version';
@@ -76,9 +76,10 @@ export class CliInitializer {
     for (const { feature, fromArray } of allFeatures) {
       if (!fromArray && OpaqueCliModule.isType(feature)) {
         const cmds = await OpaqueCliModule.toInternal(feature).commands;
-        for (const cmd of cmds) {
-          if (!cmd.if) {
-            individualPaths.add(cmd.path.join(' '));
+        for (const registration of cmds) {
+          const { command, if: condition } = unwrapCliCommand(registration);
+          if (!condition) {
+            individualPaths.add(command.path.join(' '));
           }
         }
       }
@@ -92,7 +93,13 @@ export class CliInitializer {
 
       if (fromArray) {
         const cmds = await OpaqueCliModule.toInternal(feature).commands;
-        if (cmds.some(cmd => individualPaths.has(cmd.path.join(' ')))) {
+        if (
+          cmds.some(registration =>
+            individualPaths.has(
+              unwrapCliCommand(registration).command.path.join(' '),
+            ),
+          )
+        ) {
           continue;
         }
       }

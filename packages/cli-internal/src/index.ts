@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-export { OpaqueCliModule } from './InternalCliModule';
-export type { InternalCliCommand } from './InternalCliModule';
+export {
+  OpaqueCliModule,
+  OpaqueCliCommand,
+  OpaqueCliPackageCommand,
+  unwrapCliCommand,
+} from './InternalCliModule';
+export type {
+  CliCommandEntry,
+  CliPackageCommandEntry,
+  CliCommandRegistration,
+} from './InternalCliModule';
+
 export type {
   CommandNode,
   CommandTreeNode,

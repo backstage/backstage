@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { InternalCliCommand, OpaqueCliModule } from '@internal/cli';
+import {
+  OpaqueCliCommand,
+  OpaqueCliModule,
+  OpaqueCliPackageCommand,
+} from '@internal/cli';
+import type { CliCommandRegistration } from '@internal/cli';
 import { CliCommand, CliModule, CliPackageCommand } from './types';
 
 /**
@@ -66,12 +71,21 @@ export function createCliModule(options: {
     );
   }
 
-  const commands: InternalCliCommand[] = [];
+  const commands: CliCommandRegistration[] = [];
   const addCommand = (command: CliCommand) => {
-    commands.push(command);
+    commands.push(OpaqueCliCommand.createInstance('v1', { command }));
   };
-  const addPackageCommand = ({ command, ...rest }: CliPackageCommand) => {
-    commands.push({ ...rest, path: ['package', ...command] });
+  const addPackageCommand = ({
+    command,
+    if: condition,
+    ...rest
+  }: CliPackageCommand) => {
+    commands.push(
+      OpaqueCliPackageCommand.createInstance('v1', {
+        command: { ...rest, path: ['package', ...command] },
+        if: condition,
+      }),
+    );
   };
   const commandsPromise = Promise.resolve()
     .then(() => options.init({ addCommand, addPackageCommand }))

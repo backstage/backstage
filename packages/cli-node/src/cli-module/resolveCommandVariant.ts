@@ -18,12 +18,12 @@ import { OpaqueCliModule } from '@internal/cli';
 import { ForwardedError, InputError, NotFoundError } from '@backstage/errors';
 import fs from 'fs-extra';
 import { dirname, resolve as resolvePath } from 'node:path';
-import type { InternalCliCommand } from '@internal/cli';
-import type { CliModule, CliPackageContext } from './types';
+import type { CliCommand, CliModule, CliPackageContext } from './types';
 
 /** A single implementation of a command path. */
 export interface CommandVariant {
-  command: InternalCliCommand;
+  command: CliCommand;
+  if?: (context: CliPackageContext) => boolean | Promise<boolean>;
   module?: CliModule;
 }
 
@@ -71,12 +71,12 @@ function describeModule(variant: CommandVariant): string {
 export async function resolveCommandVariant(
   variants: ReadonlyArray<CommandVariant>,
   getPackageContext: () => Promise<CliPackageContext | undefined>,
-): Promise<InternalCliCommand> {
+): Promise<CliCommand> {
   if (variants.length === 0) {
     throw new Error('Command has no implementations');
   }
-  const fallback = variants.find(v => !v.command.if);
-  const toggled = variants.filter(v => v.command.if);
+  const fallback = variants.find(v => !v.if);
+  const toggled = variants.filter(v => v.if);
   if (toggled.length === 0) {
     return variants[0].command;
   }
@@ -87,7 +87,7 @@ export async function resolveCommandVariant(
   const enabled: CommandVariant[] = [];
   if (context) {
     for (const variant of toggled) {
-      if (await variant.command.if!(context)) {
+      if (await variant.if!(context)) {
         enabled.push(variant);
       }
     }
