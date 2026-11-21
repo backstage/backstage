@@ -13037,8 +13037,8 @@ __metadata:
   linkType: hard
 
 "@opensearch-project/opensearch@npm:^2.2.1":
-  version: 2.13.0
-  resolution: "@opensearch-project/opensearch@npm:2.13.0"
+  version: 2.14.0
+  resolution: "@opensearch-project/opensearch@npm:2.14.0"
   dependencies:
     aws4: "npm:^1.11.0"
     debug: "npm:^4.3.1"
@@ -13046,7 +13046,7 @@ __metadata:
     json11: "npm:^2.0.0"
     ms: "npm:^2.1.3"
     secure-json-parse: "npm:^2.4.0"
-  checksum: 10/83ba3575d0edcdc1ff3a6efd5d60b35fd624abb6db2b95bf2473a2029a7a407d3a077caaf58b1b9789ac884b3a24083972cbcb85b0e72a099a38b5b33ce6ca86
+  checksum: 10/5b3a106e2185d6468371c80561bb9cd773c5d362968c96fd76ed0db5e627b724e4a536cee985b576977a1c69bd953550a1e22c4d3e4e78d4d242e0be11e33298
   languageName: node
   linkType: hard
 
