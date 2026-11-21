@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export const pluginId = '.backstage/dynamic-features';
+export const pluginId = ".backstage/dynamic-features";

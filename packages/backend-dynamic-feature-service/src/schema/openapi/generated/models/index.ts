@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-export * from '../models/ErrorError.model';
-export * from '../models/ErrorRequest.model';
-export * from '../models/ErrorResponse.model';
-export * from '../models/ModelError.model';
-export * from '../models/Remote.model';
-export * from '../models/RemoteInfo.model';
+
+export * from '../models/ErrorError.model'
+export * from '../models/ErrorRequest.model'
+export * from '../models/ErrorResponse.model'
+export * from '../models/ModelError.model'
+export * from '../models/Remote.model'
+export * from '../models/RemoteInfo.model'
