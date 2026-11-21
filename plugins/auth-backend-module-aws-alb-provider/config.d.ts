@@ -30,11 +30,12 @@ export interface Config {
         issuer: string;
         /**
          * The ARN of the ALB that signs the tokens; this corresponds to the
-         * `signer` claim in your tokens.
+         * `signer` claim in your tokens. Sign-in attempts are rejected if
+         * the token's signer does not match it.
          *
          * @example arn:aws:elasticloadbalancing:us-east-2:123456789012:loadbalancer/app/my-load-balancer/1234567890123456
          */
-        signer?: string;
+        signer: string;
         /**
          * The AWS region where the ALB is located.
          *
