@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
+## 0.5.0
+
+### Minor Changes
+
+- 9a7a088: **BREAKING**: The `awsalb` auth provider now requires the `signer` option to be set to the ARN of the ALB that signs the tokens. Configurations that use the provider without a `signer` are rejected at startup, and sign-in attempts are rejected if the token's signer does not match it.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.1
+
 ## 0.4.22
 
 ### Patch Changes

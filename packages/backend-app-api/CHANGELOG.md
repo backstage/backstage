@@ -1,5 +1,14 @@
 # @backstage/backend-app-api
 
+## 1.9.1
+
+### Patch Changes
+
+- 057b255: Fixed repeated shutdown signals causing the backend to exit before cleanup finishes. Process shutdown also waits for an explicit `backend.stop()` that is already in progress.
+- Updated dependencies
+  - @backstage/connections@0.5.0
+  - @backstage/backend-plugin-api@1.12.1
+
 ## 1.9.0
 
 ### Minor Changes

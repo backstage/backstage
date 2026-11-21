@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs-backend-module-zensical
 
+## 0.1.2
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 0.1.0
 
 ### Minor Changes

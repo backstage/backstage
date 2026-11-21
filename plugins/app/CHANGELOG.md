@@ -1,5 +1,11 @@
 # @backstage/plugin-app
 
+## 0.6.1
+
+### Patch Changes
+
+- 3ab90f0: The built-in default icons no longer trigger the warning about icons registered as `IconComponent`. The warning now only lists icons from icon bundles.
+
 ## 0.6.0
 
 ### Minor Changes

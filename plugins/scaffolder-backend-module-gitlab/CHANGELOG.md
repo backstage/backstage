@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.12.5
+
+### Patch Changes
+
+- bd97c92: Added an optional `squash` input to the `publish:gitlab:merge-request` action to control whether commits are squashed when the merge request is merged. When omitted, the GitLab project's squash setting is respected.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.12.1
+  - @backstage/integration@2.2.1
+
+## 0.12.4
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 0.12.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/cli-node
 
+## 0.3.7
+
+### Patch Changes
+
+- 928c181: CLI modules can now register `package` commands with `addPackageCommand` and an optional `if` condition, so that several modules can provide the same command and the right one is chosen for each package. At most one module can provide the command without `if`, which acts as the fallback for packages where no other module is enabled.
+
 ## 0.3.6
 
 ### Patch Changes
