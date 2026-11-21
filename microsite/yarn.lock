@@ -3929,6 +3929,45 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rjsf/core@npm:^6.7.1":
+  version: 6.11.1
+  resolution: "@rjsf/core@npm:6.11.1"
+  dependencies:
+    markdown-to-jsx: "npm:^9.10.3"
+  peerDependencies:
+    "@rjsf/utils": ^6.11.1
+    react: ">=18"
+  checksum: 10/e688e427dc5a403114c967c0e7d181cd2417ae62ad675f07649cc9facbaeb52e93fb39725b5e54d163dfc4b1cb6b34176309c0f41ea0eba9dd40b8d9dc76990a
+  languageName: node
+  linkType: hard
+
+"@rjsf/utils@npm:^6.7.1":
+  version: 6.11.1
+  resolution: "@rjsf/utils@npm:6.11.1"
+  dependencies:
+    "@x0k/json-schema-merge": "npm:^1.1.0"
+    fast-equals: "npm:^6.0.4"
+    fast-uri: "npm:^4.2.1"
+    jsonpointer: "npm:^5.0.1"
+    react-is: "npm:^18.3.1"
+  peerDependencies:
+    react: ">=18"
+  checksum: 10/e8c33ecee95b062be318ae1ab0ed875c1dfa8cbe57a1d62799fecf6e93243a4e679ba33f9302657e0dd6df707cbf2481321b0db938beb9deb702bfaf0c0ad34b
+  languageName: node
+  linkType: hard
+
+"@rjsf/validator-ajv8@npm:^6.7.1":
+  version: 6.11.1
+  resolution: "@rjsf/validator-ajv8@npm:6.11.1"
+  dependencies:
+    ajv: "npm:^8.20.0"
+    ajv-formats: "npm:^2.1.1"
+  peerDependencies:
+    "@rjsf/utils": ^6.11.1
+  checksum: 10/92635652101f3c492ea8563760f667f9e0b3269a31c71355fd39c9bfffd5fe82c0fa90381b86bb357e9cbe1df5a9f624b531a324fa6f4d0cd66ff2cca5975fcf
+  languageName: node
+  linkType: hard
+
 "@rspack/binding-darwin-arm64@npm:1.7.12":
   version: 1.7.12
   resolution: "@rspack/binding-darwin-arm64@npm:1.7.12"
@@ -5557,6 +5596,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@x0k/json-schema-merge@npm:^1.1.0":
+  version: 1.2.0
+  resolution: "@x0k/json-schema-merge@npm:1.2.0"
+  dependencies:
+    "@types/json-schema": "npm:^7.0.15"
+  checksum: 10/e8f0a1368e938ca3ec6f926113b458f2d3d3b1a8fa79617d933e557f0c019e16e15252b54f7f8e1c5bfd0928c78cddf50acb25bcf365af0c3d57e071df37c6e3
+  languageName: node
+  linkType: hard
+
 "@xtuc/ieee754@npm:^1.2.0":
   version: 1.2.0
   resolution: "@xtuc/ieee754@npm:1.2.0"
@@ -5716,7 +5764,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:^8.0.0, ajv@npm:^8.11.0, ajv@npm:^8.9.0":
+"ajv@npm:^8.0.0, ajv@npm:^8.11.0, ajv@npm:^8.20.0, ajv@npm:^8.9.0":
   version: 8.20.0
   resolution: "ajv@npm:8.20.0"
   dependencies:
@@ -6034,6 +6082,9 @@ __metadata:
     "@docusaurus/tsconfig": "npm:^3.10.0"
     "@docusaurus/types": "npm:^3.10.0"
     "@mdx-js/react": "npm:^3.1.1"
+    "@rjsf/core": "npm:^6.7.1"
+    "@rjsf/utils": "npm:^6.7.1"
+    "@rjsf/validator-ajv8": "npm:^6.7.1"
     "@swc/core": "npm:^1.15.47"
     "@testing-library/dom": "npm:^10.4.1"
     "@testing-library/react": "npm:^16.3.2"
@@ -8547,6 +8598,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-equals@npm:^6.0.4":
+  version: 6.4.0
+  resolution: "fast-equals@npm:6.4.0"
+  checksum: 10/6edd1f06adfbc4806a6ab50e5ba94816791226299a81652c60dfe4629f9cdedf715f88d674f44727ba59a14ac695ac2ebee23bf1c4d7c3ecab7aea367ab8aeb5
+  languageName: node
+  linkType: hard
+
 "fast-glob@npm:^3.2.11, fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.0":
   version: 3.3.3
   resolution: "fast-glob@npm:3.3.3"
@@ -8578,6 +8636,13 @@ __metadata:
   version: 3.1.7
   resolution: "fast-uri@npm:3.1.7"
   checksum: 10/6d62ea818841e1b460f60482fd31582faa23ea9d9b33f856412b24c42da11fd72bd003be6696390ec896dbe4e9e78d3bb8d93bf70a511c7f69e5e807ac9b284f
+  languageName: node
+  linkType: hard
+
+"fast-uri@npm:^4.2.1":
+  version: 4.2.3
+  resolution: "fast-uri@npm:4.2.3"
+  checksum: 10/1da9df2a03f02601aa9237d4c465da788dd8f4e6c5e12b251f520437d5ef4562d6ab24916193c56ff2181c70382e3c774c19c3011cba77460534ad980f16ab4f
   languageName: node
   linkType: hard
 
@@ -10217,6 +10282,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jsonpointer@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "jsonpointer@npm:5.0.1"
+  checksum: 10/0b40f712900ad0c846681ea2db23b6684b9d5eedf55807b4708c656f5894b63507d0e28ae10aa1bddbea551241035afe62b6df0800fc94c2e2806a7f3adecd7c
+  languageName: node
+  linkType: hard
+
 "katex@npm:^0.16.47":
   version: 0.16.47
   resolution: "katex@npm:0.16.47"
@@ -10571,6 +10643,26 @@ __metadata:
   version: 3.0.4
   resolution: "markdown-table@npm:3.0.4"
   checksum: 10/bc699819e6a15607e5def0f21aa862aa061cf1f49877baa93b0185574f6ab143591afe0e18b94d9b15ea80c6a693894150dbccfacf4f6767160dc32ae393dfe0
+  languageName: node
+  linkType: hard
+
+"markdown-to-jsx@npm:^9.10.3":
+  version: 9.10.6
+  resolution: "markdown-to-jsx@npm:9.10.6"
+  peerDependencies:
+    react: ">= 16.0.0"
+    solid-js: ">=1.0.0"
+    vue: ">=3.0.0"
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-native:
+      optional: true
+    solid-js:
+      optional: true
+    vue:
+      optional: true
+  checksum: 10/3f56e98b55a7beac34bdd72364f8a7b203b508e776392e213a5e5f526e9cee8e76a09becebf18b425ef7ed43a6195d9bb56f020976a447f559991408c7b6d4ed
   languageName: node
   linkType: hard
 
@@ -13622,6 +13714,13 @@ __metadata:
   version: 17.0.2
   resolution: "react-is@npm:17.0.2"
   checksum: 10/73b36281e58eeb27c9cc6031301b6ae19ecdc9f18ae2d518bdb39b0ac564e65c5779405d623f1df9abf378a13858b79442480244bd579968afc1faf9a2ce5e05
+  languageName: node
+  linkType: hard
+
+"react-is@npm:^18.3.1":
+  version: 18.3.1
+  resolution: "react-is@npm:18.3.1"
+  checksum: 10/d5f60c87d285af24b1e1e7eaeb123ec256c3c8bdea7061ab3932e3e14685708221bf234ec50b21e10dd07f008f1b966a2730a0ce4ff67905b3872ff2042aec22
   languageName: node
   linkType: hard
 

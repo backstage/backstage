@@ -70,6 +70,10 @@ describe('usePackageWorkspaceState', () => {
       resolve('?package=%40backstage%2Fplugin-catalog-backend', '#install'),
       ['@backstage/plugin-catalog-backend', 'install'],
     );
+    assert.deepEqual(resolve('', '#configure'), [
+      '@backstage/plugin-catalog',
+      'configure',
+    ]);
     // A tab in the old query parameter form is ignored.
     assert.deepEqual(resolve('?tab=install'), [
       '@backstage/plugin-catalog',
