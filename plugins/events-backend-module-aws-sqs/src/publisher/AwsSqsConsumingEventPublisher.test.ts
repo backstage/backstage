@@ -142,9 +142,10 @@ describe('AwsSqsConsumingEventPublisher', () => {
     });
     const logger = mockServices.logger.mock();
     const events = new TestEventsService();
-    let taskFn: (() => Promise<void>) | undefined = undefined;
+    let taskFn: ((signal: AbortSignal) => Promise<void>) | undefined =
+      undefined;
     const scheduler = {
-      scheduleTask: (spec: { fn: () => Promise<void> }) => {
+      scheduleTask: (spec: { fn: (signal: AbortSignal) => Promise<void> }) => {
         taskFn = spec.fn;
       },
     } as unknown as SchedulerService;
@@ -206,9 +207,10 @@ describe('AwsSqsConsumingEventPublisher', () => {
     const publisher = publishers[0];
     await publisher.start();
 
-    await taskFn!();
-    await taskFn!();
-    await taskFn!();
+    const signal = new AbortController().signal;
+    await taskFn!(signal);
+    await taskFn!(signal);
+    await taskFn!(signal);
 
     const receiveMessageCommands = sqsSendMock.mock.calls
       .map(call => call[0])
@@ -262,5 +264,80 @@ describe('AwsSqsConsumingEventPublisher', () => {
       event: 'payload2',
     });
     expect(events.published[1].metadata).toEqual({});
+  });
+
+  it('stops receiving and waiting when the task is aborted', async () => {
+    const config = new ConfigReader({
+      events: {
+        modules: {
+          awsSqs: {
+            awsSqsConsumingEventPublisher: {
+              topics: {
+                fake1: {
+                  queue: {
+                    region: 'eu-west-1',
+                    url: 'https://fake1.queue.url',
+                  },
+                  waitTimeAfterEmptyReceive: { seconds: 60 },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    const logger = mockServices.logger.mock();
+    let taskFn: ((signal: AbortSignal) => Promise<void>) | undefined =
+      undefined;
+    const scheduler = {
+      scheduleTask: (spec: { fn: (signal: AbortSignal) => Promise<void> }) => {
+        taskFn = spec.fn;
+      },
+    } as unknown as SchedulerService;
+
+    let receive: (abortSignal?: AbortSignal) => Promise<unknown>;
+    jest.spyOn(SQSClient.prototype, 'send').mockImplementation(sqsSendMock);
+    sqsSendMock.mockImplementation(async (_command, options) =>
+      receive(options?.abortSignal),
+    );
+
+    const [publisher] = AwsSqsConsumingEventPublisher.fromConfig({
+      config,
+      events: new TestEventsService(),
+      logger,
+      scheduler,
+    });
+    await publisher.start();
+
+    // aborted while waiting for messages
+    const receiveController = new AbortController();
+    receive = abortSignal =>
+      new Promise((_resolve, reject) =>
+        abortSignal!.addEventListener('abort', () =>
+          reject(new Error('aborted')),
+        ),
+      );
+    const receiving = taskFn!(receiveController.signal);
+    await new Promise(resolve => setImmediate(resolve));
+    receiveController.abort();
+    await receiving;
+    expect(sqsSendMock).toHaveBeenCalledTimes(1);
+    expect(sqsSendMock.mock.calls[0][1]).toEqual({
+      abortSignal: receiveController.signal,
+    });
+
+    // aborted while waiting after an empty receive
+    const sleepController = new AbortController();
+    receive = async () => ({ Messages: [] });
+    const sleeping = taskFn!(sleepController.signal);
+    await new Promise(resolve => setImmediate(resolve));
+    sleepController.abort();
+    await sleeping;
+
+    // already aborted, so no wait after an empty receive
+    receive = async () => ({ Messages: [] });
+    await taskFn!(AbortSignal.abort());
+
+    expect(logger.error).not.toHaveBeenCalled();
   });
 });
