@@ -43,7 +43,7 @@ yarn --cwd packages/app add @backstage-community/plugin-tech-radar
 
 Note the plugin is added to the `app` package, rather than the root
 `package.json`. Backstage Apps are set up as monorepos with
-[Yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/). Frontend UI plugins are generally added to the `app` folder, while backend plugins are added to the `backend` folder.
+[Yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/). Frontend UI plugins are generally added to the `app` folder, while backend plugins are added to the `backend` folder, as described in [Adding a backend plugin](#adding-a-backend-plugin).
 
 ### 2. Verify the plugin is available
 
@@ -88,6 +88,72 @@ export default app.createRoot();
 ```
 
 For more details and alternative installation methods, see [Installing Plugins](../frontend-system/building-apps/05-installing-plugins.md).
+
+## Adding a backend plugin
+
+Backend plugins run in your app's backend and usually provide the APIs that frontend plugins call. In this example we will add the [Tech Radar backend plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/tech-radar/plugins/tech-radar-backend), which serves Tech Radar data that it reads from a URL you configure. The steps are the same for other backend plugins, so check each plugin's documentation for its package name and configuration.
+
+These steps use the [new backend system](../backend-system/index.md), which is the default in new Backstage apps.
+
+### 1. Install the backend plugin package
+
+Add the plugin's npm package to the `backend` package:
+
+```shell title="From your Backstage root directory"
+yarn --cwd packages/backend add @backstage-community/plugin-tech-radar-backend
+```
+
+### 2. Register the plugin
+
+Add the plugin to your backend in `packages/backend/src/index.ts`, before `backend.start()`:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// ... other plugins
+
+/* highlight-add-next-line */
+backend.add(import('@backstage-community/plugin-tech-radar-backend'));
+
+backend.start();
+```
+
+### 3. Configure the plugin
+
+Backend plugins read their settings from `app-config.yaml`. The Tech Radar backend plugin needs the URL of a JSON file with your radar data. You can start with the sample file from the plugin's repository:
+
+```yaml title="app-config.yaml"
+techRadar:
+  url: https://github.com/backstage/community-plugins/blob/main/workspaces/tech-radar/plugins/tech-radar-common/src/sampleTechRadarResponse.json
+```
+
+The plugin fetches this URL with the [URL Reader service](../backend-system/core-services/url-reader.md), so a file in a private repository also needs the matching [integration](../integrations/index.md). Plugins describe the settings they accept in a configuration schema; see [Defining Configuration](../conf/defining.md) to learn how schemas work and how your configuration is validated against them.
+
+### 4. Verify the plugin is running
+
+Start your app:
+
+```shell title="From your Backstage root directory"
+yarn start
+```
+
+While the backend starts, it logs which plugins have finished initializing. Check that the plugin's ID, `tech-radar`, appears in the `newly initialized` list of one of these messages. The output is similar to this:
+
+```log
+Plugin initialization complete, newly initialized: app, auth, catalog, ..., tech-radar
+```
+
+The Tech Radar backend plugin also has a health endpoint that you can call:
+
+```shell
+curl http://localhost:7007/api/tech-radar/health
+```
+
+The output is:
+
+```log
+{"status":"ok"}
+```
 
 ## How the sidebar works
 
