@@ -19,6 +19,7 @@ import { describe, it } from 'node:test';
 import type { PackageSnapshot } from '../../../../scripts/plugin-directory/manifest';
 import type { PluginData } from '../../pluginDirectory/plugin';
 import {
+  getPackageMaintainer,
   getPackagePresentations,
   getPluginDecisionSummary,
 } from './packagePresentation';
@@ -83,9 +84,86 @@ describe('getPackagePresentations', () => {
       [
         { label: 'Catalog frontend', groupLabel: 'Core experiences' },
         { label: 'Catalog backend', groupLabel: 'Core experiences' },
-        { label: 'GitHub module', groupLabel: 'Extension modules' },
+        { label: 'GitHub', groupLabel: 'Extension modules' },
         { label: 'Catalog React', groupLabel: 'Shared libraries' },
       ],
+    );
+  });
+});
+
+describe('getPackageMaintainer', () => {
+  const withRepository = (
+    npmPackageName: string,
+    url: string | undefined,
+  ): PackageSnapshot => {
+    const snapshot = packageSnapshot(npmPackageName);
+    return snapshot.npm.status === 'unavailable'
+      ? snapshot
+      : {
+          ...snapshot,
+          npm: { ...snapshot.npm, repository: url ? { url } : undefined },
+        };
+  };
+
+  it('identifies Core and Community packages by npm scope', () => {
+    assert.equal(
+      getPackageMaintainer(
+        withRepository('@backstage/plugin-catalog', undefined),
+      ),
+      'Core',
+    );
+    assert.equal(
+      getPackageMaintainer(
+        withRepository('@backstage-community/plugin-adr', undefined),
+      ),
+      'Community',
+    );
+    assert.equal(
+      getPackageMaintainer(
+        withRepository('@backstagefoo/plugin-catalog', undefined),
+      ),
+      undefined,
+    );
+  });
+
+  it('calls other packages open source only with a public repository', () => {
+    const name = '@roadiehq/backstage-plugin-argo-cd';
+    for (const url of [
+      'https://github.com/RoadieHQ/roadie-backstage-plugins',
+      'git+https://github.com/RoadieHQ/roadie-backstage-plugins.git',
+      'git://github.com/RoadieHQ/roadie-backstage-plugins.git',
+    ]) {
+      assert.equal(
+        getPackageMaintainer(withRepository(name, url)),
+        'Open source',
+        url,
+      );
+    }
+
+    for (const url of [
+      undefined,
+      'ssh://git@internal.example.com/team/plugin.git',
+      'file:///srv/git/plugin.git',
+    ]) {
+      assert.equal(getPackageMaintainer(withRepository(name, url)), undefined);
+    }
+    assert.equal(
+      getPackageMaintainer({
+        npmPackageName: name,
+        npm: {
+          status: 'unavailable',
+          lastAttemptAt: '2026-08-03T12:00:00.000Z',
+          reason: 'npm-not-found',
+        },
+      }),
+      undefined,
+    );
+  });
+
+  it('is carried on the package presentations', () => {
+    assert.deepEqual(
+      getPackagePresentations(plugin).map(entry => entry.maintainer),
+      ['Core', 'Core', 'Core', 'Core'],
     );
   });
 });

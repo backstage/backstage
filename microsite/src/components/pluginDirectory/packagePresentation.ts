@@ -29,11 +29,14 @@ type PackageGroupLabel =
   | 'Extension modules'
   | 'Shared libraries';
 
+export type PackageMaintainer = 'Core' | 'Community' | 'Open source';
+
 export interface PackagePresentation {
   snapshot: PackageSnapshot;
   npmPackageName: string;
   label: string;
   functionality: string | undefined;
+  maintainer?: PackageMaintainer;
   group: PackageGroupId;
   groupLabel: PackageGroupLabel;
 }
@@ -129,10 +132,50 @@ function packageLabel(
   const moduleName = suffix
     .replace(/^backend-module-/, '')
     .replace(/^module-/, '');
+  // Modules are listed under an "Extension modules" heading, so the label
+  // names only what the module integrates with.
   if (functionality?.includes('module')) {
-    return `${toDisplayWords(moduleName)} module`;
+    return toDisplayWords(moduleName);
   }
   return toDisplayWords(suffix);
+}
+
+const publicRepositoryProtocols = new Set([
+  'https:',
+  'http:',
+  'git:',
+  'git+https:',
+  'git+http:',
+]);
+
+// Packages from the Backstage and Backstage community scopes are recognized
+// by name. Any other package is called open source only when its npm
+// metadata links a public source repository, so closed vendor packages are
+// shown without a maintainer.
+export function getPackageMaintainer(
+  snapshot: PackageSnapshot,
+): PackageMaintainer | undefined {
+  if (snapshot.npmPackageName.startsWith('@backstage/')) {
+    return 'Core';
+  }
+  if (snapshot.npmPackageName.startsWith('@backstage-community/')) {
+    return 'Community';
+  }
+
+  const repositoryUrl =
+    snapshot.npm.status === 'unavailable'
+      ? undefined
+      : snapshot.npm.repository?.url;
+  if (!repositoryUrl) {
+    return undefined;
+  }
+  try {
+    return publicRepositoryProtocols.has(new URL(repositoryUrl).protocol)
+      ? 'Open source'
+      : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 export function getPackagePresentations(
@@ -150,6 +193,7 @@ export function getPackagePresentations(
         functionality,
       ),
       functionality,
+      maintainer: getPackageMaintainer(snapshot),
       group,
       groupLabel: groupLabels[group],
     };

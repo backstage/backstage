@@ -21,7 +21,7 @@ import { PackageSelect } from './PackageSelect';
 const options = [
   { value: 'frontend', label: 'Catalog frontend', group: 'Core experiences' },
   { value: 'backend', label: 'Catalog backend', group: 'Core experiences' },
-  { value: 'github', label: 'GitHub module', group: 'Extension modules' },
+  { value: 'github', label: 'GitHub', group: 'Extension modules' },
 ];
 
 describe('PackageSelect', () => {

@@ -15,7 +15,7 @@
  */
 import type { PackagePresentation } from './packagePresentation';
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PackageNavigation } from './PackageNavigation';
 
@@ -24,10 +24,12 @@ function presentation(
   label: string,
   group: PackagePresentation['group'],
   groupLabel: PackagePresentation['groupLabel'],
+  maintainer?: PackagePresentation['maintainer'],
 ): PackagePresentation {
   return {
     npmPackageName,
     label,
+    maintainer,
     group,
     groupLabel,
     functionality: undefined,
@@ -50,18 +52,34 @@ const packages = [
     'Catalog frontend',
     'core',
     'Core experiences',
+    'Core',
   ),
   presentation(
     '@backstage/plugin-catalog-backend',
     'Catalog backend',
     'core',
     'Core experiences',
+    'Core',
   ),
   presentation(
     '@backstage/plugin-catalog-backend-module-github',
-    'GitHub module',
+    'GitHub',
     'modules',
     'Extension modules',
+  ),
+  presentation(
+    '@backstage-community/plugin-catalog-backend-module-ldap',
+    'LDAP',
+    'modules',
+    'Extension modules',
+    'Community',
+  ),
+  presentation(
+    '@roadiehq/backstage-plugin-argo-cd',
+    'Argo CD',
+    'modules',
+    'Extension modules',
+    'Open source',
   ),
 ];
 
@@ -87,17 +105,47 @@ describe('PackageNavigation', () => {
       screen.getByRole('heading', { name: 'Core experiences' }),
     ).toBeVisible();
 
+    // Core and community packages carry a small badge, others have none.
+    expect(
+      within(
+        screen.getByRole('button', { name: /Catalog frontend/ }),
+      ).getByText('Core'),
+    ).toBeVisible();
+    expect(
+      within(screen.getByRole('button', { name: /LDAP/ })).getByText(
+        'Community',
+      ),
+    ).toBeVisible();
+    expect(
+      within(screen.getByRole('button', { name: /Argo CD/ })).getByText(
+        'Open source',
+      ),
+    ).toBeVisible();
+    expect(screen.getAllByText('Core')).toHaveLength(2);
+    expect(screen.getAllByText('Community')).toHaveLength(1);
+    expect(screen.getAllByText('Open source')).toHaveLength(1);
+
+    // Package names stay out of the list until a search is under way.
+    expect(
+      screen.queryByText('@backstage/plugin-catalog-backend'),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'GitHub' })).toBeVisible();
+
+    // Searching matches package names, which the label does not contain.
     await user.type(
       screen.getByRole('searchbox', { name: 'Search packages' }),
-      'github',
+      'backend-module',
     );
-    expect(screen.getByRole('button', { name: /GitHub module/ })).toBeVisible();
+    expect(screen.getByRole('button', { name: /GitHub/ })).toBeVisible();
+    expect(
+      screen.getByText('@backstage/plugin-catalog-backend-module-github'),
+    ).toBeVisible();
     expect(
       screen.queryByRole('button', { name: /Catalog backend/ }),
     ).not.toBeInTheDocument();
     expect(onSelectPackage).not.toHaveBeenCalled();
 
-    await user.click(screen.getByRole('button', { name: /GitHub module/ }));
+    await user.click(screen.getByRole('button', { name: /GitHub/ }));
     expect(onSelectPackage).toHaveBeenCalledWith(
       '@backstage/plugin-catalog-backend-module-github',
     );

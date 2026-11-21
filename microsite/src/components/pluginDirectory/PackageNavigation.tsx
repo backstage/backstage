@@ -87,8 +87,15 @@ export function PackageNavigation({
                     }
                     onClick={() => onSelectPackage(entry.npmPackageName)}
                   >
-                    <strong>{entry.label}</strong>
-                    <code>{entry.npmPackageName}</code>
+                    <span className={styles.packageNavigationTitle}>
+                      <strong>{entry.label}</strong>
+                      {entry.maintainer && (
+                        <span className={styles.maintainerBadge}>
+                          {entry.maintainer}
+                        </span>
+                      )}
+                    </span>
+                    {normalizedQuery && <code>{entry.npmPackageName}</code>}
                   </button>
                 ))}
               </div>
