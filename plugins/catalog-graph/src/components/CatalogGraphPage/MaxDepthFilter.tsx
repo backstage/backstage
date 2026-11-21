@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
-import Box from '@material-ui/core/Box';
-import FormControl from '@material-ui/core/FormControl';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import ClearIcon from '@material-ui/icons/Clear';
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { NumberField } from '@backstage/ui';
+import { useCallback } from 'react';
 import { catalogGraphTranslationRef } from '../../translation';
 
 export type Props = {
@@ -30,81 +24,36 @@ export type Props = {
   onChange: (value: number) => void;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated The filter is styled with CSS modules and no longer reads theme
+ * overrides, so this type has no effect and will be removed.
+ */
 export type MaxDepthFilterClassKey = 'formControl';
 
-const useStyles = makeStyles(
-  {
-    formControl: {
-      width: '100%',
-      maxWidth: 300,
-    },
-  },
-  { name: 'PluginCatalogGraphMaxDepthFilter' },
-);
-
 export const MaxDepthFilter = ({ value, onChange }: Props) => {
-  const classes = useStyles();
-  const onChangeRef = useRef(onChange);
-  const [currentValue, setCurrentValue] = useState(value);
   const { t } = useTranslationRef(catalogGraphTranslationRef);
 
-  // Keep a fresh reference to the latest callback
-  useEffect(() => {
-    onChangeRef.current = onChange;
-  }, [onChange]);
-
-  // If the value changes externally, update ourselves
-  useEffect(() => {
-    setCurrentValue(value);
-  }, [value]);
-
-  // When the entered text changes, update ourselves and communicate externally
-  const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    const newValueNumeric = Number(event.target.value);
-    const newValue =
-      Number.isFinite(newValueNumeric) && newValueNumeric > 0
-        ? newValueNumeric
-        : Number.POSITIVE_INFINITY;
-    setCurrentValue(newValue);
-    onChangeRef.current(newValue);
-  }, []);
-
-  const reset = useCallback(() => {
-    setCurrentValue(Number.POSITIVE_INFINITY);
-    onChangeRef.current(Number.POSITIVE_INFINITY);
-  }, [onChangeRef]);
+  // An empty or non-positive input means unlimited depth. The field reports
+  // its value when it is committed, on blur or Enter.
+  const handleChange = useCallback(
+    (newValue: number) => {
+      onChange(
+        Number.isFinite(newValue) && newValue > 0
+          ? newValue
+          : Number.POSITIVE_INFINITY,
+      );
+    },
+    [onChange],
+  );
 
   return (
-    <Box pb={1} pt={1}>
-      <FormControl variant="outlined" className={classes.formControl}>
-        <Typography variant="button">
-          {t('catalogGraphPage.maxDepthFilter.title')}
-        </Typography>
-        <OutlinedInput
-          type="number"
-          placeholder={t('catalogGraphPage.maxDepthFilter.inputPlaceholder')}
-          value={Number.isFinite(currentValue) ? String(currentValue) : ''}
-          onChange={handleChange}
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton
-                aria-label={t(
-                  'catalogGraphPage.maxDepthFilter.clearButtonAriaLabel',
-                )}
-                onClick={reset}
-                edge="end"
-              >
-                <ClearIcon />
-              </IconButton>
-            </InputAdornment>
-          }
-          inputProps={{
-            'aria-label': 'maxp',
-          }}
-          labelWidth={0}
-        />
-      </FormControl>
-    </Box>
+    <NumberField
+      label={t('catalogGraphPage.maxDepthFilter.title')}
+      placeholder={t('catalogGraphPage.maxDepthFilter.inputPlaceholder')}
+      minValue={0}
+      value={Number.isFinite(value) ? value : Number.NaN}
+      onChange={handleChange}
+    />
   );
 };
