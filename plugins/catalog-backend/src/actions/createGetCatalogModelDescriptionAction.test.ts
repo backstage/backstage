@@ -27,6 +27,7 @@ const model: CatalogModel = {
       versions: [
         { apiVersion: 'backstage.io/v1alpha1' },
         { apiVersion: 'backstage.io/v1alpha1', specType: 'service' },
+        { apiVersion: 'backstage.io/v1beta1' },
       ],
     },
   ],
@@ -61,25 +62,168 @@ const model: CatalogModel = {
       },
     ],
   }),
-  getKind: () => undefined,
+  getKind: ({ kind }) =>
+    kind === 'Component'
+      ? {
+          description: 'A software component',
+          apiVersions: ['backstage.io/v1alpha1', 'backstage.io/v1beta1'],
+          names: {
+            kind: 'Component',
+            singular: 'component',
+            plural: 'components',
+          },
+          relationFields: [
+            {
+              path: 'spec.owner',
+              relation: 'ownedBy',
+              defaultKind: 'Group',
+              allowedKinds: ['Group', 'User'],
+            },
+          ],
+          // The flat shape that compiled models produce: composition keywords
+          // are not allowed on the root or on its direct properties
+          jsonSchema: {
+            type: 'object',
+            properties: {
+              apiVersion: { type: 'string' },
+              kind: { type: 'string' },
+              metadata: {
+                type: 'object',
+                properties: { name: { type: 'string' } },
+              },
+              spec: {
+                type: 'object',
+                required: ['owner', 'lifecycle'],
+                properties: {
+                  owner: {
+                    type: 'string',
+                    description: 'The owner of the component.',
+                  },
+                  lifecycle: {
+                    type: 'string',
+                    enum: ['production', 'experimental'],
+                  },
+                  tags: { type: 'array', items: { type: 'string' } },
+                  ids: {
+                    type: 'array',
+                    items: { type: ['string', 'number'] },
+                  },
+                  links: { $ref: '#/definitions/Links' },
+                  nested: {
+                    type: 'object',
+                    properties: { deep: { type: 'number' } },
+                  },
+                },
+              },
+            },
+          },
+        }
+      : undefined,
   getRelations: () => undefined,
 };
 
+type TestVersion = { apiVersion: string; specType?: string };
+
+// Builds a model where the spec fields of each kind are decided by a callback,
+// so that tests can control which versions render identical or distinct fields
+function createModelWithKinds(
+  kinds: Array<{ kind: string; versions: TestVersion[] }>,
+  specFieldsFor: (version: TestVersion) => string[],
+): CatalogModel {
+  return {
+    listKinds: () =>
+      kinds.map(({ kind, versions }) => ({
+        description: `The ${kind} kind`,
+        names: {
+          kind,
+          singular: kind.toLowerCase(),
+          plural: `${kind.toLowerCase()}s`,
+        },
+        versions,
+      })),
+    listRelations: () => [],
+    getMetadata: () => ({ annotations: [], labels: [], tags: [] }),
+    getKind: ({ kind, apiVersion, spec }) => {
+      const found = kinds.find(k => k.kind === kind);
+      if (!found) {
+        return undefined;
+      }
+      const specFields = specFieldsFor({
+        apiVersion,
+        specType: typeof spec?.type === 'string' ? spec.type : undefined,
+      });
+      return {
+        description: `The ${kind} kind`,
+        apiVersions: [apiVersion],
+        names: {
+          kind,
+          singular: kind.toLowerCase(),
+          plural: `${kind.toLowerCase()}s`,
+        },
+        relationFields: [],
+        jsonSchema: {
+          properties: {
+            spec: {
+              type: 'object',
+              properties: Object.fromEntries(
+                specFields.map(name => [name, { type: 'string' }]),
+              ),
+            },
+          },
+        },
+      };
+    },
+    getRelations: () => undefined,
+  };
+}
+
+// Builds a model with a single Widget kind whose spec schema is decided by a
+// callback for each version
+function createModelWithSpecSchema(
+  versions: TestVersion[],
+  specSchemaFor: (version: TestVersion) => Record<string, any>,
+): CatalogModel {
+  const names = { kind: 'Widget', singular: 'widget', plural: 'widgets' };
+  return {
+    listKinds: () => [{ description: 'The Widget kind', names, versions }],
+    listRelations: () => [],
+    getMetadata: () => ({ annotations: [], labels: [], tags: [] }),
+    getKind: ({ apiVersion, spec }) => ({
+      description: 'The Widget kind',
+      apiVersions: [apiVersion],
+      names,
+      relationFields: [],
+      jsonSchema: {
+        properties: {
+          spec: specSchemaFor({
+            apiVersion,
+            specType: typeof spec?.type === 'string' ? spec.type : undefined,
+          }),
+        },
+      },
+    }),
+    getRelations: () => undefined,
+  };
+}
+
+async function describeModel(testModel?: CatalogModel): Promise<string> {
+  const mockActionsRegistry = actionsRegistryServiceMock();
+  createGetCatalogModelDescriptionAction({
+    modelHolder: testModel
+      ? ModelHolder.modelPassthroughForTest(testModel)
+      : undefined,
+    actionsRegistry: mockActionsRegistry,
+  });
+  const result = await mockActionsRegistry.invoke({
+    id: 'test:get-catalog-model-description',
+    input: {},
+  });
+  return (result as any).output.description as string;
+}
+
 describe('createGetCatalogModelDescriptionAction', () => {
   it('should return a markdown description of the catalog model', async () => {
-    const mockActionsRegistry = actionsRegistryServiceMock();
-
-    createGetCatalogModelDescriptionAction({
-      modelHolder: ModelHolder.modelPassthroughForTest(model),
-      actionsRegistry: mockActionsRegistry,
-    });
-
-    const result = await mockActionsRegistry.invoke({
-      id: 'test:get-catalog-model-description',
-      input: {},
-    });
-
-    const description = (result as any).output.description as string;
+    const description = await describeModel(model);
 
     expect(description).toContain('# Catalog Model');
     expect(description).toContain('## Entity Kinds');
@@ -115,22 +259,453 @@ describe('createGetCatalogModelDescriptionAction', () => {
   });
 
   it('should fall back to the default model when no model holder is provided', async () => {
-    const mockActionsRegistry = actionsRegistryServiceMock();
-
-    createGetCatalogModelDescriptionAction({
-      modelHolder: undefined,
-      actionsRegistry: mockActionsRegistry,
-    });
-
-    const result = await mockActionsRegistry.invoke({
-      id: 'test:get-catalog-model-description',
-      input: {},
-    });
-
-    const description = (result as any).output.description as string;
+    const description = await describeModel();
 
     expect(description).toContain('# Catalog Model');
     expect(description).toContain('## Entity Kinds');
     expect(description).toContain('### Entity Kind "Component"');
+    // Full field lines, since the preamble mentions some field paths too
+    expect(description).toContain(
+      '* "spec.lifecycle" (string, required, non-empty): The lifecycle state of the component.',
+    );
+    expect(description).toContain(
+      '* "spec.owner" (string, required, non-empty, relation "ownedBy" [default kind: Group; allowed kinds: Group, User]): An entity reference to the owner of the component.',
+    );
+    // A relation without a declared field still gets its own line
+    expect(description).toContain(
+      '* "spec.dependencyOf" (relation "dependencyOf")',
+    );
+  });
+
+  it('should describe kind fields and relation fields', async () => {
+    const description = await describeModel(model);
+
+    // Versions with identical fields are grouped
+    expect(description.match(/#### Fields/g)).toHaveLength(2);
+    expect(description).toContain(
+      '#### Fields (backstage.io/v1alpha1, backstage.io/v1beta1)',
+    );
+    // The relation is described on the line of the field that generates it
+    expect(description).toContain(
+      '* "spec.owner" (string, required, relation "ownedBy" [default kind: Group; allowed kinds: Group, User]): The owner of the component.',
+    );
+    expect(description).not.toContain('"spec.owner" →');
+    expect(description).toContain('* "spec.tags" (array of string)');
+    expect(description).toContain('* "spec.ids" (array of string | number)');
+    expect(description).toContain(
+      '* "spec.links" (reference to "#/definitions/Links")',
+    );
+    expect(description).toContain(
+      '* "spec.lifecycle" (string, required, one of "production", "experimental")',
+    );
+    expect(description).toContain('* "spec.nested.deep" (number)');
+
+    // Base fields are not repeated for every kind
+    expect(description).not.toContain('"metadata.name" (');
+    expect(description).not.toContain('"apiVersion" (');
+  });
+
+  it('should flag fields whose details are not fully listed', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
+        type: 'object',
+        properties: {
+          // Fields beyond the maximum depth are not listed
+          a: {
+            type: 'object',
+            properties: {
+              b: {
+                type: 'object',
+                properties: { c: { type: 'string' } },
+              },
+            },
+          },
+          // Fields of arrays of arrays are not listed
+          matrix: {
+            type: 'array',
+            items: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: { cell: { type: 'string' } },
+              },
+            },
+          },
+          contact: {
+            type: 'object',
+            dependentRequired: { email: ['name'] },
+            properties: { email: { type: 'string' } },
+          },
+          // Boolean schemas allow anything or nothing
+          anything: true,
+          nothing: false,
+          // allOf entries are not merged yet, only marked
+          combined: { allOf: [{ type: 'string' }, false] },
+        },
+      })),
+    );
+
+    expect(description).toContain(
+      '* "spec.a.b" (object, has nested fields not listed here)',
+    );
+    expect(description).not.toContain('"spec.a.b.c"');
+    expect(description).toContain(
+      '* "spec.matrix" (array of array of object, has nested fields not listed here)',
+    );
+    expect(description).not.toContain('"spec.matrix.cell"');
+    expect(description).toContain(
+      '* "spec.contact" (object, has conditional constraints not listed here)',
+    );
+    expect(description).toContain('* "spec.contact.email" (string)');
+    expect(description).toContain('* "spec.anything" (any value)');
+    expect(description).toContain('* "spec.nothing" (not allowed)');
+    expect(description).toContain(
+      '* "spec.combined" (unknown, has conditional constraints not listed here)',
+    );
+  });
+
+  it('should describe tuples, boolean items and extra keys', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
+        type: 'object',
+        properties: {
+          // Draft 7 tuple, with object items whose fields are not listed
+          pair: {
+            type: 'array',
+            items: [
+              { type: 'string' },
+              { type: 'object', properties: { x: { type: 'number' } } },
+            ],
+            additionalItems: false,
+          },
+          // Draft 2020-12 tuple, where items applies after the tuple
+          point: {
+            type: 'array',
+            prefixItems: [{ type: 'number' }, true],
+            items: { type: 'string' },
+          },
+          none: { type: 'array', items: false },
+          any: { type: 'array', items: true },
+          labels: {
+            type: 'object',
+            additionalProperties: { type: 'string' },
+          },
+          closed: { type: 'object', additionalProperties: false },
+          patterned: {
+            type: 'object',
+            patternProperties: { '^x-': { type: 'string' } },
+          },
+          // then/else without an if still constrain the field in some drafts
+          dangling: { type: 'string', then: { minLength: 1 } },
+        },
+      })),
+    );
+
+    expect(description).toContain(
+      '* "spec.pair" (tuple of [string, object] with no further items, has nested fields not listed here)',
+    );
+    expect(description).not.toContain('"spec.pair.x"');
+    expect(description).toContain(
+      '* "spec.point" (tuple of [number, any value] followed by string)',
+    );
+    expect(description).toContain('* "spec.none" (empty array)');
+    expect(description).toContain('* "spec.any" (array)');
+    expect(description).toContain(
+      '* "spec.labels" (object, other keys: string)',
+    );
+    expect(description).toContain('* "spec.closed" (object, no other keys)');
+    expect(description).toContain(
+      '* "spec.patterned" (object, has pattern-matched keys not listed here)',
+    );
+    expect(description).toContain(
+      '* "spec.dangling" (string, has conditional constraints not listed here)',
+    );
+  });
+
+  it('should mark allOf instead of merging its entries', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
+        type: 'object',
+        properties: {
+          cfg: {
+            type: 'object',
+            properties: { owner: { type: 'string' } },
+            allOf: [
+              { required: ['owner'] },
+              { properties: { mode: { type: 'string' } } },
+            ],
+          },
+          level: { allOf: [{ type: 'string' }, { enum: ['low', 'high'] }] },
+          endpoints: {
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['url'],
+              properties: {
+                url: { type: 'string' },
+                port: { type: 'number' },
+              },
+            },
+          },
+          refs: { type: 'array', items: { $ref: '#/definitions/Ref' } },
+        },
+      })),
+    );
+
+    expect(description).toContain(
+      '* "spec.cfg" (object, has conditional constraints not listed here)',
+    );
+    // Only the properties declared outside of allOf are listed
+    expect(description).toContain('* "spec.cfg.owner" (string)');
+    expect(description).not.toContain('"spec.cfg.mode"');
+    expect(description).toContain(
+      '* "spec.level" (unknown, has conditional constraints not listed here)',
+    );
+    // Properties of array items are addressed through the array path
+    expect(description).toContain('* "spec.endpoints" (array of object)');
+    expect(description).toContain('* "spec.endpoints.url" (string, required)');
+    expect(description).toContain('* "spec.endpoints.port" (number)');
+    expect(description).toContain(
+      '* "spec.refs" (array of reference to "#/definitions/Ref")',
+    );
+  });
+
+  it('should describe types, references, allowed values and constraints', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
+        type: 'object',
+        properties: {
+          typedRef: { type: 'object', $ref: '#/definitions/A' },
+          // const and enum in the same schema narrow each other
+          pinned: { enum: ['a', 'b'], const: 'b' },
+          impossible: { enum: ['a'], const: 'b' },
+          count: {
+            type: 'integer',
+            exclusiveMinimum: 0,
+            maximum: 8,
+            default: 5,
+          },
+          tags: {
+            type: 'array',
+            items: { type: 'string' },
+            minItems: 1,
+            maxItems: 4,
+          },
+          email: {
+            type: 'string',
+            minLength: 3,
+            maxLength: 64,
+            format: 'email',
+            pattern: '^[a-z]',
+          },
+          name: { type: 'string', minLength: 1 },
+          notes: {
+            type: 'string',
+            description: 'Free text.\n\nSpans several lines.',
+          },
+        },
+      })),
+    );
+
+    expect(description).toContain(
+      '* "spec.typedRef" (object, reference to "#/definitions/A")',
+    );
+    expect(description).toContain('* "spec.pinned" (unknown, const "b")');
+    expect(description).toContain(
+      '* "spec.impossible" (unknown, no allowed values)',
+    );
+    expect(description).toContain(
+      '* "spec.count" (integer, over 0, max 8, default 5)',
+    );
+    expect(description).toContain(
+      '* "spec.tags" (array of string, at least 1 item, at most 4 items)',
+    );
+    expect(description).toContain(
+      '* "spec.email" (string, min length 3, max length 64, format: email, pattern: "^[a-z]")',
+    );
+    // A minimum length of 1 gets a shorter wording
+    expect(description).toContain('* "spec.name" (string, non-empty)');
+    expect(description).toContain(
+      '* "spec.notes" (string): Free text. Spans several lines.',
+    );
+  });
+
+  it('should mark fields with alternative schemas instead of expanding them', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
+        type: 'object',
+        properties: {
+          options: {
+            type: 'object',
+            properties: { mode: { type: 'string' } },
+            anyOf: [
+              { properties: { mode: { enum: ['fast'] } } },
+              { properties: { label: { type: 'string' } } },
+            ],
+          },
+        },
+      })),
+    );
+
+    expect(description).toContain(
+      '* "spec.options" (object, has conditional constraints not listed here)',
+    );
+    // Only the unconditional declaration is described
+    expect(description).toContain('* "spec.options.mode" (string)');
+    expect(description).not.toContain('"spec.options.label"');
+    expect(description).not.toContain('one of "fast"');
+  });
+
+  it('should not group versions that differ only in allowed values', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema(
+        [{ apiVersion: 'example.com/v1' }, { apiVersion: 'example.com/v2' }],
+        ({ apiVersion }) => ({
+          type: 'object',
+          properties: {
+            mode: {
+              type: 'string',
+              enum:
+                apiVersion === 'example.com/v1' ? ['fast'] : ['fast', 'slow'],
+            },
+          },
+        }),
+      ),
+    );
+
+    expect(description.match(/#### Fields/g)).toHaveLength(2);
+    expect(description).toContain('* "spec.mode" (string, one of "fast")');
+    expect(description).toContain(
+      '* "spec.mode" (string, one of "fast", "slow")',
+    );
+  });
+
+  it('should not group versions that differ only in allowed item values', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema(
+        [{ apiVersion: 'example.com/v1' }, { apiVersion: 'example.com/v2' }],
+        ({ apiVersion }) => ({
+          type: 'object',
+          properties: {
+            modes: {
+              type: 'array',
+              items: {
+                type: 'string',
+                enum:
+                  apiVersion === 'example.com/v1' ? ['fast'] : ['fast', 'slow'],
+              },
+            },
+            pinned: { type: 'array', items: { const: 'x' } },
+          },
+        }),
+      ),
+    );
+
+    expect(description.match(/#### Fields/g)).toHaveLength(2);
+    expect(description).toContain(
+      '* "spec.modes" (array of string [one of "fast"])',
+    );
+    expect(description).toContain(
+      '* "spec.modes" (array of string [one of "fast", "slow"])',
+    );
+    expect(description).toContain(
+      '* "spec.pinned" (array of unknown [const "x"])',
+    );
+  });
+
+  it('should compare allowed values regardless of object key order', async () => {
+    const description = await describeModel(
+      createModelWithSpecSchema([{ apiVersion: 'example.com/v1' }], () => ({
+        type: 'object',
+        properties: {
+          target: {
+            enum: [
+              { host: 'a', port: 1 },
+              { host: 'b', port: 2 },
+            ],
+            const: { port: 1, host: 'a' },
+          },
+        },
+      })),
+    );
+
+    expect(description).toContain(
+      '* "spec.target" (unknown, const {"host":"a","port":1})',
+    );
+  });
+
+  it('should emit one field block per distinct schema and group identical ones', async () => {
+    const description = await describeModel(
+      createModelWithKinds(
+        [
+          {
+            kind: 'Widget',
+            versions: [
+              { apiVersion: 'example.com/v1' },
+              { apiVersion: 'example.com/v2' },
+              { apiVersion: 'example.com/v3' },
+              { apiVersion: 'example.com/v1', specType: 'a' },
+              { apiVersion: 'example.com/v2', specType: 'a' },
+              { apiVersion: 'example.com/v1', specType: 'b' },
+            ],
+          },
+        ],
+        ({ apiVersion, specType }) => [
+          'common',
+          ...(specType ? [`extra_${specType}`] : []),
+          ...(apiVersion === 'example.com/v3' ? ['addedInV3'] : []),
+        ],
+      ),
+    );
+
+    // v1+v2 without spec type are identical and grouped, v3 differs, and each
+    // spec type gets its own block (grouped across the versions it shares)
+    expect(description.match(/#### Fields/g)).toHaveLength(4);
+    expect(description).toContain(
+      '#### Fields (example.com/v1, example.com/v2)',
+    );
+    expect(description).toContain('#### Fields (example.com/v3)');
+    expect(description).toContain(
+      '#### Fields (example.com/v1, example.com/v2; spec.type: "a")',
+    );
+    expect(description).toContain(
+      '#### Fields (example.com/v1; spec.type: "b")',
+    );
+    expect(description.match(/"spec.addedInV3"/g)).toHaveLength(1);
+    expect(description.match(/"spec.extra_a"/g)).toHaveLength(1);
+    expect(description.match(/"spec.extra_b"/g)).toHaveLength(1);
+    expect(description.match(/"spec.common"/g)).toHaveLength(4);
+  });
+
+  it('should grow by a fixed amount per kind', async () => {
+    const describeKinds = (count: number) =>
+      describeModel(
+        createModelWithKinds(
+          Array.from({ length: count }, (_, i) => ({
+            // Equal-length names, so that every kind renders the same size
+            kind: `Custom${String(i).padStart(3, '0')}`,
+            versions: [
+              { apiVersion: 'example.com/v1' },
+              { apiVersion: 'example.com/v2' },
+              { apiVersion: 'example.com/v3' },
+            ],
+          })),
+          () => ['name', 'owner', 'lifecycle'],
+        ),
+      );
+
+    const [small, medium, large] = await Promise.all(
+      [10, 30, 50].map(describeKinds),
+    );
+
+    // Identical versions are grouped, so every kind renders exactly one field
+    // block no matter how many versions it has
+    expect(small.match(/#### Fields/g)).toHaveLength(10);
+    expect(large.match(/#### Fields/g)).toHaveLength(50);
+
+    // Every additional kind adds the same amount of text
+    const perKind = (medium.length - small.length) / 20;
+    expect(perKind).toBeGreaterThan(0);
+    expect(large.length - medium.length).toBe(perKind * 20);
   });
 });
