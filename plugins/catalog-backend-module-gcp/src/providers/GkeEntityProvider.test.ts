@@ -465,6 +465,27 @@ describe('GkeEntityProvider', () => {
     });
   });
 
+  it('does not apply a full update when the scheduled task is aborted', async () => {
+    const runTask = (signal: AbortSignal) =>
+      (taskRunner.run as jest.Mock).mock.calls[0][0].fn(signal);
+    const controller = new AbortController();
+    clusterManagerClientMock.listClusters.mockImplementation(() => {
+      controller.abort();
+      return [{ clusters: [] }];
+    });
+
+    await runTask(AbortSignal.abort());
+    await runTask(controller.signal);
+    expect(connectionMock.applyMutation).not.toHaveBeenCalled();
+    expect(logger.error).toHaveBeenCalledTimes(2);
+
+    clusterManagerClientMock.listClusters.mockImplementation(() => [
+      { clusters: [] },
+    ]);
+    await runTask(new AbortController().signal);
+    expect(connectionMock.applyMutation).toHaveBeenCalledTimes(1);
+  });
+
   it('should log GKE API errors', async () => {
     clusterManagerClientMock.listClusters.mockRejectedValue(
       new Error('some-error'),
