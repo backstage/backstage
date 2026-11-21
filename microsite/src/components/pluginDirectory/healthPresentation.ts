@@ -1,0 +1,97 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import type {
+  PackageSnapshot,
+  SnapshotStatus,
+} from '../../../../scripts/plugin-directory/manifest';
+import type { PluginData } from '../../pluginDirectory/plugin';
+
+const millisecondsPerDay = 24 * 60 * 60 * 1000;
+const daysPerMonth = 30;
+const daysPerYear = 365;
+
+export interface StatusPresentation {
+  label: string;
+}
+
+export const statusPresentations: Record<SnapshotStatus, StatusPresentation> = {
+  fresh: {
+    label: 'Current',
+  },
+  stale: {
+    label: 'Getting old',
+  },
+  unavailable: {
+    label: 'Not reported',
+  },
+};
+
+export function formatReleaseAge(isoDate: string, now = new Date()): string {
+  const elapsedDays = Math.max(
+    0,
+    Math.floor(
+      (now.getTime() - new Date(isoDate).getTime()) / millisecondsPerDay,
+    ),
+  );
+
+  if (elapsedDays === 0) {
+    return 'today';
+  }
+  if (elapsedDays < daysPerMonth) {
+    return `${elapsedDays} ${elapsedDays === 1 ? 'day' : 'days'} ago`;
+  }
+  if (elapsedDays < daysPerYear) {
+    const elapsedMonths = Math.floor(elapsedDays / daysPerMonth);
+    return `${elapsedMonths} ${elapsedMonths === 1 ? 'month' : 'months'} ago`;
+  }
+
+  const elapsedYears = Math.floor(elapsedDays / daysPerYear);
+  return `${elapsedYears} ${elapsedYears === 1 ? 'year' : 'years'} ago`;
+}
+
+export function getNpmPackageUrl(npmPackageName: string): string {
+  return `https://www.npmjs.com/package/${npmPackageName}`;
+}
+
+const backstageVersionPattern = /^(\d+)\.(\d+)\.\d+/;
+
+/**
+ * Counts how many minor Backstage releases `version` is behind
+ * `latestVersion`, e.g. 1.50.0 vs 1.53.1 is 3 minor releases behind. Returns
+ * undefined if either version doesn't parse as a Backstage release version.
+ */
+export function countMinorVersionsBehind(
+  version: string,
+  latestVersion: string,
+): number | undefined {
+  const current = backstageVersionPattern.exec(version);
+  const latest = backstageVersionPattern.exec(latestVersion);
+  if (!current || !latest) {
+    return undefined;
+  }
+
+  const currentOrdinal = Number(current[1]) * 1000 + Number(current[2]);
+  const latestOrdinal = Number(latest[1]) * 1000 + Number(latest[2]);
+  return Math.max(0, latestOrdinal - currentOrdinal);
+}
+
+export function getPrimaryPackageSnapshot(
+  plugin: PluginData,
+): PackageSnapshot | undefined {
+  return plugin.snapshot?.packages.find(
+    packageSnapshot => packageSnapshot.npmPackageName === plugin.npmPackageName,
+  );
+}

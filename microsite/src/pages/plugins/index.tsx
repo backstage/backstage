@@ -1,5 +1,8 @@
 import Link from '@docusaurus/Link';
 import PluginsFilter from '@site/src/components/pluginsFilter/pluginsFilter';
+import { type PluginManifest } from '../../../../scripts/plugin-directory/manifest';
+import { manifestSlug } from '../../../../scripts/plugin-directory/slug';
+import { type PluginData } from '../../pluginDirectory/plugin';
 import { calcIsNewPlugin } from '@site/src/util/calcIsNewPlugin';
 import { truncateDescription } from '@site/src/util/truncateDescription';
 import { ChipCategory } from '@site/src/util/types';
@@ -7,24 +10,29 @@ import Layout from '@theme/Layout';
 import clsx from 'clsx';
 import React, { useMemo, useState } from 'react';
 
-import { IPluginData, PluginCard } from './_pluginCard';
+import { PluginCard } from './_pluginCard';
 import pluginsStyles from './plugins.module.scss';
 import { PluginsSearch } from '@site/src/components/pluginsSearch/pluginsSearch';
 
 interface IPluginsList {
-  corePlugins: IPluginData[];
-  otherPlugins: IPluginData[];
+  corePlugins: PluginData[];
+  otherPlugins: PluginData[];
 }
 
 const pluginsContext = require.context(
   '../../../data/plugins',
   false,
-  /\.ya?ml/,
+  /\.yaml$/,
 );
 
 const plugins: IPluginsList = pluginsContext.keys().reduce(
   (acum, id) => {
-    let pluginData: IPluginData = pluginsContext(id).default;
+    const manifest: PluginManifest = pluginsContext(id).default;
+    let pluginData: PluginData = {
+      ...manifest,
+      slug: manifestSlug(id.slice(2)),
+      isNew: false,
+    };
     const category: keyof IPluginsList =
       pluginData.category === 'Core Feature' ? 'corePlugins' : 'otherPlugins';
 
@@ -99,7 +107,7 @@ const Plugins = () => {
     }
   };
 
-  const matchesSearch = (pluginData: IPluginData, term: string) => {
+  const matchesSearch = (pluginData: PluginData, term: string) => {
     if (!term) return true;
     const lowerTerm = term.toLowerCase();
     return (
@@ -110,7 +118,7 @@ const Plugins = () => {
     );
   };
 
-  const matchesCategory = (pluginData: IPluginData, categories: string[]) => {
+  const matchesCategory = (pluginData: PluginData, categories: string[]) => {
     if (categories.length === 0) return true;
     return categories.includes(pluginData.category);
   };
