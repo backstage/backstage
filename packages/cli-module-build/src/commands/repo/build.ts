@@ -17,7 +17,11 @@
 import chalk from 'chalk';
 import { cli } from 'cleye';
 import { relative as relativePath } from 'node:path';
-import { buildPackages, getOutputsForRole } from '../../lib/builder';
+import {
+  buildPackages,
+  getOutputsForRole,
+  getEntryPointsForRole,
+} from '../../lib/builder';
 import { targetPaths } from '@backstage/cli-common';
 
 import {
@@ -125,6 +129,7 @@ export default async ({ args, info }: CliCommandContext) => {
     return {
       targetDir: pkg.dir,
       packageJson: pkg.packageJson,
+      entryPoints: getEntryPointsForRole(role, pkg.packageJson),
       outputs,
       logPrefix: `${chalk.cyan(relativePath(targetPaths.rootDir, pkg.dir))}: `,
       workspacePackages: packages,
