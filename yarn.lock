@@ -4640,6 +4640,7 @@ __metadata:
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@types/json-schema": "npm:^7.0.15"
     openapi-types: "npm:^12.0.0"
     yaml: "npm:^2.1.1"
   languageName: unknown
@@ -6453,6 +6454,8 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@yeoman/adapter": "npm:^4.0.2"
+    mem-fs: "npm:^4.1.4"
     yaml: "npm:^2.0.0"
     yeoman-environment: "npm:^6.1.0"
   languageName: unknown

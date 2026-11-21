@@ -44,12 +44,14 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@yeoman/adapter": "^4.0.2",
+    "mem-fs": "^4.1.4",
     "yaml": "^2.0.0",
     "yeoman-environment": "^6.1.0"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
   }
 }
