@@ -19,11 +19,10 @@ import {
   coreServices,
 } from '@backstage/backend-plugin-api';
 import {
-  WinstonLogger,
-  WinstonLoggerOptions,
+  DefaultRootLoggerService,
+  DefaultRootLoggerServiceOptions,
 } from '@backstage/backend-defaults/rootLogger';
 import { createConfigSecretEnumerator } from '@backstage/backend-defaults/rootConfig';
-import { transports, format } from 'winston';
 import { loadConfigSchema } from '@backstage/config-loader';
 import { getPackages } from '@manypkg/get-packages';
 import { dynamicPluginsSchemasServiceRef } from './schemas';
@@ -32,7 +31,7 @@ import { dynamicPluginsSchemasServiceRef } from './schemas';
  * @public
  */
 export type DynamicPluginsRootLoggerFactoryOptions = Omit<
-  WinstonLoggerOptions,
+  DefaultRootLoggerServiceOptions,
   'meta'
 >;
 
@@ -46,13 +45,7 @@ const dynamicPluginsRootLoggerServiceFactoryWithOptions = (
       schemas: dynamicPluginsSchemasServiceRef,
     },
     async factory({ config, schemas }) {
-      const logger = WinstonLogger.create({
-        level: process.env.LOG_LEVEL || 'info',
-        format:
-          process.env.NODE_ENV === 'production'
-            ? format.json()
-            : WinstonLogger.colorFormat(),
-        transports: [new transports.Console()],
+      const logger = DefaultRootLoggerService.create({
         ...options,
         meta: {
           service: 'backstage',

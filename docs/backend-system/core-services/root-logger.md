@@ -86,8 +86,12 @@ To learn more, see the [Debugging Backstage](https://backstage.io/docs/tooling/l
 The following example is how you can override the root logger service to add additional metadata to all log lines.
 
 ```ts
-import { coreServices } from '@backstage/backend-plugin-api';
-import { WinstonLogger } from '@backstage/backend-defaults/rootLogger';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+import { createBackend } from '@backstage/backend-defaults';
+import { DefaultRootLoggerService } from '@backstage/backend-defaults/rootLogger';
 import { createConfigSecretEnumerator } from '@backstage/backend-defaults/rootConfig';
 
 const backend = createBackend();
@@ -99,19 +103,13 @@ backend.add(
       config: coreServices.rootConfig,
     },
     async factory({ config }) {
-      const logger = WinstonLogger.create({
+      const logger = DefaultRootLoggerService.create({
         meta: {
           service: 'backstage',
           // here's some additional information that is not part of the
           // original implementation
           podName: 'myk8spod',
         },
-        level: process.env.LOG_LEVEL || 'info',
-        format:
-          process.env.NODE_ENV === 'production'
-            ? format.combine(format.timestamp(), format.json())
-            : WinstonLogger.colorFormat(),
-        transports: [new transports.Console()],
       });
 
       const secretEnumerator = await createConfigSecretEnumerator({
@@ -126,4 +124,39 @@ backend.add(
 );
 ```
 
-The default JSON format, used when `NODE_ENV` is `production`, adds a `timestamp` field to every log line. If you pass your own `format`, as in the example above, include `format.timestamp()` to keep it. Request logs no longer have a separate `date` field or a date at the start of the message, so use `timestamp` in log pipelines instead.
+The default JSON format, used when `NODE_ENV` is `production`, adds a `timestamp` field to every log line. If you pass your own `format`, include a timestamp in it to keep this field. Request logs no longer have a separate `date` field or a date at the start of the message, so use `timestamp` in log pipelines instead.
+
+### Custom formats and transports
+
+The default logger writes to standard output using colored text in development and
+JSON with an ISO timestamp when `NODE_ENV` is `production`.
+Custom instances created with `DefaultRootLoggerService` honor
+`LOG_LEVEL` and include metadata inherited from their parent loggers.
+
+You can supply Winston 3 transport instances and Winston or `logform` format
+instances through the `transports` and `format` options. Install the dependencies
+used by your custom implementation in your backend package. For example, inside
+a root logger factory:
+
+```ts
+import { DefaultRootLoggerService } from '@backstage/backend-defaults/rootLogger';
+import { format, transports } from 'winston';
+
+const logger = DefaultRootLoggerService.create({
+  meta: { service: 'backstage' },
+  format: format.combine(format.timestamp(), format.json()),
+  transports: [new transports.Console()],
+});
+```
+
+When overriding the root logger, register configuration secrets for redaction as
+shown in the previous example. An empty `transports` array disables output.
+
+`WinstonLogger` remains available as a deprecated alias for
+`DefaultRootLoggerService`. The deprecated `WinstonLoggerOptions` type retains
+Winston transport members for existing code that inspects or wraps transports.
+Use `DefaultRootLoggerServiceOptions` for new implementations; its transport
+contract only requires a writable stream in object mode.
+
+`WinstonLoggerLevelOverride` and `WinstonLoggerLevelOverrideMatchers` remain
+deprecated aliases for `LoggerLevelOverride` and `LoggerLevelOverrideMatchers`.

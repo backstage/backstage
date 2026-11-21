@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { TransformableInfo } from 'logform';
-import { WinstonLoggerLevelOverrideMatchers } from './types';
+import { LoggerInfo, LoggerLevelOverrideMatchers } from './types';
 
 /** Parse a slash-delimited regex like `/pattern/flags` into a RegExp, or null if not a regex-string */
 const parseRegex = (s: string): RegExp | null => {
@@ -45,7 +44,7 @@ const parseRegex = (s: string): RegExp | null => {
  * @returns A function that takes a log field and returns `true` if it matches the matcher, otherwise `false`.
  */
 const createLogFieldMatcher = (
-  matcher: WinstonLoggerLevelOverrideMatchers[0],
+  matcher: LoggerLevelOverrideMatchers[0],
 ): ((logField: unknown) => boolean) => {
   // Array of matchers: create predicates for each element and OR them together
   if (Array.isArray(matcher)) {
@@ -82,13 +81,13 @@ const createLogFieldMatcher = (
  * @returns A function that takes a log entry and returns `true` if it matches all specified matchers, otherwise `false`.
  */
 export const createLogMatcher = (
-  matchers: WinstonLoggerLevelOverrideMatchers,
-): ((log: TransformableInfo) => boolean) => {
+  matchers: LoggerLevelOverrideMatchers,
+): ((log: LoggerInfo) => boolean) => {
   const logFieldMatchers = Object.entries(matchers).map(([key, m]) => {
     const fn = createLogFieldMatcher(m);
     return [key, fn] as const;
   });
 
-  return (log: TransformableInfo) =>
+  return (log: LoggerInfo) =>
     logFieldMatchers.every(([key, fn]) => fn(log[key]));
 };

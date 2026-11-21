@@ -18,9 +18,8 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { format, transports } from 'winston';
 import { createConfigSecretEnumerator } from '../rootConfig/createConfigSecretEnumerator';
-import { WinstonLogger } from '../rootLogger/WinstonLogger';
+import { DefaultRootLoggerService } from './DefaultRootLoggerService';
 import { getRootLoggerConfig } from './config';
 
 /**
@@ -40,17 +39,12 @@ export const rootLoggerServiceFactory = createServiceFactory({
   async factory({ config }) {
     const rootLoggerConfig = getRootLoggerConfig(config);
 
-    const logger = WinstonLogger.create({
+    const logger = DefaultRootLoggerService.create({
       meta: {
         service: 'backstage',
         ...rootLoggerConfig.meta,
       },
-      level: process.env.LOG_LEVEL || rootLoggerConfig.level || 'info',
-      format:
-        process.env.NODE_ENV === 'production'
-          ? format.combine(format.timestamp(), format.json())
-          : WinstonLogger.colorFormat(),
-      transports: [new transports.Console()],
+      level: rootLoggerConfig.level,
     });
 
     const secretEnumerator = await createConfigSecretEnumerator({ logger });

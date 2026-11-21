@@ -19,28 +19,36 @@ import {
 } from '@backstage/backend-test-utils';
 import { rootLoggerServiceFactory } from './rootLoggerServiceFactory';
 
-import { transports } from 'winston';
-import { MESSAGE } from 'triple-beam';
-import { WinstonLogger } from './WinstonLogger';
+import { DefaultRootLoggerService } from './DefaultRootLoggerService';
 
 describe('rootLoggerServiceFactory', () => {
+  afterEach(() => jest.restoreAllMocks());
+
   beforeEach(() => {
-    jest.spyOn(WinstonLogger, 'create');
+    jest.replaceProperty(process, 'env', { ...process.env, LOG_LEVEL: '' });
+    jest.spyOn(DefaultRootLoggerService, 'create');
   });
 
-  it('should create WinstonLogger with defaults', async () => {
-    await ServiceFactoryTester.from(rootLoggerServiceFactory, {
+  it('should create DefaultRootLoggerService with defaults', async () => {
+    const stdout = jest.spyOn(process.stdout, 'write').mockReturnValue(true);
+    const logger = await ServiceFactoryTester.from(rootLoggerServiceFactory, {
       dependencies: [mockServices.rootConfig.factory()],
     }).getSubject();
 
-    expect(WinstonLogger.create).toHaveBeenCalledWith({
-      level: 'info',
+    expect(DefaultRootLoggerService.create).toHaveBeenCalledWith({
+      level: undefined,
       meta: {
         service: 'backstage',
       },
-      format: expect.anything(),
-      transports: expect.anything(),
     });
+
+    stdout.mockClear();
+    logger.debug('filtered by the default level');
+    logger.info('default level is info');
+    expect(stdout).toHaveBeenCalledTimes(1);
+    expect(stdout).toHaveBeenCalledWith(
+      expect.stringContaining('default level is info'),
+    );
   });
 
   it('should format logs as JSON with a timestamp in production', async () => {
@@ -49,17 +57,15 @@ describe('rootLoggerServiceFactory', () => {
       NODE_ENV: 'production',
     });
     try {
-      await ServiceFactoryTester.from(rootLoggerServiceFactory, {
+      const stdout = jest.spyOn(process.stdout, 'write').mockReturnValue(true);
+      const logger = await ServiceFactoryTester.from(rootLoggerServiceFactory, {
         dependencies: [mockServices.rootConfig.factory()],
       }).getSubject();
+      stdout.mockClear();
+      logger.info('hello');
 
-      const { format } = jest.mocked(WinstonLogger.create).mock.lastCall![0];
-      const info = format!.transform({
-        level: 'info',
-        message: 'hello',
-      }) as unknown as Record<symbol, string>;
-
-      expect(JSON.parse(info[MESSAGE])).toEqual({
+      expect(JSON.parse(String(stdout.mock.calls[0][0]))).toEqual({
+        service: 'backstage',
         level: 'info',
         message: 'hello',
         timestamp: expect.any(String),
@@ -69,8 +75,13 @@ describe('rootLoggerServiceFactory', () => {
     }
   });
 
-  it('should create WinstonLogger from config', async () => {
-    await ServiceFactoryTester.from(rootLoggerServiceFactory, {
+  it('should create DefaultRootLoggerService from config', async () => {
+    jest.replaceProperty(process, 'env', {
+      ...process.env,
+      LOG_LEVEL: 'error',
+    });
+    const stdout = jest.spyOn(process.stdout, 'write').mockReturnValue(true);
+    const logger = await ServiceFactoryTester.from(rootLoggerServiceFactory, {
       dependencies: [
         mockServices.rootConfig.factory({
           data: {
@@ -87,21 +98,25 @@ describe('rootLoggerServiceFactory', () => {
       ],
     }).getSubject();
 
-    expect(WinstonLogger.create).toHaveBeenCalledWith({
+    expect(DefaultRootLoggerService.create).toHaveBeenCalledWith({
       level: 'warn',
       meta: {
         service: 'backstage',
         env: 'test',
       },
-      format: expect.anything(),
-      transports: expect.anything(),
     });
+
+    stdout.mockClear();
+    logger.warn('filtered by LOG_LEVEL');
+    logger.error('LOG_LEVEL overrides config');
+    expect(stdout).toHaveBeenCalledTimes(1);
+    expect(stdout).toHaveBeenCalledWith(
+      expect.stringContaining('LOG_LEVEL overrides config'),
+    );
   });
 
   it('should redact secrets except allowlisted ones', async () => {
-    const mockTransportLog = jest
-      .spyOn(transports.Console.prototype, 'log')
-      .mockImplementation((_info, next) => (next as () => void)());
+    const stdout = jest.spyOn(process.stdout, 'write').mockReturnValue(true);
 
     const logger = await ServiceFactoryTester.from(rootLoggerServiceFactory, {
       dependencies: [
@@ -120,15 +135,11 @@ describe('rootLoggerServiceFactory', () => {
       ],
     }).getSubject();
 
-    mockTransportLog.mockClear();
+    stdout.mockClear();
     logger.info('a hidden-value message');
     logger.info('a shown-value message');
 
-    expect(
-      mockTransportLog.mock.calls.map(
-        ([info]) => (info as Record<symbol, string>)[MESSAGE],
-      ),
-    ).toEqual([
+    expect(stdout.mock.calls.map(([message]) => String(message))).toEqual([
       expect.stringContaining('a *** message'),
       expect.stringContaining('a shown-value message'),
     ]);

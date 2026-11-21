@@ -14,128 +14,32 @@
  * limitations under the License.
  */
 
-import type {
-  AuditorService,
-  AuthService,
-  HttpAuthService,
-  PluginMetadataService,
-} from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
-import type { JsonObject } from '@backstage/types';
-import type { Format } from 'logform';
-import * as winston from 'winston';
-import { WinstonLogger } from '../rootLogger';
-import { DefaultAuditorService } from './DefaultAuditorService';
-import { getSeverityLogLevelMappings } from './utils';
-
-/** @public */
-export const defaultFormatter = winston.format.combine(
-  winston.format.timestamp({
-    format: 'YYYY-MM-DD HH:mm:ss',
-  }),
-  winston.format.errors({ stack: true }),
-  winston.format.splat(),
-  winston.format.json(),
-);
+import { DefaultRootAuditorService } from './DefaultRootAuditorService';
+import { WinstonLoggerOptions } from '@backstage/backend-defaults/rootLogger';
 
 /**
- * Adds `isAuditEvent` field
- *
  * @public
+ * @deprecated Use {@link DefaultRootAuditorService} instead.
  */
-export const auditorFieldFormat = winston.format(info => {
-  return { ...info, isAuditEvent: true };
-})();
+export const WinstonRootAuditorService = DefaultRootAuditorService;
 
 /**
- * Options for creating a {@link WinstonRootAuditorService}.
  * @public
+ * @deprecated Use {@link DefaultRootAuditorService} instead.
  */
-export type WinstonRootAuditorServiceOptions = {
-  meta?: JsonObject;
-  format?: Format;
-  transports?: winston.transport[];
-};
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- preserve the class alias in both the type and value namespaces
+export type WinstonRootAuditorService = DefaultRootAuditorService;
 
 /**
- * An implementation of the {@link @backstage/backend-plugin-api#AuditorService} that logs events using a separate winston logger.
- *
  * @public
- *
- * @example
- * ```ts
- * export const auditorServiceFactory = createServiceFactory({
- *   service: coreServices.auditor,
- *   deps: {
- *     auth: coreServices.auth,
- *     httpAuth: coreServices.httpAuth,
- *     plugin: coreServices.pluginMetadata,
- *   },
- *   createRootContext() {
- *     return WinstonRootAuditorService.create();
- *   },
- *   factory({ plugin, auth, httpAuth }, root) {
- *     return root.forPlugin({ plugin, auth, httpAuth });
- *   },
- * });
- * ```
+ * @deprecated Use {@link DefaultRootAuditorServiceOptions} instead.
  */
-export class WinstonRootAuditorService {
-  private readonly winstonLogger: WinstonLogger;
+export type WinstonRootAuditorServiceOptions = Omit<
+  WinstonLoggerOptions,
+  'level'
+>;
 
-  private constructor(winstonLogger: WinstonLogger) {
-    this.winstonLogger = winstonLogger;
-  }
-
-  /**
-   * Creates a {@link WinstonRootAuditorService} instance.
-   */
-  static create(
-    options?: WinstonRootAuditorServiceOptions,
-  ): WinstonRootAuditorService {
-    let winstonLogger = WinstonLogger.create({
-      meta: {
-        service: 'backstage',
-      },
-      level: 'info',
-      format: winston.format.combine(
-        auditorFieldFormat,
-        options?.format ?? defaultFormatter,
-      ),
-      transports: options?.transports,
-    });
-
-    if (options?.meta) {
-      winstonLogger = winstonLogger.child(options.meta) as WinstonLogger;
-    }
-
-    return new WinstonRootAuditorService(winstonLogger);
-  }
-
-  forPlugin(deps: {
-    auth: AuthService;
-    config: Config;
-    httpAuth: HttpAuthService;
-    plugin: PluginMetadataService;
-  }): AuditorService {
-    const severityLogLevelMappings = getSeverityLogLevelMappings(deps.config);
-
-    return DefaultAuditorService.create(event => {
-      if ('error' in event) {
-        const { error, ...rest } = event;
-        const childAuditLogger = this.winstonLogger.child(rest);
-
-        childAuditLogger[severityLogLevelMappings[event.severityLevel]](
-          `${event.plugin}.${event.eventId}`,
-          error,
-        );
-      } else {
-        // the else statement is required for typechecking
-        this.winstonLogger[severityLogLevelMappings[event.severityLevel]](
-          `${event.plugin}.${event.eventId}`,
-          event,
-        );
-      }
-    }, deps);
-  }
-}
+export {
+  defaultFormatter,
+  auditorFieldFormat,
+} from './DefaultRootAuditorService';
