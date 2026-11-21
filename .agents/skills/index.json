@@ -42,6 +42,20 @@
       "name": "backend-plugin-development",
       "description": "Reference for developing Backstage backend plugins and modules on the new backend system. Use this skill when writing or changing tests for a backend plugin, module, service, or router, including mocking core services and credentials and testing against real databases, caches, the filesystem, or remote services.",
       "files": ["SKILL.md", "references/testing.md"]
+    },
+    {
+      "name": "keeping-backstage-updated",
+      "description": "Upgrade a Backstage repository to a newer Backstage release. Use this skill when bumping @backstage/* package versions, running versions:bump or versions:migrate, applying create-app template changes or codemod recipes during an upgrade, or fixing code that broke after a Backstage version change.",
+      "files": [
+        "SKILL.md",
+        "references/bump-dependencies.md",
+        "references/codemods.md",
+        "references/determine-target.md",
+        "references/fix-breaking-changes.md",
+        "references/migrate-packages.md",
+        "references/template-changes.md",
+        "references/verify-upgrade.md"
+      ]
     }
   ]
 }
