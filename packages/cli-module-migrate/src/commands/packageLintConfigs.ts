@@ -18,7 +18,7 @@ import { cli } from 'cleye';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
 import { PackageGraph } from '@backstage/cli-node';
-import { runOutput } from '@backstage/cli-common';
+import { runOutput, targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 const PREFIX = `module.exports = require('@backstage/cli/config/eslint-factory')`;
@@ -27,9 +27,14 @@ export default async ({ args, info }: CliCommandContext) => {
   cli({ name: info.usage, booleanFlagNegation: true }, undefined, args);
   const packages = await PackageGraph.listTargetPackages();
 
+  // The legacy configs extend the config files of the project's own CLI
   const oldConfigs = [
-    require.resolve('@backstage/cli/config/eslint.js'),
-    require.resolve('@backstage/cli/config/eslint.backend.js'),
+    require.resolve('@backstage/cli/config/eslint.js', {
+      paths: [targetPaths.rootDir],
+    }),
+    require.resolve('@backstage/cli/config/eslint.backend.js', {
+      paths: [targetPaths.rootDir],
+    }),
   ];
 
   const configPaths = new Array<string>();

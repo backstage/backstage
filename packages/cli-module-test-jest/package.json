@@ -44,6 +44,7 @@
     "glob": "^14.0.0",
     "jest-css-modules": "^2.1.0",
     "sucrase": "^3.20.2",
+    "yaml": "^2.0.0",
     "yargs": "^16.2.0"
   },
   "devDependencies": {

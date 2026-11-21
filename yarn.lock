@@ -2096,6 +2096,20 @@ __metadata:
     "@backstage/cli-module-search": "workspace:^"
     "@backstage/cli-module-test-jest": "workspace:^"
     "@backstage/cli-module-translations": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    jest: "npm:^30.5.0"
+  peerDependencies:
+    "@jest/environment-jsdom-abstract": ^30.0.0
+    jest: ^29.0.0 || ^30.0.0
+    jest-environment-jsdom: "*"
+    jsdom: ^27.1.0
+  peerDependenciesMeta:
+    "@jest/environment-jsdom-abstract":
+      optional: true
+    jest-environment-jsdom:
+      optional: true
+    jsdom:
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -2182,7 +2196,9 @@ __metadata:
     css-loader: "npm:^7.1.5"
     ctrlc-windows: "npm:^2.1.0"
     embedded-postgres: "npm:18.3.0-beta.17"
+    esbuild: "npm:^0.28.1"
     esbuild-loader: "npm:^4.0.0"
+    eslint: "npm:^8.6.0"
     eslint-rspack-plugin: "npm:^4.2.1"
     eslint-webpack-plugin: "npm:^4.2.0"
     fork-ts-checker-webpack-plugin: "npm:^9.0.0"
@@ -2336,6 +2352,7 @@ __metadata:
     "@backstage/cli-node": "workspace:^"
     "@types/fs-extra": "npm:^11.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^8.17.0"
+    "@typescript-eslint/parser": "npm:^8.16.0"
     chalk: "npm:^4.0.0"
     cleye: "npm:^2.6.0"
     eslint: "npm:^8.6.0"
@@ -2480,6 +2497,7 @@ __metadata:
     glob: "npm:^14.0.0"
     jest-css-modules: "npm:^2.1.0"
     sucrase: "npm:^3.20.2"
+    yaml: "npm:^2.0.0"
     yargs: "npm:^16.2.0"
   peerDependencies:
     "@jest/environment-jsdom-abstract": ^30.0.0
@@ -3425,7 +3443,19 @@ __metadata:
     react-router: ^6.30.2
     react-router-dom: ^6.30.2
   peerDependenciesMeta:
+    "@emotion/react":
+      optional: true
+    "@material-ui/core":
+      optional: true
+    "@material-ui/styles":
+      optional: true
+    "@mui/material":
+      optional: true
     "@types/react":
+      optional: true
+    react-router:
+      optional: true
+    react-router-dom:
       optional: true
   languageName: unknown
   linkType: soft

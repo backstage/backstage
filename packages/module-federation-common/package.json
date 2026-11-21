@@ -61,7 +61,25 @@
     "react-router-dom": "^6.30.2"
   },
   "peerDependenciesMeta": {
+    "@emotion/react": {
+      "optional": true
+    },
+    "@material-ui/core": {
+      "optional": true
+    },
+    "@material-ui/styles": {
+      "optional": true
+    },
+    "@mui/material": {
+      "optional": true
+    },
     "@types/react": {
+      "optional": true
+    },
+    "react-router": {
+      "optional": true
+    },
+    "react-router-dom": {
       "optional": true
     }
   }
