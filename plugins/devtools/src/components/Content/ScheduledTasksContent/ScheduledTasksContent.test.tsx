@@ -19,7 +19,13 @@ import {
   TestApiProvider,
   mockApis,
 } from '@backstage/test-utils';
-import { act, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  act,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
@@ -101,7 +107,7 @@ describe('ScheduledTasksContent', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   it('a refresh keeps the table rendered', async () => {
@@ -135,7 +141,7 @@ describe('ScheduledTasksContent', () => {
 
     // Table should stay rendered while refreshing
     expect(screen.getByText('task-a')).toBeInTheDocument();
-    expect(screen.queryByTestId('progress')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('core-progress')).not.toBeInTheDocument();
 
     resolveRefresh({
       scheduledTasks: [
@@ -176,7 +182,7 @@ describe('ScheduledTasksContent', () => {
     fireEvent.click(await screen.findByRole('option', { name: 'plugin-b' }));
 
     // Progress spinner should replace the table while loading the new plugin
-    expect(await screen.findByTestId('progress')).toBeInTheDocument();
+    expect(await screen.findByTestId('core-progress')).toBeInTheDocument();
     expect(screen.queryByText('task-a')).not.toBeInTheDocument();
     expect(mockDevToolsApi.getScheduledTasksByPlugin).toHaveBeenLastCalledWith(
       'plugin-b',
@@ -188,7 +194,7 @@ describe('ScheduledTasksContent', () => {
     });
 
     expect(await screen.findByText('task-b')).toBeInTheDocument();
-    expect(screen.queryByTestId('progress')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('core-progress')).not.toBeInTheDocument();
 
     // Enter after a mouse pick still commits typed text
     mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValue({
@@ -241,7 +247,9 @@ describe('ScheduledTasksContent', () => {
     fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
 
     expect(await screen.findByText('task-c')).toBeInTheDocument();
-    expect(screen.getByText('Scheduled Tasks (plugin-c)')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Scheduled tasks' }),
+    ).toBeInTheDocument();
     expect(mockDevToolsApi.getScheduledTasksByPlugin).toHaveBeenLastCalledWith(
       'plugin-c',
     );
@@ -251,11 +259,10 @@ describe('ScheduledTasksContent', () => {
     fireEvent.change(input, { target: { value: 'plugin-a' } });
     act(() => input.blur());
 
-    expect(
-      await screen.findByText('Scheduled Tasks (plugin-a)'),
-    ).toBeInTheDocument();
-    expect(mockDevToolsApi.getScheduledTasksByPlugin).toHaveBeenLastCalledWith(
-      'plugin-a',
+    await waitFor(() =>
+      expect(
+        mockDevToolsApi.getScheduledTasksByPlugin,
+      ).toHaveBeenLastCalledWith('plugin-a'),
     );
 
     act(() => input.focus());
@@ -281,6 +288,7 @@ describe('ScheduledTasksContent', () => {
     expect(
       screen.queryByRole('button', { name: 'Trigger' }),
     ).not.toBeInTheDocument();
+    act(() => screen.getByRole('row', { name: /task-a/ }).focus());
     act(() => indicator.focus());
     expect(indicator).toHaveFocus();
     expect(await screen.findByRole('tooltip')).toHaveTextContent(
@@ -344,7 +352,7 @@ describe('ScheduledTasksContent', () => {
     await renderComponent();
     expect(await screen.findByText('task-a')).toBeInTheDocument();
 
-    fireEvent.change(screen.getByRole('textbox', { name: /search/i }), {
+    fireEvent.change(screen.getByRole('searchbox', { name: /search/i }), {
       target: { value: 'no-matching-task' },
     });
     expect(
@@ -407,5 +415,90 @@ describe('ScheduledTasksContent', () => {
     expect(
       screen.getByText(/The plugin ID is spelled correctly/i),
     ).toBeInTheDocument();
+  });
+  it('opens task details and preserves cancel feedback and refresh', async () => {
+    mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValue({
+      scheduledTasks: [
+        {
+          ...mockTaskA,
+          settings: { version: 1, cadence: 'PT1M' },
+          taskState: {
+            status: 'running',
+            startedAt: '2026-01-01T12:00:00Z',
+            timesOutAt: '2026-01-01T12:05:00Z',
+            lastRunError: 'Previous run failed',
+          },
+        },
+      ],
+    });
+    mockDevToolsApi.cancelScheduledTask.mockRejectedValue(
+      new Error('Cancellation failed'),
+    );
+    await renderComponent();
+    const details = await screen.findByRole('button', { name: 'task-a' });
+    act(() => details.focus());
+    fireEvent.click(details);
+    const dialog = await screen.findByRole('dialog', { name: 'task-a' });
+    expect(dialog).toBeVisible();
+    expect(await screen.findByText('Previous run failed')).toBeVisible();
+    expect(screen.getByText('PT1M')).toBeVisible();
+    expect(screen.getByText('global')).toBeVisible();
+    expect(
+      screen.getByText(new Date('2026-01-01T12:00:00Z').toLocaleString()),
+    ).toBeVisible();
+    expect(
+      screen.getByText(new Date('2026-01-01T12:05:00Z').toLocaleString()),
+    ).toBeVisible();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Close' }));
+    expect(
+      await screen.findByRole('button', { name: 'Trigger' }),
+    ).toBeVisible();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByRole('row', { name: /task-a/ })).toHaveFocus(),
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    await waitFor(() =>
+      expect(mockToastApi.post).toHaveBeenCalledWith({
+        title: 'Error cancelling task task-a: Cancellation failed',
+        status: 'danger',
+      }),
+    );
+    expect(mockDevToolsApi.cancelScheduledTask).toHaveBeenCalledWith(
+      'plugin-a',
+      'task-a',
+    );
+    expect(mockDevToolsApi.getScheduledTasksByPlugin).toHaveBeenCalledTimes(2);
+    expect(screen.getByText('task-a')).toBeVisible();
+  });
+
+  it('sorts, searches, and paginates task rows', async () => {
+    mockDevToolsApi.getScheduledTasksByPlugin.mockResolvedValue({
+      scheduledTasks: Array.from({ length: 7 }, (_, index) => ({
+        ...mockTaskA,
+        taskId: `task-${index}`,
+      })),
+    });
+    await renderComponent();
+    expect(await screen.findByText('task-0')).toBeVisible();
+    expect(screen.queryByText('task-5')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+    expect(await screen.findByText('task-5')).toBeVisible();
+    expect(screen.queryByText('task-0')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('columnheader', { name: 'Task ID' }));
+    expect(await screen.findByText('task-0')).toBeVisible();
+    fireEvent.click(screen.getByRole('columnheader', { name: 'Task ID' }));
+    expect(await screen.findByText('task-6')).toBeVisible();
+    const rows = screen.getAllByRole('row');
+    expect(within(rows[1]).getByText('task-6')).toBeVisible();
+    fireEvent.change(screen.getByRole('searchbox'), {
+      target: { value: 'task-2' },
+    });
+    expect(await screen.findByText('task-2')).toBeVisible();
+    expect(screen.queryByText('task-6')).not.toBeInTheDocument();
+    fireEvent.change(screen.getByRole('searchbox'), {
+      target: { value: 'missing' },
+    });
+    expect(await screen.findByText('No records to display')).toBeVisible();
   });
 });
