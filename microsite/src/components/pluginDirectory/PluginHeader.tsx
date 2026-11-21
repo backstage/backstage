@@ -17,26 +17,20 @@ import Link from '@docusaurus/Link';
 import type { PluginData } from '../../pluginDirectory/plugin';
 import React from 'react';
 
-import { getPluginDecisionSummary } from './packagePresentation';
-import { BackstageIcon, DocumentIcon, NpmIcon } from './ReleaseIcons';
+import { getBackstageSupport } from './packagePresentation';
+import { BackstageIcon, DocumentIcon } from './ReleaseIcons';
 import styles from './pluginDirectory.module.scss';
 
 interface PluginHeaderProps {
   plugin: PluginData;
   latestBackstageVersion?: string | null;
-  now?: Date;
 }
 
 export function PluginHeader({
   plugin,
   latestBackstageVersion,
-  now,
 }: PluginHeaderProps) {
-  const summary = getPluginDecisionSummary(
-    plugin,
-    latestBackstageVersion ?? null,
-    now,
-  );
+  const support = getBackstageSupport(plugin, latestBackstageVersion ?? null);
 
   return (
     <header className={styles.detailHeader}>
@@ -50,32 +44,24 @@ export function PluginHeader({
       </div>
 
       <p className={styles.description}>{plugin.description}</p>
-      <ul
-        className={styles.releaseBadges}
-        aria-label="Plugin evaluation summary"
-      >
-        <li className={styles.releaseBadge}>
-          <NpmIcon />
-          <div className={styles.releaseBadgeDetails}>
-            {summary.release.status === 'unavailable' ? (
-              <span>npm release not reported</span>
-            ) : (
-              <>
-                <strong>{summary.release.version}</strong>
-                <span>published {summary.release.age}</span>
-              </>
-            )}
-          </div>
-        </li>
+      <ul className={styles.releaseBadges} aria-label="Plugin summary">
         <li className={styles.releaseBadge}>
           <BackstageIcon />
           <div className={styles.releaseBadgeDetails}>
-            {summary.backstage.status === 'unavailable' ? (
+            {support.status === 'unavailable' ? (
               <span>Backstage source not reported</span>
             ) : (
               <>
-                <strong>{summary.backstage.version}</strong>
-                <span>{summary.backstage.age}</span>
+                <strong>Supports Backstage {support.version}</strong>
+                {support.versionsBehind !== undefined && (
+                  <span>
+                    {support.versionsBehind === 0
+                      ? 'up to date'
+                      : `${support.versionsBehind} ${
+                          support.versionsBehind === 1 ? 'version' : 'versions'
+                        } behind`}
+                  </span>
+                )}
               </>
             )}
           </div>

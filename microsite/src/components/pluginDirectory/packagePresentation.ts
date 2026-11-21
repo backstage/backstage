@@ -16,11 +16,7 @@
 import type { PackageSnapshot } from '../../../../scripts/plugin-directory/manifest';
 import type { PluginData } from '../../pluginDirectory/plugin';
 import { resolveFunctionality } from '../../pluginDirectory/packageRoles';
-import {
-  countMinorVersionsBehind,
-  formatReleaseAge,
-  getPrimaryPackageSnapshot,
-} from './healthPresentation';
+import { countMinorVersionsBehind } from './healthPresentation';
 
 export type PackageGroupId = 'core' | 'modules' | 'libraries';
 
@@ -41,19 +37,13 @@ export interface PackagePresentation {
   groupLabel: PackageGroupLabel;
 }
 
-export interface PluginDecisionSummary {
-  release:
-    | { status: 'fresh' | 'stale'; version: string; age: string }
-    | { status: 'unavailable' };
-  backstage:
-    | {
-        status: 'fresh' | 'stale';
-        version: string;
-        age: string;
-        versionsBehind: number | undefined;
-      }
-    | { status: 'unavailable' };
-}
+export type BackstageSupport =
+  | {
+      status: 'fresh' | 'stale';
+      version: string;
+      versionsBehind: number | undefined;
+    }
+  | { status: 'unavailable' };
 
 const groupLabels: Record<PackageGroupId, PackageGroupLabel> = {
   core: 'Core experiences',
@@ -204,38 +194,23 @@ export function getPackagePresentations(
   );
 }
 
-export function getPluginDecisionSummary(
+export function getBackstageSupport(
   plugin: PluginData,
   latestBackstageVersion: string | null,
-  now = new Date(),
-): PluginDecisionSummary {
-  const npmSnapshot = getPrimaryPackageSnapshot(plugin)?.npm;
-  const release =
-    npmSnapshot && npmSnapshot.status !== 'unavailable'
-      ? {
-          status: npmSnapshot.status,
-          version: npmSnapshot.latestVersion,
-          age: formatReleaseAge(npmSnapshot.lastPublishedAt, now),
-        }
-      : ({ status: 'unavailable' } as const);
+): BackstageSupport {
   const backstageSnapshot = plugin.snapshot?.backstage;
-  const backstage =
-    backstageSnapshot && backstageSnapshot.status !== 'unavailable'
-      ? {
-          status: backstageSnapshot.status,
-          version: backstageSnapshot.version,
-          age: formatReleaseAge(backstageSnapshot.checkedAt, now),
-          versionsBehind: latestBackstageVersion
-            ? countMinorVersionsBehind(
-                backstageSnapshot.version,
-                latestBackstageVersion,
-              )
-            : undefined,
-        }
-      : ({ status: 'unavailable' } as const);
+  if (!backstageSnapshot || backstageSnapshot.status === 'unavailable') {
+    return { status: 'unavailable' };
+  }
 
   return {
-    release,
-    backstage,
+    status: backstageSnapshot.status,
+    version: backstageSnapshot.version,
+    versionsBehind: latestBackstageVersion
+      ? countMinorVersionsBehind(
+          backstageSnapshot.version,
+          latestBackstageVersion,
+        )
+      : undefined,
   };
 }
