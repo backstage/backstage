@@ -41,9 +41,55 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#ApiBlueprint';
+        params: undefined;
+        paramKeys: undefined;
+        paramsCallback: {
+          apiRefId: string;
+          apiIsPromise: false;
+          deps: {
+            discoveryApi: 'core.discovery';
+            fetchApi: 'core.fetch';
+          };
+        };
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'home-page-widget:search/search-bar': OverridableExtensionDefinition<{
       kind: 'home-page-widget';
@@ -53,6 +99,24 @@ const _default: OverridableFrontendPlugin<
       output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
       inputs: {};
       params: HomePageWidgetBlueprintParams;
+      literals: {
+        blueprint: undefined;
+        params: {
+          name: 'HomePageSearchBar';
+          title: 'Search';
+          description: 'A search bar that navigates to the search page on submit';
+        };
+        paramKeys:
+          | 'name'
+          | 'title'
+          | 'description'
+          | 'components'
+          | 'componentProps';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'page:search': OverridableExtensionDefinition<{
       config: {
@@ -192,6 +256,16 @@ const _default: OverridableFrontendPlugin<
         noHeader?: boolean;
       };
     }>;
+  },
+  {
+    pluginId: 'search';
+    title: 'Search';
+    if: undefined;
+    extensionIds: [
+      'api:search',
+      'page:search',
+      'home-page-widget:search/search-bar',
+    ];
   }
 >;
 export default _default;
@@ -208,9 +282,55 @@ export const searchApi: OverridableExtensionDefinition<{
     TApi,
     TImpl extends TApi,
     TDeps extends { [name in string]: unknown },
+    TApiRef extends {
+      readonly id: string;
+    } = {
+      readonly id: string;
+    },
+    TDepRefs extends {
+      [name in string]: {
+        readonly id: string;
+      };
+    } = {
+      [x: string]: {
+        readonly id: string;
+      };
+    },
   >(
-    params: ApiFactory<TApi, TImpl, TDeps>,
-  ) => ExtensionBlueprintParams<ApiFactory>;
+    params: ApiFactory<TApi, TImpl, TDeps> & {
+      api: TApiRef;
+      deps: TDepRefs;
+    },
+  ) => ExtensionBlueprintParams<
+    ApiFactory,
+    {
+      apiRefId: TApiRef['id'];
+      apiIsPromise: TApiRef extends {
+        readonly T: infer TValue;
+      }
+        ? [TValue] extends [PromiseLike<unknown>]
+          ? true
+          : false
+        : boolean;
+      deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+    }
+  >;
+  literals: {
+    blueprint: '@backstage/frontend-plugin-api#ApiBlueprint';
+    params: undefined;
+    paramKeys: undefined;
+    paramsCallback: {
+      apiRefId: string;
+      apiIsPromise: false;
+      deps: {
+        discoveryApi: 'core.discovery';
+        fetchApi: 'core.fetch';
+      };
+    };
+    attachTo: undefined;
+    disabled: undefined;
+    if: undefined;
+  };
 }>;
 
 // @alpha (undocumented)

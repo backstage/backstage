@@ -38,9 +38,56 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#ApiBlueprint';
+        params: undefined;
+        paramKeys: undefined;
+        paramsCallback: {
+          apiRefId: string;
+          apiIsPromise: false;
+          deps: {
+            storageApi: 'core.storage';
+            identityApi: 'core.identity';
+            errorApi: 'core.error';
+          };
+        };
+        attachTo: undefined;
+        disabled: true;
+        if: undefined;
+      };
     }>;
     'app-root-element:home/visit-listener': OverridableExtensionDefinition<{
       kind: 'app-root-element';
@@ -52,6 +99,15 @@ const _default: OverridableFrontendPlugin<
       params: {
         element: JSX.Element;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'element';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: true;
+        if: undefined;
+      };
     }>;
     'home-page-widget:home/most-visited': OverridableExtensionDefinition<{
       kind: 'home-page-widget';
@@ -61,6 +117,19 @@ const _default: OverridableFrontendPlugin<
       output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
       inputs: {};
       params: HomePageWidgetBlueprintParams;
+      literals: {
+        blueprint: undefined;
+        params: {
+          name: 'HomePageMostVisited';
+          title: 'Most Visited';
+          description: 'Shows your most frequently visited pages';
+        };
+        paramKeys: 'name' | 'title' | 'description' | 'components';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'home-page-widget:home/random-joke': OverridableExtensionDefinition<{
       kind: 'home-page-widget';
@@ -70,6 +139,25 @@ const _default: OverridableFrontendPlugin<
       output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
       inputs: {};
       params: HomePageWidgetBlueprintParams;
+      literals: {
+        blueprint: undefined;
+        params: {
+          name: 'HomePageRandomJoke';
+          title: 'Random Joke';
+          description: 'Shows a random programming joke';
+        };
+        paramKeys:
+          | 'name'
+          | 'title'
+          | 'description'
+          | 'layout'
+          | 'components'
+          | 'settings';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'home-page-widget:home/recently-visited': OverridableExtensionDefinition<{
       kind: 'home-page-widget';
@@ -79,6 +167,19 @@ const _default: OverridableFrontendPlugin<
       output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
       inputs: {};
       params: HomePageWidgetBlueprintParams;
+      literals: {
+        blueprint: undefined;
+        params: {
+          name: 'HomePageRecentlyVisited';
+          title: 'Recently Visited';
+          description: 'Shows pages you have recently visited';
+        };
+        paramKeys: 'name' | 'title' | 'description' | 'components';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'home-page-widget:home/starred-entities': OverridableExtensionDefinition<{
       kind: 'home-page-widget';
@@ -88,6 +189,19 @@ const _default: OverridableFrontendPlugin<
       output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
       inputs: {};
       params: HomePageWidgetBlueprintParams;
+      literals: {
+        blueprint: undefined;
+        params: {
+          name: 'HomePageStarredEntities';
+          title: 'Your Starred Entities';
+          description: 'Shows entities you have starred in the catalog';
+        };
+        paramKeys: 'name' | 'title' | 'description' | 'components';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'home-page-widget:home/toolkit': OverridableExtensionDefinition<{
       config: {
@@ -283,6 +397,22 @@ const _default: OverridableFrontendPlugin<
         noHeader?: boolean;
       };
     }>;
+  },
+  {
+    pluginId: 'home';
+    title: 'Home';
+    if: undefined;
+    extensionIds: [
+      'page:home',
+      'api:home/visits',
+      'app-root-element:home/visit-listener',
+      'home-page-widget:home/toolkit',
+      'home-page-widget:home/starred-entities',
+      'home-page-widget:home/random-joke',
+      'home-page-widget:home/most-visited',
+      'home-page-widget:home/recently-visited',
+      'home-page-widget:home/world-clock',
+    ];
   }
 >;
 export default _default;

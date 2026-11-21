@@ -53,9 +53,56 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#ApiBlueprint';
+        params: undefined;
+        paramKeys: undefined;
+        paramsCallback: {
+          apiRefId: string;
+          apiIsPromise: false;
+          deps: {
+            configApi: 'core.config';
+            discoveryApi: 'core.discovery';
+            fetchApi: 'core.fetch';
+          };
+        };
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'api:techdocs/addons': OverridableExtensionDefinition<{
       config: {};
@@ -81,9 +128,39 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
     }>;
     'api:techdocs/storage': OverridableExtensionDefinition<{
       kind: 'api';
@@ -96,9 +173,56 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#ApiBlueprint';
+        params: undefined;
+        paramKeys: undefined;
+        paramsCallback: {
+          apiRefId: string;
+          apiIsPromise: false;
+          deps: {
+            configApi: 'core.config';
+            discoveryApi: 'core.discovery';
+            fetchApi: 'core.fetch';
+          };
+        };
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'empty-state:techdocs/entity-content': OverridableExtensionDefinition<{
       config: {};
@@ -267,6 +391,15 @@ const _default: OverridableFrontendPlugin<
       params: {
         useProps: () => Omit<IconLinkVerticalProps, 'color'>;
         filter?: FilterPredicate | ((entity: Entity) => boolean);
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'useProps';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'page:techdocs': OverridableExtensionDefinition<{
@@ -479,6 +612,15 @@ const _default: OverridableFrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
       };
+      literals: {
+        blueprint: undefined;
+        params: undefined;
+        paramKeys: undefined;
+        paramsCallback: unknown;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'search-filter-result-type:techdocs': OverridableExtensionDefinition<{
       kind: 'search-filter-result-type';
@@ -496,6 +638,18 @@ const _default: OverridableFrontendPlugin<
       >;
       inputs: {};
       params: SearchFilterResultTypeBlueprintParams;
+      literals: {
+        blueprint: undefined;
+        params: {
+          value: 'techdocs';
+          name: 'Documentation';
+        };
+        paramKeys: 'name' | 'value' | 'icon';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'search-result-list-item:techdocs': OverridableExtensionDefinition<{
       config: {
@@ -526,6 +680,24 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       params: SearchResultListItemBlueprintParams;
     }>;
+  },
+  {
+    pluginId: 'techdocs';
+    title: 'Documentation';
+    if: undefined;
+    extensionIds: [
+      'api:techdocs',
+      'api:techdocs/storage',
+      'api:techdocs/addons',
+      'plugin-header-action:techdocs',
+      'page:techdocs',
+      'page:techdocs/reader',
+      'entity-icon-link:techdocs/read-docs',
+      'entity-content:techdocs',
+      'empty-state:techdocs/entity-content',
+      'search-filter-result-type:techdocs',
+      'search-result-list-item:techdocs',
+    ];
   }
 >;
 export default _default;

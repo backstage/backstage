@@ -30,7 +30,7 @@ export const AnalyticsImplementationBlueprint: ExtensionBlueprint<{
   kind: 'analytics';
   params: <TDeps extends { [name in string]: unknown }>(
     params: AnalyticsImplementationFactory<TDeps>,
-  ) => ExtensionBlueprintParams<AnalyticsImplementationFactory<{}>>;
+  ) => ExtensionBlueprintParams<AnalyticsImplementationFactory<{}>, unknown>;
   output: ExtensionDataRef<
     AnalyticsImplementationFactory<{}>,
     'core.analytics.factory',
@@ -213,21 +213,26 @@ export const SwappableComponentBlueprint: ExtensionBlueprint<{
           | (() => (props: IInnerComponentProps) => JSX.Element | null)
           | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
       : never;
-  }) => ExtensionBlueprintParams<{
-    component: Ref extends SwappableComponentRef<
-      any,
-      infer IExternalComponentProps
-    >
-      ? {
-          ref: Ref;
-        } & ((props: IExternalComponentProps) => JSX.Element | null)
-      : never;
-    loader: Ref extends SwappableComponentRef<infer IInnerComponentProps, any>
-      ?
-          | (() => (props: IInnerComponentProps) => JSX.Element | null)
-          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
-      : never;
-  }>;
+  }) => ExtensionBlueprintParams<
+    {
+      component: Ref extends SwappableComponentRef<
+        any,
+        infer IExternalComponentProps
+      >
+        ? {
+            ref: Ref;
+          } & ((props: IExternalComponentProps) => JSX.Element | null)
+        : never;
+      loader: Ref extends SwappableComponentRef<infer IInnerComponentProps, any>
+        ?
+            | (() => (props: IInnerComponentProps) => JSX.Element | null)
+            | (() => Promise<
+                (props: IInnerComponentProps) => JSX.Element | null
+              >)
+        : never;
+    },
+    unknown
+  >;
   output: ExtensionDataRef<
     {
       ref: SwappableComponentRef;
