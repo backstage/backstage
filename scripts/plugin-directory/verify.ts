@@ -1,3 +1,4 @@
+#!/usr/bin/env -S node --require @backstage/cli/config/nodeTransform.cjs
 /*
  * Copyright 2026 The Backstage Authors
  *
@@ -14,10 +15,10 @@
  * limitations under the License.
  */
 import { resolve } from 'node:path';
-import { loadPluginManifests } from '../src/pluginDirectory/load';
+import { loadPluginManifests } from './load';
 
 async function main(): Promise<void> {
-  const pluginDirectory = resolve(__dirname, '..', 'data', 'plugins');
+  const pluginDirectory = resolve(__dirname, '../../microsite/data/plugins');
   const plugins = await loadPluginManifests(pluginDirectory);
 
   console.log(`Validated ${plugins.length} plugin manifests.`);

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// These scripts are not packages and run on Node's built-in test runner.
+/* eslint-disable no-restricted-imports */
 import assert from 'node:assert/strict';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -55,19 +57,18 @@ function manifestYaml(overrides: Partial<typeof validManifest> = {}): string {
   return dump({ ...validManifest, ...overrides });
 }
 
+function manifestYamlWithout(): string {
+  const { addedDate: _addedDate, ...rest } = validManifest;
+  return dump(rest);
+}
+
 describe('loadPluginManifests', () => {
   it('loads manifests in filename order without truncating descriptions', async () => {
     const longDescription = 'A'.repeat(250);
-    const recentDate = new Date(Date.now() - 95 * 24 * 60 * 60 * 1_000)
-      .toISOString()
-      .slice(0, 10);
 
     await withFixtureDirectory(
       {
-        'z-plugin.yaml': manifestYaml({
-          title: 'Z Plugin',
-          addedDate: recentDate,
-        }),
+        'z-plugin.yaml': manifestYaml({ title: 'Z Plugin' }),
         'a-plugin.yaml': manifestYaml({
           title: 'A Plugin',
           description: longDescription,
@@ -80,8 +81,6 @@ describe('loadPluginManifests', () => {
           plugins.map(plugin => plugin.slug),
           ['a-plugin', 'z-plugin'],
         );
-        assert.equal(plugins[0].isNew, false);
-        assert.equal(plugins[1].isNew, true);
         assert.equal(plugins[0].description, longDescription);
       },
     );
@@ -124,6 +123,48 @@ describe('loadPluginManifests', () => {
         assert.ok(error.message.includes('invalid-plugin.yaml'));
         assert.ok(error.message.includes('authorUrl'));
         return true;
+      },
+    );
+  });
+
+  it('reports every invalid file instead of stopping at the first', async () => {
+    await assert.rejects(
+      () =>
+        withFixtureDirectory(
+          {
+            'a-valid.yaml': manifestYaml(),
+            'b-bad-url.yaml': manifestYaml({ authorUrl: 'not-a-url' }),
+            'c-malformed.yaml': 'title: [unterminated',
+            'D_Bad_Name.yaml': manifestYaml(),
+          },
+          directory => loadPluginManifests(directory),
+        ),
+      error => {
+        assert(error instanceof Error);
+        assert.ok(error.message.includes('3 plugin manifest(s)'));
+        assert.ok(error.message.includes('b-bad-url.yaml'));
+        assert.ok(error.message.includes('authorUrl'));
+        assert.ok(error.message.includes('c-malformed.yaml'));
+        assert.ok(error.message.includes('D_Bad_Name.yaml'));
+        assert.ok(!error.message.includes('a-valid.yaml'));
+        return true;
+      },
+    );
+  });
+
+  it('accepts quoted and unquoted YAML dates and normalizes them', async () => {
+    await withFixtureDirectory(
+      {
+        'quoted.yaml': `addedDate: '2025-01-02'\n${manifestYamlWithout()}`,
+        'unquoted.yaml': `addedDate: 2025-01-02\n${manifestYamlWithout()}`,
+      },
+      async directory => {
+        const plugins = await loadPluginManifests(directory);
+
+        assert.deepEqual(
+          plugins.map(plugin => plugin.addedDate),
+          ['2025-01-02', '2025-01-02'],
+        );
       },
     );
   });

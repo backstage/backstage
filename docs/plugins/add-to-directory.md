@@ -75,17 +75,35 @@ Each `capabilities` entry must be one of these values:
 
 Unknown values fail manifest validation.
 
+### Validation rules
+
+The verifier rejects a manifest in these cases:
+
+- **Unknown keys.** Every manifest object is strict, so a misspelled or extra
+  key fails validation instead of being ignored.
+- **Empty strings.** Required text fields, such as `title`, `description` and
+  `npmPackageName`, must not be empty.
+- **Invalid filenames.** The filename must be lowercase kebab-case with a
+  `.yaml` extension, for example `example-monitoring.yaml`. The only exceptions
+  are the legacy filenames `digital.ai-deploy.yaml`, `digital.ai-release.yaml`
+  and `sds_workspace.yaml`. Do not add to this list.
+- **Invalid dates.** `addedDate` must be a calendar date in `YYYY-MM-DD` form.
+  You can write it with or without quotes, so `addedDate: 2026-08-03` and
+  `addedDate: '2026-08-03'` are equivalent.
+
+The verifier checks every manifest and reports all of the problems in one run.
+
 ### Validate the manifest
 
 From the repository root, install dependencies and validate every manifest:
 
 ```shell
 yarn install
-yarn --cwd microsite plugins:verify
+node --require @backstage/cli/config/nodeTransform.cjs scripts/plugin-directory/verify.ts
 ```
 
-The verifier reports the filename and field path for invalid data. The same
-command runs in continuous integration (CI).
+The verifier reports the filename and field path for every invalid manifest. The
+same command runs in continuous integration (CI).
 
 ## Submission tips
 

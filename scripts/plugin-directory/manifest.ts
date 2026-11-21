@@ -35,7 +35,15 @@ export type Capability = (typeof capabilities)[number];
 export type SnapshotStatus = 'fresh' | 'stale' | 'unavailable';
 
 const timestampSchema = z.string().datetime({ offset: true });
-const calendarDateSchema = z.iso.date();
+// YAML reads an unquoted `2025-01-01` as a Date, so both forms are accepted
+// and normalized to a `YYYY-MM-DD` string.
+const calendarDateSchema = z.preprocess(
+  value =>
+    value instanceof Date && !Number.isNaN(value.getTime())
+      ? value.toISOString().slice(0, 10)
+      : value,
+  z.iso.date(),
+);
 const reasonCodeSchema = z
   .string()
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Expected a stable reason code');
@@ -159,8 +167,3 @@ export const pluginManifestSchema = z.strictObject({
 });
 
 export type PluginManifest = z.infer<typeof pluginManifestSchema>;
-
-export interface PluginData extends PluginManifest {
-  slug: string;
-  isNew: boolean;
-}

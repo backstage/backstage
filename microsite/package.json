@@ -9,9 +9,6 @@
     "deploy": "docusaurus deploy",
     "docusaurus": "docusaurus",
     "generate-openapi-docs": "yarn docusaurus clean-api-docs all && yarn docusaurus gen-api-docs all",
-    "plugins:audit": "tsx scripts/plugin-directory-audit/index.ts --audit",
-    "plugins:audit:check": "tsx scripts/plugin-directory-audit/index.ts",
-    "plugins:verify": "tsx scripts/plugin-directory-verify.ts",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "publish-gh-pages": "docusaurus-publish",
@@ -19,7 +16,6 @@
     "serve": "docusaurus serve",
     "start": "docusaurus start",
     "swizzle": "docusaurus swizzle",
-    "test:plugin-directory": "tsx --test 'src/**/*.test.{ts,tsx}' 'scripts/**/*.test.{ts,tsx}'",
     "typecheck": "tsc",
     "verify:sidebars": "node ./scripts/verify-sidebars",
     "version": "docusaurus-version",
@@ -47,13 +43,11 @@
     "docusaurus-pushfeedback": "^1.0.9",
     "docusaurus-theme-openapi-docs": "^5.0.0",
     "luxon": "^3.7.2",
-    "pako": "^3.0.1",
     "prism-react-renderer": "^2.4.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "sass": "^1.99.0",
-    "swc-loader": "^0.2.7",
-    "zod": "^4.4.3"
+    "swc-loader": "^0.2.7"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.10.0",
@@ -63,8 +57,6 @@
     "@types/webpack-env": "^1.18.8",
     "js-yaml": "^5.0.0",
     "prettier": "^2.6.2",
-    "tar": "^7.5.4",
-    "tsx": "^4.23.5",
     "typescript": "~6.0.2",
     "yaml-loader": "^0.9.0"
   }
