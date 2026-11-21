@@ -27,6 +27,21 @@ function registryFetch(body: unknown, status = 200): typeof fetch {
     })) as typeof fetch;
 }
 
+// Resolves only by rejecting once the request's signal aborts, like a server
+// that never answers. AbortSignal.timeout is replaced with an already aborted
+// signal so the test does not wait for the real timeout.
+function hangingFetch(): typeof fetch {
+  return ((_input: unknown, init?: RequestInit) =>
+    new Promise((_resolve, reject) => {
+      const signal = init?.signal;
+      assert.ok(signal, 'expected the request to carry an abort signal');
+      signal.addEventListener('abort', () => reject(signal.reason));
+      if (signal.aborted) {
+        reject(signal.reason);
+      }
+    })) as typeof fetch;
+}
+
 describe('fetchNpmSnapshot', () => {
   it('uses the latest release timestamp and normalizes a string GitHub repository', async () => {
     let requestedUrl: string | URL | Request | undefined;
@@ -232,5 +247,16 @@ describe('fetchNpmSnapshot', () => {
       return;
     }
     assert.equal(Object.hasOwn(snapshot, 'dependencyNames'), false);
+  });
+
+  it('gives up on a registry that never responds', async t => {
+    t.mock.method(AbortSignal, 'timeout', () => AbortSignal.abort());
+
+    const snapshot = await fetchNpmSnapshot('example', hangingFetch());
+
+    assert.equal(snapshot.status, 'unavailable');
+    if (snapshot.status === 'unavailable') {
+      assert.equal(snapshot.reason, 'npm-invalid-response');
+    }
   });
 });

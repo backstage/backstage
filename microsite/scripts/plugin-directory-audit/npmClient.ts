@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { fetchTimeoutSignal } from './fetchTimeout';
 import type { NpmSnapshot } from '../../../scripts/plugin-directory/manifest';
 
 type Repository = NonNullable<
@@ -161,6 +162,7 @@ export async function fetchNpmSnapshot(
   try {
     response = await fetchImpl(
       `https://registry.npmjs.org/${encodeURIComponent(packageName)}`,
+      { signal: fetchTimeoutSignal() },
     );
   } catch {
     return unavailable(lastAttemptAt, 'npm-invalid-response');

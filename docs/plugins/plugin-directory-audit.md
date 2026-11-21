@@ -130,11 +130,18 @@ snapshot.
 ### Config schema
 
 When a package declares a JSON `configSchema` in its `package.json`, the audit
-reads it from the published tarball and stores a sanitized copy as the
-package's `configSchema`. The plugin detail page renders its configuration form
-from this stored copy and never fetches package contents in the browser.
+reads it from unpkg.com and stores a sanitized copy as the package's
+`configSchema`. Consumers read this stored copy and never need to fetch package
+contents themselves.
 
-The audit keeps only the keywords that the configuration form needs and drops
+unpkg.com is a third-party mirror of the npm registry. It serves individual
+files, so the audit cannot check them against the `dist.integrity` of the
+registry's package tarball, and it trusts that unpkg.com serves what npm
+published. The sanitization below is the mitigation: nothing the mirror returns
+is stored unless it passes the allowlist. Every request also has a 30 second
+timeout, and a request that times out is treated like any other failed read.
+
+The audit keeps only the keywords that a configuration form needs and drops
 everything else, including anything nested under a dropped keyword:
 
 - Annotations and constraints: `type`, `title`, `description`, `default`,
@@ -152,9 +159,11 @@ match one of these keywords are kept.
 
 The audit stores no schema that is nested deeper than 32 levels, is larger than
 64 KiB once sanitized, contains a recursive `$ref`, or expands to more than
-5,000 nodes once every `$ref` is followed. It also refuses tarballs larger than
-10 MiB, or 64 MiB once unpacked, and tarball URLs outside `registry.npmjs.org`.
-When a read fails, the audit keeps the previously stored schema and prints a
+5,000 nodes once every `$ref` is followed. It reads only `package.json` and the
+file it declares, requests nothing outside `unpkg.com`, ignores declared paths
+that leave the package, and refuses files larger than 1 MiB. Anything that
+displays a stored schema must render its `title` and `description` as plain
+text. When a read fails, the audit keeps the previously stored schema and prints a
 warning. These warnings are not stored in the snapshot.
 
 ## Warning reason codes
@@ -176,7 +185,7 @@ stored in the snapshot.
 | Backstage     | `backstage-json-not-found`     | No applicable `backstage.json` exists.                                                                                              |
 | Backstage     | `backstage-json-invalid`       | The selected file is not valid JSON with a nonempty string `version`.                                                               |
 | Backstage     | `backstage-tag-not-found`      | No `v<major>.<minor>.<patch>` tag exists for `backstage/backstage`, or the plugin's `package.json` is missing from that tag's tree. |
-| Config schema | `config-schema-fetch-failed`   | The tarball cannot be downloaded or unpacked within the size limits.                                                                |
+| Config schema | `config-schema-fetch-failed`   | `package.json` or the declared schema file cannot be downloaded from unpkg.com.                                                     |
 | Config schema | `config-schema-invalid`        | The declared schema file is not a JSON object, or contains a recursive `$ref`.                                                      |
 | Config schema | `config-schema-too-large`      | The schema exceeds the size limit.                                                                                                  |
 | Config schema | `config-schema-too-deep`       | The schema exceeds the nesting limit.                                                                                               |

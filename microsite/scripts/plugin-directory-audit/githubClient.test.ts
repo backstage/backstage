@@ -30,6 +30,21 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
+// Resolves only by rejecting once the request's signal aborts, like a server
+// that never answers. AbortSignal.timeout is replaced with an already aborted
+// signal so the test does not wait for the real timeout.
+function hangingFetch(): typeof fetch {
+  return ((_input: unknown, init?: RequestInit) =>
+    new Promise((_resolve, reject) => {
+      const signal = init?.signal;
+      assert.ok(signal, 'expected the request to carry an abort signal');
+      signal.addEventListener('abort', () => reject(signal.reason));
+      if (signal.aborted) {
+        reject(signal.reason);
+      }
+    })) as typeof fetch;
+}
+
 describe('selectBackstageJsonPath', () => {
   it('selects the nearest ancestor, falls back to root, and ignores unrelated workspaces', () => {
     assert.equal(
@@ -463,5 +478,15 @@ describe('GitHubSnapshotClient', () => {
     if (snapshot.status === 'unavailable') {
       assert.equal(snapshot.reason, 'backstage-json-invalid');
     }
+  });
+
+  it('gives up on a GitHub request that never responds', async t => {
+    t.mock.method(AbortSignal, 'timeout', () => AbortSignal.abort());
+
+    const snapshot = await new GitHubSnapshotClient({
+      fetchImpl: hangingFetch(),
+    }).fetchBackstageSnapshot({ owner: 'example', repository: 'plugins' });
+
+    assert.equal(snapshot.status, 'unavailable');
   });
 });

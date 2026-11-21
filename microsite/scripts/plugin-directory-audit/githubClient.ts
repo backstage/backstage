@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { fetchTimeoutSignal } from './fetchTimeout';
 import type { BackstageSnapshot } from '../../../scripts/plugin-directory/manifest';
 
 export interface RepositoryLocation {
@@ -538,6 +539,7 @@ export class GitHubSnapshotClient {
         'X-GitHub-Api-Version': '2022-11-28',
         ...this.authorizationHeaders,
       },
+      signal: fetchTimeoutSignal(),
     });
   }
 

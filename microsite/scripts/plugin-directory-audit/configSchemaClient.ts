@@ -14,164 +14,167 @@
  * limitations under the License.
  */
 
-import { gunzipSync } from 'node:zlib';
-import { Parser } from 'tar';
 import {
   ConfigSchemaLimitError,
   sanitizeConfigSchema,
 } from './sanitizeConfigSchema';
+import { fetchTimeoutSignal } from './fetchTimeout';
 
-const REGISTRY_HOST = 'registry.npmjs.org';
-const MAX_TARBALL_BYTES = 10 * 1024 * 1024;
-const MAX_UNPACKED_BYTES = 64 * 1024 * 1024;
-const MAX_CONFIG_SCHEMA_SOURCE_BYTES = 1024 * 1024;
-const MAX_COLLECTED_JSON_BYTES = 16 * 1024 * 1024;
+const UNPKG_HOST = 'unpkg.com';
+const MAX_FILE_BYTES = 1024 * 1024;
+
+const PACKAGE_NAME_PATTERN =
+  /^(@[a-z0-9~][a-z0-9._~-]*\/)?[a-z0-9~][a-z0-9._~-]*$/;
+const VERSION_PATTERN = /^[0-9A-Za-z][0-9A-Za-z.+-]*$/;
 
 export type ConfigSchemaResult =
   | { status: 'fresh'; schema: Record<string, unknown> | undefined }
   | { status: 'unavailable'; reason: string };
 
+class FileTooLargeError extends Error {}
+class FileNotFoundError extends Error {}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-interface JsonEntries {
-  files: Map<string, Uint8Array>;
-  // JSON files that were too large to read.
-  oversized: Set<string>;
+// Turns the path a package.json declares into URL path segments, or returns
+// undefined for anything that is not a plain relative path inside the package.
+function toPathSegments(declaredPath: string): string[] | undefined {
+  const segments = declaredPath.replace(/^\.\//, '').split('/');
+  const isPlain = segments.every(
+    segment =>
+      segment.length > 0 &&
+      segment !== '.' &&
+      segment !== '..' &&
+      !/[\\:?#%]/.test(segment),
+  );
+  return isPlain ? segments : undefined;
 }
 
-// Collects the JSON files of a package tarball, which is where its
-// package.json and config schema live. Every other entry is skipped without
-// being read into memory.
-function readJsonEntries(tarball: Uint8Array): Promise<JsonEntries> {
-  return new Promise((resolve, reject) => {
-    const files = new Map<string, Uint8Array>();
-    const oversized = new Set<string>();
-    let collectedBytes = 0;
+// Reads a response body as text, giving up as soon as it grows past the limit.
+async function readLimitedText(response: Response): Promise<string> {
+  const declaredLength = Number(response.headers.get('content-length'));
+  if (declaredLength > MAX_FILE_BYTES) {
+    throw new FileTooLargeError();
+  }
+  if (!response.body) {
+    const text = await response.text();
+    if (new TextEncoder().encode(text).length > MAX_FILE_BYTES) {
+      throw new FileTooLargeError();
+    }
+    return text;
+  }
 
-    const parser = new Parser({
-      strict: true,
-      onReadEntry: entry => {
-        const isJson =
-          entry.type === 'File' &&
-          entry.path.startsWith('package/') &&
-          entry.path.endsWith('.json');
-        if (!isJson) {
-          entry.resume();
-          return;
-        }
-
-        collectedBytes += entry.size;
-        if (
-          entry.size > MAX_CONFIG_SCHEMA_SOURCE_BYTES ||
-          collectedBytes > MAX_COLLECTED_JSON_BYTES
-        ) {
-          // Too big to be a package.json or a config schema we would keep.
-          entry.resume();
-          oversized.add(entry.path);
-          return;
-        }
-
-        const chunks: Buffer[] = [];
-        entry.on('data', chunk => chunks.push(chunk));
-        entry.on('end', () => files.set(entry.path, Buffer.concat(chunks)));
-      },
-    });
-    parser.on('error', reject);
-    parser.on('warn', (_code, message) => reject(new Error(String(message))));
-    parser.on('end', () => resolve({ files, oversized }));
-    parser.end(Buffer.from(tarball));
-  });
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
+    }
+    total += value.length;
+    if (total > MAX_FILE_BYTES) {
+      await reader.cancel();
+      throw new FileTooLargeError();
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.length;
+  }
+  return new TextDecoder().decode(bytes);
 }
 
-async function fetchTarball(
+async function fetchUnpkgFile(
   packageName: string,
   version: string,
+  segments: string[],
   fetchImpl: typeof fetch,
-): Promise<Uint8Array> {
-  const versionResponse = await fetchImpl(
-    `https://${REGISTRY_HOST}/${encodeURIComponent(
-      packageName,
-    )}/${encodeURIComponent(version)}`,
+): Promise<string> {
+  if (
+    !PACKAGE_NAME_PATTERN.test(packageName) ||
+    !VERSION_PATTERN.test(version)
+  ) {
+    throw new Error(`Invalid package ${packageName}@${version}`);
+  }
+  const url = new URL(
+    `https://${UNPKG_HOST}/${packageName}@${version}/${segments
+      .map(encodeURIComponent)
+      .join('/')}`,
   );
-  if (!versionResponse.ok) {
-    throw new Error(`Registry responded ${versionResponse.status}`);
-  }
-  const versionDoc: unknown = await versionResponse.json();
-  const tarballUrl =
-    isRecord(versionDoc) && isRecord(versionDoc.dist)
-      ? versionDoc.dist.tarball
-      : undefined;
-  if (typeof tarballUrl !== 'string') {
-    throw new Error('Version document has no dist.tarball');
-  }
-  const parsedUrl = new URL(tarballUrl);
-  if (parsedUrl.protocol !== 'https:' || parsedUrl.hostname !== REGISTRY_HOST) {
-    throw new Error(`Refusing to download a tarball from ${parsedUrl.host}`);
+  if (url.protocol !== 'https:' || url.hostname !== UNPKG_HOST) {
+    throw new Error(`Refusing to download from ${url.host}`);
   }
 
-  const tarballResponse = await fetchImpl(parsedUrl);
-  if (!tarballResponse.ok) {
-    throw new Error(`Tarball download responded ${tarballResponse.status}`);
+  const response = await fetchImpl(url, { signal: fetchTimeoutSignal() });
+  if (response.url && new URL(response.url).hostname !== UNPKG_HOST) {
+    throw new Error(`Refusing a response from ${new URL(response.url).host}`);
   }
-  const declaredLength = Number(tarballResponse.headers.get('content-length'));
-  if (declaredLength > MAX_TARBALL_BYTES) {
-    throw new Error('Tarball is too large');
+  if (response.status === 404) {
+    throw new FileNotFoundError();
   }
-  const gzipped = new Uint8Array(await tarballResponse.arrayBuffer());
-  if (gzipped.length > MAX_TARBALL_BYTES) {
-    throw new Error('Tarball is too large');
+  if (!response.ok) {
+    throw new Error(`unpkg.com responded ${response.status}`);
   }
-  // Refuses to unpack more than the limit, which stops decompression bombs.
-  return gunzipSync(gzipped, { maxOutputLength: MAX_UNPACKED_BYTES });
+  return readLimitedText(response);
 }
 
 /**
  * Reads the JSON config schema a package declares through the `configSchema`
- * field of its package.json, and returns it sanitized for storage. A package
- * that declares no JSON schema yields a fresh result without a schema.
+ * field of its package.json from unpkg.com, and returns it sanitized for
+ * storage. A package that declares no JSON schema yields a fresh result
+ * without a schema.
  */
 export async function fetchConfigSchema(
   packageName: string,
   version: string,
   fetchImpl: typeof fetch = fetch,
 ): Promise<ConfigSchemaResult> {
-  let entries: JsonEntries;
+  let packageJson: unknown;
   try {
-    entries = await readJsonEntries(
-      await fetchTarball(packageName, version, fetchImpl),
+    packageJson = JSON.parse(
+      await fetchUnpkgFile(packageName, version, ['package.json'], fetchImpl),
     );
   } catch {
     return { status: 'unavailable', reason: 'config-schema-fetch-failed' };
   }
 
+  const declaredPath = isRecord(packageJson)
+    ? packageJson.configSchema
+    : undefined;
+  if (typeof declaredPath !== 'string' || !declaredPath.endsWith('.json')) {
+    return { status: 'fresh', schema: undefined };
+  }
+  const segments = toPathSegments(declaredPath);
+  if (!segments) {
+    return { status: 'unavailable', reason: 'config-schema-invalid' };
+  }
+
+  let source: string;
   try {
-    const packageJsonBytes = entries.files.get('package/package.json');
-    const packageJson: unknown = packageJsonBytes
-      ? JSON.parse(new TextDecoder().decode(packageJsonBytes))
-      : undefined;
-    const declaredPath = isRecord(packageJson)
-      ? packageJson.configSchema
-      : undefined;
-    if (typeof declaredPath !== 'string' || !declaredPath.endsWith('.json')) {
+    source = await fetchUnpkgFile(packageName, version, segments, fetchImpl);
+  } catch (error) {
+    if (error instanceof FileNotFoundError) {
       return { status: 'fresh', schema: undefined };
     }
+    return {
+      status: 'unavailable',
+      reason:
+        error instanceof FileTooLargeError
+          ? 'config-schema-too-large'
+          : 'config-schema-fetch-failed',
+    };
+  }
 
-    const schemaPath = `package/${declaredPath.replace(/^\.\//, '')}`;
-    if (entries.oversized.has(schemaPath)) {
-      return { status: 'unavailable', reason: 'config-schema-too-large' };
-    }
-    const schemaBytes = entries.files.get(schemaPath);
-    if (!schemaBytes) {
-      return { status: 'fresh', schema: undefined };
-    }
-
+  try {
     return {
       status: 'fresh',
-      schema: sanitizeConfigSchema(
-        JSON.parse(new TextDecoder().decode(schemaBytes)),
-      ),
+      schema: sanitizeConfigSchema(JSON.parse(source)),
     };
   } catch (error) {
     return {
