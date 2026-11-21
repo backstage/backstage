@@ -112,6 +112,17 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef;
         noHeader?: boolean;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#PageBlueprint';
+        params: {
+          path: '/lazy-scorecard';
+        };
+        paramKeys: 'path' | 'routeRef';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'sub-page:lazy-scorecard/checks': OverridableExtensionDefinition<{
       kind: 'sub-page';
@@ -156,6 +167,18 @@ const _default: OverridableFrontendPlugin<
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
+      };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
+        params: {
+          path: 'checks';
+          title: 'Checks';
+        };
+        paramKeys: 'title' | 'path' | 'routeRef' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'sub-page:lazy-scorecard/overview': OverridableExtensionDefinition<{
@@ -202,7 +225,29 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
+        params: {
+          path: 'overview';
+          title: 'Overview';
+        };
+        paramKeys: 'title' | 'path' | 'routeRef' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
+  },
+  {
+    pluginId: 'lazy-scorecard';
+    title: 'Lazy Scorecard';
+    if: undefined;
+    extensionIds: [
+      'page:lazy-scorecard',
+      'sub-page:lazy-scorecard/overview',
+      'sub-page:lazy-scorecard/checks',
+    ];
   }
 >;
 export default _default;
