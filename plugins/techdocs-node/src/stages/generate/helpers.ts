@@ -359,10 +359,24 @@ export const ALLOWED_MKDOCS_KEYS = new Set([
 ]);
 
 /**
- * Denylist of configuration keys that must be stripped from extension
+ * Normalized extension name -> Denylist of configuration keys that must be stripped from extension
  * configurations nested within `markdown_extensions`.
  */
-export const DANGEROUS_EXTENSION_CONFIG_KEYS = new Set(['plantuml_cmd']);
+export const DANGEROUS_EXTENSION_CONFIG_KEYS = new Map<string, string[]>([
+  ['plantuml_markdown', ['plantuml_cmd']],
+  ['pymdownx.snippets', ['base_path', 'restrict_base_path', 'url_download']],
+]);
+
+export const normalizeExtensionName = (extensionName: string) =>
+  extensionName.split(':')[0].replaceAll('-', '_');
+
+export const getDangerousKeysByExtensionName = (extensionName: string) => {
+  return (
+    DANGEROUS_EXTENSION_CONFIG_KEYS.get(
+      normalizeExtensionName(extensionName),
+    ) ?? []
+  );
+};
 
 /**
  * Allowlist of theme configuration keys supported by TechDocs.
