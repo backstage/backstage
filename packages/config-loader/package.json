@@ -48,7 +48,7 @@
     "json-schema-traverse": "^1.0.0",
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
-    "ts-json-schema-generator": "^2.9.0",
+    "ts-json-schema-generator": "^2.10.0",
     "typescript": "^5.9.3",
     "yaml": "^2.0.0"
   },
