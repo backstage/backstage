@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {
-  PackageSnapshot,
-  SnapshotStatus,
-} from '../../../../scripts/plugin-directory/manifest';
-import type { PluginData } from '../../pluginDirectory/plugin';
+import type { SnapshotStatus } from '../../../../scripts/plugin-directory/manifest';
 
 const millisecondsPerDay = 24 * 60 * 60 * 1000;
 const daysPerMonth = 30;
@@ -86,12 +82,4 @@ export function countMinorVersionsBehind(
   const currentOrdinal = Number(current[1]) * 1000 + Number(current[2]);
   const latestOrdinal = Number(latest[1]) * 1000 + Number(latest[2]);
   return Math.max(0, latestOrdinal - currentOrdinal);
-}
-
-export function getPrimaryPackageSnapshot(
-  plugin: PluginData,
-): PackageSnapshot | undefined {
-  return plugin.snapshot?.packages.find(
-    packageSnapshot => packageSnapshot.npmPackageName === plugin.npmPackageName,
-  );
 }

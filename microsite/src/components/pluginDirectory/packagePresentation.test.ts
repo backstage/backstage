@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import './testDom';
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import type { PackageSnapshot } from '../../../../scripts/plugin-directory/manifest';
 import type { PluginData } from '../../pluginDirectory/plugin';
 import {
+  getBackstageSupport,
   getPackageMaintainer,
   getPackagePresentations,
-  getPluginDecisionSummary,
 } from './packagePresentation';
 
 function packageSnapshot(
@@ -168,24 +167,23 @@ describe('getPackageMaintainer', () => {
   });
 });
 
-describe('getPluginDecisionSummary', () => {
-  it('presents release and Backstage source', () => {
-    assert.deepEqual(
-      getPluginDecisionSummary(
-        plugin,
-        '1.53.1',
-        new Date('2026-08-06T00:00:00.000Z'),
-      ),
-      {
-        release: { status: 'fresh', version: '2.0.7', age: '23 days ago' },
-        backstage: {
-          status: 'fresh',
-          version: '1.53.1',
-          age: '2 days ago',
-          versionsBehind: 0,
-        },
-      },
-    );
+describe('getBackstageSupport', () => {
+  it('presents the supported Backstage version and how far behind it is', () => {
+    assert.deepEqual(getBackstageSupport(plugin, '1.53.1'), {
+      status: 'fresh',
+      version: '1.53.1',
+      versionsBehind: 0,
+    });
+    assert.deepEqual(getBackstageSupport(plugin, '1.55.0'), {
+      status: 'fresh',
+      version: '1.53.1',
+      versionsBehind: 2,
+    });
+    assert.deepEqual(getBackstageSupport(plugin, null), {
+      status: 'fresh',
+      version: '1.53.1',
+      versionsBehind: undefined,
+    });
   });
 
   it('reports unavailable when snapshot metadata is unavailable', () => {
@@ -195,9 +193,8 @@ describe('getPluginDecisionSummary', () => {
       snapshot: undefined,
     };
 
-    assert.deepEqual(getPluginDecisionSummary(pluginWithoutSnapshot, null), {
-      release: { status: 'unavailable' },
-      backstage: { status: 'unavailable' },
+    assert.deepEqual(getBackstageSupport(pluginWithoutSnapshot, null), {
+      status: 'unavailable',
     });
   });
 });

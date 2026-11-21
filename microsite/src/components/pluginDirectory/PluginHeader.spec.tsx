@@ -57,13 +57,9 @@ const plugin: PluginData = {
 };
 
 describe('PluginHeader', () => {
-  it('renders identity, description, and evaluation facts', () => {
-    render(
-      <PluginHeader
-        plugin={plugin}
-        latestBackstageVersion="1.53.1"
-        now={new Date('2026-08-06T00:00:00.000Z')}
-      />,
+  it('renders identity, description, and the supported Backstage version', () => {
+    const { rerender } = render(
+      <PluginHeader plugin={plugin} latestBackstageVersion="1.53.1" />,
     );
 
     const heading = screen.getByRole('heading', { level: 1 });
@@ -75,14 +71,38 @@ describe('PluginHeader', () => {
     expect(
       screen.getByText('Adds operational context to catalog entities.'),
     ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText('Plugin evaluation summary'),
-    ).toHaveTextContent(
-      '2.4.0published 14 days ago1.50.02 days agoDocumentation',
+    // The npm release and the age of the check are not part of the header.
+    const summary = screen.getByLabelText('Plugin summary');
+    expect(summary).toHaveTextContent(
+      'Supports Backstage 1.50.03 versions behindDocumentation',
     );
+    expect(summary).not.toHaveTextContent('2.4.0');
+    expect(summary).not.toHaveTextContent('ago');
     expect(screen.getByRole('link', { name: /Documentation/ })).toHaveAttribute(
       'href',
       'https://example.com/catalog-insights/docs',
+    );
+
+    rerender(<PluginHeader plugin={plugin} latestBackstageVersion="1.50.4" />);
+    expect(summary).toHaveTextContent('up to date');
+
+    rerender(<PluginHeader plugin={plugin} latestBackstageVersion="1.51.0" />);
+    expect(summary).toHaveTextContent('1 version behind');
+
+    rerender(<PluginHeader plugin={plugin} latestBackstageVersion={null} />);
+    expect(summary).toHaveTextContent('Supports Backstage 1.50.0Documentation');
+  });
+
+  it('reports when the supported Backstage version is not known', () => {
+    render(
+      <PluginHeader
+        plugin={{ ...plugin, snapshot: undefined }}
+        latestBackstageVersion="1.53.1"
+      />,
+    );
+
+    expect(screen.getByLabelText('Plugin summary')).toHaveTextContent(
+      'Backstage source not reportedDocumentation',
     );
   });
 });
