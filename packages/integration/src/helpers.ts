@@ -90,6 +90,37 @@ export function basicIntegrations<T extends ScmIntegration>(
   };
 }
 
+function stripTrailingFilepath(pathname: string, filepath: string): string {
+  const trimmed = lodash.trimEnd(pathname, '/');
+  if (!filepath) {
+    return trimmed;
+  }
+  if (trimmed.endsWith(`/${filepath}`)) {
+    return lodash.trimEnd(
+      trimmed.slice(0, trimmed.length - filepath.length),
+      '/',
+    );
+  }
+  // git-url-parse decodes filepath while URL.pathname remains percent-encoded.
+  for (let i = trimmed.length; i >= 0; i = trimmed.lastIndexOf('/', i - 1)) {
+    const suffix = trimmed.slice(i + 1);
+    try {
+      if (decodeURIComponent(suffix) === filepath) {
+        return lodash.trimEnd(trimmed.slice(0, i), '/');
+      }
+    } catch {
+      // ignore malformed percent sequences in partial slices
+    }
+    if (i === 0) {
+      break;
+    }
+  }
+  return lodash.trimEnd(
+    trimmed.substring(0, trimmed.length - filepath.length),
+    '/',
+  );
+}
+
 /**
  * Default implementation of {@link ScmIntegration} `resolveUrl`, that only
  * works with URL pathname based providers.
@@ -120,10 +151,7 @@ export function defaultScmResolveUrl(options: {
 
     updated = new URL(href);
 
-    const repoRootPath = lodash.trimEnd(
-      updated.pathname.substring(0, updated.pathname.length - filepath.length),
-      '/',
-    );
+    const repoRootPath = stripTrailingFilepath(updated.pathname, filepath);
     updated.pathname = `${repoRootPath}${url}`;
   } else {
     // For relative URLs, just let the default URL constructor handle the
