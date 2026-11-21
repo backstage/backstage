@@ -17,9 +17,15 @@ import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 // @public
 const _default: OverridableFrontendPlugin<
   {
-    root: RouteRef<undefined>;
-    overview: RouteRef<undefined>;
-    checks: RouteRef<undefined>;
+    root: RouteRef<undefined> & {
+      readonly I: 'lazy-scorecard.root';
+    };
+    overview: RouteRef<undefined> & {
+      readonly I: 'lazy-scorecard.overview';
+    };
+    checks: RouteRef<undefined> & {
+      readonly I: 'lazy-scorecard.checks';
+    };
   },
   {},
   {
@@ -116,6 +122,9 @@ const _default: OverridableFrontendPlugin<
         blueprint: '@backstage/frontend-plugin-api#PageBlueprint';
         params: {
           path: '/lazy-scorecard';
+          routeRef: {
+            id: 'lazy-scorecard.root';
+          };
         };
         paramKeys: 'path' | 'routeRef';
         paramsCallback: undefined;
@@ -173,6 +182,9 @@ const _default: OverridableFrontendPlugin<
         params: {
           path: 'checks';
           title: 'Checks';
+          routeRef: {
+            id: 'lazy-scorecard.checks';
+          };
         };
         paramKeys: 'title' | 'path' | 'routeRef' | 'loader';
         paramsCallback: undefined;
@@ -230,6 +242,9 @@ const _default: OverridableFrontendPlugin<
         params: {
           path: 'overview';
           title: 'Overview';
+          routeRef: {
+            id: 'lazy-scorecard.overview';
+          };
         };
         paramKeys: 'title' | 'path' | 'routeRef' | 'loader';
         paramsCallback: undefined;

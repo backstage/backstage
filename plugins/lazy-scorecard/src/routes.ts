@@ -15,8 +15,10 @@
  */
 import { createRouteRef } from '@backstage/frontend-plugin-api';
 
-export const rootRouteRef = createRouteRef();
+export const rootRouteRef = createRouteRef({ id: 'lazy-scorecard.root' });
 
-export const overviewRouteRef = createRouteRef();
+export const overviewRouteRef = createRouteRef({
+  id: 'lazy-scorecard.overview',
+});
 
-export const checksRouteRef = createRouteRef();
+export const checksRouteRef = createRouteRef({ id: 'lazy-scorecard.checks' });

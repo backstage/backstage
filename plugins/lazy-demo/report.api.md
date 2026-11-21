@@ -17,7 +17,9 @@ import { TranslationRefTuple } from '@backstage/frontend-plugin-api';
 // @public
 const _default: OverridableFrontendPlugin<
   {
-    root: RouteRef<undefined>;
+    root: RouteRef<undefined> & {
+      readonly I: 'lazy-demo.root';
+    };
   },
   {},
   {
@@ -114,6 +116,9 @@ const _default: OverridableFrontendPlugin<
         blueprint: '@backstage/frontend-plugin-api#PageBlueprint';
         params: {
           path: '/lazy-demo';
+          routeRef: {
+            id: 'lazy-demo.root';
+          };
         };
         paramKeys: 'path' | 'routeRef' | 'loader';
         paramsCallback: undefined;

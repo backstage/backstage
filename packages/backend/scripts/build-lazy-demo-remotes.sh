@@ -6,6 +6,9 @@ set -euo pipefail
 root="$(cd "$(dirname "$0")/../../.." && pwd)"
 target="$root/packages/backend/dist/dynamic-plugins-root"
 
+# The manifest of a remote is read from the type declarations in dist-types
+(cd "$root" && yarn tsc)
+
 rm -rf "$target"
 for name in lazy-demo lazy-scorecard; do
   plugin="$root/plugins/$name"
