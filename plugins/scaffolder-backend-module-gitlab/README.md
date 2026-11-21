@@ -11,6 +11,24 @@ missing files; other errors stop the action before committing. A 404 listing
 response continues to treat all files as new, including when pushing to a new
 branch.
 
+The `publish:gitlab:merge-request` action accepts an optional boolean `squash`
+input that controls whether commits are squashed when the merge request is
+merged. When you omit it, the squash setting of the GitLab project applies, so
+leave it unset if the project requires or disallows squashing.
+
+```yaml
+steps:
+  - id: createMergeRequest
+    action: publish:gitlab:merge-request
+    name: Create a Merge Request
+    input:
+      repoUrl: gitlab.com?repo=repo&owner=owner
+      title: Create my new MR
+      branchName: new-mr
+      sourcePath: ./path/to/my/changes
+      squash: true
+```
+
 ## Getting started
 
 ## From your Backstage root directory
