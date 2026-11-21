@@ -180,6 +180,35 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     });
   });
 
+  it('should not apply the full update when the scheduled task is aborted', async () => {
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(
+      new ConfigReader(mock.config_no_org_integration),
+      { logger, schedule },
+    )[0];
+    const controller = new AbortController();
+    const originalListProjects = (provider as any).gitLabClient.listProjects;
+    const mockListProjects = jest.fn().mockImplementation(async options => {
+      controller.abort();
+      return originalListProjects.call((provider as any).gitLabClient, options);
+    });
+    (provider as any).gitLabClient.listProjects = mockListProjects;
+
+    await provider.connect(entityProviderConnection);
+    const fn = schedule.getTasks()[0].fn;
+
+    await fn(controller.signal);
+    expect(mockListProjects).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+
+    await fn(new AbortController().signal);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+  });
+
   it('should filter found projects based on a provided project pattern', async () => {
     const config = new ConfigReader(
       mock.config_single_integration_project_pattern,
