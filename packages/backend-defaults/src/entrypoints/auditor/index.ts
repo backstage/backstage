@@ -17,12 +17,19 @@
 export type {
   AuditorEvent,
   AuditorEventActorDetails,
-  AuditorEventOptions,
   AuditorEventRequest,
+  AuditorEventRequestContext,
   AuditorEventStatus,
+} from '@backstage/backend-plugin-api';
+export type {
+  AuditorEventOptions,
   AuditorLogFunction,
 } from './DefaultAuditorService';
 export { DefaultAuditorService } from './DefaultAuditorService';
+export {
+  auditSinksServiceRef,
+  defaultAuditSinksServiceFactory,
+} from './auditSinks';
 export { auditorServiceFactory } from './auditorServiceFactory';
 export { WinstonRootAuditorService } from './WinstonRootAuditorService';
 export type { WinstonRootAuditorServiceOptions } from './WinstonRootAuditorService';

@@ -29,13 +29,22 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 describe('resourcesRoutes', () => {
   let app: ExtendedHttpServer;
   let auditor: ReturnType<typeof mockServices.auditor.mock>;
-  let auditEvent: { success: jest.Mock; fail: jest.Mock };
+  let auditEvent: {
+    id: string;
+    update: jest.Mock;
+    success: jest.Mock;
+    fail: jest.Mock;
+    attachToResponse: jest.Mock;
+  };
 
   const setupAuditorMock = () => {
     auditor = mockServices.auditor.mock();
     auditEvent = {
+      id: 'test-event-id',
+      update: jest.fn(),
       success: jest.fn().mockResolvedValue(undefined),
       fail: jest.fn().mockResolvedValue(undefined),
+      attachToResponse: jest.fn(),
     };
     auditor.createEvent.mockResolvedValue(auditEvent);
   };

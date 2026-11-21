@@ -15,6 +15,7 @@
  */
 
 import type {
+  AuditSink,
   AuditorService,
   AuthService,
   HttpAuthService,
@@ -26,7 +27,14 @@ import type { Format } from 'logform';
 import * as winston from 'winston';
 import { WinstonLogger } from '../rootLogger';
 import { DefaultAuditorService } from './DefaultAuditorService';
-import { getSeverityLogLevelMappings } from './utils';
+import {
+  getAuditorSampling,
+  getMaxMetaStringLength,
+  getRedactMetaKeys,
+  getSanitizeRequestQuery,
+  getSeverityLogLevelMappings,
+} from './utils';
+import { createWinstonAuditSink } from './winstonAuditSink';
 
 /** @public */
 export const defaultFormatter = winston.format.combine(
@@ -118,24 +126,24 @@ export class WinstonRootAuditorService {
     httpAuth: HttpAuthService;
     plugin: PluginMetadataService;
   }): AuditorService {
-    const severityLogLevelMappings = getSeverityLogLevelMappings(deps.config);
+    const sampling = getAuditorSampling(deps.config);
 
-    return DefaultAuditorService.create(event => {
-      if ('error' in event) {
-        const { error, ...rest } = event;
-        const childAuditLogger = this.winstonLogger.child(rest);
+    const sink: AuditSink = createWinstonAuditSink(
+      this.winstonLogger,
+      getSeverityLogLevelMappings(deps.config),
+    );
 
-        childAuditLogger[severityLogLevelMappings[event.severityLevel]](
-          `${event.plugin}.${event.eventId}`,
-          error,
-        );
-      } else {
-        // the else statement is required for typechecking
-        this.winstonLogger[severityLogLevelMappings[event.severityLevel]](
-          `${event.plugin}.${event.eventId}`,
-          event,
-        );
-      }
-    }, deps);
+    return DefaultAuditorService.create(sink, {
+      auth: deps.auth,
+      httpAuth: deps.httpAuth,
+      plugin: deps.plugin,
+      onError: error => {
+        this.winstonLogger.error(`Failed to emit audit event, ${error}`);
+      },
+      sanitizeRequestQuery: getSanitizeRequestQuery(deps.config),
+      maxMetaStringLength: getMaxMetaStringLength(deps.config),
+      redactMetaKeys: getRedactMetaKeys(deps.config),
+      sampling,
+    });
   }
 }

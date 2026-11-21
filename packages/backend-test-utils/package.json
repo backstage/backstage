@@ -83,6 +83,8 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/context-async-hooks": "^3.0.0",
     "@types/cookie": "^0.6.0",
     "@types/jest": "*",
     "@types/lodash": "^4.14.151",

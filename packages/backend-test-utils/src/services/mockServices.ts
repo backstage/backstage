@@ -15,6 +15,7 @@
  */
 
 import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
+import { randomUUID } from 'node:crypto';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
 import { HostDiscovery } from '@backstage/backend-defaults/discovery';
@@ -46,6 +47,8 @@ import {
   createServiceFactory,
   RootLoggerService,
   AuditorService,
+  AuditorServiceCreateEventOptions,
+  AuditorServiceEvent,
   CacheService,
   HttpRouterService,
   LifecycleService,
@@ -637,12 +640,26 @@ export const mockServices: MockServices = Object.freeze({
   auditor: Object.freeze({
     factory: () => auditorServiceFactory,
     mock: createServiceMock(coreServices.auditor, () => ({
-      createEvent: jest.fn(async _ => {
-        return {
-          success: jest.fn(),
-          fail: jest.fn(),
-        };
-      }),
+      createEvent: jest.fn(async _ => ({
+        id: randomUUID(),
+        update: jest.fn(),
+        success: jest.fn(),
+        fail: jest.fn(),
+        attachToResponse: jest.fn(),
+      })),
+      withEvent: jest.fn(
+        async (
+          _options: AuditorServiceCreateEventOptions,
+          fn: (event: AuditorServiceEvent) => Promise<unknown>,
+        ) =>
+          fn({
+            id: randomUUID(),
+            update: jest.fn(),
+            success: jest.fn(),
+            fail: jest.fn(),
+            attachToResponse: jest.fn(),
+          }),
+      ) as any,
     })),
   }),
 
