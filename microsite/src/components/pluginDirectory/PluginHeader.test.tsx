@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 import type { PluginData } from '../../pluginDirectory/plugin';
+import '../../testUtils/setupDom';
+import assert from 'node:assert/strict';
+import { describe, it, mock } from 'node:test';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { PluginHeader } from './PluginHeader';
@@ -63,34 +66,46 @@ describe('PluginHeader', () => {
     );
 
     const heading = screen.getByRole('heading', { level: 1 });
-    expect(heading).toHaveTextContent('Catalog Insights');
-    expect(heading).not.toHaveTextContent('built with Backstage');
-    expect(
-      screen.getByRole('link', { name: 'Example Maintainers' }),
-    ).toHaveAttribute('href', 'https://example.com');
-    expect(
+    assert.ok(heading.textContent?.includes('Catalog Insights'));
+    assert.ok(!heading.textContent?.includes('built with Backstage'));
+    assert.equal(
+      screen
+        .getByRole('link', { name: 'Example Maintainers' })
+        .getAttribute('href'),
+      'https://example.com',
+    );
+    assert.ok(
       screen.getByText('Adds operational context to catalog entities.'),
-    ).toBeInTheDocument();
+    );
     // The npm release and the age of the check are not part of the header.
     const summary = screen.getByLabelText('Plugin summary');
-    expect(summary).toHaveTextContent(
-      'Supports Backstage 1.50.03 versions behindDocumentation',
+    assert.ok(
+      summary.textContent?.includes(
+        'Supported Backstage versionv1.50.0(3 versions behind)LinksDocs ↗',
+      ),
     );
-    expect(summary).not.toHaveTextContent('2.4.0');
-    expect(summary).not.toHaveTextContent('ago');
-    expect(screen.getByRole('link', { name: /Documentation/ })).toHaveAttribute(
-      'href',
+    assert.ok(!summary.textContent?.includes('2.4.0'));
+    assert.ok(!summary.textContent?.includes('ago'));
+    const docs = screen.getByRole('link', { name: /Docs/ });
+    assert.equal(
+      docs.getAttribute('href'),
       'https://example.com/catalog-insights/docs',
     );
+    assert.equal(docs.getAttribute('target'), '_blank');
+    assert.equal(docs.getAttribute('rel'), 'noopener noreferrer');
 
     rerender(<PluginHeader plugin={plugin} latestBackstageVersion="1.50.4" />);
-    expect(summary).toHaveTextContent('up to date');
+    assert.ok(summary.textContent?.includes('v1.50.0(up to date)'));
 
     rerender(<PluginHeader plugin={plugin} latestBackstageVersion="1.51.0" />);
-    expect(summary).toHaveTextContent('1 version behind');
+    assert.ok(summary.textContent?.includes('v1.50.0(1 version behind)'));
 
     rerender(<PluginHeader plugin={plugin} latestBackstageVersion={null} />);
-    expect(summary).toHaveTextContent('Supports Backstage 1.50.0Documentation');
+    assert.ok(
+      summary.textContent?.includes(
+        'Supported Backstage versionv1.50.0LinksDocs ↗',
+      ),
+    );
   });
 
   it('reports when the supported Backstage version is not known', () => {
@@ -101,8 +116,12 @@ describe('PluginHeader', () => {
       />,
     );
 
-    expect(screen.getByLabelText('Plugin summary')).toHaveTextContent(
-      'Backstage source not reportedDocumentation',
+    assert.ok(
+      screen
+        .getByLabelText('Plugin summary')
+        .textContent?.includes(
+          'Supported Backstage versionBackstage source not reportedLinksDocs ↗',
+        ),
     );
   });
 });

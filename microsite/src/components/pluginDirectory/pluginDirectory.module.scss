@@ -50,6 +50,36 @@
   max-width: var(--ifm-container-width);
 }
 
+.headerFacts {
+  display: grid;
+  gap: calc(var(--ifm-spacing-vertical) / 2);
+  margin: calc(var(--ifm-spacing-vertical) * 1.5) 0 0;
+
+  > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--ifm-spacing-horizontal) / 2);
+  }
+
+  dt {
+    color: var(--ifm-color-content-secondary);
+    font-weight: var(--ifm-font-weight-semibold);
+
+    &::after {
+      content: ':';
+    }
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.headerFactNote {
+  color: var(--ifm-color-content-secondary);
+  margin-left: calc(var(--ifm-spacing-horizontal) / 3);
+}
+
 .releaseBadges {
   display: flex;
   flex-wrap: wrap;
@@ -73,12 +103,6 @@
     flex: 0 0 auto;
     font-size: 1.5em;
   }
-}
-
-a.releaseBadge {
-  color: var(--ifm-color-content-secondary);
-  font-weight: var(--ifm-font-weight-semibold);
-  text-decoration: none;
 }
 
 .releaseBadgeDetails {
