@@ -20,7 +20,9 @@ import { EntityTypePicker } from './EntityTypePicker';
 import { MockEntityListContextProvider } from '@backstage/plugin-catalog-react/testUtils';
 import { catalogApiRef } from '../../api';
 import { EntityKindFilter, EntityTypeFilter } from '../../filters';
+import { DefaultEntityFilters } from '../../hooks';
 import { alertApiRef } from '@backstage/core-plugin-api';
+import { analyticsApiRef } from '@backstage/frontend-plugin-api';
 import { ApiProvider } from '@backstage/core-app-api';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { mockApis } from '@backstage/frontend-test-utils';
@@ -59,22 +61,28 @@ const entities: Entity[] = [
   },
 ];
 
-const apis = TestApiRegistry.from(
-  [
-    catalogApiRef,
-    {
-      getEntityFacets: jest.fn().mockResolvedValue({
-        facets: {
-          'spec.type': entities.map(e => ({
-            value: (e.spec as any).type,
-            count: 1,
-          })),
-        },
-      } as GetEntityFacetsResponse),
+const catalogApi = {
+  getEntityFacets: jest.fn().mockResolvedValue({
+    facets: {
+      'spec.type': entities.map(e => ({
+        value: (e.spec as any).type,
+        count: 1,
+      })),
     },
-  ],
-  [alertApiRef, mockApis.alert()],
-);
+  } as GetEntityFacetsResponse),
+};
+
+const createApis = (analyticsApi = mockApis.analytics()) =>
+  TestApiRegistry.from(
+    [catalogApiRef, catalogApi],
+    [alertApiRef, mockApis.alert()],
+    [analyticsApiRef, analyticsApi],
+  );
+
+const apis = createApis();
+
+const getFilterEvents = (analyticsApi: ReturnType<typeof mockApis.analytics>) =>
+  analyticsApi.getEvents().filter(event => event.action === 'filter');
 
 describe('<EntityTypePicker/>', () => {
   it('renders available entity types', async () => {
@@ -101,10 +109,11 @@ describe('<EntityTypePicker/>', () => {
     });
   });
 
-  it('sets the selected type filter', async () => {
+  it('sets the selected type filter and captures filter events', async () => {
     const updateFilters = jest.fn();
+    const analyticsApi = mockApis.analytics();
     await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <ApiProvider apis={createApis(analyticsApi)}>
         <MockEntityListContextProvider
           value={{
             filters: { kind: new EntityKindFilter('component', 'Component') },
@@ -129,6 +138,15 @@ describe('<EntityTypePicker/>', () => {
     fireEvent.click(screen.getByText('all'));
 
     expect(updateFilters).toHaveBeenLastCalledWith({ type: undefined });
+
+    // Clearing the filter with the "all" option does not capture an event
+    expect(getFilterEvents(analyticsApi)).toEqual([
+      expect.objectContaining({
+        action: 'filter',
+        subject: 'service',
+        attributes: { filter: 'type' },
+      }),
+    ]);
   });
 
   it('respects the query parameter filter value', async () => {
@@ -155,8 +173,9 @@ describe('<EntityTypePicker/>', () => {
 
   it('applies initialFilter when kind filter is set without a matching query parameter', async () => {
     const updateFilters = jest.fn();
+    const analyticsApi = mockApis.analytics();
     await renderInTestApp(
-      <ApiProvider apis={apis}>
+      <ApiProvider apis={createApis(analyticsApi)}>
         <MockEntityListContextProvider
           value={{
             filters: { kind: new EntityKindFilter('component', 'Component') },
@@ -175,6 +194,7 @@ describe('<EntityTypePicker/>', () => {
       type: new EntityTypeFilter(['service']),
     });
     expect(updateFilters).not.toHaveBeenLastCalledWith({ type: undefined });
+    expect(getFilterEvents(analyticsApi)).toEqual([]);
   });
 
   it('responds to external queryParameters changes', async () => {
@@ -209,5 +229,47 @@ describe('<EntityTypePicker/>', () => {
     expect(updateFilters).toHaveBeenLastCalledWith({
       type: new EntityTypeFilter(['tool']),
     });
+  });
+
+  it('does not capture filter events for types from query parameters', async () => {
+    const updateFilters = jest.fn();
+    const analyticsApi = mockApis.analytics();
+    const testApis = createApis(analyticsApi);
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={testApis}>
+        <MockEntityListContextProvider<DefaultEntityFilters>
+          value={{
+            filters: { kind: new EntityKindFilter('component', 'Component') },
+            updateFilters,
+            queryParameters: { type: 'service' },
+          }}
+        >
+          <EntityTypePicker />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    const select = within(await screen.findByTestId('select')).getByRole(
+      'button',
+    );
+    expect(select).toHaveTextContent('service');
+
+    rendered.rerender(
+      <ApiProvider apis={testApis}>
+        <MockEntityListContextProvider<DefaultEntityFilters>
+          value={{
+            filters: { kind: new EntityKindFilter('component', 'Component') },
+            updateFilters,
+            queryParameters: { type: 'library' },
+          }}
+        >
+          <EntityTypePicker />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+    expect(select).toHaveTextContent('library');
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      type: new EntityTypeFilter(['library']),
+    });
+    expect(getFilterEvents(analyticsApi)).toEqual([]);
   });
 });
