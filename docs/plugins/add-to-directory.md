@@ -20,8 +20,9 @@ a manifest in
 ### Create the manifest
 
 1. Name the file `<plugin-slug>.yaml`. New filenames must use lowercase
-   kebab-case, for example `example-monitoring.yaml`. Do not add a `slug` key to
-   the manifest.
+   kebab-case, for example `example-monitoring.yaml`. The directory derives the
+   plugin detail route from the filename, so this example is available at
+   `/plugins/example-monitoring`. Do not add a `slug` key to the manifest.
 
 1. Add the required contributor-owned fields:
 

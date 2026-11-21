@@ -15,7 +15,7 @@
  */
 import { readFile } from 'node:fs/promises';
 import { load } from 'js-yaml';
-import { z } from 'zod';
+import * as z from 'zod';
 
 export const latestBackstageVersionSchema = z.strictObject({
   version: z.string().min(1),
