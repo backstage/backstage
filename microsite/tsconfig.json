@@ -15,7 +15,9 @@
     "types": [
       "@docusaurus/module-type-aliases",
       "@docusaurus/theme-classic",
+      "@testing-library/jest-dom",
       "docusaurus-plugin-sass",
+      "jest",
       "node",
       "webpack-env"
     ]
