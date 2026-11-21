@@ -162,6 +162,58 @@ describe('gerrit core', () => {
       host: 'gerrit.com',
       gitilesBaseUrl: 'https://gerrit.googlesource.com',
     };
+    it.each([
+      { refPath: 'HEAD', ref: 'HEAD', refType: 'head' },
+      {
+        refPath: '157f862803d45b9d269f0e390f88aece1ded51e8',
+        ref: '157f862803d45b9d269f0e390f88aece1ded51e8',
+        refType: 'sha',
+      },
+      { refPath: 'refs/heads/docs', ref: 'docs', refType: 'branch' },
+      { refPath: 'refs/tags/docs', ref: 'docs', refType: 'tag' },
+    ])(
+      'preserves the repository root for $refType URLs',
+      ({ refPath, ref, refType }) => {
+        const basePath = `https://gerrit.googlesource.com/modules/docs-service/+/${refPath}`;
+
+        for (const [suffix, path] of [
+          ['', '/'],
+          ['/', '/'],
+          ['/docs', 'docs'],
+          ['/docs/', 'docs'],
+          ['/docs/guide.md', 'docs/guide.md'],
+          [`/${ref}`, ref],
+          ['/docs?format=TEXT#docs', 'docs'],
+          ['?format=JSON#docs', '/'],
+        ]) {
+          expect(parseGitilesUrlRef(config, `${basePath}${suffix}`)).toEqual({
+            basePath,
+            path,
+            project: 'modules/docs-service',
+            ref,
+            refType,
+          });
+        }
+      },
+    );
+    it('preserves separators in configured Gitiles prefixes', () => {
+      const gitilesConfig: GerritIntegrationConfig = {
+        host: 'gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com/gitiles/+/mirror',
+      };
+      expect(
+        parseGitilesUrlRef(
+          gitilesConfig,
+          'https://gerrit.com/a/gitiles/+/mirror/service/+/HEAD/docs',
+        ),
+      ).toEqual({
+        basePath: 'https://gerrit.com/a/gitiles/+/mirror/service/+/HEAD',
+        path: 'docs',
+        project: 'service',
+        ref: 'HEAD',
+        refType: 'head',
+      });
+    });
     it('can parse a gitiles urls that points to specific sha.', () => {
       const gitUrl = parseGitilesUrlRef(
         config,

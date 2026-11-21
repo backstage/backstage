@@ -24,7 +24,8 @@ const GERRIT_BODY_PREFIX = ")]}'";
  * - The project
  * - The type of ref. I.e: branch name, SHA, HEAD or tag.
  * - The file path from the repo root.
- * - The base path as the path that points to the repo root.
+ * - The base URL of the repo root at the selected ref, without a file path,
+ *   query parameters, or fragment.
  *
  * Supported types of gitiles urls that point to:
  *
@@ -69,6 +70,15 @@ export function parseGitilesUrlRef(
   // Also remove the "+" after the project.
   const rest = parts.slice(projectParts.length + 1);
   const project = lodash.join(projectParts, '/');
+  // Skip the configured Gitiles prefix when finding the project separator.
+  const projectEnd = urlParse.pathname.indexOf(
+    '/+/',
+    urlParse.pathname.length - urlPath.length,
+  );
+  urlParse.pathname = urlParse.pathname.slice(0, projectEnd);
+  urlParse.search = '';
+  urlParse.hash = '';
+  const projectUrl = urlParse.toString();
 
   // match <project>/+/HEAD/<path>
   if (rest.length > 0 && rest[0] === 'HEAD') {
@@ -79,7 +89,7 @@ export function parseGitilesUrlRef(
       ref,
       refType: 'head' as const,
       path: path || '/',
-      basePath: lodash.trimEnd(url.replace(path, ''), '/'),
+      basePath: `${projectUrl}/+/${ref}`,
     };
   }
   // match <project>/+/<sha>/<path>
@@ -91,7 +101,7 @@ export function parseGitilesUrlRef(
       ref,
       refType: 'sha' as const,
       path: path || '/',
-      basePath: lodash.trimEnd(url.replace(path, ''), '/'),
+      basePath: `${projectUrl}/+/${ref}`,
     };
   }
   const remainingPath = lodash.join(rest, '/');
@@ -118,7 +128,7 @@ export function parseGitilesUrlRef(
       ref,
       refType,
       path: path || '/',
-      basePath: lodash.trimEnd(url.replace(path, ''), '/'),
+      basePath: `${projectUrl}/+/refs/${refsReference}/${ref}`,
     };
   }
   throw new Error(`Unable to parse gitiles : ${url}`);
