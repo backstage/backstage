@@ -20,6 +20,7 @@ import {
   OverridableExtensionDefinition,
 } from './createExtension';
 import {
+  ResolveExtensionId,
   resolveExtensionDefinition,
   resolveExtensionDefinitions,
   throwOnDuplicateExtensionIds,
@@ -93,6 +94,29 @@ export type FrontendPluginInfoOptions = {
 };
 
 /**
+ * The values of a plugin that are known statically, captured from the literal
+ * values passed to {@link createFrontendPlugin}.
+ *
+ * @remarks
+ *
+ * This only exists at the type level and is never present at runtime. It lets
+ * tools read what a plugin declares from the emitted type declarations of a
+ * package, without running the package code.
+ *
+ * @public
+ */
+export type FrontendPluginLiterals = {
+  pluginId?: unknown;
+  title?: unknown;
+  if?: unknown;
+  /**
+   * The IDs of the extensions of the plugin, in the order that they were
+   * passed. This is a tuple if the order is known.
+   */
+  extensionIds?: unknown;
+};
+
+/**
  * A variant of the {@link FrontendPlugin} interface that can also be used to install overrides for the plugin.
  *
  * @public
@@ -107,7 +131,13 @@ export interface OverridableFrontendPlugin<
   TExtensionMap extends { [id in string]: ExtensionDefinition } = {
     [id in string]: ExtensionDefinition;
   },
+  TLiterals extends FrontendPluginLiterals = FrontendPluginLiterals,
 > extends FrontendPlugin<TRoutes, TExternalRoutes> {
+  /**
+   * The literal values that the plugin was created with. Only exists at the
+   * type level and is never present at runtime.
+   */
+  readonly literals?: TLiterals;
   getExtension<TId extends keyof TExtensionMap>(
     id: TId,
   ): OverridableExtensionDefinition<TExtensionMap[TId]['T']>;
@@ -183,13 +213,15 @@ export interface CreateFrontendPluginOptions<
   TRoutes extends { [name in string]: RouteRef | SubRouteRef },
   TExternalRoutes extends { [name in string]: ExternalRouteRef },
   TExtensions extends readonly ExtensionDefinition[],
+  TTitle extends string | undefined = string | undefined,
+  TIf extends FilterPredicate | undefined = FilterPredicate | undefined,
 > {
   pluginId: TId;
   /**
    * The display title of the plugin, used in page headers and navigation.
    * Falls back to the plugin ID if not provided.
    */
-  title?: string;
+  title?: TTitle;
   /**
    * The display icon of the plugin, used in page headers and navigation.
    */
@@ -198,7 +230,7 @@ export interface CreateFrontendPluginOptions<
   externalRoutes?: TExternalRoutes;
   extensions?: TExtensions;
   featureFlags?: FeatureFlagConfig[];
-  if?: FilterPredicate;
+  if?: TIf;
   info?: FrontendPluginInfoOptions;
 }
 
@@ -234,20 +266,35 @@ export interface CreateFrontendPluginOptions<
  */
 export function createFrontendPlugin<
   TId extends string,
-  TExtensions extends readonly ExtensionDefinition[],
+  const TExtensions extends readonly ExtensionDefinition[],
   TRoutes extends { [name in string]: RouteRef | SubRouteRef } = {},
   TExternalRoutes extends { [name in string]: ExternalRouteRef } = {},
+  TTitle extends string | undefined = undefined,
+  const TIf extends FilterPredicate | undefined = undefined,
 >(
   options: CreateFrontendPluginOptions<
     TId,
     TRoutes,
     TExternalRoutes,
-    TExtensions
+    TExtensions,
+    TTitle,
+    TIf
   >,
 ): OverridableFrontendPlugin<
   TRoutes,
   TExternalRoutes,
-  MakeSortedExtensionsMap<TExtensions[number], TId>
+  MakeSortedExtensionsMap<TExtensions[number], TId>,
+  {
+    pluginId: TId;
+    title: TTitle;
+    if: TIf;
+    extensionIds: {
+      -readonly [K in keyof TExtensions]: ResolveExtensionId<
+        TExtensions[K],
+        TId
+      >;
+    };
+  }
 > {
   const pluginId = options.pluginId;
 
@@ -297,7 +344,7 @@ export function createFrontendPlugin<
       return `Plugin{id=${pluginId}}`;
     },
     withOverrides(overrides) {
-      let ifPredicate = options.if;
+      let ifPredicate: FilterPredicate | undefined = options.if;
       if ('if' in overrides) {
         ifPredicate = overrides.if;
       }

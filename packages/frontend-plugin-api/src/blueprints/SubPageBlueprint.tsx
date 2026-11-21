@@ -21,6 +21,7 @@ import { RouteRef } from '../routing';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 import { ExtensionBoundary } from '../components';
 import { optionalStringSchema } from '../schema/optionalStringSchema';
+import { withBlueprintIdentity } from '../wiring/withBlueprintIdentity';
 
 /**
  * Creates extensions that are sub-page React components attached to a parent page.
@@ -63,81 +64,84 @@ import { optionalStringSchema } from '../schema/optionalStringSchema';
  * );
  * ```
  */
-export const SubPageBlueprint = createExtensionBlueprint({
-  kind: 'sub-page',
-  attachTo: { relative: { kind: 'page' }, input: 'pages' },
-  output: [
-    coreExtensionData.routePath,
-    coreExtensionData.reactElement,
-    coreExtensionData.title,
-    coreExtensionData.titleTranslation.optional(),
-    coreExtensionData.routeRef.optional(),
-    coreExtensionData.icon.optional(),
-  ],
-  configSchema: {
-    path: optionalStringSchema,
-    title: optionalStringSchema,
-  },
-  *factory(
-    params: {
-      /**
-       * The path for this sub-page, relative to the parent page. Must **not** start with '/'.
-       *
-       * @example 'overview', 'settings', 'details'
-       */
-      path: string;
-      /**
-       * The title displayed in the tab for this sub-page.
-       */
-      title: string | TranslationRefTuple<undefined>;
-      /**
-       * Optional icon for this sub-page, displayed in the tab.
-       */
-      icon?: IconElement;
-      /**
-       * A function that returns a promise resolving to the React element to render.
-       * This enables lazy loading of the sub-page content.
-       */
-      loader: () => Promise<JSX.Element>;
-      /**
-       * Optional route reference for this sub-page.
-       */
-      routeRef?: RouteRef;
+export const SubPageBlueprint = withBlueprintIdentity(
+  '@backstage/frontend-plugin-api#SubPageBlueprint',
+  createExtensionBlueprint({
+    kind: 'sub-page',
+    attachTo: { relative: { kind: 'page' }, input: 'pages' },
+    output: [
+      coreExtensionData.routePath,
+      coreExtensionData.reactElement,
+      coreExtensionData.title,
+      coreExtensionData.titleTranslation.optional(),
+      coreExtensionData.routeRef.optional(),
+      coreExtensionData.icon.optional(),
+    ],
+    configSchema: {
+      path: optionalStringSchema,
+      title: optionalStringSchema,
     },
-    { config, node, apis },
-  ) {
-    yield coreExtensionData.routePath(config.path ?? params.path);
-    const translation =
-      typeof params.title === 'object' ? params.title : undefined;
-    const translationApi =
-      translation && config.title === undefined
-        ? apis.get(translationApiRef)
-        : undefined;
-    if (translation && config.title === undefined && !translationApi) {
-      throw new Error(
-        `Translation API (core.translation) is required to resolve title '${translation.ref.id}:${translation.key}'`,
-      );
-    }
-    const title =
-      config.title ??
-      (typeof params.title === 'object'
-        ? translationApi!
-            .getTranslation<Record<string, string>>(params.title.ref)
-            .t(params.title.key)
-        : params.title);
-    yield coreExtensionData.title(title);
-    if (translation) {
-      yield coreExtensionData.titleTranslation(translation);
-    }
+    *factory(
+      params: {
+        /**
+         * The path for this sub-page, relative to the parent page. Must **not** start with '/'.
+         *
+         * @example 'overview', 'settings', 'details'
+         */
+        path: string;
+        /**
+         * The title displayed in the tab for this sub-page.
+         */
+        title: string | TranslationRefTuple<undefined>;
+        /**
+         * Optional icon for this sub-page, displayed in the tab.
+         */
+        icon?: IconElement;
+        /**
+         * A function that returns a promise resolving to the React element to render.
+         * This enables lazy loading of the sub-page content.
+         */
+        loader: () => Promise<JSX.Element>;
+        /**
+         * Optional route reference for this sub-page.
+         */
+        routeRef?: RouteRef;
+      },
+      { config, node, apis },
+    ) {
+      yield coreExtensionData.routePath(config.path ?? params.path);
+      const translation =
+        typeof params.title === 'object' ? params.title : undefined;
+      const translationApi =
+        translation && config.title === undefined
+          ? apis.get(translationApiRef)
+          : undefined;
+      if (translation && config.title === undefined && !translationApi) {
+        throw new Error(
+          `Translation API (core.translation) is required to resolve title '${translation.ref.id}:${translation.key}'`,
+        );
+      }
+      const title =
+        config.title ??
+        (typeof params.title === 'object'
+          ? translationApi!
+              .getTranslation<Record<string, string>>(params.title.ref)
+              .t(params.title.key)
+          : params.title);
+      yield coreExtensionData.title(title);
+      if (translation) {
+        yield coreExtensionData.titleTranslation(translation);
+      }
 
-    yield coreExtensionData.reactElement(
-      ExtensionBoundary.lazy(node, params.loader),
-    );
-    if (params.routeRef) {
-      yield coreExtensionData.routeRef(params.routeRef);
-    }
-    if (params.icon) {
-      yield coreExtensionData.icon(params.icon);
-    }
-  },
-});
+      yield coreExtensionData.reactElement(
+        ExtensionBoundary.lazy(node, params.loader),
+      );
+      if (params.routeRef) {
+        yield coreExtensionData.routeRef(params.routeRef);
+      }
+      if (params.icon) {
+        yield coreExtensionData.icon(params.icon);
+      }
+    },
+  }),
+);
