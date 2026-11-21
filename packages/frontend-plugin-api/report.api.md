@@ -958,7 +958,11 @@ export interface CreateFrontendPluginOptions<
 }
 
 // @public
-export function createRouteRef<TParamKeys extends string = never>(config?: {
+export function createRouteRef<
+  TParamKeys extends string = never,
+  const TId extends string | undefined = undefined,
+>(config?: {
+  id?: TId;
   readonly params?: TParamKeys[];
   aliasFor?: string;
 }): RouteRef<
@@ -967,7 +971,12 @@ export function createRouteRef<TParamKeys extends string = never>(config?: {
     : {
         [param in TParamKeys]: string;
       }
->;
+> &
+  ([TId] extends [string]
+    ? {
+        readonly I: TId;
+      }
+    : unknown);
 
 // @public
 export function createSubRouteRef<

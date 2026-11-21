@@ -45,6 +45,22 @@ describe('RouteRef', () => {
     );
   });
 
+  it('should be created with an ID that is recorded in its type', () => {
+    const routeRef = createRouteRef({ id: 'my-route', params: ['x'] });
+    const typed: RouteRef<{ x: string }> & { readonly I: 'my-route' } =
+      routeRef;
+    // @ts-expect-error the ID is a literal type
+    const wrong: RouteRef<{ x: string }> & { readonly I: 'other' } = routeRef;
+    const untyped: RouteRef<{ x: string }> = routeRef;
+    expect([typed, wrong, untyped]).toHaveLength(3);
+
+    const internal = OpaqueRouteRef.toInternal(routeRef);
+    expect(internal.getDescription()).toMatch(/^my-route, created at/);
+    // The ID doesn't conflict with the ID that is assigned to the route
+    internal.setId('plugin.root');
+    expect(internal.getDescription()).toBe('plugin.root');
+  });
+
   it('should be created with params', () => {
     const routeRef: RouteRef<{
       x: string;

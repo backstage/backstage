@@ -18,7 +18,7 @@ import { ApiBlueprint } from '../blueprints/ApiBlueprint';
 import { PageBlueprint } from '../blueprints/PageBlueprint';
 import { SubPageBlueprint } from '../blueprints/SubPageBlueprint';
 import { createApiRef } from '../apis';
-import { createRouteRef } from '../routing';
+import { createRouteRef, RouteRef } from '../routing';
 import { coreExtensionData } from './coreExtensionData';
 import { ExtensionDefinition } from './createExtension';
 import { createExtensionBlueprint } from './createExtensionBlueprint';
@@ -44,6 +44,12 @@ const page = PageBlueprint.make({
     routeRef,
     loader: async () => null as any,
   },
+});
+
+const rootRouteRef = createRouteRef({ id: 'lazy-demo.root' });
+const pageWithRouteId = PageBlueprint.make({
+  name: 'with-id',
+  params: { path: '/with-id', routeRef: rootRouteRef },
 });
 
 const dynamicPage = PageBlueprint.make({
@@ -157,6 +163,16 @@ describe('ExtensionDefinitionLiterals', () => {
           if: undefined;
         }
       >,
+      // A route ref is only recorded if it was created with an ID
+      Equal<
+        LiteralsOf<typeof pageWithRouteId>['params'],
+        { path: '/with-id'; routeRef: { id: 'lazy-demo.root' } }
+      >,
+      Equal<
+        typeof rootRouteRef,
+        RouteRef<undefined> & { readonly I: 'lazy-demo.root' }
+      >,
+      Equal<typeof routeRef, RouteRef<undefined>>,
       Equal<LiteralsOf<typeof dynamicPage>['params'], {}>,
       Equal<LiteralsOf<typeof dynamicPage>['paramKeys'], 'path' | 'icon'>,
       Equal<LiteralsOf<typeof dynamicPage>['disabled'], true>,
@@ -206,6 +222,9 @@ describe('ExtensionDefinitionLiterals', () => {
         never[]
       >,
     ] = [
+      true,
+      true,
+      true,
       true,
       true,
       true,

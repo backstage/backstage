@@ -46,7 +46,18 @@ export function createRouteRef<
   // ParamKeys is narrowed to the literal union of param name strings.
   // Defaulting to never means we get undefined params when the array is empty or omitted.
   TParamKeys extends string = never,
+  const TId extends string | undefined = undefined,
 >(config?: {
+  /**
+   * An ID that identifies the route reference among the routes of a plugin,
+   * which is recorded in the type of the route reference. It lets tools match
+   * a route reference that is passed to a page with the routes of the plugin
+   * without running the plugin, for example the Backstage CLI when it creates
+   * the manifest of a plugin that can be deferred. Use an ID that is unique
+   * within the plugin.
+   */
+  id?: TId;
+
   /** A list of parameter names that the path that this route ref is bound to must contain */
   readonly params?: TParamKeys[];
 
@@ -54,7 +65,9 @@ export function createRouteRef<
   aliasFor?: string;
 }): RouteRef<
   [TParamKeys] extends [never] ? undefined : { [param in TParamKeys]: string }
-> {
+> &
+  // The ID only exists at the type level, and is never present at runtime
+  ([TId] extends [string] ? { readonly I: TId } : unknown) {
   const params = (config?.params ?? []) as string[];
   const creationSite = describeParentCallSite();
 
@@ -69,7 +82,9 @@ export function createRouteRef<
       if (id) {
         return id;
       }
-      return `created at '${creationSite}'`;
+      return config?.id
+        ? `${config.id}, created at '${creationSite}'`
+        : `created at '${creationSite}'`;
     },
     alias: config?.aliasFor,
     setId(newId: string) {

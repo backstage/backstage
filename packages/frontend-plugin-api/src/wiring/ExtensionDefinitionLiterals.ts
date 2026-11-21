@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { RouteRef } from '../routing/RouteRef';
 import { ExtensionBlueprintParams } from './createExtensionBlueprint';
 
 /**
@@ -39,7 +40,9 @@ export type ExtensionDefinitionLiterals = {
    */
   blueprint?: string;
   /**
-   * The params that were passed as string, number or boolean literals.
+   * The params that were passed as string, number or boolean literals. A
+   * param that is a route ref created with an ID is recorded as an object
+   * with the ID.
    */
   params?: object;
   /**
@@ -80,8 +83,20 @@ type IsPrimitiveLiteral<V> = [V] extends [string]
   : false;
 
 /**
+ * Whether a type is a route ref that was created with a literal ID.
+ *
+ * @ignore
+ */
+type IsRouteRefWithId<V> = [V] extends [
+  RouteRef<any> & { readonly I: infer IId },
+]
+  ? IsPrimitiveLiteral<IId>
+  : false;
+
+/**
  * Picks the properties of the params of an extension that are primitive
- * literals.
+ * literals, or route refs that were created with an ID. A route ref is
+ * recorded as an object with its ID.
  *
  * @ignore
  */
@@ -91,7 +106,13 @@ export type PickLiteralParams<TParams> = TParams extends object
         TParams[K]
       > extends true
         ? K
-        : never]: TParams[K];
+        : IsRouteRefWithId<TParams[K]> extends true
+        ? K
+        : never]: IsPrimitiveLiteral<TParams[K]> extends true
+        ? TParams[K]
+        : TParams[K] extends { readonly I: infer IId }
+        ? { id: IId }
+        : never;
     }
   : {};
 
