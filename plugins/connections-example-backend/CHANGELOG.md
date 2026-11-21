@@ -1,5 +1,14 @@
 # @backstage/plugin-connections-example-backend
 
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/connections@0.5.0
+  - @backstage/backend-defaults@0.19.1
+  - @backstage/backend-plugin-api@1.12.1
+
 ## 0.1.6
 
 ### Patch Changes

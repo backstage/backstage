@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.5
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 4.0.3
 
 ### Patch Changes

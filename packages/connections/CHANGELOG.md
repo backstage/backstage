@@ -1,5 +1,21 @@
 # @backstage/connections
 
+## 0.5.0
+
+### Minor Changes
+
+- 714153c: All URL-based connection types now require `baseUrl` instead of `host`. Base URLs must use HTTP(S), retain context paths, and receive a trailing slash for resolving relative paths. Lookup and duplicate validation use the host parsed from `baseUrl`, including non-default ports. Update explicit `connections` configuration to use a full base URL; legacy `integrations` configuration is converted automatically, preserving configured base URLs and endpoints.
+
+  Returned URL-based connections expose `baseUrl` instead of `host`. The singleton `aws` connection type and its account-based lookup are unchanged. Provider-specific API URL fields remain optional and do not receive an automatic fallback.
+
+  Replaced `lookupStrategy` and `ConnectionLookupStrategy` with `getLookupIdentity` on connection type definitions. The callback returns `{ key: 'host', value }` for host matching, or `undefined` for type-only selection. Host-based and AWS query shapes are unchanged.
+
+### Patch Changes
+
+- e843f6c: Added a Grafana connection type for authenticated instance APIs, with service-account tokens and self-hosted basic authentication. Connections support Grafana Cloud stacks and self-hosted base URLs, including subpaths.
+
+  Connections are identified by the instance base URL and can use a separate API base URL for backend requests. Both URL roots preserve installation paths and receive a trailing slash for relative requests.
+
 ## 0.4.2
 
 ### Patch Changes

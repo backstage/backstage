@@ -1,5 +1,15 @@
 # @backstage/cli
 
+## 0.36.9
+
+### Patch Changes
+
+- 928c181: Added support for CLI modules that register package commands with an `if` condition through `addPackageCommand`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.7
+  - @backstage/cli-module-build@0.2.0
+  - @backstage/cli-defaults@0.1.9
+
 ## 0.36.8
 
 ### Patch Changes

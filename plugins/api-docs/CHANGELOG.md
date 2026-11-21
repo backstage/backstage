@@ -1,5 +1,11 @@
 # @backstage/plugin-api-docs
 
+## 0.14.9
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 0.14.7
 
 ### Patch Changes

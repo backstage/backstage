@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.10.4
+
+### Patch Changes
+
+- Bumped version to account for a patch release.
+
 ## 0.10.2
 
 ### Patch Changes
