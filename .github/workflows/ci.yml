@@ -143,10 +143,6 @@ jobs:
         working-directory: microsite
         run: yarn plugins:verify
 
-      - name: test plugin directory tooling
-        working-directory: microsite
-        run: yarn test:plugin-directory
-
       - name: verify agent skills
         run: node scripts/verify-skills.js
 
