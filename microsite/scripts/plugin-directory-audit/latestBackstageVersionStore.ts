@@ -15,7 +15,7 @@
  */
 import { writeFile } from 'node:fs/promises';
 import { dump } from 'js-yaml';
-import type { LatestBackstageVersion } from '../latestBackstageVersion';
+import type { LatestBackstageVersion } from '../../../scripts/plugin-directory/latestBackstageVersion';
 
 export async function writeLatestBackstageVersionFile(
   path: string,

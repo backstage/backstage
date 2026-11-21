@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Inflate } from 'pako';
-import { parseTar } from '../tar';
+import { gunzipSync } from 'node:zlib';
+import { Parser } from 'tar';
 import {
   ConfigSchemaLimitError,
   sanitizeConfigSchema,
@@ -25,6 +25,7 @@ const REGISTRY_HOST = 'registry.npmjs.org';
 const MAX_TARBALL_BYTES = 10 * 1024 * 1024;
 const MAX_UNPACKED_BYTES = 64 * 1024 * 1024;
 const MAX_CONFIG_SCHEMA_SOURCE_BYTES = 1024 * 1024;
+const MAX_COLLECTED_JSON_BYTES = 16 * 1024 * 1024;
 
 export type ConfigSchemaResult =
   | { status: 'fresh'; schema: Record<string, unknown> | undefined }
@@ -34,29 +35,54 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function gunzipWithLimit(gzipped: Uint8Array, maxBytes: number): Uint8Array {
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-  const inflate = new Inflate();
-  inflate.onData = (chunk: Uint8Array) => {
-    total += chunk.length;
-    if (total > maxBytes) {
-      throw new Error('Tarball is too large once unpacked');
-    }
-    chunks.push(chunk);
-  };
-  inflate.push(gzipped, true);
-  if (inflate.err) {
-    throw new Error(inflate.msg || 'Failed to unpack tarball');
-  }
+interface JsonEntries {
+  files: Map<string, Uint8Array>;
+  // JSON files that were too large to read.
+  oversized: Set<string>;
+}
 
-  const result = new Uint8Array(total);
-  let offset = 0;
-  for (const chunk of chunks) {
-    result.set(chunk, offset);
-    offset += chunk.length;
-  }
-  return result;
+// Collects the JSON files of a package tarball, which is where its
+// package.json and config schema live. Every other entry is skipped without
+// being read into memory.
+function readJsonEntries(tarball: Uint8Array): Promise<JsonEntries> {
+  return new Promise((resolve, reject) => {
+    const files = new Map<string, Uint8Array>();
+    const oversized = new Set<string>();
+    let collectedBytes = 0;
+
+    const parser = new Parser({
+      strict: true,
+      onReadEntry: entry => {
+        const isJson =
+          entry.type === 'File' &&
+          entry.path.startsWith('package/') &&
+          entry.path.endsWith('.json');
+        if (!isJson) {
+          entry.resume();
+          return;
+        }
+
+        collectedBytes += entry.size;
+        if (
+          entry.size > MAX_CONFIG_SCHEMA_SOURCE_BYTES ||
+          collectedBytes > MAX_COLLECTED_JSON_BYTES
+        ) {
+          // Too big to be a package.json or a config schema we would keep.
+          entry.resume();
+          oversized.add(entry.path);
+          return;
+        }
+
+        const chunks: Buffer[] = [];
+        entry.on('data', chunk => chunks.push(chunk));
+        entry.on('end', () => files.set(entry.path, Buffer.concat(chunks)));
+      },
+    });
+    parser.on('error', reject);
+    parser.on('warn', (_code, message) => reject(new Error(String(message))));
+    parser.on('end', () => resolve({ files, oversized }));
+    parser.end(Buffer.from(tarball));
+  });
 }
 
 async function fetchTarball(
@@ -97,7 +123,8 @@ async function fetchTarball(
   if (gzipped.length > MAX_TARBALL_BYTES) {
     throw new Error('Tarball is too large');
   }
-  return gunzipWithLimit(gzipped, MAX_UNPACKED_BYTES);
+  // Refuses to unpack more than the limit, which stops decompression bombs.
+  return gunzipSync(gzipped, { maxOutputLength: MAX_UNPACKED_BYTES });
 }
 
 /**
@@ -110,15 +137,17 @@ export async function fetchConfigSchema(
   version: string,
   fetchImpl: typeof fetch = fetch,
 ): Promise<ConfigSchemaResult> {
-  let entries: Map<string, Uint8Array>;
+  let entries: JsonEntries;
   try {
-    entries = parseTar(await fetchTarball(packageName, version, fetchImpl));
+    entries = await readJsonEntries(
+      await fetchTarball(packageName, version, fetchImpl),
+    );
   } catch {
     return { status: 'unavailable', reason: 'config-schema-fetch-failed' };
   }
 
   try {
-    const packageJsonBytes = entries.get('package/package.json');
+    const packageJsonBytes = entries.files.get('package/package.json');
     const packageJson: unknown = packageJsonBytes
       ? JSON.parse(new TextDecoder().decode(packageJsonBytes))
       : undefined;
@@ -129,14 +158,13 @@ export async function fetchConfigSchema(
       return { status: 'fresh', schema: undefined };
     }
 
-    const schemaBytes = entries.get(
-      `package/${declaredPath.replace(/^\.\//, '')}`,
-    );
+    const schemaPath = `package/${declaredPath.replace(/^\.\//, '')}`;
+    if (entries.oversized.has(schemaPath)) {
+      return { status: 'unavailable', reason: 'config-schema-too-large' };
+    }
+    const schemaBytes = entries.files.get(schemaPath);
     if (!schemaBytes) {
       return { status: 'fresh', schema: undefined };
-    }
-    if (schemaBytes.length > MAX_CONFIG_SCHEMA_SOURCE_BYTES) {
-      return { status: 'unavailable', reason: 'config-schema-too-large' };
     }
 
     return {

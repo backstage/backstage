@@ -17,8 +17,8 @@ import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import { dump } from 'js-yaml';
-import { loadPluginManifests } from '../load';
-import type { PluginManifest } from '../manifest';
+import { loadPluginManifests } from '../../../scripts/plugin-directory/load';
+import type { PluginManifest } from '../../../scripts/plugin-directory/manifest';
 
 export interface ManifestFile {
   filename: string;

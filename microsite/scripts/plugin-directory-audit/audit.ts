@@ -19,7 +19,7 @@ import type {
   NpmSnapshot,
   PackageSnapshot,
   PluginManifest,
-} from '../manifest';
+} from '../../../scripts/plugin-directory/manifest';
 import type {
   CanonicalPackage,
   GitHubSnapshotClient,

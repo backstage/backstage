@@ -16,7 +16,7 @@ described here is still current.
 Run a read-only audit from the repository root:
 
 ```shell
-GITHUB_TOKEN="$(gh auth token)" node --require @backstage/cli/config/nodeTransform.cjs scripts/plugin-directory/audit/index.ts
+GITHUB_TOKEN="$(gh auth token)" node --require @backstage/cli/config/nodeTransform.cjs microsite/scripts/plugin-directory-audit/index.ts
 ```
 
 The command fetches current npm and GitHub data, prints one table row for every
@@ -25,7 +25,7 @@ manifest, and reports remote-data warnings without changing manifest files.
 Run a write audit from the repository root:
 
 ```shell
-GITHUB_TOKEN="$(gh auth token)" node --require @backstage/cli/config/nodeTransform.cjs scripts/plugin-directory/audit/index.ts --audit
+GITHUB_TOKEN="$(gh auth token)" node --require @backstage/cli/config/nodeTransform.cjs microsite/scripts/plugin-directory-audit/index.ts --audit
 ```
 
 The write audit performs the same inspection, prints status transitions and an

@@ -13037,8 +13037,8 @@ __metadata:
   linkType: hard
 
 "@opensearch-project/opensearch@npm:^2.2.1":
-  version: 2.13.0
-  resolution: "@opensearch-project/opensearch@npm:2.13.0"
+  version: 2.14.0
+  resolution: "@opensearch-project/opensearch@npm:2.14.0"
   dependencies:
     aws4: "npm:^1.11.0"
     debug: "npm:^4.3.1"
@@ -13046,7 +13046,7 @@ __metadata:
     json11: "npm:^2.0.0"
     ms: "npm:^2.1.3"
     secure-json-parse: "npm:^2.4.0"
-  checksum: 10/83ba3575d0edcdc1ff3a6efd5d60b35fd624abb6db2b95bf2473a2029a7a407d3a077caaf58b1b9789ac884b3a24083972cbcb85b0e72a099a38b5b33ce6ca86
+  checksum: 10/5b3a106e2185d6468371c80561bb9cd773c5d362968c96fd76ed0db5e627b724e4a536cee985b576977a1c69bd953550a1e22c4d3e4e78d4d242e0be11e33298
   languageName: node
   linkType: hard
 
@@ -22055,9 +22055,9 @@ __metadata:
   linkType: hard
 
 "ansi-regex@npm:*, ansi-regex@npm:^6.0.1, ansi-regex@npm:^6.2.2, ansi-regex@npm:^6.4.0":
-  version: 6.5.0
-  resolution: "ansi-regex@npm:6.5.0"
-  checksum: 10/17e56f2faed4422292642414de88d693cbaf6cfea38479f4bd9ac6d382b0dadaa1d12857b018d3ea1a7f7a81848e3125960b11f5615137f4f01c3d5e3a0809d2
+  version: 6.6.0
+  resolution: "ansi-regex@npm:6.6.0"
+  checksum: 10/101ea2a09dd4ab8a2329764a727280c76f38211c95156abd902a15de0a06939d02ca03075c873ff823459ff083a46e4a3c5aba66c7a4394eddfdddfc933e6fdc
   languageName: node
   linkType: hard
 
@@ -37417,13 +37417,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pako@npm:^3.0.1":
-  version: 3.0.3
-  resolution: "pako@npm:3.0.3"
-  checksum: 10/7d9182f7cfb9dc66d24a7d8492ddb6c4cc3fb5cb5da2e9c0d7f5ba6cd68c941230f93d4f2cc93dfe289d72525b3f9a9814bb7119861707ad2bd07019faf4f4f0
-  languageName: node
-  linkType: hard
-
 "param-case@npm:^3.0.4":
   version: 3.0.4
   resolution: "param-case@npm:3.0.4"
@@ -41471,14 +41464,12 @@ __metadata:
     madge: "npm:^8.0.0"
     minimist: "npm:^1.2.5"
     node-gyp: "npm:^12.0.0"
-    pako: "npm:^3.0.1"
     prettier: "npm:^2.2.1"
     semver: "npm:^7.5.3"
     shx: "npm:^0.4.0"
     sloc: "npm:^0.3.1"
     sort-package-json: "npm:^3.0.0"
     storybook: "npm:^10.4.0"
-    tar: "npm:^7.5.4"
     ts-morph: "npm:^24.0.0"
     typedoc: "npm:^0.28.0"
     typescript: "npm:~5.9.0"
