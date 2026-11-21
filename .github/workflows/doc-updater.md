@@ -29,12 +29,12 @@ if: needs.pre_activation.outputs.check_result == 'success'
 # only matched against, never copied into that file.
 steps:
   - name: Use Node.js
-    uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+    uses: actions/setup-node@v7
     with:
       node-version: 24.22.1
 
   - name: Install dependencies
-    uses: backstage/actions/yarn-install@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
+    uses: backstage/actions/yarn-install@v0.7.13
     env:
       # Skip installing the Husky git hooks, which would run the docs quality check on commit.
       HUSKY: '0'
