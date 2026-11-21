@@ -33,8 +33,9 @@ export function filterPublicConfig(
 
   const allowedConfig =
     publicConfig.getOptionalStringArray('allowedConfig') ?? [];
-  const allowedExtensions =
-    publicConfig.getOptionalStringArray('allowedExtensions') ?? [];
+  const allowedExtensions = new Set(
+    publicConfig.getOptionalStringArray('allowedExtensions') ?? [],
+  );
 
   return appConfigs.map(appConfig => {
     const source = cloneDeep(appConfig.data);
@@ -49,7 +50,7 @@ export function filterPublicConfig(
         'app.extensions',
         extensions.filter(extension => {
           if (typeof extension === 'string') {
-            return allowedExtensions.includes(extension);
+            return allowedExtensions.has(extension);
           }
           if (
             extension &&
@@ -57,10 +58,20 @@ export function filterPublicConfig(
             !Array.isArray(extension)
           ) {
             const ids = Object.keys(extension);
-            return ids.length === 1 && allowedExtensions.includes(ids[0]);
+            return ids.length === 1 && allowedExtensions.has(ids[0]);
           }
           return false;
         }),
+      );
+    } else if (extensions && typeof extensions === 'object') {
+      set(
+        data,
+        'app.extensions',
+        Object.fromEntries(
+          Object.entries(extensions).filter(([id]) =>
+            allowedExtensions.has(id),
+          ),
+        ),
       );
     }
 

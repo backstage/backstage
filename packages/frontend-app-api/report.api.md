@@ -32,6 +32,12 @@ export type AppError =
 
 // @public (undocumented)
 export type AppErrorTypes = {
+  EXTENSION_CONFIG_INVALID: {
+    context: {
+      configPath: string;
+      extensionId?: string;
+    };
+  };
   EXTENSION_IGNORED: {
     context: {
       plugin: FrontendPlugin;

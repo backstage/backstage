@@ -16,13 +16,12 @@ Our example work API from [the creating section](./02-creating.md) would have th
 ```yaml title="in e.g. app-config.yaml or app-config.production.yaml"
 app:
   extensions:
-    - api:plugin.example.work:
-        config:
-          goSlow: false
-    -  # ... other extensions
+    api:plugin.example.work:
+      config:
+        goSlow: false
 ```
 
-It's important to note that the `extensions` are a list (mind the initial `-`), and that the `api:plugin.example.work` entry is an object such that the `config` key needs to be indented below it. If you do not get those two pieces right, the application may not start up correctly.
+The `app.extensions` section is an object keyed by extension ID. It configures utility APIs without changing extension order. See [Configuring Extensions](../building-apps/02-configuring-extensions.md) for configuration layering and precedence.
 
 The extension config schema will tell you what parameters it supports. Here we override the `goSlow` extension config value, which replaces the default.
 

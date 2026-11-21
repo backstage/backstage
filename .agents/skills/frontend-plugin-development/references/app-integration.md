@@ -28,15 +28,15 @@ Redirect routes in the legacy app's route list move to the `app/routes` extensio
 ```yaml title="app-config.yaml"
 app:
   extensions:
-    - app/routes:
-        config:
-          redirects:
-            - from: /old-path
-              to: /new-path
-            - from: /users/:userId
-              to: /profile/:userId
-            - from: /d
-              to: /docs/*
+    app/routes:
+      config:
+        redirects:
+          - from: /old-path
+            to: /new-path
+          - from: /users/:userId
+            to: /profile/:userId
+          - from: /d
+            to: /docs/*
 ```
 
 - `from` matches the path and everything below it: `/old-path` also matches `/old-path/sub`. Only `from: /` is matched exactly.

@@ -20,9 +20,9 @@ The catalog index page can be configured through extensions in `app-config.yaml`
 ```yaml title="app-config.yaml"
 app:
   extensions:
-    - page:catalog:
-        config:
-          pagination: true
+    page:catalog:
+      config:
+        pagination: true
 ```
 
 You can also configure pagination with additional options:
@@ -30,11 +30,11 @@ You can also configure pagination with additional options:
 ```yaml title="app-config.yaml"
 app:
   extensions:
-    - page:catalog:
-        config:
-          pagination:
-            mode: offset
-            limit: 20
+    page:catalog:
+      config:
+        pagination:
+          mode: offset
+          limit: 20
 ```
 
 ### Configuring Catalog Export
@@ -50,12 +50,12 @@ To enable catalog export, add the following configuration:
 ```yaml title="app-config.yaml"
 app:
   extensions:
-    - page:catalog:
-        config:
-          exportSettings:
-            enabled: true
-            # Optional: hide the built-in CSV and JSON formats, showing only your own supplied exporters
-            disableBuiltinExporters: false
+    page:catalog:
+      config:
+        exportSettings:
+          enabled: true
+          # Optional: hide the built-in CSV and JSON formats, showing only your own supplied exporters
+          disableBuiltinExporters: false
 ```
 
 This will display an "Export selection" button on the catalog index page that allows users to export the currently filtered catalog entities in CSV or JSON format.
@@ -141,9 +141,9 @@ The catalog index page includes a set of default filters (kind, type, owner, lif
 ```yaml title="app-config.yaml"
 app:
   extensions:
-    - catalog-filter:catalog/kind:
-        config:
-          initialFilter: domain
+    catalog-filter:catalog/kind:
+      config:
+        initialFilter: domain
 ```
 
 To set the initial list filter to "all" instead of "owned":
@@ -151,9 +151,9 @@ To set the initial list filter to "all" instead of "owned":
 ```yaml title="app-config.yaml"
 app:
   extensions:
-    - catalog-filter:catalog/list:
-        config:
-          initialFilter: all
+    catalog-filter:catalog/list:
+      config:
+        initialFilter: all
 ```
 
 ### Custom filters
@@ -208,9 +208,9 @@ Default filters can be disabled through `app-config.yaml` by setting them to `fa
 ```yaml title="app-config.yaml"
 app:
   extensions:
-    - catalog-filter:catalog/lifecycle: false
-    - catalog-filter:catalog/tag: false
-    - catalog-filter:catalog/processing-status: false
+    catalog-filter:catalog/lifecycle: false
+    catalog-filter:catalog/tag: false
+    catalog-filter:catalog/processing-status: false
 ```
 
 ## Customizing columns, actions, and table options
@@ -515,22 +515,22 @@ You can define and customize the tab groups that appear on the entity page, as w
 app:
   extensions:
     # Entity page (new frontend system)
-    - page:catalog/entity:
-        config:
-          # Show icons next to group and tab titles
-          showNavItemIcons: true
+    page:catalog/entity:
+      config:
+        # Show icons next to group and tab titles
+        showNavItemIcons: true
 
-          # Optionally override default groups and their icons
-          groups:
-            - overview:
-                title: Overview
-                icon: dashboard
-            - quality:
-                title: Quality
-                icon: verified
-            - documentation:
-                title: Docs
-                icon: description
+        # Optionally override default groups and their icons
+        groups:
+          - overview:
+              title: Overview
+              icon: dashboard
+          - quality:
+              title: Quality
+              icon: verified
+          - documentation:
+              title: Docs
+              icon: description
 ```
 
 Notes:
@@ -543,23 +543,29 @@ Notes:
 By default, content items within each group are sorted alphabetically by title. You can change this with the `defaultContentOrder` option, which supports two modes:
 
 - **`title`** (default) — sort alphabetically by the content extension's title (case-insensitive).
-- **`natural`** — preserve the natural extension discovery/registration order.
+- **`natural`** — preserve input order, including any explicit `inputs.contents.order` configuration.
+
+To follow an explicit `inputs.contents.order` on `page:catalog/entity`, set
+`config.defaultContentOrder: natural`. Any group with its own `contentOrder`
+setting must also use `natural` to follow input order. Group order continues to
+follow the group definitions. See
+[input ordering](../../frontend-system/building-apps/02-configuring-extensions.md#order-extension-inputs).
 
 A page-level `defaultContentOrder` sets the default for all groups, and individual groups can override it with a per-group `contentOrder`:
 
 ```yaml
 app:
   extensions:
-    - page:catalog/entity:
-        config:
-          # Default content order for all groups
-          defaultContentOrder: title
+    page:catalog/entity:
+      config:
+        # Default content order for all groups
+        defaultContentOrder: title
 
-          groups:
-            - documentation:
-                title: Docs
-                # Override: keep natural order for this group
-                contentOrder: natural
+        groups:
+          - documentation:
+              title: Docs
+              # Override: keep natural order for this group
+              contentOrder: natural
 ```
 
 Note that content ordering only applies to content items within groups. Ungrouped tabs (those not matching any group definition) always retain their natural order.
@@ -571,14 +577,14 @@ Groups can declare `aliases` — a list of other group IDs that should be treate
 ```yaml
 app:
   extensions:
-    - page:catalog/entity:
-        config:
-          groups:
-            - develop:
-                title: Develop
-                # Content targeting 'development' will appear in this group
-                aliases:
-                  - development
+    page:catalog/entity:
+      config:
+        groups:
+          - develop:
+              title: Develop
+              # Content targeting 'development' will appear in this group
+              aliases:
+                - development
 ```
 
 ### Overriding or disabling a tab's group (per extension)
@@ -590,17 +596,17 @@ app:
   extensions:
     # ...
     # Example entity content extension instance id
-    - entity-content:example/my-content:
-        config:
-          # Move this tab to a custom group you defined above
-          group: custom
-          # Show an icon for this entity content page but only if `showNavItemIcons` is enabled for the `page:catalog/entity` extension
-          icon: my-icon
+    entity-content:example/my-content:
+      config:
+        # Move this tab to a custom group you defined above
+        group: custom
+        # Show an icon for this entity content page but only if `showNavItemIcons` is enabled for the `page:catalog/entity` extension
+        icon: my-icon
 
     # Disassociate from any group and show as a standalone tab
-    - entity-content:example/another-content:
-        config:
-          group: false
+    entity-content:example/another-content:
+      config:
+        group: false
 ```
 
 ### Tab icons for entity content

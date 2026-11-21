@@ -67,7 +67,8 @@ export interface Config {
       allowedConfig?: string[];
 
       /**
-       * Exact extension IDs whose app.extensions entries are included.
+       * Exact extension IDs whose app.extensions array entries or object keys are
+       * included.
        * Omitted or empty means no extension configuration is included.
        */
       allowedExtensions?: string[];

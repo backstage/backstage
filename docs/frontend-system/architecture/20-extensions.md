@@ -328,9 +328,9 @@ app:
   # ...
   extensions:
     # ...
-    - app/nav:
-        config:
-          title: 'Backstage'
+    app/nav:
+      config:
+        title: 'Backstage'
 ```
 
 ## Extension factory as a generator function
