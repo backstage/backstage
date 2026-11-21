@@ -459,6 +459,209 @@ describe('PageBlueprint', () => {
     expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();
   });
 
+  it('should render the loader content as the index tab next to attached sub-pages', async () => {
+    const parentPage = PageBlueprint.make({
+      params: {
+        path: '/combined',
+        title: 'Combined',
+        loader: async () => <div data-testid="index-content">Index</div>,
+      },
+    });
+
+    const firstSubPage = SubPageBlueprint.make({
+      name: 'first',
+      params: {
+        path: 'first',
+        title: 'First',
+        loader: async () => <div data-testid="first">First</div>,
+      },
+    });
+
+    const secondSubPage = SubPageBlueprint.make({
+      name: 'second',
+      params: {
+        path: 'second',
+        title: 'Second',
+        loader: async () => <div data-testid="second">Second</div>,
+      },
+    });
+
+    const { apis } = renderTestApp({
+      extensions: [parentPage, firstSubPage, secondSubPage],
+      initialRouteEntries: ['/combined'],
+    });
+    const appHistory = apis.get(coreApis.appHistory)!;
+
+    // The page's own content shows at the index route, which is no longer
+    // handed over to the first sub-page
+    expect(await screen.findByTestId('index-content')).toBeInTheDocument();
+    expect(appHistory.getSnapshot().location.pathname).toBe('/combined');
+
+    // The loader content takes the first tab, ahead of the sub-pages
+    expect(screen.getByRole('tab', { name: 'Combined' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'First' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Second' })).toBeInTheDocument();
+
+    // Selecting a sub-page renders it instead, keeping the shell and its tabs
+    await act(async () => {
+      appHistory.navigate('/combined/second');
+    });
+    expect(await screen.findByTestId('second')).toBeInTheDocument();
+    expect(screen.queryByTestId('index-content')).not.toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Combined' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'First' })).toBeInTheDocument();
+
+    // Returning to the index tab shows the page's own content again
+    await act(async () => {
+      appHistory.navigate('/combined');
+    });
+    expect(await screen.findByTestId('index-content')).toBeInTheDocument();
+    expect(screen.queryByTestId('second')).not.toBeInTheDocument();
+    expect(appHistory.getSnapshot().location.pathname).toBe('/combined');
+  });
+
+  it('keeps query and hash while moving between the index and sub-pages of a loader page', async () => {
+    const parentPage = PageBlueprint.make({
+      params: {
+        path: '/history',
+        title: 'History',
+        loader: async () => <div data-testid="index">Index</div>,
+      },
+    });
+
+    const firstSubPage = SubPageBlueprint.make({
+      name: 'first',
+      params: {
+        path: 'first',
+        title: 'First',
+        loader: async () => <div data-testid="first">First</div>,
+      },
+    });
+
+    const { apis } = renderTestApp({
+      extensions: [parentPage, firstSubPage],
+      initialRouteEntries: ['/before', '/history?mode=test#section'],
+    });
+    const appHistory = apis.get(coreApis.appHistory)!;
+
+    // The page's own content shows at the index with query and hash intact
+    expect(await screen.findByTestId('index')).toBeInTheDocument();
+    expect(appHistory.getSnapshot().location).toMatchObject({
+      pathname: '/history',
+      search: '?mode=test',
+      hash: '#section',
+    });
+
+    await act(async () => {
+      appHistory.navigate('/history/first?tab=2#frag');
+    });
+    expect(await screen.findByTestId('first')).toBeInTheDocument();
+    expect(screen.queryByTestId('index')).not.toBeInTheDocument();
+
+    // History navigation returns to the page's own content and its query/hash
+    await act(async () => {
+      appHistory.navigate(-1);
+    });
+    expect(await screen.findByTestId('index')).toBeInTheDocument();
+    expect(appHistory.getSnapshot().location).toMatchObject({
+      pathname: '/history',
+      search: '?mode=test',
+      hash: '#section',
+    });
+  });
+
+  it('deep-links to a sub-page of a loader page and supports parameterized parent paths', async () => {
+    const parentPage = PageBlueprint.make({
+      params: {
+        path: '/deep/:team',
+        title: 'Deep',
+        loader: async () => <div data-testid="deep-index">Deep index</div>,
+      },
+    });
+
+    const notesSubPage = SubPageBlueprint.make({
+      name: 'notes',
+      params: {
+        path: 'notes',
+        title: 'Notes',
+        loader: async () => <div data-testid="notes">Notes</div>,
+      },
+    });
+
+    renderTestApp({
+      extensions: [parentPage, notesSubPage],
+      initialRouteEntries: ['/deep/acme/notes'],
+    });
+
+    expect(await screen.findByTestId('notes')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Deep' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Notes' })).toBeInTheDocument();
+
+    // The index tab navigates back to the resolved parent path
+    await act(async () => {
+      screen.getByRole('tab', { name: 'Deep' }).click();
+    });
+    expect(await screen.findByTestId('deep-index')).toBeInTheDocument();
+    expect(screen.queryByTestId('notes')).not.toBeInTheDocument();
+  });
+
+  it('uses the translated page title for the index tab of a loader page', async () => {
+    const ref = createTranslationRef({
+      id: 'combined-page-title',
+      messages: { title: 'Translated Title' },
+    });
+    const parentPage = PageBlueprint.make({
+      params: {
+        path: '/translated',
+        title: ref('title'),
+        loader: async () => <div data-testid="t-index">Index</div>,
+      },
+    });
+
+    const subPage = SubPageBlueprint.make({
+      name: 'sub',
+      params: {
+        path: 'sub',
+        title: 'Sub',
+        loader: async () => <div data-testid="t-sub">Sub</div>,
+      },
+    });
+
+    renderTestApp({
+      extensions: [parentPage, subPage],
+      initialRouteEntries: ['/translated'],
+    });
+
+    expect(await screen.findByTestId('t-index')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Translated Title' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('tab', { name: 'Translated Title' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Sub' })).toBeInTheDocument();
+  });
+
+  it('renders no tab bar for a loader page without attached sub-pages', async () => {
+    const plainPage = PageBlueprint.make({
+      name: 'plain-loader',
+      params: {
+        path: '/plain-loader',
+        title: 'Plain Loader',
+        loader: async () => <div data-testid="plain-loader">Content</div>,
+      },
+    });
+
+    renderTestApp({
+      extensions: [plainPage],
+      initialRouteEntries: ['/plain-loader'],
+    });
+
+    expect(await screen.findByTestId('plain-loader')).toBeInTheDocument();
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+    expect(screen.queryByRole('tablist')).not.toBeInTheDocument();
+  });
+
   it('should support SubPageBlueprint pages input', async () => {
     const parentPage = PageBlueprint.make({
       params: {
