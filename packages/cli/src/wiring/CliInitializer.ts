@@ -28,16 +28,77 @@ type UninitializedFeature =
 interface TaggedFeature {
   feature: CliModule;
   /**
-   * Whether this module was sourced from an array (e.g. cli-defaults).
-   * Array-sourced modules silently lose the non-toggled commands that overlap
-   * with an individually-added module, allowing explicit module
-   * additions to take precedence without causing conflicts.
-   *
-   * Toggleable commands, i.e. those with `if`, do not count as
-   * overlapping, since they are only active for some packages and rely on
-   * the array-sourced command as the fallback.
+   * Where the module came from. `installed` modules were added individually,
+   * while `bundle` modules were sourced from an array such as `cli-defaults`.
+   * Bundled modules are a lower-priority layer that installed modules
+   * override, see {@link applyOverrides}.
    */
-  fromArray: boolean;
+  source: 'installed' | 'bundle';
+}
+
+interface Overrides {
+  packageNames: Set<string>;
+  paths: Set<string>;
+}
+
+/**
+ * Collects what installed modules override: their package names, and the
+ * paths of their commands that have no `if` condition. Commands with `if` are
+ * not collected, since they are only active for some packages.
+ */
+async function collectOverrides(installed: CliModule[]): Promise<Overrides> {
+  const overrides: Overrides = { packageNames: new Set(), paths: new Set() };
+  for (const module of installed) {
+    const { packageName, commands } = OpaqueCliModule.toInternal(module);
+    overrides.packageNames.add(packageName);
+    for (const registration of await commands) {
+      const { command, if: condition } = unwrapCliCommand(registration);
+      if (!condition) {
+        overrides.paths.add(command.path.join(' '));
+      }
+    }
+  }
+  return overrides;
+}
+
+/**
+ * Applies the overrides of installed modules to a bundled module. The rules
+ * are:
+ *
+ * 1. A bundled module whose package name matches an installed module is
+ *    dropped, since it would otherwise register its commands twice.
+ * 2. A bundled command without `if` is dropped when an installed module
+ *    registers the same path without `if`.
+ * 3. Everything else is kept. Commands with `if` are never dropped, and which
+ *    one runs is decided when the command is invoked, falling back to the
+ *    command without `if`.
+ *
+ * @returns The module to use, or `undefined` if nothing is left of it.
+ */
+async function applyOverrides(
+  module: CliModule,
+  overrides: Overrides,
+): Promise<CliModule | undefined> {
+  const { packageName, commands } = OpaqueCliModule.toInternal(module);
+  if (overrides.packageNames.has(packageName)) {
+    return undefined;
+  }
+
+  const all = await commands;
+  const kept = all.filter(registration => {
+    const { command, if: condition } = unwrapCliCommand(registration);
+    return condition || !overrides.paths.has(command.path.join(' '));
+  });
+  if (kept.length === 0) {
+    return undefined;
+  }
+  if (kept.length === all.length) {
+    return module;
+  }
+  return OpaqueCliModule.createInstance('v1', {
+    packageName,
+    commands: Promise.resolve(kept),
+  });
 }
 
 export class CliInitializer {
@@ -49,83 +110,50 @@ export class CliInitializer {
         feature.then(f => {
           const unwrapped = unwrapFeature(f.default);
           if (Array.isArray(unwrapped)) {
-            return unwrapped.map(m => ({ feature: m, fromArray: true }));
+            return unwrapped.map(m => ({ feature: m, source: 'bundle' }));
           }
-          return [{ feature: unwrapped, fromArray: false }];
+          return [{ feature: unwrapped, source: 'installed' }];
         }),
       );
     } else if (Array.isArray(feature)) {
       this.#uninitiazedFeatures.push(
-        Promise.resolve(feature.map(m => ({ feature: m, fromArray: true }))),
+        Promise.resolve(feature.map(m => ({ feature: m, source: 'bundle' }))),
       );
     } else {
       this.#uninitiazedFeatures.push(
-        Promise.resolve([{ feature, fromArray: false }]),
+        Promise.resolve([{ feature, source: 'installed' }]),
       );
     }
   }
 
   async #doInit(): Promise<CliModule[]> {
     const resolvedGroups = await Promise.all(this.#uninitiazedFeatures);
-    const allFeatures = resolvedGroups.flat();
+    const features = resolvedGroups.flat();
 
-    // Collect command paths from individually-added modules. Toggleable
-    // commands are excluded so that array-sourced modules remain available
-    // as the fallback for packages where the toggled command is not enabled.
-    const individualPaths = new Set<string>();
-    const individualPackages = new Set<string>();
-    for (const { feature, fromArray } of allFeatures) {
-      if (!fromArray && OpaqueCliModule.isType(feature)) {
-        const internal = OpaqueCliModule.toInternal(feature);
-        individualPackages.add(internal.packageName);
-        const cmds = await internal.commands;
-        for (const registration of cmds) {
-          const { command, if: condition } = unwrapCliCommand(registration);
-          if (!condition) {
-            individualPaths.add(command.path.join(' '));
-          }
-        }
-      }
-    }
-
-    const modules: CliModule[] = [];
-    for (const { feature, fromArray } of allFeatures) {
+    for (const { feature } of features) {
       if (!OpaqueCliModule.isType(feature)) {
         throw new Error(`Unsupported feature type: ${(feature as any).$$type}`);
       }
-
-      if (fromArray) {
-        const { packageName, commands } = OpaqueCliModule.toInternal(feature);
-        // A module that is also added individually would otherwise register
-        // its commands twice.
-        if (individualPackages.has(packageName)) {
-          continue;
-        }
-        // Toggled commands are always kept, since they are only active for
-        // some packages and can coexist with an individual fallback.
-        const kept = (await commands).filter(registration => {
-          const { command, if: condition } = unwrapCliCommand(registration);
-          return condition || !individualPaths.has(command.path.join(' '));
-        });
-        if (kept.length === 0) {
-          continue;
-        }
-        if (kept.length < (await commands).length) {
-          // Only drop the overlapping commands, so that other commands of the
-          // module, such as fallbacks for toggled commands, stay available.
-          modules.push(
-            OpaqueCliModule.createInstance('v1', {
-              packageName,
-              commands: Promise.resolve(kept),
-            }),
-          );
-          continue;
-        }
-      }
-      modules.push(feature);
     }
 
-    return modules;
+    // All installed modules are known before the bundled ones are filtered, so
+    // the order in which modules were added does not matter.
+    const installed = features
+      .filter(f => f.source === 'installed')
+      .map(f => f.feature);
+    const bundled = features
+      .filter(f => f.source === 'bundle')
+      .map(f => f.feature);
+
+    const overrides = await collectOverrides(installed);
+    const keptBundled = await Promise.all(
+      bundled.map(module => applyOverrides(module, overrides)),
+    );
+
+    return [
+      ...installed,
+      ...keptBundled.filter((m): m is CliModule => m !== undefined),
+    ];
   }
 
   /**
