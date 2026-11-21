@@ -22055,9 +22055,9 @@ __metadata:
   linkType: hard
 
 "ansi-regex@npm:*, ansi-regex@npm:^6.0.1, ansi-regex@npm:^6.2.2, ansi-regex@npm:^6.4.0":
-  version: 6.5.0
-  resolution: "ansi-regex@npm:6.5.0"
-  checksum: 10/17e56f2faed4422292642414de88d693cbaf6cfea38479f4bd9ac6d382b0dadaa1d12857b018d3ea1a7f7a81848e3125960b11f5615137f4f01c3d5e3a0809d2
+  version: 6.6.0
+  resolution: "ansi-regex@npm:6.6.0"
+  checksum: 10/101ea2a09dd4ab8a2329764a727280c76f38211c95156abd902a15de0a06939d02ca03075c873ff823459ff083a46e4a3c5aba66c7a4394eddfdddfc933e6fdc
   languageName: node
   linkType: hard
 
