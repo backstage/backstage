@@ -164,13 +164,24 @@ describe('productionPack', () => {
     mockDir.setContent({
       plugin: {
         'package.json': JSON.stringify(pluginPackageJson),
-        src: {
-          'index.ts': `
-            import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
-            export default createFrontendPlugin({ pluginId: 'test', extensions: [] });
-          `,
-        },
+        src: { 'index.ts': 'export {};' },
         dist: { 'index.esm.js': '' },
+      },
+      // The declarations that yarn tsc emits
+      types: {
+        plugin: {
+          src: {
+            'index.d.ts': `
+              declare const _default: import('@backstage/frontend-plugin-api').OverridableFrontendPlugin<{}, {}, {}, {
+                pluginId: 'test';
+                title: undefined;
+                if: undefined;
+                extensionIds: [];
+              }>;
+              export default _default;
+            `,
+          },
+        },
       },
       library: {
         'package.json': JSON.stringify({
@@ -187,6 +198,7 @@ describe('productionPack', () => {
     await productionPack({
       packageDir: mockDir.resolve('plugin'),
       targetDir: mockDir.resolve('plugin-target'),
+      declarationsDir: mockDir.resolve('types/plugin'),
     });
     await productionPack({
       packageDir: mockDir.resolve('library'),

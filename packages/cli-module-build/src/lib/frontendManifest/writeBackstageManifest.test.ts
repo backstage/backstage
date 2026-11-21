@@ -18,53 +18,59 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { writeBackstageManifest } from './writeBackstageManifest';
 
+const API = `import("@backstage/frontend-plugin-api")`;
+
 describe('writeBackstageManifest', () => {
   const mockDir = createMockDirectory();
 
-  it('should write the manifests of the exposed plugins and modules', async () => {
+  const declaration = `
+    declare const _default: ${API}.OverridableFrontendPlugin<{}, {}, {
+      "page:demo": ${API}.OverridableExtensionDefinition<{
+        kind: "page";
+        name: undefined;
+        literals: {
+          blueprint: "@backstage/frontend-plugin-api#PageBlueprint";
+          params: { path: "/demo" };
+          paramKeys: "path" | "loader";
+          paramsCallback: undefined;
+          attachTo: undefined;
+          disabled: undefined;
+          if: undefined;
+        };
+      }>;
+    }, {
+      pluginId: "demo";
+      title: undefined;
+      if: undefined;
+      extensionIds: ["page:demo"];
+    }>;
+    export default _default;
+  `;
+
+  it('should write the manifests of the exposed plugins from the declarations', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
         name: '@internal/demo',
         backstage: { role: 'frontend-plugin' },
       }),
-      'src/index.ts': `
-        import { createFrontendPlugin, PageBlueprint } from '@backstage/frontend-plugin-api';
-        export const page = PageBlueprint.make({ params: { path: '/demo', loader: async () => null } });
-        export default createFrontendPlugin({ pluginId: 'demo', extensions: [page] });
+      'types/src/index.d.ts': declaration,
+      // Modules and files that aren't plugins are not described
+      'types/src/alpha.d.ts': `
+        declare const _default: ${API}.OverridableFrontendModule<'other'>;
+        export default _default;
       `,
-      'src/alpha.ts': `
-        import { createFrontendModule } from '@backstage/frontend-plugin-api';
-        export default createFrontendModule({ pluginId: 'other', extensions: [] });
-      `,
-      'src/utils.ts': `export const notAFeature = 1;`,
-      // The blueprint is read from the installed package
-      'node_modules/@backstage/frontend-plugin-api/package.json':
-        JSON.stringify({
-          name: '@backstage/frontend-plugin-api',
-          main: 'index.js',
-        }),
-      'node_modules/@backstage/frontend-plugin-api/index.js': `
-        import { createExtensionBlueprint } from './wiring.js';
-        const routePath = createExtensionDataRef().with({ id: 'core.routing.path' });
-        const reactElement = createExtensionDataRef().with({ id: 'core.reactElement' });
-        export const PageBlueprint = createExtensionBlueprint({
-          kind: 'page',
-          attachTo: { id: 'app/routes', input: 'routes' },
-          *factory(params, { config }) {
-            yield routePath(config.path ?? params.path);
-            yield reactElement(params.loader);
-          },
-        });
-      `,
+      'types/src/utils.d.ts': `export declare const notAFeature = 1;`,
     });
 
     await writeBackstageManifest({
       packageDir: mockDir.path,
       distDir: mockDir.resolve('dist'),
+      declarationsDir: mockDir.resolve('types'),
       exposes: {
         '.': 'src/index.ts',
-        './alpha': 'src/alpha.ts',
+        './alpha': mockDir.resolve('src/alpha.tsx'),
         './utils': 'src/utils.ts',
+        './styles': 'src/styles.css',
       },
     });
 
@@ -83,18 +89,31 @@ describe('writeBackstageManifest', () => {
             deferrable: true,
             extensions: [{ id: 'page:demo', page: { path: '/demo' } }],
           },
-          './alpha': {
-            pluginId: 'other',
-            type: 'module',
-            deferrable: false,
-            notDeferrableReason: 'modules are never deferred',
-          },
         },
       },
     });
-    expect(Object.keys(written.frontend.exposedModules)).toEqual([
-      '.',
-      './alpha',
-    ]);
+    expect(Object.keys(written.frontend.exposedModules)).toEqual(['.']);
+  });
+
+  it('should fail if the declarations have not been emitted', async () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        name: '@internal/demo',
+        backstage: { role: 'frontend-plugin' },
+      }),
+    });
+
+    await expect(
+      writeBackstageManifest({
+        packageDir: mockDir.path,
+        distDir: mockDir.resolve('dist'),
+        declarationsDir: mockDir.resolve('types'),
+        exposes: { '.': 'src/index.ts' },
+      }),
+    ).rejects.toThrow(
+      `No declaration file found at ${mockDir.resolve(
+        'types/src/index.d.ts',
+      )}, be sure to run yarn tsc to generate .d.ts files before packaging`,
+    );
   });
 });

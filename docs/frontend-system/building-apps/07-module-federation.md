@@ -180,7 +180,7 @@ app:
 
 The app then installs a stand-in for each plugin that supports deferred loading, and loads the exposed module of the plugin from its remote the first time one of its pages is visited or one of its elements is rendered. If loading the module fails, for example because of a network error, it is retried a couple of times before an error is shown.
 
-Whether a plugin supports deferred loading is decided when its remote is built, by analyzing its source code. The result is written to the `backstage-manifest.json` file of the remote, which the dynamic features backend serves together with the remote. See [Deferred loading](../building-plugins/01-index.md#deferred-loading) for which plugins can be deferred. Remotes without this file, modules, and plugins that can't be deferred are loaded before the app starts, as before.
+Whether a plugin supports deferred loading is decided when its remote is built, by reading the type declarations that `yarn tsc` emits for it, so run `yarn tsc` before you build the remote. The result is written to the `backstage-manifest.json` file of the remote, which the dynamic features backend serves together with the remote. See [Deferred loading](../building-plugins/01-index.md#deferred-loading) for which plugins can be deferred. Remotes without this file, modules, and plugins that can't be deferred are loaded before the app starts, as before.
 
 To always load the plugins of some remotes before the app starts, list their package names in `exclude`:
 

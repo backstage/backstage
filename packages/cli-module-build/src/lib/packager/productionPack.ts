@@ -41,6 +41,12 @@ interface ProductionPackOptions {
    * Enables package feature detection using this TS-morph project.
    */
   featureDetectionProject?: Project;
+  /**
+   * The directory of the type declarations of the package, which the manifest
+   * of a frontend plugin is read from. Defaults to the folder of the package
+   * in the `dist-types` folder of the repository.
+   */
+  declarationsDir?: string;
 }
 
 type ConfigSchemaValue = Record<string, unknown>;
@@ -156,6 +162,7 @@ export async function productionPack(options: ProductionPackOptions) {
       exposes: Object.fromEntries(
         sourceEntryPoints.map(entry => [entry.mount, entry.path]),
       ),
+      declarationsDir: options.declarationsDir,
     });
   }
 

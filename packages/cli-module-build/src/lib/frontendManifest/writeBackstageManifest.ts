@@ -15,8 +15,9 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'node:path';
-import { analyzeFrontendPackage } from './analyzeFrontendPackage';
+import { relative as relativePath, resolve as resolvePath } from 'node:path';
+import { targetPaths } from '@backstage/cli-common';
+import { readFrontendManifestFromTypes } from './readFrontendManifestFromTypes';
 import {
   BACKSTAGE_MANIFEST_FILE_NAME,
   BACKSTAGE_MANIFEST_VERSION,
@@ -25,10 +26,13 @@ import {
 } from './types';
 
 /**
- * Analyzes the source of the entry points of a frontend package, and writes
- * the manifest of each one that is a plugin or module to the `frontend`
- * section of `backstage-manifest.json` in the output directory. The manifest
- * lets apps defer loading the plugins of the package.
+ * Reads the type declarations of the entry points of a frontend package, and
+ * writes the manifest of each one that is a plugin to the `frontend` section
+ * of `backstage-manifest.json` in the output directory. The manifest lets
+ * apps defer loading the plugins of the package.
+ *
+ * The declarations are the ones that `yarn tsc` emits to `dist-types`, so
+ * they must exist when this is called.
  */
 export async function writeBackstageManifest(options: {
   /** The directory of the package. */
@@ -37,22 +41,42 @@ export async function writeBackstageManifest(options: {
   distDir: string;
   /**
    * The exposed modules of the package, keyed by their name in the exposes
-   * option, for example "." or "./alpha", with the path of their source.
+   * option, for example "." or "./alpha", with the path of their source,
+   * which is relative to the package or absolute.
+   * Modules that aren't TypeScript files are ignored.
    */
   exposes: { [name: string]: string };
+  /**
+   * The directory of the declarations of the package. Defaults to the folder
+   * of the package in the `dist-types` folder of the repository.
+   */
+  declarationsDir?: string;
 }): Promise<void> {
-  const analysis = analyzeFrontendPackage({
-    packageDir: options.packageDir,
-    entryPoints: Object.entries(options.exposes).map(([mount, path]) => ({
-      mount,
-      path,
-    })),
-  });
+  const declarationsDir =
+    options.declarationsDir ??
+    targetPaths.resolveRoot(
+      'dist-types',
+      relativePath(targetPaths.rootDir, options.packageDir),
+    );
 
   const frontend: FrontendPackageManifest = { exposedModules: {} };
-  for (const [entryPoint, entry] of Object.entries(analysis.entryPoints)) {
-    if ('manifest' in entry) {
-      frontend.exposedModules[entryPoint] = entry.manifest;
+  for (const [name, sourcePath] of Object.entries(options.exposes)) {
+    if (!/\.tsx?$/.test(sourcePath)) {
+      continue;
+    }
+    // The source path of a remote can be absolute
+    const packageSourcePath = relativePath(
+      options.packageDir,
+      resolvePath(options.packageDir, sourcePath),
+    );
+    const result = readFrontendManifestFromTypes({
+      entryPoint: resolvePath(
+        declarationsDir,
+        packageSourcePath.replace(/\.tsx?$/, '.d.ts'),
+      ),
+    });
+    if ('manifest' in result) {
+      frontend.exposedModules[name] = result.manifest;
     }
   }
 
