@@ -70,6 +70,10 @@ const mockCertDir = createMockDirectory({
   },
 });
 
+// Most tests here run a real HTTP server and proxy a request over a real TLS
+// socket, which can exceed the default timeout on a loaded CI runner
+jest.setTimeout(30_000);
+
 describe('KubernetesProxy', () => {
   // msw 3 hands the agent options to a real TLS socket, which needs a
   // parseable client certificate and key
