@@ -18,21 +18,9 @@ import { ComponentProps, ReactNode } from 'react';
 
 import Alert from '@material-ui/lab/Alert';
 
-import { useRouteRefParams } from '@backstage/core-plugin-api';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import {
-  Content,
-  Link,
-  Page,
-  Progress,
-  WarningPanel,
-} from '@backstage/core-components';
-import {
-  entityRouteRef,
-  useAsyncEntity,
-} from '@backstage/plugin-catalog-react';
-
-import { catalogTranslationRef } from '../../translation';
+import { useApp } from '@backstage/core-plugin-api';
+import { Content, Page, Progress } from '@backstage/core-components';
+import { useAsyncEntity } from '@backstage/plugin-catalog-react';
 import { EntityHeader } from '../EntityHeader';
 import { EntityTabs } from '../EntityTabs';
 import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
@@ -77,12 +65,11 @@ export function EntityLayout(props: EntityLayoutProps) {
     showNavItemIcons,
     routes,
   } = props;
-  const { kind } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
+  const app = useApp();
+  const { NotFoundErrorPage } = app.getComponents();
 
   const visibleRoutes = filterEntityLayoutRoutes(routes, entity);
-
-  const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
     <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
@@ -111,24 +98,14 @@ export function EntityLayout(props: EntityLayoutProps) {
         </Content>
       )}
 
-      {!loading && !error && !entity && (
-        <Content>
-          {NotFoundComponent ? (
-            NotFoundComponent
-          ) : (
-            <WarningPanel title={t('entityLabels.warningPanelTitle')}>
-              {t('entityPage.notFoundMessage', {
-                kind,
-                link: (
-                  <Link to="https://backstage.io/docs/features/software-catalog/references">
-                    {t('entityPage.notFoundLinkText')}
-                  </Link>
-                ),
-              })}
-            </WarningPanel>
-          )}
-        </Content>
-      )}
+      {!loading &&
+        !error &&
+        !entity &&
+        (NotFoundComponent ? (
+          <Content>{NotFoundComponent}</Content>
+        ) : (
+          <NotFoundErrorPage />
+        ))}
     </Page>
   );
 }
