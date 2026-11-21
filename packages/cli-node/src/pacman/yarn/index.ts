@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-export { Yarn } from './Yarn';
+export { Yarn, type YarnCreateOptions } from './Yarn';
+export {
+  YarnLockfile,
+  Lockfile,
+  type LockfileQueryEntry,
+  type LockfileDiff,
+  type LockfileDiffEntry,
+} from './YarnLockfile';

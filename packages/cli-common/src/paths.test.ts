@@ -15,8 +15,17 @@
  */
 
 /* eslint-disable no-restricted-syntax */
-import { resolve as resolvePath } from 'node:path';
-import { findPaths, findRootPath, findOwnRootDir, findOwnPaths } from './paths';
+import fs from 'node:fs';
+import os from 'node:os';
+import { dirname, resolve as resolvePath } from 'node:path';
+import {
+  findPaths,
+  findRootPath,
+  findOwnRootDir,
+  findOwnPaths,
+  targetPaths,
+} from './paths';
+import { overrideTargetPaths } from './testUtils';
 
 describe('paths', () => {
   afterEach(() => {
@@ -121,5 +130,446 @@ describe('paths', () => {
       resolvePath(__dirname, '../../cli-common/src'),
     );
     expect(paths.targetRoot).toBe(resolvePath(__dirname, '../../cli-common'));
+  });
+});
+
+describe('targetPaths', () => {
+  let tmpDir: string;
+
+  beforeAll(() => {
+    tmpDir = fs.realpathSync(
+      fs.mkdtempSync(resolvePath(os.tmpdir(), 'cli-common-paths-')),
+    );
+    const files: Record<string, string> = {
+      // A pnpm workspace with Backstage installations in subdirectories,
+      // which a workspaces field marks, and one backstage.json at the top
+      'pnpm/package.json': '{}',
+      'pnpm/pnpm-workspace.yaml':
+        "packages:\n  - apps/**\n  - '!apps/excluded/**'\n  - '!apps/kept'\n  - ./libs/*\n  - other/{lib-?,svc}\n  - nested/*/packages/*\n  - '!nested/backstage/x/x'\n  - single/*\n  - '!single/left-out'\n",
+      'pnpm/backstage.json': '{}',
+      'pnpm/apps/backstage/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      // A leftover from Yarn, which pnpm ignores
+      'pnpm/apps/backstage/.yarnrc.yml': '',
+      'pnpm/apps/backstage/packages/backend/package.json': '{}',
+      // A second installation with a backstage.json of its own
+      'pnpm/apps/second/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/apps/second/backstage.json': '{}',
+      'pnpm/apps/second/packages/app/package.json': '{}',
+      'pnpm/libs/other/package.json': '{}',
+      // An installation that only a pattern for its packages includes, with
+      // a negation that leaves out a single directory inside it
+      'pnpm/nested/backstage/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/nested/backstage/packages/app/package.json': '{}',
+      'pnpm/other/lib-a/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      // A separate Yarn project that the packages patterns leave out
+      'pnpm/tools/yarn-project/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/tools/yarn-project/packages/a/package.json': '{}',
+      'pnpm/other/lib-ab/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/other/svc/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/apps/excluded/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/apps/excluded/packages/a/package.json': '{}',
+      // A negation of the directory alone keeps the packages inside it
+      'pnpm/apps/kept/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/apps/kept/packages/a/package.json': '{}',
+      // A negation of the directory leaves it out when no pattern reaches
+      // inside it, here an npm workspace that isn't a Yarn project
+      'pnpm/single/left-out/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/single/left-out/packages/a/package.json': '{}',
+      'pnpm/single/in/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm/single/in/packages/a/package.json': '{}',
+      // A pnpm-workspace.yaml with settings only, which includes no packages
+      'settings-only/pnpm-workspace.yaml': 'nodeLinker: hoisted\n',
+      'settings-only/yarn/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'settings-only/yarn/packages/a/package.json': '{}',
+      // A pnpm app, which has no workspaces field
+      'pnpm-app/package.json': '{}',
+      'pnpm-app/pnpm-workspace.yaml': 'packages:\n  - packages/*\n',
+      'pnpm-app/backstage.json': '{}',
+      'pnpm-app/packages/backend/package.json': '{}',
+      // A Yarn workspace with the Backstage installation at the root
+      'yarn/package.json': JSON.stringify({ workspaces: ['packages/*'] }),
+      'yarn/backstage.json': '{}',
+      'yarn/packages/app/package.json': '{}',
+      // A fixture with a pnpm-workspace.yaml that only holds settings
+      'yarn/packages/app/fixture/pnpm-workspace.yaml': 'nodeLinker: hoisted\n',
+      'yarn/packages/app/fixture/package.json': '{}',
+      // A package that is not part of any workspace
+      'standalone/package.json': '{}',
+      // Yarn projects inside a pnpm workspace that matches every directory
+      'pnpm-all/pnpm-workspace.yaml': "packages:\n  - '**'\n",
+      'pnpm-all/yarn-lock/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm-all/yarn-lock/yarn.lock': '',
+      'pnpm-all/yarn-lock/packages/a/package.json': '{}',
+      'pnpm-all/yarn-field/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+        packageManager: 'yarn@4.18.1+sha512.abc',
+      }),
+      'pnpm-all/yarn-field/packages/a/package.json': '{}',
+      // A Yarn project without a workspaces field
+      'pnpm-all/yarn-single/package.json': JSON.stringify({
+        packageManager: 'yarn@4.18.1',
+      }),
+      'pnpm-all/yarn-single/yarn.lock': '',
+      'pnpm-all/yarn-single/src/index.ts': '',
+      // A package of the pnpm workspace
+      'pnpm-all/member/package.json': '{}',
+      'pnpm-all/member/src/index.ts': '',
+      // A yarn.lock left behind after moving to pnpm doesn't count
+      'pnpm-all/migrated/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+        packageManager: 'pnpm@12.14.0',
+      }),
+      'pnpm-all/migrated/yarn.lock': '',
+      'pnpm-all/migrated/packages/a/package.json': '{}',
+      'pnpm-all/dev-engines/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+        devEngines: { packageManager: [{ name: 'bun' }, { name: 'pnpm' }] },
+      }),
+      'pnpm-all/dev-engines/yarn.lock': '',
+      'pnpm-all/dev-engines/packages/a/package.json': '{}',
+      // A package manager that isn't supported doesn't decide, the lockfiles do
+      'pnpm-all/npm-field/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+        packageManager: 'npm@10.0.0',
+      }),
+      'pnpm-all/npm-field/yarn.lock': '',
+      'pnpm-all/npm-field/packages/a/package.json': '{}',
+      'pnpm-all/both-lockfiles/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'pnpm-all/both-lockfiles/yarn.lock': '',
+      'pnpm-all/both-lockfiles/pnpm-lock.yaml': '',
+      'pnpm-all/both-lockfiles/packages/a/package.json': '{}',
+      // A pnpm-workspace.yaml in a Yarn project isn't read, even when it is
+      // broken or has packages
+      'yarn-leftover/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+        packageManager: 'yarn@4.18.1',
+      }),
+      'yarn-leftover/pnpm-workspace.yaml': 'packages: [\n',
+      'yarn-leftover/packages/a/package.json': '{}',
+      'yarn-single-leftover/package.json': JSON.stringify({
+        packageManager: 'yarn@4.18.1',
+      }),
+      'yarn-single-leftover/yarn.lock': '',
+      'yarn-single-leftover/pnpm-workspace.yaml': 'packages:\n  - packages/*\n',
+      'yarn-single-leftover/src/index.ts': '',
+      // A pnpm-workspace.yaml that can't be parsed counts as a workspace that
+      // includes everything inside it, and pnpm reports the error
+      'pnpm-broken/package.json': '{}',
+      'pnpm-broken/pnpm-workspace.yaml': 'packages: [\n',
+      'pnpm-broken/apps/backstage/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      // A broken pnpm-workspace.yaml above a Yarn project isn't read
+      'broken-pnpm/pnpm-workspace.yaml': 'packages: [\n',
+      'broken-pnpm/yarn/package.json': JSON.stringify({
+        workspaces: ['packages/*'],
+      }),
+      'broken-pnpm/yarn/yarn.lock': '',
+      'broken-pnpm/yarn/packages/a/package.json': '{}',
+    };
+    for (const [path, content] of Object.entries(files)) {
+      fs.mkdirSync(dirname(resolvePath(tmpDir, path)), { recursive: true });
+      fs.writeFileSync(resolvePath(tmpDir, path), content);
+    }
+  });
+
+  afterAll(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('finds the workspace and installation roots and re-resolves them when the working directory changes', () => {
+    const cwd = jest.spyOn(process, 'cwd');
+    const expectRoots = (
+      dir: string,
+      workspaceRootDir: string,
+      installationRootDir: string,
+      backstageJsonPath: string,
+    ) => {
+      cwd.mockReturnValue(resolvePath(tmpDir, dir));
+      expect(targetPaths.dir).toBe(resolvePath(tmpDir, dir));
+      expect(targetPaths.workspaceRootDir).toBe(
+        resolvePath(tmpDir, workspaceRootDir),
+      );
+      expect(targetPaths.installationRootDir).toBe(
+        resolvePath(tmpDir, installationRootDir),
+      );
+      expect(targetPaths.backstageJsonPath).toBe(
+        resolvePath(tmpDir, backstageJsonPath),
+      );
+    };
+
+    // A nested installation uses the backstage.json at the top
+    expectRoots(
+      'pnpm/apps/backstage/packages/backend',
+      'pnpm',
+      'pnpm/apps/backstage',
+      'pnpm/backstage.json',
+    );
+    expect(targetPaths.rootDir).toBe(resolvePath(tmpDir, 'pnpm'));
+    expect(targetPaths.resolveWorkspaceRoot('pnpm-lock.yaml')).toBe(
+      resolvePath(tmpDir, 'pnpm/pnpm-lock.yaml'),
+    );
+    expect(targetPaths.resolveInstallationRoot('app-config.yaml')).toBe(
+      resolvePath(tmpDir, 'pnpm/apps/backstage/app-config.yaml'),
+    );
+    expect(targetPaths.resolveRoot('pnpm-lock.yaml')).toBe(
+      resolvePath(tmpDir, 'pnpm/pnpm-lock.yaml'),
+    );
+
+    // The nearest backstage.json wins
+    expectRoots(
+      'pnpm/apps/second/packages/app',
+      'pnpm',
+      'pnpm/apps/second',
+      'pnpm/apps/second/backstage.json',
+    );
+
+    // Outside of an installation, the installation root is the workspace root
+    expectRoots('pnpm/libs/other', 'pnpm', 'pnpm', 'pnpm/backstage.json');
+
+    // The packages patterns decide which installations belong to the pnpm
+    // workspace, and the rest are workspaces of their own
+    expectRoots(
+      'pnpm/other/lib-a',
+      'pnpm',
+      'pnpm/other/lib-a',
+      'pnpm/backstage.json',
+    );
+    expectRoots(
+      'pnpm/other/lib-ab',
+      'pnpm/other/lib-ab',
+      'pnpm/other/lib-ab',
+      'pnpm/other/lib-ab/backstage.json',
+    );
+    expectRoots(
+      'pnpm/other/svc',
+      'pnpm',
+      'pnpm/other/svc',
+      'pnpm/backstage.json',
+    );
+    expectRoots(
+      'pnpm/nested/backstage/packages/app',
+      'pnpm',
+      'pnpm/nested/backstage',
+      'pnpm/backstage.json',
+    );
+    expectRoots(
+      'pnpm/apps/excluded/packages/a',
+      'pnpm/apps/excluded',
+      'pnpm/apps/excluded',
+      'pnpm/apps/excluded/backstage.json',
+    );
+    expectRoots(
+      'pnpm/apps/kept/packages/a',
+      'pnpm',
+      'pnpm/apps/kept',
+      'pnpm/backstage.json',
+    );
+    expectRoots(
+      'pnpm/single/left-out/packages/a',
+      'pnpm/single/left-out',
+      'pnpm/single/left-out',
+      'pnpm/single/left-out/backstage.json',
+    );
+    expectRoots(
+      'pnpm/single/in/packages/a',
+      'pnpm',
+      'pnpm/single/in',
+      'pnpm/backstage.json',
+    );
+    expectRoots(
+      'pnpm/tools/yarn-project/packages/a',
+      'pnpm/tools/yarn-project',
+      'pnpm/tools/yarn-project',
+      'pnpm/tools/yarn-project/backstage.json',
+    );
+    expectRoots(
+      'settings-only/yarn/packages/a',
+      'settings-only/yarn',
+      'settings-only/yarn',
+      'settings-only/yarn/backstage.json',
+    );
+
+    expectRoots(
+      'pnpm-app/packages/backend',
+      'pnpm-app',
+      'pnpm-app',
+      'pnpm-app/backstage.json',
+    );
+    expectRoots('yarn/packages/app', 'yarn', 'yarn', 'yarn/backstage.json');
+    // A pnpm-workspace.yaml without packages doesn't start a workspace
+    expectRoots(
+      'yarn/packages/app/fixture',
+      'yarn',
+      'yarn',
+      'yarn/backstage.json',
+    );
+
+    // A Yarn project is a workspace of its own, even when the patterns of a
+    // pnpm workspace above include it
+    expectRoots(
+      'pnpm-all/yarn-lock/packages/a',
+      'pnpm-all/yarn-lock',
+      'pnpm-all/yarn-lock',
+      'pnpm-all/yarn-lock/backstage.json',
+    );
+    expectRoots(
+      'pnpm-all/yarn-field/packages/a',
+      'pnpm-all/yarn-field',
+      'pnpm-all/yarn-field',
+      'pnpm-all/yarn-field/backstage.json',
+    );
+    // Above a Yarn project without a workspaces field, the pnpm workspace
+    // doesn't count, so it is a package of its own as without pnpm
+    expectRoots(
+      'pnpm-all/yarn-single',
+      'pnpm-all/yarn-single',
+      'pnpm-all/yarn-single',
+      'pnpm-all/yarn-single/backstage.json',
+    );
+    expectRoots(
+      'pnpm-all/yarn-single/src',
+      'pnpm-all/yarn-single/src',
+      'pnpm-all/yarn-single/src',
+      'pnpm-all/yarn-single/src/backstage.json',
+    );
+    expectRoots(
+      'pnpm-all/member/src',
+      'pnpm-all',
+      'pnpm-all',
+      'pnpm-all/backstage.json',
+    );
+    expectRoots(
+      'pnpm-all/migrated/packages/a',
+      'pnpm-all',
+      'pnpm-all/migrated',
+      'pnpm-all/migrated/backstage.json',
+    );
+    expectRoots(
+      'pnpm-all/dev-engines/packages/a',
+      'pnpm-all',
+      'pnpm-all/dev-engines',
+      'pnpm-all/dev-engines/backstage.json',
+    );
+    expectRoots(
+      'pnpm-all/npm-field/packages/a',
+      'pnpm-all/npm-field',
+      'pnpm-all/npm-field',
+      'pnpm-all/npm-field/backstage.json',
+    );
+    expectRoots(
+      'pnpm-all/both-lockfiles/packages/a',
+      'pnpm-all',
+      'pnpm-all/both-lockfiles',
+      'pnpm-all/both-lockfiles/backstage.json',
+    );
+    expectRoots(
+      'yarn-leftover/packages/a',
+      'yarn-leftover',
+      'yarn-leftover',
+      'yarn-leftover/backstage.json',
+    );
+    expectRoots(
+      'yarn-single-leftover/src',
+      'yarn-single-leftover/src',
+      'yarn-single-leftover/src',
+      'yarn-single-leftover/src/backstage.json',
+    );
+    expectRoots(
+      'pnpm-broken/apps/backstage',
+      'pnpm-broken',
+      'pnpm-broken/apps/backstage',
+      'pnpm-broken/apps/backstage/backstage.json',
+    );
+    expectRoots(
+      'broken-pnpm/yarn/packages/a',
+      'broken-pnpm/yarn',
+      'broken-pnpm/yarn',
+      'broken-pnpm/yarn/backstage.json',
+    );
+
+    // Without a backstage.json, the path points into the installation root
+    expectRoots(
+      'standalone',
+      'standalone',
+      'standalone',
+      'standalone/backstage.json',
+    );
+  });
+
+  it('can be overridden with separate roots', () => {
+    const override = overrideTargetPaths({
+      dir: '/ws/apps/backstage/packages/backend',
+      workspaceRootDir: '/ws',
+      installationRootDir: '/ws/apps/backstage',
+    });
+    try {
+      expect(targetPaths.dir).toBe('/ws/apps/backstage/packages/backend');
+      expect(targetPaths.workspaceRootDir).toBe('/ws');
+      expect(targetPaths.installationRootDir).toBe('/ws/apps/backstage');
+      expect(targetPaths.rootDir).toBe('/ws');
+      expect(targetPaths.resolveWorkspaceRoot('a')).toBe('/ws/a');
+      expect(targetPaths.resolveInstallationRoot('a')).toBe(
+        '/ws/apps/backstage/a',
+      );
+      expect(targetPaths.resolveRoot('a')).toBe('/ws/a');
+      expect(targetPaths.backstageJsonPath).toBe(
+        '/ws/apps/backstage/backstage.json',
+      );
+    } finally {
+      override.restore();
+    }
+
+    const shared = overrideTargetPaths({
+      dir: '/ws/apps/backstage',
+      workspaceRootDir: '/ws',
+      backstageJsonPath: '/ws/backstage.json',
+    });
+    try {
+      expect(targetPaths.installationRootDir).toBe('/ws');
+      expect(targetPaths.backstageJsonPath).toBe('/ws/backstage.json');
+    } finally {
+      shared.restore();
+    }
+
+    const shorthand = overrideTargetPaths('/ws');
+    try {
+      expect(targetPaths.workspaceRootDir).toBe('/ws');
+      expect(targetPaths.installationRootDir).toBe('/ws');
+    } finally {
+      shorthand.restore();
+    }
   });
 });

@@ -16,6 +16,7 @@
 
 export {
   createDistWorkspace,
+  getDefaultWorkspaceFiles,
   packToDirectory,
   resolveLocalDependencies,
 } from './createDistWorkspace';
