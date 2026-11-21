@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { NpmSnapshot } from '../../src/pluginDirectory/manifest';
+import type { NpmSnapshot } from '../manifest';
 
 type Repository = NonNullable<
   Extract<NpmSnapshot, { status: 'fresh' }>['repository']

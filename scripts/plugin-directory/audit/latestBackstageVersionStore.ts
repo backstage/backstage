@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { resolve } from 'node:path';
-import { loadPluginManifests } from '../src/pluginDirectory/load';
+import { writeFile } from 'node:fs/promises';
+import { dump } from 'js-yaml';
+import type { LatestBackstageVersion } from '../latestBackstageVersion';
 
-async function main(): Promise<void> {
-  const pluginDirectory = resolve(__dirname, '..', 'data', 'plugins');
-  const plugins = await loadPluginManifests(pluginDirectory);
-
-  console.log(`Validated ${plugins.length} plugin manifests.`);
+export async function writeLatestBackstageVersionFile(
+  path: string,
+  data: LatestBackstageVersion,
+): Promise<void> {
+  const yaml = dump(data, {
+    lineWidth: -1,
+    quoteStyle: 'single',
+    forceQuotes: false,
+    noRefs: true,
+  });
+  await writeFile(path, `---\n${yaml}`, 'utf8');
 }
-
-main().catch(error => {
-  console.error(error instanceof Error ? error.stack : error);
-  process.exitCode = 1;
-});

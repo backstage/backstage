@@ -17,8 +17,8 @@ import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import { dump } from 'js-yaml';
-import { loadPluginManifests } from '../../src/pluginDirectory/load';
-import type { PluginManifest } from '../../src/pluginDirectory/manifest';
+import { loadPluginManifests } from '../load';
+import type { PluginManifest } from '../manifest';
 
 export interface ManifestFile {
   filename: string;
@@ -62,7 +62,7 @@ export async function readManifestFiles(
 ): Promise<ManifestFile[]> {
   const plugins = await loadPluginManifests(directory);
   return plugins.map(plugin => {
-    const { slug, isNew: _isNew, ...manifest } = plugin;
+    const { slug, ...manifest } = plugin;
     const filename = `${slug}.yaml`;
     return {
       filename,

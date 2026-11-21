@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// These scripts are not packages and run on Node's built-in test runner.
+/* eslint-disable no-restricted-imports */
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
-import type { PluginManifest } from '../../src/pluginDirectory/manifest';
+import type { PluginManifest } from '../manifest';
 import { readManifestFiles, writeManifestFile } from './manifestStore';
 
 const fixture = `title: Example Plugin

@@ -1,3 +1,4 @@
+#!/usr/bin/env node --require @backstage/cli/config/nodeTransform.cjs
 /*
  * Copyright 2026 The Backstage Authors
  *
@@ -13,19 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { writeFile } from 'node:fs/promises';
-import { dump } from 'js-yaml';
-import type { LatestBackstageVersion } from '../../src/pluginDirectory/latestBackstageVersion';
+import { resolve } from 'node:path';
+import { loadPluginManifests } from './load';
 
-export async function writeLatestBackstageVersionFile(
-  path: string,
-  data: LatestBackstageVersion,
-): Promise<void> {
-  const yaml = dump(data, {
-    lineWidth: -1,
-    quoteStyle: 'single',
-    forceQuotes: false,
-    noRefs: true,
-  });
-  await writeFile(path, `---\n${yaml}`, 'utf8');
+async function main(): Promise<void> {
+  const pluginDirectory = resolve(__dirname, '../../microsite/data/plugins');
+  const plugins = await loadPluginManifests(pluginDirectory);
+
+  console.log(`Validated ${plugins.length} plugin manifests.`);
 }
+
+main().catch(error => {
+  console.error(error instanceof Error ? error.stack : error);
+  process.exitCode = 1;
+});

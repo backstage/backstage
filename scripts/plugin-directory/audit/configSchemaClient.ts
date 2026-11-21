@@ -15,7 +15,7 @@
  */
 
 import { Inflate } from 'pako';
-import { parseTar } from '../../src/pluginDirectory/tar';
+import { parseTar } from '../tar';
 import {
   ConfigSchemaLimitError,
   sanitizeConfigSchema,

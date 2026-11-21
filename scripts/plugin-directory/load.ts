@@ -16,12 +16,7 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { load } from 'js-yaml';
-import { calcIsNewPlugin } from '../util/calcIsNewPlugin';
-import {
-  type PluginData,
-  type PluginManifest,
-  pluginManifestSchema,
-} from './manifest';
+import { type PluginManifest, pluginManifestSchema } from './manifest';
 
 const manifestFilenamePattern = /^[a-z0-9]+(?:-[a-z0-9]+)*\.yaml$/;
 const legacyManifestFilenames: Record<string, true> = {
@@ -30,11 +25,13 @@ const legacyManifestFilenames: Record<string, true> = {
   'sds_workspace.yaml': true,
 };
 
+export type LoadedPluginManifest = PluginManifest & { slug: string };
+
 export async function loadPluginManifests(
   directory: string,
-): Promise<PluginData[]> {
+): Promise<LoadedPluginManifest[]> {
   const filenames = (await readdir(directory)).sort();
-  const plugins: PluginData[] = [];
+  const plugins: LoadedPluginManifest[] = [];
 
   for (const filename of filenames) {
     if (
@@ -69,13 +66,10 @@ export async function loadPluginManifests(
     }
 
     const manifest: PluginManifest = result.data;
-    plugins.push(
-      calcIsNewPlugin({
-        ...manifest,
-        slug: filename.slice(0, -'.yaml'.length),
-        isNew: false,
-      }),
-    );
+    plugins.push({
+      ...manifest,
+      slug: filename.slice(0, -'.yaml'.length),
+    });
   }
 
   return plugins;

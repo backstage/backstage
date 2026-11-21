@@ -159,8 +159,3 @@ export const pluginManifestSchema = z.strictObject({
 });
 
 export type PluginManifest = z.infer<typeof pluginManifestSchema>;
-
-export interface PluginData extends PluginManifest {
-  slug: string;
-  isNew: boolean;
-}

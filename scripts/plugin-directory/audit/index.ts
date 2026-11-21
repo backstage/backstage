@@ -1,3 +1,4 @@
+#!/usr/bin/env node --require @backstage/cli/config/nodeTransform.cjs
 /*
  * Copyright 2026 The Backstage Authors
  *
@@ -14,10 +15,7 @@
  * limitations under the License.
  */
 import { resolve } from 'node:path';
-import type {
-  NpmSnapshot,
-  PluginManifest,
-} from '../../src/pluginDirectory/manifest';
+import type { NpmSnapshot, PluginManifest } from '../manifest';
 import { auditManifest, type AuditDependencies } from './audit';
 import { GitHubSnapshotClient } from './githubClient';
 import { writeLatestBackstageVersionFile } from './latestBackstageVersionStore';
@@ -273,10 +271,10 @@ export async function runAuditCommand(
 
 async function main(args: readonly string[]): Promise<void> {
   await runAuditCommand(args, {
-    directory: resolve(process.cwd(), 'data/plugins'),
+    directory: resolve(__dirname, '../../../microsite/data/plugins'),
     latestBackstageVersionPath: resolve(
-      process.cwd(),
-      'data/latest-backstage-version.yaml',
+      __dirname,
+      '../../../microsite/data/latest-backstage-version.yaml',
     ),
     dependencies: {
       fetchNpm: fetchNpmSnapshot,

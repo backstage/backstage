@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// These scripts are not packages and run on Node's built-in test runner.
+/* eslint-disable no-restricted-imports */
 import assert from 'node:assert/strict';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -58,16 +60,10 @@ function manifestYaml(overrides: Partial<typeof validManifest> = {}): string {
 describe('loadPluginManifests', () => {
   it('loads manifests in filename order without truncating descriptions', async () => {
     const longDescription = 'A'.repeat(250);
-    const recentDate = new Date(Date.now() - 95 * 24 * 60 * 60 * 1_000)
-      .toISOString()
-      .slice(0, 10);
 
     await withFixtureDirectory(
       {
-        'z-plugin.yaml': manifestYaml({
-          title: 'Z Plugin',
-          addedDate: recentDate,
-        }),
+        'z-plugin.yaml': manifestYaml({ title: 'Z Plugin' }),
         'a-plugin.yaml': manifestYaml({
           title: 'A Plugin',
           description: longDescription,
@@ -80,8 +76,6 @@ describe('loadPluginManifests', () => {
           plugins.map(plugin => plugin.slug),
           ['a-plugin', 'z-plugin'],
         );
-        assert.equal(plugins[0].isNew, false);
-        assert.equal(plugins[1].isNew, true);
         assert.equal(plugins[0].description, longDescription);
       },
     );

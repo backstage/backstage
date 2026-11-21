@@ -81,7 +81,7 @@ From the repository root, install dependencies and validate every manifest:
 
 ```shell
 yarn install
-yarn --cwd microsite plugins:verify
+node --require @backstage/cli/config/nodeTransform.cjs scripts/plugin-directory/verify.ts
 ```
 
 The verifier reports the filename and field path for invalid data. The same
