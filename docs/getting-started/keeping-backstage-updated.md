@@ -179,3 +179,40 @@ export YARN_HTTPS_PROXY=${HTTPS_PROXY}                        # optional
 ## Rollback migrations
 
 In some cases you could need to downgrade Backstage instance due to some problem or maybe because you are using a test environment to validate the new version of Backstage. You can check the [Manual Rollback using Knex](../tutorials/manual-knex-rollback.md) guide to know how to rollback migrations using Knex.
+
+## Upgrading a production instance
+
+The sections above explain each upgrade tool on its own. Use this checklist to
+put them together when you upgrade a Backstage instance that is running in
+production.
+
+1. **Before you start:** read the
+   [release notes](https://github.com/backstage/backstage/releases) for every
+   version between your current version and the target version, and review the
+   [Backstage Upgrade Helper](https://backstage.github.io/upgrade-helper/) diff
+   for the same range. Your current version is in `backstage.json`. Back up your
+   production database.
+1. **Upgrade on a branch:** create a new branch, then
+   [bump the Backstage versions](#updating-backstage-versions-with-backstage-cli)
+   and check that the project still builds and passes its tests:
+
+   ```bash
+   yarn backstage-cli versions:bump
+   yarn install
+   yarn tsc
+   yarn test:all
+   ```
+
+   Apply any
+   [create-app template changes](#following-create-app-template-changes) and
+   [codemods](#applying-automated-codemods) that the new version needs.
+
+1. **Test it:** if you have a test or staging environment, deploy the branch
+   there first. Check that the backend starts and that its database migrations
+   complete without errors.
+1. **Roll out:** merge the branch and deploy it to production the same way you
+   usually deploy. See [Deploying Backstage](../deployment/index.md) for
+   deployment options.
+1. **Roll back if needed:** redeploy the previous version. If the new version
+   ran database migrations, follow the steps in
+   [Rollback migrations](#rollback-migrations) as well.
