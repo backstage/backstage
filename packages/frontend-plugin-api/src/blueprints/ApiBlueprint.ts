@@ -62,6 +62,13 @@ export const ApiBlueprint = withBlueprintIdentity(
         ApiFactory,
         {
           apiRefId: TApiRef['id'];
+          // Whether the ref declares the API as a promise. It's a boolean for
+          // a ref with no declared type, so that it can be assigned from any ref
+          apiIsPromise: TApiRef extends { readonly T: infer TValue }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
           deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
         }
       >,

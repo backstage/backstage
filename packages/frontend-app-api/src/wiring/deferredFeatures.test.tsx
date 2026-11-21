@@ -540,9 +540,10 @@ describe('deferred features', () => {
 
   it('should load a plugin with an API when the API is first used', async () => {
     type GreetingApi = { greet(): string };
-    // The consumer uses a synchronous ref, while the stub provides the API as
-    // a promise that useApi unwraps, so that it can load the plugin
-    const greetingApiRef = createApiRef<GreetingApi>().with({
+    // The ref is declared as a promise, which the build-time analysis
+    // requires, since the stub provides the API as one while it loads the
+    // plugin
+    const greetingApiRef = createApiRef<Promise<GreetingApi>>().with({
       id: 'test.greeting',
     });
     const realPlugin = createRealDeferredPlugin().withOverrides({
@@ -552,7 +553,7 @@ describe('deferred features', () => {
             defineParams({
               api: greetingApiRef,
               deps: { config: configApiRef },
-              factory: ({ config }) => ({
+              factory: async ({ config }) => ({
                 greet: () => `Hello from ${config.getString('app.title')}`,
               }),
             }),

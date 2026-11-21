@@ -56,6 +56,16 @@ const MAKE_OPTIONS = ['name', 'attachTo', 'disabled', 'if', 'params'];
 const API_MAKE_OPTIONS = ['name', 'disabled', 'params'];
 const API_PARAMS = ['api', 'deps', 'factory'];
 
+/** The type names that declare an API ref as promise-valued. */
+const PROMISE_TYPE_NAMES = ['Promise', 'PromiseLike'];
+
+/** An API ref, as read from the source code that creates it. */
+type ApiRefInfo = {
+  id: string;
+  /** Whether the API is declared as a promise, as in `createApiRef<Promise<T>>()` */
+  isPromise: boolean;
+};
+
 // Options of createFrontendPlugin that don't affect deferred loading
 const IGNORED_PLUGIN_OPTIONS = ['icon', 'info', 'featureFlags'];
 
@@ -829,13 +839,13 @@ class PackageAnalyzer {
     return this.#resolveSymbol(symbol, sourceFile, 0);
   }
 
-  /** Reads the ID of an API ref that another package exports. */
-  readExportedApiRefId(file: string, name: string, from: ts.Node) {
+  /** Reads an API ref that another package exports. */
+  readExportedApiRef(file: string, name: string, from: ts.Node): ApiRefInfo {
     const target = this.#resolveExport(file, name, from);
     if (target.type === 'external') {
-      return this.#readApiRefId(target, name);
+      return this.#readApiRef(target, name);
     }
-    return this.#readRefCall(target.node, name, 'an API ref');
+    return this.#readApiRefCall(target.node, name);
   }
 
   #forImport(target: Extract<Target, { type: 'external' }>, what: string) {
@@ -849,20 +859,22 @@ class PackageAnalyzer {
     return imported;
   }
 
-  #readApiRefId(target: Target, what: string): string {
+  #readApiRef(target: Target, what: string): ApiRefInfo {
     if (target.type === 'node') {
-      return this.#readRefCall(target.node, what, 'an API ref');
+      return this.#readApiRefCall(target.node, what);
     }
     const { analyzer, file } = this.#forImport(target, what);
-    return analyzer.readExportedApiRefId(file, target.name, target.from);
+    return analyzer.readExportedApiRef(file, target.name, target.from);
   }
 
   /**
-   * Reads the ID of an API ref or extension data ref, which is created with
-   * either `createApiRef({ id })` or `create...Ref().with({ id })`.
+   * Reads the ID of an API ref, which is created with either
+   * `createApiRef({ id })` or `createApiRef().with({ id })`, and whether the
+   * type argument of `createApiRef` declares the API as a promise.
    */
-  #readRefCall(node: ts.Node, what: string, kind: string): string {
+  #readApiRefCall(node: ts.Node, what: string): ApiRefInfo {
     let optionsArg: ts.Expression | undefined;
+    let createCall: ts.CallExpression | undefined;
     if (ts.isCallExpression(node)) {
       const callee = unwrap(node.expression);
       if (
@@ -871,16 +883,18 @@ class PackageAnalyzer {
         ts.isCallExpression(unwrap(callee.expression))
       ) {
         optionsArg = node.arguments[0];
+        createCall = unwrap(callee.expression) as ts.CallExpression;
       } else if (
         (ts.isIdentifier(callee) && callee.text === 'createApiRef') ||
         (ts.isPropertyAccessExpression(callee) &&
           callee.name.text === 'createApiRef')
       ) {
         optionsArg = node.arguments[0];
+        createCall = node;
       }
     }
     if (!optionsArg) {
-      this.#fail(`${what} is not ${kind} with an ID that can be read`, node);
+      this.#fail(`${what} is not an API ref with an ID that can be read`, node);
     }
     const idExpr = this.#resolveObject(
       optionsArg,
@@ -889,7 +903,15 @@ class PackageAnalyzer {
     if (!idExpr) {
       this.#fail(`${what} has no ID`, optionsArg);
     }
-    return this.#evaluateString(idExpr, `the ID of ${what}`);
+    const typeArg = createCall?.typeArguments?.[0];
+    return {
+      id: this.#evaluateString(idExpr, `the ID of ${what}`),
+      isPromise:
+        typeArg !== undefined &&
+        ts.isTypeReferenceNode(typeArg) &&
+        ts.isIdentifier(typeArg.typeName) &&
+        PROMISE_TYPE_NAMES.includes(typeArg.typeName.text),
+    };
   }
 
   #readCommonOptions(
@@ -960,21 +982,27 @@ class PackageAnalyzer {
         depsExpr,
         'the API deps',
       )) {
-        deps[depName] = this.#readApiRefId(
+        deps[depName] = this.#readApiRef(
           this.#resolve(depExpr),
           `the '${depName}' dependency`,
-        );
+        ).id;
       }
+    }
+    // The stand-in of the API provides it as a promise until the plugin is
+    // loaded, which only matches the declared type of a promise-valued ref
+    const apiRef = this.#readApiRef(this.#resolve(apiExpr), 'the API ref');
+    if (!apiRef.isPromise) {
+      this.#fail(
+        `the API ref '${apiRef.id}' must be declared as a promise, as in createApiRef<Promise<MyApi>>(), since a deferred plugin provides its APIs as promises until it is loaded`,
+        apiExpr,
+      );
     }
     return {
       id: extensionId(blueprint.kind, info.pluginId, name),
       kind: blueprint.kind,
       attachTo: this.#readAttachTo(blueprint.attachTo, info.pluginId, call),
       disabled,
-      api: {
-        apiRefId: this.#readApiRefId(this.#resolve(apiExpr), 'the API ref'),
-        deps,
-      },
+      api: { apiRefId: apiRef.id, deps },
     };
   }
 

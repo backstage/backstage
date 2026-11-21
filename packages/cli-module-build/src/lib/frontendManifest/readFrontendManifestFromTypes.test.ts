@@ -121,7 +121,7 @@ describe('readFrontendManifestFromTypes', () => {
             params: 'undefined',
             paramKeys: 'undefined',
             paramsCallback:
-              '{ apiRefId: "plugin.demo"; deps: { discovery: "core.discovery" } }',
+              '{ apiRefId: "plugin.demo"; apiIsPromise: true; deps: { discovery: "core.discovery" } }',
           }),
         },
         { title: '"Demo"' },
@@ -245,6 +245,19 @@ describe('readFrontendManifestFromTypes', () => {
         }),
       ),
     ).toBe('the API params is not a literal');
+    expect(
+      reason(
+        plugin({
+          'api:demo': extension('api', 'undefined', {
+            blueprint: API_BLUEPRINT,
+            paramsCallback:
+              '{ apiRefId: "plugin.demo"; apiIsPromise: false; deps: {} }',
+          }),
+        }),
+      ),
+    ).toBe(
+      "the API ref 'plugin.demo' must be declared as a promise, as in createApiRef<Promise<MyApi>>(), since a deferred plugin provides its APIs as promises until it is loaded",
+    );
 
     // Plugin literals
     expect(reason(plugin({ 'page:demo': page() }, { if: '{ a: "b" }' }))).toBe(

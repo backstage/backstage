@@ -83,6 +83,18 @@ const api = ApiBlueprint.make({
       factory: ({ dep }) => ({ x: dep.y }),
     }),
 });
+const lazyApiRef = createApiRef<Promise<{ x: string }>>().with({
+  id: 'test.lazy',
+});
+const lazyApi = ApiBlueprint.make({
+  name: 'lazy',
+  params: defineParams =>
+    defineParams({
+      api: lazyApiRef,
+      deps: {},
+      factory: async () => ({ x: 'lazy' }),
+    }),
+});
 
 const CustomPageBlueprint = createExtensionBlueprint({
   kind: 'page',
@@ -163,7 +175,11 @@ describe('ExtensionDefinitionLiterals', () => {
       Equal<LiteralsOf<typeof inputSubPage>['attachTo'], unknown>,
       Equal<
         LiteralsOf<typeof api>['paramsCallback'],
-        { apiRefId: 'test.api'; deps: { dep: 'test.dep' } }
+        { apiRefId: 'test.api'; apiIsPromise: false; deps: { dep: 'test.dep' } }
+      >,
+      Equal<
+        LiteralsOf<typeof lazyApi>['paramsCallback'],
+        { apiRefId: 'test.lazy'; apiIsPromise: true; deps: {} }
       >,
       Equal<
         LiteralsOf<typeof api>['blueprint'],
@@ -190,6 +206,7 @@ describe('ExtensionDefinitionLiterals', () => {
         never[]
       >,
     ] = [
+      true,
       true,
       true,
       true,

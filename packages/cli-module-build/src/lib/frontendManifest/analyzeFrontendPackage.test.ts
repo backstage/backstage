@@ -291,7 +291,7 @@ describe('analyzeFrontendPackage', () => {
   });
 
   it('should read APIs and not defer extensions made with other blueprints', () => {
-    const files = (extension: string) => ({
+    const files = (extension: string, apiType = 'Promise<{}>') => ({
       'src/index.ts': `
         import {
           ApiBlueprint,
@@ -302,7 +302,7 @@ describe('analyzeFrontendPackage', () => {
           discoveryApiRef,
         } from ${API};
         import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
-        const demoApiRef = createApiRef<{}>().with({ id: 'plugin.demo.client' });
+        const demoApiRef = createApiRef<${apiType}>().with({ id: 'plugin.demo.client' });
         const WidgetBlueprint = createExtensionBlueprint({
           kind: 'widget',
           attachTo: { id: 'app/root', input: 'widgets' },
@@ -315,7 +315,7 @@ describe('analyzeFrontendPackage', () => {
             define({
               api: demoApiRef,
               deps: { discovery: discoveryApiRef },
-              factory: () => ({}),
+              factory: async () => ({}),
             }),
         });
         export default createFrontendPlugin({
@@ -349,6 +349,22 @@ describe('analyzeFrontendPackage', () => {
         ],
       },
     });
+
+    // The stand-in of an API provides it as a promise, so the ref must be
+    // declared as one
+    const page = `PageBlueprint.make({ params: { path: '/', loader: async () => null } })`;
+    expect(
+      analyze(files(page, 'PromiseLike<{}>')).entryPoints['.'],
+    ).toMatchObject({ manifest: { deferrable: true } });
+    for (const apiType of ['{}', 'Promise<{}> | {}', 'LazyApi']) {
+      expect(analyze(files(page, apiType)).entryPoints['.']).toMatchObject({
+        manifest: {
+          deferrable: false,
+          notDeferrableReason:
+            "the API ref 'plugin.demo.client' must be declared as a promise, as in createApiRef<Promise<MyApi>>(), since a deferred plugin provides its APIs as promises until it is loaded (src/index.ts:22)",
+        },
+      });
+    }
 
     // Blueprints from other packages and the blueprints of the plugin itself
     // are not read, since their outputs can't be known without running them

@@ -298,9 +298,17 @@ function readExtension(
     const callback = readOptionalLiteral(
       literals.paramsCallback,
       'the API params',
-    ) as { apiRefId?: unknown; deps?: unknown } | undefined;
+    ) as
+      | { apiRefId?: unknown; apiIsPromise?: unknown; deps?: unknown }
+      | undefined;
     if (!callback || typeof callback.apiRefId !== 'string') {
       throw new TypeReadError('the API ref ID is not a literal');
+    }
+    // A deferred plugin provides its APIs as promises until it is loaded
+    if (callback.apiIsPromise !== true) {
+      throw new TypeReadError(
+        `the API ref '${callback.apiRefId}' must be declared as a promise, as in createApiRef<Promise<MyApi>>(), since a deferred plugin provides its APIs as promises until it is loaded`,
+      );
     }
     const deps: { [name: string]: string } = {};
     for (const [depName, depId] of Object.entries(
