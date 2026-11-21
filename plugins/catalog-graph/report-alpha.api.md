@@ -95,6 +95,7 @@ const _default: OverridableFrontendPlugin<
         curve: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         title: string | undefined;
         height: number | undefined;
+        entityFilter: FilterPredicate | undefined;
         filter: string | FilterPredicate | undefined;
         type: 'content' | 'info' | undefined;
       };
@@ -111,6 +112,7 @@ const _default: OverridableFrontendPlugin<
         curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         title?: string | undefined;
         height?: number | undefined;
+        entityFilter?: FilterPredicate | undefined;
         filter?: string | FilterPredicate | undefined;
         type?: 'content' | 'info' | undefined;
       };
@@ -162,6 +164,7 @@ const _default: OverridableFrontendPlugin<
         relations: string[] | undefined;
         relationPairs: [string, string][] | undefined;
         zoom: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
+        entityFilter: FilterPredicate | undefined;
         path: string | undefined;
         title: string | undefined;
       };
@@ -180,6 +183,7 @@ const _default: OverridableFrontendPlugin<
         relations?: string[] | undefined;
         relationPairs?: [string, string][] | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
+        entityFilter?: FilterPredicate | undefined;
         path?: string | undefined;
         title?: string | undefined;
       };
