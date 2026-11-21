@@ -33,6 +33,7 @@ export async function readPuppetNodes(
   opts?: {
     transformer?: ResourceTransformer;
     logger?: LoggerService;
+    signal?: AbortSignal;
   },
 ): Promise<ResourceEntity[]> {
   const transformFn = opts?.transformer ?? defaultResourceTransformer;
@@ -48,6 +49,7 @@ export async function readPuppetNodes(
 
   const response = await fetch(url.toString(), {
     method: 'GET',
+    signal: opts?.signal,
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
@@ -62,6 +64,7 @@ export async function readPuppetNodes(
   const entities: ResourceEntity[] = [];
 
   for (const node of nodes) {
+    opts?.signal?.throwIfAborted();
     const entity = await transformFn(node, config);
     if (entity) {
       entities.push(entity);
