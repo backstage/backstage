@@ -49,7 +49,7 @@ import { SignInPageProps } from '@backstage/core-plugin-api';
 import { SparklinesLineProps } from 'react-sparklines';
 import { SparklinesProps } from 'react-sparklines';
 import { StyledComponentProps } from '@material-ui/core/styles/withStyles';
-import { StyleRules } from '@material-ui/styles';
+import { StyleRules } from '@material-ui/core/styles';
 import { StyleRules as StyleRules_2 } from '@material-ui/core/styles/withStyles';
 import { SVGProps } from 'react';
 import { TabProps } from '@material-ui/core/Tab';

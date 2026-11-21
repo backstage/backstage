@@ -38,7 +38,8 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@mui/material": "^5.12.2"
+    "@mui/material": "^5.12.2",
+    "@mui/private-theming": "^5.17.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

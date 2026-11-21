@@ -72,6 +72,7 @@
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
+    "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/ui": "workspace:^",
     "@backstage/version-bridge": "workspace:^",

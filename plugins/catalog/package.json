@@ -75,6 +75,7 @@
     "@backstage/plugin-search-react": "workspace:^",
     "@backstage/plugin-techdocs-common": "workspace:^",
     "@backstage/plugin-techdocs-react": "workspace:^",
+    "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/ui": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
