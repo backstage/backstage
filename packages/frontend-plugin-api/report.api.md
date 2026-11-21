@@ -1578,7 +1578,7 @@ export type IdentityApi = {
   getCredentials(): Promise<{
     token?: string;
   }>;
-  signOut(): Promise<void>;
+  signOut(options?: SignOutOptions): Promise<void>;
 };
 
 // @public @deprecated
@@ -2165,6 +2165,11 @@ export type SetAppSearchParams = (
     | ((previous: URLSearchParams) => AppSearchParamsInit),
   options?: Parameters<AppNavigate>[1],
 ) => void;
+
+// @public
+export type SignOutOptions = {
+  preserveLocation?: boolean;
+};
 
 export { StandardSchemaV1 };
 
