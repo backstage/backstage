@@ -29,8 +29,8 @@ interface TaggedFeature {
   feature: CliModule;
   /**
    * Whether this module was sourced from an array (e.g. cli-defaults).
-   * Array-sourced modules silently lose the commands that overlap with an
-   * individually-added module, allowing explicit module
+   * Array-sourced modules silently lose the non-toggled commands that overlap
+   * with an individually-added module, allowing explicit module
    * additions to take precedence without causing conflicts.
    *
    * Toggleable commands, i.e. those with `if`, do not count as
@@ -93,12 +93,12 @@ export class CliInitializer {
 
       if (fromArray) {
         const { packageName, commands } = OpaqueCliModule.toInternal(feature);
-        const kept = (await commands).filter(
-          registration =>
-            !individualPaths.has(
-              unwrapCliCommand(registration).command.path.join(' '),
-            ),
-        );
+        // Toggled commands are always kept, since they are only active for
+        // some packages and can coexist with an individual fallback.
+        const kept = (await commands).filter(registration => {
+          const { command, if: condition } = unwrapCliCommand(registration);
+          return condition || !individualPaths.has(command.path.join(' '));
+        });
         if (kept.length === 0) {
           continue;
         }
