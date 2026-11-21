@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import { existsSync } from 'node:fs';
-import { resolve as resolvePath } from 'node:path';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { analyzeFrontendPackage } from './analyzeFrontendPackage';
 import { readFrontendManifestFromTypes } from './readFrontendManifestFromTypes';
 
 const mockDir = createMockDirectory();
-const repoRoot = resolvePath(__dirname, '../../../../..');
 
 const API = `import("@backstage/frontend-plugin-api")`;
 const PAGE = '"@backstage/frontend-plugin-api#PageBlueprint"';
@@ -279,40 +275,96 @@ describe('readFrontendManifestFromTypes', () => {
     );
   });
 
-  // Needs the declarations that `yarn tsc` emits to dist-types
-  const hasTypes = existsSync(
-    resolvePath(repoRoot, 'dist-types/plugins/lazy-scorecard/src/index.d.ts'),
-  );
-  it('should match the analyzer for the demo plugins, except for route refs', () => {
-    if (!hasTypes) {
-      return;
-    }
-    for (const id of ['lazy-demo', 'lazy-package-demo', 'lazy-scorecard']) {
-      const fromTypes = readFrontendManifestFromTypes({
-        entryPoint: resolvePath(
-          repoRoot,
-          `dist-types/plugins/${id}/src/index.d.ts`,
-        ),
+  it('should follow relative imports and re-exports to the default export', () => {
+    const declaration = plugin({ 'page:demo': page() });
+    const readEntry = (files: { [name: string]: string }) => {
+      mockDir.setContent({ 'index.d.ts': '', ...files });
+      return readFrontendManifestFromTypes({
+        entryPoint: mockDir.resolve('index.d.ts'),
       });
-      const fromSource = analyzeFrontendPackage({
-        packageDir: resolvePath(repoRoot, 'plugins', id),
-        entryPoints: [{ mount: '.', path: 'src/index.ts' }],
-      }).entryPoints['.'];
-      if (!('manifest' in fromTypes) || !('manifest' in fromSource)) {
-        throw new Error(`Unexpected skipped entry for ${id}`);
-      }
-      // Which plugin route a route ref is can't be read from the types
-      const strip = (m: typeof fromSource.manifest) => ({
-        ...m,
-        extensions: m.extensions.map(e => ({
-          ...e,
-          page: e.page && { ...e.page, routeRefName: undefined },
-          element: e.element && { ...e.element, routeRefName: undefined },
-        })),
-      });
-      expect(JSON.parse(JSON.stringify(strip(fromTypes.manifest)))).toEqual(
-        JSON.parse(JSON.stringify(strip(fromSource.manifest))),
-      );
-    }
+    };
+    const pluginId = (result: ReturnType<typeof readEntry>) =>
+      'manifest' in result ? result.manifest.pluginId : result.skipped;
+
+    // Renamed and star re-exports, and folders with an index file
+    expect(
+      pluginId(
+        readEntry({
+          'index.d.ts': `export { demo as default } from './lib';`,
+          'lib/index.d.ts': `export * from '../plugin.js';`,
+          'plugin.d.ts': declaration.replace(
+            'declare const _default',
+            'export declare const demo',
+          ),
+        }),
+      ),
+    ).toBe('demo');
+
+    // Default imports and local default exports
+    expect(
+      pluginId(
+        readEntry({
+          'index.d.ts': `import demo from './plugin';\nexport default demo;`,
+          'plugin.d.ts': declaration,
+        }),
+      ),
+    ).toBe('demo');
+    expect(
+      pluginId(
+        readEntry({
+          'index.d.ts': `import { demo as renamed } from './plugin';\nexport { renamed as default };`,
+          'plugin.d.ts': declaration.replace(
+            'declare const _default',
+            'export declare const demo',
+          ),
+        }),
+      ),
+    ).toBe('demo');
+
+    // Reasons for skipping an entry point
+    expect(
+      pluginId(
+        readEntry({
+          'index.d.ts': `export { default } from '@acme/plugin';`,
+        }),
+      ),
+    ).toBe(
+      "the default export comes from '@acme/plugin', but only relative imports are followed",
+    );
+    expect(
+      pluginId(
+        readEntry({
+          'index.d.ts': `export { default } from './other';`,
+          'other.d.ts': `export { default } from './index';`,
+        }),
+      ),
+    ).toBe("the export 'default' is circular");
+    expect(pluginId(readEntry({ 'index.d.ts': `export const a = 1;` }))).toBe(
+      'the entry point has no default export with a type',
+    );
+  });
+
+  it('should fail if a declaration file is missing', () => {
+    mockDir.setContent({ 'other.d.ts': '' });
+    expect(() =>
+      readFrontendManifestFromTypes({
+        entryPoint: mockDir.resolve('index.d.ts'),
+      }),
+    ).toThrow(
+      `No declaration file found at ${mockDir.resolve(
+        'index.d.ts',
+      )}, be sure to run yarn tsc to generate .d.ts files before packaging`,
+    );
+
+    mockDir.setContent({ 'index.d.ts': `export { default } from './plugin';` });
+    expect(() =>
+      readFrontendManifestFromTypes({
+        entryPoint: mockDir.resolve('index.d.ts'),
+      }),
+    ).toThrow(
+      `Unable to find the declaration file for './plugin', which is imported from ${mockDir.resolve(
+        'index.d.ts',
+      )}`,
+    );
   });
 });

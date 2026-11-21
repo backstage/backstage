@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-// PROTOTYPE: reads a frontend manifest from the emitted type declarations of
-// a package rather than from its source. It relies on the `literals` of the
-// plugin and extension types, which record the literal values that they were
-// created with.
+// Reads a frontend manifest from the emitted type declarations of a package
+// rather than from its source. It relies on the `literals` of the plugin and
+// extension types, which record the literal values that they were created
+// with. The declarations are only parsed, and never type checked, so the
+// dependencies of the package don't have to be available.
 
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join as joinPath, resolve as resolvePath } from 'node:path';
 import { ts } from 'ts-morph';
 import {
@@ -34,49 +35,195 @@ import {
   FrontendFeatureManifest,
 } from './types';
 
+/** An error that means that the types can't be read as a manifest. */
 class TypeReadError extends Error {}
 
-const EXTENSIONS = ['.d.ts', '.ts', '.tsx'];
+function parseDeclarationFile(path: string) {
+  return ts.createSourceFile(
+    path,
+    readFileSync(path, 'utf8'),
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS,
+  );
+}
 
-function resolveRelative(specifier: string, containingFile: string) {
+/**
+ * Resolves a relative import or re-export of a declaration file. Imports of
+ * packages are not followed.
+ */
+function resolveRelative(
+  specifier: string,
+  containingFile: string,
+): string | undefined {
   if (!specifier.startsWith('.')) {
     return undefined;
   }
   const base = resolvePath(dirname(containingFile), specifier);
   const withoutJs = base.replace(/\.(m|c)?jsx?$/, '');
-  const candidates = [
-    ...EXTENSIONS.map(ext => `${withoutJs}${ext}`),
-    ...EXTENSIONS.map(ext => joinPath(base, `index${ext}`)),
-  ];
-  const found = candidates.find(c => existsSync(c));
-  return found
-    ? ({
-        resolvedFileName: found,
-        extension: found.endsWith('.d.ts') ? ts.Extension.Dts : ts.Extension.Ts,
-        isExternalLibraryImport: false,
-      } as ts.ResolvedModuleFull)
-    : undefined;
+  const found = [`${withoutJs}.d.ts`, joinPath(base, 'index.d.ts')].find(path =>
+    existsSync(path),
+  );
+  if (!found) {
+    throw new Error(
+      `Unable to find the declaration file for '${specifier}', which is imported from ${containingFile}`,
+    );
+  }
+  return found;
 }
 
-function createProgram(rootNames: string[]) {
-  const options: ts.CompilerOptions = {
-    noEmit: true,
-    noLib: true,
-    types: [],
-    skipLibCheck: false,
-    target: ts.ScriptTarget.ES2022,
-    module: ts.ModuleKind.ESNext,
-    moduleResolution: ts.ModuleResolutionKind.Bundler,
-  };
-  const host = ts.createCompilerHost(options, true);
-  // Only relative imports are followed, so that the dependencies of the
-  // package don't have to be loaded. Their types stay unresolved, which is
-  // fine since only the shape of the type arguments is read.
-  host.resolveModuleNameLiterals = (literals, containingFile) =>
-    literals.map(literal => ({
-      resolvedModule: resolveRelative(literal.text, containingFile),
-    }));
-  return ts.createProgram({ rootNames, options, host });
+function hasExportModifier(node: ts.VariableStatement) {
+  return node.modifiers?.some(m => m.kind === ts.SyntaxKind.ExportKeyword);
+}
+
+type ModuleLookup = {
+  /** The module and name pairs that are being resolved, to detect cycles. */
+  trail: string[];
+};
+
+function followSpecifier(
+  specifier: ts.Expression,
+  containingFile: string,
+  name: string,
+  lookup: ModuleLookup,
+): ts.VariableDeclaration | undefined {
+  if (!ts.isStringLiteralLike(specifier)) {
+    throw new TypeReadError('a module specifier is not a string literal');
+  }
+  const path = resolveRelative(specifier.text, containingFile);
+  if (!path) {
+    throw new TypeReadError(
+      `the default export comes from '${specifier.text}', but only relative imports are followed`,
+    );
+  }
+  return findExportedVariable(path, name, lookup);
+}
+
+/**
+ * Finds the variable that a module exports with a name, following relative
+ * imports and re-exports. Returns undefined if the module has no such export.
+ */
+function findExportedVariable(
+  path: string,
+  exportName: string,
+  lookup: ModuleLookup,
+): ts.VariableDeclaration | undefined {
+  const key = `${path}#${exportName}`;
+  if (lookup.trail.includes(key)) {
+    throw new TypeReadError(`the export '${exportName}' is circular`);
+  }
+  const next = { trail: [...lookup.trail, key] };
+  const file = parseDeclarationFile(path);
+
+  for (const statement of file.statements) {
+    if (
+      exportName === 'default' &&
+      ts.isExportAssignment(statement) &&
+      !statement.isExportEquals
+    ) {
+      if (!ts.isIdentifier(statement.expression)) {
+        throw new TypeReadError('the default export is not a variable');
+      }
+      return findLocalVariable(file, statement.expression.text, next);
+    }
+    if (ts.isVariableStatement(statement) && hasExportModifier(statement)) {
+      const declaration = statement.declarationList.declarations.find(
+        d => ts.isIdentifier(d.name) && d.name.text === exportName,
+      );
+      if (declaration) {
+        return declaration;
+      }
+    }
+    if (
+      ts.isExportDeclaration(statement) &&
+      !statement.isTypeOnly &&
+      statement.exportClause &&
+      ts.isNamedExports(statement.exportClause)
+    ) {
+      const specifier = statement.exportClause.elements.find(
+        e => !e.isTypeOnly && e.name.text === exportName,
+      );
+      if (specifier) {
+        const local = (specifier.propertyName ?? specifier.name).text;
+        return statement.moduleSpecifier
+          ? followSpecifier(statement.moduleSpecifier, path, local, next)
+          : findLocalVariable(file, local, next);
+      }
+    }
+  }
+
+  // Star exports don't include the default export
+  if (exportName !== 'default') {
+    for (const statement of file.statements) {
+      if (
+        ts.isExportDeclaration(statement) &&
+        !statement.isTypeOnly &&
+        !statement.exportClause &&
+        statement.moduleSpecifier
+      ) {
+        const found = followSpecifier(
+          statement.moduleSpecifier,
+          path,
+          exportName,
+          next,
+        );
+        if (found) {
+          return found;
+        }
+      }
+    }
+  }
+  return undefined;
+}
+
+/** Finds a variable that is declared or imported in a module by its local name. */
+function findLocalVariable(
+  file: ts.SourceFile,
+  name: string,
+  lookup: ModuleLookup,
+): ts.VariableDeclaration {
+  for (const statement of file.statements) {
+    if (ts.isVariableStatement(statement)) {
+      const declaration = statement.declarationList.declarations.find(
+        d => ts.isIdentifier(d.name) && d.name.text === name,
+      );
+      if (declaration) {
+        return declaration;
+      }
+    }
+    const clause = ts.isImportDeclaration(statement)
+      ? statement.importClause
+      : undefined;
+    if (clause && !clause.isTypeOnly) {
+      let imported: string | undefined;
+      if (clause.name?.text === name) {
+        imported = 'default';
+      } else if (
+        clause.namedBindings &&
+        ts.isNamedImports(clause.namedBindings)
+      ) {
+        const element = clause.namedBindings.elements.find(
+          e => !e.isTypeOnly && e.name.text === name,
+        );
+        imported = (element?.propertyName ?? element?.name)?.text;
+      }
+      if (imported !== undefined) {
+        const found = followSpecifier(
+          (statement as ts.ImportDeclaration).moduleSpecifier,
+          file.fileName,
+          imported,
+          lookup,
+        );
+        if (!found) {
+          throw new TypeReadError(
+            `'${imported}' is not exported by the module that '${name}' is imported from`,
+          );
+        }
+        return found;
+      }
+    }
+  }
+  throw new TypeReadError(`unable to find the declaration of '${name}'`);
 }
 
 /** Reads a literal type node, which is a string, number, boolean or undefined. */
@@ -407,29 +554,33 @@ function findNotDeferrableReason(
  * Reads the manifest of the plugin that is the default export of an entry
  * point declaration file. Everything comes from the types, using the
  * `literals` that plugins and extensions record, except for the plugin routes
- * that route refs are, which the types don't identify.
+ * that route refs are, which the types don't identify. A page or element
+ * therefore never has a `routeRefName`.
+ *
+ * @throws If the declaration file of the entry point, or a file that it
+ * imports, doesn't exist.
  */
 export function readFrontendManifestFromTypes(options: {
   /** The path of the declaration file of the entry point. */
   entryPoint: string;
 }): { manifest: FrontendFeatureManifest } | { skipped: string } {
-  const program = createProgram([options.entryPoint]);
-  const checker = program.getTypeChecker();
-  const sourceFile = program.getSourceFile(options.entryPoint);
-  const moduleSymbol = sourceFile && checker.getSymbolAtLocation(sourceFile);
-  let symbol = moduleSymbol?.exports?.get(
-    ts.InternalSymbolName.Default as ts.__String,
-  );
-  for (
-    let i = 0;
-    symbol && symbol.flags & ts.SymbolFlags.Alias && i < 20;
-    i++
-  ) {
-    symbol = checker.getAliasedSymbol(symbol);
+  if (!existsSync(options.entryPoint)) {
+    throw new Error(
+      `No declaration file found at ${options.entryPoint}, be sure to run yarn tsc to generate .d.ts files before packaging`,
+    );
   }
-  const declaration = symbol?.declarations?.find(
-    (d): d is ts.VariableDeclaration => ts.isVariableDeclaration(d),
-  );
+
+  let declaration: ts.VariableDeclaration | undefined;
+  try {
+    declaration = findExportedVariable(options.entryPoint, 'default', {
+      trail: [],
+    });
+  } catch (error) {
+    if (error instanceof TypeReadError) {
+      return { skipped: error.message };
+    }
+    throw error;
+  }
   if (!declaration?.type) {
     return { skipped: 'the entry point has no default export with a type' };
   }
