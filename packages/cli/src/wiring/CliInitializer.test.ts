@@ -405,6 +405,31 @@ describe('CliInitializer', () => {
     expect(process.exit).toHaveBeenCalledWith(0);
   });
 
+  it('should let an installed module win regardless of add order', async () => {
+    const calls: string[] = [];
+    const createModule = (name: string) =>
+      createCliModule({
+        packageJson: { name },
+        init: async reg =>
+          reg.addCommand({
+            path: ['test'],
+            description: name,
+            execute: async () => {
+              calls.push(name);
+            },
+          }),
+      });
+
+    process.argv = ['node', 'cli', 'test'];
+    const initializer = new CliInitializer();
+    initializer.add([createModule('@backstage/default')]);
+    initializer.add(createModule('@backstage/installed'));
+    await initializer.run();
+
+    expect(calls).toEqual(['@backstage/installed']);
+    expect(process.exit).toHaveBeenCalledWith(0);
+  });
+
   it('should keep the non-overlapping commands of an array-sourced module', async () => {
     const calls: string[] = [];
     const individualModule = createCliModule({
