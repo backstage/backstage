@@ -74,23 +74,28 @@ describe('PluginHeader', () => {
     // The npm release and the age of the check are not part of the header.
     const summary = screen.getByLabelText('Plugin summary');
     expect(summary).toHaveTextContent(
-      'Supports Backstage 1.50.03 versions behindDocumentation',
+      'Supported Backstage versionv1.50.0(3 versions behind)LinksDocs ↗',
     );
     expect(summary).not.toHaveTextContent('2.4.0');
     expect(summary).not.toHaveTextContent('ago');
-    expect(screen.getByRole('link', { name: /Documentation/ })).toHaveAttribute(
+    const docs = screen.getByRole('link', { name: /Docs/ });
+    expect(docs).toHaveAttribute(
       'href',
       'https://example.com/catalog-insights/docs',
     );
+    expect(docs).toHaveAttribute('target', '_blank');
+    expect(docs).toHaveAttribute('rel', 'noopener noreferrer');
 
     rerender(<PluginHeader plugin={plugin} latestBackstageVersion="1.50.4" />);
-    expect(summary).toHaveTextContent('up to date');
+    expect(summary).toHaveTextContent('v1.50.0(up to date)');
 
     rerender(<PluginHeader plugin={plugin} latestBackstageVersion="1.51.0" />);
-    expect(summary).toHaveTextContent('1 version behind');
+    expect(summary).toHaveTextContent('v1.50.0(1 version behind)');
 
     rerender(<PluginHeader plugin={plugin} latestBackstageVersion={null} />);
-    expect(summary).toHaveTextContent('Supports Backstage 1.50.0Documentation');
+    expect(summary).toHaveTextContent(
+      'Supported Backstage versionv1.50.0LinksDocs ↗',
+    );
   });
 
   it('reports when the supported Backstage version is not known', () => {
@@ -102,7 +107,7 @@ describe('PluginHeader', () => {
     );
 
     expect(screen.getByLabelText('Plugin summary')).toHaveTextContent(
-      'Backstage source not reportedDocumentation',
+      'Supported Backstage versionBackstage source not reportedLinksDocs ↗',
     );
   });
 });

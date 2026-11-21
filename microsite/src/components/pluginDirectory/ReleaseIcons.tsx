@@ -36,14 +36,3 @@ export function BackstageIcon() {
     </svg>
   );
 }
-
-export function DocumentIcon() {
-  return (
-    <svg viewBox="0 0 16 16" width="1em" height="1em" aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M3 1.5A.5.5 0 0 1 3.5 1h6.086a.5.5 0 0 1 .353.146l2.915 2.915a.5.5 0 0 1 .146.353V14.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-13ZM9 2H4v12h8V4.5H9.5A.5.5 0 0 1 9 4V2Zm1 .707V3.5h.793L10 2.707ZM5 7h6v1H5V7Zm0 2.5h6v1H5v-1Z"
-      />
-    </svg>
-  );
-}

@@ -18,7 +18,6 @@ import type { PluginData } from '../../pluginDirectory/plugin';
 import React from 'react';
 
 import { getBackstageSupport } from './packagePresentation';
-import { BackstageIcon, DocumentIcon } from './ReleaseIcons';
 import styles from './pluginDirectory.module.scss';
 
 interface PluginHeaderProps {
@@ -44,35 +43,41 @@ export function PluginHeader({
       </div>
 
       <p className={styles.description}>{plugin.description}</p>
-      <ul className={styles.releaseBadges} aria-label="Plugin summary">
-        <li className={styles.releaseBadge}>
-          <BackstageIcon />
-          <div className={styles.releaseBadgeDetails}>
+      <dl className={styles.headerFacts} aria-label="Plugin summary">
+        <div>
+          <dt>Supported Backstage version</dt>
+          <dd>
             {support.status === 'unavailable' ? (
-              <span>Backstage source not reported</span>
+              'Backstage source not reported'
             ) : (
               <>
-                <strong>Supports Backstage {support.version}</strong>
+                v{support.version}
                 {support.versionsBehind !== undefined && (
-                  <span>
+                  <span className={styles.headerFactNote}>
                     {support.versionsBehind === 0
-                      ? 'up to date'
-                      : `${support.versionsBehind} ${
+                      ? '(up to date)'
+                      : `(${support.versionsBehind} ${
                           support.versionsBehind === 1 ? 'version' : 'versions'
-                        } behind`}
+                        } behind)`}
                   </span>
                 )}
               </>
             )}
-          </div>
-        </li>
-        <li>
-          <a className={styles.releaseBadge} href={plugin.documentation}>
-            <DocumentIcon />
-            <span>Documentation</span>
-          </a>
-        </li>
-      </ul>
+          </dd>
+        </div>
+        <div>
+          <dt>Links</dt>
+          <dd>
+            <a
+              href={plugin.documentation}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Docs <span aria-hidden="true">↗</span>
+            </a>
+          </dd>
+        </div>
+      </dl>
     </header>
   );
 }
