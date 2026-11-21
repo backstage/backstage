@@ -278,6 +278,10 @@ jobs:
         run: yarn typecheck
         working-directory: microsite
 
+      - name: test plugin directory tooling
+        run: yarn test:plugin-directory
+        working-directory: microsite
+
       - name: verify yarn dependency duplicates
         run: node scripts/verify-lockfile-duplicates.js
 
