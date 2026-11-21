@@ -129,7 +129,7 @@ export interface CliCommand {
 
 /**
  * A command that runs in the context of a single package, registered with
- * `addPackageCommand`. It is available as `backstage-cli package <command>`.
+ * `addPackageCommand`. It is available as `backstage-cli package <path>`.
  *
  * Several modules may register the same package command as long as at most
  * one of them omits `if`. When the command is invoked, the `if` condition of
@@ -142,10 +142,10 @@ export interface CliCommand {
  */
 export interface CliPackageCommand extends Omit<CliCommand, 'path'> {
   /**
-   * The command path relative to `package`. For example, `['lint']` maps to
-   * `backstage-cli package lint`.
+   * The path segments of the command, relative to `package`. For example,
+   * `['lint']` maps to `backstage-cli package lint`.
    */
-  command: string[];
+  path: string[];
   /**
    * An optional condition that makes the command toggleable per package.
    *

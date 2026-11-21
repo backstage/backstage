@@ -582,7 +582,7 @@ describe('runCli', () => {
         packageJson: { name: '@example/vitest' },
         init: async reg => {
           reg.addPackageCommand({
-            command: ['test'],
+            path: ['test'],
             description: 'Test with Vitest',
             if: usesVitest,
             execute: async ({ args }) => {
@@ -622,7 +622,7 @@ describe('runCli', () => {
         packageJson: { name: '@example/vitest' },
         init: async reg => {
           reg.addPackageCommand({
-            command: ['test'],
+            path: ['test'],
             description: 'Test with Vitest',
             if: () => true,
             execute: async () => {},
@@ -670,7 +670,7 @@ describe('runCli', () => {
           packageJson: { name: '@example/vitest' },
           init: async reg => {
             reg.addPackageCommand({
-              command: ['test'],
+              path: ['test'],
               description: 'Test with Vitest',
               if: () => false,
               execute,

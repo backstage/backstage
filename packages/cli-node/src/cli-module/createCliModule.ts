@@ -76,13 +76,13 @@ export function createCliModule(options: {
     commands.push(OpaqueCliCommand.createInstance('v1', { command }));
   };
   const addPackageCommand = ({
-    command,
+    path,
     if: condition,
     ...rest
   }: CliPackageCommand) => {
     commands.push(
       OpaqueCliPackageCommand.createInstance('v1', {
-        command: { ...rest, path: ['package', ...command] },
+        command: { ...rest, path: ['package', ...path] },
         if: condition,
       }),
     );

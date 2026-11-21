@@ -178,7 +178,7 @@ export default async ({ args, info }: CliCommandContext) => {
 
 ### Toggling package commands
 
-Register commands under `package` with `addPackageCommand`. The `command`
+Register commands under `package` with `addPackageCommand`. The `path`
 option is the path relative to `package`, so `['lint']` registers
 `package lint`. A package command can set `if`, a condition that receives the
 package directory and its `package.json`. This lets several modules provide the
@@ -187,7 +187,7 @@ package:
 
 ```ts
 reg.addPackageCommand({
-  command: ['lint'],
+  path: ['lint'],
   description: 'Lint the package with oxlint',
   if: ({ packageJson }) => 'oxlint' in (packageJson.devDependencies ?? {}),
   execute: { loader: () => import('./commands/lint') },

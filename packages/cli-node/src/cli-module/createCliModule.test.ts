@@ -29,13 +29,13 @@ describe('createCliModule', () => {
           execute: async () => {},
         });
         reg.addPackageCommand({
-          command: ['lint'],
+          path: ['lint'],
           description: 'Lint the package',
           if: condition,
           execute: async () => {},
         });
         reg.addPackageCommand({
-          command: ['test', 'unit'],
+          path: ['test', 'unit'],
           description: 'Test the package',
           execute: async () => {},
         });

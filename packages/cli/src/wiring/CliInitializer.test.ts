@@ -330,7 +330,7 @@ describe('CliInitializer', () => {
       packageJson: { name: '@backstage/toggled' },
       init: async reg =>
         reg.addPackageCommand({
-          command: ['test'],
+          path: ['test'],
           description: 'toggled test',
           if: ({ packageJson }) => packageJson.name === 'toggled-pkg',
           execute: async () => {
