@@ -77,8 +77,14 @@ export const catalogGraphTranslationRef: TranslationRef<
     readonly 'catalogGraphCard.title': 'Relations';
     readonly 'catalogGraphCard.deepLinkTitle': 'View graph';
     readonly 'catalogGraphPage.title': 'Catalog Graph';
+    readonly 'catalogGraphPage.breadcrumbTitle': 'Relations';
     readonly 'catalogGraphPage.filterToggleButtonTitle': 'Filters';
     readonly 'catalogGraphPage.supportButtonDescription': 'Start tracking your component in by adding it to the software catalog.';
+    readonly 'catalogGraphPage.additionalRootEntities': '(+{{count}})';
+    readonly 'catalogGraphPage.entityNotFoundTitle': 'Entity not found';
+    readonly 'catalogGraphPage.entityNotFoundDescription': 'No entity was found for {{refs}}.';
+    readonly 'catalogGraphPage.noRootEntityTitle': 'No entity selected';
+    readonly 'catalogGraphPage.noRootEntityDescription': 'Open the graph from an entity page to see its relations.';
     readonly 'catalogGraphPage.simplifiedSwitchLabel': 'Simplified';
     readonly 'catalogGraphPage.mergeRelationsSwitchLabel': 'Merge relations';
     readonly 'catalogGraphPage.zoomOutDescription': 'Use pinch & zoom to move around the diagram. Click to change active node, shift click to navigate to entity.';
