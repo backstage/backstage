@@ -40,7 +40,6 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { Octokit } from '@octokit/core';
-import { graphql } from '@octokit/graphql';
 import {
   InstallationCreatedEvent,
   InstallationEvent,
@@ -76,6 +75,7 @@ import {
   ANNOTATION_GITHUB_USER_LOGIN,
 } from '../lib/annotation';
 import {
+  createGraphqlClient,
   createRestClient,
   getOrganizationsFromUser,
   getOrganizationTeam,
@@ -302,6 +302,20 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     };
   }
 
+  /**
+   * GraphQL client with throttling and retries, matching GithubOrgEntityProvider.
+   */
+  private createGraphqlClientForOrg(
+    headers: GithubCredentials['headers'],
+    logger: LoggerService,
+  ) {
+    return createGraphqlClient({
+      headers,
+      baseUrl: this.options.gitHubConfig.apiBaseUrl!,
+      logger,
+    });
+  }
+
   private get useRestSuspendedCheck(): boolean {
     return (
       !!this.options.excludeSuspendedUsers &&
@@ -404,10 +418,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         );
       }
 
-      const client = graphql.defaults({
-        baseUrl: this.options.gitHubConfig.apiBaseUrl,
-        headers,
-      });
+      const client = this.createGraphqlClientForOrg(headers, logger);
 
       logger.info(`Reading GitHub users and teams for org: ${org}`);
 
@@ -578,10 +589,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       await this.options.githubCredentialsProvider.getCredentials({
         url: `${this.options.githubUrl}/${org}`,
       });
-    const client = graphql.defaults({
-      baseUrl: this.options.gitHubConfig.apiBaseUrl,
-      headers,
-    });
+    const client = this.createGraphqlClientForOrg(headers, this.options.logger);
 
     const pageSizes = this.getPageSizes();
 
@@ -611,10 +619,10 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           await this.options.githubCredentialsProvider.getCredentials({
             url: `${this.options.githubUrl}/${userOrg}`,
           });
-        const orgClient = graphql.defaults({
-          baseUrl: this.options.gitHubConfig.apiBaseUrl,
-          headers: orgHeaders,
-        });
+        const orgClient = this.createGraphqlClientForOrg(
+          orgHeaders,
+          this.options.logger,
+        );
 
         const { teams: userTeams } = await getOrganizationTeamsFromUsers(
           orgClient,
@@ -675,10 +683,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       await this.options.githubCredentialsProvider.getCredentials({
         url: `${this.options.githubUrl}/${org}`,
       });
-    const client = graphql.defaults({
-      baseUrl: this.options.gitHubConfig.apiBaseUrl,
-      headers,
-    });
+    const client = this.createGraphqlClientForOrg(headers, this.options.logger);
 
     const { orgs } = await getOrganizationsFromUser(client, login);
     const userApplicableOrgs = orgs.filter(o => applicableOrgs.includes(o));
@@ -731,10 +736,10 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           await this.options.githubCredentialsProvider.getCredentials({
             url: `${this.options.githubUrl}/${userOrg}`,
           });
-        const orgClient = graphql.defaults({
-          baseUrl: this.options.gitHubConfig.apiBaseUrl,
-          headers: orgHeaders,
-        });
+        const orgClient = this.createGraphqlClientForOrg(
+          orgHeaders,
+          this.options.logger,
+        );
 
         const { teams } = await getOrganizationTeamsForUser(
           orgClient,
@@ -770,10 +775,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       await this.options.githubCredentialsProvider.getCredentials({
         url: `${this.options.githubUrl}/${org}`,
       });
-    const client = graphql.defaults({
-      baseUrl: this.options.gitHubConfig.apiBaseUrl,
-      headers,
-    });
+    const client = this.createGraphqlClientForOrg(headers, this.options.logger);
 
     const { name, html_url: url, description, slug } = event.team;
     const group = (await this.defaultMultiOrgTeamTransformer(
@@ -822,10 +824,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       await this.options.githubCredentialsProvider.getCredentials({
         url: `${this.options.githubUrl}/${org}`,
       });
-    const client = graphql.defaults({
-      baseUrl: this.options.gitHubConfig.apiBaseUrl,
-      headers,
-    });
+    const client = this.createGraphqlClientForOrg(headers, this.options.logger);
 
     const pageSizes = this.getPageSizes();
     const teamSlug = event.team.slug;
@@ -864,10 +863,10 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           await this.options.githubCredentialsProvider.getCredentials({
             url: `${this.options.githubUrl}/${userOrg}`,
           });
-        const orgClient = graphql.defaults({
-          baseUrl: this.options.gitHubConfig.apiBaseUrl,
-          headers: orgHeaders,
-        });
+        const orgClient = this.createGraphqlClientForOrg(
+          orgHeaders,
+          this.options.logger,
+        );
 
         const { teams } = await getOrganizationTeamsFromUsers(
           orgClient,
@@ -942,10 +941,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       await this.options.githubCredentialsProvider.getCredentials({
         url: `${this.options.githubUrl}/${org}`,
       });
-    const client = graphql.defaults({
-      baseUrl: this.options.gitHubConfig.apiBaseUrl,
-      headers,
-    });
+    const client = this.createGraphqlClientForOrg(headers, this.options.logger);
 
     const pageSizes = this.getPageSizes();
     const teamSlug = event.team.slug;
@@ -989,10 +985,10 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
             await this.options.githubCredentialsProvider.getCredentials({
               url: `${this.options.githubUrl}/${userOrg}`,
             });
-          const orgClient = graphql.defaults({
-            baseUrl: this.options.gitHubConfig.apiBaseUrl,
-            headers: orgHeaders,
-          });
+          const orgClient = this.createGraphqlClientForOrg(
+            orgHeaders,
+            this.options.logger,
+          );
 
           const { teams } = await getOrganizationTeamsForUser(
             orgClient,
