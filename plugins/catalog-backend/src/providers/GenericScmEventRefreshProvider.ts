@@ -92,36 +92,9 @@ export class GenericScmEventRefreshProvider implements EntityProvider {
       expandUrlVariations(exactLocationsToRefresh),
       50,
     )) {
-      const result = await this.#knex<DbRefreshStateRow>('refresh_state')
-        .update({ next_update_at: this.#knex.fn.now() })
-        .where(outer =>
-          outer
-            .whereIn('entity_id', keysQuery =>
-              keysQuery
-                .table<DbRefreshKeysRow>('refresh_keys')
-                .select('entity_id')
-                .whereIn('key', urls),
-            )
-            // Search rows are keyed by the final entity's slot ID, which can
-            // differ from the candidate's ID, so match candidates by ref.
-            .orWhereIn('entity_ref', searchQuery =>
-              searchQuery
-                .table<DbSearchRow>('search')
-                .join(
-                  'final_entities',
-                  'final_entities.entity_id',
-                  'search.entity_id',
-                )
-                .select('final_entities.entity_ref')
-                .whereIn('search.key', [
-                  `metadata.annotations.${ANNOTATION_LOCATION}`,
-                  `metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`,
-                ])
-                .whereIn('search.value', urls),
-            ),
-        );
-
-      count += Number(result);
+      count += await this.#refreshMatchingCandidates((query, column) => {
+        query.whereIn(column, urls);
+      });
     }
 
     // Perform prefix updates
@@ -129,48 +102,46 @@ export class GenericScmEventRefreshProvider implements EntityProvider {
       expandUrlVariations(locationPrefixesToRefresh),
       10,
     )) {
-      const result = await this.#knex<DbRefreshStateRow>('refresh_state')
-        .update({ next_update_at: this.#knex.fn.now() })
-        .where(outer =>
-          outer
-            .whereIn('entity_id', keysQuery =>
-              keysQuery
-                .table<DbRefreshKeysRow>('refresh_keys')
-                .select('entity_id')
-                .where(inner =>
-                  prefixes.reduce(
-                    (acc, prefix) => acc.orWhere('key', 'like', `${prefix}%`),
-                    inner,
-                  ),
-                ),
-            )
-            .orWhereIn('entity_ref', searchQuery =>
-              searchQuery
-                .table<DbSearchRow>('search')
-                .join(
-                  'final_entities',
-                  'final_entities.entity_id',
-                  'search.entity_id',
-                )
-                .select('final_entities.entity_ref')
-                .whereIn('search.key', [
-                  `metadata.annotations.${ANNOTATION_LOCATION}`,
-                  `metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`,
-                ])
-                .where(inner =>
-                  prefixes.reduce(
-                    (acc, prefix) =>
-                      acc.orWhere('search.value', 'like', `${prefix}%`),
-                    inner,
-                  ),
-                ),
-            ),
-        );
-
-      count += Number(result);
+      count += await this.#refreshMatchingCandidates((query, column) => {
+        query.where(inner => {
+          for (const prefix of prefixes) {
+            inner.orWhere(column, 'like', `${prefix}%`);
+          }
+        });
+      });
     }
 
     this.#scmEvents.markEventActionTaken({ count, action: 'refresh' });
+  }
+
+  async #refreshMatchingCandidates(
+    match: (query: Knex.QueryBuilder, column: string) => void,
+  ): Promise<number> {
+    const byRefreshKey = this.#knex<DbRefreshKeysRow>('refresh_keys')
+      .select('entity_id')
+      .modify(match, 'key');
+    // Search rows use the stable slot ID, not necessarily the candidate ID.
+    const bySearch = this.#knex<DbSearchRow>('search')
+      .join('final_entities', 'final_entities.entity_id', 'search.entity_id')
+      .join(
+        'refresh_state as candidate',
+        'candidate.entity_ref',
+        'final_entities.entity_ref',
+      )
+      .select('candidate.entity_id')
+      .whereIn('search.key', [
+        `metadata.annotations.${ANNOTATION_LOCATION}`,
+        `metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`,
+      ])
+      .modify(match, 'search.value');
+
+    // A single IN over the UNION allows indexed candidate lookups. The derived
+    // table also lets MySQL read refresh_state while updating it.
+    const matches = byRefreshKey.union(bySearch).as('matches');
+    const result = await this.#knex<DbRefreshStateRow>('refresh_state')
+      .update({ next_update_at: this.#knex.fn.now() })
+      .whereIn('entity_id', this.#knex.select('entity_id').from(matches));
+    return Number(result);
   }
 }
 

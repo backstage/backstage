@@ -22,12 +22,13 @@ Record execution time, plan shape, and buffer usage in `baseline.md`. Keep one
 readable representative full plan per scenario in `plans.md` and the exact
 machine-diffable final-run output in `plans.json`.
 
-**Run every scenario with and without permissions.** The plans of a request
-with and without a conditional permission filter are very different, so each
-scenario 1-14 and 20 has two variants: `_nop` (as written) and `_perm` (the
-same request with the `<permission>` predicate from scenarios 15-19 combined
-with its filter using `$all`). Scenarios 8, 9 and 11 do not go through the
-permission layer and only have a `_nop` variant.
+**Run request scenarios with and without permissions.** The plans of a
+request with and without a conditional permission filter are very different.
+Scenarios 1-14 and 20 have `_nop` (as written) and `_perm` variants (the same
+request with the `<permission>` predicate from scenarios 15-19 combined with
+its filter using `$all`), except scenarios 8, 9 and 11, which only have a
+`_nop` variant. Scenarios 22-24 are background operations; use only the
+read-only SQL below, without permissions or claim lists.
 
 **Use several claim lists.** Long `$in` lists are matched differently from
 short ones, so measure the `_perm` variants with at least 3, 10 and 40 claims,
@@ -1204,6 +1205,86 @@ entities.
 - A set of entity IDs built for a list on one of the broad fields.
 - A negated list planned as a filter that scans a materialized set again for every
   row.
+
+---
+
+## 22-24. SCM event refresh target selection
+
+**User action**: A source control event schedules a catalog refresh through
+`GenericScmEventRefreshProvider`. Measure one event per case:
+
+| Scenario | Event                | Input                                           |
+| -------- | -------------------- | ----------------------------------------------- |
+| 22       | `location.updated`   | An exact URL matching one candidate             |
+| 23       | `location.updated`   | An exact URL matching no candidates             |
+| 24       | `repository.updated` | A repository prefix matching tens of candidates |
+
+**Read-only SQL (PostgreSQL)**: Run `EXPLAIN (ANALYZE, BUFFERS)` on the
+`SELECT` below in a read-only transaction. Do not call the event handler or
+run `EXPLAIN ANALYZE` on the `UPDATE`. Selecting `ctid` retains heap access
+for target rows. This measures target selection, not the cost of updating
+rows, maintaining indexes, or taking row locks. Use
+`SET LOCAL max_parallel_workers_per_gather = 0` so the `SELECT` does not
+introduce parallelism unavailable to the `UPDATE`.
+
+```sql
+SELECT refresh_state.entity_id, refresh_state.ctid
+FROM refresh_state
+WHERE refresh_state.entity_id IN (
+  SELECT entity_id
+  FROM (
+    SELECT rk.entity_id
+    FROM refresh_keys AS rk
+    WHERE rk.key IN (:'url', :'url_variant')
+    UNION
+    SELECT candidate.entity_id
+    FROM search AS s
+    JOIN final_entities AS f ON f.entity_id = s.entity_id
+    JOIN refresh_state AS candidate ON candidate.entity_ref = f.entity_ref
+    WHERE s.key IN (
+      'metadata.annotations.backstage.io/managed-by-location',
+      'metadata.annotations.backstage.io/managed-by-origin-location'
+    )
+      AND s.value IN (:'url', :'url_variant')
+  ) AS matches
+);
+```
+
+For exact cases bind the `url:`-prefixed event URL and its `/blob/` to
+`/tree/` variant if different; otherwise use one value. For the prefix case,
+replace both `IN` predicates on `rk.key` and `s.value` with `LIKE :'prefix_pattern'`.
+Bind the `url:`-prefixed repository URL ending in `/` followed by `%`.
+Use the same inputs for all three query shapes, and redact URLs, prefixes,
+and any other private values from saved plans.
+
+Compare the wrapped candidate-ID `UNION` with these two shapes, keeping the
+outer `SELECT` and both branches' match predicates unchanged:
+
+- **Base:** Use a single `entity_id IN` over the unwrapped `UNION` of
+  `rk.entity_id` and `s.entity_id`, with no joins in the search branch.
+- **OR:** Use `refresh_state.entity_id IN (<refresh key branch>) OR
+refresh_state.entity_ref IN (<search branch selecting f.entity_ref>)`.
+  Keep the `final_entities` join, but not the `candidate` join.
+
+The wrapped query translates the search row's stable slot ID to a ref and
+then to the current candidate ID. The derived `UNION` also prevents merging
+in MySQL, which avoids the restriction on reading the update target table
+in a subquery (error 1093). Compare returned candidate IDs across shapes,
+not just counts. If candidate IDs differ from slot IDs, use the OR shape
+rather than base as the correctness reference for search matches.
+
+**Healthy plan**: Exact matches use the refresh key index and the search
+key/value index. The search branch joins by slot primary key and candidate
+ref. The outer query probes `refresh_state_pkey` only for matching candidate
+IDs; on an exact miss, the outer probe is never executed. A prefix can still
+filter a large annotation-key index range by `LIKE`; compare that work with
+base separately from target lookup.
+
+**Anti-patterns**:
+
+- A sequential scan of outer `refresh_state`, especially for an exact miss.
+- Work on outer `refresh_state` that grows with the catalog size rather
+  than with the number of matched candidates.
 
 ---
 

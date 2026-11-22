@@ -752,3 +752,43 @@ noise of master: those plans already built the set first.
   more than 100 entities. It fixed scenario 14 with 99 claims including the
   largest group (22.9 s to 5.0 s), but scenario 14 with 40 or 99 claims went
   from 2.6 s to 4.8 s and scenario 12 from 3.5 s to 4.3 s.
+
+## SCM event refresh target selection (2026-11-22)
+
+Scenarios 22-24 compare the base slot-ID `UNION`, the `OR` of ID and ref
+checks, and the wrapped candidate-ID `UNION` from #36258. PostgreSQL 18.6
+on beta, `work_mem` at 32MB. Each table entry is one representative JSON
+plan of `SELECT entity_id, ctid` in a read-only transaction, with parallel
+query disabled and a 10 s statement timeout. These are selection times,
+not update times. The three shapes returned identical candidate IDs for
+these inputs: one for the exact hit, zero for the miss, and 61 for the
+prefix. These inputs do not establish equivalence when a slot and its
+candidate have different IDs.
+
+| Scenario  | Shape   |  Execution | Planning | Shared hit / read blocks |
+| --------- | ------- | ---------: | -------: | -----------------------: |
+| 22 hit    | Base    |   0.795 ms | 0.459 ms |                   26 / 2 |
+| 22 hit    | OR      |    2.273 s | 0.640 ms |        419,043 / 877,043 |
+| 22 hit    | Wrapped |   0.463 ms | 1.027 ms |                   46 / 0 |
+| 23 miss   | Base    |   0.172 ms | 0.408 ms |                   13 / 0 |
+| 23 miss   | OR      |    1.457 s | 0.594 ms |        419,600 / 876,467 |
+| 23 miss   | Wrapped |   0.196 ms | 1.006 ms |                   13 / 0 |
+| 24 prefix | Base    | 678.058 ms | 0.423 ms |              887,079 / 0 |
+| 24 prefix | OR      |    2.279 s | 0.558 ms |      1,307,486 / 875,891 |
+| 24 prefix | Wrapped | 690.190 ms | 0.972 ms |              888,177 / 0 |
+
+The `OR` shape sequentially scanned outer `refresh_state` and removed about
+739,000 rows by filter in each case. The wrapped `UNION` kept the exact
+lookups indexed and never probed the outer table on a miss. The prefix was
+about 2% slower than base in this run. Both shapes scanned the smaller
+`refresh_keys` table and filtered about 1.47 million entries in the
+annotation-key index range; the wrapped plan then used indexed joins and
+outer primary-key lookups. None of the three shapes scanned the `search`
+heap sequentially or spilled to temp files.
+
+In an earlier beta comparison, base exact hit and miss took 3.3 ms and
+1.3 ms; the `OR` hit reached a 10 s timeout and the miss took 4,964 ms.
+The earlier candidate-ID `UNION` took about 0.7 ms and 0.4 ms, and its
+61-match prefix took 353 ms versus 357 ms for base. Those timings are from
+a separate run, not measurements of the wrapped query; the comparison
+above verifies the wrapper itself.
