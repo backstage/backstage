@@ -294,7 +294,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | ------------------------------ | ------------------------- | ----------------------------------------------------- | ------------------------------ |
 | Adam Harvey                    | Okta                      | [adamdmharvey](https://github.com/adamdmharvey)       | `adamharvey_`                  |
 | Alex Crome                     |                           | [afscrome](https://github.com/afscrome)               | `afscrome`                     |
-| Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |
+| Andrew Thauer                  |                           | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |
 | Brian Fletcher                 | Roadie.io                 | [punkle](https://github.com/punkle)                   | `Brian Fletcher#7051`          |
 | Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)           | `luchillo17#8777`              |
 | David Tuite                    | Roadie.io                 | [dtuite](https://github.com/dtuite)                   | `David Tuite (roadie.io)#1010` |
