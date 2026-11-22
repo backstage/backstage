@@ -27,6 +27,60 @@ import { TemplateParameterSchema } from '../../../types';
 import { Stepper } from './Stepper';
 
 describe('Stepper', () => {
+  it('still evaluates visible schema constraints against retained hidden values', async () => {
+    const onCreate = jest.fn();
+    await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper
+          manifest={{
+            title: 'Conditional settings',
+            steps: [
+              {
+                title: 'Settings',
+                schema: {
+                  properties: { enabled: { type: 'boolean' } },
+                  not: {
+                    properties: { mode: { const: 'advanced' } },
+                    required: ['mode'],
+                  },
+                },
+              },
+              {
+                title: 'Optional settings',
+                when: '${{ parameters.enabled }}',
+                schema: { properties: { mode: { type: 'string' } } },
+              },
+              {
+                title: 'Finish',
+                schema: { properties: { enabled: { type: 'boolean' } } },
+              },
+            ],
+          }}
+          initialState={{ enabled: true, mode: 'basic' }}
+          extensions={[]}
+          onCreate={onCreate}
+        />
+      </SecretsContextProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.change(await screen.findByRole('textbox', { name: 'mode' }), {
+      target: { value: 'advanced' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(await screen.findByRole('checkbox', { name: 'enabled' }));
+    expect(screen.queryByText('Optional settings')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Review' }));
+
+    expect(await screen.findAllByText(/must NOT be valid/i)).not.toHaveLength(
+      0,
+    );
+    expect(
+      screen.queryByRole('button', { name: 'Create' }),
+    ).not.toBeInTheDocument();
+    expect(onCreate).not.toHaveBeenCalled();
+  });
+
   it('includes each visible step title and position in its accessible name', async () => {
     await renderInTestApp(
       <SecretsContextProvider>

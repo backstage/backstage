@@ -518,6 +518,8 @@ If values, definitions, or visibility change while a check is running, its resul
 
 Custom templating filters and globals are not available in parameter step conditions. Invalid conditions keep the step visible and its parameter validation enabled.
 
+Known limitation: a visible step's schema can still read values retained from hidden steps. For example, an `if/then` rule can make a field required based on a value that will be omitted from submission. Guard cross-step constraints with the condition that makes the source step visible to avoid blocking users.
+
 When a step becomes hidden because its condition evaluates to false, any values previously entered in that step are preserved but excluded from the final parameters passed to `spec.steps`. If the user goes back and changes an earlier answer so that the step becomes visible again, their previously entered values are restored. Filtering follows nested fields and array items, so a hidden field can be removed without removing visible fields in the same object. Fields shared with a visible step are retained, including values explicitly allowed by `additionalProperties`. Local `$ref` references are resolved within each parameter step schema. If a reference can't be resolved, the values are kept rather than filtered. Any field referenced in a `when` condition should be validated by an earlier unconditional step — because `when` conditions also control which steps are validated on the backend, a field that is not itself validated could allow users to skip conditional steps unexpectedly.
 
 :::note

@@ -410,72 +410,76 @@ export const useStepperWizard = (
       setErrors(undefined);
       setValidationInterrupted(false);
       setIsValidating(true);
-      const returnedValidation = await validation(formData);
-      if (!isCurrent()) {
-        if (validationAttempt.current === attempt) {
-          setIsValidating(false);
-          setValidationInterrupted(true);
+      try {
+        const returnedValidation = await validation(formData);
+        if (!isCurrent()) {
+          if (validationAttempt.current === attempt) {
+            setValidationInterrupted(true);
+          }
+          return;
         }
-        return;
-      }
-      if (hasErrors(returnedValidation)) {
-        validationInFlight.current = undefined;
-        setIsValidating(false);
-        setErrors(returnedValidation);
-        setNavigation(current => {
-          if (!current.validatedSteps.has(displayedStepIndex)) return current;
-          const completed = new Map(current.validatedSteps);
-          completed.delete(displayedStepIndex);
-          return { ...current, validatedSteps: completed };
-        });
-        return;
-      }
-      const updated = { ...stepsState, ...formData };
-      const data = isEqual(updated, stepsState) ? stepsState : updated;
-      const completed = new Map(applicableValidations).set(displayedStepIndex, {
-        step: cloneDeep(steps[displayedStepIndex]),
-        inputs: getValidationData(
-          steps[displayedStepIndex].mergedSchema,
+        if (hasErrors(returnedValidation)) {
+          setErrors(returnedValidation);
+          setNavigation(current => {
+            if (!current.validatedSteps.has(displayedStepIndex)) return current;
+            const completed = new Map(current.validatedSteps);
+            completed.delete(displayedStepIndex);
+            return { ...current, validatedSteps: completed };
+          });
+          return;
+        }
+        const updated = { ...stepsState, ...formData };
+        const data = isEqual(updated, stepsState) ? stepsState : updated;
+        const completed = new Map(applicableValidations).set(
+          displayedStepIndex,
+          {
+            step: cloneDeep(steps[displayedStepIndex]),
+            inputs: getValidationData(
+              steps[displayedStepIndex].mergedSchema,
+              data,
+              validator,
+              customValidatorNames,
+            ),
+            formData: data,
+            validators,
+          },
+        );
+        analytics.captureEvent('click', `Next Step (${activeStep + 1})`);
+        const { visible } = resolveParameterSteps(
           data,
-          validator,
-          customValidatorNames,
-        ),
-        formData: data,
-        validators,
-      });
-      analytics.captureEvent('click', `Next Step (${activeStep + 1})`);
-      const { visible } = resolveParameterSteps(
-        data,
-        steps.map(step => ({ schema: step.mergedSchema, when: step.when })),
-      );
-      const next = visible.findIndex(
-        (isVisible, index) => isVisible && index > displayedStepIndex,
-      );
-      const result =
-        returnToPending.current || next === -1
-          ? await continueToReview(data, completed, isCurrent)
-          : { completed, index: next, errors: undefined };
-      if (!isCurrent()) {
-        if (validationAttempt.current === attempt) {
-          setIsValidating(false);
-          setValidationInterrupted(true);
+          steps.map(step => ({ schema: step.mergedSchema, when: step.when })),
+        );
+        const next = visible.findIndex(
+          (isVisible, index) => isVisible && index > displayedStepIndex,
+        );
+        const result =
+          returnToPending.current || next === -1
+            ? await continueToReview(data, completed, isCurrent)
+            : { completed, index: next, errors: undefined };
+        if (!isCurrent()) {
+          if (validationAttempt.current === attempt) {
+            setValidationInterrupted(true);
+          }
+          return;
         }
-        return;
-      }
-      validationInFlight.current = undefined;
-      setIsValidating(false);
-      if (result) {
-        returnToPending.current =
-          (returnToPending.current || next === -1) &&
-          result.index < steps.length;
-        setErrors(result.errors);
-        latestFormData.current = data;
-        setStepsState(data);
-        setNavigation(current => ({
-          ...current,
-          activeStepIndex: result.index,
-          validatedSteps: result.completed,
-        }));
+        if (result) {
+          returnToPending.current =
+            (returnToPending.current || next === -1) &&
+            result.index < steps.length;
+          setErrors(result.errors);
+          latestFormData.current = data;
+          setStepsState(data);
+          setNavigation(current => ({
+            ...current,
+            activeStepIndex: result.index,
+            validatedSteps: result.completed,
+          }));
+        }
+      } finally {
+        if (validationAttempt.current === attempt) {
+          validationInFlight.current = undefined;
+          setIsValidating(false);
+        }
       }
     },
     [
@@ -509,28 +513,32 @@ export const useStepperWizard = (
       setErrors(undefined);
       setValidationInterrupted(false);
       setIsValidating(true);
-      const result = await continueToReview(
-        stepsState,
-        new Map(applicableValidations),
-        isCurrent,
-      );
-      if (!isCurrent()) {
-        if (validationAttempt.current === attempt) {
-          setIsValidating(false);
-          setValidationInterrupted(true);
+      try {
+        const result = await continueToReview(
+          stepsState,
+          new Map(applicableValidations),
+          isCurrent,
+        );
+        if (!isCurrent()) {
+          if (validationAttempt.current === attempt) {
+            setValidationInterrupted(true);
+          }
+          return;
         }
-        return;
-      }
-      validationInFlight.current = undefined;
-      setIsValidating(false);
-      if (result) {
-        returnToPending.current = result.index < steps.length;
-        setErrors(result.errors);
-        setNavigation(current => ({
-          ...current,
-          activeStepIndex: result.index,
-          validatedSteps: result.completed,
-        }));
+        if (result) {
+          returnToPending.current = result.index < steps.length;
+          setErrors(result.errors);
+          setNavigation(current => ({
+            ...current,
+            activeStepIndex: result.index,
+            validatedSteps: result.completed,
+          }));
+        }
+      } finally {
+        if (validationAttempt.current === attempt) {
+          validationInFlight.current = undefined;
+          setIsValidating(false);
+        }
       }
       // Reaching review again is deliberate: users see the checked parameters
       // before a subsequent Create submits them.
