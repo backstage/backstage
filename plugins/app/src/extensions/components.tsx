@@ -23,17 +23,11 @@ import {
 import { useRouteMatches, normalizeBasePath } from '@internal/frontend';
 import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import {
-  ErrorPage,
-  ErrorPanel,
-  Progress as ProgressComponent,
-} from '@backstage/core-components';
-import {
   BreadcrumbEntry,
   useBreadcrumbEntries,
 } from '@backstage/frontend-plugin-api';
 
 import { PluginHeader } from '@backstage/ui';
-import Button from '@material-ui/core/Button';
 import { useMemo } from 'react';
 
 export const Progress = SwappableComponentBlueprint.make({
@@ -41,7 +35,7 @@ export const Progress = SwappableComponentBlueprint.make({
   params: define =>
     define({
       component: SwappableProgress,
-      loader: () => ProgressComponent,
+      loader: async () => (await import('@backstage/core-components')).Progress,
     }),
 });
 
@@ -50,8 +44,10 @@ export const NotFoundErrorPage = SwappableComponentBlueprint.make({
   params: define =>
     define({
       component: SwappableNotFoundErrorPage,
-      loader: () => () =>
-        <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />,
+      loader: async () => {
+        const { ErrorPage } = await import('@backstage/core-components');
+        return () => <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />;
+      },
     }),
 });
 
@@ -60,16 +56,22 @@ export const ErrorDisplay = SwappableComponentBlueprint.make({
   params: define =>
     define({
       component: SwappableErrorDisplay,
-      loader: () => props => {
-        const { plugin, error, resetError } = props;
-        const title = `Error in ${plugin?.pluginId}`;
-        return (
-          <ErrorPanel title={title} error={error} defaultExpanded>
-            <Button variant="outlined" onClick={resetError}>
-              Retry
-            </Button>
-          </ErrorPanel>
-        );
+      loader: async () => {
+        const [{ ErrorPanel }, { default: Button }] = await Promise.all([
+          import('@backstage/core-components'),
+          import('@material-ui/core/Button'),
+        ]);
+        return props => {
+          const { plugin, error, resetError } = props;
+          const title = `Error in ${plugin?.pluginId}`;
+          return (
+            <ErrorPanel title={title} error={error} defaultExpanded>
+              <Button variant="outlined" onClick={resetError}>
+                Retry
+              </Button>
+            </ErrorPanel>
+          );
+        };
       },
     }),
 });

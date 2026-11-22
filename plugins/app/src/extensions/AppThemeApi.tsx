@@ -18,8 +18,7 @@ import {
   UnifiedThemeProvider,
   themes as builtinThemes,
 } from '@backstage/theme';
-import DarkIcon from '@material-ui/icons/Brightness2';
-import LightIcon from '@material-ui/icons/WbSunny';
+import { lazy, Suspense } from 'react';
 import {
   createExtensionInput,
   ApiBlueprint,
@@ -28,6 +27,9 @@ import {
 import { ThemeBlueprint } from '@backstage/plugin-app-react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppThemeSelector } from '../../../../packages/core-app-api/src/apis/implementations';
+
+const LightIcon = lazy(() => import('@material-ui/icons/WbSunny'));
+const DarkIcon = lazy(() => import('@material-ui/icons/Brightness2'));
 
 /**
  * Contains the themes installed into the app.
@@ -62,7 +64,11 @@ export const LightTheme = ThemeBlueprint.make({
       id: 'light',
       title: 'Light Theme',
       variant: 'light',
-      icon: <LightIcon />,
+      icon: (
+        <Suspense fallback={null}>
+          <LightIcon />
+        </Suspense>
+      ),
       Provider: ({ children }) => (
         <UnifiedThemeProvider theme={builtinThemes.light} children={children} />
       ),
@@ -77,7 +83,11 @@ export const DarkTheme = ThemeBlueprint.make({
       id: 'dark',
       title: 'Dark Theme',
       variant: 'dark',
-      icon: <DarkIcon />,
+      icon: (
+        <Suspense fallback={null}>
+          <DarkIcon />
+        </Suspense>
+      ),
       Provider: ({ children }) => (
         <UnifiedThemeProvider theme={builtinThemes.dark} children={children} />
       ),
