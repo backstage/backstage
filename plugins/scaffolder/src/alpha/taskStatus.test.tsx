@@ -16,7 +16,10 @@
 
 import { screen } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
-import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import {
+  createFrontendModule,
+  createFrontendPlugin,
+} from '@backstage/frontend-plugin-api';
 import { ScaffolderTaskStatusBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -40,18 +43,22 @@ const tasks = [
   },
 ];
 
-it.each([false, true])(
-  'keeps the native list and fallback with custom status registered: %s',
-  async custom => {
+it.each(['default', 'custom', 'foreign', 'throws'] as const)(
+  'renders the task list with %s status presentation',
+  async mode => {
+    const custom = mode === 'custom' || mode === 'throws';
     const listTasks = jest.fn().mockResolvedValue({ tasks, totalTasks: 2 });
     const received = jest.fn();
     const module = createFrontendModule({
-      pluginId: 'scaffolder',
+      pluginId: mode === 'foreign' ? 'foreign' : 'scaffolder',
       extensions: [
         ScaffolderTaskStatusBlueprint.make({
           params: {
             component: ({ task, children }) => {
               received(task);
+              if (mode === 'throws' && task.id === 'custom-task') {
+                throw new Error('Custom status failed');
+              }
               return task.id === 'custom-task' ? (
                 <>Needs attention</>
               ) : (
@@ -62,8 +69,20 @@ it.each([false, true])(
         }),
       ],
     });
+    const features: Array<
+      | typeof scaffolder
+      | typeof module
+      | ReturnType<typeof createFrontendPlugin>
+    > = [scaffolder];
+    if (mode === 'foreign') {
+      features.push(createFrontendPlugin({ pluginId: 'foreign' }), module);
+    } else if (custom) {
+      features.push(module);
+    }
     renderTestApp({
-      features: custom ? [scaffolder, module] : [scaffolder],
+      features,
+      isExpectedError: error =>
+        mode === 'foreign' && error.code === 'EXTENSION_INPUT_INTERNAL_IGNORED',
       initialRouteEntries: ['/create/tasks'],
       apis: [
         [
@@ -82,12 +101,13 @@ it.each([false, true])(
     });
     expect(await screen.findByText('completed')).toBeInTheDocument();
     expect(
-      await screen.findByText(custom ? 'Needs attention' : 'failed'),
+      await screen.findByText(mode === 'custom' ? 'Needs attention' : 'failed'),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'custom-task' })).toHaveAttribute(
       'href',
       '/create/tasks/custom-task',
     );
+    expect(screen.getByRole('link', { name: 'native-task' })).toBeVisible();
     expect(listTasks).toHaveBeenCalledWith({
       filterByOwnership: 'owned',
       limit: 5,

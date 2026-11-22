@@ -573,13 +573,13 @@ const _default: OverridableFrontendPlugin<
         taskStatus: ExtensionInput<
           ConfigurableExtensionDataRef<
             ScaffolderTaskStatusComponent,
-            'scaffolder.task-status.component',
+            'scaffolder.task-status-component',
             {}
           >,
           {
             singleton: true;
             optional: true;
-            internal: false;
+            internal: true;
           }
         >;
         templateOutputsComponents: ExtensionInput<

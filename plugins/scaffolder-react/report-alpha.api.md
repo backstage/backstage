@@ -343,12 +343,10 @@ export const scaffolderReactTranslationRef: TranslationRef<
 // @alpha
 export const ScaffolderTaskStatusBlueprint: ExtensionBlueprint<{
   kind: 'scaffolder-task-status';
-  params: {
-    component: ScaffolderTaskStatusComponent;
-  };
+  params: ScaffolderTaskStatusBlueprintParams;
   output: ExtensionDataRef<
     ScaffolderTaskStatusComponent,
-    'scaffolder.task-status.component',
+    'scaffolder.task-status-component',
     {}
   >;
   inputs: {};
@@ -357,11 +355,17 @@ export const ScaffolderTaskStatusBlueprint: ExtensionBlueprint<{
   dataRefs: {
     component: ConfigurableExtensionDataRef<
       ScaffolderTaskStatusComponent,
-      'scaffolder.task-status.component',
+      'scaffolder.task-status-component',
       {}
     >;
   };
 }>;
+
+// @alpha
+export interface ScaffolderTaskStatusBlueprintParams {
+  // (undocumented)
+  component: ScaffolderTaskStatusComponent;
+}
 
 // @alpha
 export type ScaffolderTaskStatusComponent = ComponentType<{

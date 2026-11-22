@@ -8,6 +8,7 @@ from `@backstage/plugin-scaffolder-react/alpha`. Register one extension in a
 frontend module for the `scaffolder` plugin. Its component receives the full
 `task` returned by the task-list API and `children`, containing the native status
 presentation. Return `children` for tasks that your component does not handle.
+If the component throws during rendering, that cell displays the native status.
 
 ```tsx
 ScaffolderTaskStatusBlueprint.make({

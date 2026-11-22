@@ -34,8 +34,17 @@ export type ScaffolderTaskStatusComponent = ComponentType<{
 
 const componentRef =
   createExtensionDataRef<ScaffolderTaskStatusComponent>().with({
-    id: 'scaffolder.task-status.component',
+    id: 'scaffolder.task-status-component',
   });
+
+/**
+ * Parameters for {@link ScaffolderTaskStatusBlueprint}.
+ *
+ * @alpha
+ */
+export interface ScaffolderTaskStatusBlueprintParams {
+  component: ScaffolderTaskStatusComponent;
+}
 
 /**
  * Registers one task-list status presentation, leaving the native list, data
@@ -48,7 +57,7 @@ export const ScaffolderTaskStatusBlueprint = createExtensionBlueprint({
   attachTo: { id: 'sub-page:scaffolder/tasks', input: 'taskStatus' },
   output: [componentRef],
   dataRefs: { component: componentRef },
-  factory: (params: { component: ScaffolderTaskStatusComponent }) => {
+  factory: (params: ScaffolderTaskStatusBlueprintParams) => {
     return [componentRef(params.component)];
   },
 });

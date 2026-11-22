@@ -126,7 +126,7 @@ export const scaffolderTasksSubPage = SubPageBlueprint.makeWithOverrides({
   inputs: {
     taskStatus: createExtensionInput(
       [ScaffolderTaskStatusBlueprint.dataRefs.component],
-      { singleton: true, optional: true },
+      { singleton: true, optional: true, internal: true },
     ),
     templateOutputsComponents: createExtensionInput(
       [

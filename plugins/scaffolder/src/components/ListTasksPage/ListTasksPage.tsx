@@ -26,7 +26,7 @@ import {
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import useAsync from 'react-use/esm/useAsync';
-import { useState } from 'react';
+import { Component, ReactNode, useState } from 'react';
 import {
   scaffolderApiRef,
   ScaffolderTask,
@@ -51,6 +51,21 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
+
+class TaskStatusErrorBoundary extends Component<
+  { children: ReactNode; fallback: ReactNode },
+  { failed: boolean }
+> {
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  state = { failed: false };
+
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
+}
 
 export interface MyTaskPageProps {
   TaskStatusComponent?: ScaffolderTaskStatusComponent;
@@ -167,14 +182,18 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
             {
               title: t('listTaskPage.content.tableCell.status'),
               field: 'status',
-              render: row =>
-                TaskStatusComponent ? (
-                  <TaskStatusComponent task={row}>
-                    <TaskStatusColumn status={row.status} />
-                  </TaskStatusComponent>
+              render: row => {
+                const nativeStatus = <TaskStatusColumn status={row.status} />;
+                return TaskStatusComponent ? (
+                  <TaskStatusErrorBoundary key={row.id} fallback={nativeStatus}>
+                    <TaskStatusComponent task={row}>
+                      {nativeStatus}
+                    </TaskStatusComponent>
+                  </TaskStatusErrorBoundary>
                 ) : (
-                  <TaskStatusColumn status={row.status} />
-                ),
+                  nativeStatus
+                );
+              },
             },
           ]}
         />
