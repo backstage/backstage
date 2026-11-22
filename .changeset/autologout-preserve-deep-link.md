@@ -1,5 +1,5 @@
 ---
-'@backstage/frontend-plugin-api': patch
+'@backstage/frontend-plugin-api': minor
 '@backstage/core-plugin-api': minor
 '@backstage/core-app-api': patch
 '@backstage/core-components': patch

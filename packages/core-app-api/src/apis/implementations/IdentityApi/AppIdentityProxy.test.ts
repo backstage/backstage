@@ -100,7 +100,7 @@ describe('AppIdentityProxy', () => {
 
     try {
       const navigateSpy = jest.spyOn(proxy as any, 'navigateToUrl');
-      await (proxy as any).signOut({ preserveLocation: true });
+      await proxy.signOut({ preserveLocation: true });
 
       expect(mockIdentityApi.signOut).toHaveBeenCalled();
       expect(navigateSpy).toHaveBeenCalledWith(
@@ -122,7 +122,7 @@ describe('AppIdentityProxy', () => {
 
     try {
       const navigateSpy = jest.spyOn(proxy as any, 'navigateToUrl');
-      await (proxy as any).signOut({ preserveLocation: false });
+      await proxy.signOut({ preserveLocation: false });
 
       expect(mockIdentityApi.signOut).toHaveBeenCalled();
       expect(navigateSpy).toHaveBeenCalledWith('/root');
@@ -142,13 +142,29 @@ describe('AppIdentityProxy', () => {
 
     try {
       const navigateSpy = jest.spyOn(proxy as any, 'navigateToUrl');
-      await (proxy as any).signOut({ preserveLocation: true });
+      await proxy.signOut({ preserveLocation: true });
 
       expect(mockIdentityApi.signOut).toHaveBeenCalled();
       expect(navigateSpy).toHaveBeenCalledWith('/root');
     } finally {
       window.history.pushState({}, '', '/');
     }
+  });
+
+  it('should navigate to configured target URL when signOut is called before setTarget', async () => {
+    const proxy = new AppIdentityProxy();
+    const navigateSpy = jest.spyOn(proxy as any, 'navigateToUrl');
+
+    const signOutPromise = proxy.signOut();
+
+    expect(mockIdentityApi.signOut).not.toHaveBeenCalled();
+    expect(navigateSpy).not.toHaveBeenCalled();
+
+    proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/foo' });
+    await signOutPromise;
+
+    expect(mockIdentityApi.signOut).toHaveBeenCalled();
+    expect(navigateSpy).toHaveBeenCalledWith('/foo');
   });
 
   it('should report whether a target has been set', () => {

@@ -150,7 +150,13 @@ export class AppIdentityProxy implements IdentityApi {
   }
 
   private navigateToUrl(url: string): void {
+    const currentPathAndSearch = `${window.location.pathname}${window.location.search}`;
     window.location.href = url;
+    // Assigning location.href to the same path and search with a hash fragment
+    // triggers a fragment navigation rather than a full page reload (#35309).
+    if (url.startsWith(`${currentPathAndSearch}#`)) {
+      window.location.reload();
+    }
   }
 
   enableCookieAuth(ctx: {
