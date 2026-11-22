@@ -1,9 +1,6 @@
 ---
-'@backstage/frontend-test-utils': patch
 '@backstage/plugin-app': patch
-'@backstage/plugin-app-module-user-settings': patch
-'@backstage/plugin-permission-react': patch
 '@backstage/plugin-scaffolder': patch
 ---
 
-Declared missing runtime and peer dependencies, so these packages work with package managers that don't hoist dependencies, such as pnpm.
+Declared runtime dependencies that were only available through hoisting, so these packages work with package managers that don't hoist dependencies, such as pnpm: `@remix-run/router` in `@backstage/plugin-app`, and `@babel/runtime`, `@codemirror/state` and `@codemirror/theme-one-dark` in `@backstage/plugin-scaffolder`, which `@uiw/react-codemirror` needs.

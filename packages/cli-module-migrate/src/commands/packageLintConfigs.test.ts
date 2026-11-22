@@ -76,4 +76,40 @@ describe('migrate package-lint-configs', () => {
       `module.exports = require('@backstage/cli/config/eslint-factory')(__dirname);\n`,
     );
   });
+  it('resolves the legacy configs from each package, not from the root', async () => {
+    const cli = {
+      'package.json': JSON.stringify({ name: '@backstage/cli' }),
+      config: {
+        'eslint.js': 'module.exports = {};',
+        'eslint.backend.js': 'module.exports = {};',
+      },
+    };
+    mockDir.setContent({
+      'package.json': JSON.stringify({ workspaces: ['packages/*'] }),
+      packages: {
+        c: {
+          'package.json': JSON.stringify({ name: 'c' }),
+          node_modules: { '@backstage': { cli } },
+          '.eslintrc.js': `module.exports = {
+            extends: [require.resolve('@backstage/cli/config/eslint.js')],
+          };`,
+        },
+        d: {
+          'package.json': JSON.stringify({ name: 'd' }),
+          '.eslintrc.js': `module.exports = { extends: ['eslint:recommended'] };`,
+        },
+      },
+    });
+
+    const { log } = await withLogCollector(['log'], () =>
+      packageLintConfigs({ args: [], info: { usage: 'test', name: 'test' } }),
+    );
+
+    expect(log).toEqual([
+      'Skipping d, .eslintrc.js does not extend the legacy config',
+    ]);
+    expect(mockDir.content({ path: 'packages/c' })?.['.eslintrc.js']).toBe(
+      `module.exports = require('@backstage/cli/config/eslint-factory')(__dirname);\n`,
+    );
+  });
 });

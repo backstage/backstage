@@ -6675,7 +6675,6 @@ __metadata:
     "@types/react": ^18.0.0
     react: ^18.0.0
     react-dom: ^18.0.0
-    react-router: ^6.30.3
     react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@backstage/frontend-test-utils":
@@ -6742,7 +6741,6 @@ __metadata:
     "@types/react-window": "npm:^1.8.8"
     "@uiw/react-codemirror": "npm:^4.9.3"
     classnames: "npm:^2.2.6"
-    codemirror: "npm:^6.0.0"
     git-url-parse: "npm:^15.0.0"
     humanize-duration: "npm:^3.25.1"
     idb-keyval: "npm:5.1.5"
@@ -6757,7 +6755,6 @@ __metadata:
     react-intersection-observer: "npm:^9.5.3"
     react-resizable: "npm:^3.0.5"
     react-resizable-panels: "npm:^3.0.4"
-    react-router: "npm:^6.30.3"
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
     react-window: "npm:^1.8.10"
@@ -6769,7 +6766,6 @@ __metadata:
     "@types/react": ^18.0.0
     react: ^18.0.0
     react-dom: ^18.0.0
-    react-router: ^6.30.3
     react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
@@ -7607,7 +7603,7 @@ __metadata:
     "@emotion/react": "npm:^11.10.5"
     "@emotion/styled": "npm:^11.10.5"
     "@mui/material": "npm:^5.12.2"
-    "@mui/private-theming": "npm:^5.17.1"
+    "@mui/private-theming": "npm:^5.12.2"
     "@mui/styles": "npm:^5.14.18"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
@@ -11924,7 +11920,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/private-theming@npm:^5.17.1":
+"@mui/private-theming@npm:^5.12.2, @mui/private-theming@npm:^5.17.1":
   version: 5.17.1
   resolution: "@mui/private-theming@npm:5.17.1"
   dependencies:
@@ -40414,7 +40410,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:6.30.6, react-router@npm:^6.30.2, react-router@npm:^6.30.3":
+"react-router@npm:6.30.6, react-router@npm:^6.30.2":
   version: 6.30.6
   resolution: "react-router@npm:6.30.6"
   dependencies:

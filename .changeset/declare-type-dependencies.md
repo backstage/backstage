@@ -1,6 +1,5 @@
 ---
 '@backstage/core-app-api': patch
-'@backstage/core-components': patch
 '@backstage/integration-react': patch
 '@backstage/theme': patch
 '@backstage/plugin-api-docs': patch
@@ -17,4 +16,4 @@
 '@backstage/plugin-signals-react': patch
 ---
 
-The published type declarations now only import packages that are declared as dependencies, so they resolve with package managers that don't hoist dependencies, such as pnpm.
+Fixed published type declarations that imported packages not declared as dependencies, which could fail to resolve with package managers that don't hoist dependencies, such as pnpm.
