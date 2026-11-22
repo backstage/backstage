@@ -1,5 +1,4 @@
 ---
-'@backstage/plugin-catalog-backend-module-openapi': patch
 '@backstage/plugin-catalog-backend-module-unprocessed': patch
 '@backstage/plugin-proxy-backend': patch
 '@backstage/plugin-scaffolder-backend-module-yeoman': patch
