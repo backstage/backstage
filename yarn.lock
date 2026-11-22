@@ -4643,7 +4643,6 @@ __metadata:
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@types/json-schema": "npm:^7.0.15"
     openapi-types: "npm:^12.0.0"
     yaml: "npm:^2.1.1"
   languageName: unknown

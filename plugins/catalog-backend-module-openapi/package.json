@@ -49,7 +49,6 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@types/json-schema": "^7.0.15",
     "openapi-types": "^12.0.0"
   }
 }
