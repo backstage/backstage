@@ -38,7 +38,7 @@ describe('IdentityApiSignOutProxy', () => {
       signOut,
     });
 
-    await (proxy as any).signOut({ preserveLocation: true });
+    await proxy.signOut({ preserveLocation: true });
 
     expect(signOut).toHaveBeenCalledWith({ preserveLocation: true });
   });
