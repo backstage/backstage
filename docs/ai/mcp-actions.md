@@ -140,6 +140,10 @@ By default, the Backstage backend requires authentication for all requests.
 This is meant to be a temporary workaround until device authentication is completed.
 :::
 
+:::warning
+The `permission` & `permissionAttribute` restrictions as detailed in the [Service to Service Auth](../auth/service-to-service-auth.md#access-restrictions) documentation cannot be used on a static token to provide granular access (e.g. `my-plugin.add-item` ) to plugins via MCP Tools. You can use `accessRestrictions`, to restrict actions to individual plugins.
+:::
+
 Configure external access with static tokens in your app configuration:
 
 ```yaml title="app-config.yaml"
