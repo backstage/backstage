@@ -22,7 +22,7 @@
 
 <p>By adding the app package as a dependency we ensure that it is built as part of the backend, and that it can be resolved at runtime.</p>
 <p>The app package is resolved from the location of <code>@backstage/backend-plugin-api</code>. If your package manager doesn't hoist workspace packages, for example pnpm with <code>hoistWorkspacePackages: false</code>, add the app package to the <code>dependencies</code> of the root <code>package.json</code> as well. This links it into the root <code>node_modules</code>, where it can be found. Use <code>dependencies</code> rather than <code>devDependencies</code>, so that production installs keep it. This is a workaround for now, until the backend can find the app through its own dependency on it.</p>
-<pre><code class="json"><span class="hl-2">{</span><br/><span class="hl-2">  </span><span class="hl-15">&quot;dependencies&quot;</span><span class="hl-2">: {</span><br/><span class="hl-2">    </span><span class="hl-15">&quot;app&quot;</span><span class="hl-2">: </span><span class="hl-4">&quot;workspace:*&quot;</span><br/><span class="hl-2">  }</span><br/><span class="hl-2">}</span>
+<pre><code class="json"><span class="hl-2">{</span><br/><span class="hl-2">  </span><span class="hl-17">&quot;dependencies&quot;</span><span class="hl-2">: {</span><br/><span class="hl-2">    </span><span class="hl-17">&quot;app&quot;</span><span class="hl-2">: </span><span class="hl-4">&quot;workspace:*&quot;</span><br/><span class="hl-2">  }</span><br/><span class="hl-2">}</span>
 </code><button type="button">Copy</button></pre>
 
 <p>Now add the plugin to your app, creating it for example like this:</p>
