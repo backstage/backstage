@@ -58,6 +58,8 @@ export type ReviewStepProps = {
    * The complete form state, including values from hidden steps. Pass this as
    * `schemaFormState` when rendering a `ReviewState` so that conditional
    * schemas such as `dependencies` are resolved and review masks still apply.
+   * Because it includes values that won't be submitted, don't display it
+   * directly, only pass it to `ReviewState`.
    */
   schemaFormState?: JsonObject;
   handleBack: () => void;
