@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export const pluginId = 'catalog';
+export const pluginId = "catalog";

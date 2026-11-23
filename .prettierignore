@@ -28,3 +28,6 @@ dist-types
 
 # reduce the barrier for adopters to add themselves
 ADOPTERS.md
+
+# generated OpenAPI clients and routers, kept as emitted by repo-tools
+**/src/schema/openapi/generated/**

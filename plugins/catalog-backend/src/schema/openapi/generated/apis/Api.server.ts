@@ -31,125 +31,126 @@ import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
 import { ValidateEntity400Response } from '../models/ValidateEntity400Response.model';
 import { ValidateEntityRequest } from '../models/ValidateEntityRequest.model';
 
+
 /**
- * @public
- */
+  * @public
+  */
 export type DeleteEntityByUid = {
-  path: {
-    uid: string;
-  };
-  response: void | Error | Error;
-};
+    path: {
+            uid: string,
+    },
+    response:  void  |   Error  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetEntities = {
-  query: {
-    fields?: Array<string>;
-    limit?: number;
-    filter?: Array<string>;
-    offset?: number;
-    after?: string;
-    order?: Array<string>;
-  };
-  response: Array<Entity> | Error | Error;
-};
+    query: {
+        fields?: Array<string>,
+        limit?: number,
+        filter?: Array<string>,
+        offset?: number,
+        after?: string,
+        order?: Array<string>,
+    },
+    response:  Array<Entity>  |   Error  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetEntitiesByQuery = {
-  query: {
-    fields?: Array<string>;
-    limit?: number;
-    offset?: number;
-    orderField?: Array<string>;
-    cursor?: string;
-    filter?: Array<string>;
-    totalItems?: 'include' | 'exclude';
-    fullTextFilterTerm?: string;
-    fullTextFilterFields?: Array<string>;
-  };
-  response: EntitiesQueryResponse | Error | Error;
-};
+    query: {
+        fields?: Array<string>,
+        limit?: number,
+        offset?: number,
+        orderField?: Array<string>,
+        cursor?: string,
+        filter?: Array<string>,
+        totalItems?: 'include' | 'exclude',
+        fullTextFilterTerm?: string,
+        fullTextFilterFields?: Array<string>,
+    },
+    response:  EntitiesQueryResponse  |   Error  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetEntitiesByRefs = {
-  body: GetEntitiesByRefsRequest;
-  query: {
-    filter?: Array<string>;
-  };
-  response: EntitiesBatchResponse | Error | Error;
-};
+        body: GetEntitiesByRefsRequest,
+    query: {
+        filter?: Array<string>,
+    },
+    response:  EntitiesBatchResponse  |   Error  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetEntityAncestryByName = {
-  path: {
-    kind: string;
-    namespace: string;
-    name: string;
-  };
-  response: EntityAncestryResponse | Error | Error;
-};
+    path: {
+            kind: string,
+            namespace: string,
+            name: string,
+    },
+    response:  EntityAncestryResponse  |   Error  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetEntityByName = {
-  path: {
-    kind: string;
-    namespace: string;
-    name: string;
-  };
-  response: Entity | Error | Error;
-};
+    path: {
+            kind: string,
+            namespace: string,
+            name: string,
+    },
+    response:  Entity  |   Error  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetEntityByUid = {
-  path: {
-    uid: string;
-  };
-  response: Entity | Error | Error;
-};
+    path: {
+            uid: string,
+    },
+    response:  Entity  |   Error  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetEntityFacets = {
-  query: {
-    facet: Array<string>;
-    filter?: Array<string>;
-  };
-  response: EntityFacetsResponse | Error | Error;
-};
+    query: {
+        facet: Array<string>,
+        filter?: Array<string>,
+    },
+    response:  EntityFacetsResponse  |   Error  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type QueryEntitiesByPredicate = {
-  body: QueryEntitiesByPredicateRequest;
-  response: EntitiesQueryResponse | Error | Error;
-};
+        body: QueryEntitiesByPredicateRequest,
+    response:  EntitiesQueryResponse  |   Error  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type QueryEntityFacetsByPredicate = {
-  body: QueryEntityFacetsByPredicateRequest;
-  response: EntityFacetsResponse | Error | Error;
-};
+        body: QueryEntityFacetsByPredicateRequest,
+    response:  EntityFacetsResponse  |   Error  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type RefreshEntity = {
-  body: RefreshEntityRequest;
-  response: void | Error | Error;
-};
+        body: RefreshEntityRequest,
+    response:  void  |   Error  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type ValidateEntity = {
-  body: ValidateEntityRequest;
-  response: void | ValidateEntity400Response;
-};
+        body: ValidateEntityRequest,
+    response:  void  |   ValidateEntity400Response  
+}
 import { AnalyzeLocationRequest } from '../models/AnalyzeLocationRequest.model';
 import { AnalyzeLocationResponse } from '../models/AnalyzeLocationResponse.model';
 import { CreateLocation201Response } from '../models/CreateLocation201Response.model';
@@ -160,115 +161,138 @@ import { Location } from '../models/Location.model';
 import { LocationInput } from '../models/LocationInput.model';
 import { LocationsQueryResponse } from '../models/LocationsQueryResponse.model';
 
+
 /**
- * @public
- */
+  * @public
+  */
 export type AnalyzeLocation = {
-  body: AnalyzeLocationRequest;
-  response: AnalyzeLocationResponse | Error | Error;
-};
+        body: AnalyzeLocationRequest,
+    response:  AnalyzeLocationResponse  |   Error  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type CreateLocation = {
-  body: CreateLocationRequest;
-  query: {
-    dryRun?: string;
-    onConflict?: 'refresh' | 'reject';
-  };
-  response: CreateLocation201Response | Error | Error;
-};
+        body: CreateLocationRequest,
+    query: {
+        dryRun?: string,
+        onConflict?: 'refresh' | 'reject',
+    },
+    response:  CreateLocation201Response  |   Error  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type DeleteLocation = {
-  path: {
-    id: string;
-  };
-  response: void | Error | Error;
-};
+    path: {
+            id: string,
+    },
+    response:  void  |   Error  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetLocation = {
-  path: {
-    id: string;
-  };
-  response: Location | Error;
-};
+    path: {
+            id: string,
+    },
+    response:  Location  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetLocationByEntity = {
-  path: {
-    kind: string;
-    namespace: string;
-    name: string;
-  };
-  response: Location | Error;
-};
+    path: {
+            kind: string,
+            namespace: string,
+            name: string,
+    },
+    response:  Location  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetLocations = {
-  response: Array<GetLocations200ResponseInner> | Error;
-};
+    response:  Array<GetLocations200ResponseInner>  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type GetLocationsByQuery = {
-  body: GetLocationsByQueryRequest;
-  response: LocationsQueryResponse | Error;
-};
+        body: GetLocationsByQueryRequest,
+    response:  LocationsQueryResponse  |   Error  
+}
 /**
- * @public
- */
+  * @public
+  */
 export type UpdateLocation = {
-  path: {
-    id: string;
-  };
-  body: LocationInput;
-  response: Location | Error;
-};
+    path: {
+            id: string,
+    },
+        body: LocationInput,
+    response:  Location  |   Error  
+}
 
 export type EndpointMap = {
-  '#_delete|/entities/by-uid/{uid}': DeleteEntityByUid;
+    
+    '#_delete|/entities/by-uid/{uid}': DeleteEntityByUid,
+    
+    
+    '#get|/entities': GetEntities,
+    
+    
+    '#get|/entities/by-query': GetEntitiesByQuery,
+    
+    
+    '#post|/entities/by-refs': GetEntitiesByRefs,
+    
+    
+    '#get|/entities/by-name/{kind}/{namespace}/{name}/ancestry': GetEntityAncestryByName,
+    
+    
+    '#get|/entities/by-name/{kind}/{namespace}/{name}': GetEntityByName,
+    
+    
+    '#get|/entities/by-uid/{uid}': GetEntityByUid,
+    
+    
+    '#get|/entity-facets': GetEntityFacets,
+    
+    
+    '#post|/entities/by-query': QueryEntitiesByPredicate,
+    
+    
+    '#post|/entity-facets': QueryEntityFacetsByPredicate,
+    
+    
+    '#post|/refresh': RefreshEntity,
+    
+    
+    '#post|/validate-entity': ValidateEntity,
+    
+    
+    '#post|/analyze-location': AnalyzeLocation,
+    
+    
+    '#post|/locations': CreateLocation,
+    
+    
+    '#_delete|/locations/{id}': DeleteLocation,
+    
+    
+    '#get|/locations/{id}': GetLocation,
+    
+    
+    '#get|/locations/by-entity/{kind}/{namespace}/{name}': GetLocationByEntity,
+    
+    
+    '#get|/locations': GetLocations,
+    
+    
+    '#post|/locations/by-query': GetLocationsByQuery,
+    
+    
+    '#put|/locations/{id}': UpdateLocation,
+    
+}
 
-  '#get|/entities': GetEntities;
-
-  '#get|/entities/by-query': GetEntitiesByQuery;
-
-  '#post|/entities/by-refs': GetEntitiesByRefs;
-
-  '#get|/entities/by-name/{kind}/{namespace}/{name}/ancestry': GetEntityAncestryByName;
-
-  '#get|/entities/by-name/{kind}/{namespace}/{name}': GetEntityByName;
-
-  '#get|/entities/by-uid/{uid}': GetEntityByUid;
-
-  '#get|/entity-facets': GetEntityFacets;
-
-  '#post|/entities/by-query': QueryEntitiesByPredicate;
-
-  '#post|/entity-facets': QueryEntityFacetsByPredicate;
-
-  '#post|/refresh': RefreshEntity;
-
-  '#post|/validate-entity': ValidateEntity;
-
-  '#post|/analyze-location': AnalyzeLocation;
-
-  '#post|/locations': CreateLocation;
-
-  '#_delete|/locations/{id}': DeleteLocation;
-
-  '#get|/locations/{id}': GetLocation;
-
-  '#get|/locations/by-entity/{kind}/{namespace}/{name}': GetLocationByEntity;
-
-  '#get|/locations': GetLocations;
-
-  '#post|/locations/by-query': GetLocationsByQuery;
-
-  '#put|/locations/{id}': UpdateLocation;
-};
