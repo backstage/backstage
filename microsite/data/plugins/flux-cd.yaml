@@ -5,6 +5,7 @@ authorUrl: https://github.com/backstage/community-plugins
 category: GitOps
 description: Provides views of Flux CD resources such as Kustomizations, HelmReleases, and GitRepositories available in Kubernetes clusters.
 documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/flux/plugins/flux/README.md
+iconUrl: https://raw.githubusercontent.com/fluxcd/website/main/assets/icons/logo.svg
 npmPackageName: '@backstage-community/plugin-flux'
 addedDate: '2026-02-21'
 status: active
