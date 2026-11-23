@@ -58,7 +58,7 @@ You will:
 Install the Notifications service package:
 
 ```shell
-yarn workspace @internal/plugin-todo-backend add @backstage/plugin-notifications-node
+yarn workspace @internal/backstage-plugin-todo-backend add @backstage/plugin-notifications-node
 ```
 
 ### Step 1: Persist reminder state

@@ -85,8 +85,8 @@ By the end, each Component page will have a **Todos** tab. The tab will show the
 Install the catalog packages used by the snippets:
 
 ```shell
-yarn workspace @internal/plugin-todo-backend add @backstage/catalog-model
-yarn workspace @internal/plugin-todo add @backstage/catalog-model @backstage/plugin-catalog-react
+yarn workspace @internal/backstage-plugin-todo-backend add @backstage/catalog-model
+yarn workspace @internal/backstage-plugin-todo add @backstage/catalog-model @backstage/plugin-catalog-react
 ```
 
 ### Step 1: Associate todos with an entity ref

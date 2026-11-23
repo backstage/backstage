@@ -66,9 +66,9 @@ yarn new --select backend-plugin-module --option pluginId=search
 Name the module `todo` when prompted. Install the required packages:
 
 ```shell
-yarn workspace @internal/plugin-todo-common add @backstage/plugin-search-common
-yarn workspace @internal/plugin-search-backend-module-todo add @backstage/catalog-model @backstage/plugin-search-backend-node @backstage/plugin-search-common @internal/plugin-todo-common
-yarn workspace @internal/plugin-todo add @backstage/plugin-search-react @internal/plugin-todo-common
+yarn workspace @internal/backstage-plugin-todo-common add @backstage/plugin-search-common
+yarn workspace @internal/backstage-plugin-search-backend-module-todo add @backstage/catalog-model @backstage/plugin-search-backend-node @backstage/plugin-search-common @internal/backstage-plugin-todo-common
+yarn workspace @internal/backstage-plugin-todo add @backstage/plugin-search-react @internal/backstage-plugin-todo-common
 ```
 
 ### Step 1: Define the document type
@@ -126,7 +126,7 @@ import type { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import {
   TODO_SEARCH_TYPE,
   type TodoSearchDocument,
-} from '@internal/plugin-todo-common';
+} from '@internal/backstage-plugin-todo-common';
 
 type TodoListResponse = {
   items: {
@@ -196,7 +196,7 @@ Connect the `todo.read` permission to the documents produced by the collator.
 This tells Search which permission it must check before showing a TODO result:
 
 ```diff title="plugins/search-backend-module-todo/src/TodoCollatorFactory.ts"
-+import { todoReadPermission } from '@internal/plugin-todo-common';
++import { todoReadPermission } from '@internal/backstage-plugin-todo-common';
 
  export class TodoCollatorFactory implements DocumentCollatorFactory {
    readonly type = TODO_SEARCH_TYPE;
@@ -254,7 +254,7 @@ export const searchModuleTodo = createBackendModule({
 Install the module in `packages/backend/src/index.ts`:
 
 ```ts
-backend.add(import('@internal/plugin-search-backend-module-todo'));
+backend.add(import('@internal/backstage-plugin-search-backend-module-todo'));
 ```
 
 ### Step 5: Render TODO results
@@ -264,7 +264,7 @@ Create the component that displays a TODO in the search results:
 ```tsx title="plugins/todo/src/components/TodoSearchResultListItem.tsx"
 import { Link } from '@backstage/core-components';
 import type { BaseSearchResultListItemProps } from '@backstage/plugin-search-react/alpha';
-import type { TodoSearchDocument } from '@internal/plugin-todo-common';
+import type { TodoSearchDocument } from '@internal/backstage-plugin-todo-common';
 
 export function TodoSearchResultListItem({
   result,
@@ -287,7 +287,7 @@ Register it in the TODO frontend plugin:
 
 ```ts title="plugins/todo/src/plugin.tsx"
 import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
-import { TODO_SEARCH_TYPE } from '@internal/plugin-todo-common';
+import { TODO_SEARCH_TYPE } from '@internal/backstage-plugin-todo-common';
 
 export const todoSearchResultListItem = SearchResultListItemBlueprint.make({
   params: {

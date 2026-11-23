@@ -59,7 +59,7 @@ yarn new --select backend-plugin-module --option pluginId=scaffolder
 Name the module `todo` when prompted, then add its dependencies:
 
 ```shell
-yarn workspace @internal/plugin-scaffolder-backend-module-todo add @backstage/errors @backstage/plugin-scaffolder-node
+yarn workspace @internal/backstage-plugin-scaffolder-backend-module-todo add @backstage/errors @backstage/plugin-scaffolder-node
 ```
 
 ### Step 2: Implement `todo:create`
@@ -183,7 +183,9 @@ export const scaffolderModuleTodo = createBackendModule({
 Install the module in `packages/backend/src/index.ts`:
 
 ```ts
-backend.add(import('@internal/plugin-scaffolder-backend-module-todo'));
+backend.add(
+  import('@internal/backstage-plugin-scaffolder-backend-module-todo'),
+);
 ```
 
 Restart the backend, then open `http://localhost:3000/create/actions`. Search

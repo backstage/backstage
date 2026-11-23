@@ -60,9 +60,9 @@ You will:
 Install the permission packages:
 
 ```shell
-yarn workspace @internal/plugin-todo-common add @backstage/plugin-permission-common
-yarn workspace @internal/plugin-todo-backend add @backstage/plugin-permission-common @backstage/plugin-permission-node
-yarn workspace backend add @backstage/catalog-model @backstage/plugin-catalog-node @internal/plugin-todo-common
+yarn workspace @internal/backstage-plugin-todo-common add @backstage/plugin-permission-common
+yarn workspace @internal/backstage-plugin-todo-backend add @backstage/plugin-permission-common @backstage/plugin-permission-node
+yarn workspace backend add @backstage/catalog-model @backstage/plugin-catalog-node @internal/backstage-plugin-todo-common
 ```
 
 ### Step 1: Define the permission
@@ -105,7 +105,7 @@ import {
   createPermissionResourceRef,
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
-import { TODO_RESOURCE_TYPE } from '@internal/plugin-todo-common';
+import { TODO_RESOURCE_TYPE } from '@internal/backstage-plugin-todo-common';
 import * as z from 'zod';
 import type { TodoItem } from './services/TodoListService';
 
@@ -151,7 +151,7 @@ TODOs as a resource type, along with the permission, rule, and function that
 loads a TODO by id:
 
 ```ts title="plugins/todo-backend/src/plugin.ts"
-import { todoReadPermission } from '@internal/plugin-todo-common';
+import { todoReadPermission } from '@internal/backstage-plugin-todo-common';
 import { todoResourceRef, rules } from './rules';
 
 // Inside the plugin init function:
@@ -341,11 +341,11 @@ import {
   type PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
-import { todoReadPermission } from '@internal/plugin-todo-common';
+import { todoReadPermission } from '@internal/backstage-plugin-todo-common';
 import {
   createTodoConditionalDecision,
   todoConditions,
-} from '@internal/plugin-todo-backend';
+} from '@internal/backstage-plugin-todo-backend';
 
 class CatalogOwnerTodoPolicy implements PermissionPolicy {
   constructor(

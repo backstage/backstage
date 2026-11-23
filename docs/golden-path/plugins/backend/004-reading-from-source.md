@@ -19,7 +19,7 @@ Backstage gives us all three through the `integrations` config and the `urlReade
 
 The `urlReader` service uses the `integrations` block of your config to figure out how to authenticate against each SCM. You don't need to write any auth code yourself — once a host is registered there, every call you make through `urlReader` will pick up the right token.
 
-For local development, define the integration in `app-config.local.yaml`. That file is ignored by Git, so you can paste a Personal Access Token straight in without it landing in any committed or shared file:
+For local development, define the integration in `app-config.local.yaml`, creating it in the project root if it does not exist yet. That file is ignored by Git, so you can paste a Personal Access Token straight in without it landing in any committed or shared file:
 
 ```yaml title="app-config.local.yaml"
 integrations:
@@ -198,7 +198,7 @@ If a user owns a repo your backend doesn't have credentials for, the `search` ca
 Create a second migration:
 
 ```bash
-yarn workspace @internal/plugin-todo-backend knex migrate:make add_source_location --migrations-directory ./migrations
+yarn workspace @internal/backstage-plugin-todo-backend knex migrate:make add_source_location --migrations-directory ./migrations
 ```
 
 ```js title="migrations/<timestamp>_add_source_location.js"
