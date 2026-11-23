@@ -208,6 +208,46 @@ describe('ReviewState', () => {
     expect(screen.queryByText('ARRAY_SECRET')).not.toBeInTheDocument();
     expect(screen.getByText(/array\.example\.com/)).toBeInTheDocument();
 
+    // A custom review mask from another step is applied, but another step
+    // setting show: false doesn't hide a field
+    rerender(
+      <ReviewState
+        formState={formState}
+        schemas={[openStep]}
+        maskSchemas={[
+          openStep,
+          {
+            mergedSchema: {
+              type: 'object',
+              properties: {
+                connection: {
+                  type: 'object',
+                  properties: {
+                    host: {
+                      type: 'string',
+                      'ui:backstage': { review: { show: false } },
+                    },
+                    password: {
+                      type: 'string',
+                      'ui:backstage': { review: { mask: 'HIDDEN' } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getByRole('row', { name: 'Connection > Password HIDDEN' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('row', { name: 'Connection > Host example.com' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('hunter2')).not.toBeInTheDocument();
+
     // A secret that another step also hides is masked, not shown or hidden
     rerender(
       <ReviewState
