@@ -43,7 +43,3 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           NODE_OPTIONS: --max-old-space-size=7168
-      - name: Update Github issues
-        run: node --require @backstage/cli/config/nodeTransform.cjs ./scripts/snyk-github-issue-sync.ts
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
