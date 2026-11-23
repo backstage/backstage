@@ -303,9 +303,55 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#ApiBlueprint';
+        params: undefined;
+        paramKeys: undefined;
+        paramsCallback: {
+          apiRefId: string;
+          apiIsPromise: false;
+          deps: {
+            discoveryApi: 'core.discovery';
+            fetchApi: 'core.fetch';
+          };
+        };
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'api:catalog/entity-presentation': OverridableExtensionDefinition<{
       kind: 'api';
@@ -318,9 +364,54 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#ApiBlueprint';
+        params: undefined;
+        paramKeys: undefined;
+        paramsCallback: {
+          apiRefId: string;
+          apiIsPromise: false;
+          deps: {
+            catalogApiImp: string;
+          };
+        };
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'api:catalog/starred-entities': OverridableExtensionDefinition<{
       kind: 'api';
@@ -333,9 +424,54 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#ApiBlueprint';
+        params: undefined;
+        paramKeys: undefined;
+        paramsCallback: {
+          apiRefId: string;
+          apiIsPromise: false;
+          deps: {
+            storageApi: 'core.storage';
+          };
+        };
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'catalog-filter:catalog/kind': OverridableExtensionDefinition<{
       config: {
@@ -361,6 +497,15 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'catalog-filter:catalog/list': OverridableExtensionDefinition<{
@@ -403,6 +548,15 @@ const _default: OverridableFrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'catalog-filter:catalog/processing-status': OverridableExtensionDefinition<{
       kind: 'catalog-filter';
@@ -413,6 +567,15 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'catalog-filter:catalog/tag': OverridableExtensionDefinition<{
@@ -425,6 +588,15 @@ const _default: OverridableFrontendPlugin<
       params: {
         loader: () => Promise<JSX.Element>;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'catalog-filter:catalog/type': OverridableExtensionDefinition<{
       kind: 'catalog-filter';
@@ -435,6 +607,15 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'entity-card:catalog/about': OverridableExtensionDefinition<{
@@ -545,6 +726,15 @@ const _default: OverridableFrontendPlugin<
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'filter' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'entity-card:catalog/depends-on-resources': OverridableExtensionDefinition<{
       kind: 'entity-card';
@@ -585,6 +775,15 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'filter' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'entity-card:catalog/has-components': OverridableExtensionDefinition<{
@@ -627,6 +826,15 @@ const _default: OverridableFrontendPlugin<
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'filter' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'entity-card:catalog/has-resources': OverridableExtensionDefinition<{
       kind: 'entity-card';
@@ -667,6 +875,15 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'filter' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'entity-card:catalog/has-subcomponents': OverridableExtensionDefinition<{
@@ -709,6 +926,15 @@ const _default: OverridableFrontendPlugin<
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'filter' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'entity-card:catalog/has-subdomains': OverridableExtensionDefinition<{
       kind: 'entity-card';
@@ -749,6 +975,15 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'filter' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'entity-card:catalog/has-systems': OverridableExtensionDefinition<{
@@ -791,6 +1026,15 @@ const _default: OverridableFrontendPlugin<
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'filter' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'entity-card:catalog/labels': OverridableExtensionDefinition<{
       kind: 'entity-card';
@@ -832,6 +1076,17 @@ const _default: OverridableFrontendPlugin<
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
+      literals: {
+        blueprint: undefined;
+        params: {
+          type: 'info';
+        };
+        paramKeys: 'filter' | 'type' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'entity-card:catalog/links': OverridableExtensionDefinition<{
       kind: 'entity-card';
@@ -872,6 +1127,17 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {
+          type: 'info';
+        };
+        paramKeys: 'filter' | 'type' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'entity-content:catalog/overview': OverridableExtensionDefinition<{
@@ -1031,6 +1297,15 @@ const _default: OverridableFrontendPlugin<
           >;
       inputs: {};
       params: EntityContextMenuItemParams;
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'icon' | 'useProps';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'entity-context-menu-item:catalog/inspect-entity': OverridableExtensionDefinition<{
       kind: 'entity-context-menu-item';
@@ -1056,6 +1331,15 @@ const _default: OverridableFrontendPlugin<
           >;
       inputs: {};
       params: EntityContextMenuItemParams;
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'icon' | 'useProps';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'entity-context-menu-item:catalog/unregister-entity': OverridableExtensionDefinition<{
       kind: 'entity-context-menu-item';
@@ -1081,6 +1365,15 @@ const _default: OverridableFrontendPlugin<
           >;
       inputs: {};
       params: EntityContextMenuItemParams;
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'icon' | 'useProps';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'entity-icon-link:catalog/view-source': OverridableExtensionDefinition<{
       kind: 'entity-icon-link';
@@ -1119,6 +1412,15 @@ const _default: OverridableFrontendPlugin<
       params: {
         useProps: () => Omit<IconLinkVerticalProps, 'color'>;
         filter?: FilterPredicate | ((entity: Entity) => boolean);
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'useProps';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'page:catalog': OverridableExtensionDefinition<{
@@ -1516,7 +1818,52 @@ const _default: OverridableFrontendPlugin<
       >;
       inputs: {};
       params: SearchResultListItemBlueprintParams;
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'icon' | 'component' | 'predicate';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
+  },
+  {
+    pluginId: 'catalog';
+    title: 'Catalog';
+    if: undefined;
+    extensionIds: (
+      | 'page:catalog'
+      | 'entity-content:catalog/overview'
+      | 'page:catalog/entity'
+      | 'entity-card:catalog/about'
+      | 'api:catalog'
+      | 'api:catalog/entity-presentation'
+      | 'api:catalog/starred-entities'
+      | 'catalog-filter:catalog/kind'
+      | 'catalog-filter:catalog/lifecycle'
+      | 'catalog-filter:catalog/list'
+      | 'catalog-filter:catalog/mode'
+      | 'catalog-filter:catalog/namespace'
+      | 'catalog-filter:catalog/processing-status'
+      | 'catalog-filter:catalog/tag'
+      | 'catalog-filter:catalog/type'
+      | 'entity-card:catalog/depends-on-components'
+      | 'entity-card:catalog/depends-on-resources'
+      | 'entity-card:catalog/has-components'
+      | 'entity-card:catalog/has-resources'
+      | 'entity-card:catalog/has-subcomponents'
+      | 'entity-card:catalog/has-subdomains'
+      | 'entity-card:catalog/has-systems'
+      | 'entity-card:catalog/labels'
+      | 'entity-card:catalog/links'
+      | 'entity-context-menu-item:catalog/copy-entity-url'
+      | 'entity-context-menu-item:catalog/inspect-entity'
+      | 'entity-context-menu-item:catalog/unregister-entity'
+      | 'entity-icon-link:catalog/view-source'
+      | 'search-result-list-item:catalog'
+    )[];
   }
 >;
 export default _default;

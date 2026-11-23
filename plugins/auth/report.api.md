@@ -110,7 +110,24 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef;
         noHeader?: boolean;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#PageBlueprint';
+        params: {
+          path: '/oauth2';
+        };
+        paramKeys: 'path' | 'routeRef' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
+  },
+  {
+    pluginId: 'auth';
+    title: undefined;
+    if: undefined;
+    extensionIds: ['page:auth'];
   }
 >;
 export default _default;

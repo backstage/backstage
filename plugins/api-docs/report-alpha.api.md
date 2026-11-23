@@ -81,9 +81,52 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#ApiBlueprint';
+        params: undefined;
+        paramKeys: undefined;
+        paramsCallback: {
+          apiRefId: string;
+          apiIsPromise: false;
+          deps: {};
+        };
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'entity-card:api-docs/consumed-apis': OverridableExtensionDefinition<{
       kind: 'entity-card';
@@ -124,6 +167,15 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'filter' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'entity-card:api-docs/consuming-components': OverridableExtensionDefinition<{
@@ -166,6 +218,15 @@ const _default: OverridableFrontendPlugin<
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'filter' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'entity-card:api-docs/definition': OverridableExtensionDefinition<{
       kind: 'entity-card';
@@ -206,6 +267,15 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'filter' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'entity-card:api-docs/has-apis': OverridableExtensionDefinition<{
@@ -248,6 +318,15 @@ const _default: OverridableFrontendPlugin<
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'filter' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'entity-card:api-docs/provided-apis': OverridableExtensionDefinition<{
       kind: 'entity-card';
@@ -289,6 +368,15 @@ const _default: OverridableFrontendPlugin<
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'filter' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'entity-card:api-docs/providing-components': OverridableExtensionDefinition<{
       kind: 'entity-card';
@@ -329,6 +417,15 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'filter' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'entity-content:api-docs/apis': OverridableExtensionDefinition<{
@@ -407,6 +504,19 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef_2;
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
       };
+      literals: {
+        blueprint: undefined;
+        params: {
+          path: '/apis';
+          title: 'APIs';
+          group: 'development';
+        };
+        paramKeys: 'filter' | 'title' | 'path' | 'group' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'entity-content:api-docs/definition': OverridableExtensionDefinition<{
       kind: 'entity-content';
@@ -483,6 +593,19 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
+      };
+      literals: {
+        blueprint: undefined;
+        params: {
+          path: '/definition';
+          title: 'Definition';
+          group: 'documentation';
+        };
+        paramKeys: 'filter' | 'title' | 'path' | 'group' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'page:api-docs': OverridableExtensionDefinition<{
@@ -577,6 +700,23 @@ const _default: OverridableFrontendPlugin<
         noHeader?: boolean;
       };
     }>;
+  },
+  {
+    pluginId: 'api-docs';
+    title: 'APIs';
+    if: undefined;
+    extensionIds: [
+      'api:api-docs/config',
+      'page:api-docs',
+      'entity-card:api-docs/has-apis',
+      'entity-card:api-docs/definition',
+      'entity-card:api-docs/provided-apis',
+      'entity-card:api-docs/consumed-apis',
+      'entity-card:api-docs/consuming-components',
+      'entity-card:api-docs/providing-components',
+      'entity-content:api-docs/definition',
+      'entity-content:api-docs/apis',
+    ];
   }
 >;
 export default _default;

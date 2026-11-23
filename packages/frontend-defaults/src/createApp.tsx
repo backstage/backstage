@@ -46,6 +46,7 @@ import {
 import type { CreateSpecializedAppInternalOptions } from '../../frontend-app-api/src/wiring/prepareSpecializedApp';
 import appPlugin from '@backstage/plugin-app';
 import { discoverAvailableFeatures } from './discovery';
+import { applyExplicitFeatures } from './deferred';
 import { resolveAsyncFeatures } from './resolution';
 import { maybeCreateErrorPage } from './maybeCreateErrorPage';
 
@@ -125,10 +126,15 @@ export function createApp(options?: CreateAppOptions): {
 
     const { features: discoveredFeaturesAndLoaders } =
       discoverAvailableFeatures(config);
-    const { features: loadedFeatures } = await resolveAsyncFeatures({
+    const { features: resolvedFeatures } = await resolveAsyncFeatures({
       config,
       features: [...discoveredFeaturesAndLoaders, ...(options?.features ?? [])],
     });
+    // Features that are passed explicitly win over deferred plugins
+    const loadedFeatures = await applyExplicitFeatures(
+      resolvedFeatures,
+      options?.features ?? [],
+    );
 
     // Handed over synchronously while the app is being prepared, so it is
     // already the real teardown by the time anything renders.

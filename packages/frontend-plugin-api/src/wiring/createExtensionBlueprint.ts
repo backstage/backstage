@@ -38,6 +38,11 @@ import { ExtensionDataContainer } from './types';
 import { PageBlueprint } from '../blueprints/PageBlueprint';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { assertNoLegacyConfigSchema } from '../schema/assertNoLegacyConfigSchema';
+import {
+  PickCallbackLiterals,
+  PickLiteralAttachTo,
+  PickLiteralParams,
+} from './ExtensionDefinitionLiterals';
 
 /**
  * A function used to define a parameter mapping function in order to facilitate
@@ -68,9 +73,17 @@ export type ExtensionBlueprintDefineParams<
  *
  * @public
  */
-export type ExtensionBlueprintParams<T extends object = object> = {
+export type ExtensionBlueprintParams<
+  T extends object = object,
+  TLiterals = unknown,
+> = {
   $$type: '@backstage/BlueprintParams';
   T: T;
+  /**
+   * The literal values of the params, which a blueprint can record so that
+   * tools can read them from type declarations. Never present at runtime.
+   */
+  literals?: TLiterals;
 };
 
 const OpaqueBlueprintParams = OpaqueType.create<{
@@ -183,6 +196,11 @@ export type CreateExtensionBlueprintOptions<
 /** @public */
 export type ExtensionBlueprintParameters = {
   kind: string;
+  /**
+   * The identity of the blueprint, recorded in the type of the extensions
+   * made with it. Only exists at the type level.
+   */
+  blueprint?: string;
   params?: object | ExtensionBlueprintDefineParams;
   configInput?: { [K in string]: any };
   config?: { [K in string]: any };
@@ -207,6 +225,53 @@ type AnyParamsInput<TParams extends object | ExtensionBlueprintDefineParams> =
     ? IParams | ParamsFactory<TParams>
     : TParams | ParamsFactory<ExtensionBlueprintDefineParams<TParams, TParams>>;
 
+/** @ignore */
+type KeysOfUnion<T> = T extends any ? keyof T : never;
+
+/**
+ * Checks the params passed to `make`. The params are intersected with their
+ * own inferred type so that literal values are preserved, which means that
+ * excess properties of inline object literals must be rejected explicitly.
+ *
+ * @ignore
+ */
+type MakeParamsCheck<TBlueprintParams, TParamsInput> =
+  // Distributes over the constraint of the params input before it has been
+  // inferred, so that callback params keep their contextual type
+  TParamsInput extends ExtensionBlueprintDefineParams
+    ? unknown
+    : MakeObjectParamsCheck<TBlueprintParams, TParamsInput>;
+
+/** @ignore */
+type MakeObjectParamsCheck<TBlueprintParams, TParamsInput> = [
+  TBlueprintParams,
+] extends [ExtensionBlueprintDefineParams]
+  ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `<blueprint>.make({ params: defineParams => defineParams(<params>) })`'
+  : TBlueprintParams & {
+      [K in keyof TParamsInput as K extends KeysOfUnion<TBlueprintParams>
+        ? never
+        : IsReadonlyKey<TParamsInput, K> extends true
+        ? K
+        : never]: never;
+    };
+
+/**
+ * Whether a property is readonly. Inline object literals are inferred with
+ * readonly properties because the params input is a const type parameter,
+ * while params held in a variable are usually mutable. This is used to only
+ * reject unknown params when they are passed inline, like an excess property
+ * check would.
+ *
+ * @ignore
+ */
+type IsReadonlyKey<T, K extends keyof T> = (<X>() => X extends {
+  [Q in K]: T[K];
+}
+  ? 1
+  : 2) extends <X>() => X extends { readonly [Q in K]: T[K] } ? 1 : 2
+  ? true
+  : false;
+
 /**
  * @public
  */
@@ -217,19 +282,21 @@ export interface ExtensionBlueprint<
 
   make<
     TName extends string | undefined,
-    TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
+    const TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
     UParentInputs extends ExtensionDataRef,
+    const TAttachTo extends
+      | ExtensionDefinitionAttachTo<UParentInputs>
+      | undefined = undefined,
+    TDisabled extends boolean | undefined = undefined,
+    const TIf extends FilterPredicate | undefined = undefined,
   >(args: {
     name?: TName;
-    attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
+    attachTo?: TAttachTo &
+      ExtensionDefinitionAttachTo<UParentInputs> &
       VerifyExtensionAttachTo<NonNullable<T['output']>, UParentInputs>;
-    disabled?: boolean;
-    if?: FilterPredicate;
-    params: TParamsInput extends ExtensionBlueprintDefineParams
-      ? TParamsInput
-      : T['params'] extends ExtensionBlueprintDefineParams
-      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `<blueprint>.make({ params: defineParams => defineParams(<params>) })`'
-      : T['params'];
+    disabled?: TDisabled;
+    if?: TIf;
+    params: TParamsInput & MakeParamsCheck<T['params'], TParamsInput>;
   }): OverridableExtensionDefinition<{
     kind: T['kind'];
     name: string | undefined extends TName ? undefined : TName;
@@ -238,6 +305,23 @@ export interface ExtensionBlueprint<
     output: T['output'];
     inputs: T['inputs'];
     params: T['params'];
+    literals: {
+      blueprint: T extends { blueprint: infer IBlueprint extends string }
+        ? IBlueprint
+        : undefined;
+      params: [TParamsInput] extends [ExtensionBlueprintDefineParams]
+        ? undefined
+        : PickLiteralParams<TParamsInput>;
+      paramKeys: [TParamsInput] extends [ExtensionBlueprintDefineParams]
+        ? undefined
+        : keyof TParamsInput & string;
+      paramsCallback: [TParamsInput] extends [ExtensionBlueprintDefineParams]
+        ? PickCallbackLiterals<TParamsInput>
+        : undefined;
+      attachTo: PickLiteralAttachTo<TAttachTo>;
+      disabled: TDisabled;
+      if: TIf;
+    };
   }>;
 
   /**

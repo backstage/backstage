@@ -35,9 +35,55 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#ApiBlueprint';
+        params: undefined;
+        paramKeys: undefined;
+        paramsCallback: {
+          apiRefId: string;
+          apiIsPromise: false;
+          deps: {
+            discoveryApi: 'core.discovery';
+            fetchApi: 'core.fetch';
+          };
+        };
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'page:catalog-unprocessed-entities': OverridableExtensionDefinition<{
       kind: 'page';
@@ -128,6 +174,18 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef_2;
         noHeader?: boolean;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#PageBlueprint';
+        params: {
+          path: '/catalog-unprocessed-entities';
+          title: 'Unprocessed Entities';
+        };
+        paramKeys: 'title' | 'path' | 'icon' | 'routeRef' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: true;
+        if: undefined;
+      };
     }>;
     'sub-page:catalog-unprocessed-entities': OverridableExtensionDefinition<{
       kind: 'sub-page';
@@ -173,7 +231,32 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
+        params: {
+          path: 'unprocessed-entities';
+          title: 'Unprocessed Entities';
+        };
+        paramKeys: 'title' | 'path' | 'loader';
+        paramsCallback: undefined;
+        attachTo: {
+          id: 'page:devtools';
+          input: 'pages';
+        };
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
+  },
+  {
+    pluginId: 'catalog-unprocessed-entities';
+    title: 'Unprocessed Entities';
+    if: undefined;
+    extensionIds: [
+      'api:catalog-unprocessed-entities',
+      'page:catalog-unprocessed-entities',
+      'sub-page:catalog-unprocessed-entities',
+    ];
   }
 >;
 export default _default;

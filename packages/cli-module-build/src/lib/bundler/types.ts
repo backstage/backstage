@@ -18,6 +18,7 @@ import { AppConfig, Config } from '@backstage/config';
 import { BundlingPathsOptions } from './paths';
 import { ConfigSchema } from '@backstage/config-loader';
 import { RemoteSharedDependencies } from '@backstage/module-federation-common';
+import { BackstageManifest } from '../frontendManifest/types';
 
 export type ModuleFederationRemoteOptions = {
   // Unique name for this module federation bundle
@@ -29,6 +30,11 @@ export type ModuleFederationRemoteOptions = {
     [k: string]: string;
   };
   sharedDependencies: RemoteSharedDependencies;
+  /**
+   * The Backstage manifest to write next to the module federation manifest.
+   * By default it is created by analyzing the source of the exposed modules.
+   */
+  backstageManifest?: BackstageManifest;
 };
 
 export type BundlingOptions = {

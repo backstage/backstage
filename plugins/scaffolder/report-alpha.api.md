@@ -77,9 +77,57 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#ApiBlueprint';
+        params: undefined;
+        paramKeys: undefined;
+        paramsCallback: {
+          apiRefId: string;
+          apiIsPromise: false;
+          deps: {
+            discoveryApi: 'core.discovery';
+            scmIntegrationsApi: string;
+            fetchApi: 'core.fetch';
+            identityApi: 'core.identity';
+          };
+        };
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'api:scaffolder/form-decorators': OverridableExtensionDefinition<{
       config: {};
@@ -105,9 +153,39 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
     }>;
     'api:scaffolder/form-fields': OverridableExtensionDefinition<{
       config: {};
@@ -133,9 +211,39 @@ const _default: OverridableFrontendPlugin<
         TApi,
         TImpl extends TApi,
         TDeps extends { [name in string]: unknown },
+        TApiRef extends {
+          readonly id: string;
+        } = {
+          readonly id: string;
+        },
+        TDepRefs extends {
+          [name in string]: {
+            readonly id: string;
+          };
+        } = {
+          [x: string]: {
+            readonly id: string;
+          };
+        },
       >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<ApiFactory>;
+        params: ApiFactory<TApi, TImpl, TDeps> & {
+          api: TApiRef;
+          deps: TDepRefs;
+        },
+      ) => ExtensionBlueprintParams<
+        ApiFactory,
+        {
+          apiRefId: TApiRef['id'];
+          apiIsPromise: TApiRef extends {
+            readonly T: infer TValue;
+          }
+            ? [TValue] extends [PromiseLike<unknown>]
+              ? true
+              : false
+            : boolean;
+          deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+        }
+      >;
     }>;
     'entity-icon-link:scaffolder/launch-template': OverridableExtensionDefinition<{
       kind: 'entity-icon-link';
@@ -174,6 +282,15 @@ const _default: OverridableFrontendPlugin<
       params: {
         useProps: () => Omit<IconLinkVerticalProps, 'color'>;
         filter?: FilterPredicate | ((entity: Entity) => boolean);
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'filter' | 'useProps';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'home-page-widget:scaffolder/featured-templates': OverridableExtensionDefinition<{
@@ -307,6 +424,15 @@ const _default: OverridableFrontendPlugin<
       params: {
         field: () => Promise<FormField>;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'field';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'scaffolder-form-field:scaffolder/entity-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
@@ -321,6 +447,15 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         field: () => Promise<FormField>;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'field';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'scaffolder-form-field:scaffolder/entity-tags-picker': OverridableExtensionDefinition<{
@@ -337,6 +472,15 @@ const _default: OverridableFrontendPlugin<
       params: {
         field: () => Promise<FormField>;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'field';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'scaffolder-form-field:scaffolder/multi-entity-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
@@ -351,6 +495,15 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         field: () => Promise<FormField>;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'field';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'scaffolder-form-field:scaffolder/my-groups-picker': OverridableExtensionDefinition<{
@@ -367,6 +520,15 @@ const _default: OverridableFrontendPlugin<
       params: {
         field: () => Promise<FormField>;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'field';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'scaffolder-form-field:scaffolder/owned-entity-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
@@ -381,6 +543,15 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         field: () => Promise<FormField>;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'field';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'scaffolder-form-field:scaffolder/owner-picker': OverridableExtensionDefinition<{
@@ -397,6 +568,15 @@ const _default: OverridableFrontendPlugin<
       params: {
         field: () => Promise<FormField>;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'field';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'scaffolder-form-field:scaffolder/repo-branch-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
@@ -411,6 +591,15 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         field: () => Promise<FormField>;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'field';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'scaffolder-form-field:scaffolder/repo-owner-picker': OverridableExtensionDefinition<{
@@ -427,6 +616,15 @@ const _default: OverridableFrontendPlugin<
       params: {
         field: () => Promise<FormField>;
       };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'field';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'scaffolder-form-field:scaffolder/repo-url-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
@@ -441,6 +639,15 @@ const _default: OverridableFrontendPlugin<
       inputs: {};
       params: {
         field: () => Promise<FormField>;
+      };
+      literals: {
+        blueprint: undefined;
+        params: {};
+        paramKeys: 'field';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'sub-page:scaffolder/actions': OverridableExtensionDefinition<{
@@ -487,6 +694,18 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
+        params: {
+          path: 'actions';
+          title: 'Actions';
+        };
+        paramKeys: 'title' | 'path' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'sub-page:scaffolder/editor': OverridableExtensionDefinition<{
       kind: 'sub-page';
@@ -531,6 +750,18 @@ const _default: OverridableFrontendPlugin<
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
+      };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
+        params: {
+          path: 'edit';
+          title: 'Template Editor';
+        };
+        paramKeys: 'title' | 'path' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
       };
     }>;
     'sub-page:scaffolder/tasks': OverridableExtensionDefinition<{
@@ -714,7 +945,47 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
+        params: {
+          path: 'templating-extensions';
+          title: 'Templating Extensions';
+        };
+        paramKeys: 'title' | 'path' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
+  },
+  {
+    pluginId: 'scaffolder';
+    title: 'Create';
+    if: undefined;
+    extensionIds: [
+      'api:scaffolder',
+      'page:scaffolder',
+      'sub-page:scaffolder/templates',
+      'sub-page:scaffolder/tasks',
+      'sub-page:scaffolder/actions',
+      'sub-page:scaffolder/editor',
+      'sub-page:scaffolder/templating-extensions',
+      'home-page-widget:scaffolder/featured-templates',
+      'entity-icon-link:scaffolder/launch-template',
+      'api:scaffolder/form-decorators',
+      'api:scaffolder/form-fields',
+      'scaffolder-form-field:scaffolder/repo-url-picker',
+      'scaffolder-form-field:scaffolder/entity-name-picker',
+      'scaffolder-form-field:scaffolder/entity-picker',
+      'scaffolder-form-field:scaffolder/owner-picker',
+      'scaffolder-form-field:scaffolder/entity-tags-picker',
+      'scaffolder-form-field:scaffolder/multi-entity-picker',
+      'scaffolder-form-field:scaffolder/my-groups-picker',
+      'scaffolder-form-field:scaffolder/owned-entity-picker',
+      'scaffolder-form-field:scaffolder/repo-branch-picker',
+      'scaffolder-form-field:scaffolder/repo-owner-picker',
+    ];
   }
 >;
 export default _default;
@@ -756,9 +1027,39 @@ export const formDecoratorsApi: OverridableExtensionDefinition<{
     TApi,
     TImpl extends TApi,
     TDeps extends { [name in string]: unknown },
+    TApiRef extends {
+      readonly id: string;
+    } = {
+      readonly id: string;
+    },
+    TDepRefs extends {
+      [name in string]: {
+        readonly id: string;
+      };
+    } = {
+      [x: string]: {
+        readonly id: string;
+      };
+    },
   >(
-    params: ApiFactory<TApi, TImpl, TDeps>,
-  ) => ExtensionBlueprintParams<ApiFactory>;
+    params: ApiFactory<TApi, TImpl, TDeps> & {
+      api: TApiRef;
+      deps: TDepRefs;
+    },
+  ) => ExtensionBlueprintParams<
+    ApiFactory,
+    {
+      apiRefId: TApiRef['id'];
+      apiIsPromise: TApiRef extends {
+        readonly T: infer TValue;
+      }
+        ? [TValue] extends [PromiseLike<unknown>]
+          ? true
+          : false
+        : boolean;
+      deps: { [name in keyof TDepRefs]: TDepRefs[name]['id'] };
+    }
+  >;
 }>;
 
 // @public (undocumented)

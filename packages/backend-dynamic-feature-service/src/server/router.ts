@@ -27,6 +27,8 @@ import * as url from 'node:url';
 import { FrontendRemoteResolvers } from './frontendRemotesServer';
 import { Remote } from '../schema/openapi/generated/models';
 import { JsonObject } from '@backstage/types';
+import { readBackstageManifest } from './backstageManifest';
+import { createAppRemotes, resolveAppRemotesDir } from './appRemotes';
 
 export async function createRouter({
   logger,
@@ -154,6 +156,12 @@ export async function createRouter({
         defaultResolver.overrideExposedModules;
 
       const exposedModules = manifest.exposes.map(e => e.name);
+      const frontendManifest = readBackstageManifest({
+        assetsPath,
+        mfManifest: manifest,
+        logger,
+        pluginName: plugin.name,
+      });
 
       frontendPluginRemotes.push({
         packageName: plugin.name,
@@ -164,6 +172,7 @@ export async function createRouter({
         },
         exposedModules:
           overrideExposedModules?.(exposedModules, manifest) ?? exposedModules,
+        ...(frontendManifest ? { frontendManifest } : {}),
       });
 
       const customizeManifest =
@@ -188,9 +197,32 @@ export async function createRouter({
     }
   }
 
+  // The remotes that the Backstage CLI builds for the deferred packages of
+  // the app. Dynamic plugins take precedence over app remotes of the same
+  // package.
+  const appRemotesDir = resolveAppRemotesDir(
+    config.getOptionalString('app.packageName') ?? 'app',
+  );
+  const appRemotes = appRemotesDir
+    ? createAppRemotes({ remotesDir: appRemotesDir, externalBaseUrl, logger })
+    : undefined;
+  if (appRemotes) {
+    typedRouter.use(appRemotes.router);
+  }
+
   logger.info(`/remotes => ${JSON.stringify(frontendPluginRemotes)}`);
   typedRouter.get('/remotes', (_, res) => {
-    res.status(200).json(frontendPluginRemotes);
+    const dynamicPackageNames = new Set(
+      frontendPluginRemotes.map(remote => remote.packageName),
+    );
+    res
+      .status(200)
+      .json([
+        ...frontendPluginRemotes,
+        ...(appRemotes?.list() ?? []).filter(
+          remote => !dynamicPackageNames.has(remote.packageName),
+        ),
+      ]);
   });
 
   return typedRouter;

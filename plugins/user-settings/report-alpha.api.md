@@ -112,6 +112,18 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef_2;
         noHeader?: boolean;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#PageBlueprint';
+        params: {
+          path: '/settings';
+          title: 'Settings';
+        };
+        paramKeys: 'title' | 'path' | 'icon' | 'routeRef';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'sub-page:user-settings/auth-providers': OverridableExtensionDefinition<{
       config: {
@@ -211,6 +223,18 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
+        params: {
+          path: 'feature-flags';
+          title: 'Feature Flags';
+        };
+        paramKeys: 'title' | 'path' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
     'sub-page:user-settings/general': OverridableExtensionDefinition<{
       kind: 'sub-page';
@@ -256,7 +280,30 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#SubPageBlueprint';
+        params: {
+          path: 'general';
+          title: 'General';
+        };
+        paramKeys: 'title' | 'path' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: undefined;
+        if: undefined;
+      };
     }>;
+  },
+  {
+    pluginId: 'user-settings';
+    title: 'Settings';
+    if: undefined;
+    extensionIds: [
+      'page:user-settings',
+      'sub-page:user-settings/general',
+      'sub-page:user-settings/auth-providers',
+      'sub-page:user-settings/feature-flags',
+    ];
   }
 >;
 export default _default;

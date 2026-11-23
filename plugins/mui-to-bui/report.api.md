@@ -8,6 +8,7 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { FilterPredicate } from '@backstage/filter-predicates';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { JSX as JSX_3 } from 'react/jsx-runtime';
@@ -124,7 +125,24 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef_2;
         noHeader?: boolean;
       };
+      literals: {
+        blueprint: '@backstage/frontend-plugin-api#PageBlueprint';
+        params: {
+          path: '/mui-to-bui';
+        };
+        paramKeys: 'path' | 'routeRef' | 'loader';
+        paramsCallback: undefined;
+        attachTo: undefined;
+        disabled: boolean | undefined;
+        if: FilterPredicate | undefined;
+      };
     }>;
+  },
+  {
+    pluginId: 'mui-to-bui';
+    title: undefined;
+    if: undefined;
+    extensionIds: ['page:mui-to-bui'];
   }
 >;
 export default _default;

@@ -32,6 +32,43 @@ export interface Config {
      */
     packages?: 'all' | { include?: string[]; exclude?: string[] };
 
+    /**
+     * Experimental features of the new frontend system.
+     *
+     * @visibility frontend
+     */
+    experimental?: {
+      /**
+       * Enables deferred loading of the plugins that are discovered through
+       * `app.packages`. A package whose plugins can be deferred is left out
+       * of the app bundle, and is instead built as a module federation remote
+       * into the `dist/remotes` folder of the app when the app is built or
+       * started. The app loads it through the remotes endpoint of the dynamic
+       * features backend the first time one of its pages or elements is
+       * rendered, which requires the `dynamicFrontendFeaturesLoader` and
+       * `app.experimental.deferredRemotes`.
+       *
+       * Whether a plugin can be deferred is decided by static analysis of its
+       * source code. Workspace packages are analyzed from source, while other
+       * packages must include the `dist/backstage-manifest.json` file that is
+       * written when they are packed for publishing. Any package that can't
+       * be analyzed is bundled with the app.
+       *
+       * Set `exclude` to a list of package names to always bundle those
+       * packages with the app.
+       *
+       * @visibility frontend
+       */
+      deferredPackages?:
+        | boolean
+        | {
+            /**
+             * @visibility frontend
+             */
+            exclude?: string[];
+          };
+    };
+
     routes?: {
       /**
        * Maps external route references to regular route references. Both the

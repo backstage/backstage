@@ -15,13 +15,14 @@
  */
 
 import {
+  AppNodeSpec,
   coreExtensionData,
   createExtension,
   createExtensionInput,
   createFrontendPlugin,
   Extension,
 } from '@backstage/frontend-plugin-api';
-import { resolveAppTree } from './resolveAppTree';
+import { graftAppTreeNodes, resolveAppTree } from './resolveAppTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { createErrorCollector } from '../wiring/createErrorCollector';
@@ -446,5 +447,94 @@ describe('buildAppTree', () => {
         tree.nodes.get('test-2'),
       );
     });
+  });
+});
+
+describe('graftAppTreeNodes', () => {
+  const spec = (id: string, attachTo: { id: string; input: string }) => ({
+    ...baseSpec,
+    id,
+    attachTo,
+  });
+  const ids = (nodes: Iterable<{ spec: { id: string } }> | undefined) =>
+    Array.from(nodes ?? [], node => node.spec.id);
+
+  it('should replace nodes in place and attach new nodes', () => {
+    const tree = resolveAppTree(
+      'app',
+      [
+        spec('app', { id: 'root', input: 'app' }),
+        spec('a', { id: 'app', input: 'children' }),
+        spec('b', { id: 'app', input: 'children' }),
+        spec('c', { id: 'app', input: 'children' }),
+        // For example an extension from a module, attached to a replaced node
+        spec('b-child', { id: 'b', input: 'x' }),
+        // A stub child that the new nodes no longer provide, with a child
+        spec('b-stale', { id: 'b', input: 'x' }),
+        spec('b-stale-child', { id: 'b-stale', input: 'x' }),
+      ],
+      collector,
+    );
+    const app = tree.nodes.get('app')!;
+    const oldB = tree.nodes.get('b')!;
+    const bChild = tree.nodes.get('b-child')!;
+
+    const newNodes = graftAppTreeNodes(
+      tree,
+      [
+        spec('b', { id: 'app', input: 'children' }),
+        spec('b-new-child', { id: 'b', input: 'x' }),
+        spec('n1', { id: 'app', input: 'children' }),
+        spec('n2', { id: 'n1', input: 'y' }),
+        spec('orphan', { id: 'missing', input: 'z' }),
+      ],
+      { staleIds: new Set(['b-stale']) },
+    );
+    expect(ids(newNodes)).toEqual(['b', 'b-new-child', 'n1', 'n2', 'orphan']);
+
+    // The replacement keeps the position of the replaced node
+    const newB = tree.nodes.get('b')!;
+    expect(newB).not.toBe(oldB);
+    expect(ids(app.edges.attachments.get('children'))).toEqual([
+      'a',
+      'b',
+      'c',
+      'n1',
+    ]);
+    expect(newB.edges.attachedTo).toEqual({ node: app, input: 'children' });
+
+    // Existing children of the replaced node move over to the new node,
+    // except stale ones, which are removed from the tree
+    expect(tree.nodes.has('b-stale')).toBe(false);
+    expect(tree.nodes.has('b-stale-child')).toBe(false);
+    expect(tree.nodes.get('b-child')).toBe(bChild);
+    expect(bChild.edges.attachedTo).toEqual({ node: newB, input: 'x' });
+    expect(ids(newB.edges.attachments.get('x'))).toEqual([
+      'b-child',
+      'b-new-child',
+    ]);
+
+    // New nodes can attach to each other, or end up as orphans
+    expect(tree.nodes.get('n2')!.edges.attachedTo).toEqual({
+      node: tree.nodes.get('n1'),
+      input: 'y',
+    });
+    expect(ids(tree.orphans)).toEqual(['orphan']);
+    expect(tree.nodes.has('orphan')).toBe(true);
+
+    expect(() =>
+      graftAppTreeNodes(tree, [
+        {
+          ...spec('multi', { id: 'app', input: 'children' }),
+          // Multiple attachment points are only supported internally
+          attachTo: [
+            { id: 'a', input: 'x' },
+            { id: 'c', input: 'x' },
+          ] as unknown as AppNodeSpec['attachTo'],
+        },
+      ]),
+    ).toThrow(
+      "Extension 'multi' can't be added to an existing app tree because it uses multiple attachment points",
+    );
   });
 });

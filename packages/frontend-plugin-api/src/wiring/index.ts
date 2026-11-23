@@ -16,6 +16,7 @@
 
 export { coreExtensionData } from './coreExtensionData';
 export { createExtension } from './createExtension';
+export { type ExtensionDefinitionLiterals } from './ExtensionDefinitionLiterals';
 export {
   type ExtensionDefinition,
   type ExtensionDefinitionAttachTo,
@@ -40,6 +41,7 @@ export {
   type OverridableFrontendPlugin,
   type FrontendPluginInfo,
   type FrontendPluginInfoOptions,
+  type FrontendPluginLiterals,
 } from './createFrontendPlugin';
 export {
   createFrontendModule,
