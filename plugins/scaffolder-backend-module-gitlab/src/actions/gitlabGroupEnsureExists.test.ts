@@ -25,6 +25,9 @@ const mockGitlabClient = {
     show: jest.fn(),
     create: jest.fn(),
   },
+  Namespaces: {
+    show: jest.fn(),
+  },
 };
 
 jest.mock('@gitbeaker/rest', () => ({
@@ -247,6 +250,114 @@ describe('gitlab:group:ensureExists', () => {
     expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 42);
+  });
+
+  it('should reuse an existing user namespace instead of creating a group', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockResolvedValueOnce({
+      id: 7,
+      kind: 'user',
+      full_path: 'johannes.will',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        path: ['johannes.will'],
+      },
+    });
+
+    expect(mockGitlabClient.Namespaces.show).toHaveBeenCalledWith(
+      'johannes.will',
+    );
+    expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 7);
+  });
+
+  it('should fail with a clear error when a subgroup is requested under a user namespace', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockResolvedValueOnce({
+      id: 7,
+      kind: 'user',
+      full_path: 'johannes.will',
+    });
+
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          repoUrl: 'gitlab.com?repo=repo&owner=owner',
+          path: ['johannes.will', 'subgroup'],
+        },
+      }),
+    ).rejects.toThrow(
+      'is a user namespace and GitLab does not support subgroups under user namespaces',
+    );
+
+    expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+  });
+
+  it('should still create a top-level group when no namespace exists for the first path segment', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Groups.create.mockResolvedValueOnce({
+      id: 9,
+      full_path: 'new-group',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        path: ['new-group'],
+      },
+    });
+
+    expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith(
+      'new-group',
+      'new-group',
+      {},
+    );
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 9);
+  });
+
+  it('should create the group when the namespace lookup does not return a user namespace', async () => {
+    mockGitlabClient.Groups.show.mockRejectedValueOnce({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockResolvedValueOnce({
+      id: 5,
+      kind: 'group',
+      full_path: 'foo',
+    });
+    mockGitlabClient.Groups.create.mockResolvedValueOnce({
+      id: 5,
+      full_path: 'foo',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        path: ['foo'],
+      },
+    });
+
+    expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith(
+      'foo',
+      'foo',
+      {},
+    );
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 5);
   });
 
   it('should use the token from the integration config when none is provided', async () => {

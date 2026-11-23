@@ -16,7 +16,11 @@
 
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { GroupSchema, CreateGroupOptions } from '@gitbeaker/rest';
+import {
+  GroupSchema,
+  CreateGroupOptions,
+  NamespaceSchema,
+} from '@gitbeaker/rest';
 import { getClient, parseRepoUrl } from '../util';
 import { examples } from './gitlabGroupEnsureExists.examples';
 
@@ -103,6 +107,7 @@ export const createGitlabGroupEnsureExistsAction = (options: {
         const { name, slug } = pathParts[i];
         const fullPath: string = currentPath ? `${currentPath}/${slug}` : slug;
         let subGroup: GroupSchema | undefined;
+        let groupNotFound = false;
         try {
           subGroup = (await api.Groups.show(
             fullPath,
@@ -113,21 +118,38 @@ export const createGitlabGroupEnsureExistsAction = (options: {
           if (error.cause?.response?.status !== 404) {
             throw error;
           }
+          groupNotFound = true;
         }
         if (!subGroup) {
-          ctx.logger.info(`creating missing group ${fullPath}`);
+          // A top-level path segment can also be a user namespace, which the
+          // Groups API does not return. GitLab does not support subgroups
+          // under user namespaces.
+          const userNamespace =
+            i === 0 && groupNotFound
+              ? await showUserNamespace(api, slug)
+              : undefined;
+          if (userNamespace && lastIndex === 0) {
+            ctx.logger.info(`reusing existing user namespace ${slug}`);
+            parentId = userNamespace.id;
+          } else if (userNamespace) {
+            throw new Error(
+              `Cannot create a subgroup under '${slug}' because it is a user namespace and GitLab does not support subgroups under user namespaces`,
+            );
+          } else {
+            ctx.logger.info(`creating missing group ${fullPath}`);
 
-          parentId = await ctx.checkpoint({
-            key: `ensure.${name}.${slug}.${parentId}`,
-            // eslint-disable-next-line no-loop-func
-            fn: async () => {
-              const groupOptions: CreateGroupOptions = {
-                ...(parentId ? { parentId } : {}),
-                ...(description && i === lastIndex ? { description } : {}),
-              };
-              return (await api.Groups.create(name, slug, groupOptions))?.id;
-            },
-          });
+            parentId = await ctx.checkpoint({
+              key: `ensure.${name}.${slug}.${parentId}`,
+              // eslint-disable-next-line no-loop-func
+              fn: async () => {
+                const groupOptions: CreateGroupOptions = {
+                  ...(parentId ? { parentId } : {}),
+                  ...(description && i === lastIndex ? { description } : {}),
+                };
+                return (await api.Groups.create(name, slug, groupOptions))?.id;
+              },
+            });
+          }
         } else {
           parentId = subGroup.id;
         }
@@ -139,6 +161,30 @@ export const createGitlabGroupEnsureExistsAction = (options: {
     },
   });
 };
+
+/**
+ * Returns the namespace for the given path when it is a user namespace, and
+ * undefined otherwise. Group namespaces are not special-cased: groups keep
+ * being created through the Groups API exactly as before.
+ */
+async function showUserNamespace(
+  api: ReturnType<typeof getClient>,
+  path: string,
+): Promise<NamespaceSchema | undefined> {
+  let namespace: NamespaceSchema | undefined;
+  try {
+    namespace = (await api.Namespaces.show(
+      path,
+    )) as unknown as NamespaceSchema;
+  } catch (error: any) {
+    // 404 means there is no namespace with this path at all
+    if (error.cause?.response?.status === 404) {
+      return undefined;
+    }
+    throw error;
+  }
+  return namespace?.kind === 'user' ? namespace : undefined;
+}
 
 type PathPart = { name: string; slug: string };
 type PathItem = string | PathPart;

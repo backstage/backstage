@@ -26,6 +26,9 @@ const mockGitlabClient = {
     show: jest.fn(),
     create: jest.fn(),
   },
+  Namespaces: {
+    show: jest.fn(),
+  },
 };
 
 jest.mock('@gitbeaker/rest', () => ({
@@ -45,6 +48,9 @@ describe('gitlab:group:ensureExists', () => {
 
   it(`Should ${examples[0].description}`, async () => {
     mockGitlabClient.Groups.show.mockRejectedValue({
+      cause: { response: { status: 404 } },
+    });
+    mockGitlabClient.Namespaces.show.mockRejectedValue({
       cause: { response: { status: 404 } },
     });
     mockGitlabClient.Groups.create.mockResolvedValue({
