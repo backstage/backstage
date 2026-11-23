@@ -2097,19 +2097,6 @@ __metadata:
     "@backstage/cli-module-test-jest": "workspace:^"
     "@backstage/cli-module-translations": "workspace:^"
     "@backstage/cli-node": "workspace:^"
-    jest: "npm:^30.5.0"
-  peerDependencies:
-    "@jest/environment-jsdom-abstract": ^30.0.0
-    jest: ^29.0.0 || ^30.0.0
-    jest-environment-jsdom: "*"
-    jsdom: ^27.1.0
-  peerDependenciesMeta:
-    "@jest/environment-jsdom-abstract":
-      optional: true
-    jest-environment-jsdom:
-      optional: true
-    jsdom:
-      optional: true
   languageName: unknown
   linkType: soft
 
