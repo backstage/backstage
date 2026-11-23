@@ -35,6 +35,7 @@ import {
   attachComponentData,
   IconComponent,
   useApi,
+  useApiHolder,
   useElementFilter,
   useRouteRef,
   useRouteRefParams,
@@ -43,8 +44,11 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   catalogApiRef,
   EntityDisplayName,
+  type EntityPresentationApi,
   EntityRefLink,
   EntityRefLinks,
+  entityPresentationApiRef,
+  entityPresentationSnapshot,
   entityRouteRef,
   FavoriteEntity,
   getEntityRelations,
@@ -109,11 +113,14 @@ function headerProps(
   paramNamespace: string | undefined,
   paramName: string | undefined,
   entity: Entity | undefined,
+  presentationApi?: EntityPresentationApi,
 ): { headerTitle: string; headerType: string } {
   const kind = paramKind ?? entity?.kind ?? '';
   const namespace = paramNamespace ?? entity?.metadata.namespace ?? '';
-  const name =
-    entity?.metadata.title ?? paramName ?? entity?.metadata.name ?? '';
+  const name = entity
+    ? entityPresentationSnapshot(entity, undefined, presentationApi)
+        .primaryTitle
+    : paramName ?? '';
 
   return {
     headerTitle: `${name}${
@@ -282,11 +289,13 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     [entity],
   );
 
+  const presentationApi = useApiHolder().get(entityPresentationApiRef);
   const { headerTitle, headerType } = headerProps(
     kind,
     namespace,
     name,
     entity,
+    presentationApi,
   );
 
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);

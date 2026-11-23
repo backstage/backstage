@@ -28,7 +28,10 @@ import {
 import {
   AsyncEntityProvider,
   catalogApiRef,
+  EntityPresentationApi,
   EntityProvider,
+  EntityRefPresentationSnapshot,
+  entityPresentationApiRef,
   entityRouteRef,
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
@@ -118,6 +121,53 @@ describe('EntityLayout', () => {
     expect(screen.getByText('My Entity')).toBeInTheDocument();
     expect(screen.getByText('tabbed-test-title')).toBeInTheDocument();
     expect(screen.getByText('tabbed-test-content')).toBeInTheDocument();
+  });
+
+  it('renders the title from the entity presentation API when provided', async () => {
+    const mockPresentationApi: EntityPresentationApi = {
+      forEntity: entityOrRef => {
+        const name =
+          typeof entityOrRef === 'string'
+            ? entityOrRef
+            : entityOrRef.metadata.name;
+        const snapshot: EntityRefPresentationSnapshot = {
+          entityRef: `mykind:default/${name}`,
+          primaryTitle: `Presented ${name}`,
+        };
+        return { snapshot, promise: Promise.resolve(snapshot) };
+      },
+    };
+    const apisWithPresentation = TestApiRegistry.from(
+      [catalogApiRef, catalogApiMock()],
+      [alertApiRef, mockApis.alert()],
+      [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+      [permissionApiRef, mockApis.permission()],
+      [entityPresentationApiRef, mockPresentationApi],
+    );
+
+    await renderInTestApp(
+      <ApiProvider apis={apisWithPresentation}>
+        <EntityProvider entity={mockEntity}>
+          <EntityLayout>
+            <EntityLayout.Route path="/" title="tabbed-test-title">
+              <div>tabbed-test-content</div>
+            </EntityLayout.Route>
+          </EntityLayout>
+        </EntityProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+        },
+      },
+    );
+
+    expect(screen.getByText('Presented my-entity')).toBeInTheDocument();
+    expect(screen.getByText('tabbed-test-content')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(document.title).toContain('Presented my-entity'),
+    );
   });
 
   it('renders default error message when entity is not found', async () => {
