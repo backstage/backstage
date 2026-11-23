@@ -26,9 +26,9 @@ function makeRow(entity: Entity): CatalogTableRow {
     entity,
     resolved: {
       name: entity.metadata.name,
-      entityRef: `${entity.kind}:${
-        entity.metadata.namespace ?? 'default'
-      }/${entity.metadata.name}`.toLowerCase(),
+      entityRef: `${entity.kind}:${entity.metadata.namespace ?? 'default'}/${
+        entity.metadata.name
+      }`.toLowerCase(),
       partOfSystemRelations: [],
       ownedByRelations: [],
     },
@@ -63,9 +63,9 @@ describe('columnFactories.createTitleColumn', () => {
   it('sorts by the entity title when present, falling back to the name', () => {
     const column = columnFactories.createTitleColumn();
     // 'component-a' vs 'Zebra' sorts alphabetically by presentation title
-    expect(column.customSort!(makeRow(entityA), makeRow(entityB))).toBeLessThan(
-      0,
-    );
+    expect(
+      column.customSort!(makeRow(entityA), makeRow(entityB), 'row'),
+    ).toBeLessThan(0);
   });
 
   it('uses the entity presentation API for sorting when provided', () => {
@@ -73,9 +73,9 @@ describe('columnFactories.createTitleColumn', () => {
       entityPresentationApi: mockPresentationApi,
     });
     // Both presented titles are 'PRESENTED COMPONENT-X', so the name suffix decides
-    expect(column.customSort!(makeRow(entityA), makeRow(entityB))).toBeLessThan(
-      0,
-    );
+    expect(
+      column.customSort!(makeRow(entityA), makeRow(entityB), 'row'),
+    ).toBeLessThan(0);
   });
 
   it('matches search against the presented title', () => {
@@ -83,18 +83,24 @@ describe('columnFactories.createTitleColumn', () => {
       entityPresentationApi: mockPresentationApi,
     });
     expect(
-      column.customFilterAndSearch!('presented component-a', makeRow(entityA)),
+      column.customFilterAndSearch!(
+        'presented component-a',
+        makeRow(entityA),
+        column,
+      ),
     ).toBe(true);
-    expect(column.customFilterAndSearch!('component-b', makeRow(entityA))).toBe(
-      false,
-    );
+    expect(
+      column.customFilterAndSearch!('component-b', makeRow(entityA), column),
+    ).toBe(false);
   });
 
   it('matches search against the entity name when no title is set', () => {
     const column = columnFactories.createTitleColumn();
-    expect(column.customFilterAndSearch!('component-a', makeRow(entityA))).toBe(
-      true,
-    );
-    expect(column.customFilterAndSearch!('zebra', makeRow(entityB))).toBe(true);
+    expect(
+      column.customFilterAndSearch!('component-a', makeRow(entityA), column),
+    ).toBe(true);
+    expect(
+      column.customFilterAndSearch!('zebra', makeRow(entityB), column),
+    ).toBe(true);
   });
 });
