@@ -112,6 +112,7 @@ export async function performStitching(options: {
           slotId: 'entity_id',
           previousHash: 'hash',
           live: knex.raw('CASE WHEN final_entity IS NULL THEN 0 ELSE 1 END'),
+          winnerId: knex.raw('COALESCE(winner_candidate_id, entity_id)'),
         }),
       knex
         .distinct({
@@ -125,7 +126,12 @@ export async function performStitching(options: {
     ]);
 
     const slot = slotResult[0] as
-      | { slotId: string; previousHash: string; live: number | string }
+      | {
+          slotId: string;
+          previousHash: string;
+          live: number | string;
+          winnerId: string;
+        }
       | undefined;
 
     // No candidate exists. This happens when the entity was deleted, and also
@@ -164,12 +170,7 @@ export async function performStitching(options: {
       // A live slot can still hold the body of a deleted predecessor, if the
       // entity was re-created before its tombstone was written. That body
       // must not stay published while the new candidate waits for processing.
-      if (
-        slot &&
-        Number(slot.live) &&
-        slot.slotId !== candidateId &&
-        (await getPublishedUid(knex, slot.slotId)) !== candidateId
-      ) {
+      if (slot && Number(slot.live) && slot.winnerId !== candidateId) {
         const outcome = await publish(knex, () =>
           knex.transaction(tx =>
             writeTombstone({
@@ -329,24 +330,6 @@ export async function performStitching(options: {
 }
 
 /**
- * Reads the UID of the currently published body. Only used in the rare case
- * where a slot and its current candidate have different IDs.
- */
-async function getPublishedUid(
-  knex: Knex,
-  slotId: string,
-): Promise<string | undefined> {
-  const row = await knex<DbFinalEntitiesRow>('final_entities')
-    .where('entity_id', slotId)
-    .select('final_entity')
-    .first();
-  if (!row?.final_entity) {
-    return undefined;
-  }
-  return (JSON.parse(row.final_entity) as Entity).metadata.uid;
-}
-
-/**
  * Runs one publication transaction, retrying on deadlock. A superseded
  * publication has already been rolled back and counts as abandoned.
  */
@@ -499,23 +482,31 @@ async function writeEntity(options: {
             hash,
             last_updated_at: tx.fn.now(),
             deleted_at: null,
+            winner_candidate_id: candidateId,
           }
         : tx.raw(
-            '(entity_id, entity_ref, final_entity, hash, last_updated_at, deleted_at) ' +
-              'select ?, ?, ?, ?, CURRENT_TIMESTAMP, NULL ' +
+            '(entity_id, entity_ref, final_entity, hash, last_updated_at, deleted_at, winner_candidate_id) ' +
+              'select ?, ?, ?, ?, CURRENT_TIMESTAMP, NULL, ? ' +
               'where exists (select 1 from stitch_queue where entity_ref = ? and stitch_ticket = ?)',
             [
               options.slotId,
               entityRef,
               JSON.stringify(entity),
               hash,
+              candidateId,
               entityRef,
               stitchTicket,
             ],
           ),
     )
     .onConflict('entity_ref')
-    .merge(['final_entity', 'hash', 'last_updated_at', 'deleted_at']);
+    .merge([
+      'final_entity',
+      'hash',
+      'last_updated_at',
+      'deleted_at',
+      'winner_candidate_id',
+    ]);
 
   if (!isMySQL) {
     upsert = upsert.where(
@@ -596,6 +587,7 @@ async function writeTombstone(options: {
     .update({
       final_entity: null,
       hash: '',
+      winner_candidate_id: null,
       deleted_at: tx.fn.now(),
       last_updated_at: tx.fn.now(),
     });

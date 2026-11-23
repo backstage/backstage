@@ -118,6 +118,7 @@ export class DefaultCatalogProcessingEngine {
       throw new Error('Processing engine is already started');
     }
 
+    // A permanent integrity sweep; see createMissingStitchRepair.
     await this.scheduler.scheduleTask({
       id: 'catalog_repair_missing_stitches',
       scope: 'global',

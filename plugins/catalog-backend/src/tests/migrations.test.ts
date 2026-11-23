@@ -1950,6 +1950,7 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
       final_entities: original.final_entities.map(row => ({
         ...(row as object),
         deleted_at: null,
+        winner_candidate_id: null,
       })),
     });
     expect(await finalEntitiesIndexes()).toEqual(originalIndexes);
@@ -2017,6 +2018,9 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     expect(await knex.schema.hasColumn('final_entities', 'deleted_at')).toBe(
       false,
     );
+    expect(
+      await knex.schema.hasColumn('final_entities', 'winner_candidate_id'),
+    ).toBe(false);
     expect(await knex('final_entities').pluck('entity_id')).toEqual(['kept']);
     expect(await knex('stitch_queue').pluck('entity_ref')).toEqual([
       'k:ns/recreated',
@@ -2029,6 +2033,9 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     expect(await knex.schema.hasColumn('final_entities', 'deleted_at')).toBe(
       true,
     );
+    expect(
+      await knex.schema.hasColumn('final_entities', 'winner_candidate_id'),
+    ).toBe(true);
 
     // A retry after a partial run, with the foreign key already gone, keeps
     // tracking deletions.

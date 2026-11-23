@@ -42,13 +42,15 @@ async function insertFinal(
   knex: Knex,
   name: string,
   slotId: string,
-  publishedUid: string | null = slotId,
+  winner: string | null | undefined = undefined,
+  live = true,
 ) {
   await knex<DbFinalEntitiesRow>('final_entities').insert({
     entity_id: slotId,
     entity_ref: ref(name),
-    final_entity: publishedUid === null ? null : entity(name, publishedUid),
-    hash: 'published-hash',
+    final_entity: live ? entity(name, winner ?? slotId) : null,
+    hash: live ? 'published-hash' : '',
+    winner_candidate_id: winner,
   });
 }
 
@@ -79,13 +81,21 @@ describe.each(databases.eachSupportedId())(
       await applyDatabaseMigrations(knex);
     });
 
-    it('queues missing work without disturbing healthy slots or existing requests', async () => {
+    it('queues rows whose winner is gone, without disturbing healthy rows or existing requests', async () => {
+      // Deleted by an older stitcher: no candidate at all.
       await insertFinal(knex, 'deleted', 'deleted-slot');
-      await insertFinal(knex, 'stale', 'stale-slot');
+      // A revived slot whose published winner was deleted and re-created.
+      await insertFinal(knex, 'stale', 'stale-slot', 'stale-old');
       await insertCandidate(knex, 'stale', 'stale-current');
+      // Healthy rows: a revived slot, an explicit and a legacy (null) winner.
       await insertFinal(knex, 'reused', 'reused-slot', 'reused-current');
       await insertCandidate(knex, 'reused', 'reused-current');
-      await insertFinal(knex, 'tombstone', 'tombstone-slot', null);
+      await insertFinal(knex, 'explicit', 'explicit-id', 'explicit-id');
+      await insertCandidate(knex, 'explicit', 'explicit-id');
+      await insertFinal(knex, 'legacy', 'legacy-id');
+      await insertCandidate(knex, 'legacy', 'legacy-id');
+      await insertFinal(knex, 'tombstone', 'tombstone-slot', null, false);
+      // A pending request keeps its ticket and lease.
       await insertFinal(knex, 'queued', 'queued-slot');
       await knex<DbStitchQueueRow>('stitch_queue').insert({
         entity_ref: ref('queued'),
@@ -97,11 +107,8 @@ describe.each(databases.eachSupportedId())(
       const finalBefore = await knex<DbFinalEntitiesRow>(
         'final_entities',
       ).orderBy('entity_ref');
-      const repair = createMissingStitchRepair({
-        knex,
-        logger: mockServices.logger.mock(),
-        pageSize: 1,
-      });
+      const logger = mockServices.logger.mock();
+      const repair = createMissingStitchRepair({ knex, logger, batchSize: 2 });
 
       await repair(new AbortController().signal);
 
@@ -121,61 +128,48 @@ describe.each(databases.eachSupportedId())(
       await expect(
         knex<DbFinalEntitiesRow>('final_entities').orderBy('entity_ref'),
       ).resolves.toEqual(finalBefore);
+      const findings = logger.warn.mock.calls.map(
+        ([, meta]) => (meta as { entityRefs: string }).entityRefs,
+      );
+      expect(findings.join(', ').split(', ').sort()).toEqual([
+        ref('deleted'),
+        ref('stale'),
+      ]);
+
+      // Nothing new to find on the next pass.
+      logger.warn.mockClear();
+      await repair(new AbortController().signal);
+      expect(logger.warn).not.toHaveBeenCalled();
     });
 
-    it('repairs across pages without exceeding the repair cap', async () => {
-      const names = ['one', 'two', 'three', 'four', 'five'];
+    it('bounds each run, resumes from its cursor and wraps around after a full pass', async () => {
+      const names = ['a', 'b', 'c', 'd', 'e'];
       for (const name of names) {
         await insertFinal(knex, name, name);
       }
-      const logger = mockServices.logger.mock();
       const repair = createMissingStitchRepair({
         knex,
-        logger,
-        pageSize: 2,
-        maxRepairs: 3,
+        logger: mockServices.logger.mock(),
+        batchSize: 2,
+        maxBatchesPerRun: 1,
       });
+      const queued = async () =>
+        (await readQueue(knex)).map(row => row.entity_ref);
 
       await repair(new AbortController().signal);
+      expect(await queued()).toEqual([ref('a'), ref('b')]);
       await repair(new AbortController().signal);
+      expect(await queued()).toEqual(['a', 'b', 'c', 'd'].map(ref));
+      await repair(new AbortController().signal);
+      expect(await queued()).toEqual(names.map(ref));
 
-      const queuedRefs = (await readQueue(knex)).map(row => row.entity_ref);
-      expect(queuedRefs).toHaveLength(3);
-      expect(names.map(ref)).toEqual(expect.arrayContaining(queuedRefs));
-      expect(logger.warn).toHaveBeenCalledTimes(1);
-      expect(logger.warn).toHaveBeenCalledWith(expect.any(String), {
-        count: 3,
-        repairLimitReached: true,
-      });
+      // The last batch was short, so the next run starts over.
+      await knex('stitch_queue').delete();
+      await repair(new AbortController().signal);
+      expect(await queued()).toEqual([ref('a'), ref('b')]);
     });
 
-    it('stops between pages and reports repairs already enqueued on abort', async () => {
-      await insertFinal(knex, 'first', 'a');
-      await insertFinal(knex, 'second', 'b');
-      const logger = mockServices.logger.mock();
-      const controller = new AbortController();
-      const repair = createMissingStitchRepair({ knex, logger, pageSize: 1 });
-      const onResponse = (_result: unknown, query: { sql: string }) => {
-        if (/^insert.*stitch_queue/i.test(query.sql)) controller.abort();
-      };
-      knex.on('query-response', onResponse);
-      try {
-        await repair(controller.signal);
-      } finally {
-        knex.removeListener('query-response', onResponse);
-      }
-
-      expect(controller.signal.aborted).toBe(true);
-      await expect(readQueue(knex)).resolves.toEqual([
-        expect.objectContaining({ entity_ref: ref('first') }),
-      ]);
-      expect(logger.warn).toHaveBeenCalledWith(expect.any(String), {
-        count: 1,
-        repairLimitReached: false,
-      });
-    });
-
-    it('does not queue repairs when already aborted', async () => {
+    it('does nothing when already aborted', async () => {
       await insertFinal(knex, 'deleted', 'deleted-slot');
       const repair = createMissingStitchRepair({
         knex,
@@ -187,28 +181,6 @@ describe.each(databases.eachSupportedId())(
       await repair(controller.signal);
 
       await expect(readQueue(knex)).resolves.toEqual([]);
-    });
-
-    it('expires one hour after creation, even before its first invocation', async () => {
-      await insertFinal(knex, 'deleted', 'deleted-slot');
-      const options = { knex, logger: mockServices.logger.mock() };
-      const startedAt = Date.now();
-      const clock = jest.spyOn(Date, 'now').mockReturnValue(startedAt);
-      try {
-        const expired = createMissingStitchRepair(options);
-        clock.mockReturnValue(startedAt + 60 * 60 * 1000 + 1);
-
-        await expired(new AbortController().signal);
-        await expect(readQueue(knex)).resolves.toEqual([]);
-
-        const fresh = createMissingStitchRepair(options);
-        await fresh(new AbortController().signal);
-        await expect(readQueue(knex)).resolves.toEqual([
-          expect.objectContaining({ entity_ref: ref('deleted') }),
-        ]);
-      } finally {
-        clock.mockRestore();
-      }
     });
   },
 );

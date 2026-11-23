@@ -982,6 +982,7 @@ describe.each(databases.eachSupportedId())(
           uid: row.final_entity
             ? JSON.parse(row.final_entity).metadata.uid
             : undefined,
+          winner: row.winner_candidate_id,
           live: row.final_entity !== null,
           deleted: row.deleted_at !== null,
           generation: Number(row.generation),
@@ -999,6 +1000,7 @@ describe.each(databases.eachSupportedId())(
       expect(published).toEqual({
         slotId: 'first',
         uid: 'first',
+        winner: 'first',
         live: true,
         deleted: false,
         generation: expect.any(Number),
@@ -1015,6 +1017,7 @@ describe.each(databases.eachSupportedId())(
       expect(tombstone).toEqual({
         slotId: 'first',
         uid: undefined,
+        winner: null,
         live: false,
         deleted: true,
         generation: expect.any(Number),
@@ -1036,6 +1039,7 @@ describe.each(databases.eachSupportedId())(
       expect(revived).toEqual({
         slotId: 'first',
         uid: 'second',
+        winner: 'second',
         live: true,
         deleted: false,
         generation: expect.any(Number),
@@ -1051,7 +1055,11 @@ describe.each(databases.eachSupportedId())(
       await insertCandidate('third');
       await expect(stitch()).resolves.toBe('changed');
       expect(await readFinal()).toEqual(
-        expect.objectContaining({ slotId: 'first', uid: 'third' }),
+        expect.objectContaining({
+          slotId: 'first',
+          uid: 'third',
+          winner: 'third',
+        }),
       );
       expect(await readUidSearch()).toEqual([
         { entity_id: 'first', value: 'third' },
@@ -1065,7 +1073,7 @@ describe.each(databases.eachSupportedId())(
       await insertCandidate('fourth', false);
       await expect(stitch()).resolves.toBe('changed');
       expect(await readFinal()).toEqual(
-        expect.objectContaining({ slotId: 'first', live: false }),
+        expect.objectContaining({ slotId: 'first', live: false, winner: null }),
       );
       await knex('refresh_state')
         .where('entity_id', 'fourth')
@@ -1076,6 +1084,7 @@ describe.each(databases.eachSupportedId())(
         expect.objectContaining({
           slotId: 'first',
           uid: 'fourth',
+          winner: 'fourth',
           live: true,
         }),
       );

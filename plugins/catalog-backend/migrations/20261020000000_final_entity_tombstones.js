@@ -19,7 +19,9 @@
 /**
  * Lets final entity rows outlive their candidate as tombstones.
  *
- * Adds an informational `final_entities.deleted_at`, and replaces the cascade
+ * Adds an informational `final_entities.deleted_at` and a
+ * `final_entities.winner_candidate_id` that records which candidate's body is
+ * published, and replaces the cascade
  * from `refresh_state` with a deletion trigger that asks the stitcher to
  * reconcile every deleted ref. The stitcher then tombstones the row and
  * assigns it a generation. PostgreSQL uses one statement-level trigger per
@@ -56,7 +58,7 @@ exports.up = async function up(knex) {
       // rather than queue behind long-running queries and block everything
       // else that is waiting on those tables.
       await tx.raw("SET LOCAL lock_timeout = '5s'");
-      await addDeletedAtColumn(tx);
+      await addColumns(tx);
       await createPostgresTrigger(tx);
       for (const name of await findPostgresForeignKeys(tx)) {
         await tx.raw('ALTER TABLE final_entities DROP CONSTRAINT ??', [name]);
@@ -65,7 +67,7 @@ exports.up = async function up(knex) {
     return;
   }
 
-  await addDeletedAtColumn(knex);
+  await addColumns(knex);
 
   if (isMysql(knex)) {
     // Matches the application's enqueue contract, as on PostgreSQL. Triggers
@@ -134,7 +136,7 @@ exports.down = async function down(knex) {
       }
       await tx.raw(`DROP TRIGGER IF EXISTS ${triggerName} ON refresh_state`);
       await tx.raw(`DROP FUNCTION IF EXISTS ${functionName}()`);
-      await dropDeletedAtColumn(tx);
+      await dropColumns(tx);
     });
     return;
   }
@@ -153,13 +155,13 @@ exports.down = async function down(knex) {
     });
   }
   await knex.raw(`DROP TRIGGER IF EXISTS ${triggerName}`);
-  await dropDeletedAtColumn(knex);
+  await dropColumns(knex);
 };
 
 exports.config = { transaction: false };
 
 /** @param {import('knex').Knex} knex */
-async function addDeletedAtColumn(knex) {
+async function addColumns(knex) {
   if (!(await knex.schema.hasColumn('final_entities', 'deleted_at'))) {
     await knex.schema.alterTable('final_entities', table => {
       table
@@ -168,14 +170,31 @@ async function addDeletedAtColumn(knex) {
         .comment('When the entity was last tombstoned; informational only');
     });
   }
+  // No foreign key: candidates are hard-deleted and reconciled
+  // asynchronously, so a short-lived dangling value is expected. Every new
+  // publication sets it. Null on a live row means the published candidate has
+  // the row's own entity_id, which holds for every row written by code that
+  // predates this column, because only newer code reuses a slot.
+  if (!(await knex.schema.hasColumn('final_entities', 'winner_candidate_id'))) {
+    await knex.schema.alterTable('final_entities', table => {
+      table
+        .string('winner_candidate_id')
+        .nullable()
+        .comment(
+          'The refresh_state entity_id whose body is published; null for tombstones, and on live rows written by older code, where it equals entity_id',
+        );
+    });
+  }
 }
 
 /** @param {import('knex').Knex} knex */
-async function dropDeletedAtColumn(knex) {
-  if (await knex.schema.hasColumn('final_entities', 'deleted_at')) {
-    await knex.schema.alterTable('final_entities', table => {
-      table.dropColumn('deleted_at');
-    });
+async function dropColumns(knex) {
+  for (const column of ['winner_candidate_id', 'deleted_at']) {
+    if (await knex.schema.hasColumn('final_entities', column)) {
+      await knex.schema.alterTable('final_entities', table => {
+        table.dropColumn(column);
+      });
+    }
   }
 }
 

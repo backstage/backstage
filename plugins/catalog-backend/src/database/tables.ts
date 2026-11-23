@@ -153,6 +153,14 @@ export type DbFinalEntitiesRow = {
   last_updated_at?: string | Date;
   /** When the row was last tombstoned; informational only. */
   deleted_at?: string | Date | null;
+  /**
+   * The `refresh_state.entity_id` of the candidate whose body is published,
+   * which is also its `metadata.uid`. Null for tombstones, and on live rows
+   * written by older code, where the winner is `entity_id` itself. Read it as
+   * `COALESCE(winner_candidate_id, entity_id)` on live rows. There is no
+   * foreign key, so it can briefly point at a deleted candidate.
+   */
+  winner_candidate_id?: string | null;
   entity_ref: string;
 };
 

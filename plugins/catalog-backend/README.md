@@ -118,6 +118,11 @@ non-null generation is therefore not proof of complete change tracking. Any
 future feed needs an explicit rollout activation boundary and initial
 synchronization strategy.
 
+During a rolling upgrade, an older instance can handle an entity's deletion
+without removing it from the catalog. A slow background check finds such
+entities and removes them later, logging a warning for each one. Outside of an
+upgrade, that warning points to a bug or to manual changes to the database.
+
 ## Development
 
 This backend plugin can be started in a standalone mode from directly in this

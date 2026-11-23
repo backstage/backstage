@@ -21,6 +21,20 @@ comes from the current candidate. Never join `final_entities.entity_id` or
 An entity exists if and only if its final row exists and `final_entity` is not
 null. `deleted_at` is informational.
 
+`winner_candidate_id` records which candidate's body is published, and every
+publication sets it. Tombstones clear it. A live row where it is null was last
+written by older code, which never reuses a slot, so its winner is the row's own
+`entity_id`. Read the winner as `COALESCE(winner_candidate_id, entity_id)` on
+live rows. There is no foreign key, so the value can briefly point at a deleted
+candidate until the deletion's stitch runs.
+
+A permanent integrity sweep walks the final rows in primary key order, a
+bounded batch at a time, and requests a stitch for each live row whose winner
+no longer exists and that has no pending stitch. A full pass is expected to find
+nothing; a finding is logged as a warning. During a rolling upgrade it repairs
+deletions whose stitch request an older stitcher consumed without clearing the
+row.
+
 A trigger on `refresh_state` deletions requests a stitch for every deleted ref,
 using the same ticket contract as application code. PostgreSQL uses one
 statement-level trigger per deletion; MySQL and SQLite only have row-level
