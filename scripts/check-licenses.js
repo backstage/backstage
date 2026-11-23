@@ -26,7 +26,8 @@ const DEFAULT_ALLOWED = (() => {
     const cfgPath = path.join(__dirname, '..', '.allowed-licenses.json');
     const raw = fs.readFileSync(cfgPath, 'utf8');
     const cfg = JSON.parse(raw);
-    if (Array.isArray(cfg.allowedLicenses) && cfg.allowedLicenses.length) return cfg.allowedLicenses;
+    if (Array.isArray(cfg.allowedLicenses) && cfg.allowedLicenses.length)
+      return cfg.allowedLicenses;
   } catch {}
   return [];
 })();
@@ -54,9 +55,22 @@ const FALLBACK_ALLOWED = [
 if (DEFAULT_ALLOWED.length === 0) DEFAULT_ALLOWED.push(...FALLBACK_ALLOWED);
 
 function normalizeResolution(resolution) {
-  if (!resolution) return { name: null, version: null, raw: resolution, isWorkspace: false, isPatch: false };
+  if (!resolution)
+    return {
+      name: null,
+      version: null,
+      raw: resolution,
+      isWorkspace: false,
+      isPatch: false,
+    };
   if (resolution.includes('@workspace:')) {
-    return { name: null, version: null, raw: resolution, isWorkspace: true, isPatch: false };
+    return {
+      name: null,
+      version: null,
+      raw: resolution,
+      isWorkspace: true,
+      isPatch: false,
+    };
   }
   if (resolution.includes('@patch:')) {
     // Berry patch format: "outer@patch:selector#patch::locator" where selector is like "@scope/pkg@npm%3A1.0.0"
@@ -65,21 +79,42 @@ function normalizeResolution(resolution) {
       const decoded = decodeURIComponent(resolution);
       const innerMatch = decoded.match(/@patch:(.+?)@npm:([^#:]+)/);
       if (innerMatch) {
-        return { name: innerMatch[1], version: innerMatch[2].split('::')[0].split('#')[0], raw: resolution, isPatch: true, isWorkspace: false };
+        return {
+          name: innerMatch[1],
+          version: innerMatch[2].split('::')[0].split('#')[0],
+          raw: resolution,
+          isPatch: true,
+          isWorkspace: false,
+        };
       }
     } catch {}
     const m = resolution.match(/npm%3A([^#&:]+)/);
     if (m) {
       let version = m[1];
-      try { version = decodeURIComponent(version); } catch {}
+      try {
+        version = decodeURIComponent(version);
+      } catch {}
       // Fallback: try to extract scoped name from outer
       let name = resolution.split('@patch:')[0].replace(/^"/, '');
-      return { name, version, raw: resolution, isPatch: true, isWorkspace: false };
+      return {
+        name,
+        version,
+        raw: resolution,
+        isPatch: true,
+        isWorkspace: false,
+      };
     }
     try {
       const decoded = decodeURIComponent(resolution);
       const m2 = decoded.match(/@npm:([^#\s:]+)/);
-      if (m2) return { name: decoded.split('@patch:')[0], version: m2[1], raw: resolution, isPatch: true, isWorkspace: false };
+      if (m2)
+        return {
+          name: decoded.split('@patch:')[0],
+          version: m2[1],
+          raw: resolution,
+          isPatch: true,
+          isWorkspace: false,
+        };
     } catch {}
   }
   const idx = resolution.lastIndexOf('@npm:');
@@ -87,9 +122,21 @@ function normalizeResolution(resolution) {
     const name = resolution.slice(0, idx);
     const rest = resolution.slice(idx + 5);
     const version = rest.split(/[#:"\s]/)[0].split('::')[0];
-    return { name, version, raw: resolution, isPatch: false, isWorkspace: false };
+    return {
+      name,
+      version,
+      raw: resolution,
+      isPatch: false,
+      isWorkspace: false,
+    };
   }
-  return { name: null, version: null, raw: resolution, isPatch: false, isWorkspace: false };
+  return {
+    name: null,
+    version: null,
+    raw: resolution,
+    isPatch: false,
+    isWorkspace: false,
+  };
 }
 
 function parseYarnLock(content) {
@@ -105,7 +152,8 @@ function parseYarnLock(content) {
     if (current && current.resolution) {
       entries.set(current.resolution, current);
       if (currentDescriptors) {
-        for (const d of currentDescriptors) descriptorMap.set(d, current.resolution);
+        for (const d of currentDescriptors)
+          descriptorMap.set(d, current.resolution);
       }
     }
     current = null;
@@ -116,17 +164,29 @@ function parseYarnLock(content) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     if (!line.trim() || line.startsWith('#')) continue;
-    if (line.startsWith('__metadata:')) { flush(); currentDescriptors = null; continue; }
+    if (line.startsWith('__metadata:')) {
+      flush();
+      currentDescriptors = null;
+      continue;
+    }
     // header: starts at column 0, ends with ':', not indented
     if (!line.startsWith(' ') && line.endsWith(':')) {
       flush();
       let header = line.slice(0, -1).trim();
       // remove surrounding quotes
-      if (header.startsWith('"') && header.endsWith('"')) header = header.slice(1, -1);
+      if (header.startsWith('"') && header.endsWith('"'))
+        header = header.slice(1, -1);
       // split by ', ' but keep quoted commas? descriptors never contain ', ' inside, safe
-      const parts = header.split(/,\s*/).map(s => s.trim().replace(/^"|"$/g, ''));
+      const parts = header
+        .split(/,\s*/)
+        .map(s => s.trim().replace(/^"|"$/g, ''));
       currentDescriptors = parts;
-      current = { descriptors: parts, dependencies: {}, version: null, resolution: null };
+      current = {
+        descriptors: parts,
+        dependencies: {},
+        version: null,
+        resolution: null,
+      };
       inDependencies = false;
       continue;
     }
@@ -146,9 +206,17 @@ function parseYarnLock(content) {
       // Dependencies are indented 4 spaces; top-level keys (checksum, languageName, etc.) are 2 spaces
       const leading = line.match(/^(\s+)/)?.[1] || '';
       // Exit dependencies block when indentation drops to 2 (next top-level field)
-      if (leading.length <= 2 && trimmed.endsWith(':') === false && !trimmed.includes('": "npm:')) {
+      if (
+        leading.length <= 2 &&
+        trimmed.endsWith(':') === false &&
+        !trimmed.includes('": "npm:')
+      ) {
         // Check if this is a top-level field like checksum:, languageName:, linkType:, bin:, conditions:
-        if (/^(checksum|languageName|linkType|conditions|bin|peerDependencies|resolutions):/.test(trimmed)) {
+        if (
+          /^(checksum|languageName|linkType|conditions|bin|peerDependencies|resolutions):/.test(
+            trimmed,
+          )
+        ) {
           inDependencies = false;
           continue;
         }
@@ -196,9 +264,11 @@ function isOverrideActive(override, now = new Date()) {
 }
 
 function isAllowedLicense(licenseExpr, allowedLicenses) {
-  if (!licenseExpr || typeof licenseExpr !== 'string' || !licenseExpr.trim()) return false;
+  if (!licenseExpr || typeof licenseExpr !== 'string' || !licenseExpr.trim())
+    return false;
   const trimmed = licenseExpr.trim();
-  if (/^(SEE LICENSE|LicenseRef|UNLICENSED|UNKNOWN)/i.test(trimmed)) return false;
+  if (/^(SEE LICENSE|LicenseRef|UNLICENSED|UNKNOWN)/i.test(trimmed))
+    return false;
   if (/SEE LICENSE/i.test(trimmed)) return false;
   const allowedSet = new Set(allowedLicenses || DEFAULT_ALLOWED);
   // strip WITH exceptions: " GPL-2.0-only WITH Classpath-exception-2.0"
@@ -210,8 +280,10 @@ function isAllowedLicense(licenseExpr, allowedLicenses) {
     function evalNode(node) {
       if (!node) return false;
       if (node.license) return allowedSet.has(node.license);
-      if (node.conjunction === 'or') return evalNode(node.left) || evalNode(node.right);
-      if (node.conjunction === 'and') return evalNode(node.left) && evalNode(node.right);
+      if (node.conjunction === 'or')
+        return evalNode(node.left) || evalNode(node.right);
+      if (node.conjunction === 'and')
+        return evalNode(node.left) && evalNode(node.right);
       return false;
     }
     return evalNode(ast);
@@ -227,7 +299,11 @@ function isAllowedLicense(licenseExpr, allowedLicenses) {
     if (expr.includes(' AND ')) {
       return expr.split(/\s+AND\s+/).every(part => fallback(part));
     }
-    expr = expr.replace(/^[()]+|[()]+$/g, '').trim().replace(/^[()]+|[()]+$/g, '').trim();
+    expr = expr
+      .replace(/^[()]+|[()]+$/g, '')
+      .trim()
+      .replace(/^[()]+|[()]+$/g, '')
+      .trim();
     expr = expr.replace(/[()]/g, '').trim();
     if (!expr) return false;
     return allowedSet.has(expr);
@@ -264,7 +340,9 @@ function collectTransitive(changed, headLock) {
 async function fetchLicense(name, version, cache) {
   const key = `${name}@${version}`;
   if (cache.has(key)) return cache.get(key);
-  const url = `https://registry.npmjs.org/${encodeURIComponent(name)}/${encodeURIComponent(version)}`;
+  const url = `https://registry.npmjs.org/${encodeURIComponent(
+    name,
+  )}/${encodeURIComponent(version)}`;
   let lastErr;
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
@@ -282,8 +360,13 @@ async function fetchLicense(name, version, cache) {
       const lic = data.license || data.licenses || null;
       let licStr = null;
       if (typeof lic === 'string') licStr = lic;
-      else if (Array.isArray(lic)) licStr = lic.map(l => (typeof l === 'string' ? l : l.type || l.license || '')).filter(Boolean).join(' OR ');
-      else if (lic && typeof lic === 'object') licStr = lic.type || lic.license || null;
+      else if (Array.isArray(lic))
+        licStr = lic
+          .map(l => (typeof l === 'string' ? l : l.type || l.license || ''))
+          .filter(Boolean)
+          .join(' OR ');
+      else if (lic && typeof lic === 'object')
+        licStr = lic.type || lic.license || null;
       cache.set(key, licStr);
       return licStr;
     } catch (e) {
@@ -302,8 +385,10 @@ function loadConfig(configPath) {
   try {
     const raw = fs.readFileSync(configPath, 'utf8');
     const cfg = JSON.parse(raw);
-    if (Array.isArray(cfg.allowedLicenses) && cfg.allowedLicenses.length) allowedLicenses = cfg.allowedLicenses;
-    if (Array.isArray(cfg.overrides)) overrides = cfg.overrides.filter(o => !o._example);
+    if (Array.isArray(cfg.allowedLicenses) && cfg.allowedLicenses.length)
+      allowedLicenses = cfg.allowedLicenses;
+    if (Array.isArray(cfg.overrides))
+      overrides = cfg.overrides.filter(o => !o._example);
     cncfPolicyRev = cfg.cncfPolicyRev || null;
   } catch {}
   return { allowedLicenses, overrides, cncfPolicyRev };
@@ -311,8 +396,14 @@ function loadConfig(configPath) {
 
 function matchesOverride(pkgName, pkgVersion, pkgLicense, override) {
   if (override.name !== pkgName) return false;
-  if (override.versionRange && override.versionRange !== '*' && override.versionRange !== pkgVersion) return false;
-  if (override.license && pkgLicense && override.license !== pkgLicense) return false;
+  if (
+    override.versionRange &&
+    override.versionRange !== '*' &&
+    override.versionRange !== pkgVersion
+  )
+    return false;
+  if (override.license && pkgLicense && override.license !== pkgLicense)
+    return false;
   return true;
 }
 
@@ -338,22 +429,38 @@ Options:
     else if (args[i] === '--base-ref' && args[i + 1]) {
       const ref = args[++i];
       try {
-        const content = execSync(`git show ${ref}`, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
+        const content = execSync(`git show ${ref}`, {
+          encoding: 'utf8',
+          maxBuffer: 50 * 1024 * 1024,
+        });
         fs.writeFileSync('/tmp/base-yarn.lock', content, 'utf8');
         baseLockPath = '/tmp/base-yarn.lock';
-      } catch { baseLockPath = null; }
+      } catch {
+        baseLockPath = null;
+      }
     }
   }
   // default base detection for workflow
   if (!baseLockPath) {
-    if (fs.existsSync('/tmp/base-yarn.lock')) baseLockPath = '/tmp/base-yarn.lock';
+    if (fs.existsSync('/tmp/base-yarn.lock'))
+      baseLockPath = '/tmp/base-yarn.lock';
     else baseLockPath = null;
   }
 
   let baseContent = '';
   let headContent = '';
-  try { if (baseLockPath && fs.existsSync(baseLockPath)) baseContent = fs.readFileSync(baseLockPath, 'utf8'); } catch {}
-  try { headContent = fs.readFileSync(headLockPath, 'utf8'); } catch (e) { console.error(`::error file=${headLockPath}::Failed to read head lockfile: ${e.message}`); process.exit(1); }
+  try {
+    if (baseLockPath && fs.existsSync(baseLockPath))
+      baseContent = fs.readFileSync(baseLockPath, 'utf8');
+  } catch {}
+  try {
+    headContent = fs.readFileSync(headLockPath, 'utf8');
+  } catch (e) {
+    console.error(
+      `::error file=${headLockPath}::Failed to read head lockfile: ${e.message}`,
+    );
+    process.exit(1);
+  }
 
   const baseLock = parseYarnLock(baseContent);
   const headLock = parseYarnLock(headContent);
@@ -372,46 +479,76 @@ Options:
 
   for (let i = 0; i < closure.length; i += batchSize) {
     const batch = closure.slice(i, i + batchSize);
-    const results = await Promise.all(batch.map(async entry => {
-      const norm = normalizeResolution(entry.resolution);
-      if (norm.isWorkspace) return null;
-      if (!norm.name || !norm.version) return null;
-      const license = await fetchLicense(norm.name, norm.version, cache);
-      const allowed = isAllowedLicense(license, config.allowedLicenses);
-      if (allowed) return null;
-      // check overrides
-      const now = new Date();
-      for (const ov of config.overrides) {
-        if (!isOverrideActive(ov, now)) continue;
-        if (matchesOverride(norm.name, norm.version, license, ov)) return null;
-      }
-      return { name: norm.name, version: norm.version, license: license || '(missing)', resolution: entry.resolution };
-    }));
+    const results = await Promise.all(
+      batch.map(async entry => {
+        const norm = normalizeResolution(entry.resolution);
+        if (norm.isWorkspace) return null;
+        if (!norm.name || !norm.version) return null;
+        const license = await fetchLicense(norm.name, norm.version, cache);
+        const allowed = isAllowedLicense(license, config.allowedLicenses);
+        if (allowed) return null;
+        // check overrides
+        const now = new Date();
+        for (const ov of config.overrides) {
+          if (!isOverrideActive(ov, now)) continue;
+          if (matchesOverride(norm.name, norm.version, license, ov))
+            return null;
+        }
+        return {
+          name: norm.name,
+          version: norm.version,
+          license: license || '(missing)',
+          resolution: entry.resolution,
+        };
+      }),
+    );
     for (const r of results) if (r) violations.push(r);
   }
 
   if (violations.length === 0) {
-    console.log(`Checked ${closure.length} packages (${changed.length} changed + transitive), no violations.`);
+    console.log(
+      `Checked ${closure.length} packages (${changed.length} changed + transitive), no violations.`,
+    );
     process.exit(0);
   }
 
   // reporting
   for (const v of violations) {
-    console.log(`::error file=yarn.lock::License violation: ${v.name}@${v.version} has license "${v.license}" not in allowlist`);
+    console.log(
+      `::error file=yarn.lock::License violation: ${v.name}@${v.version} has license "${v.license}" not in allowlist`,
+    );
   }
   const summaryPath = process.env.GITHUB_STEP_SUMMARY;
   const tableHeader = '| Package | Version | License |\n|---|---|---|\n';
-  const tableRows = violations.map(v => `| ${v.name} | ${v.version} | ${v.license} |`).join('\n');
+  const tableRows = violations
+    .map(v => `| ${v.name} | ${v.version} | ${v.license} |`)
+    .join('\n');
   const summary = `### License check violations: ${violations.length}\n\n${tableHeader}${tableRows}\n`;
   if (summaryPath) {
-    try { fs.appendFileSync(summaryPath, summary, 'utf8'); } catch {}
+    try {
+      fs.appendFileSync(summaryPath, summary, 'utf8');
+    } catch {}
   } else {
     console.log('\n' + summary);
   }
-  console.table(violations.map(v => ({ package: v.name, version: v.version, license: v.license })));
+  console.table(
+    violations.map(v => ({
+      package: v.name,
+      version: v.version,
+      license: v.license,
+    })),
+  );
   process.exit(1);
 }
 
 if (require.main === module) main();
 
-module.exports = { parseYarnLock, diffEntries, isAllowedLicense, isOverrideActive, normalizeResolution, collectTransitive, DEFAULT_ALLOWED };
+module.exports = {
+  parseYarnLock,
+  diffEntries,
+  isAllowedLicense,
+  isOverrideActive,
+  normalizeResolution,
+  collectTransitive,
+  DEFAULT_ALLOWED,
+};

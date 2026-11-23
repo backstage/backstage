@@ -56,4 +56,3 @@ jobs:
 
       - name: Verify licenses
         run: node scripts/check-licenses.js --base-lock /tmp/base-yarn.lock --head-lock yarn.lock --config .allowed-licenses.json
-

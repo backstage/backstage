@@ -220,6 +220,10 @@ workflows:
     '.github/workflows/verify_fossa.yml':
         - 'actions/checkout@v7'
         - 'step-security/harden-runner@v2'
+    '.github/workflows/verify_licenses.yml':
+        - 'actions/checkout@v7'
+        - 'actions/setup-node@v7'
+        - 'step-security/harden-runner@v2'
     '.github/workflows/verify_lockfile.yml':
         - 'actions/checkout@v7'
         - 'step-security/harden-runner@v2'
