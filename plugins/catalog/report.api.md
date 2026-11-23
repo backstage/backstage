@@ -211,7 +211,12 @@ export const CatalogTable: {
     ): TableColumn<CatalogTableRow>;
     createNamespaceColumn(): TableColumn<CatalogTableRow>;
   }>;
-  defaultColumnsFunc: CatalogTableColumnsFunc;
+  defaultColumnsFunc: (
+    input: EntityListContextProps,
+    options?: {
+      entityPresentationApi?: EntityPresentationApi;
+    },
+  ) => TableColumn<CatalogTableRow>[];
 };
 
 // @public
