@@ -74,8 +74,8 @@ const packages = getPackagePresentations(plugin);
 
 function workspace(
   packageIndex: number,
-  selectedTab: 'readme' | 'install',
-  onSelectTab: (tab: 'readme' | 'install') => void = () => {},
+  selectedTab: 'readme' | 'install' | 'configure',
+  onSelectTab: (tab: 'readme' | 'install' | 'configure') => void = () => {},
 ) {
   return (
     <PackageWorkspace
@@ -100,7 +100,8 @@ describe('PackageWorkspace', () => {
 
   it('keeps package identity stable across controlled tabs and package changes', async () => {
     const user = userEvent.setup();
-    const onSelectTab = mock.fn<(tab: 'readme' | 'install') => void>();
+    const onSelectTab =
+      mock.fn<(tab: 'readme' | 'install' | 'configure') => void>();
     const { rerender } = render(workspace(0, 'readme', onSelectTab));
 
     const frontendHeading = screen.getByRole('heading', {

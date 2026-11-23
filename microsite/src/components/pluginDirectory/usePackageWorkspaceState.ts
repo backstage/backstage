@@ -15,7 +15,7 @@
  */
 import { useHistory, useLocation } from '@docusaurus/router';
 
-export type PackageTab = 'readme' | 'install';
+export type PackageTab = 'readme' | 'install' | 'configure';
 
 export interface PackageWorkspaceState {
   selectedPackageName: string | undefined;
@@ -25,7 +25,7 @@ export interface PackageWorkspaceState {
 }
 
 function isPackageTab(value: string): value is PackageTab {
-  return value === 'readme' || value === 'install';
+  return value === 'readme' || value === 'install' || value === 'configure';
 }
 
 // The package is a query parameter and the tab is the location hash, for

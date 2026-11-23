@@ -24,6 +24,14 @@ import { routerMock } from '../../testUtils/docusaurusMocks/router';
 import { mockUnpkgReadmes } from '../../testUtils/mockUnpkg';
 import PluginDetailPage from './PluginDetailPage';
 
+const endpointSchema = {
+  type: 'object',
+  properties: {
+    endpoint: { type: 'string' },
+  },
+  required: ['endpoint'],
+};
+
 const plugin: PluginData = {
   title: 'Example Plugin',
   author: 'Example Maintainers',
@@ -45,6 +53,7 @@ const plugin: PluginData = {
     packages: [
       {
         npmPackageName: '@example/plugin-example',
+        configSchema: endpointSchema,
         npm: {
           status: 'fresh',
           lastAttemptAt: '2026-08-03T12:00:00.000Z',
@@ -55,6 +64,7 @@ const plugin: PluginData = {
       },
       {
         npmPackageName: '@example/plugin-example-backend',
+        configSchema: endpointSchema,
         npm: {
           status: 'fresh',
           lastAttemptAt: '2026-08-03T12:00:00.000Z',
@@ -159,7 +169,7 @@ describe('PluginDetailPage', () => {
       screen.getByRole('tab', { name: 'README' }).getAttribute('aria-selected'),
       'true',
     );
-    assert.equal(screen.queryByRole('tab', { name: 'Configure' }), null);
+    assert.ok(screen.getByRole('tab', { name: 'Configure' }));
 
     await user.click(screen.getByRole('tab', { name: 'Install' }));
     // Tab switches replace the history entry rather than adding one.
@@ -189,6 +199,45 @@ describe('PluginDetailPage', () => {
     );
     assert.ok(
       screen.getByText('yarn --cwd packages/app add @example/plugin-example'),
+    );
+  });
+
+  it('keeps configuration values while URL-driven tabs change', async () => {
+    const user = userEvent.setup();
+    const showTab = (tab: string) => {
+      routerMock.location = location(
+        '?package=%40example%2Fplugin-example',
+        `#${tab}`,
+      );
+      view.rerender(
+        <PluginDetailPage
+          plugin={plugin}
+          latestBackstageVersion={{ version: null }}
+        />,
+      );
+    };
+    routerMock.location = location(
+      '?package=%40example%2Fplugin-example',
+      '#readme',
+    );
+    const view = renderPage();
+    assert.ok(await screen.findByText('README for @example/plugin-example'));
+
+    await user.click(screen.getByRole('tab', { name: 'Configure' }));
+    showTab('configure');
+    await user.type(
+      await screen.findByLabelText(/^endpoint/),
+      'https://api.example.com',
+    );
+
+    await user.click(screen.getByRole('tab', { name: 'README' }));
+    showTab('readme');
+    await user.click(screen.getByRole('tab', { name: 'Configure' }));
+    showTab('configure');
+
+    assert.equal(
+      (screen.getByLabelText(/^endpoint/) as HTMLInputElement).value,
+      'https://api.example.com',
     );
   });
 });
