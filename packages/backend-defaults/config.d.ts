@@ -290,18 +290,14 @@ export interface Config {
       dangerouslyDisableDefaultAuthPolicy?: boolean;
 
       /**
-       * Include an issuer claim in all tokens issued by the auth system,
-       * including service-to-service tokens and the user identity proof
-       * embedded in user tokens. Defaults to `false`.
-       *
-       * Only enable this once every backend in the deployment has been
-       * upgraded to a version that supports it, otherwise on-behalf-of
-       * requests from backends running older versions will fail.
+       * Include an issuer claim in plugin-to-plugin tokens, set to the
+       * external base URL of the issuing plugin. Defaults to `false`.
        *
        * This flag is temporary and will be removed in a future release, at
-       * which point all tokens will always include an issuer claim.
+       * which point plugin-to-plugin tokens will always include an issuer
+       * claim.
        */
-      experimentalIssuerClaims?: boolean;
+      experimentalPluginTokenIssuer?: boolean;
 
       /** Controls how to store keys for plugin-to-plugin auth */
       pluginKeyStore?:

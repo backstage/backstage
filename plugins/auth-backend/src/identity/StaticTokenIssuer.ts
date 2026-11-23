@@ -42,7 +42,7 @@ export type Options = {
    */
   omitClaimsFromToken?: string[];
   /**
-   * Whether to include the issuer in the signed user identity proof, see `backend.auth.experimentalIssuerClaims`
+   * Whether to include the issuer in the signed user identity proof, see `auth.experimentalUserIdentityProofIssuer`
    */
   includeIssuerInProof?: boolean;
 };

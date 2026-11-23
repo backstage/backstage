@@ -34,7 +34,7 @@ type Options = {
   discovery: DiscoveryService;
   logger: LoggerService;
   /**
-   * Whether to include the issuer claim in issued tokens, see `backend.auth.experimentalIssuerClaims`
+   * Whether to include the issuer claim in issued tokens, see `backend.auth.experimentalPluginTokenIssuer`
    */
   includeIssuer?: boolean;
   /**

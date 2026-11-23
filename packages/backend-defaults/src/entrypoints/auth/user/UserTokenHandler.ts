@@ -161,7 +161,7 @@ export class UserTokenHandler {
       payload.uip,
     ].join('.');
 
-    // TODO: Remove this fallback along with `backend.auth.experimentalIssuerClaims`.
+    // TODO: Remove this fallback along with `auth.experimentalUserIdentityProofIssuer`.
     // Auth backends without the flag enabled sign the user identity proof
     // without the issuer, in which case we need to omit it as well.
     if (payload.iss && !(await this.#hasValidSignature(limitedUserToken))) {

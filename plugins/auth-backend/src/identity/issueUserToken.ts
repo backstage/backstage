@@ -142,7 +142,7 @@ interface BackstageUserIdentityProofPayload {
   iat: number;
 
   /**
-   * The issuer of the token, only included if enabled through `backend.auth.experimentalIssuerClaims`
+   * The issuer of the token, only included if enabled through `auth.experimentalUserIdentityProofIssuer`
    */
   iss?: string;
 }

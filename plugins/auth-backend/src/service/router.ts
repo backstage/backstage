@@ -121,7 +121,8 @@ export async function createRouter(
       : [];
 
   const includeIssuerInProof =
-    config.getOptionalBoolean('backend.auth.experimentalIssuerClaims') ?? false;
+    config.getOptionalBoolean('auth.experimentalUserIdentityProofIssuer') ??
+    false;
 
   let tokenIssuer: TokenIssuer;
   if (keyStore instanceof StaticKeyStore) {
