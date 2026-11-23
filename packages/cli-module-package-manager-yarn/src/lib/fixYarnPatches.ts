@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { run } from '@backstage/cli-common';
+import { ExitCodeError, run } from '@backstage/cli-common';
 import { semverUtils, structUtils } from '@yarnpkg/core';
 import { parseSyml } from '@yarnpkg/parsers';
 import { patchUtils } from '@yarnpkg/plugin-patch';
@@ -34,7 +34,8 @@ export type FixYarnPatchesOptions = VerifyYarnPatchesOptions & {
   writeFile?: (filePath: string, content: string) => Promise<void>;
   /**
    * Extracts the unpatched contents of an installed package and returns the
-   * directory they were extracted to. The directory is removed afterwards.
+   * directory they were extracted to. Temporary folders created by Yarn are
+   * removed afterwards.
    */
   extractPackage?: (options: {
     rootDir: string;
@@ -266,19 +267,29 @@ async function defaultIsPatchReverseApplicable(options: {
   });
   try {
     await child.waitForExit();
-  } catch {
-    return false;
+  } catch (error) {
+    // A non-zero exit means the patch does not reverse-apply. Anything else,
+    // such as git not being installed, is a failure to run the check.
+    if (error instanceof ExitCodeError) {
+      return false;
+    }
+    throw error;
   }
   return !child.signalCode;
 }
 
 async function removeExtractedPackage(packageDir: string): Promise<void> {
-  // Yarn extracts into a "user" folder inside a temporary folder of its own.
-  const target =
-    path.basename(packageDir) === 'user'
-      ? path.dirname(packageDir)
-      : packageDir;
-  await fs.rm(target, { recursive: true, force: true }).catch(() => {});
+  // Yarn extracts into a "user" folder inside an "xfs-<hex>" temporary folder
+  // of its own. Only remove folders with that exact shape, since the path is
+  // read from command output.
+  const parent = path.dirname(packageDir);
+  if (
+    path.basename(packageDir) !== 'user' ||
+    !/^xfs-[0-9a-f]+$/.test(path.basename(parent))
+  ) {
+    return;
+  }
+  await fs.rm(parent, { recursive: true, force: true }).catch(() => {});
 }
 
 async function defaultInstall(
@@ -409,7 +420,7 @@ export async function fixYarnPatches(
     ((filePath: string, content: string) => fs.writeFile(filePath, content));
   const install =
     options.install ?? ((dir: string) => defaultInstall(dir, options.env));
-  const removedPatchFiles = new Map<string, string>();
+  const removedPatchFiles = new Map<string, Buffer>();
   const restoreFailure = async (
     reason: string,
   ): Promise<FixYarnPatchesResult> => {
@@ -422,7 +433,7 @@ export async function fixYarnPatches(
     });
     for (const [filePath, content] of removedPatchFiles) {
       try {
-        await writeFile(filePath, content);
+        await fs.writeFile(filePath, content);
       } catch {
         restored = false;
       }
@@ -460,17 +471,18 @@ export async function fixYarnPatches(
   let retargetFailure: string;
   try {
     const failure = await applyManifest(target.content);
-    if (!failure) {
-      return { status: 'fixed', message: target.transitions.join('; ') };
+    if (failure) {
+      return restoreFailure(failure);
     }
-    retargetFailure = failure;
+    return { status: 'fixed', message: target.transitions.join('; ') };
   } catch (error) {
     retargetFailure = `Yarn could not repair the patches: ${String(error)}`;
   }
 
-  // Retargeting failed, which commonly happens when a patch was an early
-  // backport of a change that has since been released. Check whether each
-  // patch reverse-applies in full to the target version, and if so, drop it.
+  // The install failed, which commonly happens when a patch was an early
+  // backport of a change that has since been released and so no longer
+  // applies. Check whether each patch reverse-applies in full to the target
+  // version, and if so, drop it.
   try {
     const dropped = await findReleasedPatches({
       rootDir,
@@ -504,7 +516,7 @@ export async function fixYarnPatches(
     );
     for (const holdback of dropped) {
       const patchPath = holdback.declaration.paths[0].absolute;
-      removedPatchFiles.set(patchPath, await fs.readFile(patchPath, 'utf8'));
+      removedPatchFiles.set(patchPath, await fs.readFile(patchPath));
       await fs.rm(patchPath);
     }
     const failure =

@@ -440,15 +440,14 @@ describe('fixYarnPatches', () => {
       fetch: fetchRelease,
     });
     const fetch = jest.fn(fetchRelease);
+    const extractPackage = jest.fn();
 
     await expect(
       fixYarnPatches({
         rootDir: mockDir.path,
         fetch,
         verificationResult,
-        extractPackage: async () => {
-          throw new Error('not released');
-        },
+        extractPackage,
         install: async rootDir => {
           const manifestPath = path.join(rootDir, 'package.json');
           const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
@@ -467,6 +466,7 @@ describe('fixYarnPatches', () => {
       ),
     });
     expect(fetch).not.toHaveBeenCalled();
+    expect(extractPackage).not.toHaveBeenCalled();
   });
 
   it('reports when restoration leaves a partial repair', async () => {
@@ -790,6 +790,19 @@ ${content.slice(end)}`;
 
     it('restores removed patch files when final verification fails', async () => {
       const { extractPackage } = setup('new\n');
+      // Patch files are not necessarily valid UTF-8
+      const patchBytes = Buffer.from(
+        releasablePatch.replace('+new', '+n\xe9w'),
+        'latin1',
+      );
+      await fs.writeFile(
+        mockDir.resolve('.yarn/patches/example.patch'),
+        patchBytes,
+      );
+      await fs.writeFile(
+        mockDir.resolve('extracted/index.js'),
+        Buffer.from('n\xe9w\n', 'latin1'),
+      );
       let installs = 0;
       const install = async (rootDir: string) => {
         installs += 1;
@@ -810,8 +823,28 @@ ${content.slice(end)}`;
         }),
       ).resolves.toMatchObject({
         status: 'not-fixable',
+        message: expect.stringContaining('did not pass patch verification'),
+      });
+      await expect(
+        fs.readFile(mockDir.resolve('.yarn/patches/example.patch')),
+      ).resolves.toEqual(patchBytes);
+    });
+
+    it('fails the check instead of keeping patches when git cannot run', async () => {
+      const { install, extractPackage } = setup('new\n');
+
+      await expect(
+        fixYarnPatches({
+          rootDir: mockDir.path,
+          env: { ...process.env, PATH: mockDir.resolve('no-bin') },
+          fetch: fetchSingleUpdate,
+          install,
+          extractPackage,
+        }),
+      ).resolves.toMatchObject({
+        status: 'not-fixable',
         message: expect.stringContaining(
-          'the original project files were restored',
+          'checking for released patches failed',
         ),
       });
       await expect(
@@ -968,7 +1001,7 @@ ${target.slice(target.indexOf('"@backstage/other@patch'))}`;
     it('extracts packages with Yarn and checks them with git', async () => {
       const { install } = setup('new\n');
       const actual = jest.requireActual('@backstage/cli-common');
-      const yarnTemp = mockDir.resolve('yarn-temp');
+      const yarnTemp = mockDir.resolve('xfs-1a2b3c');
       jest.mocked(run).mockImplementation((args, runOptions) => {
         if (args[0] === 'yarn' && args[1] === 'patch') {
           return actual.run(
