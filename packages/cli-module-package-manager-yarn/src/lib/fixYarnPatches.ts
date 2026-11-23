@@ -16,6 +16,7 @@
 
 import { run } from '@backstage/cli-common';
 import { semverUtils, structUtils } from '@yarnpkg/core';
+import { parseSyml } from '@yarnpkg/parsers';
 import { patchUtils } from '@yarnpkg/plugin-patch';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -506,7 +507,9 @@ export async function fixYarnPatches(
       removedPatchFiles.set(patchPath, await fs.readFile(patchPath, 'utf8'));
       await fs.rm(patchPath);
     }
-    const failure = await applyManifest(finalManifest);
+    const failure =
+      (await applyManifest(finalManifest)) ??
+      (await findOutdatedDroppedPackages(lockfilePath, dropped));
     if (failure) {
       return restoreFailure(`${retargetFailure}; ${failure}`);
     }
@@ -527,6 +530,47 @@ export async function fixYarnPatches(
       )}`,
     );
   }
+}
+
+/**
+ * Without its resolution, a dropped package goes back to the ranges its
+ * dependents declare, which could select a version older than the one the
+ * patch was checked against and that still lacks the change.
+ */
+async function findOutdatedDroppedPackages(
+  lockfilePath: string,
+  dropped: PatchHoldbackFix[],
+): Promise<string | undefined> {
+  const lockfile = parseSyml(await fs.readFile(lockfilePath, 'utf8'));
+  const outdated = new Array<string>();
+  for (const [key, entry] of Object.entries(lockfile)) {
+    if (key === '__metadata' || typeof entry?.resolution !== 'string') {
+      continue;
+    }
+    const locator = structUtils.parseLocator(entry.resolution, true);
+    const holdback = dropped.find(
+      h => h.packageName === structUtils.stringifyIdent(locator),
+    );
+    const version = semverUtils.clean(String(entry.version ?? ''));
+    if (
+      holdback &&
+      (!version ||
+        !semverUtils.satisfiesWithPrereleases(
+          version,
+          `>=${holdback.targetVersion}`,
+        ))
+    ) {
+      outdated.push(
+        `'${holdback.packageName}' resolved to '${entry.version}', which is older than '${holdback.targetVersion}'`,
+      );
+    }
+  }
+  if (outdated.length === 0) {
+    return undefined;
+  }
+  return `Removing the patch resolutions selected versions that the patches were not checked against: ${outdated.join(
+    '; ',
+  )}`;
 }
 
 /**
@@ -558,6 +602,12 @@ async function findReleasedPatches(options: {
 
   const released: PatchHoldbackFix[] = [];
   for (const holdback of options.holdbacks) {
+    // Rollback restores deleted patches by content, which would turn a
+    // symbolic link into a regular file, so linked patches are never dropped
+    const patchStat = await fs.lstat(holdback.declaration.paths[0].absolute);
+    if (patchStat.isSymbolicLink()) {
+      continue;
+    }
     const packageDir = await options.extractPackage({
       rootDir: options.rootDir,
       packageName: holdback.packageName,

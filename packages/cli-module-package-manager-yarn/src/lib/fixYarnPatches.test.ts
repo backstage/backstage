@@ -819,6 +819,80 @@ ${content.slice(end)}`;
       ).resolves.toBe(releasablePatch);
     });
 
+    it('restores the patch when dependents resolve an older version without it', async () => {
+      const { extractPackage } = setup('new\n');
+      const originalManifest = await fs.readFile(
+        mockDir.resolve('package.json'),
+        'utf8',
+      );
+      let installs = 0;
+      const install = async (rootDir: string) => {
+        installs += 1;
+        if (installs === 1) {
+          throw new Error('patch does not apply');
+        }
+        const lockfile = releasedLockfile();
+        await fs.writeFile(
+          path.join(rootDir, 'yarn.lock'),
+          installs === 3
+            ? `${lockfile}
+"@backstage/example@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@backstage/example@npm:1.0.0"
+  languageName: node
+  linkType: hard
+`
+            : lockfile,
+        );
+      };
+
+      await expect(
+        fixYarnPatches({
+          rootDir: mockDir.path,
+          fetch: fetchSingleUpdate,
+          install,
+          extractPackage,
+        }),
+      ).resolves.toMatchObject({
+        status: 'not-fixable',
+        message: expect.stringContaining(
+          "'@backstage/example' resolved to '1.0.0', which is older than '1.0.1'",
+        ),
+      });
+      await expect(
+        fs.readFile(mockDir.resolve('package.json'), 'utf8'),
+      ).resolves.toBe(originalManifest);
+      await expect(
+        fs.readFile(mockDir.resolve('.yarn/patches/example.patch'), 'utf8'),
+      ).resolves.toBe(releasablePatch);
+    });
+
+    it('does not remove a patch that is a symbolic link', async () => {
+      const { install, extractPackage } = setup('new\n');
+      await fs.rename(
+        mockDir.resolve('.yarn/patches/example.patch'),
+        mockDir.resolve('example-target.patch'),
+      );
+      await fs.symlink(
+        mockDir.resolve('example-target.patch'),
+        mockDir.resolve('.yarn/patches/example.patch'),
+      );
+
+      await expect(
+        fixYarnPatches({
+          rootDir: mockDir.path,
+          fetch: fetchSingleUpdate,
+          install,
+          extractPackage,
+        }),
+      ).resolves.toMatchObject({ status: 'not-fixable' });
+      expect(extractPackage).not.toHaveBeenCalled();
+      const link = await fs.lstat(
+        mockDir.resolve('.yarn/patches/example.patch'),
+      );
+      expect(link.isSymbolicLink()).toBe(true);
+    });
+
     it('removes released patches while retargeting the others', async () => {
       const content = repository();
       mockDir.setContent({
