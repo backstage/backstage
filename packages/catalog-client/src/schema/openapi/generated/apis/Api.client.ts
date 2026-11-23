@@ -23,25 +23,25 @@ import { FetchApi } from '../types/fetch';
 import crossFetch from 'cross-fetch';
 import { pluginId } from '../pluginId';
 import * as parser from 'uri-template';
+import { AnalyzeLocationRequest } from '../models/AnalyzeLocationRequest.model';
+import { AnalyzeLocationResponse } from '../models/AnalyzeLocationResponse.model';
+import { CreateLocation201Response } from '../models/CreateLocation201Response.model';
+import { CreateLocationRequest } from '../models/CreateLocationRequest.model';
 import { EntitiesBatchResponse } from '../models/EntitiesBatchResponse.model';
 import { EntitiesQueryResponse } from '../models/EntitiesQueryResponse.model';
 import { Entity } from '../models/Entity.model';
 import { EntityAncestryResponse } from '../models/EntityAncestryResponse.model';
 import { EntityFacetsResponse } from '../models/EntityFacetsResponse.model';
 import { GetEntitiesByRefsRequest } from '../models/GetEntitiesByRefsRequest.model';
-import { QueryEntitiesByPredicateRequest } from '../models/QueryEntitiesByPredicateRequest.model';
-import { QueryEntityFacetsByPredicateRequest } from '../models/QueryEntityFacetsByPredicateRequest.model';
-import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
-import { ValidateEntityRequest } from '../models/ValidateEntityRequest.model';
-import { AnalyzeLocationRequest } from '../models/AnalyzeLocationRequest.model';
-import { AnalyzeLocationResponse } from '../models/AnalyzeLocationResponse.model';
-import { CreateLocation201Response } from '../models/CreateLocation201Response.model';
-import { CreateLocationRequest } from '../models/CreateLocationRequest.model';
 import { GetLocations200ResponseInner } from '../models/GetLocations200ResponseInner.model';
 import { GetLocationsByQueryRequest } from '../models/GetLocationsByQueryRequest.model';
 import { Location } from '../models/Location.model';
 import { LocationInput } from '../models/LocationInput.model';
 import { LocationsQueryResponse } from '../models/LocationsQueryResponse.model';
+import { QueryEntitiesByPredicateRequest } from '../models/QueryEntitiesByPredicateRequest.model';
+import { QueryEntityFacetsByPredicateRequest } from '../models/QueryEntityFacetsByPredicateRequest.model';
+import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
+import { ValidateEntityRequest } from '../models/ValidateEntityRequest.model';
 
 /**
  * Wraps the Response type to convey a type on the json call.
@@ -63,9 +63,33 @@ export interface RequestOptions {
 /**
  * @public
  */
+export type AnalyzeLocation = {
+  body: AnalyzeLocationRequest;
+};
+/**
+ * @public
+ */
+export type CreateLocation = {
+  body: CreateLocationRequest;
+  query: {
+    dryRun?: string;
+    onConflict?: 'refresh' | 'reject';
+  };
+};
+/**
+ * @public
+ */
 export type DeleteEntityByUid = {
   path: {
     uid: string;
+  };
+};
+/**
+ * @public
+ */
+export type DeleteLocation = {
+  path: {
+    id: string;
   };
 };
 /**
@@ -146,54 +170,6 @@ export type GetEntityFacets = {
 /**
  * @public
  */
-export type QueryEntitiesByPredicate = {
-  body: QueryEntitiesByPredicateRequest;
-};
-/**
- * @public
- */
-export type QueryEntityFacetsByPredicate = {
-  body: QueryEntityFacetsByPredicateRequest;
-};
-/**
- * @public
- */
-export type RefreshEntity = {
-  body: RefreshEntityRequest;
-};
-/**
- * @public
- */
-export type ValidateEntity = {
-  body: ValidateEntityRequest;
-};
-/**
- * @public
- */
-export type AnalyzeLocation = {
-  body: AnalyzeLocationRequest;
-};
-/**
- * @public
- */
-export type CreateLocation = {
-  body: CreateLocationRequest;
-  query: {
-    dryRun?: string;
-    onConflict?: 'refresh' | 'reject';
-  };
-};
-/**
- * @public
- */
-export type DeleteLocation = {
-  path: {
-    id: string;
-  };
-};
-/**
- * @public
- */
 export type GetLocation = {
   path: {
     id: string;
@@ -222,11 +198,35 @@ export type GetLocationsByQuery = {
 /**
  * @public
  */
+export type QueryEntitiesByPredicate = {
+  body: QueryEntitiesByPredicateRequest;
+};
+/**
+ * @public
+ */
+export type QueryEntityFacetsByPredicate = {
+  body: QueryEntityFacetsByPredicateRequest;
+};
+/**
+ * @public
+ */
+export type RefreshEntity = {
+  body: RefreshEntityRequest;
+};
+/**
+ * @public
+ */
 export type UpdateLocation = {
   path: {
     id: string;
   };
   body: LocationInput;
+};
+/**
+ * @public
+ */
+export type ValidateEntity = {
+  body: ValidateEntityRequest;
 };
 
 /**
@@ -245,6 +245,60 @@ export class DefaultApiClient {
   }
 
   /**
+   * Validate a given location.
+   * @param analyzeLocationRequest -
+   */
+  public async analyzeLocation(
+    // @ts-ignore
+    request: AnalyzeLocation,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<AnalyzeLocationResponse>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/analyze-location`;
+
+    const uri = parser.parse(uriTemplate).expand({});
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(request.body),
+    });
+  }
+
+  /**
+   * Create a location for a given target.
+   * @param createLocationRequest -
+   * @param dryRun -
+   * @param onConflict - Behavior when the location already exists. \&#39;reject\&#39; (default) returns a 409 error, \&#39;refresh\&#39; triggers a refresh of the existing location entity and returns 201.
+   */
+  public async createLocation(
+    // @ts-ignore
+    request: CreateLocation,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<CreateLocation201Response>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/locations{?dryRun,onConflict}`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      ...request.query,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(request.body),
+    });
+  }
+
+  /**
    * Delete a single entity by UID.
    * @param uid -
    */
@@ -259,6 +313,32 @@ export class DefaultApiClient {
 
     const uri = parser.parse(uriTemplate).expand({
       uid: request.path.uid,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'DELETE',
+    });
+  }
+
+  /**
+   * Delete a location by id.
+   * @param id -
+   */
+  public async deleteLocation(
+    // @ts-ignore
+    request: DeleteLocation,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<void>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/locations/{id}`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      id: request.path.id,
     });
 
     return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
@@ -477,186 +557,6 @@ export class DefaultApiClient {
   }
 
   /**
-   * Query entities using predicate-based filters.
-   * @param queryEntitiesByPredicateRequest -
-   */
-  public async queryEntitiesByPredicate(
-    // @ts-ignore
-    request: QueryEntitiesByPredicate,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<EntitiesQueryResponse>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/entities/by-query`;
-
-    const uri = parser.parse(uriTemplate).expand({});
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    });
-  }
-
-  /**
-   * Get entity facets using predicate-based filters.
-   * @param queryEntityFacetsByPredicateRequest -
-   */
-  public async queryEntityFacetsByPredicate(
-    // @ts-ignore
-    request: QueryEntityFacetsByPredicate,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<EntityFacetsResponse>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/entity-facets`;
-
-    const uri = parser.parse(uriTemplate).expand({});
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    });
-  }
-
-  /**
-   * Refresh the entity related to entityRef.
-   * @param refreshEntityRequest -
-   */
-  public async refreshEntity(
-    // @ts-ignore
-    request: RefreshEntity,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<void>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/refresh`;
-
-    const uri = parser.parse(uriTemplate).expand({});
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    });
-  }
-
-  /**
-   * Validate that a passed in entity has no errors in schema.
-   * @param validateEntityRequest -
-   */
-  public async validateEntity(
-    // @ts-ignore
-    request: ValidateEntity,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<void>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/validate-entity`;
-
-    const uri = parser.parse(uriTemplate).expand({});
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    });
-  }
-
-  /**
-   * Validate a given location.
-   * @param analyzeLocationRequest -
-   */
-  public async analyzeLocation(
-    // @ts-ignore
-    request: AnalyzeLocation,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<AnalyzeLocationResponse>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/analyze-location`;
-
-    const uri = parser.parse(uriTemplate).expand({});
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    });
-  }
-
-  /**
-   * Create a location for a given target.
-   * @param createLocationRequest -
-   * @param dryRun -
-   * @param onConflict - Behavior when the location already exists. \&#39;reject\&#39; (default) returns a 409 error, \&#39;refresh\&#39; triggers a refresh of the existing location entity and returns 201.
-   */
-  public async createLocation(
-    // @ts-ignore
-    request: CreateLocation,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<CreateLocation201Response>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/locations{?dryRun,onConflict}`;
-
-    const uri = parser.parse(uriTemplate).expand({
-      ...request.query,
-    });
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'POST',
-      body: JSON.stringify(request.body),
-    });
-  }
-
-  /**
-   * Delete a location by id.
-   * @param id -
-   */
-  public async deleteLocation(
-    // @ts-ignore
-    request: DeleteLocation,
-    options?: RequestOptions,
-  ): Promise<TypedResponse<void>> {
-    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
-
-    const uriTemplate = `/locations/{id}`;
-
-    const uri = parser.parse(uriTemplate).expand({
-      id: request.path.id,
-    });
-
-    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
-      },
-      method: 'DELETE',
-    });
-  }
-
-  /**
    * Get a location by id.
    * @param id -
    */
@@ -761,6 +661,81 @@ export class DefaultApiClient {
   }
 
   /**
+   * Query entities using predicate-based filters.
+   * @param queryEntitiesByPredicateRequest -
+   */
+  public async queryEntitiesByPredicate(
+    // @ts-ignore
+    request: QueryEntitiesByPredicate,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<EntitiesQueryResponse>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/entities/by-query`;
+
+    const uri = parser.parse(uriTemplate).expand({});
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(request.body),
+    });
+  }
+
+  /**
+   * Get entity facets using predicate-based filters.
+   * @param queryEntityFacetsByPredicateRequest -
+   */
+  public async queryEntityFacetsByPredicate(
+    // @ts-ignore
+    request: QueryEntityFacetsByPredicate,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<EntityFacetsResponse>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/entity-facets`;
+
+    const uri = parser.parse(uriTemplate).expand({});
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(request.body),
+    });
+  }
+
+  /**
+   * Refresh the entity related to entityRef.
+   * @param refreshEntityRequest -
+   */
+  public async refreshEntity(
+    // @ts-ignore
+    request: RefreshEntity,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<void>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/refresh`;
+
+    const uri = parser.parse(uriTemplate).expand({});
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(request.body),
+    });
+  }
+
+  /**
    * Update the type and target of an existing location by id.
    * @param id -
    * @param locationInput -
@@ -784,6 +759,31 @@ export class DefaultApiClient {
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'PUT',
+      body: JSON.stringify(request.body),
+    });
+  }
+
+  /**
+   * Validate that a passed in entity has no errors in schema.
+   * @param validateEntityRequest -
+   */
+  public async validateEntity(
+    // @ts-ignore
+    request: ValidateEntity,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<void>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/validate-entity`;
+
+    const uri = parser.parse(uriTemplate).expand({});
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
       body: JSON.stringify(request.body),
     });
   }
