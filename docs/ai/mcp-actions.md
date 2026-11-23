@@ -235,10 +235,14 @@ auth:
 
 Tokens issued through this flow carry an `azp` claim holding the `client_id` of
 the client that obtained them, both on the initial exchange and after a refresh.
-Tokens from an interactive Backstage sign-in have no `azp` claim. A backend that
-receives a Backstage token can read this claim to tell which MCP client a request
-originated from, for example to audit tool calls or to refuse a sensitive action
-to third-party clients.
+Tokens from an interactive Backstage sign-in have no `azp` claim.
+
+The claim is only present on the token as it was issued. The backend that
+receives that token directly, such as the MCP server, can decode it to tell which
+client a request originated from. The claim is not exposed on the user principal
+of the request credentials, so audit events and permission policies do not see
+it, and it is not carried over when that backend calls another backend on behalf
+of the user.
 
 #### Pre-registered clients
 
