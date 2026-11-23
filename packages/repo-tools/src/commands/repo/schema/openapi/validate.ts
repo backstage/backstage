@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import { isEqual } from 'lodash';
 import { join } from 'node:path';
 import chalk from 'chalk';
-import { relative as relativePath, resolve as resolvePath } from 'node:path';
+import { relative as relativePath } from 'node:path';
 import { targetPaths } from '@backstage/cli-common';
 import { runner } from '../../../../lib/runner';
 import {
@@ -30,8 +30,9 @@ import {
   getPathToOpenApiSpec,
   loadAndValidateOpenApiYaml,
 } from '../../../../lib/openapi/helpers';
+import { parseGeneratedOpenApiSpec } from '../../../../lib/openapi/parseGeneratedSpec';
 
-async function validate(directoryPath: string) {
+export async function validate(directoryPath: string) {
   let openapiPath = '';
   try {
     openapiPath = await getPathToOpenApiSpec(directoryPath);
@@ -41,9 +42,9 @@ async function validate(directoryPath: string) {
   }
   const yaml = await loadAndValidateOpenApiYaml(openapiPath);
 
-  let schemaPath = join(directoryPath, TS_SCHEMA_PATH);
+  let schemaFile = TS_SCHEMA_PATH;
   if (
-    !(await fs.pathExists(schemaPath)) &&
+    !(await fs.pathExists(join(directoryPath, schemaFile))) &&
     !(await fs.pathExists(join(directoryPath, OLD_SCHEMA_PATH)))
   ) {
     throw new Error(`No \`${TS_SCHEMA_PATH}\` file found.`);
@@ -51,18 +52,33 @@ async function validate(directoryPath: string) {
     console.warn(
       `\`${OLD_SCHEMA_PATH}\` is deprecated. Please re-run \`yarn backstage-repo-tools package schema openapi generate\` to update it.`,
     );
-    schemaPath = join(directoryPath, OLD_SCHEMA_PATH);
+    schemaFile = OLD_SCHEMA_PATH;
   }
 
-  const { default: schema } = await import(resolvePath(schemaPath));
+  const regenerateHint = () =>
+    `Please run \`yarn backstage-repo-tools package schema openapi generate\` from '${relativePath(
+      targetPaths.rootDir,
+      directoryPath,
+    )}' to regenerate \`${TS_SCHEMA_PATH}\`.`;
 
-  if (!schema.spec) {
-    throw new Error(`\`${TS_SCHEMA_PATH}\` needs to have a 'spec' export.`);
+  const source = await fs.readFile(join(directoryPath, schemaFile), 'utf8');
+  let spec: unknown;
+  try {
+    spec = parseGeneratedOpenApiSpec(source);
+  } catch (error) {
+    throw new Error(`\`${schemaFile}\`: ${error.message}. ${regenerateHint()}`);
   }
-  if (!isEqual(schema.spec, yaml)) {
-    const path = relativePath(targetPaths.rootDir, directoryPath);
+
+  if (!spec) {
     throw new Error(
-      `\`${YAML_SCHEMA_PATH}\` and \`${TS_SCHEMA_PATH}\` do not match. Please run \`yarn backstage-repo-tools package schema openapi generate\` from '${path}' to regenerate \`${TS_SCHEMA_PATH}\`.`,
+      `\`${schemaFile}\` needs to have a 'spec' export. ${regenerateHint()}`,
+    );
+  }
+  // The spec is generated with JSON.stringify, so compare against the YAML as
+  // it would be serialized, for example with `.nan` turned into `null`
+  if (!isEqual(spec, JSON.parse(JSON.stringify(yaml)))) {
+    throw new Error(
+      `\`${YAML_SCHEMA_PATH}\` and \`${schemaFile}\` do not match. ${regenerateHint()}`,
     );
   }
 }
