@@ -84,6 +84,7 @@
 /plugins/user-settings-backend                    @backstage/maintainers @backstage/sda-se-reviewers
 /plugins/user-settings-common                     @backstage/maintainers @backstage/sda-se-reviewers
 
+/.allowed-licenses.json                           @backstage/maintainers
 /scripts                                          @backstage/operations-maintainers
 /workspaces/ui                                    @backstage/design-system-maintainers
 

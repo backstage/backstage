@@ -1,0 +1,59 @@
+# Complements .github/workflows/verify_fossa.yml (FOSSA push + PR analysis).
+# This workflow provides fast, deterministic PR gating on yarn.lock dependency
+# license changes using scripts/check-licenses.js and .allowed-licenses.json.
+# Security: runs on pull_request_target but executes only base-trusted code.
+# The PR's yarn.lock is fetched as data (git show) and never executed.
+name: Verify Licenses
+
+on:
+  pull_request_target:
+    branches: [master]
+    paths:
+      - 'yarn.lock'
+      - '.allowed-licenses.json'
+      - 'scripts/check-licenses.js'
+      - '.github/workflows/verify_licenses.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - name: Checkout base (trusted code)
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.base.sha }}
+
+      - name: Fetch PR head yarn.lock as data only
+        run: |
+          git fetch origin pull/${{ github.event.pull_request.number }}/head --depth 1
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          echo "Base: $BASE_SHA Head: $HEAD_SHA"
+          git show "$BASE_SHA":yarn.lock > /tmp/base-yarn.lock 2>/dev/null || touch /tmp/base-yarn.lock
+          git show "$HEAD_SHA":yarn.lock > yarn.lock 2>/dev/null || { echo "::error::Failed to fetch head yarn.lock from $HEAD_SHA"; exit 1; }
+          # Validate fetched file is a lockfile (not executed)
+          head -n 5 yarn.lock | grep -q "yarn.lock" || head -n 5 yarn.lock | grep -q "__metadata" || echo "::warning::Fetched head yarn.lock header unexpected"
+          ls -l /tmp/base-yarn.lock yarn.lock || true
+
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+
+      - name: Verify licenses
+        run: node scripts/check-licenses.js --base-lock /tmp/base-yarn.lock --head-lock yarn.lock --config .allowed-licenses.json
+

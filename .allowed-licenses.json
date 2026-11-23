@@ -1,0 +1,35 @@
+{
+  "_comment": "Allowed licenses per CNCF Allowed Third-Party License Policy (https://github.com/cncf/foundation/blob/main/allowed-third-party-license-policy.md) revision 2024-11-23 plus Apache-2.0. This file complements FOSSA scanning (see .github/workflows/verify_fossa.yml).",
+  "cncfPolicyRev": "2024-11-23",
+  "allowedLicenses": [
+    "0BSD",
+    "BSD-2-Clause",
+    "BSD-2-Clause-FreeBSD",
+    "BSD-3-Clause",
+    "MIT",
+    "MIT-0",
+    "ISC",
+    "OpenSSL",
+    "OpenSSL-standalone",
+    "PSF-2.0",
+    "Python-2.0",
+    "Python-2.0.1",
+    "PostgreSQL",
+    "SSLeay-standalone",
+    "UPL-1.0",
+    "X11",
+    "Zlib",
+    "Apache-2.0"
+  ],
+  "overrides": [
+    {
+      "_example": true,
+      "name": "example-package",
+      "versionRange": "*",
+      "license": "GPL-2.0-only",
+      "reason": "Example override entry showing required fields - engine ignores entries with _example:true; remove flag to activate",
+      "expiresOn": "2026-12-31",
+      "approvedBy": "legal@example.com"
+    }
+  ]
+}
