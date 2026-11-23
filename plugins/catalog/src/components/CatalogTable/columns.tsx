@@ -185,12 +185,29 @@ export const columnFactories = Object.freeze({
   },
   createTitleColumn(options?: {
     hidden?: boolean;
+    entityPresentationApi?: EntityPresentationApi;
   }): TableColumn<CatalogTableRow> {
+    function formatContent(entity: Entity): string {
+      if (options?.entityPresentationApi) {
+        return options.entityPresentationApi.forEntity(entity).snapshot
+          .primaryTitle;
+      }
+      return defaultEntityPresentation(entity).primaryTitle;
+    }
+
     return {
       title: <EntityTableColumnTitle translationKey="title" />,
       field: 'entity.metadata.title',
       hidden: options?.hidden,
       searchable: true,
+      customSort({ entity: entity1 }, { entity: entity2 }) {
+        return formatContent(entity1).localeCompare(formatContent(entity2));
+      },
+      customFilterAndSearch: (query, row) =>
+        formatContent(row.entity)
+          .toLocaleLowerCase()
+          .includes(query.toLocaleLowerCase()),
+      render: ({ entity }) => <>{formatContent(entity)}</>,
     };
   },
   createLabelColumn(

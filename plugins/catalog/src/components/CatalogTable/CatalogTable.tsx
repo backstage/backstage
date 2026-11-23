@@ -92,12 +92,7 @@ const sortEntities = (entities: Entity[], api?: EntityPresentationApi) => {
  * @public
  */
 export const CatalogTable = (props: CatalogTableProps) => {
-  const {
-    columns = defaultCatalogTableColumnsFunc,
-    tableOptions,
-    subtitle,
-    emptyContent,
-  } = props;
+  const { columns, tableOptions, subtitle, emptyContent } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const apis = useApiHolder();
   const entityPresentationApi = apis.get(entityPresentationApiRef);
@@ -123,11 +118,16 @@ export const CatalogTable = (props: CatalogTableProps) => {
   }
   const isLoading = loading && !hasHadData.current;
 
-  const tableColumns = useMemo(
-    () =>
-      typeof columns === 'function' ? columns(entityListContext) : columns,
-    [columns, entityListContext],
-  );
+  const tableColumns = useMemo(() => {
+    if (columns) {
+      return typeof columns === 'function'
+        ? columns(entityListContext)
+        : columns;
+    }
+    return defaultCatalogTableColumnsFunc(entityListContext, {
+      entityPresentationApi,
+    });
+  }, [columns, entityListContext, entityPresentationApi]);
   const { t } = useTranslationRef(catalogTranslationRef);
 
   if (error) {

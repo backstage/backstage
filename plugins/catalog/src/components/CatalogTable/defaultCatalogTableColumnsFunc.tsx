@@ -15,16 +15,20 @@
  */
 
 import { TableColumn } from '@backstage/core-components';
+import {
+  EntityListContextProps,
+  type EntityPresentationApi,
+} from '@backstage/plugin-catalog-react';
 import { columnFactories } from './columns';
-import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
+import { CatalogTableRow } from './types';
 
 // The defaultCatalogTableColumnsFunc symbol is not directly exported, but through the
 // CatalogTable.defaultColumnsFunc field.
 /** @public */
-export const defaultCatalogTableColumnsFunc: CatalogTableColumnsFunc = ({
-  filters,
-  entities,
-}) => {
+export const defaultCatalogTableColumnsFunc = (
+  { filters, entities }: EntityListContextProps,
+  options?: { entityPresentationApi?: EntityPresentationApi },
+): TableColumn<CatalogTableRow>[] => {
   // Derive the effective kind from the displayed entities so that both
   // the column layout and the name column's defaultKind stay consistent
   // with the rows during filter transitions (when stale rows are kept
@@ -33,8 +37,14 @@ export const defaultCatalogTableColumnsFunc: CatalogTableColumnsFunc = ({
   const showTypeColumn = filters.type === undefined;
 
   return [
-    columnFactories.createTitleColumn({ hidden: true }),
-    columnFactories.createNameColumn({ defaultKind: effectiveKind }),
+    columnFactories.createTitleColumn({
+      hidden: true,
+      entityPresentationApi: options?.entityPresentationApi,
+    }),
+    columnFactories.createNameColumn({
+      defaultKind: effectiveKind,
+      entityPresentationApi: options?.entityPresentationApi,
+    }),
     ...createEntitySpecificColumns(),
   ];
 

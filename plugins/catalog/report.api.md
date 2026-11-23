@@ -200,6 +200,7 @@ export const CatalogTable: {
     createTagsColumn(): TableColumn<CatalogTableRow>;
     createTitleColumn(options?: {
       hidden?: boolean;
+      entityPresentationApi?: EntityPresentationApi;
     }): TableColumn<CatalogTableRow>;
     createLabelColumn(
       key: string,
