@@ -72,6 +72,8 @@ Run `yarn backstage-repo-tools package schema openapi generate --server` from th
 
 You should add this command to your `package.json` for future use and you can combine both the server generation and the client generation below like so, `yarn backstage-repo-tools package schema openapi generate --server --client-package <clientPackageDirectory>`
 
+Generated code is not formatted with Prettier, only ESLint automatic fixes are applied. Add `**/src/schema/openapi/generated/**` to your root `.prettierignore` so that Prettier doesn't rewrite the generated files.
+
 Use it like so, update your `router.ts` or `createRouter.ts` file with the following content,
 
 ```diff
