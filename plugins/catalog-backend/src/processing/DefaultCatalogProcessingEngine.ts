@@ -36,6 +36,7 @@ import {
 } from '../util/opentelemetry';
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
 import { markForStitching } from '../database/operations/stitcher/markForStitching';
+import { createMissingStitchRepair } from '../database/operations/stitcher/repairMissingStitches';
 import { EventsService } from '@backstage/plugin-events-node';
 import { CATALOG_ERRORS_TOPIC } from '../constants';
 import { retryOnDeadlock } from '../database/util';
@@ -117,6 +118,13 @@ export class DefaultCatalogProcessingEngine {
       throw new Error('Processing engine is already started');
     }
 
+    await this.scheduler.scheduleTask({
+      id: 'catalog_repair_missing_stitches',
+      scope: 'global',
+      frequency: { minutes: 10 },
+      timeout: { minutes: 2 },
+      fn: createMissingStitchRepair({ knex: this.knex, logger: this.logger }),
+    });
     const stopPipeline = this.startPipeline();
     const stopCleanup = this.startOrphanCleanup();
 
