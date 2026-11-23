@@ -118,10 +118,18 @@ non-null generation is therefore not proof of complete change tracking. Any
 future feed needs an explicit rollout activation boundary and initial
 synchronization strategy.
 
-During a rolling upgrade, an older instance can handle an entity's deletion
-without removing it from the catalog. A slow background check finds such
-entities and removes them later, logging a warning for each one. Outside of an
-upgrade, that warning points to a bug or to manual changes to the database.
+During a rolling upgrade, older instances can delay some catalog changes:
+
+- An older instance can handle an entity's deletion without removing it from
+  the catalog. A slow background check finds such entities and removes them
+  later, logging a warning for each one. Outside of an upgrade, that warning
+  points to a bug or to manual changes to the database.
+- An older instance cannot publish updates to an entity that was deleted and
+  created again after the upgrade. Its attempts fail and are retried, so the
+  update is published once an upgraded instance picks it up.
+
+Instances running an older version cannot start once the upgrade's database
+migrations have run, so these delays end when the last older instance stops.
 
 ## Development
 

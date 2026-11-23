@@ -29,7 +29,8 @@ live rows. There is no foreign key, so the value can briefly point at a deleted
 candidate until the deletion's stitch runs.
 
 A permanent integrity sweep walks the final rows in primary key order, a
-bounded batch at a time, and requests a stitch for each live row whose winner
+bounded batch at a time, starting at a random position in each process and
+wrapping around, and requests a stitch for each live row whose winner
 no longer exists and that has no pending stitch. A full pass is expected to find
 nothing; a finding is logged as a warning. During a rolling upgrade it repairs
 deletions whose stitch request an older stitcher consumed without clearing the

@@ -108,7 +108,12 @@ describe.each(databases.eachSupportedId())(
         'final_entities',
       ).orderBy('entity_ref');
       const logger = mockServices.logger.mock();
-      const repair = createMissingStitchRepair({ knex, logger, batchSize: 2 });
+      const repair = createMissingStitchRepair({
+        knex,
+        logger,
+        batchSize: 2,
+        startAfter: null,
+      });
 
       await repair(new AbortController().signal);
 
@@ -152,6 +157,7 @@ describe.each(databases.eachSupportedId())(
         logger: mockServices.logger.mock(),
         batchSize: 2,
         maxBatchesPerRun: 1,
+        startAfter: null,
       });
       const queued = async () =>
         (await readQueue(knex)).map(row => row.entity_ref);
@@ -167,6 +173,77 @@ describe.each(databases.eachSupportedId())(
       await knex('stitch_queue').delete();
       await repair(new AbortController().signal);
       expect(await queued()).toEqual([ref('a'), ref('b')]);
+    });
+
+    it('starts at a random position by default, and still visits every row', async () => {
+      const names = ['a', 'b', 'c', 'd', 'e'];
+      for (const name of names) {
+        await insertFinal(knex, name, name);
+      }
+      const queued = async () =>
+        (await readQueue(knex)).map(row => row.entity_ref);
+
+      // An explicit start position, to show the wrap-around order.
+      const fromC = createMissingStitchRepair({
+        knex,
+        logger: mockServices.logger.mock(),
+        batchSize: 2,
+        maxBatchesPerRun: 1,
+        startAfter: 'c',
+      });
+      await fromC(new AbortController().signal);
+      expect(await queued()).toEqual([ref('d'), ref('e')]);
+      await fromC(new AbortController().signal);
+      await fromC(new AbortController().signal);
+      expect(await queued()).toEqual(['a', 'b', 'd', 'e'].map(ref));
+      await fromC(new AbortController().signal);
+      expect(await queued()).toEqual(names.map(ref));
+
+      // The default start is random; enough runs still cover everything.
+      await knex('stitch_queue').delete();
+      const random = createMissingStitchRepair({
+        knex,
+        logger: mockServices.logger.mock(),
+        batchSize: 2,
+        maxBatchesPerRun: 1,
+      });
+      for (let i = 0; i < 5; i++) {
+        await random(new AbortController().signal);
+      }
+      expect(await queued()).toEqual(names.map(ref));
+    });
+
+    it('enqueues more findings than fit in one insert statement', async () => {
+      const names = Array.from(
+        { length: 501 },
+        (_, i) => `n${String(i).padStart(3, '0')}`,
+      );
+      for (let i = 0; i < names.length; i += 100) {
+        await knex<DbFinalEntitiesRow>('final_entities').insert(
+          names.slice(i, i + 100).map(name => ({
+            entity_id: name,
+            entity_ref: ref(name),
+            final_entity: entity(name, name),
+            hash: 'published-hash',
+          })),
+        );
+      }
+      const logger = mockServices.logger.mock();
+      const repair = createMissingStitchRepair({
+        knex,
+        logger,
+        startAfter: null,
+      });
+
+      await repair(new AbortController().signal);
+
+      expect(
+        Number((await knex('stitch_queue').count({ count: '*' }))[0].count),
+      ).toBe(501);
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({ count: 501 }),
+      );
     });
 
     it('does nothing when already aborted', async () => {
