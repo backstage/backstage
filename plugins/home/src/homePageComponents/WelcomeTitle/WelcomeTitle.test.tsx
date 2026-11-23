@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
+import { ApiProvider } from '@backstage/core-app-api';
+import {
+  EntityPresentationApi,
+  EntityRefPresentationSnapshot,
+  entityPresentationApiRef,
+} from '@backstage/plugin-catalog-react';
+import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { WelcomeTitle } from './WelcomeTitle';
 
 describe('<WelcomeTitle>', () => {
@@ -27,18 +33,50 @@ describe('<WelcomeTitle>', () => {
 
     const { getByText } = await renderInTestApp(<WelcomeTitle />);
 
-    expect(getByText(/Get some rest, Guest/)).toBeInTheDocument();
+    expect(getByText(/Get some rest, guest/)).toBeInTheDocument();
   });
-});
 
-test('should greet user with a single language', async () => {
-  jest
-    .spyOn(global.Date, 'now')
-    .mockImplementation(() => new Date('1970-01-01T10:00:00').valueOf());
+  test('should greet user with a single language', async () => {
+    jest
+      .spyOn(global.Date, 'now')
+      .mockImplementation(() => new Date('1970-01-01T10:00:00').valueOf());
 
-  const { getByText } = await renderInTestApp(
-    <WelcomeTitle language={['English']} />,
-  );
+    const { getByText } = await renderInTestApp(
+      <WelcomeTitle language={['English']} />,
+    );
 
-  expect(getByText(/Good morning, Guest/)).toBeInTheDocument();
+    expect(getByText(/Good morning, guest/)).toBeInTheDocument();
+  });
+
+  test('should greet user with the title from the entity presentation API', async () => {
+    jest
+      .spyOn(global.Date, 'now')
+      .mockImplementation(() => new Date('1970-01-01T10:00:00').valueOf());
+
+    const mockPresentationApi: EntityPresentationApi = {
+      forEntity: entityOrRef => {
+        const name =
+          typeof entityOrRef === 'string'
+            ? entityOrRef.split('/').pop()!
+            : entityOrRef.metadata.name;
+        const snapshot: EntityRefPresentationSnapshot = {
+          entityRef: `user:default/${name}`,
+          primaryTitle: 'Ada Lovelace',
+        };
+        return { snapshot, promise: Promise.resolve(snapshot) };
+      },
+    };
+    const apis = TestApiRegistry.from([
+      entityPresentationApiRef,
+      mockPresentationApi,
+    ]);
+
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <WelcomeTitle language={['English']} />
+      </ApiProvider>,
+    );
+
+    expect(getByText(/Good morning, Ada Lovelace/)).toBeInTheDocument();
+  });
 });

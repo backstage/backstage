@@ -18,6 +18,7 @@ import {
   identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
+import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { useEffect, useMemo } from 'react';
@@ -39,8 +40,8 @@ export const WelcomeTitle = ({
   const alertApi = useApi(alertApiRef);
   const greeting = useMemo(() => getTimeBasedGreeting(language), [language]);
 
-  const { value: profile, error } = useAsync(() =>
-    identityApi.getProfileInfo(),
+  const { value: identity, error } = useAsync(() =>
+    identityApi.getBackstageIdentity(),
   );
 
   useEffect(() => {
@@ -54,9 +55,15 @@ export const WelcomeTitle = ({
 
   return (
     <Tooltip title={greeting.language}>
-      <Typography component="span" variant={variant}>{`${greeting.greeting}${
-        profile?.displayName ? `, ${profile?.displayName}` : ''
-      }!`}</Typography>
+      <Typography component="span" variant={variant}>
+        {greeting.greeting}
+        {identity?.userEntityRef ? (
+          <>
+            , <EntityDisplayName entityRef={identity.userEntityRef} hideIcon />
+          </>
+        ) : null}
+        !
+      </Typography>
     </Tooltip>
   );
 };
