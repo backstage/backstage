@@ -31,6 +31,7 @@ import {
   getPathToCurrentOpenApiSpec,
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
+import { writeManifest } from '../../../../../lib/openapi/manifest';
 
 async function generate(
   outputDirectory: string,
@@ -115,6 +116,13 @@ async function generate(
   fs.rmSync(resolve(resolvedOutputDirectory, '.openapi-generator'), {
     recursive: true,
     force: true,
+  });
+
+  await writeManifest({
+    kind: 'client',
+    generatedDir: resolvedOutputDirectory,
+    specPath: resolvedOpenapiPath,
+    additionalProperties,
   });
 }
 
