@@ -2414,22 +2414,11 @@ __metadata:
     "@backstage/cli-node": "workspace:^"
     "@backstage/release-manifests": "workspace:^"
     "@yarnpkg/cli": "npm:^4.7.0"
-    "@yarnpkg/core": "npm:^4.9.1"
+    "@yarnpkg/core": "npm:^4.9.3"
     "@yarnpkg/fslib": "npm:^3.1.2"
     "@yarnpkg/parsers": "npm:^3.0.0"
     "@yarnpkg/plugin-patch": "npm:^4.0.2"
     cleye: "npm:^2.6.0"
-  peerDependencies:
-    "@yarnpkg/cli": ^4.7.0
-    "@yarnpkg/core": ^4.9.1
-    "@yarnpkg/plugin-patch": ^4.0.2
-  peerDependenciesMeta:
-    "@yarnpkg/cli":
-      optional: true
-    "@yarnpkg/core":
-      optional: true
-    "@yarnpkg/plugin-patch":
-      optional: true
   bin:
     cli-module-package-manager-yarn: bin/backstage-cli-module-package-manager-yarn
   languageName: unknown
@@ -21163,9 +21152,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@yarnpkg/core@npm:^4.2.1, @yarnpkg/core@npm:^4.4.0, @yarnpkg/core@npm:^4.9.1":
-  version: 4.9.1
-  resolution: "@yarnpkg/core@npm:4.9.1"
+"@yarnpkg/core@npm:^4.2.1, @yarnpkg/core@npm:^4.4.0, @yarnpkg/core@npm:^4.9.3":
+  version: 4.9.3
+  resolution: "@yarnpkg/core@npm:4.9.3"
   dependencies:
     "@arcanis/slice-ansi": "npm:^1.1.1"
     "@types/semver": "npm:^7.1.0"
@@ -21173,7 +21162,7 @@ __metadata:
     "@yarnpkg/fslib": "npm:^3.1.5"
     "@yarnpkg/libzip": "npm:^3.2.2"
     "@yarnpkg/parsers": "npm:^3.1.0"
-    "@yarnpkg/shell": "npm:^4.1.3"
+    "@yarnpkg/shell": "npm:^4.1.4"
     camelcase: "npm:^5.3.1"
     chalk: "npm:^4.1.2"
     ci-info: "npm:^4.0.0"
@@ -21193,7 +21182,7 @@ __metadata:
     tinylogic: "npm:^2.0.0"
     treeify: "npm:^1.1.0"
     tslib: "npm:^2.4.0"
-  checksum: 10/d8aaa8670b82efbb0a92e4df92f5fd67143c66408d9fa28607725b534e80bc6647b627df4798672575bb818bc603a14ff8f7dcd1020c8d79efef4291e874ef67
+  checksum: 10/ce40fcb733d4cde0b0b9f00d4bd33239799b96f68e4cbfb2e3e6a846d916f96fa0e6f7606d36b0eaf937fcb5078cf68cbba8c477f5a72c92c1bcd5a0f7df0fa8
   languageName: node
   linkType: hard
 
@@ -21680,12 +21669,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@yarnpkg/shell@npm:^4.1.2, @yarnpkg/shell@npm:^4.1.3":
-  version: 4.1.3
-  resolution: "@yarnpkg/shell@npm:4.1.3"
+"@yarnpkg/shell@npm:^4.1.2, @yarnpkg/shell@npm:^4.1.4":
+  version: 4.1.4
+  resolution: "@yarnpkg/shell@npm:4.1.4"
   dependencies:
-    "@yarnpkg/fslib": "npm:^3.1.2"
-    "@yarnpkg/parsers": "npm:^3.0.3"
+    "@yarnpkg/fslib": "npm:^3.1.5"
+    "@yarnpkg/parsers": "npm:^3.1.0"
     chalk: "npm:^4.1.2"
     clipanion: "npm:^4.0.0-rc.2"
     cross-spawn: "npm:^7.0.3"
@@ -21694,7 +21683,7 @@ __metadata:
     tslib: "npm:^2.4.0"
   bin:
     shell: ./lib/cli.js
-  checksum: 10/5994f92adf960071ac938653c5ad09746285d3fdc452fc6fdd30c3a832b612cc208e8d2274731e35957b457b168d6be524f5ce30ceb18542532d9326b422421b
+  checksum: 10/a10f975945770dd7cec7c341bab0694aeecd1826e56faebbf650a1405d700a993e6d4bb203e8df2c07cd0cc1b95ac11c6bd5b8b6912d7b13722eae790e5426f2
   languageName: node
   linkType: hard
 
@@ -46769,7 +46758,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/release-manifests": "workspace:^"
     "@yarnpkg/builder": "npm:^4.2.1"
-    "@yarnpkg/core": "npm:^4.9.1"
+    "@yarnpkg/core": "npm:^4.9.3"
     "@yarnpkg/fslib": "npm:^3.1.2"
     "@yarnpkg/plugin-essentials": "npm:^4.4.0"
     "@yarnpkg/plugin-npm": "patch:@yarnpkg/plugin-npm@npm%3A3.7.1#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.7.1-ab2f1a850e.patch"
