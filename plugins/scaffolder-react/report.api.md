@@ -205,11 +205,13 @@ export type ReviewStepProps = {
     uiSchema: UiSchema;
     mergedSchema: JsonObject;
     schema: JsonObject;
+    title: string;
   }[];
   allSteps?: {
     uiSchema: UiSchema;
     mergedSchema: JsonObject;
     schema: JsonObject;
+    title: string;
   }[];
 };
 

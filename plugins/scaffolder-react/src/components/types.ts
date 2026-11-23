@@ -63,10 +63,15 @@ export type ReviewStepProps = {
   handleBack: () => void;
   handleReset: () => void;
   handleCreate: () => void;
+  /**
+   * The visible parameter steps. Pass this as `schemas` when rendering a
+   * `ReviewState`.
+   */
   steps: {
     uiSchema: UiSchema;
     mergedSchema: JsonObject;
     schema: JsonObject;
+    title: string;
   }[];
   /**
    * All parameter steps, including steps hidden by a `when` condition. Pass
@@ -77,5 +82,6 @@ export type ReviewStepProps = {
     uiSchema: UiSchema;
     mergedSchema: JsonObject;
     schema: JsonObject;
+    title: string;
   }[];
 };
