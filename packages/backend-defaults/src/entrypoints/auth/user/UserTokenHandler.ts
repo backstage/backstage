@@ -22,6 +22,7 @@ import {
   compactVerify,
   decodeJwt,
   decodeProtectedHeader,
+  errors,
   jwtVerify,
   JWTVerifyOptions,
 } from 'jose';
@@ -189,8 +190,13 @@ export class UserTokenHandler {
     try {
       await compactVerify(token, this.jwksClient.getKey);
       return true;
-    } catch {
-      return false;
+    } catch (error) {
+      // Only a signature mismatch indicates a proof signed without the issuer,
+      // any other failure such as being unable to fetch keys is unexpected
+      if (error instanceof errors.JWSSignatureVerificationFailed) {
+        return false;
+      }
+      throw error;
     }
   }
 

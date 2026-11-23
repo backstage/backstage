@@ -538,5 +538,34 @@ describe('UserTokenHandler', () => {
         userTokenHandler.verifyToken(withoutIssuer.token),
       ).resolves.toEqual({ userEntityRef: 'user:development/guest' });
     });
+
+    it('should not fall back to the legacy limited token if keys cannot be fetched', async () => {
+      server.use(
+        http.get(
+          'http://localhost:0/api/auth/.well-known/jwks.json',
+          () => new HttpResponse(null, { status: 500 }),
+        ),
+      );
+
+      const backstageToken = await createToken({
+        header: { typ: 'vnd.backstage.user', alg: 'ES256', kid: 'mock' },
+        payload: {
+          iss: 'http://localhost:7007/api/auth',
+          aud: 'backstage',
+          sub: 'mock',
+          ent: ['mock'],
+          iat: 1,
+          exp: 2,
+          uip: 'proof',
+        },
+        signature: 'sig',
+      });
+
+      await expect(
+        userTokenHandler.createLimitedUserToken(backstageToken),
+      ).rejects.toThrow(
+        /Expected 200 OK from the JSON Web Key Set HTTP response/,
+      );
+    });
   });
 });
