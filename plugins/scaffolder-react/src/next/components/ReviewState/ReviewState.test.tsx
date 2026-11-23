@@ -207,6 +207,39 @@ describe('ReviewState', () => {
 
     expect(screen.queryByText('ARRAY_SECRET')).not.toBeInTheDocument();
     expect(screen.getByText(/array\.example\.com/)).toBeInTheDocument();
+
+    // A secret that another step also hides is masked, not shown or hidden
+    rerender(
+      <ReviewState
+        formState={formState}
+        schemas={[openStep]}
+        maskSchemas={[
+          openStep,
+          {
+            mergedSchema: {
+              type: 'object',
+              properties: {
+                connection: {
+                  type: 'object',
+                  properties: {
+                    password: {
+                      type: 'string',
+                      'ui:widget': 'password',
+                      'ui:backstage': { review: { show: false } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getByRole('row', { name: 'Connection > Password ******' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('hunter2')).not.toBeInTheDocument();
   });
 
   it('should hide from review if show is not set', async () => {

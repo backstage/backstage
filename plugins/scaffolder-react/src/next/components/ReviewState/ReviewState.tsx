@@ -49,12 +49,13 @@ type ReviewOverride = { kind: 'hide' } | { kind: 'mask'; value: string };
 
 function getReviewOverride(
   definition: JsonSchema | undefined,
+  allowHide: boolean = true,
 ): ReviewOverride | undefined {
   const reviewOptions = definition?.['ui:backstage']?.review;
   if (reviewOptions?.mask) {
     return { kind: 'mask', value: reviewOptions.mask };
   }
-  if (reviewOptions?.show === false) {
+  if (allowHide && reviewOptions?.show === false) {
     return { kind: 'hide' };
   }
   if (
@@ -86,11 +87,13 @@ function findOverride(
     if (step === ownStep) {
       continue;
     }
+    // Only masks apply across steps, another step can't hide a field. Hiding
+    // is skipped here so that a secret that is also hidden is still masked.
     const override = getReviewOverride(
       step.parsed.getSchema({ pointer: `#/${pointer}`, data: formState }),
+      false,
     );
-    // Only masks apply across steps, another step can't hide a field.
-    if (override?.kind === 'mask') {
+    if (override) {
       return override;
     }
   }
