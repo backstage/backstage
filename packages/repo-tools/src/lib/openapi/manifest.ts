@@ -112,7 +112,7 @@ export async function computeFilesHash(generatedDir: string): Promise<string> {
 }
 
 async function computeTemplateHash(kind: 'server' | 'client'): Promise<string> {
-  const templatesDir = resolvePackagePath('@backstage/repo-tools', 'templates');
+  const templatesDir = resolvePackagePath(import.meta.url, 'templates');
   const files = (await listFiles(templatesDir)).filter(
     file =>
       file.startsWith(`typescript-backstage-${kind}/`) ||
@@ -128,7 +128,7 @@ async function computeTemplateHash(kind: 'server' | 'client'): Promise<string> {
 
 async function readGeneratorVersion(): Promise<string> {
   const config = await fs.readJson(
-    resolvePackagePath('@backstage/repo-tools', 'openapitools.json'),
+    resolvePackagePath(import.meta.url, 'openapitools.json'),
   );
   return config['generator-cli'].version;
 }

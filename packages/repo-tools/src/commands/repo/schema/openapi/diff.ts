@@ -72,7 +72,7 @@ export async function command(opts: OptionValues) {
   console.log(`### Summary for commit (${sha})\n`);
 
   const templatePath = resolvePackagePath(
-    '@backstage/repo-tools',
+    import.meta.url,
     'templates/oasdiff-changelog.tmpl',
   );
 
