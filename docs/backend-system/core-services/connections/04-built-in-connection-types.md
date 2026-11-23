@@ -42,11 +42,20 @@ selection rules, and a typed consumption example.
 
 ## Developer platforms
 
+- [Argo CD](./types/argocd.md) supports API token authentication.
+- [Datadog](./types/datadog.md) supports paired API and application keys.
 - [Grafana](./types/grafana.md) supports service-account tokens for Grafana Cloud
   and self-hosted instances, and basic authentication for self-hosted instances.
-
 - [Harness](./types/harness.md) supports token authentication with an optional
   additional API key.
+- [Jenkins](./types/jenkins.md) supports API tokens and unauthenticated access.
+- [Jira](./types/jira.md) supports Cloud API tokens, Data Center personal access
+  tokens and unauthenticated access.
+- [PagerDuty](./types/pagerduty.md) supports account-specific REST API tokens
+  with an explicit regional API destination.
+- [Snyk](./types/snyk.md) supports API tokens for regional API endpoints.
+- [SonarQube](./types/sonarqube.md) supports Bearer tokens, explicit Basic token
+  compatibility and unauthenticated access.
 
 ## Common behavior
 

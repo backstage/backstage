@@ -130,6 +130,21 @@ export type ConnectionTypeDefinition<
 
 // @public (undocumented)
 export const connectionTypes: {
+  readonly argocd: ConnectionTypeDefinition<{
+    type: 'argocd';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly {
+      method: 'token';
+      token: string;
+    }[];
+  }>;
   readonly aws: ConnectionTypeDefinition<{
     type: 'aws';
     cardinality: 'singleton';
@@ -208,6 +223,40 @@ export const connectionTypes: {
         }
     )[];
   }>;
+  readonly azure: ConnectionTypeDefinition<{
+    type: 'azure';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+    };
+    auth: readonly (
+      | {
+          method: 'none';
+        }
+      | {
+          method: 'pat';
+          personalAccessToken: string;
+          orgs?: string[] | undefined;
+        }
+      | {
+          method: 'clientCredentials';
+          clientId: string;
+          clientSecret: string;
+          tenantId: string;
+          orgs?: string[] | undefined;
+        }
+      | {
+          method: 'managedIdentity';
+          clientId: string;
+          tenantId?: string | undefined;
+          managedIdentityClientId?: string | undefined;
+          orgs?: string[] | undefined;
+        }
+    )[];
+  }>;
   readonly 'azure-blob-storage': ConnectionTypeDefinition<{
     type: 'azure-blob-storage';
     cardinality: 'multiton';
@@ -241,40 +290,6 @@ export const connectionTypes: {
           clientId: string;
           tenantId: string;
           clientSecret: string;
-        }
-    )[];
-  }>;
-  readonly azure: ConnectionTypeDefinition<{
-    type: 'azure';
-    cardinality: 'multiton';
-    query: {
-      url: string;
-    };
-    configSchema: {
-      baseUrl: string;
-    };
-    auth: readonly (
-      | {
-          method: 'none';
-        }
-      | {
-          method: 'pat';
-          personalAccessToken: string;
-          orgs?: string[] | undefined;
-        }
-      | {
-          method: 'clientCredentials';
-          clientId: string;
-          clientSecret: string;
-          tenantId: string;
-          orgs?: string[] | undefined;
-        }
-      | {
-          method: 'managedIdentity';
-          clientId: string;
-          tenantId?: string | undefined;
-          managedIdentityClientId?: string | undefined;
-          orgs?: string[] | undefined;
         }
     )[];
   }>;
@@ -332,6 +347,22 @@ export const connectionTypes: {
           password: string;
         }
     )[];
+  }>;
+  readonly datadog: ConnectionTypeDefinition<{
+    type: 'datadog';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly {
+      method: 'apiKey';
+      apiKey: string;
+      applicationKey: string;
+    }[];
   }>;
   readonly gerrit: ConnectionTypeDefinition<{
     type: 'gerrit';
@@ -483,6 +514,104 @@ export const connectionTypes: {
       token: string;
       apiKey?: string | undefined;
     }[];
+  }>;
+  readonly jenkins: ConnectionTypeDefinition<{
+    type: 'jenkins';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly (
+      | {
+          method: 'apiToken';
+          username: string;
+          apiToken: string;
+        }
+      | {
+          method: 'none';
+        }
+    )[];
+  }>;
+  readonly jira: ConnectionTypeDefinition<{
+    type: 'jira';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      deployment: 'cloud' | 'datacenter';
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly (
+      | {
+          method: 'none';
+        }
+      | {
+          method: 'apiToken';
+          email: string;
+          token: string;
+        }
+      | {
+          method: 'pat';
+          token: string;
+        }
+    )[];
+  }>;
+  readonly pagerduty: ConnectionTypeDefinition<{
+    type: 'pagerduty';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      apiBaseUrl: string;
+      baseUrl: string;
+    };
+    auth: readonly {
+      method: 'token';
+      token: string;
+    }[];
+  }>;
+  readonly snyk: ConnectionTypeDefinition<{
+    type: 'snyk';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly {
+      method: 'token';
+      token: string;
+    }[];
+  }>;
+  readonly sonarqube: ConnectionTypeDefinition<{
+    type: 'sonarqube';
+    cardinality: 'multiton';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      baseUrl: string;
+      apiBaseUrl?: string | undefined;
+    };
+    auth: readonly (
+      | {
+          method: 'none';
+        }
+      | {
+          method: 'token';
+          token: string;
+          authType: 'basic' | 'bearer';
+        }
+    )[];
   }>;
 };
 
