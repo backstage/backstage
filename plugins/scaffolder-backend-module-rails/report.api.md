@@ -47,9 +47,9 @@ export function createFetchRailsAction(options: {
     values: {
       railsArguments?:
         | {
+            force?: boolean | undefined;
             template?: string | undefined;
             api?: boolean | undefined;
-            force?: boolean | undefined;
             database?:
               | 'sqlite3'
               | 'mysql'
