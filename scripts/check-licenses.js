@@ -54,6 +54,10 @@ const FALLBACK_ALLOWED = [
 ];
 if (DEFAULT_ALLOWED.length === 0) DEFAULT_ALLOWED.push(...FALLBACK_ALLOWED);
 
+// ---------------------------------------------------------------------------
+// Private helpers (pure, no side effects)
+// ---------------------------------------------------------------------------
+
 function normalizeResolution(resolution) {
   if (!resolution)
     return {
@@ -270,7 +274,8 @@ function isAllowedLicense(licenseExpr, allowedLicenses) {
   if (/^(SEE LICENSE|LicenseRef|UNLICENSED|UNKNOWN)/i.test(trimmed))
     return false;
   if (/SEE LICENSE/i.test(trimmed)) return false;
-  const allowedSet = new Set(allowedLicenses || DEFAULT_ALLOWED);
+  const rawAllowed = allowedLicenses || DEFAULT_ALLOWED;
+  const allowedSet = new Set(rawAllowed.map(s => String(s).toLowerCase()));
   // strip WITH exceptions: " GPL-2.0-only WITH Classpath-exception-2.0"
   const cleaned = trimmed.replace(/\s+WITH\s+[^\s()]+/g, '');
   // try spdx-expression-parse if available
@@ -279,7 +284,7 @@ function isAllowedLicense(licenseExpr, allowedLicenses) {
     const ast = parse(cleaned);
     function evalNode(node) {
       if (!node) return false;
-      if (node.license) return allowedSet.has(node.license);
+      if (node.license) return allowedSet.has(node.license.toLowerCase());
       if (node.conjunction === 'or')
         return evalNode(node.left) || evalNode(node.right);
       if (node.conjunction === 'and')
@@ -292,12 +297,12 @@ function isAllowedLicense(licenseExpr, allowedLicenses) {
   function fallback(expr) {
     expr = expr.trim();
     if (!expr) return false;
-    // handle OR
-    if (expr.includes(' OR ')) {
-      return expr.split(/\s+OR\s+/).some(part => fallback(part));
+    // handle OR (case-insensitive operator already uppercase in SPDX, but be tolerant)
+    if (/\sOR\s/i.test(expr)) {
+      return expr.split(/\s+OR\s+/i).some(part => fallback(part));
     }
-    if (expr.includes(' AND ')) {
-      return expr.split(/\s+AND\s+/).every(part => fallback(part));
+    if (/\sAND\s/i.test(expr)) {
+      return expr.split(/\s+AND\s+/i).every(part => fallback(part));
     }
     expr = expr
       .replace(/^[()]+|[()]+$/g, '')
@@ -306,7 +311,7 @@ function isAllowedLicense(licenseExpr, allowedLicenses) {
       .trim();
     expr = expr.replace(/[()]/g, '').trim();
     if (!expr) return false;
-    return allowedSet.has(expr);
+    return allowedSet.has(expr.toLowerCase());
   }
   return fallback(cleaned);
 }
@@ -337,46 +342,158 @@ function collectTransitive(changed, headLock) {
   return result;
 }
 
-async function fetchLicense(name, version, cache) {
-  const key = `${name}@${version}`;
-  if (cache.has(key)) return cache.get(key);
-  const url = `https://registry.npmjs.org/${encodeURIComponent(
-    name,
-  )}/${encodeURIComponent(version)}`;
-  let lastErr;
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    try {
-      const res = await fetch(url, { headers: { Accept: 'application/json' } });
-      if (res.status === 429 || (res.status >= 500 && res.status < 600)) {
-        lastErr = new Error(`HTTP ${res.status}`);
-        await new Promise(r => setTimeout(r, attempt * 500));
-        continue;
-      }
-      if (!res.ok) {
-        cache.set(key, null);
-        return null;
-      }
-      const data = await res.json();
-      const lic = data.license || data.licenses || null;
-      let licStr = null;
-      if (typeof lic === 'string') licStr = lic;
-      else if (Array.isArray(lic))
-        licStr = lic
-          .map(l => (typeof l === 'string' ? l : l.type || l.license || ''))
-          .filter(Boolean)
-          .join(' OR ');
-      else if (lic && typeof lic === 'object')
-        licStr = lic.type || lic.license || null;
-      cache.set(key, licStr);
-      return licStr;
-    } catch (e) {
-      lastErr = e;
-      await new Promise(r => setTimeout(r, attempt * 500));
-    }
-  }
-  cache.set(key, null);
-  return null;
+function matchesOverride(pkgName, pkgVersion, pkgLicense, override) {
+  if (override.name !== pkgName) return false;
+  if (
+    override.versionRange &&
+    override.versionRange !== '*' &&
+    override.versionRange !== pkgVersion
+  )
+    return false;
+  if (override.license && pkgLicense && override.license !== pkgLicense)
+    return false;
+  return true;
 }
+
+function createDefaultFetchLicense() {
+  const cache = new Map();
+  return async function fetchLicense(name, version) {
+    const key = `${name}@${version}`;
+    if (cache.has(key)) return cache.get(key);
+    const url = `https://registry.npmjs.org/${encodeURIComponent(
+      name,
+    )}/${encodeURIComponent(version)}`;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const res = await fetch(url, {
+          headers: { Accept: 'application/json' },
+        });
+        if (res.status === 429 || (res.status >= 500 && res.status < 600)) {
+          await new Promise(r => setTimeout(r, attempt * 500));
+          continue;
+        }
+        if (!res.ok) {
+          cache.set(key, null);
+          return null;
+        }
+        const data = await res.json();
+        const lic = data.license || data.licenses || null;
+        let licStr = null;
+        if (typeof lic === 'string') licStr = lic;
+        else if (Array.isArray(lic))
+          licStr = lic
+            .map(l => (typeof l === 'string' ? l : l.type || l.license || ''))
+            .filter(Boolean)
+            .join(' OR ');
+        else if (lic && typeof lic === 'object')
+          licStr = lic.type || lic.license || null;
+        cache.set(key, licStr);
+        return licStr;
+      } catch {
+        await new Promise(r => setTimeout(r, attempt * 500));
+      }
+    }
+    cache.set(key, null);
+    return null;
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Pure module interface: single external interface
+// ---------------------------------------------------------------------------
+
+/**
+ * Check licenses for changed packages and their transitive closure.
+ *
+ * Pure: no fs, no process.exit, no ::error, no summary. Dependencies are
+ * injected via `fetchLicense`. Returns a result object for adapters to render.
+ *
+ * @param {object} opts
+ * @param {string} opts.baseContent - yarn.lock content for base
+ * @param {string} opts.headContent - yarn.lock content for head
+ * @param {string[]} opts.allowedLicenses - SPDX ids (case-insensitive check inside)
+ * @param {object[]} opts.overrides - entries from .allowed-licenses.json (filtered internally for _example and expiry)
+ * @param {function} opts.fetchLicense - async (name, version) => licenseString | null, injected; defaults to npm registry with cache
+ * @returns {Promise<{violations: Array<{name:string,version:string,license:string,resolution:string}>, checked:number, changed:number, closure:Array, warnings:Array}>}
+ */
+async function checkLicenses({
+  baseContent = '',
+  headContent = '',
+  allowedLicenses,
+  overrides,
+  fetchLicense,
+} = {}) {
+  const allowed = allowedLicenses ?? DEFAULT_ALLOWED;
+  const rawOverrides = overrides ?? [];
+  // Filter _example and expired overrides internally; loadConfig already filters _example but we enforce here
+  const activeOverrides = rawOverrides.filter(o => isOverrideActive(o));
+
+  const baseLock = parseYarnLock(baseContent || '');
+  const headLock = parseYarnLock(headContent || '');
+  const changedEntries = diffEntries(baseLock, headLock);
+  const closureEntries = collectTransitive(changedEntries, headLock);
+
+  const checked = closureEntries.length;
+  const changed = changedEntries.length;
+  const closure = closureEntries;
+  const warnings = [];
+
+  if (closureEntries.length === 0) {
+    return { violations: [], checked, changed, closure, warnings };
+  }
+
+  const fetchFn = fetchLicense ?? createDefaultFetchLicense();
+  const violations = [];
+  const batchSize = 20;
+
+  for (let i = 0; i < closureEntries.length; i += batchSize) {
+    const batch = closureEntries.slice(i, i + batchSize);
+    const results = await Promise.all(
+      batch.map(async entry => {
+        const norm = normalizeResolution(entry.resolution);
+        if (norm.isWorkspace) return null;
+        if (!norm.name || !norm.version) return null;
+        let license = null;
+        try {
+          license = await fetchFn(norm.name, norm.version);
+        } catch (e) {
+          warnings.push({
+            name: norm.name,
+            version: norm.version,
+            message: `fetch failed: ${e && e.message ? e.message : String(e)}`,
+          });
+          license = null;
+        }
+        const allowedLicense = isAllowedLicense(license, allowed);
+        if (allowedLicense) return null;
+        for (const ov of activeOverrides) {
+          if (matchesOverride(norm.name, norm.version, license, ov))
+            return null;
+        }
+        if (!license) {
+          warnings.push({
+            name: norm.name,
+            version: norm.version,
+            message: 'missing license field from registry',
+          });
+        }
+        return {
+          name: norm.name,
+          version: norm.version,
+          license: license || '(missing)',
+          resolution: entry.resolution,
+        };
+      }),
+    );
+    for (const r of results) if (r) violations.push(r);
+  }
+
+  return { violations, checked, changed, closure, warnings };
+}
+
+// ---------------------------------------------------------------------------
+// Adapters (I/O at edges)
+// ---------------------------------------------------------------------------
 
 function loadConfig(configPath) {
   let allowedLicenses = DEFAULT_ALLOWED;
@@ -392,19 +509,6 @@ function loadConfig(configPath) {
     cncfPolicyRev = cfg.cncfPolicyRev || null;
   } catch {}
   return { allowedLicenses, overrides, cncfPolicyRev };
-}
-
-function matchesOverride(pkgName, pkgVersion, pkgLicense, override) {
-  if (override.name !== pkgName) return false;
-  if (
-    override.versionRange &&
-    override.versionRange !== '*' &&
-    override.versionRange !== pkgVersion
-  )
-    return false;
-  if (override.license && pkgLicense && override.license !== pkgLicense)
-    return false;
-  return true;
 }
 
 async function main() {
@@ -462,68 +566,39 @@ Options:
     process.exit(1);
   }
 
-  const baseLock = parseYarnLock(baseContent);
-  const headLock = parseYarnLock(headContent);
   const config = loadConfig(configPath);
 
-  const changed = diffEntries(baseLock, headLock);
-  if (changed.length === 0) {
+  const result = await checkLicenses({
+    baseContent,
+    headContent,
+    allowedLicenses: config.allowedLicenses,
+    overrides: config.overrides,
+  });
+
+  if (result.changed === 0) {
     console.log('No changed npm packages detected.');
     process.exit(0);
   }
-  const closure = collectTransitive(changed, headLock);
 
-  const cache = new Map();
-  const batchSize = 20;
-  const violations = [];
-
-  for (let i = 0; i < closure.length; i += batchSize) {
-    const batch = closure.slice(i, i + batchSize);
-    const results = await Promise.all(
-      batch.map(async entry => {
-        const norm = normalizeResolution(entry.resolution);
-        if (norm.isWorkspace) return null;
-        if (!norm.name || !norm.version) return null;
-        const license = await fetchLicense(norm.name, norm.version, cache);
-        const allowed = isAllowedLicense(license, config.allowedLicenses);
-        if (allowed) return null;
-        // check overrides
-        const now = new Date();
-        for (const ov of config.overrides) {
-          if (!isOverrideActive(ov, now)) continue;
-          if (matchesOverride(norm.name, norm.version, license, ov))
-            return null;
-        }
-        return {
-          name: norm.name,
-          version: norm.version,
-          license: license || '(missing)',
-          resolution: entry.resolution,
-        };
-      }),
-    );
-    for (const r of results) if (r) violations.push(r);
-  }
-
-  if (violations.length === 0) {
+  if (result.violations.length === 0) {
     console.log(
-      `Checked ${closure.length} packages (${changed.length} changed + transitive), no violations.`,
+      `Checked ${result.checked} packages (${result.changed} changed + transitive), no violations.`,
     );
     process.exit(0);
   }
 
   // reporting
-  for (const v of violations) {
+  for (const v of result.violations) {
     console.log(
       `::error file=yarn.lock::License violation: ${v.name}@${v.version} has license "${v.license}" not in allowlist`,
     );
   }
   const summaryPath = process.env.GITHUB_STEP_SUMMARY;
   const tableHeader = '| Package | Version | License |\n|---|---|---|\n';
-  const tableRows = violations
+  const tableRows = result.violations
     .map(v => `| ${v.name} | ${v.version} | ${v.license} |`)
     .join('\n');
-  const summary = `### License check violations: ${violations.length}\n\n${tableHeader}${tableRows}\n`;
+  const summary = `### License check violations: ${result.violations.length}\n\n${tableHeader}${tableRows}\n`;
   if (summaryPath) {
     try {
       fs.appendFileSync(summaryPath, summary, 'utf8');
@@ -532,7 +607,7 @@ Options:
     console.log('\n' + summary);
   }
   console.table(
-    violations.map(v => ({
+    result.violations.map(v => ({
       package: v.name,
       version: v.version,
       license: v.license,
@@ -543,7 +618,11 @@ Options:
 
 if (require.main === module) main();
 
+// Primary export is checkLicenses (single external interface).
+// Additional exports are for backward compatibility with existing tests;
+// consider them an internal seam — prefer testing via checkLicenses.
 module.exports = {
+  checkLicenses,
   parseYarnLock,
   diffEntries,
   isAllowedLicense,
@@ -551,4 +630,7 @@ module.exports = {
   normalizeResolution,
   collectTransitive,
   DEFAULT_ALLOWED,
+  // internal adapters exposed for testing/compat but not part of stable API
+  loadConfig,
+  matchesOverride,
 };
