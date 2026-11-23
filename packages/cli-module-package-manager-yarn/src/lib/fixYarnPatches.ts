@@ -19,6 +19,7 @@ import { semverUtils, structUtils } from '@yarnpkg/core';
 import { parseSyml } from '@yarnpkg/parsers';
 import { patchUtils } from '@yarnpkg/plugin-patch';
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import {
   verifyYarnPatches,
@@ -279,17 +280,36 @@ async function defaultIsPatchReverseApplicable(options: {
 }
 
 async function removeExtractedPackage(packageDir: string): Promise<void> {
-  // Yarn extracts into a "user" folder inside an "xfs-<hex>" temporary folder
-  // of its own. Only remove folders with that exact shape, since the path is
-  // read from command output.
+  // Yarn extracts into a "user" folder inside an "xfs-<hex>" folder that it
+  // creates directly in the system temporary directory. The path is read from
+  // command output, so only remove a folder with exactly that shape and
+  // location, and never follow a symbolic link.
   const parent = path.dirname(packageDir);
   if (
+    !path.isAbsolute(packageDir) ||
+    path.normalize(packageDir) !== packageDir ||
     path.basename(packageDir) !== 'user' ||
     !/^xfs-[0-9a-f]+$/.test(path.basename(parent))
   ) {
     return;
   }
-  await fs.rm(parent, { recursive: true, force: true }).catch(() => {});
+  try {
+    const [tempRoot, parentRoot, parentStat] = await Promise.all([
+      fs.realpath(os.tmpdir()),
+      fs.realpath(path.dirname(parent)),
+      fs.lstat(parent),
+    ]);
+    if (
+      tempRoot !== parentRoot ||
+      !parentStat.isDirectory() ||
+      parentStat.isSymbolicLink()
+    ) {
+      return;
+    }
+    await fs.rm(parent, { recursive: true, force: true });
+  } catch {
+    // Leaving a temporary folder behind is harmless
+  }
 }
 
 async function defaultInstall(
