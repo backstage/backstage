@@ -33,7 +33,9 @@ describe('<WelcomeTitle>', () => {
 
     const { getByText } = await renderInTestApp(<WelcomeTitle />);
 
-    expect(getByText(/Get some rest, guest/)).toBeInTheDocument();
+    expect(getByText(/Get some rest,/)).toHaveTextContent(
+      'Get some rest, guest!',
+    );
   });
 
   test('should greet user with a single language', async () => {
@@ -45,7 +47,9 @@ describe('<WelcomeTitle>', () => {
       <WelcomeTitle language={['English']} />,
     );
 
-    expect(getByText(/Good morning, guest/)).toBeInTheDocument();
+    expect(getByText(/Good morning,/)).toHaveTextContent(
+      'Good morning, guest!',
+    );
   });
 
   test('should greet user with the title from the entity presentation API', async () => {
@@ -77,6 +81,8 @@ describe('<WelcomeTitle>', () => {
       </ApiProvider>,
     );
 
-    expect(getByText(/Good morning, Ada Lovelace/)).toBeInTheDocument();
+    expect(getByText(/Good morning,/)).toHaveTextContent(
+      'Good morning, Ada Lovelace!',
+    );
   });
 });
