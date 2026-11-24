@@ -1,5 +1,5 @@
 {
-  "_comment": "CNCF Allowlist + Backstage-approved licenses. CNCF list is pinned; additional licenses have per-entry approval. Allowed set is cncfAllowedLicenses ∪ approvedLicenses[].id",
+  "_comment": "CNCF Allowlist + Backstage-approved licenses. CNCF list is pinned; additional licenses have per-entry approval. Allowed set is cncfAllowedLicenses \u222a approvedLicenses[].id",
   "cncfPolicyRev": "2024-11-23",
   "cncfAllowedLicenses": [
     "0BSD",
@@ -58,27 +58,6 @@
       "approvedBy": "legal@example.com"
     },
     {
-      "name": "bintrees",
-      "versionRange": "1.0.1",
-      "license": "(missing)",
-      "reason": "verified the package has MIT license https://github.com/vadimg/js_bintrees",
-      "approvedBy": "backstage/maintainers"
-    },
-    {
-      "name": "cli-table",
-      "versionRange": "0.3.11",
-      "license": "(missing)",
-      "reason": "verified the package has MIT license https://github.com/Automattic/cli-table",
-      "approvedBy": "backstage/maintainers"
-    },
-    {
-      "name": "fast-shallow-equal",
-      "versionRange": "1.0.0",
-      "license": "(missing)",
-      "reason": "verified the package has Unlicense license https://github.com/streamich/fast-shallow-equal",
-      "approvedBy": "backstage/maintainers"
-    },
-    {
       "name": "fly-import",
       "versionRange": "1.0.0",
       "license": "(missing)",
@@ -93,27 +72,6 @@
       "approvedBy": "backstage/maintainers"
     },
     {
-      "name": "pkginfo",
-      "versionRange": "0.2.3",
-      "license": "(missing)",
-      "reason": "verified the package has MIT license https://github.com/indexzero/node-pkginfo",
-      "approvedBy": "backstage/maintainers"
-    },
-    {
-      "name": "react-universal-interface",
-      "versionRange": "0.6.2",
-      "license": "(missing)",
-      "reason": "verified the package has Unlicense license https://github.com/streamich/react-universal-interface",
-      "approvedBy": "backstage/maintainers"
-    },
-    {
-      "name": "tosource",
-      "versionRange": "2.0.0-alpha.3",
-      "license": "(missing)",
-      "reason": "verified the package has Zlib license https://github.com/marcello3d/node-tosource",
-      "approvedBy": "backstage/maintainers"
-    },
-    {
       "name": "uid2",
       "versionRange": "0.0.3",
       "license": "(missing)",
@@ -125,13 +83,6 @@
       "versionRange": "1.0.9",
       "license": "(missing)",
       "reason": "verified the package has MIT license https://github.com/ogt/valid-url",
-      "approvedBy": "backstage/maintainers"
-    },
-    {
-      "name": "spawndamnit",
-      "versionRange": "3.0.1",
-      "license": "SEE LICENSE IN LICENSE",
-      "reason": "verified the package has MIT license https://github.com/thejameskyle/spawndamnit",
       "approvedBy": "backstage/maintainers"
     }
   ]
