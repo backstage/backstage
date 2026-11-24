@@ -89,6 +89,10 @@ type PackageJsonWithTypes = {
     types?: string;
   };
 };
+
+const moduleResolutionOptions = {
+  moduleResolution: ts.ModuleResolutionKind.Bundler,
+};
 function shouldCheckTypes(pkg: Package & PackageJsonWithTypes) {
   return (
     !pkg.packageJson.private &&
@@ -99,11 +103,12 @@ function shouldCheckTypes(pkg: Package & PackageJsonWithTypes) {
 
 /**
  * Read a declaration file and recursively follow all relative imports and
- * re-exports, collecting the source content of each file encountered.
+ * re-exports, collecting the external module specifiers referenced by each
+ * file encountered.
  */
-function collectDeclSources(entryPath: string): string[] {
+function collectDeclDeps(entryPath: string): string[] {
   const visited = new Set<string>();
-  const sources: string[] = [];
+  const deps: string[] = [];
 
   function visit(filePath: string) {
     const resolved = resolvePath(filePath);
@@ -122,29 +127,78 @@ function collectDeclSources(entryPath: string): string[] {
     }
 
     const src = fs.readFileSync(actualPath, 'utf8');
-    sources.push(src);
+    const specifiers = parseModuleSpecifiers(actualPath, src);
+    deps.push(...findAllDeps(src, specifiers));
 
-    // Follow relative imports and re-exports into chunk files
-    const relativeRefs = (
-      src.match(/^(?:import|export) .* from '\..*';$/gm) || []
-    )
-      .map(match => match.match(/from '(.*)'/)?.[1] ?? '')
-      .filter(n => n.startsWith('.'));
-
-    const dir = resolvePath(actualPath, '..');
-    for (const ref of relativeRefs) {
-      visit(resolvePath(dir, ref));
+    // Follow relative imports and re-exports into chunk files, letting
+    // TypeScript resolve the .js/.cjs/.mjs and directory forms to their
+    // declaration files
+    for (const ref of specifiers) {
+      if (!ref.startsWith('.')) {
+        continue;
+      }
+      const resolution = ts.resolveModuleName(
+        ref,
+        actualPath,
+        moduleResolutionOptions,
+        ts.sys,
+      );
+      visit(
+        resolution.resolvedModule?.resolvedFileName ??
+          resolvePath(actualPath, '..', ref),
+      );
     }
   }
 
   visit(entryPath);
-  return sources;
+  return deps;
 }
 
-function findAllDeps(declSrc: string) {
-  const importedDeps = (declSrc.match(/^import .* from '.*';$/gm) || [])
-    .map(match => match.match(/from '(.*)'/)?.[1] ?? '')
-    .filter(n => !n.startsWith('.'));
+/**
+ * Parse a declaration file and return every module specifier it references:
+ * imports, re-exports, `import()` types, `import = require()` declarations,
+ * and ambient module declarations.
+ */
+function parseModuleSpecifiers(filePath: string, src: string): string[] {
+  const sourceFile = ts.createSourceFile(
+    filePath,
+    src,
+    ts.ScriptTarget.Latest,
+    true,
+  );
+  const specifiers: string[] = [];
+
+  const visit = (node: ts.Node): void => {
+    if (
+      (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
+      node.moduleSpecifier &&
+      ts.isStringLiteral(node.moduleSpecifier)
+    ) {
+      specifiers.push(node.moduleSpecifier.text);
+    } else if (
+      ts.isImportEqualsDeclaration(node) &&
+      ts.isExternalModuleReference(node.moduleReference) &&
+      ts.isStringLiteral(node.moduleReference.expression)
+    ) {
+      specifiers.push(node.moduleReference.expression.text);
+    } else if (
+      ts.isImportTypeNode(node) &&
+      ts.isLiteralTypeNode(node.argument) &&
+      ts.isStringLiteral(node.argument.literal)
+    ) {
+      specifiers.push(node.argument.literal.text);
+    } else if (ts.isModuleDeclaration(node) && ts.isStringLiteral(node.name)) {
+      specifiers.push(node.name.text);
+    }
+    ts.forEachChild(node, visit);
+  };
+
+  visit(sourceFile);
+  return specifiers;
+}
+
+function findAllDeps(declSrc: string, specifiers: string[]) {
+  const importedDeps = specifiers.filter(n => !n.startsWith('.'));
   const referencedDeps = (
     declSrc.match(/^\/\/\/ <reference types=".*" \/>$/gm) || []
   )
@@ -176,7 +230,7 @@ function findAllDeps(declSrc: string) {
 function checkTypes(pkg: Package, root: string) {
   const allDeps = getPackageExportDetails(pkg.packageJson).flatMap(exp => {
     const entryPath = resolvePath(pkg.dir, 'dist', exp.distPath);
-    return collectDeclSources(entryPath).flatMap(src => findAllDeps(src));
+    return collectDeclDeps(entryPath);
   });
   const deps = Array.from(new Set(allDeps));
 
@@ -239,7 +293,7 @@ function findTypesPackage(dep: string, pkg: Package, root: string) {
           const resolution = ts.resolveModuleName(
             dep,
             resolvePath(pkg.dir, 'index.d.ts'),
-            { moduleResolution: ts.ModuleResolutionKind.Bundler },
+            moduleResolutionOptions,
             ts.sys,
           );
           const resolvedFile = resolution.resolvedModule?.resolvedFileName;

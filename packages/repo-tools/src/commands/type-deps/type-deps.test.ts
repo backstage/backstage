@@ -473,4 +473,88 @@ describe('type-deps', () => {
     );
     expect(exit).toHaveBeenCalledWith(2);
   });
+
+  it('collects re-exports, import types and chunk files from declarations', async () => {
+    const exit = jest
+      .spyOn(process, 'exit')
+      .mockImplementation((() => {}) as () => never);
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    fs.writeFileSync(
+      joinPath(tmpDir, 'package.json'),
+      JSON.stringify({ name: 'root', private: true, workspaces: ['pkg'] }),
+    );
+    fs.writeFileSync(joinPath(tmpDir, 'yarn.lock'), '');
+    fs.mkdirSync(joinPath(tmpDir, 'pkg/dist'), { recursive: true });
+    fs.writeFileSync(
+      joinPath(tmpDir, 'pkg/package.json'),
+      JSON.stringify({
+        name: 'pkg',
+        version: '1.0.0',
+        main: 'dist/index.js',
+        types: 'dist/index.d.ts',
+        dependencies: {
+          '@fake/esm-only': '1.0.0',
+        },
+      }),
+    );
+    // A package re-export and an import() type, neither of which the old
+    // regex scanner collected, plus a relative chunk file that is only
+    // reachable by resolving the .js extension to its .d.ts
+    fs.writeFileSync(
+      joinPath(tmpDir, 'pkg/dist/index.d.ts'),
+      "export * from '@fake/esm-only/sub';\n" +
+        "export type { Deep } from './deep.js';\n",
+    );
+    fs.writeFileSync(
+      joinPath(tmpDir, 'pkg/dist/deep.d.ts'),
+      "export type Deep = import('@fake/esm-only/context').Ctx;\n",
+    );
+    fs.mkdirSync(joinPath(tmpDir, 'node_modules/@fake/esm-only/dist'), {
+      recursive: true,
+    });
+    fs.writeFileSync(
+      joinPath(tmpDir, 'node_modules/@fake/esm-only/package.json'),
+      JSON.stringify({
+        name: '@fake/esm-only',
+        version: '1.0.0',
+        type: 'module',
+        exports: {
+          '.': { types: './dist/index.d.ts', import: './dist/index.js' },
+          './sub': { types: './dist/sub.d.ts', import: './dist/sub.js' },
+          './context': {
+            types: './dist/context.d.ts',
+            import: './dist/context.js',
+          },
+        },
+      }),
+    );
+    fs.writeFileSync(
+      joinPath(tmpDir, 'node_modules/@fake/esm-only/dist/sub.d.ts'),
+      'export type Sub = { a: number };\n',
+    );
+    fs.writeFileSync(
+      joinPath(tmpDir, 'node_modules/@fake/esm-only/dist/context.d.ts'),
+      'export type Ctx = { a: number };\n',
+    );
+
+    await typeDeps();
+
+    expect(error).not.toHaveBeenCalled();
+    expect(exit).not.toHaveBeenCalled();
+
+    // Re-exports are checked like imports: removing the declarations for
+    // the re-exported subpath must fail the check
+    fs.rmSync(joinPath(tmpDir, 'node_modules/@fake/esm-only/dist/sub.d.ts'));
+
+    exit.mockClear();
+    error.mockClear();
+
+    await typeDeps();
+
+    expect(error).toHaveBeenCalledWith(
+      expect.stringContaining('Missing a type dependency: @fake/esm-only/sub'),
+    );
+    expect(exit).toHaveBeenCalledWith(2);
+  });
 });
