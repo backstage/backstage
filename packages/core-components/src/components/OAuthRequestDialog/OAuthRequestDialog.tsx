@@ -54,7 +54,7 @@ const useStyles = makeStyles(
       padding: 0,
     },
     actionButtons: {
-      padding: theme.spacing(2, 0),
+      padding: theme.spacing(2),
     },
   }),
   { name: 'OAuthRequestDialog' },
