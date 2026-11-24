@@ -32,6 +32,9 @@ export const orgTranslationRef = createTranslationRef({
         parentGroup: 'Parent Group',
         childGroups: 'Child Groups',
       },
+      listItemValue: {
+        notAvailable: 'N/A',
+      },
     },
     membersListCard: {
       cardLabel: 'User page for {{memberName}}',
