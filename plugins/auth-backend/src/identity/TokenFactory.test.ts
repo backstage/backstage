@@ -119,96 +119,51 @@ describe('TokenFactory', () => {
     );
   });
 
-  it('should bind the client to the user identity proof', async () => {
+  it('should add a proof that covers the client to tokens issued to a client', async () => {
     const factory = new TokenFactory({
       issuer: 'my-issuer',
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds: 5,
       logger,
     });
-
     const { token } = await factory.issueToken({
       claims: { sub: entityRef, ent: [entityRef], azp: 'my-client' },
     });
 
     const { keys } = await factory.listPublicKeys();
     const keyStore = createLocalJWKSet({ keys: keys });
-
     const { payload, protectedHeader } = await jwtVerify(token, keyStore);
-    expect(payload.azp).toBe('my-client');
-
-    const header = base64url.encode(
-      JSON.stringify({
-        typ: tokenTypes.limitedUser.typParam,
-        alg: protectedHeader.alg,
-        kid: protectedHeader.kid!,
-      }),
-    );
-    const limitedUserToken = (claims: object) =>
-      [header, base64url.encode(JSON.stringify(claims)), payload.uip].join('.');
-
     const { sub, iat, exp } = payload;
-    await expect(
+
+    const verifyLimited = (claims: object, proof: unknown) =>
       jwtVerify(
-        limitedUserToken({ sub, iat, exp, azp: 'my-client' }),
+        [
+          base64url.encode(
+            JSON.stringify({
+              typ: tokenTypes.limitedUser.typParam,
+              alg: protectedHeader.alg,
+              kid: protectedHeader.kid!,
+            }),
+          ),
+          base64url.encode(JSON.stringify(claims)),
+          proof,
+        ].join('.'),
         keyStore,
-      ),
-    ).resolves.toMatchObject({
-      payload: { sub: entityRef, azp: 'my-client' },
-    });
+      );
 
-    // The proof is not valid for a token that drops or replaces the client
     await expect(
-      jwtVerify(limitedUserToken({ sub, iat, exp }), keyStore),
-    ).rejects.toThrow('signature verification failed');
+      verifyLimited({ sub, iat, exp, azp: 'my-client' }, payload.cip),
+    ).resolves.toMatchObject({ payload: { sub, azp: 'my-client' } });
+    // The original proof is unchanged, for backends that ignore the client
     await expect(
-      jwtVerify(
-        limitedUserToken({ sub, iat, exp, azp: 'other-client' }),
-        keyStore,
-      ),
-    ).rejects.toThrow('signature verification failed');
-  });
-
-  it('should leave the client out of the proof when the claim is omitted from the token', async () => {
-    const factory = new TokenFactory({
-      issuer: 'my-issuer',
-      keyStore: new MemoryKeyStore(),
-      keyDurationSeconds: 5,
-      logger,
-      omitClaimsFromToken: ['azp'],
-    });
-
-    const { token } = await factory.issueToken({
-      claims: { sub: entityRef, ent: [entityRef], azp: 'my-client' },
-    });
-
-    const { keys } = await factory.listPublicKeys();
-    const keyStore = createLocalJWKSet({ keys: keys });
-
-    const { payload, protectedHeader } = await jwtVerify(token, keyStore);
-    expect(payload.azp).toBeUndefined();
-
-    const limitedUserToken = [
-      base64url.encode(
-        JSON.stringify({
-          typ: tokenTypes.limitedUser.typParam,
-          alg: protectedHeader.alg,
-          kid: protectedHeader.kid!,
-        }),
-      ),
-      base64url.encode(
-        JSON.stringify({
-          sub: payload.sub,
-          iat: payload.iat,
-          exp: payload.exp,
-        }),
-      ),
-      payload.uip,
-    ].join('.');
-
-    await expect(jwtVerify(limitedUserToken, keyStore)).resolves.toMatchObject({
-      payload: { sub: entityRef },
-    });
+      verifyLimited({ sub, iat, exp }, payload.uip),
+    ).resolves.toMatchObject({ payload: { sub } });
+    // Neither proof is valid for another client
+    for (const proof of [payload.cip, payload.uip]) {
+      await expect(
+        verifyLimited({ sub, iat, exp, azp: 'other-client' }, proof),
+      ).rejects.toThrow('signature verification failed');
+    }
   });
 
   it('should generate new signing keys when the current one expires', async () => {

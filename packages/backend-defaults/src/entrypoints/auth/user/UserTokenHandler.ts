@@ -141,6 +141,10 @@ export class UserTokenHandler {
       );
     }
 
+    // Tokens issued to an OAuth client have a second proof that also covers the
+    // client, which lets the limited user token keep it.
+    const withClient = Boolean(payload.azp && payload.cip);
+
     // NOTE: The order and properties in both the header and payload must match
     //       the usage in plugins/auth-backend/src/identity/TokenFactory.ts
     const limitedUserToken = [
@@ -156,10 +160,10 @@ export class UserTokenHandler {
           sub: payload.sub,
           iat: payload.iat,
           exp: payload.exp,
-          ...(payload.azp ? { azp: payload.azp } : {}),
+          ...(withClient ? { azp: payload.azp } : {}),
         }),
       ),
-      payload.uip,
+      withClient ? payload.cip : payload.uip,
     ].join('.');
 
     return { token: limitedUserToken, expiresAt: new Date(payload.exp * 1000) };

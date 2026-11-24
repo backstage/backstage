@@ -64,9 +64,9 @@ export async function issueUserToken({
 
   logger.info(`Issuing token for ${sub}, with entities ${ent}`);
 
-  // The client that the token was issued to, if any. It is only made part of
-  // the identity proof when it also ends up in the token itself, since the
-  // proof has to be reconstructed from the token claims.
+  // The client that the token was issued to, if any. It can only be part of a
+  // proof when it also ends up in the token itself, since the limited user
+  // token is reconstructed from the token claims.
   const azp =
     typeof additionalClaims.azp === 'string' &&
     !omitClaimsFromToken?.includes('azp')
@@ -75,15 +75,25 @@ export async function issueUserToken({
 
   const signingKey = await importJWK(key);
 
+  const proofHeader = {
+    typ: tokenTypes.limitedUser.typParam,
+    alg: key.alg,
+    kid: key.kid,
+  };
   const uip = await createUserIdentityClaim({
-    header: {
-      typ: tokenTypes.limitedUser.typParam,
-      alg: key.alg,
-      kid: key.kid,
-    },
-    payload: { sub, iat, exp, azp },
+    header: proofHeader,
+    payload: { sub, iat, exp },
     key: signingKey,
   });
+  // A second proof that also covers the client. It is kept separate so that
+  // `uip` stays valid for backends that do not know about the client.
+  const cip = azp
+    ? await createUserIdentityClaim({
+        header: proofHeader,
+        payload: { sub, iat, exp, azp },
+        key: signingKey,
+      })
+    : undefined;
 
   const claims: BackstageTokenPayload = {
     ...additionalClaims,
@@ -94,6 +104,7 @@ export async function issueUserToken({
     iat,
     exp,
     uip,
+    ...(cip ? { cip } : {}),
   };
 
   const tokenClaims = omitClaimsFromToken
