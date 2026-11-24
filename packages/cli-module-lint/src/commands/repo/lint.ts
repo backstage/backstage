@@ -193,9 +193,10 @@ export default async ({ args, info }: CliCommandContext) => {
       rootDir: targetPaths.rootDir,
       // The eval'd worker resolves modules relative to the current working
       // directory rather than this package, which breaks with strict
-      // node_modules layouts such as pnpm's. Passing the path of this module
-      // lets the worker create a require function bound to the right place.
-      workerModulePath: __filename,
+      // node_modules layouts such as pnpm's. Resolving the paths up front
+      // lets the worker load them from the right place.
+      eslintPath: require.resolve('eslint'),
+      globbyPath: require.resolve('globby'),
     },
     workerFactory: async ({
       fix: workerFix,
@@ -203,15 +204,13 @@ export default async ({ args, info }: CliCommandContext) => {
       shouldCache,
       successCache,
       rootDir,
-      workerModulePath,
+      eslintPath,
+      globbyPath,
       maxWarnings: workerMaxWarnings,
     }) => {
-      const { createRequire } =
-        require('node:module') as typeof import('module');
-      const workerRequire = createRequire(workerModulePath);
-      const { ESLint } = workerRequire('eslint') as typeof import('eslint');
+      const { ESLint } = require(eslintPath) as typeof import('eslint');
       const crypto = require('node:crypto') as typeof import('crypto');
-      const globby = workerRequire('globby') as typeof import('globby');
+      const globby = require(globbyPath) as typeof import('globby');
       const { readFile } =
         require('node:fs/promises') as typeof import('fs/promises');
       const workerPath = require('node:path') as typeof import('path');
