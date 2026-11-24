@@ -24,25 +24,25 @@
   "approvedLicenses": [
     {
       "id": "BlueOak-1.0.0",
-      "reason": "Permissive, MIT-like — no attribution burden, Apache-2.0 compatible, OSI-recognized as copyfree. Chosen as replacement for MIT in npm ecosystem for its clarity on patent and attribution.",
-      "approvedBy": "backstage/maintainers (per PR review with aramissennyeydd)",
+      "reason": "Permissive, MIT-like \u2014 no attribution burden, Apache-2.0 compatible, OSI-recognized as copyfree. Chosen as replacement for MIT in npm ecosystem for its clarity on patent and attribution.",
+      "approvedBy": "backstage/maintainers",
       "url": "https://opensource.org/license/BlueOak-1.0.0"
     },
     {
       "id": "Artistic-2.0",
-      "reason": "OSI-approved permissive — allows commercial use and relicensing with notice preservation, no copyleft. Used for Perl-ecosystem utilities, compatible with Apache-2.0.",
-      "approvedBy": "backstage/maintainers (per PR review with aramissennyeydd)",
+      "reason": "OSI-approved permissive \u2014 allows commercial use and relicensing with notice preservation, no copyleft. Used for Perl-ecosystem utilities, compatible with Apache-2.0.",
+      "approvedBy": "backstage/maintainers",
       "url": "https://opensource.org/license/Artistic-2.0"
     },
     {
       "id": "CC0-1.0",
-      "reason": "Public domain dedication — waives all copyright, no attribution required. Applied to data packages (mdn-data, caniuse subsets) where attribution would be impractical.",
+      "reason": "Public domain dedication \u2014 waives all copyright, no attribution required. Applied to data packages (mdn-data, caniuse subsets) where attribution would be impractical.",
       "approvedBy": "backstage/maintainers",
       "url": "https://creativecommons.org/publicdomain/zero/1.0/"
     },
     {
       "id": "Unlicense",
-      "reason": "Public domain dedication — equivalent to CC0 for code, no conditions. Used for small utilities where author opts out of copyright.",
+      "reason": "Public domain dedication \u2014 equivalent to CC0 for code, no conditions. Used for small utilities where author opts out of copyright.",
       "approvedBy": "backstage/maintainers",
       "url": "https://unlicense.org/"
     }
