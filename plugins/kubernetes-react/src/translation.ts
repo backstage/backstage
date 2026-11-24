@@ -77,6 +77,11 @@ export const kubernetesReactTranslationRef = createTranslationRef({
       buttons: {
         delete: 'Delete Pod',
       },
+      errors: {
+        deletePermissionDenied:
+          'You are not allowed to delete this pod. Contact your portal administrator if you need access.',
+        deleteFailed: 'Could not delete the pod. Please try again later.',
+      },
       cpuRequests: 'CPU requests',
       cpuLimits: 'CPU limits',
       memoryRequests: 'Memory requests',
@@ -119,6 +124,14 @@ export const kubernetesReactTranslationRef = createTranslationRef({
       buttonAriaLabel: 'open terminal',
       titleTemplate:
         '{{podName}} - {{containerName}} terminal shell on cluster {{clusterName}}',
+      errors: {
+        permissionDenied:
+          'You are not allowed to open a terminal for this pod. Contact your portal administrator if you need access.',
+        connectionFailed:
+          'Could not connect to the pod terminal. Please try again later.',
+        connectionClosed: 'Terminal connection closed.',
+      },
+      starting: 'Starting terminal, please wait...',
     },
     events: {
       noEventsFound: 'No events found',
