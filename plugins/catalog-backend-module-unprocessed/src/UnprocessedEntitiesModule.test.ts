@@ -55,6 +55,7 @@ describe('UnprocessedEntitiesModule', () => {
       table.string('entity_ref').unique();
       table.text('final_entity').nullable();
       table.string('deleted_at').nullable();
+      table.string('winner_candidate_id').nullable();
     });
 
     const now = new Date().toISOString();
@@ -116,7 +117,48 @@ describe('UnprocessedEntitiesModule', () => {
       last_discovery_at: now,
     });
 
+    // Re-created while its deleted predecessor's body is still published. It
+    // is pending until its own body replaces that one.
+    await db('refresh_state').insert({
+      entity_id: 'recreated-stale-entity',
+      entity_ref: 'component:default/recreated-stale',
+      unprocessed_entity: JSON.stringify({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'recreated-stale' },
+        spec: { owner: 'group:default/team-a', type: 'service' },
+      }),
+      next_update_at: now,
+      last_discovery_at: now,
+    });
+
+    // Re-created and already published into the old slot. It is neither
+    // pending nor failed.
+    await db('refresh_state').insert({
+      entity_id: 'revived-entity',
+      entity_ref: 'component:default/revived',
+      unprocessed_entity: JSON.stringify({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'revived' },
+        spec: { owner: 'group:default/team-a', type: 'service' },
+      }),
+      next_update_at: now,
+      last_discovery_at: now,
+    });
+
     await db('final_entities').insert([
+      {
+        entity_id: 'stale-slot',
+        entity_ref: 'component:default/recreated-stale',
+        final_entity: '{}',
+      },
+      {
+        entity_id: 'revived-slot',
+        entity_ref: 'component:default/revived',
+        final_entity: '{}',
+        winner_candidate_id: 'revived-entity',
+      },
       {
         entity_id: 'legacy-slot',
         entity_ref: 'component:default/recreated-legacy',
@@ -197,6 +239,7 @@ describe('UnprocessedEntitiesModule', () => {
         'component:default/pending',
         'component:default/recreated',
         'component:default/recreated-legacy',
+        'component:default/recreated-stale',
       ]);
       expect(
         response.body.entities
@@ -206,6 +249,7 @@ describe('UnprocessedEntitiesModule', () => {
         'pending-entity',
         'recreated-entity',
         'recreated-legacy-entity',
+        'recreated-stale-entity',
       ]);
       // Columns from the joined final entity must not leak into the result.
       for (const entity of response.body.entities) {
@@ -263,6 +307,43 @@ describe('UnprocessedEntitiesModule', () => {
       expect(response.status).toBe(403);
       expect(mockPermissions.authorize).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('works before the catalog has added the tombstone columns', async () => {
+    mockPermissions.authorize.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+    ]);
+    await db.schema.alterTable('final_entities', table => {
+      table.dropColumn('deleted_at');
+      table.dropColumn('winner_candidate_id');
+    });
+    await db('final_entities')
+      .whereIn('entity_id', ['old-slot', 'deleted-slot', 'revived-slot'])
+      .delete();
+
+    const pending = await request(app)
+      .get('/entities/unprocessed/pending')
+      .auth(mockCredentials.user.token(), { type: 'bearer' });
+    expect(pending.status).toBe(200);
+    expect(
+      pending.body.entities
+        .map((e: { entity_ref: string }) => e.entity_ref)
+        .sort(),
+    ).toEqual([
+      'component:default/pending',
+      'component:default/recreated',
+      'component:default/recreated-legacy',
+      'component:default/recreated-stale',
+      'component:default/revived',
+    ]);
+
+    const failed = await request(app)
+      .get('/entities/unprocessed/failed')
+      .auth(mockCredentials.user.token(), { type: 'bearer' });
+    expect(failed.status).toBe(200);
+    expect(
+      failed.body.entities.map((e: { entity_id: string }) => e.entity_id),
+    ).toEqual(['failed-entity']);
   });
 
   describe('DELETE /entities/unprocessed/delete/:entity_id', () => {

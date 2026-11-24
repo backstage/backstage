@@ -118,6 +118,14 @@ non-null generation is therefore not proof of complete change tracking. Any
 future feed needs an explicit rollout activation boundary and initial
 synchronization strategy.
 
+On MySQL, the upgrade creates a database trigger. If binary logging is
+enabled, which is the default on Amazon RDS and Aurora with backups, MySQL
+only lets users with the `SUPER` privilege create triggers. Unless the catalog's
+database user has that privilege, set `log_bin_trust_function_creators=1` on
+the server, for example in the RDS DB parameter group, before upgrading.
+Otherwise startup fails with an error that explains this, and succeeds on a
+retry once the setting is in place.
+
 During a rolling upgrade, older instances can delay some catalog changes:
 
 - An older instance can handle an entity's deletion without removing it from

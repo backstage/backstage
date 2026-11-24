@@ -85,16 +85,7 @@ exports.up = async function up(knex) {
       [triggerName],
     );
     if (!existing.length) {
-      await knex.raw(`
-      CREATE TRIGGER ${triggerName}
-      AFTER DELETE ON refresh_state
-      FOR EACH ROW
-      INSERT INTO stitch_queue (entity_ref, stitch_ticket, failure_count, next_stitch_at)
-      VALUES (OLD.entity_ref, UUID(), 0, CURRENT_TIMESTAMP)
-      ON DUPLICATE KEY UPDATE
-        stitch_ticket = VALUES(stitch_ticket),
-        failure_count = 0
-    `);
+      await createMysqlTrigger(knex);
     }
     for (const name of await findMysqlForeignKeys(knex)) {
       await knex.raw('ALTER TABLE final_entities DROP FOREIGN KEY ??', [name]);
@@ -130,6 +121,9 @@ exports.up = async function up(knex) {
 exports.down = async function down(knex) {
   if (isPg(knex)) {
     await knex.transaction(async tx => {
+      // Restoring the foreign key checks the whole table under a strong lock;
+      // fail fast rather than queue behind long transactions.
+      await tx.raw("SET LOCAL lock_timeout = '5s'");
       await removeUnmatchedFinalEntities(tx);
       if (!(await findPostgresForeignKeys(tx)).length) {
         await tx.raw(`
@@ -200,6 +194,40 @@ async function dropColumns(knex) {
         table.dropColumn(column);
       });
     }
+  }
+}
+
+/**
+ * With binary logging on, MySQL only lets users with the SUPER privilege
+ * create triggers, unless log_bin_trust_function_creators is set. That is
+ * common on managed servers, and this is the catalog's first MySQL trigger.
+ *
+ * @param {import('knex').Knex} knex
+ */
+async function createMysqlTrigger(knex) {
+  try {
+    await knex.raw(`
+      CREATE TRIGGER ${triggerName}
+      AFTER DELETE ON refresh_state
+      FOR EACH ROW
+      INSERT INTO stitch_queue (entity_ref, stitch_ticket, failure_count, next_stitch_at)
+      VALUES (OLD.entity_ref, UUID(), 0, CURRENT_TIMESTAMP)
+      ON DUPLICATE KEY UPDATE
+        stitch_ticket = VALUES(stitch_ticket),
+        failure_count = 0
+    `);
+  } catch (error) {
+    if (error?.code === 'ER_BINLOG_CREATE_ROUTINE_NEED_SUPER') {
+      throw new Error(
+        'The catalog database user is not allowed to create the trigger that ' +
+          'this migration needs, because binary logging is enabled. Either set ' +
+          'log_bin_trust_function_creators=1 on the MySQL server (on Amazon ' +
+          'RDS and Aurora, in the DB parameter group), or grant the user the ' +
+          'SUPER privilege, then restart. The migration is safe to retry. ' +
+          `Cause: ${error.message}`,
+      );
+    }
+    throw error;
   }
 }
 

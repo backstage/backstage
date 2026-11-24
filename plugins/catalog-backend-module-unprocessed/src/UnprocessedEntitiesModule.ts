@@ -50,6 +50,7 @@ export class UnprocessedEntitiesModule {
   private readonly httpAuth: HttpAuthService;
 
   private readonly database: Knex;
+  private knownColumns?: { deletedAt: boolean; winner: boolean };
   private readonly router: Pick<HttpRouterService, 'use'>;
   private readonly permissions: PermissionsService;
 
@@ -109,7 +110,39 @@ export class UnprocessedEntitiesModule {
     };
   }
 
+  /**
+   * The tombstone columns only exist once the catalog backend has run its
+   * migrations, which may be a different version than this module, or may
+   * not have happened yet. Until then, a final row always belongs to the
+   * candidate with the same ID.
+   */
+  private async finalEntityColumns(): Promise<{
+    deletedAt: boolean;
+    winner: boolean;
+  }> {
+    if (this.knownColumns) {
+      return this.knownColumns;
+    }
+    const [deletedAt, winner] = await Promise.all([
+      this.database.schema.hasColumn('final_entities', 'deleted_at'),
+      this.database.schema.hasColumn('final_entities', 'winner_candidate_id'),
+    ]);
+    const columns = { deletedAt, winner };
+    if (deletedAt && winner) {
+      this.knownColumns = columns;
+    }
+    return columns;
+  }
+
+  /** The candidate that a final row was last published for. */
+  private finalEntityOwner(winner: boolean): string {
+    return winner
+      ? 'COALESCE(final_entities.winner_candidate_id, final_entities.entity_id)'
+      : 'final_entities.entity_id';
+  }
+
   private async pending(owner?: string): Promise<HydratedRefreshState[]> {
+    const columns = await this.finalEntityColumns();
     const res = (
       await this.database('refresh_state')
         // Only candidate columns; final_entities shares some column names.
@@ -119,27 +152,22 @@ export class UnprocessedEntitiesModule {
           'final_entities.entity_ref',
           'refresh_state.entity_ref',
         )
-        // A tombstone left by an earlier deletion of the same ref does not
-        // make a re-created candidate any less pending. Neither does an empty
-        // row from before tombstones, which has no deletion time, if it
-        // belonged to a predecessor.
-        .where(q =>
-          q
-            .whereNull('final_entities.entity_id')
-            .orWhere(t =>
-              t
-                .whereNull('final_entities.final_entity')
-                .where(u =>
-                  u
-                    .whereNotNull('final_entities.deleted_at')
-                    .orWhere(
-                      'final_entities.entity_id',
-                      '<>',
-                      this.database.ref('refresh_state.entity_id'),
-                    ),
-                ),
-            ),
-        )
+        // A candidate is pending until a final row is published for it. A
+        // final row left by an earlier deletion of the same ref does not
+        // count: neither a tombstone, nor an empty row from before
+        // tombstones, nor a body that is still published for a deleted
+        // predecessor.
+        .where(q => {
+          q.whereNull('final_entities.entity_id');
+          if (columns.deletedAt) {
+            q.orWhereNotNull('final_entities.deleted_at');
+          }
+          q.orWhereRaw(
+            `${this.finalEntityOwner(
+              columns.winner,
+            )} <> refresh_state.entity_id`,
+          );
+        })
     ).map(this.hydrateRefreshState);
     if (owner) {
       return res.filter(r => r.unprocessed_entity.spec?.owner === owner);
@@ -149,6 +177,7 @@ export class UnprocessedEntitiesModule {
   }
 
   private async failed(owner?: string): Promise<HydratedRefreshState[]> {
+    const columns = await this.finalEntityColumns();
     const res = (
       await this.database('refresh_state')
         // Only candidate columns; final_entities shares some column names.
@@ -159,10 +188,13 @@ export class UnprocessedEntitiesModule {
           'refresh_state.entity_ref',
         )
         .whereNull('final_entities.final_entity')
-        .whereNull('final_entities.deleted_at')
-        .where(
-          'final_entities.entity_id',
-          this.database.ref('refresh_state.entity_id'),
+        .modify(q => {
+          if (columns.deletedAt) {
+            q.whereNull('final_entities.deleted_at');
+          }
+        })
+        .whereRaw(
+          `${this.finalEntityOwner(columns.winner)} = refresh_state.entity_id`,
         )
     ).map(this.hydrateRefreshState);
     if (owner) {

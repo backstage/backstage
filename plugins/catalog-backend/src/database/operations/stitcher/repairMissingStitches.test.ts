@@ -240,10 +240,10 @@ describe.each(databases.eachSupportedId())(
       expect(
         Number((await knex('stitch_queue').count({ count: '*' }))[0].count),
       ).toBe(501);
-      expect(logger.warn).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({ count: 501 }),
-      );
+      expect(logger.warn).toHaveBeenCalledWith(expect.any(String), {
+        count: 501,
+        entityRefs: `${names.slice(0, 20).map(ref).join(', ')}, and 481 more`,
+      });
     });
 
     it('stops between insert chunks when aborted and resumes the same batch', async () => {

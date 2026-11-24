@@ -24,6 +24,9 @@ import { retryOnDeadlock } from '../../util';
 // to 500 terms by default.
 const insertChunkSize = 500;
 
+// How many refs a warning lists by name.
+const loggedRefLimit = 20;
+
 type SweepRow = {
   entity_id: string;
   entity_ref: string;
@@ -73,7 +76,10 @@ export function createMissingStitchRepair(options: {
             'Found published catalog entities whose candidate is gone without a pending stitch; ' +
               'enqueued them for reconciliation. Outside of a rolling upgrade this indicates ' +
               'a bug or manual database changes.',
-            { count: enqueued.count, entityRefs: enqueued.refs.join(', ') },
+            {
+              count: enqueued.count,
+              entityRefs: summarizeRefs(enqueued.refs),
+            },
           );
         }
       }
@@ -91,6 +97,13 @@ export function createMissingStitchRepair(options: {
       cursor = rows[rows.length - 1].entity_id;
     }
   };
+}
+
+function summarizeRefs(refs: string[]): string {
+  const listed = refs.slice(0, loggedRefLimit).join(', ');
+  return refs.length > loggedRefLimit
+    ? `${listed}, and ${refs.length - loggedRefLimit} more`
+    : listed;
 }
 
 function isMissingStitch(row: SweepRow): boolean {
