@@ -178,7 +178,7 @@ export class UnprocessedEntitiesModule {
 
   private async failed(owner?: string): Promise<HydratedRefreshState[]> {
     const columns = await this.finalEntityColumns();
-    const res = (
+    const res: HydratedRefreshState[] = (
       await this.database('refresh_state')
         // Only candidate columns; final_entities shares some column names.
         .select('refresh_state.*')
