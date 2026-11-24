@@ -84,6 +84,13 @@
       "license": "(missing)",
       "reason": "verified the package has MIT license https://github.com/ogt/valid-url",
       "approvedBy": "backstage/maintainers"
+    },
+    {
+      "name": "@isomorphic-git/pgp-plugin",
+      "versionRange": "0.0.7",
+      "license": "LGPL-3.0+",
+      "reason": "upstream intended MIT (see commit 1823741) but package.json/LICENSE still LGPL; fix pending in https://github.com/isomorphic-git/pgp-plugin/pull/3",
+      "approvedBy": "backstage/maintainers"
     }
   ]
 }
