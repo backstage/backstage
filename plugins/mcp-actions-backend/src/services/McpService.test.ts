@@ -1000,6 +1000,47 @@ describe('McpService', () => {
       expect(result.tools[0].name).toBe('test.mock-action');
     });
 
+    it('should use a custom tool name separator', async () => {
+      const mockActionsRegistry = actionsRegistryServiceMock();
+      mockActionsRegistry.register({
+        name: 'mock-action',
+        title: 'Test',
+        description: 'Test',
+        schema: {
+          input: z => z.object({}),
+          output: z => z.object({}),
+        },
+        action: async () => ({ output: {} }),
+      });
+
+      const mcpService = await McpService.create({
+        actions: mockActionsRegistry,
+        metrics: metricsServiceMock.mock(),
+        tracingService: tracingServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
+        toolNameSeparator: '__',
+      });
+
+      const server = mcpService.getServer({
+        credentials: mockCredentials.user(),
+      });
+
+      const client = new Client({ name: 'test', version: '1.0' });
+      const [clientTransport, serverTransport] =
+        InMemoryTransport.createLinkedPair();
+      await Promise.all([
+        client.connect(clientTransport),
+        server.connect(serverTransport),
+      ]);
+
+      const listResult = await client.request(
+        { method: 'tools/list' },
+        ListToolsResultSchema,
+      );
+
+      expect(listResult.tools[0].name).toBe('test__mock-action');
+    });
+
     it('should use short action name when namespacing is disabled', async () => {
       const mockActionsRegistry = actionsRegistryServiceMock();
       mockActionsRegistry.register({

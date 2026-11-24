@@ -68,6 +68,9 @@ export const mcpPlugin = createBackendPlugin({
         const namespacedToolNames = config.getOptionalBoolean(
           'mcpActions.namespacedToolNames',
         );
+        const toolNameSeparator = config.getOptionalString(
+          'mcpActions.toolNameSeparator',
+        );
         const captureToolPayloads =
           config.getOptionalBoolean('mcpActions.tracing.capture.toolPayload') ??
           false;
@@ -78,6 +81,7 @@ export const mcpPlugin = createBackendPlugin({
           logger,
           auditor,
           namespacedToolNames,
+          toolNameSeparator,
           tracingService: tracing,
           captureToolPayloads,
         });

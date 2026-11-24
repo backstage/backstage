@@ -42,6 +42,13 @@ export interface Config {
      */
     namespacedToolNames?: boolean;
 
+    /**
+     * The separator used between the plugin ID prefix and the action name
+     * in namespaced MCP tool names. Defaults to ".". Set this to "__"
+     * when MCP clients don't accept dots in tool names.
+     */
+    toolNameSeparator?: string;
+
     tracing?: {
       capture?: {
         /**

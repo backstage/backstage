@@ -74,7 +74,16 @@ For named servers, configure instructions separately for each server.
 
 By default, MCP tool names include the plugin ID prefix to avoid collisions across plugins. For example, an action registered as `greet-user` by `my-custom-plugin` is exposed as `my-custom-plugin.greet-user`.
 
-You can disable this if you need the short names for backward compatibility:
+Some MCP clients don't accept dots in tool names. If you use such a client, you can configure the separator used between the plugin ID and the action name:
+
+```yaml title="app-config.yaml"
+mcpActions:
+  toolNameSeparator: '__'
+```
+
+With this setting, a real action like the catalog plugin's `get-catalog-entity` is exposed as `catalog__get-catalog-entity` instead of `catalog.get-catalog-entity`. A double underscore is recommended as it keeps the boundary between the plugin ID and the action name visible even when they contain single underscores themselves.
+
+You can also disable namespacing entirely if you need the short names for backward compatibility:
 
 ```yaml title="app-config.yaml"
 mcpActions:
