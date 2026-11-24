@@ -249,7 +249,7 @@ jobs:
         ports:
           - 3306/tcp
       redis:
-        image: redis:7@sha256:4fa24486b8bcca8eec45ee0eb166edc674795e53a2b53d1a9ef263eecebaac85
+        image: redis:7@sha256:6b645a37f49b0546582468706b32e71a8b7fbb5ba4583d0f9e27a8004716b738
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
