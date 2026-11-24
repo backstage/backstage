@@ -563,6 +563,51 @@ try {
 }
 ```
 
+The same plugin (or the installation) can author the tools those calls
+resolve to. A local tool runs in process on the backend host; an HTTP tool
+server routes through the guarded transport with certified routes and envelope
+validation:
+
+```ts
+// A local tool. Unsandboxed by design: it is host code with the backend's own
+// privileges, so the guard authorizes each attempt with the caller's
+// credentials and journals it by identity, but does not constrain what the
+// function does.
+const catalogLookup: ToolModule = {
+  id: 'catalog',
+  tools: [
+    { name: 'lookupEntity', description: 'Fetch a catalog entity by ref' },
+  ],
+  async run(input) {
+    const entity = await catalog.getEntityByName(input.arguments.ref);
+    return { value: entity, outcome: 'completed' };
+  },
+};
+
+// An HTTP tool server (for example, an MCP server), mediated end to end.
+const docsSearch: ToolModule = {
+  id: 'docs',
+  tools: [{ name: 'search', description: 'Search the docs site' }],
+  destination: toolName => `https://docs.example.com/mcp/${toolName}`,
+  destinationTemplates: ['https://docs.example.com/mcp/*'],
+  async validateToolCall(operation, request) {
+    // Reject any final envelope outside the certified shape.
+  },
+  adapter: {
+    kind: 'tool',
+    async invoke(input) {
+      // Dispatch to the server through the guarded fetch.
+    },
+  },
+};
+
+// Both register at the composition root, alongside provider modules.
+const moduleRegistry = createAiModuleRegistry({
+  providerModules: [anthropic],
+  toolModules: [catalogLookup, docsSearch],
+});
+```
+
 ### Harness lifecycle
 
 A plugin opens a harness once per session through `aiServiceRef` and receives a
